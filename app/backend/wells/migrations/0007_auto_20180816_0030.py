@@ -5,8 +5,11 @@ from __future__ import unicode_literals
 from django.db import migrations, models
 import django.db.models.deletion
 
+from django.conf import settings
+
 
 class Migration(migrations.Migration):
+    atomic = settings.DATABASES.get('default').get('engine') == 'django.db.backends.postgresql'
 
     dependencies = [
         ('wells', '0006_load_casing_code'),

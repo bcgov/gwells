@@ -42,7 +42,8 @@ urlpatterns = [
     url(r'^api/v1/submissions/decommission',
         never_cache(SubmissionDecommissionAPIView.as_view()), name='DEC'),
     # Edit submission
-    url(r'^api/v1/submissions/staff_edit', never_cache(SubmissionStaffEditAPIView()), name='STAFF_EDIT'),
+    url(r'^api/v1/submissions/staff_edit',
+        never_cache(SubmissionStaffEditAPIView().as_view()), name='STAFF_EDIT'),
 
     # Submissions home (loads Submissions application)
     url(r'^submissions/', SubmissionsHomeView.as_view(), name='submissions-home')

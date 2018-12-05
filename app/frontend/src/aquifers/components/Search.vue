@@ -13,77 +13,113 @@
 */
 
 <template>
-  <b-card class="p-1 container container-wide">
-    <h1 class="card-title">Aquifer Search</h1>
-    <b-form
-      v-on:submit.prevent="triggerSearch"
-      v-on:reset="triggerReset">
-      <b-form-row>
-        <b-col cols="12" md="4">
-          <b-form-group label="Aquifer name">
-            <b-form-input
-              id="search"
-              type="text"
-              v-model="search"/>
-          </b-form-group>
-          <b-form-group label="Aquifer number">
-            <b-form-input
-              id="aquifer_id"
-              type="text"
-              v-model="aquifer_id"/>
-          </b-form-group>
-        </b-col>
-      </b-form-row>
-      <b-form-row>
-        <b-col>
-          <b-form-group>
-            <b-button variant="primary" type="submit">Search</b-button>
-            <b-button variant="default" type="reset">Reset</b-button>
-          </b-form-group>
-        </b-col>
-      </b-form-row>
-    </b-form>
+  <div>
+    <!-- Active surveys -->
+    <b-alert
+        show
+        variant="info"
+        class="mb-3"
+        v-for="(survey, index) in surveys"
+        :key="`survey ${index}`">
+      <p class="m-0">
+        <a :href="survey.survey_link">
+          {{ survey.survey_introduction_text }}
+        </a>
+      </p>
+    </b-alert>
 
-    <b-table
-      :fields="aquiferListFields"
-      :items="aquiferList"
-      :show-empty="emptyResults"
-      :sort-by.sync="sortBy"
-      :sort-desc.sync="sortDesc"
-      empty-text="No aquifers could be found"
-      no-local-sorting
-      striped
-      v-if="aquiferList">
-      <template slot="aquifer_id" slot-scope="data">
-        <router-link :to="{ name: 'aquifers-view', params: { id: data.value }}">{{data.value}}</router-link>
-      </template>
-      <template slot="material" slot-scope="row">
-        {{row.item.material_description}}
-      </template>
-      <template slot="subtype" slot-scope="row">
-        {{row.item.subtype_description}}
-      </template>
-      <template slot="vulnerability" slot-scope="row">
-        {{row.item.vulnerability_description}}
-      </template>
-      <template slot="vulnerability" slot-scope="row">
-        {{row.item.vulnerability_description}}
-      </template>
-      <template slot="productivity" slot-scope="row">
-        {{row.item.productivity_description}}
-      </template>
-      <template slot="demand" slot-scope="row">
-        {{row.item.demand_description}}
-      </template>
-    </b-table>
+    <b-card no-body class="p-3 mb-4">
+      <h5>Aquifer Search</h5>
 
-    <b-container v-if="displayPagination">
-      <b-row align-h="end">
-        <b-pagination :total-rows="response.count" :per-page="limit" v-model="currentPage" />
-      </b-row>
-    </b-container>
+      <div class="pb-2">
+        <b-button
+          v-on:click="navigateToNew"
+          v-if="userRoles.aquifers.edit"
+          variant="primary">Add new Aquifer</b-button>
+      </div>
 
-  </b-card>
+      <b-alert
+        :show="noSearchCriteriaError"
+        variant="danger">
+        <i class="fa fa-exclamation-circle"/>&nbsp;&nbsp;At least one search field is required
+      </b-alert>
+
+      <b-form
+        v-on:submit.prevent="triggerSearch"
+        v-on:reset="triggerReset">
+        <b-form-row>
+          <b-col cols="12" md="4">
+            <b-form-group label="Aquifer number">
+              <b-form-input
+                id="aquifers-number"
+                type="text"
+                v-model="aquifer_id"/>
+            </b-form-group>
+            <b-form-group label="Aquifer name">
+              <b-form-input
+                id="aquifers-name"
+                type="text"
+                v-model="search"/>
+            </b-form-group>
+          </b-col>
+        </b-form-row>
+        <b-form-row>
+          <b-col>
+            <b-form-group>
+              <b-button variant="primary" type="submit" id="aquifers-search">Search</b-button>
+              <b-button variant="default" type="reset">Reset</b-button>
+            </b-form-group>
+          </b-col>
+        </b-form-row>
+      </b-form>
+
+      <b-table
+        id="aquifers-results"
+        :fields="aquiferListFields"
+        :items="aquiferList"
+        :show-empty="emptyResults"
+        :sort-by.sync="sortBy"
+        :sort-desc.sync="sortDesc"
+        empty-text="No aquifers could be found"
+        no-local-sorting
+        striped
+        v-if="aquiferList">
+        <template slot="aquifer_id" slot-scope="data">
+          <router-link :to="`${data.value}/`">{{data.value}}</router-link>
+        </template>
+        <template slot="material" slot-scope="row">
+          {{row.item.material_description}}
+        </template>
+        <template slot="subtype" slot-scope="row">
+          {{row.item.subtype_description}}
+        </template>
+        <template slot="vulnerability" slot-scope="row">
+          {{row.item.vulnerability_description}}
+        </template>
+        <template slot="vulnerability" slot-scope="row">
+          {{row.item.vulnerability_description}}
+        </template>
+        <template slot="productivity" slot-scope="row">
+          {{row.item.productivity_description}}
+        </template>
+        <template slot="demand" slot-scope="row">
+          {{row.item.demand_description}}
+        </template>
+      </b-table>
+
+      <b-container v-if="aquiferList && !emptyResults">
+        <b-row>
+          <b-col>
+            Showing {{ displayOffset }} to {{ displayPageLength }} of {{ response.count }}
+          </b-col>
+          <b-col v-if="displayPagination">
+            <b-pagination :total-rows="response.count" :per-page="limit" v-model="currentPage" />
+          </b-col>
+        </b-row>
+      </b-container>
+
+    </b-card>
+  </div>
 </template>
 
 <style>
@@ -99,12 +135,16 @@ table.b-table > tfoot > tr > th.sorting::after {
   opacity: 1 !important;
 }
 
+ul.pagination {
+  justify-content: end;
+}
 </style>
 
 <script>
 import querystring from 'querystring'
 import ApiService from '@/common/services/ApiService.js'
 import isEmpty from 'lodash.isempty'
+import { mapGetters } from 'vuex'
 
 const LIMIT = 30
 const DEFAULT_ORDERING_STRING = 'aquifer_id'
@@ -141,16 +181,31 @@ export default {
         { key: 'productivity', label: 'Productivity', sortable: true },
         { key: 'demand', label: 'Demand', sortable: true },
         { key: 'mapping_year', label: 'Year of mapping', sortable: true }
-      ]
+      ],
+      surveys: [],
+      noSearchCriteriaError: false
     }
   },
   computed: {
+    offset () { return parseInt(this.$route.query.offset, 10) || 0 },
+    displayOffset () { return this.offset + 1 },
+    displayPageLength () {
+      if (!this.response) {
+        return undefined
+      }
+
+      return this.offset + this.response.results.length
+    },
     aquiferList () { return this.response && this.response.results },
     displayPagination () { return this.aquiferList && (this.response.next || this.response.previous) },
     emptyResults () { return this.response && this.response.count === 0 },
-    query () { return this.$route.query }
+    query () { return this.$route.query },
+    ...mapGetters(['userRoles'])
   },
   methods: {
+    navigateToNew () {
+      this.$router.push({ name: 'new' })
+    },
     fetchResults () {
       if (isEmpty(this.query.aquifer_id) && isEmpty(this.query.search)) {
         this.response = {}
@@ -188,7 +243,7 @@ export default {
       this.search = ''
       this.aquifer_id = ''
       this.currentPage = 0
-
+      this.noSearchCriteriaError = false
       this.updateQueryParams()
     },
     triggerSearch () {
@@ -202,6 +257,10 @@ export default {
       if (this.search) {
         this.filterParams.search = this.search
       }
+
+      this.noSearchCriteriaError =
+        this.filterParams.aquifer_id === undefined &&
+        this.filterParams.search === undefined
 
       this.updateQueryParams()
     },
@@ -230,6 +289,20 @@ export default {
         })
       }
     }
+  },
+  created () {
+    // Fetch current surveys and add 'aquifer' surveys (if any) to this.surveys to be displayed
+    ApiService.query('surveys/').then((response) => {
+      if (response.data) {
+        response.data.forEach((survey) => {
+          if (survey.survey_page === 'a') {
+            this.surveys.push(survey)
+          }
+        })
+      }
+    }).catch((e) => {
+      console.error(e)
+    })
   },
   mounted () { this.fetchResults() },
   watch: {

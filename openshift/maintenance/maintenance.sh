@@ -24,8 +24,8 @@ STATIC_PAGE_PORT=${STATIC_PAGE_PORT:-2015-tcp}
 IMG_SRC=${IMG_SRC:-bcgov-s2i-caddy}
 GIT_REPO=${GIT_REPO:-https://github.com/bcgov/gwells.git}
 GIT_BRANCH=${GIT_BRANCH:-master}
-OC_BUILD=${OC_BUILD:-../openshift/templates/caddy-build.json}
-OC_DEPLOY=${OC_DEPLOY:-../openshift/templates/caddy-deploy.json}
+OC_BUILD=${OC_BUILD:-../openshift/templates/caddy.bc.json}
+OC_DEPLOY=${OC_DEPLOY:-../openshift/templates/caddy.dc.json}
 
 
 # Verbose option

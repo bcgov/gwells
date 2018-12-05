@@ -1,189 +1,1363 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`View Component Matches the snapshot 1`] = `
+exports[`View Component Edit mode matches the snapshot 1`] = `
 <div
   class="card p-3 mb-4 container container-wide"
 >
+  <!---->
+   
+  <!---->
+   
   <div
     class="card-body"
   >
+    <!---->
+     
     <div
       class="container"
     >
       <div
         class="row border-bottom mb-3 pb-2"
       >
+        <h5>
+          Aquifer 4 Summary - Edit
+        </h5>
+      </div>
+    </div>
+     
+    <!---->
+     
+    <div
+      class="container"
+    >
+      <div
+        class="row"
+      >
         <div
-          class="col"
+          class="col-md-6"
         >
-          <h1
-            class="pt-2"
+          <div
+            class="row"
           >
-            Aquifer Summary
-          </h1>
+            <div
+              class="aquifer-id col-form-label col-md-4"
+            >
+              
+          Aquifer number
+        
+            </div>
+             
+            <div
+              class="aquifer-id col-md-8"
+            >
+              
+          4
+        
+            </div>
+          </div>
+           
+          <div
+            aria-labelledby="__BVID__49__BV_label_"
+            class="b-form-group form-group"
+            id="__BVID__49"
+            role="group"
+          >
+            <div
+              class="form-row"
+            >
+              <label
+                class="col-sm-4 col-form-label"
+                for="aquifer_name"
+                id="__BVID__49__BV_label_"
+              >
+                Aquifer name
+              </label>
+              <div
+                class="col-sm-8"
+              >
+                <input
+                  class="form-control"
+                  id="aquifer_name"
+                  tabindex="1"
+                  type="text"
+                  value="Aggasiz"
+                />
+                <!---->
+                <!---->
+                <!---->
+              </div>
+            </div>
+          </div>
+           
+          <div
+            aria-labelledby="__BVID__51__BV_label_"
+            class="b-form-group form-group"
+            id="__BVID__51"
+            role="group"
+          >
+            <div
+              class="form-row"
+            >
+              <label
+                class="col-sm-4 col-form-label"
+                for="location_description"
+                id="__BVID__51__BV_label_"
+              >
+                Descriptive location
+              </label>
+              <div
+                class="col-sm-8"
+              >
+                <input
+                  class="form-control"
+                  id="location_description"
+                  tabindex="3"
+                  type="text"
+                  value="Aggasiz/Sea Bird Island"
+                />
+                <!---->
+                <!---->
+                <!---->
+              </div>
+            </div>
+          </div>
+           
+          <div
+            aria-labelledby="__BVID__53__BV_label_"
+            class="b-form-group form-group"
+            id="__BVID__53"
+            role="group"
+          >
+            <div
+              class="form-row"
+            >
+              <label
+                class="col-sm-4 col-form-label"
+                for="material"
+                id="__BVID__53__BV_label_"
+              >
+                Material type
+              </label>
+              <div
+                class="col-sm-8"
+              >
+                <select
+                  class="form-control custom-select"
+                  id="material"
+                  tabindex="5"
+                >
+                  <option
+                    value=""
+                  />
+                </select>
+                <!---->
+                <!---->
+                <!---->
+              </div>
+            </div>
+          </div>
+           
+          <div
+            aria-labelledby="__BVID__55__BV_label_"
+            class="b-form-group form-group"
+            id="__BVID__55"
+            role="group"
+          >
+            <div
+              class="form-row"
+            >
+              <label
+                class="col-sm-4 col-form-label"
+                for="quality_concern"
+                id="__BVID__55__BV_label_"
+              >
+                Quality concerns
+              </label>
+              <div
+                class="col-sm-8"
+              >
+                <select
+                  class="form-control custom-select"
+                  id="quality_concern"
+                  tabindex="7"
+                >
+                  <option
+                    value=""
+                  />
+                </select>
+                <!---->
+                <!---->
+                <!---->
+              </div>
+            </div>
+          </div>
+           
+          <div
+            aria-labelledby="__BVID__57__BV_label_"
+            class="b-form-group form-group"
+            id="__BVID__57"
+            role="group"
+          >
+            <div
+              class="form-row"
+            >
+              <label
+                class="col-sm-4 col-form-label"
+                for="area"
+                id="__BVID__57__BV_label_"
+              >
+                Size (km²)
+              </label>
+              <div
+                class="col-sm-8"
+              >
+                <input
+                  class="form-control"
+                  id="area"
+                  tabindex="9"
+                  type="text"
+                  value="63.3"
+                />
+                <!---->
+                <!---->
+                <!---->
+              </div>
+            </div>
+          </div>
+           
+          <div
+            aria-labelledby="__BVID__59__BV_label_"
+            class="b-form-group form-group"
+            id="__BVID__59"
+            role="group"
+          >
+            <div
+              class="form-row"
+            >
+              <label
+                class="col-sm-4 col-form-label"
+                for="known_water_use"
+                id="__BVID__59__BV_label_"
+              >
+                Type of known water use
+              </label>
+              <div
+                class="col-sm-8"
+              >
+                <select
+                  class="form-control custom-select"
+                  id="known_water_use"
+                  tabindex="11"
+                >
+                  <option
+                    value=""
+                  />
+                </select>
+                <!---->
+                <!---->
+                <!---->
+              </div>
+            </div>
+          </div>
+           
+          <div
+            aria-labelledby="__BVID__61__BV_label_"
+            class="b-form-group form-group"
+            id="__BVID__61"
+            role="group"
+          >
+            <div
+              class="form-row"
+            >
+              <label
+                class="col-sm-4 col-form-label"
+                for="notes"
+                id="__BVID__61__BV_label_"
+              >
+                Comments
+              </label>
+              <div
+                class="col-sm-8"
+              >
+                <textarea
+                  class="form-control"
+                  id="notes"
+                  rows="4"
+                  tabindex="13"
+                  wrap="soft"
+                />
+                <!---->
+                <!---->
+                <!---->
+              </div>
+            </div>
+          </div>
         </div>
          
         <div
-          class="col-auto"
+          class="col-md-6"
         >
-          <!---->
+          <div
+            aria-labelledby="__BVID__63__BV_label_"
+            class="b-form-group form-group"
+            id="__BVID__63"
+            role="group"
+          >
+            <div
+              class="form-row"
+            >
+              <label
+                class="col-sm-4 col-form-label"
+                for="mapping_year"
+                id="__BVID__63__BV_label_"
+              >
+                Year of mapping
+              </label>
+              <div
+                class="col-sm-8"
+              >
+                <input
+                  class="form-control"
+                  id="mapping_year"
+                  tabindex="2"
+                  type="text"
+                  value="1993"
+                />
+                <!---->
+                <!---->
+                <!---->
+              </div>
+            </div>
+          </div>
            
-          <a
-            class="ml-2 print fa fa-print fa-lg d-print-none"
-            href="#"
-            title="Print"
-          />
+          <div
+            aria-labelledby="__BVID__65__BV_label_"
+            class="b-form-group form-group"
+            id="__BVID__65"
+            role="group"
+          >
+            <div
+              class="form-row"
+            >
+              <label
+                class="col-sm-4 col-form-label"
+                for="litho_stratographic_unit"
+                id="__BVID__65__BV_label_"
+              >
+                Litho stratigraphic unit
+              </label>
+              <div
+                class="col-sm-8"
+              >
+                <input
+                  class="form-control"
+                  id="litho_stratographic_unit"
+                  tabindex="4"
+                  type="text"
+                  value="Fraser River Sediments"
+                />
+                <!---->
+                <!---->
+                <!---->
+              </div>
+            </div>
+          </div>
+           
+          <div
+            aria-labelledby="__BVID__67__BV_label_"
+            class="b-form-group form-group"
+            id="__BVID__67"
+            role="group"
+          >
+            <div
+              class="form-row"
+            >
+              <label
+                class="col-sm-4 col-form-label"
+                for="vulnerability"
+                id="__BVID__67__BV_label_"
+              >
+                Vulnerability
+              </label>
+              <div
+                class="col-sm-8"
+              >
+                <select
+                  class="form-control custom-select"
+                  id="vulnerability"
+                  tabindex="6"
+                >
+                  <option
+                    value=""
+                  />
+                </select>
+                <!---->
+                <!---->
+                <!---->
+              </div>
+            </div>
+          </div>
+           
+          <div
+            aria-labelledby="__BVID__69__BV_label_"
+            class="b-form-group form-group"
+            id="__BVID__69"
+            role="group"
+          >
+            <div
+              class="form-row"
+            >
+              <label
+                class="col-sm-4 col-form-label"
+                for="subtype"
+                id="__BVID__69__BV_label_"
+              >
+                Subtype
+              </label>
+              <div
+                class="col-sm-8"
+              >
+                <select
+                  class="form-control custom-select"
+                  id="subtype"
+                  tabindex="8"
+                >
+                  <option
+                    value=""
+                  />
+                </select>
+                <!---->
+                <!---->
+                <!---->
+              </div>
+            </div>
+          </div>
+           
+          <div
+            aria-labelledby="__BVID__71__BV_label_"
+            class="b-form-group form-group"
+            id="__BVID__71"
+            role="group"
+          >
+            <div
+              class="form-row"
+            >
+              <label
+                class="col-sm-4 col-form-label"
+                for="productivity"
+                id="__BVID__71__BV_label_"
+              >
+                Productivity
+              </label>
+              <div
+                class="col-sm-8"
+              >
+                <select
+                  class="form-control custom-select"
+                  id="productivity"
+                  tabindex="10"
+                >
+                  <option
+                    value=""
+                  />
+                </select>
+                <!---->
+                <!---->
+                <!---->
+              </div>
+            </div>
+          </div>
+           
+          <div
+            aria-labelledby="__BVID__73__BV_label_"
+            class="b-form-group form-group"
+            id="__BVID__73"
+            role="group"
+          >
+            <div
+              class="form-row"
+            >
+              <label
+                class="col-sm-4 col-form-label"
+                for="demand"
+                id="__BVID__73__BV_label_"
+              >
+                Demand
+              </label>
+              <div
+                class="col-sm-8"
+              >
+                <select
+                  class="form-control custom-select"
+                  id="demand"
+                  tabindex="12"
+                >
+                  <option
+                    value=""
+                  />
+                </select>
+                <!---->
+                <!---->
+                <!---->
+              </div>
+            </div>
+          </div>
         </div>
       </div>
        
-      <dl
+      <div
+        class="row mt-4"
+      >
+        <div
+          class="col-auto"
+        >
+          <button
+            class="btn btn-primary"
+            type="button"
+          >
+            
+        Save
+      
+          </button>
+           
+          <button
+            class="btn btn-default"
+            type="button"
+          >
+            
+        Cancel
+      
+          </button>
+        </div>
+      </div>
+       
+      <div>
+        <div
+          id="confirmSave___BV_modal_outer_"
+        >
+          <div
+            aria-hidden="true"
+            class="modal fade"
+            id="confirmSave"
+            role="dialog"
+            style="display: none;"
+          >
+            <div
+              class="modal-dialog modal-md"
+            >
+              <div
+                aria-describedby="confirmSave___BV_modal_body_"
+                aria-labelledby="confirmSave___BV_modal_header_"
+                class="modal-content"
+                role="document"
+                tabindex="-1"
+              >
+                <header
+                  class="modal-header"
+                  id="confirmSave___BV_modal_header_"
+                >
+                  <h5
+                    class="modal-title"
+                  />
+                  <button
+                    aria-label="Close"
+                    class="close"
+                    type="button"
+                  >
+                    ×
+                  </button>
+                </header>
+                <div
+                  class="modal-body"
+                  id="confirmSave___BV_modal_body_"
+                >
+                  <p>
+                    Are you sure you would like to save this record?
+                  </p>
+                </div>
+                <footer
+                  class="modal-footer"
+                  id="confirmSave___BV_modal_footer_"
+                >
+                  <button
+                    class="btn btn-default"
+                    type="button"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    class="btn btn-primary"
+                    type="button"
+                  >
+                    OK
+                  </button>
+                </footer>
+              </div>
+            </div>
+          </div>
+          <!---->
+        </div>
+      </div>
+       
+      <div>
+        <div
+          id="confirmCancel___BV_modal_outer_"
+        >
+          <div
+            aria-hidden="true"
+            class="modal fade"
+            id="confirmCancel"
+            role="dialog"
+            style="display: none;"
+          >
+            <div
+              class="modal-dialog modal-md"
+            >
+              <div
+                aria-describedby="confirmCancel___BV_modal_body_"
+                aria-labelledby="confirmCancel___BV_modal_header_"
+                class="modal-content"
+                role="document"
+                tabindex="-1"
+              >
+                <header
+                  class="modal-header"
+                  id="confirmCancel___BV_modal_header_"
+                >
+                  <h5
+                    class="modal-title"
+                  />
+                  <button
+                    aria-label="Close"
+                    class="close"
+                    type="button"
+                  >
+                    ×
+                  </button>
+                </header>
+                <div
+                  class="modal-body"
+                  id="confirmCancel___BV_modal_body_"
+                >
+                  <p>
+                    Are you sure you want to quit editing this record?
+                  </p>
+                </div>
+                <footer
+                  class="modal-footer"
+                  id="confirmCancel___BV_modal_footer_"
+                >
+                  <button
+                    class="btn btn-default"
+                    type="button"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    class="btn btn-primary"
+                    type="button"
+                  >
+                    OK
+                  </button>
+                </footer>
+              </div>
+            </div>
+          </div>
+          <!---->
+        </div>
+      </div>
+    </div>
+     
+    <!---->
+     
+    <h5
+      class="mt-3 border-bottom"
+    >
+      Documentation
+    </h5>
+     
+    <aquifer-documents-stub />
+  </div>
+</div>
+`;
+
+exports[`View Component View mode matches the snapshot 1`] = `
+<div
+  class="card p-3 mb-4"
+>
+  <!---->
+   
+  <!---->
+   
+  <div
+    class="container"
+  >
+    <!---->
+     
+    <div
+      class="row border-bottom mb-3 pb-2"
+    >
+      <div
+        class="col"
+      >
+        <h5>
+          Aquifer 4 Summary - Edit
+        </h5>
+      </div>
+    </div>
+     
+    <!---->
+     
+    <div
+      class="container"
+    >
+      <div
         class="row"
       >
-        <dt
-          class="col-sm-2"
+        <div
+          class="col-md-6"
         >
+          <div
+            class="row"
+          >
+            <div
+              class="aquifer-id col-form-label col-md-4"
+            >
+              
           Aquifer number
-        </dt>
-         
-        <dd
-          class="col-sm-4"
-        >
+        
+            </div>
+             
+            <div
+              class="aquifer-id col-md-8"
+            >
+              
           4
-        </dd>
+        
+            </div>
+          </div>
+           
+          <div
+            aria-labelledby="__BVID__12__BV_label_"
+            class="b-form-group form-group"
+            id="__BVID__12"
+            role="group"
+          >
+            <div
+              class="form-row"
+            >
+              <label
+                class="col-sm-4 col-form-label"
+                for="aquifer_name"
+                id="__BVID__12__BV_label_"
+              >
+                Aquifer name
+              </label>
+              <div
+                class="col-sm-8"
+              >
+                <input
+                  class="form-control"
+                  id="aquifer_name"
+                  tabindex="1"
+                  type="text"
+                  value="Aggasiz"
+                />
+                <!---->
+                <!---->
+                <!---->
+              </div>
+            </div>
+          </div>
+           
+          <div
+            aria-labelledby="__BVID__14__BV_label_"
+            class="b-form-group form-group"
+            id="__BVID__14"
+            role="group"
+          >
+            <div
+              class="form-row"
+            >
+              <label
+                class="col-sm-4 col-form-label"
+                for="location_description"
+                id="__BVID__14__BV_label_"
+              >
+                Descriptive location
+              </label>
+              <div
+                class="col-sm-8"
+              >
+                <input
+                  class="form-control"
+                  id="location_description"
+                  tabindex="3"
+                  type="text"
+                  value="Aggasiz/Sea Bird Island"
+                />
+                <!---->
+                <!---->
+                <!---->
+              </div>
+            </div>
+          </div>
+           
+          <div
+            aria-labelledby="__BVID__16__BV_label_"
+            class="b-form-group form-group"
+            id="__BVID__16"
+            role="group"
+          >
+            <div
+              class="form-row"
+            >
+              <label
+                class="col-sm-4 col-form-label"
+                for="material"
+                id="__BVID__16__BV_label_"
+              >
+                Material type
+              </label>
+              <div
+                class="col-sm-8"
+              >
+                <select
+                  class="form-control custom-select"
+                  id="material"
+                  tabindex="5"
+                >
+                  <option
+                    value=""
+                  />
+                </select>
+                <!---->
+                <!---->
+                <!---->
+              </div>
+            </div>
+          </div>
+           
+          <div
+            aria-labelledby="__BVID__18__BV_label_"
+            class="b-form-group form-group"
+            id="__BVID__18"
+            role="group"
+          >
+            <div
+              class="form-row"
+            >
+              <label
+                class="col-sm-4 col-form-label"
+                for="quality_concern"
+                id="__BVID__18__BV_label_"
+              >
+                Quality concerns
+              </label>
+              <div
+                class="col-sm-8"
+              >
+                <select
+                  class="form-control custom-select"
+                  id="quality_concern"
+                  tabindex="7"
+                >
+                  <option
+                    value=""
+                  />
+                </select>
+                <!---->
+                <!---->
+                <!---->
+              </div>
+            </div>
+          </div>
+           
+          <div
+            aria-labelledby="__BVID__20__BV_label_"
+            class="b-form-group form-group"
+            id="__BVID__20"
+            role="group"
+          >
+            <div
+              class="form-row"
+            >
+              <label
+                class="col-sm-4 col-form-label"
+                for="area"
+                id="__BVID__20__BV_label_"
+              >
+                Size (km²)
+              </label>
+              <div
+                class="col-sm-8"
+              >
+                <input
+                  class="form-control"
+                  id="area"
+                  tabindex="9"
+                  type="text"
+                  value="63.3"
+                />
+                <!---->
+                <!---->
+                <!---->
+              </div>
+            </div>
+          </div>
+           
+          <div
+            aria-labelledby="__BVID__22__BV_label_"
+            class="b-form-group form-group"
+            id="__BVID__22"
+            role="group"
+          >
+            <div
+              class="form-row"
+            >
+              <label
+                class="col-sm-4 col-form-label"
+                for="known_water_use"
+                id="__BVID__22__BV_label_"
+              >
+                Type of known water use
+              </label>
+              <div
+                class="col-sm-8"
+              >
+                <select
+                  class="form-control custom-select"
+                  id="known_water_use"
+                  tabindex="11"
+                >
+                  <option
+                    value=""
+                  />
+                </select>
+                <!---->
+                <!---->
+                <!---->
+              </div>
+            </div>
+          </div>
+           
+          <div
+            aria-labelledby="__BVID__24__BV_label_"
+            class="b-form-group form-group"
+            id="__BVID__24"
+            role="group"
+          >
+            <div
+              class="form-row"
+            >
+              <label
+                class="col-sm-4 col-form-label"
+                for="notes"
+                id="__BVID__24__BV_label_"
+              >
+                Comments
+              </label>
+              <div
+                class="col-sm-8"
+              >
+                <textarea
+                  class="form-control"
+                  id="notes"
+                  rows="4"
+                  tabindex="13"
+                  wrap="soft"
+                />
+                <!---->
+                <!---->
+                <!---->
+              </div>
+            </div>
+          </div>
+        </div>
          
-        <dt
-          class="col-sm-2"
+        <div
+          class="col-md-6"
         >
-          Year of mapping
-        </dt>
-         
-        <dd
-          class="col-sm-4"
+          <div
+            aria-labelledby="__BVID__26__BV_label_"
+            class="b-form-group form-group"
+            id="__BVID__26"
+            role="group"
+          >
+            <div
+              class="form-row"
+            >
+              <label
+                class="col-sm-4 col-form-label"
+                for="mapping_year"
+                id="__BVID__26__BV_label_"
+              >
+                Year of mapping
+              </label>
+              <div
+                class="col-sm-8"
+              >
+                <input
+                  class="form-control"
+                  id="mapping_year"
+                  tabindex="2"
+                  type="text"
+                  value="1993"
+                />
+                <!---->
+                <!---->
+                <!---->
+              </div>
+            </div>
+          </div>
+           
+          <div
+            aria-labelledby="__BVID__28__BV_label_"
+            class="b-form-group form-group"
+            id="__BVID__28"
+            role="group"
+          >
+            <div
+              class="form-row"
+            >
+              <label
+                class="col-sm-4 col-form-label"
+                for="litho_stratographic_unit"
+                id="__BVID__28__BV_label_"
+              >
+                Litho stratigraphic unit
+              </label>
+              <div
+                class="col-sm-8"
+              >
+                <input
+                  class="form-control"
+                  id="litho_stratographic_unit"
+                  tabindex="4"
+                  type="text"
+                  value="Fraser River Sediments"
+                />
+                <!---->
+                <!---->
+                <!---->
+              </div>
+            </div>
+          </div>
+           
+          <div
+            aria-labelledby="__BVID__30__BV_label_"
+            class="b-form-group form-group"
+            id="__BVID__30"
+            role="group"
+          >
+            <div
+              class="form-row"
+            >
+              <label
+                class="col-sm-4 col-form-label"
+                for="vulnerability"
+                id="__BVID__30__BV_label_"
+              >
+                Vulnerability
+              </label>
+              <div
+                class="col-sm-8"
+              >
+                <select
+                  class="form-control custom-select"
+                  id="vulnerability"
+                  tabindex="6"
+                >
+                  <option
+                    value=""
+                  />
+                </select>
+                <!---->
+                <!---->
+                <!---->
+              </div>
+            </div>
+          </div>
+           
+          <div
+            aria-labelledby="__BVID__32__BV_label_"
+            class="b-form-group form-group"
+            id="__BVID__32"
+            role="group"
+          >
+            <div
+              class="form-row"
+            >
+              <label
+                class="col-sm-4 col-form-label"
+                for="subtype"
+                id="__BVID__32__BV_label_"
+              >
+                Subtype
+              </label>
+              <div
+                class="col-sm-8"
+              >
+                <select
+                  class="form-control custom-select"
+                  id="subtype"
+                  tabindex="8"
+                >
+                  <option
+                    value=""
+                  />
+                </select>
+                <!---->
+                <!---->
+                <!---->
+              </div>
+            </div>
+          </div>
+           
+          <div
+            aria-labelledby="__BVID__34__BV_label_"
+            class="b-form-group form-group"
+            id="__BVID__34"
+            role="group"
+          >
+            <div
+              class="form-row"
+            >
+              <label
+                class="col-sm-4 col-form-label"
+                for="productivity"
+                id="__BVID__34__BV_label_"
+              >
+                Productivity
+              </label>
+              <div
+                class="col-sm-8"
+              >
+                <select
+                  class="form-control custom-select"
+                  id="productivity"
+                  tabindex="10"
+                >
+                  <option
+                    value=""
+                  />
+                </select>
+                <!---->
+                <!---->
+                <!---->
+              </div>
+            </div>
+          </div>
+           
+          <div
+            aria-labelledby="__BVID__36__BV_label_"
+            class="b-form-group form-group"
+            id="__BVID__36"
+            role="group"
+          >
+            <div
+              class="form-row"
+            >
+              <label
+                class="col-sm-4 col-form-label"
+                for="demand"
+                id="__BVID__36__BV_label_"
+              >
+                Demand
+              </label>
+              <div
+                class="col-sm-8"
+              >
+                <select
+                  class="form-control custom-select"
+                  id="demand"
+                  tabindex="12"
+                >
+                  <option
+                    value=""
+                  />
+                </select>
+                <!---->
+                <!---->
+                <!---->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+       
+      <div
+        class="row mt-4"
+      >
+        <div
+          class="col-auto"
         >
-          1993
-        </dd>
-         
-        <dt
-          class="col-sm-2"
+          <button
+            class="btn btn-primary"
+            type="button"
+          >
+            
+        Save
+      
+          </button>
+           
+          <button
+            class="btn btn-default"
+            type="button"
+          >
+            
+        Cancel
+      
+          </button>
+        </div>
+      </div>
+       
+      <div>
+        <div
+          id="confirmSave___BV_modal_outer_"
         >
-          Aquifer name
-        </dt>
-         
-        <dd
-          class="col-sm-4"
+          <div
+            aria-hidden="true"
+            class="modal fade"
+            id="confirmSave"
+            role="dialog"
+            style="display: none;"
+          >
+            <div
+              class="modal-dialog modal-md"
+            >
+              <div
+                aria-describedby="confirmSave___BV_modal_body_"
+                aria-labelledby="confirmSave___BV_modal_header_"
+                class="modal-content"
+                role="document"
+                tabindex="-1"
+              >
+                <header
+                  class="modal-header"
+                  id="confirmSave___BV_modal_header_"
+                >
+                  <h5
+                    class="modal-title"
+                  />
+                  <button
+                    aria-label="Close"
+                    class="close"
+                    type="button"
+                  >
+                    ×
+                  </button>
+                </header>
+                <div
+                  class="modal-body"
+                  id="confirmSave___BV_modal_body_"
+                >
+                  <p>
+                    Are you sure you would like to save this record?
+                  </p>
+                </div>
+                <footer
+                  class="modal-footer"
+                  id="confirmSave___BV_modal_footer_"
+                >
+                  <button
+                    class="btn btn-default"
+                    type="button"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    class="btn btn-primary"
+                    type="button"
+                  >
+                    OK
+                  </button>
+                </footer>
+              </div>
+            </div>
+          </div>
+          <!---->
+        </div>
+      </div>
+       
+      <div>
+        <div
+          id="confirmCancel___BV_modal_outer_"
         >
-          Aggasiz
-        </dd>
-         
-        <dt
-          class="col-sm-2"
-        >
-          Litho stratigraphic unit
-        </dt>
-         
-        <dd
-          class="col-sm-4"
-        >
-          Fraser River Sediments
-        </dd>
-         
-        <dt
-          class="col-sm-2"
-        >
-          Descriptive location
-        </dt>
-         
-        <dd
-          class="col-sm-4"
-        >
-          Aggasiz/Sea Bird Island
-        </dd>
-         
-        <dt
-          class="col-sm-2"
-        >
-          Vulnerability
-        </dt>
-         
-        <dd
-          class="col-sm-4"
-        >
-          High
-        </dd>
-         
-        <dt
-          class="col-sm-2"
-        >
-          Material type
-        </dt>
-         
-        <dd
-          class="col-sm-4"
-        >
-          Sand and Gravel
-        </dd>
-         
-        <dt
-          class="col-sm-2"
-        >
-          Subtype
-        </dt>
-         
-        <dd
-          class="col-sm-4"
-        >
-          Unconfined sand and gravel - large river system
-        </dd>
-         
-        <dt
-          class="col-sm-2"
-        >
-          Quality concerns
-        </dt>
-         
-        <dd
-          class="col-sm-4"
-        >
-          
-        </dd>
-         
-        <dt
-          class="col-sm-2"
-        >
-          Productivity
-        </dt>
-         
-        <dd
-          class="col-sm-4"
-        >
-          High
-        </dd>
-         
-        <dt
-          class="col-sm-2"
-        >
-          Size (km²)
-        </dt>
-         
-        <dd
-          class="col-sm-4"
-        >
-          63.3
-        </dd>
-         
-        <dt
-          class="col-sm-2"
-        >
-          Demand
-        </dt>
-         
-        <dd
-          class="col-sm-4"
-        >
-          
-        </dd>
-      </dl>
+          <div
+            aria-hidden="true"
+            class="modal fade"
+            id="confirmCancel"
+            role="dialog"
+            style="display: none;"
+          >
+            <div
+              class="modal-dialog modal-md"
+            >
+              <div
+                aria-describedby="confirmCancel___BV_modal_body_"
+                aria-labelledby="confirmCancel___BV_modal_header_"
+                class="modal-content"
+                role="document"
+                tabindex="-1"
+              >
+                <header
+                  class="modal-header"
+                  id="confirmCancel___BV_modal_header_"
+                >
+                  <h5
+                    class="modal-title"
+                  />
+                  <button
+                    aria-label="Close"
+                    class="close"
+                    type="button"
+                  >
+                    ×
+                  </button>
+                </header>
+                <div
+                  class="modal-body"
+                  id="confirmCancel___BV_modal_body_"
+                >
+                  <p>
+                    Are you sure you want to quit editing this record?
+                  </p>
+                </div>
+                <footer
+                  class="modal-footer"
+                  id="confirmCancel___BV_modal_footer_"
+                >
+                  <button
+                    class="btn btn-default"
+                    type="button"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    class="btn btn-primary"
+                    type="button"
+                  >
+                    OK
+                  </button>
+                </footer>
+              </div>
+            </div>
+          </div>
+          <!---->
+        </div>
+      </div>
     </div>
+     
+    <!---->
+     
+    <h5
+      class="mt-3 border-bottom"
+    >
+      Documentation
+    </h5>
+     
+    <aquifer-documents-stub />
   </div>
 </div>
 `;

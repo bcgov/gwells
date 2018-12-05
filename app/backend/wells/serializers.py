@@ -17,6 +17,7 @@ from rest_framework import serializers
 from django.db import transaction
 from gwells.models import ProvinceStateCode
 from gwells.serializers import AuditModelSerializer
+from registries.serializers import PersonBasicSerializer
 from wells.models import (
     ActivitySubmission,
     Casing,
@@ -115,6 +116,20 @@ class LinerPerforationSerializer(serializers.ModelSerializer):
         )
 
 
+class WellDetailSerializer(AuditModelSerializer):
+    casing_set = CasingSerializer(many=True)
+    screen_set = ScreenSerializer(many=True)
+    linerperforation_set = LinerPerforationSerializer(many=True)
+    decommission_description_set = DecommissionDescriptionSerializer(many=True)
+    driller_responsible = PersonBasicSerializer()
+    # well vs. well_tag_number ; on submissions, we refer to well
+    well = serializers.IntegerField(source='well_tag_number')
+
+    class Meta:
+        model = Well
+        fields = '__all__'
+
+
 class WellStackerSerializer(AuditModelSerializer):
 
     casing_set = CasingSerializer(many=True)
@@ -132,7 +147,12 @@ class WellStackerSerializer(AuditModelSerializer):
         # based on this update. Trying to match up individual records and updating them, dealing with
         # removed casing/screen/perforation records etc. etc. is not the responsibility of this section.
         # The composite section is responsible for that.
-        FOREIGN_KEYS = {'casing_set': Casing, 'screen_set': Screen, 'linerperforation_set': LinerPerforation, 'decommission_description_set': DecommissionDescription}
+        FOREIGN_KEYS = {
+            'casing_set': Casing,
+            'screen_set': Screen,
+            'linerperforation_set': LinerPerforation,
+            'decommission_description_set': DecommissionDescription
+        }
         for key in FOREIGN_KEYS.keys():
             for record in getattr(instance, key).all():
                 record.delete()
@@ -184,6 +204,40 @@ class WellListSerializer(serializers.ModelSerializer):
             "latitude",
             "longitude",
             "drilling_method",
+            "other_drilling_method",
+            "well_orientation",
+            "surface_seal_material",
+            "surface_seal_length",
+            "surface_seal_thickness",
+            "surface_seal_method",
+            # "surface_seal_depth",
+            # "backfill_above_surface_seal_depth",
+            "backfill_type",
+            "backfill_depth",
+            "liner_material",
+            "liner_diameter",
+            "liner_thickness",
+            "liner_from",
+            "liner_to",
+            "screen_intake_method",
+            "screen_type",
+            "screen_material",
+            "other_screen_material",
+            "screen_opening",
+            "screen_bottom",
+            "other_screen_bottom",
+            "filter_pack_from",
+            "filter_pack_to",
+            "filter_pack_thickness",
+            "filter_pack_material",
+            "filter_pack_material_size",
+            "development_method",
+            "development_hours",
+            "development_notes",
+            "water_quality_characteristics",
+            "water_quality_colour",
+            "water_quality_odour",
+            "total_depth_drilled",
             "finished_well_depth",
             "well_yield",
             "diameter",

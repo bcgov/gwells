@@ -1,6 +1,29 @@
+/*
+Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*/
 <template>
     <fieldset>
-      <legend :id="id">Well Location</legend>
+      <b-row>
+        <b-col cols="12" lg="6">
+          <legend :id="id">Well Location</legend>
+        </b-col>
+        <b-col cols="12" lg="6">
+          <div class="float-right">
+            <b-btn v-if="isStaffEdit" variant="primary" class="ml-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
+            <a href="#top" v-if="isStaffEdit">Back to top</a>
+          </div>
+        </b-col>
+      </b-row>
       <b-row>
         <b-col>
           <p>Please provide as much information as possible. A minimum of one type of well location information is required below:</p>
@@ -201,7 +224,7 @@ export default {
     legalTownship: String,
     legalRange: String,
     landDistrict: String,
-    legalPID: String,
+    legalPID: null,
     wellLocationDescription: String,
     errors: {
       type: Object,
@@ -211,7 +234,15 @@ export default {
       type: Object,
       default: () => ({})
     },
-    errorWellLocationNotProvided: Boolean
+    errorWellLocationNotProvided: Boolean,
+    isStaffEdit: {
+      type: Boolean,
+      isInput: false
+    },
+    saveDisabled: {
+      type: Boolean,
+      isInput: false
+    }
   },
   data () {
     return {

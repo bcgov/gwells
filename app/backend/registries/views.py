@@ -271,7 +271,7 @@ class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
             registrations_qs = registrations_qs.filter(
                 organization__city__in=cities)
 
-        activity = self.request.query_params.get('activity', None)
+        activity = self.request.query_params.get('activity', default='DRILL')
         status = self.request.query_params.get('status', None)
 
         user_is_staff = self.request.user.groups.filter(name=REGISTRIES_VIEWER_ROLE).exists()
@@ -315,7 +315,7 @@ class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
             # User is not logged in
             # Only show active drillers to non-admin users and public
             qs = qs.filter(
-                Q(registrations__applications__current_status__code='A'),
+                Q(registrations__applications__current_status__code='A', registrations__registries_activity=activity),
                 Q(registrations__applications__removal_date__isnull=True),
                 Q()
             )

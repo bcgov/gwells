@@ -1,7 +1,30 @@
+/*
+Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*/
 <template>
   <div>
     <fieldset>
-      <legend :id="id">Geographic Coordinates</legend>
+      <b-row>
+        <b-col cols="12" lg="6">
+          <legend :id="id">Geographic Coordinates</legend>
+        </b-col>
+        <b-col cols="12" lg="6">
+          <div class="float-right">
+            <b-btn v-if="isStaffEdit" variant="primary" class="ml-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
+            <a href="#top" v-if="isStaffEdit">Back to top</a>
+          </div>
+        </b-col>
+      </b-row>
       <p>To determine coordinates using a Global Positioning System (GPS), set the datum to North America Datum of 1983 (NAD 83), the current ministry standard for mapping.</p>
       <p>After the GPS coordinates are entered, the map pin can be moved by clicking and dragging it on the map. The GPS coordinates will be updated automatically.</p>
       <b-row>
@@ -169,7 +192,7 @@
           </b-card>
         </b-col>
         <b-col sm="12" md="6">
-          <coords-map :latitude="latitudeInput" :longitude="longitudeInput" v-on:coordinate="handleMapCoordinate"/>
+          <coords-map :latitude="Number(latitudeInput)" :longitude="Number(longitudeInput)" v-on:coordinate="handleMapCoordinate"/>
         </b-col>
       </b-row>
 
@@ -192,8 +215,8 @@ export default {
   name: 'Coords',
   mixins: [inputBindingsMixin, convertCoordinatesMixin],
   props: {
-    latitude: Number,
-    longitude: Number,
+    latitude: null,
+    longitude: null,
     errors: {
       type: Object,
       default: () => ({})
@@ -205,6 +228,14 @@ export default {
     errorCoordsNotProvided: Boolean,
     id: {
       type: String,
+      isInput: false
+    },
+    isStaffEdit: {
+      type: Boolean,
+      isInput: false
+    },
+    saveDisabled: {
+      type: Boolean,
       isInput: false
     }
   },
@@ -239,6 +270,13 @@ export default {
         }
       },
       latitudeDMSValidation: false
+    }
+  },
+  created () {
+    if (this.latitude || this.longitude) {
+      // If we're loaded with a latitude and longitude, trigger an update so that degree,minute,second
+      // and East/Northing get populated.
+      this.handleMapCoordinate({lng: Number(this.longitude), lat: Number(this.latitude)})
     }
   },
   computed: {

@@ -15,7 +15,7 @@ from django.views import generic
 from django.forms import modelformset_factory
 from django.forms import modelform_factory
 from django.contrib.auth.mixins import UserPassesTestMixin
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 from django.contrib.auth.models import Group
 from django.contrib.auth.models import User
 

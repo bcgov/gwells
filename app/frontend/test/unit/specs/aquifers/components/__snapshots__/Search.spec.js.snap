@@ -1,17 +1,22 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Search Component Matches the snapshot 1`] = `
-<div
-  class="card p-1 container container-wide"
->
+<div>
+   
   <div
-    class="card-body"
+    class="card p-3 mb-4"
   >
-    <h1
-      class="card-title"
-    >
+    <h5>
       Aquifer Search
-    </h1>
+    </h5>
+     
+    <div
+      class="pb-2"
+    >
+      <!---->
+    </div>
+     
+    <!---->
      
     <form
       class=""
@@ -23,50 +28,61 @@ exports[`Search Component Matches the snapshot 1`] = `
           class="col-md-4 col-12"
         >
           <fieldset
-            aria-labelledby="__BVID__10__BV_label_"
+            aria-labelledby="__BVID__16__BV_label_"
             class="b-form-group form-group"
-            id="__BVID__10"
+            id="__BVID__16"
             role="group"
           >
-            <input
-              class="form-control"
-              id="search"
-              type="text"
-            />
-            <!---->
-            <!---->
-            <!---->
-          </div>
-        </fieldset>
-         
-        <fieldset
-          aria-labelledby="__BVID__12__BV_label_"
-          class="b-form-group form-group"
-          id="__BVID__12"
-          role="group"
-        >
-          <legend
-            class="col-form-label pt-0"
-            id="__BVID__12__BV_label_"
-          >
-            Aquifer number
-          </legend>
-          <div
-            aria-labelledby="__BVID__12__BV_label_"
+            <legend
+              class="col-form-label pt-0"
+              id="__BVID__16__BV_label_"
+            >
+              Aquifer number
+            </legend>
+            <div
+              aria-labelledby="__BVID__16__BV_label_"
+              class=""
+              role="group"
+            >
+              <input
+                class="form-control"
+                id="aquifers-number"
+                type="text"
+              />
+              <!---->
+              <!---->
+              <!---->
+            </div>
+          </fieldset>
+           
+          <fieldset
+            aria-labelledby="__BVID__18__BV_label_"
             class="b-form-group form-group"
-            id="__BVID__12"
+            id="__BVID__18"
             role="group"
           >
-            <input
-              class="form-control"
-              id="aquifer_id"
-              type="text"
-            />
-            <!---->
-            <!---->
-            <!---->
-          </div>
-        </fieldset>
+            <legend
+              class="col-form-label pt-0"
+              id="__BVID__18__BV_label_"
+            >
+              Aquifer name
+            </legend>
+            <div
+              aria-labelledby="__BVID__18__BV_label_"
+              class=""
+              role="group"
+            >
+              <input
+                class="form-control"
+                id="aquifers-name"
+                type="text"
+              />
+              <!---->
+              <!---->
+              <!---->
+            </div>
+          </fieldset>
+        </div>
       </div>
        
       <div
@@ -77,7 +93,7 @@ exports[`Search Component Matches the snapshot 1`] = `
         >
           <fieldset
             class="b-form-group form-group"
-            id="__BVID__14"
+            id="__BVID__20"
             role="group"
           >
             <!---->
@@ -87,6 +103,7 @@ exports[`Search Component Matches the snapshot 1`] = `
             >
               <button
                 class="btn btn-primary"
+                id="aquifers-search"
                 type="submit"
               >
                 Search
@@ -105,116 +122,14 @@ exports[`Search Component Matches the snapshot 1`] = `
           </fieldset>
         </div>
       </div>
-    </div>
-  </form>
-   
-  <table
-    aria-busy="false"
-    aria-colcount="11"
-    aria-rowcount="1"
-    class="table b-table table-striped"
-    id="__BVID__15"
-  >
-    <!---->
-    <!---->
-    <thead
-      class=""
-    >
-      <tr>
-        <th
-          aria-colindex="1"
-          aria-label="Click to sort Descending"
-          aria-sort="ascending"
-          class="sorting sorting_asc"
-          tabindex="0"
-        >
-          Aquifer number
-        </th>
-        <th
-          aria-colindex="2"
-          aria-label="Click to sort Descending"
-          class="sorting"
-          tabindex="0"
-        >
-          Aquifer name
-        </th>
-        <th
-          aria-colindex="3"
-          aria-label="Click to sort Descending"
-          class="sorting"
-          tabindex="0"
-        >
-          Descriptive location
-        </th>
-        <th
-          aria-colindex="4"
-          aria-label="Click to sort Descending"
-          class="sorting"
-          tabindex="0"
-        >
-          Material
-        </th>
-        <th
-          aria-colindex="5"
-          aria-label="Click to sort Descending"
-          class="sorting"
-          tabindex="0"
-        >
-          Litho stratigraphic unit
-        </th>
-        <th
-          aria-colindex="6"
-          aria-label="Click to sort Descending"
-          class="sorting"
-          tabindex="0"
-        >
-          Subtype
-        </th>
-        <th
-          aria-colindex="7"
-          aria-label="Click to sort Descending"
-          class="sorting"
-          tabindex="0"
-        >
-          Vulnerability
-        </th>
-        <th
-          aria-colindex="8"
-          aria-label="Click to sort Descending"
-          class="sorting"
-          tabindex="0"
-        >
-          Size-km²
-        </th>
-        <th
-          aria-colindex="9"
-          aria-label="Click to sort Descending"
-          class="sorting"
-          tabindex="0"
-        >
-          Productivity
-        </th>
-        <th
-          aria-colindex="10"
-          aria-label="Click to sort Descending"
-          class="sorting"
-          tabindex="0"
-        >
-          Demand
-        </th>
-        <th
-          aria-colindex="11"
-          aria-label="Click to sort Descending"
-          class="sorting"
-          tabindex="0"
-        >
-          Year of mapping
-        </th>
-      </tr>
-    </thead>
-    <!---->
-    <tbody
-      class=""
+    </form>
+     
+    <table
+      aria-busy="false"
+      aria-colcount="11"
+      aria-rowcount="1"
+      class="table b-table table-striped"
+      id="aquifers-results"
     >
       <!---->
       <!---->
@@ -224,75 +139,92 @@ exports[`Search Component Matches the snapshot 1`] = `
         <tr>
           <th
             aria-colindex="1"
-            class=""
+            aria-label="Click to sort Descending"
+            aria-sort="ascending"
+            class="sorting sorting_asc"
+            tabindex="0"
           >
             Aquifer number
           </th>
           <th
             aria-colindex="2"
-            class=""
+            aria-label="Click to sort Descending"
+            class="sorting"
+            tabindex="0"
           >
             Aquifer name
           </th>
           <th
             aria-colindex="3"
-            class=""
+            aria-label="Click to sort Descending"
+            class="sorting"
+            tabindex="0"
           >
             Descriptive location
           </th>
           <th
             aria-colindex="4"
-            class=""
+            aria-label="Click to sort Descending"
+            class="sorting"
+            tabindex="0"
           >
             Material
           </th>
           <th
             aria-colindex="5"
-            class=""
+            aria-label="Click to sort Descending"
+            class="sorting"
+            tabindex="0"
           >
             Litho stratigraphic unit
           </th>
           <th
             aria-colindex="6"
-            class=""
+            aria-label="Click to sort Descending"
+            class="sorting"
+            tabindex="0"
           >
             Subtype
           </th>
           <th
             aria-colindex="7"
-            class=""
+            aria-label="Click to sort Descending"
+            class="sorting"
+            tabindex="0"
           >
             Vulnerability
           </th>
           <th
             aria-colindex="8"
-            class=""
+            aria-label="Click to sort Descending"
+            class="sorting"
+            tabindex="0"
           >
             Size-km²
           </th>
           <th
             aria-colindex="9"
-            class=""
+            aria-label="Click to sort Descending"
+            class="sorting"
+            tabindex="0"
           >
             Productivity
           </th>
           <th
             aria-colindex="10"
-            class=""
+            aria-label="Click to sort Descending"
+            class="sorting"
+            tabindex="0"
           >
             Demand
           </th>
           <th
             aria-colindex="11"
-            class=""
+            aria-label="Click to sort Descending"
+            class="sorting"
+            tabindex="0"
           >
             Year of mapping
-          </th>
-          <th
-            aria-colindex="12"
-            class=""
-          >
-            Publication status
           </th>
         </tr>
       </thead>
@@ -309,7 +241,7 @@ exports[`Search Component Matches the snapshot 1`] = `
             class=""
           >
             <router-link-stub
-              to="[object Object]"
+              to="4/"
             />
           </td>
           <td
@@ -328,7 +260,9 @@ exports[`Search Component Matches the snapshot 1`] = `
             aria-colindex="4"
             class=""
           >
-            Sand and Gravel
+            
+        Sand and Gravel
+      
           </td>
           <td
             aria-colindex="5"
@@ -340,13 +274,17 @@ exports[`Search Component Matches the snapshot 1`] = `
             aria-colindex="6"
             class=""
           >
-            Unconfined sand and gravel - large river system
+            
+        Unconfined sand and gravel - large river system
+      
           </td>
           <td
             aria-colindex="7"
             class=""
           >
-            High
+            
+        High
+      
           </td>
           <td
             aria-colindex="8"
@@ -358,89 +296,47 @@ exports[`Search Component Matches the snapshot 1`] = `
             aria-colindex="9"
             class=""
           >
-            High
+            
+        High
+      
           </td>
           <td
             aria-colindex="10"
             class=""
-          />
-        </td>
-        <td
-          aria-colindex="2"
-          class=""
-        >
-          Aggasiz
-        </td>
-        <td
-          aria-colindex="3"
-          class=""
-        >
-          Aggasiz/Sea Bird Island
-        </td>
-        <td
-          aria-colindex="4"
-          class=""
-        >
-          
-      Sand and Gravel
-    
-        </td>
-        <td
-          aria-colindex="5"
-          class=""
-        >
-          Fraser River Sediments
-        </td>
-        <td
-          aria-colindex="6"
-          class=""
-        >
-          
-      Unconfined sand and gravel - large river system
-    
-        </td>
-        <td
-          aria-colindex="7"
-          class=""
-        >
-          
-      High
-    
-        </td>
-        <td
-          aria-colindex="8"
-          class=""
-        >
-          63.3
-        </td>
-        <td
-          aria-colindex="9"
-          class=""
-        >
-          
-      High
-    
-        </td>
-        <td
-          aria-colindex="10"
-          class=""
-        >
-          
+          >
+            
+        
       
-    
-        </td>
-        <td
-          aria-colindex="11"
-          class=""
+          </td>
+          <td
+            aria-colindex="11"
+            class=""
+          >
+            1993
+          </td>
+        </tr>
+        <!---->
+        <!---->
+      </tbody>
+    </table>
+     
+    <div
+      class="container"
+    >
+      <div
+        class="row"
+      >
+        <div
+          class="col"
         >
-          1993
-        </td>
-      </tr>
-      <!---->
-      <!---->
-    </tbody>
-  </table>
-   
-  <!---->
+          
+          Showing 1 to 0 of 
+        
+        </div>
+         
+        <!---->
+      </div>
+    </div>
+  </div>
 </div>
 `;

@@ -25,10 +25,12 @@ class FooterModule extends Module {
   }
 
   /**
-   * Clicks footer menu anchor tags based on the displayed text.
-   * @param a map of attributes of the footer menu anchor tag. eg: [text:'footer link text'] (required)
+   * Clicks a footer menu anchor tag based on its text.
+   * @param footerText the text of the footer link to be clicked. (required)
    */
-  void clickMenuItem(Map<String, Object> itemSelector) {
-    footerBar.$(itemSelector, 'a').click()
+  void clickMenuItem(String footerText) {
+    waitFor {
+      footerBar.$('a', text:"$footerText").click()
+    }
   }
 }

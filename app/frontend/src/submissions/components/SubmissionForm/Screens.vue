@@ -1,3 +1,16 @@
+/*
+Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*/
 <template>
   <fieldset>
     <legend :id="id">Screen Information</legend>
@@ -96,7 +109,7 @@
               <td class="input-width-small py-0">
                 <form-input
                   group-class="my-1"
-                  :id="`screen${index}DepthFrom`"
+                  :id="`screenDepthFrom_${index}`"
                   aria-label="Depth from (feet)"
                   v-model="screens[index].start"
                   :errors="getScreenError(index).start"
@@ -106,7 +119,7 @@
               <td class="input-width-small py-0">
                 <form-input
                   group-class="my-1"
-                  :id="`screen${index}DepthTo`"
+                  :id="`screenDepthTo_${index}`"
                   aria-label="Depth to (feet)"
                   v-model="screens[index].end"
                   :errors="getScreenError(index).end"
@@ -116,7 +129,7 @@
               <td class="input-width-small py-0">
                 <form-input
                   group-class="my-1"
-                  :id="`screen${index}Diameter`"
+                  :id="`screenDiameter_${index}`"
                   aria-label="Diameter (inches)"
                   v-model="screens[index].internal_diameter"
                   :errors="getScreenError(index).internal_diameter"
@@ -126,7 +139,7 @@
               <td class="input-width-small py-0">
                 <form-input
                     group-class="my-1"
-                    :id="`screen${index}Assembly`"
+                    :id="`screenAssemblyType_${index}`"
                     aria-label="Screen Assembly Type"
                     v-model="screens[index].assembly_type"
                     select
@@ -142,7 +155,7 @@
                 <form-input
                   list="screenSlotSizeList"
                   group-class="my-1"
-                  :id="`screen${index}SlotSize`"
+                  :id="`screenSlotSize_${index}`"
                   aria-label="Screen Slot Size"
                   v-model="screens[index].slot_size"
                   :errors="getScreenError(index).slot_size"

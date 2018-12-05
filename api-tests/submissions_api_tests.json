@@ -308,13 +308,13 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "74cf621d-6689-43e8-be83-f6b1cb4d5d0a",
-										"type": "text/javascript",
+										"id": "4c4a1015-b29c-4fc3-8579-29b9e8dac3c8",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
 											"pm.environment.set(\"well_tag_number\", jsonData.well);",
 											"pm.environment.set('filing_number', jsonData.filing_number)",
+											"var created_driller_guid = pm.environment.get('created_driller_guid')",
 											"",
 											"pm.test(\"Status code is 201\", function () {",
 											"   pm.expect(pm.response.code).to.equal(201);",
@@ -323,8 +323,25 @@
 											"pm.test(\"Expect well record to be created\", function() {",
 											"    pm.expect(jsonData.well).to.be.ok;",
 											"})",
+											"",
+											"pm.test(\"Expect driller_responsible to be returned\", function() {",
+											"    pm.expect(jsonData.consultant_company).to.equal(\"Inc & Inc\")",
+											"})",
+											"",
+											"pm.test(\"Expect consultant_name to be returned\", function() {",
+											"    pm.expect(jsonData.consultant_name).to.equal(\"Bobothy\")",
+											"})",
+											"",
+											"pm.test(\"Expect driller_name to be returned\", function() {",
+											"    pm.expect(jsonData.driller_name).to.equal(\"Jimithy\")",
+											"})",
+											"",
+											"pm.test(\"Expect driller_responsible to be returned\", function() {",
+											"    pm.expect(jsonData.driller_responsible).to.equal(created_driller_guid)",
+											"})",
 											""
-										]
+										],
+										"type": "text/javascript"
 									}
 								}
 							],
@@ -337,48 +354,14 @@
 									},
 									{
 										"key": "Content-Type",
-										"value": "application/x-www-form-urlencoded"
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
 									}
 								],
 								"body": {
-									"mode": "urlencoded",
-									"urlencoded": [
-										{
-											"key": "driller_responsible",
-											"value": "{{created_driller_guid}}",
-											"type": "text"
-										},
-										{
-											"key": "work_end_date",
-											"value": "2018-07-02",
-											"type": "text"
-										},
-										{
-											"key": "owner_full_name",
-											"value": "Holly Homeowner",
-											"type": "text"
-										},
-										{
-											"key": "work_start_date",
-											"value": "2018-07-01",
-											"type": "text"
-										},
-										{
-											"key": "owner_province_state",
-											"value": "BC",
-											"type": "text"
-										},
-										{
-											"key": "owner_mailing_address",
-											"value": "321 Main Street",
-											"type": "text"
-										},
-										{
-											"key": "owner_city",
-											"value": "Anytown",
-											"type": "text"
-										}
-									]
+									"mode": "raw",
+									"raw": "{\n\t\"driller_responsible\": \"{{created_driller_guid}}\",\n\t\"driller_name\": \"Jimithy\",\n\t\"consultant_name\": \"Bobothy\",\n\t\"consultant_company\": \"Inc & Inc\",\n\t\"work_end_date\": \"2018-07-10\",\n\t\"owner_full_name\": \"Holly Homeowner\",\n\t\"work_start_date\": \"2018-07-01\",\n\t\"owner_province_state\": \"BC\",\n\t\"owner_mailing_address\": \"321 Main Street\",\n\t\"owner_city\": \"Anytown\",\n\t\"well_orientation\": false\n}"
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/construction?format=json",
@@ -408,10 +391,10 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "8cda82f1-4f66-419a-9d79-636186a44b6c",
-										"type": "text/javascript",
+										"id": "7eb46403-4d9e-40c9-b32c-bde682037045",
 										"exec": [
 											"var jsonData = pm.response.json();",
+											"var created_driller_guid = pm.environment.get('created_driller_guid')",
 											"",
 											"pm.test(\"Status code is 200\", function () {",
 											"   pm.expect(pm.response.code).to.equal(200);",
@@ -425,10 +408,24 @@
 											"    pm.expect(jsonData.screen_set.length).to.equal(0);",
 											"})",
 											"",
+											"pm.test(\"Expect well orientation false\", function() {",
+											"    pm.expect(jsonData.well_orientation).to.equal(false);",
+											"})",
+											"",
 											"pm.test(\"Expect linerperforation to be empty\", function() {",
 											"    pm.expect(jsonData.linerperforation_set.length).to.equal(0);",
+											"})",
+											"",
+											"pm.test(\"driller_responsible is an object with name and guid\", function() {",
+											"    pm.expect('name' in jsonData['driller_responsible']).to.be.true",
+											"})",
+											"",
+											"pm.test(\"driller_responsible is an object with name and guid\", function() {",
+											"    pm.expect('person_guid' in jsonData['driller_responsible']).to.be.true",
+											"    pm.expect(jsonData.driller_responsible.person_guid).to.equal(created_driller_guid)",
 											"})"
-										]
+										],
+										"type": "text/javascript"
 									}
 								}
 							],
@@ -445,49 +442,8 @@
 									}
 								],
 								"body": {
-									"mode": "urlencoded",
-									"urlencoded": [
-										{
-											"key": "well_activity_type",
-											"value": "CON",
-											"type": "text"
-										},
-										{
-											"key": "driller_responsible",
-											"value": "{{created_driller_guid}}",
-											"type": "text"
-										},
-										{
-											"key": "work_end_date",
-											"value": "2018-07-02",
-											"type": "text"
-										},
-										{
-											"key": "owner_full_name",
-											"value": "Holly Homeowner",
-											"type": "text"
-										},
-										{
-											"key": "work_start_date",
-											"value": "2018-07-01",
-											"type": "text"
-										},
-										{
-											"key": "owner_province_state",
-											"value": "BC",
-											"type": "text"
-										},
-										{
-											"key": "owner_mailing_address",
-											"value": "321 Main Street",
-											"type": "text"
-										},
-										{
-											"key": "owner_city",
-											"value": "Anytown",
-											"type": "text"
-										}
-									]
+									"mode": "raw",
+									"raw": ""
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
@@ -548,49 +504,8 @@
 									}
 								],
 								"body": {
-									"mode": "urlencoded",
-									"urlencoded": [
-										{
-											"key": "well_activity_type",
-											"value": "CON",
-											"type": "text"
-										},
-										{
-											"key": "driller_responsible",
-											"value": "{{created_driller_guid}}",
-											"type": "text"
-										},
-										{
-											"key": "work_end_date",
-											"value": "2018-07-02",
-											"type": "text"
-										},
-										{
-											"key": "owner_full_name",
-											"value": "Holly Homeowner",
-											"type": "text"
-										},
-										{
-											"key": "work_start_date",
-											"value": "2018-07-01",
-											"type": "text"
-										},
-										{
-											"key": "owner_province_state",
-											"value": "BC",
-											"type": "text"
-										},
-										{
-											"key": "owner_mailing_address",
-											"value": "321 Main Street",
-											"type": "text"
-										},
-										{
-											"key": "owner_city",
-											"value": "Anytown",
-											"type": "text"
-										}
-									]
+									"mode": "raw",
+									"raw": ""
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/{{filing_number}}",
@@ -772,49 +687,8 @@
 									}
 								],
 								"body": {
-									"mode": "urlencoded",
-									"urlencoded": [
-										{
-											"key": "well_activity_type",
-											"value": "CON",
-											"type": "text"
-										},
-										{
-											"key": "driller_responsible",
-											"value": "{{created_driller_guid}}",
-											"type": "text"
-										},
-										{
-											"key": "work_end_date",
-											"value": "2018-07-02",
-											"type": "text"
-										},
-										{
-											"key": "owner_full_name",
-											"value": "Holly Homeowner",
-											"type": "text"
-										},
-										{
-											"key": "work_start_date",
-											"value": "2018-07-01",
-											"type": "text"
-										},
-										{
-											"key": "owner_province_state",
-											"value": "BC",
-											"type": "text"
-										},
-										{
-											"key": "owner_mailing_address",
-											"value": "321 Main Street",
-											"type": "text"
-										},
-										{
-											"key": "owner_city",
-											"value": "Anytown",
-											"type": "text"
-										}
-									]
+									"mode": "raw",
+									"raw": ""
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
@@ -989,49 +863,8 @@
 									}
 								],
 								"body": {
-									"mode": "urlencoded",
-									"urlencoded": [
-										{
-											"key": "well_activity_type",
-											"value": "CON",
-											"type": "text"
-										},
-										{
-											"key": "driller_responsible",
-											"value": "{{created_driller_guid}}",
-											"type": "text"
-										},
-										{
-											"key": "work_end_date",
-											"value": "2018-07-02",
-											"type": "text"
-										},
-										{
-											"key": "owner_full_name",
-											"value": "Holly Homeowner",
-											"type": "text"
-										},
-										{
-											"key": "work_start_date",
-											"value": "2018-07-01",
-											"type": "text"
-										},
-										{
-											"key": "owner_province_state",
-											"value": "BC",
-											"type": "text"
-										},
-										{
-											"key": "owner_mailing_address",
-											"value": "321 Main Street",
-											"type": "text"
-										},
-										{
-											"key": "owner_city",
-											"value": "Anytown",
-											"type": "text"
-										}
-									]
+									"mode": "raw",
+									"raw": ""
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
@@ -1115,7 +948,6 @@
 									"listen": "test",
 									"script": {
 										"id": "3737032f-d35f-4597-a306-133d74120ae4",
-										"type": "text/javascript",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
@@ -1123,7 +955,8 @@
 											"   pm.expect(pm.response.code).to.equal(400);",
 											"})",
 											""
-										]
+										],
+										"type": "text/javascript"
 									}
 								}
 							],
@@ -1141,7 +974,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"well_activity_type\": \"CON\",\n\t\"owner_full_name\": \"Bob\",\n\t\"owner_mailing_address\": \"123 Place\",\n\t\"owner_city\": \"Victoria\",\n\t\"owner_province_state\": \"BC\",\n\t\"liner_diameter\": 1,\n\t\"liner_from\": 0,\n\t\"liner_material\": \"PVC\",\n\t\"liner_thickness\": 2,\n\t\"liner_to\": 3,\n\t\"linerperforation_set\": [\n\t\t{\n\t\t}\n\t]\n}"
+									"raw": "{\n\t\"well_activity_type\": \"CON\",\n\t\"owner_full_name\": \"Bob\",\n\t\"owner_mailing_address\": \"123 Place\",\n\t\"owner_city\": \"Victoria\",\n\t\"owner_province_state\": \"BC\",\n\t\"liner_diameter\": 1,\n\t\"liner_from\": 0,\n\t\"liner_material\": \"PVC\",\n\t\"liner_thickness\": 2,\n\t\"liner_to\": 3,\n\t\"linerperforation_set\": [\n\t\t{}\n\t]\n}"
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/construction?format=json",
@@ -1172,7 +1005,6 @@
 									"listen": "test",
 									"script": {
 										"id": "77ba3bf1-a4ad-476e-bd9a-c67bf0e7a34c",
-										"type": "text/javascript",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
@@ -1188,10 +1020,11 @@
 											"    pm.expect(jsonData.screen_set.length).to.equal(0);",
 											"})",
 											"",
-											"pm.test(\"Expect linerperforation to be empty\", function() {",
+											"pm.test(\"Expect linerperforation to still have one value\", function() {",
 											"    pm.expect(jsonData.linerperforation_set.length).to.equal(1);",
 											"})"
-										]
+										],
+										"type": "text/javascript"
 									}
 								}
 							],
@@ -1208,49 +1041,8 @@
 									}
 								],
 								"body": {
-									"mode": "urlencoded",
-									"urlencoded": [
-										{
-											"key": "well_activity_type",
-											"value": "CON",
-											"type": "text"
-										},
-										{
-											"key": "driller_responsible",
-											"value": "{{created_driller_guid}}",
-											"type": "text"
-										},
-										{
-											"key": "work_end_date",
-											"value": "2018-07-02",
-											"type": "text"
-										},
-										{
-											"key": "owner_full_name",
-											"value": "Holly Homeowner",
-											"type": "text"
-										},
-										{
-											"key": "work_start_date",
-											"value": "2018-07-01",
-											"type": "text"
-										},
-										{
-											"key": "owner_province_state",
-											"value": "BC",
-											"type": "text"
-										},
-										{
-											"key": "owner_mailing_address",
-											"value": "321 Main Street",
-											"type": "text"
-										},
-										{
-											"key": "owner_city",
-											"value": "Anytown",
-											"type": "text"
-										}
-									]
+									"mode": "raw",
+									"raw": ""
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
@@ -1371,49 +1163,8 @@
 									}
 								],
 								"body": {
-									"mode": "urlencoded",
-									"urlencoded": [
-										{
-											"key": "well_activity_type",
-											"value": "CON",
-											"type": "text"
-										},
-										{
-											"key": "driller_responsible",
-											"value": "{{created_driller_guid}}",
-											"type": "text"
-										},
-										{
-											"key": "work_end_date",
-											"value": "2018-07-02",
-											"type": "text"
-										},
-										{
-											"key": "owner_full_name",
-											"value": "Holly Homeowner",
-											"type": "text"
-										},
-										{
-											"key": "work_start_date",
-											"value": "2018-07-01",
-											"type": "text"
-										},
-										{
-											"key": "owner_province_state",
-											"value": "BC",
-											"type": "text"
-										},
-										{
-											"key": "owner_mailing_address",
-											"value": "321 Main Street",
-											"type": "text"
-										},
-										{
-											"key": "owner_city",
-											"value": "Anytown",
-											"type": "text"
-										}
-									]
+									"mode": "raw",
+									"raw": ""
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
@@ -1467,49 +1218,8 @@
 									}
 								],
 								"body": {
-									"mode": "urlencoded",
-									"urlencoded": [
-										{
-											"key": "well_activity_type",
-											"value": "CON",
-											"type": "text"
-										},
-										{
-											"key": "driller_responsible",
-											"value": "{{created_driller_guid}}",
-											"type": "text"
-										},
-										{
-											"key": "work_end_date",
-											"value": "2018-07-02",
-											"type": "text"
-										},
-										{
-											"key": "owner_full_name",
-											"value": "Holly Homeowner",
-											"type": "text"
-										},
-										{
-											"key": "work_start_date",
-											"value": "2018-07-01",
-											"type": "text"
-										},
-										{
-											"key": "owner_province_state",
-											"value": "BC",
-											"type": "text"
-										},
-										{
-											"key": "owner_mailing_address",
-											"value": "321 Main Street",
-											"type": "text"
-										},
-										{
-											"key": "owner_city",
-											"value": "Anytown",
-											"type": "text"
-										}
-									]
+									"mode": "raw",
+									"raw": ""
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/{{filing_number}}",
@@ -1524,6 +1234,223 @@
 									]
 								},
 								"description": "Check if the submission was created correclty."
+							},
+							"response": []
+						},
+						{
+							"name": "Create new driller",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "bd75139a-e3d4-4e57-9eca-568872d2b9dc",
+										"type": "text/javascript",
+										"exec": [
+											"( function() {",
+											"    pm.test(\"Successful POST request\", function () {",
+											"        pm.expect(pm.response.code).to.be.oneOf([201,202]);",
+											"    });",
+											"    ",
+											"    var jsonData = pm.response.json()",
+											"    pm.environment.set(\"created_driller_guid\", jsonData.person_guid);",
+											"})();",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "first_name",
+											"value": "Bobby",
+											"type": "text"
+										},
+										{
+											"key": "surname",
+											"value": "Driller",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/drillers/?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"drillers",
+										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json"
+										}
+									]
+								},
+								"description": "Create a new driller to be registered"
+							},
+							"response": []
+						},
+						{
+							"name": "Alteration - Person Responsible",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "0b7855ea-c33f-45a0-912c-9a02fc8077d2",
+										"type": "text/javascript",
+										"exec": [
+											"var jsonData = pm.response.json();",
+											"var created_driller_guid = pm.environment.get('created_driller_guid');",
+											"var fields = {",
+											"    \"consultant_company\": \"John Company\",",
+											"\t\"consultant_name\": \"John Consultant\",",
+											"\t\"driller_name\": \"John Person\",",
+											"\t\"driller_responsible\": created_driller_guid",
+											"}",
+											"",
+											"pm.environment.set('filing_number', jsonData.filing_number)",
+											"",
+											"pm.test(\"Status code is 201\", function () {",
+											"   pm.expect(pm.response.code).to.equal(201);",
+											"})",
+											"",
+											"Object.keys(fields).forEach((key) => {",
+											"    pm.test(`response contains ${key}`, function() {",
+											"        pm.expect(key in jsonData).to.be.true;",
+											"    })",
+											"    pm.test(`field: ${key} returned`, function() {",
+											"        pm.expect(jsonData[key]).to.equal(fields[key]);",
+											"    })",
+											"})",
+											"",
+											"",
+											"",
+											"",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"well\": {{well_tag_number}},\n\t\"consultant_company\": \"John Company\",\n\t\"consultant_name\": \"John Consultant\",\n\t\"driller_name\": \"John Person\",\n\t\"driller_responsible\": \"{{created_driller_guid}}\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/submissions/alteration",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"submissions",
+										"alteration"
+									]
+								},
+								"description": "Request a list of wells"
+							},
+							"response": []
+						},
+						{
+							"name": "Alteration - Person Responsible - Well Updated",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "027d3bd1-6dcc-4552-99da-324c714df9d0",
+										"type": "text/javascript",
+										"exec": [
+											"var jsonData = pm.response.json();",
+											"var created_driller_guid = pm.environment.get('created_driller_guid');",
+											"var fields = {",
+											"    \"consultant_company\": \"John Company\",",
+											"\t\"consultant_name\": \"John Consultant\",",
+											"\t\"driller_name\": \"John Person\"",
+											"}",
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"   pm.expect(pm.response.code).to.equal(200);",
+											"})",
+											"",
+											"Object.keys(fields).forEach((key) => {",
+											"    pm.test(`response contains ${key}`, function() {",
+											"        pm.expect(key in jsonData).to.be.true;",
+											"    })",
+											"    pm.test(`field: ${key} returned`, function() {",
+											"        pm.expect(jsonData[key]).to.equal(fields[key]);",
+											"    })",
+											"})",
+											"",
+											"pm.test('driller_responsible returned', function() {",
+											"    pm.expect(jsonData.driller_responsible.person_guid).to.equal(created_driller_guid)",
+											"})",
+											"",
+											"",
+											"",
+											"",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"wells",
+										"{{well_tag_number}}"
+									]
+								},
+								"description": "Request a list of wells"
 							},
 							"response": []
 						}
@@ -1632,49 +1559,8 @@
 									}
 								],
 								"body": {
-									"mode": "urlencoded",
-									"urlencoded": [
-										{
-											"key": "well_activity_type",
-											"value": "CON",
-											"type": "text"
-										},
-										{
-											"key": "driller_responsible",
-											"value": "{{created_driller_guid}}",
-											"type": "text"
-										},
-										{
-											"key": "work_end_date",
-											"value": "2018-07-02",
-											"type": "text"
-										},
-										{
-											"key": "owner_full_name",
-											"value": "Holly Homeowner",
-											"type": "text"
-										},
-										{
-											"key": "work_start_date",
-											"value": "2018-07-01",
-											"type": "text"
-										},
-										{
-											"key": "owner_province_state",
-											"value": "BC",
-											"type": "text"
-										},
-										{
-											"key": "owner_mailing_address",
-											"value": "321 Main Street",
-											"type": "text"
-										},
-										{
-											"key": "owner_city",
-											"value": "Anytown",
-											"type": "text"
-										}
-									]
+									"mode": "raw",
+									"raw": ""
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
@@ -1732,13 +1618,319 @@
 									}
 								],
 								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/submissions/{{filing_number}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"submissions",
+										"{{filing_number}}"
+									]
+								},
+								"description": "Check if the submission was created correclty."
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Staff Edit",
+					"item": [
+						{
+							"name": "Well Location",
+							"item": [
+								{
+									"name": "Construction Submission; for Well Location",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "74cf621d-6689-43e8-be83-f6b1cb4d5d0a",
+												"exec": [
+													"var jsonData = pm.response.json();",
+													"",
+													"pm.environment.set(\"well_tag_number\", jsonData.well);",
+													"pm.environment.set('filing_number', jsonData.filing_number)",
+													"",
+													"pm.test(\"Status code is 201\", function () {",
+													"   pm.expect(pm.response.code).to.equal(201);",
+													"})",
+													"",
+													"pm.test(\"Expect well record to be created\", function() {",
+													"    pm.expect(jsonData.well).to.be.ok;",
+													"})",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "JWT {{token}}"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/x-www-form-urlencoded"
+											}
+										],
+										"body": {
+											"mode": "urlencoded",
+											"urlencoded": [
+												{
+													"key": "driller_responsible",
+													"value": "{{created_driller_guid}}",
+													"type": "text"
+												},
+												{
+													"key": "work_end_date",
+													"value": "2018-07-02",
+													"type": "text"
+												},
+												{
+													"key": "owner_full_name",
+													"value": "Holly Homeowner",
+													"type": "text"
+												},
+												{
+													"key": "work_start_date",
+													"value": "2018-07-01",
+													"type": "text"
+												},
+												{
+													"key": "owner_province_state",
+													"value": "BC",
+													"type": "text"
+												},
+												{
+													"key": "owner_mailing_address",
+													"value": "321 Main Street",
+													"type": "text"
+												},
+												{
+													"key": "owner_city",
+													"value": "Anytown",
+													"type": "text"
+												},
+												{
+													"key": "consultant_name",
+													"value": "John",
+													"type": "text"
+												},
+												{
+													"key": "well_orientation",
+													"value": "True",
+													"type": "text"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{base_url}}/api/v1/submissions/construction?format=json",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"api",
+												"v1",
+												"submissions",
+												"construction"
+											],
+											"query": [
+												{
+													"key": "format",
+													"value": "json"
+												}
+											]
+										},
+										"description": "Submit a construction submission"
+									},
+									"response": []
+								},
+								{
+									"name": "Staff Edit; Well Location",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "d810c676-8904-437e-8c93-3ea1d36e1bd1",
+												"exec": [
+													"var jsonData = pm.response.json();",
+													"",
+													"",
+													"pm.test(\"Status code is 201\", function () {",
+													"   pm.expect(pm.response.code).to.equal(201);",
+													"})",
+													"",
+													"pm.test(\"Expect well_tag_number to match created\", function() {",
+													"    pm.expect(jsonData.well).to.equal(pm.environment.get(\"well_tag_number\"))",
+													"})",
+													"",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "JWT {{token}}"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n\t\"well\": {{well_tag_number}},\n\t\"street_address\": \"Some street\",\n\t\"city\":\"Some city\",\n\t\"legal_lot\":\"3\",\n\t\"legal_plan\":\"3\",\n\t\"legal_district_lot\":\"3\",\n\t\"legal_block\":\"3\",\n\t\"legal_section\":\"3\",\n\t\"legal_township\":\"3\",\n\t\"legal_range\":\"3\",\n\t\"land_district\":\"03\",\n\t\"legal_pid\":\"3\",\n\t\"well_location_description\":\"Description of well location\"\n}"
+										},
+										"url": {
+											"raw": "{{base_url}}/api/v1/submissions/staff_edit?format=json",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"api",
+												"v1",
+												"submissions",
+												"staff_edit"
+											],
+											"query": [
+												{
+													"key": "format",
+													"value": "json"
+												}
+											]
+										},
+										"description": "Submit an edit submission"
+									},
+									"response": []
+								},
+								{
+									"name": "Check Well Edited; Well Location",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "a7b16fb6-1b37-44b8-96b7-118759edb19b",
+												"exec": [
+													"var jsonData = pm.response.json()",
+													"",
+													"var expected = {",
+													"\t\"street_address\": \"Some street\",",
+													"\t\"city\":\"Some city\",",
+													"\t\"legal_lot\":\"3\",",
+													"\t\"legal_plan\":\"3\",",
+													"\t\"legal_district_lot\":\"3\",",
+													"\t\"legal_block\":\"3\",",
+													"\t\"legal_section\":\"3\",",
+													"\t\"legal_township\":\"3\",",
+													"\t\"legal_range\":\"3\",",
+													"\t\"land_district\":\"03\",",
+													"\t\"legal_pid\":3,",
+													"\t\"well_location_description\":\"Description of well location\"",
+													"};",
+													"",
+													"pm.test(\"Status code is 200\", function () {",
+													"    pm.expect(pm.response.code).to.equal(200);",
+													"});",
+													"",
+													"pm.test(\"Expect value to be updated\", function() {",
+													"    for (var key in expected) {",
+													"        pm.expect(jsonData[key], key).to.equal(expected[key]);",
+													"    }",
+													"});",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "JWT {{token}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": ""
+										},
+										"url": {
+											"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"api",
+												"v1",
+												"wells",
+												"{{well_tag_number}}"
+											]
+										},
+										"description": "Get a well"
+									},
+									"response": []
+								}
+							],
+							"_postman_isSubFolder": true
+						},
+						{
+							"name": "Construction Submission",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "74cf621d-6689-43e8-be83-f6b1cb4d5d0a",
+										"exec": [
+											"var jsonData = pm.response.json();",
+											"",
+											"pm.environment.set(\"well_tag_number\", jsonData.well);",
+											"pm.environment.set('filing_number', jsonData.filing_number)",
+											"",
+											"pm.test(\"Status code is 201\", function () {",
+											"   pm.expect(pm.response.code).to.equal(201);",
+											"})",
+											"",
+											"pm.test(\"Expect well record to be created\", function() {",
+											"    pm.expect(jsonData.well).to.be.ok;",
+											"})",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/x-www-form-urlencoded"
+									}
+								],
+								"body": {
 									"mode": "urlencoded",
 									"urlencoded": [
-										{
-											"key": "well_activity_type",
-											"value": "CON",
-											"type": "text"
-										},
 										{
 											"key": "driller_responsible",
 											"value": "{{created_driller_guid}}",
@@ -1773,11 +1965,21 @@
 											"key": "owner_city",
 											"value": "Anytown",
 											"type": "text"
+										},
+										{
+											"key": "consultant_name",
+											"value": "John",
+											"type": "text"
+										},
+										{
+											"key": "well_orientation",
+											"value": "True",
+											"type": "text"
 										}
 									]
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/submissions/{{filing_number}}",
+									"raw": "{{base_url}}/api/v1/submissions/construction?format=json",
 									"host": [
 										"{{base_url}}"
 									],
@@ -1785,10 +1987,146 @@
 										"api",
 										"v1",
 										"submissions",
-										"{{filing_number}}"
+										"construction"
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json"
+										}
 									]
 								},
-								"description": "Check if the submission was created correclty."
+								"description": "Submit a submission"
+							},
+							"response": []
+						},
+						{
+							"name": "Staff Edit",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "d810c676-8904-437e-8c93-3ea1d36e1bd1",
+										"exec": [
+											"var jsonData = pm.response.json();",
+											"",
+											"",
+											"pm.test(\"Status code is 201\", function () {",
+											"   pm.expect(pm.response.code).to.equal(201);",
+											"})",
+											"",
+											"pm.test(\"Expect well_tag_number to match created\", function() {",
+											"    pm.expect(jsonData.well).to.equal(pm.environment.get(\"well_tag_number\"))",
+											"})",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"well\": {{well_tag_number}},\n\t\"consultant_name\": \"John Mann\",\n\t\"owner_full_name\": \"Buddy\",\n\t\"ground_elevation_method\": \"10K_MAP\",\n\t\"ground_elevation\": 12,\n\t\"drilling_method\": \"AIR_ROTARY\",\n\t\"other_drilling_method\": \"Shovel\",\n\t\"well_orientation\": \"False\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/submissions/staff_edit?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"submissions",
+										"staff_edit"
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json"
+										}
+									]
+								},
+								"description": "Submit a submission"
+							},
+							"response": []
+						},
+						{
+							"name": "Check Well Edited",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "a7b16fb6-1b37-44b8-96b7-118759edb19b",
+										"exec": [
+											"var jsonData = pm.response.json()",
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.expect(pm.response.code).to.equal(200);",
+											"})",
+											"",
+											"pm.test(\"Expect consultant name to be updated\", function() {",
+											"    pm.expect(jsonData['consultant_name']).to.equal('John Mann')",
+											"})",
+											"",
+											"pm.test(\"Expect owner name to be updated\", function() {",
+											"    pm.expect(jsonData['owner_full_name']).to.equal('Buddy')",
+											"})",
+											"",
+											"pm.test(\"Expect owner city to NOT be updated\", function() {",
+											"    pm.expect(jsonData['owner_city']).to.equal('Anytown')",
+											"})",
+											"",
+											"pm.test(\"Expect well orientation to be updated\", function() {",
+											"    pm.expect(jsonData['well_orientation']).to.equal(false)",
+											"})",
+											"",
+											"pm.test(\"Expect other_drilling_method to be updated\", function() {",
+											"    pm.expect(jsonData['other_drilling_method']).to.equal('Shovel')",
+											"})",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"wells",
+										"{{well_tag_number}}"
+									]
+								},
+								"description": "Request a list of wells"
 							},
 							"response": []
 						}
@@ -1970,49 +2308,8 @@
 							}
 						],
 						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "well_activity_type",
-									"value": "CON",
-									"type": "text"
-								},
-								{
-									"key": "driller_responsible",
-									"value": "{{created_driller_guid}}",
-									"type": "text"
-								},
-								{
-									"key": "work_end_date",
-									"value": "2018-07-02",
-									"type": "text"
-								},
-								{
-									"key": "owner_full_name",
-									"value": "Holly Homeowner",
-									"type": "text"
-								},
-								{
-									"key": "work_start_date",
-									"value": "2018-07-01",
-									"type": "text"
-								},
-								{
-									"key": "owner_province_state",
-									"value": "BC",
-									"type": "text"
-								},
-								{
-									"key": "owner_mailing_address",
-									"value": "321 Main Street",
-									"type": "text"
-								},
-								{
-									"key": "owner_city",
-									"value": "Anytown",
-									"type": "text"
-								}
-							]
+							"mode": "raw",
+							"raw": ""
 						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
@@ -2135,49 +2432,8 @@
 							}
 						],
 						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "well_activity_type",
-									"value": "CON",
-									"type": "text"
-								},
-								{
-									"key": "driller_responsible",
-									"value": "{{created_driller_guid}}",
-									"type": "text"
-								},
-								{
-									"key": "work_end_date",
-									"value": "2018-07-02",
-									"type": "text"
-								},
-								{
-									"key": "owner_full_name",
-									"value": "Holly Homeowner",
-									"type": "text"
-								},
-								{
-									"key": "work_start_date",
-									"value": "2018-07-01",
-									"type": "text"
-								},
-								{
-									"key": "owner_province_state",
-									"value": "BC",
-									"type": "text"
-								},
-								{
-									"key": "owner_mailing_address",
-									"value": "321 Main Street",
-									"type": "text"
-								},
-								{
-									"key": "owner_city",
-									"value": "Anytown",
-									"type": "text"
-								}
-							]
+							"mode": "raw",
+							"raw": ""
 						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
@@ -2196,7 +2452,7 @@
 					"response": []
 				},
 				{
-					"name": "Decommission well Copy",
+					"name": "Decommission well",
 					"event": [
 						{
 							"listen": "test",
@@ -2261,7 +2517,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "0cf6450c-2d27-4794-9349-bf1276139cb8",
+								"id": "f060585e-3c9b-48b2-88cd-33b26d54703b",
 								"type": "text/javascript",
 								"exec": [
 									"var jsonData = pm.response.json();",
@@ -2307,49 +2563,8 @@
 							}
 						],
 						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "well_activity_type",
-									"value": "CON",
-									"type": "text"
-								},
-								{
-									"key": "driller_responsible",
-									"value": "{{created_driller_guid}}",
-									"type": "text"
-								},
-								{
-									"key": "work_end_date",
-									"value": "2018-07-02",
-									"type": "text"
-								},
-								{
-									"key": "owner_full_name",
-									"value": "Holly Homeowner",
-									"type": "text"
-								},
-								{
-									"key": "work_start_date",
-									"value": "2018-07-01",
-									"type": "text"
-								},
-								{
-									"key": "owner_province_state",
-									"value": "BC",
-									"type": "text"
-								},
-								{
-									"key": "owner_mailing_address",
-									"value": "321 Main Street",
-									"type": "text"
-								},
-								{
-									"key": "owner_city",
-									"value": "Anytown",
-									"type": "text"
-								}
-							]
+							"mode": "raw",
+							"raw": ""
 						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",

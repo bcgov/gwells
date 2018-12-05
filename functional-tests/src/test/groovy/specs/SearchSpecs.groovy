@@ -16,11 +16,9 @@ package specs
 
 import pages.HomePage
 
-import spock.lang.Timeout
 import spock.lang.Title
 import spock.lang.Narrative
 
-@Timeout(300)
 @Title('Groundwater Well Search Tests')
 @Narrative('''As a public user, I want to search for existing wells.''')
 class SearchSpecs extends BaseSpec {
@@ -34,7 +32,7 @@ class SearchSpecs extends BaseSpec {
       setWellTagOrIdentificationPlateNumber(123)
     when: 'I click the Search button'
       clickSearchButton()
-    then: 'The search is executed and a list of results is displayed'
+    then: 'The search is executed and a table containing at least 1 matching result is displayed'
       foundSearchResults()
   }
 

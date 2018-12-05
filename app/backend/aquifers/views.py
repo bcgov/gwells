@@ -16,10 +16,14 @@ from django.shortcuts import render
 from django_filters import rest_framework as filters
 from django.views.generic import TemplateView
 
+from drf_yasg.utils import swagger_auto_schema
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.filters import SearchFilter, OrderingFilter
-from rest_framework.generics import ListAPIView, RetrieveUpdateAPIView
+from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveUpdateAPIView
+
+from gwells.documents import MinioClient
 
 from aquifers import models
 from aquifers import serializers
@@ -37,18 +41,23 @@ class AquiferRetrieveUpdateAPIView(RetrieveUpdateAPIView):
     lookup_field = 'aquifer_id'
     serializer_class = serializers.AquiferSerializer
 
-class AquiferListAPIView(ListAPIView):
+
+class AquiferListCreateAPIView(ListCreateAPIView):
     """List aquifers
     get: return a list of aquifers
+    post: create an aquifer
     """
 
+    permission_classes = (HasAquiferEditRoleOrReadOnly,)
     queryset = models.Aquifer.objects.all()
     serializer_class = serializers.AquiferSerializer
-    filter_backends = (filters.DjangoFilterBackend, OrderingFilter, SearchFilter)
+    filter_backends = (filters.DjangoFilterBackend,
+                       OrderingFilter, SearchFilter)
     filter_fields = ('aquifer_id',)
     search_fields = ('aquifer_name',)
     ordering_fields = '__all__'
     ordering = ('aquifer_id',)
+
 
 class AquiferMaterialListAPIView(ListAPIView):
     """List aquifer materials codes
@@ -85,6 +94,7 @@ class AquiferSubtypeListAPIView(ListAPIView):
     queryset = models.AquiferSubtype.objects.all()
     serializer_class = serializers.AquiferSubtypeSerializer
 
+
 class AquiferProductivityListAPIView(ListAPIView):
     """List aquifer productivity codes
     get: return a list of aquifer productivity codes
@@ -92,6 +102,7 @@ class AquiferProductivityListAPIView(ListAPIView):
 
     queryset = models.AquiferProductivity.objects.all()
     serializer_class = serializers.AquiferProductivitySerializer
+
 
 class AquiferDemandListAPIView(ListAPIView):
     """List aquifer demand codes
@@ -101,6 +112,7 @@ class AquiferDemandListAPIView(ListAPIView):
     queryset = models.AquiferDemand.objects.all()
     serializer_class = serializers.AquiferDemandSerializer
 
+
 class WaterUseListAPIView(ListAPIView):
     """List Water Use Codes
     get: return a list of water use codes
@@ -109,6 +121,26 @@ class WaterUseListAPIView(ListAPIView):
     queryset = models.WaterUse.objects.all()
     serializer_class = serializers.WaterUseSerializer
 
+
 class AquiferHomeView(TemplateView):
     """Loads the html file containing the Aquifer web app"""
     template_name = 'aquifers/aquifers.html'
+
+
+class ListFiles(APIView):
+    """
+    List documents associated with an aquifer
+
+    get: list files found for the aquifer identified in the uri
+    """
+
+    @swagger_auto_schema(auto_schema=None)
+    def get(self, request, aquifer_id):
+
+        client = MinioClient(
+            request=request, disable_private=True)
+
+        documents = client.get_documents(
+            int(aquifer_id), resource="aquifer", include_private=False)
+
+        return Response(documents)

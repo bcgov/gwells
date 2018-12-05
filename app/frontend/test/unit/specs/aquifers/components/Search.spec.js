@@ -1,8 +1,23 @@
+/*
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*/
+
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 import SearchComponent from '@/aquifers/components/Search.vue'
 import Vuex from 'vuex'
 import axios from 'axios'
 import VueRouter from 'vue-router'
+import auth from '@/common/store/auth.js'
 
 jest.mock('axios')
 
@@ -29,20 +44,24 @@ describe('Search Component', () => {
     localVue,
     stubs: ['router-link', 'router-view'],
     router: new VueRouter(),
+    store: new Vuex.Store({
+      modules: { auth }
+    }),
     methods: {
-      scrollToTableTop() {}
+      scrollToTableTop () {}
     },
     ...options
   })
 
   it('Displays a message if no aquifers could be found', () => {
+    axios.get.mockResolvedValue({})
     const wrapper = component({
       computed: {
-        aquiferList() { return [] },
-        emptyResults() { return true }
+        aquiferList () { return [] },
+        emptyResults () { return true }
       },
       methods: {
-        fetchResults() {}
+        fetchResults () {}
       }
     })
 
@@ -52,10 +71,12 @@ describe('Search Component', () => {
   it('Matches the snapshot', () => {
     const wrapper = component({
       computed: {
-        aquiferList() { return [aquiferFixture] }
+        aquiferList () { return [aquiferFixture] },
+        emptyResults () { return false },
+        displayPageLength () { return 0 }
       },
       methods: {
-        fetchResults() {}
+        fetchResults () {}
       }
     })
 
@@ -66,17 +87,17 @@ describe('Search Component', () => {
     axios.get.mockResolvedValue({})
 
     const wrapper = component()
-    wrapper.find('#search').setValue('asdf')
+    wrapper.find('#aquifers-name').setValue('asdf')
     wrapper.find('form').trigger('submit')
 
-    expect(axios.get).toHaveBeenCalledWith('aquifers/', {"params": { "search": "asdf" }})
+    expect(axios.get).toHaveBeenCalledWith('aquifers/', { 'params': { 'search': 'asdf' } })
   })
 
   it('form reset resets response and query', () => {
     const wrapper = component()
     axios.get.mockResolvedValue({})
 
-    wrapper.find('#search').setValue('asdf')
+    wrapper.find('#aquifers-name').setValue('asdf')
     wrapper.find('form').trigger('submit')
 
     expect(wrapper.vm.query.search).toEqual('asdf')

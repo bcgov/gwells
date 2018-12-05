@@ -31,20 +31,20 @@ class HeaderModule extends Module {
   }
 
   /**
-   * Clicks a header menu anchor tag based on its attributes, typically text.
-   * @param a map of attributes of the header menu anchor tag. eg: [text:'header link text'] (required)
+   * Clicks a header menu anchor tag based on its text.
+   * @param headerText the text of the header link to be clicked. (required)
    */
-  void clickMenuItem(Map<String, Object> itemSelector) {
+  void clickMenuItem(String headerText) {
     waitFor {
-      getHeaderSelector(itemSelector).click()
+      getHeaderSelector(headerText).click()
     }
   }
 
   /**
-   * Returns the selector for a header menu anchor tag based on its attributes, typically text.
-   * @param a map of attributes of the header menu anchor tag. eg: [text:'header link text'] (required)
+   * Returns the selector for a header menu anchor tag based on its text.
+   * @param headerText the text of the header link to be clicked. (required)
    */
-  Navigator getHeaderSelector(Map<String, Object> itemSelector) {
-    headerNavigationBar.$(itemSelector, 'a')
+  Navigator getHeaderSelector(String headerText) {
+    headerNavigationBar.$('a', text:"$headerText")
   }
 }

@@ -56,7 +56,7 @@ This application's template has been broken down into build and deploy component
 
 Template:
 
-* ../openshift/templates/caddy-build.json
+* ../openshift/templates/caddy.bc.json
 
 Contains:
 
@@ -84,7 +84,7 @@ Build Project:
 2. ##### Build by Command line
 
     ```
-    oc process -f ../openshift/templates/caddy-build.json -p NAME=proxy-caddy \
+    oc process -f ../openshift/templates/caddy.bc.json -p NAME=proxy-caddy \
       GIT_REPO=https://github.com/bcgov/gwells.git GIT_BRANCH=master \
       IMG_SRC=bcgov-s2i-caddy | oc apply -f -
 
@@ -94,7 +94,7 @@ Build Project:
 
 Template:
 
-* ../openshift/templates/caddy-build.json
+* ../openshift/templates/caddy.dc.json
 
 Contains:
 
@@ -126,7 +126,7 @@ Deploy Projects Available:
 2. ##### Deploy by Command line
 
     ```
-    oc process -f ../openshift/templates/caddy-build.json -n moe-gwells-tools -p NAME=proxy-caddy \
+    oc process -f ../openshift/templates/caddy.bc.json -n moe-gwells-tools -p NAME=proxy-caddy \
         BUILD_PROJECT=moe-gwells-tools | oc apply -f -
     oc expose svc proxy-caddy
     ```

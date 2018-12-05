@@ -15,12 +15,11 @@ ext {
         groovyVersion = '2.4.15'
         gebVersion = '2.2'
         seleniumVersion = '3.14.0'
-        chromeDriverVersion = '2.41'
+        chromeDriverVersion = '2.44'
         geckoDriverVersion = '0.21.0'
         ieDriverVersion = '3.14.0'
         edgeDriverVersion = '3.14.0'
         safariDriverVersion = '3.14.0'
-
         spockCoreVersion = '1.1-groovy-2.4'
         spockReportsVersion = '1.6.1'
         slf4jApiVersion = '1.7.25'
@@ -79,6 +78,21 @@ drivers.each { driver ->
 
         systemProperty "geb.build.reportsDir", reporting.file("geb/$name")
         systemProperty "geb.env", driver
+
+        /*
+         * Set environment variables from a .env file, if it exists.
+         * Equals sign separated key value pairs, one per new line: SOME_KEY=some value
+         * These local environment variables take precedence over any environment variables set at the system level.
+         */
+        def envFile = file('.env')
+        if (envFile.exists()) {
+            envFile.readLines().each() {
+                def (key, value) = it.tokenize('=')
+                if (key && value) {
+                    environment key, value
+                }
+            }
+        }
     }
 }
 
@@ -100,6 +114,7 @@ test {
     dependsOn drivers.collect { tasks["${it}Test"] }
     enabled = false
 }
+
 
 tasks.withType(Test) {
     maxHeapSize = "1g"

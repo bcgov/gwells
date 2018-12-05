@@ -102,6 +102,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         'registry',
         'summary',
         'documents',
+        'exports',
         'submissions',
         'footer'
       ],

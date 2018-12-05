@@ -36,6 +36,9 @@ urlpatterns = [
     url(r'^api/v1/wells/(?P<tag>[0-9]+)/files$',
         never_cache(views.ListFiles.as_view()), name='file-list'),
 
+    # Extract files
+    url(r'^api/v1/wells/extracts$', views.ListExtracts.as_view(), name='extract-list'),
+
     # Well list
     url(r'^api/v1/wells/$',
         never_cache(views.WellListAPIView.as_view()), name='well-list'),
