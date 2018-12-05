@@ -206,7 +206,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </b-card>
         </b-col>
         <b-col sm="12" md="6">
-          <coords-map :latitude="Number(latitudeInput)" :longitude="Number(longitudeInput)" v-on:coordinate="handleMapCoordinate"/>
+          <coords-map :latitude="mapLatitude" :longitude="mapLongitude" v-on:coordinate="handleMapCoordinate"/>
         </b-col>
       </b-row>
 
@@ -328,6 +328,14 @@ export default {
       set: function (value) {
         this.dms.long.deg = this.transformToNegative(value)
       }
+    },
+    mapLatitude () {
+      // We have to make sure that the map get's a number or a null, otherwise "" may turn into 0.
+      return this.latitudeInput ? Number(this.latitudeInput) : null
+    },
+    mapLongitude () {
+      // We have to make sure that the map get's a number or a null, otherwise "" may turn into 0.
+      return this.longitudeInput ? Number(this.longitudeInput) : null
     },
     ...mapGetters(['codes'])
   },
