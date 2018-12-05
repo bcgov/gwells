@@ -207,7 +207,6 @@ export default {
           'wellDevelopment',
           'waterQuality',
           'comments'
-
         ]
       }
     }
