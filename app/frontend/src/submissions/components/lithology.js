@@ -27,6 +27,7 @@ const VALID_SOILS = [
   'till',
   'organic',
   'boulder',
+  'pebbles',
   'cobble'
 ]
 
@@ -45,7 +46,6 @@ const VALID_BEDROCK = [
   'quartz',
   'quartzite',
   'limestone',
-  'pebbles',
   'volcanics',
   'feldspar'
 ]
