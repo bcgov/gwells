@@ -50,9 +50,89 @@ const VALID_BEDROCK = [
   'feldspar'
 ]
 
+const VALID_COLOURS = [
+  'blue',
+  'grey',
+  'green',
+  'black',
+  'brown',
+  'rust',
+  'white',
+  'yellow',
+  'purple'
+
+]
+
+const VALID_HARDNESS = [
+  {
+    'lithology_hardness_code': 'DENSE',
+    'description': 'Dense'
+  },
+  {
+    'lithology_hardness_code': 'HARD',
+    'description': 'Hard'
+  },
+  {
+    'lithology_hardness_code': 'LOOSE',
+    'description': 'Loose'
+  },
+  {
+    'lithology_hardness_code': 'MEDIUM',
+    'description': 'Medium'
+  },
+  {
+    'lithology_hardness_code': 'SOFT',
+    'description': 'Soft'
+  },
+  {
+    'lithology_hardness_code': 'STIFF',
+    'description': 'Stiff'
+  },
+  {
+    'lithology_hardness_code': 'VERY_HARD',
+    'description': 'Very Hard'
+  },
+  {
+    'lithology_hardness_code': 'VERY_SOFT',
+    'description': 'Very Soft'
+  }
+]
+
+const VALID_MOISTURE = [
+  'very dry',
+  'dry',
+  'damp',
+  'moist',
+  'wet',
+  'very wet'
+]
+
 // checks if a string is all uppercase
 const isUpper = (word) => {
   return word === word.toUpperCase() && word !== word.toLowerCase()
+}
+
+// match checks if any words in array `words` match an item in array `list`.
+// it returns the matching word after the first match.
+const match = (words, list) => {
+  let prev = ''
+
+  // first check for the previous word + current word (this allows e.g. 'very soft' without matching 'soft')
+  for (let i = 0; i < words.length; i++) {
+    if (list.includes(prev + ' ' + words[i])) {
+      return list.indexOf(prev + ' ' + words[i])
+    }
+    prev = words[i]
+  }
+
+  // if no matches found, check just the word without the previous word.
+  for (let i = 0; i < words.length; i++) {
+    if (list.includes(words[i])) {
+      return list.indexOf(words[i])
+    }
+  }
+
+  return -1
 }
 
 // splitWords takes a string, removes common punctuation and returns an array of words
@@ -208,6 +288,32 @@ class Lithology {
 
     // return an array of just the valid soil/rock terms
     return sorted.map((soil) => soil.term)
+  }
+
+  moisture (list = VALID_MOISTURE) {
+    const matchPosition = match(
+      splitWords(this.original).map((word) => word.toLowerCase()),
+      list.map((item) => item.description.toLowerCase())
+    )
+
+    // return the code at the matched position
+    return matchPosition > -1 ? list[matchPosition].lithology_moisture_code : ''
+  }
+  hardness (list = VALID_HARDNESS) {
+    const matchPosition = match(
+      splitWords(this.original).map((word) => word.toLowerCase()),
+      list.map((item) => item.description.toLowerCase())
+    )
+
+    return matchPosition > -1 ? list[matchPosition].lithology_hardness_code : ''
+  }
+  colour (list = VALID_COLOURS) {
+    const matchPosition = match(
+      splitWords(this.original).map((word) => word.toLowerCase()),
+      list.map((item) => item.description.toLowerCase())
+    )
+
+    return matchPosition > -1 ? list[matchPosition].lithology_colour_code : ''
   }
 }
 

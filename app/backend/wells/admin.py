@@ -18,6 +18,10 @@ from wells.models import (
     WaterQualityCharacteristic,
     WaterQualityColour
 )
+from gwells.models.lithology import (
+    LithologyColourCode, LithologyHardnessCode,
+    LithologyMaterialCode, LithologyMoistureCode,
+)
 
 # Register your models here.
 
@@ -25,3 +29,7 @@ admin.site.register(WaterQualityCharacteristic)
 admin.site.register(WaterQualityColour)
 admin.site.register(DecommissionMaterialCode)
 admin.site.register(DecommissionMethodCode)
+admin.site.register(LithologyColourCode)
+admin.site.register(LithologyHardnessCode)
+admin.site.register(LithologyMaterialCode)
+admin.site.register(LithologyMoistureCode)

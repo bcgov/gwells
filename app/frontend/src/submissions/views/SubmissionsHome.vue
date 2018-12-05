@@ -529,6 +529,6 @@ export default {
   max-width: 3rem;
 }
 .input-width-medium {
-  max-width: 10rem;
+  max-width: 6rem;
 }
 </style>

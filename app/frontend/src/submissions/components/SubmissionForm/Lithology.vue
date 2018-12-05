@@ -25,7 +25,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               <div>To</div><div>ft (bgl)</div>
             </th>
             <th class="font-weight-normal">
-              Description
+              Soil or Bedrock Description
             </th>
             <th class="font-weight-normal">
               Materials
@@ -57,44 +57,65 @@ Licensed under the Apache License, Version 2.0 (the "License");
               <td>
                 <form-input
                     :id="`lithologyDescription${index}`"
-                    aria-label="Description"
+                    aria-label="Soil or Bedrock Description"
                     v-model="lithology[index].lithology_raw_data"
                     group-class="mt-1 mb-0"
                     @input="parseDescription(index, $event)"
                 ></form-input>
               </td>
-              <td>
+              <td class="input-width-medium">
                 <div class="material-badges">
                   <b-badge v-for="(soil, j) in lithSoils[index]" variant="light" class="font-weight-normal" :key="`soilTerm-${index}-${j}`">
                     {{ soil }}
                   </b-badge>
                 </div>
               </td>
-              <td class="input-width-small">
-                <!-- <form-input
+              <td class="input-width-medium">
+                <form-input
                     :id="`lithologyMoisture${index}`"
                     aria-label="Moisture"
                     select
                     :options="codes.lithology_moisture_codes"
                     text-field="description"
                     value-field="lithology_moisture_code"
+                    placeholder="Select moisture"
                     v-model="lithology[index].lithology_moisture"
-                    group-class="mt-1 mb-0"></form-input> -->
+                    group-class="mt-1 mb-0"></form-input>
                   <!-- <div class="material-badges">
                     <b-badge variant="light" class="font-weight-normal">Wet</b-badge>
                   </div> -->
               </td>
-              <td>
+              <td class="input-width-medium">
+                <form-input
+                    :id="`lithologyColour${index}`"
+                    aria-label="Colour"
+                    select
+                    :options="codes.lithology_colours"
+                    text-field="description"
+                    placeholder="Select colour"
+                    value-field="lithology_colour_code"
+                    v-model="lithology[index].lithology_colour"
+                    group-class="mt-1 mb-0"></form-input>
                   <!-- <div class="material-badges">
                     <b-badge variant="light" class="font-weight-normal">Reddish-brown</b-badge>
                   </div> -->
               </td>
-              <td>
+              <td class="input-width-medium">
+                <form-input
+                    :id="`lithologyHardness${index}`"
+                    aria-label="Hardness"
+                    select
+                    :options="codes.lithology_hardness_codes"
+                    text-field="description"
+                    placeholder="Select hardness"
+                    value-field="lithology_hardness_code"
+                    v-model="lithology[index].lithology_hardness"
+                    group-class="mt-1 mb-0"></form-input>
                   <!-- <div class="material-badges">
                     <b-badge variant="light" class="font-weight-normal">Dense</b-badge>
                   </div> -->
               </td>
-              <td>
+              <td class="input-width-medium">
                 <form-input :id="`lithologyFlowEstimate${index}`" aria-label="Water bearing flow" v-model="lithology[index].water_bearing_estimated_flow" group-class="mt-1 mb-0"></form-input>
               </td>
               <td class="pt-1">
@@ -162,7 +183,11 @@ export default {
   },
   methods: {
     addLithologyRow () {
-      this.lithologyInput.push({})
+      this.lithologyInput.push({
+        lithology_colour: '',
+        lithology_hardness: '',
+        lithology_moisture: ''
+      })
     },
     removeRowByIndex (index) {
       this.lithologyInput.splice(index, 1)
@@ -187,14 +212,24 @@ export default {
       this.$refs.cancelRemoveBtn.focus()
     },
     parseDescription (index, value) {
-      const soils = new Lithology(value)
-      this.lithSoils[index] = soils.parseSoilTerms()
+      const lithology = new Lithology(value)
+      this.lithSoils[index] = lithology.parseSoilTerms()
+
+      const moisture = lithology.moisture(this.codes.lithology_moisture_codes)
+      const hardness = lithology.hardness(this.codes.lithology_hardness_codes)
+      const colour = lithology.colour(this.codes.lithology_colours)
+
+      this.lithologyInput[index].lithology_hardness = hardness
+      this.lithologyInput[index].lithology_colour = colour
+      this.lithologyInput[index].lithology_moisture = moisture
     }
   },
   created () {
     // When component created, add an initial row of lithology.
     if (!this.lithologyInput.length) {
-      this.lithologyInput.push({}, {}, {})
+      for (let i = 0; i < 3; i++) {
+        this.addLithologyRow()
+      }
     }
   }
 }
