@@ -171,7 +171,10 @@ class StackWells():
                     target_key = source_target_map.get(source_key, source_key)
                     if target_key in target_keys:
                         if target_key in composite and target_key in FOREIGN_KEYS:
-                            composite[target_key] = self._merge_series(composite[source_key], value)
+                            if submission.well_activity_type.code == WellActivityCode.types.staff_edit():
+                                composite[target_key] = value
+                            else:
+                                composite[target_key] = self._merge_series(composite[source_key], value)
                         else:
                             composite[target_key] = value
 

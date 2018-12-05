@@ -334,34 +334,24 @@ class WellAlterationSubmissionSerializer(WellSubmissionSerializerBase):
 class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
 
     well = serializers.PrimaryKeyRelatedField(queryset=Well.objects.all())
+    linerperforation_set = LinerPerforationSerializer(
+        many=True, required=False)
+    casing_set = CasingSerializer(many=True, required=False)
+    screen_set = ScreenSerializer(many=True, required=False)
 
     def get_well_activity_type(self):
         return WellActivityCode.types.staff_edit()
 
     def get_foreign_keys(self):
-        return {}
+        return {
+            'casing_set': Casing,
+            'screen_set': Screen,
+            'linerperforation_set': LinerPerforation,
+        }
 
     class Meta:
         model = ActivitySubmission
         fields = (
-            # 'well',
-            # 'driller_name',
-            # 'consultant_name',
-            # 'consultant_company',
-            # 'driller_responsible',
-            # 'owner_full_name',
-            # 'owner_full_name',
-            # 'owner_mailing_address',
-            # 'owner_province_state',
-            # 'owner_city',
-            # 'owner_postal_code',
-            # 'owner_email',
-            # 'owner_tel',
-            # 'ground_elevation',
-            # 'ground_elevation_method',
-            # 'drilling_method',
-            # 'other_drilling_method',
-            # 'well_orientation',
             'well',
             'well_class',
             'well_subclass',
@@ -401,7 +391,7 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
             'other_drilling_method',
             'well_orientation',
             # 'lithologydescription_set',
-            # 'casing_set',
+            'casing_set',
             'surface_seal_material',
             # 'surface_seal_depth',  NEEDS MIGRATION
             'surface_seal_thickness',
@@ -413,7 +403,7 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
             'liner_thickness',
             'liner_from',
             'liner_to',
-            # 'linerperforation_set',
+            'linerperforation_set',
             'screen_intake_method',
             'screen_type',
             'screen_material',
@@ -421,7 +411,7 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
             'screen_opening',
             'screen_bottom',
             'other_screen_bottom',
-            # 'screen_set',
+            'screen_set',
             'filter_pack_from',
             'filter_pack_to',
             'filter_pack_thickness',
