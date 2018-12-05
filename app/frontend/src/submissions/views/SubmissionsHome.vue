@@ -199,12 +199,15 @@ export default {
           'wellLocation',
           'wellCoords',
           'method',
+          'casings',
           'backfill',
           'liner',
+          'screens',
           'filterPack',
           'wellDevelopment',
           'waterQuality',
           'comments'
+
         ]
       }
     }

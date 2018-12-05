@@ -61,6 +61,7 @@ class CasingSerializer(serializers.ModelSerializer):
             'casing_code',
             'casing_material',
             'drive_shoe',
+            'wall_thickness'
         )
         extra_kwargs = {
             'start': {'required': True},
