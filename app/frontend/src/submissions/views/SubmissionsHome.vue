@@ -206,6 +206,7 @@ export default {
           'filterPack',
           'wellDevelopment',
           'waterQuality',
+          'wellCompletion',
           'comments'
         ]
       }
