@@ -48,7 +48,7 @@ new Vue({
     this.fetchCodes()
   },
   methods: {
-    ...mapMutations('aquiferCodes', ['addCodes']),
+    ...mapMutations(['addCodes']),
     ...mapActions([FETCH_CONFIG]),
     fetchCode (codePath, key) {
       ApiService.query(codePath).then((response) => {

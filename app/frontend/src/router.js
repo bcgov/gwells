@@ -5,7 +5,7 @@ import AuthGuard from './authGuard'
 // Aquifers components
 import AquiferSearch from '@/aquifers/components/Search'
 import AquiferView from '@/aquifers/components/View'
-import AquiferEdit from '@/aquifers/components/Edit'
+import AquiferNew from '@/aquifers/components/New'
 
 import WellSearch from '@/wells/views/WellSearch.vue'
 import WellDetail from '@/wells/views/WellDetail.vue'
@@ -42,10 +42,15 @@ export default new Router({
       props: true
     },
     {
-      path: '/aquifers/:id/edit',
-      component: AquiferEdit,
-      name: 'aquifers-edit',
-      props: true
+      path: '/:id/edit',
+      component: AquiferView,
+      name: 'edit',
+      props: { edit: true }
+    },
+    {
+      path: '/new',
+      component: AquiferNew,
+      name: 'new'
     },
 
     // Submissions routes

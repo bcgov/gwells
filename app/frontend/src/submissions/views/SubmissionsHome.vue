@@ -16,20 +16,20 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <div class="card" v-if="userRoles.wells.edit || userRoles.submissions.edit">
       <div class="card-body">
 
-      <!-- Form submission success message -->
-      <b-alert
-          id="submissionSuccessAlert"
-          :show="formSubmitSuccess"
-          variant="success"
-          class="mt-3">
-        <i class="fa fa-2x fa-check-circle text-success mr-2 alert-icon" aria-hidden="true"></i>
-        <div v-if="isStaffEdit" class="alert-message">
-          Changes saved.
-        </div>
-        <div v-else class="alert-message">
-          Your well record was successfully submitted.
-        </div>
-      </b-alert>
+        <!-- Form submission success message -->
+        <b-alert
+            id="submissionSuccessAlert"
+            :show="formSubmitSuccess"
+            variant="success"
+            class="mt-3">
+          <i class="fa fa-2x fa-check-circle text-success mr-2 alert-icon" aria-hidden="true"></i>
+          <div v-if="isStaffEdit" class="alert-message">
+            Changes saved.
+          </div>
+          <div v-else class="alert-message">
+            Your well record was successfully submitted.
+          </div>
+        </b-alert>
 
         <!-- Form submission error message -->
         <b-alert
@@ -39,73 +39,74 @@ Licensed under the Apache License, Version 2.0 (the "License");
             variant="danger"
             class="mt-3">
 
-        <i class="fa fa-2x fa-exclamation-circle text-danger mr-2 alert-icon" aria-hidden="true"></i>
-        <div class="alert-message">
-          <div v-if="isStaffEdit">
-            Your changes were not saved.
-          </div>
-          <div v-else>
-            Your well record was not submitted.
-          </div>
-          <span v-if="errors && errors.detail">
-            {{ errors.detail }}
-          </span>
-          <div v-if="errors && errors != {}">
-            <div v-for="(field, i) in Object.keys(errors)" :key="`submissionError${i}`">
-              {{field | readable}} : <span v-for="(e, j) in errors[field]" :key="`submissionError${i}-${j}`">{{ e }}</span>
+          <i class="fa fa-2x fa-exclamation-circle text-danger mr-2 alert-icon" aria-hidden="true"></i>
+          <div class="alert-message">
+            <div v-if="isStaffEdit">
+              Your changes were not saved.
+            </div>
+            <div v-else>
+              Your well record was not submitted.
+            </div>
+            <span v-if="errors && errors.detail">
+              {{ errors.detail }}
+            </span>
+            <div v-if="errors && errors != {}">
+              <div v-for="(field, i) in Object.keys(errors)" :key="`submissionError${i}`">
+                {{field | readable}} : <span v-for="(e, j) in errors[field]" :key="`submissionError${i}-${j}`">{{ e }}</span>
+              </div>
             </div>
           </div>
         </b-alert>
 
-      <b-form @submit.prevent="confirmSubmit">
-        <!-- if preview === true : Preview -->
-        <submission-preview
-          v-if="preview"
-          :form="form"
-          :activity="activityType"
-          :sections="displayFormSection"
-          :errors="errors"
-          :reportSubmitted="formSubmitSuccess"
-          :formSubmitLoading="formSubmitLoading"
-          v-on:back="handlePreviewBackButton"
-          v-on:startNewReport="handleExitPreviewAfterSubmit"
-          />
-        <!-- if preview === false : Activity submission form -->
-        <activity-submission-form
-          v-else
-          :form="form"
-          :activityType.sync="activityType"
-          :sections="displayFormSection"
-          :formSteps="formSteps"
-          :errors="errors"
-          :formIsFlat.sync="formIsFlat"
-          :trackValueChanges="trackValueChanges"
-          :formSubmitLoading="formSubmitLoading"
-          :isStaffEdit="isStaffEdit"
-          v-on:preview="handlePreviewButton"
-          v-on:submit_edit="formSubmit"
-          v-on:resetForm="resetForm"
-          />
+        <b-form @submit.prevent="confirmSubmit">
+          <!-- if preview === true : Preview -->
+          <submission-preview
+            v-if="preview"
+            :form="form"
+            :activity="activityType"
+            :sections="displayFormSection"
+            :errors="errors"
+            :reportSubmitted="formSubmitSuccess"
+            :formSubmitLoading="formSubmitLoading"
+            v-on:back="handlePreviewBackButton"
+            v-on:startNewReport="handleExitPreviewAfterSubmit"
+            />
+          <!-- if preview === false : Activity submission form -->
+          <activity-submission-form
+            v-else
+            :form="form"
+            :activityType.sync="activityType"
+            :sections="displayFormSection"
+            :formSteps="formSteps"
+            :errors="errors"
+            :formIsFlat.sync="formIsFlat"
+            :trackValueChanges="trackValueChanges"
+            :formSubmitLoading="formSubmitLoading"
+            :isStaffEdit="isStaffEdit"
+            v-on:preview="handlePreviewButton"
+            v-on:submit_edit="formSubmit"
+            v-on:resetForm="resetForm"
+            />
 
-          <!-- Form submission confirmation -->
-          <b-modal
-              v-model="confirmSubmitModal"
-              id="confirmSubmitModal"
-              centered
-              title="Confirm submission"
-              @shown="$refs.confirmSubmitConfirmBtn.focus()"
-              :return-focus="$refs.activitySubmitBtn">
-            Are you sure you want to submit this activity report?
-            <div slot="modal-footer">
-              <b-btn variant="primary" @click="confirmSubmitModal=false;formSubmit()" ref="confirmSubmitConfirmBtn">
-                Save
-              </b-btn>
-              <b-btn variant="light" @click="confirmSubmitModal=false">
-                Cancel
-              </b-btn>
-            </div>
-          </b-modal>
-        </b-form>
+            <!-- Form submission confirmation -->
+            <b-modal
+                v-model="confirmSubmitModal"
+                id="confirmSubmitModal"
+                centered
+                title="Confirm submission"
+                @shown="$refs.confirmSubmitConfirmBtn.focus()"
+                :return-focus="$refs.activitySubmitBtn">
+              Are you sure you want to submit this activity report?
+              <div slot="modal-footer">
+                <b-btn variant="primary" @click="confirmSubmitModal=false;formSubmit()" ref="confirmSubmitConfirmBtn">
+                  Save
+                </b-btn>
+                <b-btn variant="light" @click="confirmSubmitModal=false">
+                  Cancel
+                </b-btn>
+              </div>
+            </b-modal>
+          </b-form>
       </div>
     </div>
   </div>
