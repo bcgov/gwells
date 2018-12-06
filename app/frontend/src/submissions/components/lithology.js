@@ -13,7 +13,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 */
 
 // default valid soil types
-// these can be overrided if the application provides a list
+// these can be overriden if the application provides a list
 const VALID_SOILS = [
   'gravel',
   'sand',
@@ -48,63 +48,6 @@ const VALID_BEDROCK = [
   'limestone',
   'volcanics',
   'feldspar'
-]
-
-const VALID_COLOURS = [
-  'blue',
-  'grey',
-  'green',
-  'black',
-  'brown',
-  'rust',
-  'white',
-  'yellow',
-  'purple'
-
-]
-
-const VALID_HARDNESS = [
-  {
-    'lithology_hardness_code': 'DENSE',
-    'description': 'Dense'
-  },
-  {
-    'lithology_hardness_code': 'HARD',
-    'description': 'Hard'
-  },
-  {
-    'lithology_hardness_code': 'LOOSE',
-    'description': 'Loose'
-  },
-  {
-    'lithology_hardness_code': 'MEDIUM',
-    'description': 'Medium'
-  },
-  {
-    'lithology_hardness_code': 'SOFT',
-    'description': 'Soft'
-  },
-  {
-    'lithology_hardness_code': 'STIFF',
-    'description': 'Stiff'
-  },
-  {
-    'lithology_hardness_code': 'VERY_HARD',
-    'description': 'Very Hard'
-  },
-  {
-    'lithology_hardness_code': 'VERY_SOFT',
-    'description': 'Very Soft'
-  }
-]
-
-const VALID_MOISTURE = [
-  'very dry',
-  'dry',
-  'damp',
-  'moist',
-  'wet',
-  'very wet'
 ]
 
 // checks if a string is all uppercase
@@ -290,7 +233,7 @@ class Lithology {
     return sorted.map((soil) => soil.term)
   }
 
-  moisture (list = VALID_MOISTURE) {
+  moisture (list = []) {
     const matchPosition = match(
       splitWords(this.original).map((word) => word.toLowerCase()),
       list.map((item) => item.description.toLowerCase())
@@ -299,7 +242,7 @@ class Lithology {
     // return the code at the matched position
     return matchPosition > -1 ? list[matchPosition].lithology_moisture_code : ''
   }
-  hardness (list = VALID_HARDNESS) {
+  hardness (list = []) {
     const matchPosition = match(
       splitWords(this.original).map((word) => word.toLowerCase()),
       list.map((item) => item.description.toLowerCase())
@@ -307,7 +250,7 @@ class Lithology {
 
     return matchPosition > -1 ? list[matchPosition].lithology_hardness_code : ''
   }
-  colour (list = VALID_COLOURS) {
+  colour (list = []) {
     const matchPosition = match(
       splitWords(this.original).map((word) => word.toLowerCase()),
       list.map((item) => item.description.toLowerCase())
