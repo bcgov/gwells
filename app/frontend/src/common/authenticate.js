@@ -22,15 +22,9 @@ export default {
   },
 
   setLocalToken: function (instance) {
-    localStorage.setItem('token', instance.token)
-    localStorage.setItem('refreshToken', instance.refreshToken)
-    localStorage.setItem('idToken', instance.idToken)
     ApiService.authHeader('JWT', instance.token)
   },
   removeLocalToken: function () {
-    localStorage.removeItem('token')
-    localStorage.removeItem('refreshToken')
-    localStorage.removeItem('idToken')
     ApiService.authHeader()
   },
 
@@ -44,26 +38,20 @@ export default {
       if (instance.authenticated && ApiService.hasAuthHeader() && !instance.isTokenExpired(0)) {
         resolve() // We've already authenticated, have a header, and we've not expired.
       } else {
-        // Attempt to retrieve a stored token, this may avoid us having to refresh the page.
-        const token = localStorage.getItem('token')
-        const refreshToken = localStorage.getItem('refreshToken')
-        const idToken = localStorage.getItem('idToken')
         instance.init({
           onLoad: 'check-sso',
           checkLoginIframe: true,
-          timeSkew: 10, // Allow for some deviation
-          token,
-          refreshToken,
-          idToken }
+          timeSkew: 10 // Allow for some deviation
+        }
         ).success((result) => {
           // assumes the store passed in includes a 'SET_KEYCLOAK' mutation.
           store.commit('SET_KEYCLOAK', instance)
           if (instance.authenticated) {
             // We may have been authenticated, but the token could be expired.
-            instance.updateToken(60).then(() => {
+            instance.updateToken(60).success(() => {
               // Store the token to avoid future round trips
               this.setLocalToken(instance)
-            }).catch(() => {
+            }).error(() => {
               // The refresh token is expired or was rejected
               result = false
               this.removeLocalToken()
@@ -71,9 +59,9 @@ export default {
             })
           }
           instance.onTokenExpired = () => {
-            instance.updateToken().then(() => {
+            instance.updateToken().success(() => {
               this.setLocalToken(instance)
-            }).catch(() => {
+            }).error(() => {
               this.removeLocalToken()
               instance.clearToken()
             })
