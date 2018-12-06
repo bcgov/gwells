@@ -558,6 +558,8 @@ class Well(AuditModel):
 
     well_identification_plate_attached = models.CharField(
         max_length=500, blank=True, null=True, verbose_name='Well Identification Plate Is Attached')
+    id_plate_attached_by = models.CharField(
+        max_length=100, blank=True, null=True, verbose_name='Well identification plate attached by')
 
     latitude = models.DecimalField(
         max_digits=8, decimal_places=6, blank=True, null=True, verbose_name='Latitude')
@@ -885,6 +887,9 @@ class ActivitySubmission(AuditModel):
     well_activity_type = models.ForeignKey(
         WellActivityCode, db_column='well_activity_code', on_delete=models.CASCADE,
         verbose_name='Type of Work')
+    well_status = models.ForeignKey(WellStatusCode, db_column='well_status_code',
+                                    on_delete=models.CASCADE, blank=True, null=True,
+                                    verbose_name='Well Status')
     well_class = models.ForeignKey(WellClassCode, blank=True, null=True, db_column='well_class_code',
                                    on_delete=models.CASCADE, verbose_name='Well Class')
     well_subclass = models.ForeignKey(WellSubclassCode, db_column='well_subclass_guid',
@@ -952,8 +957,11 @@ class ActivitySubmission(AuditModel):
 
     identification_plate_number = models.PositiveIntegerField(
         blank=True, null=True, verbose_name='Identification Plate Number')
-    well_plate_attached = models.CharField(
+    well_identification_plate_attached = models.CharField(
         max_length=500, blank=True, null=True, verbose_name='Well Identification Plate Is Attached')
+
+    id_plate_attached_by = models.CharField(
+        max_length=100, blank=True, null=True, verbose_name='Well identification plate attached by')
 
     latitude = models.DecimalField(
         max_digits=8, decimal_places=6, blank=True, null=True)

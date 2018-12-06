@@ -24,6 +24,30 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </div>
         </b-col>
       </b-row>
+      <b-row v-if="isStaffEdit">
+        <b-col cols="12" md="3" xl="2">
+          <form-input
+              id="wellTagNumberStaff"
+              label="Well Tag Number"
+              type="text"
+              :value="wellTagNumber"
+              disabled
+          ></form-input>
+        </b-col>
+        <b-col cols="12" md="4">
+          <form-input
+            select
+            v-model="wellStatusCodeInput"
+            :options="codes.well_status_codes"
+            value-field="well_status_code"
+            text-field="description"
+            label="Well Status"
+            placeholder="Select status"
+            :errors="errors['well_status']"
+            :loaded="fieldsLoaded['well_status']"
+            id="wellStatusCodeInput"></form-input>
+        </b-col>
+      </b-row>
       <b-row>
         <b-col cols="12" md="4">
           <b-form-group
@@ -130,6 +154,38 @@ Licensed under the Apache License, Version 2.0 (the "License");
               :loaded="fieldsLoaded['well_identification_plate_attached']"
           ></form-input>
         </b-col>
+        <b-col cols="12" md="4" v-if="isStaffEdit">
+          <form-input
+              id="wellPlateAttachedBy"
+              label="Identification Plate Attached By"
+              type="text"
+              v-model="idPlateAttachedByInput"
+              :errors="errors['id_plate_attached_by']"
+              :loaded="fieldsLoaded['id_plate_attached_by']"
+          ></form-input>
+        </b-col>
+      </b-row>
+      <b-row v-if="isStaffEdit">
+        <b-col cols="12" md="4" v-if="isStaffEdit">
+          <form-input
+              id="waterSupplySystem"
+              label="Water Supply System Name"
+              type="text"
+              v-model="waterSupplySystemInput"
+              :errors="errors['water_supply_system_name']"
+              :loaded="fieldsLoaded['water_supply_system_name']"
+          ></form-input>
+        </b-col>
+        <b-col cols="12" md="4" v-if="isStaffEdit">
+          <form-input
+              id="waterSupplyWell"
+              label="Water Supply Well"
+              type="text"
+              v-model="waterSupplyWellInput"
+              :errors="errors['water_supply_system_well_name']"
+              :loaded="fieldsLoaded['water_supply_system_well_name']"
+          ></form-input>
+        </b-col>
       </b-row>
       <b-row v-if="!isStaffEdit">
         <b-col cols="12" md="6">
@@ -168,16 +224,20 @@ export default {
   props: {
     units: String,
     wellTagNumber: null,
+    wellStatusCode: String,
     workStartDate: String,
     workEndDate: String,
     personResponsible: Object,
     drillerName: String,
     idPlateNumber: null,
     wellPlateAttached: String,
+    idPlateAttachedBy: String,
     wellClass: String,
     intendedWaterUse: String,
     wellSubclass: String,
     drillerSameAsPersonResponsible: Boolean,
+    waterSupplySystem: String,
+    waterSupplyWell: String,
     errors: {
       type: Object,
       default: () => ({})

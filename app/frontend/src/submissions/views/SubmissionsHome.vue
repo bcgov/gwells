@@ -314,11 +314,15 @@ export default {
     resetForm () {
       this.form = {
         well: null,
+        well_status: '',
         well_class: '',
         well_subclass: '',
         intended_water_use: '',
         identification_plate_number: null,
-        well_plate_attached: '',
+        well_identification_plate_attached: '',
+        id_plate_attached_by: '',
+        water_supply_system_well_name: '',
+        water_supply_system_name: '',
         driller_responsible: null,
         driller_name: '',
         consultant_name: '',

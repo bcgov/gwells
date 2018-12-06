@@ -56,6 +56,7 @@ from wells.models import (
     Well,
     WellClassCode,
     WellSubclassCode,
+    WellStatusCode,
     YieldEstimationMethodCode,
 )
 
@@ -188,7 +189,7 @@ class WellConstructionSubmissionSerializer(WellSubmissionSerializerBase):
     class Meta:
         model = ActivitySubmission
         fields = ('filing_number', 'well_activity_type', 'well', 'well_class', 'well_subclass',
-                  'intended_water_use', 'identification_plate_number', 'well_plate_attached',
+                  'intended_water_use', 'identification_plate_number', 'well_identification_plate_attached',
                   'work_start_date', 'work_end_date', 'owner_full_name', 'owner_mailing_address',
                   'owner_province_state', 'owner_city', 'owner_postal_code', 'owner_email',
                   'owner_tel', 'street_address', 'city',
@@ -244,7 +245,7 @@ class WellAlterationSubmissionSerializer(WellSubmissionSerializerBase):
             'well_subclass',
             'intended_water_use',
             'identification_plate_number',
-            'well_plate_attached',
+            'well_identification_plate_attached',
             'work_start_date',
             'work_end_date',
             'owner_full_name',
@@ -355,9 +356,13 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
             'well',
             'well_class',
             'well_subclass',
+            'well_status',
             'intended_water_use',
             'identification_plate_number',
-            'well_plate_attached',
+            'well_identification_plate_attached',
+            'id_plate_attached_by',
+            'water_supply_system_name',
+            'water_supply_system_well_name',
             'work_start_date',
             'work_end_date',
             'owner_full_name',
@@ -466,7 +471,7 @@ class WellDecommissionSubmissionSerializer(WellSubmissionSerializerBase):
             'well_subclass',
             'intended_water_use',
             'identification_plate_number',
-            'well_plate_attached',
+            'well_identification_plate_attached',
             'work_start_date',
             'work_end_date',
             'owner_full_name',
@@ -709,3 +714,13 @@ class DecommissionMaterialCodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = DecommissionMaterialCode
         fields = ('code', 'description')
+
+
+class WellStatusCodeSerializer(serializers.ModelSerializer):
+    """ Serializes well status codes """
+
+    class Meta:
+        model = WellStatusCode
+        fields = (
+            'well_status_code', 'description'
+        )

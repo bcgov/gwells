@@ -52,6 +52,7 @@ from wells.models import (
     Well,
     WellClassCode,
     WellSubclassCode,
+    WellStatusCode,
     YieldEstimationMethodCode,)
 from submissions.models import WellActivityCode
 from wells.serializers import (
@@ -86,6 +87,7 @@ from submissions.serializers import (
     WellSubmissionListSerializer,
     WellActivityCodeSerializer,
     WellClassCodeSerializer,
+    WellStatusCodeSerializer,
     WellSubclassCodeSerializer,
     YieldEstimationMethodCodeSerializer,
     WellStaffEditSubmissionSerializer,
@@ -290,6 +292,9 @@ class SubmissionsOptions(APIView):
             instance=WaterQualityCharacteristic.objects.all(), many=True)
         water_quality_colours = WaterQualityColourSerializer(
             instance=WaterQualityColour.objects.all(), many=True)
+        well_status_codes = WellStatusCodeSerializer(
+            instance=WellStatusCode.objects.all(), many=True
+        )
 
         root = urljoin('/', app_root, 'api/v1/')
         for item in activity_codes.data:
@@ -323,6 +328,7 @@ class SubmissionsOptions(APIView):
         options["yield_estimation_methods"] = yield_estimation_methods.data
         options["water_quality_characteristics"] = water_quality_characteristics.data
         options["water_quality_colours"] = water_quality_colours.data
+        options["well_status_codes"] = well_status_codes.data 
 
         return Response(options)
 
