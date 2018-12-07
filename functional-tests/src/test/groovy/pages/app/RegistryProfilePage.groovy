@@ -20,13 +20,13 @@ package pages
 class RegistryProfilePage extends BaseAppPage {
   static at = {
     browser.getCurrentUrl() =~ /\/registries\/people\/[a-z0-9\-]+$/ &&
-    pageTitle.text() == "$firstName $surName"
+    pageTitle.text() == "$firstName $surname"
   }
   static content = {
     pageTitle { $('main h4') }
   }
 
-  private final String surName
+  private final String surname
   private final String firstName
 
   /**
@@ -34,11 +34,11 @@ class RegistryProfilePage extends BaseAppPage {
    *
    * Uses the well operator's first and last name to-at check the page, as the title is based on the operator's name.
    *
-   * @param String the well operator surName (required)
+   * @param String the well operator surname (required)
    * @param String the well operator firstName (required)
    */
-  RegistryProfilePage(String surName, String firstName) {
-    this.surName = surName
+  RegistryProfilePage(String surname, String firstName) {
+    this.surname = surname
     this.firstName = firstName
   }
 }
