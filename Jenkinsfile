@@ -122,53 +122,6 @@ pipeline {
     }
     agent any
     stages {
-        // the Start Pipeline stage will process and apply OpenShift build templates which will create
-        // buildconfigs and an imagestream for built images.
-        // each pull request gets its own buildconfig but all new builds are pushed to a single imagestream,
-        // to be tagged with the pull request number.
-        // e.g.:  gwells-app:pr-999
-        stage('Prepare Templates') {
-            steps {
-                script {
-                    echo "Cancelling previous builds..."
-                    timeout(10) {
-                        abortAllPreviousBuildInProgress(currentBuild)
-                    }
-                    echo "Previous builds cancelled"
-
-                    _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
-                        // Process db and app template into list objects
-                        //  - variable substitution
-                        echo "Processing build templates"
-                        def dbtemplate = openshift.process("-f",
-                            "openshift/postgresql.bc.json",
-                            "ENV_NAME=${DEV_SUFFIX}"
-                        )
-                        //
-                        def buildtemplate = openshift.process("-f",
-                            "openshift/backend.bc.json",
-                            "ENV_NAME=${DEV_SUFFIX}",
-                            "NAME_SUFFIX=-${DEV_SUFFIX}-${PR_NUM}",
-                            "APP_IMAGE_TAG=${PR_NUM}",
-                            "SOURCE_REPOSITORY_URL=${REPOSITORY}",
-                            "SOURCE_REPOSITORY_REF=pull/${CHANGE_ID}/head"
-                        )
-
-                        // Apply oc list objects
-                        //  - add docker image reference as tag in gwells-postgresql
-                        echo "Preparing database imagestream"
-                        echo " \$ oc process -f openshift/postgresql.bc.json -p ENV_NAME=${DEV_SUFFIX} | oc apply -n moe-gwells-tools -f -"
-                        openshift.apply(dbtemplate)
-                        //  - add docker image reference as tag in gwells-application
-                        //  - create build config
-                        echo "Preparing backend imagestream and buildconfig"
-                        echo " \$ oc process -f openshift/backend.bc.json -p ENV_NAME=${DEV_SUFFIX} -p NAME_SUFFIX=-${DEV_SUFFIX}-${PR_NUM} -p APP_IMAGE_TAG=${PR_NUM} -p SOURCE_REPOSITORY_URL=${REPOSITORY} -p SOURCE_REPOSITORY_REF=pull/${CHANGE_ID}/head | oc apply -n moe-gwells-tools -f -"
-                        openshift.apply(buildtemplate)
-                    }
-                }
-            }
-        }
-
         // the Build stage runs unit tests and builds files. an image will be outputted to the app's imagestream
         // builds use the source to image strategy. See /app/.s2i/assemble for image build script
         stage('Build (with tests)') {
@@ -502,17 +455,7 @@ pipeline {
                         input "Deploy to staging?"
                         echo "Preparing..."
 
-                        // Process db and app template into list objects
-                        //  - variable substitution
-                        echo "Processing build templates"
-                        def dbtemplate = openshift.process("-f",
-                            "openshift/postgresql.bc.json",
-                            "ENV_NAME=${TEST_SUFFIX}"
-                        )
-                        openshift.apply(dbtemplate)
-
                         echo "Updating staging deployment..."
-
                         def deployDBTemplate = openshift.process("-f",
                             "openshift/postgresql.dc.json",
                             "NAME_SUFFIX=-${TEST_SUFFIX}",
