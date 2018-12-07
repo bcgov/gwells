@@ -13,13 +13,13 @@
             "description": "The OpenShift ImageStream name.",
             "displayName": "IMAGE_STREAM_NAME",
             "name": "IMAGE_STREAM_NAME",
-            "value": "postgresql-9.6-oracle-fdw"
+            "value": "postgis-oracle-fdw"
         },
         {
             "description": "The OpenShift Namespace where the ImageStream resides.",
             "displayName": "Namespace",
             "name": "IMAGE_STREAM_NAMESPACE",
-            "value": "bcgov"
+            "value": "moe-gwells-tools"
         },
         {
             "description": "The name of the OpenShift Service exposed for the database.",
@@ -63,7 +63,7 @@
             "displayName": "Version of PostgreSQL Image",
             "name": "IMAGE_STREAM_VERSION",
             "required": true,
-            "value": "v1-stable"
+            "value": "96-24-1"
         },
         {
             "description": "Indicator to enable pgcrypto extension (provided out-of-the-box with PostgreSQL).",
