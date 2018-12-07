@@ -13,13 +13,13 @@
             "description": "The OpenShift ImageStream name.",
             "displayName": "IMAGE_STREAM_NAME",
             "name": "IMAGE_STREAM_NAME",
-            "value": "postgresql"
+            "value": "postgresql-9.6-oracle-fdw"
         },
         {
             "description": "The OpenShift Namespace where the ImageStream resides.",
             "displayName": "Namespace",
             "name": "IMAGE_STREAM_NAMESPACE",
-            "value": "openshift"
+            "value": "bcgov"
         },
         {
             "description": "The name of the OpenShift Service exposed for the database.",
@@ -59,12 +59,24 @@
             "value": "1Gi"
         },
         {
-            "description": "Version of PostgreSQL image to be used (9.2, 9.4, 9.5 or latest).",
+            "description": "Version of PostgreSQL/PostGIS/Oracle-FDW image to be used.",
             "displayName": "Version of PostgreSQL Image",
             "name": "IMAGE_STREAM_VERSION",
             "required": true,
-            "value": "9.5"
+            "value": "v1-stable"
         },
+        {
+            "description": "Indicator to enable pgcrypto extension (provided out-of-the-box with PostgreSQL).",
+            "displayName": "Flag to enable pgcrypto PostgreSQL extension.",
+            "name": "PGCRYPTO_EXTENSION",
+            "value": "Y"
+        },
+        {
+            "description": "Indicator to enable PostGIS extension.",
+            "displayName": "Flag to enable PostGIS PostgreSQL extension.",
+            "name": "POSTGIS_EXTENSION",
+            "value": "Y"
+        },  
         {
             "name": "NAME_SUFFIX",
             "required": true
@@ -262,6 +274,14 @@
                                         "name": "FDW_SCHEMA",
                                         "value": "wells"
                                     },
+                                    {
+                                        "name": "PGCRYPTO_EXTENSION",
+                                        "value": "Y"
+                                    },
+                                    {
+                                        "name": "POSTGIS_EXTENSION",
+                                        "value": "Y"
+                                    },                                      
                                     {
                                         "name": "PGOPTIONS",
                                         "value": "-c maintenance_work_mem=128MB"
