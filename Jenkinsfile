@@ -137,6 +137,7 @@ pipeline {
                     }
                     echo "Previous builds cancelled"
 
+                    _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
                         //
                         def buildtemplate = openshift.process("-f",
                             "openshift/backend.bc.json",
