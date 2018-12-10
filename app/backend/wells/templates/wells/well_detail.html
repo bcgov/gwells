@@ -96,8 +96,7 @@
                     <label for="aquifer_number">Aquifer Number:</label>
                     <span id="aquifer_number">
                       {% for aquifer_well in well.aquiferwell_set.all %}
-                        <a href="http://a100.gov.bc.ca/pub/wells/aquiferDetail.do?aquiferNumber={{aquifer_well.aquifer_id }}&docType=adr"
-                            target="_blank">{{aquifer_well.aquifer_id }}</a>&nbsp;
+                        <a href="/gwells/aquifers/{{aquifer_well.aquifer_id }}/" target="_blank">{{aquifer_well.aquifer_id }}</a>&nbsp;
                       {% endfor %}
                     </span>
                 </div>
