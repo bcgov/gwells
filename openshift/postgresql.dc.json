@@ -63,7 +63,7 @@
             "displayName": "Version of PostgreSQL Image",
             "name": "IMAGE_STREAM_VERSION",
             "required": true,
-            "value": "9.6"
+            "value": "v1-stable"
         },
         {
             "description": "Indicator to enable pgcrypto extension (provided out-of-the-box with PostgreSQL).",
