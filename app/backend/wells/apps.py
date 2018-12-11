@@ -11,8 +11,35 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
+import logging
+
 from django.apps import AppConfig
+from django.db.models.signals import post_migrate
+
+from django.db.models import Max
+
+logger = logging.getLogger(__name__)
+
+
+def post_migration_callback(sender, **kwargs):
+    # NOTE: His is a temporary measure to reduce issues surrounding the well_tag_number sequece being
+    # incorrect after replication wells. This should be removed once we switch over to gwells for createing
+    # wells.
+    from wells.models import Well
+    from django.db import connection
+
+    result = Well.objects.all().aggregate(Max('well_tag_number'))
+    if result['well_tag_number__max']:
+        with connection.cursor() as cursor:
+            sql = "alter sequence well_well_tag_number_seq restart with {}".format(
+                result['well_tag_number__max'] + 1)
+            logger.info('altering well_well_tag_number_seq: {}'.format(sql))
+            cursor.execute(sql)
 
 
 class WellsConfig(AppConfig):
     name = 'wells'
+
+    def ready(self):
+        pass
+        post_migrate.connect(post_migration_callback, sender=self)
