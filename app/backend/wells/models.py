@@ -391,7 +391,7 @@ class WellStatusCodeTypeManager(models.Manager):
     # Alteration reports trigger an "ALTERATION" status
     def alteration(self):
         return self.get_queryset().get(well_status_code='ALTERATION')
-    
+
     def other(self):
         return self.get_queryset().get(well_status_code='OTHER')
 
@@ -467,6 +467,36 @@ class WellYieldUnitCode(AuditModel):
     class Meta:
         db_table = 'well_yield_unit_code'
         ordering = ['display_order', 'description']
+
+    def __str__(self):
+        return self.description
+
+
+class CoordinateAcquisitionCode(AuditModel):
+    """
+    •	A = (10 m accuracy) ICF cadastre and good location sketch
+    •	B = (20 m accuracy) Digitized from 1:5,000 mapping
+    •	C = (50 m accuracy) Digitized from 1:20,000 mapping
+    •	D = (100 m accuracy) Digitized from old Dept. of Lands, Forests and Water Resources maps
+    •	E = (200 m accuracy) Digitized from 1:50,000 maps
+    •	F = (1 m accuracy) CDGPS
+    •	G = (unknown, accuracy based on parcel size) No ICF cadastre, poor or no location sketch; site
+        located in center of primary parcel
+    •	H = (10 m accuracy) Handheld GPS with accuracy of +/- 10 metres
+    •	I = (20 m accuracy) No ICF cadastre but good location sketch or good written description
+    •	J = (unknown, accuracy based on parcel size) ICF cadastre, poor or no location sketch, arbitrarily
+        located in center of parcel
+    """
+    code = models.CharField(primary_key=True, max_length=1, editable=False,
+                            db_column='coordinate_acquisition_code')
+    description = models.CharField(max_length=250)
+
+    effective_date = models.DateTimeField()
+    expiry_date = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'coordinate_acquisition_code'
+        ordering = ['code', ]
 
     def __str__(self):
         return self.description
@@ -711,10 +741,11 @@ class Well(AuditModel):
         blank=True, null=True, verbose_name="UTM Northing")
     utm_easting = models.IntegerField(
         blank=True, null=True, verbose_name="UTM Easting")
-    utm_accuracy_code = models.CharField(
-        max_length=10, blank=True, null=True, verbose_name="Location Accuracy Code")
-    bcgs_id = models.ForeignKey(BCGS_Numbers, db_column='bcgs_id',
-                                blank=True, null=True, verbose_name="BCGS Mapsheet Number", on_delete=models.PROTECT)
+    coordinate_acquisition_code = models.ForeignKey(
+        CoordinateAcquisitionCode, null=True, blank=True, verbose_name="Location Accuracy Code",
+        db_column='coordinate_acquisition_code', on_delete=models.PROTECT)
+    bcgs_id = models.ForeignKey(BCGS_Numbers, db_column='bcgs_id', on_delete=models.PROTECT, blank=True,
+                                null=True, verbose_name="BCGS Mapsheet Number")
 
     decommission_reason = models.CharField(
         max_length=250, blank=True, null=True, verbose_name="Reason for Decommission")
@@ -728,8 +759,8 @@ class Well(AuditModel):
     decommission_details = models.CharField(
         max_length=250, blank=True, null=True, verbose_name="Decommission Details")
     ems_id = models.CharField(max_length=30, blank=True, null=True)
-    aquifer = models.ForeignKey(Aquifer, db_column='aquifer_id', on_delete=models.PROTECT, blank=True, null=True,
-                                verbose_name='Aquifer ID Number')
+    aquifer = models.ForeignKey(Aquifer, db_column='aquifer_id', on_delete=models.PROTECT, blank=True,
+                                null=True, verbose_name='Aquifer ID Number')
 
     driller_responsible = models.ForeignKey(Person, db_column='driller_responsible_guid',
                                             on_delete=models.PROTECT,
@@ -810,7 +841,6 @@ class LtsaOwner(AuditModel):
         ProvinceStateCode, db_column='province_state_code', on_delete=models.CASCADE, verbose_name='Province')
     postal_code = models.CharField(
         max_length=10, blank=True, verbose_name='Postal Code')
-
 
     class Meta:
         db_table = 'ltsa_owner'
@@ -918,7 +948,8 @@ class ActivitySubmission(AuditModel):
         max_length=100, verbose_name='Mailing Address', blank=True, null=True)
     owner_city = models.CharField(max_length=100, verbose_name='Town/City', blank=True, null=True)
     owner_province_state = models.ForeignKey(
-        ProvinceStateCode, db_column='province_state_code', on_delete=models.CASCADE, verbose_name='Province', blank=True, null=True)
+        ProvinceStateCode, db_column='province_state_code', on_delete=models.CASCADE, verbose_name='Province',
+        blank=True, null=True)
     owner_postal_code = models.CharField(
         max_length=10, blank=True, null=True, verbose_name='Postal Code')
     owner_email = models.EmailField(null=True, blank=True, verbose_name='Email address')
@@ -959,6 +990,9 @@ class ActivitySubmission(AuditModel):
         max_digits=8, decimal_places=6, blank=True, null=True)
     longitude = models.DecimalField(
         max_digits=9, decimal_places=6, blank=True, null=True)
+    coordinate_acquisition_code = models.ForeignKey(
+        CoordinateAcquisitionCode, null=True, blank=True, verbose_name="Location Accuracy Code",
+        db_column='coordinate_acquisition_code', on_delete=models.PROTECT)
     ground_elevation = models.DecimalField(
         max_digits=10, decimal_places=2, blank=True, null=True, verbose_name='Ground Elevation')
     ground_elevation_method = models.ForeignKey(GroundElevationMethodCode,
@@ -1445,7 +1479,8 @@ class DecommissionMaterialCode(AuditModel):
 
 
 class DecommissionDescription(AuditModel):
-    """Provides a description of the ground conditions (between specified start and end depth) for decommissioning"""
+    """Provides a description of the ground conditions (between specified start and end depth) for
+        decommissioning"""
 
     decommission_description_guid = models.UUIDField(primary_key=True, default=uuid.uuid4)
     activity_submission = models.ForeignKey(ActivitySubmission, db_column='filing_number',
@@ -1459,5 +1494,6 @@ class DecommissionDescription(AuditModel):
     end = models.DecimalField(db_column='decommission_description_to', max_digits=7, decimal_places=2,
                               verbose_name='Decommissioned To', blank=False,
                               validators=[MinValueValidator(Decimal('0.01'))])
-    material = models.ForeignKey(DecommissionMaterialCode, db_column='decommission_material_code', on_delete=models.PROTECT)
+    material = models.ForeignKey(DecommissionMaterialCode, db_column='decommission_material_code',
+                                 on_delete=models.PROTECT)
     observations = models.CharField(max_length=255, null=True, blank=True)
