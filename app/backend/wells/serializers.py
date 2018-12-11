@@ -25,12 +25,31 @@ from wells.models import (
     CasingCode,
     DecommissionDescription,
     LinerPerforation,
+    ProductionData,
     Screen,
     Well,
 )
 
 
 logger = logging.getLogger(__name__)
+
+
+class ProductionDataSerializer(serializers.ModelSerializer):
+    """Serializes production data"""
+    class Meta:
+        model = ProductionData
+        fields = (
+            'yield_estimation_method',
+            'yield_estimation_rate',
+            'yield_estimation_duration',
+            'well_yield_unit',
+            'static_level',
+            'drawdown',
+            'hydro_fracturing_performed',
+            'hydro_fracturing_yield_increase',
+            'recommended_pump_depth',
+            'recommended_pump_rate',
+        )
 
 
 class CasingMaterialSerializer(serializers.ModelSerializer):
@@ -123,6 +142,8 @@ class WellDetailSerializer(AuditModelSerializer):
     linerperforation_set = LinerPerforationSerializer(many=True)
     decommission_description_set = DecommissionDescriptionSerializer(many=True)
     driller_responsible = PersonBasicSerializer()
+    productiondata_set = ProductionDataSerializer(many=True)
+
     # well vs. well_tag_number ; on submissions, we refer to well
     well = serializers.IntegerField(source='well_tag_number')
 
@@ -137,6 +158,7 @@ class WellStackerSerializer(AuditModelSerializer):
     screen_set = ScreenSerializer(many=True)
     linerperforation_set = LinerPerforationSerializer(many=True)
     decommission_description_set = DecommissionDescriptionSerializer(many=True)
+    productiondata_set = ProductionDataSerializer(many=True)
 
     class Meta:
         model = Well
@@ -152,7 +174,8 @@ class WellStackerSerializer(AuditModelSerializer):
             'casing_set': Casing,
             'screen_set': Screen,
             'linerperforation_set': LinerPerforation,
-            'decommission_description_set': DecommissionDescription
+            'decommission_description_set': DecommissionDescription,
+            'productiondata_set': ProductionData
         }
         for key in FOREIGN_KEYS.keys():
             for record in getattr(instance, key).all():
@@ -239,6 +262,7 @@ class WellListSerializer(serializers.ModelSerializer):
             "screen_opening",
             "screen_bottom",
             "other_screen_bottom",
+            "screen_information",
             "filter_pack_from",
             "filter_pack_to",
             "filter_pack_thickness",
@@ -247,6 +271,7 @@ class WellListSerializer(serializers.ModelSerializer):
             "development_method",
             "development_hours",
             "development_notes",
+            "productiondata_set",
             "water_quality_characteristics",
             "water_quality_colour",
             "water_quality_odour",

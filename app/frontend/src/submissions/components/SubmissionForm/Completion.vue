@@ -149,7 +149,7 @@ export default {
     artesianFlow: String,
     artesianPressure: String,
     wellCapType: String,
-    wellDisinfected: String,
+    wellDisinfected: null,
     errors: {
       type: Object,
       default: () => ({})

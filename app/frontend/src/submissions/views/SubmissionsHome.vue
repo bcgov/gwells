@@ -205,6 +205,7 @@ export default {
           'screens',
           'filterPack',
           'wellDevelopment',
+          'wellYield',
           'waterQuality',
           'wellCompletion',
           'comments'
@@ -261,7 +262,7 @@ export default {
         this.stripBlankStrings(data)
       }
 
-      const sets = ['linerperforation_set', 'lithologydescription_set', 'production_data_set', 'screen_set', 'casing_set', 'decommission_description_set']
+      const sets = ['linerperforation_set', 'lithologydescription_set', 'productiondata_set', 'screen_set', 'casing_set', 'decommission_description_set']
       sets.forEach((key) => {
         if (key in data) {
           data[key] = this.filterBlankRows(data[key])
@@ -376,10 +377,11 @@ export default {
         screen_opening: '',
         screen_bottom: '',
         screen_set: [],
+        screen_information: '',
         development_method: '',
         development_hours: '',
         development_notes: '',
-        production_data_set: [],
+        productiondata_set: [],
         filter_pack_from: '',
         filter_pack_to: '',
         filter_pack_thickness: '',

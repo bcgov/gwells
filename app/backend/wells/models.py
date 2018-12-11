@@ -626,7 +626,9 @@ class Well(AuditModel):
                                       on_delete=models.CASCADE, blank=True, null=True, verbose_name='Bottom')
     other_screen_bottom = models.CharField(
         max_length=50, blank=True, null=True, verbose_name='Specify Other Screen Bottom')
-
+    screen_information = models.CharField(
+        max_length=300, blank=True, null=True, verbose_name="Screen Information"
+    )
     filter_pack_from = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True,
                                            verbose_name='Filter Pack From',
                                            validators=[MinValueValidator(Decimal('0.00'))])
@@ -1035,6 +1037,10 @@ class ActivitySubmission(AuditModel):
     other_screen_bottom = models.CharField(
         max_length=50, blank=True, null=True, verbose_name='Specify Other Screen Bottom')
 
+    screen_information = models.CharField(
+        max_length=300, blank=True, null=True, verbose_name="Screen Information"
+    )
+
     filter_pack_from = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True,
                                            verbose_name='Filter Pack From',
                                            validators=[MinValueValidator(Decimal('0.00'))])
@@ -1240,6 +1246,13 @@ class ProductionData(AuditModel):
         verbose_name='Well Yield Increase Due to Hydro-fracturing',
         blank=True, null=True,
         validators=[MinValueValidator(Decimal('0.00'))])
+
+    recommended_pump_depth = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True,
+                                                verbose_name='Recommended pump depth',
+                                                validators=[MinValueValidator(Decimal('0.00'))])
+    recommended_pump_rate = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True,
+                                                verbose_name='Recommended pump rate',
+                                                validators=[MinValueValidator(Decimal('0.00'))])
 
     class Meta:
         db_table = 'production_data'
