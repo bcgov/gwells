@@ -696,7 +696,7 @@
     <legend>Liner Details</legend>
     <div class="row no-gutters print-compressed">
         <div class="col-md-12 col-print-12 table-responsive print-compressed">
-            {% if well.perforation_set.all %}
+            {% if well.linerperforation_set.all %}
             <table id="liner_details" class="table table-sm table-bordered table-striped">
                 <thead>
                     <th>Liner Material</th>
@@ -708,7 +708,7 @@
                     <th>Liner Perforated To</th>
                 </thead>
                 <tbody>
-                    {% for perforation in well.perforation_set.all %}
+                    {% for perforation in well.linerperforation_set.all %}
                     <tr>
                         <td>{{well.liner_material.liner_material_code|default_if_none:'&nbsp;'}}</td>
                         <td>{{perforation.liner_diameter|exclude_zero_decimals|default_if_none:'&nbsp;'}}</td>

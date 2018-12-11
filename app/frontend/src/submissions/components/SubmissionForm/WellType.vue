@@ -30,7 +30,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               id="wellTagNumberStaff"
               label="Well Tag Number"
               type="text"
-              :value="wellTagNumber"
+              :value="$route.params.id"
               disabled
           ></form-input>
         </b-col>
@@ -179,7 +179,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <b-col cols="12" md="4" v-if="isStaffEdit">
           <form-input
               id="waterSupplyWell"
-              label="Water Supply Well"
+              label="Water Supply Well Name"
               type="text"
               v-model="waterSupplyWellInput"
               :errors="errors['water_supply_system_well_name']"
