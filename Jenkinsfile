@@ -111,6 +111,11 @@ pipeline {
         TEST_SUFFIX = "staging"
         TEST_HOST = "gwells-test.pathfinder.gov.bc.ca"
 
+        // DEMO_PROJECT is for a stable demo environment.  It can be for training or presentation.
+        DEMO_PROJECT = "moe-gwells-test"
+        DEMO_SUFFIX = "demo"
+        DEMO_HOST = "gwells-demo.pathfinder.gov.bc.ca"
+
         // PROD_PROJECT is the prod deployment.
         // New production images can be deployed by tagging an existing "test" image as "prod".
         PROD_PROJECT = "moe-gwells-prod"
@@ -485,6 +490,7 @@ pipeline {
                 }
             }
         }
+
 
 
         // the Promote to Test stage allows approving the tagging of the newly built image into the test environment,
