@@ -81,7 +81,7 @@ export default {
       this.createMarker()
     },
     createMarker () {
-      if (this.latitude !== null && this.getLongitude() !== null) {
+      if (this.map && this.latitude !== null && this.getLongitude() !== null) {
         const latlng = L.latLng(this.latitude, this.getLongitude())
         this.marker = L.marker(latlng, {draggable: this.draggable, autoPan: true})
         if (this.draggable) {

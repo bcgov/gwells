@@ -82,6 +82,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           :trackValueChanges="trackValueChanges"
           :formSubmitLoading="formSubmitLoading"
           :isStaffEdit="isStaffEdit"
+          :loading="loading"
           v-on:preview="handlePreviewButton"
           v-on:submit_edit="formSubmit"
           v-on:resetForm="resetForm"
@@ -130,6 +131,7 @@ export default {
       activityType: 'CON',
       formIsFlat: false,
       preview: false,
+      loading: false,
       confirmSubmitModal: false,
       formSubmitSuccess: false,
       formSubmitSuccessWellTag: null,
@@ -349,6 +351,7 @@ export default {
         well_location_description: '',
         latitude: null,
         longitude: null,
+        coordinate_acquisition_code: null,
         ground_elevation: null,
         ground_elevation_method: '',
         drilling_method: '',
@@ -470,6 +473,7 @@ export default {
       this.activityType = 'STAFF_EDIT'
       this.formIsFlat = true
 
+      this.loading = true
       ApiService.query(`wells/${this.$route.params.id}`).then((res) => {
         Object.keys(res.data).forEach((key) => {
           if (key in this.form) {
@@ -482,7 +486,12 @@ export default {
         // Wait for the form update we just did to fire off change events.
         this.$nextTick(() => {
           this.form.meta.valueChanged = {}
-          this.trackValueChanges = true
+          this.loading = false
+          this.$nextTick(() => {
+            // We have to allow the UI to render all the components after the 'loading = false' setting,
+            // so we only start tracking changes after that.
+            this.trackValueChanges = true
+          })
         })
       }).catch((e) => {
         console.error(e)
