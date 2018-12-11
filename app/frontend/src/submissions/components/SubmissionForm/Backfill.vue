@@ -79,22 +79,17 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <form-input
               label="Backfill Material Above Surface Seal"
               id="backfillAboveSurfaceSeal"
-              select
               v-model="backfillAboveSurfaceSealInput"
-              :options="codes.surficial_material_codes"
-              text-field="description"
-              value-field="surficial_material_code"
-              placeholder="Select material"
-              :errors="errors['backfill_above_surface_seal']"
-              :loaded="fieldsLoaded['backfill_above_surface_seal']"></form-input>
+              :errors="errors['backfill_type']"
+              :loaded="fieldsLoaded['backfill_type']"></form-input>
         </b-col>
         <b-col cols="12" sm="4" md="3">
           <form-input
               label="Backfill Depth (ft)"
               id="backfillDepth"
               v-model="backfillDepthInput"
-              :errors="errors['backfill_above_surface_seal_depth']"
-              :loaded="fieldsLoaded['backfill_above_surface_seal_depth']"></form-input>
+              :errors="errors['backfill_depth']"
+              :loaded="fieldsLoaded['backfill_depth']"></form-input>
         </b-col>
       </b-row>
     </fieldset>

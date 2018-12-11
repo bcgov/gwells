@@ -584,6 +584,8 @@ class Well(AuditModel):
                                               verbose_name='Surface Seal Material')
     surface_seal_length = models.DecimalField(
         max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Surface Seal Length')
+    surface_seal_depth = models.DecimalField(
+        max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Surface Seal Depth')
     surface_seal_thickness = models.DecimalField(
         max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Surface Seal Thickness')
     surface_seal_method = models.ForeignKey(SurfaceSealMethodCode, db_column='surface_seal_method_code',
@@ -996,11 +998,16 @@ class ActivitySubmission(AuditModel):
     surface_seal_method = models.ForeignKey(SurfaceSealMethodCode, db_column='surface_seal_method_code',
                                             on_delete=models.CASCADE, blank=True, null=True,
                                             verbose_name='Surface Seal Installation Method')
+
     backfill_above_surface_seal = models.CharField(
         max_length=250, blank=True, null=True, verbose_name='Backfill Material Above Surface Seal')
     backfill_above_surface_seal_depth = models.DecimalField(
         max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Backfill Depth')
+    backfill_depth = models.DecimalField(
+        max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Backfill Depth')
 
+    backfill_type = models.CharField(
+        max_length=250, blank=True, null=True, verbose_name="Backfill Material Above Surface Seal")
     liner_material = models.ForeignKey(LinerMaterialCode, db_column='liner_material_code',
                                        on_delete=models.CASCADE, blank=True, null=True,
                                        verbose_name='Liner Material')
