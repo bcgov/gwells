@@ -1,8 +1,17 @@
-#attribution https://thihara.github.io/Django-Req-Parsing/
+# attribution https://thihara.github.io/Django-Req-Parsing/
+import time
+from random import randint
+import logging
 
 from django.http import HttpResponseBadRequest
 from django.utils.deprecation import MiddlewareMixin
 from django.http import HttpResponse
+
+from gwells.settings.base import get_env_variable
+
+
+logger = logging.getLogger(__name__)
+
 
 class GWellsRequestParsingMiddleware(MiddlewareMixin):
 
