@@ -111,6 +111,11 @@ pipeline {
         TEST_SUFFIX = "staging"
         TEST_HOST = "gwells-test.pathfinder.gov.bc.ca"
 
+        // DEMO_PROJECT is for a stable demo environment.  It can be for training or presentation.
+        DEMO_PROJECT = "moe-gwells-test"
+        DEMO_SUFFIX = "demo"
+        DEMO_HOST = "gwells-demo.pathfinder.gov.bc.ca"
+
         // PROD_PROJECT is the prod deployment.
         // New production images can be deployed by tagging an existing "test" image as "prod".
         PROD_PROJECT = "moe-gwells-prod"
@@ -488,6 +493,8 @@ pipeline {
             }
         }
 
+
+
         // the Promote to Test stage allows approving the tagging of the newly built image into the test environment,
         // which will trigger an automatic deployment of that image.
         // The deployment configs in the openshift folder are applied first in case there are any changes to the templates.
@@ -758,6 +765,157 @@ pipeline {
                 }
             }
         }
+
+
+        stage('Deploy image to demo') {
+            when {
+                expression { env.CHANGE_TARGET == 'demo' }
+            }
+            steps {
+                script {
+                    _openshift(env.STAGE_NAME, TEST_PROJECT) {
+                        input "Deploy to demo?"
+                        echo "Preparing..."
+
+                        // Process db and app template into list objects
+                        echo "Processing build templates"
+                        def dbtemplate = openshift.process("-f",
+                            "openshift/postgresql.bc.json",
+                            "ENV_NAME=${DEMO_SUFFIX}"
+                        )
+                        openshift.apply(dbtemplate)
+
+                        echo "Updating staging deployment..."
+
+                        def deployDBTemplate = openshift.process("-f",
+                            "openshift/postgresql.dc.json",
+                            "NAME_SUFFIX=-${DEMO_SUFFIX}",
+                            "DATABASE_SERVICE_NAME=gwells-pgsql-${DEMO_SUFFIX}",
+                            "IMAGE_STREAM_NAMESPACE=''",
+                            "IMAGE_STREAM_NAME=gwells-postgresql-${DEMO_SUFFIX}",
+                            "IMAGE_STREAM_VERSION=${DEMO_SUFFIX}",
+                            "POSTGRESQL_DATABASE=gwells",
+                            "VOLUME_CAPACITY=5Gi"
+                        )
+
+                        def deployTemplate = openshift.process("-f",
+                            "openshift/backend.dc.json",
+                            "NAME_SUFFIX=-${DEMO_SUFFIX}",
+                            "ENV_NAME=${DEMO_SUFFIX}",
+                            "HOST=${DEMO_HOST}",
+                        )
+
+                        // some objects need to be copied from a base secret or configmap
+                        // these objects have an annotation "as-copy-of" in their object spec (e.g. an object in backend.dc.json)
+                        echo "Creating configmaps and secrets objects"
+                        List newObjectCopies = []
+
+                        // todo: refactor to explicitly copy the objects we need
+                        for (o in (deployTemplate + deployDBTemplate)) {
+
+                            // only perform this operation on objects with 'as-copy-of'
+                            def sourceName = o.metadata && o.metadata.annotations && o.metadata.annotations['as-copy-of']
+                            if (sourceName && sourceName.length() > 0) {
+
+                                def selector = openshift.selector("${o.kind}/${sourceName}")
+                                if (selector.count() == 1) {
+                                    // create a copy of the object and add it to the new list of objects to be applied
+                                    Map copiedModel = selector.object(exportable:true)
+                                    copiedModel.metadata.name = o.metadata.name
+                                    echo "Copying ${o.kind} ${o.metadata.name}"
+                                    newObjectCopies.add(copiedModel)
+                                }
+                            }
+                        }
+
+                        // apply the templates, which will create new objects or modify existing ones as necessary.
+                        // the copies of base objects (secrets, configmaps) are also applied.
+                        echo "Applying deployment config for pull request ${PR_NUM} on ${DEMO_PROJECT}"
+
+                        openshift.apply(deployTemplate).label(
+                            [
+                                'app':"gwells-${DEMO_SUFFIX}",
+                                'app-name':"${APP_NAME}",
+                                'env-name':"${DEMO_SUFFIX}"
+                            ],
+                            "--overwrite"
+                        )
+                        openshift.apply(deployDBTemplate).label(
+                            [
+                                'app':"gwells-${DEMO_SUFFIX}",
+                                'app-name':"${APP_NAME}",
+                                'env-name':"${DEMO_SUFFIX}"
+                            ],
+                            "--overwrite"
+                        )
+                        openshift.apply(newObjectCopies).label(
+                            [
+                                'app':"gwells-${DEMO_SUFFIX}",
+                                'app-name':"${APP_NAME}",
+                                'env-name':"${DEMO_SUFFIX}"
+                            ],
+                            "--overwrite"
+                        )
+                        echo "Successfully applied demo deployment config"
+
+                        // promote the newly built image to DEV
+                        echo "Tagging new image to demo imagestream."
+
+                        // Application/database images are tagged in the tools imagestream as the new demo/prod image
+                        openshift.tag(
+                            "${TOOLS_PROJECT}/gwells-application:${PR_NUM}",
+                            "${TOOLS_PROJECT}/gwells-application:${DEMO_SUFFIX}"
+                        )
+
+                        // Images are then tagged into the target environment namespace (demo or prod)
+                        openshift.tag(
+                            "${TOOLS_PROJECT}/gwells-application:${DEMO_SUFFIX}",
+                            "${DEMO_PROJECT}/gwells-${DEMO_SUFFIX}:${DEMO_SUFFIX}"
+                        )
+                        openshift.tag(
+                            "${TOOLS_PROJECT}/gwells-postgresql:${DEMO_SUFFIX}",
+                            "${DEMO_PROJECT}/gwells-postgresql-${DEMO_SUFFIX}:${DEMO_SUFFIX}"
+                        )
+
+                        def targetDemoURL = "https://${APP_NAME}-${DEMO_SUFFIX}.pathfinder.gov.bc.ca/gwells"
+                        createDeploymentStatus(DEMO_SUFFIX, 'PENDING', targetDemoURL)
+
+                        // Create cronjob for well export
+                        def cronTemplate = openshift.process("-f",
+                            "openshift/export-wells.cj.json",
+                            "ENV_NAME=${DEMO_SUFFIX}",
+                            "PROJECT=${DEMO_PROJECT}",
+                            "TAG=${DEMO_SUFFIX}"
+                        )
+                        openshift.apply(cronTemplate).label(
+                            [
+                                'app':"gwells-${DEMO_SUFFIX}",
+                                'app-name':"${APP_NAME}",
+                                'env-name':"${DEMO_SUFFIX}"
+                            ],
+                            "--overwrite"
+                        )
+
+                        // monitor the deployment status and wait until deployment is successful
+                        echo "Waiting for deployment to demo..."
+                        def newVersion = openshift.selector("dc", "gwells-${DEMO_SUFFIX}").object().status.latestVersion
+                        def pods = openshift.selector('pod', [deployment: "gwells-${DEMO_SUFFIX}-${newVersion}"])
+
+                        // wait until at least one pod reports as ready
+                        timeout(15) {
+                            pods.untilEach(2) {
+                                return it.object().status.containerStatuses.every {
+                                it.ready
+                                }
+                            }
+                        }
+
+                        createDeploymentStatus(DEMO_SUFFIX, 'SUCCESS', targetDemoURL)
+                    }
+                }
+            }
+        }
+
 
         stage('Deploy image to Production') {
             when {
