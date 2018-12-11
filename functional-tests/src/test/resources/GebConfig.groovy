@@ -43,6 +43,14 @@ environments {
       o.addArguments('disable-gpu')
       o.addArguments('no-sandbox')
       o.addArguments("window-size=1600,900")
+
+      // Experimental config to solve the local storage security issue.
+      Map prefs = [
+        'profile.default_content_settings.cookies': 1,
+        'profile.block_third_party_cookies': false
+      ]
+      o.setExperimentalOption("prefs", prefs);
+
       new ChromeDriver(o)
     }
   }
@@ -102,10 +110,6 @@ baseUrl = env['BASE_URL']
 if (!baseUrl) {
   baseUrl = "http://127.0.0.1:8000/gwells/"
 }
-
-println "--------------------------------------"
-println "BaseURL: ${baseUrl}"
-println "--------------------------------------"
 
 autoClearCookies = true
 autoClearWebStorage = true
