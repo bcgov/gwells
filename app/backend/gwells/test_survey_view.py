@@ -14,7 +14,7 @@
 
 from gwells.forms import *
 from django.test import TestCase
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from http import HTTPStatus
 from gwells.models import Survey
 from gwells.views.admin import SurveyView

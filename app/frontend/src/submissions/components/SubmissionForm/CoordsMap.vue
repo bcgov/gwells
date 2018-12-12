@@ -18,6 +18,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 <script>
 import L from 'leaflet'
 import { tiledMapLayer } from 'esri-leaflet'
+
 export default {
   name: 'CoordsMap',
   props: {
@@ -80,7 +81,7 @@ export default {
       this.createMarker()
     },
     createMarker () {
-      if (this.latitude !== null && this.getLongitude() !== null) {
+      if (this.map && this.latitude !== null && this.getLongitude() !== null) {
         const latlng = L.latLng(this.latitude, this.getLongitude())
         this.marker = L.marker(latlng, {draggable: this.draggable, autoPan: true})
         if (this.draggable) {

@@ -4,9 +4,11 @@ from __future__ import unicode_literals
 
 from django.db import migrations, models
 import django.db.models.deletion
+from django.conf import settings
 
 
 class Migration(migrations.Migration):
+    atomic = settings.DATABASES.get('default').get('engine') == 'django.db.backends.postgresql'
 
     dependencies = [
         ('wells', '0002_auto_20180713_1641'),
@@ -21,7 +23,8 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='activitysubmission',
             name='driller_responsible',
-            field=models.ForeignKey(blank=True, db_column='driller_responsible_guid', null=True, on_delete=django.db.models.deletion.PROTECT, to='registries.Person', verbose_name='Person Responsible for Drilling'),
+            field=models.ForeignKey(blank=True, db_column='driller_responsible_guid', null=True, on_delete=django.db.models.deletion.PROTECT,
+                                    to='registries.Person', verbose_name='Person Responsible for Drilling'),
         ),
         migrations.AlterField(
             model_name='activitysubmission',

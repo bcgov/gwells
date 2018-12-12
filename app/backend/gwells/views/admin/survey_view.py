@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.template import loader
 from django.http import HttpResponse, HttpResponseNotAllowed, HttpResponseNotFound, HttpResponseServerError
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.models import Permission, Group
 

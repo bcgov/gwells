@@ -15,7 +15,7 @@ import logging
 from http import HTTPStatus
 
 from django.test import TestCase
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core import serializers
 from django.conf import settings
 from django.contrib.auth.models import Group
