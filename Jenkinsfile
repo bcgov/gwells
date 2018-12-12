@@ -137,14 +137,7 @@ pipeline {
                     echo "Previous builds cancelled"
 
                     _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
-                        // Process db and app template into list objects
                         //  - variable substitution
-                        echo "Processing build templates"
-                        def dbtemplate = openshift.process("-f",
-                            "openshift/postgresql.bc.json",
-                            "ENV_NAME=${DEV_SUFFIX}"
-                        )
-                        //
                         def buildtemplate = openshift.process("-f",
                             "openshift/backend.bc.json",
                             "ENV_NAME=${DEV_SUFFIX}",
@@ -155,10 +148,6 @@ pipeline {
                         )
 
                         // Apply oc list objects
-                        //  - add docker image reference as tag in gwells-postgresql
-                        echo "Preparing database imagestream"
-                        echo " \$ oc process -f openshift/postgresql.bc.json -p ENV_NAME=${DEV_SUFFIX} | oc apply -n moe-gwells-tools -f -"
-                        openshift.apply(dbtemplate)
                         //  - add docker image reference as tag in gwells-application
                         //  - create build config
                         echo "Preparing backend imagestream and buildconfig"
@@ -199,13 +188,13 @@ pipeline {
                 script {
                     _openshift(env.STAGE_NAME, DEV_PROJECT) {
                         // Process postgres deployment config (sub in vars, create list items)
-                        echo " \$ oc process -f openshift/postgresql.dc.json -p DATABASE_SERVICE_NAME=gwells-pgsql-${DEV_SUFFIX}-${PR_NUM} -p IMAGE_STREAM_NAMESPACE='' -p IMAGE_STREAM_NAME=gwells-postgresql-${DEV_SUFFIX}-${PR_NUM} -p IMAGE_STREAM_VERSION=${DEV_SUFFIX} -p NAME_SUFFIX=-${DEV_SUFFIX}-${PR_NUM} -p POSTGRESQL_DATABASE=gwells -p VOLUME_CAPACITY=1Gi | oc apply -n moe-gwells-dev -f -"
+                        echo " \$ oc process -f openshift/postgresql.dc.json -p DATABASE_SERVICE_NAME=gwells-pgsql-${DEV_SUFFIX}-${PR_NUM} -p IMAGE_STREAM_NAMESPACE=bcgov -p IMAGE_STREAM_NAME=postgresql-9.6-oracle-fdw -p IMAGE_STREAM_VERSION=v1-stable -p NAME_SUFFIX=-${DEV_SUFFIX}-${PR_NUM} -p POSTGRESQL_DATABASE=gwells -p VOLUME_CAPACITY=1Gi | oc apply -n moe-gwells-dev -f -"
                         def deployDBTemplate = openshift.process("-f",
                             "openshift/postgresql.dc.json",
                             "DATABASE_SERVICE_NAME=gwells-pgsql-${DEV_SUFFIX}-${PR_NUM}",
-                            "IMAGE_STREAM_NAMESPACE=''",
-                            "IMAGE_STREAM_NAME=gwells-postgresql-${DEV_SUFFIX}-${PR_NUM}",
-                            "IMAGE_STREAM_VERSION=${DEV_SUFFIX}",
+                            "IMAGE_STREAM_NAMESPACE=bcgov",
+                            "IMAGE_STREAM_NAME=postgresql-9.6-oracle-fdw",
+                            "IMAGE_STREAM_VERSION=v1-stable",
                             "NAME_SUFFIX=-${DEV_SUFFIX}-${PR_NUM}",
                             "POSTGRESQL_DATABASE=gwells",
                             "VOLUME_CAPACITY=1Gi"
@@ -503,23 +492,14 @@ pipeline {
                         echo "Preparing..."
 
                         // Process db and app template into list objects
-                        //  - variable substitution
-                        echo "Processing build templates"
-                        def dbtemplate = openshift.process("-f",
-                            "openshift/postgresql.bc.json",
-                            "ENV_NAME=${TEST_SUFFIX}"
-                        )
-                        openshift.apply(dbtemplate)
-
                         echo "Updating staging deployment..."
-
                         def deployDBTemplate = openshift.process("-f",
                             "openshift/postgresql.dc.json",
                             "NAME_SUFFIX=-${TEST_SUFFIX}",
                             "DATABASE_SERVICE_NAME=gwells-pgsql-${TEST_SUFFIX}",
-                            "IMAGE_STREAM_NAMESPACE=''",
-                            "IMAGE_STREAM_NAME=gwells-postgresql-${TEST_SUFFIX}",
-                            "IMAGE_STREAM_VERSION=${TEST_SUFFIX}",
+                            "IMAGE_STREAM_NAMESPACE=bcgov",
+                            "IMAGE_STREAM_NAME=postgresql-9.6-oracle-fdw",
+                            "IMAGE_STREAM_VERSION=v1-stable",
                             "POSTGRESQL_DATABASE=gwells",
                             "VOLUME_CAPACITY=5Gi"
                         )
@@ -773,13 +753,13 @@ pipeline {
                             "openshift/postgresql.dc.json",
                             "NAME_SUFFIX=-${PROD_SUFFIX}",
                             "DATABASE_SERVICE_NAME=gwells-pgsql-${PROD_SUFFIX}",
-                            "IMAGE_STREAM_NAMESPACE=''",
-                            "IMAGE_STREAM_NAME=gwells-postgresql-${PROD_SUFFIX}",
-                            "IMAGE_STREAM_VERSION=${PROD_SUFFIX}",
+                            "IMAGE_STREAM_NAMESPACE=bcgov",
+                            "IMAGE_STREAM_NAME=postgresql-9.6-oracle-fdw",
+                            "IMAGE_STREAM_VERSION=v1-stable",
                             "POSTGRESQL_DATABASE=gwells",
                             "VOLUME_CAPACITY=20Gi"
                         )
-
+                        
                         def deployTemplate = openshift.process("-f",
                             "openshift/backend.dc.json",
                             "NAME_SUFFIX=-${PROD_SUFFIX}",
