@@ -607,7 +607,7 @@ pipeline {
                             "${TEST_PROJECT}/gwells-${TEST_SUFFIX}:${TEST_SUFFIX}"
                         )  // todo: clean up labels/tags
                         openshift.tag(
-                            "${TOOLS_PROJECT}/gwells-postgresql:test",
+                            "${TOOLS_PROJECT}/gwells-postgresql:${TEST_SUFFIX}",
                             "${TEST_PROJECT}/gwells-postgresql-${TEST_SUFFIX}:${TEST_SUFFIX}"
                         )  // todo: clean up labels/tags
 
