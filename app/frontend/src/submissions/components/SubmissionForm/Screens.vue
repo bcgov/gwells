@@ -91,6 +91,16 @@ Licensed under the Apache License, Version 2.0 (the "License");
           v-model="screenBottomInput"></form-input>
       </b-col>
     </b-row>
+    <b-row>
+      <b-col cols="12" md="4" lg="3">
+        <form-input
+          id="screenInformation"
+          label="Screen Information"
+          v-model="screenInformationInput"
+          :errors="errors['screen_information']"
+          :loaded="fieldsLoaded['screen_information']"></form-input>
+      </b-col>
+    </b-row>
     <p class="mt-3 mb-2">Screen Details</p>
     <div class="table-responsive">
       <table class="table table-sm">
@@ -214,6 +224,7 @@ export default {
     otherScreenMaterial: String,
     screenOpening: String,
     screenBottom: String,
+    screenInformation: String,
     screens: {
       type: Array,
       default: () => ([])

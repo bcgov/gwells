@@ -341,7 +341,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <fieldset class="my-3 detail-section" v-if="sections.wellYield">
       <legend>Well Yield</legend>
 
-      <div v-for="(productionTest, index) in form.production_data_set" :key="`ProductionDataSet${index}`">
+      <div v-for="(productionTest, index) in form.productiondata_set" :key="`ProductionDataSet${index}`">
         <b-row>
           <b-col cols="12" lg="4"><span class="font-weight-bold">Estimation Method:</span> {{codeToDescription('yield_estimation_methods', productionTest.yield_estimation_method)}} </b-col>
           <b-col cols="12" lg="4"><span class="font-weight-bold">Estimation Rate:</span> {{productionTest.yield_estimation_rate}} </b-col>

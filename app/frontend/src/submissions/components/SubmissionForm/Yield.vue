@@ -73,8 +73,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <b-col cols="12" md="4" lg="2">
           <b-form-group label="Hydro-fracturing Performed">
             <b-form-radio-group id="hydroFracPerformedOptions" v-model="productionData[index].hydro_fracturing_performed" name="hydroFracturingPerformed" class="mt-2">
-              <b-form-radio value="No">No</b-form-radio>
-              <b-form-radio value="Yes">Yes</b-form-radio>
+              <b-form-radio :value="false">No</b-form-radio>
+              <b-form-radio :value="true">Yes</b-form-radio>
             </b-form-radio-group>
           </b-form-group>
         </b-col>
@@ -106,7 +106,7 @@ export default {
     yieldEstimationDuration: String,
     staticLevel: String,
     drawdown: String,
-    hydroFracturingPerformed: String,
+    hydroFracturingPerformed: null,
     hydroFracturingYieldIncrease: String,
     errors: {
       type: Object,
