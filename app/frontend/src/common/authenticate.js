@@ -60,10 +60,10 @@ export default {
           store.commit('SET_KEYCLOAK', instance)
           if (instance.authenticated) {
             // We may have been authenticated, but the token could be expired.
-            instance.updateToken(60).then(() => {
+            instance.updateToken(60).success(() => {
               // Store the token to avoid future round trips
               this.setLocalToken(instance)
-            }).catch(() => {
+            }).error(() => {
               // The refresh token is expired or was rejected
               result = false
               this.removeLocalToken()
@@ -71,9 +71,9 @@ export default {
             })
           }
           instance.onTokenExpired = () => {
-            instance.updateToken().then(() => {
+            instance.updateToken().success(() => {
               this.setLocalToken(instance)
-            }).catch(() => {
+            }).error(() => {
               this.removeLocalToken()
               instance.clearToken()
             })

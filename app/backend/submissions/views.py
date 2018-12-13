@@ -28,6 +28,7 @@ from wells.models import (
     ActivitySubmission,
     CasingCode,
     CasingMaterialCode,
+    CoordinateAcquisitionCode,
     DecommissionMaterialCode,
     DecommissionMethodCode,
     DevelopmentMethodCode,
@@ -60,6 +61,7 @@ from wells.serializers import (
     CasingMaterialSerializer
 )
 from submissions.serializers import (
+    CoordinateAcquisitionCodeSerializer,
     DecommissionMaterialCodeSerializer,
     DecommissionMethodCodeSerializer,
     DevelopmentMethodCodeSerializer,
@@ -295,6 +297,8 @@ class SubmissionsOptions(APIView):
         well_status_codes = WellStatusCodeSerializer(
             instance=WellStatusCode.objects.all(), many=True
         )
+        coordinate_acquisition_codes = CoordinateAcquisitionCodeSerializer(
+            instance=CoordinateAcquisitionCode.objects.all(), many=True)
 
         root = urljoin('/', app_root, 'api/v1/')
         for item in activity_codes.data:
@@ -303,6 +307,7 @@ class SubmissionsOptions(APIView):
 
         options["province_codes"] = province_codes.data
         options["activity_types"] = activity_codes.data
+        options["coordinate_acquisition_codes"] = coordinate_acquisition_codes.data
         options["well_classes"] = well_class_codes.data
         options["intended_water_uses"] = intended_water_use_codes.data
         options["casing_codes"] = casing_codes.data

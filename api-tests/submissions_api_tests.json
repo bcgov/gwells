@@ -423,6 +423,10 @@
 											"pm.test(\"driller_responsible is an object with name and guid\", function() {",
 											"    pm.expect('person_guid' in jsonData['driller_responsible']).to.be.true",
 											"    pm.expect(jsonData.driller_responsible.person_guid).to.equal(created_driller_guid)",
+											"})",
+											"",
+											"pm.test(\"We expect the default accuracy code to be 'H' (GPS)\", function() {",
+											"    pm.expect(jsonData.coordinate_acquisition_code).to.equal('H')",
 											"})"
 										],
 										"type": "text/javascript"
@@ -1842,6 +1846,134 @@
 													"\t\"land_district\":\"03\",",
 													"\t\"legal_pid\":3,",
 													"\t\"well_location_description\":\"Description of well location\"",
+													"};",
+													"",
+													"pm.test(\"Status code is 200\", function () {",
+													"    pm.expect(pm.response.code).to.equal(200);",
+													"});",
+													"",
+													"pm.test(\"Expect value to be updated\", function() {",
+													"    for (var key in expected) {",
+													"        pm.expect(jsonData[key], key).to.equal(expected[key]);",
+													"    }",
+													"});",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "JWT {{token}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": ""
+										},
+										"url": {
+											"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"api",
+												"v1",
+												"wells",
+												"{{well_tag_number}}"
+											]
+										},
+										"description": "Get a well"
+									},
+									"response": []
+								}
+							],
+							"_postman_isSubFolder": true
+						},
+						{
+							"name": "Well Coordinates",
+							"item": [
+								{
+									"name": "Staff Edit; Well Coordinate",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "d810c676-8904-437e-8c93-3ea1d36e1bd1",
+												"exec": [
+													"var jsonData = pm.response.json();",
+													"",
+													"",
+													"pm.test(\"Status code is 201\", function () {",
+													"   pm.expect(pm.response.code).to.equal(201);",
+													"})",
+													"",
+													"pm.test(\"Expect well_tag_number to match created\", function() {",
+													"    pm.expect(jsonData.well).to.equal(pm.environment.get(\"well_tag_number\"))",
+													"})",
+													"",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "JWT {{token}}"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n\t\"well\": {{well_tag_number}},\n\t\"latitude\": 1,\n\t\"longitude\": 1,\n\t\"coordinate_acquisition_code\": \"B\"\n}"
+										},
+										"url": {
+											"raw": "{{base_url}}/api/v1/submissions/staff_edit?format=json",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"api",
+												"v1",
+												"submissions",
+												"staff_edit"
+											],
+											"query": [
+												{
+													"key": "format",
+													"value": "json"
+												}
+											]
+										},
+										"description": "Submit an edit submission"
+									},
+									"response": []
+								},
+								{
+									"name": "Check Well Edited; Well Location",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "a7b16fb6-1b37-44b8-96b7-118759edb19b",
+												"exec": [
+													"var jsonData = pm.response.json()",
+													"",
+													"var expected = {",
+													"\t\"latitude\": \"1.000000\",",
+													"\t\"longitude\": \"1.000000\",",
+													"\t\"coordinate_acquisition_code\": \"B\"",
 													"};",
 													"",
 													"pm.test(\"Status code is 200\", function () {",

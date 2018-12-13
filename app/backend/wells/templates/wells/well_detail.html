@@ -96,8 +96,7 @@
                     <label for="aquifer_number">Aquifer Number:</label>
                     <span id="aquifer_number">
                       {% for aquifer_well in well.aquiferwell_set.all %}
-                        <a href="http://a100.gov.bc.ca/pub/wells/aquiferDetail.do?aquiferNumber={{aquifer_well.aquifer_id }}&docType=adr"
-                            target="_blank">{{aquifer_well.aquifer_id }}</a>&nbsp;
+                        <a href="/gwells/aquifers/{{aquifer_well.aquifer_id }}/" target="_blank">{{aquifer_well.aquifer_id }}</a>&nbsp;
                       {% endfor %}
                     </span>
                 </div>
@@ -313,8 +312,8 @@
                     <span id="utm_zone_code" data-utm-zone-code="{{well.longitude }}">{{well.utm_zone_code|default_if_none:'&nbsp;' }}</span>
                 </div>
                 <div class="col-md-6 col-print-6 print-compressed">
-                    <label for="utm_accuracy_code">{% verbose_name well "utm_accuracy_code" %}:</label>
-                    <span id="utm_accuracy_code" data-utm-accuracy-code="{{well.utm_accuracy_code }}">{{well.utm_accuracy_code|default_if_none:'&nbsp;' }}</span>
+                    <label for="coordinate_acquisition_code">{% verbose_name well "coordinate_acquisition_code" %}:</label>
+                    <span id="coordinate_acquisition_code" data-utm-accuracy-code="{{well.coordinate_acquisition_code }}">{{well.coordinate_acquisition_code|default_if_none:'&nbsp;' }}</span>
                 </div>
             </div>
 
