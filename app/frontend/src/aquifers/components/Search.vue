@@ -29,7 +29,7 @@
     </b-alert>
 
     <b-card no-body class="p-3 mb-4">
-      <h5>Aquifer Search</h5>
+      <h1>Aquifer Search</h1>
 
       <div class="pb-2">
         <b-button

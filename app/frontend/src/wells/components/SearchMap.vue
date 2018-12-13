@@ -5,6 +5,10 @@
 <script>
 import L from 'leaflet'
 import { tiledMapLayer } from 'esri-leaflet'
+import 'leaflet.markercluster/dist/MarkerCluster.css'
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
+import 'leaflet.markercluster/dist/leaflet.markercluster.js'
+
 // Extend control, making a locate
 L.Control.Locate = L.Control.extend({
   onAdd: function (map) {
@@ -34,27 +38,30 @@ export default {
     },
     longitude: {
       type: Number
+    },
+    locations: {
+      type: Array,
+      default: () => ([])
     }
   },
   data () {
     return {
-      map: null
+      map: null,
+      cluster: null
     }
   },
-  mounted () {
+  created () {
     // There seems to be an issue loading leaflet immediately on mount, we use nextTick to ensure
     // that the view has been rendered at least once before injecting the map.
     this.$nextTick(function () {
       this.initLeaflet()
       this.initMap()
+      this.createMarkers()
     })
   },
   watch: {
-    latitude () {
-      this.updateCoords()
-    },
-    longitude () {
-      this.updateCoords()
+    locations () {
+      this.createMarkers()
     }
   },
   methods: {
@@ -89,59 +96,24 @@ export default {
       this.map.on('locationfound', (ev) => {
         this.$emit('coordinate', ev.latlng)
       })
+      this.map.setMaxZoom(17)
     },
-    createMarker () {
-      if (this.latitude !== null && this.getLongitude() !== null) {
-        const latlng = L.latLng(this.latitude, this.getLongitude())
-        this.marker = L.marker(latlng, {draggable: true, autoPan: true})
-        this.marker.on('dragend', (ev) => {
-          this.handleDrag(ev)
-        })
-        this.marker.addTo(this.map)
-        this.setMarkerPopup()
-        // The 1st time we create a marker, we jump to a different zoom level.
-        this.map.setView(latlng, 13)
+    createMarkers () {
+      // clear markers
+
+      if (!this.cluster) {
+        this.cluster = L.markerClusterGroup({ chunkedLoading: true })
+        this.map.addLayer(this.cluster)
       }
-    },
-    updateMarkerLatLong (latlng) {
-      if (this.marker) {
-        this.setMarkerPopup(latlng.lat, latlng.lng)
-        this.marker.setLatLng(latlng)
-      }
+
+      this.cluster.clearLayers()
+      const markers = this.locations.map((item) => {
+        return L.marker(L.latLng(item[0], item[1]))
+      })
+      this.cluster.addLayers(markers)
     },
     setMarkerPopup (latitude, longitude) {
       this.marker.bindPopup('Latitude: ' + latitude + ', Longitude: ' + longitude)
-    },
-    updateCoords () {
-      if (!isNaN(this.latitude) && !isNaN(this.getLongitude())) {
-        const latlng = L.latLng(this.latitude, this.getLongitude())
-        if (this.insideBC(latlng)) {
-          if (this.marker) {
-            this.updateMarkerLatLong(latlng)
-            this.map.panTo(latlng)
-          } else {
-            this.createMarker()
-          }
-        } else {
-          if (this.marker) {
-            this.map.removeLayer(this.marker)
-            this.marker = null
-          }
-        }
-      }
-    },
-    handleDrag (ev) {
-      if (this.insideBC(this.marker.getLatLng())) {
-        const markerLatLng = this.marker.getLatLng()
-        // In B.C. that longitude is always negative, so people aren't used to seeing the minus sign - so
-        // we're hiding it away from them.
-        const newLatLng = { lng: markerLatLng.lng > 0 ? markerLatLng.lng : markerLatLng.lng * -1, lat: markerLatLng.lat }
-        this.$emit('coordinate', newLatLng)
-      } else {
-        // We don't allow dragging the marker outside of BC, put it back.
-        const latlng = L.latLng(this.latitude, this.getLongitude())
-        this.updateMarkerLatLong(latlng)
-      }
     },
     insideBC (latLng) {
       // could check this against databc by reverse geocoding change checking that the point is in BC

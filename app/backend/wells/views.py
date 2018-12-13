@@ -19,6 +19,11 @@ from django.views.generic import DetailView
 
 from django_filters import rest_framework as restfilters
 
+from functools import reduce
+import operator
+
+from django.db.models import Q
+
 from rest_framework import filters
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -37,8 +42,17 @@ from gwells.pagination import APILimitOffsetPagination
 from gwells.settings.base import get_env_variable
 
 from wells.models import Well
-from wells.serializers import WellListSerializer, WellTagSearchSerializer, WellDetailSerializer
+from wells.serializers import WellListSerializer, WellTagSearchSerializer, WellDetailSerializer, WellLocationSerializer
 from wells.permissions import WellsEditPermissions
+
+
+class WellSearchFilter(restfilters.FilterSet):
+    well_tag_number = restfilters.CharFilter()
+    identification_plate_number = restfilters.CharFilter()
+    owner_full_name = restfilters.CharFilter(lookup_expr='icontains')
+    street_address = restfilters.CharFilter(lookup_expr='icontains')
+    legal_plan = restfilters.CharFilter()
+    legal_lot = restfilters.CharFilter()
 
 
 class WellDetailView(DetailView):
@@ -145,14 +159,7 @@ class WellListAPIView(ListAPIView):
     filter_backends = (restfilters.DjangoFilterBackend,
                        filters.SearchFilter, filters.OrderingFilter)
     ordering = ('well_tag_number',)
-    filter_fields = (
-        'well_tag_number',
-        'identification_plate_number',
-        'owner_full_name',
-        'street_address',
-        'legal_plan',
-        'legal_lot',
-    )
+    filterset_class = WellSearchFilter
 
     def get_queryset(self):
         qs = self.queryset
@@ -203,3 +210,22 @@ class WellTagSearchAPIView(ListAPIView):
             return Response([])
         else:
             return super().get(request)
+
+
+class WellLocationListAPIView(ListAPIView):
+    """ returns well locations for a given search
+
+        get: returns a list of wells with locations only
+    """
+
+    permission_classes = (DjangoModelPermissionsOrAnonReadOnly,)
+    model = Well
+    queryset = Well.objects.all()
+    serializer_class = WellLocationSerializer
+
+    # Allow searching on name fields, names of related companies, etc.
+    filter_backends = (restfilters.DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter)
+    ordering = ('well_tag_number',)
+    filterset_class = WellSearchFilter
+    pagination_class = None

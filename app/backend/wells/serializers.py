@@ -265,3 +265,11 @@ class WellTagSearchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Well
         fields = ("well_tag_number", "owner_full_name")
+
+
+class WellLocationSerializer(serializers.ModelSerializer):
+    """ serializes well locations """
+
+    class Meta:
+        model = Well
+        fields = ("well_tag_number", "latitude", "longitude")

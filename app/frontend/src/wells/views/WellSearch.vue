@@ -4,7 +4,7 @@
 
     <b-row class="mt-3">
       <b-col cols="12" lg="6" xl="5">
-        <b-form @submit.prevent="$root.$emit('bv::refresh::table', 'wellSearchTable')" @reset.prevent="resetButtonHandler">
+        <b-form @submit.prevent="$root.$emit('bv::refresh::table', 'wellSearchTable'); locationSearch()" @reset.prevent="resetButtonHandler(); locationSearch()">
           <b-row>
             <b-col>
               <p>
@@ -16,12 +16,20 @@
             </b-col>
           </b-row>
           <b-row>
-            <b-col>
+            <b-col cols="6">
               <form-input
                 id="wellTagSearchBox"
                 group-class="font-weight-bold"
-                label="Well Tag Number or Well Identification Plate Number"
+                label="Well Tag Number"
                 v-model="searchParams.well_tag_number"
+              ></form-input>
+            </b-col>
+            <b-col cols="6">
+              <form-input
+                id="wellPlateSearchBox"
+                group-class="font-weight-bold"
+                label="Well Identification Plate Number"
+                v-model="searchParams.identification_plate_number"
               ></form-input>
             </b-col>
           </b-row>
@@ -31,6 +39,7 @@
                 id="streetAddressSearchBox"
                 group-class="font-weight-bold"
                 label="Street Address"
+                v-model="searchParams.street_address"
               ></form-input>
             </b-col>
           </b-row>
@@ -39,7 +48,16 @@
               <form-input
                 id="lotNumberSearchBox"
                 group-class="font-weight-bold"
-                label="Legal Plan or Lot Number"
+                label="Legal Plan"
+                v-model="searchParams.legal_plan"
+              ></form-input>
+            </b-col>
+            <b-col>
+              <form-input
+                id="legalPlanSearchBox"
+                group-class="font-weight-bold"
+                v-model="searchParams.legal_lot"
+                label="Lot Number"
               ></form-input>
             </b-col>
           </b-row>
@@ -71,7 +89,13 @@
         </b-form>
       </b-col>
       <b-col cols="12" lg="6" xl="7">
-        <search-map :latitude="latitude" :longitude="longitude" v-on:coordinate="handleMapCoordinate"/>
+        <search-map
+            :latitude="latitude"
+            :longitude="longitude"
+            :locations="locations"
+            v-on:coordinate="handleMapCoordinate"
+            ref="searchMap"
+            />
       </b-col>
     </b-row>
     <b-row class="my-5">
@@ -81,7 +105,7 @@
           ref="wellSearchTable"
           id="wellSearchTable"
           :busy.sync="isBusy"
-          :fields="['well_tag_number', 'identification_plate_number', 'owner_full_name', 'street_address', 'lot', 'plan', 'district_lot', 'land_district', 'PID', 'diameter', 'finished_well_depth']"
+          :fields="['well_tag_number', 'identification_plate_number', 'owner_full_name', 'street_address', 'legal_lot', 'legal_plan', 'legal_district_lot', 'land_district', 'legal_pid', 'diameter', 'finished_well_depth']"
           :items="wellSearch"
           :per-page="perPage"
           :current-page="currentPage"
@@ -113,9 +137,13 @@ export default {
       numberOfRecords: 0,
       latitude: null,
       longitude: null,
+      locations: [],
 
       // searchParams will be set by searchParamsReset()
-      searchParams: {}
+      searchParams: {},
+
+      // additional location search params
+      mapSearchParams: {}
     }
   },
   methods: {
@@ -149,6 +177,29 @@ export default {
         return []
       })
     },
+    locationSearch () {
+      let params = Object.assign({}, this.searchParams)
+      if (this.$refs.searchMap && this.$refs.searchMap.map) {
+        const bounds = this.$refs.searchMap.map.getBounds()
+        const sw = bounds.getSouthWest()
+        const ne = bounds.getNorthEast()
+        console.log('bounds', sw, ne)
+        const boundBox = {
+
+          south: sw.lat,
+          west: sw.lng,
+          north: ne.lat,
+          east: ne.lng
+
+        }
+        params = Object.assign(params, boundBox)
+      }
+      ApiService.query('wells/locations', params).then((response) => {
+        this.locations = response.data.map((well) => {
+          return [well.latitude, well.longitude]
+        })
+      })
+    },
     resetButtonHandler () {
       this.searchParamsReset()
       this.$root.$emit('bv::refresh::table', 'wellSearchTable')
@@ -166,6 +217,7 @@ export default {
   },
   created () {
     this.searchParamsReset()
+    this.locationSearch()
   }
 }
 </script>
