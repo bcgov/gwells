@@ -382,7 +382,7 @@
                 </div>
                 <div class="col-md-5 col-print-5 print-compressed">
                     <span id="finished_well_depth">
-                            {% if  well.finished_well_depth > 0 %}
+                            {% if  well.finished_well_depth >= 0 %}
                                 {{well.finished_well_depth|exclude_zero_decimals}} feet
                             {% else                             %}
                                 &nbsp;
@@ -396,7 +396,7 @@
                 </div>
                 <div class="col-md-5 col-print-5  print-compressed">
                     <span id="final_casing_stickup">
-                        {% if  well.final_casing_stick_up > 0 %}
+                        {% if  well.final_casing_stick_up >= 0 %}
                           {{well.final_casing_stick_up|exclude_zero_decimals}} inches
                         {% else                               %}
                           &nbsp;
@@ -410,7 +410,7 @@
                 </div>
                 <div class="col-md-5 col-print-5 print-compressed">
                     <span id="bedrock_depth">
-                        {% if  well.bedrock_depth > 0       %}
+                        {% if  well.bedrock_depth >= 0       %}
                         {{well.bedrock_depth|exclude_zero_decimals}} feet
                         {% else                             %}
                         &nbsp;
@@ -424,7 +424,7 @@
                 </div>
                 <div class="col-md-5 col-print-5 print-compressed">
                     <span id="ground_elevation">
-                        {% if  well.ground_elevation > 0 %}
+                        {% if  well.ground_elevation >= 0 %}
                         {{well.ground_elevation|exclude_zero_decimals}} feet
                         {% else                             %}
                         &nbsp;
@@ -448,7 +448,7 @@
                 </div>
                 <div class="col-md-5 col-print-5 print-compressed">
                     <span id="static_water_level">
-                        {% if  well.static_water_level > 0  %}
+                        {% if  well.static_water_level >= 0  %}
                         {{well.static_water_level|exclude_zero_decimals}} feet
                         {% else                             %}
                         &nbsp;
@@ -462,7 +462,7 @@
                 </div>
                 <div class="col-md-5 col-print-5 print-compressed">
                     <span id="well_yield">
-                      {% if  well.well_yield > 0 %}
+                      {% if  well.well_yield >= 0 %}
                       {{well.well_yield|exclude_zero_decimals}} {{well.well_yield_unit.well_yield_unit_code|default_if_none:"no unit provided"}}
                       {% else                             %}
                       &nbsp;
@@ -476,7 +476,7 @@
                 </div>
                 <div class="col-md-5 col-print-5 print-compressed">
                     <span id="artesian_flow">
-                      {% if well.artesian_flow > 0             %}
+                      {% if well.artesian_flow >= 0             %}
                         {{well.artesian_flow|exclude_zero_decimals}}&nbsp;{{well.well_yield_unit.well_yield_unit_code|default_if_none:"no unit provided"}}
                       {% endif                                 %}
                     </span>
@@ -488,7 +488,7 @@
                 </div>
                 <div class="col-md-5 col-print-5 print-compressed">
                     <span id="artesian_pressure">
-                        {% if  well.artesian_pressure > 0       %}
+                        {% if  well.artesian_pressure >= 0       %}
                         {{well.artesian_pressure|exclude_zero_decimals}} inches
                         {% else                             %}
                         &nbsp;
