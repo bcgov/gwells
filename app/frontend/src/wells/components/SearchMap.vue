@@ -107,7 +107,9 @@ export default {
       }
 
       this.cluster.clearLayers()
-      const markers = this.locations.map((item) => {
+      const markers = this.locations.filter((item) => {
+        return item[0] && item[1]
+      }).map((item) => {
         return L.marker(L.latLng(item[0], item[1]))
       })
       this.cluster.addLayers(markers)
