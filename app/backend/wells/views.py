@@ -100,7 +100,6 @@ class ListExtracts(APIView):
 
     def create_description(self, name):
         extension = name[name.rfind('.')+1:]
-        print(extension)
         if extension == 'zip':
             return 'ZIP, CSV'
         elif extension == 'xlsx':

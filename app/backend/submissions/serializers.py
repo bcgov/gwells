@@ -29,6 +29,7 @@ from wells.serializers import (
 from wells.models import (
     ActivitySubmission,
     Casing,
+    CoordinateAcquisitionCode,
     DecommissionDescription,
     DecommissionMaterialCode,
     DecommissionMethodCode,
@@ -167,13 +168,30 @@ class WellSubmissionLegacySerializer(WellSubmissionSerializerBase):
         fields = '__all__'
 
 
+class CoordinateAcquisitionCodeSerializer(serializers.ModelSerializer):
+    """ Serializes coordinate acquisition codes """
+
+    class Meta:
+        model = CoordinateAcquisitionCode
+        fields = ('code', 'description')
+
+
 class WellConstructionSubmissionSerializer(WellSubmissionSerializerBase):
     """ Serializes a well construction submission. """
 
     casing_set = CasingSerializer(many=True, required=False)
     screen_set = ScreenSerializer(many=True, required=False)
     linerperforation_set = LinerPerforationSerializer(
-        many=True, required=False)
+        many=True, required=False)    
+    coordinate_acquisition_code = serializers.PrimaryKeyRelatedField(
+        queryset=CoordinateAcquisitionCode.objects.all(),
+        required=False)
+
+    def create(self, validated_data):
+        # Whenever we create a Construction record, we default to H (gps) for the source.
+        if 'coordinate_acquisition_code' not in validated_data:
+            validated_data['coordinate_acquisition_code'] = CoordinateAcquisitionCode.objects.get(code='H')
+        return super().create(validated_data)
 
     def get_foreign_keys(self):
         return {
@@ -208,7 +226,7 @@ class WellConstructionSubmissionSerializer(WellSubmissionSerializerBase):
                   'finished_well_depth', 'final_casing_stick_up', 'bedrock_depth', 'static_water_level',
                   'well_yield', 'artesian_flow', 'artesian_pressure', 'well_cap_type', 'well_disinfected',
                   'comments', 'alternative_specs_submitted', 'consultant_company', 'consultant_name',
-                  'driller_name', 'driller_responsible',)
+                  'driller_name', 'driller_responsible', 'coordinate_acquisition_code',)
         extra_kwargs = {
             # TODO: reference appropriate serializer as above
             'lithologydescription_set': {'required': False},
@@ -395,6 +413,7 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
             'well_location_description',
             'latitude',
             'longitude',
+            'coordinate_acquisition_code',
             'ground_elevation',
             'ground_elevation_method',
             'drilling_method',

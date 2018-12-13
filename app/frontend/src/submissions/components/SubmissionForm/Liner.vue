@@ -233,7 +233,7 @@ export default {
   },
   created () {
     // When component created, add an initial row of lithology.
-    if (!this.linerPerforationsInput.length) {
+    if (!this.linerPerforationsInput.length && !this.isStaffEdit) {
       this.linerPerforationsInput.push({}, {}, {})
     }
   }

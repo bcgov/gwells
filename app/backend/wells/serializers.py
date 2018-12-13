@@ -203,6 +203,9 @@ class WellListSerializer(serializers.ModelSerializer):
             "drilling_company",
             "latitude",
             "longitude",
+            "coordinate_acquisition_code",
+            "ground_elevation",
+            "ground_elevation_method",
             "drilling_method",
             "other_drilling_method",
             "well_orientation",
@@ -241,6 +244,18 @@ class WellListSerializer(serializers.ModelSerializer):
             "finished_well_depth",
             "well_yield",
             "diameter",
+            "observation_well_number",
+            "observation_well_status",
+            "ems",
+            "utm_zone_code",
+            "utm_northing",
+            "utm_easting",
+            "bcgs_id",
+            "decommission_reason",
+            "decommission_method",
+            "sealant_material",
+            "backfill_material",
+            "decommission_details",
         )
 
 

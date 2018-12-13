@@ -58,35 +58,36 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </div>
         </b-alert>
 
-        <b-form @submit.prevent="confirmSubmit">
-          <!-- if preview === true : Preview -->
-          <submission-preview
-            v-if="preview"
-            :form="form"
-            :activity="activityType"
-            :sections="displayFormSection"
-            :errors="errors"
-            :reportSubmitted="formSubmitSuccess"
-            :formSubmitLoading="formSubmitLoading"
-            v-on:back="handlePreviewBackButton"
-            v-on:startNewReport="handleExitPreviewAfterSubmit"
-            />
-          <!-- if preview === false : Activity submission form -->
-          <activity-submission-form
-            v-else
-            :form="form"
-            :activityType.sync="activityType"
-            :sections="displayFormSection"
-            :formSteps="formSteps"
-            :errors="errors"
-            :formIsFlat.sync="formIsFlat"
-            :trackValueChanges="trackValueChanges"
-            :formSubmitLoading="formSubmitLoading"
-            :isStaffEdit="isStaffEdit"
-            v-on:preview="handlePreviewButton"
-            v-on:submit_edit="formSubmit"
-            v-on:resetForm="resetForm"
-            />
+      <b-form @submit.prevent="confirmSubmit">
+        <!-- if preview === true : Preview -->
+        <submission-preview
+          v-if="preview"
+          :form="form"
+          :activity="activityType"
+          :sections="displayFormSection"
+          :errors="errors"
+          :reportSubmitted="formSubmitSuccess"
+          :formSubmitLoading="formSubmitLoading"
+          v-on:back="handlePreviewBackButton"
+          v-on:startNewReport="handleExitPreviewAfterSubmit"
+          />
+        <!-- if preview === false : Activity submission form -->
+        <activity-submission-form
+          v-else
+          :form="form"
+          :activityType.sync="activityType"
+          :sections="displayFormSection"
+          :formSteps="formSteps"
+          :errors="errors"
+          :formIsFlat.sync="formIsFlat"
+          :trackValueChanges="trackValueChanges"
+          :formSubmitLoading="formSubmitLoading"
+          :isStaffEdit="isStaffEdit"
+          :loading="loading"
+          v-on:preview="handlePreviewButton"
+          v-on:submit_edit="formSubmit"
+          v-on:resetForm="resetForm"
+          />
 
             <!-- Form submission confirmation -->
             <b-modal
@@ -132,6 +133,7 @@ export default {
       activityType: 'CON',
       formIsFlat: false,
       preview: false,
+      loading: false,
       confirmSubmitModal: false,
       formSubmitSuccess: false,
       formSubmitSuccessWellTag: null,
@@ -351,6 +353,7 @@ export default {
         well_location_description: '',
         latitude: null,
         longitude: null,
+        coordinate_acquisition_code: null,
         ground_elevation: null,
         ground_elevation_method: '',
         drilling_method: '',
@@ -472,6 +475,7 @@ export default {
       this.activityType = 'STAFF_EDIT'
       this.formIsFlat = true
 
+      this.loading = true
       ApiService.query(`wells/${this.$route.params.id}`).then((res) => {
         Object.keys(res.data).forEach((key) => {
           if (key in this.form) {
@@ -484,7 +488,12 @@ export default {
         // Wait for the form update we just did to fire off change events.
         this.$nextTick(() => {
           this.form.meta.valueChanged = {}
-          this.trackValueChanges = true
+          this.loading = false
+          this.$nextTick(() => {
+            // We have to allow the UI to render all the components after the 'loading = false' setting,
+            // so we only start tracking changes after that.
+            this.trackValueChanges = true
+          })
         })
       }).catch((e) => {
         console.error(e)
