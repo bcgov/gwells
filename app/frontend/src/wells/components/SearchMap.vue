@@ -161,8 +161,7 @@ export default {
 @import "leaflet/dist/leaflet.css";
 
 .map {
-  width: 550px;
-  height: 500px;
+  height: 600px;
 }
 .geolocate {
     background-image: url('../../common/assets/images/geolocate.png');

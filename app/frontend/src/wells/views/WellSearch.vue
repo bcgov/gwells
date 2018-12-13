@@ -1,15 +1,20 @@
 <template>
   <b-card class="container container-wide p-1">
-    <h1 class="card-title">Well Search</h1>
-    <p>
-      Not all groundwater wells are registered with the province, as registration was voluntary until February 29, 2016. Data quality issues may impact search results.
-    </p>
-    <p>
-      Search by one of the fields below, or zoom to a location on the map and select the "Search Wells in this Area" button.
-    </p>
-    <b-row class="mt-5">
-      <b-col cols="12" lg="6">
+    <h1 class="card-title">Groundwater Well Search</h1>
+
+    <b-row class="mt-3">
+      <b-col cols="12" lg="6" xl="5">
         <b-form @submit.prevent="$root.$emit('bv::refresh::table', 'wellSearchTable')" @reset.prevent="resetButtonHandler">
+          <b-row>
+            <b-col>
+              <p>
+                Not all groundwater wells are registered with the province, as registration was voluntary until February 29, 2016. Data quality issues may impact search results.
+              </p>
+              <p>
+                Search by one of the fields below, or zoom to a location on the map and select the "Search Wells in this Area" button.
+              </p>
+            </b-col>
+          </b-row>
           <b-row>
             <b-col>
               <form-input
@@ -65,7 +70,7 @@
           </b-row>
         </b-form>
       </b-col>
-      <b-col cols="12" lg="6">
+      <b-col cols="12" lg="6" xl="7">
         <search-map :latitude="latitude" :longitude="longitude" v-on:coordinate="handleMapCoordinate"/>
       </b-col>
     </b-row>
