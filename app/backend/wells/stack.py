@@ -193,7 +193,7 @@ class StackWells():
                         #
                         # If the target_key is not in one of the foreign key sets (i.e., it's a property/column
                         # of a well), then the value can overwrite the previous composite value.
-                        if (submission.well_activity_type.code == WellActivityCode.types.staff_edit() and
+                        if (submission.well_activity_type.code == WellActivityCode.types.staff_edit().code and
                                 target_key in composite and
                                 (target_key in FOREIGN_KEYS or target_key in FOREIGN_KEY_DATA_SETS)):
                             # staff edits come in with the entire set of values and thus can replace

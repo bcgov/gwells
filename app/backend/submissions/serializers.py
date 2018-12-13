@@ -123,6 +123,7 @@ class WellSubmissionStackerSerializer(WellSubmissionSerializerBase):
         many=True, required=False)
     decommission_description_set = DecommissionDescriptionSerializer(
         many=True, required=False)
+    productiondata_set = ProductionDataSerializer(many=True, required=False)
 
     def get_foreign_keys(self):
         return {
@@ -130,6 +131,7 @@ class WellSubmissionStackerSerializer(WellSubmissionSerializerBase):
             'screen_set': Screen,
             'linerperforation_set': LinerPerforation,
             'decommission_description_set': DecommissionDescription,
+            'productiondata_set': ProductionData
         }
 
     class Meta:

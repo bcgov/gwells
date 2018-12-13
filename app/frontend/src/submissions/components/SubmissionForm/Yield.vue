@@ -24,8 +24,15 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </div>
         </b-col>
       </b-row>
-    <div v-for="(data, index) in productionData" :key="`productionDataSet${index}`">
+    <b-card class="mt-2" v-for="(data, index) in productionData" :key="`productionDataSet${index}`">
       <b-row>
+        <b-col>
+          <h5 class="card-title">Production data set {{index + 1}}
+            <b-btn size="sm" :id="`removeProductionDataBtn${index}`" variant="primary" @click="removeRowIfOk(index)" class="mt-2 float-right"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
+          </h5>
+        </b-col>
+      </b-row>
+      <b-row class="mt-3">
         <b-col cols="12" md="4" lg="3">
           <form-input
               id="yieldEstimationMethod"
@@ -87,7 +94,23 @@ Licensed under the Apache License, Version 2.0 (the "License");
               ></form-input>
         </b-col>
       </b-row>
-    </div>
+    </b-card>
+    <b-btn size="sm" variant="primary" id="addlinerPerforationRowBtn" @click="addRow" class="mt-3"><i class="fa fa-plus-square-o"></i> Add production data</b-btn>
+    <b-modal
+        v-model="confirmRemoveModal"
+        centered
+        title="Confirm remove"
+        @shown="focusRemoveModal">
+      Are you sure you want to remove this row?
+      <div slot="modal-footer">
+        <b-btn variant="secondary" @click="confirmRemoveModal=false;rowIndexToRemove=null" ref="cancelRemoveBtn">
+          Cancel
+        </b-btn>
+        <b-btn variant="danger" @click="confirmRemoveModal=false;removeRowByIndex(rowIndexToRemove)">
+          Remove
+        </b-btn>
+      </div>
+    </b-modal>
   </fieldset>
 </template>
 
@@ -133,7 +156,9 @@ export default {
     productionDataInput: 'productionData'
   },
   data () {
-    return {}
+    return {
+      confirmRemoveModal: false
+    }
   },
   computed: {
     ...mapGetters(['codes'])
@@ -150,6 +175,31 @@ export default {
         hydro_fracturing_yield_increase: ''
       }
       this.productionDataInput.push(blankData)
+    },
+    addRow () {
+      this.addProductionData()
+    },
+    removeRowByIndex (index) {
+      this.productionDataInput.splice(index, 1)
+      this.rowIndexToRemove = null
+    },
+    removeRowIfOk (rowNumber) {
+      if (this.rowHasValues(this.productionDataInput[rowNumber])) {
+        this.rowIndexToRemove = rowNumber
+        this.confirmRemoveModal = true
+      } else {
+        this.removeRowByIndex(rowNumber)
+      }
+    },
+    rowHasValues (row) {
+      let keys = Object.keys(row)
+      if (keys.length === 0) return false
+      // Check that all fields are not empty.
+      return !keys.every((key) => !row[key])
+    },
+    focusRemoveModal () {
+      // Focus the "cancel" button in the confirm remove popup.
+      this.$refs.cancelRemoveBtn.focus()
     }
   },
   created () {

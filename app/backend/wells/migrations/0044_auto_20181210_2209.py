@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('wells', '0040_activitysubmission_well_status'),
+        ('wells', '0043_filter_pack_codes'),
     ]
 
     operations = [
@@ -20,12 +20,14 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='productiondata',
             name='recommended_pump_depth',
-            field=models.DecimalField(blank=True, decimal_places=2, max_digits=7, null=True, validators=[django.core.validators.MinValueValidator(Decimal('0.00'))], verbose_name='Recommended pump depth'),
+            field=models.DecimalField(blank=True, decimal_places=2, max_digits=7, null=True, validators=[
+                                      django.core.validators.MinValueValidator(Decimal('0.00'))], verbose_name='Recommended pump depth'),
         ),
         migrations.AddField(
             model_name='productiondata',
             name='recommended_pump_rate',
-            field=models.DecimalField(blank=True, decimal_places=2, max_digits=7, null=True, validators=[django.core.validators.MinValueValidator(Decimal('0.00'))], verbose_name='Recommended pump rate'),
+            field=models.DecimalField(blank=True, decimal_places=2, max_digits=7, null=True, validators=[
+                                      django.core.validators.MinValueValidator(Decimal('0.00'))], verbose_name='Recommended pump rate'),
         ),
         migrations.AddField(
             model_name='well',
