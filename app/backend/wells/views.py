@@ -35,7 +35,11 @@ from gwells.pagination import APILimitOffsetPagination
 from gwells.settings.base import get_env_variable
 
 from wells.models import Well
-from wells.serializers import WellListSerializer, WellTagSearchSerializer, WellDetailSerializer
+from wells.serializers import (
+    WellListSerializer,
+    WellTagSearchSerializer,
+    WellDetailSerializer,
+    WellDetailAdminSerializer)
 from wells.permissions import WellsEditPermissions
 
 
@@ -66,6 +70,18 @@ class WellDetail(RetrieveAPIView):
 
     queryset = Well.objects.all()
     lookup_field = 'well_tag_number'
+
+    def get_serializer(self, *args, **kwargs):
+        """ returns a different serializer for admin users """
+
+        serializer = self.serializer_class
+
+        print(self.request.user)
+        if (self.request.user and self.request.user.is_authenticated and
+                self.request.user.groups.filter(name=WELLS_VIEWER_ROLE).exists()):
+            print('admin!!')
+            serializer = WellDetailAdminSerializer
+        return serializer(*args, **kwargs)
 
 
 class ListExtracts(APIView):

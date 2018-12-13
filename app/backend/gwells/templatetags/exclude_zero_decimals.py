@@ -9,7 +9,7 @@ def exclude_zero_decimals(value):
     Returns removes trailing zeros from decimal numbers if all numbers after
     the decimal are zeros.
     """
-    if not value:
+    if value is None:
         return value
 
     str_value = str(value)

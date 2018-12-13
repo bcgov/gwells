@@ -371,6 +371,7 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
     casing_set = CasingSerializer(many=True, required=False)
     screen_set = ScreenSerializer(many=True, required=False)
     productiondata_set = ProductionDataSerializer(many=True, required=False)
+    decommission_description_set = DecommissionDescriptionSerializer(many=True, required=False)
 
     def get_well_activity_type(self):
         return WellActivityCode.types.staff_edit()
@@ -380,7 +381,8 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
             'casing_set': Casing,
             'screen_set': Screen,
             'linerperforation_set': LinerPerforation,
-            'productiondata_set': ProductionData
+            'productiondata_set': ProductionData,
+            'decommission_description_set': DecommissionDescription
         }
 
     class Meta:
@@ -476,7 +478,9 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
             'well_cap_type',
             'well_disinfected',
             'comments',
+            'internal_comments',
             'alternative_specs_submitted',
+            'decommission_description_set',
         )
 
 

@@ -721,6 +721,8 @@ class Well(AuditModel):
         default=False, verbose_name='Well Disinfected', choices=((False, 'No'), (True, 'Yes')))
 
     comments = models.CharField(max_length=3000, blank=True, null=True)
+    internal_comments = models.CharField(max_length=3000, blank=True, null=True)
+
     alternative_specs_submitted = \
         models.BooleanField(default=False,
                             verbose_name='Alternative specs submitted (if required)',
@@ -1138,6 +1140,8 @@ class ActivitySubmission(AuditModel):
         default=False, verbose_name='Well Disinfected?', choices=((False, 'No'), (True, 'Yes')))
 
     comments = models.CharField(max_length=3000, blank=True, null=True)
+    internal_comments = models.CharField(max_length=3000, blank=True, null=True)
+    
     alternative_specs_submitted = models.BooleanField(
         default=False, verbose_name='Alternative specs submitted (if required)')
 

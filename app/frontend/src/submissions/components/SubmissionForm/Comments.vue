@@ -35,17 +35,28 @@ Licensed under the Apache License, Version 2.0 (the "License");
         </b-form-group>
       </b-col>
     </b-row>
-    <!-- <b-row>
-      <b-col cols="12" sm="6"> -->
 
+    <b-row class="mt-3">
+      <b-col cols="12" md="8">
+        <b-form-group label="Internal Office Comments" id="commentsGroup">
+          <b-form-textarea
+              id="internalCommentsEntry"
+              :rows="3"
+              :max-rows="12"
+              v-model="internalCommentsInput"></b-form-textarea>
+        </b-form-group>
+      </b-col>
+    </b-row>
+    <b-row class="mt-3">
+      <b-col cols="12" sm="6">
           <b-form-checkbox id="alternativeSpecsCheckbox"
                 v-model="alternativeSpecsSubmittedInput"
                 :value="true"
                 :unchecked-value="false">
             Alternative specs submitted (if required)
           </b-form-checkbox>
-      <!-- </b-col>
-    </b-row> -->
+      </b-col>
+    </b-row>
   </fieldset>
 </template>
 
@@ -56,6 +67,7 @@ export default {
   mixins: [inputBindingsMixin],
   props: {
     comments: String,
+    internalComments: String,
     alternativeSpecsSubmitted: null,
     errors: {
       type: Object,
@@ -80,6 +92,7 @@ export default {
   },
   fields: {
     commentsInput: 'comments',
+    internalCommentsInput: 'internalComments',
     alternativeSpecsSubmittedInput: 'alternativeSpecsSubmitted'
   },
   data () {

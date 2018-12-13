@@ -210,6 +210,8 @@ export default {
           'wellYield',
           'waterQuality',
           'wellCompletion',
+          'closureDescription',
+          'decommissionInformation',
           'comments'
         ]
       }
@@ -231,7 +233,7 @@ export default {
     isStaffEdit () {
       return this.activityType === 'STAFF_EDIT'
     },
-    ...mapGetters(['codes', 'userRoles', 'well'])
+    ...mapGetters(['codes', 'userRoles', 'well', 'keycloak'])
   },
   methods: {
     formSubmit () {
@@ -405,6 +407,7 @@ export default {
         well_cap_type: '',
         well_disinfected: 'False',
         comments: '',
+        internal_comments: '',
         alternative_specs_submitted: 'False',
         decommission_description_set: [],
         decommission_reason: '',
@@ -483,6 +486,7 @@ export default {
       this.formIsFlat = true
 
       this.loading = true
+
       ApiService.query(`wells/${this.$route.params.id}`).then((res) => {
         Object.keys(res.data).forEach((key) => {
           if (key in this.form) {
