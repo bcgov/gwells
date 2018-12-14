@@ -76,10 +76,8 @@ class WellDetail(RetrieveAPIView):
 
         serializer = self.serializer_class
 
-        print(self.request.user)
         if (self.request.user and self.request.user.is_authenticated and
                 self.request.user.groups.filter(name=WELLS_VIEWER_ROLE).exists()):
-            print('admin!!')
             serializer = WellDetailAdminSerializer
         return serializer(*args, **kwargs)
 
