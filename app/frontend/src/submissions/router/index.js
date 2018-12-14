@@ -13,12 +13,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
 */
 import Vue from 'vue'
 import Router from 'vue-router'
+import { store } from '../store/index.js'
 
 import SubmissionsHome from '@/submissions/views/SubmissionsHome.vue'
 
 Vue.use(Router)
 
-export default new Router({
+const router = new Router({
   routes: [
     {
       path: '/:id/edit',
@@ -40,3 +41,27 @@ export default new Router({
     return { x: 0, y: 0 }
   }
 })
+
+router.beforeEach((to, from, next) => {
+  if (to.matched.some(record => record.meta.edit)) {
+    // this route requires auth, check if logged in
+    // if not, redirect to login page.
+
+    const expiry = localStorage.getItem('gwells-session-expiry')
+    const expiryDate = expiry ? new Date(expiry * 1000) : null
+
+    if (router.app.$keycloak.authenticated) {
+      next()
+    } else if (expiryDate && expiryDate < new Date()) {
+      // while (true) {
+      //   if (router.app.$keycloak.authenticated) {
+
+      //   }
+      // }
+    }
+  } else {
+    next()
+  }
+})
+
+export default router
