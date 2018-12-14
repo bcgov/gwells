@@ -47,18 +47,16 @@ router.beforeEach((to, from, next) => {
     // this route requires auth, check if logged in
     // if not, redirect to login page.
 
-    const expiry = localStorage.getItem('gwells-session-expiry')
-    const expiryDate = expiry ? new Date(expiry * 1000) : null
-
-    if (router.app.$keycloak.authenticated) {
-      next()
-    } else if (expiryDate && expiryDate < new Date()) {
-      // while (true) {
-      //   if (router.app.$keycloak.authenticated) {
-
-      //   }
-      // }
+    console.log('need auth')
+    const waitForLogin = () => {
+      setTimeout(() => {
+        if (store.getters.keycloakReady && store.getters.keycloak && store.getters.keycloak.authenticated) next()
+        else if (store.getters.keycloakReady && store.getters.keycloak && !store.getters.keycloak.authenticated) next({ path: '/', replace: true })
+        else waitForLogin()
+      }, 50)
     }
+
+    waitForLogin()
   } else {
     next()
   }

@@ -1,25 +1,25 @@
 export const SET_KEYCLOAK = 'SET_KEYCLOAK'
-export const SET_KEYCLOAK_LOADING = 'SET_KEYCLOAK_LOADING'
+export const SET_KEYCLOAK_READY = 'SET_KEYCLOAK_READY'
 
 const auth = {
   state: {
     keycloak: {},
-    keycloakLoading: false
+    keycloakReady: false
   },
   mutations: {
     [SET_KEYCLOAK] (state, payload) {
       state.keycloak = payload
     },
-    [SET_KEYCLOAK_LOADING] (state, payload) {
-      state.keycloakLoading = payload
+    [SET_KEYCLOAK_READY] (state, payload) {
+      state.keycloakReady = payload
     }
   },
   getters: {
     keycloak (state) {
       return state.keycloak
     },
-    keycloakLoading (state) {
-      return state.keycloakLoading
+    keycloakReady (state) {
+      return state.keycloakReady
     },
     userRoles (state) {
       if (state.keycloak && state.keycloak.authenticated) {
