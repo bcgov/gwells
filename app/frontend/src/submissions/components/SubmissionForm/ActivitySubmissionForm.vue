@@ -16,7 +16,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <h1 class="card-title">
       <b-row>
         <b-col cols="12">
-          <div v-if="isStaffEdit" id="top">Update Well Details</div>
+          <div v-if="isStaffEdit" id="top">Update Well Information</div>
           <div v-else>Well Activity Submission</div>
           <b-form-group v-if="activityType !== 'STAFF_EDIT'">
             <b-form-radio-group button-variant="outline-primary" size="sm" buttons v-model="formIsFlatInput" label="Form layout" class="float-right">
@@ -612,7 +612,8 @@ export default {
               this.formValueChanged = true
               this.form.meta.valueChanged[key] = true
             }
-          }
+          },
+          deep: true
         }
       })
     }
