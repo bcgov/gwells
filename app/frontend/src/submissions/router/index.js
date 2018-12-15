@@ -47,7 +47,6 @@ router.beforeEach((to, from, next) => {
     // this route requires auth, check if logged in
     // if not, redirect to login page.
 
-    console.log('need auth')
     const waitForLogin = () => {
       setTimeout(() => {
         if (store.getters.keycloakReady && store.getters.keycloak && store.getters.keycloak.authenticated) next()
