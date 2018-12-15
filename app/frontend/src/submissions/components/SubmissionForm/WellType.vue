@@ -166,7 +166,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         </b-col>
       </b-row>
       <b-row v-if="isStaffEdit">
-        <b-col cols="12" md="4" v-if="isStaffEdit">
+        <b-col cols="12" md="4">
           <form-input
               id="waterSupplySystem"
               label="Water Supply System Name"
@@ -176,7 +176,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               :loaded="fieldsLoaded['water_supply_system_name']"
           ></form-input>
         </b-col>
-        <b-col cols="12" md="4" v-if="isStaffEdit">
+        <b-col cols="12" md="4">
           <form-input
               id="waterSupplyWell"
               label="Water Supply Well Name"
