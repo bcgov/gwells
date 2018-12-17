@@ -80,7 +80,22 @@ Please see [CONTRIBUTING.md](https://github.com/bcgov/gwells/blob/master/CONTRIB
 ## Issues
 Issues are tracked on the [GWELLS Trello board](https://trello.com/b/2UQZgXHR/wells-project-board).
 
+## Architecture
+
+### Current
+
+![GWELLS container diagram](pics/container_diagram.png)
+
+### Vision
+
+The current GWELLS architecture relies on Vue.js components being served up using Django templates. This 
+approach results in a complicated interdependence between Vue.js and Django.
+
+The intent is to completely seperate the front end into independently hosted Vue.js components and completely
+drop Django templates.
+
+![GWELLS container diagram (Vision)](pics/container_diagram_vision.png)
+
 ## License
 
 Code released under the [Apache License, Version 2.0](https://github.com/bcgov/gwells/blob/master/LICENSE).
-
