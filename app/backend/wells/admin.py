@@ -16,7 +16,9 @@ from wells.models import (
     DecommissionMaterialCode,
     DecommissionMethodCode,
     WaterQualityCharacteristic,
-    WaterQualityColour
+    WaterQualityColour,
+    FilterPackMaterialSizeCode,
+    FilterPackMaterialCode
 )
 
 # Register your models here.
@@ -25,3 +27,5 @@ admin.site.register(WaterQualityCharacteristic)
 admin.site.register(WaterQualityColour)
 admin.site.register(DecommissionMaterialCode)
 admin.site.register(DecommissionMethodCode)
+admin.site.register(FilterPackMaterialSizeCode)
+admin.site.register(FilterPackMaterialCode)

@@ -25,12 +25,31 @@ from wells.models import (
     CasingCode,
     DecommissionDescription,
     LinerPerforation,
+    ProductionData,
     Screen,
     Well,
 )
 
 
 logger = logging.getLogger(__name__)
+
+
+class ProductionDataSerializer(serializers.ModelSerializer):
+    """Serializes production data"""
+    class Meta:
+        model = ProductionData
+        fields = (
+            'yield_estimation_method',
+            'yield_estimation_rate',
+            'yield_estimation_duration',
+            'well_yield_unit',
+            'static_level',
+            'drawdown',
+            'hydro_fracturing_performed',
+            'hydro_fracturing_yield_increase',
+            'recommended_pump_depth',
+            'recommended_pump_rate',
+        )
 
 
 class CasingMaterialSerializer(serializers.ModelSerializer):
@@ -61,6 +80,7 @@ class CasingSerializer(serializers.ModelSerializer):
             'casing_code',
             'casing_material',
             'drive_shoe',
+            'wall_thickness'
         )
         extra_kwargs = {
             'start': {'required': True},
@@ -122,6 +142,135 @@ class WellDetailSerializer(AuditModelSerializer):
     linerperforation_set = LinerPerforationSerializer(many=True)
     decommission_description_set = DecommissionDescriptionSerializer(many=True)
     driller_responsible = PersonBasicSerializer()
+    productiondata_set = ProductionDataSerializer(many=True)
+
+    # well vs. well_tag_number ; on submissions, we refer to well
+    well = serializers.IntegerField(source='well_tag_number')
+
+    class Meta:
+        model = Well
+        fields = (
+            "well_guid",
+            "well",
+            "well_tag_number",
+            "identification_plate_number",
+            "owner_full_name",
+            # "owner_mailing_address", # temporarily disabled - required for staff, hidden for public
+            # "owner_city",
+            # "owner_province_state",
+            # "owner_postal_code",
+            "well_class",
+            "well_subclass",
+            "intended_water_use",
+            "well_status",
+            "licenced_status",
+            "street_address",
+            "city",
+            "legal_lot",
+            "legal_plan",
+            "legal_district_lot",
+            "legal_block",
+            "legal_section",
+            "legal_township",
+            "legal_range",
+            "land_district",
+            "legal_pid",
+            "well_location_description",
+            "construction_start_date",
+            "construction_end_date",
+            "alteration_end_date",
+            "decommission_start_date",
+            "decommission_end_date",
+            "driller_responsible",
+            "drilling_company",
+            "well_identification_plate_attached",
+            "id_plate_attached_by",
+            "water_supply_system_name",
+            "water_supply_system_well_name",
+            "latitude",
+            "longitude",
+            "coordinate_acquisition_code",
+            "ground_elevation",
+            "ground_elevation_method",
+            "drilling_method",
+            "other_drilling_method",
+            "well_orientation",
+            "surface_seal_material",
+            "surface_seal_length",
+            "surface_seal_thickness",
+            "surface_seal_method",
+            "surface_seal_depth",
+            "backfill_type",
+            "backfill_depth",
+            "liner_material",
+            "liner_diameter",
+            "liner_thickness",
+            "liner_from",
+            "liner_to",
+            "screen_intake_method",
+            "screen_type",
+            "screen_material",
+            "other_screen_material",
+            "screen_opening",
+            "screen_bottom",
+            "other_screen_bottom",
+            "screen_information",
+            "filter_pack_from",
+            "filter_pack_to",
+            "filter_pack_thickness",
+            "filter_pack_material",
+            "filter_pack_material_size",
+            "development_method",
+            "development_hours",
+            "development_notes",
+            "water_quality_characteristics",
+            "water_quality_colour",
+            "water_quality_odour",
+            "total_depth_drilled",
+            "finished_well_depth",
+            "final_casing_stick_up",
+            "bedrock_depth",
+            "water_supply_system_name",
+            "water_supply_system_well_name",
+            "static_water_level",
+            "well_yield",
+            "artesian_flow",
+            "artesian_pressure",
+            "well_cap_type",
+            "well_disinfected",
+            "comments",
+            "alternative_specs_submitted",
+            "well_yield_unit",
+            "diameter",
+            "observation_well_number",
+            "observation_well_status",
+            "ems",
+            "utm_zone_code",
+            "utm_northing",
+            "utm_easting",
+            "bcgs_id",
+            "decommission_reason",
+            "decommission_method",
+            "sealant_material",
+            "backfill_material",
+            "decommission_details",
+            "productiondata_set",
+            'casing_set',
+            'screen_set',
+            'linerperforation_set',
+            'decommission_description_set',
+            'productiondata_set',
+        )
+
+
+class WellDetailAdminSerializer(AuditModelSerializer):
+    casing_set = CasingSerializer(many=True)
+    screen_set = ScreenSerializer(many=True)
+    linerperforation_set = LinerPerforationSerializer(many=True)
+    decommission_description_set = DecommissionDescriptionSerializer(many=True)
+    driller_responsible = PersonBasicSerializer()
+    productiondata_set = ProductionDataSerializer(many=True)
+
     # well vs. well_tag_number ; on submissions, we refer to well
     well = serializers.IntegerField(source='well_tag_number')
 
@@ -136,6 +285,7 @@ class WellStackerSerializer(AuditModelSerializer):
     screen_set = ScreenSerializer(many=True)
     linerperforation_set = LinerPerforationSerializer(many=True)
     decommission_description_set = DecommissionDescriptionSerializer(many=True)
+    productiondata_set = ProductionDataSerializer(many=True)
 
     class Meta:
         model = Well
@@ -151,7 +301,8 @@ class WellStackerSerializer(AuditModelSerializer):
             'casing_set': Casing,
             'screen_set': Screen,
             'linerperforation_set': LinerPerforation,
-            'decommission_description_set': DecommissionDescription
+            'decommission_description_set': DecommissionDescription,
+            'productiondata_set': ProductionData
         }
         for key in FOREIGN_KEYS.keys():
             for record in getattr(instance, key).all():
@@ -208,6 +359,9 @@ class WellListSerializer(serializers.ModelSerializer):
             "decommission_end_date",
             "drilling_company",
             "well_identification_plate_attached",
+            "id_plate_attached_by",
+            "water_supply_system_name",
+            "water_supply_system_well_name",
             "latitude",
             "longitude",
             "coordinate_acquisition_code",
@@ -220,8 +374,7 @@ class WellListSerializer(serializers.ModelSerializer):
             "surface_seal_length",
             "surface_seal_thickness",
             "surface_seal_method",
-            # "surface_seal_depth",
-            # "backfill_above_surface_seal_depth",
+            "surface_seal_depth",
             "backfill_type",
             "backfill_depth",
             "liner_material",
@@ -236,6 +389,7 @@ class WellListSerializer(serializers.ModelSerializer):
             "screen_opening",
             "screen_bottom",
             "other_screen_bottom",
+            "screen_information",
             "filter_pack_from",
             "filter_pack_to",
             "filter_pack_thickness",
@@ -244,6 +398,7 @@ class WellListSerializer(serializers.ModelSerializer):
             "development_method",
             "development_hours",
             "development_notes",
+            "productiondata_set",
             "water_quality_characteristics",
             "water_quality_colour",
             "water_quality_odour",

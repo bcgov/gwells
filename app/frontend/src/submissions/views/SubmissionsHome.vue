@@ -201,11 +201,17 @@ export default {
           'wellLocation',
           'wellCoords',
           'method',
+          'casings',
           'backfill',
           'liner',
+          'screens',
           'filterPack',
           'wellDevelopment',
+          'wellYield',
           'waterQuality',
+          'wellCompletion',
+          'closureDescription',
+          'decommissionInformation',
           'comments'
         ]
       }
@@ -227,7 +233,7 @@ export default {
     isStaffEdit () {
       return this.activityType === 'STAFF_EDIT'
     },
-    ...mapGetters(['codes', 'userRoles', 'well'])
+    ...mapGetters(['codes', 'userRoles', 'well', 'keycloak'])
   },
   methods: {
     formSubmit () {
@@ -260,7 +266,7 @@ export default {
         this.stripBlankStrings(data)
       }
 
-      const sets = ['linerperforation_set', 'lithologydescription_set', 'production_data_set', 'screen_set', 'casing_set', 'decommission_description_set']
+      const sets = ['linerperforation_set', 'lithologydescription_set', 'productiondata_set', 'screen_set', 'casing_set', 'decommission_description_set']
       sets.forEach((key) => {
         if (key in data) {
           data[key] = this.filterBlankRows(data[key])
@@ -313,11 +319,15 @@ export default {
     resetForm () {
       this.form = {
         well: null,
+        well_status: '',
         well_class: '',
         well_subclass: '',
         intended_water_use: '',
         identification_plate_number: null,
-        well_plate_attached: '',
+        well_identification_plate_attached: '',
+        id_plate_attached_by: '',
+        water_supply_system_well_name: '',
+        water_supply_system_name: '',
         driller_responsible: null,
         driller_name: '',
         consultant_name: '',
@@ -362,8 +372,8 @@ export default {
         surface_seal_depth: '',
         surface_seal_thickness: '',
         surface_seal_method: '',
-        backfill_above_surface_seal: '',
-        backfill_above_surface_seal_depth: '',
+        backfill_type: '',
+        backfill_depth: '',
         casing_set: [],
         screen_intake_method: '',
         screen_type: '',
@@ -372,10 +382,11 @@ export default {
         screen_opening: '',
         screen_bottom: '',
         screen_set: [],
+        screen_information: '',
         development_method: '',
         development_hours: '',
         development_notes: '',
-        production_data_set: [],
+        productiondata_set: [],
         filter_pack_from: '',
         filter_pack_to: '',
         filter_pack_thickness: '',
@@ -396,6 +407,7 @@ export default {
         well_cap_type: '',
         well_disinfected: 'False',
         comments: '',
+        internal_comments: '',
         alternative_specs_submitted: 'False',
         decommission_description_set: [],
         decommission_reason: '',
@@ -474,6 +486,7 @@ export default {
       this.formIsFlat = true
 
       this.loading = true
+
       ApiService.query(`wells/${this.$route.params.id}`).then((res) => {
         Object.keys(res.data).forEach((key) => {
           if (key in this.form) {

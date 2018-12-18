@@ -24,7 +24,8 @@ from wells.serializers import (
     CasingSerializer,
     DecommissionDescriptionSerializer,
     ScreenSerializer,
-    LinerPerforationSerializer
+    LinerPerforationSerializer,
+    ProductionDataSerializer
 )
 from wells.models import (
     ActivitySubmission,
@@ -42,6 +43,7 @@ from wells.models import (
     LandDistrictCode,
     LinerMaterialCode,
     LinerPerforation,
+    ProductionData,
     Screen,
     ScreenAssemblyTypeCode,
     ScreenBottomCode,
@@ -57,6 +59,7 @@ from wells.models import (
     Well,
     WellClassCode,
     WellSubclassCode,
+    WellStatusCode,
     YieldEstimationMethodCode,
 )
 
@@ -121,6 +124,7 @@ class WellSubmissionStackerSerializer(WellSubmissionSerializerBase):
         many=True, required=False)
     decommission_description_set = DecommissionDescriptionSerializer(
         many=True, required=False)
+    productiondata_set = ProductionDataSerializer(many=True, required=False)
 
     def get_foreign_keys(self):
         return {
@@ -128,6 +132,7 @@ class WellSubmissionStackerSerializer(WellSubmissionSerializerBase):
             'screen_set': Screen,
             'linerperforation_set': LinerPerforation,
             'decommission_description_set': DecommissionDescription,
+            'productiondata_set': ProductionData
         }
 
     class Meta:
@@ -144,6 +149,7 @@ class WellSubmissionLegacySerializer(WellSubmissionSerializerBase):
         many=True, required=False)
     decommission_description_set = DecommissionDescriptionSerializer(
         many=True, required=False)
+    productiondata_set = ProductionDataSerializer(many=True, required=False)
 
     def get_well_activity_type(self):
         return WellActivityCode.types.legacy()
@@ -154,6 +160,7 @@ class WellSubmissionLegacySerializer(WellSubmissionSerializerBase):
             'screen_set': Screen,
             'linerperforation_set': LinerPerforation,
             'decommission_description_set': DecommissionDescription,
+            'productiondata_set': ProductionData
         }
 
     class Meta:
@@ -182,7 +189,9 @@ class WellConstructionSubmissionSerializer(WellSubmissionSerializerBase):
     casing_set = CasingSerializer(many=True, required=False)
     screen_set = ScreenSerializer(many=True, required=False)
     linerperforation_set = LinerPerforationSerializer(
-        many=True, required=False)    
+        many=True, required=False)
+    productiondata_set = ProductionDataSerializer(many=True, required=False)
+
     coordinate_acquisition_code = serializers.PrimaryKeyRelatedField(
         queryset=CoordinateAcquisitionCode.objects.all(),
         required=False)
@@ -198,6 +207,7 @@ class WellConstructionSubmissionSerializer(WellSubmissionSerializerBase):
             'casing_set': Casing,
             'screen_set': Screen,
             'linerperforation_set': LinerPerforation,
+            'productiondata_set': ProductionData
         }
 
     def get_well_activity_type(self):
@@ -206,7 +216,7 @@ class WellConstructionSubmissionSerializer(WellSubmissionSerializerBase):
     class Meta:
         model = ActivitySubmission
         fields = ('filing_number', 'well_activity_type', 'well', 'well_class', 'well_subclass',
-                  'intended_water_use', 'identification_plate_number', 'well_plate_attached',
+                  'intended_water_use', 'identification_plate_number', 'well_identification_plate_attached',
                   'work_start_date', 'work_end_date', 'owner_full_name', 'owner_mailing_address',
                   'owner_province_state', 'owner_city', 'owner_postal_code', 'owner_email',
                   'owner_tel', 'street_address', 'city',
@@ -215,13 +225,13 @@ class WellConstructionSubmissionSerializer(WellSubmissionSerializerBase):
                   'latitude', 'longitude', 'ground_elevation', 'ground_elevation_method', 'drilling_method',
                   'other_drilling_method', 'well_orientation', 'lithologydescription_set', 'casing_set',
                   'surface_seal_material', 'surface_seal_depth', 'surface_seal_thickness',
-                  'surface_seal_method', 'backfill_above_surface_seal', 'backfill_above_surface_seal_depth',
+                  'surface_seal_method', 'backfill_type', 'backfill_depth',
                   'liner_material', 'liner_diameter', 'liner_thickness', 'liner_from', 'liner_to',
                   'linerperforation_set', 'screen_intake_method', 'screen_type', 'screen_material',
                   'other_screen_material', 'screen_opening', 'screen_bottom', 'other_screen_bottom',
                   'screen_set', 'filter_pack_from', 'filter_pack_to', 'filter_pack_thickness',
                   'filter_pack_material', 'filter_pack_material_size', 'development_method',
-                  'development_hours', 'development_notes', 'water_quality_characteristics',
+                  'development_hours', 'productiondata_set', 'development_notes', 'water_quality_characteristics',
                   'water_quality_colour', 'water_quality_odour', 'ems_id', 'total_depth_drilled',
                   'finished_well_depth', 'final_casing_stick_up', 'bedrock_depth', 'static_water_level',
                   'well_yield', 'artesian_flow', 'artesian_pressure', 'well_cap_type', 'well_disinfected',
@@ -241,12 +251,14 @@ class WellAlterationSubmissionSerializer(WellSubmissionSerializerBase):
     screen_set = ScreenSerializer(many=True, required=False)
     linerperforation_set = LinerPerforationSerializer(
         many=True, required=False)
+    productiondata_set = ProductionDataSerializer(many=True, required=False)
 
     def get_foreign_keys(self):
         return {
             'casing_set': Casing,
             'screen_set': Screen,
             'linerperforation_set': LinerPerforation,
+            'productiondata_set': ProductionData
         }
 
     def get_well_activity_type(self):
@@ -262,7 +274,7 @@ class WellAlterationSubmissionSerializer(WellSubmissionSerializerBase):
             'well_subclass',
             'intended_water_use',
             'identification_plate_number',
-            'well_plate_attached',
+            'well_identification_plate_attached',
             'work_start_date',
             'work_end_date',
             'owner_full_name',
@@ -301,8 +313,8 @@ class WellAlterationSubmissionSerializer(WellSubmissionSerializerBase):
             'surface_seal_depth',
             'surface_seal_thickness',
             'surface_seal_method',
-            'backfill_above_surface_seal',
-            'backfill_above_surface_seal_depth',
+            'backfill_type',
+            'backfill_depth',
             'liner_material',
             'liner_diameter',
             'liner_thickness',
@@ -316,6 +328,7 @@ class WellAlterationSubmissionSerializer(WellSubmissionSerializerBase):
             'screen_opening',
             'screen_bottom',
             'other_screen_bottom',
+            'screen_information',
             'screen_set',
             'filter_pack_from',
             'filter_pack_to',
@@ -325,6 +338,7 @@ class WellAlterationSubmissionSerializer(WellSubmissionSerializerBase):
             'development_method',
             'development_hours',
             'development_notes',
+            'productiondata_set',
             'water_quality_characteristics',
             'water_quality_colour',
             'water_quality_odour',
@@ -352,40 +366,38 @@ class WellAlterationSubmissionSerializer(WellSubmissionSerializerBase):
 class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
 
     well = serializers.PrimaryKeyRelatedField(queryset=Well.objects.all())
+    linerperforation_set = LinerPerforationSerializer(
+        many=True, required=False)
+    casing_set = CasingSerializer(many=True, required=False)
+    screen_set = ScreenSerializer(many=True, required=False)
+    productiondata_set = ProductionDataSerializer(many=True, required=False)
+    decommission_description_set = DecommissionDescriptionSerializer(many=True, required=False)
 
     def get_well_activity_type(self):
         return WellActivityCode.types.staff_edit()
 
     def get_foreign_keys(self):
-        return {}
+        return {
+            'casing_set': Casing,
+            'screen_set': Screen,
+            'linerperforation_set': LinerPerforation,
+            'productiondata_set': ProductionData,
+            'decommission_description_set': DecommissionDescription
+        }
 
     class Meta:
         model = ActivitySubmission
         fields = (
-            # 'well',
-            # 'driller_name',
-            # 'consultant_name',
-            # 'consultant_company',
-            # 'driller_responsible',
-            # 'owner_full_name',
-            # 'owner_full_name',
-            # 'owner_mailing_address',
-            # 'owner_province_state',
-            # 'owner_city',
-            # 'owner_postal_code',
-            # 'owner_email',
-            # 'owner_tel',
-            # 'ground_elevation',
-            # 'ground_elevation_method',
-            # 'drilling_method',
-            # 'other_drilling_method',
-            # 'well_orientation',
             'well',
             'well_class',
             'well_subclass',
+            'well_status',
             'intended_water_use',
             'identification_plate_number',
-            'well_plate_attached',
+            'well_identification_plate_attached',
+            'id_plate_attached_by',
+            'water_supply_system_name',
+            'water_supply_system_well_name',
             'work_start_date',
             'work_end_date',
             'owner_full_name',
@@ -420,19 +432,19 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
             'other_drilling_method',
             'well_orientation',
             # 'lithologydescription_set',
-            # 'casing_set',
+            'casing_set',
             'surface_seal_material',
-            # 'surface_seal_depth',  NEEDS MIGRATION
+            'surface_seal_depth',
             'surface_seal_thickness',
             'surface_seal_method',
-            'backfill_above_surface_seal',
-            # 'backfill_above_surface_seal_depth',  NEEDS MIGRATION - this field was supposed to replace backfill_depth
+            'backfill_type',
+            'backfill_depth',
             'liner_material',
             'liner_diameter',
             'liner_thickness',
             'liner_from',
             'liner_to',
-            # 'linerperforation_set',
+            'linerperforation_set',
             'screen_intake_method',
             'screen_type',
             'screen_material',
@@ -440,7 +452,8 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
             'screen_opening',
             'screen_bottom',
             'other_screen_bottom',
-            # 'screen_set',
+            'screen_set',
+            'screen_information',
             'filter_pack_from',
             'filter_pack_to',
             'filter_pack_thickness',
@@ -449,12 +462,18 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
             'development_method',
             'development_hours',
             'development_notes',
+            'productiondata_set',
             'water_quality_characteristics',
             'water_quality_colour',
             'water_quality_odour',
             'ems_id',
             'total_depth_drilled',
             'finished_well_depth',
+            'decommission_reason',
+            'decommission_method',
+            'sealant_material',
+            'backfill_material',
+            'decommission_details',
             'final_casing_stick_up',
             'bedrock_depth',
             'static_water_level',
@@ -464,7 +483,9 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
             'well_cap_type',
             'well_disinfected',
             'comments',
+            'internal_comments',
             'alternative_specs_submitted',
+            'decommission_description_set',
         )
 
 
@@ -495,7 +516,7 @@ class WellDecommissionSubmissionSerializer(WellSubmissionSerializerBase):
             'well_subclass',
             'intended_water_use',
             'identification_plate_number',
-            'well_plate_attached',
+            'well_identification_plate_attached',
             'work_start_date',
             'work_end_date',
             'owner_full_name',
@@ -738,3 +759,13 @@ class DecommissionMaterialCodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = DecommissionMaterialCode
         fields = ('code', 'description')
+
+
+class WellStatusCodeSerializer(serializers.ModelSerializer):
+    """ Serializes well status codes """
+
+    class Meta:
+        model = WellStatusCode
+        fields = (
+            'well_status_code', 'description'
+        )

@@ -13,7 +13,17 @@ Licensed under the Apache License, Version 2.0 (the "License");
 */
 <template>
   <fieldset>
-    <legend :id="id">Screen Information</legend>
+    <b-row>
+      <b-col cols="12" lg="6">
+        <legend :id="id">Screen Information</legend>
+      </b-col>
+      <b-col cols="12" lg="6">
+        <div class="float-right">
+          <b-btn v-if="isStaffEdit" variant="primary" class="ml-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
+          <a href="#top" v-if="isStaffEdit">Back to top</a>
+        </div>
+      </b-col>
+    </b-row>
     <b-row>
       <b-col cols="12" md="4" lg="3">
         <form-input
@@ -79,6 +89,16 @@ Licensed under the Apache License, Version 2.0 (the "License");
           value-field="screen_bottom_code"
           placeholder="Select bottom"
           v-model="screenBottomInput"></form-input>
+      </b-col>
+    </b-row>
+    <b-row>
+      <b-col cols="12" md="4" lg="3">
+        <form-input
+          id="screenInformation"
+          label="Screen Information"
+          v-model="screenInformationInput"
+          :errors="errors['screen_information']"
+          :loaded="fieldsLoaded['screen_information']"></form-input>
       </b-col>
     </b-row>
     <p class="mt-3 mb-2">Screen Details</p>
@@ -204,6 +224,7 @@ export default {
     otherScreenMaterial: String,
     screenOpening: String,
     screenBottom: String,
+    screenInformation: String,
     screens: {
       type: Array,
       default: () => ([])
@@ -218,6 +239,14 @@ export default {
     },
     id: {
       type: String,
+      isInput: false
+    },
+    isStaffEdit: {
+      type: Boolean,
+      isInput: false
+    },
+    saveDisabled: {
+      type: Boolean,
       isInput: false
     }
   },
