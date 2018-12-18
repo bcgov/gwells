@@ -521,7 +521,8 @@ export default {
     },
     isLoadFormDisabled () {
       // During unit tests, the localStorage object might not exist, so we have to check it's existence.
-      return !window.localStorage || (window.localStorage.getItem('savedFormData') === null && !this.hasHadSaveFormSuccess)
+      // return !window.localStorage || (window.localStorage.getItem('savedFormData') === null && !this.hasHadSaveFormSuccess)
+      return true
     },
     editSaveDisabled () {
       return this.formSubmitLoading || !this.formValueChanged
@@ -534,14 +535,14 @@ export default {
     saveForm () {
       // saves a copy of form data locally
       this.saveStatusReset()
-      const data = JSON.stringify(this.form)
-      localStorage.setItem('savedFormData', data)
+      // const data = JSON.stringify(this.form)
+      // localStorage.setItem('savedFormData', data)
       setTimeout(() => { this.saveFormSuccess = true }, 10)
       setTimeout(() => { this.saveFormSuccess = false; this.hasHadSaveFormSuccess = true }, 1000)
     },
     loadForm () {
       this.saveStatusReset()
-      const storedData = localStorage.getItem('savedFormData')
+      const storedData = null // localStorage.getItem('savedFormData')
       if (storedData) {
         this.$emit('resetForm')
 

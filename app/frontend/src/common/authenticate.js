@@ -22,15 +22,15 @@ export default {
   },
 
   setLocalToken: function (instance) {
-    localStorage.setItem('token', instance.token)
-    localStorage.setItem('refreshToken', instance.refreshToken)
-    localStorage.setItem('idToken', instance.idToken)
+    // localStorage.setItem('token', instance.token)
+    // localStorage.setItem('refreshToken', instance.refreshToken)
+    // localStorage.setItem('idToken', instance.idToken)
     ApiService.authHeader('JWT', instance.token)
   },
   removeLocalToken: function () {
-    localStorage.removeItem('token')
-    localStorage.removeItem('refreshToken')
-    localStorage.removeItem('idToken')
+    // localStorage.removeItem('token')
+    // localStorage.removeItem('refreshToken')
+    // localStorage.removeItem('idToken')
     ApiService.authHeader()
   },
 
@@ -45,9 +45,9 @@ export default {
         resolve() // We've already authenticated, have a header, and we've not expired.
       } else {
         // Attempt to retrieve a stored token, this may avoid us having to refresh the page.
-        const token = localStorage.getItem('token')
-        const refreshToken = localStorage.getItem('refreshToken')
-        const idToken = localStorage.getItem('idToken')
+        const token = null // localStorage.getItem('token')
+        const refreshToken = null // localStorage.getItem('refreshToken')
+        const idToken = null // localStorage.getItem('idToken')
         instance.init({
           onLoad: 'check-sso',
           checkLoginIframe: true,
