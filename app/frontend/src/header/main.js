@@ -55,9 +55,13 @@ new Vue({
   },
   created () {
     // start Keycloak authentication
-    authenticate.authenticate(store).then((result) => {
-      // Auth complete. Do something here if you want.
-    })
+    authenticate.authenticate(store).then(
+      () => {
+        // Auth complete. Do something here if you want.
+      }).catch(
+      () => {
+        // Auth failed for some reason. Do something here if you want.
+      })
     this.FETCH_CONFIG()
   }
 })
