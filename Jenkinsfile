@@ -337,6 +337,13 @@ pipeline {
         //                                     envVar(key:'GRADLE_USER_HOME', value: '/var/cache/artifacts/gradle')
         //                                 ]
         //                             )
+        //                         ],
+        //                         volumes: [
+        //                             persistentVolumeClaim(
+        //                                 mountPath: '/var/cache/artifacts',
+        //                                 claimName: 'cache',
+        //                                 readOnly: false
+        //                             )
         //                         ]
         //                     ) {
         //                         node("bddstack-${DEV_SUFFIX}-${PR_NUM}") {
@@ -347,6 +354,7 @@ pipeline {
         //                                 try {
         //                                     try {
         //                                         sh './gradlew chromeHeadlessTest'
+        //                                         sh './gradlew -DchromeHeadlessTest.single=SearchSpecs chromeHeadlessTest' // single test
         //                                     } finally {
         //                                         archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
         //                                         archiveArtifacts allowEmptyArchive: true, artifacts: 'build/test-results/**/*'
