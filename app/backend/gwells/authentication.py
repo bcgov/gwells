@@ -42,19 +42,28 @@ class JwtOidcAuthentication(JSONWebTokenAuthentication):
                 'Failed to retrieve or create user')
 
         if user_created:
+            # User created, set the email for the 1st time.
             user.set_password(User.objects.make_random_password(length=36))
             user.email = payload.get('email')
             user.save()
-
-        user.email = payload.get('email')
-        user.save()
+        elif user.email != payload.get('email'):
+            # The email has changed, do an update.
+            user.email = payload.get('email')
+            user.save()
 
         # load the user's GWELLS profile
         try:
-            profile, __ = Profile.objects.get_or_create(user=user.id)
+            profile, profile_created = Profile.objects.get_or_create(user=user.id)
         except:
             raise exceptions.AuthenticationFailed(
                 'Failed to create user profile')
+
+        # get the name from the token and store it in the profile. If name not supplied, use the username.
+        name = payload.get('name') or payload.get('preferred_username')
+        if profile.name != name:
+            # Update the profile name if it's changed.
+            profile.name = name
+            profile.save()
 
         # get the roles supplied by Keycloak for this user
         try:
@@ -64,10 +73,5 @@ class JwtOidcAuthentication(JSONWebTokenAuthentication):
 
         # put user in groups based on role
         roles_to_groups(user, roles)
-
-        # get the name from the token and store it in the profile. If name not supplied, use the username.
-        name = payload.get('name') or payload.get('preferred_username')
-        profile.name = name
-        profile.save()
 
         return user

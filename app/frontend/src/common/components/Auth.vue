@@ -31,6 +31,7 @@ export default {
   },
   methods: {
     keyCloakLogin () {
+      // If you click REAL fast, this.keycloak may not exist!
       if (this.keycloak) {
         this.keycloak.init().success(() => {
           this.keycloak.login({ idpHint: this.config.sso_idp_hint }).success((authenticated) => {

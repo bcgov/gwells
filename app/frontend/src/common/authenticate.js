@@ -33,6 +33,16 @@ export default {
     localStorage.removeItem('idToken')
     ApiService.authHeader()
   },
+  setTokenExpireAction: function (instance) {
+    instance.onTokenExpired = () => {
+      instance.updateToken().success(() => {
+        this.setLocalToken(instance)
+      }).error(() => {
+        this.removeLocalToken()
+        instance.clearToken()
+      })
+    }
+  },
 
   authenticate: function (store) {
     /**
@@ -56,31 +66,32 @@ export default {
           refreshToken,
           idToken }
         ).success((result) => {
-          // assumes the store passed in includes a 'SET_KEYCLOAK' mutation.
-          store.commit('SET_KEYCLOAK', instance)
+          // Assumes the store passed in includes a 'SET_KEYCLOAK' mutation.
           if (instance.authenticated) {
             // We may have been authenticated, but the token could be expired.
             instance.updateToken(60).success(() => {
-              // Store the token to avoid future round trips
+              // Store the token to avoid future round trips, and wire up the API
               this.setLocalToken(instance)
+              this.setTokenExpireAction(instance)
+              // We update the store reference only after wiring up the API. (Someone might be waiting
+              // for login to complete before taking some action. )
+              store.commit('SET_KEYCLOAK', instance)
+              resolve()
             }).error(() => {
               // The refresh token is expired or was rejected
-              result = false
               this.removeLocalToken()
               instance.clearToken()
+              // We update the store reference only after wiring up the API. (Someone might be waiting
+              // for login to complete before taking some action. )
+              store.commit('SET_KEYCLOAK', instance)
+              resolve()
             })
+          } else {
+            // We may have failed to authenticate, for many reasons, e.g. - it may be we never logged in,
+            // or have an expired token.
+            store.commit('SET_KEYCLOAK', instance)
+            resolve()
           }
-          instance.onTokenExpired = () => {
-            instance.updateToken().success(() => {
-              this.setLocalToken(instance)
-            }).error(() => {
-              this.removeLocalToken()
-              instance.clearToken()
-            })
-          }
-          // We may have failed to authenticate, for many reasons, e.g. - it may be we never logged in,
-          // or have an expired token.
-          resolve(result)
         }).error((e) => {
           reject(e)
         })
