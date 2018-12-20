@@ -750,23 +750,23 @@ pipeline {
 
         // Single functional test
         stage('TEST - Smoke Tests') {
-            when {
-                expression { env.CHANGE_TARGET == 'master' }
-            }
+            // when {
+            //     expression { env.CHANGE_TARGET == 'master' }
+            // }
             steps {
                 script {
                     _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
-                        echo "Functional Testing"
-                        String baseURL = "https://${TEST_HOST}/gwells"
+                        echo "Smoke Testing"
+                        String BASE_URL = "${TEST_HOST}"
                         podTemplate(
-                            label: "bddstack-${PR_NUM}",
-                            name: "bddstack-${PR_NUM}",
+                            label: "bddstack-${TEST_SUFFIX}-${PR_NUM}",
+                            name: "bddstack-${TEST_SUFFIX}-${PR_NUM}",
                             serviceAccount: 'jenkins',
                             cloud: 'openshift',
                             containers: [
                                 containerTemplate(
                                     name: 'jnlp',
-                                    image: 'docker-registry.default.svc:5000/moe-gwells-tools/bddstack:latest',
+                                    image: 'docker-registry.default.svc:5000/bcgov/jenkins-slave-bddstack:v1-stable',
                                     resourceRequestCpu: '800m',
                                     resourceLimitCpu: '800m',
                                     resourceRequestMemory: '4Gi',
@@ -775,8 +775,12 @@ pipeline {
                                     command: '',
                                     args: '${computer.jnlpmac} ${computer.name}',
                                     envVars: [
-                                        envVar(key:'BASEURL', value: baseURL),
+                                        envVar(key:'BASE_URL', value: BASE_URL),
                                         envVar(key:'GRADLE_USER_HOME', value: '/var/cache/artifacts/gradle'),
+                                        envVar(key:'GWELLS_USERNAME', value: 'bdduser1'),
+                                        envVar(key:'GWELLS_VIEWER_USERNAME', value: 'bdd-viewer'),
+                                        envVar(key:'GWELLS_SUBMISSION_USERNAME', value: 'bdd-submission'),
+                                        envVar(key:'GWELLS_REGISTRY_USERNAME', value: 'bdd-registry'),
                                         envVar(key:'OPENSHIFT_JENKINS_JVM_ARCH', value: 'x86_64')
                                     ]
                                 )
@@ -789,12 +793,13 @@ pipeline {
                                 )
                             ]
                         ) {
-                            node("bddstack-${PR_NUM}") {
+                            node("bddstack-${TEST_SUFFIX}-${PR_NUM}") {
                                 //the checkout is mandatory, otherwise functional tests would fail
                                 echo "checking out source"
                                 checkout scm
                                 dir('functional-tests') {
                                     try {
+                                        echo "BASE_URL = ${BASE_URL}"
                                         sh './gradlew -DchromeHeadlessTest.single=SearchSpecs chromeHeadlessTest'
                                     } finally {
                                         archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
