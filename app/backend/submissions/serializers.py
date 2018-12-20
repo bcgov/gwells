@@ -11,21 +11,21 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-
-from rest_framework import serializers
 import logging
+
+from django.db import transaction
+from django.db.models import OneToOneField
+from rest_framework import serializers
 
 from gwells.models import ProvinceStateCode
 from gwells.serializers import AuditModelSerializer
-from django.db import transaction
 import wells.stack
 from wells.models import Well, ActivitySubmission, WellActivityCode
 from wells.serializers import (
     CasingSerializer,
     DecommissionDescriptionSerializer,
     ScreenSerializer,
-    LinerPerforationSerializer,
-    ProductionDataSerializer
+    LinerPerforationSerializer
 )
 from wells.models import (
     ActivitySubmission,
@@ -43,7 +43,6 @@ from wells.models import (
     LandDistrictCode,
     LinerMaterialCode,
     LinerPerforation,
-    ProductionData,
     Screen,
     ScreenAssemblyTypeCode,
     ScreenBottomCode,
@@ -60,6 +59,7 @@ from wells.models import (
     WellClassCode,
     WellSubclassCode,
     WellStatusCode,
+    WellYieldUnitCode,
     YieldEstimationMethodCode,
     ObsWellStatusCode,
 )
@@ -86,7 +86,7 @@ class WellSubmissionListSerializer(serializers.ModelSerializer):
 class WellSubmissionSerializerBase(serializers.ModelSerializer):
     """ Bass class for well submission serialisation. """
 
-    def get_foreign_keys(self):
+    def get_foreign_key_sets(self):
         raise NotImplementedError()  # Implement in base class!
 
     def get_well_activity_type(self):
@@ -95,19 +95,30 @@ class WellSubmissionSerializerBase(serializers.ModelSerializer):
     @transaction.atomic
     def create(self, validated_data):
         # Pop foreign key records from validated data (we need to create them ourselves).
-        foreign_keys = self.get_foreign_keys()
+        foreign_keys = self.get_foreign_key_sets()
         foreign_keys_data = {}
         for key in foreign_keys.keys():
             foreign_keys_data[key] = validated_data.pop(key, None)
         # Create submission.
         validated_data['well_activity_type'] = self.get_well_activity_type()
+
+        # If the yield_estimation_rate is specified, we default to USGPM
+        if validated_data.get('yield_estimation_rate', None) and \
+                not validated_data.get('well_yield_unit', None):
+            validated_data['well_yield_unit'] = WellYieldUnitCode.objects.get(well_yield_unit_code='USGPM')
+
         instance = super().create(validated_data)
         # Create foreign key records.
         for key, value in foreign_keys_data.items():
             if value:
-                for data in value:
-                    thing = foreign_keys[key].objects.create(
-                        activity_submission=instance, **data)
+                model = type(self).Meta.model
+                field = model._meta.get_field(key)
+                foreign_class = foreign_keys[key]
+                if field.one_to_many:
+                    for data in value:
+                        foreign_class.objects.create(activity_submission=instance, **data)
+                else:
+                    raise 'UNEXPECTED FIELD! {}'.format(field)
         # Update the well record.
         stacker = wells.stack.StackWells()
         stacker.process(instance.filing_number)
@@ -125,15 +136,13 @@ class WellSubmissionStackerSerializer(WellSubmissionSerializerBase):
         many=True, required=False)
     decommission_description_set = DecommissionDescriptionSerializer(
         many=True, required=False)
-    productiondata_set = ProductionDataSerializer(many=True, required=False)
 
-    def get_foreign_keys(self):
+    def get_foreign_key_sets(self):
         return {
             'casing_set': Casing,
             'screen_set': Screen,
             'linerperforation_set': LinerPerforation,
             'decommission_description_set': DecommissionDescription,
-            'productiondata_set': ProductionData
         }
 
     class Meta:
@@ -150,18 +159,16 @@ class WellSubmissionLegacySerializer(WellSubmissionSerializerBase):
         many=True, required=False)
     decommission_description_set = DecommissionDescriptionSerializer(
         many=True, required=False)
-    productiondata_set = ProductionDataSerializer(many=True, required=False)
 
     def get_well_activity_type(self):
         return WellActivityCode.types.legacy()
 
-    def get_foreign_keys(self):
+    def get_foreign_key_sets(self):
         return {
             'casing_set': Casing,
             'screen_set': Screen,
             'linerperforation_set': LinerPerforation,
             'decommission_description_set': DecommissionDescription,
-            'productiondata_set': ProductionData
         }
 
     class Meta:
@@ -191,7 +198,6 @@ class WellConstructionSubmissionSerializer(WellSubmissionSerializerBase):
     screen_set = ScreenSerializer(many=True, required=False)
     linerperforation_set = LinerPerforationSerializer(
         many=True, required=False)
-    productiondata_set = ProductionDataSerializer(many=True, required=False)
 
     coordinate_acquisition_code = serializers.PrimaryKeyRelatedField(
         queryset=CoordinateAcquisitionCode.objects.all(),
@@ -203,12 +209,11 @@ class WellConstructionSubmissionSerializer(WellSubmissionSerializerBase):
             validated_data['coordinate_acquisition_code'] = CoordinateAcquisitionCode.objects.get(code='H')
         return super().create(validated_data)
 
-    def get_foreign_keys(self):
+    def get_foreign_key_sets(self):
         return {
             'casing_set': Casing,
             'screen_set': Screen,
             'linerperforation_set': LinerPerforation,
-            'productiondata_set': ProductionData
         }
 
     def get_well_activity_type(self):
@@ -232,7 +237,11 @@ class WellConstructionSubmissionSerializer(WellSubmissionSerializerBase):
                   'other_screen_material', 'screen_opening', 'screen_bottom', 'other_screen_bottom',
                   'screen_set', 'filter_pack_from', 'filter_pack_to', 'filter_pack_thickness',
                   'filter_pack_material', 'filter_pack_material_size', 'development_method',
-                  'development_hours', 'productiondata_set', 'development_notes', 'water_quality_characteristics',
+                  'development_hours', 'yield_estimation_method', 'yield_estimation_rate',
+                  'yield_estimation_duration', 'well_yield_unit', 'static_level_before_test',
+                  'drawdown', 'hydro_fracturing_performed', 'hydro_fracturing_yield_increase',
+                  'recommended_pump_depth', 'recommended_pump_rate', 'development_notes',
+                  'water_quality_characteristics',
                   'water_quality_colour', 'water_quality_odour', 'ems_id', 'total_depth_drilled',
                   'finished_well_depth', 'final_casing_stick_up', 'bedrock_depth', 'static_water_level',
                   'well_yield', 'artesian_flow', 'artesian_pressure', 'well_cap_type', 'well_disinfected',
@@ -252,14 +261,12 @@ class WellAlterationSubmissionSerializer(WellSubmissionSerializerBase):
     screen_set = ScreenSerializer(many=True, required=False)
     linerperforation_set = LinerPerforationSerializer(
         many=True, required=False)
-    productiondata_set = ProductionDataSerializer(many=True, required=False)
 
-    def get_foreign_keys(self):
+    def get_foreign_key_sets(self):
         return {
             'casing_set': Casing,
             'screen_set': Screen,
             'linerperforation_set': LinerPerforation,
-            'productiondata_set': ProductionData
         }
 
     def get_well_activity_type(self):
@@ -339,7 +346,16 @@ class WellAlterationSubmissionSerializer(WellSubmissionSerializerBase):
             'development_method',
             'development_hours',
             'development_notes',
-            'productiondata_set',
+            'yield_estimation_method',
+            'yield_estimation_rate',
+            'yield_estimation_duration',
+            'well_yield_unit',
+            'static_level_before_test',
+            'drawdown',
+            'hydro_fracturing_performed',
+            'hydro_fracturing_yield_increase',
+            'recommended_pump_depth',
+            'recommended_pump_rate',
             'water_quality_characteristics',
             'water_quality_colour',
             'water_quality_odour',
@@ -371,19 +387,17 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
         many=True, required=False)
     casing_set = CasingSerializer(many=True, required=False)
     screen_set = ScreenSerializer(many=True, required=False)
-    productiondata_set = ProductionDataSerializer(many=True, required=False)
     decommission_description_set = DecommissionDescriptionSerializer(many=True, required=False)
 
     def get_well_activity_type(self):
         return WellActivityCode.types.staff_edit()
 
-    def get_foreign_keys(self):
+    def get_foreign_key_sets(self):
         return {
             'casing_set': Casing,
             'screen_set': Screen,
             'linerperforation_set': LinerPerforation,
-            'productiondata_set': ProductionData,
-            'decommission_description_set': DecommissionDescription
+            'decommission_description_set': DecommissionDescription,
         }
 
     class Meta:
@@ -463,7 +477,16 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
             'development_method',
             'development_hours',
             'development_notes',
-            'productiondata_set',
+            'yield_estimation_method',
+            'yield_estimation_rate',
+            'yield_estimation_duration',
+            'well_yield_unit',
+            'static_level_before_test',
+            'drawdown',
+            'hydro_fracturing_performed',
+            'hydro_fracturing_yield_increase',
+            'recommended_pump_depth',
+            'recommended_pump_rate',
             'water_quality_characteristics',
             'water_quality_colour',
             'water_quality_odour',
@@ -513,7 +536,7 @@ class WellDecommissionSubmissionSerializer(WellSubmissionSerializerBase):
     def get_well_activity_type(self):
         return WellActivityCode.types.decommission()
 
-    def get_foreign_keys(self):
+    def get_foreign_key_sets(self):
         return {
             'casing_set': Casing,
             'decommission_description_set': DecommissionDescription,

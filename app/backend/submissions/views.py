@@ -115,7 +115,6 @@ def get_submission_queryset(qs):
                 "water_quality_characteristics",
                 "lithologydescription_set",
                 "linerperforation_set",
-                "productiondata_set",
                 "casing_set",
                 "screen_set",
                 "decommission_description_set",
