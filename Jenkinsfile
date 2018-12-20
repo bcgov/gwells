@@ -750,9 +750,9 @@ pipeline {
 
         // Single functional test
         stage('TEST - Smoke Tests') {
-            // when {
-            //     expression { env.CHANGE_TARGET == 'master' }
-            // }
+            when {
+                expression { env.CHANGE_TARGET == 'master' }
+            }
             steps {
                 script {
                     _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
@@ -800,7 +800,7 @@ pipeline {
                                 dir('functional-tests') {
                                     try {
                                         echo "BASE_URL = ${BASE_URL}"
-                                        sh './gradlew -DchromeHeadlessTest.single=SearchSpecs chromeHeadlessTest'
+                                        sh './gradlew -DchromeHeadlessTest.single=FlowSpecs chromeHeadlessTest'
                                     } finally {
                                         archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
                                         archiveArtifacts allowEmptyArchive: true, artifacts: 'build/test-results/**/*'
