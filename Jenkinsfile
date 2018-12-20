@@ -757,7 +757,7 @@ pipeline {
                 script {
                     _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
                         echo "Smoke Testing"
-                        String BASE_URL = "${TEST_HOST}"
+                        String BASE_URL = "https://${TEST_HOST}/gwells/"
                         podTemplate(
                             label: "bddstack-${TEST_SUFFIX}-${PR_NUM}",
                             name: "bddstack-${TEST_SUFFIX}-${PR_NUM}",
