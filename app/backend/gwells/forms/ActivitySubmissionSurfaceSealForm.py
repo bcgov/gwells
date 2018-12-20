@@ -48,8 +48,8 @@ class ActivitySubmissionSurfaceSealForm(forms.ModelForm):
                     css_class='row',
                 ),
                 Div(
-                    Div('backfill_above_surface_seal', css_class='col-md-3'),
-                    Div(AppendedText('backfill_above_surface_seal_depth', 'ft'), css_class='col-md-2'),
+                    Div('backfill_type', css_class='col-md-3'),
+                    Div(AppendedText('backfill_depth', 'ft'), css_class='col-md-2'),
                     css_class='row',
                 ),
             ),
@@ -115,5 +115,5 @@ class ActivitySubmissionSurfaceSealForm(forms.ModelForm):
     class Meta:
         model = ActivitySubmission
         fields = ['surface_seal_material', 'surface_seal_depth', 'surface_seal_thickness',
-                  'surface_seal_method', 'backfill_above_surface_seal', 'backfill_above_surface_seal_depth',
+                  'surface_seal_method', 'backfill_type', 'backfill_depth',
                   'liner_material', 'liner_diameter', 'liner_thickness', 'liner_from', 'liner_to']

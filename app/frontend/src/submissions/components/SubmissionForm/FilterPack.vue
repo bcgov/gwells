@@ -62,7 +62,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           :options="codes.filter_pack_material"
           text-field="description"
           value-field="filter_pack_material_code"
-          v-model="screenPackMaterialInput"
+          v-model="filterPackMaterialInput"
           placeholder="Select material"
           :errors="errors['filter_pack_material']"
           :loaded="fieldsLoaded['filter_pack_material']"
@@ -75,8 +75,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
           select
           :options="codes.filter_pack_material_size"
           text-field="description"
-          value-field="filter_pack_material_size"
-          v-model="screenPackMaterialSizeInput"
+          value-field="filter_pack_material_size_code"
+          v-model="filterPackMaterialSizeInput"
           placeholder="Select size"
           :errors="errors['filter_pack_material_size']"
           :loaded="fieldsLoaded['filter_pack_material_size']"
@@ -96,8 +96,8 @@ export default {
     filterPackFrom: String,
     filterPackTo: String,
     filterPackThickness: String,
-    screenPackMaterial: String,
-    screenPackMaterialSize: String,
+    filterPackMaterial: String,
+    filterPackMaterialSize: String,
     errors: {
       type: Object,
       default: () => ({})
@@ -123,8 +123,8 @@ export default {
     filterPackFromInput: 'filterPackFrom',
     filterPackToInput: 'filterPackTo',
     filterPackThicknessInput: 'filterPackThickness',
-    screenPackMaterialInput: 'screenPackMaterial',
-    screenPackMaterialSizeInput: 'screenPackMaterialSize'
+    filterPackMaterialInput: 'filterPackMaterial',
+    filterPackMaterialSizeInput: 'filterPackMaterialSize'
   },
   data () {
     return {}

@@ -588,6 +588,8 @@ class Well(AuditModel):
 
     well_identification_plate_attached = models.CharField(
         max_length=500, blank=True, null=True, verbose_name='Well Identification Plate Is Attached')
+    id_plate_attached_by = models.CharField(
+        max_length=100, blank=True, null=True, verbose_name='Well identification plate attached by')
 
     latitude = models.DecimalField(
         max_digits=8, decimal_places=6, blank=True, null=True, verbose_name='Latitude')
@@ -612,6 +614,8 @@ class Well(AuditModel):
                                               verbose_name='Surface Seal Material')
     surface_seal_length = models.DecimalField(
         max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Surface Seal Length')
+    surface_seal_depth = models.DecimalField(
+        max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Surface Seal Depth')
     surface_seal_thickness = models.DecimalField(
         max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Surface Seal Thickness')
     surface_seal_method = models.ForeignKey(SurfaceSealMethodCode, db_column='surface_seal_method_code',
@@ -654,7 +658,9 @@ class Well(AuditModel):
                                       on_delete=models.CASCADE, blank=True, null=True, verbose_name='Bottom')
     other_screen_bottom = models.CharField(
         max_length=50, blank=True, null=True, verbose_name='Specify Other Screen Bottom')
-
+    screen_information = models.CharField(
+        max_length=300, blank=True, null=True, verbose_name="Screen Information"
+    )
     filter_pack_from = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True,
                                            verbose_name='Filter Pack From',
                                            validators=[MinValueValidator(Decimal('0.00'))])
@@ -715,6 +721,8 @@ class Well(AuditModel):
         default=False, verbose_name='Well Disinfected', choices=((False, 'No'), (True, 'Yes')))
 
     comments = models.CharField(max_length=3000, blank=True, null=True)
+    internal_comments = models.CharField(max_length=3000, blank=True, null=True)
+
     alternative_specs_submitted = \
         models.BooleanField(default=False,
                             verbose_name='Alternative specs submitted (if required)',
@@ -915,6 +923,9 @@ class ActivitySubmission(AuditModel):
     well_activity_type = models.ForeignKey(
         WellActivityCode, db_column='well_activity_code', on_delete=models.CASCADE,
         verbose_name='Type of Work')
+    well_status = models.ForeignKey(WellStatusCode, db_column='well_status_code',
+                                    on_delete=models.CASCADE, blank=True, null=True,
+                                    verbose_name='Well Status')
     well_class = models.ForeignKey(WellClassCode, blank=True, null=True, db_column='well_class_code',
                                    on_delete=models.CASCADE, verbose_name='Well Class')
     well_subclass = models.ForeignKey(WellSubclassCode, db_column='well_subclass_guid',
@@ -983,8 +994,11 @@ class ActivitySubmission(AuditModel):
 
     identification_plate_number = models.PositiveIntegerField(
         blank=True, null=True, verbose_name='Identification Plate Number')
-    well_plate_attached = models.CharField(
+    well_identification_plate_attached = models.CharField(
         max_length=500, blank=True, null=True, verbose_name='Well Identification Plate Is Attached')
+
+    id_plate_attached_by = models.CharField(
+        max_length=100, blank=True, null=True, verbose_name='Well identification plate attached by')
 
     latitude = models.DecimalField(
         max_digits=8, decimal_places=6, blank=True, null=True)
@@ -1022,11 +1036,16 @@ class ActivitySubmission(AuditModel):
     surface_seal_method = models.ForeignKey(SurfaceSealMethodCode, db_column='surface_seal_method_code',
                                             on_delete=models.CASCADE, blank=True, null=True,
                                             verbose_name='Surface Seal Installation Method')
+
     backfill_above_surface_seal = models.CharField(
         max_length=250, blank=True, null=True, verbose_name='Backfill Material Above Surface Seal')
     backfill_above_surface_seal_depth = models.DecimalField(
         max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Backfill Depth')
+    backfill_depth = models.DecimalField(
+        max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Backfill Depth')
 
+    backfill_type = models.CharField(
+        max_length=250, blank=True, null=True, verbose_name="Backfill Material Above Surface Seal")
     liner_material = models.ForeignKey(LinerMaterialCode, db_column='liner_material_code',
                                        on_delete=models.CASCADE, blank=True, null=True,
                                        verbose_name='Liner Material')
@@ -1060,6 +1079,10 @@ class ActivitySubmission(AuditModel):
                                       verbose_name='Bottom')
     other_screen_bottom = models.CharField(
         max_length=50, blank=True, null=True, verbose_name='Specify Other Screen Bottom')
+
+    screen_information = models.CharField(
+        max_length=300, blank=True, null=True, verbose_name="Screen Information"
+    )
 
     filter_pack_from = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True,
                                            verbose_name='Filter Pack From',
@@ -1117,6 +1140,8 @@ class ActivitySubmission(AuditModel):
         default=False, verbose_name='Well Disinfected?', choices=((False, 'No'), (True, 'Yes')))
 
     comments = models.CharField(max_length=3000, blank=True, null=True)
+    internal_comments = models.CharField(max_length=3000, blank=True, null=True)
+    
     alternative_specs_submitted = models.BooleanField(
         default=False, verbose_name='Alternative specs submitted (if required)')
 
@@ -1266,6 +1291,13 @@ class ProductionData(AuditModel):
         verbose_name='Well Yield Increase Due to Hydro-fracturing',
         blank=True, null=True,
         validators=[MinValueValidator(Decimal('0.00'))])
+
+    recommended_pump_depth = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True,
+                                                verbose_name='Recommended pump depth',
+                                                validators=[MinValueValidator(Decimal('0.00'))])
+    recommended_pump_rate = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True,
+                                                verbose_name='Recommended pump rate',
+                                                validators=[MinValueValidator(Decimal('0.00'))])
 
     class Meta:
         db_table = 'production_data'

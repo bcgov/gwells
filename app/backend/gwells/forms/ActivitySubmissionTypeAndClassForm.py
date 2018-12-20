@@ -52,7 +52,7 @@ class ActivitySubmissionTypeAndClassForm(forms.ModelForm):
                 ),
                 Div(
                     Div('identification_plate_number', css_class='col-md-4'),
-                    Div('well_plate_attached', css_class='col-md-4'),
+                    Div('well_identification_plate_attached', css_class='col-md-4'),
                     css_class='row',
                 ),
                 Div(
@@ -96,7 +96,7 @@ class ActivitySubmissionTypeAndClassForm(forms.ModelForm):
         cleaned_data = super(ActivitySubmissionTypeAndClassForm, self).clean()
         identification_plate_number = cleaned_data.get(
             'identification_plate_number')
-        well = cleaned_data.get('well_plate_attached')
+        well = cleaned_data.get('well_identification_plate_attached')
         work_start_date = cleaned_data.get('work_start_date')
         work_end_date = cleaned_data.get('work_end_date')
 
@@ -132,7 +132,7 @@ class ActivitySubmissionTypeAndClassForm(forms.ModelForm):
                   'well_subclass',
                   'intended_water_use',
                   'identification_plate_number',
-                  'well_plate_attached',
+                  'well_identification_plate_attached',
                   'driller_responsible',
                   'driller_name',
                   'consultant_name',

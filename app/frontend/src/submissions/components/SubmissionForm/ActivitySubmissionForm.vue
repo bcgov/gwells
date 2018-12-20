@@ -16,7 +16,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <h1 class="card-title">
       <b-row>
         <b-col cols="12">
-          <div v-if="isStaffEdit" id="top">Well Edit Page</div>
+          <div v-if="isStaffEdit" id="top">Update Well Information</div>
           <div v-else>Well Activity Submission</div>
           <b-form-group v-if="activityType !== 'STAFF_EDIT'">
             <b-form-radio-group button-variant="outline-primary" size="sm" buttons v-model="formIsFlatInput" label="Form layout" class="float-right">
@@ -67,35 +67,39 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </b-row>
 
       <!-- Type of work performed -->
-      <activity-type class="my-3"
+      <activity-type class="my-5"
         v-if="showSection('activityType')"
         id="activityType"
         :wellActivityType.sync="activityTypeInput"
       />
 
-      <!-- Type of well -->
-      <well-type class="my-3"
-        v-if="showSection('wellType')"
-        id="wellType"
-        :wellTagNumber.sync="form.well"
-        :wellActivityType.sync="activityType"
-        :wellClass.sync="form.well_class"
-        :wellSubclass.sync="form.well_subclass"
-        :intendedWaterUse.sync="form.intended_water_use"
-        :units.sync="units"
-        :idPlateNumber.sync="form.identification_plate_number"
-        :wellPlateAttached.sync="form.well_plate_attached"
-        :workStartDate.sync="form.work_start_date"
-        :workEndDate.sync="form.work_end_date"
-        :errors="errors"
-        :fieldsLoaded="fieldsLoaded"
-        :isStaffEdit="isStaffEdit"
-        :saveDisabled="editSaveDisabled"
-        v-on:save="$emit('submit_edit')"
-      />
+    <!-- Type of well -->
+    <well-type class="my-5"
+      v-if="showSection('wellType')"
+      id="wellType"
+      :wellTagNumber.sync="form.well"
+      :wellStatusCode.sync="form.well_status"
+      :wellActivityType.sync="activityType"
+      :wellClass.sync="form.well_class"
+      :wellSubclass.sync="form.well_subclass"
+      :intendedWaterUse.sync="form.intended_water_use"
+      :units.sync="units"
+      :idPlateNumber.sync="form.identification_plate_number"
+      :wellPlateAttached.sync="form.well_identification_plate_attached"
+      :idPlateAttachedBy.sync="form.id_plate_attached_by"
+      :waterSupplySystem.sync="form.water_supply_system_name"
+      :waterSupplyWell.sync="form.water_supply_system_well_name"
+      :workStartDate.sync="form.work_start_date"
+      :workEndDate.sync="form.work_end_date"
+      :errors="errors"
+      :fieldsLoaded="fieldsLoaded"
+      :isStaffEdit="isStaffEdit"
+      :saveDisabled="editSaveDisabled"
+      v-on:save="$emit('submit_edit')"
+    />
 
       <!-- Person responsible for work -->
-      <person-responsible class="my-3"
+      <person-responsible class="my-5"
         v-if="showSection('personResponsible')"
         id="personResponsible"
         :drillerName.sync="form.driller_name"
@@ -111,7 +115,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       />
 
       <!-- Owner information -->
-      <owner class="my-3"
+      <owner class="my-5"
         v-if="showSection('wellOwner')"
         id="wellOwner"
         :ownerFullName.sync="form.owner_full_name"
@@ -129,7 +133,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       />
 
       <!-- Well location -->
-      <location class="my-3"
+      <location class="my-5"
         v-if="showSection('wellLocation')"
         id="wellLocation"
         :ownerMailingAddress.sync="form.owner_mailing_address"
@@ -154,7 +158,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       />
 
       <!-- Coords -->
-      <coords class="my-3"
+      <coords class="my-5"
         v-if="showSection('wellCoords')"
         id="wellCoords"
         :latitude.sync="form.latitude"
@@ -166,7 +170,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       />
 
       <!-- Method of Drilling -->
-      <method-of-drilling class="my-3"
+      <method-of-drilling class="my-5"
         v-if="showSection('method')"
         id="method"
         :groundElevation.sync="form.ground_elevation"
@@ -180,7 +184,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       />
 
       <!-- Closure/Decommission Description -->
-      <closure-description class="my-3"
+      <closure-description class="my-5"
         v-if="showSection('closureDescription')"
         id="closureDescription"
         :isStaffEdit="isStaffEdit"
@@ -191,7 +195,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </closure-description>
 
       <!-- Lithology -->
-      <lithology class="my-3"
+      <lithology class="my-5"
         v-if="showSection('lithology')"
         id="lithology"
         :lithology.sync="form.lithologydescription_set"
@@ -201,7 +205,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       />
 
       <!-- Casings -->
-      <casings class="my-3"
+      <casings class="my-5"
         :key="`casingsComponent${componentUpdateTrigger}`"
         v-if="showSection('casings')"
         id="casings"
@@ -214,22 +218,22 @@ Licensed under the Apache License, Version 2.0 (the "License");
       />
 
       <!-- Surface Seal / Backfill Material -->
-      <backfill class="my-3"
+      <backfill class="my-5"
         v-if="showSection('backfill')"
         id="backfill"
         :surfaceSealMaterial.sync="form.surface_seal_material"
         :surfaceSealDepth.sync="form.surface_seal_depth"
         :surfaceSealThickness.sync="form.surface_seal_thickness"
         :surfaceSealMethod.sync="form.surface_seal_method"
-        :backfillAboveSurfaceSeal.sync="form.backfill_above_surface_seal"
-        :backfillDepth.sync="form.backfill_above_surface_seal_depth"
+        :backfillAboveSurfaceSeal.sync="form.backfill_type"
+        :backfillDepth.sync="form.backfill_depth"
         :isStaffEdit="isStaffEdit"
         :saveDisabled="editSaveDisabled"
         v-on:save="$emit('submit_edit')"
       />
 
       <!-- Liner Information -->
-      <liner class="my-3"
+      <liner class="my-5"
         :key="`linerComponent${componentUpdateTrigger}`"
         v-if="showSection('liner')"
         id="liner"
@@ -247,7 +251,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       />
 
       <!-- Screens -->
-      <screens class="my-3"
+      <screens class="my-5"
         :key="`screensComponent${componentUpdateTrigger}`"
         v-if="showSection('screens' )"
         id="screens"
@@ -258,6 +262,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         :screenOpening.sync="form.screen_opening"
         :screenBottom.sync="form.screen_bottom"
         :screens.sync="form.screen_set"
+        :screenInformation.sync="form.screen_information"
         :errors="errors"
         :fieldsLoaded="fieldsLoaded"
         :isStaffEdit="isStaffEdit"
@@ -266,7 +271,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       />
 
       <!-- Filter Pack -->
-      <filterPack class="my-3"
+      <filterPack class="my-5"
         v-if="showSection('filterPack')"
         id="filterPack"
         :filterPackFrom.sync="form.filter_pack_from"
@@ -280,7 +285,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       />
 
       <!-- Well Development -->
-      <development class="my-3"
+      <development class="my-5"
         v-if="showSection('wellDevelopment')"
         id="wellDevelopment"
         :developmentMethod.sync="form.development_method"
@@ -292,17 +297,17 @@ Licensed under the Apache License, Version 2.0 (the "License");
       />
 
       <!-- Yield (Production Data) -->
-      <yield class="my-3"
+      <yield class="my-5"
         v-if="showSection('wellYield')"
         id="wellYield"
-        :productionData.sync="form.production_data_set"
+        :productionData.sync="form.productiondata_set"
         :isStaffEdit="isStaffEdit"
         :saveDisabled="editSaveDisabled"
         v-on:save="$emit('submit_edit')"
       />
 
       <!-- Water Quality -->
-      <water-quality class="my-3"
+      <water-quality class="my-5"
         v-if="showSection('waterQuality')"
         id="waterQuality"
         :waterQualityCharacteristics.sync="form.water_quality_characteristics"
@@ -315,7 +320,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       />
 
         <!-- Well Completion Data -->
-      <completion class="my-3"
+      <completion class="my-5"
         v-if="showSection('wellCompletion')"
         id="wellCompletion"
         :totalDepthDrilled.sync="form.total_depth_drilled"
@@ -333,7 +338,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-on:save="$emit('submit_edit')"
       />
 
-      <decommission-information class="my-3"
+      <decommission-information class="my-5"
         v-if="showSection('decommissionInformation')"
         id="decommissionInformation"
         :finishedWellDepth.sync="form.finished_well_depth"
@@ -348,10 +353,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
       />
 
       <!-- Comments -->
-      <comments class="my-3"
+      <comments class="my-5"
         v-if="showSection('comments')"
         id="comments"
         :comments.sync="form.comments"
+        :internalComments.sync="form.internal_comments"
         :alternativeSpecsSubmitted.sync="form.alternative_specs_submitted"
         :isStaffEdit="isStaffEdit"
         :saveDisabled="editSaveDisabled"
@@ -606,7 +612,8 @@ export default {
               this.formValueChanged = true
               this.form.meta.valueChanged[key] = true
             }
-          }
+          },
+          deep: true
         }
       })
     }

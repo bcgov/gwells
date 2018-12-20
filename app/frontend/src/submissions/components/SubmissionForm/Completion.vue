@@ -13,7 +13,17 @@ Licensed under the Apache License, Version 2.0 (the "License");
 */
 <template>
   <fieldset>
-    <legend :id="id">Well Completion Data</legend>
+    <b-row>
+      <b-col cols="12" lg="6">
+        <legend :id="id">Well Completion Data</legend>
+      </b-col>
+      <b-col cols="12" lg="6">
+        <div class="float-right">
+          <b-btn v-if="isStaffEdit" variant="primary" class="ml-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
+          <a href="#top" v-if="isStaffEdit">Back to top</a>
+        </div>
+      </b-col>
+    </b-row>
     <b-row>
       <b-col cols="12" md="6" lg="4">
         <form-input
@@ -115,8 +125,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <b-col cols="12" md="6" lg="4">
         <b-form-group label="Well Disinfected?">
           <b-form-radio-group id="wellDisinfectedRadio" class="mt-1" v-model="wellDisinfectedInput">
-            <b-form-radio value="False">No</b-form-radio>
-            <b-form-radio value="True">Yes</b-form-radio>
+            <b-form-radio :value="false">No</b-form-radio>
+            <b-form-radio :value="true">Yes</b-form-radio>
           </b-form-radio-group>
         </b-form-group>
       </b-col>
@@ -139,7 +149,7 @@ export default {
     artesianFlow: String,
     artesianPressure: String,
     wellCapType: String,
-    wellDisinfected: String,
+    wellDisinfected: null,
     errors: {
       type: Object,
       default: () => ({})
@@ -150,6 +160,14 @@ export default {
     },
     id: {
       type: String,
+      isInput: false
+    },
+    isStaffEdit: {
+      type: Boolean,
+      isInput: false
+    },
+    saveDisabled: {
+      type: Boolean,
       isInput: false
     }
   },
