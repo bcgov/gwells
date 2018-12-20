@@ -685,7 +685,7 @@ pipeline {
                                 )
                             ]
                         ) {
-                            node("nodejs-${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}-${env.CHANGE_ID}") {
+                            node("nodejs-${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}") {
                                 checkout scm
                                 dir('api-tests') {
                                     sh 'npm install -g newman'
