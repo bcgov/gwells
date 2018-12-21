@@ -30,7 +30,8 @@
                         "annotations": null,
                         "from": {
                             "kind": "ImageStreamTag",
-                            "name": "postgresql-oracle-fdw:9.5-2"
+                            "name": "postgresql-9.6-oracle-fdw:v1-stable",
+                            "namespace": "bcgov"
                         },
                         "importPolicy": {},
                         "name": "${ENV_NAME}",
