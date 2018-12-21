@@ -51,19 +51,15 @@ export default {
   },
 
   setLocalToken: function (instance) {
-    if (window.localStorage) {
-      window.localStorage.setItem('token', instance.token)
-      window.localStorage.setItem('refreshToken', instance.refreshToken)
-      window.localStorage.setItem('idToken', instance.idToken)
-    }
+    localStorage.setItem('token', instance.token)
+    localStorage.setItem('refreshToken', instance.refreshToken)
+    localStorage.setItem('idToken', instance.idToken)
     ApiService.authHeader('JWT', instance.token)
   },
   removeLocalToken: function () {
-    if (window.localStorage) {
-      window.localStorage.removeItem('token')
-      window.localStorage.removeItem('refreshToken')
-      window.localStorage.removeItem('idToken')
-    }
+    localStorage.removeItem('token')
+    localStorage.removeItem('refreshToken')
+    localStorage.removeItem('idToken')
     ApiService.authHeader()
   },
   setTokenExpireAction: function (instance) {
@@ -82,46 +78,10 @@ export default {
      * Return a promise that resolves on completion of authentication.
      */
     return new Promise((resolve, reject) => {
-      const instance = this.getInstance()
-      if (instance.authenticated && ApiService.hasAuthHeader() && !instance.isTokenExpired(0)) {
-        resolve() // We've already authenticated, have a header, and we've not expired.
-      } else {
-        // Attempt to retrieve a stored token, this may avoid us having to refresh the page.
-        const token = window.localStorage ? localStorage.getItem('token') : null
-        const refreshToken = window.localStorage ? localStorage.getItem('refreshToken') : null
-        const idToken = window.localStorage ? localStorage.getItem('idToken') : null
-        instance.init({
-          onLoad: 'check-sso',
-          checkLoginIframe: true,
-          timeSkew: 10, // Allow for some deviation
-          token,
-          refreshToken,
-          idToken }
-        ).success((result) => {
-          // Assumes the store passed in includes a 'SET_KEYCLOAK' mutation.
-          if (instance.authenticated) {
-            // We may have been authenticated, but the token could be expired.
-            instance.updateToken(60).success(() => {
-              // Store the token to avoid future round trips, and wire up the API
-              this.setLocalToken(instance)
-              this.setTokenExpireAction(instance)
-              // We update the store reference only after wiring up the API. (Someone might be waiting
-              // for login to complete before taking some action. )
-              store.commit('SET_KEYCLOAK', instance)
-              resolve()
-            }).error(() => {
-              // The refresh token is expired or was rejected
-              this.removeLocalToken()
-              instance.clearToken()
-              // We update the store reference only after wiring up the API. (Someone might be waiting
-              // for login to complete before taking some action. )
-              store.commit('SET_KEYCLOAK', instance)
-              resolve()
-            })
-          } else {
-            // We may have failed to authenticate, for many reasons, e.g. - it may be we never logged in,
-            // or have an expired token.
-            store.commit('SET_KEYCLOAK', instance)
+      this.getInstance()
+        .then((instance) => {
+          if (instance.authenticated && ApiService.hasAuthHeader() && !instance.isTokenExpired(0)) {
+            // We've already authenticated, have a header, and we've not expired.
             resolve()
           } else {
             // Attempt to retrieve a stored token, this may avoid us having to refresh the page.
