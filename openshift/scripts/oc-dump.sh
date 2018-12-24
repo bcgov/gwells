@@ -7,6 +7,8 @@
 #
 # NOTE: You need to be logged in with a token, via:
 #       https://console.pathfinder.gov.bc.ca:8443/oauth/token/request
+#
+# EXAMPLE: ./oc-dump.sh moe-gwells-test/gwells-pgsql-staging  
 
 
 # Halt conditions, verbosity and field separator
