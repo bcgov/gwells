@@ -94,6 +94,8 @@ drop table if exists wells_decommissiondescription          cascade;
 drop table if exists wells_decommissionmaterialcode         cascade;
 drop table if exists xform_aquifers                         cascade;
 drop table if exists yield_estimation_method_code           cascade;
+drop table if exists coordinate_acquisition_code            cascade;
+
 drop function if exists db_replicate_step1                (boolean);
 drop function if exists db_replicate_step2                       ();
 drop function if exists migrate_aquifers                         ();
@@ -105,3 +107,5 @@ drop function if exists migrate_production                       ();
 drop function if exists migrate_screens                          ();
 drop function if exists populate_well                            ();
 drop function if exists populate_xform                    (boolean);
+
+drop sequence if exists aquifer_aquifer_id_seq;
