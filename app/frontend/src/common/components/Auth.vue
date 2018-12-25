@@ -37,9 +37,11 @@ export default {
           this.keycloak.login({ idpHint: this.config.sso_idp_hint }).success((authenticated) => {
             if (authenticated) {
               ApiService.authHeader('JWT', this.keycloak.token)
-              localStorage.setItem('token', this.keycloak.token)
-              localStorage.setItem('refreshToken', this.keycloak.refreshToken)
-              localStorage.setItem('idToken', this.keycloak.idToken)
+              if (window.localStorage) {
+                localStorage.setItem('token', this.keycloak.token)
+                localStorage.setItem('refreshToken', this.keycloak.refreshToken)
+                localStorage.setItem('idToken', this.keycloak.idToken)
+              }
             }
           }).error((e) => {
             this.$store.commit(SET_ERROR, { error: 'Cannot contact SSO provider' })
@@ -53,9 +55,11 @@ export default {
       if (this.keycloak && this.keycloak.authenticated) {
         this.keycloak.clearToken()
         ApiService.authHeader()
-        localStorage.removeItem('token')
-        localStorage.removeItem('refreshToken')
-        localStorage.removeItem('idToken')
+        if (window.localStorage) {
+          localStorage.removeItem('token')
+          localStorage.removeItem('refreshToken')
+          localStorage.removeItem('idToken')
+        }
         this.keycloak.logout() // This redirects the user to a logout screen.
       }
     }

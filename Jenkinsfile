@@ -158,6 +158,7 @@ pipeline {
             }
         }
 
+
         // the Build stage runs unit tests and builds files. an image will be outputted to the app's imagestream
         // builds use the source to image strategy. See /app/.s2i/assemble for image build script
         stage('Build (with tests)') {
@@ -183,7 +184,7 @@ pipeline {
         // the Deploy to Dev stage creates a new dev environment for the pull request (if necessary), tags the newly built
         // application image into that environment, and monitors the newest deployment for pods/containers to
         // report back as ready.
-        stage('Deploy to dev') {
+        stage('DEV - Deploy') {
             steps {
                 script {
                     _openshift(env.STAGE_NAME, DEV_PROJECT) {
@@ -268,7 +269,8 @@ pipeline {
             }
         }
 
-        stage('Load Fixtures') {
+
+        stage('DEV - Load Fixtures') {
             steps {
                 script {
                     _openshift(env.STAGE_NAME, DEV_PROJECT) {
@@ -308,63 +310,70 @@ pipeline {
         }
 
 
-        // // Functional tests using BDD Stack
-        // // See https://github.com/BCDevOps/BDDStack
-        // stage('Functional Tests') {
-        //     steps {
-        //         script {
-        //             _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
-        //                     echo "Functional Testing"
-        //                     String baseURL = "https://${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca/gwells"
-        //                     podTemplate(
-        //                         label: "bddstack-${DEV_SUFFIX}-${PR_NUM}",
-        //                         name: "bddstack-${DEV_SUFFIX}-${PR_NUM}",
-        //                         serviceAccount: 'jenkins',
-        //                         cloud: 'openshift',
-        //                         containers: [
-        //                             containerTemplate(
-        //                                 name: 'jnlp',
-        //                                 image: 'docker-registry.default.svc:5000/moe-gwells-tools/bddstack:latest',
-        //                                 resourceRequestCpu: '800m',
-        //                                 resourceLimitCpu: '800m',
-        //                                 resourceRequestMemory: '4Gi',
-        //                                 resourceLimitMemory: '4Gi',
-        //                                 workingDir: '/home/jenkins',
-        //                                 command: '',
-        //                                 args: '${computer.jnlpmac} ${computer.name}',
-        //                                 envVars: [
-        //                                     envVar(key:'BASEURL', value: baseURL),
-        //                                     envVar(key:'GRADLE_USER_HOME', value: '/var/cache/artifacts/gradle')
-        //                                 ]
-        //                             )
-        //                         ]
-        //                     ) {
-        //                         node("bddstack-${DEV_SUFFIX}-${PR_NUM}") {
-        //                             //the checkout is mandatory, otherwise functional tests would fail
-        //                             echo "checking out source"
-        //                             checkout scm
-        //                             dir('functional-tests') {
-        //                                 try {
-        //                                     try {
-        //                                         sh './gradlew chromeHeadlessTest'
-        //                                     } finally {
-        //                                         archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
-        //                                         archiveArtifacts allowEmptyArchive: true, artifacts: 'build/test-results/**/*'
-        //                                         junit 'build/test-results/**/*.xml'
-        //                                     }
-        //                                 } catch (error) {
-        //                                     echo error
-        //                                 }
-        //                             }
-        //                         }
-        //                     }
-        //             }
-        //         }
-        //     }
-        // }
+        // Functional tests temporarily limited to smoke tests
+        // See https://github.com/BCDevOps/BDDStack
+        stage('DEV - Smoke Tests') {
+            steps {
+                script {
+                    _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
+                        echo "Functional Testing"
+                        String BASE_URL = "https://${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca/gwells"
+                        podTemplate(
+                            label: "bddstack-${DEV_SUFFIX}-${PR_NUM}",
+                            name: "bddstack-${DEV_SUFFIX}-${PR_NUM}",
+                            serviceAccount: 'jenkins',
+                            cloud: 'openshift',
+                            containers: [
+                                containerTemplate(
+                                    name: 'jnlp',
+                                    image: 'docker-registry.default.svc:5000/bcgov/jenkins-slave-bddstack:v1-stable',
+                                    resourceRequestCpu: '800m',
+                                    resourceLimitCpu: '800m',
+                                    resourceRequestMemory: '4Gi',
+                                    resourceLimitMemory: '4Gi',
+                                    workingDir: '/home/jenkins',
+                                    command: '',
+                                    args: '${computer.jnlpmac} ${computer.name}',
+                                    envVars: [
+                                        envVar(key:'BASE_URL', value: BASE_URL),
+                                        envVar(key:'GRADLE_USER_HOME', value: '/var/cache/artifacts/gradle'),
+                                        envVar(key:'GWELLS_USERNAME', value: 'bdduser1'),
+                                        envVar(key:'GWELLS_VIEWER_USERNAME', value: 'bdd-viewer'),
+                                        envVar(key:'GWELLS_SUBMISSION_USERNAME', value: 'bdd-submission'),
+                                        envVar(key:'GWELLS_REGISTRY_USERNAME', value: 'bdd-registry'),
+                                        envVar(key:'OPENSHIFT_JENKINS_JVM_ARCH', value: 'x86_64')
+                                    ]
+                                )
+                            ],
+                            volumes: [
+                                persistentVolumeClaim(
+                                    mountPath: '/var/cache/artifacts',
+                                    claimName: 'cache',
+                                    readOnly: false
+                                )
+                            ]
+                        ) {
+                            node("bddstack-${DEV_SUFFIX}-${PR_NUM}") {
+                                //the checkout is mandatory, otherwise functional tests would fail
+                                echo "checking out source"
+                                checkout scm
+                                dir('functional-tests') {
+                                    try {
+                                        echo "BASE_URL = ${BASE_URL}"
+                                        sh './gradlew -DchromeHeadlessTest.single=SearchSpecs chromeHeadlessTest'
+                                    } catch (error) {
+                                        echo error
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
 
-        stage('API Tests') {
+        stage('DEV - API Tests') {
             steps {
                 script {
                     _openshift(env.STAGE_NAME, DEV_PROJECT) {
@@ -477,11 +486,12 @@ pipeline {
             }
         }
 
+
         // the Promote to Test stage allows approving the tagging of the newly built image into the test environment,
         // which will trigger an automatic deployment of that image.
         // The deployment configs in the openshift folder are applied first in case there are any changes to the templates.
         // this stage should only occur when the pull request is being made against the master branch.
-        stage('Deploy image to staging') {
+        stage('TEST - Deploy') {
             when {
                 expression { env.CHANGE_TARGET == 'master' }
             }
@@ -612,7 +622,7 @@ pipeline {
                         timeout(15) {
                             pods.untilEach(2) {
                                 return it.object().status.containerStatuses.every {
-                                it.ready
+                                    it.ready
                                 }
                             }
                         }
@@ -623,16 +633,17 @@ pipeline {
             }
         }
 
-        stage('API Tests against Staging') {
+
+        stage('TEST - API Tests') {
             when {
                 expression { env.CHANGE_TARGET == 'master' }
             }
             steps {
                 script {
-                    _openshift(env.STAGE_NAME, TEST_PROJECT) {
+                    _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
                         podTemplate(
-                            label: "nodejs-${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}-${env.CHANGE_ID}",
-                            name: "nodejs-${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}-${env.CHANGE_ID}",
+                            label: "nodejs-${APP_NAME}-${TEST_SUFFIX}-${PR_NUM}",
+                            name: "nodejs-${APP_NAME}-${TEST_SUFFIX}-${PR_NUM}",
                             serviceAccount: 'jenkins',
                             cloud: 'openshift',
                             activeDeadlineSeconds: 1800,
@@ -677,7 +688,7 @@ pipeline {
                                 )
                             ]
                         ) {
-                            node("nodejs-${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}-${env.CHANGE_ID}") {
+                            node("nodejs-${APP_NAME}-${TEST_SUFFIX}-${PR_NUM}") {
                                 checkout scm
                                 dir('api-tests') {
                                     sh 'npm install -g newman'
@@ -739,7 +750,68 @@ pipeline {
             }
         }
 
-        stage('Deploy image to Production') {
+
+        // Single functional test
+        stage('TEST - Smoke Tests') {
+            when {
+                expression { env.CHANGE_TARGET == 'master' }
+            }
+            steps {
+                script {
+                    _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
+                        echo "Smoke Testing"
+                        String BASE_URL = "https://${TEST_HOST}/gwells/"
+                        podTemplate(
+                            label: "bddstack-${TEST_SUFFIX}-${PR_NUM}",
+                            name: "bddstack-${TEST_SUFFIX}-${PR_NUM}",
+                            serviceAccount: 'jenkins',
+                            cloud: 'openshift',
+                            containers: [
+                                containerTemplate(
+                                    name: 'jnlp',
+                                    image: 'docker-registry.default.svc:5000/bcgov/jenkins-slave-bddstack:v1-stable',
+                                    resourceRequestCpu: '800m',
+                                    resourceLimitCpu: '800m',
+                                    resourceRequestMemory: '4Gi',
+                                    resourceLimitMemory: '4Gi',
+                                    workingDir: '/home/jenkins',
+                                    command: '',
+                                    args: '${computer.jnlpmac} ${computer.name}',
+                                    envVars: [
+                                        envVar(key:'BASE_URL', value: BASE_URL),
+                                        envVar(key:'OPENSHIFT_JENKINS_JVM_ARCH', value: 'x86_64')
+                                    ]
+                                )
+                            ],
+                            volumes: [
+                                persistentVolumeClaim(
+                                    mountPath: '/var/cache/artifacts',
+                                    claimName: 'cache',
+                                    readOnly: false
+                                )
+                            ]
+                        ) {
+                            node("bddstack-${TEST_SUFFIX}-${PR_NUM}") {
+                                //the checkout is mandatory, otherwise functional tests would fail
+                                echo "checking out source"
+                                checkout scm
+                                dir('functional-tests') {
+                                    try {
+                                        echo "BASE_URL = ${BASE_URL}"
+                                        sh './gradlew -DchromeHeadlessTest.single=AquiferSearchSpecs chromeHeadlessTest'
+                                    } catch (error) {
+                                        echo error
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
+        stage('PROD - Deploy') {
             when {
                 expression { env.CHANGE_TARGET == 'master' }
             }
@@ -759,7 +831,7 @@ pipeline {
                             "POSTGRESQL_DATABASE=gwells",
                             "VOLUME_CAPACITY=20Gi"
                         )
-                        
+
                         def deployTemplate = openshift.process("-f",
                             "openshift/backend.dc.json",
                             "NAME_SUFFIX=-${PROD_SUFFIX}",
@@ -881,35 +953,63 @@ pipeline {
         }
 
 
-        // stage('Slack Notify') {
-        //     when {
-        //         expression { env.CHANGE_TARGET == 'master' }
-        //     }
-        //     steps {
-        //         script {
-        //             _openshift(env.STAGE_NAME, PROD_PROJECT) {
-        //
-        //                 _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
-        //
-        //                     // get a slack token
-        //                     def token = openshift.selector("secret", "slack").object().data.token.decodeBase64()
-        //                     token = new String(token)
-        //
-        //                     // build a message to send to the channel
-        //                     def message = [:]
-        //                     message.channel = "#gwells"
-        //                     message.text = "A new production deployment was rolled out at https://apps.nrs.gov.bc.ca/gwells/"
-        //                     payload = JsonOutput.toJson(message)
-        //
-        //                     // Approve script here: https://jenkins-moe-gwells-tools.pathfinder.gov.bc.ca/scriptApproval/
-        //                     sh (
-        //                         script: """curl -X POST -H "Content-Type: application/json" --data \'${payload}\' https://devopspathfinder.slack.com/services/hooks/jenkins-ci?token=${token}""",
-        //                         returnStdout: true
-        //                     ).trim()
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
+        // Single functional test
+        stage('PROD - Smoke Tests') {
+            when {
+                expression { env.CHANGE_TARGET == 'master' }
+            }
+            steps {
+                script {
+                    _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
+                        echo "Smoke Testing"
+                        String BASE_URL = "https://${PROD_HOST}/gwells/"
+                        podTemplate(
+                            label: "bddstack-${PROD_SUFFIX}-${PR_NUM}",
+                            name: "bddstack-${PROD_SUFFIX}-${PR_NUM}",
+                            serviceAccount: 'jenkins',
+                            cloud: 'openshift',
+                            containers: [
+                                containerTemplate(
+                                    name: 'jnlp',
+                                    image: 'docker-registry.default.svc:5000/bcgov/jenkins-slave-bddstack:v1-stable',
+                                    resourceRequestCpu: '800m',
+                                    resourceLimitCpu: '800m',
+                                    resourceRequestMemory: '4Gi',
+                                    resourceLimitMemory: '4Gi',
+                                    workingDir: '/home/jenkins',
+                                    command: '',
+                                    args: '${computer.jnlpmac} ${computer.name}',
+                                    envVars: [
+                                        envVar(key:'BASE_URL', value: BASE_URL),
+                                        envVar(key:'OPENSHIFT_JENKINS_JVM_ARCH', value: 'x86_64')
+                                    ]
+                                )
+                            ],
+                            volumes: [
+                                persistentVolumeClaim(
+                                    mountPath: '/var/cache/artifacts',
+                                    claimName: 'cache',
+                                    readOnly: false
+                                )
+                            ]
+                        ) {
+                            node("bddstack-${PROD_SUFFIX}-${PR_NUM}") {
+                                //the checkout is mandatory, otherwise functional tests would fail
+                                echo "checking out source"
+                                checkout scm
+                                dir('functional-tests') {
+                                    try {
+                                        echo "BASE_URL = ${BASE_URL}"
+                                        sh './gradlew -DchromeHeadlessTest.single=AquiferSearchSpecs chromeHeadlessTest'
+                                    } catch (error) {
+                                        echo error
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
