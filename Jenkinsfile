@@ -109,7 +109,7 @@ pipeline {
         // TEST_PROJECT contains the test deployment. The test image is a candidate for promotion to prod.
         TEST_PROJECT = "moe-gwells-test"
         TEST_SUFFIX = "staging"
-        TEST_HOST = "gwells-test.pathfinder.gov.bc.ca"
+        TEST_HOST = "gwells-staging.pathfinder.gov.bc.ca"
 
         // PROD_PROJECT is the prod deployment.
         // New production images can be deployed by tagging an existing "test" image as "prod".
