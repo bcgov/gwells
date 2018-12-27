@@ -824,7 +824,7 @@ pipeline {
             steps {
                 script {
                     _openshift(env.STAGE_NAME, DEMO_PROJECT) {
-                        input "Deploy to staging?"
+                        input "Deploy to demo?"
                         echo "Preparing..."
 
                         // Process db and app template into list objects
@@ -954,6 +954,66 @@ pipeline {
                         }
 
                         createDeploymentStatus(DEMO_SUFFIX, 'SUCCESS', targetDemoURL)
+                    }
+                }
+            }
+        }
+
+
+        // Single functional test
+        stage('DEMO - Smoke Tests') {
+            when {
+                expression { env.CHANGE_TARGET == 'demo' }
+            }
+            steps {
+                script {
+                    _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
+                        echo "Smoke Testing"
+                        String BASE_URL = "https://${DEMO_HOST}/gwells/"
+                        podTemplate(
+                            label: "bddstack-${DEMO_SUFFIX}-${PR_NUM}",
+                            name: "bddstack-${DEMO_SUFFIX}-${PR_NUM}",
+                            serviceAccount: 'jenkins',
+                            cloud: 'openshift',
+                            containers: [
+                                containerTemplate(
+                                    name: 'jnlp',
+                                    image: 'docker-registry.default.svc:5000/bcgov/jenkins-slave-bddstack:v1-stable',
+                                    resourceRequestCpu: '800m',
+                                    resourceLimitCpu: '800m',
+                                    resourceRequestMemory: '4Gi',
+                                    resourceLimitMemory: '4Gi',
+                                    workingDir: '/home/jenkins',
+                                    command: '',
+                                    args: '${computer.jnlpmac} ${computer.name}',
+                                    envVars: [
+                                        envVar(key:'BASE_URL', value: BASE_URL),
+                                        envVar(key:'OPENSHIFT_JENKINS_JVM_ARCH', value: 'x86_64')
+                                    ]
+                                )
+                            ],
+                            volumes: [
+                                persistentVolumeClaim(
+                                    mountPath: '/var/cache/artifacts',
+                                    claimName: 'cache',
+                                    readOnly: false
+                                )
+                            ]
+                        ) {
+                            node("bddstack-${DEMO_SUFFIX}-${PR_NUM}") {
+                                //the checkout is mandatory, otherwise functional tests would fail
+                                echo "checking out source"
+                                checkout scm
+                                dir('functional-tests') {
+                                    try {
+                                        echo "BASE_URL = ${BASE_URL}"
+                                        sh './gradlew -DchromeHeadlessTest.single=AquiferSearchSpecs chromeHeadlessTest'
+                                    } catch (error) {
+                                        echo error
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
