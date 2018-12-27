@@ -109,7 +109,7 @@ pipeline {
         // TEST_PROJECT contains the test deployment. The test image is a candidate for promotion to prod.
         TEST_PROJECT = "moe-gwells-test"
         TEST_SUFFIX = "staging"
-        TEST_HOST = "gwells-test.pathfinder.gov.bc.ca"
+        TEST_HOST = "gwells-staging.pathfinder.gov.bc.ca"
 
         // DEMO_PROJECT is for a stable demo environment.  It can be for training or presentation.
         DEMO_PROJECT = "moe-gwells-test"
