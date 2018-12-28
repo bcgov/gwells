@@ -62,15 +62,28 @@ export default {
     localStorage.removeItem('idToken')
     ApiService.authHeader()
   },
-  setTokenExpireAction: function (instance) {
-    instance.onTokenExpired = () => {
-      instance.updateToken().success(() => {
-        this.setLocalToken(instance)
-      }).error(() => {
-        this.removeLocalToken()
-        instance.clearToken()
-      })
-    }
+
+  scheduleRenewal (instance) {
+    const expiresAt = instance.tokenParsed.exp
+
+    // set delay to 50% of token's lifespan (in seconds), or at least 60 seconds
+    let delay = (expiresAt - (Date.now() / 1000)) * 0.5
+    delay = delay > 60 ? delay : 60
+
+    setTimeout(() => {
+      this.renewToken(instance)
+    }, delay * 1000)
+  },
+
+  renewToken (instance) {
+    instance.updateToken(1800).success(() => {
+      this.setLocalToken(instance)
+      this.scheduleRenewal(instance)
+    }).error(() => {
+      // The refresh token is expired or was rejected
+      this.removeLocalToken()
+      instance.clearToken()
+    })
   },
 
   authenticate: function (store) {
@@ -101,11 +114,11 @@ export default {
                 instance.updateToken(60).success(() => {
                   // Store the token to avoid future round trips, and wire up the API
                   this.setLocalToken(instance)
-                  this.setTokenExpireAction(instance)
                   // We update the store reference only after wiring up the API. (Someone might be waiting
                   // for login to complete before taking some action. )
                   // Assumes that store passed in includes a 'SET_KEYCLOAK' mutation!
                   store.commit('SET_KEYCLOAK', instance)
+                  this.scheduleRenewal(instance)
                   resolve()
                 }).error(() => {
                   // The refresh token is expired or was rejected
