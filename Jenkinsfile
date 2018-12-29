@@ -45,7 +45,7 @@ void createDeploymentStatus (String suffix, String status, String targetURL) {
 
 // Functional test script
 // Can be limited by adding smokeTest name
-def functionalTest (String STAGE_NAME, String BASE_URL, String ENV_SUFFIX, String smokeTest='false') {
+def functionalTest (String STAGE_NAME, String BASE_URL, String ENV_SUFFIX, String smokeTest=false) {
     _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
         echo "Testing"
         podTemplate(
@@ -117,7 +117,7 @@ def _openshift(String name, String project, Closure body) {
             openshift.withProject(project) {
                 echo "Running Stage '${name}'"
                 waitUntil {
-                    notifyStageStatus(name, 'PENDING')
+                    notifyStageStatus (name, 'PENDING')
                     boolean isDone=false
                     try {
                         body()
@@ -379,57 +379,8 @@ pipeline {
             steps {
                 script {
                     _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
-                        echo "Functional Testing"
                         String BASE_URL = "https://${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca/gwells"
-                        podTemplate(
-                            label: "bddstack-${DEV_SUFFIX}-${PR_NUM}",
-                            name: "bddstack-${DEV_SUFFIX}-${PR_NUM}",
-                            serviceAccount: 'jenkins',
-                            cloud: 'openshift',
-                            containers: [
-                                containerTemplate(
-                                    name: 'jnlp',
-                                    image: 'docker-registry.default.svc:5000/bcgov/jenkins-slave-bddstack:v1-stable',
-                                    resourceRequestCpu: '800m',
-                                    resourceLimitCpu: '800m',
-                                    resourceRequestMemory: '4Gi',
-                                    resourceLimitMemory: '4Gi',
-                                    workingDir: '/home/jenkins',
-                                    command: '',
-                                    args: '${computer.jnlpmac} ${computer.name}',
-                                    envVars: [
-                                        envVar(key:'BASE_URL', value: BASE_URL),
-                                        envVar(key:'GRADLE_USER_HOME', value: '/var/cache/artifacts/gradle'),
-                                        envVar(key:'GWELLS_USERNAME', value: 'bdduser1'),
-                                        envVar(key:'GWELLS_VIEWER_USERNAME', value: 'bdd-viewer'),
-                                        envVar(key:'GWELLS_SUBMISSION_USERNAME', value: 'bdd-submission'),
-                                        envVar(key:'GWELLS_REGISTRY_USERNAME', value: 'bdd-registry'),
-                                        envVar(key:'OPENSHIFT_JENKINS_JVM_ARCH', value: 'x86_64')
-                                    ]
-                                )
-                            ],
-                            volumes: [
-                                persistentVolumeClaim(
-                                    mountPath: '/var/cache/artifacts',
-                                    claimName: 'cache',
-                                    readOnly: false
-                                )
-                            ]
-                        ) {
-                            node("bddstack-${DEV_SUFFIX}-${PR_NUM}") {
-                                //the checkout is mandatory, otherwise functional tests would fail
-                                echo "checking out source"
-                                checkout scm
-                                dir('functional-tests') {
-                                    try {
-                                        echo "BASE_URL = ${BASE_URL}"
-                                        sh './gradlew -DchromeHeadlessTest.single=SearchSpecs chromeHeadlessTest'
-                                    } catch (error) {
-                                        echo error
-                                    }
-                                }
-                            }
-                        }
+                        def result = functionalTest ('DEV - Smoke Tests', BASE_URL, DEV_SUFFIX, 'SearchSpecs')
                     }
                 }
             }
@@ -822,52 +773,8 @@ pipeline {
             steps {
                 script {
                     _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
-                        echo "Smoke Testing"
                         String BASE_URL = "https://${TEST_HOST}/gwells/"
-                        podTemplate(
-                            label: "bddstack-${TEST_SUFFIX}-${PR_NUM}",
-                            name: "bddstack-${TEST_SUFFIX}-${PR_NUM}",
-                            serviceAccount: 'jenkins',
-                            cloud: 'openshift',
-                            containers: [
-                                containerTemplate(
-                                    name: 'jnlp',
-                                    image: 'docker-registry.default.svc:5000/bcgov/jenkins-slave-bddstack:v1-stable',
-                                    resourceRequestCpu: '800m',
-                                    resourceLimitCpu: '800m',
-                                    resourceRequestMemory: '4Gi',
-                                    resourceLimitMemory: '4Gi',
-                                    workingDir: '/home/jenkins',
-                                    command: '',
-                                    args: '${computer.jnlpmac} ${computer.name}',
-                                    envVars: [
-                                        envVar(key:'BASE_URL', value: BASE_URL),
-                                        envVar(key:'OPENSHIFT_JENKINS_JVM_ARCH', value: 'x86_64')
-                                    ]
-                                )
-                            ],
-                            volumes: [
-                                persistentVolumeClaim(
-                                    mountPath: '/var/cache/artifacts',
-                                    claimName: 'cache',
-                                    readOnly: false
-                                )
-                            ]
-                        ) {
-                            node("bddstack-${TEST_SUFFIX}-${PR_NUM}") {
-                                //the checkout is mandatory, otherwise functional tests would fail
-                                echo "checking out source"
-                                checkout scm
-                                dir('functional-tests') {
-                                    try {
-                                        echo "BASE_URL = ${BASE_URL}"
-                                        sh './gradlew -DchromeHeadlessTest.single=AquiferSearchSpecs chromeHeadlessTest'
-                                    } catch (error) {
-                                        echo error
-                                    }
-                                }
-                            }
-                        }
+                        def result = functionalTest ('TEST - Smoke Tests', BASE_URL, TEST_SUFFIX, 'AquiferSearchSpecs')
                     }
                 }
             }
@@ -1143,52 +1050,8 @@ pipeline {
             steps {
                 script {
                     _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
-                        echo "Smoke Testing"
                         String BASE_URL = "https://${DEMO_HOST}/gwells/"
-                        podTemplate(
-                            label: "bddstack-${DEMO_SUFFIX}-${PR_NUM}",
-                            name: "bddstack-${DEMO_SUFFIX}-${PR_NUM}",
-                            serviceAccount: 'jenkins',
-                            cloud: 'openshift',
-                            containers: [
-                                containerTemplate(
-                                    name: 'jnlp',
-                                    image: 'docker-registry.default.svc:5000/bcgov/jenkins-slave-bddstack:v1-stable',
-                                    resourceRequestCpu: '800m',
-                                    resourceLimitCpu: '800m',
-                                    resourceRequestMemory: '4Gi',
-                                    resourceLimitMemory: '4Gi',
-                                    workingDir: '/home/jenkins',
-                                    command: '',
-                                    args: '${computer.jnlpmac} ${computer.name}',
-                                    envVars: [
-                                        envVar(key:'BASE_URL', value: BASE_URL),
-                                        envVar(key:'OPENSHIFT_JENKINS_JVM_ARCH', value: 'x86_64')
-                                    ]
-                                )
-                            ],
-                            volumes: [
-                                persistentVolumeClaim(
-                                    mountPath: '/var/cache/artifacts',
-                                    claimName: 'cache',
-                                    readOnly: false
-                                )
-                            ]
-                        ) {
-                            node("bddstack-${DEMO_SUFFIX}-${PR_NUM}") {
-                                //the checkout is mandatory, otherwise functional tests would fail
-                                echo "checking out source"
-                                checkout scm
-                                dir('functional-tests') {
-                                    try {
-                                        echo "BASE_URL = ${BASE_URL}"
-                                        sh './gradlew -DchromeHeadlessTest.single=AquiferSearchSpecs chromeHeadlessTest'
-                                    } catch (error) {
-                                        echo error
-                                    }
-                                }
-                            }
-                        }
+                        def result = functionalTest ('DEMO - Smoke Tests', BASE_URL, TEST_SUFFIX, 'AquiferSearchSpecs')
                     }
                 }
             }
