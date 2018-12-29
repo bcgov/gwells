@@ -169,6 +169,16 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-on:save="$emit('submit_edit')"
       />
 
+      <!-- aquifer -->
+      <aquifer-data class="my-5"
+        v-if="showSection('aquiferData')"
+        id="aquiferData"
+        :aquifer.sync="form.aquifer"
+        :isStaffEdit="isStaffEdit"
+        :saveDisabled="editSaveDisabled"
+        v-on:save="$emit('submit_edit')"
+      />
+
       <!-- Method of Drilling -->
       <method-of-drilling class="my-5"
         v-if="showSection('method')"
@@ -405,6 +415,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
 <script>
 import ActivityType from './ActivityType.vue'
+import AquiferData from './AquiferData.vue'
 import WellType from './WellType.vue'
 import PersonResponsible from './PersonResponsible.vue'
 import Owner from './Owner.vue'
@@ -470,6 +481,7 @@ export default {
   },
   components: {
     ActivityType,
+    AquiferData,
     WellType,
     PersonResponsible,
     Owner,
@@ -505,6 +517,7 @@ export default {
       fieldsLoaded: {},
       formStepDescriptions: {
         'activityType': 'Type of work',
+        'aquiferData': 'Well testing and aquifer details',
         'wellType': 'Well class',
         'wellOwner': 'Well owner',
         'wellLocation': 'Well location',

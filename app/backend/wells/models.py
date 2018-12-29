@@ -1149,6 +1149,10 @@ class ActivitySubmission(AuditModel):
     diameter = models.CharField(max_length=9, blank=True, null=True)
     ems_id = models.CharField(max_length=30, blank=True, null=True)
 
+    # aquifer association
+    aquifer = models.ForeignKey(Aquifer, db_column='aquifer_id', on_delete=models.PROTECT, blank=True,
+                                null=True, verbose_name='Aquifer ID Number')
+
     # Decommission info
     decommission_reason = models.CharField(
         max_length=250, blank=True, null=True, verbose_name="Reason for Decommission")

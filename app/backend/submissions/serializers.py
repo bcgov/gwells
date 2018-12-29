@@ -467,6 +467,7 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
             'water_quality_colour',
             'water_quality_odour',
             'ems_id',
+            "aquifer",
             'total_depth_drilled',
             'finished_well_depth',
             'decommission_reason',
