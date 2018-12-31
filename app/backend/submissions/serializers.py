@@ -487,6 +487,16 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
             'internal_comments',
             'alternative_specs_submitted',
             'decommission_description_set',
+            'avi',
+            'storativity',
+            'transmissivity',
+            'hydraulic_conductivity',
+            'specific_storage',
+            'specific_yield',
+            'testing_method',
+            'testing_duration',
+            'analytic_solution_type',
+            'boundary_effect'
         )
 
 
