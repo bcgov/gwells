@@ -44,8 +44,8 @@ void createDeploymentStatus (String suffix, String status, String targetURL) {
 
 
 // Functional test script
-// Can be limited by adding smokeTest name
-def functionalTest (String STAGE_NAME, String BASE_URL, String ENV_SUFFIX, String smokeTest='false') {
+// Can be limited by assinging toTest var
+def functionalTest (String STAGE_NAME, String BASE_URL, String ENV_SUFFIX, String toTest='all') {
     _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
         echo "Testing"
         podTemplate(
@@ -85,10 +85,10 @@ def functionalTest (String STAGE_NAME, String BASE_URL, String ENV_SUFFIX, Strin
                 dir('functional-tests') {
                     try {
                         echo "BASE_URL = ${BASE_URL}"
-                        if ('false'.equalsIgnoreCase(smokeTest)) {
+                        if ('all'.equalsIgnoreCase(toTest)) {
                             sh './gradlew chromeHeadlessTest'
                         } else {
-                            sh "./gradlew -DchromeHeadlessTest.single=${smokeTest} chromeHeadlessTest"
+                            sh "./gradlew -DchromeHeadlessTest.single=${toTest} chromeHeadlessTest"
                         }
                     } catch (error) {
                         echo error
