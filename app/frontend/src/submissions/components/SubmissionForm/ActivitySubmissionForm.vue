@@ -338,6 +338,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-on:save="$emit('submit_edit')"
       />
 
+      <observation-well-info class="my-5"
+        <!-- insert details -->
+      />
+
       <decommission-information class="my-5"
         v-if="showSection('decommissionInformation')"
         id="decommissionInformation"
@@ -422,6 +426,7 @@ import Yield from './Yield.vue'
 import WaterQuality from './WaterQuality.vue'
 import Completion from './Completion.vue'
 import Comments from './Comments.vue'
+import ObservationWellInfo from './ObservationWellInfo.vue'
 import ClosureDescription from './ClosureDescription.vue'
 import DecommissionInformation from './DecommissionInformation.vue'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
@@ -488,7 +493,8 @@ export default {
     Completion,
     Comments,
     ClosureDescription,
-    DecommissionInformation
+    DecommissionInformation,
+    ObservationWellInfo
   },
   data () {
     return {
