@@ -53,6 +53,114 @@ Licensed under the Apache License, Version 2.0 (the "License");
         </b-form-group>
       </b-col>
     </b-row>
+    <b-row>
+      <b-col cols="12" md="4">
+        <form-input
+            id="AVIInput"
+            label="AVI"
+            type="text"
+            v-model="AVIInput"
+            :errors="errors['avi']"
+            :loaded="fieldsLoaded['avi']"
+        ></form-input>
+      </b-col>
+      <b-col cols="12" md="4">
+        <form-input
+            id="storativityInput"
+            label="Storativity"
+            type="text"
+            v-model="storativityInput"
+            :errors="errors['storativity']"
+            :loaded="fieldsLoaded['storativity']"
+        ></form-input>
+      </b-col>
+      <b-col cols="12" md="4">
+        <form-input
+            id="transmissivityInput"
+            label="Transmissivity"
+            type="text"
+            v-model="transmissivityInput"
+            :errors="errors['transmissivity']"
+            :loaded="fieldsLoaded['transmissivity']"
+        ></form-input>
+      </b-col>
+    </b-row>
+    <b-row>
+      <b-col cols="12" md="4">
+        <form-input
+            id="hydraulicConductivityInput"
+            label="Hydraulic Cconductivity"
+            type="text"
+            v-model="hydraulicConductivityInput"
+            :errors="errors['hydraulic_conductivity']"
+            :loaded="fieldsLoaded['hydraulic_conductivity']"
+        ></form-input>
+      </b-col>
+      <b-col cols="12" md="4">
+        <form-input
+            id="specificStorageInput"
+            label="Specific storage"
+            type="text"
+            v-model="specificStorageInput"
+            :errors="errors['specific_storage']"
+            :loaded="fieldsLoaded['specific_storage']"
+        ></form-input>
+      </b-col>
+      <b-col cols="12" md="4">
+        <form-input
+            id="specificYieldInput"
+            label="Specific yield"
+            type="text"
+            v-model="specificYieldInput"
+            :errors="errors['specific_yield']"
+            :loaded="fieldsLoaded['specific_yield']"
+        ></form-input>
+      </b-col>
+    </b-row>
+    <b-row>
+      <b-col cols="12" md="4">
+        <form-input
+            id="testingMethodInput"
+            label="Testing method"
+            type="text"
+            v-model="testingMethodInput"
+            :errors="errors['test_method']"
+            :loaded="fieldsLoaded['test_method']"
+        ></form-input>
+      </b-col>
+      <b-col cols="12" md="4">
+        <form-input
+            id="testingDuration"
+            label="Testing duration"
+            type="text"
+            v-model="testingDurationInput"
+            :errors="errors['testing_duration']"
+            :loaded="fieldsLoaded['testing_duration']"
+        ></form-input>
+      </b-col>
+      <b-col cols="12" md="4">
+        <form-input
+            id="analyticSolution"
+            label="Analytic solution"
+            type="text"
+            v-model="analyticSolutionInput"
+            :errors="errors['analytic_solution_type']"
+            :loaded="fieldsLoaded['analytic_solution_type']"
+        ></form-input>
+      </b-col>
+    </b-row>
+    <b-row>
+      <b-col cols="12" md="4">
+        <form-input
+            id="boundaryEffectInput"
+            label="Boundary effect"
+            type="text"
+            v-model="boundaryEffectInput"
+            :errors="errors['boundary_effect']"
+            :loaded="fieldsLoaded['boundary_effect']"
+        ></form-input>
+      </b-col>
+    </b-row>
   </fieldset>
 </template>
 
@@ -67,6 +175,16 @@ export default {
   mixins: [inputBindingsMixin, inputFormatMixin],
   props: {
     aquifer: null,
+    avi: null,
+    storativity: null,
+    transmissivity: null,
+    hydraulicConductivity: null,
+    specificStorage: null,
+    specificYield: null,
+    testingMethod: null,
+    testingDuration: null,
+    analyticSolutionType: null,
+    boundaryEffect: null,
     id: {
       type: String,
       isInput: false
@@ -89,7 +207,17 @@ export default {
     }
   },
   fields: {
-    aquiferInput: 'aquifer'
+    aquiferInput: 'aquifer',
+    aviInput: 'avi',
+    storativityInput: 'storativity',
+    transmissivityInput: 'transmissivity',
+    hydraulicConductivityInput: 'hydraulicConductivity',
+    specificStorageInput: 'specificStorage',
+    specificYieldInput: 'specificYield',
+    testingMethodInput: 'testingMethod',
+    testingDurationInput: 'testingDuration',
+    analyticSolutionInput: 'analyticSolutionType',
+    boundaryEffectInput: 'boundaryEffect'
   },
   data () {
     return {

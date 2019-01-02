@@ -496,7 +496,7 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
             'testing_method',
             'testing_duration',
             'analytic_solution_type',
-            'boundary_effect'
+            'boundary_effect',
         )
 
 

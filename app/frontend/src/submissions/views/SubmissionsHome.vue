@@ -417,6 +417,16 @@ export default {
         sealant_material: '',
         backfill_material: '',
         decommission_details: '',
+        avi: '',
+        storativity: '',
+        transmissivity: '',
+        hydraulic_conductivity: '',
+        specific_storage: '',
+        specific_yield: '',
+        testing_method: '',
+        testing_duration: '',
+        analytic_solution_type: '',
+        boundary_effect: '',
 
         // non-form fields that should be saved with form
         meta: {
