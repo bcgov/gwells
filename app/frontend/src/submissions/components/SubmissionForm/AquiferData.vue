@@ -208,7 +208,7 @@ export default {
   },
   fields: {
     aquiferInput: 'aquifer',
-    aviInput: 'avi',
+    AVIInput: 'avi',
     storativityInput: 'storativity',
     transmissivityInput: 'transmissivity',
     hydraulicConductivityInput: 'hydraulicConductivity',
