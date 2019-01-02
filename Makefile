@@ -6,10 +6,10 @@
 default: vue
 
 vue: prep
-	NPM_CMD=dev docker-compose up -d
+	NPM_CMD=dev docker-compose up
 
 django: prep
-	NPM_CMD=watch docker-compose up -d
+	NPM_CMD=watch docker-compose up
 
 
 ###################
