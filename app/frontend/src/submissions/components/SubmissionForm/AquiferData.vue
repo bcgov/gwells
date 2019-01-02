@@ -232,6 +232,8 @@ export default {
       ApiService.query(`aquifers/names/?search=${escape(search)}`).then((response) => {
         vm.aquiferList = response.data
         loading(false)
+      }).catch(() => {
+        loading(false)
       })
     }, 500),
     onAquiferSearch (search, loading) {
