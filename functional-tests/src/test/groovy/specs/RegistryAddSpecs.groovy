@@ -21,7 +21,7 @@ import pages.RegistryProfilePage
 import spock.lang.Title
 import spock.lang.Narrative
 
-@Title('Groundwater Well Registry Add Tests')
+@Title('Groundwater Wells Registry Add Tests')
 @Narrative('''As an admin user, I want to register a new well operator.''')
 class RegistryAddSpecs extends LoggedInSpec {
 

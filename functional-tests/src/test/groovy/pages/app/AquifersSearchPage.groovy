@@ -14,33 +14,38 @@
 
 package pages
 
-class AquifersPage extends BaseAppPage {
+class AquifersSearchPage extends BaseAppPage {
   static at = { pageTitle.text() == 'Aquifer Search' }
-  static url = 'aquifers/#/'
+  static url = 'aquifers'
   static content = {
-    pageTitle { $('main h5') }
+    pageTitle { $('main h4') }
 
-    aquiferNameField { $('#aquifers-name') }
-    aquiferNumberField { $('#aquifers-number') }
+    nameField { $('#aquifers-name') }
+    numberField { $('#aquifers-number') }
 
-    aquiferSearchButton { $('#aquifers-search') }
+    searchButton { $('#aquifers-search') }
 
-    aquiferResultsTable { $('#aquifers-results') }
+    searchResultsTable(required:false) { $('#aquifers-results') }
   }
 
   void setAquiferName(String name) {
-    aquiferNameField.value(name)
+    nameField.value(name)
   }
 
   void setAquiferNumber(int number) {
-    aquiferNumberField.value(number)
+    numberField.value(number)
   }
 
   void clickSearchButton() {
-    aquiferSearchButton.click()
+    searchButton.click()
   }
 
-  Boolean foundSearchResults() {
-    waitFor { aquiferResultsTable.$('tbody tr').size() != 0 }
+  int getSearchResultsCount() {
+    waitFor { searchResultsTable.$('tbody tr').hasNot(".b-table-empty-row").size() }
+  }
+
+  void clickFirstSearchResult() {
+    // click the first column with an anchor tag, from the first row of the search results table
+    waitFor { searchResultsTable.$('tbody tr')[0].$('td a')[0].click() }
   }
 }

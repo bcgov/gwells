@@ -6,9 +6,9 @@ exports[`Search Component Matches the snapshot 1`] = `
   <div
     class="card p-3 mb-4"
   >
-    <h5>
+    <h4>
       Aquifer Search
-    </h5>
+    </h4>
      
     <div
       class="pb-2"

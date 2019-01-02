@@ -14,7 +14,7 @@
 
 package specs
 
-import traits.Login
+import specs.traits.Login
 
 /**
  * Base spec for tests that require being logged in.
