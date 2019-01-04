@@ -20,32 +20,59 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <b-col cols="12" lg="6">
         <div class="float-right">
           <b-btn v-if="isStaffEdit" variant="primary" class="ml-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
-          <a href="#top" v-if="isStaffEdit">Back to top</a>g
+          <a href="#top" v-if="isStaffEdit">Back to top</a>
         </div>
       </b-col>
     </b-row>
+    <!-- <b-row v-if="isStaffEdit"> -->
     <b-row>
-      <b-col cols="12" md="8">
-        <b-form-group label="Comments" id="commentsGroup">
-          <b-form-textarea
-              id="commentsEntry"
-              :rows="3"
-              :max-rows="12"
-              v-model="commentsInput"></b-form-textarea>
-        </b-form-group>
+      <b-col cols="12" md="3" xl="2">
+        <form-input
+          id="licenseStatus"
+          label="License Status"
+          v-model="licenseStatusLookup"
+          :errors="errors['license_status']"
+          :loaded="fieldsLoaded['license_status']"
+          select
+          :options="codes.license_status_input"
+          value-field="license_status_input"
+          text-field="description"
+          placeholder="Select status"
+        ></form-input>
+      </b-col>
+      <b-col cols="12" md="3" xl="2">
+        <form-input
+          id="licenseNumber"
+          label="License Number"
+          v-model="licenseNumberLookup"
+          :errors="errors['license_number']"
+          :loaded="fieldsLoaded['license_number']"
+        ></form-input>
+      </b-col>
+      <b-col cols="12" md="3" xl="2">
+        <form-input
+          id="obsWellNumber"
+          label="Observation Well Number"
+          v-model="obsWellNumberInput"
+          :errors="errors['observation_well_number']"
+          :loaded="fieldsLoaded['observation_well_number']"
+        ></form-input>
+      </b-col>
+      <b-col cols="12" md="3" xl="2">
+        <form-input
+          id="obsWellStatus"
+          label="Observation Well Status"
+          select
+          :options="codes.observation_well_status"
+          :errors="errors['observation_well_status']"
+          :loaded="fieldsLoaded['observation_well_status']"
+          text-field="description"
+          value-field="observation_well_status"
+          placeholder="Select status"
+          v-model="obsWellStatusInput"
+        ></form-input>
       </b-col>
     </b-row>
-    <!-- <b-row>
-      <b-col cols="12" sm="6"> -->
-
-          <b-form-checkbox id="alternativeSpecsCheckbox"
-                v-model="alternativeSpecsSubmittedInput"
-                :value="true"
-                :unchecked-value="false">
-            Alternative specs submitted (if required)
-          </b-form-checkbox>
-      <!-- </b-col>
-    </b-row> -->
   </fieldset>
 </template>
 

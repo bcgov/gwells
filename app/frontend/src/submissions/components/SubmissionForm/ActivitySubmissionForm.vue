@@ -338,8 +338,62 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-on:save="$emit('submit_edit')"
       />
 
+      <!-- Licensing and Observation Wells
+        v-if="showSection('TBD' )"
+      -->
       <observation-well-info class="my-5"
-        <!-- insert details -->
+        :key="`screensComponent${componentUpdateTrigger}`"
+        id='observationWellInfo'
+        :licenseStatus="form.license_status"
+        :licenseNumber="form.license_number"
+        :obsWellNumber="form.observation_well_number"
+        :obsWellStatus="form.observation_well_status"
+      />
+
+      <!-- Screens -->
+      <!--
+      <screens class="my-5"
+        :key="`screensComponent${componentUpdateTrigger}`"
+        v-if="showSection('screens' )"
+        id="screens"
+        :screenIntakeMethod.sync="form.screen_intake_method"
+        :screenType.sync="form.screen_type"
+        :screenMaterial.sync="form.screen_material"
+        :otherScreenMaterial.sync="form.other_screen_material"
+        :screenOpening.sync="form.screen_opening"
+        :screenBottom.sync="form.screen_bottom"
+        :screens.sync="form.screen_set"
+        :screenInformation.sync="form.screen_information"
+        :errors="errors"
+        :fieldsLoaded="fieldsLoaded"
+        :isStaffEdit="isStaffEdit"
+        :saveDisabled="editSaveDisabled"
+        v-on:save="$emit('submit_edit')"
+      />
+    -->
+
+      <well-type class="my-5"
+        v-if="showSection('wellType')"
+        id="wellType"
+        :wellTagNumber.sync="form.well"
+        :wellStatusCode.sync="form.well_status"
+        :wellActivityType.sync="activityType"
+        :wellClass.sync="form.well_class"
+        :wellSubclass.sync="form.well_subclass"
+        :intendedWaterUse.sync="form.intended_water_use"
+        :units.sync="units"
+        :idPlateNumber.sync="form.identification_plate_number"
+        :wellPlateAttached.sync="form.well_identification_plate_attached"
+        :idPlateAttachedBy.sync="form.id_plate_attached_by"
+        :waterSupplySystem.sync="form.water_supply_system_name"
+        :waterSupplyWell.sync="form.water_supply_system_well_name"
+        :workStartDate.sync="form.work_start_date"
+        :workEndDate.sync="form.work_end_date"
+        :errors="errors"
+        :fieldsLoaded="fieldsLoaded"
+        :isStaffEdit="isStaffEdit"
+        :saveDisabled="editSaveDisabled"
+        v-on:save="$emit('submit_edit')"
       />
 
       <decommission-information class="my-5"
@@ -426,9 +480,9 @@ import Yield from './Yield.vue'
 import WaterQuality from './WaterQuality.vue'
 import Completion from './Completion.vue'
 import Comments from './Comments.vue'
-import ObservationWellInfo from './ObservationWellInfo.vue'
 import ClosureDescription from './ClosureDescription.vue'
 import DecommissionInformation from './DecommissionInformation.vue'
+import ObservationWellInfo from './ObservationWellInfo.vue'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 export default {
   name: 'SubmissionsForm',
@@ -529,7 +583,8 @@ export default {
         'wellCompletion': 'Well completion data',
         'decommissionInformation': 'Well decommission information',
         'comments': 'Comments',
-        'personResponsible': 'Person Responsible for Work'
+        'personResponsible': 'Person Responsible for Work',
+        'observationWellInfo': 'Licensing and observation wells info'
       }
     }
   },
