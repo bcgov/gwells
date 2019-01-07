@@ -305,7 +305,7 @@ pipeline {
         // each pull request gets its own buildconfig but all new builds are pushed to a single imagestream,
         // to be tagged with the pull request number.
         // e.g.:  gwells-app:pr-999
-        stage('Prepare Templates') {
+        stage('ALL - Prepare Templates') {
             steps {
                 script {
                     echo "Cancelling previous builds..."
@@ -339,7 +339,7 @@ pipeline {
 
         // the Build stage runs unit tests and builds files. an image will be outputted to the app's imagestream
         // builds use the source to image strategy. See /app/.s2i/assemble for image build script
-        stage('Build (with tests)') {
+        stage('ALL - Build (with tests)') {
             steps {
                 script {
                     _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
@@ -712,7 +712,6 @@ pipeline {
             steps {
                 script {
                     _openshift(env.STAGE_NAME, DEMO_PROJECT) {
-                        input "Deploy to demo?"
                         echo "Preparing..."
 
                         // Process db and app template into list objects
