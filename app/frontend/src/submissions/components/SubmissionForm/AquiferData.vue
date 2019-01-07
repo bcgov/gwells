@@ -89,7 +89,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <b-col cols="12" md="4">
         <form-input
             id="hydraulicConductivityInput"
-            label="Hydraulic Cconductivity"
+            label="Hydraulic Conductivity"
             type="text"
             v-model="hydraulicConductivityInput"
             :errors="errors['hydraulic_conductivity']"
