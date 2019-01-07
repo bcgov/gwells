@@ -342,10 +342,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-if="showSection('TBD' )"
       -->
       <observation-well-info class="my-5"
-        :key="`screensComponent${componentUpdateTrigger}`"
         id='observationWellInfo'
-        :licenseStatus="form.license_status"
-        :licenseNumber="form.license_number"
         :obsWellNumber="form.observation_well_number"
         :obsWellStatus="form.observation_well_status"
       />
