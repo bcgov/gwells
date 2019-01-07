@@ -26,6 +26,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     </b-row>
     <!-- <b-row v-if="isStaffEdit"> -->
     <b-row>
+    <!-- waiting for data to use these fields
       <b-col cols="12" md="3" xl="2">
         <form-input
           id="licenseStatus"
@@ -49,6 +50,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           :loaded="fieldsLoaded['license_number']"
         ></form-input>
       </b-col>
+    -->
       <b-col cols="12" md="3" xl="2">
         <form-input
           id="obsWellNumber"
