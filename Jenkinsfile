@@ -520,7 +520,7 @@ pipeline {
         // this stage should only occur when the pull request is being made against the master branch.
         stage('TEST - Deploy') {
             when {
-                expression { env.CHANGE_TARGET == 'master' }
+                expression { env.CHANGE_TARGET == 'master' || env.CHANGE_TARGET.startsWith('release/') }
             }
             steps {
                 script {
@@ -663,7 +663,7 @@ pipeline {
 
         stage('TEST - API Tests') {
             when {
-                expression { env.CHANGE_TARGET == 'master' }
+                expression { env.CHANGE_TARGET == 'master' || env.CHANGE_TARGET.startsWith('release/') }
             }
             steps {
                 script {
