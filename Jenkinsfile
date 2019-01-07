@@ -364,7 +364,7 @@ pipeline {
         // report back as ready.
         stage('DEV - Deploy') {
             when {
-                expression { env.CHANGE_TARGET != 'master' }
+                expression { env.CHANGE_TARGET != 'master' && env.CHANGE_TARGET != 'demo' }
             }
             steps {
                 script {
@@ -453,7 +453,7 @@ pipeline {
 
         stage('DEV - Load Fixtures') {
             when {
-                expression { env.CHANGE_TARGET != 'master' }
+                expression { env.CHANGE_TARGET != 'master' && env.CHANGE_TARGET != 'demo' }
             }
             steps {
                 script {
@@ -498,7 +498,7 @@ pipeline {
         // See https://github.com/BCDevOps/BDDStack
         stage('DEV - Smoke Tests') {
             when {
-                expression { env.CHANGE_TARGET != 'master' }
+                expression { env.CHANGE_TARGET != 'master' && env.CHANGE_TARGET != 'demo' }
             }
             steps {
                 script {
@@ -513,7 +513,7 @@ pipeline {
 
         stage('DEV - API Tests') {
             when {
-                expression { env.CHANGE_TARGET != 'master' }
+                expression { env.CHANGE_TARGET != 'master' && env.CHANGE_TARGET != 'demo' }
             }
             steps {
                 script {
