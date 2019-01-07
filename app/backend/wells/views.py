@@ -14,7 +14,7 @@
 from urllib.parse import quote
 
 from django.db.models import Prefetch
-from django.http import Http404
+from django.http import Http404, JsonResponse
 from django.views.generic import DetailView
 
 from rest_framework import filters
@@ -94,7 +94,7 @@ class ListExtracts(APIView):
         minioClient = Minio(host,
                             access_key=get_env_variable('S3_PUBLIC_ACCESS_KEY'),
                             secret_key=get_env_variable('S3_PUBLIC_SECRET_KEY'),
-                            secure=True)
+                            secure=get_env_variable('S3_USE_SECURE', 1))
         objects = minioClient.list_objects(get_env_variable('S3_WELL_EXPORT_BUCKET'))
         urls = list(
             map(
@@ -202,3 +202,23 @@ class WellTagSearchAPIView(ListAPIView):
             return Response([])
         else:
             return super().get(request)
+
+
+class PreSignedDocumentKey(APIView):
+    """
+    Get a pre-signed document key to upload into an S3 compatible document store
+
+    post: obtain a URL that is pre-signed to allow client-side uploads
+    """
+
+    permission_classes = (WellsEditPermissions,)
+
+    @swagger_auto_schema(auto_schema=None)
+    def get(self, request):
+        client = MinioClient(
+            request=request, disable_private=True)
+
+        object_name = request.GET.get("filename")
+        url = client.get_presigned_put_url(object_name)
+
+        return JsonResponse({"url": url})
