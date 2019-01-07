@@ -343,8 +343,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
       -->
       <observation-well-info class="my-5"
         id='observationWellInfo'
-        :obsWellNumber="form.observation_well_number"
-        :obsWellStatus="form.observation_well_status"
+        :obsWellNumber.sync="form.observation_well_number"
+        :obsWellStatus.sync="form.observation_well_status"
       />
 
       <!-- Screens -->
