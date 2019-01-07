@@ -14,11 +14,13 @@
 
 from rest_framework.response import Response
 from posixpath import join as urljoin
+from django.http import JsonResponse
 from django.views.generic import TemplateView
 from django.urls import reverse
 from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveUpdateAPIView, RetrieveAPIView
 from rest_framework.views import APIView
 
+from gwells.documents import MinioClient
 from gwells.urls import app_root
 from gwells.pagination import APILimitOffsetPagination
 from wells.permissions import WellsEditPermissions
@@ -363,3 +365,22 @@ class SubmissionsOptions(APIView):
 class SubmissionsHomeView(TemplateView):
     """Loads the html file containing the Submissions web app"""
     template_name = 'submissions/submissions.html'
+
+
+class PreSignedDocumentKey(APIView):
+    """
+    Get a pre-signed document key to upload into an S3 compatible document store
+
+    post: obtain a URL that is pre-signed to allow client-side uploads
+    """
+
+    permission_classes = (WellsEditPermissions,)
+
+    def get(self, request):
+        client = MinioClient(
+            request=request, disable_private=True)
+
+        object_name = request.GET.get("filename")
+        url = client.get_presigned_put_url(object_name)
+
+        return JsonResponse({"url": url})

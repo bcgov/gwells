@@ -12,8 +12,8 @@
     limitations under the License.
 """
 
-from django.shortcuts import render
 from django_filters import rest_framework as djfilters
+from django.http import Http404, JsonResponse
 from django.views.generic import TemplateView
 
 from drf_yasg.utils import swagger_auto_schema
@@ -37,7 +37,6 @@ from aquifers.models import (
     AquiferProductivity,
     AquiferSubtype,
     AquiferVulnerabilityCode,
-    QualityConcern,
 )
 from aquifers.permissions import HasAquiferEditRoleOrReadOnly, HasAquiferEditRole
 from gwells.change_history import generate_history_diff
@@ -213,3 +212,23 @@ class AquiferHistory(APIView):
         history_diff = sorted(aquifer_history_diff, key=lambda x: x['date'], reverse=True)
 
         return Response(history_diff)
+
+
+class PreSignedDocumentKey(APIView):
+    """
+    Get a pre-signed document key to upload into an S3 compatible document store
+
+    post: obtain a URL that is pre-signed to allow client-side uploads
+    """
+
+    permission_classes = (HasAquiferEditRole,)
+
+    @swagger_auto_schema(auto_schema=None)
+    def get(self, request):
+        client = MinioClient(
+            request=request, disable_private=True)
+
+        object_name = request.GET.get("filename")
+        url = client.get_presigned_put_url(object_name)
+
+        return JsonResponse({"url": url})
