@@ -68,7 +68,7 @@ export default {
 
     // set delay to 50% of token's lifespan (in seconds), or at least 60 seconds
     let delay = (expiresAt - (Date.now() / 1000)) * 0.5
-    delay = delay > 60 ? delay : 60
+    delay = Math.max(60, delay)
 
     setTimeout(() => {
       this.renewToken(instance)
