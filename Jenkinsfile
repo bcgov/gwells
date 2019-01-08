@@ -173,7 +173,7 @@ def apiTest (String STAGE_NAME, String BASE_URL, String ENV_SUFFIX) {
                     envVars: [
                         envVar(
                             key:'BASE_URL',
-                            value: BASE_URL
+                            value: "${BASE_URL}"
                         ),
                         secretEnvVar(
                             key: 'GWELLS_API_TEST_USER',
