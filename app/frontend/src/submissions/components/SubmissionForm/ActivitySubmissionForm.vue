@@ -171,27 +171,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-on:save="$emit('submit_edit')"
       />
 
-      <!-- aquifer -->
-      <aquifer-data class="my-5"
-        v-if="showSection('aquiferData')"
-        id="aquiferData"
-        :aquifer.sync="form.aquifer"
-        :avi.sync="form.avi"
-        :storativity.sync="form.storativity"
-        :transmissivity.sync="form.transmissivity"
-        :hydraulicConductivity.sync="form.hydraulic_conductivity"
-        :specificStorage.sync="form.specific_storage"
-        :specificYield.sync="form.specific_yield"
-        :testingMethod.sync="form.testing_method"
-        :testingDuration.sync="form.testing_duration"
-        :analyticSolutionType.sync="form.analytic_solution_type"
-        :boundaryEffect.sync="form.boundary_effect"
-        :errors="errors"
-        :isStaffEdit="isStaffEdit"
-        :saveDisabled="editSaveDisabled"
-        v-on:save="$emit('submit_edit')"
-      />
-
       <!-- Method of Drilling -->
       <method-of-drilling class="my-5"
         v-if="showSection('method')"
@@ -392,6 +371,27 @@ Licensed under the Apache License, Version 2.0 (the "License");
         :comments.sync="form.comments"
         :internalComments.sync="form.internal_comments"
         :alternativeSpecsSubmitted.sync="form.alternative_specs_submitted"
+        :errors="errors"
+        :isStaffEdit="isStaffEdit"
+        :saveDisabled="editSaveDisabled"
+        v-on:save="$emit('submit_edit')"
+      />
+
+      <!-- aquifer -->
+      <aquifer-data class="my-5"
+        v-if="showSection('aquiferData')"
+        id="aquiferData"
+        :aquifer.sync="form.aquifer"
+        :aquiferVulnerabilityIndex.sync="form.aquifer_vulnerability_index"
+        :storativity.sync="form.storativity"
+        :transmissivity.sync="form.transmissivity"
+        :hydraulicConductivity.sync="form.hydraulic_conductivity"
+        :specificStorage.sync="form.specific_storage"
+        :specificYield.sync="form.specific_yield"
+        :testingMethod.sync="form.testing_method"
+        :testingDuration.sync="form.testing_duration"
+        :analyticSolutionType.sync="form.analytic_solution_type"
+        :boundaryEffect.sync="form.boundary_effect"
         :errors="errors"
         :isStaffEdit="isStaffEdit"
         :saveDisabled="editSaveDisabled"

@@ -56,12 +56,12 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <b-row>
       <b-col cols="12" md="4">
         <form-input
-            id="AVIInput"
+            id="aquiferVulnerabilityIndexInput"
             label="AVI"
             type="text"
-            v-model="AVIInput"
-            :errors="errors['avi']"
-            :loaded="fieldsLoaded['avi']"
+            v-model="aquiferVulnerabilityIndexInput"
+            :errors="errors['aquifer_vulnerability_index']"
+            :loaded="fieldsLoaded['aquifer_vulnerability_index']"
         ></form-input>
       </b-col>
       <b-col cols="12" md="4">
@@ -175,7 +175,7 @@ export default {
   mixins: [inputBindingsMixin, inputFormatMixin],
   props: {
     aquifer: null,
-    avi: null,
+    aquiferVulnerabilityIndex: null,
     storativity: null,
     transmissivity: null,
     hydraulicConductivity: null,
@@ -208,7 +208,7 @@ export default {
   },
   fields: {
     aquiferInput: 'aquifer',
-    AVIInput: 'avi',
+    aquiferVulnerabilityIndexInput: 'aquiferVulnerabilityIndex',
     storativityInput: 'storativity',
     transmissivityInput: 'transmissivity',
     hydraulicConductivityInput: 'hydraulicConductivity',

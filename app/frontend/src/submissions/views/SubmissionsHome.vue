@@ -200,7 +200,6 @@ export default {
           'personResponsible',
           'wellLocation',
           'wellCoords',
-          'aquiferData',
           'method',
           'casings',
           'backfill',
@@ -213,7 +212,8 @@ export default {
           'wellCompletion',
           'closureDescription',
           'decommissionInformation',
-          'comments'
+          'comments',
+          'aquiferData'
         ]
       }
     }
@@ -417,7 +417,7 @@ export default {
         sealant_material: '',
         backfill_material: '',
         decommission_details: '',
-        avi: '',
+        aquifer_vulnerability_index: '',
         storativity: '',
         transmissivity: '',
         hydraulic_conductivity: '',

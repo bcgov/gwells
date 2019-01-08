@@ -194,7 +194,7 @@ class WellConstructionSubmissionSerializer(WellSubmissionSerializerBase):
 
     coordinate_acquisition_code = serializers.PrimaryKeyRelatedField(
         queryset=CoordinateAcquisitionCode.objects.all(),
-        required=False)
+        required=False, allow_null=True)
 
     def create(self, validated_data):
         # Whenever we create a Construction record, we default to H (gps) for the source.
@@ -487,7 +487,7 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
             'internal_comments',
             'alternative_specs_submitted',
             'decommission_description_set',
-            'avi',
+            'aquifer_vulnerability_index',
             'storativity',
             'transmissivity',
             'hydraulic_conductivity',

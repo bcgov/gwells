@@ -780,7 +780,7 @@ class Well(AuditModel):
         max_length=200, blank=True, null=True, verbose_name='Consultant Company')
 
     # Aquifer related data
-    avi = models.DecimalField(
+    aquifer_vulnerability_index = models.DecimalField(
         max_digits=10, decimal_places=0, blank=True, null=True, verbose_name='AVI')
     storativity = models.DecimalField(
         max_digits=8, decimal_places=7, blank=True, null=True, verbose_name='Storativity')
@@ -1197,7 +1197,7 @@ class ActivitySubmission(AuditModel):
         max_length=250, blank=True, null=True, verbose_name="Decommission Details")
 
     # Aquifer related data
-    avi = models.DecimalField(
+    aquifer_vulnerability_index = models.DecimalField(
         max_digits=10, decimal_places=0, blank=True, null=True, verbose_name='AVI')
     storativity = models.DecimalField(
         max_digits=8, decimal_places=7, blank=True, null=True, verbose_name='Storativity')
