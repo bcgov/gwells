@@ -15,7 +15,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
   <fieldset>
     <b-row>
       <b-col cols="12" lg="6">
-        <legend :id="id">Licensing and Observation Wells</legend>
+        <legend :id="id">Observation Well Information</legend>
       </b-col>
       <b-col cols="12" lg="6">
         <div class="float-right">
@@ -24,33 +24,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         </div>
       </b-col>
     </b-row>
-    <!-- <b-row v-if="isStaffEdit"> -->
     <b-row>
-    <!-- waiting for data to use these fields
-      <b-col cols="12" md="3" xl="2">
-        <form-input
-          id="licenseStatus"
-          label="License Status"
-          v-model="licenseStatusLookup"
-          :errors="errors['license_status']"
-          :loaded="fieldsLoaded['license_status']"
-          select
-          :options="codes.license_status_input"
-          value-field="license_status_input"
-          text-field="description"
-          placeholder="Select status"
-        ></form-input>
-      </b-col>
-      <b-col cols="12" md="3" xl="2">
-        <form-input
-          id="licenseNumber"
-          label="License Number"
-          v-model="licenseNumberLookup"
-          :errors="errors['license_number']"
-          :loaded="fieldsLoaded['license_number']"
-        ></form-input>
-      </b-col>
-    -->
       <b-col cols="12" md="3" xl="2">
         <form-input
           id="obsWellNumber"
@@ -69,7 +43,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           :errors="errors['observation_well_status']"
           :loaded="fieldsLoaded['observation_well_status']"
           text-field="description"
-          value-field="observation_well_status"
+          value-field="obs_well_status_code"
           placeholder="Select status"
           v-model="obsWellStatusInput"
         ></form-input>
@@ -86,6 +60,8 @@ export default {
   props: {
     comments: String,
     alternativeSpecsSubmitted: null,
+    obsWellStatus: null,
+    obsWellNumber: null,
     errors: {
       type: Object,
       default: () => ({})
@@ -109,7 +85,9 @@ export default {
   },
   fields: {
     commentsInput: 'comments',
-    alternativeSpecsSubmittedInput: 'alternativeSpecsSubmitted'
+    alternativeSpecsSubmittedInput: 'alternativeSpecsSubmitted',
+    obsWellStatusInput: 'obsWellStatus',
+    obsWellNumberInput: 'obsWellNumber'
   },
   data () {
     return {

@@ -39,6 +39,7 @@ from wells.models import (
     IntendedWaterUseCode,
     LandDistrictCode,
     LinerMaterialCode,
+    ObsWellStatusCode,
     ScreenIntakeMethodCode,
     SurfaceSealMaterialCode,
     SurfaceSealMethodCode,
@@ -72,6 +73,7 @@ from submissions.serializers import (
     IntendedWaterUseCodeSerializer,
     LandDistrictSerializer,
     LinerMaterialCodeSerializer,
+    ObservationWellStatusCodeSerializer,
     ScreenIntakeMethodSerializer,
     SurfaceSealMaterialCodeSerializer,
     SurfaceSealMethodCodeSerializer,
@@ -299,6 +301,9 @@ class SubmissionsOptions(APIView):
         )
         coordinate_acquisition_codes = CoordinateAcquisitionCodeSerializer(
             instance=CoordinateAcquisitionCode.objects.all(), many=True)
+        observation_well_status = ObservationWellStatusCodeSerializer(
+            instance=ObsWellStatusCode.objects.all(), many=True
+        )
 
         root = urljoin('/', app_root, 'api/v1/')
         for item in activity_codes.data:
@@ -333,7 +338,8 @@ class SubmissionsOptions(APIView):
         options["yield_estimation_methods"] = yield_estimation_methods.data
         options["water_quality_characteristics"] = water_quality_characteristics.data
         options["water_quality_colours"] = water_quality_colours.data
-        options["well_status_codes"] = well_status_codes.data 
+        options["well_status_codes"] = well_status_codes.data
+        options["observation_well_status"] = observation_well_status.data
 
         return Response(options)
 

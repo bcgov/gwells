@@ -338,54 +338,12 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-on:save="$emit('submit_edit')"
       />
 
-      <!-- Licensing and Observation Wells
-        v-if="showSection('TBD' )"
-      -->
+      <!-- Observation well info -->
       <observation-well-info class="my-5"
+        v-if="showSection('observationWellInfo')"
         id='observationWellInfo'
         :obsWellNumber.sync="form.observation_well_number"
         :obsWellStatus.sync="form.observation_well_status"
-      />
-
-      <!-- Screens -->
-      <!--
-      <screens class="my-5"
-        :key="`screensComponent${componentUpdateTrigger}`"
-        v-if="showSection('screens' )"
-        id="screens"
-        :screenIntakeMethod.sync="form.screen_intake_method"
-        :screenType.sync="form.screen_type"
-        :screenMaterial.sync="form.screen_material"
-        :otherScreenMaterial.sync="form.other_screen_material"
-        :screenOpening.sync="form.screen_opening"
-        :screenBottom.sync="form.screen_bottom"
-        :screens.sync="form.screen_set"
-        :screenInformation.sync="form.screen_information"
-        :errors="errors"
-        :fieldsLoaded="fieldsLoaded"
-        :isStaffEdit="isStaffEdit"
-        :saveDisabled="editSaveDisabled"
-        v-on:save="$emit('submit_edit')"
-      />
-    -->
-
-      <well-type class="my-5"
-        v-if="showSection('wellType')"
-        id="wellType"
-        :wellTagNumber.sync="form.well"
-        :wellStatusCode.sync="form.well_status"
-        :wellActivityType.sync="activityType"
-        :wellClass.sync="form.well_class"
-        :wellSubclass.sync="form.well_subclass"
-        :intendedWaterUse.sync="form.intended_water_use"
-        :units.sync="units"
-        :idPlateNumber.sync="form.identification_plate_number"
-        :wellPlateAttached.sync="form.well_identification_plate_attached"
-        :idPlateAttachedBy.sync="form.id_plate_attached_by"
-        :waterSupplySystem.sync="form.water_supply_system_name"
-        :waterSupplyWell.sync="form.water_supply_system_well_name"
-        :workStartDate.sync="form.work_start_date"
-        :workEndDate.sync="form.work_end_date"
         :errors="errors"
         :fieldsLoaded="fieldsLoaded"
         :isStaffEdit="isStaffEdit"

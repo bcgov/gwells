@@ -210,6 +210,7 @@ export default {
           'wellYield',
           'waterQuality',
           'wellCompletion',
+          'observationWellInfo',
           'closureDescription',
           'decommissionInformation',
           'comments'
@@ -415,6 +416,8 @@ export default {
         sealant_material: '',
         backfill_material: '',
         decommission_details: '',
+        observation_well_number: '',
+        observation_well_status: '',
 
         // non-form fields that should be saved with form
         meta: {
