@@ -76,8 +76,10 @@ export default {
   },
 
   renewToken (instance) {
-    instance.updateToken(1800).success(() => {
-      this.setLocalToken(instance)
+    instance.updateToken(1800).success((refreshed) => {
+      if (refreshed) {
+        this.setLocalToken(instance)
+      }
       this.scheduleRenewal(instance)
     }).error(() => {
       // The refresh token is expired or was rejected
