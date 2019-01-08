@@ -19,7 +19,7 @@ import pages.RegistryPage
 import spock.lang.Title
 import spock.lang.Narrative
 
-@Title('Groundwater Well Registry Tests')
+@Title('Groundwater Wells Registry Tests')
 @Narrative('''As a user, I want to search the registry of well operators.''')
 class RegistrySpecs extends LoggedInSpec {
 
@@ -31,7 +31,7 @@ class RegistrySpecs extends LoggedInSpec {
     when: 'I click the Search button'
       clickSearchButton()
     then: 'The search is executed and a table containing at least 1 matching result is displayed'
-      foundSearchResults()
+      getSearchResultsCount() != 0
   }
 
   void 'Search for Well Pump Installers as a public user'() {
@@ -42,7 +42,7 @@ class RegistrySpecs extends LoggedInSpec {
     when: 'I click the Search button'
       clickSearchButton()
     then: 'The search is executed and a table containing at least 1 matching result is displayed'
-      foundSearchResults()
+      getSearchResultsCount() != 0
   }
 
   void 'Search using "Individual, company, or registration number" field as a public user'() {
@@ -53,6 +53,6 @@ class RegistrySpecs extends LoggedInSpec {
     when: 'I click the Search button'
       clickSearchButton()
     then: 'The search is executed and a table containing at least 1 matching result is displayed'
-      foundSearchResults()
+      getSearchResultsCount() != 0
   }
 }

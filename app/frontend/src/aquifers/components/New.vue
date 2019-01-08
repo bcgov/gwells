@@ -19,7 +19,7 @@
 
       <b-container>
         <b-row class="border-bottom mb-3 pb-2">
-          <b-col><h5>Add new Aquifer</h5></b-col>
+          <b-col><h4>Add new Aquifer</h4></b-col>
         </b-row>
 
         <aquifer-form

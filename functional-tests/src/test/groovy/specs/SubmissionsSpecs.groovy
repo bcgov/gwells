@@ -23,7 +23,7 @@ import spock.lang.Narrative
 import spock.lang.Stepwise
 
 @Stepwise
-@Title('Groundwater Well Submissions Tests')
+@Title('Groundwater Wells Submissions Tests')
 @Narrative('''As a submission user, I want to create a new well submission report.''')
 class SubmissionsSpecs extends LoggedInSpec {
 

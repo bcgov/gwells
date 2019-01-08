@@ -145,7 +145,7 @@
             },
             "spec": {
                 "strategy": {
-                    "type": "Recreate",
+                    "type": "Rolling",
                     "recreateParams": {
                         "timeoutSeconds": 180,
                         "pre": {
