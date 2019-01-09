@@ -12,7 +12,7 @@
     limitations under the License.
 */
 
-package traits
+package specs.traits
 
 import geb.navigator.Navigator
 import geb.driver.CachingDriverFactory
@@ -41,5 +41,15 @@ trait Utils {
    */
   void fail(String message='') {
     throw new AssertionError(message)
+  }
+
+  /**
+   * Appends a random 2-3 digit integer to the beginning of the provided string.
+   * @param nonUniqueString a string to make unique.
+   * @return the given string with random digits appended to the beginning.
+   */
+  String makeUnique(String nonUniqueString) {
+    String random = Math.abs(new Random().nextInt() % 600) + 1
+    return random + nonUniqueString
   }
 }
