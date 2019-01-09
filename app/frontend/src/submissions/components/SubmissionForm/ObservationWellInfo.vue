@@ -42,7 +42,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           :options="codes.observation_well_status"
           :errors="errors['observation_well_status']"
           :loaded="fieldsLoaded['observation_well_status']"
-          text-field="description"
+          text-field="obs_well_status_code"
           value-field="obs_well_status_code"
           placeholder="Select status"
           v-model="obsWellStatusInput"
