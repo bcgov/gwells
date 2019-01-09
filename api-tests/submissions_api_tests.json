@@ -2230,7 +2230,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"well\": {{well_tag_number}},\n\t\"consultant_name\": \"John Mann\",\n\t\"owner_full_name\": \"Buddy\",\n\t\"ground_elevation_method\": \"10K_MAP\",\n\t\"ground_elevation\": 12,\n\t\"drilling_method\": \"AIR_ROTARY\",\n\t\"other_drilling_method\": \"Shovel\",\n\t\"well_orientation\": \"False\"\n}"
+									"raw": "{\n\t\"well\": {{well_tag_number}},\n\t\"consultant_name\": \"John Mann\",\n\t\"owner_full_name\": \"Buddy\",\n\t\"ground_elevation_method\": \"10K_MAP\",\n\t\"ground_elevation\": 12,\n\t\"drilling_method\": \"AIR_ROTARY\",\n\t\"other_drilling_method\": \"Shovel\",\n\t\"well_orientation\": \"False\",\n\t\"observation_well_status\": \"Active\",\n\t\"observation_well_number\": 123\n}"
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/staff_edit?format=json",
@@ -2287,7 +2287,14 @@
 											"pm.test(\"Expect other_drilling_method to be updated\", function() {",
 											"    pm.expect(jsonData['other_drilling_method']).to.equal('Shovel')",
 											"})",
-											""
+											"",
+											"pm.test(\"Expect observation_well_number to be updated\", function() {",
+											"    pm.expect(jsonData['observation_well_number']).to.equal('123')",
+											"})",
+											"",
+											"pm.test(\"Expect observation_well_status to be updated\", function() {",
+											"    pm.expect(jsonData['observation_well_status']).to.equal('Active')",
+											"})"
 										],
 										"type": "text/javascript"
 									}
@@ -2441,6 +2448,189 @@
 								"body": {
 									"mode": "raw",
 									"raw": "{\n\t\"well\": {{well_tag_number}},\n\t\"consultant_name\": \"John Mann\",\n\t\"owner_full_name\": \"Buddy\",\n\t\"ground_elevation_method\": \"10K_MAP\",\n\t\"ground_elevation\": 12,\n\t\"drilling_method\": \"AIR_ROTARY\",\n\t\"other_drilling_method\": \"Shovel\",\n\t\"well_orientation\": \"False\",\n\t\"linerperforation_set\": [\n\t\t{\n\t\t\t\"start\": 0,\n\t\t\t\"end\": 8\n\t\t},\n\t\t{\n\t\t\t\"start\": 8,\n\t\t\t\"end\": 12\n\t\t}\n\t],\n\t\"screen_set\": [\n\t\t{\n\t\t\t\"start\": 5,\n\t\t\t\"end\": 15,\n\t\t\t\"assembly_type\": \"SCREEN\"\n\t\t},\n\t\t{\n\t\t\t\"start\": 15,\n\t\t\t\"end\": 20,\n\t\t\t\"assembly_type\": \"SCREEN\"\n\t\t}\n\t],\n\t\"casing_set\": [\n\t\t{\n\t\t\t\"casing_code\": \"SURFACE\",\n\t\t\t\"start\":\"1\",\n\t\t\t\"end\":\"2\",\n\t\t\t\"diameter\":\"1\",\n\t\t\t\"drive_shoe\":\"False\",\n\t\t\t\"id\":0,\n\t\t\t\"wall_thickness\":\"87\"\n\t\t},\n\t\t{\n\t\t\t\"casing_code\":\"SURFACE\",\n\t\t\t\"start\":\"4\",\n\t\t\t\"casing_material\":\"STEEL\",\n\t\t\t\"end\":\"8\",\n\t\t\t\"diameter\":\"2\",\n\t\t\t\"drive_shoe\":\"True\",\n\t\t\t\"id\":1,\n\t\t\t\"wall_thickness\":\"7\"\n\t\t}\n\t],\n\t\"productiondata_set\": [\n\t\t{\n\t\t\t\"drawdown\": 11,\n\t\t\t\"yield_estimation_rate\": 11\n\t\t}\n\t]\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/submissions/staff_edit?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"submissions",
+										"staff_edit"
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json"
+										}
+									]
+								},
+								"description": "Submit a submission"
+							},
+							"response": []
+						},
+						{
+							"name": "Create aquifer for well",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "6e74f248-5709-45ca-9105-1294977c9001",
+										"exec": [
+											"var jsonData = pm.response.json();",
+											"",
+											"pm.environment.set(\"created_aquifer_for_well\", jsonData.aquifer_id);",
+											"pm.test(\"Status code is 201\", function () {",
+											"    pm.response.to.have.status(201);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/x-www-form-urlencoded",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "aquifer_name",
+											"value": "Cool Aquifer",
+											"type": "text"
+										},
+										{
+											"key": "area",
+											"value": "10",
+											"type": "text"
+										},
+										{
+											"key": "demand",
+											"value": "H",
+											"type": "text"
+										},
+										{
+											"key": "known_water_use",
+											"value": "M",
+											"type": "text"
+										},
+										{
+											"key": "litho_stratographic_unit",
+											"value": "Aquifer Litho Stratographic Unit",
+											"type": "text"
+										},
+										{
+											"key": "location_description",
+											"value": "Location Description",
+											"type": "text"
+										},
+										{
+											"key": "mapping_year",
+											"value": "1991",
+											"type": "text"
+										},
+										{
+											"key": "material",
+											"value": "B",
+											"type": "text"
+										},
+										{
+											"key": "notes",
+											"value": "Notes",
+											"type": "text"
+										},
+										{
+											"key": "productivity",
+											"value": "H",
+											"type": "text"
+										},
+										{
+											"key": "quality_concern",
+											"value": "N",
+											"type": "text"
+										},
+										{
+											"key": "subtype",
+											"value": "1a",
+											"type": "text"
+										},
+										{
+											"key": "vulnerability",
+											"value": "H",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/aquifers/",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"aquifers",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Staff Edit - Associate well with aquifer",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "d810c676-8904-437e-8c93-3ea1d36e1bd1",
+										"exec": [
+											"var jsonData = pm.response.json();",
+											"",
+											"",
+											"pm.test(\"Status code is 201\", function () {",
+											"   pm.expect(pm.response.code).to.equal(201);",
+											"})",
+											"",
+											"pm.test(\"Expect aquifer id to match created aquifer\", function() {",
+											"    pm.expect(jsonData.aquifer).to.equal(pm.environment.get(\"created_aquifer_for_well\"))",
+											"})",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"well\": {{well_tag_number}},\n\t\"aquifer\": {{created_aquifer_for_well}}\n}"
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/staff_edit?format=json",
