@@ -732,10 +732,10 @@ class Well(AuditModel):
     diameter = models.CharField(max_length=9, blank=True)
 
     observation_well_number = models.CharField(
-        max_length=3, blank=True, null=True, verbose_name="Observation Well Number")
+        max_length=30, blank=True, null=True, verbose_name="Observation Well Number")
 
     observation_well_status = models.ForeignKey(
-        ObsWellStatusCode, db_column='obs_well_status_code', blank=True, null="True",
+        ObsWellStatusCode, db_column='obs_well_status_code', blank=True, null=True,
         verbose_name="Observation Well Status", on_delete=models.PROTECT)
 
     ems = models.CharField(max_length=10, blank=True, null=True,
@@ -1179,6 +1179,13 @@ class ActivitySubmission(AuditModel):
     diameter = models.CharField(max_length=9, blank=True, null=True)
     ems_id = models.CharField(max_length=30, blank=True, null=True)
 
+    # Observation well details
+    observation_well_number = models.CharField(
+        max_length=30, blank=True, null=True, verbose_name="Observation Well Number")
+
+    observation_well_status = models.ForeignKey(
+        ObsWellStatusCode, db_column='obs_well_status_code', blank=True, null=True,
+        verbose_name="Observation Well Status", on_delete=models.PROTECT)
     # aquifer association
     aquifer = models.ForeignKey(Aquifer, db_column='aquifer_id', on_delete=models.PROTECT, blank=True,
                                 null=True, verbose_name='Aquifer ID Number')

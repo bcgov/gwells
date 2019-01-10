@@ -61,6 +61,7 @@ from wells.models import (
     WellSubclassCode,
     WellStatusCode,
     YieldEstimationMethodCode,
+    ObsWellStatusCode,
 )
 
 logger = logging.getLogger(__name__)
@@ -487,6 +488,8 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
             'internal_comments',
             'alternative_specs_submitted',
             'decommission_description_set',
+            'observation_well_number',
+            'observation_well_status',
             'aquifer_vulnerability_index',
             'storativity',
             'transmissivity',
@@ -779,4 +782,14 @@ class WellStatusCodeSerializer(serializers.ModelSerializer):
         model = WellStatusCode
         fields = (
             'well_status_code', 'description'
+        )
+
+
+class ObservationWellStatusCodeSerializer(serializers.ModelSerializer):
+    """ serializes observation well status codes """
+
+    class Meta:
+        model = ObsWellStatusCode
+        fields = (
+            'obs_well_status_code', 'description'
         )

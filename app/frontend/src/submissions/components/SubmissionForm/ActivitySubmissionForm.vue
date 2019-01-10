@@ -349,6 +349,19 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-on:save="$emit('submit_edit')"
       />
 
+      <!-- Observation well info -->
+      <observation-well-info class="my-5"
+        v-if="showSection('observationWellInfo')"
+        id='observationWellInfo'
+        :obsWellNumber.sync="form.observation_well_number"
+        :obsWellStatus.sync="form.observation_well_status"
+        :errors="errors"
+        :fieldsLoaded="fieldsLoaded"
+        :isStaffEdit="isStaffEdit"
+        :saveDisabled="editSaveDisabled"
+        v-on:save="$emit('submit_edit')"
+      />
+
       <decommission-information class="my-5"
         v-if="showSection('decommissionInformation')"
         id="decommissionInformation"
@@ -459,6 +472,7 @@ import Completion from './Completion.vue'
 import Comments from './Comments.vue'
 import ClosureDescription from './ClosureDescription.vue'
 import DecommissionInformation from './DecommissionInformation.vue'
+import ObservationWellInfo from './ObservationWellInfo.vue'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 export default {
   name: 'SubmissionsForm',
@@ -524,7 +538,8 @@ export default {
     Completion,
     Comments,
     ClosureDescription,
-    DecommissionInformation
+    DecommissionInformation,
+    ObservationWellInfo
   },
   data () {
     return {
@@ -560,7 +575,8 @@ export default {
         'wellCompletion': 'Well completion data',
         'decommissionInformation': 'Well decommission information',
         'comments': 'Comments',
-        'personResponsible': 'Person Responsible for Work'
+        'personResponsible': 'Person responsible for work',
+        'observationWellInfo': 'Observation wells info'
       }
     }
   },

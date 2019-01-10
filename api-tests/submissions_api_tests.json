@@ -2230,7 +2230,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"well\": {{well_tag_number}},\n\t\"consultant_name\": \"John Mann\",\n\t\"owner_full_name\": \"Buddy\",\n\t\"ground_elevation_method\": \"10K_MAP\",\n\t\"ground_elevation\": 12,\n\t\"drilling_method\": \"AIR_ROTARY\",\n\t\"other_drilling_method\": \"Shovel\",\n\t\"well_orientation\": \"False\"\n}"
+									"raw": "{\n\t\"well\": {{well_tag_number}},\n\t\"consultant_name\": \"John Mann\",\n\t\"owner_full_name\": \"Buddy\",\n\t\"ground_elevation_method\": \"10K_MAP\",\n\t\"ground_elevation\": 12,\n\t\"drilling_method\": \"AIR_ROTARY\",\n\t\"other_drilling_method\": \"Shovel\",\n\t\"well_orientation\": \"False\",\n\t\"observation_well_status\": \"Active\",\n\t\"observation_well_number\": 123\n}"
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/staff_edit?format=json",
@@ -2287,7 +2287,14 @@
 											"pm.test(\"Expect other_drilling_method to be updated\", function() {",
 											"    pm.expect(jsonData['other_drilling_method']).to.equal('Shovel')",
 											"})",
-											""
+											"",
+											"pm.test(\"Expect observation_well_number to be updated\", function() {",
+											"    pm.expect(jsonData['observation_well_number']).to.equal('123')",
+											"})",
+											"",
+											"pm.test(\"Expect observation_well_status to be updated\", function() {",
+											"    pm.expect(jsonData['observation_well_status']).to.equal('Active')",
+											"})"
 										],
 										"type": "text/javascript"
 									}
