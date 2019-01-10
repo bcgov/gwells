@@ -13,12 +13,14 @@ Licensed under the Apache License, Version 2.0 (the "License");
 */
 import Vue from 'vue'
 import Router from 'vue-router'
+import { store } from '../store/index.js'
+import authenticate from '@/common/authenticate.js'
 
 import SubmissionsHome from '@/submissions/views/SubmissionsHome.vue'
 
 Vue.use(Router)
 
-export default new Router({
+const router = new Router({
   routes: [
     {
       path: '/:id/edit',
@@ -40,3 +42,11 @@ export default new Router({
     return { x: 0, y: 0 }
   }
 })
+
+router.beforeEach((to, from, next) => {
+  authenticate.authenticate(store).then(() => {
+    next()
+  })
+})
+
+export default router

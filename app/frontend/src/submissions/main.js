@@ -22,7 +22,6 @@ import '@/common/assets/css/bootstrap-theme.min.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import vSelect from 'vue-select'
 import FormInput from '@/common/components/FormInput.vue'
-import authenticate from '@/common/authenticate.js'
 import {FETCH_CONFIG} from '@/common/store/config.js'
 
 // GWELLS js API library (helper methods for working with API)
@@ -55,10 +54,6 @@ new Vue({
     ])
   },
   created () {
-    // start Keycloak authentication
-    authenticate.authenticate(store).then(() => {
-      // Auth complete. Do something here if you want.
-    })
     this.FETCH_CONFIG()
   }
 })
