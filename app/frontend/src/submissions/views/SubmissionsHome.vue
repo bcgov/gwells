@@ -212,7 +212,8 @@ export default {
           'wellCompletion',
           'closureDescription',
           'decommissionInformation',
-          'comments'
+          'comments',
+          'aquiferData'
         ]
       }
     }
@@ -396,6 +397,7 @@ export default {
         water_quality_colour: '',
         water_quality_odour: '',
         ems_id: '',
+        aquifer: '',
         total_depth_drilled: '',
         finished_well_depth: '',
         final_casing_stick_up: '',
@@ -415,6 +417,16 @@ export default {
         sealant_material: '',
         backfill_material: '',
         decommission_details: '',
+        aquifer_vulnerability_index: '',
+        storativity: '',
+        transmissivity: '',
+        hydraulic_conductivity: '',
+        specific_storage: '',
+        specific_yield: '',
+        testing_method: '',
+        testing_duration: '',
+        analytic_solution_type: '',
+        boundary_effect: '',
 
         // non-form fields that should be saved with form
         meta: {

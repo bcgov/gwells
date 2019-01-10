@@ -13,11 +13,12 @@
 """
 
 from django.shortcuts import render
-from django_filters import rest_framework as filters
+from django_filters import rest_framework as djfilters
 from django.views.generic import TemplateView
 
 from drf_yasg.utils import swagger_auto_schema
 
+from rest_framework import filters
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.filters import SearchFilter, OrderingFilter
@@ -51,7 +52,7 @@ class AquiferListCreateAPIView(ListCreateAPIView):
     permission_classes = (HasAquiferEditRoleOrReadOnly,)
     queryset = models.Aquifer.objects.all()
     serializer_class = serializers.AquiferSerializer
-    filter_backends = (filters.DjangoFilterBackend,
+    filter_backends = (djfilters.DjangoFilterBackend,
                        OrderingFilter, SearchFilter)
     filter_fields = ('aquifer_id',)
     search_fields = ('aquifer_name',)
@@ -144,3 +145,27 @@ class ListFiles(APIView):
             int(aquifer_id), resource="aquifer", include_private=False)
 
         return Response(documents)
+
+
+class AquiferNameList(ListAPIView):
+    """ List all aquifers in a simplified format """
+
+    serializer_class = serializers.AquiferSerializerBasic
+    model = models.Aquifer
+    queryset = models.Aquifer.objects.all()
+    pagination_class = None
+
+    filter_backends = (filters.SearchFilter,)
+    ordering = ('aquifer_id',)
+    search_fields = (
+        'aquifer_id',
+        'aquifer_name',
+    )
+
+    def get(self, request):
+        search = self.request.query_params.get('search', None)
+        if not search or len(search) < 3:
+            # avoiding responding with excess results
+            return Response([])
+        else:
+            return super().get(request)
