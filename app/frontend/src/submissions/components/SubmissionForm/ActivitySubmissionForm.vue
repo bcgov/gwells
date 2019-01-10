@@ -538,8 +538,8 @@ export default {
         'wellCompletion': 'Well completion data',
         'decommissionInformation': 'Well decommission information',
         'comments': 'Comments',
-        'personResponsible': 'Person Responsible for Work',
-        'observationWellInfo': 'Licensing and observation wells info'
+        'personResponsible': 'Person responsible for work',
+        'observationWellInfo': 'Observation wells info'
       }
     }
   },
