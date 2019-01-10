@@ -691,7 +691,7 @@ pipeline {
         // Single functional test
         stage('TEST - Smoke Tests') {
             when {
-                expression { env.CHANGE_TARGET == 'master' }
+                expression { env.CHANGE_TARGET == 'master' || env.CHANGE_TARGET.startsWith('release/') }
             }
             steps {
                 script {
