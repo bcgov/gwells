@@ -732,7 +732,7 @@ class Well(AuditModel):
     diameter = models.CharField(max_length=9, blank=True)
 
     observation_well_number = models.CharField(
-        max_length=3, blank=True, null=True, verbose_name="Observation Well Number")
+        max_length=30, blank=True, null=True, verbose_name="Observation Well Number")
 
     observation_well_status = models.ForeignKey(
         ObsWellStatusCode, db_column='obs_well_status_code', blank=True, null=True,
@@ -1139,7 +1139,7 @@ class ActivitySubmission(AuditModel):
 
     comments = models.CharField(max_length=3000, blank=True, null=True)
     internal_comments = models.CharField(max_length=3000, blank=True, null=True)
-    
+
     alternative_specs_submitted = models.BooleanField(
         default=False, verbose_name='Alternative specs submitted (if required)')
 
@@ -1151,7 +1151,7 @@ class ActivitySubmission(AuditModel):
 
     # Observation well details
     observation_well_number = models.CharField(
-        max_length=3, blank=True, null=True, verbose_name="Observation Well Number")
+        max_length=30, blank=True, null=True, verbose_name="Observation Well Number")
 
     observation_well_status = models.ForeignKey(
         ObsWellStatusCode, db_column='obs_well_status_code', blank=True, null=True,
