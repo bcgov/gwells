@@ -19,7 +19,7 @@ import pages.HomePage
 import spock.lang.Title
 import spock.lang.Narrative
 
-@Title('Groundwater Well Search Tests')
+@Title('Groundwater Wells Search Tests')
 @Narrative('''As a public user, I want to search for existing wells.''')
 class SearchSpecs extends BaseSpec {
 
@@ -33,33 +33,33 @@ class SearchSpecs extends BaseSpec {
     when: 'I click the Search button'
       clickSearchButton()
     then: 'The search is executed and a table containing at least 1 matching result is displayed'
-      foundSearchResults()
+      getSearchResultsCount() != 0
   }
 
   void 'Search by "Street Address" field'() {
     given: 'I populate the "Street Address" field'
-      setStreetAddress('a')
+      setStreetAddress('anahim')
     when: 'I click the Search button'
       clickSearchButton()
     then: 'The search is executed and a table containing at least 1 matching result is displayed'
-      foundSearchResults()
+      getSearchResultsCount() != 0
   }
 
   void 'Search by "Legal Plan or District Lot or Parcel Identification Number PID" field'() {
     given: 'I populate the "Legal Plan or District Lot or Parcel Identification Number PID" field'
-      setLegalPlanOrDistrictLotorPID('123')
+      setLegalPlanOrDistrictLotorPID('405')
     when: 'I click the Search button'
       clickSearchButton()
     then: 'The search is executed and a table containing at least 1 matching result is displayed'
-      foundSearchResults()
+      getSearchResultsCount() != 0
   }
 
   void 'Search by "Owner Name" field'() {
     given: 'I populate the "Owner Name" field'
-      setOwnerName('a')
+      setOwnerName('police')
     when: 'I click the Search button'
       clickSearchButton()
     then: 'The search is executed and a table containing at least 1 matching result is displayed'
-      foundSearchResults()
+      getSearchResultsCount() != 0
   }
 }

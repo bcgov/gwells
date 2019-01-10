@@ -34,7 +34,7 @@
           :state="fieldHasError.aquifer_name">
             <b-form-input
               tabindex="1"
-              id="aquifer_name"
+              id="aquifer-name"
               type="text"
               v-model="record.aquifer_name"/>
         </b-form-group>
@@ -48,7 +48,7 @@
           :state="fieldHasError.location_description">
             <b-form-input
               tabindex="3"
-              id="location_description"
+              id="aquifer-location-description"
               type="text"
               v-model="record.location_description"/>
         </b-form-group>
@@ -63,7 +63,7 @@
           <b-form-select
             tabindex="5"
             :options="[''].concat(material_codes)"
-            id="material"
+            id="aquifer-material"
             text-field="description"
             v-model="record.material"
             value-field="code"/>
@@ -78,7 +78,7 @@
           :state="fieldHasError.quality_concern">
           <b-form-select
             tabindex="7"
-            id="quality_concern"
+            id="aquifer-quality-concern"
             v-model="record.quality_concern"
             :options="[''].concat(quality_concern_codes)"
             value-field="code"
@@ -94,7 +94,7 @@
           :state="fieldHasError.area">
           <b-form-input
             tabindex="9"
-            id="area"
+            id="aquifer-area"
             type="text"
             v-model="record.area"/>
         </b-form-group>
@@ -108,7 +108,7 @@
           :state="fieldHasError.known_water_use">
           <b-form-select
             tabindex="11"
-            id="known_water_use"
+            id="aquifer-known-water-use"
             v-model="record.known_water_use"
             :options="[''].concat(known_water_use_codes)"
             value-field="code"
@@ -125,7 +125,7 @@
           <b-form-textarea
             tabindex="13"
             rows="4"
-            id="notes"
+            id="aquifer-notes"
             v-model="record.notes"/>
         </b-form-group>
       </b-col>
@@ -140,7 +140,7 @@
           :state="fieldHasError.mapping_year">
             <b-form-input
               tabindex="2"
-              id="mapping_year"
+              id="aquifer-mapping-year"
               type="text"
               v-model="record.mapping_year"/>
         </b-form-group>
@@ -154,7 +154,7 @@
           :state="fieldHasError.litho_stratographic_unit">
             <b-form-input
               tabindex="4"
-              id="litho_stratographic_unit"
+              id="aquifer-litho-stratigraphic-unit"
               type="text"
               v-model="record.litho_stratographic_unit"/>
         </b-form-group>
@@ -169,7 +169,7 @@
           <b-form-select
             tabindex="6"
             :options="[''].concat(vulnerability_codes)"
-            id="vulnerability"
+            id="aquifer-vulnerability"
             text-field="description"
             v-model="record.vulnerability"
             value-field="code"/>
@@ -184,7 +184,7 @@
           :state="fieldHasError.subtype">
           <b-form-select
             tabindex="8"
-            id="subtype"
+            id="aquifer-subtype"
             v-model="record.subtype"
             :options="[''].concat(subtype_codes)"
             value-field="code"
@@ -200,7 +200,7 @@
           :state="fieldHasError.productivity">
           <b-form-select
             tabindex="10"
-            id="productivity"
+            id="aquifer-productivity"
             v-model="record.productivity"
             :options="[''].concat(productivity_codes)"
             value-field="code"
@@ -216,7 +216,7 @@
           :state="fieldHasError.demand">
           <b-form-select
             tabindex="12"
-            id="demand"
+            id="aquifer-demand"
             v-model="record.demand"
             :options="[''].concat(demand_codes)"
             value-field="code"
