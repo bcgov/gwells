@@ -779,6 +779,36 @@ class Well(AuditModel):
     consultant_company = models.CharField(
         max_length=200, blank=True, null=True, verbose_name='Consultant Company')
 
+    # Aquifer related data
+    aquifer_vulnerability_index = models.DecimalField(
+        max_digits=10, decimal_places=0, blank=True, null=True, verbose_name='AVI')
+    storativity = models.DecimalField(
+        max_digits=8, decimal_places=7, blank=True, null=True, verbose_name='Storativity')
+    transmissivity = models.DecimalField(
+        max_digits=10, decimal_places=0, blank=True, null=True, verbose_name='Transmissivity')
+    hydraulic_conductivity = models.TextField(
+        max_length=100,
+        blank=True,
+        null=True,
+        verbose_name='Hydraulic Conductivity')
+    specific_storage = models.TextField(
+        max_length=100,
+        blank=True,
+        null=True,
+        verbose_name='Specific Storage')
+    specific_yield = models.DecimalField(
+        max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Specific Yield')
+    testing_method = models.TextField(
+        max_length=100,
+        blank=True,
+        null=True,
+        verbose_name='Testing Method')
+    testing_duration = models.PositiveIntegerField(blank=True, null=True)
+    analytic_solution_type = models.DecimalField(
+        max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Analytic Solution Type')
+    boundary_effect = models.DecimalField(
+        max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Boundary Effect')
+
     class Meta:
         db_table = 'well'
 
@@ -1156,6 +1186,9 @@ class ActivitySubmission(AuditModel):
     observation_well_status = models.ForeignKey(
         ObsWellStatusCode, db_column='obs_well_status_code', blank=True, null=True,
         verbose_name="Observation Well Status", on_delete=models.PROTECT)
+    # aquifer association
+    aquifer = models.ForeignKey(Aquifer, db_column='aquifer_id', on_delete=models.PROTECT, blank=True,
+                                null=True, verbose_name='Aquifer ID Number')
 
     # Decommission info
     decommission_reason = models.CharField(
@@ -1169,6 +1202,36 @@ class ActivitySubmission(AuditModel):
         max_length=100, blank=True, null=True, verbose_name="Backfill Material")
     decommission_details = models.CharField(
         max_length=250, blank=True, null=True, verbose_name="Decommission Details")
+
+    # Aquifer related data
+    aquifer_vulnerability_index = models.DecimalField(
+        max_digits=10, decimal_places=0, blank=True, null=True, verbose_name='AVI')
+    storativity = models.DecimalField(
+        max_digits=8, decimal_places=7, blank=True, null=True, verbose_name='Storativity')
+    transmissivity = models.DecimalField(
+        max_digits=10, decimal_places=0, blank=True, null=True, verbose_name='Transmissivity')
+    hydraulic_conductivity = models.TextField(
+        max_length=100,
+        blank=True,
+        null=True,
+        verbose_name='Hydraulic Conductivity')
+    specific_storage = models.TextField(
+        max_length=100,
+        blank=True,
+        null=True,
+        verbose_name='Specific Storage')
+    specific_yield = models.DecimalField(
+        max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Specific Yield')
+    testing_method = models.TextField(
+        max_length=100,
+        blank=True,
+        null=True,
+        verbose_name='Testing Method')
+    testing_duration = models.PositiveIntegerField(blank=True, null=True)
+    analytic_solution_type = models.DecimalField(
+        max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Analytic Solution Type')
+    boundary_effect = models.DecimalField(
+        max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Boundary Effect')
 
     class Meta:
         db_table = 'activity_submission'

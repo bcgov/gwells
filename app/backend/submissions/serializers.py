@@ -195,7 +195,7 @@ class WellConstructionSubmissionSerializer(WellSubmissionSerializerBase):
 
     coordinate_acquisition_code = serializers.PrimaryKeyRelatedField(
         queryset=CoordinateAcquisitionCode.objects.all(),
-        required=False)
+        required=False, allow_null=True)
 
     def create(self, validated_data):
         # Whenever we create a Construction record, we default to H (gps) for the source.
@@ -468,6 +468,7 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
             'water_quality_colour',
             'water_quality_odour',
             'ems_id',
+            'aquifer',
             'total_depth_drilled',
             'finished_well_depth',
             'decommission_reason',
@@ -489,6 +490,16 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
             'decommission_description_set',
             'observation_well_number',
             'observation_well_status',
+            'aquifer_vulnerability_index',
+            'storativity',
+            'transmissivity',
+            'hydraulic_conductivity',
+            'specific_storage',
+            'specific_yield',
+            'testing_method',
+            'testing_duration',
+            'analytic_solution_type',
+            'boundary_effect',
         )
 
 
