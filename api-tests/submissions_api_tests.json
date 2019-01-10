@@ -2606,10 +2606,6 @@
 											"pm.test(\"Status code is 201\", function () {",
 											"   pm.expect(pm.response.code).to.equal(201);",
 											"})",
-											"",
-											"pm.test(\"Expect aquifer id to match created aquifer\", function() {",
-											"    pm.expect(jsonData.aquifer).to.equal(pm.environment.get(\"created_aquifer_for_well\"))",
-											"})",
 											""
 										],
 										"type": "text/javascript"
