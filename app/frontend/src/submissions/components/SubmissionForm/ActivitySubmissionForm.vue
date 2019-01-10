@@ -576,7 +576,7 @@ export default {
         'decommissionInformation': 'Well decommission information',
         'comments': 'Comments',
         'personResponsible': 'Person responsible for work',
-        'observationWellInfo': 'Observation wells info'
+        'observationWellInfo': 'Observation well information'
       }
     }
   },
