@@ -91,9 +91,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     placeholder="Select moisture"
                     v-model="lithology[index].lithology_moisture"
                     group-class="mt-1 mb-0"></form-input>
-                  <!-- <div class="material-badges">
-                    <b-badge variant="light" class="font-weight-normal">Wet</b-badge>
-                  </div> -->
               </td>
               <td class="input-width-medium">
                 <form-input
@@ -106,9 +103,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     value-field="lithology_colour_code"
                     v-model="lithology[index].lithology_colour"
                     group-class="mt-1 mb-0"></form-input>
-                  <!-- <div class="material-badges">
-                    <b-badge variant="light" class="font-weight-normal">Reddish-brown</b-badge>
-                  </div> -->
               </td>
               <td class="input-width-medium">
                 <form-input
@@ -121,9 +115,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     value-field="lithology_hardness_code"
                     v-model="lithology[index].lithology_hardness"
                     group-class="mt-1 mb-0"></form-input>
-                  <!-- <div class="material-badges">
-                    <b-badge variant="light" class="font-weight-normal">Dense</b-badge>
-                  </div> -->
               </td>
               <td class="input-width-medium">
                 <form-input :id="`lithologyFlowEstimate${index}`" aria-label="Water bearing flow" v-model="lithology[index].water_bearing_estimated_flow" group-class="mt-1 mb-0"></form-input>
