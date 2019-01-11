@@ -7,6 +7,8 @@
 #
 # NOTE: You need to be logged in with a token, via:
 #       https://console.pathfinder.gov.bc.ca:8443/oauth/token/request
+#
+# EXAMPLE: ./oc-restore.sh moe-gwells-prod/gwells-pgsql-production gwells-pgsql-production-2018-12-20-1542.dump 
 
 
 # Halt conditions, verbosity and field separator

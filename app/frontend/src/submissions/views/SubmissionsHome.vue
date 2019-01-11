@@ -82,6 +82,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           :trackValueChanges="trackValueChanges"
           :formSubmitLoading="formSubmitLoading"
           :isStaffEdit="isStaffEdit"
+          :loading="loading"
           v-on:preview="handlePreviewButton"
           v-on:submit_edit="formSubmit"
           v-on:resetForm="resetForm"
@@ -130,6 +131,7 @@ export default {
       activityType: 'CON',
       formIsFlat: false,
       preview: false,
+      loading: false,
       confirmSubmitModal: false,
       formSubmitSuccess: false,
       formSubmitSuccessWellTag: null,
@@ -201,12 +203,20 @@ export default {
           'wellLocation',
           'wellCoords',
           'method',
+          'casings',
           'backfill',
           'liner',
+          'screens',
           'filterPack',
           'wellDevelopment',
+          'wellYield',
           'waterQuality',
-          'comments'
+          'wellCompletion',
+          'observationWellInfo',
+          'closureDescription',
+          'decommissionInformation',
+          'comments',
+          'aquiferData'
         ]
       }
     }
@@ -227,7 +237,7 @@ export default {
     isStaffEdit () {
       return this.activityType === 'STAFF_EDIT'
     },
-    ...mapGetters(['codes', 'userRoles', 'well'])
+    ...mapGetters(['codes', 'userRoles', 'well', 'keycloak'])
   },
   methods: {
     formSubmit () {
@@ -260,7 +270,7 @@ export default {
         this.stripBlankStrings(data)
       }
 
-      const sets = ['linerperforation_set', 'lithologydescription_set', 'production_data_set', 'screen_set', 'casing_set', 'decommission_description_set']
+      const sets = ['linerperforation_set', 'lithologydescription_set', 'productiondata_set', 'screen_set', 'casing_set', 'decommission_description_set']
       sets.forEach((key) => {
         if (key in data) {
           data[key] = this.filterBlankRows(data[key])
@@ -311,11 +321,15 @@ export default {
     resetForm () {
       this.form = {
         well: null,
+        well_status: '',
         well_class: '',
         well_subclass: '',
         intended_water_use: '',
         identification_plate_number: null,
-        well_plate_attached: '',
+        well_identification_plate_attached: '',
+        id_plate_attached_by: '',
+        water_supply_system_well_name: '',
+        water_supply_system_name: '',
         driller_responsible: null,
         driller_name: '',
         consultant_name: '',
@@ -349,6 +363,7 @@ export default {
         well_location_description: '',
         latitude: null,
         longitude: null,
+        coordinate_acquisition_code: null,
         ground_elevation: null,
         ground_elevation_method: '',
         drilling_method: '',
@@ -359,8 +374,8 @@ export default {
         surface_seal_depth: '',
         surface_seal_thickness: '',
         surface_seal_method: '',
-        backfill_above_surface_seal: '',
-        backfill_above_surface_seal_depth: '',
+        backfill_type: '',
+        backfill_depth: '',
         casing_set: [],
         screen_intake_method: '',
         screen_type: '',
@@ -369,10 +384,11 @@ export default {
         screen_opening: '',
         screen_bottom: '',
         screen_set: [],
+        screen_information: '',
         development_method: '',
         development_hours: '',
         development_notes: '',
-        production_data_set: [],
+        productiondata_set: [],
         filter_pack_from: '',
         filter_pack_to: '',
         filter_pack_thickness: '',
@@ -382,6 +398,7 @@ export default {
         water_quality_colour: '',
         water_quality_odour: '',
         ems_id: '',
+        aquifer: '',
         total_depth_drilled: '',
         finished_well_depth: '',
         final_casing_stick_up: '',
@@ -393,6 +410,7 @@ export default {
         well_cap_type: '',
         well_disinfected: 'False',
         comments: '',
+        internal_comments: '',
         alternative_specs_submitted: 'False',
         decommission_description_set: [],
         decommission_reason: '',
@@ -400,6 +418,18 @@ export default {
         sealant_material: '',
         backfill_material: '',
         decommission_details: '',
+        observation_well_number: '',
+        observation_well_status: '',
+        aquifer_vulnerability_index: '',
+        storativity: '',
+        transmissivity: '',
+        hydraulic_conductivity: '',
+        specific_storage: '',
+        specific_yield: '',
+        testing_method: '',
+        testing_duration: '',
+        analytic_solution_type: '',
+        boundary_effect: '',
 
         // non-form fields that should be saved with form
         meta: {
@@ -470,6 +500,8 @@ export default {
       this.activityType = 'STAFF_EDIT'
       this.formIsFlat = true
 
+      this.loading = true
+
       ApiService.query(`wells/${this.$route.params.id}`).then((res) => {
         Object.keys(res.data).forEach((key) => {
           if (key in this.form) {
@@ -482,7 +514,12 @@ export default {
         // Wait for the form update we just did to fire off change events.
         this.$nextTick(() => {
           this.form.meta.valueChanged = {}
-          this.trackValueChanges = true
+          this.loading = false
+          this.$nextTick(() => {
+            // We have to allow the UI to render all the components after the 'loading = false' setting,
+            // so we only start tracking changes after that.
+            this.trackValueChanges = true
+          })
         })
       }).catch((e) => {
         console.error(e)

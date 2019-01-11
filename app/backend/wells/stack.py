@@ -151,7 +151,14 @@ class StackWells():
                          (record.well_activity_type.code != WellActivityCode.types.legacy().code,
                           record.well_activity_type.code != WellActivityCode.types.construction().code,
                           record.create_date))
-        FOREIGN_KEYS = ('casing_set', 'screen_set', 'linerperforation_set', 'decommission_description_set')
+
+        # these are depth-specific sets that have a "start" and "end" value
+        FOREIGN_KEYS = ('casing_set', 'screen_set', 'linerperforation_set', 'decommission_description_set',)
+
+        # FOREIGN_KEY_DATA_SETS are collections of data associated with a well that are not depth specific.
+        # they don't need to be handled with depth overlap validation like casings, screens etc.
+        FOREIGN_KEY_DATA_SETS = ('productiondata_set',)
+
         composite = {}
 
         # Well status is set based on the most recent activity submission.
@@ -162,22 +169,44 @@ class StackWells():
         }
 
         for submission in records:
+            # add a well_status based on the current activity submission
+            # a staff edit could still override this with a different value.
+            composite['well_status'] = well_status_map.get(
+                submission.well_activity_type.code, WellStatusCode.types.other().well_status_code)
             source_target_map = activity_type_map.get(submission.well_activity_type.code, {})
             serializer = submissions.serializers.WellSubmissionStackerSerializer(submission)
             for source_key, value in serializer.data.items():
                 # We only consider items with values, and keys that are in our target
                 # an exception is STAFF_EDIT submissions (we need to be able to accept empty values)
-                if value or value is False:
+                if value or value is False or value == 0:
                     target_key = source_target_map.get(source_key, source_key)
                     if target_key in target_keys:
-                        if target_key in composite and target_key in FOREIGN_KEYS:
+                        # The composite dict is built up by applying the set of submissions/edits in order.
+                        #
+                        # There are several cases for handling values:
+                        #
+                        # The first cases involve related foreign key sets (other tables that
+                        # have records that reference the current submission/well). These are handled
+                        # differently for staff edits (can replace the entire previous set), or for
+                        # sets that reference a depth along the drilled well (must be merged checking for
+                        # overlap).
+                        #
+                        # If the target_key is not in one of the foreign key sets (i.e., it's a property/column
+                        # of a well), then the value can overwrite the previous composite value.
+                        if (submission.well_activity_type.code == WellActivityCode.types.staff_edit().code and
+                                target_key in composite and
+                                (target_key in FOREIGN_KEYS or target_key in FOREIGN_KEY_DATA_SETS)):
+                            # staff edits come in with the entire set of values and thus can replace
+                            # the composite value
+                            composite[target_key] = value
+                        elif target_key in composite and target_key in FOREIGN_KEYS:
+                            # foreign key sets are based on depth and need special merge handling.
                             composite[target_key] = self._merge_series(composite[source_key], value)
+                        elif target_key in composite and target_key in FOREIGN_KEY_DATA_SETS:
+                            # data sets just need to be added to the existing collection
+                            composite[target_key] = composite[source_key] + value
                         else:
                             composite[target_key] = value
-
-            # add a well_status based on the current activity submission
-            composite['well_status'] = well_status_map.get(
-                submission.well_activity_type.code, WellStatusCode.types.other().well_status_code)
 
         # Update the well view
         well_serializer = WellStackerSerializer(well, data=composite, partial=True)

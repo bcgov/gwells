@@ -206,7 +206,7 @@ SELECT /*csv*/
   WELLS.WELLS_WELLS.DRILLING_METHOD_CODE AS drilling_method_code,
   WELLS.WELLS_WELLS.GROUND_ELEVATION_METHOD_CODE AS ground_elevation_method_code,
   WELLS.WELLS_WELLS.BACKFILL_DEPTH AS bkfill_above_srfc_seal_depth,
-  WELLS.WELLS_WELLS.BACKFILL_TYPE  AS backfill_above_surface_seal,
+  WELLS.WELLS_WELLS.BACKFILL_TYPE  AS backfill_type,
   SEALANT_MATERIAL AS SEALANT_MATERIAL,
 /* other_drilling_method         character varying(50)  
  drilling_method_code         character varying(10)                  

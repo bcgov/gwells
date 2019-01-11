@@ -12,7 +12,7 @@
     limitations under the License.
 */
 
-package traits
+package specs.traits
 
 import pages.HomePage
 import pages.LoginPage

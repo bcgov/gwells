@@ -32,6 +32,7 @@ from wells.models import (
     ActivitySubmission,
     CasingCode,
     CasingMaterialCode,
+    CoordinateAcquisitionCode,
     DecommissionMaterialCode,
     DecommissionMethodCode,
     DevelopmentMethodCode,
@@ -42,6 +43,7 @@ from wells.models import (
     IntendedWaterUseCode,
     LandDistrictCode,
     LinerMaterialCode,
+    ObsWellStatusCode,
     ScreenIntakeMethodCode,
     SurfaceSealMaterialCode,
     SurfaceSealMethodCode,
@@ -56,6 +58,7 @@ from wells.models import (
     Well,
     WellClassCode,
     WellSubclassCode,
+    WellStatusCode,
     YieldEstimationMethodCode,)
 from submissions.models import WellActivityCode
 from wells.serializers import (
@@ -63,6 +66,7 @@ from wells.serializers import (
     CasingMaterialSerializer
 )
 from submissions.serializers import (
+    CoordinateAcquisitionCodeSerializer,
     DecommissionMaterialCodeSerializer,
     DecommissionMethodCodeSerializer,
     DevelopmentMethodCodeSerializer,
@@ -77,6 +81,7 @@ from submissions.serializers import (
     LithologyColourSerializer,
     LithologyMaterialSerializer,
     LithologyMoistureSerializer,
+    ObservationWellStatusCodeSerializer,
     ScreenIntakeMethodSerializer,
     SurfaceSealMaterialCodeSerializer,
     SurfaceSealMethodCodeSerializer,
@@ -94,6 +99,7 @@ from submissions.serializers import (
     WellSubmissionListSerializer,
     WellActivityCodeSerializer,
     WellClassCodeSerializer,
+    WellStatusCodeSerializer,
     WellSubclassCodeSerializer,
     YieldEstimationMethodCodeSerializer,
     WellStaffEditSubmissionSerializer,
@@ -298,6 +304,14 @@ class SubmissionsOptions(APIView):
             instance=WaterQualityCharacteristic.objects.all(), many=True)
         water_quality_colours = WaterQualityColourSerializer(
             instance=WaterQualityColour.objects.all(), many=True)
+        well_status_codes = WellStatusCodeSerializer(
+            instance=WellStatusCode.objects.all(), many=True
+        )
+        coordinate_acquisition_codes = CoordinateAcquisitionCodeSerializer(
+            instance=CoordinateAcquisitionCode.objects.all(), many=True)
+        observation_well_status = ObservationWellStatusCodeSerializer(
+            instance=ObsWellStatusCode.objects.all(), many=True
+        )
 
         lithology_hardness = LithologyHardnessSerializer(instance=LithologyHardnessCode.objects.all(), many=True)
         lithology_colours = LithologyColourSerializer(instance=LithologyColourCode.objects.all(), many=True)
@@ -311,6 +325,7 @@ class SubmissionsOptions(APIView):
 
         options["province_codes"] = province_codes.data
         options["activity_types"] = activity_codes.data
+        options["coordinate_acquisition_codes"] = coordinate_acquisition_codes.data
         options["well_classes"] = well_class_codes.data
         options["intended_water_uses"] = intended_water_use_codes.data
         options["casing_codes"] = casing_codes.data
@@ -340,8 +355,11 @@ class SubmissionsOptions(APIView):
         options["lithology_colours"] = lithology_colours.data
         options["lithology_materials"] = lithology_materials.data
         options["lithology_moisture_codes"] = lithology_moisture.data
+        options["well_status_codes"] = well_status_codes.data
+        options["observation_well_status"] = observation_well_status.data
 
         return Response(options)
+
 
 class SubmissionsHomeView(TemplateView):
     """Loads the html file containing the Submissions web app"""

@@ -61,7 +61,7 @@ class RegistryPage extends BaseAppPage {
     individualOrCompanyOrRegistrationSearchField.value(value)
   }
 
-  Boolean foundSearchResults() {
-    waitFor { searchResultsTable.$('tbody tr').size() != 0 }
+  int getSearchResultsCount() {
+    waitFor { searchResultsTable.$('tbody tr').size() }
   }
 }

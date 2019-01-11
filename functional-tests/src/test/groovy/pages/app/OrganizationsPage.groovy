@@ -16,7 +16,7 @@ package pages
 
 class OrganizationsPage extends BaseAppPage {
   static at = { pageTitle.text() == 'Manage Companies' }
-  static url = ''
+  static url = 'registries/organizations/manage'
   static content = {
     pageTitle { $('main h4') }
 

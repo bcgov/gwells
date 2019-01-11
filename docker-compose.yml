@@ -2,10 +2,11 @@ version: '3'
 
 services:
   db:
-    image: postgres:9.5
+    image: postgres:9.6
     environment:
       POSTGRES_USER: gwells
       POSTGRES_PASSWORD: test1
+      POSTGRES_DBNAME: gwells
     hostname: db
     volumes:
       - ./.tmp/psql-dev:/var/lib/postgresql
@@ -60,10 +61,12 @@ services:
             python3 manage.py migrate --noinput &&
             echo Loading fixtures, this may take some time... &&
             python3 manage.py loaddata
+                aquifers.json
                 gwells-codetables.json
-                wellsearch-codetables
                 registries-codetables.json
-                registries.json &&
+                registries.json
+                wellsearch.json
+                wellsearch-codetables.json &&
             python3 manage.py createinitialrevisions &&
             python3 manage.py collectstatic --noinput &&
             python3 manage.py runserver 0.0.0.0:8000"

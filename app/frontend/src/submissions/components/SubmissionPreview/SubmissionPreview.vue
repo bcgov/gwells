@@ -37,7 +37,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <b-row>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Well Tag Number:</span> {{ form.well ? form.well['well_tag_number']: '' }}</b-col>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Well Identification Plate Number:</span> {{ form.identification_plate_number }}</b-col>
-        <b-col cols="12" lg="4"><span class="font-weight-bold">Where Plate Attached:</span> {{ form.well_plate_attached }}</b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Where Plate Attached:</span> {{ form.well_identification_plate_attached }}</b-col>
       </b-row>
       <b-row>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Work Start Date:</span> {{ form.work_start_date }}</b-col>
@@ -229,7 +229,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <legend>Surface Seal and Backfill Details</legend>
       <b-row>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Surface Seal Material:</span> {{ codeToDescription('surface_seal_materials', form.surface_seal_material) }}</b-col>
-        <b-col cols="12" lg="4"><span class="font-weight-bold">Backfill Material Above Surface Seal:</span> {{ codeToDescription('surface_seal_materials', form.backfill_above_surface_seal) }}</b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Backfill Material Above Surface Seal:</span> {{ codeToDescription('surface_seal_materials', form.backfill_type) }}</b-col>
       </b-row>
       <b-row>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Surface Seal Installation Method:</span> {{ codeToDescription('surface_seal_methods', form.surface_seal_method) }}</b-col>
@@ -338,7 +338,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <fieldset class="my-3 detail-section" v-if="sections.wellYield">
       <legend>Well Yield</legend>
 
-      <div v-for="(productionTest, index) in form.production_data_set" :key="`ProductionDataSet${index}`">
+      <div v-for="(productionTest, index) in form.productiondata_set" :key="`ProductionDataSet${index}`">
         <b-row>
           <b-col cols="12" lg="4"><span class="font-weight-bold">Estimation Method:</span> {{codeToDescription('yield_estimation_methods', productionTest.yield_estimation_method)}} </b-col>
           <b-col cols="12" lg="4"><span class="font-weight-bold">Estimation Rate:</span> {{productionTest.yield_estimation_rate}} </b-col>

@@ -96,8 +96,7 @@
                     <label for="aquifer_number">Aquifer Number:</label>
                     <span id="aquifer_number">
                       {% for aquifer_well in well.aquiferwell_set.all %}
-                        <a href="http://a100.gov.bc.ca/pub/wells/aquiferDetail.do?aquiferNumber={{aquifer_well.aquifer_id }}&docType=adr"
-                            target="_blank">{{aquifer_well.aquifer_id }}</a>&nbsp;
+                        <a href="/gwells/aquifers/{{aquifer_well.aquifer_id }}/" target="_blank">{{aquifer_well.aquifer_id }}</a>&nbsp;
                       {% endfor %}
                     </span>
                 </div>
@@ -149,11 +148,11 @@
                     <a class="jump_link" href="#surface_seal_fieldset">Surface Seal and Backfill Details</a>
                 </div>
             </div>
-            <div class="row no-gutters">
+            <!-- <div class="row no-gutters">
                 <div class="col-md-12">
                     <a class="jump_link" href="#perforations_fieldset">Liner Details</a>
                 </div>
-            </div>
+            </div> -->
             <div class="row no-gutters">
                 <div class="col-md-12">
                     <a class="jump_link" href="#screen_details_fieldset">Screen Details</a>
@@ -313,8 +312,8 @@
                     <span id="utm_zone_code" data-utm-zone-code="{{well.longitude }}">{{well.utm_zone_code|default_if_none:'&nbsp;' }}</span>
                 </div>
                 <div class="col-md-6 col-print-6 print-compressed">
-                    <label for="utm_accuracy_code">{% verbose_name well "utm_accuracy_code" %}:</label>
-                    <span id="utm_accuracy_code" data-utm-accuracy-code="{{well.utm_accuracy_code }}">{{well.utm_accuracy_code|default_if_none:'&nbsp;' }}</span>
+                    <label for="coordinate_acquisition_code">{% verbose_name well "coordinate_acquisition_code" %}:</label>
+                    <span id="coordinate_acquisition_code" data-utm-accuracy-code="{{well.coordinate_acquisition_code }}">{{well.coordinate_acquisition_code|default_if_none:'&nbsp;' }}</span>
                 </div>
             </div>
 
@@ -383,7 +382,7 @@
                 </div>
                 <div class="col-md-5 col-print-5 print-compressed">
                     <span id="finished_well_depth">
-                            {% if  well.finished_well_depth > 0 %}
+                            {% if  well.finished_well_depth >= 0 %}
                                 {{well.finished_well_depth|exclude_zero_decimals}} feet
                             {% else                             %}
                                 &nbsp;
@@ -397,7 +396,7 @@
                 </div>
                 <div class="col-md-5 col-print-5  print-compressed">
                     <span id="final_casing_stickup">
-                        {% if  well.final_casing_stick_up > 0 %}
+                        {% if  well.final_casing_stick_up >= 0 %}
                           {{well.final_casing_stick_up|exclude_zero_decimals}} inches
                         {% else                               %}
                           &nbsp;
@@ -411,7 +410,7 @@
                 </div>
                 <div class="col-md-5 col-print-5 print-compressed">
                     <span id="bedrock_depth">
-                        {% if  well.bedrock_depth > 0       %}
+                        {% if  well.bedrock_depth >= 0       %}
                         {{well.bedrock_depth|exclude_zero_decimals}} feet
                         {% else                             %}
                         &nbsp;
@@ -425,7 +424,7 @@
                 </div>
                 <div class="col-md-5 col-print-5 print-compressed">
                     <span id="ground_elevation">
-                        {% if  well.ground_elevation > 0 %}
+                        {% if  well.ground_elevation >= 0 %}
                         {{well.ground_elevation|exclude_zero_decimals}} feet
                         {% else                             %}
                         &nbsp;
@@ -449,7 +448,7 @@
                 </div>
                 <div class="col-md-5 col-print-5 print-compressed">
                     <span id="static_water_level">
-                        {% if  well.static_water_level > 0  %}
+                        {% if  well.static_water_level >= 0  %}
                         {{well.static_water_level|exclude_zero_decimals}} feet
                         {% else                             %}
                         &nbsp;
@@ -463,7 +462,7 @@
                 </div>
                 <div class="col-md-5 col-print-5 print-compressed">
                     <span id="well_yield">
-                      {% if  well.well_yield > 0 %}
+                      {% if  well.well_yield >= 0 %}
                       {{well.well_yield|exclude_zero_decimals}} {{well.well_yield_unit.well_yield_unit_code|default_if_none:"no unit provided"}}
                       {% else                             %}
                       &nbsp;
@@ -477,7 +476,7 @@
                 </div>
                 <div class="col-md-5 col-print-5 print-compressed">
                     <span id="artesian_flow">
-                      {% if well.artesian_flow > 0             %}
+                      {% if well.artesian_flow >= 0             %}
                         {{well.artesian_flow|exclude_zero_decimals}}&nbsp;{{well.well_yield_unit.well_yield_unit_code|default_if_none:"no unit provided"}}
                       {% endif                                 %}
                     </span>
@@ -489,7 +488,7 @@
                 </div>
                 <div class="col-md-5 col-print-5 print-compressed">
                     <span id="artesian_pressure">
-                        {% if  well.artesian_pressure > 0       %}
+                        {% if  well.artesian_pressure >= 0       %}
                         {{well.artesian_pressure|exclude_zero_decimals}} inches
                         {% else                             %}
                         &nbsp;
@@ -692,11 +691,12 @@
     </div>
 </fieldset>
 
-<fieldset id="perforations_fieldset">
+<!-- TODO: this section wasn't completed and doesn't work. We need to either update it or scrap it in favour of the Vue SPA version. -->
+<!-- <fieldset id="perforations_fieldset">
     <legend>Liner Details</legend>
     <div class="row no-gutters print-compressed">
         <div class="col-md-12 col-print-12 table-responsive print-compressed">
-            {% if well.perforation_set.all %}
+            {% if well.linerperforation_set.all %}
             <table id="liner_details" class="table table-sm table-bordered table-striped">
                 <thead>
                     <th>Liner Material</th>
@@ -708,7 +708,7 @@
                     <th>Liner Perforated To</th>
                 </thead>
                 <tbody>
-                    {% for perforation in well.perforation_set.all %}
+                    {% for perforation in well.linerperforation_set.all %}
                     <tr>
                         <td>{{well.liner_material.liner_material_code|default_if_none:'&nbsp;'}}</td>
                         <td>{{perforation.liner_diameter|exclude_zero_decimals|default_if_none:'&nbsp;'}}</td>
@@ -726,7 +726,7 @@
             {% endif %}
         </div>
     </div>
-</fieldset>
+</fieldset> -->
 
 <fieldset id="screen_details_fieldset">
     <legend>Screen Details</legend>

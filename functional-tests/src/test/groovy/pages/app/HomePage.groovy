@@ -52,7 +52,7 @@ class HomePage extends BaseAppPage {
     searchButton.click()
   }
 
-  Boolean foundSearchResults() {
-    waitFor { searchResultsTable.$('tbody tr').size() != 0 }
+  int getSearchResultsCount() {
+    waitFor { searchResultsTable.$('tbody tr').size() }
   }
 }

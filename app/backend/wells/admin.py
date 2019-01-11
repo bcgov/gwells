@@ -16,7 +16,9 @@ from wells.models import (
     DecommissionMaterialCode,
     DecommissionMethodCode,
     WaterQualityCharacteristic,
-    WaterQualityColour
+    WaterQualityColour,
+    FilterPackMaterialSizeCode,
+    FilterPackMaterialCode
 )
 from gwells.models.lithology import (
     LithologyColourCode, LithologyHardnessCode,
@@ -33,3 +35,5 @@ admin.site.register(LithologyColourCode)
 admin.site.register(LithologyHardnessCode)
 admin.site.register(LithologyMaterialCode)
 admin.site.register(LithologyMoistureCode)
+admin.site.register(FilterPackMaterialSizeCode)
+admin.site.register(FilterPackMaterialCode)
