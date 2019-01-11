@@ -202,6 +202,7 @@ export default {
   methods: {
     addLithologyRow () {
       this.lithologyInput.push({
+        lithology_raw_data: '',
         lithology_colour: '',
         lithology_hardness: '',
         lithology_moisture: ''
