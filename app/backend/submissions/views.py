@@ -25,8 +25,7 @@ from wells.permissions import WellsEditPermissions
 from gwells.models import ProvinceStateCode
 from gwells.models.lithology import (
     LithologyColourCode, LithologyHardnessCode,
-    LithologyMaterialCode, BedrockMaterialCode,
-    LithologyMoistureCode, SurficialMaterialCode)
+    LithologyMaterialCode, LithologyMoistureCode,)
 from gwells.serializers import ProvinceStateCodeSerializer
 from wells.models import (
     ActivitySubmission,
