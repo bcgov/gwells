@@ -2,7 +2,7 @@ import { shallowMount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
 import VueMoment from 'vue-moment'
 import moxios from 'moxios'
-import ChangeHistory from '@/registry/components/people/ChangeHistory'
+import ChangeHistory from '@/common/components/ChangeHistory'
 
 const localVue = createLocalVue()
 localVue.use(Vuex)
@@ -49,6 +49,9 @@ describe('Notes.vue', () => {
       propsData: {
         resource: 'person',
         id: '123'
+      },
+      methods: {
+        update () {}
       },
       data () {
         return {

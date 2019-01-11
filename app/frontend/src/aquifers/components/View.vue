@@ -85,6 +85,8 @@
       </dl>
       <h5 class="mt-3 border-bottom">Documentation</h5>
       <aquifer-documents :aquifer="id"></aquifer-documents>
+
+      <change-history v-if="userRoles.aquifers.edit" class="mt-5" :id="id" resource="aquifers" ref="aquiferHistory"/>
     </b-container>
   </b-card>
 </template>
@@ -101,13 +103,15 @@ import ApiService from '@/common/services/ApiService.js'
 import APIErrorMessage from '@/common/components/APIErrorMessage'
 import AquiferForm from './Form'
 import Documents from './Documents.vue'
+import ChangeHistory from '@/common/components/ChangeHistory.vue'
 import { mapGetters } from 'vuex'
 
 export default {
   components: {
     'api-error': APIErrorMessage,
     'aquifer-form': AquiferForm,
-    'aquifer-documents': Documents
+    'aquifer-documents': Documents,
+    ChangeHistory
   },
   props: {
     'edit': Boolean
@@ -135,6 +139,7 @@ export default {
     handleSaveSuccess () {
       this.fetch()
       this.navigateToView()
+      this.$refs.aquiferHistory.update()
       this.showSaveSuccess = true
     },
     handlePatchError (error) {

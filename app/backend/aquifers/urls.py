@@ -39,6 +39,10 @@ urlpatterns = [
     url(r'^api/v1/aquifers/(?P<aquifer_id>[0-9]+)/files$',
         never_cache(views.ListFiles.as_view()), name='aquifer-file-list'),
 
+    # Change history for an aquifer
+    url(r'^api/v1/aquifers/(?P<aquifer_id>[0-9]+)/history/$',
+        never_cache(views.AquiferHistory.as_view()), name='aquifer-history'),
+
     url(r'^api/v1/aquifer-codes/materials/$',
         cache_page(CACHE_TTL)(views.AquiferMaterialListAPIView.as_view()),
         name='aquifer-material-list'
