@@ -35,6 +35,7 @@ class Command(BaseCommand):
             if os.path.exists(filename):
                 os.remove(filename)
         logger.info('export complete')
+        self.stdout.write(self.style.SUCCESS('export complete'))
 
     def upload_files(self, zip_filename, spreadsheet_filename):
         minioClient = Minio(get_env_variable('S3_HOST'),
