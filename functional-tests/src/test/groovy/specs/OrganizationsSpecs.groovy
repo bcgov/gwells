@@ -25,7 +25,7 @@ import spock.lang.Narrative
 import spock.lang.Stepwise
 
 @Stepwise
-@Title('Groundwater Well Organizations Tests')
+@Title('Groundwater Wells Organizations Tests')
 @Narrative('''As an admin user, I want to add, update, and delete organizations (companies).''')
 class OrganizationsSpecs extends LoggedInSpec {
 

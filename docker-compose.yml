@@ -60,12 +60,12 @@ services:
             python3 manage.py migrate --noinput &&
             echo Loading fixtures, this may take some time... &&
             python3 manage.py loaddata
-              gwells-codetables.json
-              wellsearch-codetables.json
-              registries-codetables.json
-              registries.json
-              aquifers.json
-              wellsearch &&
+                aquifers.json
+                gwells-codetables.json
+                registries-codetables.json
+                registries.json
+                wellsearch.json
+                wellsearch-codetables.json &&
             python3 manage.py createinitialrevisions &&
             python3 manage.py collectstatic --noinput &&
             python3 manage.py runserver 0.0.0.0:8000"

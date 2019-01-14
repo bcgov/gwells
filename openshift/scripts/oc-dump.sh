@@ -7,6 +7,8 @@
 #
 # NOTE: You need to be logged in with a token, via:
 #       https://console.pathfinder.gov.bc.ca:8443/oauth/token/request
+#
+# EXAMPLE: ./oc-dump.sh moe-gwells-test/gwells-pgsql-staging  
 
 
 # Halt conditions, verbosity and field separator
@@ -90,8 +92,9 @@ SAVE_PATH=$( dirname ${SAVE_TO} )
 mkdir -p ${SAVE_PATH}
 oc exec ${POD_DB} -n ${PROJECT} -- /bin/bash -c '\
   pg_dump -U ${POSTGRESQL_USER} -d ${POSTGRESQL_DATABASE} -Fc -f /tmp/'${SAVE_FILE}' \
-	--no-privileges --no-tablespaces --schema=public \
+	--no-privileges --no-tablespaces --schema=public --exclude-table=spatial_ref_sys \
 '
+
 oc rsync ${POD_DB}:/tmp/${SAVE_FILE} ${SAVE_PATH} -n ${PROJECT} --progress=true --no-perms=true
 oc exec ${POD_DB} -n ${PROJECT} -- /bin/bash -c 'rm /tmp/'${SAVE_FILE}
 

@@ -14,6 +14,8 @@
 
 package pages
 
+import geb.navigator.Navigator
+
 import org.openqa.selenium.Keys
 
 class SubmissionsPage extends BaseAppPage {
@@ -112,28 +114,24 @@ class SubmissionsPage extends BaseAppPage {
     wellSubClassGroup.$('option', text:wellSubClass).click()
   }
 
-  void setStartDateOfWork(String day, String month, String year) {
+  void _setDateField(Navigator selector, String day, String month, String year) {
     // This is a workaround for an issue where calling: effectiveDateField.value('2018-10-10') appears to correctly set
     // the date, but as soon as another element is interacted with the effective date 'unsets' to be empty again.
     // Calling .value() should work according to the doc, assuming no other javascript is messing with the field.
-    startDateOfWork << day
-    startDateOfWork << month
+    selector << day
+    selector << month
     // Setting the day value auto advances to the month, but setting the month does not auto advance to the year.
     // Simulate the user clicking the right arrow to move to the next field.
-    startDateOfWork << Keys.ARROW_RIGHT
-    startDateOfWork << year
+    selector << Keys.ARROW_RIGHT
+    selector << year
+  }
+
+  void setStartDateOfWork(String day, String month, String year) {
+    _setDateField(startDateOfWork, day, month, year)
   }
 
   void setEndDateOfWork(String day, String month, String year) {
-    // This is a workaround for an issue where calling: effectiveDateField.value('2018-10-10') appears to correctly set
-    // the date, but as soon as another element is interacted with the effective date 'unsets' to be empty again.
-    // Calling .value() should work according to the doc, assuming no other javascript is messing with the field.
-    endDateOfWork << day
-    endDateOfWork << month
-    // Setting the day value auto advances to the month, but setting the month does not auto advance to the year.
-    // Simulate the user clicking the right arrow to move to the next field.
-    endDateOfWork << Keys.ARROW_RIGHT
-    endDateOfWork << year
+    _setDateField(endDateOfWork, day, month, year)
   }
 
   void setPersonResponsibleForDrilling(String person) {

@@ -13,7 +13,17 @@ Licensed under the Apache License, Version 2.0 (the "License");
 */
 <template>
   <fieldset>
-    <legend :id="id">Lithology</legend>
+    <b-row>
+      <b-col cols="12" lg="6">
+        <legend :id="id">Lithology</legend>
+      </b-col>
+      <b-col cols="12" lg="6">
+        <div class="float-right">
+          <b-btn v-if="isStaffEdit" variant="primary" class="ml-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
+          <a href="#top" v-if="isStaffEdit">Back to top</a>
+        </div>
+      </b-col>
+    </b-row>
     <div class="table-responsive">
       <table class="table table-sm">
         <thead>
@@ -145,6 +155,14 @@ export default {
     },
     id: {
       type: String,
+      isInput: false
+    },
+    isStaffEdit: {
+      type: Boolean,
+      isInput: false
+    },
+    saveDisabled: {
+      type: Boolean,
       isInput: false
     }
   },

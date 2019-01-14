@@ -35,6 +35,12 @@ const store = new Vuex.Store({
 new Vue({
   el: '#documents',
   store,
+  created () {
+    // If this was the only vue component on the page, we'd be calling authenticate here, but in this case
+    // the header is responsible for doing this. Our components have to patiently wait for authentication
+    // to be completed by the header component. (Or we'd just be doing multiple authentications in
+    // parallel.)
+  },
   components: {
     Documents
   },

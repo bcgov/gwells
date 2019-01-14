@@ -15,7 +15,7 @@
 package specs
 
 import pages.HomePage
-import pages.AquifersPage
+import pages.AquifersSearchPage
 import pages.InformationPage
 import pages.RegistryPage
 import pages.SubmissionsPage
@@ -44,7 +44,7 @@ class FlowSpecs extends BaseSpec {
     where:
       TextSelector              || AssertPage
       'Well Search'             || HomePage
-      'Aquifers'                || AquifersPage
+      'Aquifers'                || AquifersSearchPage
       'Groundwater Information' || InformationPage
       'Registry'                || RegistryPage
       //TODO requires being logged - move to auth flow specs? 'Submit Report'           || SubmissionsPage

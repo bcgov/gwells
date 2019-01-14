@@ -33,6 +33,7 @@
 
       <div class="pb-2">
         <b-button
+          id="aquifers-add"
           v-on:click="navigateToNew"
           v-if="userRoles.aquifers.edit"
           variant="primary">Add new Aquifer</b-button>

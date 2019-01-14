@@ -13,7 +13,17 @@ Licensed under the Apache License, Version 2.0 (the "License");
 */
 <template>
   <fieldset>
-    <legend :id="id">Casing Details</legend>
+    <b-row>
+      <b-col cols="12" lg="6">
+        <legend :id="id">Casing Details</legend>
+      </b-col>
+      <b-col cols="12" lg="6">
+        <div class="float-right">
+          <b-btn v-if="isStaffEdit" variant="primary" class="ml-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
+          <a href="#top" v-if="isStaffEdit">Back to top</a>
+        </div>
+      </b-col>
+    </b-row>
     <div class="table-responsive" id="casingTable">
       <table class="table table-sm">
         <thead>
@@ -114,8 +124,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
               <b-form-radio-group v-model="casing.drive_shoe"
                                   :name="'drive_shoe_' + index"
                                   :id="'casingDriveShoe_' + index">
-                <b-form-radio value="False">No</b-form-radio>
-                <b-form-radio value="True">Yes</b-form-radio>
+                <b-form-radio :value="false">No</b-form-radio>
+                <b-form-radio :value="true">Yes</b-form-radio>
               </b-form-radio-group>
             </td>
             <td class="pt-1 py-0">
@@ -162,6 +172,14 @@ export default {
     },
     id: {
       type: String,
+      isInput: false
+    },
+    isStaffEdit: {
+      type: Boolean,
+      isInput: false
+    },
+    saveDisabled: {
+      type: Boolean,
       isInput: false
     }
   },
