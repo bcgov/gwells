@@ -39,7 +39,7 @@ from aquifers.models import (
     AquiferVulnerabilityCode,
     QualityConcern,
 )
-from aquifers.permissions import HasAquiferEditRoleOrReadOnly
+from aquifers.permissions import HasAquiferEditRoleOrReadOnly, HasAquiferEditRole
 from gwells.change_history import generate_history_diff
 from registries.views import AuditCreateMixin, AuditUpdateMixin
 
@@ -188,7 +188,7 @@ class AquiferHistory(APIView):
     """
     get: returns a history of changes to a Aquifer model record
     """
-
+    permission_classes = (HasAquiferEditRole,)
     queryset = Aquifer.objects.all()
     swagger_schema = None
 
