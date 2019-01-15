@@ -29,6 +29,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <b-row>
         <b-col cols="12" md="12" lg="4">
           <b-form-group
+              label="Drill Supervisor *"
               aria-describedby="personResponsibleInvalidFeedback"
               :state="false">
             <label>Person Responsible for Drilling</label>
@@ -67,27 +68,24 @@ Licensed under the Apache License, Version 2.0 (the "License");
             </b-form-text>
           </b-form-group>
         </b-col>
-        <b-col cols="12" md="6" lg="4">
+        <b-col cols="12" md="8" lg="4">
+          <p class="d-inline">Drill Operator</p>
+          <b-form-checkbox id="checkbox1"
+            v-model="drillerSameAsPersonResponsibleInput"
+            :value="true"
+            :unchecked-value="false"
+            :disabled="!personResponsible">
+            Same as Supervisor
+          </b-form-checkbox>
           <form-input
               id="drillerName"
-              label="Name of Person Who Did the Drilling"
+              label=""
               type="text"
               :disabled="drillerSameAsPersonResponsible"
               v-model="drillerNameInput"
               :errors="errors['driller_name']"
               :loaded="fieldsLoaded['driller_name']"
           ></form-input>
-        </b-col>
-        <b-col cols="12" md="6" lg="4">
-          <b-form-group class="pt-md-4 mt-md-2">
-            <b-form-checkbox id="checkbox1"
-                  v-model="drillerSameAsPersonResponsibleInput"
-                  :value="true"
-                  :unchecked-value="false"
-                  :disabled="!personResponsible">
-              Same as Person Responsible for Drilling
-            </b-form-checkbox>
-          </b-form-group>
         </b-col>
       </b-row>
       <b-row>
