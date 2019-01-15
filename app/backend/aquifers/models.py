@@ -11,10 +11,14 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
+import reversion
+
 from django.utils import timezone
 from django.db import models
 from gwells.models import AuditModel
+from django.contrib.contenttypes.fields import GenericRelation
 from django.core.validators import MinValueValidator, MaxValueValidator
+from reversion.models import Version
 
 
 class AquiferMaterial(AuditModel):
@@ -88,7 +92,7 @@ class AquiferDemand(AuditModel):
     expiry_date = models.DateTimeField(blank=True, null=True)
 
     class Meta:
-        db_table = 'aquifer_demand_code' 
+        db_table = 'aquifer_demand_code'
         ordering = ['display_order', 'code']
         verbose_name_plural = 'Aquifer Demand Codes'
 
@@ -154,6 +158,7 @@ class AquiferVulnerabilityCode(AuditModel):
         return '{} - {}'.format(self.code, self.description)
 
 
+@reversion.register()
 class Aquifer(AuditModel):
     """
     An underground layer of water-bearing permeable rock, rock fractures or unconsolidated materials
@@ -179,7 +184,7 @@ class Aquifer(AuditModel):
         AquiferSubtype,
         db_column='aquifer_subtype_code',
         blank=True,
-        null=True,        
+        null=True,
         on_delete=models.PROTECT,
         verbose_name="Subtype Reference",
         related_name='aquifers')
@@ -191,12 +196,12 @@ class Aquifer(AuditModel):
         blank=True,
         null=True,
         on_delete=models.PROTECT,
-        verbose_name="Aquifer Vulnerabiliy")   
+        verbose_name="Aquifer Vulnerabiliy")
     productivity = models.ForeignKey(
         AquiferProductivity,
         db_column='aquifer_productivity_code',
         blank=True,
-        null=True,        
+        null=True,
         on_delete=models.PROTECT,
         verbose_name="Productivity Reference",
         related_name='aquifers')
@@ -212,7 +217,7 @@ class Aquifer(AuditModel):
         WaterUse,
         db_column='water_use_code',
         blank=True,
-        null=True,        
+        null=True,
         on_delete=models.PROTECT,
         verbose_name="Known Water Use Reference",
         related_name='aquifers')
@@ -220,7 +225,7 @@ class Aquifer(AuditModel):
         QualityConcern,
         db_column='quality_concern_code',
         blank=True,
-        null=True,        
+        null=True,
         on_delete=models.PROTECT,
         verbose_name="Quality Concern Reference",
         related_name='aquifers')
@@ -228,17 +233,19 @@ class Aquifer(AuditModel):
         max_length=100, blank=True, null=True, verbose_name='Lithographic Stratographic Unit')
     mapping_year = models.PositiveIntegerField(
         validators=[
-            MinValueValidator(1990), 
+            MinValueValidator(1990),
             MaxValueValidator(timezone.now().year)],
         blank=True,
-        null=True,                
-        verbose_name="Date of Mapping",    
+        null=True,
+        verbose_name="Date of Mapping",
         help_text="Use the following format: <YYYY>")
     notes = models.TextField(
         max_length=2000,
         blank=True,
         null=True,
         verbose_name='Notes on Aquifer, for internal use only.')
+
+    history = GenericRelation(Version)
 
     class Meta:
         db_table = 'aquifer'
