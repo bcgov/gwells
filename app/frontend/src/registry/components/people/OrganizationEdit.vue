@@ -305,7 +305,7 @@ import { mapGetters } from 'vuex'
 import ApiService from '@/common/services/ApiService.js'
 import OrganizationAdd from '@/registry/components/people/OrganizationAdd.vue'
 import Notes from '@/registry/components/people/Notes.vue'
-import ChangeHistory from '@/registry/components/people/ChangeHistory.vue'
+import ChangeHistory from '@/common/components/ChangeHistory.vue'
 import inputFormatMixin from '@/common/inputFormatMixin.js'
 import { FETCH_DRILLER_OPTIONS } from '@/registry/store/actions.types'
 

@@ -26,3 +26,16 @@ class HasAquiferEditRoleOrReadOnly(BasePermission):
             request.user.is_authenticated and
             request.user.groups.filter(name=AQUIFERS_EDIT_ROLE).exists()
         )
+
+
+class HasAquiferEditRole(BasePermission):
+    """
+    Grants permission to users with Aquifer Edit Roles
+    """
+
+    def has_permission(self, request, view):
+        return (
+            request.user and
+            request.user.is_authenticated and
+            request.user.groups.filter(name=AQUIFERS_EDIT_ROLE).exists()
+        )
