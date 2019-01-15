@@ -26,13 +26,20 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </div>
         </b-col>
       </b-row>
+      <b-form-checkbox id="checkbox1"
+        v-model="drillerSameAsPersonResponsibleInput"
+        :value="true"
+        :unchecked-value="false"
+      >
+      <p>Supervisor and Operator are the same</p>
+      </b-form-checkbox>
       <b-row>
-        <b-col cols="12" md="12" lg="4">
+        <b-col cols="12" md="12" lg="6">
           <b-form-group
               label="Drill Supervisor *"
               aria-describedby="personResponsibleInvalidFeedback"
-              :state="false">
-            <label>Person Responsible for Drilling</label>
+              :state="false"
+          >
             <v-select
                 :class="errors.person_responsible?'border border-danger dropdown-error-border':''"
                 :disabled="persons === null"
@@ -68,18 +75,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
             </b-form-text>
           </b-form-group>
         </b-col>
-        <b-col cols="12" md="8" lg="4">
-          <p class="d-inline">Drill Operator</p>
-          <b-form-checkbox id="checkbox1"
-            v-model="drillerSameAsPersonResponsibleInput"
-            :value="true"
-            :unchecked-value="false"
-            :disabled="!personResponsible">
-            Same as Supervisor
-          </b-form-checkbox>
+        <b-col cols="12" md="12" lg="6">
           <form-input
               id="drillerName"
-              label=""
+              label="Drill Operator"
               type="text"
               :disabled="drillerSameAsPersonResponsible"
               v-model="drillerNameInput"
@@ -244,6 +243,7 @@ export default {
       if (prev) {
         this.drillerSameAsPersonResponsibleInput = false
       }
+      this.drillerNameInput = (this.personResponsible && this.drillerSameAsPersonResponsible) ? this.personResponsible.name : ''
     },
     drillerSameAsPersonResponsible (val) {
       // keep driller name disabled & set to "person responsible", or leave it enabled and blank
