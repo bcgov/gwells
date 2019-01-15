@@ -205,6 +205,7 @@ export default {
           'method',
           'casings',
           'backfill',
+          'lithology',
           'liner',
           'screens',
           'filterPack',

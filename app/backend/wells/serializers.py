@@ -299,6 +299,7 @@ class WellDetailAdminSerializer(AuditModelSerializer):
     decommission_description_set = DecommissionDescriptionSerializer(many=True)
     driller_responsible = PersonBasicSerializer()
     productiondata_set = ProductionDataSerializer(many=True)
+    lithologydescription_set = LithologyDescriptionSerializer(many=True)
 
     # well vs. well_tag_number ; on submissions, we refer to well
     well = serializers.IntegerField(source='well_tag_number')

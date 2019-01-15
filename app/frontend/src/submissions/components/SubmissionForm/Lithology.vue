@@ -225,13 +225,19 @@ export default {
       const lithology = new Lithology(value)
       this.lithSoils[index] = lithology.parseSoilTerms()
 
-      const moisture = lithology.moisture(this.codes.lithology_moisture_codes)
-      const hardness = lithology.hardness(this.codes.lithology_hardness_codes)
-      const colour = lithology.colour(this.codes.lithology_colours)
+      // if codes are available, parse colour, hardness and moisture terms too.
+      // If codes aren't available, we use the original value in these fields
+      // This is to avoid overwriting what is already stored in the database if the page is loaded
+      // but codes failed to load, or have not loaded yet.
+      if (this.codes.lithology_moisture_codes && this.codes.lithology_hardness_codes && this.codes.lithology_colours) {
+        const moisture = lithology.moisture(this.codes.lithology_moisture_codes)
+        const hardness = lithology.hardness(this.codes.lithology_hardness_codes)
+        const colour = lithology.colour(this.codes.lithology_colours)
 
-      this.lithologyInput[index].lithology_hardness = hardness
-      this.lithologyInput[index].lithology_colour = colour
-      this.lithologyInput[index].lithology_moisture = moisture
+        this.lithologyInput[index].lithology_hardness = hardness
+        this.lithologyInput[index].lithology_colour = colour
+        this.lithologyInput[index].lithology_moisture = moisture
+      }
     }
   },
   created () {

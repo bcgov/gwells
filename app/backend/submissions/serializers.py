@@ -388,6 +388,7 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
     screen_set = ScreenSerializer(many=True, required=False)
     productiondata_set = ProductionDataSerializer(many=True, required=False)
     decommission_description_set = DecommissionDescriptionSerializer(many=True, required=False)
+    lithologydescription_set = LithologyDescriptionSerializer(many=True, required=False)
 
     def get_well_activity_type(self):
         return WellActivityCode.types.staff_edit()
@@ -398,6 +399,7 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
             'screen_set': Screen,
             'linerperforation_set': LinerPerforation,
             'productiondata_set': ProductionData,
+            'lithologydescription_set': LithologyDescription,
             'decommission_description_set': DecommissionDescription
         }
 
@@ -447,7 +449,7 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
             'drilling_method',
             'other_drilling_method',
             'well_orientation',
-            # 'lithologydescription_set',
+            'lithologydescription_set',
             'casing_set',
             'surface_seal_material',
             'surface_seal_depth',
