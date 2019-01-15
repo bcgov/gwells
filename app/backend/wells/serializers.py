@@ -25,31 +25,12 @@ from wells.models import (
     CasingCode,
     DecommissionDescription,
     LinerPerforation,
-    ProductionData,
     Screen,
     Well,
 )
 
 
 logger = logging.getLogger(__name__)
-
-
-class ProductionDataSerializer(serializers.ModelSerializer):
-    """Serializes production data"""
-    class Meta:
-        model = ProductionData
-        fields = (
-            'yield_estimation_method',
-            'yield_estimation_rate',
-            'yield_estimation_duration',
-            'well_yield_unit',
-            'static_level',
-            'drawdown',
-            'hydro_fracturing_performed',
-            'hydro_fracturing_yield_increase',
-            'recommended_pump_depth',
-            'recommended_pump_rate',
-        )
 
 
 class CasingMaterialSerializer(serializers.ModelSerializer):
@@ -142,7 +123,6 @@ class WellDetailSerializer(AuditModelSerializer):
     linerperforation_set = LinerPerforationSerializer(many=True)
     decommission_description_set = DecommissionDescriptionSerializer(many=True)
     driller_responsible = PersonBasicSerializer()
-    productiondata_set = ProductionDataSerializer(many=True)
 
     # well vs. well_tag_number ; on submissions, we refer to well
     well = serializers.IntegerField(source='well_tag_number')
@@ -265,12 +245,20 @@ class WellDetailSerializer(AuditModelSerializer):
             "testing_duration",
             "analytic_solution_type",
             "boundary_effect",
-            "productiondata_set",
+            "yield_estimation_method",
+            "yield_estimation_rate",
+            "yield_estimation_duration",
+            "well_yield_unit",
+            "static_level_before_test",
+            "drawdown",
+            "hydro_fracturing_performed",
+            "hydro_fracturing_yield_increase",
+            "recommended_pump_depth",
+            "recommended_pump_rate",
             "casing_set",
             "screen_set",
             "linerperforation_set",
             "decommission_description_set",
-            "productiondata_set",
         )
 
 
@@ -280,7 +268,6 @@ class WellDetailAdminSerializer(AuditModelSerializer):
     linerperforation_set = LinerPerforationSerializer(many=True)
     decommission_description_set = DecommissionDescriptionSerializer(many=True)
     driller_responsible = PersonBasicSerializer()
-    productiondata_set = ProductionDataSerializer(many=True)
 
     # well vs. well_tag_number ; on submissions, we refer to well
     well = serializers.IntegerField(source='well_tag_number')
@@ -296,7 +283,6 @@ class WellStackerSerializer(AuditModelSerializer):
     screen_set = ScreenSerializer(many=True)
     linerperforation_set = LinerPerforationSerializer(many=True)
     decommission_description_set = DecommissionDescriptionSerializer(many=True)
-    productiondata_set = ProductionDataSerializer(many=True)
 
     class Meta:
         model = Well
@@ -304,30 +290,38 @@ class WellStackerSerializer(AuditModelSerializer):
 
     @transaction.atomic
     def update(self, instance, validated_data):
-        # If there is existing related data, the easiest approach is to drop it, and re-create it
-        # based on this update. Trying to match up individual records and updating them, dealing with
-        # removed casing/screen/perforation records etc. etc. is not the responsibility of this section.
-        # The composite section is responsible for that.
+        # If there is existing related data, the easiest approach is to drop it, and re-create many to
+        # many fields based on this update. Trying to match up individual records and updating them,
+        # dealing with removed casing/screen/perforation records etc. etc. is not the responsibility
+        # of this section. The composite section is responsible for that.
         FOREIGN_KEYS = {
             'casing_set': Casing,
             'screen_set': Screen,
             'linerperforation_set': LinerPerforation,
             'decommission_description_set': DecommissionDescription,
-            'productiondata_set': ProductionData
         }
+
         for key in FOREIGN_KEYS.keys():
-            for record in getattr(instance, key).all():
-                record.delete()
+            # Is the field one to many, or many to many?
+            model = type(self).Meta.model
+            field = model._meta.get_field(key)
             records_data = validated_data.pop(key, None)
-            if records_data:
-                for record_data in records_data:
-                    # We're re-creating this record, and binding it to the current instance, so we need
-                    # to get rid of any redundant/duplicate reference that may exist in the record data
-                    # in order to avoid duplications. (the well we pop, should be the same as the instance
-                    # variable)
-                    record_data.pop('well', None)
-                    # Create new instance of of the casing/screen/whatever record.
-                    obj = FOREIGN_KEYS[key].objects.create(well=instance, **record_data)
+            foreign_class = FOREIGN_KEYS[key]
+            if field.one_to_many:
+                # We just delete the one to many records. It would be too complicated to match them up.
+                for record in getattr(instance, key).all():
+                    record.delete()
+                if records_data:
+                    for record_data in records_data:
+                        # We're re-creating this record, and binding it to the current instance, so we need
+                        # to get rid of any redundant/duplicate reference that may exist in the record data
+                        # in order to avoid duplications. (the well we pop, should be the same as the instance
+                        # variable)
+                        record_data.pop('well', None)
+                        # Create new instance of of the casing/screen/whatever record.
+                        obj = foreign_class.objects.create(well=instance, **record_data)
+            else:
+                raise 'UNEXPECTED FIELD! {}'.format(field)
         instance = super().update(instance, validated_data)
         return instance
 
@@ -409,7 +403,16 @@ class WellListSerializer(serializers.ModelSerializer):
             "development_method",
             "development_hours",
             "development_notes",
-            "productiondata_set",
+            "yield_estimation_method",
+            "yield_estimation_rate",
+            "yield_estimation_duration",
+            "well_yield_unit",
+            "static_level_before_test",
+            "drawdown",
+            "hydro_fracturing_performed",
+            "hydro_fracturing_yield_increase",
+            "recommended_pump_depth",
+            "recommended_pump_rate",
             "water_quality_characteristics",
             "water_quality_colour",
             "water_quality_odour",

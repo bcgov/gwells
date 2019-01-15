@@ -125,7 +125,7 @@ class Command(BaseCommand):
  legal_pid,
  well_location_description,
  latitude, longitude, utm_zone_code, utm_northing, utm_easting,
- utm_accuracy_code, bcgs_id,
+ coordinate_acquisition_code, bcgs_id,
  construction_start_date, construction_end_date, alteration_start_date,
  alteration_end_date, decommission_start_date, decommission_end_date,
  driller_name, consultant_name, consultant_company,
@@ -150,6 +150,10 @@ class Command(BaseCommand):
  filter_pack_material_size_code,
  development_hours, development_notes,
  water_quality_colour, water_quality_odour, ems_id,
+ yield_estimation_method_code,
+ yield_estimation_rate,
+ yield_estimation_duration, static_level_before_test, drawdown,
+ hydro_fracturing_performed, hydro_fracturing_yield_increase,
  decommission_reason, decommission_method_code, decommission_details, sealant_material,
  backfill_material,
  comments, aquifer_id,
@@ -196,14 +200,6 @@ class Command(BaseCommand):
         screen_sql = ("""select well_tag_number, screen_from, screen_to, internal_diameter,
  screen_assembly_type_code, slot_size from screen
  order by well_tag_number""")
-        ############
-        # PRODUCTION
-        ############
-        production_sql = ("""select well_tag_number, yield_estimation_method_code, well_yield_unit_code,
- yield_estimation_rate,
- yield_estimation_duration, static_level, drawdown,
- hydro_fracturing_performed, hydro_fracturing_yield_increase from production_data
- order by well_tag_number""")
         ##############
         # PERFORATIONS
         ##############
@@ -235,10 +231,6 @@ class Command(BaseCommand):
             with connection.cursor() as cursor:
                 cursor.execute(screen_sql)
                 self.export(workbook, gwells_zip, 'screen', cursor)
-            # Production
-            with connection.cursor() as cursor:
-                cursor.execute(production_sql)
-                self.export(workbook, gwells_zip, 'production', cursor)
             # Perforation
             with connection.cursor() as cursor:
                 cursor.execute(perforation_sql)

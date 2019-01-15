@@ -826,22 +826,21 @@
 <fieldset id="well_yield_fieldset">
     <legend>Well Yield</legend>
     <div class="row no-gutters print-compressed">
-        {% for productiondata in well.productiondata_set.all|dictsortreversed:"update_date"|slice:"1" %}
         <div class="col-md-4 col-print-4 print-compressed">
             <div class="row no-gutters print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
-                    <label for="yield-estimation-method">{% verbose_name productiondata "yield_estimation_method" %}:</label>
-                    <span id="yield-estimation-method">{{productiondata.yield_estimation_method.description|default_if_none:'&nbsp;' }}</span>
+                    <label for="yield-estimation-method">{% verbose_name well "yield_estimation_method" %}:</label>
+                    <span id="yield-estimation-method">{{well.yield_estimation_method.description|default_if_none:'&nbsp;' }}</span>
                 </div>
             </div>
         </div>
         <div class="col-md-4 col-print-4 print-compressed">
             <div class="row no-gutters print-compressed">
                 <div class="col-md-12 print-col-12 print-compressed">
-                    <label for="yield_estimation_rate">{% verbose_name productiondata "yield_estimation_rate" %}:</label>
+                    <label for="yield_estimation_rate">{% verbose_name well "yield_estimation_rate" %}:</label>
                     <span id="yield_estimation_rate">
-                    {% if productiondata.yield_estimation_rate > 0 %}
-                        {{productiondata.yield_estimation_rate|exclude_zero_decimals }} &nbsp; {{productiondata.well_yield_unit.well_yield_unit_code}}
+                    {% if well.yield_estimation_rate > 0 %}
+                        {{well.yield_estimation_rate|exclude_zero_decimals }} &nbsp; {{well.well_yield_unit.well_yield_unit_code}}
                     {% endif %}
                   </span>
                 </div>
@@ -850,16 +849,15 @@
         <div class="col-md-4 col-print-12 print-compressed">
             <div class="row no-gutters print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
-                    <label for="yield_estimation_duration">{% verbose_name productiondata "yield_estimation_duration" %}:</label>
+                    <label for="yield_estimation_duration">{% verbose_name well "yield_estimation_duration" %}:</label>
                     <span id="yield_estimation_duration">
-                      {% if productiondata.yield_estimation_duration > 0 %}
-                          {{productiondata.yield_estimation_duration|exclude_zero_decimals }} &nbsp; hours
+                      {% if well.yield_estimation_duration > 0 %}
+                          {{well.yield_estimation_duration|exclude_zero_decimals }} &nbsp; hours
                       {% endif %}
                   </span>
                 </div>
             </div>
         </div>
-        {% endfor %}
     </div>
 </fieldset>
 

@@ -155,10 +155,6 @@ class StackWells():
         # these are depth-specific sets that have a "start" and "end" value
         FOREIGN_KEYS = ('casing_set', 'screen_set', 'linerperforation_set', 'decommission_description_set',)
 
-        # FOREIGN_KEY_DATA_SETS are collections of data associated with a well that are not depth specific.
-        # they don't need to be handled with depth overlap validation like casings, screens etc.
-        FOREIGN_KEY_DATA_SETS = ('productiondata_set',)
-
         composite = {}
 
         # Well status is set based on the most recent activity submission.
@@ -191,20 +187,17 @@ class StackWells():
                         # sets that reference a depth along the drilled well (must be merged checking for
                         # overlap).
                         #
-                        # If the target_key is not in one of the foreign key sets (i.e., it's a property/column
-                        # of a well), then the value can overwrite the previous composite value.
+                        # If the target_key is not in one of the foreign key sets (i.e., it's a property/
+                        # column of a well), then the value can overwrite the previous composite value.
                         if (submission.well_activity_type.code == WellActivityCode.types.staff_edit().code and
                                 target_key in composite and
-                                (target_key in FOREIGN_KEYS or target_key in FOREIGN_KEY_DATA_SETS)):
+                                (target_key in FOREIGN_KEYS)):
                             # staff edits come in with the entire set of values and thus can replace
                             # the composite value
                             composite[target_key] = value
                         elif target_key in composite and target_key in FOREIGN_KEYS:
                             # foreign key sets are based on depth and need special merge handling.
                             composite[target_key] = self._merge_series(composite[source_key], value)
-                        elif target_key in composite and target_key in FOREIGN_KEY_DATA_SETS:
-                            # data sets just need to be added to the existing collection
-                            composite[target_key] = composite[source_key] + value
                         else:
                             composite[target_key] = value
 

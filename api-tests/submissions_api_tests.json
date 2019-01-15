@@ -1065,7 +1065,7 @@
 							"response": []
 						},
 						{
-							"name": "Construction Submission - production data tests",
+							"name": "Construction Submission - production data",
 							"event": [
 								{
 									"listen": "test",
@@ -1099,7 +1099,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"well_activity_type\": \"CON\",\n\t\"owner_full_name\": \"Bob\",\n\t\"owner_mailing_address\": \"123 Place\",\n\t\"owner_city\": \"Victoria\",\n\t\"owner_province_state\": \"BC\",\n\t\"liner_diameter\": 1,\n\t\"liner_from\": 0,\n\t\"liner_material\": \"PVC\",\n\t\"liner_thickness\": 2,\n\t\"liner_to\": 3,\n\t\"productiondata_set\": [\n\t\t{\n\t\t\t\"drawdown\": 10,\n\t\t\t\"yield_estimation_rate\": 10\n\t\t},\n\t\t{\n\t\t\t\"drawdown\": 120,\n\t\t\t\"yield_estimation_rate\": 120\n\t\t}\n\t]\n}"
+									"raw": "{\n\t\"well_activity_type\": \"CON\",\n\t\"owner_full_name\": \"Bob\",\n\t\"owner_mailing_address\": \"123 Place\",\n\t\"owner_city\": \"Victoria\",\n\t\"owner_province_state\": \"BC\",\n\t\"liner_diameter\": 1,\n\t\"liner_from\": 0,\n\t\"liner_material\": \"PVC\",\n\t\"liner_thickness\": 2,\n\t\"liner_to\": 3,\n\t\"drawdown\": 10,\n\t\"yield_estimation_rate\": 10\n}"
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/construction?format=json",
@@ -1120,6 +1120,65 @@
 									]
 								},
 								"description": "Request a list of wells"
+							},
+							"response": []
+						},
+						{
+							"name": "Check submission - production data",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "77ba3bf1-a4ad-476e-bd9a-c67bf0e7a34c",
+										"exec": [
+											"var jsonData = pm.response.json();",
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"   pm.expect(pm.response.code).to.equal(200);",
+											"})",
+											"",
+											"pm.test(\"Expect production data - yield estimation rate to be created\", function() {",
+											"    pm.expect(jsonData.yield_estimation_rate).to.equal(\"10.00\")",
+											"})",
+											"",
+											"pm.test(\"Expect production data - drawdown to be created\", function() {",
+											"    pm.expect(jsonData.drawdown).to.equal(\"10.00\")",
+											"})",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/x-www-form-urlencoded"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"wells",
+										"{{well_tag_number}}"
+									]
+								},
+								"description": "Check if the created well matched submission"
 							},
 							"response": []
 						}
@@ -2230,7 +2289,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"well\": {{well_tag_number}},\n\t\"consultant_name\": \"John Mann\",\n\t\"owner_full_name\": \"Buddy\",\n\t\"ground_elevation_method\": \"10K_MAP\",\n\t\"ground_elevation\": 12,\n\t\"drilling_method\": \"AIR_ROTARY\",\n\t\"other_drilling_method\": \"Shovel\",\n\t\"well_orientation\": \"False\",\n\t\"observation_well_status\": \"Active\",\n\t\"observation_well_number\": 123\n}"
+									"raw": "{\n\t\"well\": {{well_tag_number}},\n\t\"consultant_name\": \"John Mann\",\n\t\"owner_full_name\": \"Buddy\",\n\t\"ground_elevation_method\": \"10K_MAP\",\n\t\"ground_elevation\": 12,\n\t\"drilling_method\": \"AIR_ROTARY\",\n\t\"other_drilling_method\": \"Shovel\",\n\t\"well_orientation\": \"False\",\n\t\"observation_well_status\": \"Active\",\n\t\"observation_well_number\": 123,\n\t\"drawdown\": 11,\n\t\"yield_estimation_rate\": 11\n}"
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/staff_edit?format=json",
@@ -2294,6 +2353,18 @@
 											"",
 											"pm.test(\"Expect observation_well_status to be updated\", function() {",
 											"    pm.expect(jsonData['observation_well_status']).to.equal('Active')",
+											"})",
+											"",
+											"pm.test(\"Expect production data - yield estimation rate to be updated\", function() {",
+											"    pm.expect(jsonData.yield_estimation_rate).to.equal(\"11.00\")",
+											"})",
+											"",
+											"pm.test(\"Expect the well_yield_unit to default to USGPM\", function() {",
+											"    pm.expect(jsonData.well_yield_unit).to.equal(\"USGPM\")",
+											"})",
+											"",
+											"pm.test(\"Expect production data - drawdown to be updated\", function() {",
+											"    pm.expect(jsonData.drawdown).to.equal(\"11.00\")",
 											"})"
 										],
 										"type": "text/javascript"
@@ -2370,7 +2441,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"well_activity_type\": \"CON\",\n\t\"owner_full_name\": \"Bob\",\n\t\"owner_mailing_address\": \"123 Place\",\n\t\"owner_city\": \"Victoria\",\n\t\"owner_province_state\": \"BC\",\n\t\"liner_diameter\": 1,\n\t\"liner_from\": 0,\n\t\"liner_material\": \"PVC\",\n\t\"liner_thickness\": 2,\n\t\"liner_to\": 3,\n\t\"linerperforation_set\": [\n\t\t{\n\t\t\t\"start\": 0,\n\t\t\t\"end\": 10\n\t\t},\n\t\t\t\t{\n\t\t\t\"start\": 10,\n\t\t\t\"end\": 12\n\t\t}\n\t],\n\t\"productiondata_set\": [\n\t\t{\n\t\t\t\"drawdown\": 10,\n\t\t\t\"yield_estimation_rate\": 10\n\t\t},\n\t\t{\n\t\t\t\"drawdown\": 120,\n\t\t\t\"yield_estimation_rate\": 120\n\t\t}\n\t]\n}\n"
+									"raw": "{\n\t\"well_activity_type\": \"CON\",\n\t\"owner_full_name\": \"Bob\",\n\t\"owner_mailing_address\": \"123 Place\",\n\t\"owner_city\": \"Victoria\",\n\t\"owner_province_state\": \"BC\",\n\t\"liner_diameter\": 1,\n\t\"liner_from\": 0,\n\t\"liner_material\": \"PVC\",\n\t\"liner_thickness\": 2,\n\t\"liner_to\": 3,\n\t\"linerperforation_set\": [\n\t\t{\n\t\t\t\"start\": 0,\n\t\t\t\"end\": 10\n\t\t},\n\t\t\t\t{\n\t\t\t\"start\": 10,\n\t\t\t\"end\": 12\n\t\t}\n\t],\n\t\"drawdown\": 10,\n\t\"yield_estimation_rate\": 10\n}\n"
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/construction?format=json",
@@ -2425,9 +2496,7 @@
 											"    pm.expect(jsonData.casing_set[0].end).to.equal(\"2.00\")",
 											"    pm.expect(jsonData.casing_set[1].start).to.equal(\"4.00\")",
 											"})",
-											"pm.test(\"Expect production data set to be updated\", function() {",
-											"    pm.expect(jsonData.productiondata_set[0].yield_estimation_rate).to.equal(\"11.00\")",
-											"})"
+											""
 										],
 										"type": "text/javascript"
 									}
@@ -2447,7 +2516,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"well\": {{well_tag_number}},\n\t\"consultant_name\": \"John Mann\",\n\t\"owner_full_name\": \"Buddy\",\n\t\"ground_elevation_method\": \"10K_MAP\",\n\t\"ground_elevation\": 12,\n\t\"drilling_method\": \"AIR_ROTARY\",\n\t\"other_drilling_method\": \"Shovel\",\n\t\"well_orientation\": \"False\",\n\t\"linerperforation_set\": [\n\t\t{\n\t\t\t\"start\": 0,\n\t\t\t\"end\": 8\n\t\t},\n\t\t{\n\t\t\t\"start\": 8,\n\t\t\t\"end\": 12\n\t\t}\n\t],\n\t\"screen_set\": [\n\t\t{\n\t\t\t\"start\": 5,\n\t\t\t\"end\": 15,\n\t\t\t\"assembly_type\": \"SCREEN\"\n\t\t},\n\t\t{\n\t\t\t\"start\": 15,\n\t\t\t\"end\": 20,\n\t\t\t\"assembly_type\": \"SCREEN\"\n\t\t}\n\t],\n\t\"casing_set\": [\n\t\t{\n\t\t\t\"casing_code\": \"SURFACE\",\n\t\t\t\"start\":\"1\",\n\t\t\t\"end\":\"2\",\n\t\t\t\"diameter\":\"1\",\n\t\t\t\"drive_shoe\":\"False\",\n\t\t\t\"id\":0,\n\t\t\t\"wall_thickness\":\"87\"\n\t\t},\n\t\t{\n\t\t\t\"casing_code\":\"SURFACE\",\n\t\t\t\"start\":\"4\",\n\t\t\t\"casing_material\":\"STEEL\",\n\t\t\t\"end\":\"8\",\n\t\t\t\"diameter\":\"2\",\n\t\t\t\"drive_shoe\":\"True\",\n\t\t\t\"id\":1,\n\t\t\t\"wall_thickness\":\"7\"\n\t\t}\n\t],\n\t\"productiondata_set\": [\n\t\t{\n\t\t\t\"drawdown\": 11,\n\t\t\t\"yield_estimation_rate\": 11\n\t\t}\n\t]\n}"
+									"raw": "{\n\t\"well\": {{well_tag_number}},\n\t\"consultant_name\": \"John Mann\",\n\t\"owner_full_name\": \"Buddy\",\n\t\"ground_elevation_method\": \"10K_MAP\",\n\t\"ground_elevation\": 12,\n\t\"drilling_method\": \"AIR_ROTARY\",\n\t\"other_drilling_method\": \"Shovel\",\n\t\"well_orientation\": \"False\",\n\t\"linerperforation_set\": [\n\t\t{\n\t\t\t\"start\": 0,\n\t\t\t\"end\": 8\n\t\t},\n\t\t{\n\t\t\t\"start\": 8,\n\t\t\t\"end\": 12\n\t\t}\n\t],\n\t\"screen_set\": [\n\t\t{\n\t\t\t\"start\": 5,\n\t\t\t\"end\": 15,\n\t\t\t\"assembly_type\": \"SCREEN\"\n\t\t},\n\t\t{\n\t\t\t\"start\": 15,\n\t\t\t\"end\": 20,\n\t\t\t\"assembly_type\": \"SCREEN\"\n\t\t}\n\t],\n\t\"casing_set\": [\n\t\t{\n\t\t\t\"casing_code\": \"SURFACE\",\n\t\t\t\"start\":\"1\",\n\t\t\t\"end\":\"2\",\n\t\t\t\"diameter\":\"1\",\n\t\t\t\"drive_shoe\":\"False\",\n\t\t\t\"id\":0,\n\t\t\t\"wall_thickness\":\"87\"\n\t\t},\n\t\t{\n\t\t\t\"casing_code\":\"SURFACE\",\n\t\t\t\"start\":\"4\",\n\t\t\t\"casing_material\":\"STEEL\",\n\t\t\t\"end\":\"8\",\n\t\t\t\"diameter\":\"2\",\n\t\t\t\"drive_shoe\":\"True\",\n\t\t\t\"id\":1,\n\t\t\t\"wall_thickness\":\"7\"\n\t\t}\n\t]\n}"
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/staff_edit?format=json",
