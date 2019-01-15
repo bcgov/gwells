@@ -94,6 +94,14 @@
         ga('create', 'UA-106174915-1', 'auto');
         ga('set', 'anonymizeIp', true);
         ga('send', 'pageview');
+
+        function handleOutboundLinkClicks(link) {
+            ga('send', 'event', {
+                eventCategory: 'Outbound Link',
+                eventAction: 'click',
+                eventLabel: link
+            });
+        }
     </script>
     {% endif %}
 </head>
