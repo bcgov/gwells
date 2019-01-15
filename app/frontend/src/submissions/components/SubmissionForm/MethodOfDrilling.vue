@@ -124,7 +124,17 @@ export default {
   },
   data () {
     return {
-
+      wellOrientationInput: 'true',
+      options: [
+        {
+          text: 'Vertical',
+          value: 'true'
+        },
+        {
+          text: 'Horizontal',
+          value: 'false'
+        }
+      ]
     }
   },
   computed: {
