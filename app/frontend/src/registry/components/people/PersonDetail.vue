@@ -364,7 +364,7 @@
 import APIErrorMessage from '@/common/components/APIErrorMessage'
 import PersonEdit from '@/registry/components/people/PersonEdit.vue'
 import PersonNotes from '@/registry/components/people/PersonNotes.vue'
-import ChangeHistory from '@/registry/components/people/ChangeHistory.vue'
+import ChangeHistory from '@/common/components/ChangeHistory.vue'
 import ApplicationAddEdit from '@/registry/components/people/ApplicationAddEdit.vue'
 import ApiService from '@/common/services/ApiService.js'
 import { mapGetters } from 'vuex'

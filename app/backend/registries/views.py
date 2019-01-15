@@ -67,7 +67,7 @@ from registries.serializers import (
     AccreditedCertificateCodeSerializer,
     OrganizationNoteSerializer,
     PersonNameSerializer)
-from registries.utils import generate_history_diff
+from gwells.change_history import generate_history_diff
 
 
 class AuditCreateMixin(CreateModelMixin):

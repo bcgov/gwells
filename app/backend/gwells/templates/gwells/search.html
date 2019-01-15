@@ -150,6 +150,22 @@
   </p>
 {% endif %}
 
+{% if settings.ENABLE_GOOGLE_ANALYTICS %}
+    <p>
+        <a href="http://www.frontcounterbc.gov.bc.ca/Start/surface-water/" onclick="handleOutboundLinkClicks('www.frontcounterbc.gov.bc.ca/Start/surface-water/')">
+            Learn about and submit water license applications
+        </a>  with FrontCounterBC.
+    </p>
+
+{% else %}
+    <p>
+        <a href="http://www.frontcounterbc.gov.bc.ca/Start/surface-water/">
+            Learn about and submit water license applications
+        </a>  with FrontCounterBC.
+    </p>
+{% endif %}
+
+
 {% endblock %}
 
 {% block jqscript_block %}

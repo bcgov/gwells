@@ -2,10 +2,10 @@
   <div class="card">
     <div class="card-body">
       <h6 class="card-title" id="changeHistoryTitle">Change History
-        <span v-if="history && history.length" class="ml-3">
+        <span class="ml-3">
           <b-button link size="sm" variant="outline-primary" @click="showHistory = !showHistory">{{showHistory ? "Hide":"Show"}}</b-button>
         </span></h6>
-      <div id="historyList" ref="history">
+      <div id="historyList" ref="history" v-if="!loading">
         <div class="mt-2" v-if="!history || !history.length">
           <b-row><b-col>No history for this record.</b-col></b-row>
         </div>
@@ -26,6 +26,9 @@
               </div>
           </div>
         </div>
+        <div v-if="loading">
+          <b-row><b-col>Loading history...</b-col></b-row>
+        </div>
       </div>
     </div>
   </div>
@@ -45,7 +48,8 @@ export default {
   data () {
     return {
       history: [],
-      showHistory: false
+      showHistory: false,
+      loading: false
     }
   },
   computed: {
@@ -65,8 +69,12 @@ export default {
   },
   methods: {
     update () {
+      this.loading = true
       ApiService.history(this.endpoint, this.id).then((response) => {
         this.history = response.data
+        this.loading = false
+      }).catch(() => {
+        this.loading = false
       })
     }
   },
