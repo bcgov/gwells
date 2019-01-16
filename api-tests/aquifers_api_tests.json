@@ -916,7 +916,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{base_url}}/gwells/api/v1/aquifers/presigned_put_url?filename=file.pdf",
+					"raw": "{{base_url}}/gwells/api/v1/aquifers/{{aquifer_id}}/presigned_put_url?filename=file.pdf",
 					"host": [
 						"{{base_url}}"
 					],
@@ -925,6 +925,7 @@
 						"api",
 						"v1",
 						"aquifers",
+						"{{aquifer_id}}",
 						"presigned_put_url"
 					],
 					"query": [
