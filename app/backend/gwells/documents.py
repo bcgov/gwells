@@ -171,12 +171,18 @@ class MinioClient():
 
         return objects
 
-    def get_presigned_put_url(self, object_name, private=False):
+    def get_presigned_put_url(self, object_name, bucket_name=None, private=False):
         if private:
+            if bucket_name is None:
+                bucket_name = self.private_bucket
+
             key = self.private_client.presigned_put_object(
-                self.private_bucket, object_name, expires=timedelta(minutes=5))
+                bucket_name, object_name, expires=timedelta(minutes=5))
         else:
+            if bucket_name is None:
+                bucket_name = self.public_bucket
+
             key = self.public_client.presigned_put_object(
-                self.public_bucket, object_name, expires=timedelta(minutes=5))
+                bucket_name, object_name, expires=timedelta(minutes=5))
 
         return key
