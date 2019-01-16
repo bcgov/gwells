@@ -259,7 +259,8 @@ class WellConstructionSubmissionSerializer(WellSubmissionSerializerBase):
                   'finished_well_depth', 'final_casing_stick_up', 'bedrock_depth', 'static_water_level',
                   'well_yield', 'artesian_flow', 'artesian_pressure', 'well_cap_type', 'well_disinfected',
                   'comments', 'alternative_specs_submitted', 'consultant_company', 'consultant_name',
-                  'driller_name', 'driller_responsible', 'coordinate_acquisition_code',)
+                  'driller_name', 'person_responsible', 'company_of_person_responsible',
+                  'coordinate_acquisition_code',)
         extra_kwargs = {
             # TODO: reference appropriate serializer as above
             'well_activity_type': {'required': False}
@@ -311,7 +312,8 @@ class WellAlterationSubmissionSerializer(WellSubmissionSerializerBase):
             'consultant_company',
             'consultant_name',
             'driller_name',
-            'driller_responsible',
+            'person_responsible',
+            'company_of_person_responsible',
             'legal_lot',
             'legal_plan',
             'legal_district_lot',
@@ -442,7 +444,8 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
             'consultant_company',
             'consultant_name',
             'driller_name',
-            'driller_responsible',
+            'person_responsible',
+            'company_of_person_responsible',
             'legal_lot',
             'legal_plan',
             'legal_district_lot',
