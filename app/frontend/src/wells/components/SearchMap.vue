@@ -5,9 +5,7 @@
 <script>
 import L from 'leaflet'
 import { tiledMapLayer } from 'esri-leaflet'
-import 'leaflet.markercluster/dist/MarkerCluster.css'
-import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
-import 'leaflet.markercluster/dist/leaflet.markercluster.js'
+import debounce from 'lodash.debounce'
 
 // Extend control, making a locate
 L.Control.Locate = L.Control.extend({
@@ -47,7 +45,8 @@ export default {
   data () {
     return {
       map: null,
-      cluster: null
+      cluster: null,
+      markerGroup: null
     }
   },
   created () {
@@ -62,6 +61,12 @@ export default {
   watch: {
     locations () {
       this.createMarkers()
+    },
+    latitude () {
+      this.map.setView([this.latitude ? this.latitude : 54.5, this.getLongitude() ? this.getLongitude() : -126.5])
+    },
+    longitude () {
+      this.map.setView([this.latitude ? this.latitude : 54.5, this.getLongitude() ? this.getLongitude() : -126.5])
     }
   },
   methods: {
@@ -77,7 +82,9 @@ export default {
     },
     initMap () {
       // Create map, with default centered and zoomed to show entire BC.
-      this.map = L.map('map').setView([this.latitude ? this.latitude : 54.5, this.getLongitude() ? this.getLongitude() : -126.5], 5)
+      this.map = L.map('map', {
+        preferCanvas: true
+      }).setView([this.latitude ? this.latitude : 54.5, this.getLongitude() ? this.getLongitude() : -126.5], 5)
       L.control.scale().addTo(this.map)
       // Add map layers.
       tiledMapLayer({url: 'https://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer'}).addTo(this.map)
@@ -96,23 +103,41 @@ export default {
       this.map.on('locationfound', (ev) => {
         this.$emit('coordinate', ev.latlng)
       })
+
+      const debouncedEmitMoved = debounce(() => {
+        this.$emit('moved', true)
+      }, 500)
+
+      this.map.on('moveend', debouncedEmitMoved)
+      this.map.on('zoomend', debouncedEmitMoved)
+
       this.map.setMaxZoom(17)
     },
     createMarkers () {
       // clear markers
-
-      if (!this.cluster) {
-        this.cluster = L.markerClusterGroup({ chunkedLoading: true })
-        this.map.addLayer(this.cluster)
+      if (this.markerGroup) {
+        this.map.removeLayer(this.markerGroup)
       }
 
-      this.cluster.clearLayers()
-      const markers = this.locations.filter((item) => {
+      // create a new marker group
+      this.markerGroup = L.layerGroup()
+      this.markerGroup.addTo(this.map)
+
+      // filter locations for coordinates (coordinate either present or not),
+      // and then add them to the new marker group
+      this.locations.filter((item) => {
         return item[0] && item[1]
       }).map((item) => {
-        return L.marker(L.latLng(item[0], item[1]))
+        return L.circleMarker(L.latLng(item[0], item[1]), {
+          radius: 4, // The radius of the circleMarker
+          color: '#000', // The color of the circleMarker
+          weight: 1,
+          fillColor: '#0162fe', // The fill color of the circleMarker
+          fillOpacity: 1.0 // How transparent the circleMarker's fill is
+        }).bindPopup(`<a href="/gwells/well/${item[2]}">${item[2]}</a>`)
+      }).forEach((marker) => {
+        marker.addTo(this.markerGroup)
       })
-      this.cluster.addLayers(markers)
     },
     setMarkerPopup (latitude, longitude) {
       this.marker.bindPopup('Latitude: ' + latitude + ', Longitude: ' + longitude)

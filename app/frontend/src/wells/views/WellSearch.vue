@@ -95,6 +95,7 @@
             :locations="locations"
             v-on:coordinate="handleMapCoordinate"
             ref="searchMap"
+            @moved="locationSearch"
             />
       </b-col>
     </b-row>
@@ -186,17 +187,17 @@ export default {
         console.log('bounds', sw, ne)
         const boundBox = {
 
-          south: sw.lat,
-          west: sw.lng,
-          north: ne.lat,
-          east: ne.lng
+          sw_lat: sw.lat,
+          sw_long: sw.lng,
+          ne_lat: ne.lat,
+          ne_long: ne.lng
 
         }
         params = Object.assign(params, boundBox)
       }
       ApiService.query('wells/locations', params).then((response) => {
         this.locations = response.data.map((well) => {
-          return [well.latitude, well.longitude]
+          return [well.latitude, well.longitude, well.well_tag_number]
         })
       })
     },
@@ -211,13 +212,19 @@ export default {
       }
     },
     handleMapCoordinate (latln) {
-      this.latitude = latln.lat
-      this.longitude = latln.lng
+      this.latitude = null
+      this.longitude = null
+      setTimeout(() => {
+        this.latitude = latln.lat
+        this.longitude = latln.lng
+      }, 0)
     }
   },
   created () {
     this.searchParamsReset()
-    this.locationSearch()
+    setTimeout(() => {
+      this.locationSearch()
+    }, 0)
   }
 }
 </script>

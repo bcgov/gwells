@@ -60,6 +60,13 @@ class WellSearchFilter(restfilters.FilterSet):
     legal_lot = restfilters.CharFilter()
 
 
+class WellLocationFilter(WellSearchFilter, restfilters.FilterSet):
+    ne_lat = restfilters.NumberFilter(field_name='latitude', lookup_expr='lte')
+    ne_long = restfilters.NumberFilter(field_name='longitude', lookup_expr='lte')
+    sw_lat = restfilters.NumberFilter(field_name='latitude', lookup_expr='gte')
+    sw_long = restfilters.NumberFilter(field_name='longitude', lookup_expr='gte')
+
+
 class WellDetailView(DetailView):
     model = Well
     context_object_name = 'well'
@@ -242,5 +249,14 @@ class WellLocationListAPIView(ListAPIView):
     filter_backends = (restfilters.DjangoFilterBackend,
                        filters.SearchFilter, filters.OrderingFilter)
     ordering = ('well_tag_number',)
-    filterset_class = WellSearchFilter
+    filterset_class = WellLocationFilter
     pagination_class = None
+
+    def get(self, request):
+        """ cancels request if too many wells are found"""
+
+        count = WellLocationFilter(request.GET, queryset=Well.objects.all()).qs.count()
+        # return an empty response if there are too many wells to display
+        if count > 2000:
+            return Response([])
+        return super().get(request)
