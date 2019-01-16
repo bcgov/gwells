@@ -95,7 +95,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <b-form-group
               aria-describedby="companyOfPersonResponsibleInvalidFeedback"
               :state="false">
+<<<<<<< HEAD
             <label>Company of person Responsible for Drilling</label>
+=======
+            <label>Company of person Responsible for Drilling <span class="font-weight-bold">*displays a maximum of {{MAX_RESULTS}} results</span></label>
+>>>>>>> - Added ordering to wells/tags/ search.
             <v-select
               :disabled="companies === null"
               id="companyOfPersonResponsibleSelect"
@@ -110,9 +114,12 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   Search by company name
               </template>
             </v-select>
+<<<<<<< HEAD
             <small id="companyOfPersonResponsibleSelectHint" class="form-text text-muted">
               *displays a maximum of {{MAX_RESULTS}} results
             </small>
+=======
+>>>>>>> - Added ordering to wells/tags/ search.
             <b-form-text id="companyOfPersonResponsibleInvalidFeedback" v-if="errors.person_responsible">
               <div v-for="(error, index) in errors.driller_company_responsible" :key="`companyOfPersonResponsible error ${index}`" class="text-danger">
                 {{ error }}
@@ -252,7 +259,11 @@ export default {
       this.drillerNameInput = (this.personResponsible && this.drillerSameAsPersonResponsible) ? this.personResponsible.name : ''
     }
   },
+<<<<<<< HEAD
   created () {
+=======
+  beforeCreate () {
+>>>>>>> - Added ordering to wells/tags/ search.
     ApiService.query(`drillers/names/`).then((response) => {
       this.persons = response.data
     })
