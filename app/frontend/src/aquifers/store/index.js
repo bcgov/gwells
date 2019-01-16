@@ -17,9 +17,10 @@ import Vuex from 'vuex'
 import auth from '@/common/store/auth.js'
 import config from '@/common/store/config.js'
 import aquiferCodes from './codes.js'
+import aquiferState from './aquifers.js'
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
-  modules: { auth, aquiferCodes, config }
+  modules: { auth, aquiferCodes, aquiferState, config }
 })

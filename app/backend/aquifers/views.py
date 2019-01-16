@@ -224,11 +224,12 @@ class PreSignedDocumentKey(APIView):
     permission_classes = (HasAquiferEditRole,)
 
     @swagger_auto_schema(auto_schema=None)
-    def get(self, request):
+    def get(self, request, aquifer_id):
         client = MinioClient(
             request=request, disable_private=True)
 
         object_name = request.GET.get("filename")
-        url = client.get_presigned_put_url(object_name)
+        filename = "AQ_%s_%s" % (aquifer_id, object_name)
+        url = client.get_presigned_put_url(filename)
 
-        return JsonResponse({"url": url})
+        return JsonResponse({"object_name": object_name, "url": url})

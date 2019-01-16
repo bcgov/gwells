@@ -15,6 +15,9 @@
 <template>
   <b-card no-body class="p-3 mb-4">
     <api-error v-if="error" :error="error"/>
+    <b-alert show v-if="files_uploading">File Upload In Progress...</b-alert>
+    <b-alert show v-if="!files_uploading && file_upload_error" variant="warning" >{{file_upload_error}}</b-alert>
+    <b-alert show v-if="!files_uploading && file_upload_success" variant="success" >Successfully uploaded all files</b-alert>
     <b-alert variant="success" :show="showSaveSuccess" id="aquifer-success-alert">Record successfully updated.</b-alert>
 
     <b-container>
@@ -104,7 +107,7 @@ import APIErrorMessage from '@/common/components/APIErrorMessage'
 import AquiferForm from './Form'
 import Documents from './Documents.vue'
 import ChangeHistory from '@/common/components/ChangeHistory.vue'
-import { mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapState } from 'vuex'
 
 export default {
   components: {
@@ -130,17 +133,30 @@ export default {
     id () { return this.$route.params.id },
     editMode () { return this.edit },
     viewMode () { return !this.edit },
-    ...mapGetters(['userRoles'])
+    ...mapGetters(['userRoles']),
+    ...mapState('aquiferState', [
+      'aquifer_files',
+      'files_uploading',
+      'file_upload_error',
+      'file_upload_success'
+    ])
   },
   watch: {
     id () { this.fetch() }
   },
   methods: {
+    ...mapActions('aquiferState', [
+      'uploadFiles'
+    ]),
     handleSaveSuccess () {
       this.fetch()
       this.navigateToView()
       this.$refs.aquiferHistory.update()
       this.showSaveSuccess = true
+
+      if (this.aquifer_files.length > 0) {
+        this.uploadFiles(this.id)
+      }
     },
     handlePatchError (error) {
       if (error.response) {

@@ -18,6 +18,7 @@ import Vuex from 'vuex'
 import axios from 'axios'
 import auth from '@/common/store/auth.js'
 import aquiferCodes from '@/aquifers/store/codes'
+import aquiferState from '@/aquifers/store/aquifers'
 import VueRouter from 'vue-router'
 
 jest.mock('axios')
@@ -45,7 +46,7 @@ describe('View Component', () => {
     localVue,
     router: new VueRouter(),
     store: new Vuex.Store({
-      modules: { auth, aquiferCodes }
+      modules: { auth, aquiferCodes, aquiferState }
     }),
     stubs: ['aquifer-documents'],
     ...options
