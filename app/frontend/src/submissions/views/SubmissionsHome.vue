@@ -271,7 +271,7 @@ export default {
         this.stripBlankStrings(data)
       }
 
-      const sets = ['linerperforation_set', 'lithologydescription_set', 'productiondata_set', 'screen_set', 'casing_set', 'decommission_description_set']
+      const sets = ['linerperforation_set', 'lithologydescription_set', 'screen_set', 'casing_set', 'decommission_description_set']
       sets.forEach((key) => {
         if (key in data) {
           data[key] = this.filterBlankRows(data[key])
@@ -389,7 +389,16 @@ export default {
         development_method: '',
         development_hours: '',
         development_notes: '',
-        productiondata_set: [],
+        yield_estimation_method: '',
+        yield_estimation_rate: '',
+        yield_estimation_duration: '',
+        well_yield_unit: '',
+        static_level_before_test: '',
+        drawdown: '',
+        hydro_fracturing_performed: '',
+        hydro_fracturing_yield_increase: '',
+        recommended_pump_depth: '',
+        recommended_pump_rate: '',
         filter_pack_from: '',
         filter_pack_to: '',
         filter_pack_thickness: '',

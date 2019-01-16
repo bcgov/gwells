@@ -2555,7 +2555,7 @@
 											"})",
 											"",
 											"pm.test(\"Expect the well_yield_unit to default to USGPM\", function() {",
-											"    pm.expect(jsonData.yield_estimation_rate).to.equal(\"USGPM\")",
+											"    pm.expect(jsonData.well_yield_unit).to.equal(\"USGPM\")",
 											"})",
 											"",
 											"pm.test(\"Expect production data - drawdown to be updated\", function() {",

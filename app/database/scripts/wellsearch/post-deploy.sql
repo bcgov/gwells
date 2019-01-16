@@ -236,10 +236,6 @@ COMMENT ON COLUMN perforation.create_date IS 'Date and time (UTC) when the physi
 COMMENT ON COLUMN perforation.create_user IS 'The user who created this record in the database.';
 COMMENT ON COLUMN perforation.update_date IS 'Date and time (UTC) when the physical record was updated in the database.  It will be the same as the create_date until the record is first updated after creation.';
 COMMENT ON COLUMN perforation.update_user IS 'The user who last updated this record in the database.';
-COMMENT ON COLUMN production_data.create_date IS 'Date and time (UTC) when the physical record was created in the database.';
-COMMENT ON COLUMN production_data.create_user IS 'The user who created this record in the database.';
-COMMENT ON COLUMN production_data.update_date IS 'Date and time (UTC) when the physical record was updated in the database.  It will be the same as the create_date until the record is first updated after creation.';
-COMMENT ON COLUMN production_data.update_user IS 'The user who last updated this record in the database.';
 COMMENT ON COLUMN province_state_code.create_date IS 'Date and time (UTC) when the physical record was created in the database.';
 COMMENT ON COLUMN province_state_code.create_user IS 'The user who created this record in the database.';
 COMMENT ON COLUMN province_state_code.display_order IS 'The order in which the codes may display on screen.';

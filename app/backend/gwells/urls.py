@@ -18,9 +18,7 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.views.generic import TemplateView
 
-from gwells.views import SurveyListView, SearchView, RegistryView,\
-    ActivitySubmissionDetailView, HealthView, ActivitySubmissionWizardView, ActivitySubmissionListView,\
-    FORMS
+from gwells.views import SurveyListView, SearchView, RegistryView, HealthView
 from gwells.views.admin import *
 from gwells.views import api
 from gwells.settings.base import get_env_variable
@@ -54,9 +52,6 @@ urlpatterns = [
     #     views.DetailView.as_view(), name='detail'),
     url(r'^' + app_root_slash + 'registry-legacy$',
         RegistryView.as_view(), name='registry-legacy'),
-    url(r'^' + app_root_slash + 'submission/(?P<pk>[0-9]+)$',
-        ActivitySubmissionDetailView.as_view(),
-        name='activity_submission_detail'),
     url(r'^' + app_root_slash + 'health$', HealthView.health, name='health'),
     url(r'^' + app_root_slash + 'groundwater-information',
         TemplateView.as_view(
@@ -90,12 +85,6 @@ urlpatterns = [
 if settings.ENABLE_DATA_ENTRY:
     urlpatterns = [
         url(r'^' + app_root_slash, include('submissions.urls')),
-        url(r'^' + app_root_slash + 'submission/create$',
-            ActivitySubmissionWizardView.as_view(FORMS),
-            name='activity_submission_create'),
-        url(r'^' + app_root_slash + 'submission/$',
-            ActivitySubmissionListView.as_view(),
-            name='activity_submission_list'),
     ] + urlpatterns
 
 if settings.DEBUG:
