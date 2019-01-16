@@ -65,8 +65,12 @@ class Command(BaseCommand):
             cells = []
             # Write the headings
             for index, field in enumerate(cursor.description):
-                values.append(field.name)
-                cell = WriteOnlyCell(worksheet, value=field.name)
+                if isinstance(field, tuple):
+                    fieldName = field[0]
+                else:
+                    fieldName = field.name
+                values.append(fieldName)
+                cell = WriteOnlyCell(worksheet, value=fieldName)
                 cell.font = Font(bold=True)
                 cells.append(cell)
             columns = len(values)
