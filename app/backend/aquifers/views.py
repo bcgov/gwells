@@ -27,6 +27,7 @@ from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveUpda
 from reversion.views import RevisionMixin
 
 from gwells.documents import MinioClient
+from gwells.settings.base import get_env_variable
 
 from aquifers import models
 from aquifers import serializers
@@ -230,6 +231,6 @@ class PreSignedDocumentKey(APIView):
 
         object_name = request.GET.get("filename")
         filename = "AQ_%s_%s" % (aquifer_id, object_name)
-        url = client.get_presigned_put_url(filename)
+        url = client.get_presigned_put_url(filename, bucket_name=get_env_variable("S3_AQUIFER_BUCKET"))
 
         return JsonResponse({"object_name": object_name, "url": url})
