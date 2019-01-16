@@ -14,11 +14,18 @@ services:
       MINIO_SECRET_KEY: minio123
     command: server /data
   db:
-    image: postgres:9.6
+    # The image below, needs to point to something that supports gis.
+    # I cloned https://github.com/bcgov/openshift-postgresql-oracle_fdw
+    # and ran: docker build -t postgis . -f centos7.rh-postgresql96/Dockerfile
+    image: postgis:latest
+    # image: postgres:9.6
     environment:
-      POSTGRES_USER: gwells
-      POSTGRES_PASSWORD: test1
-      POSTGRES_DBNAME: gwells
+      # POSTGRES_USER: gwells
+      # POSTGRES_PASSWORD: test1
+      # POSTGRES_DBNAME: gwells
+      POSTGRESQL_USER: gwells
+      POSTGRESQL_PASSWORD: test1
+      POSTGRESQL_DATABASE: gwells      
     hostname: db
     volumes:
       - ./.tmp/psql-dev:/var/lib/postgresql
@@ -40,6 +47,11 @@ services:
       - ./app:/app
       - /app/frontend/node_modules/
   api:
+    # The image below, needs to have gdal installed, I used:
+    # https://github.com/Sybrand/pythonforpostgis/blob/master/usingapt/Dockerfile 
+    # and ran: docker build --tag=python36gdal .
+    # which worked fine.
+    # For now, just installing gdal-bin as part of this load
     image: python:3.6
     environment:
       DATABASE_SERVICE_NAME: postgres
@@ -73,10 +85,14 @@ services:
       S3_ROOT_BUCKET:  gwells
       S3_AQUIFER_BUCKET: aquifers
       S3_USE_SECURE: 0
+    # apt-get update -q and apt-get install -q -y gdal-bin should be part of the base image!!!!
     command: /bin/bash -c "sleep 3 &&
             set -x &&
+            apt-get update -q &&
+            apt-get install -q -y gdal-bin &&
             cd /app/backend &&
             mkdir -p .pip &&
+            pip3 install --upgrade pip &&
             pip3 install --cache-dir=.pip -r requirements.txt &&
             python3 manage.py migrate --noinput &&
             echo Loading fixtures, this may take some time... &&

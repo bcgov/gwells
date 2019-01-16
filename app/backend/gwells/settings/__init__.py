@@ -90,6 +90,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'debug_toolbar',
     'django.contrib.postgres',
+    'django.contrib.gis',
     'rest_framework',
     'corsheaders',
     'drf_yasg',
@@ -149,6 +150,9 @@ WSGI_APPLICATION = 'wsgi.application'
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
+# GeoDjango needs to know where to find SpatiaLite
+# https://docs.djangoproject.com/en/2.1/ref/contrib/gis/install/spatialite/
+SPATIALITE_LIBRARY_PATH = get_env_variable('SPATIALITE_LIBRARY_PATH')
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
