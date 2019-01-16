@@ -25,7 +25,8 @@ class ExportTest(TestCase):
     @patch('wells.management.commands.export.open')
     @patch('wells.management.commands.export.Minio')
     @patch('wells.management.commands.export.os')
-    def test_export_no_exceptions(self, fake_minio, fake_os, fake_open):
+    @patch('wells.management.commands.export.zipfile')
+    def test_export_no_exceptions(self, fake_minio, fake_os, fake_open, fake_zipfile):
         # This is a very simple test, that just checks to see that the export can be run without any
         # exceptions. This should catch most of the situations that could cause an export to fail.
         out = StringIO()
