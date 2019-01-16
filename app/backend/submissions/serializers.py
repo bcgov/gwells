@@ -23,8 +23,7 @@ import wells.stack
 
 from gwells.models.lithology import (
     LithologyColourCode, LithologyHardnessCode,
-    LithologyMaterialCode, BedrockMaterialCode,
-    LithologyMoistureCode, SurficialMaterialCode)
+    LithologyMaterialCode, LithologyMoistureCode)
 
 from wells.models import Well, ActivitySubmission, WellActivityCode
 from wells.serializers import (

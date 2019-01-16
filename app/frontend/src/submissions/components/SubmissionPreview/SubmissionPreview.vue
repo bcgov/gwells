@@ -181,13 +181,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
           :fields="[
             'from',
             'to',
-            'visual_description',
+            'description',
             'colour',
             'hardness',
             'moisture',
             'water_bearing_estimated_flow',
           ]">
-          <template slot="visual_description" slot-scope="data">{{data.item.lithology_raw_data}}</template>
+          <template slot="description" slot-scope="data">{{data.item.lithology_raw_data}}</template>
           <template slot="from" slot-scope="data">{{data.item.lithology_from}}</template>
           <template slot="to" slot-scope="data">{{data.item.lithology_to}}</template>
           <template slot="colour" slot-scope="data">{{codeToDescription('lithology_colours', data.item.lithology_colour) }}</template>
