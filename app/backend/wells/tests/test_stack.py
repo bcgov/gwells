@@ -191,7 +191,7 @@ class StackTest(TestCase):
             owner_full_name='Bob',
             work_start_date=date(2018, 1, 1),
             work_end_date=date(2018, 2, 1),
-            driller_responsible=self.driller,
+            person_responsible=self.driller,
             owner_province_state=self.province,
             well_activity_type=WellActivityCode.types.construction(),
             )
@@ -207,7 +207,7 @@ class StackTest(TestCase):
             owner_full_name=owner_full_name,
             work_start_date=date(2018, 1, 1),
             work_end_date=date(2018, 2, 1),
-            driller_responsible=self.driller,
+            person_responsible=self.driller,
             owner_province_state=self.province,
             well_activity_type=WellActivityCode.types.construction(),
             )
@@ -224,7 +224,7 @@ class StackTest(TestCase):
             owner_full_name=owner_full_name,
             work_start_date=date(2018, 1, 1),
             work_end_date=date(2018, 2, 1),
-            driller_responsible=self.driller,
+            person_responsible=self.driller,
             owner_province_state=self.province,
             well_activity_type=WellActivityCode.types.construction(),
             )
@@ -235,7 +235,7 @@ class StackTest(TestCase):
             owner_full_name=new_owner_full_name,
             work_start_date=date(2018, 2, 1),
             work_end_date=date(2018, 3, 1),
-            driller_responsible=self.driller,
+            person_responsible=self.driller,
             owner_province_state=self.province,
             well_activity_type=WellActivityCode.types.alteration(),
             well=well
@@ -264,7 +264,7 @@ class StackTest(TestCase):
             owner_full_name=new_full_name,
             work_start_date=date(2018, 1, 1),
             work_end_date=date(2018, 2, 1),
-            driller_responsible=self.driller,
+            person_responsible=self.driller,
             owner_province_state=self.province,
             well_activity_type=WellActivityCode.types.alteration(),
             well=well
@@ -314,7 +314,7 @@ class StackTest(TestCase):
             owner_full_name=new_full_name,
             work_start_date=date(2018, 1, 1),
             work_end_date=date(2018, 2, 1),
-            driller_responsible=self.driller,
+            person_responsible=self.driller,
             owner_province_state=self.province,
             well_activity_type=WellActivityCode.types.construction(),
             well=well
@@ -343,7 +343,7 @@ class StackTest(TestCase):
             owner_full_name=new_full_name,
             work_start_date=date(2018, 1, 1),
             work_end_date=date(2018, 2, 1),
-            driller_responsible=self.driller,
+            person_responsible=self.driller,
             owner_province_state=self.province,
             well_activity_type=WellActivityCode.types.decommission(),
             well=well
@@ -419,7 +419,7 @@ class StackTest(TestCase):
             owner_full_name=original_full_name,
             work_start_date=date(2018, 1, 1),
             work_end_date=date(2018, 2, 1),
-            driller_responsible=self.driller,
+            person_responsible=self.driller,
             owner_province_state=self.province,
             well_activity_type=WellActivityCode.types.construction()
             )

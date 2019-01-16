@@ -15,8 +15,8 @@ import auth from '@/common/store/auth.js'
 import config from '@/common/store/config.js'
 import ApiService from '@/common/services/ApiService.js'
 
-import { FETCH_CODES } from './actions.types.js'
-import { SET_CODES, SET_ERROR } from './mutations.types.js'
+import { FETCH_CODES, FETCH_WELLS } from './actions.types.js'
+import { SET_CODES, SET_ERROR, SET_WELLS } from './mutations.types.js'
 
 Vue.use(Vuex)
 
@@ -27,7 +27,8 @@ export const store = new Vuex.Store({
   },
   state: {
     error: null,
-    codes: null
+    codes: null,
+    wells: null
   },
   mutations: {
     [SET_ERROR] (state, payload) {
@@ -35,6 +36,9 @@ export const store = new Vuex.Store({
     },
     [SET_CODES] (state, payload) {
       state.codes = payload
+    },
+    [SET_WELLS] (state, payload) {
+      state.wells = payload
     }
   },
   actions: {
@@ -47,6 +51,16 @@ export const store = new Vuex.Store({
           commit(SET_ERROR, e.response)
         })
       }
+    },
+    [FETCH_WELLS] ({ commit }) {
+      if (!this.state.wells) {
+        // fetch the wells once
+        ApiService.query('wells/tags/?ordering=well_tag_number').then((res) => {
+          commit(SET_WELLS, res.data)
+        }).catch((e) => {
+          commit(SET_ERROR, e.response)
+        })
+      }
     }
   },
   getters: {
@@ -54,6 +68,9 @@ export const store = new Vuex.Store({
       return state.codes || {
         land_district_codes: {}
       }
+    },
+    wells (state) {
+      return state.wells
     },
     globalError (state) {
       return state.error

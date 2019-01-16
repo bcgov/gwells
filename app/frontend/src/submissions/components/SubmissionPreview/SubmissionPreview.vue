@@ -48,8 +48,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <fieldset class="my-3 detail-section">
       <legend>Person Responsible for Work</legend>
       <b-row>
-        <b-col cols="12" lg="4"><span class="font-weight-bold">Person Responsible for Work:</span> {{ form.driller_responsible ? form.driller_responsible['name'] : '' }}</b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Person Responsible for Work:</span> {{ form.person_responsible ? form.person_responsible['name'] : '' }}</b-col>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Person Who Performed Work:</span> {{ form.driller_name }}</b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Company of Person Responsible for Work:</span> {{ form.company_of_person_responsible ? form.company_of_person_responsible['org_verbose_name'] : '' }}</b-col>
       </b-row>
       <b-row>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Consultant Name:</span> {{ form.consultant_name }}</b-col>
