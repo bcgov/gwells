@@ -21,6 +21,7 @@ import { store } from './store'
 import '@/common/assets/css/bootstrap-theme.min.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import vSelect from 'vue-select'
+import VueMoment from 'vue-moment'
 import FormInput from '@/common/components/FormInput.vue'
 import {FETCH_CONFIG} from '@/common/store/config.js'
 
@@ -29,6 +30,8 @@ import ApiService from '@/common/services/ApiService.js'
 
 Vue.use(Vuex)
 Vue.use(BootstrapVue)
+Vue.use(VueMoment)
+
 Vue.component('v-select', vSelect)
 Vue.component('form-input', FormInput)
 

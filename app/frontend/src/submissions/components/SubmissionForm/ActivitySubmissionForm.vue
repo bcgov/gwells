@@ -73,6 +73,12 @@ Licensed under the Apache License, Version 2.0 (the "License");
         :wellActivityType.sync="activityTypeInput"
       />
 
+    <submission-history
+      v-if="showSection('submissionHistory')"
+      id="submissionHistory"
+      :isStaffEdit="isStaffEdit"
+    ></submission-history>
+
     <!-- Type of well -->
     <well-type class="my-5"
       v-if="showSection('wellType')"
@@ -481,6 +487,7 @@ import Comments from './Comments.vue'
 import ClosureDescription from './ClosureDescription.vue'
 import DecommissionInformation from './DecommissionInformation.vue'
 import ObservationWellInfo from './ObservationWellInfo.vue'
+import SubmissionHistory from './SubmissionHistory.vue'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 export default {
   name: 'SubmissionsForm',
@@ -547,7 +554,8 @@ export default {
     Comments,
     ClosureDescription,
     DecommissionInformation,
-    ObservationWellInfo
+    ObservationWellInfo,
+    SubmissionHistory
   },
   data () {
     return {
@@ -584,7 +592,8 @@ export default {
         'decommissionInformation': 'Well decommission information',
         'comments': 'Comments',
         'personResponsible': 'Person responsible for work',
-        'observationWellInfo': 'Observation well information'
+        'observationWellInfo': 'Observation well information',
+        'submissionHistory': 'Activity report history'
       }
     }
   },

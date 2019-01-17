@@ -34,7 +34,10 @@ from gwells.roles import WELLS_VIEWER_ROLE, WELLS_EDIT_ROLE
 from gwells.pagination import APILimitOffsetPagination
 from gwells.settings.base import get_env_variable
 
-from wells.models import Well
+from submissions.serializers import WellSubmissionListSerializer
+from submissions.models import WellActivityCode
+
+from wells.models import Well, ActivitySubmission
 from wells.serializers import (
     WellListSerializer,
     WellTagSearchSerializer,
@@ -202,3 +205,18 @@ class WellTagSearchAPIView(ListAPIView):
             return Response([])
         else:
             return super().get(request)
+
+
+class WellSubmissionsListAPIView(ListAPIView):
+    """ lists submissions for a well """
+
+    permission_classes = (WellsEditPermissions,)
+    serializer_class = WellSubmissionListSerializer
+
+    def get_queryset(self):
+        well = self.kwargs.get('well')
+        records = ActivitySubmission.objects.filter(well=well).select_related('well_activity_type').order_by('create_date')
+        return sorted(records, key=lambda record:
+                      (record.well_activity_type.code != WellActivityCode.types.legacy().code,
+                          record.well_activity_type.code != WellActivityCode.types.construction().code,
+                          record.create_date), reverse=True)

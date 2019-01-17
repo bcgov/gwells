@@ -195,6 +195,7 @@ export default {
           'comments'
         ],
         STAFF_EDIT: [
+          'submissionHistory',
           'wellType',
           'wellOwner',
           'personResponsible',
