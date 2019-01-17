@@ -119,6 +119,18 @@
     </b-pagination>
       </b-col>
     </b-row>
+    <b-row>
+      <b-col>
+        <p>
+          Can’t find the well you are looking for? Try your search again using a different set of criteria. If you still need more assistance, Contact <a href="https://portal.nrs.gov.bc.ca/web/client/contact">FrontCounterBC</a>.
+        </p>
+        <p>
+          <a href="http://www.frontcounterbc.gov.bc.ca/Start/surface-water/" onclick="handleOutboundLinkClicks('www.frontcounterbc.gov.bc.ca/Start/surface-water/')">
+              Learn about and submit water license applications
+          </a>  with FrontCounterBC.
+        </p>
+      </b-col>
+    </b-row>
   </b-card>
 </template>
 
@@ -218,6 +230,15 @@ export default {
         this.latitude = latln.lat
         this.longitude = latln.lng
       }, 0)
+    },
+    handleOutboundLinkClicks (link) {
+      if (window.ga) {
+        window.ga('send', 'event', {
+          eventCategory: 'Outbound Link',
+          eventAction: 'click',
+          eventLabel: link
+        })
+      }
     }
   },
   created () {
