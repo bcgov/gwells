@@ -31,12 +31,12 @@ Licensed under the Apache License, Version 2.0 (the "License");
         :value="true"
         :unchecked-value="false"
       >
-      <p>Supervisor and Operator are the same</p>
+      <p>Person Responsible is the same as the Person Who Completed the Work</p>
       </b-form-checkbox>
       <b-row>
         <b-col cols="12" md="12" lg="6">
           <b-form-group
-              label="Drill Supervisor *"
+              label="Person Responsible for Work *"
               aria-describedby="personResponsibleInvalidFeedback"
               :state="false"
           >
@@ -78,7 +78,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <b-col cols="12" md="12" lg="6">
           <form-input
               id="drillerName"
-              label="Drill Operator"
+              label="Person Who Completed the Work"
               type="text"
               :disabled="drillerSameAsPersonResponsible"
               v-model="drillerNameInput"
