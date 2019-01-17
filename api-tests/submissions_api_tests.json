@@ -1181,6 +1181,201 @@
 								"description": "Check if the created well matched submission"
 							},
 							"response": []
+						},
+						{
+							"name": "Construction Submission - lithology",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "af2703e6-b88c-41e0-a74f-14fdd2b1f927",
+										"exec": [
+											"var jsonData = pm.response.json();",
+											"",
+											"pm.environment.set(\"well_tag_number\", jsonData.well);",
+											"",
+											"pm.test(\"Status code is 201\", function () {",
+											"   pm.expect(pm.response.code).to.equal(201);",
+											"})",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"well_activity_type\": \"CON\",\n\t\"owner_full_name\": \"Bob\",\n\t\"owner_mailing_address\": \"123 Place\",\n\t\"owner_city\": \"Victoria\",\n\t\"owner_province_state\": \"BC\",\n\t\"lithologydescription_set\": [\n\t\t{\n\t\t\t\"lithology_from\": 0,\n\t\t\t\"lithology_to\": 10,\n\t\t\t\"lithology_raw_data\": \"SAND, silty, some gravel\",\n\t\t\t\"lithology_hardness\": \"DENSE\",\n\t\t\t\"lithology_colour\": 13,\n\t\t\t\"lithology_moisture\": \"WET\",\n\t\t\t\"water_bearing_estimated_flow\": 2.1\n\t\t}\n\t]\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/submissions/construction?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"submissions",
+										"construction"
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json"
+										}
+									]
+								},
+								"description": "Request a list of wells"
+							},
+							"response": []
+						},
+						{
+							"name": "Construction Submission - lithology empty",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "af2703e6-b88c-41e0-a74f-14fdd2b1f927",
+										"exec": [
+											"var jsonData = pm.response.json();",
+											"",
+											"pm.test(\"Status code is 201\", function () {",
+											"   pm.expect(pm.response.code).to.equal(201);",
+											"})",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"well_activity_type\": \"CON\",\n\t\"owner_full_name\": \"Bob\",\n\t\"owner_mailing_address\": \"123 Place\",\n\t\"owner_city\": \"Victoria\",\n\t\"owner_province_state\": \"BC\",\n\t\"lithologydescription_set\": [\n\t\t{}\n\t]\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/submissions/construction?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"submissions",
+										"construction"
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json"
+										}
+									]
+								},
+								"description": "Request a list of wells"
+							},
+							"response": []
+						},
+						{
+							"name": "Check submission - created lithology",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "77ba3bf1-a4ad-476e-bd9a-c67bf0e7a34c",
+										"exec": [
+											"var jsonData = pm.response.json();",
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"   pm.expect(pm.response.code).to.equal(200);",
+											"})",
+											"",
+											"",
+											"pm.test(\"Expect lithology to have one value\", function() {",
+											"    pm.expect(jsonData.lithologydescription_set.length).to.equal(1);",
+											"})",
+											"pm.test(\"Lithology entry: expect lithology_from to be 0.00\", function() {",
+											"    pm.expect(jsonData.lithologydescription_set[0].lithology_from).to.equal('0.00');",
+											"})",
+											"pm.test(\"Lithology entry: expect lithology_to to be 10.00\", function() {",
+											"    pm.expect(jsonData.lithologydescription_set[0].lithology_to).to.equal('10.00');",
+											"})",
+											"",
+											"pm.test(\"Lithology entry: expect lithology_raw_data to be equal to first submission\", function() {",
+											"    pm.expect(jsonData.lithologydescription_set[0].lithology_raw_data).to.equal('SAND, silty, some gravel');",
+											"})",
+											"pm.test(\"Lithology entry: expect color to be a vibrant shade of 13\", function() {",
+											"    pm.expect(jsonData.lithologydescription_set[0].lithology_colour).to.equal('13');",
+											"})",
+											"pm.test(\"Lithology entry: expect hardness to be dense\", function() {",
+											"    pm.expect(jsonData.lithologydescription_set[0].lithology_hardness).to.equal('DENSE');",
+											"})",
+											"pm.test(\"Lithology entry: expect moisture to be wet\", function() {",
+											"    pm.expect(jsonData.lithologydescription_set[0].lithology_moisture).to.equal('WET');",
+											"})",
+											"pm.test(\"Lithology entry: expect water bearing flow to be 2.1\", function() {",
+											"    pm.expect(jsonData.lithologydescription_set[0].water_bearing_estimated_flow).to.equal('2.1000');",
+											"})",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/x-www-form-urlencoded"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"wells",
+										"{{well_tag_number}}"
+									]
+								},
+								"description": "Check if the created well matched submission"
+							},
+							"response": []
 						}
 					],
 					"_postman_isSubFolder": true

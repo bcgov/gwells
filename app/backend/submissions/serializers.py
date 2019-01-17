@@ -20,12 +20,18 @@ from rest_framework import serializers
 from gwells.models import ProvinceStateCode
 from gwells.serializers import AuditModelSerializer
 import wells.stack
+
+from gwells.models.lithology import (
+    LithologyColourCode, LithologyHardnessCode,
+    LithologyMaterialCode, LithologyMoistureCode)
+
 from wells.models import Well, ActivitySubmission, WellActivityCode
 from wells.serializers import (
     CasingSerializer,
     DecommissionDescriptionSerializer,
     ScreenSerializer,
-    LinerPerforationSerializer
+    LinerPerforationSerializer,
+    LithologyDescriptionSerializer,
 )
 from wells.models import (
     ActivitySubmission,
@@ -43,6 +49,7 @@ from wells.models import (
     LandDistrictCode,
     LinerMaterialCode,
     LinerPerforation,
+    LithologyDescription,
     Screen,
     ScreenAssemblyTypeCode,
     ScreenBottomCode,
@@ -77,6 +84,7 @@ class WellSubmissionListSerializer(serializers.ModelSerializer):
     screen_set = ScreenSerializer(many=True, required=False)
     linerperforation_set = LinerPerforationSerializer(
         many=True, required=False)
+    lithologydescription_set = LithologyDescriptionSerializer(many=True, required=False)
 
     class Meta:
         fields = '__all__'
@@ -136,6 +144,7 @@ class WellSubmissionStackerSerializer(WellSubmissionSerializerBase):
         many=True, required=False)
     decommission_description_set = DecommissionDescriptionSerializer(
         many=True, required=False)
+    lithologydescription_set = LithologyDescriptionSerializer(many=True, required=False)
 
     def get_foreign_key_sets(self):
         return {
@@ -143,6 +152,7 @@ class WellSubmissionStackerSerializer(WellSubmissionSerializerBase):
             'screen_set': Screen,
             'linerperforation_set': LinerPerforation,
             'decommission_description_set': DecommissionDescription,
+            'lithologydescription_set': LithologyDescription,
         }
 
     class Meta:
@@ -159,6 +169,7 @@ class WellSubmissionLegacySerializer(WellSubmissionSerializerBase):
         many=True, required=False)
     decommission_description_set = DecommissionDescriptionSerializer(
         many=True, required=False)
+    lithologydescription_set = LithologyDescriptionSerializer(many=True, required=False)
 
     def get_well_activity_type(self):
         return WellActivityCode.types.legacy()
@@ -169,12 +180,12 @@ class WellSubmissionLegacySerializer(WellSubmissionSerializerBase):
             'screen_set': Screen,
             'linerperforation_set': LinerPerforation,
             'decommission_description_set': DecommissionDescription,
+            'lithologydescription_set': LithologyDescription,
         }
 
     class Meta:
         model = ActivitySubmission
         extra_kwargs = {
-            'lithologydescription_set': {'required': False},
             # This field might not be present
             'create_user': {'required': False},
             # This is autopopulated during create
@@ -198,6 +209,7 @@ class WellConstructionSubmissionSerializer(WellSubmissionSerializerBase):
     screen_set = ScreenSerializer(many=True, required=False)
     linerperforation_set = LinerPerforationSerializer(
         many=True, required=False)
+    lithologydescription_set = LithologyDescriptionSerializer(many=True, required=False)
 
     coordinate_acquisition_code = serializers.PrimaryKeyRelatedField(
         queryset=CoordinateAcquisitionCode.objects.all(),
@@ -214,6 +226,7 @@ class WellConstructionSubmissionSerializer(WellSubmissionSerializerBase):
             'casing_set': Casing,
             'screen_set': Screen,
             'linerperforation_set': LinerPerforation,
+            'lithologydescription_set': LithologyDescription,
         }
 
     def get_well_activity_type(self):
@@ -249,7 +262,6 @@ class WellConstructionSubmissionSerializer(WellSubmissionSerializerBase):
                   'driller_name', 'driller_responsible', 'coordinate_acquisition_code',)
         extra_kwargs = {
             # TODO: reference appropriate serializer as above
-            'lithologydescription_set': {'required': False},
             'well_activity_type': {'required': False}
         }
 
@@ -261,12 +273,14 @@ class WellAlterationSubmissionSerializer(WellSubmissionSerializerBase):
     screen_set = ScreenSerializer(many=True, required=False)
     linerperforation_set = LinerPerforationSerializer(
         many=True, required=False)
+    lithologydescription_set = LithologyDescriptionSerializer(many=True, required=False)
 
     def get_foreign_key_sets(self):
         return {
             'casing_set': Casing,
             'screen_set': Screen,
             'linerperforation_set': LinerPerforation,
+            'lithologydescription_set': LithologyDescription,
         }
 
     def get_well_activity_type(self):
@@ -375,7 +389,6 @@ class WellAlterationSubmissionSerializer(WellSubmissionSerializerBase):
         )
         extra_kwargs = {
             # TODO: reference appropriate serializer as above
-            'lithologydescription_set': {'required': False},
             'well_activity_type': {'required': False}
         }
 
@@ -388,6 +401,7 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
     casing_set = CasingSerializer(many=True, required=False)
     screen_set = ScreenSerializer(many=True, required=False)
     decommission_description_set = DecommissionDescriptionSerializer(many=True, required=False)
+    lithologydescription_set = LithologyDescriptionSerializer(many=True, required=False)
 
     def get_well_activity_type(self):
         return WellActivityCode.types.staff_edit()
@@ -397,7 +411,8 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
             'casing_set': Casing,
             'screen_set': Screen,
             'linerperforation_set': LinerPerforation,
-            'decommission_description_set': DecommissionDescription,
+            'lithologydescription_set': LithologyDescription,
+            'decommission_description_set': DecommissionDescription
         }
 
     class Meta:
@@ -446,7 +461,7 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
             'drilling_method',
             'other_drilling_method',
             'well_orientation',
-            # 'lithologydescription_set',
+            'lithologydescription_set',
             'casing_set',
             'surface_seal_material',
             'surface_seal_depth',
@@ -796,6 +811,50 @@ class DecommissionMaterialCodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = DecommissionMaterialCode
         fields = ('code', 'description')
+
+
+class LithologyHardnessSerializer(serializers.ModelSerializer):
+    """Serializes lithology hardness options"""
+
+    class Meta:
+        model = LithologyHardnessCode
+        fields = (
+            'lithology_hardness_code',
+            'description'
+        )
+
+
+class LithologyColourSerializer(serializers.ModelSerializer):
+    """Serializes lithology colour options"""
+
+    class Meta:
+        model = LithologyColourCode
+        fields = (
+            'lithology_colour_code',
+            'description'
+        )
+
+
+class LithologyMaterialSerializer(serializers.ModelSerializer):
+    """Serializes lithology material options"""
+
+    class Meta:
+        model = LithologyMaterialCode
+        fields = (
+            'lithology_material_code',
+            'description'
+        )
+
+
+class LithologyMoistureSerializer(serializers.ModelSerializer):
+    """Serializes lithology moisture options"""
+
+    class Meta:
+        model = LithologyMoistureCode
+        fields = (
+            'lithology_moisture_code',
+            'description'
+        )
 
 
 class WellStatusCodeSerializer(serializers.ModelSerializer):

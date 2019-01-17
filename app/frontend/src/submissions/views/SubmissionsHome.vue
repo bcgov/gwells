@@ -153,6 +153,7 @@ export default {
           'method',
           'casings',
           'backfill',
+          'lithology',
           'liner',
           'screens',
           'filterPack',
@@ -172,6 +173,7 @@ export default {
           'method',
           'casings',
           'backfill',
+          'lithology',
           'liner',
           'screens',
           'filterPack',
@@ -203,6 +205,7 @@ export default {
           'method',
           'casings',
           'backfill',
+          'lithology',
           'liner',
           'screens',
           'filterPack',
@@ -286,9 +289,7 @@ export default {
       ApiService.post(PATH, data).then((response) => {
         this.formSubmitSuccess = true
         this.formSubmitSuccessWellTag = response.data.well
-        if (!this.isStaffEdit) {
-          this.resetForm()
-        }
+
         this.$emit('formSaved')
 
         if (!this.form.well_tag_number) {
@@ -572,9 +573,9 @@ export default {
   }
 }
 .input-width-small {
-  max-width: 5rem;
+  max-width: 3rem;
 }
 .input-width-medium {
-  max-width: 10rem;
+  max-width: 6rem;
 }
 </style>

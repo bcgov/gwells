@@ -23,6 +23,9 @@ from gwells.urls import app_root
 from gwells.pagination import APILimitOffsetPagination
 from wells.permissions import WellsEditPermissions
 from gwells.models import ProvinceStateCode
+from gwells.models.lithology import (
+    LithologyColourCode, LithologyHardnessCode,
+    LithologyMaterialCode, LithologyMoistureCode,)
 from gwells.serializers import ProvinceStateCodeSerializer
 from wells.models import (
     ActivitySubmission,
@@ -73,6 +76,10 @@ from submissions.serializers import (
     IntendedWaterUseCodeSerializer,
     LandDistrictSerializer,
     LinerMaterialCodeSerializer,
+    LithologyHardnessSerializer,
+    LithologyColourSerializer,
+    LithologyMaterialSerializer,
+    LithologyMoistureSerializer,
     ObservationWellStatusCodeSerializer,
     ScreenIntakeMethodSerializer,
     SurfaceSealMaterialCodeSerializer,
@@ -304,6 +311,11 @@ class SubmissionsOptions(APIView):
             instance=ObsWellStatusCode.objects.all(), many=True
         )
 
+        lithology_hardness = LithologyHardnessSerializer(instance=LithologyHardnessCode.objects.all(), many=True)
+        lithology_colours = LithologyColourSerializer(instance=LithologyColourCode.objects.all(), many=True)
+        lithology_materials = LithologyMaterialSerializer(instance=LithologyMaterialCode.objects.all(), many=True)
+        lithology_moisture = LithologyMoistureSerializer(instance=LithologyMoistureCode.objects.all(), many=True)
+
         root = urljoin('/', app_root, 'api/v1/')
         for item in activity_codes.data:
             if item['code'] not in ('LEGACY'):
@@ -337,6 +349,10 @@ class SubmissionsOptions(APIView):
         options["yield_estimation_methods"] = yield_estimation_methods.data
         options["water_quality_characteristics"] = water_quality_characteristics.data
         options["water_quality_colours"] = water_quality_colours.data
+        options["lithology_hardness_codes"] = lithology_hardness.data
+        options["lithology_colours"] = lithology_colours.data
+        options["lithology_materials"] = lithology_materials.data
+        options["lithology_moisture_codes"] = lithology_moisture.data
         options["well_status_codes"] = well_status_codes.data
         options["observation_well_status"] = observation_well_status.data
 

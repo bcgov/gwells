@@ -25,6 +25,7 @@ from wells.models import (
     CasingCode,
     DecommissionDescription,
     LinerPerforation,
+    LithologyDescription,
     Screen,
     Well,
 )
@@ -117,12 +118,28 @@ class LinerPerforationSerializer(serializers.ModelSerializer):
         )
 
 
+class LithologyDescriptionSerializer(serializers.ModelSerializer):
+    """Serializes lithology description records"""
+    class Meta:
+        model = LithologyDescription
+        fields = (
+            'lithology_from',
+            'lithology_to',
+            'lithology_raw_data',
+            'lithology_colour',
+            'lithology_hardness',
+            'lithology_moisture',
+            'water_bearing_estimated_flow',
+        )
+
+
 class WellDetailSerializer(AuditModelSerializer):
     casing_set = CasingSerializer(many=True)
     screen_set = ScreenSerializer(many=True)
     linerperforation_set = LinerPerforationSerializer(many=True)
     decommission_description_set = DecommissionDescriptionSerializer(many=True)
     driller_responsible = PersonBasicSerializer()
+    lithologydescription_set = LithologyDescriptionSerializer(many=True)
 
     # well vs. well_tag_number ; on submissions, we refer to well
     well = serializers.IntegerField(source='well_tag_number')
@@ -259,6 +276,7 @@ class WellDetailSerializer(AuditModelSerializer):
             "screen_set",
             "linerperforation_set",
             "decommission_description_set",
+            "lithologydescription_set"
         )
 
 
@@ -268,6 +286,7 @@ class WellDetailAdminSerializer(AuditModelSerializer):
     linerperforation_set = LinerPerforationSerializer(many=True)
     decommission_description_set = DecommissionDescriptionSerializer(many=True)
     driller_responsible = PersonBasicSerializer()
+    lithologydescription_set = LithologyDescriptionSerializer(many=True)
 
     # well vs. well_tag_number ; on submissions, we refer to well
     well = serializers.IntegerField(source='well_tag_number')
@@ -283,6 +302,7 @@ class WellStackerSerializer(AuditModelSerializer):
     screen_set = ScreenSerializer(many=True)
     linerperforation_set = LinerPerforationSerializer(many=True)
     decommission_description_set = DecommissionDescriptionSerializer(many=True)
+    lithologydescription_set = LithologyDescriptionSerializer(many=True)
 
     class Meta:
         model = Well
@@ -299,6 +319,7 @@ class WellStackerSerializer(AuditModelSerializer):
             'screen_set': Screen,
             'linerperforation_set': LinerPerforation,
             'decommission_description_set': DecommissionDescription,
+            'lithologydescription_set': LithologyDescription,
         }
 
         for key in FOREIGN_KEYS.keys():
