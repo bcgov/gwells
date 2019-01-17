@@ -18,25 +18,25 @@ import axios from 'axios'
 export default {
   namespaced: true,
   state: {
-    aquifer_files: [],
+    upload_files: [],
     files_uploading: false,
     file_upload_errors: [],
     file_upload_success: false
   },
   actions: {
-    uploadFiles (context, aquiferId) {
+    uploadFiles (context, documentType, recordId) {
       context.commit('setFilesUploading', true)
 
       let uploadPromises = []
 
-      context.state.aquifer_files.forEach((file) => {
+      context.state.upload_files.forEach((file) => {
         uploadPromises.push(
-          ApiService.presigned_put_url('aquifers', aquiferId, file.name)
+          ApiService.presigned_put_url(documentType, recordId, file.name)
             .then((response) => {
               let url = response.data.url
               let objectName = response.data.object_name
               let filename = response.data.filename
-              let file = context.state.aquifer_files.filter(file => file.name === objectName)
+              let file = context.state.upload_files.filter(file => file.name === objectName)
 
               if (file.length !== 1) {
                 context.commit('addError', 'Error uploading file: ' + filename)
@@ -89,7 +89,7 @@ export default {
       state.file_upload_success = payload
     },
     setFiles (state, payload) {
-      state.aquifer_files = payload
+      state.upload_files = payload
     }
   }
 }

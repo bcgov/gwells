@@ -134,18 +134,18 @@ export default {
     editMode () { return this.edit },
     viewMode () { return !this.edit },
     ...mapGetters(['userRoles']),
-    ...mapState('aquiferState', [
-      'aquifer_files',
+    ...mapState('documentState', [
       'files_uploading',
       'file_upload_error',
-      'file_upload_success'
+      'file_upload_success',
+      'upload_files'
     ])
   },
   watch: {
     id () { this.fetch() }
   },
   methods: {
-    ...mapActions('aquiferState', [
+    ...mapActions('documentState', [
       'uploadFiles'
     ]),
     handleSaveSuccess () {
@@ -155,7 +155,7 @@ export default {
       this.showSaveSuccess = true
 
       if (this.aquifer_files.length > 0) {
-        this.uploadFiles(this.id)
+        this.uploadFiles('aquifers', this.id)
       }
     },
     handlePatchError (error) {

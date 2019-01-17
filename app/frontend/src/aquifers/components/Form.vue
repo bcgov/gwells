@@ -137,9 +137,9 @@
             v-model="files"
             multiple
             plain/>
-          <div class="mt-3" v-if="aquifer_files.length > 0">
+          <div class="mt-3" v-if="upload_files.length > 0">
             <b-list-group>
-              <b-list-group-item v-for="(f, index) in aquifer_files" :key="index">{{f.name}}</b-list-group-item>
+              <b-list-group-item v-for="(f, index) in upload_files" :key="index">{{f.name}}</b-list-group-item>
             </b-list-group>
           </div>
         </b-form-group>
@@ -295,7 +295,7 @@ export default {
     },
     files: {
       get: function () {
-        return this.aquifer_files
+        return this.upload_files
       },
       set: function (value) {
         this.setFiles(value)
@@ -310,12 +310,12 @@ export default {
       'subtype_codes',
       'vulnerability_codes'
     ]),
-    ...mapState('aquiferState', [
-      'aquifer_files'
+    ...mapState('documentState', [
+      'upload_files'
     ])
   },
   methods: {
-    ...mapMutations('aquiferState', [
+    ...mapMutations('documentState', [
       'setFiles'
     ])
   },

@@ -45,8 +45,8 @@ export default {
     'aquifer-form': AquiferForm
   },
   computed: {
-    ...mapState('aquiferState', [
-      'aquifer_files'
+    ...mapState('documentState', [
+      'upload_files'
     ])
   },
   data () {
@@ -57,7 +57,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('aquiferState', [
+    ...mapActions('documentState', [
       'uploadFiles'
     ]),
     navigateToView () {
@@ -67,7 +67,7 @@ export default {
       this.$router.push({ name: 'view', params: { id: data.aquifer_id } })
 
       if (this.aquifer_files.length > 0) {
-        this.uploadFiles(data.aquifer_id)
+        this.uploadFiles('aquifers', data.aquifer_id)
       }
     },
     handleError (error) {
