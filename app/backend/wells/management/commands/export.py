@@ -35,6 +35,7 @@ class Command(BaseCommand):
             if os.path.exists(filename):
                 os.remove(filename)
         logger.info('export complete')
+        self.stdout.write(self.style.SUCCESS('export complete'))
 
     def upload_files(self, zip_filename, spreadsheet_filename):
         minioClient = Minio(get_env_variable('S3_HOST'),
@@ -64,8 +65,12 @@ class Command(BaseCommand):
             cells = []
             # Write the headings
             for index, field in enumerate(cursor.description):
-                values.append(field.name)
-                cell = WriteOnlyCell(worksheet, value=field.name)
+                if isinstance(field, tuple):
+                    fieldName = field[0]
+                else:
+                    fieldName = field.name
+                values.append(fieldName)
+                cell = WriteOnlyCell(worksheet, value=fieldName)
                 cell.font = Font(bold=True)
                 cells.append(cell)
             columns = len(values)
