@@ -611,6 +611,15 @@
                                         }
                                     },
                                     {
+                                        "name": "S3_AQUIFER_BUCKET",
+                                        "valueFrom": {
+                                            "configMapKeyRef": {
+                                                "key": "S3_AQUIFER_BUCKET",
+                                                "name": "gwells-global-config${NAME_SUFFIX}"
+                                            }
+                                        }
+                                    },
+                                    {
                                         "name": "WEB_CONCURRENCY",
                                         "value": "4"
                                     },
