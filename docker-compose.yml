@@ -6,6 +6,7 @@ services:
     environment:
       POSTGRES_USER: gwells
       POSTGRES_PASSWORD: test1
+      POSTGRES_DBNAME: gwells
     hostname: db
     volumes:
       - ./.tmp/psql-dev:/var/lib/postgresql

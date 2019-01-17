@@ -155,6 +155,7 @@ export default {
           'method',
           'casings',
           'backfill',
+          'lithology',
           'liner',
           'screens',
           'filterPack',
@@ -174,6 +175,7 @@ export default {
           'method',
           'casings',
           'backfill',
+          'lithology',
           'liner',
           'screens',
           'filterPack',
@@ -205,6 +207,7 @@ export default {
           'method',
           'casings',
           'backfill',
+          'lithology',
           'liner',
           'screens',
           'filterPack',
@@ -212,9 +215,11 @@ export default {
           'wellYield',
           'waterQuality',
           'wellCompletion',
+          'observationWellInfo',
           'closureDescription',
           'decommissionInformation',
-          'comments'
+          'comments',
+          'aquiferData'
         ]
       }
     }
@@ -268,7 +273,7 @@ export default {
         this.stripBlankStrings(data)
       }
 
-      const sets = ['linerperforation_set', 'lithologydescription_set', 'productiondata_set', 'screen_set', 'casing_set', 'decommission_description_set']
+      const sets = ['linerperforation_set', 'lithologydescription_set', 'screen_set', 'casing_set', 'decommission_description_set']
       sets.forEach((key) => {
         if (key in data) {
           data[key] = this.filterBlankRows(data[key])
@@ -286,9 +291,7 @@ export default {
       ApiService.post(PATH, data).then((response) => {
         this.formSubmitSuccess = true
         this.formSubmitSuccessWellTag = response.data.well
-        if (!this.isStaffEdit) {
-          this.resetForm()
-        }
+
         this.$emit('formSaved')
 
         if (!this.form.well_tag_number) {
@@ -388,7 +391,16 @@ export default {
         development_method: '',
         development_hours: '',
         development_notes: '',
-        productiondata_set: [],
+        yield_estimation_method: '',
+        yield_estimation_rate: '',
+        yield_estimation_duration: '',
+        well_yield_unit: '',
+        static_level_before_test: '',
+        drawdown: '',
+        hydro_fracturing_performed: '',
+        hydro_fracturing_yield_increase: '',
+        recommended_pump_depth: '',
+        recommended_pump_rate: '',
         filter_pack_from: '',
         filter_pack_to: '',
         filter_pack_thickness: '',
@@ -398,6 +410,7 @@ export default {
         water_quality_colour: '',
         water_quality_odour: '',
         ems_id: '',
+        aquifer: '',
         total_depth_drilled: '',
         finished_well_depth: '',
         final_casing_stick_up: '',
@@ -417,6 +430,18 @@ export default {
         sealant_material: '',
         backfill_material: '',
         decommission_details: '',
+        observation_well_number: '',
+        observation_well_status: '',
+        aquifer_vulnerability_index: '',
+        storativity: '',
+        transmissivity: '',
+        hydraulic_conductivity: '',
+        specific_storage: '',
+        specific_yield: '',
+        testing_method: '',
+        testing_duration: '',
+        analytic_solution_type: '',
+        boundary_effect: '',
 
         // non-form fields that should be saved with form
         meta: {
@@ -550,9 +575,9 @@ export default {
     }
   }
   .input-width-small {
-    max-width: 5rem;
+    max-width: 3rem;
   }
   .input-width-medium {
-    max-width: 10rem;
+    max-width: 6rem;
   }
 </style>

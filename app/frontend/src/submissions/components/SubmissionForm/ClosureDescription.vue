@@ -106,7 +106,10 @@ export default {
       type: Array,
       default: () => ([])
     },
-    errors: Array,
+    errors: {
+      type: Object,
+      default: () => ({})
+    },
     fieldsLoaded: Object,
     id: {
       type: String,

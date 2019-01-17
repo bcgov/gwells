@@ -124,3 +124,19 @@ class WaterUseSerializer(serializers.ModelSerializer):
             'code',
             'description'
         )
+
+
+class AquiferSerializerBasic(serializers.ModelSerializer):
+    """Serialize a aquifer list with a simplified format"""
+
+    description = serializers.SerializerMethodField()
+
+    class Meta:
+        model = models.Aquifer
+        fields = (
+            'aquifer_id',
+            'description',
+        )
+
+    def get_description(self, obj):
+        return '{} - {}'.format(obj.aquifer_id, obj.aquifer_name)

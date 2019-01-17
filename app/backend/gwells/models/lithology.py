@@ -150,7 +150,7 @@ class LithologyMaterialCode(AuditModel):
         ordering = ['display_order']
 
     def __str__(self):
-        return 'lithology_material {} {}'.format(self.code, self.description)
+        return 'lithology_material {} {}'.format(self.lithology_material_code, self.description)
 
 
 class LithologyStructureCode(AuditModel):
