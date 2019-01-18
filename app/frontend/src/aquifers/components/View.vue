@@ -15,7 +15,7 @@
 <template>
   <b-card no-body class="p-3 mb-4">
     <api-error v-if="error" :error="error"/>
-    <b-alert variant="success" :show="showSaveSuccess">Record successfully updated</b-alert>
+    <b-alert variant="success" :show="showSaveSuccess" id="aquifer-success-alert">Record successfully updated.</b-alert>
 
     <b-container>
       <b-row v-if="loading" class="border-bottom mb-3 pb-2">
@@ -23,11 +23,11 @@
       </b-row>
 
       <b-row v-if="editMode && !loading" class="border-bottom mb-3 pb-2">
-        <b-col><h5>Aquifer {{record.aquifer_id}} Summary - Edit</h5></b-col>
+        <b-col><h4>Aquifer {{record.aquifer_id}} Summary - Edit</h4></b-col>
       </b-row>
 
       <b-row v-if="viewMode" class="border-bottom mb-3 pb-2">
-        <b-col><h5 class="pt-2">Aquifer Summary</h5></b-col>
+        <b-col><h4 class="pt-2">Aquifer Summary</h4></b-col>
         <b-col cols="auto">
           <b-button
             variant="default"
@@ -54,12 +54,12 @@
 
       <dl v-if="viewMode" class="row">
         <dt class="col-sm-2">Aquifer number</dt>
-        <dd class="col-sm-4">{{record.aquifer_id}}</dd>
+        <dd class="col-sm-4" id="aquifer-view-number">{{record.aquifer_id}}</dd>
         <dt class="col-sm-2">Year of mapping</dt>
         <dd class="col-sm-4">{{record.mapping_year}}</dd>
 
         <dt class="col-sm-2">Aquifer name</dt>
-        <dd class="col-sm-4">{{record.aquifer_name}}</dd>
+        <dd class="col-sm-4" id="aquifer-view-name">{{record.aquifer_name}}</dd>
         <dt class="col-sm-2">Litho stratigraphic unit</dt>
         <dd class="col-sm-4">{{record.litho_stratographic_unit}}</dd>
 
@@ -85,6 +85,8 @@
       </dl>
       <h5 class="mt-3 border-bottom">Documentation</h5>
       <aquifer-documents :aquifer="id"></aquifer-documents>
+
+      <change-history v-if="userRoles.aquifers.edit" class="mt-5" :id="id" resource="aquifers" ref="aquiferHistory"/>
     </b-container>
   </b-card>
 </template>
@@ -101,13 +103,15 @@ import ApiService from '@/common/services/ApiService.js'
 import APIErrorMessage from '@/common/components/APIErrorMessage'
 import AquiferForm from './Form'
 import Documents from './Documents.vue'
+import ChangeHistory from '@/common/components/ChangeHistory.vue'
 import { mapGetters } from 'vuex'
 
 export default {
   components: {
     'api-error': APIErrorMessage,
     'aquifer-form': AquiferForm,
-    'aquifer-documents': Documents
+    'aquifer-documents': Documents,
+    ChangeHistory
   },
   props: {
     'edit': Boolean
@@ -135,6 +139,7 @@ export default {
     handleSaveSuccess () {
       this.fetch()
       this.navigateToView()
+      this.$refs.aquiferHistory.update()
       this.showSaveSuccess = true
     },
     handlePatchError (error) {

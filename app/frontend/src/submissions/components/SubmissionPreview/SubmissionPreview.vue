@@ -176,21 +176,25 @@ Licensed under the Apache License, Version 2.0 (the "License");
           striped
           small
           bordered
-          :items="filterBlankRows(form.lithology_set)"
+          :items="filterBlankRows(form.lithologydescription_set)"
           show-empty
           :fields="[
             'from',
             'to',
-            'primary',
-            'secondary',
-            'bedrock',
-            'descriptor',
+            'description',
             'colour',
             'hardness',
             'moisture',
-            'water_bearing_flow',
-            'observations'
-          ]"></b-table>
+            'water_bearing_estimated_flow',
+          ]">
+          <template slot="description" slot-scope="data">{{data.item.lithology_raw_data}}</template>
+          <template slot="from" slot-scope="data">{{data.item.lithology_from}}</template>
+          <template slot="to" slot-scope="data">{{data.item.lithology_to}}</template>
+          <template slot="colour" slot-scope="data">{{codeToDescription('lithology_colours', data.item.lithology_colour) }}</template>
+          <template slot="hardness" slot-scope="data">{{codeToDescription('lithology_hardness_codes', data.item.lithology_hardness) }}</template>
+          <template slot="moisture" slot-scope="data">{{codeToDescription('lithology_moisture_codes', data.item.lithology_moisture) }}</template>
+
+        </b-table>
       </div>
     </fieldset>
 
@@ -340,22 +344,19 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
     <fieldset class="my-3 detail-section" v-if="sections.wellYield">
       <legend>Well Yield</legend>
-
-      <div v-for="(productionTest, index) in form.productiondata_set" :key="`ProductionDataSet${index}`">
-        <b-row>
-          <b-col cols="12" lg="4"><span class="font-weight-bold">Estimation Method:</span> {{codeToDescription('yield_estimation_methods', productionTest.yield_estimation_method)}} </b-col>
-          <b-col cols="12" lg="4"><span class="font-weight-bold">Estimation Rate:</span> {{productionTest.yield_estimation_rate}} </b-col>
-          <b-col cols="12" lg="4"><span class="font-weight-bold">Estimation Duration:</span> {{productionTest.yield_estimation_duration}}</b-col>
-        </b-row>
-        <b-row>
-          <b-col cols="12" lg="4"><span class="font-weight-bold">Static Water Level Before Test:</span> {{productionTest.static_level}}</b-col>
-          <b-col cols="12" lg="4"><span class="font-weight-bold">Drawdown:</span> {{productionTest.drawdown}}</b-col>
-        </b-row>
-        <b-row>
-          <b-col cols="12" lg="4"><span class="font-weight-bold">Hydrofracturing Performed:</span> {{productionTest.hydro_fracturing_performed}}</b-col>
-          <b-col cols="12" lg="4"><span class="font-weight-bold">Increase in Yield Due to Hydrofracturing:</span> {{productionTest.hydro_fracturing_yield_increase}}</b-col>
-        </b-row>
-      </div>
+      <b-row>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Estimation Method:</span> {{codeToDescription('yield_estimation_methods', form.yield_estimation_method)}} </b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Estimation Rate:</span> {{form.yield_estimation_rate}} </b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Estimation Duration:</span> {{form.yield_estimation_duration}}</b-col>
+      </b-row>
+      <b-row>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Static Water Level Before Test:</span> {{form.static_level_before_test}}</b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Drawdown:</span> {{form.drawdown}}</b-col>
+      </b-row>
+      <b-row>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Hydrofracturing Performed:</span> {{form.hydro_fracturing_performed}}</b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Increase in Yield Due to Hydrofracturing:</span> {{form.hydro_fracturing_yield_increase}}</b-col>
+      </b-row>
     </fieldset>
 
     <fieldset class="my-3 detail-section" v-if="sections.waterQuality">

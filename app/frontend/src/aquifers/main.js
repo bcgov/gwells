@@ -15,6 +15,7 @@
 import 'babel-polyfill'
 import {mapActions, mapMutations} from 'vuex'
 import Vue from 'vue'
+import VueMoment from 'vue-moment'
 import BootstrapVue from 'bootstrap-vue'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
@@ -32,6 +33,7 @@ ApiService.init()
 
 Vue.use(BootstrapVue)
 Vue.use(vueSmoothScroll)
+Vue.use(VueMoment)
 
 /* eslint-disable no-new */
 new Vue({

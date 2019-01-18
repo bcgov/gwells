@@ -173,7 +173,7 @@ def apiTest (String STAGE_NAME, String BASE_URL, String ENV_SUFFIX) {
                     envVars: [
                         envVar(
                             key:'BASE_URL',
-                            value: BASE_URL
+                            value: "${BASE_URL}"
                         ),
                         secretEnvVar(
                             key: 'GWELLS_API_TEST_USER',
@@ -305,7 +305,7 @@ pipeline {
         // each pull request gets its own buildconfig but all new builds are pushed to a single imagestream,
         // to be tagged with the pull request number.
         // e.g.:  gwells-app:pr-999
-        stage('Prepare Templates') {
+        stage('ALL - Prepare Templates') {
             steps {
                 script {
                     echo "Cancelling previous builds..."
@@ -339,7 +339,7 @@ pipeline {
 
         // the Build stage runs unit tests and builds files. an image will be outputted to the app's imagestream
         // builds use the source to image strategy. See /app/.s2i/assemble for image build script
-        stage('Build (with tests)') {
+        stage('ALL - Build (with tests)') {
             steps {
                 script {
                     _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
@@ -363,6 +363,9 @@ pipeline {
         // application image into that environment, and monitors the newest deployment for pods/containers to
         // report back as ready.
         stage('DEV - Deploy') {
+            when {
+                expression { env.CHANGE_TARGET != 'master' && env.CHANGE_TARGET != 'demo' }
+            }
             steps {
                 script {
                     _openshift(env.STAGE_NAME, DEV_PROJECT) {
@@ -449,6 +452,9 @@ pipeline {
 
 
         stage('DEV - Load Fixtures') {
+            when {
+                expression { env.CHANGE_TARGET != 'master' && env.CHANGE_TARGET != 'demo' }
+            }
             steps {
                 script {
                     _openshift(env.STAGE_NAME, DEV_PROJECT) {
@@ -491,6 +497,9 @@ pipeline {
         // Functional tests temporarily limited to smoke tests
         // See https://github.com/BCDevOps/BDDStack
         stage('DEV - Smoke Tests') {
+            when {
+                expression { env.CHANGE_TARGET != 'master' && env.CHANGE_TARGET != 'demo' }
+            }
             steps {
                 script {
                     _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
@@ -503,6 +512,9 @@ pipeline {
 
 
         stage('DEV - API Tests') {
+            when {
+                expression { env.CHANGE_TARGET != 'master' && env.CHANGE_TARGET != 'demo' }
+            }
             steps {
                 script {
                     _openshift(env.STAGE_NAME, DEV_PROJECT) {
@@ -520,7 +532,7 @@ pipeline {
         // this stage should only occur when the pull request is being made against the master branch.
         stage('TEST - Deploy') {
             when {
-                expression { env.CHANGE_TARGET == 'master' }
+                expression { env.CHANGE_TARGET == 'master' || env.CHANGE_TARGET.startsWith('release/') }
             }
             steps {
                 script {
@@ -663,7 +675,7 @@ pipeline {
 
         stage('TEST - API Tests') {
             when {
-                expression { env.CHANGE_TARGET == 'master' }
+                expression { env.CHANGE_TARGET == 'master' || env.CHANGE_TARGET.startsWith('release/') }
             }
             steps {
                 script {
@@ -679,13 +691,13 @@ pipeline {
         // Single functional test
         stage('TEST - Smoke Tests') {
             when {
-                expression { env.CHANGE_TARGET == 'master' }
+                expression { env.CHANGE_TARGET == 'master' || env.CHANGE_TARGET.startsWith('release/') }
             }
             steps {
                 script {
                     _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
                         String BASE_URL = "https://${TEST_HOST}/gwells/"
-                        def result = functionalTest ('TEST - Smoke Tests', BASE_URL, TEST_SUFFIX, 'AquiferSearchSpecs')
+                        def result = functionalTest ('TEST - Smoke Tests', BASE_URL, TEST_SUFFIX, 'SearchSpecs')
                     }
                 }
             }
@@ -700,7 +712,6 @@ pipeline {
             steps {
                 script {
                     _openshift(env.STAGE_NAME, DEMO_PROJECT) {
-                        input "Deploy to demo?"
                         echo "Preparing..."
 
                         // Process db and app template into list objects
@@ -860,7 +871,7 @@ pipeline {
                 script {
                     _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
                         String BASE_URL = "https://${DEMO_HOST}/gwells/"
-                        def result = functionalTest ('DEMO - Smoke Tests', BASE_URL, DEMO_SUFFIX, 'AquiferSearchSpecs')
+                        def result = functionalTest ('DEMO - Smoke Tests', BASE_URL, DEMO_SUFFIX, 'SearchSpecs')
                     }
                 }
             }
@@ -1018,7 +1029,7 @@ pipeline {
                 script {
                     _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
                         String BASE_URL = "https://${PROD_HOST}/gwells/"
-                        def result = functionalTest ('PROD - Smoke Tests', BASE_URL, PROD_SUFFIX, 'AquiferSearchSpecs')
+                        def result = functionalTest ('PROD - Smoke Tests', BASE_URL, PROD_SUFFIX, 'SearchSpecs')
                     }
                 }
             }

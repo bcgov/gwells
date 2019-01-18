@@ -13,45 +13,59 @@
 """
 
 from django.shortcuts import render
-from django_filters import rest_framework as filters
+from django_filters import rest_framework as djfilters
 from django.views.generic import TemplateView
 
 from drf_yasg.utils import swagger_auto_schema
 
+from rest_framework import filters
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveUpdateAPIView
 
+from reversion.views import RevisionMixin
+
 from gwells.documents import MinioClient
 
 from aquifers import models
 from aquifers import serializers
-from aquifers.permissions import HasAquiferEditRoleOrReadOnly
+from aquifers.models import (
+    Aquifer,
+    AquiferDemand,
+    AquiferMaterial,
+    AquiferProductivity,
+    AquiferSubtype,
+    AquiferVulnerabilityCode,
+    QualityConcern,
+)
+from aquifers.permissions import HasAquiferEditRoleOrReadOnly, HasAquiferEditRole
+from gwells.change_history import generate_history_diff
+from registries.views import AuditCreateMixin, AuditUpdateMixin
 
 
-class AquiferRetrieveUpdateAPIView(RetrieveUpdateAPIView):
+class AquiferRetrieveUpdateAPIView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateAPIView):
     """List aquifers
     get: return details of aquifers
     patch: update aquifer
     """
 
     permission_classes = (HasAquiferEditRoleOrReadOnly,)
-    queryset = models.Aquifer.objects.all()
+    queryset = Aquifer.objects.all()
     lookup_field = 'aquifer_id'
     serializer_class = serializers.AquiferSerializer
 
 
-class AquiferListCreateAPIView(ListCreateAPIView):
+class AquiferListCreateAPIView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     """List aquifers
     get: return a list of aquifers
     post: create an aquifer
     """
 
     permission_classes = (HasAquiferEditRoleOrReadOnly,)
-    queryset = models.Aquifer.objects.all()
+    queryset = Aquifer.objects.all()
     serializer_class = serializers.AquiferSerializer
-    filter_backends = (filters.DjangoFilterBackend,
+    filter_backends = (djfilters.DjangoFilterBackend,
                        OrderingFilter, SearchFilter)
     filter_fields = ('aquifer_id',)
     search_fields = ('aquifer_name',)
@@ -64,7 +78,7 @@ class AquiferMaterialListAPIView(ListAPIView):
     get: return a list of aquifer material codes
     """
 
-    queryset = models.AquiferMaterial.objects.all()
+    queryset = AquiferMaterial.objects.all()
     serializer_class = serializers.AquiferMaterialSerializer
 
 
@@ -82,7 +96,7 @@ class AquiferVulnerabilityListAPIView(ListAPIView):
     get: return a list of aquifer vulnerability codes
     """
 
-    queryset = models.AquiferVulnerabilityCode.objects.all()
+    queryset = AquiferVulnerabilityCode.objects.all()
     serializer_class = serializers.AquiferVulnerabilitySerializer
 
 
@@ -91,7 +105,7 @@ class AquiferSubtypeListAPIView(ListAPIView):
     get: return a list of aquifer subtype codes
     """
 
-    queryset = models.AquiferSubtype.objects.all()
+    queryset = AquiferSubtype.objects.all()
     serializer_class = serializers.AquiferSubtypeSerializer
 
 
@@ -100,7 +114,7 @@ class AquiferProductivityListAPIView(ListAPIView):
     get: return a list of aquifer productivity codes
     """
 
-    queryset = models.AquiferProductivity.objects.all()
+    queryset = AquiferProductivity.objects.all()
     serializer_class = serializers.AquiferProductivitySerializer
 
 
@@ -109,7 +123,7 @@ class AquiferDemandListAPIView(ListAPIView):
     get: return a list of aquifer demand codes
     """
 
-    queryset = models.AquiferDemand.objects.all()
+    queryset = AquiferDemand.objects.all()
     serializer_class = serializers.AquiferDemandSerializer
 
 
@@ -144,3 +158,58 @@ class ListFiles(APIView):
             int(aquifer_id), resource="aquifer", include_private=False)
 
         return Response(documents)
+
+
+class AquiferNameList(ListAPIView):
+    """ List all aquifers in a simplified format """
+
+    serializer_class = serializers.AquiferSerializerBasic
+    model = Aquifer
+    queryset = Aquifer.objects.all()
+    pagination_class = None
+
+    filter_backends = (filters.SearchFilter,)
+    ordering = ('aquifer_id',)
+    search_fields = (
+        'aquifer_id',
+        'aquifer_name',
+    )
+
+    def get(self, request):
+        search = self.request.query_params.get('search', None)
+        if not search or len(search) < 3:
+            # avoiding responding with excess results
+            return Response([])
+        else:
+            return super().get(request)
+
+
+class AquiferHistory(APIView):
+    """
+    get: returns a history of changes to a Aquifer model record
+    """
+    permission_classes = (HasAquiferEditRole,)
+    queryset = Aquifer.objects.all()
+    swagger_schema = None
+
+    def get(self, request, aquifer_id):
+        """
+        Retrieves version history for the specified Aquifer record and creates a list of diffs
+        for each revision.
+        """
+
+        try:
+            aquifer = Aquifer.objects.get(aquifer_id=aquifer_id)
+        except Aquifer.DoesNotExist:
+            raise Http404("Aquifer not found")
+
+        # query records in history for this model.
+        aquifer_history = [obj for obj in aquifer.history.all().order_by(
+            '-revision__date_created')]
+
+        aquifer_history_diff = generate_history_diff(
+            aquifer_history, 'aquifer ' + aquifer_id)
+
+        history_diff = sorted(aquifer_history_diff, key=lambda x: x['date'], reverse=True)
+
+        return Response(history_diff)
