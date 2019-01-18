@@ -397,6 +397,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         :isStaffEdit="isStaffEdit"
         :saveDisabled="editSaveDisabled"
         v-on:save="$emit('submit_edit')"
+        v-on:setFormValueChanged="setFormValueChanged"
       />
 
       <!-- aquifer -->
@@ -655,6 +656,10 @@ export default {
     saveStatusReset () {
       this.saveFormSuccess = false
       this.loadFormSuccess = false
+    },
+    setFormValueChanged () {
+      console.log('catch emit')
+      this.formValueChanged = true
     }
   },
   created () {

@@ -30,6 +30,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
         </div>
       </b-alert>
 
+      <!-- Document Uploading alerts -->
+      <b-alert show v-if="files_uploading">File Upload In Progress...</b-alert>
+      <b-alert show v-if="!files_uploading && file_upload_error" variant="warning" >{{file_upload_error}}</b-alert>
+      <b-alert show v-if="!files_uploading && file_upload_success" variant="success" >Successfully uploaded all files</b-alert>
+
       <!-- Form submission error message -->
       <b-alert
           :show="formSubmitError"
@@ -112,7 +117,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapState } from 'vuex'
 import ApiService from '@/common/services/ApiService.js'
 import { FETCH_CODES, FETCH_WELLS } from '../store/actions.types.js'
 import inputFormatMixin from '@/common/inputFormatMixin.js'
@@ -238,9 +243,18 @@ export default {
     isStaffEdit () {
       return this.activityType === 'STAFF_EDIT'
     },
-    ...mapGetters(['codes', 'userRoles', 'well', 'keycloak'])
+    ...mapGetters(['codes', 'userRoles', 'well', 'keycloak']),
+    ...mapState('documentState', [
+      'files_uploading',
+      'file_upload_error',
+      'file_upload_success',
+      'upload_files'
+    ])
   },
   methods: {
+    ...mapActions('documentState', [
+      'uploadFiles'
+    ]),
     formSubmit () {
       const data = Object.assign({}, this.form)
       const meta = data.meta
@@ -303,6 +317,21 @@ export default {
         this.$nextTick(function () {
           window.scrollTo(0, 0)
         })
+
+        if (this.upload_files.length > 0) {
+          if (response.data.filing_number) {
+            this.uploadFiles({
+              documentType: 'submissions',
+              recordId: response.data.filing_number
+            })
+          } else {
+            this.uploadFiles({
+              documentType: 'wells',
+              recordId: response.data.well
+            })
+          }
+
+        }
       }).catch((error) => {
         if (error.response.status === 400) {
           // Bad request, the response.data will contain information relating to why the request was bad.
@@ -316,7 +345,7 @@ export default {
         this.$nextTick(function () {
           window.scrollTo(0, 0)
         })
-      }).finally(() => {
+      }).finally((response) => {
         this.formSubmitLoading = false
       })
     },

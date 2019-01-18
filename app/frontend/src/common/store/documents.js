@@ -24,8 +24,13 @@ export default {
     file_upload_success: false
   },
   actions: {
-    uploadFiles (context, documentType, recordId) {
+    uploadFiles (context, payload) {
       context.commit('setFilesUploading', true)
+      let documentType = payload.documentType
+      let recordId = payload.recordId
+
+      console.log(documentType)
+      console.log(recordId)
 
       let uploadPromises = []
 
