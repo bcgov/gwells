@@ -40,7 +40,7 @@ urlpatterns = [
     url(r'^api/v1/wells/extracts$', views.ListExtracts.as_view(), name='extract-list'),
 
     # Document Uploading (well records)
-    url(r'^api/v1/wells/presigned_put_url$',
+    url(r'^api/v1/wells/(?P<tag>[0-9]+)/presigned_put_url$',
         never_cache(views.PreSignedDocumentKey.as_view()), name='well-pre-signed-url'),
 
     # Well list

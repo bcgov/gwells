@@ -15,6 +15,7 @@ from urllib.parse import quote
 
 from django.db.models import Prefetch
 from django.http import Http404, JsonResponse
+from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView
 
 from rest_framework import filters
@@ -91,10 +92,11 @@ class ListExtracts(APIView):
     @swagger_auto_schema(auto_schema=None)
     def get(self, request):
         host = get_env_variable('S3_HOST')
+        use_secure = int(get_env_variable('S3_USE_SECURE', 1))
         minioClient = Minio(host,
                             access_key=get_env_variable('S3_PUBLIC_ACCESS_KEY'),
                             secret_key=get_env_variable('S3_PUBLIC_SECRET_KEY'),
-                            secure=get_env_variable('S3_USE_SECURE', 1))
+                            secure=use_secure)
         objects = minioClient.list_objects(get_env_variable('S3_WELL_EXPORT_BUCKET'))
         urls = list(
             map(
@@ -211,14 +213,17 @@ class PreSignedDocumentKey(APIView):
     post: obtain a URL that is pre-signed to allow client-side uploads
     """
 
+    queryset = Well.objects.all()
     permission_classes = (WellsEditPermissions,)
 
     @swagger_auto_schema(auto_schema=None)
-    def get(self, request):
+    def get(self, request, tag):
+        well = get_object_or_404(self.queryset, pk=tag)
         client = MinioClient(
             request=request, disable_private=True)
 
         object_name = request.GET.get("filename")
-        url = client.get_presigned_put_url(object_name)
+        filename = "WTN_%s_%s" % (well.well_tag_number, object_name)
+        url = client.get_presigned_put_url(filename, bucket_name=get_env_variable("S3_WELLS_BUCKET"))
 
-        return JsonResponse({"url": url})
+        return JsonResponse({"object_name": object_name, "url": url})
