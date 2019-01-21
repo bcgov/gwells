@@ -154,8 +154,11 @@ export default {
       this.$refs.aquiferHistory.update()
       this.showSaveSuccess = true
 
-      if (this.aquifer_files.length > 0) {
-        this.uploadFiles('aquifers', this.id)
+      if (this.upload_files.length > 0) {
+        this.uploadFiles({
+          documentType: 'aquifers',
+          recordId: data.aquifer_id
+        })
       }
     },
     handlePatchError (error) {

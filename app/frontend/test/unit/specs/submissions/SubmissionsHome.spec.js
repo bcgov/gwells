@@ -1,6 +1,7 @@
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
 import VueRouter from 'vue-router'
+import documentState from '@/common/store/documents.js'
 import SubmissionsHome from '@/submissions/views/SubmissionsHome.vue'
 
 import { FETCH_CODES, FETCH_WELLS } from '@/submissions/store/actions.types.js'
@@ -27,7 +28,8 @@ describe('SubmissionsHome.vue', () => {
     store = new Vuex.Store({
       state: {},
       actions,
-      getters
+      getters,
+      modules: { documentState }
     })
   })
 

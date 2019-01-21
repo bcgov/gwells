@@ -16,6 +16,7 @@ import reversion
 from collections import OrderedDict
 from django.db.models import Q, Prefetch
 from django.http import HttpResponse, Http404, JsonResponse
+from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.views.generic import TemplateView
 from django_filters import rest_framework as restfilters
@@ -32,6 +33,7 @@ from gwells.documents import MinioClient
 from gwells.roles import REGISTRIES_VIEWER_ROLE
 from gwells.models import ProvinceStateCode
 from gwells.pagination import APILimitOffsetPagination
+from gwells.settings.base import get_env_variable
 from reversion.models import Version
 from registries.models import (
     AccreditedCertificateCode,
@@ -801,14 +803,17 @@ class PreSignedDocumentKey(APIView):
     post: obtain a URL that is pre-signed to allow client-side uploads
     """
 
+    queryset = Person.objects.all()
     permission_classes = (RegistriesPermissions,)
 
     @swagger_auto_schema(auto_schema=None)
-    def get(self, request):
+    def get(self, request, person_guid):
+        person = get_object_or_404(self.queryset, pk=person_guid)
         client = MinioClient(
             request=request, disable_private=True)
 
         object_name = request.GET.get("filename")
-        url = client.get_presigned_put_url(object_name)
+        filename = "P_%s_%s" % (person.person_guid, object_name)
+        url = client.get_presigned_put_url(filename, bucket_name=get_env_variable("S3_REGISTRANT_BUCKET"))
 
-        return JsonResponse({"url": url})
+        return JsonResponse({"object_name": object_name, "url": url})
