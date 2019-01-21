@@ -114,7 +114,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 <script>
 import { mapGetters } from 'vuex'
 import ApiService from '@/common/services/ApiService.js'
-import { FETCH_CODES } from '../store/actions.types.js'
+import { FETCH_CODES, FETCH_WELLS } from '../store/actions.types.js'
 import inputFormatMixin from '@/common/inputFormatMixin.js'
 import SubmissionPreview from '@/submissions/components/SubmissionPreview/SubmissionPreview.vue'
 import filterBlankRows from '@/common/filterBlankRows.js'
@@ -258,8 +258,12 @@ export default {
       delete data.meta
 
       // replace the "person responsible" object with the person's guid
-      if (data.driller_responsible && data.driller_responsible.person_guid) {
-        data.driller_responsible = data.driller_responsible.person_guid
+      if (data.person_responsible && data.person_responsible.person_guid) {
+        data.person_responsible = data.person_responsible.person_guid
+      }
+      // replace the "company of person responsible" object with the company's guid
+      if (data.company_of_person_responsible && data.company_of_person_responsible.org_guid) {
+        data.company_of_person_responsible = data.company_of_person_responsible.org_guid
       }
 
       if (data.well && data.well.well_tag_number) {
@@ -331,7 +335,8 @@ export default {
         id_plate_attached_by: '',
         water_supply_system_well_name: '',
         water_supply_system_name: '',
-        driller_responsible: null,
+        person_responsible: null,
+        company_of_person_responsible: null,
         driller_name: '',
         consultant_name: '',
         consultant_company: '',
@@ -518,7 +523,7 @@ export default {
             this.form[key] = res.data[key]
           }
         })
-        if (this.form.driller_responsible && this.form.driller_responsible.name === this.form.driller_name) {
+        if (this.form.person_responsible && this.form.person_responsible.name === this.form.driller_name) {
           this.form.meta.drillerSameAsPersonResponsible = true
         }
         // Wait for the form update we just did to fire off change events.
@@ -534,6 +539,10 @@ export default {
       }).catch((e) => {
         console.error(e)
       })
+    } else {
+      // Some of our child components need the well data, we dispatch the request here, in hopes
+      // that the data will be available by the time those components render.
+      this.$store.dispatch(FETCH_WELLS)
     }
   }
 }

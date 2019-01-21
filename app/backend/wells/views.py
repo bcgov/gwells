@@ -183,22 +183,14 @@ class WellTagSearchAPIView(ListAPIView):
 
     permission_classes = (DjangoModelPermissionsOrAnonReadOnly,)
     model = Well
-    queryset = Well.objects.all()
+    queryset = Well.objects.only('well_tag_number', 'owner_full_name').all()
     pagination_class = None
     serializer_class = WellTagSearchSerializer
     lookup_field = 'well_tag_number'
 
-    filter_backends = (filters.SearchFilter,)
-    ordering = ('well_tag_number',)
+    filter_backends = (filters.SearchFilter, filters.OrderingFilter)
+    ordering_fields = ('well_tag_number',)
     search_fields = (
         'well_tag_number',
         'owner_full_name',
     )
-
-    def get(self, request):
-        search = self.request.query_params.get('search', None)
-        if not search or len(search) < 3:
-            # avoiding responding with entire collection of wells
-            return Response([])
-        else:
-            return super().get(request)
