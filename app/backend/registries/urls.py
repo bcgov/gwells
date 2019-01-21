@@ -62,6 +62,10 @@ urlpatterns = [
         never_cache(views.OrganizationListView.as_view()),
         name='organization-list'),
 
+    # Document Uploading (driller records)
+    url(r'^api/v1/drillers/(?P<person_guid>[-\w]+)/presigned_put_url$',
+        never_cache(views.PreSignedDocumentKey.as_view()), name='drillers-pre-signed-url'),
+
     # Person note endpoints
     url(r'^api/v1/drillers/(?P<person_guid>[-\w]+)/notes/$',
         never_cache(views.PersonNoteListView.as_view()), name='person-note-list'),

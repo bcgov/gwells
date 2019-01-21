@@ -60,6 +60,9 @@ const ApiService = {
   },
   history (resource, record) {
     return axios.get(`${resource}/${record}/history/`)
+  },
+  presigned_put_url (resource, record, filename) {
+    return axios.get(`${resource}/${record}/presigned_put_url?filename=${filename}`)
   }
 }
 

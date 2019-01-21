@@ -17,6 +17,7 @@ import ViewComponent from '@/aquifers/components/View.vue'
 import Vuex from 'vuex'
 import axios from 'axios'
 import auth from '@/common/store/auth.js'
+import documentState from '@/common/store/documents.js'
 import aquiferCodes from '@/aquifers/store/codes'
 import VueRouter from 'vue-router'
 
@@ -45,7 +46,7 @@ describe('View Component', () => {
     localVue,
     router: new VueRouter(),
     store: new Vuex.Store({
-      modules: { auth, aquiferCodes }
+      modules: { auth, aquiferCodes, documentState }
     }),
     stubs: ['aquifer-documents'],
     ...options
