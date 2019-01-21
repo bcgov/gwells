@@ -90,6 +90,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'debug_toolbar',
     'django.contrib.postgres',
+    'django.contrib.gis',
     'rest_framework',
     'corsheaders',
     'drf_yasg',

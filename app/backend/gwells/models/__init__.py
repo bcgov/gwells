@@ -21,6 +21,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.dispatch import receiver
 from django.db.models.signals import post_save
+from django.contrib.gis.db import models as gis_models
 
 from .common import AuditModel, ProvinceStateCode
 from .screen import ScreenIntakeMethodCode, ScreenMaterialCode, ScreenOpeningCode, ScreenBottomCode,\
@@ -55,6 +56,42 @@ class Profile(models.Model):
 
     class Meta:
         db_table = 'profile'
+
+
+class Border(gis_models.Model):
+    se_a_c_flg = gis_models.CharField(max_length=254)
+    obejctid = gis_models.FloatField()
+    shape = gis_models.FloatField()
+    length_m = gis_models.FloatField()
+    oic_number = gis_models.CharField(max_length=7)
+    area_sqm = gis_models.FloatField()
+    upt_date = gis_models.CharField(max_length=20)
+    upt_type = gis_models.CharField(max_length=50)
+    chng_org = gis_models.CharField(max_length=30)
+    aa_parent = gis_models.CharField(max_length=100)
+    aa_type = gis_models.CharField(max_length=50)
+    aa_id = gis_models.BigIntegerField()
+    aa_name = gis_models.CharField(max_length=100)
+    abrvn = gis_models.CharField(max_length=40)
+    bdy_type = gis_models.CharField(max_length=20)
+    oic_year = gis_models.CharField(max_length=4)
+    afctd_area = gis_models.CharField(max_length=120)
+    geom = gis_models.MultiPolygonField(srid=4269)
+
+
+# class Border(gis_models.Model):
+#     # Regular Django fields corresponding to the attributes in the province borders shapefile.
+#     pruid = models.CharField(max_length=2)
+#     prname = models.CharField(max_length=55)
+#     prename = models.CharField(max_length=30)
+#     prfname = models.CharField(max_length=30)
+#     preabbr = models.CharField(max_length=10)
+#     prfabbr = models.CharField(max_length=10)
+#     # GeoDjango-specific: a geometry field (MultiPolygonField)
+#     geom = gis_models.MultiPolygonField(srid=4269)
+
+#     def __str__(self):
+#         return self.prename
 
 
 @receiver(post_save, sender=User)
