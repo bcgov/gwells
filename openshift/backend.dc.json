@@ -620,6 +620,24 @@
                                         }
                                     },
                                     {
+                                        "name": "S3_REGISTRANT_BUCKET",
+                                        "valueFrom": {
+                                            "configMapKeyRef": {
+                                                "key": "S3_REGISTRANT_BUCKET",
+                                                "name": "gwells-global-config${NAME_SUFFIX}"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "S3_SUBMISSION_BUCKET",
+                                        "valueFrom": {
+                                            "configMapKeyRef": {
+                                                "key": "S3_SUBMISSION_BUCKET",
+                                                "name": "gwells-global-config${NAME_SUFFIX}"
+                                            }
+                                        }
+                                    },
+                                    {
                                         "name": "WEB_CONCURRENCY",
                                         "value": "4"
                                     },
