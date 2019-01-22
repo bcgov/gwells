@@ -35,7 +35,10 @@ describe('WellType.vue', () => {
         wells: {
           edit: true
         }
-      })
+      }),
+      wells: () => {
+        return []
+      }
     }
     store = new Vuex.Store({
       getters

@@ -128,6 +128,21 @@
             id="aquifer-notes"
             v-model="record.notes"/>
         </b-form-group>
+
+        <b-form-group
+          horizontal
+          label-cols="4"
+          label="Documents">
+          <b-form-file
+            v-model="files"
+            multiple
+            plain/>
+          <div class="mt-3" v-if="upload_files.length > 0">
+            <b-list-group>
+              <b-list-group-item v-for="(f, index) in upload_files" :key="index">{{f.name}}</b-list-group-item>
+            </b-list-group>
+          </div>
+        </b-form-group>
       </b-col>
 
       <b-col md="6">
@@ -268,7 +283,7 @@
 
 <script>
 import { isEmpty, mapValues } from 'lodash'
-import { mapState } from 'vuex'
+import { mapMutations, mapState } from 'vuex'
 
 export default {
   computed: {
@@ -278,6 +293,14 @@ export default {
     fieldHasError () {
       return mapValues(this.fieldErrors, (messages) => isEmpty(messages))
     },
+    files: {
+      get: function () {
+        return this.upload_files
+      },
+      set: function (value) {
+        this.setFiles(value)
+      }
+    },
     ...mapState('aquiferCodes', [
       'demand_codes',
       'known_water_use_codes',
@@ -286,6 +309,14 @@ export default {
       'quality_concern_codes',
       'subtype_codes',
       'vulnerability_codes'
+    ]),
+    ...mapState('documentState', [
+      'upload_files'
+    ])
+  },
+  methods: {
+    ...mapMutations('documentState', [
+      'setFiles'
     ])
   },
   props: {

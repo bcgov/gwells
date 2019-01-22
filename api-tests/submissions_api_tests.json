@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "5372c36b-759f-4701-9798-c1e4cedf70c1",
+		"_postman_id": "3b063fe0-732f-430c-93a8-a582829e5b3a",
 		"name": "GWELLS Submissions API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -337,7 +337,7 @@
 											"})",
 											"",
 											"pm.test(\"Expect driller_responsible to be returned\", function() {",
-											"    pm.expect(jsonData.driller_responsible).to.equal(created_driller_guid)",
+											"    pm.expect(jsonData.person_responsible).to.equal(created_driller_guid)",
 											"})",
 											""
 										],
@@ -361,7 +361,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"driller_responsible\": \"{{created_driller_guid}}\",\n\t\"driller_name\": \"Jimithy\",\n\t\"consultant_name\": \"Bobothy\",\n\t\"consultant_company\": \"Inc & Inc\",\n\t\"work_end_date\": \"2018-07-10\",\n\t\"owner_full_name\": \"Holly Homeowner\",\n\t\"work_start_date\": \"2018-07-01\",\n\t\"owner_province_state\": \"BC\",\n\t\"owner_mailing_address\": \"321 Main Street\",\n\t\"owner_city\": \"Anytown\",\n\t\"well_orientation\": false\n}"
+									"raw": "{\n\t\"person_responsible\": \"{{created_driller_guid}}\",\n\t\"driller_name\": \"Jimithy\",\n\t\"consultant_name\": \"Bobothy\",\n\t\"consultant_company\": \"Inc & Inc\",\n\t\"work_end_date\": \"2018-07-10\",\n\t\"owner_full_name\": \"Holly Homeowner\",\n\t\"work_start_date\": \"2018-07-01\",\n\t\"owner_province_state\": \"BC\",\n\t\"owner_mailing_address\": \"321 Main Street\",\n\t\"owner_city\": \"Anytown\",\n\t\"well_orientation\": false\n}"
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/construction?format=json",
@@ -416,13 +416,13 @@
 											"    pm.expect(jsonData.linerperforation_set.length).to.equal(0);",
 											"})",
 											"",
-											"pm.test(\"driller_responsible is an object with name and guid\", function() {",
-											"    pm.expect('name' in jsonData['driller_responsible']).to.be.true",
+											"pm.test(\"person_responsible is an object with name and guid\", function() {",
+											"    pm.expect('name' in jsonData['person_responsible']).to.be.true",
 											"})",
 											"",
-											"pm.test(\"driller_responsible is an object with name and guid\", function() {",
-											"    pm.expect('person_guid' in jsonData['driller_responsible']).to.be.true",
-											"    pm.expect(jsonData.driller_responsible.person_guid).to.equal(created_driller_guid)",
+											"pm.test(\"person_responsible is an object with name and guid\", function() {",
+											"    pm.expect('person_guid' in jsonData['person_responsible']).to.be.true",
+											"    pm.expect(jsonData.person_responsible.person_guid).to.equal(created_driller_guid)",
 											"})",
 											"",
 											"pm.test(\"We expect the default accuracy code to be 'H' (GPS)\", function() {",
@@ -524,6 +524,75 @@
 									]
 								},
 								"description": "Check if the submission was created correctly."
+							},
+							"response": []
+						},
+						{
+							"name": "Submissions Get PUT_URL",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "768133b0-7dd6-4197-97ca-ddca5cb1743f",
+										"exec": [
+											"var jsonData = pm.response.json()",
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.expect(pm.response.code).to.equal(200);",
+											"})",
+											"",
+											"pm.test(\"Response contains URL with signature\", function() {",
+											"    var jsonData = pm.response.json()",
+											"    pm.expect(jsonData.url).to.not.eql(null)",
+											"    pm.expect(jsonData.url).to.include(\"X-Amz-Signature\")",
+											"})",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "4d7ea87d-32ab-4696-9176-b041b6673698",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/submissions/{{filing_number}}/presigned_put_url?filename=file.pdf",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"submissions",
+										"{{filing_number}}",
+										"presigned_put_url"
+									],
+									"query": [
+										{
+											"key": "filename",
+											"value": "file.pdf"
+										}
+									]
+								}
 							},
 							"response": []
 						},
@@ -1625,21 +1694,126 @@
 							"response": []
 						},
 						{
+							"name": "Create new company",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "2ce89229-b4af-45c3-8645-ef507a84011c",
+										"exec": [
+											"( function() {",
+											"    pm.test(\"Successful POST request\", function () {",
+											"        pm.expect(pm.response.code, \"response code not 201\").to.be.oneOf([201,202]);",
+											"    });",
+											"    ",
+											"    var jsonData = pm.response.json()",
+											"    pm.environment.set(\"company_guid\", jsonData.org_guid);",
+											"})();",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "name",
+											"value": "Steve's Drilling Inc.",
+											"type": "text"
+										},
+										{
+											"key": "street_address",
+											"value": "1012 Douglas",
+											"type": "text"
+										},
+										{
+											"key": "city",
+											"value": "",
+											"type": "text"
+										},
+										{
+											"key": "postal_code",
+											"value": "a1a 1a1",
+											"type": "text"
+										},
+										{
+											"key": "main_tel",
+											"value": "",
+											"type": "text"
+										},
+										{
+											"key": "fax_tel",
+											"value": "",
+											"type": "text"
+										},
+										{
+											"key": "website_url",
+											"value": "",
+											"type": "text"
+										},
+										{
+											"key": "province_state",
+											"value": "BC",
+											"type": "text"
+										},
+										{
+											"key": "email",
+											"value": "company@example.com",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/organizations/?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"organizations",
+										""
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
 							"name": "Alteration - Person Responsible",
 							"event": [
 								{
 									"listen": "test",
 									"script": {
 										"id": "0b7855ea-c33f-45a0-912c-9a02fc8077d2",
-										"type": "text/javascript",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"var created_driller_guid = pm.environment.get('created_driller_guid');",
+											"var company_guid = pm.environment.get('company_guid');",
 											"var fields = {",
 											"    \"consultant_company\": \"John Company\",",
 											"\t\"consultant_name\": \"John Consultant\",",
 											"\t\"driller_name\": \"John Person\",",
-											"\t\"driller_responsible\": created_driller_guid",
+											"\t\"person_responsible\": created_driller_guid,",
+											"\t\"company_of_person_responsible\": company_guid",
 											"}",
 											"",
 											"pm.environment.set('filing_number', jsonData.filing_number)",
@@ -1661,7 +1835,8 @@
 											"",
 											"",
 											""
-										]
+										],
+										"type": "text/javascript"
 									}
 								}
 							],
@@ -1679,7 +1854,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"well\": {{well_tag_number}},\n\t\"consultant_company\": \"John Company\",\n\t\"consultant_name\": \"John Consultant\",\n\t\"driller_name\": \"John Person\",\n\t\"driller_responsible\": \"{{created_driller_guid}}\"\n}"
+									"raw": "{\n\t\"well\": {{well_tag_number}},\n\t\"consultant_company\": \"John Company\",\n\t\"consultant_name\": \"John Consultant\",\n\t\"driller_name\": \"John Person\",\n\t\"person_responsible\": \"{{created_driller_guid}}\",\n\t\"company_of_person_responsible\": \"{{company_guid}}\"\n}"
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/alteration",
@@ -1704,7 +1879,6 @@
 									"listen": "test",
 									"script": {
 										"id": "027d3bd1-6dcc-4552-99da-324c714df9d0",
-										"type": "text/javascript",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"var created_driller_guid = pm.environment.get('created_driller_guid');",
@@ -1727,15 +1901,16 @@
 											"    })",
 											"})",
 											"",
-											"pm.test('driller_responsible returned', function() {",
-											"    pm.expect(jsonData.driller_responsible.person_guid).to.equal(created_driller_guid)",
+											"pm.test('person_responsible returned', function() {",
+											"    pm.expect(jsonData.person_responsible.person_guid).to.equal(created_driller_guid)",
 											"})",
 											"",
 											"",
 											"",
 											"",
 											""
-										]
+										],
+										"type": "text/javascript"
 									}
 								}
 							],

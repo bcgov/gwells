@@ -14,11 +14,14 @@
 
 from rest_framework.response import Response
 from posixpath import join as urljoin
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView
 from django.urls import reverse
-from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveUpdateAPIView, RetrieveAPIView
+from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveAPIView
 from rest_framework.views import APIView
 
+from gwells.documents import MinioClient
 from gwells.urls import app_root
 from gwells.pagination import APILimitOffsetPagination
 from wells.permissions import WellsEditPermissions
@@ -27,6 +30,7 @@ from gwells.models.lithology import (
     LithologyColourCode, LithologyHardnessCode,
     LithologyMaterialCode, LithologyMoistureCode,)
 from gwells.serializers import ProvinceStateCodeSerializer
+from gwells.settings.base import get_env_variable
 from wells.models import (
     ActivitySubmission,
     CasingCode,
@@ -110,7 +114,8 @@ def get_submission_queryset(qs):
                 "well_class",
                 "well_subclass",
                 "intended_water_use",
-                "driller_responsible",
+                "person_responsible",
+                'company_of_person_responsible',
                 "owner_province_state",
                 "ground_elevation_method",
                 "drilling_method",
@@ -362,3 +367,26 @@ class SubmissionsOptions(APIView):
 class SubmissionsHomeView(TemplateView):
     """Loads the html file containing the Submissions web app"""
     template_name = 'submissions/submissions.html'
+
+
+class PreSignedDocumentKey(RetrieveAPIView):
+    """
+    Get a pre-signed document key to upload into an S3 compatible document store
+
+    post: obtain a URL that is pre-signed to allow client-side uploads
+    """
+
+    queryset = ActivitySubmission.objects.all()
+    permission_classes = (WellsEditPermissions,)
+
+    def get(self, request, submission_id):
+        submission = get_object_or_404(self.queryset, pk=submission_id)
+
+        client = MinioClient(
+            request=request, disable_private=True)
+
+        object_name = request.GET.get("filename")
+        filename = "WTN_%s_%s" % (submission.well.well_tag_number, object_name)
+        url = client.get_presigned_put_url(filename, bucket_name=get_env_variable("S3_SUBMISSION_BUCKET"))
+
+        return JsonResponse({"object_name": object_name, "url": url})

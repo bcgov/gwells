@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "4be9ad4a-ce86-484a-80b7-80065a29c930",
+		"_postman_id": "4159e8e0-2c15-44c3-90bb-f4375df2e15a",
 		"name": "GWELLS Well API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -117,7 +117,10 @@
 								"value": "JWT {{token}}"
 							}
 						],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/wells/?format=json",
 							"host": [
@@ -227,7 +230,10 @@
 								"value": "JWT {{token}}"
 							}
 						],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
 							"host": [
@@ -241,6 +247,75 @@
 							]
 						},
 						"description": "Request a list of wells"
+					},
+					"response": []
+				},
+				{
+					"name": "Wells Get PUT_URL",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "768133b0-7dd6-4197-97ca-ddca5cb1743f",
+								"exec": [
+									"var jsonData = pm.response.json()",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"})",
+									"",
+									"pm.test(\"Response contains URL with signature\", function() {",
+									"    var jsonData = pm.response.json()",
+									"    pm.expect(jsonData.url).to.not.eql(null)",
+									"    pm.expect(jsonData.url).to.include(\"X-Amz-Signature\")",
+									"})",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "4d7ea87d-32ab-4696-9176-b041b6673698",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "JWT {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/presigned_put_url?filename=file.pdf",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"wells",
+								"{{well_tag_number}}",
+								"presigned_put_url"
+							],
+							"query": [
+								{
+									"key": "filename",
+									"value": "file.pdf"
+								}
+							]
+						}
 					},
 					"response": []
 				}

@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "3d69ef7c-a30f-42a5-a557-2caa5b78504b",
+		"_postman_id": "08a976cb-10f8-4557-953e-61a551dbdfd0",
 		"name": "GWELLS Aquifers",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -878,6 +878,66 @@
 						"aquifers",
 						"{{aquifer_id}}",
 						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Aquifer Get PUT_URL",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "768133b0-7dd6-4197-97ca-ddca5cb1743f",
+						"exec": [
+							"var jsonData = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"})",
+							"",
+							"pm.test(\"Response contains URL with signature\", function() {",
+							"    var jsonData = pm.response.json()",
+							"    pm.expect(jsonData.url).to.not.eql(null)",
+							"    pm.expect(jsonData.url).to.include(\"X-Amz-Signature\")",
+							"})",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "JWT {{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/aquifers/{{aquifer_id}}/presigned_put_url?filename=file.pdf",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"aquifers",
+						"{{aquifer_id}}",
+						"presigned_put_url"
+					],
+					"query": [
+						{
+							"key": "filename",
+							"value": "file.pdf"
+						}
 					]
 				}
 			},

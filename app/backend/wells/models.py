@@ -22,7 +22,7 @@ from gwells.models.lithology import (
     LithologyDescriptionCode, LithologyColourCode, LithologyHardnessCode,
     LithologyMaterialCode, BedrockMaterialCode, BedrockMaterialDescriptorCode, LithologyStructureCode,
     LithologyMoistureCode, SurficialMaterialCode)
-from registries.models import Person
+from registries.models import Person, Organization
 from submissions.models import WellActivityCode
 from aquifers.models import Aquifer
 
@@ -770,10 +770,13 @@ class Well(AuditModel):
     aquifer = models.ForeignKey(Aquifer, db_column='aquifer_id', on_delete=models.PROTECT, blank=True,
                                 null=True, verbose_name='Aquifer ID Number')
 
-    driller_responsible = models.ForeignKey(Person, db_column='driller_responsible_guid',
-                                            on_delete=models.PROTECT,
-                                            verbose_name='Person Responsible for Drilling',
-                                            null=True, blank=True)
+    person_responsible = models.ForeignKey(Person, db_column='person_responsible_guid',
+                                           on_delete=models.PROTECT,
+                                           verbose_name='Person Responsible for Drilling',
+                                           null=True, blank=True)
+    company_of_person_responsible = models.ForeignKey(
+        Organization, db_column='org_of_person_responsible_guid', on_delete=models.PROTECT,
+        verbose_name='Company of person responsible for drilling', null=True, blank=True)
     driller_name = models.CharField(
         max_length=200, blank=True, null=True, verbose_name='Name of Person Who Did the Work')
     consultant_name = models.CharField(
@@ -998,10 +1001,13 @@ class ActivitySubmission(AuditModel):
                                            verbose_name='Intended Water Use')
     # Driller responsible should be a required field on all submissions, but for legacy well
     # information this may not be available, so we can't enforce this on a database level.
-    driller_responsible = models.ForeignKey(Person, db_column='driller_responsible_guid',
-                                            on_delete=models.PROTECT,
-                                            verbose_name='Person Responsible for Drilling',
-                                            blank=True, null=True)
+    person_responsible = models.ForeignKey(Person, db_column='person_responsible_guid',
+                                           on_delete=models.PROTECT,
+                                           verbose_name='Person Responsible for Drilling',
+                                           blank=True, null=True)
+    company_of_person_responsible = models.ForeignKey(
+        Organization, db_column='org_of_person_responsible_guid', on_delete=models.PROTECT,
+        verbose_name='Company of person responsible for drilling', null=True, blank=True)
     driller_name = models.CharField(
         max_length=200, blank=True, null=True, verbose_name='Name of Person Who Did the Work')
     consultant_name = models.CharField(

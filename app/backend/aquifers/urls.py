@@ -43,6 +43,10 @@ urlpatterns = [
     url(r'^api/v1/aquifers/(?P<aquifer_id>[0-9]+)/history/$',
         never_cache(views.AquiferHistory.as_view()), name='aquifer-history'),
 
+    # Document Uploading (aquifer records)
+    url(r'^api/v1/aquifers/(?P<aquifer_id>[0-9]+)/presigned_put_url$',
+        never_cache(views.PreSignedDocumentKey.as_view()), name='aquifer-pre-signed-url'),
+
     url(r'^api/v1/aquifer-codes/materials/$',
         cache_page(CACHE_TTL)(views.AquiferMaterialListAPIView.as_view()),
         name='aquifer-material-list'

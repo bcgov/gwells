@@ -14,7 +14,8 @@
 from urllib.parse import quote
 
 from django.db.models import Prefetch
-from django.http import Http404
+from django.http import Http404, JsonResponse
+from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView
 
 from rest_framework import filters
@@ -91,10 +92,11 @@ class ListExtracts(APIView):
     @swagger_auto_schema(auto_schema=None)
     def get(self, request):
         host = get_env_variable('S3_HOST')
+        use_secure = int(get_env_variable('S3_USE_SECURE', 1))
         minioClient = Minio(host,
                             access_key=get_env_variable('S3_PUBLIC_ACCESS_KEY'),
                             secret_key=get_env_variable('S3_PUBLIC_SECRET_KEY'),
-                            secure=True)
+                            secure=use_secure)
         objects = minioClient.list_objects(get_env_variable('S3_WELL_EXPORT_BUCKET'))
         urls = list(
             map(
@@ -183,13 +185,13 @@ class WellTagSearchAPIView(ListAPIView):
 
     permission_classes = (DjangoModelPermissionsOrAnonReadOnly,)
     model = Well
-    queryset = Well.objects.all()
+    queryset = Well.objects.only('well_tag_number', 'owner_full_name').all()
     pagination_class = None
     serializer_class = WellTagSearchSerializer
     lookup_field = 'well_tag_number'
 
-    filter_backends = (filters.SearchFilter,)
-    ordering = ('well_tag_number',)
+    filter_backends = (filters.SearchFilter, filters.OrderingFilter)
+    ordering_fields = ('well_tag_number',)
     search_fields = (
         'well_tag_number',
         'owner_full_name',
@@ -202,3 +204,26 @@ class WellTagSearchAPIView(ListAPIView):
             return Response([])
         else:
             return super().get(request)
+
+
+class PreSignedDocumentKey(APIView):
+    """
+    Get a pre-signed document key to upload into an S3 compatible document store
+
+    post: obtain a URL that is pre-signed to allow client-side uploads
+    """
+
+    queryset = Well.objects.all()
+    permission_classes = (WellsEditPermissions,)
+
+    @swagger_auto_schema(auto_schema=None)
+    def get(self, request, tag):
+        well = get_object_or_404(self.queryset, pk=tag)
+        client = MinioClient(
+            request=request, disable_private=True)
+
+        object_name = request.GET.get("filename")
+        filename = "WTN_%s_%s" % (well.well_tag_number, object_name)
+        url = client.get_presigned_put_url(filename, bucket_name=get_env_variable("S3_WELLS_BUCKET"))
+
+        return JsonResponse({"object_name": object_name, "url": url})

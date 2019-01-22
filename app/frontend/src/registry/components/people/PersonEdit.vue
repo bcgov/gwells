@@ -164,7 +164,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 import ApiService from '@/common/services/ApiService.js'
 import APIErrorMessage from '@/common/components/APIErrorMessage'
 import inputFormatMixin from '@/common/inputFormatMixin.js'
@@ -209,6 +209,9 @@ export default {
     ...mapGetters([
       'error',
       'currentDriller'
+    ]),
+    ...mapState('documentState', [
+      'upload_files'
     ])
   },
   methods: {
