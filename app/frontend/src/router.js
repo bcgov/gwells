@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import AuthGuard from './authGuard'
+import authenticate from '@/common/authenticate.js'
+import { store } from './store/index.js'
 
 // Aquifers components
 import AquiferSearch from '@/aquifers/components/Search'
@@ -25,7 +27,7 @@ import SubmissionsHome from '@/submissions/views/SubmissionsHome.vue'
 
 Vue.use(Router)
 
-export default new Router({
+const router = new Router({
   mode: 'history',
   base: '/gwells/',
   routes: [
@@ -45,24 +47,40 @@ export default new Router({
       path: '/:id/edit',
       component: AquiferView,
       name: 'edit',
-      props: { edit: true }
+      props: { edit: true },
+      meta: {
+        edit: true,
+        app: 'aquifers'
+      }
     },
     {
       path: '/new',
       component: AquiferNew,
-      name: 'new'
+      name: 'new',
+      meta: {
+        edit: true,
+        app: 'aquifers'
+      }
     },
 
     // Submissions routes
     {
       path: '/submissions/:id/edit',
       name: 'SubmissionsEdit',
-      component: SubmissionsHome
+      component: SubmissionsHome,
+      meta: {
+        edit: true,
+        app: 'submissions'
+      }
     },
     {
       path: '/submissions/',
       name: 'SubmissionsHome',
-      component: SubmissionsHome
+      component: SubmissionsHome,
+      meta: {
+        edit: true,
+        app: 'submissions'
+      }
     },
 
     // Registries routes
@@ -73,7 +91,8 @@ export default new Router({
       beforeEnter: AuthGuard,
       meta: {
         // list of required permissions (e.g. "edit: true" means user needs edit permission)
-        edit: true
+        edit: true,
+        app: 'registries'
       }
     },
     {
@@ -82,7 +101,8 @@ export default new Router({
       component: PersonAdd,
       beforeEnter: AuthGuard,
       meta: {
-        edit: true
+        edit: true,
+        app: 'registries'
       }
     },
     {
@@ -91,7 +111,8 @@ export default new Router({
       component: ApplicationDetail,
       beforeEnter: AuthGuard,
       meta: {
-        view: true
+        view: true,
+        app: 'registries'
       }
     },
     {
@@ -100,7 +121,8 @@ export default new Router({
       component: PersonDetail,
       beforeEnter: AuthGuard,
       meta: {
-        view: true
+        view: true,
+        app: 'registries'
       }
     },
     {
@@ -109,7 +131,8 @@ export default new Router({
       component: OrganizationEdit,
       beforeEnter: AuthGuard,
       meta: {
-        edit: true
+        edit: true,
+        app: 'registries'
       }
     },
     {
@@ -118,7 +141,8 @@ export default new Router({
       component: OrganizationAdd,
       beforeEnter: AuthGuard,
       meta: {
-        edit: true
+        edit: true,
+        app: 'registries'
       }
     },
     {
@@ -156,3 +180,18 @@ export default new Router({
     return { x: 0, y: 0 }
   }
 })
+
+router.beforeEach((to, from, next) => {
+  if (!router.app.$keycloak) {
+    authenticate.authenticate(store).then(() => {
+      console.log(router.app.$keycloak)
+      next()
+    }).catch((e) => {
+      next({ name: 'wells-home' })
+    })
+  } else {
+    next()
+  }
+})
+
+export default router
