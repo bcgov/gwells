@@ -79,21 +79,6 @@ class Border(gis_models.Model):
     geom = gis_models.MultiPolygonField(srid=4269)
 
 
-# class Border(gis_models.Model):
-#     # Regular Django fields corresponding to the attributes in the province borders shapefile.
-#     pruid = models.CharField(max_length=2)
-#     prname = models.CharField(max_length=55)
-#     prename = models.CharField(max_length=30)
-#     prfname = models.CharField(max_length=30)
-#     preabbr = models.CharField(max_length=10)
-#     prfabbr = models.CharField(max_length=10)
-#     # GeoDjango-specific: a geometry field (MultiPolygonField)
-#     geom = gis_models.MultiPolygonField(srid=4269)
-
-#     def __str__(self):
-#         return self.prename
-
-
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
