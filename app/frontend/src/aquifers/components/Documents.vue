@@ -30,35 +30,20 @@
 </template>
 
 <script>
-import ApiService from '@/common/services/ApiService.js'
 
 export default {
   name: 'AquiferDocuments',
   props: {
-    aquifer: null
+    files: {
+      type: Object,
+      default: null
+    }
   },
   data () {
     return {
       loading: false,
-      files: null,
       error: null
     }
-  },
-  methods: {
-    fetchDocuments () {
-      this.loading = true
-      ApiService.query('aquifers/' + this.aquifer + '/files').then((response) => {
-        this.files = response.data
-      }).catch((e) => {
-        console.error(e)
-        this.error = 'Unable to retrieve file list.'
-      }).finally(() => {
-        this.loading = false
-      })
-    }
-  },
-  created () {
-    this.fetchDocuments()
   }
 }
 </script>

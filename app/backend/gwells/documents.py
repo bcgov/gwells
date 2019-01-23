@@ -124,6 +124,21 @@ class MinioClient():
         )
         return urls
 
+    def get_prefix(self, document_id: int, resource='well'):
+        """Helper function to determine the prefix for a given resource"""
+        if resource == 'well':
+            prefix = str(str('{:0<6}'.format('{:0>2}'.format(document_id // 10000))) + '/WTN ' +
+                         str(document_id) + '_')
+        elif resource == 'aquifer':
+            prefix = str(str('{:0<5}'.format('{:0>3}'.format(document_id // 100))) + '/AQ_' +
+                         str('{:0<5}'.format('{:0>5}'.format(document_id))) + '_')
+
+        return prefix
+
+    def format_object_name(self, object_name: str, document_id: int, resource='well'):
+        """Wrapper function for getting an object name, with path and prefix, for an object and resource type"""
+        return self.get_prefix(document_id, resource) + object_name
+
     def get_documents(self, document_id: int, resource='well', include_private=False):
         """Retrieves a list of available documents for a well or aquifer"""
 
@@ -131,12 +146,9 @@ class MinioClient():
         # e.g. WTA 23456 goes into prefix 020000/
 
         public_bucket = self.public_bucket
-        prefix = str(str('{:0<6}'.format('{:0>2}'.format(document_id//10000))) + '/WTN ' +
-                     str(document_id) + '_')
+        prefix = self.get_prefix(document_id, resource)
 
         if resource == 'aquifer':
-            prefix = str(str('{:0<5}'.format('{:0>3}'.format(document_id//100))) + '/AQ_' +
-                         str('{:0<5}'.format('{:0>5}'.format(document_id))) + '_')
             public_bucket = self.public_aquifers_bucket
 
         objects = {}
@@ -172,6 +184,7 @@ class MinioClient():
         return objects
 
     def get_presigned_put_url(self, object_name, bucket_name=None, private=False):
+        """Retrieves the a presigned URL for putting objects into an S3 source"""
         if private:
             if bucket_name is None:
                 bucket_name = self.private_bucket

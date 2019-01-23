@@ -21,6 +21,7 @@ export default {
     upload_files: [],
     files_uploading: false,
     file_upload_errors: [],
+    file_upload_error: false,
     file_upload_success: false
   },
   actions: {
@@ -28,9 +29,6 @@ export default {
       context.commit('setFilesUploading', true)
       let documentType = payload.documentType
       let recordId = payload.recordId
-
-      console.log(documentType)
-      console.log(recordId)
 
       let uploadPromises = []
 
@@ -45,6 +43,7 @@ export default {
 
               if (file.length !== 1) {
                 context.commit('addError', 'Error uploading file: ' + filename)
+                context.commit('setFileUploadError', true)
                 return
               }
 
@@ -62,25 +61,27 @@ export default {
                 })
                 .catch((error) => {
                   console.log(error)
+                  context.commit('setFileUploadError', true)
                   context.commit('addError', error)
                 })
             })
             .catch((error) => {
               console.log(error)
+              context.commit('setFileUploadError', true)
               context.commit('addError', error)
             })
         )
       })
 
-      Promise.all(uploadPromises)
-        .then(function (values) {
-          context.commit('setFilesUploading', false)
-          context.commit('setFileUploadSuccess', true)
-          context.commit('setFiles', [])
-          setTimeout(() => {
-            context.commit('setFileUploadSuccess', false)
-          }, 5000)
-        })
+      return Promise.all(uploadPromises)
+    },
+    fileUploadSuccess (context) {
+      context.commit('setFilesUploading', false)
+      context.commit('setFileUploadSuccess', true)
+      context.commit('setFiles', [])
+      setTimeout(() => {
+        context.commit('setFileUploadSuccess', false)
+      }, 5000)
     }
   },
   mutations: {
@@ -89,6 +90,9 @@ export default {
     },
     setFilesUploading (state, payload) {
       state.files_uploading = payload
+    },
+    setFileUploadError (state, payload) {
+      state.file_upload_error = payload
     },
     setFileUploadSuccess (state, payload) {
       state.file_upload_success = payload

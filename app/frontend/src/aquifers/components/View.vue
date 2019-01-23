@@ -16,10 +16,15 @@
   <b-card no-body class="p-3 mb-4">
     <api-error v-if="error" :error="error"/>
     <b-alert show v-if="files_uploading">File Upload In Progress...</b-alert>
-    <b-alert show v-if="!files_uploading && file_upload_error" variant="warning" >{{file_upload_error}}</b-alert>
-    <b-alert show v-if="!files_uploading && file_upload_success" variant="success" >Successfully uploaded all files</b-alert>
-    <b-alert variant="success" :show="showSaveSuccess" id="aquifer-success-alert">Record successfully updated.</b-alert>
-
+    <b-alert show v-if="!files_uploading && file_upload_error" variant="warning" >
+      There was an error uploading the files
+    </b-alert>
+    <b-alert show v-if="!files_uploading && file_upload_success" variant="success" >
+      Successfully uploaded all files
+    </b-alert>
+    <b-alert variant="success" :show="showSaveSuccess" id="aquifer-success-alert">
+      Record successfully updated.
+    </b-alert>
     <b-container>
       <b-row v-if="loading" class="border-bottom mb-3 pb-2">
         <b-col><h5>Loading...</h5></b-col>
@@ -51,6 +56,7 @@
         v-on:cancel="navigateToView"
         :fieldErrors="fieldErrors"
         :record="record"
+        :aquifer_files="aquifer_files"
         showId
         v-if="editMode"
         />
@@ -87,8 +93,7 @@
         <dd class="col-sm-4">{{record.demand_description}}</dd>
       </dl>
       <h5 class="mt-3 border-bottom">Documentation</h5>
-      <aquifer-documents :aquifer="id"></aquifer-documents>
-
+      <aquifer-documents :files="aquifer_files"></aquifer-documents>
       <change-history v-if="userRoles.aquifers.edit" class="mt-5" :id="id" resource="aquifers" ref="aquiferHistory"/>
     </b-container>
   </b-card>
@@ -107,7 +112,7 @@ import APIErrorMessage from '@/common/components/APIErrorMessage'
 import AquiferForm from './Form'
 import Documents from './Documents.vue'
 import ChangeHistory from '@/common/components/ChangeHistory.vue'
-import { mapActions, mapGetters, mapState } from 'vuex'
+import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 
 export default {
   components: {
@@ -119,14 +124,18 @@ export default {
   props: {
     'edit': Boolean
   },
-  created () { this.fetch() },
+  created () {
+    this.fetch()
+    this.fetchFiles()
+  },
   data () {
     return {
       error: undefined,
       fieldErrors: {},
       loading: false,
       record: {},
-      showSaveSuccess: false
+      showSaveSuccess: false,
+      aquifer_files: {}
     }
   },
   computed: {
@@ -142,11 +151,14 @@ export default {
     ])
   },
   watch: {
-    id () { this.fetch() }
+    id () {
+      this.fetch()
+    }
   },
   methods: {
     ...mapActions('documentState', [
-      'uploadFiles'
+      'uploadFiles',
+      'fileUploadSuccess'
     ]),
     handleSaveSuccess () {
       this.fetch()
@@ -157,11 +169,17 @@ export default {
       if (this.upload_files.length > 0) {
         this.uploadFiles({
           documentType: 'aquifers',
-          recordId: data.aquifer_id
+          recordId: this.id
+        }).then(() => {
+          this.fileUploadSuccess()
+          this.fetchFiles()
+        }).catch((error) => {
+          console.log(error)
         })
       }
     },
     handlePatchError (error) {
+      console.log(error)
       if (error.response) {
         if (error.response.status === 400) {
           this.fieldErrors = error.response.data
@@ -194,6 +212,12 @@ export default {
       ApiService.query(`aquifers/${id}`)
         .then((response) => {
           this.record = response.data
+        })
+    },
+    fetchFiles (id = this.id) {
+      ApiService.query(`aquifers/${id}/files`)
+        .then((response) => {
+          this.aquifer_files = response.data
         })
     }
   }
