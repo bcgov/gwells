@@ -53,6 +53,7 @@ class MinioClient():
             self.public_bucket = get_env_variable(
                 'S3_ROOT_BUCKET', strict=True)
             self.public_aquifers_bucket = get_env_variable('S3_AQUIFER_BUCKET', default_value="aquifer-docs")
+            self.public_drillers_bucket = get_env_variable('S3_REGISTRANT_BUCKET', default_value="driller-docs")
             self.public_access_key = get_env_variable(
                 'S3_PUBLIC_ACCESS_KEY', warn=False)
             self.public_secret_key = get_env_variable(
@@ -124,7 +125,7 @@ class MinioClient():
         )
         return urls
 
-    def get_prefix(self, document_id: int, resource='well'):
+    def get_prefix(self, document_id, resource='well'):
         """Helper function to determine the prefix for a given resource"""
         if resource == 'well':
             prefix = str(str('{:0<6}'.format('{:0>2}'.format(document_id // 10000))) + '/WTN ' +
@@ -132,7 +133,10 @@ class MinioClient():
         elif resource == 'aquifer':
             prefix = str(str('{:0<5}'.format('{:0>3}'.format(document_id // 100))) + '/AQ_' +
                          str('{:0<5}'.format('{:0>5}'.format(document_id))) + '_')
+        elif resource == 'driller':
+            prefix = "P_%s" % document_id
 
+        print(prefix)
         return prefix
 
     def format_object_name(self, object_name: str, document_id: int, resource='well'):
@@ -144,23 +148,29 @@ class MinioClient():
 
         # prefix well tag numbers with a 6 digit "folder" id
         # e.g. WTA 23456 goes into prefix 020000/
-
-        public_bucket = self.public_bucket
         prefix = self.get_prefix(document_id, resource)
 
-        if resource == 'aquifer':
+        if resource == 'well':
+            public_bucket = self.public_bucket
+        elif resource == 'aquifer':
             public_bucket = self.public_aquifers_bucket
+        elif resource == 'driller':
+            public_bucket = self.public_drillers_bucket
 
         objects = {}
+        print(public_bucket)
 
         # provide all requests with a "public" collection of documents
         if self.public_client:
             pub_objects = []
             try:
+                print(self.public_client.list_objects(
+                        public_bucket, prefix=prefix, recursive=True))
                 pub_objects = self.create_url_list(
                     self.public_client.list_objects(
                         public_bucket, prefix=prefix, recursive=True),
                     self.public_host)
+                print(pub_objects)
             except:
                 logger.error(
                     "Could not retrieve files from public file server")

@@ -65,6 +65,8 @@ urlpatterns = [
     # Document Uploading (driller records)
     url(r'^api/v1/drillers/(?P<person_guid>[-\w]+)/presigned_put_url$',
         never_cache(views.PreSignedDocumentKey.as_view()), name='drillers-pre-signed-url'),
+    url(r'^api/v1/drillers/(?P<person_guid>[-\w]+)/files/$',
+        never_cache(views.ListFiles.as_view()), name='drillers-file-list'),
 
     # Person note endpoints
     url(r'^api/v1/drillers/(?P<person_guid>[-\w]+)/notes/$',

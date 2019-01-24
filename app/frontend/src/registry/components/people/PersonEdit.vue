@@ -209,9 +209,6 @@ export default {
     ...mapGetters([
       'error',
       'currentDriller'
-    ]),
-    ...mapState('documentState', [
-      'upload_files'
     ])
   },
   methods: {

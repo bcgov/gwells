@@ -796,6 +796,25 @@ class PersonNameSearch(ListAPIView):
     )
 
 
+class ListFiles(APIView):
+    """
+    List documents associated with an aquifer
+
+    get: list files found for the aquifer identified in the uri
+    """
+
+    @swagger_auto_schema(auto_schema=None)
+    def get(self, request, person_guid):
+
+        client = MinioClient(
+            request=request, disable_private=True)
+
+        documents = client.get_documents(
+            person_guid, resource="driller", include_private=False)
+
+        return Response(documents)
+
+
 class PreSignedDocumentKey(APIView):
     """
     Get a pre-signed document key to upload into an S3 compatible document store

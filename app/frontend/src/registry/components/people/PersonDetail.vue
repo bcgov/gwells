@@ -365,10 +365,15 @@
             </div>
             <b-row class="mt-3">
               <b-col>
+                <person-documents :files="person_files"></person-documents>
+              </b-col>
+            </b-row>
+            <b-row class="mt-3">
+              <b-col>
                 <b-form-group
                   horizontal
                   label-cols="4"
-                  label="Documents">
+                  label="Upload Documents">
                   <b-form-file
                     v-model="files"
                     multiple
@@ -414,10 +419,12 @@ import ApiService from '@/common/services/ApiService.js'
 import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 import { SET_DRILLER } from '@/registry/store/mutations.types'
 import { FETCH_DRILLER, FETCH_DRILLER_OPTIONS } from '@/registry/store/actions.types'
+import PersonDocuments from "./PersonDocuments";
 
 export default {
   name: 'person-detail',
   components: {
+    'person-documents': PersonDocuments,
     'api-error': APIErrorMessage,
     'person-edit': PersonEdit,
     'application-add': ApplicationAddEdit,
@@ -456,7 +463,8 @@ export default {
       confirmRegisterModal: {
         DRILL: false,
         PUMP: false
-      }
+      },
+      person_files: {}
     }
   },
   computed: {
@@ -548,7 +556,8 @@ export default {
   },
   methods: {
     ...mapActions('documentState', [
-      'uploadFiles'
+      'uploadFiles',
+      'fileUploadSuccess'
     ]),
     ...mapMutations('documentState', [
       'setFiles'
@@ -570,6 +579,7 @@ export default {
       if (this.currentDriller && this.$refs.changeHistory) {
         this.$refs.changeHistory.update()
       }
+      this.fetchFiles()
     },
     addApplication (registration) {
       const newClassification = {
@@ -617,8 +627,21 @@ export default {
         this.uploadFiles({
           documentType: 'drillers',
           recordId: this.currentDriller.person_guid
+        }).then(() => {
+          this.fileUploadSuccess()
+          this.fetchFiles()
+          window.scrollTo(0,0);
+        }).catch((error) => {
+          console.log(error)
         })
       }
+    },
+    fetchFiles () {
+      ApiService.query(`drillers/${this.$route.params.person_guid}/files/`)
+        .then((response) => {
+          this.person_files = response.data
+          console.log(response.data)
+        })
     }
   },
   created () {
