@@ -12,3 +12,4 @@
 export const SET_KEYCLOAK = 'SET_KEYCLOAK'
 export const SET_CODES = 'SET_SUBMISSION_CODES'
 export const SET_ERROR = 'SET_SUBMISSION_ERROR'
+export const SET_WELLS = 'SET_WELLS'

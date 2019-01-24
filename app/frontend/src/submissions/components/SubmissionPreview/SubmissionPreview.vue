@@ -48,8 +48,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <fieldset class="my-3 detail-section">
       <legend>Person Responsible for Work</legend>
       <b-row>
-        <b-col cols="12" lg="4"><span class="font-weight-bold">Person Responsible for Work:</span> {{ form.driller_responsible ? form.driller_responsible['name'] : '' }}</b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Person Responsible for Work:</span> {{ form.person_responsible ? form.person_responsible['name'] : '' }}</b-col>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Person Who Performed Work:</span> {{ form.driller_name }}</b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Company of Person Responsible for Work:</span> {{ form.company_of_person_responsible ? form.company_of_person_responsible['org_verbose_name'] : '' }}</b-col>
       </b-row>
       <b-row>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Consultant Name:</span> {{ form.consultant_name }}</b-col>
@@ -426,6 +427,17 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </p>
     </fieldset>
 
+    <fieldset>
+      <legend>Documents to Upload</legend>
+      <b-row>
+        <b-col cols="12" lg="4">
+          <b-list-group>
+            <b-list-group-item v-for="(f, index) in upload_files" :key="index">{{f.name}}</b-list-group-item>
+          </b-list-group>
+        </b-col>
+      </b-row>
+    </fieldset>
+
     <!-- Back / Next / Submit controls -->
     <b-row v-if="!reportSubmitted" class="mt-5">
       <b-col>
@@ -439,7 +451,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 import CoordsMap from '@/submissions/components/SubmissionForm/CoordsMap.vue'
 import convertCoordinatesMixin from '@/common/convertCoordinatesMixin.js'
 import filterBlankRows from '@/common/filterBlankRows'
@@ -487,7 +499,10 @@ export default {
     // converts form lat/long and returns an object containing UTM easting, northing, and zone
       return this.convertToUTM(Number(this.form.longitude), Number(this.form.latitude))
     },
-    ...mapGetters(['codes'])
+    ...mapGetters(['codes']),
+    ...mapState('documentState', [
+      'upload_files'
+    ]),
   }
 }
 </script>

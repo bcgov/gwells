@@ -15,7 +15,8 @@
 import reversion
 from collections import OrderedDict
 from django.db.models import Q, Prefetch
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, JsonResponse
+from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.views.generic import TemplateView
 from django_filters import rest_framework as restfilters
@@ -28,9 +29,11 @@ from rest_framework.response import Response
 from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
 from rest_framework.views import APIView
 from drf_multiple_model.views import ObjectMultipleModelAPIView
+from gwells.documents import MinioClient
 from gwells.roles import REGISTRIES_VIEWER_ROLE
 from gwells.models import ProvinceStateCode
 from gwells.pagination import APILimitOffsetPagination
+from gwells.settings.base import get_env_variable
 from reversion.models import Version
 from registries.models import (
     AccreditedCertificateCode,
@@ -791,3 +794,26 @@ class PersonNameSearch(ListAPIView):
         'first_name',
         'surname',
     )
+
+
+class PreSignedDocumentKey(APIView):
+    """
+    Get a pre-signed document key to upload into an S3 compatible document store
+
+    post: obtain a URL that is pre-signed to allow client-side uploads
+    """
+
+    queryset = Person.objects.all()
+    permission_classes = (RegistriesPermissions,)
+
+    @swagger_auto_schema(auto_schema=None)
+    def get(self, request, person_guid):
+        person = get_object_or_404(self.queryset, pk=person_guid)
+        client = MinioClient(
+            request=request, disable_private=True)
+
+        object_name = request.GET.get("filename")
+        filename = "P_%s_%s" % (person.person_guid, object_name)
+        url = client.get_presigned_put_url(filename, bucket_name=get_env_variable("S3_REGISTRANT_BUCKET"))
+
+        return JsonResponse({"object_name": object_name, "url": url})

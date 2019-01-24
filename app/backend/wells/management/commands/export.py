@@ -124,7 +124,7 @@ class Command(BaseCommand):
  intended_water_use_code, licenced_status_code,
  observation_well_number, obs_well_status_code, water_supply_system_name,
  water_supply_system_well_name,
- street_address, city, legal_lot, legal_plan, legal_district_lot, legal_block,
+ well.street_address, well.city, legal_lot, legal_plan, legal_district_lot, legal_block,
  legal_section, legal_township, legal_range,
  land_district_code,
  legal_pid,
@@ -165,13 +165,16 @@ class Command(BaseCommand):
  drilling_company.drilling_company_code,
  ems,
  aquifer_id,
- registries_person.surname as driller_responsible
+ registries_person.surname as person_responsible,
+ registries_organization.name as company_of_person_responsible
  from well
  left join well_subclass_code as wsc on wsc.well_subclass_guid = well.well_subclass_guid
  left join drilling_company on
  drilling_company.drilling_company_guid = well.drilling_company_guid
  left join registries_person on
- registries_person.person_guid = well.driller_responsible_guid
+ registries_person.person_guid = well.person_responsible_guid
+ left join registries_organization on
+ registries_organization.org_guid = well.org_of_person_responsible_guid
  order by well_tag_number""")
         ###########
         # LITHOLOGY

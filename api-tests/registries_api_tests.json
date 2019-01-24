@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "050f7138-bc27-4b73-9e23-30500331ba5e",
+		"_postman_id": "ceaead09-4021-429a-bb6f-f4e87d822599",
 		"name": "GWELLS Registries API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -939,59 +939,8 @@
 									}
 								],
 								"body": {
-									"mode": "formdata",
-									"formdata": [
-										{
-											"key": "who_created",
-											"value": "STH",
-											"type": "text"
-										},
-										{
-											"key": "who_updated",
-											"value": "",
-											"type": "text"
-										},
-										{
-											"key": "name",
-											"value": "Drilling Co'; rest of name\\\\/*\\\";more name",
-											"type": "text"
-										},
-										{
-											"key": "street_address",
-											"value": "address\\\";\\/* \\'\\\\';rest of address",
-											"type": "text"
-										},
-										{
-											"key": "city",
-											"value": "1') or '1';",
-											"type": "text"
-										},
-										{
-											"key": "postal_code",
-											"value": "",
-											"type": "text"
-										},
-										{
-											"key": "main_tel",
-											"value": "",
-											"type": "text"
-										},
-										{
-											"key": "fax_tel",
-											"value": "",
-											"type": "text"
-										},
-										{
-											"key": "website_url",
-											"value": "",
-											"type": "text"
-										},
-										{
-											"key": "certificate_authority",
-											"value": "False",
-											"type": "text"
-										}
-									]
+									"mode": "raw",
+									"raw": ""
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/organizations/{{created_guid_bad_input}}/?format=json",
@@ -2196,6 +2145,75 @@
 									]
 								},
 								"description": "Replace a driller record"
+							},
+							"response": []
+						},
+						{
+							"name": "Registries Get PUT_URL",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "768133b0-7dd6-4197-97ca-ddca5cb1743f",
+										"exec": [
+											"var jsonData = pm.response.json()",
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.expect(pm.response.code).to.equal(200);",
+											"})",
+											"",
+											"pm.test(\"Response contains URL with signature\", function() {",
+											"    var jsonData = pm.response.json()",
+											"    pm.expect(jsonData.url).to.not.eql(null)",
+											"    pm.expect(jsonData.url).to.include(\"X-Amz-Signature\")",
+											"})",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "4d7ea87d-32ab-4696-9176-b041b6673698",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}/presigned_put_url?filename=file.pdf",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"drillers",
+										"{{created_driller_guid}}",
+										"presigned_put_url"
+									],
+									"query": [
+										{
+											"key": "filename",
+											"value": "file.pdf"
+										}
+									]
+								}
 							},
 							"response": []
 						},
@@ -3852,14 +3870,8 @@
 									}
 								],
 								"body": {
-									"mode": "formdata",
-									"formdata": [
-										{
-											"key": "registration_no",
-											"value": "12345",
-											"type": "text"
-										}
-									]
+									"mode": "raw",
+									"raw": ""
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/registrations/{{created_registration_guid}}/?format=json",
@@ -3916,14 +3928,8 @@
 									}
 								],
 								"body": {
-									"mode": "formdata",
-									"formdata": [
-										{
-											"key": "registration_no",
-											"value": "12345",
-											"type": "text"
-										}
-									]
+									"mode": "raw",
+									"raw": ""
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/applications/{{created_application_guid}}/?format=json",

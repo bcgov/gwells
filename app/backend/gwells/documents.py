@@ -57,13 +57,19 @@ class MinioClient():
                 'S3_PUBLIC_ACCESS_KEY', warn=False)
             self.public_secret_key = get_env_variable(
                 'S3_PUBLIC_SECRET_KEY', warn=False)
+            self.use_https = int(get_env_variable(
+                'S3_USE_HTTPS', 1, warn=False))
 
             self.public_client = Minio(
                 self.public_host,
                 access_key=self.public_access_key,
                 secret_key=self.public_secret_key,
-                secure=True
+                secure=self.use_https
             )
+
+        if not disable_private:
+            self.private_client = self.create_private_client()
+
         self.disable_private = disable_private
 
     def create_private_client(self):
@@ -76,7 +82,7 @@ class MinioClient():
             self.private_host,
             access_key=self.private_access_key,
             secret_key=self.private_secret_key,
-            secure=True
+            secure=self.use_https
         )
 
     def get_private_file(self, object_name: str):
@@ -150,8 +156,7 @@ class MinioClient():
             objects['public'] = pub_objects
 
         # authenticated requests also receive a "private" collection
-        self.private_client = self.create_private_client()
-        if include_private and self.private_client:
+        if include_private and not self.disable_private:
             priv_objects = []
             try:
                 priv_objects = self.create_url_list(
@@ -165,3 +170,19 @@ class MinioClient():
             objects['private'] = priv_objects
 
         return objects
+
+    def get_presigned_put_url(self, object_name, bucket_name=None, private=False):
+        if private:
+            if bucket_name is None:
+                bucket_name = self.private_bucket
+
+            key = self.private_client.presigned_put_object(
+                bucket_name, object_name, expires=timedelta(minutes=5))
+        else:
+            if bucket_name is None:
+                bucket_name = self.public_bucket
+
+            key = self.public_client.presigned_put_object(
+                bucket_name, object_name, expires=timedelta(minutes=5))
+
+        return key

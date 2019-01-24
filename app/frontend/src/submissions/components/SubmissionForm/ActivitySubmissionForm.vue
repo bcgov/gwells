@@ -105,7 +105,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
         :drillerName.sync="form.driller_name"
         :consultantName.sync="form.consultant_name"
         :consultantCompany.sync="form.consultant_company"
-        :personResponsible.sync="form.driller_responsible"
+        :personResponsible.sync="form.person_responsible"
+        :companyOfPersonResponsible.sync="form.company_of_person_responsible"
         :drillerSameAsPersonResponsible.sync="form.meta.drillerSameAsPersonResponsible"
         :errors="errors"
         :fieldsLoaded="fieldsLoaded"
@@ -396,6 +397,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         :isStaffEdit="isStaffEdit"
         :saveDisabled="editSaveDisabled"
         v-on:save="$emit('submit_edit')"
+        v-on:setFormValueChanged="setFormValueChanged"
       />
 
       <!-- aquifer -->
@@ -654,6 +656,10 @@ export default {
     saveStatusReset () {
       this.saveFormSuccess = false
       this.loadFormSuccess = false
+    },
+    setFormValueChanged () {
+      console.log('catch emit')
+      this.formValueChanged = true
     }
   },
   created () {

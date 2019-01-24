@@ -12,8 +12,8 @@
     limitations under the License.
 """
 
-from django.shortcuts import render
 from django_filters import rest_framework as djfilters
+from django.http import Http404, JsonResponse
 from django.views.generic import TemplateView
 
 from drf_yasg.utils import swagger_auto_schema
@@ -27,6 +27,7 @@ from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveUpda
 from reversion.views import RevisionMixin
 
 from gwells.documents import MinioClient
+from gwells.settings.base import get_env_variable
 
 from aquifers import models
 from aquifers import serializers
@@ -37,7 +38,6 @@ from aquifers.models import (
     AquiferProductivity,
     AquiferSubtype,
     AquiferVulnerabilityCode,
-    QualityConcern,
 )
 from aquifers.permissions import HasAquiferEditRoleOrReadOnly, HasAquiferEditRole
 from gwells.change_history import generate_history_diff
@@ -213,3 +213,24 @@ class AquiferHistory(APIView):
         history_diff = sorted(aquifer_history_diff, key=lambda x: x['date'], reverse=True)
 
         return Response(history_diff)
+
+
+class PreSignedDocumentKey(APIView):
+    """
+    Get a pre-signed document key to upload into an S3 compatible document store
+
+    post: obtain a URL that is pre-signed to allow client-side uploads
+    """
+
+    permission_classes = (HasAquiferEditRole,)
+
+    @swagger_auto_schema(auto_schema=None)
+    def get(self, request, aquifer_id):
+        client = MinioClient(
+            request=request, disable_private=True)
+
+        object_name = request.GET.get("filename")
+        filename = "AQ_%s_%s" % (aquifer_id, object_name)
+        url = client.get_presigned_put_url(filename, bucket_name=get_env_variable("S3_AQUIFER_BUCKET"))
+
+        return JsonResponse({"object_name": object_name, "url": url})

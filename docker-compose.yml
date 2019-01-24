@@ -1,6 +1,18 @@
 version: '3'
+version: '3'
 
 services:
+  minio:
+    image: minio/minio
+    hostname: minio
+    ports:
+    - "9000:9000"
+    volumes:
+    - ./.tmp/minio-files:/data
+    environment:
+      MINIO_ACCESS_KEY: minio
+      MINIO_SECRET_KEY: minio123
+    command: server /data
   db:
     image: postgres:9.6
     environment:
@@ -53,6 +65,14 @@ services:
       SSO_CLIENT: gwells-test
       SSO_AUTH_HOST: https://sso-test.pathfinder.gov.bc.ca/auth
       SSO_IDP_HINT: "undefined"
+      S3_HOST: minio:9000
+      S3_USE_HTTPS: 0
+      S3_PUBLIC_ACCESS_KEY: minio
+      S3_PUBLIC_SECRET_KEY: minio123
+      S3_WELL_EXPORT_BUCKET: gwells
+      S3_ROOT_BUCKET:  gwells
+      S3_AQUIFER_BUCKET: aquifers
+      S3_USE_SECURE: 0
     command: /bin/bash -c "sleep 3 &&
             set -x &&
             cd /app/backend &&
