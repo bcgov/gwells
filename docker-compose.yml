@@ -6,10 +6,14 @@ services:
     # I cloned https://github.com/bcgov/openshift-postgresql-oracle_fdw
     # and ran: docker build -t postgis . -f centos7.rh-postgresql96/Dockerfile
     image: postgis:latest
+    # image: postgres:9.6
     environment:
+      # POSTGRES_USER: gwells
+      # POSTGRES_PASSWORD: test1
+      # POSTGRES_DBNAME: gwells
       POSTGRESQL_USER: gwells
       POSTGRESQL_PASSWORD: test1
-      POSTGRESQL_DATABASE: gwells
+      POSTGRESQL_DATABASE: gwells      
     hostname: db
     volumes:
       - ./.tmp/psql-dev:/var/lib/postgresql
@@ -31,10 +35,12 @@ services:
       - ./app:/app
       - /app/frontend/node_modules/
   api:
-    # The image below, need to have gdal installed, I used:
+    # The image below, needs to have gdal installed, I used:
     # https://github.com/Sybrand/pythonforpostgis/blob/master/usingapt/Dockerfile 
     # and ran: docker build --tag=python36gdal .
-    image: python36gdal:latest
+    # which worked fine.
+    # For now, just installing gdal-bin as part of this load
+    image: python:3.6
     environment:
       DATABASE_SERVICE_NAME: postgres
       DATABASE_ENGINE: postgresql
@@ -59,8 +65,11 @@ services:
       SSO_CLIENT: gwells-test
       SSO_AUTH_HOST: https://sso-test.pathfinder.gov.bc.ca/auth
       SSO_IDP_HINT: "undefined"
+    # apt-get update -q and apt-get install -q -y gdal-bin should be part of the base image!!!!
     command: /bin/bash -c "sleep 3 &&
             set -x &&
+            apt-get update -q &&
+            apt-get install -q -y gdal-bin &&
             cd /app/backend &&
             mkdir -p .pip &&
             pip3 install --upgrade pip &&
