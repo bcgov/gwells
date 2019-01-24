@@ -59,7 +59,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               </b-col>
             </b-row>
           </b-card>
-          <b-row><b-col><p class="p-3">OR</p></b-col></b-row>
+          <b-row><b-col><p class="p-3 m-0">OR</p></b-col></b-row>
           <b-card no-body class="p-3 mx-1 mx-md-1">
             <b-row>
               <b-col cols="12" md="6" lg="6">
@@ -145,7 +145,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               </b-col>
             </b-row>
           </b-card>
-          <b-row><b-col><p class="p-3">OR</p></b-col></b-row>
+          <b-row><b-col><p class="p-3 m-0">OR</p></b-col></b-row>
           <b-card no-body class="p-3 mx-1 mx-md-1">
             <b-row>
               <b-col cols="12" sm="4" lg="4">
@@ -204,6 +204,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
               </b-col>
             </b-row>
           </b-card>
+          <b-row>
+            <b-col class="mt-3">
+              <div v-if="validCoordinate === false">
+                <div class="alert alert-danger" role="alert">You have entered an invalid coordinate</div>
+              </div>
+            </b-col>
+          </b-row>
         </b-col>
         <b-col sm="12" md="6">
           <coords-map :latitude="mapLatitude" :longitude="mapLongitude" v-on:coordinate="handleMapCoordinate"/>
@@ -222,6 +229,7 @@ import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 import CoordsMap from '@/submissions/components/SubmissionForm/CoordsMap.vue'
 import { mapGetters } from 'vuex'
 import convertCoordinatesMixin from '@/common/convertCoordinatesMixin.js'
+import ApiService from '@/common/services/ApiService.js'
 export default {
   components: {
     'coords-map': CoordsMap
@@ -284,7 +292,9 @@ export default {
           sec: null
         }
       },
-      latitudeDMSValidation: false
+      latitudeDMSValidation: false,
+      coordinateLookup: new Map(),
+      validCoordinate: null
     }
   },
   created () {
@@ -399,6 +409,7 @@ export default {
           latitude = Number(latitude)
           const { easting, northing, zone } = this.convertToUTM(Number(this.longitudeInput), Number(latitude))
 
+          this.checkIfCoordinateIsValid(latitude, this.longitudeInput)
           this.updateDMS(this.convertToDMS(Number(this.longitudeInput)), this.convertToDMS(Number(latitude)))
           this.updateUTM(easting, northing, zone)
         }
@@ -416,6 +427,7 @@ export default {
           long = Number(long)
           const { easting, northing, zone } = this.convertToUTM(long, Number(this.latitudeInput))
 
+          this.checkIfCoordinateIsValid(this.latitudeInput, long)
           this.updateDMS(this.convertToDMS(long), this.convertToDMS(Number(this.latitudeInput)))
           this.updateUTM(easting, northing, zone)
         }
@@ -513,8 +525,11 @@ export default {
       }
     },
     updateDegrees (longitude, latitude) {
-      this.longitudeInput = this.roundDecimalDegrees(longitude)
-      this.latitudeInput = this.roundDecimalDegrees(latitude)
+      const newLong = this.roundDecimalDegrees(longitude)
+      const newLat = this.roundDecimalDegrees(latitude)
+      this.longitudeInput = newLong
+      this.latitudeInput = newLat
+      this.checkIfCoordinateIsValid(newLat, newLong)
     },
     resetDegrees () {
       this.degrees = {
@@ -539,6 +554,29 @@ export default {
 
       this.updateDMS(this.convertToDMS(latlng.lng), this.convertToDMS(latlng.lat))
       this.updateUTM(easting, northing, zone)
+    },
+    checkIfCoordinateIsValid (latitude, longitude) {
+      // Longitude may sometimes drop the minus (negative) sign, we make sure to add it back in.
+      longitude = this.transformToNegative(longitude)
+      // We use a dictionary to reduce network traffic, by storing and checking for coordinates locally.
+      const key = `${latitude};${longitude}`
+      if (this.coordinateLookup.has(key)) {
+        // We already have this key, so we don't have to do a network call.
+        this.validCoordinate = this.coordinateLookup.get(key)
+      } else {
+        // Reserve a spot in the dictionary, so that subsequent checks don't result in a network call.
+        // We may have multiple requests to check the same coordinate before a result is returned.
+        this.coordinateLookup.set(key, null)
+        const params = {
+          latitude: latitude,
+          longitude: longitude}
+        ApiService.query('gis/insidebc', params).then((response) => {
+          // Store the result for future lookups.
+          this.coordinateLookup.set(key, response.data.inside)
+          // Update the state.
+          this.validCoordinate = response.data.inside
+        })
+      }
     }
   }
 }

@@ -42,10 +42,13 @@ class InsideBC(APIView):
         latitude = request.query_params.get('latitude')
         longitude = request.query_params.get('longitude')
 
-        wgs84_srid = 4326
-        pnt = GEOSGeometry('POINT({} {})'.format(latitude, longitude), srid=wgs84_srid)
-        result = Border.objects.filter(geom__contains=pnt)
+        inside = False
+        if latitude and longitude:
+            wgs84_srid = 4326
+            pnt = GEOSGeometry('POINT({} {})'.format(longitude, latitude), srid=wgs84_srid)
+            result = Border.objects.filter(geom__contains=pnt)
+            inside = result.count() > 0
 
         return Response({
-            'inside': result.count() > 0
+            'inside': inside
         })
