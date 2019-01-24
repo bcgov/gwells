@@ -238,8 +238,8 @@ export default {
     personNameReg (option) {
       let drillno = option.registrations.find((item) => {
         return item.activity === 'DRILL'
-      }).registration_no || "Unavailable"
-      return option.first_name + " " + option.surname + " (" + drillno + ")"
+      }).registration_no || 'Unavailable'
+      return option.first_name + ' ' + option.surname + ' (' + drillno + ')'
     }
   },
   watch: {
