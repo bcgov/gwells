@@ -318,7 +318,8 @@ class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
             # User is not logged in
             # Only show active drillers to non-admin users and public
             qs = qs.filter(
-                Q(registrations__applications__current_status__code='A', registrations__registries_activity=activity),
+                Q(registrations__applications__current_status__code='A',
+                    registrations__registries_activity=activity),
                 Q(registrations__applications__removal_date__isnull=True),
                 Q()
             )
@@ -782,7 +783,7 @@ class PersonNameSearch(ListAPIView):
     """Search for a person in the Register"""
 
     permission_classes = (DjangoModelPermissionsOrAnonReadOnly,)
-    serializer_class = PersonNameSerializer
+    serializer_class = PersonListSerializer
     queryset = Person.objects.all()
     pagination_class = None
     lookup_field = 'person_guid'

@@ -56,12 +56,16 @@ Licensed under the Apache License, Version 2.0 (the "License");
               </template>
               <template slot="option" slot-scope="option">
                 <div>
-                  {{ option.name }}
+                  {{ option.first_name }} {{ option.surname}} ({{ option.registrations.find((item) => {
+                    return item.activity === 'DRILL'
+                  }).registration_no}})
                   </div>
               </template>
               <template slot="selected-option" slot-scope="option">
                 <div>
-                  {{ option.name }}
+                  {{ option.first_name }} {{ option.surname}} ({{ option.registrations.find((item) => {
+                    return item.activity === 'DRILL'
+                  }).registration_no}})
                 </div>
               </template>
             </v-select>

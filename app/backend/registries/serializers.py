@@ -750,4 +750,4 @@ class PersonNameSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Person
-        fields = ('name', 'person_guid')
+        fields = ('name', 'person_guid', 'registrations')
