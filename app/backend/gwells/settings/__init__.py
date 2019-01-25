@@ -106,6 +106,7 @@ INSTALLED_APPS = (
     'django_extensions',
     'drf_multiple_model',
     'reversion',
+    'django.contrib.gis',
 )
 
 MIDDLEWARE = (
