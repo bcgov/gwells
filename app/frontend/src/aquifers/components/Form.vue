@@ -315,11 +315,6 @@ export default {
       'upload_files'
     ])
   },
-  methods: {
-    ...mapMutations('documentState', [
-      'setFiles'
-    ])
-  },
   props: {
     fieldErrors: Object,
     record: Object,
@@ -327,6 +322,7 @@ export default {
   },
   methods: {
     ...mapMutations('aquiferCodes', ['addCodes']),
+    ...mapMutations('documentState', ['setFiles']),
     fetchCode (codePath, key) {
       ApiService.query(codePath).then((response) => {
         this.addCodes({key, codeTable: response.data.results})

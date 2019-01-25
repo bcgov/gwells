@@ -180,7 +180,7 @@ class WellDetailSerializer(AuditModelSerializer):
             "decommission_start_date",
             "decommission_end_date",
             "person_responsible",
-            "company_of_person_responsible"
+            "company_of_person_responsible",
             "drilling_company",
             "well_identification_plate_attached",
             "id_plate_attached_by",
@@ -278,7 +278,7 @@ class WellDetailSerializer(AuditModelSerializer):
             "screen_set",
             "linerperforation_set",
             "decommission_description_set",
-            "lithologydescription_set"
+            "lithologydescription_set",
         )
 
 

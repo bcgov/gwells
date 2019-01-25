@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-card no-body class="mb-3 container container-wide">
+    <b-card no-body class="mb-3 container container-wide d-print-none">
       <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"></b-breadcrumb>
     </b-card>
     <b-card class="container container-wide p-1">
@@ -9,8 +9,8 @@
       <fieldset id="summary_fieldset" class="detail-section mb-3">
         <legend>
           <span class="h2">Well Summary</span>
-          <div class="float-right">
-            <router-link v-if="show.edit" :to="{ name: 'SubmissionsEdit', params: { id: well.well_tag_number || 0 } }" class="hide-for-print mr-3">
+          <div class="float-right d-print-none">
+            <router-link v-if="show.edit" :to="{ name: 'SubmissionsEdit', params: { id: well.well_tag_number || 0 } }" class="mr-3">
               <button class="btn btn-primary mb-1">Edit</button>
             </router-link>
             <b-btn variant="light" v-if="analytics" aria-label="Print" @click="ga('send', 'event', 'Button', 'print', 'Wells Summary Print'); handlePrint;"><i class="fa fa-print"></i></b-btn>
@@ -19,51 +19,51 @@
           </div>
         </legend>
         <b-row>
-          <b-col cols="12" lg="4"><span class="font-weight-bold">Well Tag Number:</span> {{ well.well_tag_number }}</b-col>
-          <b-col cols="12" lg="4"><span class="font-weight-bold">Well Status:</span> {{ well.well_status }}</b-col>
-          <b-col cols="12" lg="4"><span class="font-weight-bold">Observation Well Number:</span> {{ well.observation_well_number }}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Well Tag Number:</span> {{ well.well_tag_number }}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Well Status:</span> {{ well.well_status }}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Observation Well Number:</span> {{ well.observation_well_number }}</b-col>
         </b-row>
         <b-row>
-          <b-col cols="12" lg="4"><span class="font-weight-bold">Well Identification Plate Number:</span> {{ well.identification_plate_number }}</b-col>
-          <b-col cols="12" lg="4"><span class="font-weight-bold">Well Class:</span> {{ well.well_class }}</b-col>
-          <b-col cols="12" lg="4"><span class="font-weight-bold">Observation Well Status:</span> {{ well.observation_well_status }}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Well Identification Plate Number:</span> {{ well.identification_plate_number }}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Well Class:</span> {{ well.well_class }}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Observation Well Status:</span> {{ well.observation_well_status }}</b-col>
         </b-row>
         <b-row>
-          <b-col cols="12" lg="4"><span class="font-weight-bold">Owner Name:</span> {{ well.owner_full_name }}</b-col>
-          <b-col cols="12" lg="4"><span class="font-weight-bold">Well Subclass:</span> {{ well.subclass }}</b-col>
-          <b-col cols="12" lg="4"><span class="font-weight-bold">Environmental Monitoring System (EMS) ID:</span> {{ well.ems_id }}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Owner Name:</span> {{ well.owner_full_name }}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Well Subclass:</span> {{ well.subclass }}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Environmental Monitoring System (EMS) ID:</span> {{ well.ems_id }}</b-col>
         </b-row>
         <b-row>
-          <b-col cols="12" lg="4"><span class="font-weight-bold">Licensed Status:</span> {{ well.licenced_status }}</b-col>
-          <b-col cols="12" lg="4"><span class="font-weight-bold">Intended Water Use:</span> {{ well.intended_water_use }}</b-col>
-          <b-col cols="12" lg="4"><span class="font-weight-bold">Aquifer Number:</span> {{ well.aquifer }}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Licensed Status:</span> {{ well.licenced_status }}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Intended Water Use:</span> {{ well.intended_water_use }}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Aquifer Number:</span> {{ well.aquifer }}</b-col>
         </b-row>
         <b-row>
-          <b-col cols="12" lg="4"></b-col>
-          <b-col cols="12" lg="4"></b-col>
-          <b-col cols="12" lg="4"><span class="font-weight-bold">Alternative specs submitted (if required):</span> {{ well.alternative_specs_submitted }}</b-col>
+          <b-col cols="12" md="4"></b-col>
+          <b-col cols="12" md="4"></b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Alternative specs submitted (if required):</span> {{ well.alternative_specs_submitted }}</b-col>
         </b-row>
       </fieldset>
 
       <!-- LINKS -->
-      <fieldset id="jump_links_fieldset" class="no-print detail-section my-3">
+      <fieldset id="jump_links_fieldset" class="d-print-none detail-section my-3">
           <legend>Sections</legend>
           <b-row>
-            <b-col cols="12" lg="4">
+            <b-col cols="12" md="4">
               <div><a class="jump_link" href="#location_information_fieldset">Location Information</a></div>
               <div><a class="jump_link" href="#well_activity_fieldset">Well Activity</a></div>
               <div><a class="jump_link" href="#well_completion_data_fieldset">Well Completion Data and Artesian Flow</a></div>
               <div><a class="jump_link" href="#lithology_fieldset">Lithology</a></div>
               <div><a class="jump_link" href="#casing_fieldset">Casing Details</a></div>
             </b-col>
-            <b-col cols="12" lg="4">
+            <b-col cols="12" md="4">
               <div><a class="jump_link" href="#surface_seal_fieldset">Surface Seal and Backfill Details</a></div>
               <div><a class="jump_link" href="#perforations_fieldset">Liner Details</a></div>
               <div><a class="jump_link" href="#screen_details_fieldset">Screen Details</a></div>
               <div><a class="jump_link" href="#well_development_fieldset">Well Development</a></div>
               <div><a class="jump_link" href="#well_yield_fieldset">Well Yield</a></div>
             </b-col>
-            <b-col cols="12" lg="4">
+            <b-col cols="12" md="4">
               <div><a class="jump_link" href="#well_decommissioning_fieldset">Well Decommissioning</a></div>
               <div><a class="jump_link" href="#well_comments_fieldset">Comments</a></div>
               <div v-if="config && config.enable_documents"><a class="jump_link" href="#documents_fieldset">Documentation</a></div>
@@ -76,7 +76,7 @@
       <fieldset id="location_information_fieldset" class="my-3 detail-section">
         <legend>Location Information</legend>
         <b-row>
-          <b-col cols="12" lg="6" xl="5">
+          <b-col cols="12" md="6" xl="5">
             <b-row>
               <b-col><span class="font-weight-bold">Street Address:</span> {{ well.street_address }}</b-col>
             </b-row>
@@ -134,23 +134,23 @@
               </b-col>
             </b-row>
           </b-col>
-          <b-col cols="12" lg="6" xl="6" offset-xl="1">
+          <b-col cols="12" md="6" xl="6" offset-xl="1">
             <div>
               <coords-map :latitude="Number(well.latitude) || 49" :longitude="Number(well.longitude) || -123" :draggable="false"></coords-map>
             </div>
             <div class="my-3">&nbsp;</div>
             <div><span class="font-weight-bold">Geographic Coordinates - North American Datum of 1983 (NAD 83)</span></div>
             <b-row>
-              <b-col cols="12" lg="4"><span class="font-weight-bold">Latitude:</span> {{well.latitude}}</b-col>
-              <b-col cols="12" lg="6"><span class="font-weight-bold">Longitude:</span> {{well.longitude}}</b-col>
+              <b-col cols="12" md="4"><span class="font-weight-bold">Latitude:</span> {{well.latitude}}</b-col>
+              <b-col cols="12" md="6"><span class="font-weight-bold">Longitude:</span> {{well.longitude}}</b-col>
             </b-row>
             <b-row>
-              <b-col cols="12" lg="4"><span class="font-weight-bold">UTM Easting:</span> {{ UTM.easting ? Math.round(UTM.easting) : ''}}</b-col>
-              <b-col cols="12" lg="6"><span class="font-weight-bold">UTM Northing:</span> {{ UTM.northing ? Math.round(UTM.northing) : ''}}</b-col>
+              <b-col cols="12" md="4"><span class="font-weight-bold">UTM Easting:</span> {{ UTM.easting ? Math.round(UTM.easting) : ''}}</b-col>
+              <b-col cols="12" md="6"><span class="font-weight-bold">UTM Northing:</span> {{ UTM.northing ? Math.round(UTM.northing) : ''}}</b-col>
             </b-row>
             <b-row>
-              <b-col cols="12" lg="4"><span class="font-weight-bold">Zone:</span> {{UTM.zone}}</b-col>
-              <b-col cols="12" lg="6"><span class="font-weight-bold">Location Accuracy Code:</span> {{well.location_accuracy_code}}</b-col>
+              <b-col cols="12" md="4"><span class="font-weight-bold">Zone:</span> {{UTM.zone}}</b-col>
+              <b-col cols="12" md="6"><span class="font-weight-bold">Location Accuracy Code:</span> {{well.location_accuracy_code}}</b-col>
             </b-row>
           </b-col>
         </b-row>
@@ -172,28 +172,28 @@
       <fieldset id="well_completion_data_fieldset" class="my-3 detail-section">
         <legend>Well Completion Data</legend>
         <b-row>
-          <b-col cols="12" lg="4"><span class="font-weight-bold">Total Depth Drilled:</span> {{ well.total_depth_drilled }} {{ well.total_depth_drilled ? 'feet':''}}</b-col>
-          <b-col cols="12" lg="4"><span class="font-weight-bold">Static Water Level (BTOC):</span> {{ well.static_water_level }} {{ well.static_water_level ? 'feet': ''}}</b-col>
-          <b-col cols="12" lg="4"><span class="font-weight-bold">Well Cap:</span> {{ well.well_cap_type }}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Total Depth Drilled:</span> {{ well.total_depth_drilled }} {{ well.total_depth_drilled ? 'feet':''}}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Static Water Level (BTOC):</span> {{ well.static_water_level }} {{ well.static_water_level ? 'feet': ''}}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Well Cap:</span> {{ well.well_cap_type }}</b-col>
         </b-row>
         <b-row>
-          <b-col cols="12" lg="4"><span class="font-weight-bold">Finished Well Depth:</span> {{ well.finished_well_depth }} {{ well.finished_well_depth ? 'feet':''}}</b-col>
-          <b-col cols="12" lg="4"><span class="font-weight-bold">Estimated Well Yield:</span> {{ well.well_yield }} {{ well.well_yield ? 'USGPM': ''}}</b-col>
-          <b-col cols="12" lg="4"><span class="font-weight-bold">Well Disinfected:</span> {{ well.well_disinfected }}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Finished Well Depth:</span> {{ well.finished_well_depth }} {{ well.finished_well_depth ? 'feet':''}}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Estimated Well Yield:</span> {{ well.well_yield }} {{ well.well_yield ? 'USGPM': ''}}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Well Disinfected:</span> {{ well.well_disinfected }}</b-col>
         </b-row>
         <b-row>
-          <b-col cols="12" lg="4"><span class="font-weight-bold">Final Casing Stick Up:</span> {{ well.final_casing_stick_up }} {{ well.final_casing_stick_up ? 'inches':''}}</b-col>
-          <b-col cols="12" lg="4"><span class="font-weight-bold">Artesian Flow:</span> {{ well.artesian_flow }} {{ well.artesian_flow ? 'USGPM': ''}}</b-col>
-          <b-col cols="12" lg="4"><span class="font-weight-bold">Drilling Method:</span> {{ well.method_of_drilling }}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Final Casing Stick Up:</span> {{ well.final_casing_stick_up }} {{ well.final_casing_stick_up ? 'inches':''}}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Artesian Flow:</span> {{ well.artesian_flow }} {{ well.artesian_flow ? 'USGPM': ''}}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Drilling Method:</span> {{ well.method_of_drilling }}</b-col>
         </b-row>
         <b-row>
-          <b-col cols="12" lg="4"><span class="font-weight-bold">Depth to Bedrock:</span> {{ well.bedrock_depth }} {{ well.bedrock_depth ? 'feet':''}}</b-col>
-          <b-col cols="12" lg="4"><span class="font-weight-bold">Artesian Pressure:</span> {{ well.artesian_pressure }} {{ well.artesian_pressure ? 'feet': ''}}</b-col>
-          <b-col cols="12" lg="4"><span class="font-weight-bold">Orientation of Well:</span> {{ well.well_orientation }}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Depth to Bedrock:</span> {{ well.bedrock_depth }} {{ well.bedrock_depth ? 'feet':''}}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Artesian Pressure:</span> {{ well.artesian_pressure }} {{ well.artesian_pressure ? 'feet': ''}}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Orientation of Well:</span> {{ well.well_orientation }}</b-col>
         </b-row>
         <b-row>
-          <b-col cols="12" lg="4"><span class="font-weight-bold">Ground elevation:</span> {{ well.ground_elevation }}</b-col>
-          <b-col cols="12" lg="4"><span class="font-weight-bold">Method of determining elevation:</span> {{ well.ground_elevation_method }}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Ground elevation:</span> {{ well.ground_elevation }}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Method of determining elevation:</span> {{ well.ground_elevation_method }}</b-col>
         </b-row>
       </fieldset>
 
@@ -230,38 +230,38 @@
       <fieldset id="surface_seal_fieldset" class="my-3 detail-section">
         <legend>Surface Seal and Backfill Details</legend>
         <b-row>
-          <b-col cols="12" lg="4"><span class="font-weight-bold">Surface Seal Material:</span> {{ codeToDescription('surface_seal_materials', well.surface_seal_material) }}</b-col>
-          <b-col cols="12" lg="4"><span class="font-weight-bold">Backfill Material Above Surface Seal:</span> {{ codeToDescription('surface_seal_materials', well.backfill_above_surface_seal) }}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Surface Seal Material:</span> {{ codeToDescription('surface_seal_materials', well.surface_seal_material) }}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Backfill Material Above Surface Seal:</span> {{ codeToDescription('surface_seal_materials', well.backfill_above_surface_seal) }}</b-col>
         </b-row>
         <b-row>
-          <b-col cols="12" lg="4"><span class="font-weight-bold">Surface Seal Installation Method:</span> {{ codeToDescription('surface_seal_methods', well.surface_seal_method) }}</b-col>
-          <b-col cols="12" lg="4"><span class="font-weight-bold">Backfill Depth:</span> {{ well.backfill_depth }}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Surface Seal Installation Method:</span> {{ codeToDescription('surface_seal_methods', well.surface_seal_method) }}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Backfill Depth:</span> {{ well.backfill_depth }}</b-col>
         </b-row>
         <b-row>
-          <b-col cols="12" lg="4"><span class="font-weight-bold">Surface Seal Thickness:</span> {{ well.surface_seal_thickness }}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Surface Seal Thickness:</span> {{ well.surface_seal_thickness }}</b-col>
         </b-row>
         <b-row>
-          <b-col cols="12" lg="4"><span class="font-weight-bold">Surface Seal Depth:</span> {{ well.surface_seal_depth }}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Surface Seal Depth:</span> {{ well.surface_seal_depth }}</b-col>
         </b-row>
       </fieldset>
 
       <fieldset id="liner_details_fieldset" class="my-3 detail-section">
         <legend>Liner Details</legend>
         <b-row>
-          <b-col cols="12" lg="6">
+          <b-col cols="12" md="6">
             <b-row>
-              <b-col cols="12" lg="6"><span class="font-weight-bold">Liner Material:</span> {{ codeToDescription('liner_materials', well.liner_material) }}</b-col>
+              <b-col cols="12" md="6"><span class="font-weight-bold">Liner Material:</span> {{ codeToDescription('liner_materials', well.liner_material) }}</b-col>
             </b-row>
             <b-row>
-              <b-col cols="12" lg="6"><span class="font-weight-bold">Liner Diameter:</span> {{ well.liner_diameter }}</b-col>
-              <b-col cols="12" lg="6"><span class="font-weight-bold">Liner Thickness:</span> {{ well.liner_thickness }}</b-col>
+              <b-col cols="12" md="6"><span class="font-weight-bold">Liner Diameter:</span> {{ well.liner_diameter }}</b-col>
+              <b-col cols="12" md="6"><span class="font-weight-bold">Liner Thickness:</span> {{ well.liner_thickness }}</b-col>
             </b-row>
             <b-row>
-              <b-col cols="12" lg="6"><span class="font-weight-bold">Liner from:</span> {{ well.liner_from }}</b-col>
-              <b-col cols="12" lg="6"><span class="font-weight-bold">Liner to:</span> {{ well.liner_to }}</b-col>
+              <b-col cols="12" md="6"><span class="font-weight-bold">Liner from:</span> {{ well.liner_from }}</b-col>
+              <b-col cols="12" md="6"><span class="font-weight-bold">Liner to:</span> {{ well.liner_to }}</b-col>
             </b-row>
           </b-col>
-          <b-col cols="12" lg="6">
+          <b-col cols="12" md="6">
             <div class="font-weight-bold">Liner perforations</div>
             <b-table
                 striped
@@ -281,24 +281,24 @@
       <fieldset id="screen_details_fieldset" class="my-3 detail-section">
         <legend>Screen Details</legend>
         <b-row>
-          <b-col cols="12" lg="4">
+          <b-col cols="12" md="4">
             <b-row>
-              <b-col cols="12" lg="6"><span class="font-weight-bold">Intake Method:</span> {{ codeToDescription('screen_intake_methods', well.screen_intake_method) }}</b-col>
+              <b-col cols="12" md="6"><span class="font-weight-bold">Intake Method:</span> {{ codeToDescription('screen_intake_methods', well.screen_intake_method) }}</b-col>
             </b-row>
             <b-row>
-              <b-col cols="12" lg="6"><span class="font-weight-bold">Type:</span> {{ codeToDescription('screen_types', well.screen_type) }}</b-col>
+              <b-col cols="12" md="6"><span class="font-weight-bold">Type:</span> {{ codeToDescription('screen_types', well.screen_type) }}</b-col>
             </b-row>
             <b-row>
-              <b-col cols="12" lg="6"><span class="font-weight-bold">Material:</span> {{ codeToDescription('screen_materials', well.screen_material) }}</b-col>
+              <b-col cols="12" md="6"><span class="font-weight-bold">Material:</span> {{ codeToDescription('screen_materials', well.screen_material) }}</b-col>
             </b-row>
             <b-row>
-              <b-col cols="12" lg="6"><span class="font-weight-bold">Opening:</span> {{ codeToDescription('screen_openings', well.screen_opening) }}</b-col>
+              <b-col cols="12" md="6"><span class="font-weight-bold">Opening:</span> {{ codeToDescription('screen_openings', well.screen_opening) }}</b-col>
             </b-row>
             <b-row>
-              <b-col cols="12" lg="6"><span class="font-weight-bold">Bottom:</span> {{ codeToDescription('screen_bottoms', well.screen_bottom) }}</b-col>
+              <b-col cols="12" md="6"><span class="font-weight-bold">Bottom:</span> {{ codeToDescription('screen_bottoms', well.screen_bottom) }}</b-col>
             </b-row>
           </b-col>
-          <b-col cols="12" lg="8">
+          <b-col cols="12" md="8">
             <div class="font-weight-bold">Installed Screens</div>
             <b-table
                 striped
@@ -319,8 +319,8 @@
       <fieldset id="well_development_fieldset" class="my-3 detail-section">
         <legend>Well Development</legend>
         <b-row>
-          <b-col cols="12" lg="4"><span class="font-weight-bold">Developed by:</span> {{ codeToDescription('development_methods', well.development_method) }}</b-col>
-          <b-col cols="12" lg="4"><span class="font-weight-bold">Development Total Duration:</span> {{ well.development_hours }} {{ well.development_hours ? 'hours':'' }}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Developed by:</span> {{ codeToDescription('development_methods', well.development_method) }}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Development Total Duration:</span> {{ well.development_hours }} {{ well.development_hours ? 'hours':'' }}</b-col>
         </b-row>
       </fieldset>
 
@@ -331,17 +331,17 @@
 
         <div v-for="(productionTest, index) in well.production_data_set" :key="`ProductionDataSet${index}`">
           <b-row>
-            <b-col cols="12" lg="4"><span class="font-weight-bold">Estimation Method:</span> {{codeToDescription('yield_estimation_methods', productionTest.yield_estimation_method)}} </b-col>
-            <b-col cols="12" lg="4"><span class="font-weight-bold">Estimation Rate:</span> {{productionTest.yield_estimation_rate}} </b-col>
-            <b-col cols="12" lg="4"><span class="font-weight-bold">Estimation Duration:</span> {{productionTest.yield_estimation_duration}}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Estimation Method:</span> {{codeToDescription('yield_estimation_methods', productionTest.yield_estimation_method)}} </b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Estimation Rate:</span> {{productionTest.yield_estimation_rate}} </b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Estimation Duration:</span> {{productionTest.yield_estimation_duration}}</b-col>
           </b-row>
           <b-row>
-            <b-col cols="12" lg="4"><span class="font-weight-bold">Static Water Level Before Test:</span> {{productionTest.static_level}}</b-col>
-            <b-col cols="12" lg="4"><span class="font-weight-bold">Drawdown:</span> {{productionTest.drawdown}}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Static Water Level Before Test:</span> {{productionTest.static_level}}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Drawdown:</span> {{productionTest.drawdown}}</b-col>
           </b-row>
           <b-row>
-            <b-col cols="12" lg="4"><span class="font-weight-bold">Hydrofracturing Performed:</span> {{productionTest.hydro_fracturing_performed}}</b-col>
-            <b-col cols="12" lg="4"><span class="font-weight-bold">Increase in Yield Due to Hydrofracturing:</span> {{productionTest.hydro_fracturing_yield_increase}}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Hydrofracturing Performed:</span> {{productionTest.hydro_fracturing_performed}}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Increase in Yield Due to Hydrofracturing:</span> {{productionTest.hydro_fracturing_yield_increase}}</b-col>
           </b-row>
         </div>
       </fieldset>
@@ -349,16 +349,16 @@
       <fieldset id="well_decommissioning_fieldset" class="my-3 detail-section">
         <legend>Well Decommission Information</legend>
         <b-row>
-          <b-col cols="12" lg="4"><span class="font-weight-bold">Finished Well Depth:</span> {{ well.finished_well_depth }} {{ well.finished_well_depth ? 'feet':''}}</b-col>
-          <b-col cols="12" lg="4"><span class="font-weight-bold">Sealant Material:</span> {{ well.sealant_material }}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Finished Well Depth:</span> {{ well.finished_well_depth }} {{ well.finished_well_depth ? 'feet':''}}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Sealant Material:</span> {{ well.sealant_material }}</b-col>
         </b-row>
         <b-row>
-          <b-col cols="12" lg="4"><span class="font-weight-bold">Reason for Decommission:</span> {{ well.decommission_reason }}</b-col>
-          <b-col cols="12" lg="4"><span class="font-weight-bold">Backfill Material:</span> {{ well.backfill_material }}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Reason for Decommission:</span> {{ well.decommission_reason }}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Backfill Material:</span> {{ well.backfill_material }}</b-col>
         </b-row>
         <b-row>
-          <b-col cols="12" lg="4"><span class="font-weight-bold">Method of Decommission:</span> {{ well.decommission_method }}</b-col>
-          <b-col cols="12" lg="4"><span class="font-weight-bold">Decommission Details:</span> {{ well.decommission_details }}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Method of Decommission:</span> {{ well.decommission_method }}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Decommission Details:</span> {{ well.decommission_details }}</b-col>
         </b-row>
       </fieldset>
 

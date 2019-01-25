@@ -148,7 +148,7 @@ export default {
     ...mapActions('documentState', [
       'uploadFiles'
     ]),
-    handleSaveSuccess () {
+    handleSaveSuccess (response) {
       this.fetch()
       this.navigateToView()
       this.$refs.aquiferHistory.update()
@@ -157,7 +157,7 @@ export default {
       if (this.upload_files.length > 0) {
         this.uploadFiles({
           documentType: 'aquifers',
-          recordId: data.aquifer_id
+          recordId: response.data.aquifer_id
         })
       }
     },

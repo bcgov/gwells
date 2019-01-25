@@ -26,7 +26,7 @@
         </b-navbar-nav>
         <b-navbar-nav class="ml-auto">
           <li>
-            <keycloak-auth class="d-none d-sm-block" v-if="auth !== 'hide'" id="keycloak-auth"/>
+            <keycloak-auth class="d-none d-sm-block d-print-none" v-if="auth !== 'hide'" id="keycloak-auth"/>
           </li>
         </b-navbar-nav>
         <b-navbar-nav class="ml-auto d-sm-none">
