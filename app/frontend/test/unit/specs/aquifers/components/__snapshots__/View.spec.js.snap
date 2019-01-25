@@ -34,6 +34,7 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
     <!---->
      
     <div
+      aquifer_files="[object Object]"
       class="container"
     >
       <div
@@ -717,7 +718,9 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
       Documentation
     </h5>
      
-    <aquifer-documents-stub />
+    <aquifer-documents-stub
+      files="[object Object]"
+    />
      
     <!---->
   </div>
@@ -758,6 +761,7 @@ exports[`View Component View mode matches the snapshot 1`] = `
     <!---->
      
     <div
+      aquifer_files="[object Object]"
       class="container"
     >
       <div
@@ -1441,7 +1445,9 @@ exports[`View Component View mode matches the snapshot 1`] = `
       Documentation
     </h5>
      
-    <aquifer-documents-stub />
+    <aquifer-documents-stub
+      files="[object Object]"
+    />
      
     <!---->
   </div>
