@@ -514,7 +514,7 @@ export default {
     ...mapGetters(['codes']),
     ...mapState('documentState', [
       'upload_files'
-    ]),
+    ])
   }
 }
 </script>

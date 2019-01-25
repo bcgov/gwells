@@ -548,7 +548,6 @@ export default {
       if (this.form.well && this.form.well.well_tag_number) {
         ApiService.query(`wells/${this.form.well.well_tag_number}/files`)
           .then((response) => {
-            console.log("Setting uploaded files")
             this.uploaded_files = response.data
           })
       }

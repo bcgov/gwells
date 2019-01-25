@@ -447,13 +447,13 @@ export default {
           this.$router.push({ name: 'PersonDetail', params: { person_guid: response.data.person_guid } })
         }
         this.onFormReset()
-
-      }).catch((e) => {
-        const errors = e.response.data
-        for (const field in errors) {
-          this.fieldErrors[field] = errors[field]
-        }
       })
+        .catch((e) => {
+          const errors = e.response.data
+          for (const field in errors) {
+            this.fieldErrors[field] = errors[field]
+          }
+        })
     },
     onFormReset () {
       this.clearFieldErrors()

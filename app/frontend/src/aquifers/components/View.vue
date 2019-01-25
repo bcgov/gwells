@@ -112,7 +112,7 @@ import APIErrorMessage from '@/common/components/APIErrorMessage'
 import AquiferForm from './Form'
 import Documents from './Documents.vue'
 import ChangeHistory from '@/common/components/ChangeHistory.vue'
-import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
+import { mapActions, mapGetters, mapState } from 'vuex'
 
 export default {
   components: {

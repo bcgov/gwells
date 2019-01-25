@@ -419,7 +419,7 @@ import ApiService from '@/common/services/ApiService.js'
 import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 import { SET_DRILLER } from '@/registry/store/mutations.types'
 import { FETCH_DRILLER, FETCH_DRILLER_OPTIONS } from '@/registry/store/actions.types'
-import PersonDocuments from "./PersonDocuments";
+import PersonDocuments from './PersonDocuments'
 
 export default {
   name: 'person-detail',
@@ -619,7 +619,6 @@ export default {
       })
     },
     cancelUploadAttachments () {
-      console.log("cancel upload")
       this.setFiles([])
     },
     uploadAttachments () {
@@ -630,7 +629,7 @@ export default {
         }).then(() => {
           this.fileUploadSuccess()
           this.fetchFiles()
-          window.scrollTo(0,0);
+          window.scrollTo(0, 0)
         }).catch((error) => {
           console.log(error)
         })

@@ -61,7 +61,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 
 <script>
-import { mapGetters, mapMutations, mapState } from 'vuex'
+import { mapGetters } from 'vuex'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 export default {
   mixins: [inputBindingsMixin],
@@ -101,7 +101,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['codes']),
+    ...mapGetters(['codes'])
   }
 }
 </script>
