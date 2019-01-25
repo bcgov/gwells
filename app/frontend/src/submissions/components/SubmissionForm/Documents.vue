@@ -47,8 +47,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <div class="row no-gutters mt-3">
           <div class="col-md-12">
             <!-- public documents -->
-            <ul v-if="uploaded_files && uploaded_files.public && uploaded_files.public.length">
-              <li v-for="(file, index) in uploaded_files.public" :key="index">
+            <ul v-if="uploadedFiles && uploadedFiles.public && uploadedFiles.public.length">
+              <li v-for="(file, index) in uploadedFiles.public" :key="index">
                 <a :href="file.url" :download="file.name" target="_blank">{{file.name}}</a>
               </li>
             </ul>
@@ -60,8 +60,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <div class="row no-gutters">
           <div class="col-md-12">
             <h4>Internal documentation - authorized access only</h4>
-            <ul v-if="uploaded_files && uploaded_files.private && uploaded_files.private.length">
-              <li v-for="(file, index) in uploaded_files.private" :key="index">
+            <ul v-if="uploadedFiles && uploadedFiles.private && uploadedFiles.private.length">
+              <li v-for="(file, index) in uploadedFiles.private" :key="index">
                 <a :href="file.url" :download="file.name" target="_blank">{{file.name}}</a>
               </li>
             </ul>
@@ -101,7 +101,7 @@ export default {
       type: Boolean,
       isInput: false
     },
-    uploaded_files: {
+    uploadedFiles: {
       type: Object,
       isInput: false
     },

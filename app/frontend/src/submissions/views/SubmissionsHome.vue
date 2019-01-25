@@ -72,7 +72,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           :errors="errors"
           :reportSubmitted="formSubmitSuccess"
           :formSubmitLoading="formSubmitLoading"
-          :uploaded_files="uploaded_files"
+          :uploadedFiles="uploadedFiles"
           v-on:back="handlePreviewBackButton"
           v-on:startNewReport="handleExitPreviewAfterSubmit"
           />
@@ -89,7 +89,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           :formSubmitLoading="formSubmitLoading"
           :isStaffEdit="isStaffEdit"
           :loading="loading"
-          :uploaded_files="uploaded_files"
+          :uploadedFiles="uploadedFiles"
           v-on:preview="handlePreviewButton"
           v-on:submit_edit="formSubmit"
           v-on:resetForm="resetForm"
@@ -149,7 +149,7 @@ export default {
       errors: {},
       form: {},
       formOptions: {},
-      uploaded_files: {},
+      uploadedFiles: {},
       formSteps: {
         CON: [
           'activityType',
@@ -548,7 +548,7 @@ export default {
       if (this.form.well && this.form.well.well_tag_number) {
         ApiService.query(`wells/${this.form.well.well_tag_number}/files`)
           .then((response) => {
-            this.uploaded_files = response.data
+            this.uploadedFiles = response.data
           })
       }
     }

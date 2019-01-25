@@ -56,7 +56,6 @@
         v-on:cancel="navigateToView"
         :fieldErrors="fieldErrors"
         :record="record"
-        :aquifer_files="aquifer_files"
         showId
         v-if="editMode"
         />
@@ -93,7 +92,7 @@
         <dd class="col-sm-4">{{record.demand_description}}</dd>
       </dl>
       <h5 class="mt-3 border-bottom">Documentation</h5>
-      <aquifer-documents :files="aquifer_files"></aquifer-documents>
+      <aquifer-documents :files="aquiferFiles"></aquifer-documents>
       <change-history v-if="userRoles.aquifers.edit" class="mt-5" :id="id" resource="aquifers" ref="aquiferHistory"/>
     </b-container>
   </b-card>
@@ -135,7 +134,7 @@ export default {
       loading: false,
       record: {},
       showSaveSuccess: false,
-      aquifer_files: {}
+      aquiferFiles: {}
     }
   },
   computed: {
@@ -217,7 +216,7 @@ export default {
     fetchFiles (id = this.id) {
       ApiService.query(`aquifers/${id}/files`)
         .then((response) => {
-          this.aquifer_files = response.data
+          this.aquiferFiles = response.data
         })
     }
   }

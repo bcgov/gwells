@@ -438,12 +438,12 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </b-row>
     </fieldset>
 
-    <fieldset v-if="uploaded_files && uploaded_files.public && uploaded_files.public.length > 0">
+    <fieldset v-if="uploadedFiles && uploadedFiles.public && uploadedFiles.public.length > 0">
       <legend>Uploaded Documents</legend>
       <b-row>
         <b-col cols="12" lg="4">
           <b-list-group>
-            <b-list-group-item v-for="(f, index) in uploaded_files.public" :key="index">{{f.name}}</b-list-group-item>
+            <b-list-group-item v-for="(f, index) in uploadedFiles.public" :key="index">{{f.name}}</b-list-group-item>
           </b-list-group>
         </b-col>
       </b-row>
@@ -480,7 +480,7 @@ export default {
     'sections',
     'reportSubmitted',
     'formSubmitLoading',
-    'uploaded_files'
+    'uploadedFiles'
   ],
   data () {
     return {
