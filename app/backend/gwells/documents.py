@@ -159,20 +159,15 @@ class MinioClient():
             public_bucket = self.public_drillers_bucket
 
         objects = {}
-        print(public_bucket)
-        print(prefix)
 
         # provide all requests with a "public" collection of documents
         if self.public_client:
             pub_objects = []
             try:
-                print(self.public_client.list_objects(
-                        public_bucket, prefix=prefix, recursive=True))
                 pub_objects = self.create_url_list(
                     self.public_client.list_objects(
                         public_bucket, prefix=prefix, recursive=True),
                     self.public_host)
-                print(pub_objects)
             except:
                 logger.error(
                     "Could not retrieve files from public file server")
