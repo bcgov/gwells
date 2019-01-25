@@ -4,7 +4,7 @@
 
     <b-row class="mt-3">
       <b-col cols="12" lg="6" xl="5">
-        <b-form @submit.prevent="$root.$emit('bv::refresh::table', 'wellSearchTable'); locationSearch()" @reset.prevent="resetButtonHandler(); locationSearch()">
+        <b-form @submit.prevent="wellSearch(); locationSearch()" @reset.prevent="resetButtonHandler(); locationSearch()">
           <b-row>
             <b-col>
               <p>
@@ -88,7 +88,7 @@
           </b-row>
         </b-form>
       </b-col>
-      <b-col cols="12" lg="6" xl="7">
+      <b-col>
         <search-map
             :latitude="latitude"
             :longitude="longitude"
@@ -99,7 +99,7 @@
             />
       </b-col>
     </b-row>
-    <b-row class="my-5">
+    <!-- <b-row class="my-5">
       <b-col>
         <b-table
           show-empty
@@ -115,8 +115,13 @@
             <router-link :to="{ name: 'wells-detail', params: { id: data.item.well_tag_number} }">{{ data.item.well_tag_number }}</router-link>
           </template>
         </b-table>
-        <b-pagination :disabled="isBusy" size="md" :total-rows="numberOfRecords" v-model="currentPage" :per-page="perPage">
-    </b-pagination>
+      </b-col>
+    </b-row> -->
+    <b-row class="my-5">
+      <b-col>
+        <div ref="tabulator"></div>
+        <b-pagination class="mt-3" :disabled="isBusy" size="md" :total-rows="numberOfRecords" v-model="currentPage" :per-page="perPage" @input="wellSearch()">
+        </b-pagination>
       </b-col>
     </b-row>
     <b-row>
@@ -137,6 +142,9 @@
 <script>
 import ApiService from '@/common/services/ApiService.js'
 import SearchMap from '@/wells/components/SearchMap.vue'
+
+const Tabulator = require('tabulator-tables')
+
 export default {
   name: 'WellSearch',
   components: {
@@ -151,6 +159,10 @@ export default {
       latitude: null,
       longitude: null,
       locations: [],
+
+      // testing tabulator
+      tabulator: null,
+      tableData: [],
 
       // searchParams will be set by searchParamsReset()
       searchParams: {},
@@ -185,6 +197,10 @@ export default {
 
       return ApiService.query('wells/', params).then((response) => {
         this.numberOfRecords = response.data.count
+        this.tableData = response.data.results
+        this.tabulator.clearData()
+        this.tabulator.replaceData(this.tableData)
+
         return response.data.results || []
       }).catch((e) => {
         return []
@@ -207,7 +223,7 @@ export default {
         }
         params = Object.assign(params, boundBox)
       }
-      ApiService.query('wells/locations', params).then((response) => {
+      ApiService.query('wells/locations/', params).then((response) => {
         this.locations = response.data.map((well) => {
           return [well.latitude, well.longitude, well.well_tag_number]
         })
@@ -239,6 +255,11 @@ export default {
           eventLabel: link
         })
       }
+    },
+    tableLinkParams (cell) {
+      return {
+        url: `/gwells/well/${cell.getValue()}/`
+      }
     }
   },
   created () {
@@ -246,10 +267,29 @@ export default {
     setTimeout(() => {
       this.locationSearch()
     }, 0)
+    this.wellSearch()
+  },
+  mounted () {
+    this.tabulator = new Tabulator(this.$refs.tabulator, {
+      data: this.tableData,
+      height: '36rem',
+      columns: [
+        { title: 'Well Tag', field: 'well_tag_number', formatter: 'link', formatterParams: (cell) => ({ url: `/gwells/well/${cell.getValue()}` }) },
+        { title: 'ID Plate', field: 'identification_plate_number' },
+        { title: 'Owner Name', field: 'owner_full_name' },
+        { title: 'Street Address', field: 'street_address' },
+        { title: 'Legal Lot', field: 'legal_lot' },
+        { title: 'Legal Plan', field: 'legal_plan' },
+        { title: 'Legal District Lot', field: 'legal_district_lot' },
+        { title: 'Land District', field: 'land_district' },
+        { title: 'Legal PID', field: 'legal_pid' },
+        { title: 'Diameter', field: 'diameter' },
+        { title: 'Finished Well Depth', field: 'finished_well_depth' }
+      ]
+    })
   }
 }
 </script>
 
 <style>
-
 </style>
