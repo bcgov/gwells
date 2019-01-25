@@ -184,6 +184,7 @@ class WellListAPIView(ListAPIView):
                        filters.SearchFilter, filters.OrderingFilter)
     ordering = ('well_tag_number',)
     filterset_class = WellSearchFilter
+    search_fields = ('legal_pid', 'legal_plan', 'legal_district_lot', 'legal_block', 'legal_section', 'legal_township', 'legal_range')
 
     def get_queryset(self):
         qs = self.queryset
@@ -194,6 +195,11 @@ class WellListAPIView(ListAPIView):
                 Prefetch("water_quality_characteristics")
             ) \
             .order_by("well_tag_number")
+
+        well_tag_or_plate = self.request.query_params.get('well', None)
+        if well_tag_or_plate:
+            qs = qs.filter(Q(well_tag_number=well_tag_or_plate) | Q(identification_plate_number=well_tag_or_plate))
+
         return qs
 
     def list(self, request):
@@ -253,6 +259,23 @@ class WellLocationListAPIView(ListAPIView):
     ordering = ('well_tag_number',)
     filterset_class = WellLocationFilter
     pagination_class = None
+
+    # search_fields and get_queryset are fragile here.
+    # they need to match up with the search results returned by WellListAPIView.
+    # an attempt was made to factor out filtering logic into WellSearchFilter (which WellLocationFilter inherits),
+    # but so far, not all the searchable fields have been put into that class.
+    # Please note the difference between "searchable fields" (one query param will return results that are valid
+    # for any of these fields) and "filter fields" (search by a single individual fields)
+    search_fields = ('legal_pid', 'legal_plan', 'legal_district_lot', 'legal_block', 'legal_section', 'legal_township', 'legal_range')
+
+    def get_queryset(self):
+        qs = self.queryset
+
+        well_tag_or_plate = self.request.query_params.get('well', None)
+        if well_tag_or_plate:
+            qs = qs.filter(Q(well_tag_number=well_tag_or_plate) | Q(identification_plate_number=well_tag_or_plate))
+
+        return qs
 
     def get(self, request):
         """ cancels request if too many wells are found"""

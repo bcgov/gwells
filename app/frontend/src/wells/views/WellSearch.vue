@@ -4,7 +4,7 @@
 
     <b-row class="mt-3">
       <b-col cols="12" lg="6" xl="5">
-        <b-form @submit.prevent="wellSearch(); locationSearch()" @reset.prevent="resetButtonHandler(); locationSearch()">
+        <b-form @submit.prevent="handleSearchSubmit()" @reset.prevent="resetButtonHandler()">
           <b-row>
             <b-col>
               <p>
@@ -16,21 +16,21 @@
             </b-col>
           </b-row>
           <b-row>
-            <b-col cols="6">
+            <b-col cols="8">
+
               <form-input
                 id="wellTagSearchBox"
                 group-class="font-weight-bold"
-                label="Well Tag Number"
-                v-model="searchParams.well_tag_number"
-              ></form-input>
-            </b-col>
-            <b-col cols="6">
-              <form-input
-                id="wellPlateSearchBox"
-                group-class="font-weight-bold"
-                label="Well Identification Plate Number"
-                v-model="searchParams.identification_plate_number"
-              ></form-input>
+                v-model="searchParams.well"
+              >
+                <label>
+                  Well Tag or Identification Plate Number
+                  <b-badge pill variant="primary" v-b-popover.hover="'Well electronic filing number or physical identification plate number'"><i class="fa fa-question fa-lg"></i></b-badge>
+                </label>
+              </form-input>
+              <b-form-group>
+
+              </b-form-group>
             </b-col>
           </b-row>
           <b-row>
@@ -48,17 +48,17 @@
               <form-input
                 id="lotNumberSearchBox"
                 group-class="font-weight-bold"
-                label="Legal Plan"
-                v-model="searchParams.legal_plan"
-              ></form-input>
-            </b-col>
-            <b-col>
-              <form-input
-                id="legalPlanSearchBox"
-                group-class="font-weight-bold"
-                v-model="searchParams.legal_lot"
-                label="Lot Number"
-              ></form-input>
+                v-model="searchParams.search"
+              >
+              <label>
+                  Legal Plan or District Lot or Parcel Identification Number (PID)
+                  <b-badge pill variant="primary"
+                    v-b-popover.hover="'Find the legal plan, district lot, or 9-digit PID \
+                      (parcel identifier) on the \
+                      property assessment, property tax notice, or real estate transaction.'"
+                  ><i class="fa fa-question fa-lg"></i></b-badge>
+              </label>
+              </form-input>
             </b-col>
           </b-row>
           <b-row>
@@ -75,6 +75,11 @@
             <b-col>
               <b-btn variant="primary" type="submit">Search</b-btn>
               <b-btn variant="dark" type="reset" class="mx-2">Reset</b-btn>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col>
+              <well-exports/>
             </b-col>
           </b-row>
           <b-row>
@@ -99,24 +104,6 @@
             />
       </b-col>
     </b-row>
-    <!-- <b-row class="my-5">
-      <b-col>
-        <b-table
-          show-empty
-          ref="wellSearchTable"
-          id="wellSearchTable"
-          :busy.sync="isBusy"
-          :fields="['well_tag_number', 'identification_plate_number', 'owner_full_name', 'street_address', 'legal_lot', 'legal_plan', 'legal_district_lot', 'land_district', 'legal_pid', 'diameter', 'finished_well_depth']"
-          :items="wellSearch"
-          :per-page="perPage"
-          :current-page="currentPage"
-        >
-          <template slot="well_tag_number" slot-scope="data">
-            <router-link :to="{ name: 'wells-detail', params: { id: data.item.well_tag_number} }">{{ data.item.well_tag_number }}</router-link>
-          </template>
-        </b-table>
-      </b-col>
-    </b-row> -->
     <b-row class="my-5">
       <b-col>
         <div ref="tabulator"></div>
@@ -142,13 +129,15 @@
 <script>
 import ApiService from '@/common/services/ApiService.js'
 import SearchMap from '@/wells/components/SearchMap.vue'
+import Exports from '@/wells/components/Exports.vue'
 
 const Tabulator = require('tabulator-tables')
 
 export default {
   name: 'WellSearch',
   components: {
-    'search-map': SearchMap
+    'search-map': SearchMap,
+    'well-exports': Exports
   },
   data () {
     return {
@@ -172,20 +161,10 @@ export default {
     }
   },
   methods: {
+    /**
+    * wellSearch searches for wells based on parameters in the querystring
+    */
     wellSearch (ctx = { perPage: this.perPage, currentPage: this.currentPage }) {
-      /**
-      * wellSearch() is a table items provider function
-      * https://bootstrap-vue.js.org/docs/components/table/
-      *
-      * it takes a context/config object that contains properties that come
-      * from the table attributes (e.g. perPage, currentPage), makes an API request
-      * with query strings based on the context, and returns a promise.
-      * The promise must always return an array.
-      *
-      * this function is handled by the table but a refresh can be triggered by
-      * calling this.$root.$emit('bv::refresh::table', 'wellSearchTable')
-      */
-
       const params = {
         limit: ctx.perPage,
         offset: ctx.perPage * (ctx.currentPage - 1)
@@ -194,7 +173,6 @@ export default {
       // add other search parameters into the params object.
       // these will be urlencoded and the API will filter on these values.
       Object.assign(params, this.searchParams)
-
       return ApiService.query('wells/', params).then((response) => {
         this.numberOfRecords = response.data.count
         this.tableData = response.data.results
@@ -212,7 +190,6 @@ export default {
         const bounds = this.$refs.searchMap.map.getBounds()
         const sw = bounds.getSouthWest()
         const ne = bounds.getNorthEast()
-        console.log('bounds', sw, ne)
         const boundBox = {
 
           sw_lat: sw.lat,
@@ -229,14 +206,32 @@ export default {
         })
       })
     },
+    handleSearchSubmit () {
+      this.updateQueryParams()
+      this.wellSearch()
+      this.locationSearch()
+    },
     resetButtonHandler () {
       this.searchParamsReset()
-      this.$root.$emit('bv::refresh::table', 'wellSearchTable')
+      this.wellSearch()
+      this.locationSearch()
     },
     searchParamsReset () {
       this.searchParams = {
-        owner_full_name: '',
-        well_tag_number: ''
+        well: '',
+        street_address: '',
+        lot_search: '',
+        owner_full_name: ''
+      }
+      this.$router.push({ query: null })
+    },
+    initSearchParams () {
+      const query = this.$route.query
+      console.log('initial query', query)
+      if (Object.entries(query).length !== 0 && query.constructor === Object) {
+        this.searchParams = Object.assign({}, query)
+      } else {
+        this.searchParamsReset()
       }
     },
     handleMapCoordinate (latln) {
@@ -260,10 +255,24 @@ export default {
       return {
         url: `/gwells/well/${cell.getValue()}/`
       }
+    },
+    updateQueryParams () {
+      const params = Object.assign({}, this.searchParams)
+
+      // check if every key on the params object is empty.
+      // evaluations to boolean
+      const paramsEmpty = Object.keys(params).every((x) => {
+        return params[x] === '' || params[x] === null
+      })
+
+      // if params are completely empty, clear the query string,
+      // otherwise add the params to the query string.  this allows
+      // users to bookmark searches.
+      this.$router.push({ query: paramsEmpty ? null : this.searchParams })
     }
   },
   created () {
-    this.searchParamsReset()
+    this.initSearchParams()
     setTimeout(() => {
       this.locationSearch()
     }, 0)

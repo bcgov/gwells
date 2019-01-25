@@ -76,6 +76,7 @@
 
       <b-table
         id="aquifers-results"
+        class="mt-3"
         :fields="aquiferListFields"
         :items="aquiferList"
         :show-empty="emptyResults"
@@ -86,7 +87,7 @@
         striped
         v-if="aquiferList">
         <template slot="aquifer_id" slot-scope="data">
-          <router-link :to="`${data.value}/`">{{data.value}}</router-link>
+          <router-link :to="{ name: 'aquifers-view', params: {id: data.value} }">{{data.value}}</router-link>
         </template>
         <template slot="material" slot-scope="row">
           {{row.item.material_description}}
@@ -144,7 +145,6 @@ ul.pagination {
 <script>
 import querystring from 'querystring'
 import ApiService from '@/common/services/ApiService.js'
-import isEmpty from 'lodash.isempty'
 import { mapGetters } from 'vuex'
 
 const LIMIT = 30
@@ -208,11 +208,6 @@ export default {
       this.$router.push({ name: 'new' })
     },
     fetchResults () {
-      if (isEmpty(this.query.aquifer_id) && isEmpty(this.query.search)) {
-        this.response = {}
-        return
-      }
-
       // trigger the Google Analytics search event
       this.triggerAnalyticsSearchEvent(this.query)
 
@@ -258,10 +253,6 @@ export default {
       if (this.search) {
         this.filterParams.search = this.search
       }
-
-      this.noSearchCriteriaError =
-        this.filterParams.aquifer_id === undefined &&
-        this.filterParams.search === undefined
 
       this.updateQueryParams()
     },
