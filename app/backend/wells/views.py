@@ -138,7 +138,7 @@ class ListFiles(APIView):
             request=request, disable_private=(not user_is_staff))
 
         documents = client.get_documents(
-            int(tag), include_private=user_is_staff)
+            int(tag), resource="well", include_private=user_is_staff)
 
         return Response(documents)
 
@@ -223,7 +223,7 @@ class PreSignedDocumentKey(APIView):
             request=request, disable_private=True)
 
         object_name = request.GET.get("filename")
-        filename = "WTN_%s_%s" % (well.well_tag_number, object_name)
-        url = client.get_presigned_put_url(filename, bucket_name=get_env_variable("S3_WELLS_BUCKET"))
+        filename = client.format_object_name(object_name, int(well.well_tag_number), "well")
+        url = client.get_presigned_put_url(filename, bucket_name=get_env_variable("S3_WELL_BUCKET"))
 
         return JsonResponse({"object_name": object_name, "url": url})

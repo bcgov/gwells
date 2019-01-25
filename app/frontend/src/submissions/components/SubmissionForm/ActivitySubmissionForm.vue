@@ -400,6 +400,18 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-on:setFormValueChanged="setFormValueChanged"
       />
 
+      <!-- Documents -->
+      <documents class="my-5"
+        v-if="showSection('documents')"
+        id="files"
+        :uploaded_files="uploaded_files"
+        :isStaffEdit="isStaffEdit"
+        :saveDisabled="editSaveDisabled"
+        :showDocuments="form.well !== null"
+        v-on:save="$emit('submit_edit')"
+        v-on:setFormValueChanged="setFormValueChanged"
+      />
+
       <!-- aquifer -->
       <aquifer-data class="my-5"
         v-if="showSection('aquiferData')"
@@ -480,6 +492,7 @@ import Yield from './Yield.vue'
 import WaterQuality from './WaterQuality.vue'
 import Completion from './Completion.vue'
 import Comments from './Comments.vue'
+import Documents from './Documents.vue'
 import ClosureDescription from './ClosureDescription.vue'
 import DecommissionInformation from './DecommissionInformation.vue'
 import ObservationWellInfo from './ObservationWellInfo.vue'
@@ -525,6 +538,10 @@ export default {
     loading: {
       type: Boolean,
       isInput: false
+    },
+    uploaded_files: {
+      type: Object,
+      isInput: false
     }
   },
   components: {
@@ -547,6 +564,7 @@ export default {
     WaterQuality,
     Completion,
     Comments,
+    Documents,
     ClosureDescription,
     DecommissionInformation,
     ObservationWellInfo
@@ -658,7 +676,6 @@ export default {
       this.loadFormSuccess = false
     },
     setFormValueChanged () {
-      console.log('catch emit')
       this.formValueChanged = true
     }
   },

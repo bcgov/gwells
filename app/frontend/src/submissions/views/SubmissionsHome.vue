@@ -72,6 +72,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           :errors="errors"
           :reportSubmitted="formSubmitSuccess"
           :formSubmitLoading="formSubmitLoading"
+          :uploaded_files="uploaded_files"
           v-on:back="handlePreviewBackButton"
           v-on:startNewReport="handleExitPreviewAfterSubmit"
           />
@@ -88,6 +89,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           :formSubmitLoading="formSubmitLoading"
           :isStaffEdit="isStaffEdit"
           :loading="loading"
+          :uploaded_files="uploaded_files"
           v-on:preview="handlePreviewButton"
           v-on:submit_edit="formSubmit"
           v-on:resetForm="resetForm"
@@ -147,6 +149,7 @@ export default {
       errors: {},
       form: {},
       formOptions: {},
+      uploaded_files: {},
       formSteps: {
         CON: [
           'activityType',
@@ -166,7 +169,8 @@ export default {
           'wellYield',
           'waterQuality',
           'wellCompletion',
-          'comments'
+          'comments',
+          'documents'
         ],
         ALT: [
           'activityType',
@@ -186,7 +190,8 @@ export default {
           'wellYield',
           'waterQuality',
           'wellCompletion',
-          'comments'
+          'comments',
+          'documents'
         ],
         DEC: [
           'activityType',
@@ -199,7 +204,8 @@ export default {
           'closureDescription',
           'casings',
           'decommissionInformation',
-          'comments'
+          'comments',
+          'documents'
         ],
         STAFF_EDIT: [
           'wellType',
@@ -222,6 +228,7 @@ export default {
           'closureDescription',
           'decommissionInformation',
           'comments',
+          'documents',
           'aquiferData'
         ]
       }
@@ -253,7 +260,8 @@ export default {
   },
   methods: {
     ...mapActions('documentState', [
-      'uploadFiles'
+      'uploadFiles',
+      'fileUploadSuccess'
     ]),
     formSubmit () {
       const data = Object.assign({}, this.form)
@@ -323,14 +331,23 @@ export default {
             this.uploadFiles({
               documentType: 'submissions',
               recordId: response.data.filing_number
+            }).then(() => {
+              this.fileUploadSuccess()
+              this.fetchFiles()
+            }).catch((error) => {
+              console.log(error)
             })
           } else {
             this.uploadFiles({
               documentType: 'wells',
               recordId: response.data.well
+            }).then(() => {
+              this.fileUploadSuccess()
+              this.fetchFiles()
+            }).catch((error) => {
+              console.log(error)
             })
           }
-
         }
       }).catch((error) => {
         if (error.response.status === 400) {
@@ -526,6 +543,15 @@ export default {
       this.$nextTick(function () {
         window.scrollTo(0, 0)
       })
+    },
+    fetchFiles () {
+      if (this.form.well && this.form.well.well_tag_number) {
+        ApiService.query(`wells/${this.form.well.well_tag_number}/files`)
+          .then((response) => {
+            console.log("Setting uploaded files")
+            this.uploaded_files = response.data
+          })
+      }
     }
   },
   watch: {
@@ -573,6 +599,8 @@ export default {
       // that the data will be available by the time those components render.
       this.$store.dispatch(FETCH_WELLS)
     }
+
+    this.fetchFiles()
   }
 }
 </script>

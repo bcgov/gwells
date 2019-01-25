@@ -57,24 +57,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </b-form-checkbox>
       </b-col>
     </b-row>
-    <b-row class="mt-3">
-      <b-col cols="12" sm="6">
-        <b-form-group
-          label="Attachments"
-          id="attachmentGroup">
-          <b-form-file
-            v-model="files"
-            id="files"
-            multiple
-            plain/>
-          <div class="mt-3" v-if="upload_files.length > 0">
-            <b-list-group>
-              <b-list-group-item v-for="(f, index) in upload_files" :key="index">{{f.name}}</b-list-group-item>
-            </b-list-group>
-          </div>
-        </b-form-group>
-      </b-col>
-    </b-row>
   </fieldset>
 </template>
 
@@ -120,24 +102,6 @@ export default {
   },
   computed: {
     ...mapGetters(['codes']),
-    ...mapState('documentState', [
-      'upload_files'
-    ]),
-    files: {
-      get: function () {
-        return this.upload_files
-      },
-      set: function (value) {
-        this.setFiles(value)
-        console.log('emit')
-        this.$emit('setFormValueChanged')
-      }
-    }
-  },
-  methods: {
-    ...mapMutations('documentState', [
-      'setFiles'
-    ])
   }
 }
 </script>

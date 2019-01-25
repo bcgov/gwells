@@ -1,17 +1,26 @@
 version: '3'
-version: '3'
-
 services:
-  minio:
+  minio-public:
     image: minio/minio
     hostname: minio
     ports:
     - "9000:9000"
     volumes:
-    - ./.tmp/minio-files:/data
+    - ./.tmp/minio-public-files:/data
     environment:
       MINIO_ACCESS_KEY: minio
-      MINIO_SECRET_KEY: minio123
+      MINIO_SECRET_KEY: minio1234
+    command: server /data
+  minio-private:
+    image: minio/minio
+    hostname: minio
+    ports:
+    - "9001:9000"
+    volumes:
+    - ./.tmp/minio-private-files:/data
+    environment:
+      MINIO_ACCESS_KEY: minio
+      MINIO_SECRET_KEY: minio1234
     command: server /data
   db:
     image: postgres:9.6
@@ -55,7 +64,7 @@ services:
       CSRF_COOKIE_SECURE: "False"
       ENABLE_DATA_ENTRY: "True"
       ENABLE_GOOGLE_ANALYTICS: "False"
-      ENABLE_ADDITIONAL_DOCUMENTS: "False"
+      ENABLE_ADDITIONAL_DOCUMENTS: "True"
       POSTGRES_SERVICE_PORT: 5432
       DJANGO_ADMIN_URL: admin
       PYTHONUNBUFFERED: "1"
@@ -65,15 +74,22 @@ services:
       SSO_CLIENT: gwells-test
       SSO_AUTH_HOST: https://sso-test.pathfinder.gov.bc.ca/auth
       SSO_IDP_HINT: "undefined"
-      S3_HOST: minio:9000
-      S3_USE_HTTPS: 0
+      S3_USE_SECURE: 0
+      S3_HOST: minio-public:9000
       S3_PUBLIC_ACCESS_KEY: minio
-      S3_PUBLIC_SECRET_KEY: minio123
+      S3_PUBLIC_SECRET_KEY: minio1234
       S3_WELL_EXPORT_BUCKET: gwells
       S3_ROOT_BUCKET:  gwells
-      S3_AQUIFER_BUCKET: aquifers
+      S3_WELL_BUCKET: well-docs
+      S3_AQUIFER_BUCKET: aquifer-docs
       S3_REGISTRANT_BUCKET: driller-docs
-      S3_USE_SECURE: 0
+      S3_PRIVATE_HOST: minio-private:9000
+      MINIO_ACCESS_KEY: minio
+      MINIO_SECRET_KEY: minio1234
+      S3_PRIVATE_ROOT_BUCKET:  gwells
+      S3_PRIVATE_WELL_BUCKET: well-docs
+      S3_PRIVATE_AQUIFER_BUCKET: aquifer-docs
+      S3_PRIVATE_REGISTRANT_BUCKET: driller-docs
     command: /bin/bash -c "sleep 3 &&
             set -x &&
             cd /app/backend &&

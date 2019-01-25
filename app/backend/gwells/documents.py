@@ -58,14 +58,14 @@ class MinioClient():
                 'S3_PUBLIC_ACCESS_KEY', warn=False)
             self.public_secret_key = get_env_variable(
                 'S3_PUBLIC_SECRET_KEY', warn=False)
-            self.use_https = int(get_env_variable(
-                'S3_USE_HTTPS', 1, warn=False))
+            self.use_secure = int(get_env_variable(
+                'S3_USE_SECURE', 1, warn=False))
 
             self.public_client = Minio(
                 self.public_host,
                 access_key=self.public_access_key,
                 secret_key=self.public_secret_key,
-                secure=self.use_https
+                secure=self.use_secure
             )
 
         if not disable_private:
@@ -78,12 +78,14 @@ class MinioClient():
         self.private_secret_key = get_env_variable('MINIO_SECRET_KEY')
         self.private_host = get_env_variable('S3_PRIVATE_HOST')
         self.private_bucket = get_env_variable('S3_PRIVATE_BUCKET')
+        self.private_aquifers_bucket = get_env_variable('S3_PRIVATE_AQUIFER_BUCKET', default_value="aquifer-docs")
+        self.private_drillers_bucket = get_env_variable('S3_PRIVATE_REGISTRANT_BUCKET', default_value="driller-docs")
 
         return Minio(
             self.private_host,
             access_key=self.private_access_key,
             secret_key=self.private_secret_key,
-            secure=self.use_https
+            secure=self.use_secure
         )
 
     def get_private_file(self, object_name: str):
@@ -136,7 +138,6 @@ class MinioClient():
         elif resource == 'driller':
             prefix = "P_%s" % document_id
 
-        print(prefix)
         return prefix
 
     def format_object_name(self, object_name: str, document_id: int, resource='well'):
@@ -159,6 +160,7 @@ class MinioClient():
 
         objects = {}
         print(public_bucket)
+        print(prefix)
 
         # provide all requests with a "public" collection of documents
         if self.public_client:
