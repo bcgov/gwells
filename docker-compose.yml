@@ -1,5 +1,4 @@
 version: '3'
-version: '3'
 
 services:
   minio:
@@ -14,7 +13,7 @@ services:
       MINIO_SECRET_KEY: minio123
     command: server /data
   db:
-    image: postgres:9.6
+    image: mdillon/postgis:9.6
     environment:
       POSTGRES_USER: gwells
       POSTGRES_PASSWORD: test1
