@@ -70,7 +70,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     text-field="description"
                     :state="getCasingError(index).casing_code ? false : null">
                   <template slot="first">
-                    <option :value="null" disabled>Select a type</option>
+                    <option :value="null" enabled>Select a type</option>
                   </template>
                 </b-form-select>
                 <b-form-invalid-feedback :id="`casingCodeInvalidFeedback${index}`">
@@ -92,7 +92,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     text-field="description"
                     :state="getCasingError(index).casing_material ? false : null">
                   <template slot="first">
-                    <option :value="null" disabled>Select a material</option>
+                    <option :value="null" enabled>Select a material</option>
                   </template>
                 </b-form-select>
                 <b-form-invalid-feedback :id="`casingCodeInvalidFeedback${index}`">
@@ -122,8 +122,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
             </td>
             <td class="pt-0 py-0">
               <b-form-radio-group v-model="casing.drive_shoe"
-                                  :name="'drive_shoe_' + index"
-                                  :id="'casingDriveShoe_' + index">
+                :name="'drive_shoe_' + index"
+                :id="'casingDriveShoe_' + index">
                 <b-form-radio :value="false">No</b-form-radio>
                 <b-form-radio :value="true">Yes</b-form-radio>
               </b-form-radio-group>
