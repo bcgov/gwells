@@ -256,7 +256,14 @@ export default {
         land_district_code: '',
         name: 'Select district'
       }]
-      return initial.concat(this.codes.land_district_codes)
+      return initial.concat(
+        this.codes.land_district_codes.map((item) => {
+          return {
+            land_district_code: item.land_district_code,
+            name: `${item.name} (${item.land_district_code})`
+          }
+        })
+      )
     },
     ...mapGetters(['codes'])
   },
