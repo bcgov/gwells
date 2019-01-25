@@ -34,7 +34,7 @@
             "kind": "ImageStream",
             "apiVersion": "v1",
             "metadata": {
-                "name": "gwells-python-36-rhel7-gadl",
+                "name": "gwells-python-36-rhel7-gdal",
                 "labels": {
                     "appver": "gwells-base-image"
                 },
@@ -121,7 +121,7 @@
                     "sourceStrategy": {
                         "from": {
                             "kind": "ImageStreamTag",
-                            "name": "gwells-python-36-rhel7-gdal"
+                            "name": "gwells-python-36-rhel7-gdal:2.4"
                         },
                         "env": [
                             {
