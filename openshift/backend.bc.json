@@ -34,7 +34,7 @@
             "kind": "ImageStream",
             "apiVersion": "v1",
             "metadata": {
-                "name": "gwells-python-36-rhel7-gdal",
+                "name": "tst-python-36-rhel7-gdal",
                 "labels": {
                     "appver": "gwells-base-image"
                 },
