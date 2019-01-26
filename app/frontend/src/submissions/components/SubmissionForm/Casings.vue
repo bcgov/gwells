@@ -70,7 +70,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     text-field="description"
                     :state="getCasingError(index).casing_code ? false : null">
                   <template slot="first">
-                    <option :value="null" enabled>Select a type</option>
+                    <option value="" enabled>Select a type</option>
                   </template>
                 </b-form-select>
                 <b-form-invalid-feedback :id="`casingCodeInvalidFeedback${index}`">
@@ -92,7 +92,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     text-field="description"
                     :state="getCasingError(index).casing_material ? false : null">
                   <template slot="first">
-                    <option :value="null" enabled>Select a material</option>
+                    <option value="" enabled>Select a material</option>
                   </template>
                 </b-form-select>
                 <b-form-invalid-feedback :id="`casingCodeInvalidFeedback${index}`">
@@ -191,7 +191,12 @@ export default {
   },
   methods: {
     addRow () {
-      this.casingsInput.push({})
+      this.casingsInput.push({
+        start: '',
+        end: '',
+        casing_code: '',
+        casing_material: ''
+      })
     },
     removeRowByIndex (index) {
       this.casingsInput.splice(index, 1)
@@ -235,7 +240,9 @@ export default {
   created () {
     // When component created, add an initial row of casings.
     if (!this.casingsInput.length) {
-      this.casingsInput.push({}, {}, {})
+      this.addRow()
+      this.addRow()
+      this.addRow()
     }
   }
 }
