@@ -19,9 +19,6 @@ from . import views
 
 
 urlpatterns = [
-    # Template views
-    url(r'^well/(?P<pk>[0-9]+)$',
-        views.WellDetailView.as_view(), name='well_detail'),
 
     # API endpoints
     # Well
