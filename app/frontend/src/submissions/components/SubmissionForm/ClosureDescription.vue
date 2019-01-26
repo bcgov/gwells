@@ -69,6 +69,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
                       :options="codes.decommission_materials"
                       text-field="description"
                       value-field="code"
+                      placeholder="Select material"
+                      value="Select material"
                       v-model="item.material"
                       :errors="getClosureError(index).material"
                       :loaded="getFieldsLoaded(index).material"
@@ -152,7 +154,9 @@ export default {
   },
   created () {
     if (!this.closureDescriptionSet.length) {
-      this.closureDescriptionSetInput.push({}, {}, {}, {}, {}, {}, {}, {}, {}, {})
+      for (let i=0; i<8; i++){
+        this.addClosureRow()
+      }
     }
   }
 }
