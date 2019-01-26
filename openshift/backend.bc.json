@@ -121,7 +121,7 @@
                     "sourceStrategy": {
                         "from": {
                             "kind": "ImageStreamTag",
-                            "name": "gwells-python-36-rhel7-gdal:2.4"
+                            "name": "tst-python-36-rhel7-gdal:2.4"
                         },
                         "env": [
                             {
