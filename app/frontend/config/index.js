@@ -48,9 +48,9 @@ module.exports = {
     index: path.resolve(__dirname, '../dist/index.html'),
 
     // Paths
-    assetsRoot: path.resolve(__dirname, '../dist'),
-    assetsSubDirectory: 'static',
-    assetsPublicPath: '/gwells/',
+    assetsRoot: path.resolve(__dirname, '../../backend/gwells/static/'),
+    assetsSubDirectory: 'vue',
+    assetsPublicPath: '/gwells/static/',
 
     /**
      * Source Maps

@@ -48,65 +48,6 @@ class ViewsTestCase(TestCase):
     def test_robots_view_ok(self):
         self.ok('robots')
 
-    def test_home_view_ok(self):
-        self.ok('home')
-
-    def test_search_view_ok(self):
-        self.ok('search')
-
-    def test_search_view_with_no_params(self):
-        url = reverse('search')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, HTTPStatus.OK)
-
-    def test_well_detail_no_well(self):
-        # setup
-        logger = logging.getLogger('django.request')
-        previous_level = logger.getEffectiveLevel()
-        logger.setLevel(logging.ERROR)
-
-        initial_url = reverse('well_detail', kwargs={'pk': '1'})
-        url = initial_url[:-2]
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
-
-        # teardown
-        logger.setLevel(previous_level)
-
-    def test_well_detail_ok(self):
-        wells = Search.well_search(123, '', '', '')
-        self.assertEqual(wells.count(), 1)
-
-        url = reverse('well_detail', kwargs={'pk': 123})
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, HTTPStatus.OK)
-
-    def test_registry_ok(self):
-        self.ok('registry-legacy')
-
-    def test_health_ok(self):
-        self.ok('health')
-
-    def test_groundwater_information_ok(self):
-        self.ok('groundwater_information')
-
-    def test_map_well_search(self):
-        self.ok('map_well_search')
-
-    def test_404_not_ok(self):
-        # setup
-        logger = logging.getLogger('django.request')
-        previous_level = logger.getEffectiveLevel()
-        logger.setLevel(logging.ERROR)
-
-        # look for clearly erroneous well_tag_number
-        url = reverse('well_detail', kwargs={'pk': 999999999})
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
-
-        # teardown
-        logger.setLevel(previous_level)
-
     def test_site_admin_ok(self):
         group_name = 'admin'
         username = 'admin'

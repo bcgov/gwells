@@ -15,11 +15,4 @@ from django.views import generic
 
 
 class HomeView(generic.TemplateView):
-    template_name = 'gwells/index.html'
-
-    def get_context_data(self, **kwargs):
-        """
-        Return the context for the page.
-        """
-        context = super(HomeView, self).get_context_data(**kwargs)
-        return context
+    template_name = 'gwells/gwells_spa.html'

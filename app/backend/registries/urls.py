@@ -37,10 +37,6 @@ schema_view = get_schema_view(
     permission_classes=(DjangoModelPermissionsOrAnonReadOnly,)
 )
 
-# wrap obtain_jwt_token view in a function that excludes it from swagger documentation.
-obtain_jwt_token_noswagger = swagger_auto_schema(
-    method='post', auto_schema=None)(obtain_jwt_token)
-
 urlpatterns = [
 
     # Organization note endpoints
@@ -109,13 +105,8 @@ urlpatterns = [
         {'activity': 'install'},
         name='city-list-installers'),
 
-    # Temporary development login endpoint
-    url(r'^api/v1/api-token-auth/', obtain_jwt_token_noswagger, name='get-token'),
-
     # Swagger documentation endpoint
     url(r'^api/$', schema_view.with_ui('redoc',
                                        cache_timeout=None), name='api-docs'),
 
-    # Registries frontend webapp loader (html page that contains header, footer, and a SPA in between)
-    url(r'^registries/', views.RegistriesIndexView.as_view(), name='registries-home'),
 ]

@@ -81,7 +81,4 @@ urlpatterns = [
         cache_page(CACHE_TTL)(views.WaterUseListAPIView.as_view()),
         name='aquifer-water-use-code-list'
         ),
-
-    # Aquifers home (loads aquifers application)
-    url(r'^aquifers/', views.AquiferHomeView.as_view(), name='aquifers-home')
 ]

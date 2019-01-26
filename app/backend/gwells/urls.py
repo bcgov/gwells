@@ -18,7 +18,8 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.views.generic import TemplateView
 
-from gwells.views import SurveyListView, SearchView, RegistryView, HealthView
+from gwells.views import SurveyListView, HealthView
+from gwells.views.home_view import HomeView
 from gwells.views.admin import *
 from gwells.views import api
 from gwells.settings.base import get_env_variable
@@ -40,25 +41,13 @@ DJANGO_ADMIN_URL = get_env_variable(
 
 
 urlpatterns = [
-    # url(r'^'+ app_root +'$', views.HomeView.as_view(), name='home'),
     url(r'^' + app_root_slash + 'robots\.txt$',
         TemplateView.as_view(template_name='robots.txt',
                              content_type='text/plain'),
         name='robots'),
-    url(r'^' + app_root_slash + '$', SearchView.well_search, name='home'),
-    url(r'^' + app_root_slash + 'search$',
-        SearchView.well_search, name='search'),
-    # url(r'^(?P<pk>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/$',
-    #     views.DetailView.as_view(), name='detail'),
-    url(r'^' + app_root_slash + 'registry-legacy$',
-        RegistryView.as_view(), name='registry-legacy'),
+
+
     url(r'^' + app_root_slash + 'health$', HealthView.health, name='health'),
-    url(r'^' + app_root_slash + 'groundwater-information',
-        TemplateView.as_view(
-            template_name='gwells/groundwater_information.html'),
-        name='groundwater_information'),
-    url(r'^' + app_root_slash + 'ajax/map_well_search/$',
-        SearchView.map_well_search, name='map_well_search'),
     url(r'^' +
         app_root_slash +
         'site_admin/survey/(?P<pk>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$',
@@ -68,6 +57,8 @@ urlpatterns = [
     url(r'^' + app_root_slash + 'site_admin',
         AdminView.as_view(),
         name='site_admin'),  # editable list view of surveys and other site admin features
+
+    # API routes
     url(r'^' + app_root_slash + 'api/v1/surveys/$',
         SurveyListView.as_view(), name='survey-list'),
     url(r'^' + app_root_slash + DJANGO_ADMIN_URL + '/', admin.site.urls),
@@ -79,7 +70,12 @@ urlpatterns = [
         api.GeneralConfig.as_view(), name='configuration'),
     url(r'^' + app_root_slash, include('registries.urls')),
     url(r'^' + app_root_slash, include('wells.urls')),
-    url(r'^' + app_root_slash, include('aquifers.urls'))
+    url(r'^' + app_root_slash, include('aquifers.urls')),
+
+    # main web application page
+    url(r'^' + app_root_slash, HomeView.as_view(), name='home'),
+
+
 ]
 
 if settings.ENABLE_DATA_ENTRY:
