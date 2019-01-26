@@ -100,10 +100,7 @@ export default {
     groundElevationMethod: String,
     drillingMethod: String,
     otherDrillingMethod: String,
-    wellOrientation: { 
-      type: Boolean,
-      default: true
-    },
+    wellOrientation: null,
     errors: {
       type: Object,
       default: () => ({})
