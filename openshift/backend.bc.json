@@ -40,7 +40,7 @@
                 },
                 "creationTimestamp": null,
                 "annotations": {
-                    "description": "Python Base Image with GDAL"
+                    "description": "Python Base Image with GIS-related External Libraries"
                 }
             },
             "spec": {
