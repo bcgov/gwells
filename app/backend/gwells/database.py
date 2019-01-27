@@ -20,7 +20,8 @@ from gwells.settings.base import get_env_variable
 
 engines = {
     'sqlite': 'django.db.backends.sqlite3',
-    'postgresql': 'django.contrib.gis.db.backends.postgis',
+    'postgresql': 'django.db.backends.postgresql',
+    'postgis': 'django.contrib.gis.db.backends.postgis',
     'mysql': 'django.db.backends.mysql',
 }
 
