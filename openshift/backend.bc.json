@@ -142,6 +142,14 @@
                             {
                                 "name": "JWT_AUDIENCE",
                                 "value": "webapp-dev-local"
+                            },
+                            {
+                                "name": "GDAL_LIBRARY_PATH",
+                                "value": "/usr/local/lib/libgdal.so"
+                            },
+                            {
+                                "name": "GEOS_LIBRARY_PATH",
+                                "value": "/usr/local/lib/libgeos_c.so"
                             }
                         ]
                     }

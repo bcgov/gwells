@@ -115,7 +115,9 @@
                 "SSO_IDP_HINT": null,
                 "SSO_PORT": null,
                 "SSO_PUBKEY": null,
-                "SSO_REALM": null
+                "SSO_REALM": null,
+                "GDAL_LIBRARY_PATH": null,
+                "GEOS_LIBRARY_PATH": null
             },
             "kind": "ConfigMap",
             "metadata": {
