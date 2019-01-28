@@ -158,7 +158,11 @@
                             {
                                 "name": "DATABASE_ENGINE",
                                 "value": "postgis"
-                            }
+                            },
+                            {
+                                "name": "DATABASE_NAME",
+                                "value": "gwells"
+                            }                            
                         ]
                     }
                 },
