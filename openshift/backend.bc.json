@@ -163,6 +163,7 @@
                                 "name": "DATABASE_NAME",
                                 "valueFrom": {
                                     "secretKeyRef": {
+                                        "namespace": "moe-gwells-dev",
                                         "name": "gwells-pgsql-unit-test",
                                         "key": "database-name"
                                     }
@@ -172,6 +173,7 @@
                                 "name": "DATABASE_USER",
                                 "valueFrom": {
                                     "secretKeyRef": {
+                                        "namespace": "moe-gwells-dev",
                                         "name": "gwells-pgsql-unit-test",
                                         "key": "database-user"
                                     }
@@ -181,6 +183,7 @@
                                 "name": "DATABASE_PASSWORD",
                                 "valueFrom": {
                                     "secretKeyRef": {
+                                        "namespace": "moe-gwells-dev",
                                         "name": "gwells-pgsql-unit-test",
                                         "key": "database-password"
                                     }
@@ -194,6 +197,7 @@
                                 "name": "POSTGRESQL_ADMIN_PASSWORD",
                                 "valueFrom": {
                                     "secretKeyRef": {
+                                        "namespace": "moe-gwells-dev",
                                         "name": "gwells-pgsql-unit-test",
                                         "key": "postgres_admin_password"
                                     }
