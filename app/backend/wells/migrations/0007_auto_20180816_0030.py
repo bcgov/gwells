@@ -9,7 +9,7 @@ from django.conf import settings
 
 
 class Migration(migrations.Migration):
-    atomic = settings.DATABASES.get('default').get('engine') == 'django.db.backends.postgresql'
+    atomic = settings.DATABASES.get('default').get('engine') == 'django.contrib.gis.db.backends.postgis'
 
     dependencies = [
         ('wells', '0006_load_casing_code'),

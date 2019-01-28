@@ -312,7 +312,7 @@
                                     },
                                     {
                                         "name": "DATABASE_ENGINE",
-                                        "value": "postgresql"
+                                        "value": "postgis"
                                     },
                                     {
                                         "name": "DATABASE_NAME",
