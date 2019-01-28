@@ -188,7 +188,7 @@
                             },
                             {
                                 "name": "DATABASE_SCHEMA",
-                                "value": "gwells-${NAME_SUFFIX}"
+                                "value": "public"
                             }
                         ]
                     }
