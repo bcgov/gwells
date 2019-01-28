@@ -150,7 +150,7 @@
                             {
                                 "name": "GEOS_LIBRARY_PATH",
                                 "value": "/usr/local/lib/libgeos_c.so"
-                            }
+                            },
                             {
                                 "name": "DATABASE_SERVICE_NAME",
                                 "value": "gwells-pgsql-unit-test"
