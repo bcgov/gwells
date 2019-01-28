@@ -161,8 +161,39 @@
                             },
                             {
                                 "name": "DATABASE_NAME",
-                                "value": "gwells"
-                            }                            
+                                "value": "gwells-unit-test"
+                            },
+                            {
+                                "name": "DATABASE_USER",
+                                "valueFrom": {
+                                    "secretKeyRef": {
+                                        "name": "gwells-pgsql${NAME_SUFFIX}",
+                                        "key": "database-user"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "DATABASE_PASSWORD",
+                                "valueFrom": {
+                                    "secretKeyRef": {
+                                        "name": "gwells-pgsql${NAME_SUFFIX}",
+                                        "key": "database-password"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "DATABASE_SCHEMA",
+                                "value": "gwells-${NAME_SUFFIX}"
+                            },
+                            {
+                                "name": "POSTGRESQL_ADMIN_PASSWORD",
+                                "valueFrom": {
+                                    "secretKeyRef": {
+                                        "name": "gwells-database-credentials${NAME_SUFFIX}",
+                                        "key": "postgres_admin_password"
+                                    }
+                                }
+                            }
                         ]
                     }
                 },
