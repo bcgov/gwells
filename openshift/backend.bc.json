@@ -189,15 +189,6 @@
                             {
                                 "name": "DATABASE_SCHEMA",
                                 "value": "gwells-${NAME_SUFFIX}"
-                            },
-                            {
-                                "name": "POSTGRESQL_ADMIN_PASSWORD",
-                                "valueFrom": {
-                                    "secretKeyRef": {
-                                        "name": "gwells-pgsql-unit-test",
-                                        "key": "postgres_admin_password"
-                                    }
-                                }
                             }
                         ]
                     }
