@@ -161,22 +161,27 @@
                             },
                             {
                                 "name": "DATABASE_NAME",
-                                "value": "gwells-unit-test"
+                                "valueFrom": {
+                                    "secretKeyRef": {
+                                        "name": "gwells-pgsql-unit-test",
+                                        "key": "database-name"
+                                    }
+                                }                                
                             },
                             {
                                 "name": "DATABASE_USER",
                                 "valueFrom": {
                                     "secretKeyRef": {
-                                        "name": "gwells-pgsql${NAME_SUFFIX}",
+                                        "name": "gwells-pgsql-unit-test",
                                         "key": "database-user"
                                     }
-                                }
+                                }      
                             },
                             {
                                 "name": "DATABASE_PASSWORD",
                                 "valueFrom": {
                                     "secretKeyRef": {
-                                        "name": "gwells-pgsql${NAME_SUFFIX}",
+                                        "name": "gwells-pgsql-unit-test",
                                         "key": "database-password"
                                     }
                                 }
@@ -189,7 +194,7 @@
                                 "name": "POSTGRESQL_ADMIN_PASSWORD",
                                 "valueFrom": {
                                     "secretKeyRef": {
-                                        "name": "gwells-database-credentials${NAME_SUFFIX}",
+                                        "name": "gwells-pgsql-unit-test",
                                         "key": "postgres_admin_password"
                                     }
                                 }
