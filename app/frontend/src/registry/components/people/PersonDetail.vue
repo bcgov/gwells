@@ -609,7 +609,6 @@ export default {
       })
     },
     cancelUploadAttachments () {
-      console.log("cancel upload")
       this.setFiles([])
     },
     uploadAttachments () {

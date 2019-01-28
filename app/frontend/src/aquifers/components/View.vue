@@ -156,8 +156,8 @@ export default {
 
       if (this.upload_files.length > 0) {
         this.uploadFiles({
-          documentType: 'aquifers',
-          recordId: data.aquifer_id
+          documentType: 'aquifers'
+          // recordId: data.aquifer_id
         })
       }
     },
