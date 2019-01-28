@@ -351,8 +351,8 @@ pipeline {
                         def appBuild = openshift.selector("bc", "${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}")
                         // temporarily set ENABLE_DATA_ENTRY=True during testing because False currently leads to a failing unit test
                         echo "Building"
-                        echo " \$ oc start-build -n moe-gwells-tools ${APP_NAME}-${DEV_SUFFIX}-${PR_NUM} --wait --env=ENABLE_DATA_ENTRY=true --env=DATABASE_SERVICE_NAME=gwells-pgsql-unit-test --follow=true"
-                        appBuild.startBuild("--wait", "--env=ENABLE_DATA_ENTRY=True --env=DATABASE_SERVICE_NAME=gwells-pgsql-unit-test").logs("-f")
+                        echo " \$ oc start-build -n moe-gwells-tools ${APP_NAME}-${DEV_SUFFIX}-${PR_NUM} --wait --env=ENABLE_DATA_ENTRY=true --env=DATABASE_SERVICE_NAME=gwells-pgsql-unit-test --env=DATABASE_NAME=gwells-unit-test --follow=true"
+                        appBuild.startBuild("--wait", "--env=ENABLE_DATA_ENTRY=True --env=DATABASE_SERVICE_NAME=gwells-pgsql-unit-test --env=DATABASE_NAME=gwells-unit-test").logs("-f")
                     }
                 }
             }
