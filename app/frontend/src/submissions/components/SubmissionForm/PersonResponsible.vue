@@ -54,11 +54,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
               <template slot="no-options">
                   Type to search registry...
               </template>
-              <template slot="option" slot-scope="option">
-                <div>
-                  {{personNameReg (option)}}
-                </div>
-              </template>
               <template slot="selected-option" slot-scope="option">
                 <div>
                   {{personNameReg (option)}}
@@ -204,12 +199,6 @@ export default {
         // On some browsers indexOf is faster than contains and vice versa. The trends seems to be that indexOf is faster
         return (item.name != null && item.name.toUpperCase().indexOf(search) !== -1) || (item.org_verbose_name != null && item.org_verbose_name.toUpperCase().indexOf(search) !== -1)
       })
-    },
-    personNameReg (option) {
-      let drillno = option.registrations.find((item) => {
-        return item.activity === 'DRILL'
-      }).registration_no || 'Unavailable'
-      return option.first_name + ' ' + option.surname + ' (' + drillno + ')'
     },
     /**
      * Get a list of matches.
