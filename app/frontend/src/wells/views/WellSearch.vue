@@ -19,7 +19,7 @@
             <b-col cols="8">
 
               <form-input
-                id="wellTagSearchBox"
+                id="id_well"
                 group-class="font-weight-bold"
                 v-model="searchParams.well"
               >
@@ -36,7 +36,7 @@
           <b-row>
             <b-col>
               <form-input
-                id="streetAddressSearchBox"
+                id="id_addr"
                 group-class="font-weight-bold"
                 label="Street Address"
                 v-model="searchParams.street_address"
@@ -46,7 +46,7 @@
           <b-row>
             <b-col>
               <form-input
-                id="lotNumberSearchBox"
+                id="id_legal"
                 group-class="font-weight-bold"
                 v-model="searchParams.search"
               >
@@ -64,7 +64,7 @@
           <b-row>
             <b-col>
               <form-input
-                id="ownerNameSearchBox"
+                id="id_owner"
                 group-class="font-weight-bold"
                 label="Owner Name"
                 v-model="searchParams.owner_full_name"
