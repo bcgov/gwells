@@ -27,9 +27,9 @@ class HomePage extends BaseAppPage {
     legalPlanOrDistrictLotOrPIDField { $('#id_legal') }
     ownerNameField { $('#id_owner') }
 
-    searchButton { $('input', type:'submit', value:'Search') }
+    searchButton { $('button', type:'submit', value:'Search') }
 
-    searchResultsTable(required:false) { $('#results') }
+    searchResultsTable(required:false) { $('.tabulator-table') }
   }
 
   void setWellTagOrIdentificationPlateNumber(int value) {
@@ -53,6 +53,6 @@ class HomePage extends BaseAppPage {
   }
 
   int getSearchResultsCount() {
-    waitFor { searchResultsTable.$('tbody tr').size() }
+    waitFor { searchResultsTable.$('.tabulator-row').size() }
   }
 }
