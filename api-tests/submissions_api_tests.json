@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "3b063fe0-732f-430c-93a8-a582829e5b3a",
+		"_postman_id": "5372c36b-759f-4701-9798-c1e4cedf70c1",
 		"name": "GWELLS Submissions API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -361,7 +361,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"person_responsible\": \"{{created_driller_guid}}\",\n\t\"driller_name\": \"Jimithy\",\n\t\"consultant_name\": \"Bobothy\",\n\t\"consultant_company\": \"Inc & Inc\",\n\t\"work_end_date\": \"2018-07-10\",\n\t\"owner_full_name\": \"Holly Homeowner\",\n\t\"work_start_date\": \"2018-07-01\",\n\t\"owner_province_state\": \"BC\",\n\t\"owner_mailing_address\": \"321 Main Street\",\n\t\"owner_city\": \"Anytown\",\n\t\"well_orientation\": false\n}"
+									"raw": "{\n\t\"person_responsible\": \"{{created_driller_guid}}\",\n\t\"driller_name\": \"Jimithy\",\n\t\"consultant_name\": \"Bobothy\",\n\t\"consultant_company\": \"Inc & Inc\",\n\t\"work_end_date\": \"2018-07-10\",\n\t\"owner_full_name\": \"Holly Homeowner\",\n\t\"work_start_date\": \"2018-07-01\",\n\t\"owner_province_state\": \"BC\",\n\t\"owner_mailing_address\": \"321 Main Street\",\n\t\"owner_city\": \"Anytown\",\n\t\"well_orientation\": false,\n\t\"drilling_method\": [\"AUGER\", \"CABLE_TOOL\"]\n}"
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/construction?format=json",
@@ -1286,7 +1286,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"well_activity_type\": \"CON\",\n\t\"owner_full_name\": \"Bob\",\n\t\"owner_mailing_address\": \"123 Place\",\n\t\"owner_city\": \"Victoria\",\n\t\"owner_province_state\": \"BC\",\n\t\"lithologydescription_set\": [\n\t\t{\n\t\t\t\"lithology_from\": 0,\n\t\t\t\"lithology_to\": 10,\n\t\t\t\"lithology_raw_data\": \"SAND, silty, some gravel\",\n\t\t\t\"lithology_hardness\": \"DENSE\",\n\t\t\t\"lithology_colour\": 13,\n\t\t\t\"lithology_moisture\": \"WET\",\n\t\t\t\"water_bearing_estimated_flow\": 2.1\n\t\t}\n\t]\n}"
+									"raw": "{\n\t\"well_activity_type\": \"CON\",\n\t\"owner_full_name\": \"Bob\",\n\t\"owner_mailing_address\": \"123 Place\",\n\t\"owner_city\": \"Victoria\",\n\t\"owner_province_state\": \"BC\",\n\t\"lithologydescription_set\": [\n\t\t{\n\t\t\t\"lithology_from\": 0,\n\t\t\t\"lithology_to\": 10,\n\t\t\t\"lithology_raw_data\": \"SAND, silty, some gravel\",\n\t\t\t\"lithology_hardness\": \"DENSE\",\n\t\t\t\"lithology_colour\": 13,\n\t\t\t\"lithology_moisture\": \"WET\",\n\t\t\t\"water_bearing_estimated_flow\": 2.1,\n\t\t\t\"lithology_observation\": \"hard to drill through\"\n\t\t}\n\t]\n}"
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/construction?format=json",
@@ -2659,7 +2659,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"well\": {{well_tag_number}},\n\t\"consultant_name\": \"John Mann\",\n\t\"owner_full_name\": \"Buddy\",\n\t\"ground_elevation_method\": \"10K_MAP\",\n\t\"ground_elevation\": 12,\n\t\"drilling_method\": \"AIR_ROTARY\",\n\t\"other_drilling_method\": \"Shovel\",\n\t\"well_orientation\": \"False\",\n\t\"observation_well_status\": \"Active\",\n\t\"observation_well_number\": 123,\n\t\"drawdown\": 11,\n\t\"yield_estimation_rate\": 11\n}"
+									"raw": "{\n\t\"well\": {{well_tag_number}},\n\t\"consultant_name\": \"John Mann\",\n\t\"owner_full_name\": \"Buddy\",\n\t\"ground_elevation_method\": \"10K_MAP\",\n\t\"ground_elevation\": 12,\n\t\"drilling_methods\": [\"AIR_ROTARY\", \"AUGER\"],\n\t\"well_orientation\": \"False\",\n\t\"observation_well_status\": \"Active\",\n\t\"observation_well_number\": 123,\n\t\"drawdown\": 11,\n\t\"yield_estimation_rate\": 11\n}"
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/staff_edit?format=json",
@@ -2714,7 +2714,7 @@
 											"})",
 											"",
 											"pm.test(\"Expect other_drilling_method to be updated\", function() {",
-											"    pm.expect(jsonData['other_drilling_method']).to.equal('Shovel')",
+											"    pm.expect(jsonData['drilling_methods'].indexOf(\"AUGER\") > -1).to.equal(true)",
 											"})",
 											"",
 											"pm.test(\"Expect observation_well_number to be updated\", function() {",

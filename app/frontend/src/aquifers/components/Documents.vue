@@ -94,7 +94,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['userRoles']),
+    ...mapGetters(['userRoles'])
   },
   methods: {
     showModal () {
