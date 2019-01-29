@@ -330,7 +330,6 @@ export default {
               recordId: response.data.well
             })
           }
-
         }
       }).catch((error) => {
         if (error.response.status === 400) {
