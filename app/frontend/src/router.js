@@ -184,7 +184,6 @@ const router = new Router({
 router.beforeEach((to, from, next) => {
   if (!router.app.$keycloak) {
     authenticate.authenticate(store).then(() => {
-      console.log(router.app.$keycloak)
       next()
     }).catch((e) => {
       next({ name: 'wells-home' })

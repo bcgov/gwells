@@ -298,10 +298,6 @@ export default {
     isEditMode () {
       return this.mode === 'edit'
     }
-  },
-  created () {
-    // NOTE: temporarily disabled
-    // this.FETCH_DRILLER_OPTIONS()
   }
 }
 </script>

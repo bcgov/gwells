@@ -227,7 +227,8 @@ export default {
     },
     initSearchParams () {
       const query = this.$route.query
-      console.log('initial query', query)
+      // check if the page loads with a query (e.g. user bookmarked a search)
+      // if so, set the search boxes to the query params
       if (Object.entries(query).length !== 0 && query.constructor === Object) {
         this.searchParams = Object.assign({}, query)
       } else {
