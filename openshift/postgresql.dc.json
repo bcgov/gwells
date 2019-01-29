@@ -26,7 +26,7 @@
             "displayName": "Database Service Name",
             "name": "DATABASE_SERVICE_NAME",
             "required": true,
-            "value": "postgresql"
+            "value": "postgis"
         },
         {
             "description": "Username for PostgreSQL user that will be used for accessing the database.",

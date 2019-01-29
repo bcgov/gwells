@@ -1,5 +1,4 @@
 version: '3'
-version: '3'
 
 services:
   minio:
@@ -14,18 +13,11 @@ services:
       MINIO_SECRET_KEY: minio123
     command: server /data
   db:
-    # The image below, needs to point to something that supports gis.
-    # I cloned https://github.com/bcgov/openshift-postgresql-oracle_fdw
-    # and ran: docker build -t postgis . -f centos7.rh-postgresql96/Dockerfile
-    image: postgis:latest
-    # image: postgres:9.6
+    image: mdillon/postgis:9.6
     environment:
-      # POSTGRES_USER: gwells
-      # POSTGRES_PASSWORD: test1
-      # POSTGRES_DBNAME: gwells
-      POSTGRESQL_USER: gwells
-      POSTGRESQL_PASSWORD: test1
-      POSTGRESQL_DATABASE: gwells      
+      POSTGRES_USER: gwells
+      POSTGRES_PASSWORD: test1
+      POSTGRES_DBNAME: gwells
     hostname: db
     volumes:
       - ./.tmp/psql-dev:/var/lib/postgresql

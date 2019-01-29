@@ -54,7 +54,7 @@ void unitTestsPython (Map context, boolean isQuick=false) {
             echo "Running tests with artifact stash for SonarQube"
             sh script: '''#!/usr/bin/container-entrypoint /bin/sh
                 cd /opt/app-root/src/backend
-                DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg
+                DATABASE_ENGINE=postgis DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg
             '''
             sh script: '''#!/usr/bin/container-entrypoint /bin/sh
                 cp /opt/app-root/src/backend/nosetests.xml ./
@@ -74,7 +74,7 @@ void unitTestsPython (Map context, boolean isQuick=false) {
         }
         sh "oc exec '${podName}' -n '${projectName}' -- bash -c '\
             cd /opt/app-root/src/backend; \
-            DATABASE_ENGINE=sqlite DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg \
+            DATABASE_ENGINE=postgis DEBUG=False TEMPLATE_DEBUG=False python manage.py test -c nose.cfg \
         '"
     } else {
         echo "Python unit tests are being skipped at this stage"

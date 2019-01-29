@@ -65,6 +65,10 @@ FIXTURES_DIR = '/'.join([BASE_DIR, APP_CONTEXT_ROOT, 'fixtures'])
 # Fixtures dirs
 FIXTURES_DIRS = [FIXTURES_DIR]
 
+# GeoDjango External Library Paths
+GDAL_LIBRARY_PATH = get_env_variable('GDAL_LIBRARY_PATH', '/usr/local/lib/libgdal.so')
+GEOS_LIBRARY_PATH = get_env_variable('GEOS_LIBRARY_PATH', '/usr/local/lib/libgeos_c.so')
+
 # django-settings-export lets us make these variables available in the templates.
 # This eleminate the need for setting the context for each and every view.
 SETTINGS_EXPORT = [
@@ -90,7 +94,6 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'debug_toolbar',
     'django.contrib.postgres',
-    'django.contrib.gis',
     'rest_framework',
     'corsheaders',
     'drf_yasg',
@@ -107,6 +110,7 @@ INSTALLED_APPS = (
     'django_extensions',
     'drf_multiple_model',
     'reversion',
+    'django.contrib.gis',
 )
 
 MIDDLEWARE = (
@@ -150,9 +154,6 @@ WSGI_APPLICATION = 'wsgi.application'
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
-# GeoDjango needs to know where to find SpatiaLite
-# https://docs.djangoproject.com/en/2.1/ref/contrib/gis/install/spatialite/
-SPATIALITE_LIBRARY_PATH = get_env_variable('SPATIALITE_LIBRARY_PATH')
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
