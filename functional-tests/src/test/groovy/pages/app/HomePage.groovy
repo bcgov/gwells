@@ -15,10 +15,10 @@
 package pages
 
 class HomePage extends BaseAppPage {
-  static at = { pageTitle.text() == 'Groundwater Well Search' }
+  static at = { pageTitle.text() == 'Well Search' }
   static url = ''
   static content = {
-    pageTitle { $('#main-content h2') }
+    pageTitle { $('#wellSearchTitle') }
 
     bodyContent { $('#main-content') }
 

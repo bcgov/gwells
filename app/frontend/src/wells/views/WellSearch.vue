@@ -1,6 +1,6 @@
 <template>
   <b-card class="container container-wide p-1">
-    <h1 class="card-title">Groundwater Well Search</h1>
+    <h1 class="card-title" id="wellSearchTitle">Well Search</h1>
 
     <b-row class="mt-3">
       <b-col cols="12" lg="6" xl="5">
