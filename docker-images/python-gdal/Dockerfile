@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/rhscl/python-36-rhel7:1-21
+FROM python-36-rhel7:1-21
 
 # Install and configure GDAL for Python, as GeoDjango depends on these external libraries
 # (without SFCGAL as we aren't using "CREATE EXTENSION postgis_sfcgal;"")
