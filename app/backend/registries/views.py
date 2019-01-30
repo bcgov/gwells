@@ -783,7 +783,7 @@ class PersonNameSearch(ListAPIView):
     """Search for a person in the Register"""
 
     permission_classes = (DjangoModelPermissionsOrAnonReadOnly,)
-    serializer_class = PersonListSerializer
+    serializer_class = PersonNameSerializer
     queryset = Person.objects.all()
     pagination_class = None
     lookup_field = 'person_guid'
