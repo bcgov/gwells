@@ -46,7 +46,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 id="personResponsibleSelect"
                 :filterable="false"
                 :options="personOptions"
-                label="name"
+                label="surname"
                 v-model="personResponsibleInput"
                 @search="onPersonSearch"
                 ref="personResponsible"
@@ -55,6 +55,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   Type to search registry...
               </template>
               <template slot="selected-option" slot-scope="option">
+                <div>
+                  {{personNameReg (option)}}
+                </div>
+              </template>
+              <template slot="option" slot-scope="option">
                 <div>
                   {{personNameReg (option)}}
                 </div>
@@ -190,8 +195,9 @@ export default {
   methods: {
     onPersonSearch (search, loading) {
       this.personOptions = this.genericSearch(search, this.persons, (item, search) => {
+        const name = item.first_name + ' ' + item.surname
         // On some browsers indexOf is faster than contains and vice versa. The trends seems to be that indexOf is faster
-        return item.name != null && item.name.toUpperCase().indexOf(search) !== -1
+        return name != null && name.toUpperCase().indexOf(search) !== -1
       })
     },
     onCompanyOfPersonResponsibleSearch (search, loading) {

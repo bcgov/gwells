@@ -256,6 +256,9 @@ export default {
         land_district_code: '',
         name: 'Select district'
       }]
+      if (!this.codes || !this.codes.land_district_codes) {
+        return initial
+      }
       return initial.concat(
         this.codes.land_district_codes.map((item) => {
           return {
