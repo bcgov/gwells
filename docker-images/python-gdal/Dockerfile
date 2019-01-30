@@ -1,4 +1,4 @@
-FROM python-36-rhel7:1-21
+FROM registry.access.redhat.com/rhscl/python-36-rhel7:1-21
 
 USER root
 
