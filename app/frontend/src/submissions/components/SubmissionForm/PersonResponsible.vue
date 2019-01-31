@@ -56,12 +56,12 @@ Licensed under the Apache License, Version 2.0 (the "License");
               </template>
               <template slot="selected-option" slot-scope="option">
                 <div>
-                  {{personNameReg (option)}}
+                  {{ personNameReg (option) }}
                 </div>
               </template>
               <template slot="option" slot-scope="option">
                 <div>
-                  {{personNameReg (option)}}
+                  {{ personNameReg (option) }}
                 </div>
               </template>
             </v-select>
@@ -237,15 +237,11 @@ export default {
       }
     },
     personNameReg (option) {
-      let drillno = option.registrations.find((item) => {
+      const drillReg = option.registrations.find((item) => {
         return item.registries_activity === 'DRILL'
       })
-      if (drillno === undefined) {
-        drillno = 'Unavailable'
-      } else {
-        drillno = drillno.registration_no
-      }
-      return option.name + ' (' + drillno + ')'
+      const drillNo = (drillReg) ? drillReg.registration_no : 'Unavailable'
+      return option.name + ' (' + drillNo + ')'
     }
   },
   watch: {
