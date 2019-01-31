@@ -501,7 +501,7 @@ pipeline {
                     _openshift(env.STAGE_NAME, DEV_PROJECT) {
 
                         def DB_newVersion = openshift.selector("dc", "${APP_NAME}-pgsql-${DEV_SUFFIX}-${PR_NUM}").object().status.latestVersion
-                        def DB_pod = openshift.selector('pod', [deployment: "${APP_NAME}-pgsql-${DEV_SUFFIX}-${PR_NUM}-${newVersion}"])
+                        def DB_pod = openshift.selector('pod', [deployment: "${APP_NAME}-pgsql-${DEV_SUFFIX}-${PR_NUM}-${DB_newVersion}"])
                         echo "Temporarily granting ADMIN rights"
                         def db_ocoutput_grant = openshift.exec(
                             DB_pods.objects()[0].metadata.name,
