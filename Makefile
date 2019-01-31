@@ -23,13 +23,6 @@ prep:
 down:
 	@	docker-compose down
 
-db-clean:
-	@	docker-compose down || true
-	@	rm -rf ./.tmp/psql-dev
-	@	echo
-	@	echo "Compose is down and the database folder deleted"
-	@	echo
-
 test: test-node test-django
 
 test-node:

@@ -1,5 +1,4 @@
 version: '3'
-version: '3'
 
 services:
   minio:
@@ -21,7 +20,7 @@ services:
       POSTGRES_DBNAME: gwells
     hostname: db
     volumes:
-      - ./.tmp/psql-dev:/var/lib/postgresql
+      - /var/lib/postgresql
   webapp:
     image: node:8.9.4
     environment:
