@@ -506,10 +506,10 @@ pipeline {
                         def db_ocoutput_grant = openshift.exec(
                             DB_pod.objects()[0].metadata.name,
                             "--",
-                            'bash -c psql <<EOF
-ALTER USER "${POSTGRESQL_USER}" WITH SUPERUSER;
-EOF'
+                            "bash -c 'psql -c \"ALTER USER \\"${POSTGRESQL_USER}\\" WITH SUPERUSER;\" '" 
                         )
+                        echo "Temporary DB grant results: "+ db_ocoutput_grant.actions[0].out
+
 
                         def newVersion = openshift.selector("dc", "${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}").object().status.latestVersion
                         def pods = openshift.selector('pod', [deployment: "${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}-${newVersion}"])
@@ -525,13 +525,13 @@ EOF'
                         )
                         echo "Django test results: "+ ocoutput.actions[0].out
 
+                        echo "Revoking ADMIN rights"
                         def db_ocoutput_revoke = openshift.exec(
                             DB_pods.objects()[0].metadata.name,
                             "--",
-                            'bash -c psql <<EOF
-ALTER USER "${POSTGRESQL_USER}" WITH NOSUPERUSER;
-EOF'                        )
-                       echo "Removed temporary ADMIN rights"
+                            "bash -c 'psql -c \"ALTER USER \\"${POSTGRESQL_USER}\\" WITH NOSUPERUSER;\" '" 
+                       )
+                        echo "DB Revocation results: "+ db_ocoutput_revoke.actions[0].out
 
                     }
                 }
