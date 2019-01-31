@@ -412,6 +412,14 @@
                                         }
                                     },
                                     {
+                                        "name": "GDAL_LIBRARY_PATH",
+                                        "value": "/usr/local/lib/libgdal.so"
+                                    },
+                                    {
+                                        "name": "GEOS_LIBRARY_PATH",
+                                        "value": "/usr/local/lib/libgeos_c.so"
+                                    },                         
+                                    {
                                         "name": "ENABLE_GOOGLE_ANALYTICS",
                                         "valueFrom": {
                                             "configMapKeyRef": {

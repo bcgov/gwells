@@ -42,7 +42,7 @@ services:
     image: garywongbc/python-36-gdal:v1
     environment:
       DATABASE_SERVICE_NAME: postgres
-      DATABASE_ENGINE: postgis
+      DATABASE_ENGINE: postgresql
       DATABASE_NAME: gwells
       DATABASE_USER: gwells
       DATABASE_PASSWORD: test1
