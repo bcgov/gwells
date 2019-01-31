@@ -148,7 +148,7 @@ export default {
     ...mapActions('documentState', [
       'uploadFiles'
     ]),
-    handleSaveSuccess (data) {
+    handleSaveSuccess () {
       this.fetch()
       this.navigateToView()
       this.$refs.aquiferHistory.update()
