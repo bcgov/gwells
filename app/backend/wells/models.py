@@ -599,7 +599,9 @@ class Well(AuditModel):
         max_digits=8, decimal_places=6, blank=True, null=True, verbose_name='Latitude')
     longitude = models.DecimalField(
         max_digits=9, decimal_places=6, blank=True, null=True, verbose_name='Longitude')
+"""        
     geometry = models.PointField(blank=True, null=True, verbose_name='Lat/Long',srid=3005)
+"""
     ground_elevation = models.DecimalField(
         max_digits=10, decimal_places=2, blank=True, null=True, verbose_name='Ground Elevation')
     ground_elevation_method = models.ForeignKey(GroundElevationMethodCode,

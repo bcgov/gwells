@@ -121,7 +121,7 @@
                     "sourceStrategy": {
                         "from": {
                             "kind": "ImageStreamTag",
-                            "name": "python-36-rhel7-gdal:latest"
+                            "name": "python-36-rhel7-gdal:v1"
                         },
                         "env": [
                             {
@@ -142,55 +142,7 @@
                             {
                                 "name": "JWT_AUDIENCE",
                                 "value": "webapp-dev-local"
-                            },
-                            {
-                                "name": "GDAL_LIBRARY_PATH",
-                                "value": "/usr/local/lib/libgdal.so"
-                            },
-                            {
-                                "name": "GEOS_LIBRARY_PATH",
-                                "value": "/usr/local/lib/libgeos_c.so"
-                            },
-                            {
-                                "name": "DATABASE_SERVICE_NAME",
-                                "value": "gwells-pgsql-unit-test"
-                            },
-                            {
-                                "name": "DATABASE_ENGINE",
-                                "value": "postgis"
-                            },
-                            {
-                                "name": "DATABASE_NAME",
-                                "valueFrom": {
-                                    "secretKeyRef": {
-                                        "name": "gwells-pgsql-unit-test",
-                                        "key": "database-name"
-                                    }
-                                }                                
-                            },
-                            {
-                                "name": "DATABASE_USER",
-                                "valueFrom": {
-                                    "secretKeyRef": {
-                                        "name": "gwells-pgsql-unit-test",
-                                        "key": "database-user"
-                                    }
-                                }      
-                            },
-                            {
-                                "name": "DATABASE_PASSWORD",
-                                "valueFrom": {
-                                    "secretKeyRef": {
-                                        "name": "gwells-pgsql-unit-test",
-                                        "key": "database-password"
-                                    }
-                                }
-                            },
-                            {
-                                "name": "DATABASE_SCHEMA",
-                                "value": "public"
-                            }
-                        ]
+                            }                        ]
                     }
                 },
                 "output": {
