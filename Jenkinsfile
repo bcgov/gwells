@@ -506,7 +506,7 @@ pipeline {
                         def db_ocoutput_grant = openshift.exec(
                             DB_pod.objects()[0].metadata.name,
                             "--",
-                            "bash -c psql -c  \"${POSTGRESQL_USER}\" WITH SUPERUSER;"
+                            "bash -c psql -c  \"\${POSTGRESQL_USER}\" WITH SUPERUSER;"
                         )
 
                         def newVersion = openshift.selector("dc", "${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}").object().status.latestVersion
@@ -526,7 +526,7 @@ pipeline {
                         def db_ocoutput_revoke = openshift.exec(
                             DB_pods.objects()[0].metadata.name,
                             "--",
-                            "bash -c psql -c  \"${POSTGRESQL_USER}\" WITH NOSUPERUSER;"
+                            "bash -c psql -c  \"\${POSTGRESQL_USER}\" WITH NOSUPERUSER;"
                         )
                        echo "Removed temporary ADMIN rights"
 
