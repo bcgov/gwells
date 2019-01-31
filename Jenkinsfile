@@ -503,7 +503,7 @@ pipeline {
                         def DB_newVersion = openshift.selector("dc", "${APP_NAME}-pgsql-${DEV_SUFFIX}-${PR_NUM}").object().status.latestVersion
                         def DB_pod = openshift.selector('pod', [deployment: "${APP_NAME}-pgsql-${DEV_SUFFIX}-${PR_NUM}-${newVersion}"])
                         echo "Temporarily granting ADMIN rights"
-                        def ocoutput = openshift.exec(
+                        def db_ocoutput_grant = openshift.exec(
                             DB_pods.objects()[0].metadata.name,
                             "--",
                             "bash -c psql -c  \"${POSTGRESQL_USER}\" WITH SUPERUSER;"
@@ -523,7 +523,7 @@ pipeline {
                         )
                         echo "Django test results: "+ ocoutput.actions[0].out
 
-                        def ocoutput = openshift.exec(
+                        def db_ocoutput_revoke = openshift.exec(
                             DB_pods.objects()[0].metadata.name,
                             "--",
                             "bash -c psql -c  \"${POSTGRESQL_USER}\" WITH NOSUPERUSER;"
