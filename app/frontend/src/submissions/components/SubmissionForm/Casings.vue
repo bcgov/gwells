@@ -70,7 +70,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     text-field="description"
                     :state="getCasingError(index).casing_code ? false : null">
                   <template slot="first">
-                    <option value="" enabled>Select a type</option>
+                    <option value="">Select a type</option>
                   </template>
                 </b-form-select>
                 <b-form-invalid-feedback :id="`casingCodeInvalidFeedback${index}`">
