@@ -508,7 +508,7 @@ pipeline {
                             "--",
                             "bash -c '\
                                 cd /opt/app-root/src/backend; \
-                                python manage.py test -c nose.cfg \
+                                python -m manage.py test -c nose.cfg \
                             '"
                         )
                         echo "Django test results: "+ ocoutput.actions[0].out
