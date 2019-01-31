@@ -13,7 +13,7 @@
 """
 from urllib.parse import quote
 
-from django.db.models import Prefetch
+from django.db.models import Prefetch, Q
 from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView
@@ -22,8 +22,6 @@ from django_filters import rest_framework as restfilters
 
 from functools import reduce
 import operator
-
-from django.db.models import Q
 
 from rest_framework import filters
 from rest_framework.views import APIView
@@ -53,12 +51,43 @@ from wells.permissions import WellsEditPermissions
 
 
 class WellSearchFilter(restfilters.FilterSet):
+    well = restfilters.CharFilter(method='filter_well_tag_or_plate',
+                                  label='Well tag or identification plate number')
     well_tag_number = restfilters.CharFilter()
     identification_plate_number = restfilters.CharFilter()
-    owner_full_name = restfilters.CharFilter(lookup_expr='icontains')
+    street_address_or_city = restfilters.CharFilter(method='filter_street_address_or_city',
+                                                    label='Street address or city')
     street_address = restfilters.CharFilter(lookup_expr='icontains')
-    legal_plan = restfilters.CharFilter()
+    owner_full_name = restfilters.CharFilter(lookup_expr='icontains')
     legal_lot = restfilters.CharFilter()
+    legal_plan = restfilters.CharFilter()
+    legal_district_lot = restfilters.CharFilter()
+    land_district = restfilters.CharFilter(field_name='land_district_id',
+                                           label='Land district code')
+    legal_pid = restfilters.NumberFilter()
+
+    well_status = restfilters.CharFilter(field_name='well_status_id',
+                                         label='Well status')
+    licenced_status = restfilters.CharFilter(field_name='licenced_status_id',
+                                             label='Licenced status')
+    company_of_person_responsible = restfilters.UUIDFilter()
+    person_responsible = restfilters.UUIDFilter()
+
+    # TODO:
+    # - start date of work / end date of work range
+    # - well depth (finished or final combined as range)
+
+    aquifer_id = restfilters.NumberFilter()
+
+    # TODO: all other fields :)
+
+    def filter_well_tag_or_plate(self, queryset, name, value):
+        return queryset.filter(Q(well_tag_number=value) |
+                               Q(identification_plate_number=value))
+
+    def filter_street_address_or_city(self, queryset, name, value):
+        return queryset.filter(Q(street_address__icontains=value) |
+                               Q(city__icontains=value))
 
 
 class WellLocationFilter(WellSearchFilter, restfilters.FilterSet):
@@ -195,10 +224,6 @@ class WellListAPIView(ListAPIView):
                 Prefetch("water_quality_characteristics")
             ) \
             .order_by("well_tag_number")
-
-        well_tag_or_plate = self.request.query_params.get('well', None)
-        if well_tag_or_plate:
-            qs = qs.filter(Q(well_tag_number=well_tag_or_plate) | Q(identification_plate_number=well_tag_or_plate))
 
         return qs
 
