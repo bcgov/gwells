@@ -46,7 +46,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 id="personResponsibleSelect"
                 :filterable="false"
                 :options="personOptions"
-                label="surname"
+                label="name"
                 v-model="personResponsibleInput"
                 @search="onPersonSearch"
                 ref="personResponsible"
@@ -195,7 +195,7 @@ export default {
   methods: {
     onPersonSearch (search, loading) {
       this.personOptions = this.genericSearch(search, this.persons, (item, search) => {
-        const name = item.first_name + ' ' + item.surname
+        const name = item.name
         // On some browsers indexOf is faster than contains and vice versa. The trends seems to be that indexOf is faster
         return name != null && name.toUpperCase().indexOf(search) !== -1
       })
@@ -238,9 +238,14 @@ export default {
     },
     personNameReg (option) {
       let drillno = option.registrations.find((item) => {
-        return item.activity === 'DRILL'
-      }).registration_no || 'Unavailable'
-      return option.first_name + ' ' + option.surname + ' (' + drillno + ')'
+        return item.registries_activity === 'DRILL'
+      })
+      if (drillno === undefined) {
+        drillno = 'Unavailable'
+      } else {
+        drillno = drillno.registration_no
+      }
+      return option.name + ' (' + drillno + ')'
     }
   },
   watch: {
