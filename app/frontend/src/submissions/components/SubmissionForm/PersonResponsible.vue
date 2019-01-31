@@ -240,7 +240,7 @@ export default {
       const drillReg = option.registrations.find((item) => {
         return item.registries_activity === 'DRILL'
       })
-      const drillNo = (drillReg) ? drillReg.registration_no : 'Unavailable'
+      const drillNo = (drillReg) ? drillReg.registration_no : 'Registration Number Unavailable'
       return option.name + ' (' + drillNo + ')'
     }
   },
