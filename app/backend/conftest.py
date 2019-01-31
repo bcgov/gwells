@@ -2,7 +2,7 @@ import pytest
 
 @pytest.fixture(scope='session')
 def django_db_setup():
-    settings.DATABASES['gwells'] = {
+    settings.DATABASES['default'] = {
         'ENGINE': get_env_variable('DATABASE_ENGINE'),
         'NAME': get_env_variable('DATABASE_NAME'),
         'USER': get_env_variable('DATABASE_USER'),
