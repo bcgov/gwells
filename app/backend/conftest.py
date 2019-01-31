@@ -7,7 +7,6 @@ def django_db_setup():
 DATABASE_SCHEMA=public
 DATABASE_USER=userGN0
 DATABASE_NAME=gwells
-DATABASE_PASSWORD=EG47IxlbVC3IkH6b
 DATABASE_ENGINE=postgresql
 DATABASE_SERVICE_NAME=gwells-pgsql-dev-pr-1116
 """
