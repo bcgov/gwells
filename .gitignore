@@ -99,8 +99,6 @@ htmlcov/
 nosetests.xml
 coverage.xml
 *,cover
-app/backend/*.csv
-app/backend/*.xlsx
 
 # Translations
 *.mo
