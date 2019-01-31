@@ -499,6 +499,16 @@ pipeline {
             steps {
                 script {
                     _openshift(env.STAGE_NAME, DEV_PROJECT) {
+
+                        def DB_newVersion = openshift.selector("dc", "${APP_NAME}-pgsql-${DEV_SUFFIX}-${PR_NUM}").object().status.latestVersion
+                        def DB_pod = openshift.selector('pod', [deployment: "${APP_NAME}-pgsql-${DEV_SUFFIX}-${PR_NUM}-${newVersion}"])
+                        echo "Temporarily granting ADMIN rights"
+                        def ocoutput = openshift.exec(
+                            DB_pods.objects()[0].metadata.name,
+                            "--",
+                            "bash -c psql -c  \"${POSTGRESQL_USER}\" WITH SUPERUSER;"
+                        )
+
                         def newVersion = openshift.selector("dc", "${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}").object().status.latestVersion
                         def pods = openshift.selector('pod', [deployment: "${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}-${newVersion}"])
 
@@ -512,6 +522,14 @@ pipeline {
                             '"
                         )
                         echo "Django test results: "+ ocoutput.actions[0].out
+
+                        def ocoutput = openshift.exec(
+                            DB_pods.objects()[0].metadata.name,
+                            "--",
+                            "bash -c psql -c  \"${POSTGRESQL_USER}\" WITH NOSUPERUSER;"
+                        )
+                       echo "Removed temporary ADMIN rights"
+
                     }
                 }
             }
