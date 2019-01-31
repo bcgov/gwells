@@ -3,6 +3,7 @@ import pytest
 @pytest.fixture(scope='session')
 def django_db_setup():
 """
+
 DATABASE_SCHEMA=public
 DATABASE_USER=userGN0
 DATABASE_NAME=gwells
