@@ -507,7 +507,7 @@ pipeline {
                             DB_pod.objects()[0].metadata.name,
                             "--",
                             "bash -c '\
-                                psql -c alter user \"\'${POSTGRESQL_USER}\'\" WITH SUPERUSER; \
+                                psql -c alter user \"\'\${POSTGRESQL_USER}\'\" WITH SUPERUSER; \
                             '"                            
                         )
                         echo "Temporary DB grant results: "+ db_ocoutput_grant.actions[0].out
@@ -531,7 +531,7 @@ pipeline {
                             DB_pods.objects()[0].metadata.name,
                             "--", 
                             "bash -c '\
-                                psql -c alter user \"\'${POSTGRESQL_USER}\'\" WITH NOSUPERUSER; \
+                                psql -c alter user \"\'\${POSTGRESQL_USER}\'\" WITH NOSUPERUSER; \
                             '"                             )
                         echo "DB Revocation results: "+ db_ocoutput_revoke.actions[0].out
                     }
