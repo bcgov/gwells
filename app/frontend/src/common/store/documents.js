@@ -55,11 +55,8 @@ export default {
                 }
               }
 
-              let instance = axios.create()
-              console.log(instance)
-
-              return instance.put(url, file, options)
-                .then((response) => {
+              return ApiService.fileUpload(url, file, options)
+                .then(() => {
                   console.log('successfully added file: ' + objectName)
                 })
                 .catch((error) => {
