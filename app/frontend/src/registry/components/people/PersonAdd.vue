@@ -381,7 +381,8 @@ export default {
   },
   methods: {
     ...mapActions('documentState', [
-      'uploadFiles'
+      'uploadFiles',
+      'fileUploadSuccess'
     ]),
     ...mapMutations('documentState', [
       'setFiles'
@@ -436,16 +437,23 @@ export default {
           this.uploadFiles({
             documentType: 'drillers',
             recordId: response.data.person_guid
+          }).then(() => {
+            this.fileUploadSuccess()
+            this.$router.push({ name: 'PersonDetail', params: { person_guid: response.data.person_guid } })
+          }).catch((error) => {
+            console.log(error)
           })
+        } else {
+          this.$router.push({ name: 'PersonDetail', params: { person_guid: response.data.person_guid } })
         }
         this.onFormReset()
-        this.$router.push({ name: 'PersonDetail', params: { person_guid: response.data.person_guid } })
-      }).catch((e) => {
-        const errors = e.response.data
-        for (const field in errors) {
-          this.fieldErrors[field] = errors[field]
-        }
       })
+        .catch((e) => {
+          const errors = e.response.data
+          for (const field in errors) {
+            this.fieldErrors[field] = errors[field]
+          }
+        })
     },
     onFormReset () {
       this.clearFieldErrors()

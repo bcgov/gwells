@@ -400,6 +400,20 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-on:setFormValueChanged="setFormValueChanged"
       />
 
+      <!-- Documents -->
+      <documents class="my-5"
+        v-if="showSection('documents')"
+        id="files"
+        :uploadedFiles="uploadedFiles"
+        :isStaffEdit="isStaffEdit"
+        :saveDisabled="editSaveDisabled"
+        :showDocuments="form.well !== null"
+        :form="form"
+        v-on:save="$emit('submit_edit')"
+        v-on:setFormValueChanged="setFormValueChanged"
+        v-on:fetchFiles="fetchFiles"
+      />
+
       <!-- aquifer -->
       <aquifer-data class="my-5"
         v-if="showSection('aquiferData')"
@@ -480,6 +494,7 @@ import Yield from './Yield.vue'
 import WaterQuality from './WaterQuality.vue'
 import Completion from './Completion.vue'
 import Comments from './Comments.vue'
+import Documents from './Documents.vue'
 import ClosureDescription from './ClosureDescription.vue'
 import DecommissionInformation from './DecommissionInformation.vue'
 import ObservationWellInfo from './ObservationWellInfo.vue'
@@ -525,6 +540,10 @@ export default {
     loading: {
       type: Boolean,
       isInput: false
+    },
+    uploadedFiles: {
+      type: Object,
+      isInput: false
     }
   },
   components: {
@@ -547,6 +566,7 @@ export default {
     WaterQuality,
     Completion,
     Comments,
+    Documents,
     ClosureDescription,
     DecommissionInformation,
     ObservationWellInfo
@@ -658,8 +678,10 @@ export default {
       this.loadFormSuccess = false
     },
     setFormValueChanged () {
-      console.log('catch emit')
       this.formValueChanged = true
+    },
+    fetchFiles () {
+      this.$emit('fetchFiles')
     }
   },
   created () {
