@@ -1601,7 +1601,7 @@
     },
     {
         "model": "wells.drillingmethodcode",
-        "pk": "DUAL_ROTARY",
+        "pk": "DUO_ROTARY",
         "fields": {
             "create_user": "ETL_USER",
             "create_date": "2017-07-01T08:00:00Z",
