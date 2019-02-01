@@ -96,7 +96,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 
 <script>
-import { mapGetters, mapMutations, mapState } from 'vuex'
+import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 import ApiService from '@/common/services/ApiService.js'
 
@@ -115,9 +115,9 @@ export default {
       type: String,
       isInput: false
     },
-    tag: {
-      type: Number,
-      isInput: false
+    form: {
+      type: Object,
+      isInput: null
     },
     isStaffEdit: {
       type: Boolean,
@@ -180,7 +180,18 @@ export default {
       if (this.fileType === 'private') {
         isPrivate = true
       }
-      ApiService.delete_file(`wells/${this.tag}/delete_document?filename=${this.file}&private=${isPrivate}`)
+
+      console.log(this.form)
+      console.log(this.form.well)
+      console.log(this.form.well.well_tag_number)
+
+      let tag = this.form.well && isNaN(this.form.well) ? this.form.well.well_tag_number : this.form.well
+
+      ApiService.delete_file(`wells/${tag}/delete_document?filename=${this.file}&private=${isPrivate}`)
+        .then( () => {
+          console.log("Emit 1")
+          this.$emit('fetchFiles')
+        })
     }
   }
 }

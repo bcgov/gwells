@@ -76,7 +76,7 @@ export default {
       default: null
     },
     id: {
-      type: String,
+      type: [String, Number],
       default: null
     },
     editMode: {
@@ -112,6 +112,9 @@ export default {
         isPrivate = true
       }
       ApiService.delete_file(`aquifers/${this.id}/delete_document?filename=${this.file}&private=${isPrivate}`)
+        .then( () => {
+          this.$emit('fetchFiles')
+        })
     }
   }
 }

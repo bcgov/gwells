@@ -408,9 +408,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
         :isStaffEdit="isStaffEdit"
         :saveDisabled="editSaveDisabled"
         :showDocuments="form.well !== null"
-        :tag="form.well"
+        :form="form"
         v-on:save="$emit('submit_edit')"
         v-on:setFormValueChanged="setFormValueChanged"
+        v-on:fetchFiles="fetchFiles"
       />
 
       <!-- aquifer -->
@@ -678,6 +679,10 @@ export default {
     },
     setFormValueChanged () {
       this.formValueChanged = true
+    },
+    fetchFiles () {
+      console.log("Emit 2")
+      this.$emit('fetchFiles')
     }
   },
   created () {

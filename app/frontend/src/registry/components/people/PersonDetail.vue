@@ -383,7 +383,9 @@
             </b-row>
             <b-row class="mt-3">
               <b-col>
-                <person-documents :files="person_files" :guid="currentDriller.person_guid"></person-documents>
+                <person-documents :files="person_files"
+                  v-on:fetchFiles="fetchFiles"
+                  :guid="currentDriller.person_guid"></person-documents>
               </b-col>
             </b-row>
             <div slot="modal-footer">

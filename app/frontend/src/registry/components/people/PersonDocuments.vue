@@ -106,10 +106,14 @@ export default {
         isPrivate = true
       }
       ApiService.delete_file(`drillers/${this.guid}/delete_document?filename=${this.file}&private=${isPrivate}`)
+        .then( () => {
+          this.$emit('fetchFiles')
+        })
     }
   }
 }
 </script>
 
 <style lang="scss">
+
 </style>

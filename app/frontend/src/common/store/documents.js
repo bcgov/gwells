@@ -58,7 +58,7 @@ export default {
               let instance = axios.create()
               console.log(instance)
 
-              instance.put(url, file, options)
+              return instance.put(url, file, options)
                 .then((response) => {
                   console.log('successfully added file: ' + objectName)
                 })

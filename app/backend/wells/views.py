@@ -224,7 +224,9 @@ class PreSignedDocumentKey(APIView):
 
         object_name = request.GET.get("filename")
         filename = client.format_object_name(object_name, int(well.well_tag_number), "well")
-        url = client.get_presigned_put_url(filename, bucket_name=get_env_variable("S3_WELL_BUCKET"))
+
+        # TODO: This should probably be "S3_WELL_BUCKET" but that will require a file migration
+        url = client.get_presigned_put_url(filename, bucket_name=get_env_variable("S3_ROOT_BUCKET"))
 
         return JsonResponse({"object_name": object_name, "url": url})
 

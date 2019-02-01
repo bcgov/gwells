@@ -387,6 +387,6 @@ class PreSignedDocumentKey(RetrieveAPIView):
 
         object_name = request.GET.get("filename")
         filename = client.format_object_name(object_name, int(submission.well.well_tag_number), "well")
-        url = client.get_presigned_put_url(filename, bucket_name=get_env_variable("S3_WELL_BUCKET"))
+        url = client.get_presigned_put_url(filename, bucket_name=get_env_variable("S3_ROOT_BUCKET"))
 
         return JsonResponse({"object_name": object_name, "url": url})

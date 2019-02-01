@@ -79,7 +79,7 @@
 
 <script>
 import ApiService from '@/common/services/ApiService.js'
-import { mapGetters } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
   data () {
@@ -118,6 +118,9 @@ export default {
     }
   },
   methods: {
+    ...mapActions('documentState',
+      ['removeFileFromStore']
+    ),
     showModal () {
       this.$refs.deleteModal.show()
     },
@@ -137,6 +140,9 @@ export default {
         isPrivate = true
       }
       ApiService.delete_file(`wells/${this.wellTag}/delete_document?filename=${this.file}&private=${isPrivate}`)
+        .then( () => {
+          this.removeFileFromStore(this.file)
+        })
     }
   }
 }

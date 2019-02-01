@@ -93,6 +93,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           v-on:preview="handlePreviewButton"
           v-on:submit_edit="formSubmit"
           v-on:resetForm="resetForm"
+          v-on:fetchFiles="fetchFiles"
           />
 
         <!-- Form submission confirmation -->
@@ -545,8 +546,12 @@ export default {
       })
     },
     fetchFiles () {
-      if (this.form.well && this.form.well.well_tag_number) {
-        ApiService.query(`wells/${this.form.well.well_tag_number}/files`)
+      //this.form.well is sometimes the tag number, and sometimes an object. This detects which is which
+      console.log(this.form.well && isNaN(this.form.well))
+      let tag = this.form.well && isNaN(this.form.well) ? this.form.well.well_tag_number : this.form.well
+
+      if (tag) {
+        ApiService.query(`wells/${tag}/files`)
           .then((response) => {
             this.uploadedFiles = response.data
           })
