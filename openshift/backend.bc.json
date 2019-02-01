@@ -34,13 +34,13 @@
             "kind": "ImageStream",
             "apiVersion": "v1",
             "metadata": {
-                "name": "gwells-python-36-rhel7",
+                "name": "python-36-rhel7-gdal",
                 "labels": {
                     "appver": "gwells-base-image"
                 },
                 "creationTimestamp": null,
                 "annotations": {
-                    "description": "Python Base Image"
+                    "description": "Python Base Image with GIS-related External Libraries"
                 }
             },
             "spec": {
@@ -49,11 +49,11 @@
                 },
                 "tags":[
                     {
-                        "name": "3.6",
+                        "name": "latest",
                         "annotations": null,
                         "from": {
                             "kind": "DockerImage",
-                            "name": "registry.access.redhat.com/rhscl/python-36-rhel7:1-21"
+                            "name": "moe-gwells-tools/python-36-rhel7-gdal"
                         },
                         "importPolicy": {},
                         "referencePolicy": {
@@ -121,7 +121,7 @@
                     "sourceStrategy": {
                         "from": {
                             "kind": "ImageStreamTag",
-                            "name": "gwells-python-36-rhel7:3.6"
+                            "name": "python-36-rhel7-gdal:v1"
                         },
                         "env": [
                             {
@@ -142,8 +142,7 @@
                             {
                                 "name": "JWT_AUDIENCE",
                                 "value": "webapp-dev-local"
-                            }
-                        ]
+                            }                        ]
                     }
                 },
                 "output": {

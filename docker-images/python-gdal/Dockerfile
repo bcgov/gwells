@@ -17,7 +17,7 @@ RUN cd /tmp && wget https://download.osgeo.org/proj/proj-5.2.0.tar.gz && \
     rm -rf /tmp/proj-5.2.0 /tmp/proj-5.2.0.tar.gz /tmp/proj-datumgrid-north-america-1.1.tar.gz
 
 # Install and configure GDAL for Python, as GeoDjango depends on these external libraries
-# (without SFCGAL as we aren't using "CREATE EXTENSION postgis_sfcgal;"")
+# (without SFCGAL as we aren't using "CREATE EXTENSION postgis_sfcgal;")
 RUN cd /tmp && wget http://download.osgeo.org/gdal/2.4.0/gdal-2.4.0.tar.gz && \
     tar zxvf gdal-2.4.0.tar.gz && cd gdal-2.4.0/ && \
     ./configure --with-python --with-sfcgal=no && \

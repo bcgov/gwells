@@ -358,7 +358,6 @@ pipeline {
             }
         }
 
-
         // the Deploy to Dev stage creates a new dev environment for the pull request (if necessary), tags the newly built
         // application image into that environment, and monitors the newest deployment for pods/containers to
         // report back as ready.
@@ -493,7 +492,54 @@ pipeline {
             }
         }
 
+        stage('DEV - Django Unit Tests') {
+            when {
+                expression { env.CHANGE_TARGET != 'master' && env.CHANGE_TARGET != 'demo' }
+            }
+            steps {
+                script {
+                    _openshift(env.STAGE_NAME, DEV_PROJECT) {
 
+                        def DB_newVersion = openshift.selector("dc", "${APP_NAME}-pgsql-${DEV_SUFFIX}-${PR_NUM}").object().status.latestVersion
+                        def DB_pod = openshift.selector('pod', [deployment: "${APP_NAME}-pgsql-${DEV_SUFFIX}-${PR_NUM}-${DB_newVersion}"])
+                        echo "Temporarily granting elevated DB rights"
+                        def db_ocoutput_grant = openshift.exec(
+                            DB_pod.objects()[0].metadata.name,
+                            "--",
+                            "bash -c '\
+                                psql -c \"ALTER USER \\\"\${POSTGRESQL_USER}\\\" WITH SUPERUSER;\" \
+                            '"
+                        )
+                        echo "Temporary DB grant results: "+ db_ocoutput_grant.actions[0].out
+
+                        def newVersion = openshift.selector("dc", "${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}").object().status.latestVersion
+                        def pods = openshift.selector('pod', [deployment: "${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}-${newVersion}"])
+
+                        echo "Running Django unit tests"
+                        def ocoutput = openshift.exec(
+                            pods.objects()[0].metadata.name,
+                            "--",
+                            "bash -c '\
+                                cd /opt/app-root/src/backend; \
+                                python -m manage.py test -c nose.cfg \
+                            '"
+                        )
+                        echo "Django test results: "+ ocoutput.actions[0].out
+
+                        echo "Revoking ADMIN rights"
+                        def db_ocoutput_revoke = openshift.exec(
+                            DB_pods.objects()[0].metadata.name,
+                            "--", 
+                            "bash -c '\
+                                psql -c \"ALTER USER \\\"\${POSTGRESQL_USER}\\\" WITH NOSUPERUSER;\" \
+                            '"
+                        )
+                        echo "DB Revocation results: "+ db_ocoutput_revoke.actions[0].out
+                    }
+                }
+            }
+        }
+        
         // Functional tests temporarily limited to smoke tests
         // See https://github.com/BCDevOps/BDDStack
         stage('DEV - Smoke Tests') {

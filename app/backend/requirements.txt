@@ -23,3 +23,4 @@ cryptography==2.3.1
 django-reversion==2.0.13
 openpyxl==2.5.11
 lxml==4.2.5
+pygdal>=2.4
