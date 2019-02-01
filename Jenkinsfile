@@ -337,9 +337,9 @@ pipeline {
         }
 
 
-        // the Build stage runs unit tests and builds files. an image will be outputted to the app's imagestream
-        // builds use the source to image strategy. See /app/.s2i/assemble for image build script
-        stage('ALL - Build (with tests)') {
+        // the Build stage builds files; an image will be outputted to the app's imagestream,
+        // using the source-to-image (s2i) strategy. See /app/.s2i/assemble for image build script
+        stage('ALL - Build') {
             steps {
                 script {
                     _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
@@ -358,10 +358,10 @@ pipeline {
             }
         }
 
-        // the Deploy to Dev stage creates a new dev environment for the pull request (if necessary), tags the newly built
-        // application image into that environment, and monitors the newest deployment for pods/containers to
-        // report back as ready.
-        stage('DEV - Deploy') {
+        // the Deploy to Dev stage creates a new dev environment for the pull request (if necessary), tagging
+        // the newly built application image into that environment.  This stage also runs unit tests and 
+        // monitors the newest deployment for pods/containers to report back as ready.
+        stage('DEV - Deploy (with tests)') {
             when {
                 expression { env.CHANGE_TARGET != 'master' && env.CHANGE_TARGET != 'demo' }
             }
@@ -521,7 +521,7 @@ pipeline {
                             "--",
                             "bash -c '\
                                 cd /opt/app-root/src/backend; \
-                                python -m manage.py test -c nose.cfg \
+                                python manage.py test -c nose.cfg \
                             '"
                         )
                         echo "Django test results: "+ ocoutput.actions[0].out
