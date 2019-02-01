@@ -24,13 +24,12 @@ services:
       MINIO_SECRET_KEY: minio1234
     command: server --address ":9001" /data
   db:
-    image: postgres:9.6
+    image: mdillon/postgis:9.6
     hostname: db
     environment:
       POSTGRES_USER: gwells
       POSTGRES_PASSWORD: test1
       POSTGRES_DBNAME: gwells
-    hostname: db
     volumes:
       - /var/lib/postgresql
   frontend:
