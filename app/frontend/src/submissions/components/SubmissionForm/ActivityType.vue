@@ -23,7 +23,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                               id="reportType">
             <b-form-radio value="CON" v-if="userRoles.submissions.edit">Construction</b-form-radio>
             <b-form-radio value="ALT" v-if="userRoles.submissions.edit">Alteration</b-form-radio>
-            <b-form-radio value="DEC" v-if="userRoles.submissions.edit">Decommissioning</b-form-radio>
+            <b-form-radio value="DEC" v-if="userRoles.submissions.edit">Decommission</b-form-radio>
           </b-form-radio-group>
         </b-form-group>
       </b-col>

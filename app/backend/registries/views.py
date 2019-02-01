@@ -318,7 +318,8 @@ class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
             # User is not logged in
             # Only show active drillers to non-admin users and public
             qs = qs.filter(
-                Q(registrations__applications__current_status__code='A', registrations__registries_activity=activity),
+                Q(registrations__applications__current_status__code='A',
+                    registrations__registries_activity=activity),
                 Q(registrations__applications__removal_date__isnull=True),
                 Q()
             )

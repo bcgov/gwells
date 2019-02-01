@@ -59,21 +59,24 @@ Licensed under the Apache License, Version 2.0 (the "License");
             v-model="staticLevelInput"
             hint="ft (btoc)"></form-input>
       </b-col>
-      <b-col cols="12" md="4" lg="2">
+      <b-col>
         <b-form-group label="Hydro-fracturing Performed">
-          <b-form-radio-group id="hydroFracPerformedOptions" v-model="hydroFracturingPerformedInput" name="hydroFracturingPerformed" class="mt-2">
-            <b-form-radio :value="false">No</b-form-radio>
+          <b-form-radio-group v-model="hydroFracturingPerformedInput"
+            id="hydroFracPerformedOptions"
+            name="hydroFracturingPerformed"
+          >
             <b-form-radio :value="true">Yes</b-form-radio>
+            <b-form-radio :value="false">No</b-form-radio>
           </b-form-radio-group>
         </b-form-group>
       </b-col>
       <b-col cols="12" md="4" lg="4" offset-md="1">
         <form-input
-            id="hydroFracturingYieldIncrease"
-            label="Increase in Well Yield Due to Hydro-fracturing"
-            v-model="hydroFracturingYieldIncreaseInput"
-            hint="USgpm"
-            ></form-input>
+          id="hydroFracturingYieldIncrease"
+          label="Increase in Well Yield Due to Hydro-fracturing"
+          v-model="hydroFracturingYieldIncreaseInput"
+          hint="USgpm"
+        ></form-input>
       </b-col>
     </b-row>
     <b-row>
@@ -116,7 +119,7 @@ export default {
     yieldEstimationDuration: String,
     staticLevel: String,
     drawdown: String,
-    hydroFracturingPerformed: null,
+    hydroFracturingPerformed: Boolean,
     hydroFracturingYieldIncrease: String,
     recommendedPumpDepth: String,
     recommendedPumpRate: String,
