@@ -3,13 +3,9 @@
 # General Jobs #
 ################
 
-default: vue
+default: vue down
 
-vue: prep
-	NPM_CMD=dev docker-compose up
-
-django: prep
-	NPM_CMD=watch docker-compose up
+test: test-node test-django
 
 
 ###################
@@ -17,24 +13,24 @@ django: prep
 ###################
 
 prep:
-	@	docker-compose pull
-	@	docker-compose build
+	docker-compose pull
+	docker-compose build
 
 down:
-	@	docker-compose down
+	docker-compose down
 
-db-clean:
-	@	docker-compose down || true
-	@	rm -rf ./.tmp/psql-dev
-	@	echo
-	@	echo "Compose is down and the database folder deleted"
-	@	echo
+vue: prep
+	NPM_CMD=dev docker-compose up || true
 
-test: test-node test-django
+django: prep
+	NPM_CMD=watch docker-compose up || true
 
 test-node:
-	docker exec -ti gwells_webapp_1 /bin/bash -c "cd /app/frontend/; npm run unit -- --runInBand"
+	docker exec -ti gwells_frontend_1 /bin/bash -c "cd /app/frontend/; npm run unit -- --runInBand"
 
 test-django:
-	docker exec -ti gwells_webapp_1 /bin/bash -c "cd /app/frontend/; npm run build"
-	docker exec -ti gwells_api_1 /bin/bash -c "cd /app/backend/; python manage.py test -c nose.cfg --noinput"
+	docker exec -ti gwells_frontend_1 /bin/bash -c "cd /app/frontend/; npm run build"
+	docker exec -ti gwells_backend_1 /bin/bash -c "cd /app/backend/; python manage.py test -c nose.cfg --noinput"
+
+admin-django:
+	docker exec -ti gwells_backend_1 /bin/bash -c "cd /app/backend; python manage.py createsuperuser"

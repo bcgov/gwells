@@ -200,7 +200,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               id="workStartDateInput"
               type="date"
               label="Start Date of Work *"
-              hint="Enter date as YYYY/MM/DD"
+              placeholder="YYYY/MM/DD"
               v-model="workStartDateInput"
               :errors="errors.work_start_date"
               :loaded="fieldsLoaded['work_start_date']">
@@ -211,7 +211,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               id="workEndDateInput"
               type="date"
               label="End Date of Work *"
-              hint="Enter date as YYYY/MM/DD"
+              placeholder="YYYY/MM/DD"
               v-model="workEndDateInput"
               :errors="errors.work_end_date"
               :loaded="fieldsLoaded['work_end_date']">
