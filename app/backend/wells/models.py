@@ -1348,7 +1348,9 @@ class LithologyDescription(AuditModel):
                                            verbose_name='Hardness')
     lithology_material = models.ForeignKey(LithologyMaterialCode, db_column='lithology_material_code',
                                            on_delete=models.CASCADE, blank=True, null=True,
-                                           verbose_name="Material")
+                                           verbose_name='Material', related_name='lithology_records')
+
+    materials = models.ManyToManyField(LithologyMaterialCode, through='LithologyMaterial')
 
     water_bearing_estimated_flow = models.DecimalField(
         max_digits=10, decimal_places=4, blank=True, null=True, verbose_name='Water Bearing Estimated Flow')
@@ -1391,6 +1393,24 @@ class LithologyDescription(AuditModel):
                                                          self.lithology_to)
         else:
             return 'well {} {} {}'.format(self.well, self.lithology_from, self.lithology_to)
+
+
+class LithologyMaterial(AuditModel):
+    """
+    LithologyMaterial is an intermediary table between LithologyDescription
+    and LithologyMaterialCode. It allows using the Django model relationship
+    ManyToManyField while retaining the order of materials (which is significant)
+    """
+    description_id = models.ForeignKey(LithologyDescription, on_delete=models.CASCADE)
+    material_code = models.ForeignKey(LithologyMaterialCode, on_delete=models.CASCADE)
+    
+    # material_order is the significance of each team.  The primary soil type should come first,
+    # followed by subsequent soil types identified during drilling. Each value of order
+    # should be unique for a given description_id.
+    material_order = models.PositiveIntegerField()
+
+    class Meta:
+        unique_together = ("description_id", "material_order")
 
 
 class LinerPerforation(AuditModel):

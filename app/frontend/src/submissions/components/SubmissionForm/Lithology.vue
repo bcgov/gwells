@@ -117,6 +117,15 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     group-class="mt-1 mb-0"></form-input>
               </td>
               <td class="input-width-medium">
+                <form-input
+                    :id="`lithologyHardness${index}`"
+                    aria-label="Hardness"
+                    text-field="description"
+                    placeholder="Select hardness"
+                    v-model="lithology[index].lithology_observation"
+                    group-class="mt-1 mb-0"></form-input>
+              </td>
+              <td class="input-width-medium">
                 <form-input :id="`lithologyFlowEstimate${index}`" aria-label="Water bearing flow" v-model="lithology[index].water_bearing_estimated_flow" group-class="mt-1 mb-0"></form-input>
               </td>
               <td class="pt-1">
@@ -196,11 +205,13 @@ export default {
         lithology_raw_data: '',
         lithology_colour: '',
         lithology_hardness: '',
-        lithology_moisture: ''
+        lithology_moisture: '',
+        lithology_observation: ''
       })
     },
     removeRowByIndex (index) {
       this.lithologyInput.splice(index, 1)
+      this.lithSoils.splice(index, 1)
       this.rowIndexToRemove = null
     },
     removeRowIfOk (rowNumber) {
