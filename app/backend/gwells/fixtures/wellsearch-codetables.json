@@ -1601,13 +1601,13 @@
     },
     {
         "model": "wells.drillingmethodcode",
-        "pk": "DUO_ROTARY",
+        "pk": "DUAL_ROTARY",
         "fields": {
             "create_user": "ETL_USER",
             "create_date": "2017-07-01T08:00:00Z",
             "update_user": "ETL_USER",
             "update_date": "2017-07-01T08:00:00Z",
-            "description": "Duo Rotary",
+            "description": "Dual Rotary",
             "display_order": 60,
             "effective_date": "2018-05-25T07:00:00Z",
             "expiry_date": null
