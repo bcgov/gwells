@@ -12,9 +12,6 @@
     limitations under the License.
 """
 
-"""
-from django.db import models
-"""
 from django.contrib.gis.db import models
 from django.core.validators import MinValueValidator
 from decimal import Decimal

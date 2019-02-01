@@ -142,7 +142,8 @@
                             {
                                 "name": "JWT_AUDIENCE",
                                 "value": "webapp-dev-local"
-                            }                        ]
+                            }
+                        ]
                     }
                 },
                 "output": {
