@@ -111,8 +111,8 @@ export default {
       if (this.fileType === 'private') {
         isPrivate = true
       }
-      ApiService.delete_file(`aquifers/${this.id}/delete_document?filename=${this.file}&private=${isPrivate}`)
-        .then( () => {
+      ApiService.deleteFile(`aquifers/${this.id}/delete_document?filename=${this.file}&private=${isPrivate}`)
+        .then(() => {
           this.$emit('fetchFiles')
         })
     }

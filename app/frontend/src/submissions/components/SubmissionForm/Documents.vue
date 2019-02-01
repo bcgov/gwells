@@ -96,7 +96,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 
 <script>
-import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
+import { mapGetters, mapMutations, mapState } from 'vuex'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 import ApiService from '@/common/services/ApiService.js'
 
@@ -187,9 +187,8 @@ export default {
 
       let tag = this.form.well && isNaN(this.form.well) ? this.form.well.well_tag_number : this.form.well
 
-      ApiService.delete_file(`wells/${tag}/delete_document?filename=${this.file}&private=${isPrivate}`)
-        .then( () => {
-          console.log("Emit 1")
+      ApiService.deleteFile(`wells/${tag}/delete_document?filename=${this.file}&private=${isPrivate}`)
+        .then(() => {
           this.$emit('fetchFiles')
         })
     }

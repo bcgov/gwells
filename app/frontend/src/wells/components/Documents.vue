@@ -139,8 +139,9 @@ export default {
       if (this.fileType === 'private') {
         isPrivate = true
       }
-      ApiService.delete_file(`wells/${this.wellTag}/delete_document?filename=${this.file}&private=${isPrivate}`)
-        .then( () => {
+
+      ApiService.deleteFile(`wells/${this.wellTag}/delete_document?filename=${this.file}&private=${isPrivate}`)
+        .then(() => {
           this.removeFileFromStore(this.file)
         })
     }

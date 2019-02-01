@@ -546,7 +546,7 @@ export default {
       })
     },
     fetchFiles () {
-      //this.form.well is sometimes the tag number, and sometimes an object. This detects which is which
+      // this.form.well is sometimes the tag number, and sometimes an object. This detects which is which
       console.log(this.form.well && isNaN(this.form.well))
       let tag = this.form.well && isNaN(this.form.well) ? this.form.well.well_tag_number : this.form.well
 

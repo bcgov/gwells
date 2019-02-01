@@ -61,7 +61,7 @@ const ApiService = {
   history (resource, record) {
     return axios.get(`${resource}/${record}/history/`)
   },
-  presigned_put_url (resource, record, filename) {
+  presignedPutUrl (resource, record, filename) {
     return axios.get(`${resource}/${record}/presigned_put_url?filename=${filename}`)
   },
   // fileUpload uploads a file using a pre-signed S3 URL
@@ -78,7 +78,7 @@ const ApiService = {
     }
     return axios.put(presignedUrl, file, config)
   },
-  delete_file (resource) {
+  deleteFile (resource) {
     return axios.delete(resource)
   }
 }

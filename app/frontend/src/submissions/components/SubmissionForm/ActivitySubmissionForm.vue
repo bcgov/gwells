@@ -681,7 +681,6 @@ export default {
       this.formValueChanged = true
     },
     fetchFiles () {
-      console.log("Emit 2")
       this.$emit('fetchFiles')
     }
   },

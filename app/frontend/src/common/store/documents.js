@@ -13,7 +13,6 @@
 */
 
 import ApiService from '@/common/services/ApiService.js'
-import axios from 'axios'
 
 export default {
   namespaced: true,
@@ -34,7 +33,7 @@ export default {
 
       context.state.upload_files.forEach((file) => {
         uploadPromises.push(
-          ApiService.presigned_put_url(documentType, recordId, file.name)
+          ApiService.presignedPutUrl(documentType, recordId, file.name)
             .then((response) => {
               let url = response.data.url
               let objectName = response.data.object_name

@@ -217,7 +217,6 @@ export default {
         })
     },
     fetchFiles (id = this.id) {
-      console.log("fetchFiles")
       ApiService.query(`aquifers/${id}/files`)
         .then((response) => {
           this.aquiferFiles = response.data
