@@ -61,7 +61,7 @@ services:
       DATABASE_PASSWORD: test1
       POSTGRES_SERVICE_HOST: db
       DJANGO_DEBUG: "True"
-      APP_CONTEXT_ROOT: gwells
+      APP_CONxTEXT_ROOT: gwells
       DJANGO_SECRET_KEY: secret
       SESSION_COOKIE_SECURE: "False"
       CSRF_COOKIE_SECURE: "False"
