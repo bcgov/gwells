@@ -19,7 +19,6 @@ from gwells.settings.base import get_env_variable
 
 
 engines = {
-    'sqlite': 'django.db.backends.sqlite3',
     'postgresql': 'django.db.backends.postgresql',
     'postgis': 'django.contrib.gis.db.backends.postgis',
     'mysql': 'django.db.backends.mysql',
@@ -29,12 +28,10 @@ engines = {
 def config():
     service_name = get_env_variable('DATABASE_SERVICE_NAME', '').upper().replace('-', '_')
     if service_name:
-        engine = engines.get(get_env_variable('DATABASE_ENGINE'), engines['sqlite'])
+        engine = engines.get(get_env_variable('DATABASE_ENGINE'), engines['postgis'])
     else:
-        engine = engines['sqlite']
+        engine = engines['postgis']
     name = get_env_variable('DATABASE_NAME')
-    if not name and engine == engines['sqlite']:
-        name = os.path.join(settings.BASE_DIR, 'db.sqlite3')
     return {
         'ENGINE': engine,
         'NAME': name,
