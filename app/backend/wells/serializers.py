@@ -129,6 +129,7 @@ class LithologyDescriptionSerializer(serializers.ModelSerializer):
             'lithology_colour',
             'lithology_hardness',
             'lithology_moisture',
+            'lithology_observation',
             'water_bearing_estimated_flow',
         )
 

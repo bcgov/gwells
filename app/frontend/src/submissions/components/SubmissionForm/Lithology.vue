@@ -49,6 +49,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
             <th class="font-weight-normal">
               Hardness
             </th>
+            <th class="font-weight-normal">
+              Observations
+            </th>
             <th class="font-weight-normal input-width-medium">
               Water Bearing Flow Estimate (USGPM)
             </th>
@@ -118,10 +121,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
               </td>
               <td class="input-width-medium">
                 <form-input
-                    :id="`lithologyHardness${index}`"
-                    aria-label="Hardness"
-                    text-field="description"
-                    placeholder="Select hardness"
+                    :id="`lithologyObservations${index}`"
+                    aria-label="Observations"
                     v-model="lithology[index].lithology_observation"
                     group-class="mt-1 mb-0"></form-input>
               </td>
@@ -129,7 +130,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 <form-input :id="`lithologyFlowEstimate${index}`" aria-label="Water bearing flow" v-model="lithology[index].water_bearing_estimated_flow" group-class="mt-1 mb-0"></form-input>
               </td>
               <td class="pt-1">
-                <b-btn size="sm" variant="primary" @click="removeRowIfOk(index)" :id="`removeRowButton${index}`" class="mt-2"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
+                <b-btn size="sm" variant="primary" @click="removeRowIfOk(index)" :id="`removeRowButton${index}`" class="mt-2 float-right"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
               </td>
             </tr>
           </template>
