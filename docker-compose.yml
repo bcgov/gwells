@@ -30,6 +30,7 @@ services:
       POSTGRES_USER: gwells
       POSTGRES_PASSWORD: test1
       POSTGRES_DBNAME: gwells
+    hostname: db
     volumes:
       - /var/lib/postgresql
   frontend:
@@ -61,7 +62,7 @@ services:
       DATABASE_PASSWORD: test1
       POSTGRES_SERVICE_HOST: db
       DJANGO_DEBUG: "True"
-      APP_CONxTEXT_ROOT: gwells
+      APP_CONTEXT_ROOT: gwells
       DJANGO_SECRET_KEY: secret
       SESSION_COOKIE_SECURE: "False"
       CSRF_COOKIE_SECURE: "False"
