@@ -92,7 +92,7 @@
         <dd class="col-sm-4">{{record.demand_description}}</dd>
       </dl>
       <h5 class="mt-3 border-bottom">Documentation</h5>
-      <aquifer-documents :files="aquiferFiles"></aquifer-documents>
+      <aquifer-documents :files="aquiferFiles" :editMode="editMode" :id="this.id"></aquifer-documents>
       <change-history v-if="userRoles.aquifers.edit" class="mt-5" :id="id" resource="aquifers" ref="aquiferHistory"/>
     </b-container>
   </b-card>

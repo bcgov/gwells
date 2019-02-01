@@ -12,72 +12,94 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-  <fieldset>
-    <b-row>
-      <b-col cols="12" lg="6">
-        <legend :id="id">Attachments</legend>
-      </b-col>
-      <b-col cols="12" lg="6">
-        <div class="float-right">
-          <b-btn v-if="isStaffEdit" variant="primary" class="ml-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
-          <a href="#top" v-if="isStaffEdit">Back to top</a>
-        </div>
-      </b-col>
-    </b-row>
-    <b-row class="mt-3">
-      <b-col cols="12" sm="6">
-        <b-form-group
-          label="Attachments"
-          id="attachmentGroup">
-          <b-form-file
-            v-model="files"
-            id="files"
-            multiple
-            plain/>
-          <div class="mt-3" v-if="upload_files.length > 0">
-            <b-list-group>
-              <b-list-group-item v-for="(f, index) in upload_files" :key="index">{{f.name}}</b-list-group-item>
-            </b-list-group>
+  <div>
+    <fieldset>
+      <b-row>
+        <b-col cols="12" lg="6">
+          <legend :id="id">Attachments</legend>
+        </b-col>
+        <b-col cols="12" lg="6">
+          <div class="float-right">
+            <b-btn v-if="isStaffEdit" variant="primary" class="ml-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
+            <a href="#top" v-if="isStaffEdit">Back to top</a>
           </div>
-        </b-form-group>
-      </b-col>
-    </b-row>
-    <b-row v-if="showDocuments">
-      <b-col cols="12">
-        <div class="row no-gutters mt-3">
-          <div class="col-md-12">
-            <!-- public documents -->
-            <ul v-if="uploadedFiles && uploadedFiles.public && uploadedFiles.public.length">
-              <li v-for="(file, index) in uploadedFiles.public" :key="index">
-                <a :href="file.url" :download="file.name" target="_blank">{{file.name}}</a>
-              </li>
-            </ul>
-            <div v-else>
-                No additional documentation currently available for this well.
+        </b-col>
+      </b-row>
+      <b-row class="mt-3">
+        <b-col cols="12" sm="6">
+          <b-form-group
+            label="Attachments"
+            id="attachmentGroup">
+            <b-form-file
+              v-model="files"
+              id="files"
+              multiple
+              plain/>
+            <div class="mt-3" v-if="upload_files.length > 0">
+              <b-list-group>
+                <b-list-group-item v-for="(f, index) in upload_files" :key="index">{{f.name}}</b-list-group-item>
+              </b-list-group>
+            </div>
+          </b-form-group>
+        </b-col>
+      </b-row>
+      <b-row v-if="showDocuments">
+        <b-col cols="12">
+          <div class="row no-gutters mt-3">
+            <div class="col-md-12">
+              <!-- public documents -->
+              <ul v-if="uploadedFiles && uploadedFiles.public && uploadedFiles.public.length">
+                <li v-for="(file, index) in uploadedFiles.public" :key="index">
+                  <a :href="file.url" :download="file.name" target="_blank">{{file.name}}</a>
+                  <a class="fa fa-trash fa-lg"
+                  variant="primary"
+                  style="margin-left: .5em"
+                  href="#"
+                  v-on:click="confirmDeleteFile(file.name, 'public', $event)" />
+                </li>
+              </ul>
+              <div v-else>
+                  No additional documentation currently available for this well.
+              </div>
             </div>
           </div>
-        </div>
-        <div class="row no-gutters">
-          <div class="col-md-12">
-            <h4>Internal documentation - authorized access only</h4>
-            <ul v-if="uploadedFiles && uploadedFiles.private && uploadedFiles.private.length">
-              <li v-for="(file, index) in uploadedFiles.private" :key="index">
-                <a :href="file.url" :download="file.name" target="_blank">{{file.name}}</a>
-              </li>
-            </ul>
-            <div v-else>
-              No additional private documentation currently available for this well.
+          <div class="row no-gutters">
+            <div class="col-md-12">
+              <h4>Internal documentation - authorized access only</h4>
+              <ul v-if="uploadedFiles && uploadedFiles.private && uploadedFiles.private.length">
+                <li v-for="(file, index) in uploadedFiles.private" :key="index">
+                  <a :href="file.url" :download="file.name" target="_blank">{{file.name}}</a>
+                  <a class="fa fa-trash fa-lg"
+                  variant="primary"
+                  style="margin-left: .5em"
+                  href="#"
+                  v-on:click="confirmDeleteFile(file.name, 'private', $event)" />
+                </li>
+              </ul>
+              <div v-else>
+                No additional private documentation currently available for this well.
+              </div>
             </div>
           </div>
-        </div>
-      </b-col>
-    </b-row>
-  </fieldset>
+        </b-col>
+      </b-row>
+    </fieldset>
+    <b-modal
+      ok-variant="primary"
+      cancel-variant="default"
+      v-on:ok="deleteFile"
+      ref="deleteModal" >
+      <p>Are you sure you would like to delete this file?</p>
+      <p>{{file}}</p>
+    </b-modal>
+  </div>
 </template>
 
 <script>
 import { mapGetters, mapMutations, mapState } from 'vuex'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
+import ApiService from '@/common/services/ApiService.js'
+
 export default {
   mixins: [inputBindingsMixin],
   props: {
@@ -91,6 +113,10 @@ export default {
     },
     id: {
       type: String,
+      isInput: false
+    },
+    tag: {
+      type: Number,
       isInput: false
     },
     isStaffEdit: {
@@ -112,7 +138,9 @@ export default {
   },
   data () {
     return {
-      status: 'False'
+      status: 'False',
+      file: '',
+      fileType: ''
     }
   },
   computed: {
@@ -133,7 +161,27 @@ export default {
   methods: {
     ...mapMutations('documentState', [
       'setFiles'
-    ])
+    ]),
+    showModal () {
+      this.$refs.deleteModal.show()
+    },
+    hideModal () {
+      this.$refs.deleteModal.hide()
+    },
+    confirmDeleteFile (file, fileType, e) {
+      e.preventDefault()
+      this.file = file
+      this.fileType = fileType
+      this.showModal()
+    },
+    deleteFile () {
+      this.hideModal()
+      let isPrivate = false
+      if (this.fileType === 'private') {
+        isPrivate = true
+      }
+      ApiService.delete_file(`wells/${this.tag}/delete_document?filename=${this.file}&private=${isPrivate}`)
+    }
   }
 }
 </script>

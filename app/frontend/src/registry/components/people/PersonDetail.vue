@@ -365,11 +365,6 @@
             </div>
             <b-row class="mt-3">
               <b-col>
-                <person-documents :files="person_files"></person-documents>
-              </b-col>
-            </b-row>
-            <b-row class="mt-3">
-              <b-col>
                 <b-form-group
                   horizontal
                   label-cols="4"
@@ -384,6 +379,11 @@
                     </b-list-group>
                   </div>
                 </b-form-group>
+              </b-col>
+            </b-row>
+            <b-row class="mt-3">
+              <b-col>
+                <person-documents :files="person_files" :guid="currentDriller.person_guid"></person-documents>
               </b-col>
             </b-row>
             <div slot="modal-footer">

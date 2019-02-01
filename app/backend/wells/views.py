@@ -14,7 +14,7 @@
 from urllib.parse import quote
 
 from django.db.models import Prefetch
-from django.http import Http404, JsonResponse
+from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView
 
@@ -227,3 +227,31 @@ class PreSignedDocumentKey(APIView):
         url = client.get_presigned_put_url(filename, bucket_name=get_env_variable("S3_WELL_BUCKET"))
 
         return JsonResponse({"object_name": object_name, "url": url})
+
+
+class DeleteWellDocument(APIView):
+    """
+    Delete a document from a S3 compatible store
+
+    delete: remove the specified object from the S3 store
+    """
+
+    queryset = Well.objects.all()
+    permission_classes = (WellsEditPermissions,)
+
+    @swagger_auto_schema(auto_schema=None)
+    def delete(self, request, tag):
+        well = get_object_or_404(self.queryset, pk=tag)
+        client = MinioClient(
+            request=request, disable_private=True)
+
+        is_private = False
+        if request.GET.get("private") == "true":
+            is_private = True
+
+        object_name = client.get_bucket_folder(int(well.well_tag_number), "well") + "/" + request.GET.get("filename")
+
+        # TODO: This should probably be "S3_WELL_BUCKET" but that will require a file migration
+        client.delete_document(object_name, bucket_name=get_env_variable("S3_ROOT_BUCKET"), private=is_private)
+
+        return HttpResponse(status=204)

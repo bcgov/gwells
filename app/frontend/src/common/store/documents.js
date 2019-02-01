@@ -55,7 +55,7 @@ export default {
                 }
               }
 
-              let instance = axios.create();
+              let instance = axios.create()
               console.log(instance)
 
               instance.put(url, file, options)

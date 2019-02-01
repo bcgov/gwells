@@ -127,16 +127,31 @@ class MinioClient():
         )
         return urls
 
+    def get_bucket_folder(self, document_id, resource='well'):
+        """Helper function to determine the folder for a given resource"""
+        if resource == 'well':
+            folder = str(str('{:0<6}'.format('{:0>2}'.format(document_id // 10000))))
+        elif resource == 'aquifer':
+            folder = str(str('{:0<5}'.format('{:0>3}'.format(document_id // 100))))
+        elif resource == 'driller':
+            folder = ""
+        else:
+            folder = ""
+
+        return folder
+
     def get_prefix(self, document_id, resource='well'):
         """Helper function to determine the prefix for a given resource"""
+        folder = self.get_bucket_folder(document_id, resource)
+
         if resource == 'well':
-            prefix = str(str('{:0<6}'.format('{:0>2}'.format(document_id // 10000))) + '/WTN ' +
-                         str(document_id) + '_')
+            prefix = str(folder + '/WTN ' + str(document_id) + '_')
         elif resource == 'aquifer':
-            prefix = str(str('{:0<5}'.format('{:0>3}'.format(document_id // 100))) + '/AQ_' +
-                         str('{:0<5}'.format('{:0>5}'.format(document_id))) + '_')
+            prefix = str(folder + '/AQ_' + str('{:0<5}'.format('{:0>5}'.format(document_id))) + '_')
         elif resource == 'driller':
-            prefix = "P_%s" % document_id
+            prefix = "P_%s" % str(document_id)
+        else:
+            prefix = ""
 
         return prefix
 
@@ -150,6 +165,7 @@ class MinioClient():
         # prefix well tag numbers with a 6 digit "folder" id
         # e.g. WTA 23456 goes into prefix 020000/
         prefix = self.get_prefix(document_id, resource)
+        print(prefix)
 
         if resource == 'well':
             public_bucket = self.public_bucket
@@ -158,6 +174,7 @@ class MinioClient():
         elif resource == 'driller':
             public_bucket = self.public_drillers_bucket
 
+        print(public_bucket)
         objects = {}
 
         # provide all requests with a "public" collection of documents
@@ -206,3 +223,19 @@ class MinioClient():
                 bucket_name, object_name, expires=timedelta(minutes=5))
 
         return key
+
+    def delete_document(self, object_name, bucket_name=None, private=False):
+        if private:
+            if bucket_name is None:
+                bucket_name = self.private_bucket
+
+            print(bucket_name)
+
+            self.private_client.remove_object(bucket_name, object_name)
+        else:
+            if bucket_name is None:
+                bucket_name = self.public_bucket
+
+            print(bucket_name)
+
+            self.public_client.remove_object(bucket_name, object_name)

@@ -408,6 +408,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         :isStaffEdit="isStaffEdit"
         :saveDisabled="editSaveDisabled"
         :showDocuments="form.well !== null"
+        :tag="form.well"
         v-on:save="$emit('submit_edit')"
         v-on:setFormValueChanged="setFormValueChanged"
       />
