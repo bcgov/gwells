@@ -359,9 +359,9 @@ pipeline {
         }
 
         // the Deploy to Dev stage creates a new dev environment for the pull request (if necessary), tagging
-        // the newly built application image into that environment.  This stage also runs unit tests and 
-        // monitors the newest deployment for pods/containers to report back as ready.
-        stage('DEV - Deploy (with tests)') {
+        // the newly built application image into that environment.  This stage monitors the newest deployment
+        // for pods/containers to report back as ready.
+        stage('DEV - Deploy') {
             when {
                 expression { env.CHANGE_TARGET != 'master' && env.CHANGE_TARGET != 'demo' }
             }
@@ -492,6 +492,8 @@ pipeline {
             }
         }
 
+        // the Django Unit Tests stage runs backend unit tests using a test DB that is
+        // created and destroyed afterwards. 
         stage('DEV - Django Unit Tests') {
             when {
                 expression { env.CHANGE_TARGET != 'master' && env.CHANGE_TARGET != 'demo' }
@@ -528,7 +530,7 @@ pipeline {
 
                         echo "Revoking ADMIN rights"
                         def db_ocoutput_revoke = openshift.exec(
-                            DB_pods.objects()[0].metadata.name,
+                            DB_pod.objects()[0].metadata.name,
                             "--", 
                             "bash -c '\
                                 psql -c \"ALTER USER \\\"\${POSTGRESQL_USER}\\\" WITH NOSUPERUSER;\" \
