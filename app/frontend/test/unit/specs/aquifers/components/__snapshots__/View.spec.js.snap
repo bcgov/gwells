@@ -718,6 +718,7 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
     </h5>
      
     <aquifer-documents-stub
+      editmode="true"
       files="[object Object]"
     />
      
@@ -1444,6 +1445,7 @@ exports[`View Component View mode matches the snapshot 1`] = `
     </h5>
      
     <aquifer-documents-stub
+      editmode="true"
       files="[object Object]"
     />
      
