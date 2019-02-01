@@ -80,6 +80,8 @@ urlpatterns = [
         views.PersonNoteDetailView.as_view(), name='person-note-detail'),
 
     # Person endpoints (drillers, well installers, and other instances of Person model)
+    # TODO: There's some confusion between drillers and persons. Sometimes we're looking only for drillers,
+    # sometimes we're actually looking for people (pump installers, drillers etc.)
     url(r'^api/v1/drillers/names/$',
         never_cache(views.PersonNameSearch.as_view()), name='person-search'),
     url(r'api/v1/drillers/options/',

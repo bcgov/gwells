@@ -26,12 +26,20 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </div>
         </b-col>
       </b-row>
+      <b-form-checkbox id="checkbox1"
+        v-model="drillerSameAsPersonResponsibleInput"
+        :value="true"
+        :unchecked-value="false"
+      >
+      <p>Person Responsible is the same as the Person Who Completed the Work</p>
+      </b-form-checkbox>
       <b-row>
-        <b-col cols="12" md="12" lg="4">
+        <b-col cols="12" md="12" lg="6">
           <b-form-group
+              label="Person Responsible for Work *"
               aria-describedby="personResponsibleInvalidFeedback"
-              :state="false">
-            <label>Person Responsible for Drilling</label>
+              :state="false"
+          >
             <v-select
                 :class="errors.person_responsible?'border border-danger dropdown-error-border':''"
                 :disabled="persons === null"
@@ -46,14 +54,14 @@ Licensed under the Apache License, Version 2.0 (the "License");
               <template slot="no-options">
                   Type to search registry...
               </template>
-              <template slot="option" slot-scope="option">
-                <div>
-                  {{ option.name }}
-                  </div>
-              </template>
               <template slot="selected-option" slot-scope="option">
                 <div>
-                  {{ option.name }}
+                  {{ personNameReg (option) }}
+                </div>
+              </template>
+              <template slot="option" slot-scope="option">
+                <div>
+                  {{ personNameReg (option) }}
                 </div>
               </template>
             </v-select>
@@ -67,27 +75,16 @@ Licensed under the Apache License, Version 2.0 (the "License");
             </b-form-text>
           </b-form-group>
         </b-col>
-        <b-col cols="12" md="6" lg="4">
+        <b-col cols="12" md="12" lg="6">
           <form-input
               id="drillerName"
-              label="Name of Person Who Did the Drilling"
+              label="Person Who Completed the Work"
               type="text"
               :disabled="drillerSameAsPersonResponsible"
               v-model="drillerNameInput"
               :errors="errors['driller_name']"
               :loaded="fieldsLoaded['driller_name']"
           ></form-input>
-        </b-col>
-        <b-col cols="12" md="6" lg="4">
-          <b-form-group class="pt-md-4 mt-md-2">
-            <b-form-checkbox id="checkbox1"
-                  v-model="drillerSameAsPersonResponsibleInput"
-                  :value="true"
-                  :unchecked-value="false"
-                  :disabled="!personResponsible">
-              Same as Person Responsible for Drilling
-            </b-form-checkbox>
-          </b-form-group>
         </b-col>
       </b-row>
       <b-row>
@@ -198,8 +195,9 @@ export default {
   methods: {
     onPersonSearch (search, loading) {
       this.personOptions = this.genericSearch(search, this.persons, (item, search) => {
+        const name = item.name
         // On some browsers indexOf is faster than contains and vice versa. The trends seems to be that indexOf is faster
-        return item.name != null && item.name.toUpperCase().indexOf(search) !== -1
+        return name != null && name.toUpperCase().indexOf(search) !== -1
       })
     },
     onCompanyOfPersonResponsibleSearch (search, loading) {
@@ -237,6 +235,13 @@ export default {
       if (options && ref.typeAheadPointer < options.length) {
         this[inputName] = options[ref.typeAheadPointer]
       }
+    },
+    personNameReg (option) {
+      const drillReg = option.registrations.find((item) => {
+        return item.registries_activity === 'DRILL'
+      })
+      const drillNo = (drillReg && drillReg.registration_no) ? drillReg.registration_no : 'Registration Number Unavailable'
+      return option.name + ' (' + drillNo + ')'
     }
   },
   watch: {
@@ -246,6 +251,7 @@ export default {
       if (prev) {
         this.drillerSameAsPersonResponsibleInput = false
       }
+      this.drillerNameInput = (this.personResponsible && this.drillerSameAsPersonResponsible) ? this.personResponsible.name : ''
     },
     drillerSameAsPersonResponsible (val) {
       // keep driller name disabled & set to "person responsible", or leave it enabled and blank
