@@ -502,12 +502,12 @@ pipeline {
 
                         def DB_newVersion = openshift.selector("dc", "${APP_NAME}-pgsql-${DEV_SUFFIX}-${PR_NUM}").object().status.latestVersion
                         def DB_pod = openshift.selector('pod', [deployment: "${APP_NAME}-pgsql-${DEV_SUFFIX}-${PR_NUM}-${DB_newVersion}"])
-                        echo "Temporarily granting ADMIN rights"
+                        echo "Temporarily granting elevated DB rights"
                         def db_ocoutput_grant = openshift.exec(
                             DB_pod.objects()[0].metadata.name,
                             "--",
                             "bash -c '\
-                                psql -c \"ALTER USER \\\\\\"${POSTGRESQL_USER}\\\\\\" WITH SUPERUSER;\" \
+                                psql -c \"ALTER USER \\\"\${POSTGRESQL_USER}\\\" WITH SUPERUSER;\" \
                             '"
                         )
                         echo "Temporary DB grant results: "+ db_ocoutput_grant.actions[0].out
@@ -531,8 +531,9 @@ pipeline {
                             DB_pods.objects()[0].metadata.name,
                             "--", 
                             "bash -c '\
-                                psql -c \"ALTER USER \\\\\\"${POSTGRESQL_USER}\\\\\\" WITH SUPERUSER;\" \
-                            '"                             )
+                                psql -c \"ALTER USER \\\"\${POSTGRESQL_USER}\\\" WITH NOSUPERUSER;\" \
+                            '"
+                        )
                         echo "DB Revocation results: "+ db_ocoutput_revoke.actions[0].out
                     }
                 }
