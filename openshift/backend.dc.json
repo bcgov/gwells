@@ -429,6 +429,60 @@
                                         }
                                     },
                                     {
+                                        "name": "S3_AQUIFER_BUCKET",
+                                        "valueFrom": {
+                                            "configMapKeyRef": {
+                                                "key": "S3_AQUIFER_BUCKET",
+                                                "name": "gwells-global-config${NAME_SUFFIX}"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "S3_REGISTRANT_BUCKET",
+                                        "valueFrom": {
+                                            "configMapKeyRef": {
+                                                "key": "S3_REGISTRANT_BUCKET",
+                                                "name": "gwells-global-config${NAME_SUFFIX}"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "S3_PRIVATE_ROOT_BUCKET",
+                                        "valueFrom": {
+                                            "configMapKeyRef": {
+                                                "key": "S3_PRIVATE_ROOT_BUCKET",
+                                                "name": "gwells-global-config${NAME_SUFFIX}"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "S3_PRIVATE_AQUIFER_BUCKET",
+                                        "valueFrom": {
+                                            "configMapKeyRef": {
+                                                "key": "S3_PRIVATE_AQUIFER_BUCKET",
+                                                "name": "gwells-global-config${NAME_SUFFIX}"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "S3_PRIVATE_REGISTRANT_BUCKET",
+                                        "valueFrom": {
+                                            "configMapKeyRef": {
+                                                "key": "S3_PRIVATE_REGISTRANT_BUCKET",
+                                                "name": "gwells-global-config${NAME_SUFFIX}"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "S3_PRIVATE_WELL_BUCKET",
+                                        "valueFrom": {
+                                            "configMapKeyRef": {
+                                                "key": "S3_PRIVATE_WELL_BUCKET",
+                                                "name": "gwells-global-config${NAME_SUFFIX}"
+                                            }
+                                        }
+                                    },
+                                    {
                                         "name": "SSO_CLIENT",
                                         "valueFrom": {
                                             "configMapKeyRef": {
