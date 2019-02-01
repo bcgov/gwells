@@ -115,7 +115,9 @@
                 "SSO_IDP_HINT": null,
                 "SSO_PORT": null,
                 "SSO_PUBKEY": null,
-                "SSO_REALM": null
+                "SSO_REALM": null,
+                "GDAL_LIBRARY_PATH": null,
+                "GEOS_LIBRARY_PATH": null
             },
             "kind": "ConfigMap",
             "metadata": {
@@ -310,7 +312,7 @@
                                     },
                                     {
                                         "name": "DATABASE_ENGINE",
-                                        "value": "postgresql"
+                                        "value": "postgis"
                                     },
                                     {
                                         "name": "DATABASE_NAME",
@@ -409,6 +411,14 @@
                                             }
                                         }
                                     },
+                                    {
+                                        "name": "GDAL_LIBRARY_PATH",
+                                        "value": "/usr/local/lib/libgdal.so"
+                                    },
+                                    {
+                                        "name": "GEOS_LIBRARY_PATH",
+                                        "value": "/usr/local/lib/libgeos_c.so"
+                                    },                         
                                     {
                                         "name": "ENABLE_GOOGLE_ANALYTICS",
                                         "valueFrom": {
@@ -606,60 +616,6 @@
                                         "valueFrom": {
                                             "configMapKeyRef": {
                                                 "key": "SSO_IDP_HINT",
-                                                "name": "gwells-global-config${NAME_SUFFIX}"
-                                            }
-                                        }
-                                    },
-                                    {
-                                        "name": "S3_AQUIFER_BUCKET",
-                                        "valueFrom": {
-                                            "configMapKeyRef": {
-                                                "key": "S3_AQUIFER_BUCKET",
-                                                "name": "gwells-global-config${NAME_SUFFIX}"
-                                            }
-                                        }
-                                    },
-                                    {
-                                        "name": "S3_REGISTRANT_BUCKET",
-                                        "valueFrom": {
-                                            "configMapKeyRef": {
-                                                "key": "S3_REGISTRANT_BUCKET",
-                                                "name": "gwells-global-config${NAME_SUFFIX}"
-                                            }
-                                        }
-                                    },
-                                    {
-                                        "name": "S3_PRIVATE_ROOT_BUCKET",
-                                        "valueFrom": {
-                                            "configMapKeyRef": {
-                                                "key": "S3_PRIVATE_ROOT_BUCKET",
-                                                "name": "gwells-global-config${NAME_SUFFIX}"
-                                            }
-                                        }
-                                    },
-                                    {
-                                        "name": "S3_PRIVATE_AQUIFER_BUCKET",
-                                        "valueFrom": {
-                                            "configMapKeyRef": {
-                                                "key": "S3_PRIVATE_AQUIFER_BUCKET",
-                                                "name": "gwells-global-config${NAME_SUFFIX}"
-                                            }
-                                        }
-                                    },
-                                    {
-                                        "name": "S3_PRIVATE_REGISTRANT_BUCKET",
-                                        "valueFrom": {
-                                            "configMapKeyRef": {
-                                                "key": "S3_PRIVATE_REGISTRANT_BUCKET",
-                                                "name": "gwells-global-config${NAME_SUFFIX}"
-                                            }
-                                        }
-                                    },
-                                    {
-                                        "name": "S3_PRIVATE_WELL_BUCKET",
-                                        "valueFrom": {
-                                            "configMapKeyRef": {
-                                                "key": "S3_PRIVATE_WELL_BUCKET",
                                                 "name": "gwells-global-config${NAME_SUFFIX}"
                                             }
                                         }
