@@ -14,15 +14,16 @@ services:
     command: server /data
   db:
     image: postgres:9.6
+    hostname: db
     environment:
       POSTGRES_USER: gwells
       POSTGRES_PASSWORD: test1
       POSTGRES_DBNAME: gwells
-    hostname: db
     volumes:
       - /var/lib/postgresql
-  webapp:
+  frontend:
     image: node:8.9.4
+    hostname: frontend
     environment:
       DEBUG: "True"
       AXIOS_BASE_URL: http://127.0.0.1:8000/gwells/api/v1/
@@ -38,8 +39,9 @@ services:
     volumes:
       - ./app:/app
       - /app/frontend/node_modules/
-  api:
+  backend:
     image: python:3.6
+    hostname: backend
     environment:
       DATABASE_SERVICE_NAME: postgres
       DATABASE_ENGINE: postgresql
