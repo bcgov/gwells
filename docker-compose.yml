@@ -14,11 +14,11 @@ services:
     command: server /data
   db:
     image: mdillon/postgis:9.6
+    hostname: db
     environment:
       POSTGRES_USER: gwells
       POSTGRES_PASSWORD: test1
       POSTGRES_DBNAME: gwells
-    hostname: db
     volumes:
       - /var/lib/postgresql
   frontend:
