@@ -1,3 +1,5 @@
+.DELETE_ON_ERROR:
+
 
 ################
 # General Jobs #
@@ -17,13 +19,13 @@ prep:
 	docker-compose build
 
 down:
-	docker-compose down
+	docker-compose down --volumes
 
 vue: prep
-	NPM_CMD=dev docker-compose up || true
+	set -m; NPM_CMD=dev docker-compose up
 
 django: prep
-	NPM_CMD=watch docker-compose up || true
+	set -m; NPM_CMD=watch docker-compose up
 
 test-node:
 	docker exec -ti gwells_frontend_1 /bin/bash -c "cd /app/frontend/; npm run unit -- --runInBand"
