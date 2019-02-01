@@ -15,7 +15,7 @@ import uuid
 import datetime
 import logging
 import reversion
-from django.db import models
+from django.contrib.gis.db import models
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.fields import GenericRelation
 from reversion.models import Version
@@ -23,7 +23,6 @@ from gwells.models import AuditModel, ProvinceStateCode
 
 User = get_user_model()
 logger = logging.getLogger(__name__)
-
 
 @reversion.register()
 class ActivityCode(AuditModel):
