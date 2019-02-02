@@ -36,6 +36,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
               v-model="waterQualityCharacteristicsInput"
               multiple
           ></v-select>
+          <b-form-text id="waterQualityHint">
+            Select as many as necessary
+          </b-form-text>
         </b-form-group>
       </b-col>
     </b-row>
