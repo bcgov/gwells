@@ -413,11 +413,20 @@
                                     },
                                     {
                                         "name": "GDAL_LIBRARY_PATH",
-                                        "value": "/usr/local/lib/libgdal.so"
-                                    },
+                                        "valueFrom": {
+                                            "configMapKeyRef": {
+                                                "key": "GDAL_LIBRARY_PATH",
+                                                "name": "gwells-global-config${NAME_SUFFIX}"
+                                            }
+                                        }                                    },
                                     {
                                         "name": "GEOS_LIBRARY_PATH",
-                                        "value": "/usr/local/lib/libgeos_c.so"
+                                        "valueFrom": {
+                                            "configMapKeyRef": {
+                                                "key": "GEOS_LIBRARY_PATH",
+                                                "name": "gwells-global-config${NAME_SUFFIX}"
+                                            }
+                                        }
                                     },                         
                                     {
                                         "name": "ENABLE_GOOGLE_ANALYTICS",
