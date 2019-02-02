@@ -339,7 +339,7 @@ pipeline {
 
         // the Build stage builds files; an image will be outputted to the app's imagestream,
         // using the source-to-image (s2i) strategy. See /app/.s2i/assemble for image build script
-        stage('ALL - Build') {
+        stage('ALL - Build (with tests)') {
             steps {
                 script {
                     _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
