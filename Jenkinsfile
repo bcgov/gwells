@@ -492,9 +492,9 @@ pipeline {
             }
         }
 
-        // the Django Unit Tests stage runs backend unit tests using a test DB that is
+        // the DEV Deploy stage runs backend unit tests using a test DB that is
         // created and destroyed afterwards. 
-        stage('DEV - Django Unit Tests') {
+        stage('DEV - Deploy') {
             when {
                 expression { env.CHANGE_TARGET != 'master' && env.CHANGE_TARGET != 'demo' }
             }
