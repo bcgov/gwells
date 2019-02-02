@@ -14,10 +14,6 @@
 import reversion
 
 from django.utils import timezone
-"""
-from django.db import models
-- in preparatino for Aquifer.geometry
-"""
 from django.contrib.gis.db import models
 
 from gwells.models import AuditModel

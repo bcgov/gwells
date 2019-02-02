@@ -51,7 +51,7 @@ services:
       - ./app:/app
       - /app/frontend/node_modules/
   backend:
-    image: python:3.6
+    image: garywongbc/python-36-gdal:v1
     hostname: backend
     environment:
       DATABASE_SERVICE_NAME: postgres
@@ -67,6 +67,8 @@ services:
       CSRF_COOKIE_SECURE: "False"
       ENABLE_DATA_ENTRY: "True"
       ENABLE_GOOGLE_ANALYTICS: "False"
+      GDAL_LIBRARY_PATH: "/usr/local/lib/libgdal.so"
+      GEOS_LIBRARY_PATH: "/usr/local/lib/libgeos_c.so"
       ENABLE_ADDITIONAL_DOCUMENTS: "True"
       POSTGRES_SERVICE_PORT: 5432
       DJANGO_ADMIN_URL: admin
