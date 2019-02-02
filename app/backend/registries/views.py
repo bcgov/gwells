@@ -797,6 +797,25 @@ class PersonNameSearch(ListAPIView):
     )
 
 
+class ListFiles(APIView):
+    """
+    List documents associated with an aquifer
+
+    get: list files found for the aquifer identified in the uri
+    """
+
+    @swagger_auto_schema(auto_schema=None)
+    def get(self, request, person_guid):
+
+        client = MinioClient(
+            request=request, disable_private=True)
+
+        documents = client.get_documents(
+            person_guid, resource="driller", include_private=False)
+
+        return Response(documents)
+
+
 class PreSignedDocumentKey(APIView):
     """
     Get a pre-signed document key to upload into an S3 compatible document store
@@ -814,7 +833,33 @@ class PreSignedDocumentKey(APIView):
             request=request, disable_private=True)
 
         object_name = request.GET.get("filename")
-        filename = "P_%s_%s" % (person.person_guid, object_name)
+        filename = client.format_object_name(object_name, person.person_guid, "driller")
         url = client.get_presigned_put_url(filename, bucket_name=get_env_variable("S3_REGISTRANT_BUCKET"))
 
         return JsonResponse({"object_name": object_name, "url": url})
+
+
+class DeleteDrillerDocument(APIView):
+    """
+    Delete a document from a S3 compatible store
+
+    delete: remove the specified object from the S3 store
+    """
+
+    queryset = Person.objects.all()
+    permission_classes = (RegistriesPermissions,)
+
+    @swagger_auto_schema(auto_schema=None)
+    def delete(self, request, person_guid):
+        person = get_object_or_404(self.queryset, pk=person_guid)
+        client = MinioClient(
+            request=request, disable_private=True)
+
+        is_private = False
+        if request.GET.get("private") == "true":
+            is_private = True
+
+        object_name = request.GET.get("filename")
+        client.delete_document(object_name, bucket_name=get_env_variable("S3_REGISTRANT_BUCKET"), private=is_private)
+
+        return HttpResponse(status=204)

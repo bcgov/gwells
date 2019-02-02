@@ -56,7 +56,15 @@ describe('View Component', () => {
     const fetch = jest.fn()
 
     component({
-      methods: { fetch }
+      methods: {
+        fetch,
+        fetchFiles () {
+          return {
+            public: [],
+            private: []
+          }
+        }
+      }
     })
 
     expect(fetch).toHaveBeenCalled()
@@ -70,7 +78,15 @@ describe('View Component', () => {
             record: aquiferFixture
           }
         },
-        methods: { fetch () {} },
+        methods: {
+          fetch () {},
+          fetchFiles () {
+            return {
+              public: [],
+              private: []
+            }
+          }
+        },
         propsData: { edit: true }
       })
 
@@ -86,7 +102,15 @@ describe('View Component', () => {
             record: aquiferFixture
           }
         },
-        methods: { fetch () {} },
+        methods: {
+          fetch () {},
+          fetchFiles () {
+            return {
+              public: [],
+              private: []
+            }
+          }
+        },
         propsData: { edit: true }
       })
 
@@ -96,17 +120,22 @@ describe('View Component', () => {
     describe('On save', () => {
       it('resets showSaveSuccess to false', () => {
         const wrapper = component({
-          data () {
+          data() {
             return {
               record: aquiferFixture,
               showSaveSuccess: true
             }
           },
           methods: {
-            fetch () {},
+            fetch() { },
+            fetchFiles() {
+              return {
+                public: [],
+                private: []
+              }
+            },
             navigateToView () {}
-          },
-          propsData: { edit: true }
+          }
         })
 
         axios.patch.mockResolvedValue(true)
@@ -125,7 +154,13 @@ describe('View Component', () => {
             }
           },
           methods: {
-            fetch () {},
+            fetch() { },
+            fetchFiles() {
+              return {
+                public: [],
+                private: []
+              }
+            },
             navigateToView () {}
           },
           propsData: { edit: true }
@@ -140,7 +175,13 @@ describe('View Component', () => {
       it('sends a patch with the contents of record on save', () => {
         const wrapper = component({
           methods: {
-            fetch () {},
+            fetch() { },
+            fetchFiles() {
+              return {
+                public: [],
+                private: []
+              }
+            },
             navigateToView () {}
           },
           computed: { id () { return 10 } },
@@ -179,7 +220,15 @@ describe('View Component', () => {
           }
         }
       },
-      methods: { fetch () {} },
+      methods: {
+          fetch () {},
+          fetchFiles () {
+            return {
+              public: [],
+              private: []
+            }
+          }
+        },
       propsData: { edit: true }
     })
 
