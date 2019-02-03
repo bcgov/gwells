@@ -220,13 +220,18 @@ class PreSignedDocumentKey(APIView):
     def get(self, request, tag):
         well = get_object_or_404(self.queryset, pk=tag)
         client = MinioClient(
-            request=request, disable_private=True)
+            request=request, disable_private=False)
 
         object_name = request.GET.get("filename")
         filename = client.format_object_name(object_name, int(well.well_tag_number), "well")
 
+        is_private = False
+        if request.GET.get("private") == "true":
+            is_private = True
+
         # TODO: This should probably be "S3_WELL_BUCKET" but that will require a file migration
-        url = client.get_presigned_put_url(filename, bucket_name=get_env_variable("S3_ROOT_BUCKET"))
+        url = client.get_presigned_put_url(
+            filename, bucket_name=get_env_variable("S3_ROOT_BUCKET"), private=is_private)
 
         return JsonResponse({"object_name": object_name, "url": url})
 

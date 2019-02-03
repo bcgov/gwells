@@ -33,6 +33,7 @@ from gwells.documents import MinioClient
 from gwells.roles import REGISTRIES_VIEWER_ROLE
 from gwells.models import ProvinceStateCode
 from gwells.pagination import APILimitOffsetPagination
+from gwells.roles import REGISTRIES_ADJUDICATOR_ROLE, REGISTRIES_AUTHORITY_ROLE
 from gwells.settings.base import get_env_variable
 from reversion.models import Version
 from registries.models import (
@@ -806,12 +807,14 @@ class ListFiles(APIView):
 
     @swagger_auto_schema(auto_schema=None)
     def get(self, request, person_guid):
+        user_is_staff = self.request.user.groups.filter(
+            Q(name=REGISTRIES_ADJUDICATOR_ROLE) | Q(name=REGISTRIES_AUTHORITY_ROLE)).exists()
 
         client = MinioClient(
-            request=request, disable_private=True)
+            request=request, disable_private=(not user_is_staff))
 
         documents = client.get_documents(
-            person_guid, resource="driller", include_private=False)
+            person_guid, resource="driller", include_private=user_is_staff)
 
         return Response(documents)
 
@@ -830,11 +833,17 @@ class PreSignedDocumentKey(APIView):
     def get(self, request, person_guid):
         person = get_object_or_404(self.queryset, pk=person_guid)
         client = MinioClient(
-            request=request, disable_private=True)
+            request=request, disable_private=False)
 
         object_name = request.GET.get("filename")
         filename = client.format_object_name(object_name, person.person_guid, "driller")
-        url = client.get_presigned_put_url(filename, bucket_name=get_env_variable("S3_REGISTRANT_BUCKET"))
+
+        is_private = False
+        if request.GET.get("private") == "true":
+            is_private = True
+
+        url = client.get_presigned_put_url(
+            filename, bucket_name=get_env_variable("S3_REGISTRANT_BUCKET"), private=is_private)
 
         return JsonResponse({"object_name": object_name, "url": url})
 
@@ -853,7 +862,7 @@ class DeleteDrillerDocument(APIView):
     def delete(self, request, person_guid):
         person = get_object_or_404(self.queryset, pk=person_guid)
         client = MinioClient(
-            request=request, disable_private=True)
+            request=request, disable_private=False)
 
         is_private = False
         if request.GET.get("private") == "true":
