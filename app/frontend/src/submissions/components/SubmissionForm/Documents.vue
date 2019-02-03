@@ -63,7 +63,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               </div>
             </div>
           </div>
-          <div class="row no-gutters">
+          <div class="row no-gutters" v-if="userRoles.submissions.edit">
             <div class="col-md-12">
               <h4>Internal documentation - authorized access only</h4>
               <ul v-if="uploadedFiles && uploadedFiles.private && uploadedFiles.private.length">
@@ -144,7 +144,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['codes']),
+    ...mapGetters(['codes', 'userRoles']),
     ...mapState('documentState', [
       'upload_files'
     ]),
