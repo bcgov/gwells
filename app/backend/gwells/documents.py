@@ -165,7 +165,6 @@ class MinioClient():
         # prefix well tag numbers with a 6 digit "folder" id
         # e.g. WTA 23456 goes into prefix 020000/
         prefix = self.get_prefix(document_id, resource)
-        print(prefix)
 
         if resource == 'well':
             public_bucket = self.public_bucket
@@ -174,7 +173,6 @@ class MinioClient():
         elif resource == 'driller':
             public_bucket = self.public_drillers_bucket
 
-        print(public_bucket)
         objects = {}
 
         # provide all requests with a "public" collection of documents
@@ -193,11 +191,18 @@ class MinioClient():
 
         # authenticated requests also receive a "private" collection
         if include_private and not self.disable_private:
+            if resource == 'well':
+                private_bucket = self.private_bucket
+            elif resource == 'aquifer':
+                private_bucket = self.private_aquifers_bucket
+            elif resource == 'driller':
+                private_bucket = self.private_drillers_bucket
+
             priv_objects = []
             try:
                 priv_objects = self.create_url_list(
                     self.private_client.list_objects(
-                        self.private_bucket, prefix=prefix, recursive=True),
+                        private_bucket, prefix=prefix, recursive=True),
                     self.private_host, private=True)
             except:
                 logger.error(
