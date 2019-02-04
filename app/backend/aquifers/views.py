@@ -234,13 +234,15 @@ class PreSignedDocumentKey(APIView):
 
         object_name = request.GET.get("filename")
         filename = client.format_object_name(object_name, int(aquifer_id), "aquifer")
+        bucket_name = get_env_variable("S3_AQUIFER_BUCKET")
 
         is_private = False
         if request.GET.get("private") == "true":
             is_private = True
+            bucket_name = get_env_variable("S3_PRIVATE_AQUIFER_BUCKET")
 
         url = client.get_presigned_put_url(
-            filename, bucket_name=get_env_variable("S3_AQUIFER_BUCKET"), private=is_private)
+            filename, bucket_name=bucket_name, private=is_private)
 
         return JsonResponse({"object_name": object_name, "url": url})
 
