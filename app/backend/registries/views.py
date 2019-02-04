@@ -867,10 +867,13 @@ class DeleteDrillerDocument(APIView):
             request=request, disable_private=False)
 
         is_private = False
+        bucket_name = get_env_variable("S3_REGISTRANT_BUCKET")
+
         if request.GET.get("private") == "true":
             is_private = True
+            bucket_name = get_env_variable("S3_PRIVATE_REGISTRANT_BUCKET")
 
         object_name = request.GET.get("filename")
-        client.delete_document(object_name, bucket_name=get_env_variable("S3_REGISTRANT_BUCKET"), private=is_private)
+        client.delete_document(object_name, bucket_name=bucket_name, private=is_private)
 
         return HttpResponse(status=204)

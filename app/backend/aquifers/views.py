@@ -262,10 +262,13 @@ class DeleteAquiferDocument(APIView):
             request=request, disable_private=True)
 
         is_private = False
+        bucket_name = get_env_variable("S3_AQUIFER_BUCKET")
+
         if request.GET.get("private") == "true":
             is_private = True
+            bucket_name = get_env_variable("S3_PRIVATE_AQUIFER_BUCKET")
 
         object_name = client.get_bucket_folder(int(aquifer_id), "aquifer") + "/" + request.GET.get("filename")
-        client.delete_document(object_name, bucket_name=get_env_variable("S3_AQUIFER_BUCKET"), private=is_private)
+        client.delete_document(object_name, bucket_name=bucket_name, private=is_private)
 
         return HttpResponse(status=204)

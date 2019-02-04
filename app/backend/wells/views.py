@@ -255,12 +255,15 @@ class DeleteWellDocument(APIView):
             request=request, disable_private=True)
 
         is_private = False
+        bucket_name = get_env_variable("S3_ROOT_BUCKET")
+
         if request.GET.get("private") == "true":
             is_private = True
+            bucket_name = get_env_variable("S3_PRIVATE_ROOT_BUCKET")
 
         object_name = client.get_bucket_folder(int(well.well_tag_number), "well") + "/" + request.GET.get("filename")
 
         # TODO: This should probably be "S3_WELL_BUCKET" but that will require a file migration
-        client.delete_document(object_name, bucket_name=get_env_variable("S3_ROOT_BUCKET"), private=is_private)
+        client.delete_document(object_name, bucket_name=bucket_name, private=is_private)
 
         return HttpResponse(status=204)
