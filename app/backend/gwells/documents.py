@@ -53,18 +53,19 @@ class MinioClient():
             self.public_bucket = get_env_variable(
                 'S3_ROOT_BUCKET', strict=True)
             self.public_aquifers_bucket = get_env_variable('S3_AQUIFER_BUCKET', default_value="aquifer-docs")
+            self.public_drillers_bucket = get_env_variable('S3_REGISTRANT_BUCKET', default_value="driller-docs")
             self.public_access_key = get_env_variable(
                 'S3_PUBLIC_ACCESS_KEY', warn=False)
             self.public_secret_key = get_env_variable(
                 'S3_PUBLIC_SECRET_KEY', warn=False)
-            self.use_https = int(get_env_variable(
-                'S3_USE_HTTPS', 1, warn=False))
+            self.use_secure = int(get_env_variable(
+                'S3_USE_SECURE', 1, warn=False))
 
             self.public_client = Minio(
                 self.public_host,
                 access_key=self.public_access_key,
                 secret_key=self.public_secret_key,
-                secure=self.use_https
+                secure=self.use_secure
             )
 
         if not disable_private:
@@ -77,12 +78,14 @@ class MinioClient():
         self.private_secret_key = get_env_variable('MINIO_SECRET_KEY')
         self.private_host = get_env_variable('S3_PRIVATE_HOST')
         self.private_bucket = get_env_variable('S3_PRIVATE_BUCKET')
+        self.private_aquifers_bucket = get_env_variable('S3_PRIVATE_AQUIFER_BUCKET', default_value="aquifer-docs")
+        self.private_drillers_bucket = get_env_variable('S3_PRIVATE_REGISTRANT_BUCKET', default_value="driller-docs")
 
         return Minio(
             self.private_host,
             access_key=self.private_access_key,
             secret_key=self.private_secret_key,
-            secure=self.use_https
+            secure=self.use_secure
         )
 
     def get_private_file(self, object_name: str):
@@ -124,21 +127,54 @@ class MinioClient():
         )
         return urls
 
+    def get_bucket_folder(self, document_id, resource='well'):
+        """Helper function to determine the folder for a given resource"""
+        if resource == 'well':
+            folder = str(str('{:0<6}'.format('{:0>2}'.format(document_id // 10000))))
+        elif resource == 'aquifer':
+            folder = str(str('{:0<5}'.format('{:0>3}'.format(document_id // 100))))
+        elif resource == 'driller':
+            folder = ""
+        else:
+            folder = ""
+
+        return folder
+
+    def get_prefix(self, document_id, resource='well'):
+        """Helper function to determine the prefix for a given resource"""
+        folder = self.get_bucket_folder(document_id, resource)
+
+        if resource == 'well':
+            prefix = str(folder + '/WTN ' + str(document_id) + '_')
+        elif resource == 'aquifer':
+            prefix = str(folder + '/AQ_' + str('{:0<5}'.format('{:0>5}'.format(document_id))) + '_')
+        elif resource == 'driller':
+            prefix = "P_%s" % str(document_id)
+        else:
+            prefix = ""
+
+        return prefix
+
+    def format_object_name(self, object_name: str, document_id: int, resource='well'):
+        """Wrapper function for getting an object name, with path and prefix, for an object and resource type"""
+        return self.get_prefix(document_id, resource) + object_name
+
     def get_documents(self, document_id: int, resource='well', include_private=False):
         """Retrieves a list of available documents for a well or aquifer"""
 
         # prefix well tag numbers with a 6 digit "folder" id
         # e.g. WTA 23456 goes into prefix 020000/
+        prefix = self.get_prefix(document_id, resource)
+        print(prefix)
 
-        public_bucket = self.public_bucket
-        prefix = str(str('{:0<6}'.format('{:0>2}'.format(document_id//10000))) + '/WTN ' +
-                     str(document_id) + '_')
-
-        if resource == 'aquifer':
-            prefix = str(str('{:0<5}'.format('{:0>3}'.format(document_id//100))) + '/AQ_' +
-                         str('{:0<5}'.format('{:0>5}'.format(document_id))) + '_')
+        if resource == 'well':
+            public_bucket = self.public_bucket
+        elif resource == 'aquifer':
             public_bucket = self.public_aquifers_bucket
+        elif resource == 'driller':
+            public_bucket = self.public_drillers_bucket
 
+        print(public_bucket)
         objects = {}
 
         # provide all requests with a "public" collection of documents
@@ -172,6 +208,7 @@ class MinioClient():
         return objects
 
     def get_presigned_put_url(self, object_name, bucket_name=None, private=False):
+        """Retrieves the a presigned URL for putting objects into an S3 source"""
         if private:
             if bucket_name is None:
                 bucket_name = self.private_bucket
@@ -186,3 +223,19 @@ class MinioClient():
                 bucket_name, object_name, expires=timedelta(minutes=5))
 
         return key
+
+    def delete_document(self, object_name, bucket_name=None, private=False):
+        if private:
+            if bucket_name is None:
+                bucket_name = self.private_bucket
+
+            print(bucket_name)
+
+            self.private_client.remove_object(bucket_name, object_name)
+        else:
+            if bucket_name is None:
+                bucket_name = self.public_bucket
+
+            print(bucket_name)
+
+            self.public_client.remove_object(bucket_name, object_name)

@@ -19,7 +19,7 @@ describe('ClosureDescription.vue', () => {
     })
   })
 
-  it('starts with a blank closure description row', () => {
+  it('starts with 10 blank closure description rows', () => {
     const wrapper = shallowMount(ClosureDescription, {
       localVue,
       store,

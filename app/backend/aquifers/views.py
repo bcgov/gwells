@@ -13,7 +13,7 @@
 """
 
 from django_filters import rest_framework as djfilters
-from django.http import Http404, JsonResponse
+from django.http import Http404, HttpResponse, JsonResponse
 from django.views.generic import TemplateView
 
 from drf_yasg.utils import swagger_auto_schema
@@ -230,7 +230,31 @@ class PreSignedDocumentKey(APIView):
             request=request, disable_private=True)
 
         object_name = request.GET.get("filename")
-        filename = "AQ_%s_%s" % (aquifer_id, object_name)
+        filename = client.format_object_name(object_name, int(aquifer_id), "aquifer")
         url = client.get_presigned_put_url(filename, bucket_name=get_env_variable("S3_AQUIFER_BUCKET"))
 
         return JsonResponse({"object_name": object_name, "url": url})
+
+
+class DeleteAquiferDocument(APIView):
+    """
+    Delete a document from a S3 compatible store
+
+    delete: remove the specified object from the S3 store
+    """
+
+    permission_classes = (HasAquiferEditRole,)
+
+    @swagger_auto_schema(auto_schema=None)
+    def delete(self, request, aquifer_id):
+        client = MinioClient(
+            request=request, disable_private=True)
+
+        is_private = False
+        if request.GET.get("private") == "true":
+            is_private = True
+
+        object_name = client.get_bucket_folder(int(aquifer_id), "aquifer") + "/" + request.GET.get("filename")
+        client.delete_document(object_name, bucket_name=get_env_variable("S3_AQUIFER_BUCKET"), private=is_private)
+
+        return HttpResponse(status=204)
