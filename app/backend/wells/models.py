@@ -1348,7 +1348,7 @@ class LithologyDescription(AuditModel):
                                            verbose_name='Hardness')
     lithology_material = models.ForeignKey(LithologyMaterialCode, db_column='lithology_material_code',
                                            on_delete=models.CASCADE, blank=True, null=True,
-                                           verbose_name='Material', related_name='lithology_records')
+                                           verbose_name="Material")
 
     water_bearing_estimated_flow = models.DecimalField(
         max_digits=10, decimal_places=4, blank=True, null=True, verbose_name='Water Bearing Estimated Flow')
