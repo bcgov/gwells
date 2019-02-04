@@ -496,7 +496,7 @@ pipeline {
         // created and destroyed afterwards. 
         stage('DEV - Django Unit Tests') {
             when {
-                expression { env.CHANGE_TARGET != 'master' && env.CHANGE_TARGET != 'demo' }
+                expression { env.CHANGE_TARGET != 'master' }
             }
             steps {
                 script {
