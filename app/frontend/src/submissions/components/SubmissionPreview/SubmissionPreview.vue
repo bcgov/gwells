@@ -209,7 +209,12 @@ Licensed under the Apache License, Version 2.0 (the "License");
           :items="filterBlankRows(form.decommission_description_set)"
           :fields="['start', 'end', 'material', 'observations']"
           show-empty
-        ></b-table>
+        >
+          <template slot="start" slot-scope="data">{{data.item.start}} ft</template>
+          <template slot="end" slot-scope="data">{{data.item.end}} ft</template>
+          <template slot="material" slot-scope="data">{{codeToDescription('decommission_materials', data.item.material)}}</template>
+          <template slot="observations" slot-scope="data">{{codeToDescription('decommission_materials', data.item.observations)}}</template>
+        </b-table>
       </div>
     </fieldset>
 
