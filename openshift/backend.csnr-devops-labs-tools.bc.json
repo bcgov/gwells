@@ -1,0 +1,140 @@
+{
+    "kind": "Template",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "gwells-python-gdal",
+        "creationTimestamp": null
+    },
+    "objects": [
+        {
+            "kind": "Build",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "gwells-python-1",
+                "creationTimestamp": null,
+                "labels": {
+                    "build": "gwells-python",
+                    "buildconfig": "gwells-python",
+                    "openshift.io/build-config.name": "gwells-python",
+                    "openshift.io/build.start-policy": "Serial"
+                },
+                "annotations": {
+                    "openshift.io/build-config.name": "gwells-python",
+                    "openshift.io/build.number": "1",
+                    "openshift.io/build.pod-name": "gwells-python-1-build"
+                },
+                "ownerReferences": [
+                    {
+                        "apiVersion": "build.openshift.io/v1",
+                        "kind": "BuildConfig",
+                        "name": "gwells-python",
+                        "uid": "923c8f4a-28d0-11e9-a0cc-0050568379a2",
+                        "controller": true
+                    }
+                ]
+            },
+            "spec": {
+                "serviceAccount": "builder",
+                "source": {
+                    "type": "Git",
+                    "git": {
+                        "uri": "https://github.com/bcgov/gwells",
+                        "ref": "feature/gis-backend-with-configmap"
+                    },
+                    "contextDir": "docker-images/python-gdal"
+                },
+                "revision": {
+                    "type": "Git",
+                    "git": {
+                        "commit": "3a55ada221c095e1dac30dd8903d0af1501398bf",
+                        "author": {
+                            "name": "Gary Wong (BC Gov)",
+                            "email": "garywong@gov.bc.ca"
+                        },
+                        "committer": {
+                            "name": "Gary Wong (BC Gov)",
+                            "email": "garywong@gov.bc.ca"
+                        },
+                        "message": "Start of refactoring Dockerfile images and references."
+                    }
+                },
+                "strategy": {
+                    "type": "Docker",
+                    "dockerStrategy": {
+                        "from": {
+                            "kind": "DockerImage",
+                            "name": "registry.access.redhat.com/rhscl/python-36-rhel7@sha256:6dc1d761d5f476d8d55102ace0a662fbce7c1d1d88660c39bbf6aefebc60cf53"
+                        }
+                    }
+                },
+                "output": {
+                    "to": {
+                        "kind": "ImageStreamTag",
+                        "name": "gwells-python:latest"
+                    },
+                    "pushSecret": {
+                        "name": "builder-dockercfg-sc8zs"
+                    }
+                },
+                "resources": {},
+                "postCommit": {},
+                "nodeSelector": null,
+                "triggeredBy": [
+                    {
+                        "message": "Build configuration change"
+                    }
+                ]
+            },
+            "status": {
+                "phase": "New",
+                "outputDockerImageReference": "docker-registry.default.svc:5000/csnr-devops-lab-tools/gwells-python:latest",
+                "config": {
+                    "name": "gwells-python"
+                },
+                "output": {
+                    "to": {
+                        "imageDigest": "sha256:7ac128f9df8f5b3317a786c5e8180f43e73205f3f7a70a39268a2404a41f9b5d"
+                    }
+                },
+                "stages": [
+                    {
+                        "name": "FetchInputs",
+                        "startTime": "2019-02-04T22:59:58Z",
+                        "durationMilliseconds": 19729,
+                        "steps": [
+                            {
+                                "name": "FetchGitSource",
+                                "startTime": "2019-02-04T22:59:58Z",
+                                "durationMilliseconds": 19729
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Build",
+                        "startTime": "2019-02-04T23:00:33Z",
+                        "durationMilliseconds": 13724046,
+                        "steps": [
+                            {
+                                "name": "DockerBuild",
+                                "startTime": "2019-02-04T23:00:33Z",
+                                "durationMilliseconds": 13724046
+                            }
+                        ]
+                    },
+                    {
+                        "name": "PushImage",
+                        "startTime": "2019-02-05T02:49:18Z",
+                        "durationMilliseconds": 39840,
+                        "steps": [
+                            {
+                                "name": "PushDockerImage",
+                                "startTime": "2019-02-05T02:49:18Z",
+                                "durationMilliseconds": 39840
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    ]
+}
