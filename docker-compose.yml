@@ -51,7 +51,9 @@ services:
       - ./app:/app
       - /app/frontend/node_modules/
   backend:
-    image: garywongbc/python-36-gdal:v1
+    build:
+      context: .
+      dockerfile: ./docker-images/python-gdal/Dockerfile.centos  
     hostname: backend
     environment:
       DATABASE_SERVICE_NAME: postgres
