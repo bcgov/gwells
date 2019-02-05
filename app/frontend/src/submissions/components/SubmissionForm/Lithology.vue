@@ -50,6 +50,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
               Hardness
             </th>
             <th class="font-weight-normal">
+              Descriptor
+            </th>
+            <th class="font-weight-normal">
               Observations
             </th>
             <th class="font-weight-normal input-width-medium">
@@ -118,6 +121,19 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     value-field="lithology_hardness_code"
                     v-model="lithology[index].lithology_hardness"
                     group-class="mt-1 mb-0"></form-input>
+              </td>
+              <td class="input-width-medium">
+                <form-input
+                    :id="`lithologyDescriptor${index}`"
+                    aria-label="Descriptor"
+                    select
+                    :options="codes.lithology_descriptors"
+                    text-field="description"
+                    value-field="lithology_description_code"
+                    placeholder="Select descriptor"
+                    v-model="lithology[index].lithology_description"
+                    group-class="mt-1 mb-0"
+                />
               </td>
               <td class="input-width-medium">
                 <form-input
@@ -207,7 +223,9 @@ export default {
         lithology_colour: '',
         lithology_hardness: '',
         lithology_moisture: '',
-        lithology_observation: ''
+        lithology_observation: '',
+        // lithology_description is a "descriptor" (containing an additional descriptive term like 'weathered', 'competent')
+        lithology_description: ''
       })
     },
     removeRowByIndex (index) {
