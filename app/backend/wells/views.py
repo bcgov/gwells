@@ -262,7 +262,7 @@ class DeleteWellDocument(APIView):
     def delete(self, request, tag):
         well = get_object_or_404(self.queryset, pk=tag)
         client = MinioClient(
-            request=request, disable_private=True)
+            request=request, disable_private=False)
 
         is_private = False
         bucket_name = get_env_variable("S3_ROOT_BUCKET")

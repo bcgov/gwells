@@ -277,7 +277,7 @@ class DeleteAquiferDocument(APIView):
     @swagger_auto_schema(auto_schema=None)
     def delete(self, request, aquifer_id):
         client = MinioClient(
-            request=request, disable_private=True)
+            request=request, disable_private=False)
 
         is_private = False
         bucket_name = get_env_variable("S3_AQUIFER_BUCKET")
