@@ -16,13 +16,13 @@ services:
     image: minio/minio
     hostname: minio
     ports:
-    - "9001:9000"
+    - "9001:9001"
     volumes:
     - ./.tmp/minio-private-files:/data
     environment:
       MINIO_ACCESS_KEY: minio
       MINIO_SECRET_KEY: minio1234
-    command: server /data
+    command: server --address ":9001" /data
   db:
     image: postgres:9.6
     hostname: db
@@ -86,9 +86,10 @@ services:
       S3_WELL_BUCKET: well-docs
       S3_AQUIFER_BUCKET: aquifer-docs
       S3_REGISTRANT_BUCKET: driller-docs
-      S3_PRIVATE_HOST: minio-private:9000
+      S3_PRIVATE_HOST: minio-private:9001
       MINIO_ACCESS_KEY: minio
       MINIO_SECRET_KEY: minio1234
+      S3_PRIVATE_BUCKET: gwells
       S3_PRIVATE_ROOT_BUCKET:  gwells
       S3_PRIVATE_WELL_BUCKET: well-docs
       S3_PRIVATE_AQUIFER_BUCKET: aquifer-docs

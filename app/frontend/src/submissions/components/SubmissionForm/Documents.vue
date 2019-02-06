@@ -26,7 +26,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         </b-col>
       </b-row>
       <b-row class="mt-3">
-        <b-col cols="12" sm="6">
+        <b-col cols="12">
           <b-form-group
             label="Attachments"
             id="attachmentGroup">
@@ -35,6 +35,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
               id="files"
               multiple
               plain/>
+            <div class="mt-3">
+              <b-form-checkbox
+               id="isPrivateCheckbox"
+               v-model="privateDocument">Are these documents private?</b-form-checkbox>
+            </div>
             <div class="mt-3" v-if="upload_files.length > 0">
               <b-list-group>
                 <b-list-group-item v-for="(f, index) in upload_files" :key="index">{{f.name}}</b-list-group-item>
@@ -63,7 +68,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               </div>
             </div>
           </div>
-          <div class="row no-gutters">
+          <div class="row no-gutters" v-if="userRoles.submissions.edit">
             <div class="col-md-12">
               <h4>Internal documentation - authorized access only</h4>
               <ul v-if="uploadedFiles && uploadedFiles.private && uploadedFiles.private.length">
@@ -144,8 +149,9 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['codes']),
+    ...mapGetters(['codes', 'userRoles']),
     ...mapState('documentState', [
+      'isPrivate',
       'upload_files'
     ]),
     files: {
@@ -156,11 +162,20 @@ export default {
         this.setFiles(value)
         this.$emit('setFormValueChanged')
       }
+    },
+    privateDocument: {
+      get: function () {
+        return this.isPrivate
+      },
+      set: function (value) {
+        this.setPrivate(value)
+      }
     }
   },
   methods: {
     ...mapMutations('documentState', [
-      'setFiles'
+      'setFiles',
+      'setPrivate'
     ]),
     showModal () {
       this.$refs.deleteModal.show()
