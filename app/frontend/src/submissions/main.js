@@ -20,6 +20,7 @@ import router from './router'
 import { store } from './store'
 import '@/common/assets/css/bootstrap-theme.min.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
+import vueSmoothScroll from 'vue-smoothscroll'
 import vSelect from 'vue-select'
 import FormInput from '@/common/components/FormInput.vue'
 import {FETCH_CONFIG} from '@/common/store/config.js'
@@ -29,6 +30,7 @@ import ApiService from '@/common/services/ApiService.js'
 
 Vue.use(Vuex)
 Vue.use(BootstrapVue)
+Vue.use(vueSmoothScroll)
 Vue.component('v-select', vSelect)
 Vue.component('form-input', FormInput)
 
