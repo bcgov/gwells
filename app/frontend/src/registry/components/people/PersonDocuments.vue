@@ -30,7 +30,7 @@
           </div>
         </div>
       </div>
-      <div class="row no-gutters">
+      <div class="row no-gutters" v-if="userRoles.registry.edit">
         <div class="col-md-12">
           <h4>Internal documentation - authorized access only</h4>
           <div v-if="error">
@@ -64,6 +64,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import ApiService from '@/common/services/ApiService.js'
 
 export default {
@@ -85,6 +86,9 @@ export default {
       file: '',
       fileType: ''
     }
+  },
+  computed: {
+    ...mapGetters(['userRoles']),
   },
   methods: {
     showModal () {

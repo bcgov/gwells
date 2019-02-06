@@ -220,13 +220,20 @@ class PreSignedDocumentKey(APIView):
     def get(self, request, tag):
         well = get_object_or_404(self.queryset, pk=tag)
         client = MinioClient(
-            request=request, disable_private=True)
+            request=request, disable_private=False)
 
         object_name = request.GET.get("filename")
         filename = client.format_object_name(object_name, int(well.well_tag_number), "well")
+        bucket_name = get_env_variable("S3_ROOT_BUCKET")
+
+        is_private = False
+        if request.GET.get("private") == "true":
+            is_private = True
+            bucket_name = get_env_variable("S3_PRIVATE_ROOT_BUCKET")
 
         # TODO: This should probably be "S3_WELL_BUCKET" but that will require a file migration
-        url = client.get_presigned_put_url(filename, bucket_name=get_env_variable("S3_ROOT_BUCKET"))
+        url = client.get_presigned_put_url(
+            filename, bucket_name=bucket_name, private=is_private)
 
         return JsonResponse({"object_name": object_name, "url": url})
 
@@ -248,12 +255,15 @@ class DeleteWellDocument(APIView):
             request=request, disable_private=True)
 
         is_private = False
+        bucket_name = get_env_variable("S3_ROOT_BUCKET")
+
         if request.GET.get("private") == "true":
             is_private = True
+            bucket_name = get_env_variable("S3_PRIVATE_ROOT_BUCKET")
 
         object_name = client.get_bucket_folder(int(well.well_tag_number), "well") + "/" + request.GET.get("filename")
 
         # TODO: This should probably be "S3_WELL_BUCKET" but that will require a file migration
-        client.delete_document(object_name, bucket_name=get_env_variable("S3_ROOT_BUCKET"), private=is_private)
+        client.delete_document(object_name, bucket_name=bucket_name, private=is_private)
 
         return HttpResponse(status=204)

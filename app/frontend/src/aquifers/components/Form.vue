@@ -137,6 +137,11 @@
             v-model="files"
             multiple
             plain/>
+          <div class="mt-3">
+            <b-form-checkbox
+             id="isPrivateCheckbox"
+             v-model="privateDocument">Are these documents private?</b-form-checkbox>
+          </div>
           <div class="mt-3" v-if="upload_files.length > 0">
             <b-list-group>
               <b-list-group-item v-for="(f, index) in upload_files" :key="index">{{f.name}}</b-list-group-item>
@@ -301,6 +306,14 @@ export default {
         this.setFiles(value)
       }
     },
+    privateDocument: {
+      get: function () {
+        return this.isPrivate
+      },
+      set: function (value) {
+        this.setPrivate(value)
+      }
+    },
     ...mapState('aquiferCodes', [
       'demand_codes',
       'known_water_use_codes',
@@ -311,12 +324,14 @@ export default {
       'vulnerability_codes'
     ]),
     ...mapState('documentState', [
+      'isPrivate',
       'upload_files'
     ])
   },
   methods: {
     ...mapMutations('documentState', [
-      'setFiles'
+      'setFiles',
+      'setPrivate'
     ])
   },
   props: {

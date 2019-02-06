@@ -27,6 +27,7 @@ from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveUpda
 from reversion.views import RevisionMixin
 
 from gwells.documents import MinioClient
+from gwells.roles import AQUIFERS_EDIT_ROLE
 from gwells.settings.base import get_env_variable
 
 from aquifers import models
@@ -150,12 +151,14 @@ class ListFiles(APIView):
 
     @swagger_auto_schema(auto_schema=None)
     def get(self, request, aquifer_id):
+        user_is_staff = self.request.user.groups.filter(
+            name=AQUIFERS_EDIT_ROLE).exists()
 
         client = MinioClient(
-            request=request, disable_private=True)
+            request=request, disable_private=(not user_is_staff))
 
         documents = client.get_documents(
-            int(aquifer_id), resource="aquifer", include_private=False)
+            int(aquifer_id), resource="aquifer", include_private=user_is_staff)
 
         return Response(documents)
 
@@ -227,11 +230,19 @@ class PreSignedDocumentKey(APIView):
     @swagger_auto_schema(auto_schema=None)
     def get(self, request, aquifer_id):
         client = MinioClient(
-            request=request, disable_private=True)
+            request=request, disable_private=False)
 
         object_name = request.GET.get("filename")
         filename = client.format_object_name(object_name, int(aquifer_id), "aquifer")
-        url = client.get_presigned_put_url(filename, bucket_name=get_env_variable("S3_AQUIFER_BUCKET"))
+        bucket_name = get_env_variable("S3_AQUIFER_BUCKET")
+
+        is_private = False
+        if request.GET.get("private") == "true":
+            is_private = True
+            bucket_name = get_env_variable("S3_PRIVATE_AQUIFER_BUCKET")
+
+        url = client.get_presigned_put_url(
+            filename, bucket_name=bucket_name, private=is_private)
 
         return JsonResponse({"object_name": object_name, "url": url})
 
@@ -251,10 +262,13 @@ class DeleteAquiferDocument(APIView):
             request=request, disable_private=True)
 
         is_private = False
+        bucket_name = get_env_variable("S3_AQUIFER_BUCKET")
+
         if request.GET.get("private") == "true":
             is_private = True
+            bucket_name = get_env_variable("S3_PRIVATE_AQUIFER_BUCKET")
 
         object_name = client.get_bucket_folder(int(aquifer_id), "aquifer") + "/" + request.GET.get("filename")
-        client.delete_document(object_name, bucket_name=get_env_variable("S3_AQUIFER_BUCKET"), private=is_private)
+        client.delete_document(object_name, bucket_name=bucket_name, private=is_private)
 
         return HttpResponse(status=204)

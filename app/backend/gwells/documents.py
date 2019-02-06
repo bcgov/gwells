@@ -88,14 +88,14 @@ class MinioClient():
             secure=self.use_secure
         )
 
-    def get_private_file(self, object_name: str):
+    def get_private_file(self, object_name: str, bucket_name):
         """ Generates a link to a private document with name "object_name" (name includes prefixes) """
         return self.private_client.presigned_get_object(
-            self.private_bucket,
+            bucket_name,
             object_name,
             expires=timedelta(minutes=12))
 
-    def create_url(self, obj, host, private=False):
+    def create_url(self, obj, host, bucket_name, private=False):
         """Generate a URL for a file/document
 
         obj: the file object returned by Minio.list_objects()
@@ -106,7 +106,7 @@ class MinioClient():
         """
 
         if private:
-            return self.get_private_file(obj.object_name)
+            return self.get_private_file(obj.object_name, bucket_name)
 
         return 'https://{}/{}/{}'.format(
             host,
@@ -114,12 +114,12 @@ class MinioClient():
             quote(obj.object_name)
         )
 
-    def create_url_list(self, objects, host, private=False):
+    def create_url_list(self, objects, host, bucket_name, private=False):
         """Generate a list of documents with name and url"""
         urls = list(
             map(
                 lambda document: {
-                    'url': self.create_url(document, host, private),
+                    'url': self.create_url(document, host, bucket_name, private),
 
                     # split on last occurrence of '/' and return last item (supports any or no prefixes)
                     'name': document.object_name.rsplit('/', 1)[-1]
@@ -165,7 +165,6 @@ class MinioClient():
         # prefix well tag numbers with a 6 digit "folder" id
         # e.g. WTA 23456 goes into prefix 020000/
         prefix = self.get_prefix(document_id, resource)
-        print(prefix)
 
         if resource == 'well':
             public_bucket = self.public_bucket
@@ -174,7 +173,6 @@ class MinioClient():
         elif resource == 'driller':
             public_bucket = self.public_drillers_bucket
 
-        print(public_bucket)
         objects = {}
 
         # provide all requests with a "public" collection of documents
@@ -184,7 +182,7 @@ class MinioClient():
                 pub_objects = self.create_url_list(
                     self.public_client.list_objects(
                         public_bucket, prefix=prefix, recursive=True),
-                    self.public_host)
+                    self.public_host, public_bucket)
             except:
                 logger.error(
                     "Could not retrieve files from public file server")
@@ -193,12 +191,19 @@ class MinioClient():
 
         # authenticated requests also receive a "private" collection
         if include_private and not self.disable_private:
+            if resource == 'well':
+                private_bucket = self.private_bucket
+            elif resource == 'aquifer':
+                private_bucket = self.private_aquifers_bucket
+            elif resource == 'driller':
+                private_bucket = self.private_drillers_bucket
+
             priv_objects = []
             try:
                 priv_objects = self.create_url_list(
                     self.private_client.list_objects(
-                        self.private_bucket, prefix=prefix, recursive=True),
-                    self.private_host, private=True)
+                        private_bucket, prefix=prefix, recursive=True),
+                    self.private_host, private_bucket, private=True)
             except:
                 logger.error(
                     "Could not retrieve files from private file server", exc_info=sys.exc_info())
