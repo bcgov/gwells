@@ -61,8 +61,8 @@ const ApiService = {
   history (resource, record) {
     return axios.get(`${resource}/${record}/history/`)
   },
-  presignedPutUrl (resource, record, filename) {
-    return axios.get(`${resource}/${record}/presigned_put_url?filename=${filename}`)
+  presignedPutUrl (resource, record, filename, isPrivate) {
+    return axios.get(`${resource}/${record}/presigned_put_url?filename=${filename}&private=${isPrivate}`)
   },
   // fileUpload uploads a file using a pre-signed S3 URL
   fileUpload (presignedUrl, file) {

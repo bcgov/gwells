@@ -17,6 +17,7 @@ import ApiService from '@/common/services/ApiService.js'
 export default {
   namespaced: true,
   state: {
+    isPrivate: false,
     upload_files: [],
     files_uploading: false,
     file_upload_errors: [],
@@ -33,7 +34,7 @@ export default {
 
       context.state.upload_files.forEach((file) => {
         uploadPromises.push(
-          ApiService.presignedPutUrl(documentType, recordId, file.name)
+          ApiService.presignedPutUrl(documentType, recordId, file.name, context.state.isPrivate)
             .then((response) => {
               let url = response.data.url
               let objectName = response.data.object_name
@@ -78,6 +79,7 @@ export default {
       context.commit('setFilesUploading', false)
       context.commit('setFileUploadSuccess', true)
       context.commit('setFiles', [])
+      context.commit('setPrivate', false)
       setTimeout(() => {
         context.commit('setFileUploadSuccess', false)
       }, 5000)
@@ -98,6 +100,9 @@ export default {
     },
     setFiles (state, payload) {
       state.upload_files = payload
+    },
+    setPrivate (state, payload) {
+      state.isPrivate = payload
     }
   }
 }
