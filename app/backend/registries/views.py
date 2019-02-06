@@ -20,6 +20,7 @@ from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.views.generic import TemplateView
 from django_filters import rest_framework as restfilters
+from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from reversion.views import RevisionMixin
 from rest_framework import filters, status, exceptions
@@ -805,7 +806,24 @@ class ListFiles(APIView):
     get: list files found for the aquifer identified in the uri
     """
 
-    @swagger_auto_schema(auto_schema=None)
+    @swagger_auto_schema(responses={200: openapi.Response('OK',
+        openapi.Schema(type=openapi.TYPE_OBJECT, properties={
+            'public': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'url': openapi.Schema(type=openapi.TYPE_STRING),
+                    'name': openapi.Schema(type=openapi.TYPE_STRING)
+                }
+            )),
+            'private': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'url': openapi.Schema(type=openapi.TYPE_STRING),
+                    'name': openapi.Schema(type=openapi.TYPE_STRING)
+                }
+            ))
+        })
+    )})
     def get(self, request, person_guid):
         user_is_staff = self.request.user.groups.filter(
             Q(name=REGISTRIES_ADJUDICATOR_ROLE) | Q(name=REGISTRIES_AUTHORITY_ROLE)).exists()

@@ -17,6 +17,7 @@ from django.http import Http404, HttpResponse, JsonResponse
 from django.views.generic import TemplateView
 
 from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 from rest_framework import filters
 from rest_framework.views import APIView
@@ -149,7 +150,24 @@ class ListFiles(APIView):
     get: list files found for the aquifer identified in the uri
     """
 
-    @swagger_auto_schema(auto_schema=None)
+    @swagger_auto_schema(responses={200: openapi.Response('OK',
+        openapi.Schema(type=openapi.TYPE_OBJECT, properties={
+            'public': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'url': openapi.Schema(type=openapi.TYPE_STRING),
+                    'name': openapi.Schema(type=openapi.TYPE_STRING)
+                }
+            )),
+            'private': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'url': openapi.Schema(type=openapi.TYPE_STRING),
+                    'name': openapi.Schema(type=openapi.TYPE_STRING)
+                }
+            ))
+        })
+    )})
     def get(self, request, aquifer_id):
         user_is_staff = self.request.user.groups.filter(
             name=AQUIFERS_EDIT_ROLE).exists()
