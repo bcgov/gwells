@@ -38,7 +38,7 @@ from gwells.roles import WELLS_VIEWER_ROLE, WELLS_EDIT_ROLE
 from gwells.pagination import APILimitOffsetPagination
 from gwells.settings.base import get_env_variable
 
-from wells.filters import WellSearchFilter
+from wells.filters import WellListFilter
 from wells.models import Well
 from wells.serializers import (
     WellListSerializer,
@@ -181,7 +181,7 @@ class WellListAPIView(ListAPIView):
     filter_backends = (restfilters.DjangoFilterBackend,
                        filters.SearchFilter, filters.OrderingFilter)
     ordering = ('well_tag_number',)
-    filterset_class = WellSearchFilter
+    filterset_class = WellListFilter
     search_fields = ('well_tag_number', 'identification_plate_number',
                      'street_address', 'city', 'owner_full_name')
 

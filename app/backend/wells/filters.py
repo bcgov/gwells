@@ -1,4 +1,3 @@
-
 """
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -18,7 +17,7 @@ from django_filters import rest_framework as filters
 from wells.models import Well
 
 
-class WellSearchFilter(filters.FilterSet):
+class WellListFilter(filters.FilterSet):
     well = filters.CharFilter(method='filter_well_tag_or_plate',
                               label='Well tag or identification plate number')
     street_address_or_city = filters.CharFilter(method='filter_street_address_or_city',
