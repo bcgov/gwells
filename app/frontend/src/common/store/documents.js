@@ -13,14 +13,15 @@
 */
 
 import ApiService from '@/common/services/ApiService.js'
-import axios from 'axios'
 
 export default {
   namespaced: true,
   state: {
+    isPrivate: false,
     upload_files: [],
     files_uploading: false,
     file_upload_errors: [],
+    file_upload_error: false,
     file_upload_success: false
   },
   actions: {
@@ -29,14 +30,11 @@ export default {
       let documentType = payload.documentType
       let recordId = payload.recordId
 
-      console.log(documentType)
-      console.log(recordId)
-
       let uploadPromises = []
 
       context.state.upload_files.forEach((file) => {
         uploadPromises.push(
-          ApiService.presigned_put_url(documentType, recordId, file.name)
+          ApiService.presignedPutUrl(documentType, recordId, file.name, context.state.isPrivate)
             .then((response) => {
               let url = response.data.url
               let objectName = response.data.object_name
@@ -45,6 +43,7 @@ export default {
 
               if (file.length !== 1) {
                 context.commit('addError', 'Error uploading file: ' + filename)
+                context.commit('setFileUploadError', true)
                 return
               }
 
@@ -56,31 +55,34 @@ export default {
                 }
               }
 
-              axios.put(url, file, options)
-                .then((response) => {
+              return ApiService.fileUpload(url, file, options)
+                .then(() => {
                   console.log('successfully added file: ' + objectName)
                 })
                 .catch((error) => {
                   console.log(error)
+                  context.commit('setFileUploadError', true)
                   context.commit('addError', error)
                 })
             })
             .catch((error) => {
               console.log(error)
+              context.commit('setFileUploadError', true)
               context.commit('addError', error)
             })
         )
       })
 
-      Promise.all(uploadPromises)
-        .then(function (values) {
-          context.commit('setFilesUploading', false)
-          context.commit('setFileUploadSuccess', true)
-          context.commit('setFiles', [])
-          setTimeout(() => {
-            context.commit('setFileUploadSuccess', false)
-          }, 5000)
-        })
+      return Promise.all(uploadPromises)
+    },
+    fileUploadSuccess (context) {
+      context.commit('setFilesUploading', false)
+      context.commit('setFileUploadSuccess', true)
+      context.commit('setFiles', [])
+      context.commit('setPrivate', false)
+      setTimeout(() => {
+        context.commit('setFileUploadSuccess', false)
+      }, 5000)
     }
   },
   mutations: {
@@ -90,11 +92,17 @@ export default {
     setFilesUploading (state, payload) {
       state.files_uploading = payload
     },
+    setFileUploadError (state, payload) {
+      state.file_upload_error = payload
+    },
     setFileUploadSuccess (state, payload) {
       state.file_upload_success = payload
     },
     setFiles (state, payload) {
       state.upload_files = payload
+    },
+    setPrivate (state, payload) {
+      state.isPrivate = payload
     }
   }
 }

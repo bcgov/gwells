@@ -378,10 +378,18 @@ class PreSignedDocumentKey(RetrieveAPIView):
         submission = get_object_or_404(self.queryset, pk=submission_id)
 
         client = MinioClient(
-            request=request, disable_private=True)
+            request=request, disable_private=False)
 
         object_name = request.GET.get("filename")
-        filename = "WTN_%s_%s" % (submission.well.well_tag_number, object_name)
-        url = client.get_presigned_put_url(filename, bucket_name=get_env_variable("S3_SUBMISSION_BUCKET"))
+        filename = client.format_object_name(object_name, int(submission.well.well_tag_number), "well")
+        bucket_name = get_env_variable("S3_ROOT_BUCKET")
+
+        is_private = False
+        if request.GET.get("private") == "true":
+            is_private = True
+            bucket_name = get_env_variable("S3_PRIVATE_ROOT_BUCKET")
+
+        url = client.get_presigned_put_url(
+            filename, bucket_name=bucket_name, private=is_private)
 
         return JsonResponse({"object_name": object_name, "url": url})

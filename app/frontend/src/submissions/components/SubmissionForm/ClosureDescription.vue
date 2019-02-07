@@ -16,6 +16,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <b-row>
       <b-col cols="12" lg="6">
         <legend :id="id">Decommission Description</legend>
+        <p>Enter depth intervals from the top of the hole to the bottom.</p>
       </b-col>
       <b-col cols="12" lg="6">
         <div class="float-right">
@@ -69,6 +70,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
                       :options="codes.decommission_materials"
                       text-field="description"
                       value-field="code"
+                      placeholder="Select material"
+                      value="Select material"
                       v-model="item.material"
                       :errors="getClosureError(index).material"
                       :loaded="getFieldsLoaded(index).material"
@@ -152,7 +155,9 @@ export default {
   },
   created () {
     if (!this.closureDescriptionSet.length) {
-      this.closureDescriptionSetInput.push({}, {}, {}, {}, {}, {}, {}, {}, {}, {})
+      for (let i = 0; i < 10; i++) {
+        this.addClosureRow()
+      }
     }
   }
 }

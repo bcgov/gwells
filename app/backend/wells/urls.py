@@ -44,6 +44,10 @@ urlpatterns = [
     url(r'^api/v1/wells/(?P<tag>[0-9]+)/presigned_put_url$',
         never_cache(views.PreSignedDocumentKey.as_view()), name='well-pre-signed-url'),
 
+    # Document Uploading (well records)
+    url(r'^api/v1/wells/(?P<tag>[0-9]+)/delete_document$',
+        never_cache(views.DeleteWellDocument.as_view()), name='well-delete-document'),
+
     # Well list
     url(r'^api/v1/wells/$',
         never_cache(views.WellListAPIView.as_view()), name='well-list'),

@@ -58,19 +58,23 @@ export default {
   },
   methods: {
     ...mapActions('documentState', [
-      'uploadFiles'
+      'uploadFiles',
+      'fileUploadSuccess'
     ]),
     navigateToView () {
       this.$router.push({ name: 'home' })
     },
     handleSuccess ({data}) {
-      this.$router.push({ name: 'view', params: { id: data.aquifer_id } })
-
       if (this.upload_files.length > 0) {
         this.uploadFiles({
           documentType: 'aquifers',
           recordId: data.aquifer_id
+        }).then((values) => {
+          this.fileUploadSuccess()
+          this.$router.push({ name: 'view', params: { id: data.aquifer_id } })
         })
+      } else {
+        this.$router.push({ name: 'view', params: { id: data.aquifer_id } })
       }
     },
     handleError (error) {

@@ -129,6 +129,11 @@
                     v-model="files"
                     multiple
                     plain/>
+                  <div class="mt-3">
+                    <b-form-checkbox
+                     id="isPrivateCheckbox"
+                     v-model="privateDocument">Are these documents private?</b-form-checkbox>
+                  </div>
                   <div class="mt-3" v-if="upload_files.length > 0">
                     <b-list-group>
                       <b-list-group-item v-for="(f, index) in upload_files" :key="index">{{f.name}}</b-list-group-item>
@@ -371,20 +376,31 @@ export default {
         this.setFiles(value)
       }
     },
+    privateDocument: {
+      get: function () {
+        return this.isPrivate
+      },
+      set: function (value) {
+        this.setPrivate(value)
+      }
+    },
     ...mapGetters([
       'loading',
       'error'
     ]),
     ...mapState('documentState', [
+      'isPrivate',
       'upload_files'
     ])
   },
   methods: {
     ...mapActions('documentState', [
+      'fileUploadSuccess',
       'uploadFiles'
     ]),
     ...mapMutations('documentState', [
-      'setFiles'
+      'setFiles',
+      'setPrivate'
     ]),
     clearFieldErrors () {
       this.fieldErrors = {
@@ -436,16 +452,23 @@ export default {
           this.uploadFiles({
             documentType: 'drillers',
             recordId: response.data.person_guid
+          }).then(() => {
+            this.fileUploadSuccess()
+            this.$router.push({ name: 'PersonDetail', params: { person_guid: response.data.person_guid } })
+          }).catch((error) => {
+            console.log(error)
           })
+        } else {
+          this.$router.push({ name: 'PersonDetail', params: { person_guid: response.data.person_guid } })
         }
         this.onFormReset()
-        this.$router.push({ name: 'PersonDetail', params: { person_guid: response.data.person_guid } })
-      }).catch((e) => {
-        const errors = e.response.data
-        for (const field in errors) {
-          this.fieldErrors[field] = errors[field]
-        }
       })
+        .catch((e) => {
+          const errors = e.response.data
+          for (const field in errors) {
+            this.fieldErrors[field] = errors[field]
+          }
+        })
     },
     onFormReset () {
       this.clearFieldErrors()

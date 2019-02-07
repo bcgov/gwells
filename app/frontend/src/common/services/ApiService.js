@@ -23,7 +23,7 @@ const ApiService = {
     })
   },
   hasAuthHeader () {
-    return !!axios.defaults.headers.common['Authorization']
+    return !!axios.headers.common['Authorization']
   },
   authHeader (prefix, token) {
     // set auth header. Expects prefix to be "Bearer", "JWT" etc.
@@ -55,8 +55,25 @@ const ApiService = {
   history (resource, record) {
     return axios.get(`${resource}/${record}/history/`)
   },
-  presigned_put_url (resource, record, filename) {
-    return axios.get(`${resource}/${record}/presigned_put_url?filename=${filename}`)
+  presignedPutUrl (resource, record, filename, isPrivate) {
+    return axios.get(`${resource}/${record}/presigned_put_url?filename=${filename}&private=${isPrivate}`)
+  },
+  // fileUpload uploads a file using a pre-signed S3 URL
+  fileUpload (presignedUrl, file) {
+    const config = {
+      headers: {
+        'Content-Type': file.type
+      },
+      transformRequest: (data, headers) => {
+        // delete Authorization header for file upload requests (credentials are via a presigned link)
+        delete headers.common['Authorization']
+        return data
+      }
+    }
+    return axios.put(presignedUrl, file, config)
+  },
+  deleteFile (resource) {
+    return axios.delete(resource)
   }
 }
 

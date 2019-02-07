@@ -73,6 +73,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           :errors="errors"
           :reportSubmitted="formSubmitSuccess"
           :formSubmitLoading="formSubmitLoading"
+          :uploadedFiles="uploadedFiles"
           v-on:back="handlePreviewBackButton"
           v-on:startNewReport="handleExitPreviewAfterSubmit"
           />
@@ -89,9 +90,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
           :formSubmitLoading="formSubmitLoading"
           :isStaffEdit="isStaffEdit"
           :loading="loading"
+          :uploadedFiles="uploadedFiles"
           v-on:preview="handlePreviewButton"
           v-on:submit_edit="formSubmit"
           v-on:resetForm="resetForm"
+          v-on:fetchFiles="fetchFiles"
           />
 
             <!-- Form submission confirmation -->
@@ -149,6 +152,7 @@ export default {
       errors: {},
       form: {},
       formOptions: {},
+      uploadedFiles: {},
       formSteps: {
         CON: [
           'activityType',
@@ -168,7 +172,8 @@ export default {
           'wellYield',
           'waterQuality',
           'wellCompletion',
-          'comments'
+          'comments',
+          'documents'
         ],
         ALT: [
           'activityType',
@@ -188,7 +193,8 @@ export default {
           'wellYield',
           'waterQuality',
           'wellCompletion',
-          'comments'
+          'comments',
+          'documents'
         ],
         DEC: [
           'activityType',
@@ -201,7 +207,8 @@ export default {
           'closureDescription',
           'casings',
           'decommissionInformation',
-          'comments'
+          'comments',
+          'documents'
         ],
         STAFF_EDIT: [
           'wellType',
@@ -224,6 +231,7 @@ export default {
           'closureDescription',
           'decommissionInformation',
           'comments',
+          'documents',
           'aquiferData'
         ]
       }
@@ -255,7 +263,8 @@ export default {
   },
   methods: {
     ...mapActions('documentState', [
-      'uploadFiles'
+      'uploadFiles',
+      'fileUploadSuccess'
     ]),
     formSubmit () {
       const data = Object.assign({}, this.form)
@@ -325,11 +334,21 @@ export default {
             this.uploadFiles({
               documentType: 'submissions',
               recordId: response.data.filing_number
+            }).then(() => {
+              this.fileUploadSuccess()
+              this.fetchFiles()
+            }).catch((error) => {
+              console.log(error)
             })
           } else {
             this.uploadFiles({
               documentType: 'wells',
               recordId: response.data.well
+            }).then(() => {
+              this.fileUploadSuccess()
+              this.fetchFiles()
+            }).catch((error) => {
+              console.log(error)
             })
           }
         }
@@ -404,7 +423,7 @@ export default {
         ground_elevation_method: '',
         drilling_method: '',
         other_drilling_method: '',
-        well_orientation: '',
+        well_orientation: true,
         lithologydescription_set: [],
         surface_seal_material: '',
         surface_seal_depth: '',
@@ -430,7 +449,7 @@ export default {
         well_yield_unit: '',
         static_level_before_test: '',
         drawdown: '',
-        hydro_fracturing_performed: '',
+        hydro_fracturing_performed: false,
         hydro_fracturing_yield_increase: '',
         recommended_pump_depth: '',
         recommended_pump_rate: '',
@@ -527,6 +546,18 @@ export default {
       this.$nextTick(function () {
         window.scrollTo(0, 0)
       })
+    },
+    fetchFiles () {
+      // this.form.well is sometimes the tag number, and sometimes an object. This detects which is which
+      console.log(this.form.well && isNaN(this.form.well))
+      let tag = this.form.well && isNaN(this.form.well) ? this.form.well.well_tag_number : this.form.well
+
+      if (tag) {
+        ApiService.query(`wells/${tag}/files`)
+          .then((response) => {
+            this.uploadedFiles = response.data
+          })
+      }
     }
   },
   watch: {
@@ -574,6 +605,8 @@ export default {
       // that the data will be available by the time those components render.
       this.$store.dispatch(FETCH_WELLS)
     }
+
+    this.fetchFiles()
   }
 }
 </script>

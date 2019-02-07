@@ -1,19 +1,5 @@
-/*
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-
-        http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
-*/
-
 <template>
-  <div>
+  <div id="person-documents">
     <div v-if="loading" class="row no-gutters">
       <div class="col-md-12">
         Loading documents...
@@ -23,7 +9,7 @@
       </div>
     </div>
     <div v-else>
-      <div class="row no-gutters">
+      <div class="row no-gutters mt-3">
         <div class="col-md-12">
           <!-- public documents -->
           <div v-if="error">
@@ -40,11 +26,11 @@
             </li>
           </ul>
           <div v-else>
-              No additional documentation currently available for this well.
+              No additional documentation currently available for this person.
           </div>
         </div>
       </div>
-      <div class="row no-gutters" v-if="userRoles.wells.view">
+      <div class="row no-gutters" v-if="userRoles.registry.edit">
         <div class="col-md-12">
           <h4>Internal documentation - authorized access only</h4>
           <div v-if="error">
@@ -78,50 +64,33 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import ApiService from '@/common/services/ApiService.js'
-import { mapActions, mapGetters } from 'vuex'
 
 export default {
+  name: 'PersonDocuments',
   props: {
-    well: {
-      required: true
+    files: {
+      type: Object,
+      default: null
+    },
+    guid: {
+      type: String,
+      default: null
     }
   },
   data () {
     return {
-      loading: true,
-      files: null,
+      loading: false,
       error: null,
       file: '',
       fileType: ''
     }
   },
-  watch: {
-    // This is not ideal. If you are authorized, we need to show you a different set of wells, however,
-    // auth is happening asynchronously somewhere else on the page.
-    keycloak: function () {
-      if (this.well) {
-        this.loadFiles()
-      }
-    }
-  },
   computed: {
-    ...mapGetters(['userRoles', 'keycloak'])
+    ...mapGetters(['userRoles']),
   },
   methods: {
-    loadFiles () {
-      ApiService.query('wells/' + this.well + '/files').then((response) => {
-        this.files = response.data
-      }).catch((e) => {
-        console.error(e)
-        this.error = 'Unable to retrieve file list.'
-      }).finally(() => {
-        this.loading = false
-      })
-    },
-    ...mapActions('documentState',
-      ['removeFileFromStore']
-    ),
     showModal () {
       this.$refs.deleteModal.show()
     },
@@ -140,10 +109,9 @@ export default {
       if (this.fileType === 'private') {
         isPrivate = true
       }
-
-      ApiService.deleteFile(`wells/${this.wellTag}/delete_document?filename=${this.file}&private=${isPrivate}`)
+      ApiService.deleteFile(`drillers/${this.guid}/delete_document?filename=${this.file}&private=${isPrivate}`)
         .then(() => {
-          this.removeFileFromStore(this.file)
+          this.$emit('fetchFiles')
         })
     }
   }
@@ -151,4 +119,5 @@ export default {
 </script>
 
 <style lang="scss">
+
 </style>

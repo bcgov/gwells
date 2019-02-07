@@ -56,7 +56,15 @@ describe('View Component', () => {
     const fetch = jest.fn()
 
     component({
-      methods: { fetch }
+      methods: {
+        fetch,
+        fetchFiles () {
+          return {
+            public: [],
+            private: []
+          }
+        }
+      }
     })
 
     expect(fetch).toHaveBeenCalled()
@@ -70,7 +78,15 @@ describe('View Component', () => {
             record: aquiferFixture
           }
         },
-        methods: { fetch () {} },
+        methods: {
+          fetch () {},
+          fetchFiles () {
+            return {
+              public: [],
+              private: []
+            }
+          }
+        },
         propsData: { edit: true }
       })
 
@@ -86,7 +102,15 @@ describe('View Component', () => {
             record: aquiferFixture
           }
         },
-        methods: { fetch () {} },
+        methods: {
+          fetch () {},
+          fetchFiles () {
+            return {
+              public: [],
+              private: []
+            }
+          }
+        },
         propsData: { edit: true }
       })
 
@@ -103,10 +127,15 @@ describe('View Component', () => {
             }
           },
           methods: {
-            fetch () {},
+            fetch () { },
+            fetchFiles () {
+              return {
+                public: [],
+                private: []
+              }
+            },
             navigateToView () {}
-          },
-          propsData: { edit: true }
+          }
         })
 
         axios.patch.mockResolvedValue(true)
@@ -125,7 +154,13 @@ describe('View Component', () => {
             }
           },
           methods: {
-            fetch () {},
+            fetch () { },
+            fetchFiles () {
+              return {
+                public: [],
+                private: []
+              }
+            },
             navigateToView () {}
           },
           propsData: { edit: true }
@@ -140,7 +175,13 @@ describe('View Component', () => {
       it('sends a patch with the contents of record on save', () => {
         const wrapper = component({
           methods: {
-            fetch () {},
+            fetch () { },
+            fetchFiles () {
+              return {
+                public: [],
+                private: []
+              }
+            },
             navigateToView () {}
           },
           computed: { id () { return 10 } },
@@ -154,5 +195,55 @@ describe('View Component', () => {
         expect(axios.patch).toHaveBeenCalledWith('aquifers/10/', aquiferFixture)
       })
     })
+  })
+
+  it('displays field errors messages', () => {
+    let errorMessage = 'error message'
+
+    const wrapper = component({
+      data () {
+        return {
+          fieldErrors: {
+            mapping_year: [errorMessage],
+            aquifer_name: [errorMessage],
+            litho_stratographic_unit: [errorMessage],
+            location_description: [errorMessage],
+            vulnerability: [errorMessage],
+            material: [errorMessage],
+            subtype: [errorMessage],
+            quality_concern: [errorMessage],
+            productivity: [errorMessage],
+            area: [errorMessage],
+            demand: [errorMessage],
+            known_water_use: [errorMessage],
+            notes: [errorMessage]
+          }
+        }
+      },
+      methods: {
+        fetch () {},
+        fetchFiles () {
+          return {
+            public: [],
+            private: []
+          }
+        }
+      },
+      propsData: { edit: true }
+    })
+
+    expect(wrapper.find('#aquifer-mapping-year + [role="alert"]').text()).toBe(errorMessage)
+    expect(wrapper.find('#aquifer-name + [role="alert"]').text()).toBe(errorMessage)
+    expect(wrapper.find('#aquifer-litho-stratigraphic-unit + [role="alert"]').text()).toBe(errorMessage)
+    expect(wrapper.find('#aquifer-location-description + [role="alert"]').text()).toBe(errorMessage)
+    expect(wrapper.find('#aquifer-vulnerability + [role="alert"]').text()).toBe(errorMessage)
+    expect(wrapper.find('#aquifer-material + [role="alert"]').text()).toBe(errorMessage)
+    expect(wrapper.find('#aquifer-subtype + [role="alert"]').text()).toBe(errorMessage)
+    expect(wrapper.find('#aquifer-quality-concern + [role="alert"]').text()).toBe(errorMessage)
+    expect(wrapper.find('#aquifer-productivity + [role="alert"]').text()).toBe(errorMessage)
+    expect(wrapper.find('#aquifer-area + [role="alert"]').text()).toBe(errorMessage)
+    expect(wrapper.find('#aquifer-demand + [role="alert"]').text()).toBe(errorMessage)
+    expect(wrapper.find('#aquifer-known-water-use + [role="alert"]').text()).toBe(errorMessage)
+    expect(wrapper.find('#aquifer-notes + [role="alert"]').text()).toBe(errorMessage)
   })
 })
