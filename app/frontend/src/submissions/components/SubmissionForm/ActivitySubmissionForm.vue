@@ -43,7 +43,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <div v-else>
       <b-row v-if="isStaffEdit">
           <b-col lg="3" v-for="step in formSteps[activityType]" :key='step'>
-            <a :href="'#' + step">{{formStepDescriptions[step] ? formStepDescriptions[step] : step}}</a>
+            <a href="#" @click="anchorLinkHandler(step)">{{formStepDescriptions[step] ? formStepDescriptions[step] : step}}</a>
           </b-col>
         </b-row>
       <p v-if="!isStaffEdit">Submit activity on a well. <a href="/gwells/">Try a search</a> to see if the well exists in the system before submitting a report.</p>
@@ -403,7 +403,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <!-- Documents -->
       <documents class="my-5"
         v-if="showSection('documents')"
-        id="files"
+        id="documents"
         :uploadedFiles="uploadedFiles"
         :isStaffEdit="isStaffEdit"
         :saveDisabled="editSaveDisabled"
@@ -606,7 +606,8 @@ export default {
         'decommissionInformation': 'Well decommission information',
         'comments': 'Comments',
         'personResponsible': 'Person responsible for work',
-        'observationWellInfo': 'Observation well information'
+        'observationWellInfo': 'Observation well information',
+        'documents': 'Attachments'
       }
     }
   },
@@ -682,6 +683,9 @@ export default {
     },
     fetchFiles () {
       this.$emit('fetchFiles')
+    },
+    anchorLinkHandler (step) {
+      this.$SmoothScroll(this.$el.querySelector(`#${step}`))
     }
   },
   created () {

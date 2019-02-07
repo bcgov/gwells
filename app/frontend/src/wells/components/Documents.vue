@@ -31,7 +31,7 @@
           </div>
           <ul v-else-if="files && files.public && files.public.length">
             <li v-for="(file, index) in files.public" :key="index">
-              <a :href="file.url" :download="file.name" target="_blank">{{file.name}}</a>
+              <a :href="file.url" :download="file.name" target="_blank" @click="handleDownloadEvent(file.name)">{{file.name}}</a>
               <a class="fa fa-trash fa-lg"
                 variant="primary"
                 style="margin-left: .5em"
@@ -52,7 +52,7 @@
           </div>
           <ul v-else-if="files && files.private && files.private.length">
             <li v-for="(file, index) in files.private" :key="index">
-              <a :href="file.url" :download="file.name" target="_blank">{{file.name}}</a>
+              <a :href="file.url" :download="file.name" target="_blank" @click="handleDownloadEvent(file.name)">{{file.name}}</a>
               <a class="fa fa-trash fa-lg"
                 variant="primary"
                 style="margin-left: .5em"
@@ -121,6 +121,17 @@ export default {
     ...mapActions('documentState',
       ['removeFileFromStore']
     ),
+    handleDownloadEvent (file) {
+      if (window.ga) {
+        // ga('send', 'event', 'Attachment', 'Accessed', 'Original Well Record')
+        window.ga('send', {
+          hitType: 'event',
+          eventCategory: 'Attachment',
+          eventAction: 'Accessed',
+          eventLabel: `Original Well Record ${file}`
+        })
+      }
+    },
     showModal () {
       this.$refs.deleteModal.show()
     },
