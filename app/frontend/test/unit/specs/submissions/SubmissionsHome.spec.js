@@ -1,9 +1,10 @@
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
 import VueRouter from 'vue-router'
+import documentState from '@/common/store/documents.js'
 import SubmissionsHome from '@/submissions/views/SubmissionsHome.vue'
 
-import { FETCH_CODES } from '@/submissions/store/actions.types.js'
+import { FETCH_CODES, FETCH_WELLS } from '@/submissions/store/actions.types.js'
 
 const localVue = createLocalVue()
 localVue.use(Vuex)
@@ -21,12 +22,14 @@ describe('SubmissionsHome.vue', () => {
       userRoles: () => ({ wells: { edit: true }, submissions: { edit: true } })
     }
     actions = {
-      [FETCH_CODES]: jest.fn()
+      [FETCH_CODES]: jest.fn(),
+      [FETCH_WELLS]: jest.fn()
     }
     store = new Vuex.Store({
       state: {},
       actions,
-      getters
+      getters,
+      modules: { documentState }
     })
   })
 

@@ -43,7 +43,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <div v-else>
       <b-row v-if="isStaffEdit">
           <b-col lg="3" v-for="step in formSteps[activityType]" :key='step'>
-            <a :href="'#' + step">{{formStepDescriptions[step] ? formStepDescriptions[step] : step}}</a>
+            <a href="#" @click="anchorLinkHandler(step)">{{formStepDescriptions[step] ? formStepDescriptions[step] : step}}</a>
           </b-col>
         </b-row>
       <p v-if="!isStaffEdit">Submit activity on a well. <a href="/gwells/">Try a search</a> to see if the well exists in the system before submitting a report.</p>
@@ -111,7 +111,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
         :drillerName.sync="form.driller_name"
         :consultantName.sync="form.consultant_name"
         :consultantCompany.sync="form.consultant_company"
-        :personResponsible.sync="form.driller_responsible"
+        :personResponsible.sync="form.person_responsible"
+        :companyOfPersonResponsible.sync="form.company_of_person_responsible"
         :drillerSameAsPersonResponsible.sync="form.meta.drillerSameAsPersonResponsible"
         :errors="errors"
         :fieldsLoaded="fieldsLoaded"
@@ -402,6 +403,21 @@ Licensed under the Apache License, Version 2.0 (the "License");
         :isStaffEdit="isStaffEdit"
         :saveDisabled="editSaveDisabled"
         v-on:save="$emit('submit_edit')"
+        v-on:setFormValueChanged="setFormValueChanged"
+      />
+
+      <!-- Documents -->
+      <documents class="my-5"
+        v-if="showSection('documents')"
+        id="documents"
+        :uploadedFiles="uploadedFiles"
+        :isStaffEdit="isStaffEdit"
+        :saveDisabled="editSaveDisabled"
+        :showDocuments="form.well !== null"
+        :form="form"
+        v-on:save="$emit('submit_edit')"
+        v-on:setFormValueChanged="setFormValueChanged"
+        v-on:fetchFiles="fetchFiles"
       />
 
       <!-- aquifer -->
@@ -484,6 +500,7 @@ import Yield from './Yield.vue'
 import WaterQuality from './WaterQuality.vue'
 import Completion from './Completion.vue'
 import Comments from './Comments.vue'
+import Documents from './Documents.vue'
 import ClosureDescription from './ClosureDescription.vue'
 import DecommissionInformation from './DecommissionInformation.vue'
 import ObservationWellInfo from './ObservationWellInfo.vue'
@@ -530,6 +547,10 @@ export default {
     loading: {
       type: Boolean,
       isInput: false
+    },
+    uploadedFiles: {
+      type: Object,
+      isInput: false
     }
   },
   components: {
@@ -552,6 +573,7 @@ export default {
     WaterQuality,
     Completion,
     Comments,
+    Documents,
     ClosureDescription,
     DecommissionInformation,
     ObservationWellInfo,
@@ -593,7 +615,8 @@ export default {
         'comments': 'Comments',
         'personResponsible': 'Person responsible for work',
         'observationWellInfo': 'Observation well information',
-        'submissionHistory': 'Activity report history'
+        'submissionHistory': 'Activity report history',
+        'documents': 'Attachments'
       }
     }
   },
@@ -663,6 +686,15 @@ export default {
     saveStatusReset () {
       this.saveFormSuccess = false
       this.loadFormSuccess = false
+    },
+    setFormValueChanged () {
+      this.formValueChanged = true
+    },
+    fetchFiles () {
+      this.$emit('fetchFiles')
+    },
+    anchorLinkHandler (step) {
+      this.$SmoothScroll(this.$el.querySelector(`#${step}`))
     }
   },
   created () {

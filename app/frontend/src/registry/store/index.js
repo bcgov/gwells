@@ -13,6 +13,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import auth from '@/common/store/auth.js'
 import config from '@/common/store/config.js'
+import documentState from '@/common/store/documents.js'
 import ApiService from '@/common/services/ApiService.js'
 import {
   FETCH_CITY_LIST,
@@ -35,7 +36,8 @@ Vue.use(Vuex)
 export const store = new Vuex.Store({
   modules: {
     auth: auth,
-    config: config
+    config: config,
+    documentState: documentState
   },
   state: {
     user: null,

@@ -223,6 +223,15 @@ class RegistrationsListSerializer(serializers.ModelSerializer):
         )
 
 
+class RegistrationsNumberSerializer(serializers.ModelSerializer):
+    """
+    Serializes only the registration no
+    """
+    class Meta:
+        model = Register
+        fields = ('registration_no','registries_activity')
+
+
 class PersonBasicSerializer(serializers.ModelSerializer):
     """
     Serializes Person model with basic fields only
@@ -748,6 +757,8 @@ class WellClassCodeSerializer(serializers.ModelSerializer):
 class PersonNameSerializer(serializers.ModelSerializer):
     """Serializes person names for quick searching"""
 
+    registrations = RegistrationsNumberSerializer(many=True, read_only=True)
+
     class Meta:
         model = Person
-        fields = ('name', 'person_guid')
+        fields = ('name', 'person_guid', 'registrations')

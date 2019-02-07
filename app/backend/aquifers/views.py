@@ -12,8 +12,8 @@
     limitations under the License.
 """
 
-from django.shortcuts import render
 from django_filters import rest_framework as djfilters
+from django.http import Http404, HttpResponse, JsonResponse
 from django.views.generic import TemplateView
 
 from drf_yasg.utils import swagger_auto_schema
@@ -27,6 +27,8 @@ from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveUpda
 from reversion.views import RevisionMixin
 
 from gwells.documents import MinioClient
+from gwells.roles import AQUIFERS_EDIT_ROLE
+from gwells.settings.base import get_env_variable
 
 from aquifers import models
 from aquifers import serializers
@@ -37,7 +39,6 @@ from aquifers.models import (
     AquiferProductivity,
     AquiferSubtype,
     AquiferVulnerabilityCode,
-    QualityConcern,
 )
 from aquifers.permissions import HasAquiferEditRoleOrReadOnly, HasAquiferEditRole
 from gwells.change_history import generate_history_diff
@@ -150,12 +151,14 @@ class ListFiles(APIView):
 
     @swagger_auto_schema(auto_schema=None)
     def get(self, request, aquifer_id):
+        user_is_staff = self.request.user.groups.filter(
+            name=AQUIFERS_EDIT_ROLE).exists()
 
         client = MinioClient(
-            request=request, disable_private=True)
+            request=request, disable_private=(not user_is_staff))
 
         documents = client.get_documents(
-            int(aquifer_id), resource="aquifer", include_private=False)
+            int(aquifer_id), resource="aquifer", include_private=user_is_staff)
 
         return Response(documents)
 
@@ -213,3 +216,59 @@ class AquiferHistory(APIView):
         history_diff = sorted(aquifer_history_diff, key=lambda x: x['date'], reverse=True)
 
         return Response(history_diff)
+
+
+class PreSignedDocumentKey(APIView):
+    """
+    Get a pre-signed document key to upload into an S3 compatible document store
+
+    post: obtain a URL that is pre-signed to allow client-side uploads
+    """
+
+    permission_classes = (HasAquiferEditRole,)
+
+    @swagger_auto_schema(auto_schema=None)
+    def get(self, request, aquifer_id):
+        client = MinioClient(
+            request=request, disable_private=False)
+
+        object_name = request.GET.get("filename")
+        filename = client.format_object_name(object_name, int(aquifer_id), "aquifer")
+        bucket_name = get_env_variable("S3_AQUIFER_BUCKET")
+
+        is_private = False
+        if request.GET.get("private") == "true":
+            is_private = True
+            bucket_name = get_env_variable("S3_PRIVATE_AQUIFER_BUCKET")
+
+        url = client.get_presigned_put_url(
+            filename, bucket_name=bucket_name, private=is_private)
+
+        return JsonResponse({"object_name": object_name, "url": url})
+
+
+class DeleteAquiferDocument(APIView):
+    """
+    Delete a document from a S3 compatible store
+
+    delete: remove the specified object from the S3 store
+    """
+
+    permission_classes = (HasAquiferEditRole,)
+
+    @swagger_auto_schema(auto_schema=None)
+    def delete(self, request, aquifer_id):
+        client = MinioClient(
+            request=request, disable_private=True)
+
+        is_private = False
+        bucket_name = get_env_variable("S3_AQUIFER_BUCKET")
+
+        if request.GET.get("private") == "true":
+            is_private = True
+            bucket_name = get_env_variable("S3_PRIVATE_AQUIFER_BUCKET")
+
+        object_name = client.get_bucket_folder(int(aquifer_id), "aquifer") + "/" + request.GET.get("filename")
+        client.delete_document(object_name, bucket_name=bucket_name, private=is_private)
+
+        return HttpResponse(status=204)

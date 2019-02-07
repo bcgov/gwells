@@ -14,7 +14,8 @@
 from urllib.parse import quote
 
 from django.db.models import Prefetch
-from django.http import Http404
+from django.http import Http404, HttpResponse, JsonResponse
+from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView
 
 from rest_framework import filters
@@ -94,10 +95,11 @@ class ListExtracts(APIView):
     @swagger_auto_schema(auto_schema=None)
     def get(self, request):
         host = get_env_variable('S3_HOST')
+        use_secure = int(get_env_variable('S3_USE_SECURE', 1))
         minioClient = Minio(host,
                             access_key=get_env_variable('S3_PUBLIC_ACCESS_KEY'),
                             secret_key=get_env_variable('S3_PUBLIC_SECRET_KEY'),
-                            secure=True)
+                            secure=use_secure)
         objects = minioClient.list_objects(get_env_variable('S3_WELL_EXPORT_BUCKET'))
         urls = list(
             map(
@@ -139,7 +141,7 @@ class ListFiles(APIView):
             request=request, disable_private=(not user_is_staff))
 
         documents = client.get_documents(
-            int(tag), include_private=user_is_staff)
+            int(tag), resource="well", include_private=user_is_staff)
 
         return Response(documents)
 
@@ -186,13 +188,13 @@ class WellTagSearchAPIView(ListAPIView):
 
     permission_classes = (DjangoModelPermissionsOrAnonReadOnly,)
     model = Well
-    queryset = Well.objects.all()
+    queryset = Well.objects.only('well_tag_number', 'owner_full_name').all()
     pagination_class = None
     serializer_class = WellTagSearchSerializer
     lookup_field = 'well_tag_number'
 
-    filter_backends = (filters.SearchFilter,)
-    ordering = ('well_tag_number',)
+    filter_backends = (filters.SearchFilter, filters.OrderingFilter)
+    ordering_fields = ('well_tag_number',)
     search_fields = (
         'well_tag_number',
         'owner_full_name',
@@ -220,3 +222,66 @@ class WellSubmissionsListAPIView(ListAPIView):
                       (record.well_activity_type.code != WellActivityCode.types.legacy().code,
                           record.well_activity_type.code != WellActivityCode.types.construction().code,
                           record.create_date), reverse=True)
+
+
+class PreSignedDocumentKey(APIView):
+    """
+    Get a pre-signed document key to upload into an S3 compatible document store
+
+    post: obtain a URL that is pre-signed to allow client-side uploads
+    """
+
+    queryset = Well.objects.all()
+    permission_classes = (WellsEditPermissions,)
+
+    @swagger_auto_schema(auto_schema=None)
+    def get(self, request, tag):
+        well = get_object_or_404(self.queryset, pk=tag)
+        client = MinioClient(
+            request=request, disable_private=False)
+
+        object_name = request.GET.get("filename")
+        filename = client.format_object_name(object_name, int(well.well_tag_number), "well")
+        bucket_name = get_env_variable("S3_ROOT_BUCKET")
+
+        is_private = False
+        if request.GET.get("private") == "true":
+            is_private = True
+            bucket_name = get_env_variable("S3_PRIVATE_ROOT_BUCKET")
+
+        # TODO: This should probably be "S3_WELL_BUCKET" but that will require a file migration
+        url = client.get_presigned_put_url(
+            filename, bucket_name=bucket_name, private=is_private)
+
+        return JsonResponse({"object_name": object_name, "url": url})
+
+
+class DeleteWellDocument(APIView):
+    """
+    Delete a document from a S3 compatible store
+
+    delete: remove the specified object from the S3 store
+    """
+
+    queryset = Well.objects.all()
+    permission_classes = (WellsEditPermissions,)
+
+    @swagger_auto_schema(auto_schema=None)
+    def delete(self, request, tag):
+        well = get_object_or_404(self.queryset, pk=tag)
+        client = MinioClient(
+            request=request, disable_private=True)
+
+        is_private = False
+        bucket_name = get_env_variable("S3_ROOT_BUCKET")
+
+        if request.GET.get("private") == "true":
+            is_private = True
+            bucket_name = get_env_variable("S3_PRIVATE_ROOT_BUCKET")
+
+        object_name = client.get_bucket_folder(int(well.well_tag_number), "well") + "/" + request.GET.get("filename")
+
+        # TODO: This should probably be "S3_WELL_BUCKET" but that will require a file migration
+        client.delete_document(object_name, bucket_name=bucket_name, private=is_private)
+
+        return HttpResponse(status=204)

@@ -110,14 +110,18 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </b-row>
       <b-row>
         <b-col cols="12" md="4"  v-if="!isStaffEdit">
-          <b-form-group label="Well Tag Number (if known)">
+          <b-form-group>
+            <label>Well Tag Number (if known) <span class="font-weight-bold"></span></label>
             <v-select
               v-model="wellTagNumberInput"
+              :disabled="wells === null"
               id="wellTagNumberSelect"
               :filterable="false"
-              :options="wellTagOptions"
               label="well_tag_number"
-              @search="onWellTagSearch">
+              :options="wellTagOptions"
+              @search="onWellTagSearch"
+              ref="wellTagNumber"
+              @search:blur="handleSearchBlur">
               <template slot="no-options">
                   Search by well tag number or owner name
               </template>
@@ -132,6 +136,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 </div>
               </template>
             </v-select>
+            <small id="wellTagNumberSelectHint" class="form-text text-muted">
+              *displays a maximum of {{MAX_RESULTS}} results
+            </small>
           </b-form-group>
         </b-col>
         <b-col cols="12" md="4">
@@ -193,7 +200,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               id="workStartDateInput"
               type="date"
               label="Start Date of Work *"
-              hint="Enter date as YYYY/MM/DD"
+              placeholder="YYYY-MM-DD"
               v-model="workStartDateInput"
               :errors="errors.work_start_date"
               :loaded="fieldsLoaded['work_start_date']">
@@ -204,7 +211,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               id="workEndDateInput"
               type="date"
               label="End Date of Work *"
-              hint="Enter date as YYYY/MM/DD"
+              placeholder="YYYY-MM-DD"
               v-model="workEndDateInput"
               :errors="errors.work_end_date"
               :loaded="fieldsLoaded['work_end_date']">
@@ -215,10 +222,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 
 <script>
-import debounce from 'lodash.debounce'
 import { mapGetters } from 'vuex'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
-import ApiService from '@/common/services/ApiService.js'
+
 export default {
   mixins: [inputBindingsMixin],
   props: {
@@ -261,7 +267,8 @@ export default {
   },
   data () {
     return {
-      wellTagOptions: []
+      wellTagOptions: [],
+      MAX_RESULTS: 50
     }
   },
   computed: {
@@ -272,18 +279,35 @@ export default {
         return []
       }
     },
-    ...mapGetters(['codes', 'userRoles'])
+    ...mapGetters(['codes', 'userRoles', 'wells'])
   },
   methods: {
-    wellTagSearch: debounce((loading, search, vm) => {
-      ApiService.query(`wells/tags/?search=${escape(search)}`).then((response) => {
-        vm.wellTagOptions = response.data
-        loading(false)
-      })
-    }, 500),
+    match (item, search) {
+      // On some browsers indexOf is faster than contains and vice versa. The trends seems to be that indexOf is faster
+      return (item.owner_full_name != null && item.owner_full_name.toUpperCase().indexOf(search) !== -1) || String(item.well_tag_number).indexOf(search) !== -1
+    },
     onWellTagSearch (search, loading) {
-      loading(true)
-      this.wellTagSearch(loading, search, this)
+      // Only do search if something has been typed.
+      this.wellTagOptions = []
+      if (search && search.length >= 1 && this.wells) {
+        // Save time, by converting to uppercase for search only once.
+        search = search.toUpperCase()
+        // We iterate manually instead of using .filter in order that we can limit the number
+        // of search results, and run faster.
+        for (let i = 0; i < this.wells.length && this.wellTagOptions.length < this.MAX_RESULTS; ++i) {
+          if (this.match(this.wells[i], search)) {
+            this.wellTagOptions.push(this.wells[i])
+          }
+        }
+      }
+    },
+    handleSearchBlur () {
+      if (this.wellTagOptions && this.$refs.wellTagNumber.typeAheadPointer < this.wellTagOptions.length) {
+        const target = this.wellTagOptions[this.$refs.wellTagNumber.typeAheadPointer]
+        if (target) {
+          this.wellTagNumberInput = target.well_tag_number
+        }
+      }
     }
   },
   watch: {
@@ -303,5 +327,9 @@ export default {
 <style>
 .dropdown-error-border {
   border-radius: 5px;
+}
+.v-select i.open-indicator {
+  width: 0px;
+  visibility: hidden;
 }
 </style>

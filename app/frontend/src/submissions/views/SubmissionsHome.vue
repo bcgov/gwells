@@ -30,6 +30,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
         </div>
       </b-alert>
 
+      <!-- Document Uploading alerts -->
+      <b-alert show v-if="files_uploading">File Upload In Progress...</b-alert>
+      <b-alert show v-if="!files_uploading && file_upload_error" variant="warning" >{{file_upload_error}}</b-alert>
+      <b-alert show v-if="!files_uploading && file_upload_success" variant="success" >Successfully uploaded all files</b-alert>
+
       <!-- Form submission error message -->
       <b-alert
           :show="formSubmitError"
@@ -67,6 +72,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           :errors="errors"
           :reportSubmitted="formSubmitSuccess"
           :formSubmitLoading="formSubmitLoading"
+          :uploadedFiles="uploadedFiles"
           v-on:back="handlePreviewBackButton"
           v-on:startNewReport="handleExitPreviewAfterSubmit"
           />
@@ -83,9 +89,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
           :formSubmitLoading="formSubmitLoading"
           :isStaffEdit="isStaffEdit"
           :loading="loading"
+          :uploadedFiles="uploadedFiles"
           v-on:preview="handlePreviewButton"
           v-on:submit_edit="formSubmit"
           v-on:resetForm="resetForm"
+          v-on:fetchFiles="fetchFiles"
           />
 
         <!-- Form submission confirmation -->
@@ -112,9 +120,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapState } from 'vuex'
 import ApiService from '@/common/services/ApiService.js'
-import { FETCH_CODES } from '../store/actions.types.js'
+import { FETCH_CODES, FETCH_WELLS } from '../store/actions.types.js'
 import inputFormatMixin from '@/common/inputFormatMixin.js'
 import SubmissionPreview from '@/submissions/components/SubmissionPreview/SubmissionPreview.vue'
 import filterBlankRows from '@/common/filterBlankRows.js'
@@ -142,6 +150,7 @@ export default {
       errors: {},
       form: {},
       formOptions: {},
+      uploadedFiles: {},
       formSteps: {
         CON: [
           'activityType',
@@ -153,6 +162,7 @@ export default {
           'method',
           'casings',
           'backfill',
+          'lithology',
           'liner',
           'screens',
           'filterPack',
@@ -160,7 +170,8 @@ export default {
           'wellYield',
           'waterQuality',
           'wellCompletion',
-          'comments'
+          'comments',
+          'documents'
         ],
         ALT: [
           'activityType',
@@ -172,6 +183,7 @@ export default {
           'method',
           'casings',
           'backfill',
+          'lithology',
           'liner',
           'screens',
           'filterPack',
@@ -179,7 +191,8 @@ export default {
           'wellYield',
           'waterQuality',
           'wellCompletion',
-          'comments'
+          'comments',
+          'documents'
         ],
         DEC: [
           'activityType',
@@ -192,7 +205,8 @@ export default {
           'closureDescription',
           'casings',
           'decommissionInformation',
-          'comments'
+          'comments',
+          'documents'
         ],
         STAFF_EDIT: [
           'submissionHistory',
@@ -204,6 +218,7 @@ export default {
           'method',
           'casings',
           'backfill',
+          'lithology',
           'liner',
           'screens',
           'filterPack',
@@ -215,6 +230,7 @@ export default {
           'closureDescription',
           'decommissionInformation',
           'comments',
+          'documents',
           'aquiferData'
         ]
       }
@@ -236,9 +252,19 @@ export default {
     isStaffEdit () {
       return this.activityType === 'STAFF_EDIT'
     },
-    ...mapGetters(['codes', 'userRoles', 'well', 'keycloak'])
+    ...mapGetters(['codes', 'userRoles', 'well', 'keycloak']),
+    ...mapState('documentState', [
+      'files_uploading',
+      'file_upload_error',
+      'file_upload_success',
+      'upload_files'
+    ])
   },
   methods: {
+    ...mapActions('documentState', [
+      'uploadFiles',
+      'fileUploadSuccess'
+    ]),
     formSubmit () {
       const data = Object.assign({}, this.form)
       const meta = data.meta
@@ -256,8 +282,12 @@ export default {
       delete data.meta
 
       // replace the "person responsible" object with the person's guid
-      if (data.driller_responsible && data.driller_responsible.person_guid) {
-        data.driller_responsible = data.driller_responsible.person_guid
+      if (data.person_responsible && data.person_responsible.person_guid) {
+        data.person_responsible = data.person_responsible.person_guid
+      }
+      // replace the "company of person responsible" object with the company's guid
+      if (data.company_of_person_responsible && data.company_of_person_responsible.org_guid) {
+        data.company_of_person_responsible = data.company_of_person_responsible.org_guid
       }
 
       if (data.well && data.well.well_tag_number) {
@@ -287,9 +317,7 @@ export default {
       ApiService.post(PATH, data).then((response) => {
         this.formSubmitSuccess = true
         this.formSubmitSuccessWellTag = response.data.well
-        if (!this.isStaffEdit) {
-          this.resetForm()
-        }
+
         this.$emit('formSaved')
 
         if (!this.form.well_tag_number) {
@@ -299,6 +327,30 @@ export default {
         this.$nextTick(function () {
           window.scrollTo(0, 0)
         })
+
+        if (this.upload_files.length > 0) {
+          if (response.data.filing_number) {
+            this.uploadFiles({
+              documentType: 'submissions',
+              recordId: response.data.filing_number
+            }).then(() => {
+              this.fileUploadSuccess()
+              this.fetchFiles()
+            }).catch((error) => {
+              console.log(error)
+            })
+          } else {
+            this.uploadFiles({
+              documentType: 'wells',
+              recordId: response.data.well
+            }).then(() => {
+              this.fileUploadSuccess()
+              this.fetchFiles()
+            }).catch((error) => {
+              console.log(error)
+            })
+          }
+        }
       }).catch((error) => {
         if (error.response.status === 400) {
           // Bad request, the response.data will contain information relating to why the request was bad.
@@ -312,7 +364,7 @@ export default {
         this.$nextTick(function () {
           window.scrollTo(0, 0)
         })
-      }).finally(() => {
+      }).finally((response) => {
         this.formSubmitLoading = false
       })
     },
@@ -331,7 +383,8 @@ export default {
         id_plate_attached_by: '',
         water_supply_system_well_name: '',
         water_supply_system_name: '',
-        driller_responsible: null,
+        person_responsible: null,
+        company_of_person_responsible: null,
         driller_name: '',
         consultant_name: '',
         consultant_company: '',
@@ -369,7 +422,7 @@ export default {
         ground_elevation_method: '',
         drilling_method: '',
         other_drilling_method: '',
-        well_orientation: '',
+        well_orientation: true,
         lithologydescription_set: [],
         surface_seal_material: '',
         surface_seal_depth: '',
@@ -395,7 +448,7 @@ export default {
         well_yield_unit: '',
         static_level_before_test: '',
         drawdown: '',
-        hydro_fracturing_performed: '',
+        hydro_fracturing_performed: false,
         hydro_fracturing_yield_increase: '',
         recommended_pump_depth: '',
         recommended_pump_rate: '',
@@ -492,6 +545,18 @@ export default {
       this.$nextTick(function () {
         window.scrollTo(0, 0)
       })
+    },
+    fetchFiles () {
+      // this.form.well is sometimes the tag number, and sometimes an object. This detects which is which
+      console.log(this.form.well && isNaN(this.form.well))
+      let tag = this.form.well && isNaN(this.form.well) ? this.form.well.well_tag_number : this.form.well
+
+      if (tag) {
+        ApiService.query(`wells/${tag}/files`)
+          .then((response) => {
+            this.uploadedFiles = response.data
+          })
+      }
     }
   },
   watch: {
@@ -518,7 +583,7 @@ export default {
             this.form[key] = res.data[key]
           }
         })
-        if (this.form.driller_responsible && this.form.driller_responsible.name === this.form.driller_name) {
+        if (this.form.person_responsible && this.form.person_responsible.name === this.form.driller_name) {
           this.form.meta.drillerSameAsPersonResponsible = true
         }
         // Wait for the form update we just did to fire off change events.
@@ -534,7 +599,13 @@ export default {
       }).catch((e) => {
         console.error(e)
       })
+    } else {
+      // Some of our child components need the well data, we dispatch the request here, in hopes
+      // that the data will be available by the time those components render.
+      this.$store.dispatch(FETCH_WELLS)
     }
+
+    this.fetchFiles()
   }
 }
 </script>
@@ -573,9 +644,9 @@ export default {
   }
 }
 .input-width-small {
-  max-width: 5rem;
+  max-width: 3rem;
 }
 .input-width-medium {
-  max-width: 10rem;
+  max-width: 6rem;
 }
 </style>

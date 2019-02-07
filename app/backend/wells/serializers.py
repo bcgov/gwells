@@ -17,7 +17,7 @@ from rest_framework import serializers
 from django.db import transaction
 from gwells.models import ProvinceStateCode
 from gwells.serializers import AuditModelSerializer
-from registries.serializers import PersonBasicSerializer
+from registries.serializers import PersonBasicSerializer, OrganizationNameListSerializer
 from wells.models import (
     ActivitySubmission,
     Casing,
@@ -25,6 +25,7 @@ from wells.models import (
     CasingCode,
     DecommissionDescription,
     LinerPerforation,
+    LithologyDescription,
     Screen,
     Well,
 )
@@ -117,12 +118,29 @@ class LinerPerforationSerializer(serializers.ModelSerializer):
         )
 
 
+class LithologyDescriptionSerializer(serializers.ModelSerializer):
+    """Serializes lithology description records"""
+    class Meta:
+        model = LithologyDescription
+        fields = (
+            'lithology_from',
+            'lithology_to',
+            'lithology_raw_data',
+            'lithology_colour',
+            'lithology_hardness',
+            'lithology_moisture',
+            'water_bearing_estimated_flow',
+        )
+
+
 class WellDetailSerializer(AuditModelSerializer):
     casing_set = CasingSerializer(many=True)
     screen_set = ScreenSerializer(many=True)
     linerperforation_set = LinerPerforationSerializer(many=True)
     decommission_description_set = DecommissionDescriptionSerializer(many=True)
-    driller_responsible = PersonBasicSerializer()
+    person_responsible = PersonBasicSerializer()
+    company_of_person_responsible = OrganizationNameListSerializer()
+    lithologydescription_set = LithologyDescriptionSerializer(many=True)
 
     # well vs. well_tag_number ; on submissions, we refer to well
     well = serializers.IntegerField(source='well_tag_number')
@@ -161,7 +179,8 @@ class WellDetailSerializer(AuditModelSerializer):
             "alteration_end_date",
             "decommission_start_date",
             "decommission_end_date",
-            "driller_responsible",
+            "person_responsible",
+            "company_of_person_responsible",
             "drilling_company",
             "well_identification_plate_attached",
             "id_plate_attached_by",
@@ -259,6 +278,7 @@ class WellDetailSerializer(AuditModelSerializer):
             "screen_set",
             "linerperforation_set",
             "decommission_description_set",
+            "lithologydescription_set"
         )
 
 
@@ -267,7 +287,9 @@ class WellDetailAdminSerializer(AuditModelSerializer):
     screen_set = ScreenSerializer(many=True)
     linerperforation_set = LinerPerforationSerializer(many=True)
     decommission_description_set = DecommissionDescriptionSerializer(many=True)
-    driller_responsible = PersonBasicSerializer()
+    person_responsible = PersonBasicSerializer()
+    company_of_person_responsible = OrganizationNameListSerializer()
+    lithologydescription_set = LithologyDescriptionSerializer(many=True)
 
     # well vs. well_tag_number ; on submissions, we refer to well
     well = serializers.IntegerField(source='well_tag_number')
@@ -283,6 +305,7 @@ class WellStackerSerializer(AuditModelSerializer):
     screen_set = ScreenSerializer(many=True)
     linerperforation_set = LinerPerforationSerializer(many=True)
     decommission_description_set = DecommissionDescriptionSerializer(many=True)
+    lithologydescription_set = LithologyDescriptionSerializer(many=True)
 
     class Meta:
         model = Well
@@ -299,6 +322,7 @@ class WellStackerSerializer(AuditModelSerializer):
             'screen_set': Screen,
             'linerperforation_set': LinerPerforation,
             'decommission_description_set': DecommissionDescription,
+            'lithologydescription_set': LithologyDescription,
         }
 
         for key in FOREIGN_KEYS.keys():

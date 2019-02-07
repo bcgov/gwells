@@ -13,6 +13,15 @@
       </b-row>
     </div>
     <div v-else class="card">
+      <div class="col-xs-12" v-if="files_uploading">
+        <b-alert show>File Upload In Progress...</b-alert>
+      </div>
+      <div class="col-xs-12" v-if="!files_uploading && file_upload_error">
+        <b-alert show variant="warning" >{{file_upload_error}}</b-alert>
+      </div>
+      <div class="col-xs-12" v-if="!files_uploading && file_upload_success">
+        <b-alert show variant="success" >Successfully uploaded all files</b-alert>
+      </div>
       <div class="card-body p-2 p-md-3">
         <div v-if="currentDriller != {}">
           <div class="row">
@@ -347,6 +356,54 @@
         <!-- Notes -->
         <person-notes @updated="updateRecord"></person-notes>
 
+        <div class="card mb-3">
+          <div class="card-body p-2 p-md-3">
+            <div class="row">
+              <div class="col-9">
+                <h5 class="card-title mb-3">Attachments</h5>
+              </div>
+            </div>
+            <b-row class="mt-3">
+              <b-col>
+                <b-form-group
+                  horizontal
+                  label-cols="4"
+                  label="Upload Documents">
+                  <b-form-file
+                    v-model="files"
+                    multiple
+                    plain/>
+                  <div class="mt-3">
+                    <b-form-checkbox
+                     id="isPrivateCheckbox"
+                     v-model="privateDocument">Are these documents private?</b-form-checkbox>
+                  </div>
+                  <div class="mt-3" v-if="upload_files.length > 0">
+                    <b-list-group>
+                      <b-list-group-item v-for="(f, index) in upload_files" :key="index">{{f.name}}</b-list-group-item>
+                    </b-list-group>
+                  </div>
+                </b-form-group>
+              </b-col>
+            </b-row>
+            <b-row class="mt-3">
+              <b-col>
+                <person-documents :files="person_files"
+                  v-on:fetchFiles="fetchFiles"
+                  :guid="currentDriller.person_guid"></person-documents>
+              </b-col>
+            </b-row>
+            <div slot="modal-footer">
+              <b-btn variant="primary" @click="uploadAttachments()" :disabled="this.upload_files.length === 0">
+                Save
+              </b-btn>
+              <b-btn variant="light" @click="cancelUploadAttachments" >
+                Cancel
+              </b-btn>
+            </div>
+          </div>
+        </div>
+
         <!-- Change history for this record -->
         <change-history
           ref="changeHistory"
@@ -354,7 +411,6 @@
           v-if="!!currentDriller"
           resource="person"
           :id="currentDriller.person_guid"></change-history>
-
       </div>
     </div>
   </div>
@@ -367,13 +423,15 @@ import PersonNotes from '@/registry/components/people/PersonNotes.vue'
 import ChangeHistory from '@/common/components/ChangeHistory.vue'
 import ApplicationAddEdit from '@/registry/components/people/ApplicationAddEdit.vue'
 import ApiService from '@/common/services/ApiService.js'
-import { mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 import { SET_DRILLER } from '@/registry/store/mutations.types'
 import { FETCH_DRILLER, FETCH_DRILLER_OPTIONS } from '@/registry/store/actions.types'
+import PersonDocuments from './PersonDocuments'
 
 export default {
   name: 'person-detail',
   components: {
+    'person-documents': PersonDocuments,
     'api-error': APIErrorMessage,
     'person-edit': PersonEdit,
     'application-add': ApplicationAddEdit,
@@ -412,10 +470,27 @@ export default {
       confirmRegisterModal: {
         DRILL: false,
         PUMP: false
-      }
+      },
+      person_files: {}
     }
   },
   computed: {
+    files: {
+      get: function () {
+        return this.upload_files
+      },
+      set: function (value) {
+        this.setFiles(value)
+      }
+    },
+    privateDocument: {
+      get: function () {
+        return this.isPrivate
+      },
+      set: function (value) {
+        this.setPrivate(value)
+      }
+    },
     showSpinner () {
       return this.currentDriller == null || this.loading || this.savingApplication
     },
@@ -486,9 +561,24 @@ export default {
       'currentDriller',
       'drillers',
       'userRoles'
+    ]),
+    ...mapState('documentState', [
+      'files_uploading',
+      'file_upload_error',
+      'file_upload_success',
+      'isPrivate',
+      'upload_files'
     ])
   },
   methods: {
+    ...mapActions('documentState', [
+      'uploadFiles',
+      'fileUploadSuccess'
+    ]),
+    ...mapMutations('documentState', [
+      'setFiles',
+      'setPrivate'
+    ]),
     show (key) {
       return ((key === 'PUMP' && this.pumpApplication) || (key === 'DRILL' && this.drillApplication))
     },
@@ -506,6 +596,7 @@ export default {
       if (this.currentDriller && this.$refs.changeHistory) {
         this.$refs.changeHistory.update()
       }
+      this.fetchFiles()
     },
     addApplication (registration) {
       const newClassification = {
@@ -543,6 +634,30 @@ export default {
       ApiService.post('registrations', data).then(() => {
         this.updateRecord()
       })
+    },
+    cancelUploadAttachments () {
+      this.setFiles([])
+    },
+    uploadAttachments () {
+      if (this.upload_files.length > 0) {
+        this.uploadFiles({
+          documentType: 'drillers',
+          recordId: this.currentDriller.person_guid
+        }).then(() => {
+          this.fileUploadSuccess()
+          this.fetchFiles()
+          window.scrollTo(0, 0)
+        }).catch((error) => {
+          console.log(error)
+        })
+      }
+    },
+    fetchFiles () {
+      ApiService.query(`drillers/${this.$route.params.person_guid}/files/`)
+        .then((response) => {
+          this.person_files = response.data
+          console.log(response.data)
+        })
     }
   },
   created () {

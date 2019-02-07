@@ -26,45 +26,59 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </div>
         </b-col>
       </b-row>
+      <b-form-checkbox id="checkbox1"
+        v-model="drillerSameAsPersonResponsibleInput"
+        :value="true"
+        :unchecked-value="false"
+      >
+      <p>Person Responsible is the same as the Person Who Completed the Work</p>
+      </b-form-checkbox>
       <b-row>
-        <b-col cols="12" md="12" lg="4">
+        <b-col cols="12" md="12" lg="6">
           <b-form-group
-              label="Person Responsible for Drilling *"
+              label="Person Responsible for Work *"
               aria-describedby="personResponsibleInvalidFeedback"
-              :state="false">
+              :state="false"
+          >
             <v-select
-                :class="errors.driller_responsible?'border border-danger dropdown-error-border':''"
+                :class="errors.person_responsible?'border border-danger dropdown-error-border':''"
+                :disabled="persons === null"
                 id="personResponsibleSelect"
                 :filterable="false"
                 :options="personOptions"
                 label="name"
                 v-model="personResponsibleInput"
-                @search="onPersonSearch">
+                @search="onPersonSearch"
+                ref="personResponsible"
+                @search:blur="handleSearchBlur(personOptions, $refs.personResponsible, 'personResponsibleInput')">
               <template slot="no-options">
                   Type to search registry...
               </template>
-              <template slot="option" slot-scope="option">
-                <div>
-                  {{ option.name }}
-                  </div>
-              </template>
               <template slot="selected-option" slot-scope="option">
                 <div>
-                  {{ option.name }}
+                  {{ personNameReg (option) }}
+                </div>
+              </template>
+              <template slot="option" slot-scope="option">
+                <div>
+                  {{ personNameReg (option) }}
                 </div>
               </template>
             </v-select>
-            <b-form-text id="personResponsibleInvalidFeedback" v-if="errors.driller_responsible">
-              <div v-for="(error, index) in errors.driller_responsible" :key="`personResponsible error ${index}`" class="text-danger">
+            <small id="personResponsibleSelectHint" class="form-text text-muted">
+              *displays a maximum of {{MAX_RESULTS}} results
+            </small>
+            <b-form-text id="personResponsibleInvalidFeedback" v-if="errors.person_responsible">
+              <div v-for="(error, index) in errors.person_responsible" :key="`personResponsible error ${index}`" class="text-danger">
                 {{ error }}
               </div>
             </b-form-text>
           </b-form-group>
         </b-col>
-        <b-col cols="12" md="6" lg="4">
+        <b-col cols="12" md="12" lg="6">
           <form-input
               id="drillerName"
-              label="Name of Person Who Did the Drilling"
+              label="Person Who Completed the Work"
               type="text"
               :disabled="drillerSameAsPersonResponsible"
               v-model="drillerNameInput"
@@ -72,15 +86,35 @@ Licensed under the Apache License, Version 2.0 (the "License");
               :loaded="fieldsLoaded['driller_name']"
           ></form-input>
         </b-col>
-        <b-col cols="12" md="6" lg="4">
-          <b-form-group class="pt-md-4 mt-md-2">
-            <b-form-checkbox id="checkbox1"
-                  v-model="drillerSameAsPersonResponsibleInput"
-                  :value="true"
-                  :unchecked-value="false"
-                  :disabled="!personResponsible">
-              Same as Person Responsible for Drilling
-            </b-form-checkbox>
+      </b-row>
+      <b-row>
+        <b-col cols="12" md="12" lg="4">
+          <b-form-group
+              aria-describedby="companyOfPersonResponsibleInvalidFeedback"
+              :state="false">
+            <label>Company of person Responsible for Drilling</label>
+            <v-select
+              :disabled="companies === null"
+              id="companyOfPersonResponsibleSelect"
+              :filterable="false"
+              :options="companyOfPersonResponsibleOptions"
+              label="org_verbose_name"
+              v-model="companyOfPersonResponsibleInput"
+              @search="onCompanyOfPersonResponsibleSearch"
+              ref="companyOfPersonResponsible"
+              @search:blur="handleSearchBlur(companyOfPersonResponsibleOptions, $refs.companyOfPersonResponsible, 'companyOfPersonResponsibleInput')">
+              <template slot="no-options">
+                  Search by company name
+              </template>
+            </v-select>
+            <small id="companyOfPersonResponsibleSelectHint" class="form-text text-muted">
+              *displays a maximum of {{MAX_RESULTS}} results
+            </small>
+            <b-form-text id="companyOfPersonResponsibleInvalidFeedback" v-if="errors.person_responsible">
+              <div v-for="(error, index) in errors.driller_company_responsible" :key="`companyOfPersonResponsible error ${index}`" class="text-danger">
+                {{ error }}
+              </div>
+            </b-form-text>
           </b-form-group>
         </b-col>
       </b-row>
@@ -110,7 +144,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 
 <script>
-import debounce from 'lodash.debounce'
 import { mapGetters } from 'vuex'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 import ApiService from '@/common/services/ApiService.js'
@@ -119,6 +152,7 @@ export default {
   mixins: [inputBindingsMixin],
   props: {
     personResponsible: Object,
+    companyOfPersonResponsible: Object,
     drillerName: String,
     consultantName: String,
     consultantCompany: String,
@@ -148,7 +182,11 @@ export default {
   },
   data () {
     return {
-      personOptions: []
+      personOptions: [],
+      persons: null,
+      companyOfPersonResponsibleOptions: [],
+      companies: null,
+      MAX_RESULTS: 50
     }
   },
   computed: {
@@ -156,15 +194,55 @@ export default {
   },
   methods: {
     onPersonSearch (search, loading) {
-      loading(true)
-      this.drillerSearch(loading, search, this)
-    },
-    drillerSearch: debounce((loading, search, vm) => {
-      ApiService.query(`drillers/names/?search=${escape(search)}`).then((response) => {
-        vm.personOptions = response.data
-        loading(false)
+      this.personOptions = this.genericSearch(search, this.persons, (item, search) => {
+        const name = item.name
+        // On some browsers indexOf is faster than contains and vice versa. The trends seems to be that indexOf is faster
+        return name != null && name.toUpperCase().indexOf(search) !== -1
       })
-    }, 500)
+    },
+    onCompanyOfPersonResponsibleSearch (search, loading) {
+      this.companyOfPersonResponsibleOptions = this.genericSearch(search, this.companies, (item, search) => {
+        // On some browsers indexOf is faster than contains and vice versa. The trends seems to be that indexOf is faster
+        return (item.name != null && item.name.toUpperCase().indexOf(search) !== -1) || (item.org_verbose_name != null && item.org_verbose_name.toUpperCase().indexOf(search) !== -1)
+      })
+    },
+    /**
+     * Get a list of matches.
+     * @param {string} needle - The string being searched for.
+     * @param {array} haystack - A list of objects to search.
+     * @param {function} match - The function to evaluate if a needle matches an item in the list.
+     * @return {array} Up to MAX_RESULT matching objects.
+     */
+    genericSearch (needle, haystack, match) {
+      const result = []
+      if (needle && needle.length >= 1 && haystack) {
+        needle = needle.toUpperCase()
+        for (let i = 0; i < haystack.length && result.length < this.MAX_RESULTS; ++i) {
+          if (match(haystack[i], needle)) {
+            result.push(haystack[i])
+          }
+        }
+      }
+      return result
+    },
+    /**
+     * Select the highlighted option in the dropdown as the input field.
+     * @param {array} options - List of objects.
+     * @param {object} ref - Reference to v-select component.
+     * @param {string} inputName - Name of property on this component to set with the highlighted item.
+     */
+    handleSearchBlur (options, ref, inputName) {
+      if (options && ref.typeAheadPointer < options.length) {
+        this[inputName] = options[ref.typeAheadPointer]
+      }
+    },
+    personNameReg (option) {
+      const drillReg = option.registrations.find((item) => {
+        return item.registries_activity === 'DRILL'
+      })
+      const drillNo = (drillReg && drillReg.registration_no) ? drillReg.registration_no : 'Registration Number Unavailable'
+      return option.name + ' (' + drillNo + ')'
+    }
   },
   watch: {
     personResponsible (val, prev) {
@@ -173,11 +251,20 @@ export default {
       if (prev) {
         this.drillerSameAsPersonResponsibleInput = false
       }
+      this.drillerNameInput = (this.personResponsible && this.drillerSameAsPersonResponsible) ? this.personResponsible.name : ''
     },
     drillerSameAsPersonResponsible (val) {
       // keep driller name disabled & set to "person responsible", or leave it enabled and blank
       this.drillerNameInput = (this.personResponsible && this.drillerSameAsPersonResponsible) ? this.personResponsible.name : ''
     }
+  },
+  created () {
+    ApiService.query(`drillers/names/`).then((response) => {
+      this.persons = response.data
+    })
+    ApiService.query('organizations/names/').then((response) => {
+      this.companies = response.data
+    })
   }
 }
 </script>
@@ -185,5 +272,9 @@ export default {
 <style>
 .dropdown-error-border {
   border-radius: 5px;
+}
+.v-select i.open-indicator {
+  width: 0px;
+  visibility: hidden;
 }
 </style>

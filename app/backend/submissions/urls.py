@@ -16,8 +16,8 @@ from django.views.decorators.cache import never_cache
 
 from submissions.views import (SubmissionsOptions, SubmissionListAPIView, SubmissionConstructionAPIView,
                                SubmissionAlterationAPIView, SubmissionDecommissionAPIView,
-                               SubmissionsHomeView, SubmissionGetAPIView, SubmissionStaffEditAPIView
-                               )
+                               SubmissionsHomeView, SubmissionGetAPIView, SubmissionStaffEditAPIView,
+                               PreSignedDocumentKey,)
 
 
 urlpatterns = [
@@ -44,6 +44,10 @@ urlpatterns = [
     # Edit submission
     url(r'^api/v1/submissions/staff_edit',
         never_cache(SubmissionStaffEditAPIView().as_view()), name='STAFF_EDIT'),
+
+    # Document Uploading (submission records)
+    url(r'^api/v1/submissions/(?P<submission_id>[0-9]+)/presigned_put_url$',
+        never_cache(PreSignedDocumentKey.as_view()), name='submissions-pre-signed-url'),
 
     # Submissions home (loads Submissions application)
     url(r'^submissions/', SubmissionsHomeView.as_view(), name='submissions-home')

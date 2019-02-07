@@ -28,7 +28,6 @@
           :record="record"
           :fieldErrors="fieldErrors"
           />
-
       </b-container>
     </b-card>
   </div>
@@ -38,11 +37,17 @@
 import ApiService from '@/common/services/ApiService.js'
 import APIErrorMessage from '@/common/components/APIErrorMessage'
 import AquiferForm from './Form'
+import { mapActions, mapState } from 'vuex'
 
 export default {
   components: {
     'api-error': APIErrorMessage,
     'aquifer-form': AquiferForm
+  },
+  computed: {
+    ...mapState('documentState', [
+      'upload_files'
+    ])
   },
   data () {
     return {
@@ -52,11 +57,25 @@ export default {
     }
   },
   methods: {
+    ...mapActions('documentState', [
+      'uploadFiles',
+      'fileUploadSuccess'
+    ]),
     navigateToView () {
       this.$router.push({ name: 'home' })
     },
     handleSuccess ({data}) {
-      this.$router.push({ name: 'view', params: { id: data.aquifer_id } })
+      if (this.upload_files.length > 0) {
+        this.uploadFiles({
+          documentType: 'aquifers',
+          recordId: data.aquifer_id
+        }).then((values) => {
+          this.fileUploadSuccess()
+          this.$router.push({ name: 'view', params: { id: data.aquifer_id } })
+        })
+      } else {
+        this.$router.push({ name: 'view', params: { id: data.aquifer_id } })
+      }
     },
     handleError (error) {
       if (error.response) {

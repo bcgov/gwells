@@ -62,6 +62,17 @@ urlpatterns = [
         never_cache(views.OrganizationListView.as_view()),
         name='organization-list'),
 
+    # Document Uploading (driller records)
+    url(r'^api/v1/drillers/(?P<person_guid>[-\w]+)/presigned_put_url$',
+        never_cache(views.PreSignedDocumentKey.as_view()), name='drillers-pre-signed-url'),
+
+    # Document Deleting (driller records)
+    url(r'^api/v1/drillers/(?P<person_guid>[-\w]+)/delete_document$',
+        never_cache(views.DeleteDrillerDocument.as_view()), name='driller-delete-document'),
+
+    url(r'^api/v1/drillers/(?P<person_guid>[-\w]+)/files/$',
+        never_cache(views.ListFiles.as_view()), name='drillers-file-list'),
+
     # Person note endpoints
     url(r'^api/v1/drillers/(?P<person_guid>[-\w]+)/notes/$',
         never_cache(views.PersonNoteListView.as_view()), name='person-note-list'),
@@ -69,6 +80,8 @@ urlpatterns = [
         views.PersonNoteDetailView.as_view(), name='person-note-detail'),
 
     # Person endpoints (drillers, well installers, and other instances of Person model)
+    # TODO: There's some confusion between drillers and persons. Sometimes we're looking only for drillers,
+    # sometimes we're actually looking for people (pump installers, drillers etc.)
     url(r'^api/v1/drillers/names/$',
         never_cache(views.PersonNameSearch.as_view()), name='person-search'),
     url(r'api/v1/drillers/options/',
