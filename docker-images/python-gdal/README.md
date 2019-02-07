@@ -1,15 +1,3 @@
-oc -n csnr-devops-lab-tools new-build .  --name python-36-rhel7-gdal --context-dir=docker-images/python-gdal
-
-(or `oc -n csnr-devops-lab-tools new-build https://github.com/bcgov/gwells.git#feature/python-gdal --name python-36-rhel7-gdal --context-dir=docker-images/python-gdal` to reference a specific branch)
-
-To reset:
-oc -n moe-gwells-tools delete bc/tst-python-gdal istag/tst-python-gdal:latest is/tst-python-gdal
-
-oc -n csnr-devops-lab-tools logs -f bc/python-36-rhel7-gdal
-
-oc -n csnr-devops-lab-tools tag python-36-rhel7-gdal:latest python-36-rhel7-gdal:v1
-
-
 # Docker Images 
 
 Dockerfiles that are the source of GWELLS custom images.
@@ -17,9 +5,6 @@ Dockerfiles that are the source of GWELLS custom images.
 ## Python Images with GDAL, GEOS, and PROJ.4 compiled from source
     * [OpenShift, based upon RHEL7](./python-gdal/Dockerfile.rhel7)
     * [Local Development](./python-gdal/Dockerfile.centos)
-
-
-
 
 
 ```
@@ -34,19 +19,15 @@ The OpenShift image can only be built on a machine with a valid subscription, so
 
 
 ```
-oc -n csnr-devops-lab-tools new-build https://github.com/bcgov/gwells#feature/gis-backend-with-configmap --context-dir=docker-images/python-gdal --name gwells-python 
+oc -n moe-gwells-tools new-build https://github.com/bcgov/gwells#feature/gis-backend-with-configmap --context-dir=docker-images/python-gdal --name gwells-python 
 
 
 oc -n moe-gwells-tools tag gwells-python:latest gwells-python:3.6
 oc -n moe-gwells-tools tag gwells-python:latest gwells-python:GDAL
-oc -n moe-gwells-tools tag gwells-python:latest gwells-python:GEOS
-oc -n moe-gwells-tools tag gwells-python:latest gwells-python:PROJ.4
 
 
 
 ```
-
-
 
 
 
@@ -56,6 +37,16 @@ docker build . -f Dockerfile.centos -t gwells-python:gdal
 
 ```
 
+## Misc:
+oc -n csnr-devops-lab-tools new-build .  --name python-36-rhel7-gdal --context-dir=docker-images/python-gdal
+
+(or `oc -n csnr-devops-lab-tools new-build https://github.com/bcgov/gwells.git#feature/python-gdal --name python-36-rhel7-gdal --context-dir=docker-images/python-gdal` to reference a specific branch)
+
+To reset:
+oc -n moe-gwells-tools delete bc/tst-python-gdal istag/tst-python-gdal:latest is/tst-python-gdal
+oc -n csnr-devops-lab-tools logs -f bc/python-36-rhel7-gdal
+
+oc -n moe-gwells-tools export bc/gwells-python is/gwells-python  -o json --as-template=gwells-python > backend-test.bc.json
 
 
 

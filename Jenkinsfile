@@ -362,9 +362,6 @@ pipeline {
         // the newly built application image into that environment.  This stage monitors the newest deployment
         // for pods/containers to report back as ready.
         stage('DEV - Deploy') {
-            when {
-                expression { env.CHANGE_TARGET != 'master' && env.CHANGE_TARGET != 'demo' }
-            }
             steps {
                 script {
                     _openshift(env.STAGE_NAME, DEV_PROJECT) {
@@ -451,9 +448,6 @@ pipeline {
 
 
         stage('DEV - Load Fixtures') {
-            when {
-                expression { env.CHANGE_TARGET != 'master' && env.CHANGE_TARGET != 'demo' }
-            }
             steps {
                 script {
                     _openshift(env.STAGE_NAME, DEV_PROJECT) {
@@ -495,9 +489,6 @@ pipeline {
         // the Django Unit Tests stage runs backend unit tests using a test DB that is
         // created and destroyed afterwards. 
         stage('DEV - Django Unit Tests') {
-            when {
-                expression { env.CHANGE_TARGET != 'master' }
-            }
             steps {
                 script {
                     _openshift(env.STAGE_NAME, DEV_PROJECT) {
@@ -545,9 +536,6 @@ pipeline {
         // Functional tests temporarily limited to smoke tests
         // See https://github.com/BCDevOps/BDDStack
         stage('DEV - Smoke Tests') {
-            when {
-                expression { env.CHANGE_TARGET != 'master' && env.CHANGE_TARGET != 'demo' }
-            }
             steps {
                 script {
                     _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
@@ -560,9 +548,6 @@ pipeline {
 
 
         stage('DEV - API Tests') {
-            when {
-                expression { env.CHANGE_TARGET != 'master' && env.CHANGE_TARGET != 'demo' }
-            }
             steps {
                 script {
                     _openshift(env.STAGE_NAME, DEV_PROJECT) {
