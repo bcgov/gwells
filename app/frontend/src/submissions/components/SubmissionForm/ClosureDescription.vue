@@ -16,6 +16,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <b-row>
       <b-col cols="12" lg="6">
         <legend :id="id">Decommission Description</legend>
+        <p>Enter depth intervals from the top of the hole to the bottom.</p>
       </b-col>
       <b-col cols="12" lg="6">
         <div class="float-right">
