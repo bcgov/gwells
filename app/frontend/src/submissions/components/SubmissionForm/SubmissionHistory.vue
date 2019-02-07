@@ -20,18 +20,18 @@ Licensed under the Apache License, Version 2.0 (the "License");
     </b-row>
     <b-row>
       <b-col cols="12">
-        <p v-if="numberOfRecords > 0">
-          There {{ numberOfRecords > 1 ? 'are' : 'is' }} {{ numberOfRecords }} activity {{ numberOfRecords > 1 ? 'reports' : 'report' }} for well {{ $route.params.id }}.
+        <p v-if="submissionsRecordsCount > 0">
+          There {{ submissionsRecordsCount > 1 ? 'are' : 'is' }} {{ submissionsRecordsCount }} activity {{ submissionsRecordsCount > 1 ? 'reports' : 'report' }} for well {{ $route.params.id }}.
         </p>
         <b-table
             id="submissionHistoryTable"
             ref="submissionHistoryTable"
-            :busy.sync="isBusy"
+            :busy.sync="submissionsBusy"
             :items="fetchReports"
             :fields="['report', 'date_entered', 'date_work_finished']"
             responsive
-            :per-page="perPage"
-            :current-page="currentPage"
+            :per-page="submissionsPerPage"
+            :current-page="submissionsPage"
           >
           <template slot="report" slot-scope="data">
             <router-link :to="{ name: 'SubmissionDetail', params: { id: $route.params.id, submissionId: data.item.filing_number }}">{{ data.item.well_activity_type }}</router-link>
@@ -43,7 +43,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             {{ data.item.work_end_date | moment("MMMM Do YYYY [at] LT") }}
           </template>
         </b-table>
-        <b-pagination v-if="!!numberOfRecords" size="md" :total-rows="numberOfRecords" v-model="currentPage" :per-page="perPage" :disabled="isBusy" />
+        <b-pagination v-if="!!submissionsRecordsCount" size="md" :total-rows="submissionsRecordsCount" v-model="submissionsPage" :per-page="submissionsPerPage" :disabled="submissionsBusy" />
       </b-col>
     </b-row>
   </fieldset>
@@ -71,18 +71,17 @@ export default {
   },
   data () {
     return {
-      submissions: [],
-      perPage: 5,
-      currentPage: 1,
-      isBusy: false,
-      numberOfRecords: 0
+      submissionsPerPage: 5,
+      submissionsPage: 1,
+      submissionsBusy: false,
+      submissionsRecordsCount: 0
     }
   },
   computed: {
     ...mapGetters(['codes'])
   },
   methods: {
-    fetchReports (ctx = { perPage: this.perPage, currentPage: this.currentPage }) {
+    fetchReports (ctx = { perPage: this.perPage, currentPage: this.submissionsPage }) {
       /**
       * table items provider function
       * https://bootstrap-vue.js.org/docs/components/table/
@@ -97,8 +96,13 @@ export default {
       // these will be urlencoded and the API will filter on these values.
       Object.assign(params, this.searchParams)
       return ApiService.query(`wells/${this.$route.params.id}/submissions` + '?' + querystring.stringify(params)).then((response) => {
-        this.numberOfRecords = response.data.count
-        return response.data.results || []
+        let results = response.data.results || []
+        results = response.data.results.filter((item) => {
+          return item.well_activity_type !== 'STAFF_EDIT'
+        })
+
+        this.submissionsRecordsCount = results.length
+        return results
       }).catch((e) => {
         return []
       })
