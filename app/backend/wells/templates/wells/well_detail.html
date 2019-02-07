@@ -95,9 +95,7 @@
                 <div class="col-md-12 col-print-12 print-compressed">
                     <label for="aquifer_number">Aquifer Number:</label>
                     <span id="aquifer_number">
-                      {% for aquifer_well in well.aquiferwell_set.all %}
-                        <a href="/gwells/aquifers/{{aquifer_well.aquifer_id }}/" target="_blank">{{aquifer_well.aquifer_id }}</a>&nbsp;
-                      {% endfor %}
+                        <a href="/gwells/aquifers/{{ well.aquifer_id }}/" target="_blank">{{ well.aquifer_id }}</a>&nbsp;
                     </span>
                 </div>
             </div>
