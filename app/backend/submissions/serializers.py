@@ -91,8 +91,13 @@ class WellSubmissionListSerializer(serializers.ModelSerializer):
         model = ActivitySubmission
 
 
-class WellSubmissionSerializerBase(serializers.ModelSerializer):
+class WellSubmissionSerializerBase(AuditModelSerializer):
     """ Bass class for well submission serialisation. """
+
+    create_user = serializers.ReadOnlyField()
+    create_date = serializers.ReadOnlyField()
+    update_user = serializers.ReadOnlyField()
+    update_date = serializers.ReadOnlyField()
 
     def get_foreign_key_sets(self):
         raise NotImplementedError()  # Implement in base class!
@@ -260,7 +265,9 @@ class WellConstructionSubmissionSerializer(WellSubmissionSerializerBase):
                   'well_yield', 'artesian_flow', 'artesian_pressure', 'well_cap_type', 'well_disinfected',
                   'comments', 'alternative_specs_submitted', 'consultant_company', 'consultant_name',
                   'driller_name', 'person_responsible', 'company_of_person_responsible',
-                  'coordinate_acquisition_code',)
+                  'coordinate_acquisition_code',
+                  'create_user', 'create_date',
+                  )
         extra_kwargs = {
             # TODO: reference appropriate serializer as above
             'well_activity_type': {'required': False}
@@ -388,6 +395,7 @@ class WellAlterationSubmissionSerializer(WellSubmissionSerializerBase):
             'well_disinfected',
             'comments',
             'alternative_specs_submitted',
+            'create_user', 'create_date',
         )
         extra_kwargs = {
             # TODO: reference appropriate serializer as above
@@ -541,6 +549,7 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
             'testing_duration',
             'analytic_solution_type',
             'boundary_effect',
+            'create_user', 'create_date',
         )
 
 
@@ -607,6 +616,7 @@ class WellDecommissionSubmissionSerializer(WellSubmissionSerializerBase):
             'decommission_description_set',
             'comments',
             'alternative_specs_submitted',
+            'create_user', 'create_date',
         )
         extra_kwargs = {
             'well_activity_type': {'required': False}

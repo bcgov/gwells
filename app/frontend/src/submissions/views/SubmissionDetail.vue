@@ -2,9 +2,20 @@
   <b-card v-if="userRoles.wells.edit || userRoles.submissions.edit">
     <b-card-body>
       <div v-if="submission">
-        <dl>
+        <h1>Activity Report Summary</h1>
+        <div>Filed: {{submission.create_date | moment("MMMM Do YYYY [at] LT") }}</div>
+        <div>By: {{submission.create_user}} </div>
+        <dl class="mt-5">
           <template v-for="(value, key, i) in submission">
-            <div :key="`submission data row ${i} value`" class="row" v-if="value !== null && (Array.isArray(value) && value.length > 0 || !Array.isArray(value))">
+            <div
+              :key="`submission data row ${i} value`"
+              class="row"
+              v-if="
+                value !== null &&
+                (Array.isArray(value) && value.length > 0 || !Array.isArray(value)) &&
+                key !== 'create_user' && // we will display these fields separately
+                key !== 'create_date'
+            ">
               <dt class="col-12 col-md-6 col-xl-2">{{key}}</dt><dd class="col-12 col-md-6 col-xl-10">{{value}}</dd>
             </div>
           </template>
