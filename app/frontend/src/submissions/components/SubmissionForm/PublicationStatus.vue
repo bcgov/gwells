@@ -28,17 +28,19 @@ limitations under the License.
     </b-row>
     <b-row v-if="isStaffEdit">
       <b-col cols="12" md="4">
-        <form-input
-          select
-          v-model="wellPublicationStatusCodeInput"
-          :options="codes.well_publication_status_codes"
-          value-field="well_publication_status_code"
-          text-field="description"
-          label="Well Publication Status"
-          placeholder="Select publication status"
-          :errors="errors['well_publication_status']"
-          :loaded="fieldsLoaded['well_publication_status']"
-          id="wellPublicationStatusCodeInput"></form-input>
+        <b-form-group id="wellPublicationStatusCodeInput">
+          <b-form-select
+            v-model="wellPublicationStatusCodeInput"
+            :options="codes.well_publication_status_codes"
+            value-field="well_publication_status_code"
+            text-field="well_publication_status_code"
+            :errors="errors['well_publication_status']"
+            :loaded="fieldsLoaded['well_publication_status']">
+            <template slot="first">
+              <option value="" disabled>Select Publication Status</option>
+            </template>
+          </b-form-select>
+        </b-form-group>
       </b-col>
     </b-row>
   </fieldset>

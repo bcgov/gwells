@@ -209,6 +209,7 @@ export default {
           'documents'
         ],
         STAFF_EDIT: [
+          'wellPublicationStatus',
           'wellType',
           'wellOwner',
           'personResponsible',

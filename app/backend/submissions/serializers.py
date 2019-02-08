@@ -425,6 +425,7 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
             'well_class',
             'well_subclass',
             'well_status',
+            'well_publication_status',
             'intended_water_use',
             'identification_plate_number',
             'well_identification_plate_attached',

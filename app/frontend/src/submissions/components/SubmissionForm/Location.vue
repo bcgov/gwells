@@ -256,7 +256,7 @@ export default {
         land_district_code: '',
         name: 'Select district'
       }]
-      if (!this.codes || !this.codes.land_district_codes) {
+      if (!this.codes || Object.entries(this.codes.land_district_codes).length === 0) {
         return initial
       }
       return initial.concat(
