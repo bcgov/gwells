@@ -69,7 +69,7 @@ class WellDetail(RetrieveAPIView):
     """
     serializer_class = WellDetailSerializer
 
-    queryset = Well.objects.all()
+    queryset = Well.objects.exclude(well_publication_status='Unpublished')
     lookup_field = 'well_tag_number'
 
     def get_serializer(self, *args, **kwargs):

@@ -73,6 +73,18 @@ Licensed under the Apache License, Version 2.0 (the "License");
         :wellActivityType.sync="activityTypeInput"
       />
 
+    <!-- Publication Status of well -->
+    <publication-status class="my-5"
+      v-if="showSection('wellPublicationStatus')"
+      id="wellPublicationStatus"
+      :wellPublicationStatusCode.sync="form.well_publication_status"
+      :errors="errors"
+      :fieldsLoaded="fieldsLoaded"
+      :isStaffEdit="isStaffEdit"
+      :saveDisabled="editSaveDisabled"
+      v-on:save="$emit('submit_edit')"
+    />
+
     <!-- Type of well -->
     <well-type class="my-5"
       v-if="showSection('wellType')"
@@ -478,6 +490,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 import ActivityType from './ActivityType.vue'
 import AquiferData from './AquiferData.vue'
 import WellType from './WellType.vue'
+import PublicationStatus from './PublicationStatus.vue'
 import PersonResponsible from './PersonResponsible.vue'
 import Owner from './Owner.vue'
 import Location from './Location.vue'
@@ -499,6 +512,7 @@ import ClosureDescription from './ClosureDescription.vue'
 import DecommissionInformation from './DecommissionInformation.vue'
 import ObservationWellInfo from './ObservationWellInfo.vue'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
+
 export default {
   name: 'SubmissionsForm',
   mixins: [inputBindingsMixin],
@@ -550,6 +564,7 @@ export default {
     ActivityType,
     AquiferData,
     WellType,
+    PublicationStatus,
     PersonResponsible,
     Owner,
     Location,
@@ -588,6 +603,7 @@ export default {
         'activityType': 'Type of work',
         'aquiferData': 'Well testing and aquifer details',
         'wellType': 'Well class',
+        'wellPublicationStatus': 'Well publication status',
         'wellOwner': 'Well owner',
         'wellLocation': 'Well location',
         'wellCoords': 'Geographic coordinates',
