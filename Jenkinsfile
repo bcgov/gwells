@@ -536,6 +536,9 @@ pipeline {
         // Functional tests temporarily limited to smoke tests
         // See https://github.com/BCDevOps/BDDStack
         stage('DEV - Smoke Tests') {
+            when {
+                expression { env.CHANGE_TARGET != 'master' && env.CHANGE_TARGET != 'demo' }
+            }
             steps {
                 script {
                     _openshift(env.STAGE_NAME, TOOLS_PROJECT) {

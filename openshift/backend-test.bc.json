@@ -34,7 +34,7 @@
             "kind": "ImageStream",
             "apiVersion": "v1",
             "metadata": {
-                "name": "gwells-python-36-gdal-rhel7",
+                "name": "gwells-python",
                 "labels": {
                     "appver": "gwells-base-image"
                 },
@@ -53,7 +53,7 @@
                         "annotations": null,
                         "from": {
                             "kind": "DockerImage",
-                            "name": "docker-registry.default.svc:5000/moe-gwells-tools/gwells-python:3.6"
+                            "name": "docker-registry.default.svc:5000/moe-gwells-tools/gwells-python:v2"
                         },
                         "importPolicy": {},
                         "referencePolicy": {
@@ -115,7 +115,7 @@
                     "dockerStrategy": {
                         "from": {
                             "kind": "ImageStreamTag",
-                            "name": "python-36-rhel7:1-21"
+                            "name": "gwells-python:3.6"
                         },
                         "env": [
                             {
