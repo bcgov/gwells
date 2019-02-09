@@ -311,10 +311,6 @@
                                         "value": "gwells-pgsql${NAME_SUFFIX}"
                                     },
                                     {
-                                        "name": "DATABASE_ENGINE",
-                                        "value": "postgis"
-                                    },
-                                    {
                                         "name": "DATABASE_NAME",
                                         "valueFrom": {
                                             "secretKeyRef": {

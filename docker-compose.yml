@@ -57,7 +57,6 @@ services:
     hostname: backend
     environment:
       DATABASE_SERVICE_NAME: postgres
-      DATABASE_ENGINE: postgresql
       DATABASE_NAME: gwells
       DATABASE_USER: gwells
       DATABASE_PASSWORD: test1

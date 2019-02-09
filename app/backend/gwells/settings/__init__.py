@@ -301,7 +301,7 @@ ADD_REVERSION_ADMIN = True
 # migrations by specifying an environemnt variable DISABLE_MIGRATIONS. Used in conjunction with
 # --keepdb, a developer can run mosts unit tests, and run them fast.
 #
-# e.g.: DATABASE_ENGINE=sqlite DISABLE_MIGRATIONS=DISABLE_MIGRATIONS python manage.py test\
+# e.g.: DISABLE_MIGRATIONS=DISABLE_MIGRATIONS python manage.py test\
 #  submissions.tests.TestWellSubmissionListSerializer --keepdb
 class DisableMigrations(object):
     def __contains__(self, item):

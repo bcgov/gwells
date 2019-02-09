@@ -14,23 +14,15 @@
 import os
 
 from django.conf import settings
-
 from gwells.settings.base import get_env_variable
 
-
 engines = {
-    'postgresql': 'django.db.backends.postgresql',
     'postgis': 'django.contrib.gis.db.backends.postgis',
-    'mysql': 'django.db.backends.mysql',
 }
 
 
 def config():
-    service_name = get_env_variable('DATABASE_SERVICE_NAME', '').upper().replace('-', '_')
-    if service_name:
-        engine = engines.get(get_env_variable('DATABASE_ENGINE'), engines['postgis'])
-    else:
-        engine = engines['postgis']
+    engine = engines['postgis']
     name = get_env_variable('DATABASE_NAME')
     return {
         'ENGINE': engine,
