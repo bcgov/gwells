@@ -22,6 +22,7 @@ engines = {
 
 
 def config():
+    service_name = get_env_variable('DATABASE_SERVICE_NAME', '').upper().replace('-', '_')
     engine = engines['postgis']
     name = get_env_variable('DATABASE_NAME')
     return {
