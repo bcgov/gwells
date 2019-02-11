@@ -14,14 +14,7 @@
 					"script": {
 						"id": "cd15c45c-02a8-445d-ba5a-399f36ccaf01",
 						"exec": [
-							"pm.test(\"Response is valid JSON\", function () {",
-							"  pm.response.to.be.ok;",
-							"  pm.response.to.be.withBody;",
-							"  pm.response.to.be.json;",
-							"});",
-							"pm.test(\"At least one result\", function () {",
-							"  pm.expect(pm.response.json().count).to.be.at.least(1);",
-							"});"
+							""
 						],
 						"type": "text/javascript"
 					}
@@ -57,14 +50,6 @@
 					"script": {
 						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
 						"exec": [
-							"pm.test(\"Response is valid JSON\", function () {",
-							"  pm.response.to.be.ok;",
-							"  pm.response.to.be.withBody;",
-							"  pm.response.to.be.json;",
-							"});",
-							"pm.test(\"At least one result\", function () {",
-							"  pm.expect(pm.response.json().count).to.be.at.least(1);",
-							"});",
 							"pm.test(\"Well tag number matches filter\", function () {",
 							"  const wellParam = parseInt(pm.request.url.query.get(\"well\"));",
 							"  pm.response.json().results.forEach(function(result) {",
@@ -84,7 +69,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{base_url}}/api/v1/wells/?well=123",
+					"raw": "{{base_url}}/api/v1/wells/?well=9193183",
 					"host": [
 						"{{base_url}}"
 					],
@@ -97,7 +82,7 @@
 					"query": [
 						{
 							"key": "well",
-							"value": "123"
+							"value": "9193183"
 						}
 					]
 				}
@@ -112,14 +97,6 @@
 					"script": {
 						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
 						"exec": [
-							"pm.test(\"Response is valid JSON\", function () {",
-							"  pm.response.to.be.ok;",
-							"  pm.response.to.be.withBody;",
-							"  pm.response.to.be.json;",
-							"});",
-							"pm.test(\"At least one result\", function () {",
-							"  pm.expect(pm.response.json().count).to.be.at.least(1);",
-							"});",
 							"pm.test(\"Well id plate matches filter\", function () {",
 							"  const wellParam = parseInt(pm.request.url.query.get(\"well\"));",
 							"  pm.response.json().results.forEach(function(result) {",
@@ -139,7 +116,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{base_url}}/api/v1/wells/?well=41097",
+					"raw": "{{base_url}}/api/v1/wells/?well=55555",
 					"host": [
 						"{{base_url}}"
 					],
@@ -152,7 +129,7 @@
 					"query": [
 						{
 							"key": "well",
-							"value": "41097"
+							"value": "55555"
 						}
 					]
 				}
@@ -167,14 +144,6 @@
 					"script": {
 						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
 						"exec": [
-							"pm.test(\"Response is valid JSON\", function () {",
-							"  pm.response.to.be.ok;",
-							"  pm.response.to.be.withBody;",
-							"  pm.response.to.be.json;",
-							"});",
-							"pm.test(\"At least one result\", function () {",
-							"  pm.expect(pm.response.json().count).to.be.at.least(1);",
-							"});",
 							"pm.test(\"Well tag number matches filter\", function () {",
 							"  const wellTagNumber = parseInt(pm.request.url.query.get(\"well_tag_number\"));",
 							"  pm.response.json().results.forEach(function(result) {",
@@ -194,7 +163,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{base_url}}/api/v1/wells/?well_tag_number=123",
+					"raw": "{{base_url}}/api/v1/wells/?well_tag_number=9193183",
 					"host": [
 						"{{base_url}}"
 					],
@@ -207,7 +176,7 @@
 					"query": [
 						{
 							"key": "well_tag_number",
-							"value": "123"
+							"value": "9193183"
 						}
 					]
 				}
@@ -222,14 +191,6 @@
 					"script": {
 						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
 						"exec": [
-							"pm.test(\"Response is valid JSON\", function () {",
-							"  pm.response.to.be.ok;",
-							"  pm.response.to.be.withBody;",
-							"  pm.response.to.be.json;",
-							"});",
-							"pm.test(\"At least one result\", function () {",
-							"  pm.expect(pm.response.json().count).to.be.at.least(1);",
-							"});",
 							"pm.test(\"Well id plate matches filter\", function () {",
 							"  const idPlateNumber = parseInt(pm.request.url.query.get(\"identification_plate_number\"));",
 							"  pm.response.json().results.forEach(function(result) {",
@@ -249,7 +210,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{base_url}}/api/v1/wells/?identification_plate_number=41097",
+					"raw": "{{base_url}}/api/v1/wells/?identification_plate_number=55555",
 					"host": [
 						"{{base_url}}"
 					],
@@ -262,7 +223,7 @@
 					"query": [
 						{
 							"key": "identification_plate_number",
-							"value": "41097"
+							"value": "55555"
 						}
 					]
 				}
@@ -277,16 +238,8 @@
 					"script": {
 						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
 						"exec": [
-							"pm.test(\"Response is valid JSON\", function () {",
-							"  pm.response.to.be.ok;",
-							"  pm.response.to.be.withBody;",
-							"  pm.response.to.be.json;",
-							"});",
-							"pm.test(\"At least one result\", function () {",
-							"  pm.expect(pm.response.json().count).to.be.at.least(1);",
-							"});",
 							"pm.test(\"Street address matches filter\", function () {",
-							"  const streetAddress = pm.request.url.query.get(\"street_address_or_city\");",
+							"  const streetAddress = pm.request.url.query.get(\"street_address_or_city\").toLowerCase();",
 							"  pm.response.json().results.forEach(function(result) {",
 							"    pm.expect(result.street_address.toLowerCase()).to.include(streetAddress);",
 							"  });",
@@ -304,7 +257,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{base_url}}/api/v1/wells/?street_address_or_city=christensen road",
+					"raw": "{{base_url}}/api/v1/wells/?street_address_or_city=1234 Main",
 					"host": [
 						"{{base_url}}"
 					],
@@ -317,7 +270,7 @@
 					"query": [
 						{
 							"key": "street_address_or_city",
-							"value": "christensen road"
+							"value": "1234 Main"
 						}
 					]
 				}
@@ -332,14 +285,6 @@
 					"script": {
 						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
 						"exec": [
-							"pm.test(\"Response is valid JSON\", function () {",
-							"  pm.response.to.be.ok;",
-							"  pm.response.to.be.withBody;",
-							"  pm.response.to.be.json;",
-							"});",
-							"pm.test(\"At least one result\", function () {",
-							"  pm.expect(pm.response.json().count).to.be.at.least(1);",
-							"});",
 							"pm.test(\"City matches filter\", function () {",
 							"  const city = pm.request.url.query.get(\"street_address_or_city\").toLowerCase();",
 							"  pm.response.json().results.forEach(function(result) {",
@@ -359,7 +304,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{base_url}}/api/v1/wells/?street_address_or_city=Anahim Lake",
+					"raw": "{{base_url}}/api/v1/wells/?street_address_or_city=vancouver",
 					"host": [
 						"{{base_url}}"
 					],
@@ -372,7 +317,7 @@
 					"query": [
 						{
 							"key": "street_address_or_city",
-							"value": "Anahim Lake"
+							"value": "vancouver"
 						}
 					]
 				}
@@ -387,16 +332,8 @@
 					"script": {
 						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
 						"exec": [
-							"pm.test(\"Response is valid JSON\", function () {",
-							"  pm.response.to.be.ok;",
-							"  pm.response.to.be.withBody;",
-							"  pm.response.to.be.json;",
-							"});",
-							"pm.test(\"At least one result\", function () {",
-							"  pm.expect(pm.response.json().count).to.be.at.least(1);",
-							"});",
 							"pm.test(\"Street address matches filter\", function () {",
-							"  const streetAddress = pm.request.url.query.get(\"street_address\");",
+							"  const streetAddress = pm.request.url.query.get(\"street_address\").toLowerCase();",
 							"",
 							"  pm.response.json().results.forEach(function(result) {",
 							"    pm.expect(result.street_address.toLowerCase()).to.include(streetAddress);",
@@ -415,7 +352,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{base_url}}/api/v1/wells/?street_address=christensen road",
+					"raw": "{{base_url}}/api/v1/wells/?street_address=Main st",
 					"host": [
 						"{{base_url}}"
 					],
@@ -428,7 +365,7 @@
 					"query": [
 						{
 							"key": "street_address",
-							"value": "christensen road"
+							"value": "Main st"
 						}
 					]
 				}
@@ -443,16 +380,8 @@
 					"script": {
 						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
 						"exec": [
-							"pm.test(\"Response is valid JSON\", function () {",
-							"  pm.response.to.be.ok;",
-							"  pm.response.to.be.withBody;",
-							"  pm.response.to.be.json;",
-							"});",
-							"pm.test(\"At least one result\", function () {",
-							"  pm.expect(pm.response.json().count).to.be.at.least(1);",
-							"});",
 							"pm.test(\"Owner matches filter\", function () {",
-							"  const ownerFullName = pm.request.url.query.get(\"owner_full_name\");",
+							"  const ownerFullName = pm.request.url.query.get(\"owner_full_name\").toLowerCase();",
 							"  pm.response.json().results.forEach(function(result) {",
 							"    pm.expect(result.owner_full_name.toLowerCase()).to.include(ownerFullName);",
 							"  });",
@@ -470,7 +399,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{base_url}}/api/v1/wells/?owner_full_name=latchmore",
+					"raw": "{{base_url}}/api/v1/wells/?owner_full_name=Alice",
 					"host": [
 						"{{base_url}}"
 					],
@@ -483,7 +412,7 @@
 					"query": [
 						{
 							"key": "owner_full_name",
-							"value": "latchmore"
+							"value": "Alice"
 						}
 					]
 				}
@@ -498,14 +427,6 @@
 					"script": {
 						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
 						"exec": [
-							"pm.test(\"Response is valid JSON\", function () {",
-							"  pm.response.to.be.ok;",
-							"  pm.response.to.be.withBody;",
-							"  pm.response.to.be.json;",
-							"});",
-							"pm.test(\"At least one result\", function () {",
-							"  pm.expect(pm.response.json().count).to.be.at.least(1);",
-							"});",
 							"pm.test(\"Legal lot matches filter\", function () {",
 							"  const legalLot = pm.request.url.query.get(\"legal_lot\");",
 							"",
@@ -526,7 +447,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{base_url}}/api/v1/wells/?legal_lot=1A",
+					"raw": "{{base_url}}/api/v1/wells/?legal_lot=1Q",
 					"host": [
 						"{{base_url}}"
 					],
@@ -539,7 +460,7 @@
 					"query": [
 						{
 							"key": "legal_lot",
-							"value": "1A"
+							"value": "1Q"
 						}
 					]
 				}
@@ -554,14 +475,6 @@
 					"script": {
 						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
 						"exec": [
-							"pm.test(\"Response is valid JSON\", function () {",
-							"  pm.response.to.be.ok;",
-							"  pm.response.to.be.withBody;",
-							"  pm.response.to.be.json;",
-							"});",
-							"pm.test(\"At least one result\", function () {",
-							"  pm.expect(pm.response.json().count).to.be.at.least(1);",
-							"});",
 							"pm.test(\"Legal plan matches filter\", function () {",
 							"  const legalPlan = pm.request.url.query.get(\"legal_plan\");",
 							"",
@@ -582,7 +495,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{base_url}}/api/v1/wells/?legal_plan=25014",
+					"raw": "{{base_url}}/api/v1/wells/?legal_plan=555",
 					"host": [
 						"{{base_url}}"
 					],
@@ -595,7 +508,7 @@
 					"query": [
 						{
 							"key": "legal_plan",
-							"value": "25014"
+							"value": "555"
 						}
 					]
 				}
@@ -610,14 +523,6 @@
 					"script": {
 						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
 						"exec": [
-							"pm.test(\"Response is valid JSON\", function () {",
-							"  pm.response.to.be.ok;",
-							"  pm.response.to.be.withBody;",
-							"  pm.response.to.be.json;",
-							"});",
-							"pm.test(\"At least one result\", function () {",
-							"  pm.expect(pm.response.json().count).to.be.at.least(1);",
-							"});",
 							"pm.test(\"Legal district lot matches filter\", function () {",
 							"  const legalDistrictLot = pm.request.url.query.get(\"legal_district_lot\");",
 							"",
@@ -638,7 +543,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{base_url}}/api/v1/wells/?legal_district_lot=405",
+					"raw": "{{base_url}}/api/v1/wells/?legal_district_lot=20000",
 					"host": [
 						"{{base_url}}"
 					],
@@ -651,7 +556,7 @@
 					"query": [
 						{
 							"key": "legal_district_lot",
-							"value": "405"
+							"value": "20000"
 						}
 					]
 				}
@@ -666,14 +571,6 @@
 					"script": {
 						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
 						"exec": [
-							"pm.test(\"Response is valid JSON\", function () {",
-							"  pm.response.to.be.ok;",
-							"  pm.response.to.be.withBody;",
-							"  pm.response.to.be.json;",
-							"});",
-							"pm.test(\"At least one result\", function () {",
-							"  pm.expect(pm.response.json().count).to.be.at.least(1);",
-							"});",
 							"pm.test(\"Land district matches filter\", function () {",
 							"  const landDistrict = pm.request.url.query.get(\"land_district\");",
 							"",
@@ -694,7 +591,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{base_url}}/api/v1/wells/?land_district=44",
+					"raw": "{{base_url}}/api/v1/wells/?land_district=36",
 					"host": [
 						"{{base_url}}"
 					],
@@ -707,7 +604,7 @@
 					"query": [
 						{
 							"key": "land_district",
-							"value": "44"
+							"value": "36"
 						}
 					]
 				}
@@ -722,14 +619,6 @@
 					"script": {
 						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
 						"exec": [
-							"pm.test(\"Response is valid JSON\", function () {",
-							"  pm.response.to.be.ok;",
-							"  pm.response.to.be.withBody;",
-							"  pm.response.to.be.json;",
-							"});",
-							"pm.test(\"At least one result\", function () {",
-							"  pm.expect(pm.response.json().count).to.be.at.least(1);",
-							"});",
 							"pm.test(\"Legal PID matches filter\", function () {",
 							"  const legalPID = parseInt(pm.request.url.query.get(\"legal_pid\"));",
 							"",
@@ -750,7 +639,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{base_url}}/api/v1/wells/?legal_pid=8048142",
+					"raw": "{{base_url}}/api/v1/wells/?legal_pid=555555",
 					"host": [
 						"{{base_url}}"
 					],
@@ -763,7 +652,7 @@
 					"query": [
 						{
 							"key": "legal_pid",
-							"value": "8048142"
+							"value": "555555"
 						}
 					]
 				}
@@ -778,14 +667,6 @@
 					"script": {
 						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
 						"exec": [
-							"pm.test(\"Response is valid JSON\", function () {",
-							"  pm.response.to.be.ok;",
-							"  pm.response.to.be.withBody;",
-							"  pm.response.to.be.json;",
-							"});",
-							"pm.test(\"At least one result\", function () {",
-							"  pm.expect(pm.response.json().count).to.be.at.least(1);",
-							"});",
 							"pm.test(\"Well status matches filter\", function () {",
 							"  const wellStatus = pm.request.url.query.get(\"well_status\");",
 							"",
@@ -806,7 +687,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{base_url}}/api/v1/wells/?well_status=CLOSURE",
+					"raw": "{{base_url}}/api/v1/wells/?well_status=OTHER",
 					"host": [
 						"{{base_url}}"
 					],
@@ -819,7 +700,7 @@
 					"query": [
 						{
 							"key": "well_status",
-							"value": "CLOSURE"
+							"value": "OTHER"
 						}
 					]
 				}
@@ -834,14 +715,6 @@
 					"script": {
 						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
 						"exec": [
-							"pm.test(\"Response is valid JSON\", function () {",
-							"  pm.response.to.be.ok;",
-							"  pm.response.to.be.withBody;",
-							"  pm.response.to.be.json;",
-							"});",
-							"pm.test(\"At least one result\", function () {",
-							"  pm.expect(pm.response.json().count).to.be.at.least(1);",
-							"});",
 							"pm.test(\"Licenced status matches filter\", function () {",
 							"  const licencedStatus = pm.request.url.query.get(\"licenced_status\");",
 							"",
@@ -862,7 +735,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{base_url}}/api/v1/wells/?licenced_status=UNLICENSED",
+					"raw": "{{base_url}}/api/v1/wells/?licenced_status=LICENSED",
 					"host": [
 						"{{base_url}}"
 					],
@@ -875,7 +748,7 @@
 					"query": [
 						{
 							"key": "licenced_status",
-							"value": "UNLICENSED"
+							"value": "LICENSED"
 						}
 					]
 				}
@@ -883,28 +756,19 @@
 			"response": []
 		},
 		{
-			"name": "date_of_work param (matching construction_start_date, before and after range)",
+			"name": "date_of_work param (date range before)",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
 						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
 						"exec": [
-							"pm.test(\"Response is valid JSON\", function () {",
-							"  pm.response.to.be.ok;",
-							"  pm.response.to.be.withBody;",
-							"  pm.response.to.be.json;",
-							"});",
-							"pm.test(\"At least one result\", function () {",
-							"  pm.expect(pm.response.json().count).to.be.at.least(1);",
-							"});",
-							"pm.test(\"Any date field matches filter\", function () {",
-							"  const dateOfWorkAfter = new Date(pm.request.url.query.get(\"date_of_work_after\"));",
+							"pm.test(\"Construction start date field matches filter\", function () {",
 							"  const dateOfWorkBefore = new Date(pm.request.url.query.get(\"date_of_work_before\"));",
 							"",
 							"  pm.response.json().results.forEach(function(result) {",
 							"    const constructionStartDate = new Date(result.construction_start_date);",
-							"    pm.expect(constructionStartDate).to.be.within(dateOfWorkAfter, dateOfWorkBefore);",
+							"    pm.expect(constructionStartDate).to.be.at.most(dateOfWorkBefore);",
 							"  });",
 							"});"
 						],
@@ -920,7 +784,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{base_url}}/api/v1/wells/?date_of_work_before=1975-12-31&date_of_work_after=1975-01-01",
+					"raw": "{{base_url}}/api/v1/wells/?date_of_work_before=1975-12-31",
 					"host": [
 						"{{base_url}}"
 					],
@@ -934,10 +798,6 @@
 						{
 							"key": "date_of_work_before",
 							"value": "1975-12-31"
-						},
-						{
-							"key": "date_of_work_after",
-							"value": "1975-01-01"
 						}
 					]
 				}
@@ -945,276 +805,19 @@
 			"response": []
 		},
 		{
-			"name": "date_of_work param (matching construction_end_date, before and after range)",
+			"name": "date_of_work param (date range after)",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
 						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
 						"exec": [
-							"pm.test(\"Response is valid JSON\", function () {",
-							"  pm.response.to.be.ok;",
-							"  pm.response.to.be.withBody;",
-							"  pm.response.to.be.json;",
-							"});",
-							"pm.test(\"At least one result\", function () {",
-							"  pm.expect(pm.response.json().count).to.be.at.least(1);",
-							"});",
-							"pm.test(\"Any date field matches filter\", function () {",
+							"pm.test(\"Decommission end date field matches filter\", function () {",
 							"  const dateOfWorkAfter = new Date(pm.request.url.query.get(\"date_of_work_after\"));",
-							"  const dateOfWorkBefore = new Date(pm.request.url.query.get(\"date_of_work_before\"));",
-							"",
-							"  pm.response.json().results.forEach(function(result) {",
-							"    const constructionEndDate = new Date(result.construction_end_date);",
-							"    pm.expect(constructionEndDate).to.be.within(dateOfWorkAfter, dateOfWorkBefore);",
-							"  });",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
-				"url": {
-					"raw": "{{base_url}}/api/v1/wells/?date_of_work_before=1976-12-31&date_of_work_after=1976-01-01",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"api",
-						"v1",
-						"wells",
-						""
-					],
-					"query": [
-						{
-							"key": "date_of_work_before",
-							"value": "1976-12-31"
-						},
-						{
-							"key": "date_of_work_after",
-							"value": "1976-01-01"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "date_of_work param (matching alteration_start_date, before and after range)",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
-						"exec": [
-							"pm.test(\"Response is valid JSON\", function () {",
-							"  pm.response.to.be.ok;",
-							"  pm.response.to.be.withBody;",
-							"  pm.response.to.be.json;",
-							"});",
-							"pm.test(\"At least one result\", function () {",
-							"  pm.expect(pm.response.json().count).to.be.at.least(1);",
-							"});",
-							"pm.test(\"Any date field matches filter\", function () {",
-							"  const dateOfWorkAfter = new Date(pm.request.url.query.get(\"date_of_work_after\"));",
-							"  const dateOfWorkBefore = new Date(pm.request.url.query.get(\"date_of_work_before\"));",
-							"",
-							"  pm.response.json().results.forEach(function(result) {",
-							"    const alterationStartDate = new Date(result.alteration_start_date);",
-							"    pm.expect(alterationStartDate).to.be.within(dateOfWorkAfter, dateOfWorkBefore);",
-							"  });",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
-				"url": {
-					"raw": "{{base_url}}/api/v1/wells/?date_of_work_before=2014-11-30&date_of_work_after=2014-11-20",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"api",
-						"v1",
-						"wells",
-						""
-					],
-					"query": [
-						{
-							"key": "date_of_work_before",
-							"value": "2014-11-30"
-						},
-						{
-							"key": "date_of_work_after",
-							"value": "2014-11-20"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "date_of_work param (matching alteration_end_date, before and after range)",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
-						"exec": [
-							"pm.test(\"Response is valid JSON\", function () {",
-							"  pm.response.to.be.ok;",
-							"  pm.response.to.be.withBody;",
-							"  pm.response.to.be.json;",
-							"});",
-							"pm.test(\"At least one result\", function () {",
-							"  pm.expect(pm.response.json().count).to.be.at.least(1);",
-							"});",
-							"pm.test(\"Any date field matches filter\", function () {",
-							"  const dateOfWorkAfter = new Date(pm.request.url.query.get(\"date_of_work_after\"));",
-							"  const dateOfWorkBefore = new Date(pm.request.url.query.get(\"date_of_work_before\"));",
-							"",
-							"  pm.response.json().results.forEach(function(result) {",
-							"    const alterationEndDate = new Date(result.alteration_end_date);",
-							"    pm.expect(alterationEndDate).to.be.within(dateOfWorkAfter, dateOfWorkBefore);",
-							"  });",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
-				"url": {
-					"raw": "{{base_url}}/api/v1/wells/?date_of_work_before=2014-11-30&date_of_work_after=2014-11-20",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"api",
-						"v1",
-						"wells",
-						""
-					],
-					"query": [
-						{
-							"key": "date_of_work_before",
-							"value": "2014-11-30"
-						},
-						{
-							"key": "date_of_work_after",
-							"value": "2014-11-20"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "date_of_work param (matching decommission_start_date, before and after range)",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
-						"exec": [
-							"pm.test(\"Response is valid JSON\", function () {",
-							"  pm.response.to.be.ok;",
-							"  pm.response.to.be.withBody;",
-							"  pm.response.to.be.json;",
-							"});",
-							"pm.test(\"At least one result\", function () {",
-							"  pm.expect(pm.response.json().count).to.be.at.least(1);",
-							"});",
-							"pm.test(\"Any date field matches filter\", function () {",
-							"  const dateOfWorkAfter = new Date(pm.request.url.query.get(\"date_of_work_after\"));",
-							"  const dateOfWorkBefore = new Date(pm.request.url.query.get(\"date_of_work_before\"));",
-							"",
-							"  pm.response.json().results.forEach(function(result) {",
-							"    const decommissionStartDate = new Date(result.decommission_start_date);",
-							"    pm.expect(decommissionStartDate).to.be.within(dateOfWorkAfter, dateOfWorkBefore);",
-							"  });",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
-				"url": {
-					"raw": "{{base_url}}/api/v1/wells/?date_of_work_before=2014-11-30&date_of_work_after=2014-11-20",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"api",
-						"v1",
-						"wells",
-						""
-					],
-					"query": [
-						{
-							"key": "date_of_work_before",
-							"value": "2014-11-30"
-						},
-						{
-							"key": "date_of_work_after",
-							"value": "2014-11-20"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "date_of_work param (matching decommission_end_date, before and after range)",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
-						"exec": [
-							"pm.test(\"Response is valid JSON\", function () {",
-							"  pm.response.to.be.ok;",
-							"  pm.response.to.be.withBody;",
-							"  pm.response.to.be.json;",
-							"});",
-							"pm.test(\"At least one result\", function () {",
-							"  pm.expect(pm.response.json().count).to.be.at.least(1);",
-							"});",
-							"pm.test(\"Any date field matches filter\", function () {",
-							"  const dateOfWorkAfter = new Date(pm.request.url.query.get(\"date_of_work_after\"));",
-							"  const dateOfWorkBefore = new Date(pm.request.url.query.get(\"date_of_work_before\"));",
 							"",
 							"  pm.response.json().results.forEach(function(result) {",
 							"    const decommissionEndDate = new Date(result.decommission_end_date);",
-							"    pm.expect(decommissionEndDate).to.be.within(dateOfWorkAfter, dateOfWorkBefore);",
+							"    pm.expect(decommissionEndDate).to.be.at.least(dateOfWorkAfter);",
 							"  });",
 							"});"
 						],
@@ -1230,7 +833,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{base_url}}/api/v1/wells/?date_of_work_before=2014-11-30&date_of_work_after=2014-11-20",
+					"raw": "{{base_url}}/api/v1/wells/?date_of_work_after=2019-02-07",
 					"host": [
 						"{{base_url}}"
 					],
@@ -1242,12 +845,8 @@
 					],
 					"query": [
 						{
-							"key": "date_of_work_before",
-							"value": "2014-11-30"
-						},
-						{
 							"key": "date_of_work_after",
-							"value": "2014-11-20"
+							"value": "2019-02-07"
 						}
 					]
 				}
@@ -1255,21 +854,13 @@
 			"response": []
 		},
 		{
-			"name": "well_depth param (matching finished_well_depth, min and max range)",
+			"name": "well_depth param (range minimum)",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
 						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
 						"exec": [
-							"pm.test(\"Response is valid JSON\", function () {",
-							"  pm.response.to.be.ok;",
-							"  pm.response.to.be.withBody;",
-							"  pm.response.to.be.json;",
-							"});",
-							"pm.test(\"At least one result\", function () {",
-							"  pm.expect(pm.response.json().count).to.be.at.least(1);",
-							"});",
 							"pm.test(\"Finished well depth matches filter\", function () {",
 							"  const wellDepthMin = parseInt(pm.request.url.query.get(\"well_depth_min\"));",
 							"  const wellDepthMax = parseInt(pm.request.url.query.get(\"well_depth_max\"));",
@@ -1315,26 +906,17 @@
 			"response": []
 		},
 		{
-			"name": "well_depth param (matching total_depth_drilled, min and max range)",
+			"name": "well_depth param (range maximum)",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
 						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
 						"exec": [
-							"pm.test(\"Response is valid JSON\", function () {",
-							"  pm.response.to.be.ok;",
-							"  pm.response.to.be.withBody;",
-							"  pm.response.to.be.json;",
-							"});",
-							"pm.test(\"At least one result\", function () {",
-							"  pm.expect(pm.response.json().count).to.be.at.least(1);",
-							"});",
-							"pm.test(\"Total depth drilled matches filter\", function () {",
-							"  const wellDepthMin = parseInt(pm.request.url.query.get(\"well_depth_min\"));",
+							"pm.test(\"Finished well depth matches filter\", function () {",
 							"  const wellDepthMax = parseInt(pm.request.url.query.get(\"well_depth_max\"));",
 							"  pm.response.json().results.forEach(function(result) {",
-							"    pm.expect(parseFloat(result.total_depth_drilled)).to.be.within(wellDepthMin, wellDepthMax);",
+							"    pm.expect(parseFloat(result.finished_well_depth)).to.be.at.most(wellDepthMax);",
 							"  });",
 							"});"
 						],
@@ -1350,7 +932,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{base_url}}/api/v1/wells/?well_depth_min=280&well_depth_max=290",
+					"raw": "{{base_url}}/api/v1/wells/?well_depth_max=185",
 					"host": [
 						"{{base_url}}"
 					],
@@ -1362,12 +944,8 @@
 					],
 					"query": [
 						{
-							"key": "well_depth_min",
-							"value": "280"
-						},
-						{
 							"key": "well_depth_max",
-							"value": "290"
+							"value": "185"
 						}
 					]
 				}
@@ -1382,14 +960,6 @@
 					"script": {
 						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
 						"exec": [
-							"pm.test(\"Response is valid JSON\", function () {",
-							"  pm.response.to.be.ok;",
-							"  pm.response.to.be.withBody;",
-							"  pm.response.to.be.json;",
-							"});",
-							"pm.test(\"At least one result\", function () {",
-							"  pm.expect(pm.response.json().count).to.be.at.least(1);",
-							"});",
 							"pm.test(\"Well class matches filter\", function () {",
 							"  const wellClass = pm.request.url.query.get(\"well_class\");",
 							"  pm.response.json().results.forEach(function(result) {",
@@ -1437,14 +1007,6 @@
 					"script": {
 						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
 						"exec": [
-							"pm.test(\"Response is valid JSON\", function () {",
-							"  pm.response.to.be.ok;",
-							"  pm.response.to.be.withBody;",
-							"  pm.response.to.be.json;",
-							"});",
-							"pm.test(\"At least one result\", function () {",
-							"  pm.expect(pm.response.json().count).to.be.at.least(1);",
-							"});",
 							"pm.test(\"Well subclass matches filter\", function () {",
 							"  const wellSubclass = pm.request.url.query.get(\"well_subclass\");",
 							"  pm.response.json().results.forEach(function(result) {",
@@ -1492,14 +1054,6 @@
 					"script": {
 						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
 						"exec": [
-							"pm.test(\"Response is valid JSON\", function () {",
-							"  pm.response.to.be.ok;",
-							"  pm.response.to.be.withBody;",
-							"  pm.response.to.be.json;",
-							"});",
-							"pm.test(\"At least one result\", function () {",
-							"  pm.expect(pm.response.json().count).to.be.at.least(1);",
-							"});",
 							"pm.test(\"Legal block matches filter\", function () {",
 							"  const legalBlock = pm.request.url.query.get(\"legal_block\");",
 							"  pm.response.json().results.forEach(function(result) {",
@@ -1547,14 +1101,6 @@
 					"script": {
 						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
 						"exec": [
-							"pm.test(\"Response is valid JSON\", function () {",
-							"  pm.response.to.be.ok;",
-							"  pm.response.to.be.withBody;",
-							"  pm.response.to.be.json;",
-							"});",
-							"pm.test(\"At least one result\", function () {",
-							"  pm.expect(pm.response.json().count).to.be.at.least(1);",
-							"});",
 							"pm.test(\"Legal section matches filter\", function () {",
 							"  const legalSection = pm.request.url.query.get(\"legal_section\");",
 							"  pm.response.json().results.forEach(function(result) {",
@@ -1602,14 +1148,6 @@
 					"script": {
 						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
 						"exec": [
-							"pm.test(\"Response is valid JSON\", function () {",
-							"  pm.response.to.be.ok;",
-							"  pm.response.to.be.withBody;",
-							"  pm.response.to.be.json;",
-							"});",
-							"pm.test(\"At least one result\", function () {",
-							"  pm.expect(pm.response.json().count).to.be.at.least(1);",
-							"});",
 							"pm.test(\"Legal township matches filter\", function () {",
 							"  const legalTownship = pm.request.url.query.get(\"legal_township\");",
 							"  pm.response.json().results.forEach(function(result) {",
@@ -1657,14 +1195,6 @@
 					"script": {
 						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
 						"exec": [
-							"pm.test(\"Response is valid JSON\", function () {",
-							"  pm.response.to.be.ok;",
-							"  pm.response.to.be.withBody;",
-							"  pm.response.to.be.json;",
-							"});",
-							"pm.test(\"At least one result\", function () {",
-							"  pm.expect(pm.response.json().count).to.be.at.least(1);",
-							"});",
 							"pm.test(\"Legal range matches filter\", function () {",
 							"  const legalRange = pm.request.url.query.get(\"legal_range\");",
 							"  pm.response.json().results.forEach(function(result) {",
@@ -1712,14 +1242,6 @@
 					"script": {
 						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
 						"exec": [
-							"pm.test(\"Response is valid JSON\", function () {",
-							"  pm.response.to.be.ok;",
-							"  pm.response.to.be.withBody;",
-							"  pm.response.to.be.json;",
-							"});",
-							"pm.test(\"At least one result\", function () {",
-							"  pm.expect(pm.response.json().count).to.be.at.least(1);",
-							"});",
 							"pm.test(\"Well location description matches filter\", function () {",
 							"  const wellLocationDesc = pm.request.url.query.get(\"well_location_description\");",
 							"  pm.response.json().results.forEach(function(result) {",
@@ -1760,28 +1282,19 @@
 			"response": []
 		},
 		{
-			"name": "construction_start_date param (before and after range)",
+			"name": "construction_start_date param (date range before)",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
 						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
 						"exec": [
-							"pm.test(\"Response is valid JSON\", function () {",
-							"  pm.response.to.be.ok;",
-							"  pm.response.to.be.withBody;",
-							"  pm.response.to.be.json;",
-							"});",
-							"pm.test(\"At least one result\", function () {",
-							"  pm.expect(pm.response.json().count).to.be.at.least(1);",
-							"});",
 							"pm.test(\"Construction start date matches filter\", function () {",
-							"  const constructionStartAfter = new Date(pm.request.url.query.get(\"construction_start_date_after\"));",
 							"  const constructionStartBefore = new Date(pm.request.url.query.get(\"construction_start_date_before\"));",
 							" ",
 							"  pm.response.json().results.forEach(function(result) {",
 							"    const constructionStartDate = new Date(result.construction_start_date);",
-							"    pm.expect(constructionStartDate).to.be.within(constructionStartAfter, constructionStartBefore);",
+							"    pm.expect(constructionStartDate).to.be.at.most(constructionStartBefore);",
 							"  });",
 							"});"
 						],
@@ -1797,7 +1310,56 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{base_url}}/api/v1/wells/?construction_start_date_after=1975-01-01&construction_start_date_before=1975-12-31",
+					"raw": "{{base_url}}/api/v1/wells/?construction_start_date_before=1975-12-31",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"wells",
+						""
+					],
+					"query": [
+						{
+							"key": "construction_start_date_before",
+							"value": "1975-12-31"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "construction_start_date param (date range after)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+						"exec": [
+							"pm.test(\"Construction start date matches filter\", function () {",
+							"  const constructionStartAfter = new Date(pm.request.url.query.get(\"construction_start_date_after\"));",
+							"",
+							"  pm.response.json().results.forEach(function(result) {",
+							"    const constructionStartDate = new Date(result.construction_start_date);",
+							"    pm.expect(constructionStartDate).to.be.at.least(constructionStartAfter);",
+							"  });",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/wells/?construction_start_date_after=1975-01-01",
 					"host": [
 						"{{base_url}}"
 					],
@@ -1811,10 +1373,6 @@
 						{
 							"key": "construction_start_date_after",
 							"value": "1975-01-01"
-						},
-						{
-							"key": "construction_start_date_before",
-							"value": "1975-12-31"
 						}
 					]
 				}
@@ -1822,28 +1380,19 @@
 			"response": []
 		},
 		{
-			"name": "construction_end_date param (before and after range)",
+			"name": "construction_end_date param (date range before)",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
 						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
 						"exec": [
-							"pm.test(\"Response is valid JSON\", function () {",
-							"  pm.response.to.be.ok;",
-							"  pm.response.to.be.withBody;",
-							"  pm.response.to.be.json;",
-							"});",
-							"pm.test(\"At least one result\", function () {",
-							"  pm.expect(pm.response.json().count).to.be.at.least(1);",
-							"});",
 							"pm.test(\"Construction end date matches filter\", function () {",
-							"  const constructionEndAfter = new Date(pm.request.url.query.get(\"construction_end_date_after\"));",
 							"  const constructionEndBefore = new Date(pm.request.url.query.get(\"construction_end_date_before\"));",
 							" ",
 							"  pm.response.json().results.forEach(function(result) {",
 							"    const constructionEndDate = new Date(result.construction_end_date);",
-							"    pm.expect(constructionEndDate).to.be.within(constructionEndAfter, constructionEndBefore);",
+							"    pm.expect(constructionEndDate).to.be.at.most(constructionEndBefore);",
 							"  });",
 							"});"
 						],
@@ -1859,7 +1408,56 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{base_url}}/api/v1/wells/?construction_end_date_after=1976-01-01&construction_end_date_before=1976-12-31",
+					"raw": "{{base_url}}/api/v1/wells/?construction_end_date_before=1976-12-31",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"wells",
+						""
+					],
+					"query": [
+						{
+							"key": "construction_end_date_before",
+							"value": "1976-12-31"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "construction_end_date param (date range after)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+						"exec": [
+							"pm.test(\"Construction end date matches filter\", function () {",
+							"  const constructionEndAfter = new Date(pm.request.url.query.get(\"construction_end_date_after\"));",
+							"",
+							"  pm.response.json().results.forEach(function(result) {",
+							"    const constructionEndDate = new Date(result.construction_end_date);",
+							"    pm.expect(constructionEndDate).to.be.at.least(constructionEndAfter);",
+							"  });",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/wells/?construction_end_date_after=1976-01-01",
 					"host": [
 						"{{base_url}}"
 					],
@@ -1873,10 +1471,6 @@
 						{
 							"key": "construction_end_date_after",
 							"value": "1976-01-01"
-						},
-						{
-							"key": "construction_end_date_before",
-							"value": "1976-12-31"
 						}
 					]
 				}
@@ -1884,28 +1478,19 @@
 			"response": []
 		},
 		{
-			"name": "alteration_start_date param (before and after range)",
+			"name": "alteration_start_date param (date range before)",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
 						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
 						"exec": [
-							"pm.test(\"Response is valid JSON\", function () {",
-							"  pm.response.to.be.ok;",
-							"  pm.response.to.be.withBody;",
-							"  pm.response.to.be.json;",
-							"});",
-							"pm.test(\"At least one result\", function () {",
-							"  pm.expect(pm.response.json().count).to.be.at.least(1);",
-							"});",
 							"pm.test(\"Alteration start date matches filter\", function () {",
-							"  const alterationStartAfter = new Date(pm.request.url.query.get(\"alteration_start_date_after\"));",
 							"  const alterationStartBefore = new Date(pm.request.url.query.get(\"alteration_start_date_before\"));",
 							" ",
 							"  pm.response.json().results.forEach(function(result) {",
 							"    const alterationStartDate = new Date(result.alteration_start_date);",
-							"    pm.expect(alterationStartDate).to.be.within(alterationStartAfter, alterationStartBefore);",
+							"    pm.expect(alterationStartDate).to.be.at.most(alterationStartBefore);",
 							"  });",
 							"});"
 						],
@@ -1921,7 +1506,56 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{base_url}}/api/v1/wells/?alteration_start_date_after=2014-01-01&alteration_start_date_before=2014-12-31",
+					"raw": "{{base_url}}/api/v1/wells/?alteration_start_date_before=2014-12-31",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"wells",
+						""
+					],
+					"query": [
+						{
+							"key": "alteration_start_date_before",
+							"value": "2014-12-31"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "alteration_start_date param (date range after)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+						"exec": [
+							"pm.test(\"Alteration start date matches filter\", function () {",
+							"  const alterationStartAfter = new Date(pm.request.url.query.get(\"alteration_start_date_after\"));",
+							"",
+							"  pm.response.json().results.forEach(function(result) {",
+							"    const alterationStartDate = new Date(result.alteration_start_date);",
+							"    pm.expect(alterationStartDate).to.be.at.least(alterationStartAfter);",
+							"  });",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/wells/?alteration_start_date_after=2014-01-01",
 					"host": [
 						"{{base_url}}"
 					],
@@ -1935,10 +1569,6 @@
 						{
 							"key": "alteration_start_date_after",
 							"value": "2014-01-01"
-						},
-						{
-							"key": "alteration_start_date_before",
-							"value": "2014-12-31"
 						}
 					]
 				}
@@ -1946,28 +1576,19 @@
 			"response": []
 		},
 		{
-			"name": "alteration_end_date param (before and after range)",
+			"name": "alteration_end_date param (date range before)",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
 						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
 						"exec": [
-							"pm.test(\"Response is valid JSON\", function () {",
-							"  pm.response.to.be.ok;",
-							"  pm.response.to.be.withBody;",
-							"  pm.response.to.be.json;",
-							"});",
-							"pm.test(\"At least one result\", function () {",
-							"  pm.expect(pm.response.json().count).to.be.at.least(1);",
-							"});",
 							"pm.test(\"Alteration end date matches filter\", function () {",
-							"  const alterationEndAfter = new Date(pm.request.url.query.get(\"alteration_end_date_after\"));",
 							"  const alterationEndBefore = new Date(pm.request.url.query.get(\"alteration_end_date_before\"));",
 							" ",
 							"  pm.response.json().results.forEach(function(result) {",
 							"    const alterationEndDate = new Date(result.alteration_end_date);",
-							"    pm.expect(alterationEndDate).to.be.within(alterationEndAfter, alterationEndBefore);",
+							"    pm.expect(alterationEndDate).to.be.at.most(alterationEndBefore);",
 							"  });",
 							"});"
 						],
@@ -1983,7 +1604,56 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{base_url}}/api/v1/wells/?alteration_end_date_after=2014-01-01&alteration_end_date_before=2014-12-31",
+					"raw": "{{base_url}}/api/v1/wells/?alteration_end_date_before=2019-01-01",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"wells",
+						""
+					],
+					"query": [
+						{
+							"key": "alteration_end_date_before",
+							"value": "2019-01-01"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "alteration_end_date param (date range after)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+						"exec": [
+							"pm.test(\"Alteration end date matches filter\", function () {",
+							"  const alterationEndAfter = new Date(pm.request.url.query.get(\"alteration_end_date_after\"));",
+							"",
+							"  pm.response.json().results.forEach(function(result) {",
+							"    const alterationEndDate = new Date(result.alteration_end_date);",
+							"    pm.expect(alterationEndDate).to.be.at.least(alterationEndAfter);",
+							"  });",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/wells/?alteration_end_date_after=2018-12-30",
 					"host": [
 						"{{base_url}}"
 					],
@@ -1996,11 +1666,7 @@
 					"query": [
 						{
 							"key": "alteration_end_date_after",
-							"value": "2014-01-01"
-						},
-						{
-							"key": "alteration_end_date_before",
-							"value": "2014-12-31"
+							"value": "2018-12-30"
 						}
 					]
 				}
@@ -2008,28 +1674,19 @@
 			"response": []
 		},
 		{
-			"name": "decommission_start_date param (before and after range)",
+			"name": "decommission_start_date param (date range before)",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
 						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
 						"exec": [
-							"pm.test(\"Response is valid JSON\", function () {",
-							"  pm.response.to.be.ok;",
-							"  pm.response.to.be.withBody;",
-							"  pm.response.to.be.json;",
-							"});",
-							"pm.test(\"At least one result\", function () {",
-							"  pm.expect(pm.response.json().count).to.be.at.least(1);",
-							"});",
 							"pm.test(\"Decommission end date matches filter\", function () {",
-							"  const decommissionStartAfter = new Date(pm.request.url.query.get(\"decommission_start_date_after\"));",
 							"  const decommissionStartBefore = new Date(pm.request.url.query.get(\"decommission_start_date_before\"));",
 							" ",
 							"  pm.response.json().results.forEach(function(result) {",
 							"    const decommissionStartDate = new Date(result.decommission_start_date);",
-							"    pm.expect(decommissionStartDate).to.be.within(decommissionStartAfter, decommissionStartBefore);",
+							"    pm.expect(decommissionStartDate).to.be.at.most(decommissionStartBefore);",
 							"  });",
 							"});"
 						],
@@ -2045,7 +1702,56 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{base_url}}/api/v1/wells/?decommission_start_date_after=2014-01-01&decommission_start_date_before=2014-12-31",
+					"raw": "{{base_url}}/api/v1/wells/?decommission_start_date_before=2019-02-03",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"wells",
+						""
+					],
+					"query": [
+						{
+							"key": "decommission_start_date_before",
+							"value": "2019-02-03"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "decommission_start_date param (date range after)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+						"exec": [
+							"pm.test(\"Decommission end date matches filter\", function () {",
+							"  const decommissionStartAfter = new Date(pm.request.url.query.get(\"decommission_start_date_after\"));",
+							"",
+							"  pm.response.json().results.forEach(function(result) {",
+							"    const decommissionStartDate = new Date(result.decommission_start_date);",
+							"    pm.expect(decommissionStartDate).to.be.at.least(decommissionStartAfter);",
+							"  });",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/wells/?decommission_start_date_after=2019-02-01",
 					"host": [
 						"{{base_url}}"
 					],
@@ -2058,11 +1764,7 @@
 					"query": [
 						{
 							"key": "decommission_start_date_after",
-							"value": "2014-01-01"
-						},
-						{
-							"key": "decommission_start_date_before",
-							"value": "2014-12-31"
+							"value": "2019-02-01"
 						}
 					]
 				}
@@ -2070,28 +1772,19 @@
 			"response": []
 		},
 		{
-			"name": "decommission_end_date param (before and after range)",
+			"name": "decommission_end_date param (date range before)",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
 						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
 						"exec": [
-							"pm.test(\"Response is valid JSON\", function () {",
-							"  pm.response.to.be.ok;",
-							"  pm.response.to.be.withBody;",
-							"  pm.response.to.be.json;",
-							"});",
-							"pm.test(\"At least one result\", function () {",
-							"  pm.expect(pm.response.json().count).to.be.at.least(1);",
-							"});",
 							"pm.test(\"Decommission end date matches filter\", function () {",
-							"  const decommissionEndAfter = new Date(pm.request.url.query.get(\"decommission_end_date_after\"));",
 							"  const decommissionEndBefore = new Date(pm.request.url.query.get(\"decommission_end_date_before\"));",
 							" ",
 							"  pm.response.json().results.forEach(function(result) {",
 							"    const decommissionEndDate = new Date(result.decommission_end_date);",
-							"    pm.expect(decommissionEndDate).to.be.within(decommissionEndAfter, decommissionEndBefore);",
+							"    pm.expect(decommissionEndDate).to.be.at.most(decommissionEndBefore);",
 							"  });",
 							"});"
 						],
@@ -2107,7 +1800,56 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{base_url}}/api/v1/wells/?decommission_end_date_after=2014-01-01&decommission_end_date_before=2014-12-31",
+					"raw": "{{base_url}}/api/v1/wells/?decommission_end_date_before=2019-02-09",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"wells",
+						""
+					],
+					"query": [
+						{
+							"key": "decommission_end_date_before",
+							"value": "2019-02-09"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "decommission_end_date param (date range after)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+						"exec": [
+							"pm.test(\"Decommission end date matches filter\", function () {",
+							"  const decommissionEndAfter = new Date(pm.request.url.query.get(\"decommission_end_date_after\"));",
+							"",
+							"  pm.response.json().results.forEach(function(result) {",
+							"    const decommissionEndDate = new Date(result.decommission_end_date);",
+							"    pm.expect(decommissionEndDate).to.be.at.least(decommissionEndAfter);",
+							"  });",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/wells/?decommission_end_date_after=2019-02-07",
 					"host": [
 						"{{base_url}}"
 					],
@@ -2120,11 +1862,7 @@
 					"query": [
 						{
 							"key": "decommission_end_date_after",
-							"value": "2014-01-01"
-						},
-						{
-							"key": "decommission_end_date_before",
-							"value": "2014-12-31"
+							"value": "2019-02-07"
 						}
 					]
 				}
@@ -2139,14 +1877,6 @@
 					"script": {
 						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
 						"exec": [
-							"pm.test(\"Response is valid JSON\", function () {",
-							"  pm.response.to.be.ok;",
-							"  pm.response.to.be.withBody;",
-							"  pm.response.to.be.json;",
-							"});",
-							"pm.test(\"At least one result\", function () {",
-							"  pm.expect(pm.response.json().count).to.be.at.least(1);",
-							"});",
 							"pm.test(\"Drilling company matches filter\", function () {",
 							"  const drillingCompany = pm.request.url.query.get(\"drilling_company\");",
 							"  pm.response.json().results.forEach(function(result) {",
@@ -2194,14 +1924,6 @@
 					"script": {
 						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
 						"exec": [
-							"pm.test(\"Response is valid JSON\", function () {",
-							"  pm.response.to.be.ok;",
-							"  pm.response.to.be.withBody;",
-							"  pm.response.to.be.json;",
-							"});",
-							"pm.test(\"At least one result\", function () {",
-							"  pm.expect(pm.response.json().count).to.be.at.least(1);",
-							"});",
 							"pm.test(\"Well identification plate attached matches filter\", function () {",
 							"  const wellIdPlateAttached = pm.request.url.query.get(\"well_identification_plate_attached\");",
 							"",
@@ -2250,14 +1972,6 @@
 					"script": {
 						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
 						"exec": [
-							"pm.test(\"Response is valid JSON\", function () {",
-							"  pm.response.to.be.ok;",
-							"  pm.response.to.be.withBody;",
-							"  pm.response.to.be.json;",
-							"});",
-							"pm.test(\"At least one result\", function () {",
-							"  pm.expect(pm.response.json().count).to.be.at.least(1);",
-							"});",
 							"pm.test(\"Water supply system name matches filter\", function () {",
 							"  const waterSupplySystemName = pm.request.url.query.get(\"water_supply_system_name\");",
 							"",
@@ -2306,14 +2020,6 @@
 					"script": {
 						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
 						"exec": [
-							"pm.test(\"Response is valid JSON\", function () {",
-							"  pm.response.to.be.ok;",
-							"  pm.response.to.be.withBody;",
-							"  pm.response.to.be.json;",
-							"});",
-							"pm.test(\"At least one result\", function () {",
-							"  pm.expect(pm.response.json().count).to.be.at.least(1);",
-							"});",
 							"pm.test(\"Water supply system well name matches filter\", function () {",
 							"  const waterSupplySystemWellName = pm.request.url.query.get(\"water_supply_system_well_name\");",
 							" ",
@@ -2355,29 +2061,20 @@
 			"response": []
 		},
 		{
-			"name": "latitude param (min and max range)",
+			"name": "latitude param (range minimum)",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
 						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
 						"exec": [
-							"pm.test(\"Response is valid JSON\", function () {",
-							"  pm.response.to.be.ok;",
-							"  pm.response.to.be.withBody;",
-							"  pm.response.to.be.json;",
-							"});",
-							"pm.test(\"At least one result\", function () {",
-							"  pm.expect(pm.response.json().count).to.be.at.least(1);",
-							"});",
 							"pm.test(\"Latitude matches filter\", function () {",
 							"  const latitudeMin = parseFloat(pm.request.url.query.get(\"latitude_min\"));",
-							"  const latitudeMax = parseFloat(pm.request.url.query.get(\"latitude_max\"));",
 							"",
 							"  pm.response.json().results.forEach(function(result) {",
 							"    const latitude = parseFloat(result.latitude);",
 							"",
-							"    pm.expect(latitude).to.be.within(latitudeMin, latitudeMax);",
+							"    pm.expect(latitude).to.be.at.least(latitudeMin);",
 							"  });",
 							"});"
 						],
@@ -2393,7 +2090,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{base_url}}/api/v1/wells/?latitude_min=49.22&latitude_max=49.24",
+					"raw": "{{base_url}}/api/v1/wells/?latitude_min=49.22",
 					"host": [
 						"{{base_url}}"
 					],
@@ -2407,10 +2104,6 @@
 						{
 							"key": "latitude_min",
 							"value": "49.22"
-						},
-						{
-							"key": "latitude_max",
-							"value": "49.24"
 						}
 					]
 				}
@@ -2418,29 +2111,20 @@
 			"response": []
 		},
 		{
-			"name": "longitude param (min and max range)",
+			"name": "latitude param (range maximum)",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
 						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
 						"exec": [
-							"pm.test(\"Response is valid JSON\", function () {",
-							"  pm.response.to.be.ok;",
-							"  pm.response.to.be.withBody;",
-							"  pm.response.to.be.json;",
-							"});",
-							"pm.test(\"At least one result\", function () {",
-							"  pm.expect(pm.response.json().count).to.be.at.least(1);",
-							"});",
-							"pm.test(\"Longitude matches filter\", function () {",
-							"  const longitudeMin = parseFloat(pm.request.url.query.get(\"longitude_min\"));",
-							"  const longitudeMax = parseFloat(pm.request.url.query.get(\"longitude_max\"));",
+							"pm.test(\"Latitude matches filter\", function () {",
+							"  const latitudeMax = parseFloat(pm.request.url.query.get(\"latitude_max\"));",
 							"",
 							"  pm.response.json().results.forEach(function(result) {",
-							"    const longitude = parseFloat(result.longitude);",
+							"    const latitude = parseFloat(result.latitude);",
 							"",
-							"    pm.expect(longitude).to.be.within(longitudeMin, longitudeMax);",
+							"    pm.expect(latitude).to.be.at.most(latitudeMax);",
 							"  });",
 							"});"
 						],
@@ -2456,7 +2140,57 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{base_url}}/api/v1/wells/?longitude_min=-122.58&longitude_max=-122.57",
+					"raw": "{{base_url}}/api/v1/wells/?latitude_max=49.24",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"wells",
+						""
+					],
+					"query": [
+						{
+							"key": "latitude_max",
+							"value": "49.24"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "longitude param (range minimum)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+						"exec": [
+							"pm.test(\"Longitude matches filter\", function () {",
+							"  const longitudeMin = parseFloat(pm.request.url.query.get(\"longitude_min\"));",
+							"",
+							"  pm.response.json().results.forEach(function(result) {",
+							"    const longitude = parseFloat(result.longitude);",
+							"",
+							"    pm.expect(longitude).to.be.at.least(longitudeMin);",
+							"  });",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/wells/?longitude_min=-122.58",
 					"host": [
 						"{{base_url}}"
 					],
@@ -2470,7 +2204,53 @@
 						{
 							"key": "longitude_min",
 							"value": "-122.58"
-						},
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "longitude param (range maximum)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+						"exec": [
+							"pm.test(\"Longitude matches filter\", function () {",
+							"  const longitudeMax = parseFloat(pm.request.url.query.get(\"longitude_max\"));",
+							"",
+							"  pm.response.json().results.forEach(function(result) {",
+							"    const longitude = parseFloat(result.longitude);",
+							"",
+							"    pm.expect(longitude).to.be.at.most(longitudeMax);",
+							"  });",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/wells/?longitude_max=-122.57",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"wells",
+						""
+					],
+					"query": [
 						{
 							"key": "longitude_max",
 							"value": "-122.57"
@@ -2488,14 +2268,6 @@
 					"script": {
 						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
 						"exec": [
-							"pm.test(\"Response is valid JSON\", function () {",
-							"  pm.response.to.be.ok;",
-							"  pm.response.to.be.withBody;",
-							"  pm.response.to.be.json;",
-							"});",
-							"pm.test(\"At least one result\", function () {",
-							"  pm.expect(pm.response.json().count).to.be.at.least(1);",
-							"});",
 							"pm.test(\"Coordinate acquisition code matches filter\", function () {",
 							"  const coordinateAcquisitionCode = pm.request.url.query.get(\"coordinate_acquisition_code\");",
 							"  pm.response.json().results.forEach(function(result) {",
@@ -2543,14 +2315,6 @@
 					"script": {
 						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
 						"exec": [
-							"pm.test(\"Response is valid JSON\", function () {",
-							"  pm.response.to.be.ok;",
-							"  pm.response.to.be.withBody;",
-							"  pm.response.to.be.json;",
-							"});",
-							"pm.test(\"At least one result\", function() {",
-							"  pm.expect(pm.response.json().count).to.be.at.least(1);",
-							"});",
 							"pm.test(\"Ground elevation matches filter\", function () {",
 							"  const groundElevationMin = parseFloat(pm.request.url.query.get(\"ground_elevation_min\"));",
 							"  const groundElevationMax = parseFloat(pm.request.url.query.get(\"ground_elevation_max\"));",
@@ -2597,6 +2361,592 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "ground_elevation_method param",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+						"exec": [
+							"pm.test(\"Ground elevation method matches filter\", function () {",
+							"  const groundElevationMethod = pm.request.url.query.get(\"ground_elevation_method\");",
+							"",
+							"  pm.response.json().results.forEach(function(result) {",
+							"    pm.expect(result.ground_elevation_method).to.equal(groundElevationMethod);",
+							"  });",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/wells/?ground_elevation_method=GPS",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"wells",
+						""
+					],
+					"query": [
+						{
+							"key": "ground_elevation_method",
+							"value": "GPS"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "drilling_method param",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+						"exec": [
+							"pm.test(\"Drilling method matches filter\", function () {",
+							"  const drillingMethod = pm.request.url.query.get(\"drilling_method\");",
+							"",
+							"  pm.response.json().results.forEach(function(result) {",
+							"    pm.expect(result.drilling_method).to.equal(drillingMethod);",
+							"  });",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/wells/?drilling_method=DUGOUT",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"wells",
+						""
+					],
+					"query": [
+						{
+							"key": "drilling_method",
+							"value": "DUGOUT"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "other_drilling_method param",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+						"exec": [
+							"pm.test(\"Other drilling method matches filter\", function () {",
+							"  const otherDrillingMethod = pm.request.url.query.get(\"other_drilling_method\");",
+							"",
+							"  pm.response.json().results.forEach(function(result) {",
+							"    pm.expect(result.other_drilling_method.toLowerCase()).to.contain(otherDrillingMethod.toLowerCase());",
+							"  });",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/wells/?other_drilling_method=not sure",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"wells",
+						""
+					],
+					"query": [
+						{
+							"key": "other_drilling_method",
+							"value": "not sure"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "well_orientation param",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+						"exec": [
+							"pm.test(\"Well orientation matches filter\", function () {",
+							"  pm.response.json().results.forEach(function(result) {",
+							"    pm.expect(result.well_orientation).to.be.false;",
+							"  });",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/wells/?well_orientation=False",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"wells",
+						""
+					],
+					"query": [
+						{
+							"key": "well_orientation",
+							"value": "False"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "surface_seal_material param",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+						"exec": [
+							"pm.test(\"Surface seal material matches filter\", function () {",
+							"  const surfaceSealMaterial = pm.request.url.query.get(\"surface_seal_material\");",
+							"",
+							"  pm.response.json().results.forEach(function(result) {",
+							"    pm.expect(result.surface_seal_material).to.equal(surfaceSealMaterial);",
+							"  });",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/wells/?surface_seal_material=SND_CMT_GT",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"wells",
+						""
+					],
+					"query": [
+						{
+							"key": "surface_seal_material",
+							"value": "SND_CMT_GT"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "surface_seal_length param (range minimum)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+						"exec": [
+							"pm.test(\"Surface seal length matches filter\", function () {",
+							"  const surfaceSealLengthMin = parseFloat(pm.request.url.query.get(\"surface_seal_length_min\"));",
+							"",
+							"  pm.response.json().results.forEach(function(result) {",
+							"    const surfaceSealLength = parseFloat(result.surface_seal_length);",
+							"",
+							"    pm.expect(surfaceSealLength).to.be.at.least(surfaceSealLengthMin);",
+							"  });",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/wells/?surface_seal_length_min=19",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"wells",
+						""
+					],
+					"query": [
+						{
+							"key": "surface_seal_length_min",
+							"value": "19"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "surface_seal_length param (range maximum)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+						"exec": [
+							"pm.test(\"Surface seal length matches filter\", function () {",
+							"  const surfaceSealLengthMax = parseFloat(pm.request.url.query.get(\"surface_seal_length_max\"));",
+							"",
+							"  pm.response.json().results.forEach(function(result) {",
+							"    const surfaceSealLength = parseFloat(result.surface_seal_length);",
+							"",
+							"    pm.expect(surfaceSealLength).to.be.at.most(surfaceSealLengthMax);",
+							"  });",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/wells/?surface_seal_length_max=11",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"wells",
+						""
+					],
+					"query": [
+						{
+							"key": "surface_seal_length_max",
+							"value": "11"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "surface_seal_thickness param (range minimum)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+						"exec": [
+							"pm.test(\"Surface seal thickness matches filter\", function () {",
+							"  const surfaceSealThicknessMin = parseFloat(pm.request.url.query.get(\"surface_seal_thickness_min\"));",
+							"",
+							"  pm.response.json().results.forEach(function(result) {",
+							"    const surfaceSealThickness = parseFloat(result.surface_seal_thickness);",
+							"",
+							"    pm.expect(surfaceSealThickness).to.be.at.least(surfaceSealThicknessMin);",
+							"  });",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/wells/?surface_seal_thickness_min=3.3",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"wells",
+						""
+					],
+					"query": [
+						{
+							"key": "surface_seal_thickness_min",
+							"value": "3.3"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "surface_seal_thickness param (range maximum)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+						"exec": [
+							"pm.test(\"Surface seal thickness matches filter\", function () {",
+							"  const surfaceSealThicknessMax = parseFloat(pm.request.url.query.get(\"surface_seal_thickness_max\"));",
+							"",
+							"  pm.response.json().results.forEach(function(result) {",
+							"    const surfaceSealThickness = parseFloat(result.surface_seal_thickness);",
+							"",
+							"    pm.expect(surfaceSealThickness).to.be.at.most(surfaceSealThicknessMax);",
+							"  });",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/wells/?surface_seal_thickness_max=1.1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"wells",
+						""
+					],
+					"query": [
+						{
+							"key": "surface_seal_thickness_max",
+							"value": "1.1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "surface_seal_method param",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+						"exec": [
+							"pm.test(\"Surface seal method matches filter\", function () {",
+							"  const surfaceSealMethod = pm.request.url.query.get(\"surface_seal_method\");",
+							"",
+							"  pm.response.json().results.forEach(function(result) {",
+							"    pm.expect(result.surface_seal_method).to.equal(surfaceSealMethod);",
+							"  });",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/wells/?surface_seal_method=PUMPED",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"wells",
+						""
+					],
+					"query": [
+						{
+							"key": "surface_seal_method",
+							"value": "PUMPED"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "surface_seal_depth param (range minimum)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+						"exec": [
+							"pm.test(\"Surface seal depth matches filter\", function () {",
+							"  const surfaceSealDepthMin = parseFloat(pm.request.url.query.get(\"surface_seal_depth_min\"));",
+							"",
+							"  pm.response.json().results.forEach(function(result) {",
+							"    const surfaceSealDepth = parseFloat(result.surface_seal_depth);",
+							"",
+							"    pm.expect(surfaceSealDepth).to.be.at.least(surfaceSealDepthMin);",
+							"  });",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/wells/?surface_seal_depth_min=2",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"wells",
+						""
+					],
+					"query": [
+						{
+							"key": "surface_seal_depth_min",
+							"value": "2"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "surface_seal_depth param (range maximum)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+						"exec": [
+							"pm.test(\"Surface seal depth matches filter\", function () {",
+							"  const surfaceSealDepthMax = parseFloat(pm.request.url.query.get(\"surface_seal_depth_max\"));",
+							"",
+							"  pm.response.json().results.forEach(function(result) {",
+							"    const surfaceSealDepth = parseFloat(result.surface_seal_depth);",
+							"",
+							"    pm.expect(surfaceSealDepth).to.be.at.most(surfaceSealDepthMax);",
+							"  });",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/wells/?surface_seal_depth_max=1.5",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"wells",
+						""
+					],
+					"query": [
+						{
+							"key": "surface_seal_depth_max",
+							"value": "1.5"
+						}
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"event": [
@@ -2616,7 +2966,14 @@
 				"id": "d0c5ca05-8884-48bf-88d3-9dc425dd6ba5",
 				"type": "text/javascript",
 				"exec": [
-					""
+					"pm.test(\"Response is valid JSON\", function () {",
+					"  pm.response.to.be.ok;",
+					"  pm.response.to.be.withBody;",
+					"  pm.response.to.be.json;",
+					"});",
+					"pm.test(\"At least one result\", function () {",
+					"  pm.expect(pm.response.json().count).to.be.at.least(1);",
+					"});"
 				]
 			}
 		}
