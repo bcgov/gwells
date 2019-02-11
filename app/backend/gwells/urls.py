@@ -77,6 +77,8 @@ urlpatterns = [
         api.KeycloakConfig.as_view(), name='keycloak'),
     url(r'^' + app_root_slash + 'api/v1/config',
         api.GeneralConfig.as_view(), name='configuration'),
+    url(r'^' + app_root_slash + 'api/v1/gis/insidebc',
+        api.InsideBC.as_view(), name='insidebc'),
     url(r'^' + app_root_slash, include('registries.urls')),
     url(r'^' + app_root_slash, include('wells.urls')),
     url(r'^' + app_root_slash, include('aquifers.urls'))
