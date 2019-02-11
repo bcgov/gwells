@@ -23,7 +23,7 @@ import wells.stack
 
 from gwells.models.lithology import (
     LithologyColourCode, LithologyHardnessCode,
-    LithologyMaterialCode, LithologyMoistureCode)
+    LithologyMaterialCode, LithologyMoistureCode, LithologyDescriptionCode)
 
 from wells.models import Well, ActivitySubmission, WellActivityCode
 from wells.serializers import (
@@ -241,15 +241,15 @@ class WellConstructionSubmissionSerializer(WellSubmissionSerializerBase):
                   'owner_tel', 'street_address', 'city',
                   'legal_lot', 'legal_plan', 'legal_district_lot', 'legal_block', 'legal_section',
                   'legal_township', 'legal_range', 'land_district', 'legal_pid', 'well_location_description',
-                  'latitude', 'longitude', 'ground_elevation', 'ground_elevation_method', 'drilling_method',
-                  'other_drilling_method', 'well_orientation', 'lithologydescription_set', 'casing_set',
+                  'latitude', 'longitude', 'ground_elevation', 'ground_elevation_method', 'drilling_methods',
+                  'well_orientation', 'lithologydescription_set', 'casing_set',
                   'surface_seal_material', 'surface_seal_depth', 'surface_seal_thickness',
                   'surface_seal_method', 'backfill_type', 'backfill_depth',
                   'liner_material', 'liner_diameter', 'liner_thickness', 'liner_from', 'liner_to',
                   'linerperforation_set', 'screen_intake_method', 'screen_type', 'screen_material',
                   'other_screen_material', 'screen_opening', 'screen_bottom', 'other_screen_bottom',
                   'screen_set', 'filter_pack_from', 'filter_pack_to', 'filter_pack_thickness',
-                  'filter_pack_material', 'filter_pack_material_size', 'development_method',
+                  'filter_pack_material', 'filter_pack_material_size', 'development_methods',
                   'development_hours', 'yield_estimation_method', 'yield_estimation_rate',
                   'yield_estimation_duration', 'well_yield_unit', 'static_level_before_test',
                   'drawdown', 'hydro_fracturing_performed', 'hydro_fracturing_yield_increase',
@@ -328,8 +328,7 @@ class WellAlterationSubmissionSerializer(WellSubmissionSerializerBase):
             'longitude',
             'ground_elevation',
             'ground_elevation_method',
-            'drilling_method',
-            'other_drilling_method',
+            'drilling_methods',
             'well_orientation',
             'lithologydescription_set',
             'casing_set',
@@ -359,7 +358,7 @@ class WellAlterationSubmissionSerializer(WellSubmissionSerializerBase):
             'filter_pack_thickness',
             'filter_pack_material',
             'filter_pack_material_size',
-            'development_method',
+            'development_methods',
             'development_hours',
             'development_notes',
             'yield_estimation_method',
@@ -461,8 +460,7 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
             'coordinate_acquisition_code',
             'ground_elevation',
             'ground_elevation_method',
-            'drilling_method',
-            'other_drilling_method',
+            'drilling_methods',
             'well_orientation',
             'lithologydescription_set',
             'casing_set',
@@ -492,7 +490,7 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
             'filter_pack_thickness',
             'filter_pack_material',
             'filter_pack_material_size',
-            'development_method',
+            'development_methods',
             'development_hours',
             'development_notes',
             'yield_estimation_method',
@@ -595,8 +593,7 @@ class WellDecommissionSubmissionSerializer(WellSubmissionSerializerBase):
             'longitude',
             'ground_elevation',
             'ground_elevation_method',
-            'drilling_method',
-            'other_drilling_method',
+            'drilling_methods',
             'well_orientation',
             'decommission_reason',
             'decommission_method',
@@ -877,4 +874,15 @@ class ObservationWellStatusCodeSerializer(serializers.ModelSerializer):
         model = ObsWellStatusCode
         fields = (
             'obs_well_status_code', 'description'
+        )
+
+
+class LithologyDescriptionCodeSerializer(serializers.ModelSerializer):
+    """ serializes lithology descriptor codes """
+
+    class Meta:
+        model = LithologyDescriptionCode
+        fields = (
+            'lithology_description_code',
+            'description',
         )

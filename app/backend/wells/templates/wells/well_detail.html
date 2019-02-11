@@ -518,10 +518,16 @@
             </div>
             <div class="row no-gutters print-compressed">
                 <div class="col-md-7 col-print-7 print-compressed">
-                    <label for="drilling_method">{% verbose_name well "drilling_method" %}:</label>
+                    <label for="drilling_methods">{% verbose_name well "drilling_methods" %}:</label>
                 </div>
                 <div class="col-md-5 col-print-5 print-compressed">
-                    <span id="drilling_method">{{well.drilling_method.drilling_method_code|default_if_none:'&nbsp;' }}</span>
+                    <span id="drilling_methods">
+                        {% for method in well.drilling_methods.all %}
+                            {% if method is not None %}
+                                {{method.description}}{% if not forloop.last %}, {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </span>
                 </div>
             </div>
             <div class="row no-gutters print-compressed">
@@ -803,8 +809,14 @@
         <div class="col-md-4 col-print-4 print-compressed">
             <div class="row no-gutters print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
-                    <label for="devloped-by">{% verbose_name well "development_method" %}:</label>
-                    <span id="developed-by">{{well.development_method.description|default_if_none:'&nbsp;' }}</span>
+                    <label for="devlopedment-methods">{% verbose_name well "development_methods" %}:</label>
+                    <span id="development-methods">
+                        {% for method in well.development_methods.all %}
+                            {% if method is not None %}
+                                {{method}}{% if not forloop.last %}, {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </span>
                 </div>
             </div>
         </div>

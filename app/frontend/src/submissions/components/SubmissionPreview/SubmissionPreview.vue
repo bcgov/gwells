@@ -162,10 +162,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <b-col cols="12" lg="4"><span class="font-weight-bold">Method of determining elevation:</span> {{ codeToDescription('ground_elevation_methods', form.ground_elevation_method) }}</b-col>
       </b-row>
       <b-row>
-        <b-col cols="12" lg="4"><span class="font-weight-bold">Drilling method:</span> {{ form.drilling_method }}</b-col>
-        <b-col cols="12" lg="3"><span class="font-weight-bold">Other drilling method:</span> {{ form.other_drilling_method }}</b-col>
-      </b-row>
-      <b-row>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Drilling methods:</span> <div v-for="(item, index) in form.drilling_methods" :key="index">{{ codeToDescription('drilling_methods', item) }}</div></b-col>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Orientation of well:</span> {{ form.well_orientation }}</b-col>
       </b-row>
     </fieldset>
@@ -338,7 +335,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <fieldset class="my-3 detail-section" v-if="sections.wellDevelopment">
       <legend>Well Development</legend>
       <b-row>
-        <b-col cols="12" lg="4"><span class="font-weight-bold">Developed by:</span> {{ codeToDescription('development_methods', form.development_method) }}</b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Developed by:</span> <div v-for="(item, index) in form.development_methods" :key="index"> {{ codeToDescription('development_methods', item) }}</div></b-col>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Development Total Duration:</span> {{ form.development_hours }} {{ form.development_hours ? 'hours':'' }}</b-col>
       </b-row>
     </fieldset>

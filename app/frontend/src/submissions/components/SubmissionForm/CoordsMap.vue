@@ -31,6 +31,9 @@ export default {
     draggable: {
       type: Boolean,
       default: true
+    },
+    insideBC: {
+      type: Function
     }
   },
   data () {
@@ -107,39 +110,37 @@ export default {
     updateCoords () {
       if (!isNaN(this.latitude) && !isNaN(this.getLongitude())) {
         const latlng = L.latLng(this.latitude, this.getLongitude())
-        if (this.insideBC(latlng)) {
-          if (this.marker) {
-            this.updateMarkerLatLong(latlng)
-            this.map.panTo(latlng)
+        this.insideBC(latlng.lat, latlng.lng).then((result) => {
+          if (result) {
+            if (this.marker) {
+              this.updateMarkerLatLong(latlng)
+              this.map.panTo(latlng)
+            } else {
+              this.createMarker()
+            }
           } else {
-            this.createMarker()
+            if (this.marker) {
+              this.map.removeLayer(this.marker)
+              this.marker = null
+            }
           }
-        } else {
-          if (this.marker) {
-            this.map.removeLayer(this.marker)
-            this.marker = null
-          }
-        }
+        })
       }
     },
     handleDrag (ev) {
-      if (this.insideBC(this.marker.getLatLng())) {
-        const markerLatLng = this.marker.getLatLng()
-        // In B.C. that longitude is always negative, so people aren't used to seeing the minus sign - so
-        // we're hiding it away from them.
-        const newLatLng = { lng: markerLatLng.lng > 0 ? markerLatLng.lng : markerLatLng.lng * -1, lat: markerLatLng.lat }
-        this.$emit('coordinate', newLatLng)
-      } else {
-        // We don't allow dragging the marker outside of BC, put it back.
-        const latlng = L.latLng(this.latitude, this.getLongitude())
-        this.updateMarkerLatLong(latlng)
-      }
-    },
-    insideBC (latLng) {
-      // could check this against databc by reverse geocoding change checking that the point is in BC
-      // - https://geocoder.api.gov.bc.ca/addresses.json?locationDescriptor=any&parcelPoint=55%2C-124
-      // Using a very simple, rough bounding box
-      return !!latLng && latLng.lat < 60 && latLng.lat > 48.2 && latLng.lng > -139.07 && latLng.lng < -114
+      const markerLatLng = this.marker.getLatLng()
+      this.insideBC(markerLatLng.lat, markerLatLng.lng).then((result) => {
+        if (result) {
+          // In B.C. that longitude is always negative, so people aren't used to seeing the minus sign - so
+          // we're hiding it away from them.
+          const newLatLng = { lng: markerLatLng.lng > 0 ? markerLatLng.lng : markerLatLng.lng * -1, lat: markerLatLng.lat }
+          this.$emit('coordinate', newLatLng)
+        } else {
+          // We don't allow dragging the marker outside of BC, put it back.
+          const latlng = L.latLng(this.latitude, this.getLongitude())
+          this.updateMarkerLatLong(latlng)
+        }
+      })
     },
     getLongitude () {
       // In B.C. users are used to omitting the minus sign on longitude, it's always negative. So we're

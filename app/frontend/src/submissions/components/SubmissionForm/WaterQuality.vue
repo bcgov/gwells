@@ -26,17 +26,18 @@ Licensed under the Apache License, Version 2.0 (the "License");
     </b-row>
     <b-row>
       <b-col cols="12" md="6">
-        <b-form-group label="Characteristics" id="waterCharacteristicsGroup">
-          <v-select
-              :options="codes.water_quality_characteristics"
-              label="description"
-              index="code"
-              id="waterCharacteristicsInput"
-              placeholder="Select characteristics"
-              v-model="waterQualityCharacteristicsInput"
-              multiple
-          ></v-select>
-        </b-form-group>
+        <form-input
+          id="waterCharacteristicsInput"
+          label="Characteristics"
+          select
+          :options="codes.water_quality_characteristics"
+          value-field="code"
+          text-field="description"
+          hint="Select one or more characteristics"
+          v-model="waterQualityCharacteristicsInput"
+          :multiple="true"
+          :errors="errors['water_quality_characteristics']"
+          :loaded="fieldsLoaded['water_quality_characteristics']"/>
       </b-col>
     </b-row>
     <b-row>
