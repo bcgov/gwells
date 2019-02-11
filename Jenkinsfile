@@ -472,8 +472,8 @@ pipeline {
                                 wellsearch-codetables.json \
                                 registries-codetables.json \
                                 registries.json \
-                                aquifers.json \
                                 wellsearch.json \
+                                aquifers.json \
                             '"
                         )
                         echo "Load Fixtures results: "+ ocoutput.actions[0].out
