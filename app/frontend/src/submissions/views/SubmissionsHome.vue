@@ -419,9 +419,8 @@ export default {
         coordinate_acquisition_code: null,
         ground_elevation: null,
         ground_elevation_method: '',
-        drilling_method: '',
-        other_drilling_method: '',
         well_orientation: true,
+        drilling_methods: [],
         lithologydescription_set: [],
         surface_seal_material: '',
         surface_seal_depth: '',
@@ -438,7 +437,7 @@ export default {
         screen_bottom: '',
         screen_set: [],
         screen_information: '',
-        development_method: '',
+        development_methods: [],
         development_hours: '',
         development_notes: '',
         yield_estimation_method: '',
@@ -547,7 +546,6 @@ export default {
     },
     fetchFiles () {
       // this.form.well is sometimes the tag number, and sometimes an object. This detects which is which
-      console.log(this.form.well && isNaN(this.form.well))
       let tag = this.form.well && isNaN(this.form.well) ? this.form.well.well_tag_number : this.form.well
 
       if (tag) {
