@@ -36,7 +36,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <b-row>
         <b-col cols="12" md="12" lg="6">
           <b-form-group
-              label="Person Responsible for Work *"
+              label="Person Responsible for Work"
               aria-describedby="personResponsibleInvalidFeedback"
               :state="false"
           >
