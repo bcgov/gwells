@@ -16,17 +16,12 @@ import os
 from django.conf import settings
 from gwells.settings.base import get_env_variable
 
-engines = {
-    'postgis': 'django.contrib.gis.db.backends.postgis',
-}
-
 
 def config():
     service_name = get_env_variable('DATABASE_SERVICE_NAME', '').upper().replace('-', '_')
-    engine = engines['postgis']
     name = get_env_variable('DATABASE_NAME')
     return {
-        'ENGINE': engine,
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': name,
         'USER': get_env_variable('DATABASE_USER'),
         'PASSWORD': get_env_variable('DATABASE_PASSWORD'),
