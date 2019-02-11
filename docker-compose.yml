@@ -27,9 +27,9 @@ services:
     image: docker-registry.pathfinder.gov.bc.ca:443/moe-gwells-tools/postgresql-oracle-fdw:9.6-1
     hostname: db
     environment:
-      POSTGRES_USER: gwells
-      POSTGRES_PASSWORD: test1
-      POSTGRES_DBNAME: gwells
+      POSTGRESQL_USER: gwells
+      POSTGRESQL_PASSWORD: test1
+      POSTGRESQL_DATABASE: gwells
     volumes:
       - /var/lib/postgresql
   frontend:
@@ -54,49 +54,49 @@ services:
     image: docker-registry.pathfinder.gov.bc.ca:443/moe-gwells-tools/gwells-python:3.6
     hostname: backend
     environment:
-      DATABASE_SERVICE_NAME: postgres
+      APP_CONTEXT_ROOT: gwells
+      CSRF_COOKIE_SECURE: "False"
       DATABASE_NAME: gwells
       DATABASE_USER: gwells
       DATABASE_PASSWORD: test1
-      POSTGRES_SERVICE_HOST: db
+      DATABASE_SERVICE_NAME: gwells
+      DJANGO_ADMIN_URL: admin
       DJANGO_DEBUG: "True"
-      APP_CONTEXT_ROOT: gwells
       DJANGO_SECRET_KEY: secret
-      SESSION_COOKIE_SECURE: "False"
-      CSRF_COOKIE_SECURE: "False"
+      ENABLE_ADDITIONAL_DOCUMENTS: "True"
       ENABLE_AQUIFERS_SEARCH: "True"
       ENABLE_DATA_ENTRY: "True"
       ENABLE_GOOGLE_ANALYTICS: "False"
       GDAL_LIBRARY_PATH: "/usr/local/lib/libgdal.so"
       GEOS_LIBRARY_PATH: "/usr/local/lib/libgeos_c.so"
-      ENABLE_ADDITIONAL_DOCUMENTS: "True"
-      POSTGRES_SERVICE_PORT: 5432
-      DJANGO_ADMIN_URL: admin
+      GWELLS_SERVICE_HOST: db
+      GWELLS_SERVICE_PORT: 5432
+      MINIO_ACCESS_KEY: minio
+      MINIO_SECRET_KEY: minio1234
       PYTHONUNBUFFERED: "1"
-      SSO_PUBKEY: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAh+5Hc4w/PKN04avW1LX/orSyXsJ7nJiEbErMyQqCvYAEKmQUeok7Yy+r6sVuJSyQQMCExk37NY3fUQOK92J83oC/9WGij7bvlWHew810edIisechoKpLuQbw63xlj/5ifQfJ977NM1n1RQgXF4hr4MDuhGbV+PAkQGdSPfufjEFleCwj8mvjUwTFnSwE9I+Rf78DVJzCHZbpFMq9skvrpCzeNsLNNoz+k1DENQ6MKnVnbUYskG+j5NZ3g+kxfkRf2G0tw2KisLYtxUSdfwutieT2Zxglk/kZeMWS7khXWzhwjvWf5a1qM5ebreVVYNhra7MjcrkXSh0v5IBcW+122wIDAQAB
-      SSO_REALM: gwells
+      SESSION_COOKIE_SECURE: "False"
       SSO_AUDIENCE: gwells-test
       SSO_CLIENT: gwells-test
       SSO_AUTH_HOST: https://sso-test.pathfinder.gov.bc.ca/auth
       SSO_IDP_HINT: "undefined"
       SSO_PORT: 0
-      S3_USE_SECURE: 0
-      S3_HOST: minio-public:9000
-      S3_PUBLIC_ACCESS_KEY: minio
-      S3_PUBLIC_SECRET_KEY: minio1234
-      S3_WELL_EXPORT_BUCKET: gwells
-      S3_ROOT_BUCKET:  gwells
-      S3_WELL_BUCKET: well-docs
+      SSO_REALM: gwells
+      SSO_PUBKEY: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAh+5Hc4w/PKN04avW1LX/orSyXsJ7nJiEbErMyQqCvYAEKmQUeok7Yy+r6sVuJSyQQMCExk37NY3fUQOK92J83oC/9WGij7bvlWHew810edIisechoKpLuQbw63xlj/5ifQfJ977NM1n1RQgXF4hr4MDuhGbV+PAkQGdSPfufjEFleCwj8mvjUwTFnSwE9I+Rf78DVJzCHZbpFMq9skvrpCzeNsLNNoz+k1DENQ6MKnVnbUYskG+j5NZ3g+kxfkRf2G0tw2KisLYtxUSdfwutieT2Zxglk/kZeMWS7khXWzhwjvWf5a1qM5ebreVVYNhra7MjcrkXSh0v5IBcW+122wIDAQAB
       S3_AQUIFER_BUCKET: aquifer-docs
-      S3_REGISTRANT_BUCKET: driller-docs
-      S3_PRIVATE_HOST: minio-private:9001
-      MINIO_ACCESS_KEY: minio
-      MINIO_SECRET_KEY: minio1234
+      S3_HOST: minio-public:9000
       S3_PRIVATE_BUCKET: gwells
+      S3_PRIVATE_HOST: minio-private:9001
       S3_PRIVATE_ROOT_BUCKET:  gwells
       S3_PRIVATE_WELL_BUCKET: well-docs
       S3_PRIVATE_AQUIFER_BUCKET: aquifer-docs
       S3_PRIVATE_REGISTRANT_BUCKET: driller-docs
+      S3_PUBLIC_ACCESS_KEY: minio
+      S3_PUBLIC_SECRET_KEY: minio1234
+      S3_REGISTRANT_BUCKET: driller-docs
+      S3_ROOT_BUCKET:  gwells
+      S3_USE_SECURE: 0
+      S3_WELL_BUCKET: well-docs
+      S3_WELL_EXPORT_BUCKET: gwells
     command: /bin/bash -c "sleep 3 &&
             set -x &&
             cd /app/backend &&
