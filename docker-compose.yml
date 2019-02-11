@@ -24,9 +24,7 @@ services:
       MINIO_SECRET_KEY: minio1234
     command: server --address ":9001" /data
   db:
-    build:
-      context: .
-      dockerfile: ./docker-images/postgis/Dockerfile
+    image: docker-registry.pathfinder.gov.bc.ca:443/moe-gwells-tools/postgresql-oracle-fdw:9.6-1
     hostname: db
     environment:
       POSTGRES_USER: gwells
@@ -53,9 +51,7 @@ services:
       - ./app:/app
       - /app/frontend/node_modules/
   backend:
-    build:
-      context: .
-      dockerfile: ./docker-images/python-gdal/Dockerfile  
+    image: docker-registry.pathfinder.gov.bc.ca:443/moe-gwells-tools/gwells-python:3.6
     hostname: backend
     environment:
       DATABASE_SERVICE_NAME: postgres
