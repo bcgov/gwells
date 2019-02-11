@@ -53,7 +53,7 @@ services:
   backend:
     build:
       context: .
-      dockerfile: ./docker-images/python-gdal/Dockerfile.centos  
+      dockerfile: ./docker-images/python-gdal/Dockerfile  
     hostname: backend
     environment:
       DATABASE_SERVICE_NAME: postgres
@@ -66,6 +66,7 @@ services:
       DJANGO_SECRET_KEY: secret
       SESSION_COOKIE_SECURE: "False"
       CSRF_COOKIE_SECURE: "False"
+      ENABLE_AQUIFERS_SEARCH: "True"
       ENABLE_DATA_ENTRY: "True"
       ENABLE_GOOGLE_ANALYTICS: "False"
       GDAL_LIBRARY_PATH: "/usr/local/lib/libgdal.so"
@@ -80,6 +81,7 @@ services:
       SSO_CLIENT: gwells-test
       SSO_AUTH_HOST: https://sso-test.pathfinder.gov.bc.ca/auth
       SSO_IDP_HINT: "undefined"
+      SSO_PORT: 0
       S3_USE_SECURE: 0
       S3_HOST: minio-public:9000
       S3_PUBLIC_ACCESS_KEY: minio
