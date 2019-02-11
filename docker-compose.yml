@@ -24,7 +24,9 @@ services:
       MINIO_SECRET_KEY: minio1234
     command: server --address ":9001" /data
   db:
-    image: mdillon/postgis:9.6
+    build:
+      context: .
+      dockerfile: ./docker-images/postgis/Dockerfile
     hostname: db
     environment:
       POSTGRES_USER: gwells
