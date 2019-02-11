@@ -66,8 +66,11 @@ FIXTURES_DIR = '/'.join([BASE_DIR, APP_CONTEXT_ROOT, 'fixtures'])
 FIXTURES_DIRS = [FIXTURES_DIR]
 
 # GeoDjango External Library Paths
-GDAL_LIBRARY_PATH = get_env_variable('GDAL_LIBRARY_PATH', '/usr/local/lib/libgdal.so')
-GEOS_LIBRARY_PATH = get_env_variable('GEOS_LIBRARY_PATH', '/usr/local/lib/libgeos_c.so')
+# When running containerised, GDAL_LIBRARY_PATH and GEOS_LIBRARY_PATH -**MUST**- be specified.
+# For running locally, if you've configured you local system correctly, CUSTOM_GDAL_GEOS may be set to False.
+if get_env_variable('CUSTOM_GDAL_GEOS', 'True', strict=False, warn=False) == 'True':
+    GDAL_LIBRARY_PATH = get_env_variable('GDAL_LIBRARY_PATH', '/usr/local/lib/libgdal.so')
+    GEOS_LIBRARY_PATH = get_env_variable('GEOS_LIBRARY_PATH', '/usr/local/lib/libgeos_c.so')
 
 # django-settings-export lets us make these variables available in the templates.
 # This eleminate the need for setting the context for each and every view.
