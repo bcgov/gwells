@@ -755,10 +755,10 @@ class Well(AuditModel):
     decommission_method = models.ForeignKey(
         DecommissionMethodCode, db_column='decommission_method_code', blank=True, null="True",
         verbose_name="Method of Decommission", on_delete=models.PROTECT)
-    sealant_material = models.CharField(
-        max_length=100, blank=True, null=True, verbose_name="Sealant Material")
-    backfill_material = models.CharField(
-        max_length=100, blank=True, null=True, verbose_name="Backfill Material")
+    decommission_sealant_material = models.CharField(
+        max_length=100, blank=True, null=True, verbose_name="Decommission Sealant Material")
+    decommission_backfill_material = models.CharField(
+        max_length=100, blank=True, null=True, verbose_name="Decommission Backfill Material")
     decommission_details = models.CharField(
         max_length=250, blank=True, null=True, verbose_name="Decommission Details")
     ems_id = models.CharField(max_length=30, blank=True, null=True)
@@ -1226,9 +1226,9 @@ class ActivitySubmission(AuditModel):
     decommission_method = models.ForeignKey(
         DecommissionMethodCode, db_column='decommission_method_code', blank=True, null=True,
         verbose_name="Method of Decommission", on_delete=models.PROTECT)
-    sealant_material = models.CharField(
+    decommission_sealant_material = models.CharField(
         max_length=100, blank=True, null=True, verbose_name="Sealant Material")
-    backfill_material = models.CharField(
+    decommission_backfill_material = models.CharField(
         max_length=100, blank=True, null=True, verbose_name="Backfill Material")
     decommission_details = models.CharField(
         max_length=250, blank=True, null=True, verbose_name="Decommission Details")
