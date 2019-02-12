@@ -231,7 +231,7 @@ class Command(BaseCommand):
         drilling_method_sql = ("""select well_id as well_tag_number,
 drillingmethodcode_id as drilling_method_code
 from well_drilling_methods
-inner join well on well.well_tag_number = p.well_tag_number
+inner join well on well.well_tag_number = well_drilling_methods.well_id
 where well.well_publication_status_code = 'Published' or well.well_publication_status_code = null
 order by well_tag_number""")
         ####################
@@ -240,7 +240,7 @@ order by well_tag_number""")
         development_method_sql = ("""select well_id as well_tag_number,
 developmentmethodcode_id as development_method_code
 from well_development_methods
-inner join well on well.well_tag_number = p.well_tag_number
+inner join well on well.well_tag_number = well_development_methods.well_id
 where well.well_publication_status_code = 'Published' or well.well_publication_status_code = null
 order by well_tag_number""")
 
