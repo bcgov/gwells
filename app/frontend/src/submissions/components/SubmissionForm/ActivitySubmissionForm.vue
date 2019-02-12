@@ -186,18 +186,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-on:save="$emit('submit_edit')"
       />
 
-      <!-- Closure/Decommission Description -->
-      <closure-description class="my-5"
-        v-if="showSection('closureDescription')"
-        id="closureDescription"
-        :errors="errors"
-        :isStaffEdit="isStaffEdit"
-        :saveDisabled="editSaveDisabled"
-        v-on:save="$emit('submit_edit')"
-        :closureDescriptionSet.sync="form.decommission_description_set">
-
-      </closure-description>
-
       <!-- Lithology -->
       <lithology class="my-5"
         v-if="showSection('lithology')"
@@ -370,6 +358,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-on:save="$emit('submit_edit')"
       />
 
+      <!-- Decommission Information -->
       <decommission-information class="my-5"
         v-if="showSection('decommissionInformation')"
         id="decommissionInformation"
@@ -384,6 +373,17 @@ Licensed under the Apache License, Version 2.0 (the "License");
         :saveDisabled="editSaveDisabled"
         v-on:save="$emit('submit_edit')"
       />
+
+      <!-- Closure/Decommission Description -->
+      <closure-description class="my-5"
+         v-if="showSection('closureDescription')"
+         id="closureDescription"
+         :errors="errors"
+         :isStaffEdit="isStaffEdit"
+         :saveDisabled="editSaveDisabled"
+         v-on:save="$emit('submit_edit')"
+         :closureDescriptionSet.sync="form.decommission_description_set">
+      </closure-description>
 
       <!-- Comments -->
       <comments class="my-5"
