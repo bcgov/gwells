@@ -16,13 +16,13 @@ class Migration(migrations.Migration):
             name='well_publication_status',
             field=models.ForeignKey(db_column='well_publication_status_code', default='Published',
                                     on_delete=django.db.models.deletion.CASCADE, to='wells.WellPublicationStatusCode',
-                                    verbose_name='Well Publication Status', blank=True, null=True),
+                                    verbose_name='Well Publication Status'),
         ),
         migrations.AddField(
             model_name='well',
             name='well_publication_status',
             field=models.ForeignKey(db_column='well_publication_status_code', default='Published',
                                     on_delete=django.db.models.deletion.CASCADE, to='wells.WellPublicationStatusCode',
-                                    verbose_name='Well Publication Status', blank=True, null=True),
+                                    verbose_name='Well Publication Status'),
         ),
     ]

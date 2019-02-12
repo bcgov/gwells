@@ -21,14 +21,14 @@ class Migration(migrations.Migration):
             name='WellPublicationStatusCode',
             fields=[
                 ('create_user', models.CharField(max_length=60)),
-                ('create_date', models.DateTimeField()),
-                ('update_user', models.CharField(max_length=60)),
-                ('update_date', models.DateTimeField()),
+                ('create_date', models.DateTimeField(blank=True, null=True)),
+                ('update_user', models.CharField(max_length=60, null=True)),
+                ('update_date', models.DateTimeField(blank=True, null=True)),
                 ('well_publication_status_code', models.CharField(editable=False, max_length=20, primary_key=True, serialize=False)),
                 ('description', models.CharField(max_length=255)),
                 ('display_order', models.PositiveIntegerField()),
                 ('effective_date', models.DateTimeField()),
-                ('expiry_date', models.DateTimeField(default='infinity')),
+                ('expiry_date', models.DateTimeField()),
             ],
             options={
                 'db_table': 'well_publication_status_code',

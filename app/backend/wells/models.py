@@ -423,12 +423,12 @@ class WellPublicationStatusCode(AuditModel):
     Well Publication Status.
     """
     well_publication_status_code = models.CharField(
-        primary_key=True, max_length=20, editable=False)
-    description = models.CharField(max_length=255)
-    display_order = models.PositiveIntegerField()
+        primary_key=True, max_length=20, editable=False, null=False)
+    description = models.CharField(max_length=255, null=False)
+    display_order = models.PositiveIntegerField(null=False)
 
-    effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date = models.DateTimeField(blank=True, null=True)
+    effective_date = models.DateTimeField(null=False)
+    expiry_date = models.DateTimeField(null=False)
 
     class Meta:
         db_table = 'well_publication_status_code'
