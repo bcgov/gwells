@@ -65,8 +65,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
             id="hydroFracPerformedOptions"
             name="hydroFracturingPerformed"
           >
-            <b-form-radio :value="true">Yes</b-form-radio>
             <b-form-radio :value="false">No</b-form-radio>
+            <b-form-radio :value="true">Yes</b-form-radio>
           </b-form-radio-group>
         </b-form-group>
       </b-col>
