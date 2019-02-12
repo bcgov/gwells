@@ -101,6 +101,51 @@ def functionalTest (String STAGE_NAME, String BASE_URL, String ENV_SUFFIX, Strin
 }
 
 
+// Functional test script
+// Can be limited by assinging toTest var
+def unitTestDjango (String STAGE_NAME, String ENV_PROJECT, String ENV_SUFFIX) {
+    _openshift(env.STAGE_NAME, STAGING_PROJECT) {
+        def DB_target = ENV_PROJECT != 'staging' ? "${APP_NAME}-pgsql-${ENV_SUFFIX}" : "${APP_NAME}-pgsql-${ENV_SUFFIX}-${PR_NUM}"
+        def DB_newVersion = openshift.selector("dc", "${DB_target}").object().status.latestVersion
+        def DB_pod = openshift.selector('pod', [deployment: "${DB_target}-${DB_newVersion}"])
+        echo "Temporarily granting elevated DB rights"
+        def db_ocoutput_grant = openshift.exec(
+            DB_pod.objects()[0].metadata.name,
+            "--",
+            "bash -c '\
+                psql -c \"ALTER USER \\\"\${POSTGRESQL_USER}\\\" WITH SUPERUSER;\" \
+            '"
+        )
+        echo "Temporary DB grant results: "+ db_ocoutput_grant.actions[0].out
+
+        def target = ENV_PROJECT != 'staging' ? "${APP_NAME}-${ENV_SUFFIX}" : "${APP_NAME}-${ENV_SUFFIX}-${PR_NUM}"
+        def newVersion = openshift.selector("dc", "${target}").object().status.latestVersion
+        def pods = openshift.selector('pod', [deployment: "${target}-${newVersion}"])
+
+        echo "Running Django unit tests"
+        def ocoutput = openshift.exec(
+            pods.objects()[0].metadata.name,
+            "--",
+            "bash -c '\
+                cd /opt/app-root/src/backend; \
+                python manage.py test -c nose.cfg \
+            '"
+        )
+        echo "Django test results: "+ ocoutput.actions[0].out
+
+        echo "Revoking ADMIN rights"
+        def db_ocoutput_revoke = openshift.exec(
+            DB_pod.objects()[0].metadata.name,
+            "--",
+            "bash -c '\
+                psql -c \"ALTER USER \\\"\${POSTGRESQL_USER}\\\" WITH NOSUPERUSER;\" \
+            '"
+        )
+        echo "DB Revocation results: "+ db_ocoutput_revoke.actions[0].out
+    }
+}
+
+
 // Print stack trace of error
 @NonCPS
 private static String stackTraceAsString(Throwable t) {
