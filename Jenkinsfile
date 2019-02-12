@@ -339,7 +339,7 @@ pipeline {
 
         // the Build stage builds files; an image will be outputted to the app's imagestream,
         // using the source-to-image (s2i) strategy. See /app/.s2i/assemble for image build script
-        stage('ALL - Build (with tests)') {
+        stage('ALL - Build') {
             steps {
                 script {
                     _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
@@ -450,51 +450,12 @@ pipeline {
         }
 
 
-        stage('DEV - Load Fixtures') {
+        // the Django Unit Tests stage runs backend unit tests using a test DB that is
+        // created and destroyed afterwards.
+        stage('DEV - Django Unit Tests') {
             when {
                 expression { env.CHANGE_TARGET != 'master' && env.CHANGE_TARGET != 'demo' }
-            }            
-            steps {
-                script {
-                    _openshift(env.STAGE_NAME, DEV_PROJECT) {
-                        def newVersion = openshift.selector("dc", "${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}").object().status.latestVersion
-                        def pods = openshift.selector('pod', [deployment: "${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}-${newVersion}"])
-
-                        echo "Loading fixtures"
-                        def ocoutput = openshift.exec(
-                            pods.objects()[0].metadata.name,
-                            "--",
-                            "bash -c '\
-                                cd /opt/app-root/src/backend; \
-                                python manage.py loaddata \
-                                gwells-codetables.json \
-                                wellsearch-codetables.json \
-                                registries-codetables.json \
-                                registries.json \
-                                wellsearch.json \
-                                aquifers.json \
-                            '"
-                        )
-                        echo "Load Fixtures results: "+ ocoutput.actions[0].out
-
-                        openshift.exec(
-                            pods.objects()[0].metadata.name,
-                            "--",
-                            "bash -c '\
-                                cd /opt/app-root/src/backend; \
-                                python manage.py createinitialrevisions \
-                            '"
-                        )
-                        def targetURL = "https://${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca/gwells"
-                        createDeploymentStatus(DEV_SUFFIX, 'SUCCESS', targetURL)
-                    }
-                }
             }
-        }
-
-        // the Django Unit Tests stage runs backend unit tests using a test DB that is
-        // created and destroyed afterwards. @DEREK Take this one
-        stage('DEV - Django Unit Tests') {
             steps {
                 script {
                     _openshift(env.STAGE_NAME, DEV_PROJECT) {
@@ -538,6 +499,50 @@ pipeline {
                 }
             }
         }
+
+
+        stage('DEV - Load Fixtures') {
+            when {
+                expression { env.CHANGE_TARGET != 'master' && env.CHANGE_TARGET != 'demo' }
+            }
+            steps {
+                script {
+                    _openshift(env.STAGE_NAME, DEV_PROJECT) {
+                        def newVersion = openshift.selector("dc", "${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}").object().status.latestVersion
+                        def pods = openshift.selector('pod', [deployment: "${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}-${newVersion}"])
+
+                        echo "Loading fixtures"
+                        def ocoutput = openshift.exec(
+                            pods.objects()[0].metadata.name,
+                            "--",
+                            "bash -c '\
+                                cd /opt/app-root/src/backend; \
+                                python manage.py loaddata \
+                                gwells-codetables.json \
+                                wellsearch-codetables.json \
+                                registries-codetables.json \
+                                registries.json \
+                                wellsearch.json \
+                                aquifers.json \
+                            '"
+                        )
+                        echo "Load Fixtures results: "+ ocoutput.actions[0].out
+
+                        openshift.exec(
+                            pods.objects()[0].metadata.name,
+                            "--",
+                            "bash -c '\
+                                cd /opt/app-root/src/backend; \
+                                python manage.py createinitialrevisions \
+                            '"
+                        )
+                        def targetURL = "https://${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca/gwells"
+                        createDeploymentStatus(DEV_SUFFIX, 'SUCCESS', targetURL)
+                    }
+                }
+            }
+        }
+
         
         // Functional tests temporarily limited to smoke tests
         // See https://github.com/BCDevOps/BDDStack
@@ -713,6 +718,58 @@ pipeline {
                         }
 
                         createDeploymentStatus(STAGING_SUFFIX, 'SUCCESS', targetTestURL)
+                    }
+                }
+            }
+        }
+
+
+        // the Django Unit Tests stage runs backend unit tests using a test DB that is
+        // created and destroyed afterwards.
+        // TODO: This will be combined with the other Django tests in a function soon
+        stage('STAGING - Django Unit Tests') {
+            when {
+                expression { env.CHANGE_TARGET == 'master' }
+            }
+            steps {
+                script {
+                    _openshift(env.STAGE_NAME, STAGING_PROJECT) {
+
+                        def DB_newVersion = openshift.selector("dc", "${APP_NAME}-pgsql-${STAGING_SUFFIX}").object().status.latestVersion
+                        def DB_pod = openshift.selector('pod', [deployment: "${APP_NAME}-pgsql-${STAGING_SUFFIX}-${DB_newVersion}"])
+                        echo "Temporarily granting elevated DB rights"
+                        def db_ocoutput_grant = openshift.exec(
+                            DB_pod.objects()[0].metadata.name,
+                            "--",
+                            "bash -c '\
+                                psql -c \"ALTER USER \\\"\${POSTGRESQL_USER}\\\" WITH SUPERUSER;\" \
+                            '"
+                        )
+                        echo "Temporary DB grant results: "+ db_ocoutput_grant.actions[0].out
+
+                        def newVersion = openshift.selector("dc", "${APP_NAME}-${STAGING_SUFFIX}").object().status.latestVersion
+                        def pods = openshift.selector('pod', [deployment: "${APP_NAME}-${STAGING_SUFFIX}-${newVersion}"])
+
+                        echo "Running Django unit tests"
+                        def ocoutput = openshift.exec(
+                            pods.objects()[0].metadata.name,
+                            "--",
+                            "bash -c '\
+                                cd /opt/app-root/src/backend; \
+                                python manage.py test -c nose.cfg \
+                            '"
+                        )
+                        echo "Django test results: "+ ocoutput.actions[0].out
+
+                        echo "Revoking ADMIN rights"
+                        def db_ocoutput_revoke = openshift.exec(
+                            DB_pod.objects()[0].metadata.name,
+                            "--",
+                            "bash -c '\
+                                psql -c \"ALTER USER \\\"\${POSTGRESQL_USER}\\\" WITH NOSUPERUSER;\" \
+                            '"
+                        )
+                        echo "DB Revocation results: "+ db_ocoutput_revoke.actions[0].out
                     }
                 }
             }
