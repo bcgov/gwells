@@ -493,7 +493,7 @@ pipeline {
         }
 
         // the Django Unit Tests stage runs backend unit tests using a test DB that is
-        // created and destroyed afterwards. 
+        // created and destroyed afterwards. @DEREK Take this one
         stage('DEV - Django Unit Tests') {
             steps {
                 script {
