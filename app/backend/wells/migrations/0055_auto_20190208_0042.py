@@ -14,11 +14,15 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='activitysubmission',
             name='well_publication_status',
-            field=models.ForeignKey(db_column='well_publication_status_code', default='Published', on_delete=django.db.models.deletion.CASCADE, to='wells.WellPublicationStatusCode', verbose_name='Well Publication Status'),
+            field=models.ForeignKey(db_column='well_publication_status_code', default='Published',
+                                    on_delete=django.db.models.deletion.CASCADE, to='wells.WellPublicationStatusCode',
+                                    verbose_name='Well Publication Status', blank=True, null=True),
         ),
         migrations.AddField(
             model_name='well',
             name='well_publication_status',
-            field=models.ForeignKey(db_column='well_publication_status_code', default='Published', on_delete=django.db.models.deletion.CASCADE, to='wells.WellPublicationStatusCode', verbose_name='Well Publication Status'),
+            field=models.ForeignKey(db_column='well_publication_status_code', default='Published',
+                                    on_delete=django.db.models.deletion.CASCADE, to='wells.WellPublicationStatusCode',
+                                    verbose_name='Well Publication Status', blank=True, null=True),
         ),
     ]

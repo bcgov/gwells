@@ -175,7 +175,7 @@ class Command(BaseCommand):
  registries_person.person_guid = well.person_responsible_guid
  left join registries_organization on
  registries_organization.org_guid = well.org_of_person_responsible_guid
- where well.well_publication_status_code = 'Published'
+ where well.well_publication_status_code = 'Published' or well.well_publication_status_code = null
  order by well_tag_number""")
         ###########
         # LITHOLOGY
@@ -196,32 +196,32 @@ class Command(BaseCommand):
  lhc.lithology_hardness_code = lithology_description.lithology_hardness_code
  left join lithology_colour_code as lcc on
  lcc.lithology_colour_code = lithology_description.lithology_colour_code
- left join well on well.well_tag_number = lithology_description.well_tag_number
- where well.well_publication_status_code = 'Published'
+ inner join well on well.well_tag_number = lithology_description.well_tag_number
+ where well.well_publication_status_code = 'Published' or well.well_publication_status_code = null
  order by lithology_description.well_tag_number""")
         ########
         # CASING
         ########
         casing_sql = ("""select casing.well_tag_number, casing_from, casing_to, casing.diameter, casing_code,
  casing_material_code, wall_thickness, drive_shoe from casing
- left join well on well.well_tag_number = casing.well_tag_number
- where well.well_publication_status_code = 'Published'
+ inner join well on well.well_tag_number = casing.well_tag_number
+ where well.well_publication_status_code = 'Published' or well.well_publication_status_code = null
  order by casing.well_tag_number""")
         ########
         # SCREEN
         ########
         screen_sql = ("""select screen.well_tag_number, screen_from, screen_to, internal_diameter,
  screen_assembly_type_code, slot_size from screen
- left join well on well.well_tag_number = screen.well_tag_number
- where well.well_publication_status_code = 'Published'
+ inner join well on well.well_tag_number = screen.well_tag_number
+ where well.well_publication_status_code = 'Published' or well.well_publication_status_code = null
  order by screen.well_tag_number""")
         ##############
         # PERFORATIONS
         ##############
         perforation_sql = ("""select p.well_tag_number, p.liner_from, p.liner_to, p.liner_diameter,
  liner_perforation_from, liner_perforation_to, p.liner_thickness from perforation as p
- left join well on well.well_tag_number = p.well_tag_number
- where well.well_publication_status_code = 'Published'
+ inner join well on well.well_tag_number = p.well_tag_number
+ where well.well_publication_status_code = 'Published' or well.well_publication_status_code = null
  order by p.well_tag_number""")
 
         if os.path.exists(zip_filename):

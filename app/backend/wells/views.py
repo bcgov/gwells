@@ -69,7 +69,8 @@ class WellDetail(RetrieveAPIView):
     """
     serializer_class = WellDetailSerializer
 
-    queryset = Well.objects.exclude(well_publication_status='Unpublished')
+    # TODO Address viewing unpublished wells when advanced search has been merged
+    queryset = Well.objects.all()  # exclude(well_publication_status='Unpublished')
     lookup_field = 'well_tag_number'
 
     def get_serializer(self, *args, **kwargs):
@@ -151,7 +152,8 @@ class WellListAPIView(ListAPIView):
 
     permission_classes = (DjangoModelPermissionsOrAnonReadOnly,)
     model = Well
-    queryset = Well.objects.exclude(well_publication_status='Unpublished')
+    # TODO Address viewing unpublished wells when advanced search has been merged
+    queryset = Well.objects.all()  # exclude(well_publication_status='Unpublished')
     pagination_class = APILimitOffsetPagination
     serializer_class = WellListSerializer
 
