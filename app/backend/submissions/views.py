@@ -120,7 +120,6 @@ def get_submission_queryset(qs):
                 'company_of_person_responsible',
                 "owner_province_state",
                 "ground_elevation_method",
-                "drilling_method",
                 "surface_seal_material",
                 "surface_seal_method",
                 "liner_material",
@@ -132,6 +131,7 @@ def get_submission_queryset(qs):
                 "casing_set",
                 "screen_set",
                 "decommission_description_set",
+                "drilling_methods"
             ) \
             .order_by("filing_number")
 
