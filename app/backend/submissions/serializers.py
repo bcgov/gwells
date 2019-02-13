@@ -23,7 +23,7 @@ import wells.stack
 
 from gwells.models.lithology import (
     LithologyColourCode, LithologyHardnessCode,
-    LithologyMaterialCode, LithologyMoistureCode)
+    LithologyMaterialCode, LithologyMoistureCode, LithologyDescriptionCode)
 
 from wells.models import Well, ActivitySubmission, WellActivityCode
 from wells.serializers import (
@@ -886,4 +886,15 @@ class ObservationWellStatusCodeSerializer(serializers.ModelSerializer):
         model = ObsWellStatusCode
         fields = (
             'obs_well_status_code', 'description'
+        )
+
+
+class LithologyDescriptionCodeSerializer(serializers.ModelSerializer):
+    """ serializes lithology descriptor codes """
+
+    class Meta:
+        model = LithologyDescriptionCode
+        fields = (
+            'lithology_description_code',
+            'description',
         )

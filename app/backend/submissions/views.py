@@ -28,7 +28,7 @@ from wells.permissions import WellsEditPermissions
 from gwells.models import ProvinceStateCode
 from gwells.models.lithology import (
     LithologyColourCode, LithologyHardnessCode,
-    LithologyMaterialCode, LithologyMoistureCode,)
+    LithologyMaterialCode, LithologyMoistureCode, LithologyDescriptionCode)
 from gwells.serializers import ProvinceStateCodeSerializer
 from gwells.settings.base import get_env_variable
 from wells.models import (
@@ -83,6 +83,7 @@ from submissions.serializers import (
     LinerMaterialCodeSerializer,
     LithologyHardnessSerializer,
     LithologyColourSerializer,
+    LithologyDescriptionCodeSerializer,
     LithologyMaterialSerializer,
     LithologyMoistureSerializer,
     ObservationWellStatusCodeSerializer,
@@ -325,6 +326,8 @@ class SubmissionsOptions(APIView):
         lithology_colours = LithologyColourSerializer(instance=LithologyColourCode.objects.all(), many=True)
         lithology_materials = LithologyMaterialSerializer(instance=LithologyMaterialCode.objects.all(), many=True)
         lithology_moisture = LithologyMoistureSerializer(instance=LithologyMoistureCode.objects.all(), many=True)
+        lithology_descriptors = LithologyDescriptionCodeSerializer(
+            instance=LithologyDescriptionCode.objects.all(), many=True)
 
         root = urljoin('/', app_root, 'api/v1/')
         for item in activity_codes.data:
@@ -363,6 +366,7 @@ class SubmissionsOptions(APIView):
         options["lithology_colours"] = lithology_colours.data
         options["lithology_materials"] = lithology_materials.data
         options["lithology_moisture_codes"] = lithology_moisture.data
+        options["lithology_descriptors"] = lithology_descriptors.data
         options["well_status_codes"] = well_status_codes.data
         options["well_publication_status_codes"] = well_publication_status_codes.data
         options["observation_well_status"] = observation_well_status.data

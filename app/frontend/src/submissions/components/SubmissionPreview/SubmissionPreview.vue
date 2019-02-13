@@ -183,6 +183,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             'colour',
             'hardness',
             'moisture',
+            'descriptor',
             'water_bearing_estimated_flow',
           ]">
           <template slot="description" slot-scope="data">{{data.item.lithology_raw_data}}</template>
@@ -191,7 +192,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <template slot="colour" slot-scope="data">{{codeToDescription('lithology_colours', data.item.lithology_colour) }}</template>
           <template slot="hardness" slot-scope="data">{{codeToDescription('lithology_hardness_codes', data.item.lithology_hardness) }}</template>
           <template slot="moisture" slot-scope="data">{{codeToDescription('lithology_moisture_codes', data.item.lithology_moisture) }}</template>
-
+          <template slot="descriptor" slot-scope="data">{{codeToDescription('lithology_descriptors', data.item.lithology_description) }}</template>
         </b-table>
       </div>
     </fieldset>
@@ -206,7 +207,12 @@ Licensed under the Apache License, Version 2.0 (the "License");
           :items="filterBlankRows(form.decommission_description_set)"
           :fields="['start', 'end', 'material', 'observations']"
           show-empty
-        ></b-table>
+        >
+          <template slot="start" slot-scope="data">{{data.item.start}} ft</template>
+          <template slot="end" slot-scope="data">{{data.item.end}} ft</template>
+          <template slot="material" slot-scope="data">{{codeToDescription('decommission_materials', data.item.material)}}</template>
+          <template slot="observations" slot-scope="data">{{codeToDescription('decommission_materials', data.item.observations)}}</template>
+        </b-table>
       </div>
     </fieldset>
 

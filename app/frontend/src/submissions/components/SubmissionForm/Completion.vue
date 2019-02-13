@@ -28,7 +28,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <b-col cols="12" md="6" lg="4">
         <form-input
             id="totalDepthDrilled"
-            label="Total Depth Drilled *"
+            label="Total Depth Drilled"
             v-model="totalDepthDrilledInput"
             hint="ft"
             :errors="errors['total_depth_drilled']"
@@ -38,7 +38,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <b-col cols="12" md="6" lg="4">
         <form-input
             id="finishedWellDepth"
-            label="Finished Well Depth *"
+            label="Finished Well Depth"
             v-model="finishedWellDepthInput"
             hint="ft (bgl)"
             :errors="errors['finished_well_depth']"
@@ -50,7 +50,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <b-col cols="12" md="6" lg="4">
         <form-input
             id="finalCasingStickUp"
-            label="Final Casing Stick Up *"
+            label="Final Casing Stick Up"
             v-model="finalCasingStickUpInput"
             hint="in"
             :errors="errors['final_casing_stick_up']"
@@ -60,7 +60,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <b-col cols="12" md="6" lg="4">
         <form-input
             id="bedrockDepth"
-            label="Depth to Bedrock *"
+            label="Depth to Bedrock"
             v-model="bedrockDepthInput"
             hint="ft (bgl)"
             :errors="errors['depth_to_bedrock']"

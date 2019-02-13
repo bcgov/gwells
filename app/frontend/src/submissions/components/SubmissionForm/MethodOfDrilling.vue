@@ -52,7 +52,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <b-col cols="12" md="6">
           <form-input
               id="drillingMethod"
-              label="Drilling Method(s) *"
+              label="Drilling Method(s)"
               select
               :options="codes.drilling_methods"
               value-field="drilling_method_code"
