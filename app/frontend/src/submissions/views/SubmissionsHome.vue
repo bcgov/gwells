@@ -16,51 +16,94 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <div class="card-body">
 
       <!-- Form submission success message -->
-      <b-alert
-          id="submissionSuccessAlert"
-          :show="formSubmitSuccess"
-          variant="success"
-          class="mt-3">
-        <i class="fa fa-2x fa-check-circle text-success mr-2 alert-icon" aria-hidden="true"></i>
-        <div v-if="isStaffEdit" class="alert-message">
-          Changes saved.
-        </div>
-        <div v-else class="alert-message">
-          Your well record was successfully submitted.
-        </div>
-      </b-alert>
+      <b-modal
+        v-model="formSubmitSuccess"
+        hide-header
+        hide-footer
+        hide-header-close>
+        <b-alert
+            id="submissionSuccessAlert"
+            :show="formSubmitSuccess"
+            variant="success"
+            class="mt-3">
+          <i class="fa fa-2x fa-check-circle text-success mr-2 alert-icon" aria-hidden="true"></i>
+          <div v-if="isStaffEdit" class="alert-message">
+            Changes saved.
+          </div>
+          <div v-else class="alert-message">
+            Your well record was successfully submitted.
+          </div>
+        </b-alert>
+      </b-modal>
 
       <!-- Document Uploading alerts -->
-      <b-alert show v-if="files_uploading">File Upload In Progress...</b-alert>
-      <b-alert show v-if="!files_uploading && file_upload_error" variant="warning" >{{file_upload_error}}</b-alert>
-      <b-alert show v-if="!files_uploading && file_upload_success" variant="success" >Successfully uploaded all files</b-alert>
+      <b-modal
+        v-model="files_uploading"
+        hide-header
+        hide-footer
+        hide-header-close><b-alert show v-if="files_uploading">File Upload In Progress...</b-alert>
+      </b-modal>
+      <b-modal
+        v-model="!files_uploading && file_upload_error"
+        hide-header
+        hide-footer
+        hide-header-close><b-alert show v-if="!files_uploading && file_upload_error" variant="warning" >{{file_upload_error}}</b-alert>
+      </b-modal>
+      <b-modal
+        visible=(!files_uploading && file_upload_success)
+        hide-header
+        hide-footer
+        hide-header-close><b-alert show v-if="!files_uploading && file_upload_success" variant="success" >Successfully uploaded all files</b-alert>
+      </b-modal>
+
+      <!-- Form saving message -->
+      <b-modal
+        v-model="formSubmitLoading"
+        hide-header
+        hide-footer
+        hide-header-close>
+        <b-container>
+          <b-col>
+            <b-row>
+              <div class="loader"></div>
+              <div class="alert-message">Saving...</div>
+            </b-row>
+          </b-col>
+        </b-container>
+      </b-modal>
 
       <!-- Form submission error message -->
-      <b-alert
-          :show="formSubmitError"
-          dismissible
-          @dismissed="formSubmitError=false"
-          variant="danger"
-          class="mt-3">
+      <b-modal
+        v-model="formSubmitError"
+        hide-header
+        hide-footer
+        hide-header-close>
+        <b-alert
+            :show="formSubmitError"
+            dismissible
+            @dismissed="formSubmitError=false"
+            variant="danger"
+            class="mt-3">
 
-        <i class="fa fa-2x fa-exclamation-circle text-danger mr-2 alert-icon" aria-hidden="true"></i>
-        <div class="alert-message">
-          <div v-if="isStaffEdit">
-            Your changes were not saved.
-          </div>
-          <div v-else>
-            Your well record was not submitted.
-          </div>
-          <span v-if="errors && errors.detail">
-            {{ errors.detail }}
-          </span>
-          <div v-if="errors && errors != {}">
-            <div v-for="(field, i) in Object.keys(errors)" :key="`submissionError${i}`">
-              {{field | readable}} : <span v-for="(e, j) in errors[field]" :key="`submissionError${i}-${j}`">{{ e }}</span>
+          <i class="fa fa-2x fa-exclamation-circle text-danger mr-2 alert-icon" aria-hidden="true"></i>
+          <div class="alert-message">
+            <div v-if="isStaffEdit">
+              Your changes were not saved.
+            </div>
+            <div v-else>
+              Your well record was not submitted.
+            </div>
+            <span v-if="errors && errors.detail">
+              {{ errors.detail }}
+            </span>
+            <div v-if="errors && errors != {}">
+              <div v-for="(field, i) in Object.keys(errors)" :key="`submissionError${i}`">
+                {{field | readable}} : <span v-for="(e, j) in errors[field]" :key="`submissionError${i}-${j}`">{{ e }}</span>
+              </div>
             </div>
           </div>
-        </div>
-      </b-alert>
+        </b-alert>
+      </b-modal>
 
       <b-form @submit.prevent="confirmSubmit">
         <!-- if preview === true : Preview -->
@@ -645,5 +688,18 @@ export default {
 }
 .input-width-medium {
   max-width: 6rem;
+}
+.loader {
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #5b7b9c;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 </style>
