@@ -44,13 +44,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
         hide-header-close><b-alert show v-if="files_uploading">File Upload In Progress...</b-alert>
       </b-modal>
       <b-modal
-        v-model="!files_uploading && file_upload_error"
+        v-model="file_upload_error"
         hide-header
         hide-footer
         hide-header-close><b-alert show v-if="!files_uploading && file_upload_error" variant="warning" >{{file_upload_error}}</b-alert>
       </b-modal>
       <b-modal
-        visible=(!files_uploading && file_upload_success)
+        v-model="file_upload_success"
         hide-header
         hide-footer
         hide-header-close><b-alert show v-if="!files_uploading && file_upload_success" variant="success" >Successfully uploaded all files</b-alert>
@@ -365,10 +365,6 @@ export default {
         if (!this.form.well_tag_number) {
           this.setWellTagNumber(response.data.well)
         }
-
-        this.$nextTick(function () {
-          window.scrollTo(0, 0)
-        })
 
         if (this.upload_files.length > 0) {
           if (response.data.filing_number) {
