@@ -35,6 +35,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             value-field="development_method_code"
             v-model="developmentMethodInput"
             placeholder="Select method"
+            :multiple="true"
             :errors="errors['development_method']"
             :loaded="fieldsLoaded['development_method']"></form-input>
       </b-col>
@@ -68,7 +69,7 @@ import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 export default {
   mixins: [inputBindingsMixin],
   props: {
-    developmentMethod: String,
+    developmentMethod: Array,
     developmentHours: String,
     developmentNotes: String,
     errors: {

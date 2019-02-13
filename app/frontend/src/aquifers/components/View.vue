@@ -165,7 +165,9 @@ export default {
     handleSaveSuccess () {
       this.fetch()
       this.navigateToView()
-      this.$refs.aquiferHistory.update()
+      if (this.$refs.aquiferHistory) {
+        this.$refs.aquiferHistory.update()
+      }
       this.showSaveSuccess = true
 
       if (this.upload_files.length > 0) {
@@ -181,7 +183,6 @@ export default {
       }
     },
     handlePatchError (error) {
-      console.log(error)
       if (error.response) {
         if (error.response.status === 400) {
           this.fieldErrors = error.response.data

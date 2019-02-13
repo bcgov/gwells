@@ -51,30 +51,19 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <b-row>
         <b-col cols="12" md="6">
           <form-input
-            id="drillingMethod"
-            label="Drilling Method *"
-            select
-            :options="codes.drilling_methods"
-            placeholder="Select method"
-            value-field="drilling_method_code"
-            text-field="description"
-            v-model="drillingMethodInput"
-            :errors="errors['drilling_method']"
-            :loaded="fieldsLoaded['drilling_method']"
+              id="drillingMethod"
+              label="Drilling Method(s)"
+              select
+              :options="codes.drilling_methods"
+              value-field="drilling_method_code"
+              text-field="description"
+              hint="Select one or more drilling methods"
+              v-model="drillingMethodInput"
+              :multiple="true"
+              :errors="errors['drilling_methods']"
+              :loaded="fieldsLoaded['drilling_methods']"
           ></form-input>
         </b-col>
-        <b-col cols="12" md="6">
-          <form-input
-            id="otherDrillingMethod"
-            label="Specify Other Method of Drilling"
-            type="text"
-            v-model="otherDrillingMethodInput"
-            :errors="errors['other_drilling_method']"
-            :loaded="fieldsLoaded['other_drilling_method']"
-          ></form-input>
-        </b-col>
-      </b-row>
-      <b-row>
         <b-col>
           <b-form-group label="Orientation of Well">
             <b-form-radio-group v-model="wellOrientationInput"
@@ -98,7 +87,7 @@ export default {
   props: {
     groundElevation: null,
     groundElevationMethod: String,
-    drillingMethod: String,
+    drillingMethod: Array,
     otherDrillingMethod: String,
     wellOrientation: null,
     errors: {

@@ -11,7 +11,8 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-from django.db import models
+
+from django.contrib.gis.db import models
 from django.core.validators import MinValueValidator
 from decimal import Decimal
 import uuid
@@ -601,11 +602,8 @@ class Well(AuditModel):
                                                 db_column='ground_elevation_method_code',
                                                 on_delete=models.CASCADE, blank=True, null=True,
                                                 verbose_name='Elevation Determined By')
-    drilling_method = models.ForeignKey(DrillingMethodCode, db_column='drilling_method_code',
-                                        on_delete=models.CASCADE, blank=True, null=True,
-                                        verbose_name='Drilling Method')
-    other_drilling_method = models.CharField(
-        max_length=50, blank=True, null=True, verbose_name='Specify Other Drilling Method')
+    drilling_methods = models.ManyToManyField(DrillingMethodCode, verbose_name='Drilling Methods',
+                                              blank=True)
     well_orientation = models.BooleanField(default=True, verbose_name='Orientation of Well', choices=(
         (True, 'vertical'), (False, 'horizontal')))
 
@@ -677,10 +675,8 @@ class Well(AuditModel):
                                                   db_column='filter_pack_material_size_code',
                                                   on_delete=models.CASCADE, blank=True, null=True,
                                                   verbose_name='Filter Pack Material Size')
-
-    development_method = models.ForeignKey(DevelopmentMethodCode, db_column='development_method_code',
-                                           on_delete=models.CASCADE, blank=True, null=True,
-                                           verbose_name='Developed By')
+    development_methods = models.ManyToManyField(DevelopmentMethodCode, blank=True,
+                                                 verbose_name='Development Methods')
     development_hours = models.DecimalField(max_digits=9, decimal_places=2, blank=True, null=True,
                                             verbose_name='Development Total Duration',
                                             validators=[MinValueValidator(Decimal('0.00'))])
@@ -760,10 +756,10 @@ class Well(AuditModel):
     decommission_method = models.ForeignKey(
         DecommissionMethodCode, db_column='decommission_method_code', blank=True, null="True",
         verbose_name="Method of Decommission", on_delete=models.PROTECT)
-    sealant_material = models.CharField(
-        max_length=100, blank=True, null=True, verbose_name="Sealant Material")
-    backfill_material = models.CharField(
-        max_length=100, blank=True, null=True, verbose_name="Backfill Material")
+    decommission_sealant_material = models.CharField(
+        max_length=100, blank=True, null=True, verbose_name="Decommission Sealant Material")
+    decommission_backfill_material = models.CharField(
+        max_length=100, blank=True, null=True, verbose_name="Decommission Backfill Material")
     decommission_details = models.CharField(
         max_length=250, blank=True, null=True, verbose_name="Decommission Details")
     ems_id = models.CharField(max_length=30, blank=True, null=True)
@@ -1081,11 +1077,8 @@ class ActivitySubmission(AuditModel):
                                                 db_column='ground_elevation_method_code',
                                                 on_delete=models.CASCADE, blank=True, null=True,
                                                 verbose_name='Elevation Determined By')
-    drilling_method = models.ForeignKey(DrillingMethodCode, db_column='drilling_method_code',
-                                        on_delete=models.CASCADE, blank=True, null=True,
-                                        verbose_name='Drilling Method')
-    other_drilling_method = models.CharField(
-        max_length=50, blank=True, null=True, verbose_name='Specify Other Drilling Method')
+    drilling_methods = models.ManyToManyField(DrillingMethodCode, verbose_name='Drilling Methods',
+                                              blank=True)
     well_orientation = models.BooleanField(default=True, verbose_name='Orientation of Well', choices=(
         (True, 'vertical'), (False, 'horizontal')))
     water_supply_system_name = models.CharField(
@@ -1168,10 +1161,8 @@ class ActivitySubmission(AuditModel):
                                                   db_column='filter_pack_material_size_code',
                                                   on_delete=models.CASCADE, blank=True, null=True,
                                                   verbose_name='Filter Pack Material Size')
-
-    development_method = models.ForeignKey(DevelopmentMethodCode, db_column='development_method_code',
-                                           on_delete=models.CASCADE, blank=True, null=True,
-                                           verbose_name='Development Method')
+    development_methods = models.ManyToManyField(DevelopmentMethodCode, blank=True,
+                                                 verbose_name='Development Methods')
     development_hours = models.DecimalField(max_digits=9, decimal_places=2, blank=True, null=True,
                                             verbose_name='Development Total Duration',
                                             validators=[MinValueValidator(Decimal('0.00'))])
@@ -1211,7 +1202,7 @@ class ActivitySubmission(AuditModel):
     internal_comments = models.CharField(max_length=3000, blank=True, null=True)
 
     alternative_specs_submitted = models.BooleanField(
-        default=False, verbose_name='Alternative specs submitted (if required)')
+        default=False, verbose_name='Alternative specs submitted (if required)', choices=((False, 'No'), (True, 'Yes')))
 
     well_yield_unit = models.ForeignKey(
         WellYieldUnitCode, db_column='well_yield_unit_code', on_delete=models.CASCADE, blank=True, null=True)
@@ -1236,9 +1227,9 @@ class ActivitySubmission(AuditModel):
     decommission_method = models.ForeignKey(
         DecommissionMethodCode, db_column='decommission_method_code', blank=True, null=True,
         verbose_name="Method of Decommission", on_delete=models.PROTECT)
-    sealant_material = models.CharField(
+    decommission_sealant_material = models.CharField(
         max_length=100, blank=True, null=True, verbose_name="Sealant Material")
-    backfill_material = models.CharField(
+    decommission_backfill_material = models.CharField(
         max_length=100, blank=True, null=True, verbose_name="Backfill Material")
     decommission_details = models.CharField(
         max_length=250, blank=True, null=True, verbose_name="Decommission Details")

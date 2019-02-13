@@ -184,26 +184,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
         id="method"
         :groundElevation.sync="form.ground_elevation"
         :groundElevationMethod.sync="form.ground_elevation_method"
-        :drillingMethod.sync="form.drilling_method"
-        :otherDrillingMethod.sync="form.other_drilling_method"
+        :drillingMethod.sync="form.drilling_methods"
         :wellOrientation.sync="form.well_orientation"
         :errors="errors"
         :isStaffEdit="isStaffEdit"
         :saveDisabled="editSaveDisabled"
         v-on:save="$emit('submit_edit')"
       />
-
-      <!-- Closure/Decommission Description -->
-      <closure-description class="my-5"
-        v-if="showSection('closureDescription')"
-        id="closureDescription"
-        :errors="errors"
-        :isStaffEdit="isStaffEdit"
-        :saveDisabled="editSaveDisabled"
-        v-on:save="$emit('submit_edit')"
-        :closureDescriptionSet.sync="form.decommission_description_set">
-
-      </closure-description>
 
       <!-- Lithology -->
       <lithology class="my-5"
@@ -303,7 +290,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-if="showSection('wellDevelopment')"
         id="wellDevelopment"
         :errors="errors"
-        :developmentMethod.sync="form.development_method"
+        :developmentMethod.sync="form.development_methods"
         :developmentHours.sync="form.development_hours"
         :developmentNotes.sync="form.development_notes"
         :isStaffEdit="isStaffEdit"
@@ -377,20 +364,32 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-on:save="$emit('submit_edit')"
       />
 
+      <!-- Decommission Information -->
       <decommission-information class="my-5"
         v-if="showSection('decommissionInformation')"
         id="decommissionInformation"
         :finishedWellDepth.sync="form.finished_well_depth"
         :decommissionReason.sync="form.decommission_reason"
         :decommissionMethod.sync="form.decommission_method"
-        :sealantMaterial.sync="form.sealant_material"
-        :backfillMaterial.sync="form.backfill_material"
+        :sealantMaterial.sync="form.decommission_sealant_material"
+        :backfillMaterial.sync="form.decommission_backfill_material"
         :decommissionDetails.sync="form.decommission_details"
         :errors="errors"
         :isStaffEdit="isStaffEdit"
         :saveDisabled="editSaveDisabled"
         v-on:save="$emit('submit_edit')"
       />
+
+      <!-- Closure/Decommission Description -->
+      <closure-description class="my-5"
+         v-if="showSection('closureDescription')"
+         id="closureDescription"
+         :errors="errors"
+         :isStaffEdit="isStaffEdit"
+         :saveDisabled="editSaveDisabled"
+         v-on:save="$emit('submit_edit')"
+         :closureDescriptionSet.sync="form.decommission_description_set">
+      </closure-description>
 
       <!-- Comments -->
       <comments class="my-5"
