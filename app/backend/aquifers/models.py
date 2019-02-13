@@ -14,7 +14,8 @@
 import reversion
 
 from django.utils import timezone
-from django.db import models
+from django.contrib.gis.db import models
+
 from gwells.models import AuditModel
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.validators import MinValueValidator, MaxValueValidator
