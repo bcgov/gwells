@@ -29,7 +29,7 @@ services:
       MINIO_SECRET_KEY: minio1234
     command: server --address ":9001" /data
   db:
-    image: docker-registry.pathfinder.gov.bc.ca/moe-gwells-tools/postgis-oracle-fdw:96-24-1
+    image: mdillon/postgis
     hostname: db
     environment:
       POSTGRESQL_USER: gwells
