@@ -101,6 +101,51 @@ def functionalTest (String STAGE_NAME, String BASE_URL, String ENV_SUFFIX, Strin
 }
 
 
+// Functional test script
+// Can be limited by assinging toTest var
+def unitTestDjango (String STAGE_NAME, String ENV_PROJECT, String ENV_SUFFIX) {
+    _openshift(env.STAGE_NAME, ENV_PROJECT) {
+        def DB_target = ENV_PROJECT == 'staging' ? "${APP_NAME}-pgsql-${ENV_SUFFIX}" : "${APP_NAME}-pgsql-${ENV_SUFFIX}-${PR_NUM}"
+        def DB_newVersion = openshift.selector("dc", "${DB_target}").object().status.latestVersion
+        def DB_pod = openshift.selector('pod', [deployment: "${DB_target}-${DB_newVersion}"])
+        echo "Temporarily granting elevated DB rights"
+        def db_ocoutput_grant = openshift.exec(
+            DB_pod.objects()[0].metadata.name,
+            "--",
+            "bash -c '\
+                psql -c \"ALTER USER \\\"\${POSTGRESQL_USER}\\\" WITH SUPERUSER;\" \
+            '"
+        )
+        echo "Temporary DB grant results: "+ db_ocoutput_grant.actions[0].out
+
+        def target = ENV_PROJECT == 'staging' ? "${APP_NAME}-${ENV_SUFFIX}" : "${APP_NAME}-${ENV_SUFFIX}-${PR_NUM}"
+        def newVersion = openshift.selector("dc", "${target}").object().status.latestVersion
+        def pods = openshift.selector('pod', [deployment: "${target}-${newVersion}"])
+
+        echo "Running Django unit tests"
+        def ocoutput = openshift.exec(
+            pods.objects()[0].metadata.name,
+            "--",
+            "bash -c '\
+                cd /opt/app-root/src/backend; \
+                python manage.py test -c nose.cfg \
+            '"
+        )
+        echo "Django test results: "+ ocoutput.actions[0].out
+
+        echo "Revoking ADMIN rights"
+        def db_ocoutput_revoke = openshift.exec(
+            DB_pod.objects()[0].metadata.name,
+            "--",
+            "bash -c '\
+                psql -c \"ALTER USER \\\"\${POSTGRESQL_USER}\\\" WITH NOSUPERUSER;\" \
+            '"
+        )
+        echo "DB Revocation results: "+ db_ocoutput_revoke.actions[0].out
+    }
+}
+
+
 // Print stack trace of error
 @NonCPS
 private static String stackTraceAsString(Throwable t) {
@@ -337,9 +382,9 @@ pipeline {
         }
 
 
-        // the Build stage runs unit tests and builds files. an image will be outputted to the app's imagestream
-        // builds use the source to image strategy. See /app/.s2i/assemble for image build script
-        stage('ALL - Build (with tests)') {
+        // the Build stage builds files; an image will be outputted to the app's imagestream,
+        // using the source-to-image (s2i) strategy. See /app/.s2i/assemble for image build script
+        stage('ALL - Build') {
             steps {
                 script {
                     _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
@@ -358,10 +403,9 @@ pipeline {
             }
         }
 
-
-        // the Deploy to Dev stage creates a new dev environment for the pull request (if necessary), tags the newly built
-        // application image into that environment, and monitors the newest deployment for pods/containers to
-        // report back as ready.
+        // the Deploy to Dev stage creates a new dev environment for the pull request (if necessary), tagging
+        // the newly built application image into that environment.  This stage monitors the newest deployment
+        // for pods/containers to report back as ready.
         stage('DEV - Deploy') {
             when {
                 expression { env.CHANGE_TARGET != 'master' && env.CHANGE_TARGET != 'demo' }
@@ -451,6 +495,22 @@ pipeline {
         }
 
 
+        // the Django Unit Tests stage runs backend unit tests using a test DB that is
+        // created and destroyed afterwards.
+        stage('DEV - Django Unit Tests') {
+            when {
+                expression { env.CHANGE_TARGET != 'master' && env.CHANGE_TARGET != 'demo' }
+            }
+            steps {
+                script {
+                    _openshift(env.STAGE_NAME, DEV_PROJECT) {
+                        def result = unitTestDjango (env.STAGE_NAME, DEV_PROJECT, DEV_SUFFIX)
+                    }
+                }
+            }
+        }
+
+
         stage('DEV - Load Fixtures') {
             when {
                 expression { env.CHANGE_TARGET != 'master' && env.CHANGE_TARGET != 'demo' }
@@ -493,7 +553,7 @@ pipeline {
             }
         }
 
-
+        
         // Functional tests temporarily limited to smoke tests
         // See https://github.com/BCDevOps/BDDStack
         stage('DEV - Smoke Tests') {
@@ -541,6 +601,7 @@ pipeline {
                         echo "Preparing..."
 
                         // Process db and app template into list objects
+                        // TODO: Match docker-compose image from moe-gwells-tools
                         echo "Updating staging deployment..."
                         def deployDBTemplate = openshift.process("-f",
                             "openshift/postgresql.dc.json",
@@ -667,6 +728,22 @@ pipeline {
                         }
 
                         createDeploymentStatus(STAGING_SUFFIX, 'SUCCESS', targetTestURL)
+                    }
+                }
+            }
+        }
+
+
+        // the Django Unit Tests stage runs backend unit tests using a test DB that is
+        // created and destroyed afterwards.
+        stage('Staging - Django Unit Tests') {
+            when {
+                expression { env.CHANGE_TARGET == 'master' }
+            }
+            steps {
+                script {
+                    _openshift(env.STAGE_NAME, STAGING_PROJECT) {
+                        def result = unitTestDjango (env.STAGE_NAME, STAGING_PROJECT, STAGING_SUFFIX)
                     }
                 }
             }

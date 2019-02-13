@@ -909,8 +909,6 @@
             "bcgs_id": null,
             "decommission_reason": null,
             "decommission_method": null,
-            "sealant_material": null,
-            "backfill_material": null,
             "decommission_details": null,
             "water_quality_characteristics": []
         }
@@ -959,7 +957,9 @@
             "longitude": "-122.540000",
             "ground_elevation": "1697.00",
             "ground_elevation_method": null,
-            "drilling_methods": ["AIR_ROTARY"],
+            "drilling_methods": [
+                "AIR_ROTARY"
+            ],
             "well_orientation": true,
             "surface_seal_material": "BNTITE_CLY",
             "surface_seal_length": "20.00",
@@ -984,7 +984,9 @@
             "filter_pack_thickness": null,
             "filter_pack_material": null,
             "filter_pack_material_size": null,
-            "development_methods": ["AIR_LIFT"],
+            "development_methods": [
+                "AIR_LIFT"
+            ],
             "development_hours": "1.00",
             "development_notes": "",
             "water_quality_colour": "",
@@ -1015,8 +1017,6 @@
             "bcgs_id": 876,
             "decommission_reason": null,
             "decommission_method": null,
-            "sealant_material": null,
-            "backfill_material": null,
             "decommission_details": null,
             "water_quality_characteristics": [],
             "yield_estimation_method": "AIR_LIFT",
@@ -1072,7 +1072,9 @@
             "longitude": "-122.580000",
             "ground_elevation": "3091.00",
             "ground_elevation_method": "GPS",
-            "drilling_methods": ["AIR_ROTARY"],
+            "drilling_methods": [
+                "AIR_ROTARY"
+            ],
             "well_orientation": true,
             "surface_seal_material": "BNTITE_CLY",
             "surface_seal_length": "16.00",
@@ -1097,7 +1099,9 @@
             "filter_pack_thickness": null,
             "filter_pack_material": null,
             "filter_pack_material_size": null,
-            "development_methods": ["AIR_LIFT"],
+            "development_methods": [
+                "AIR_LIFT"
+            ],
             "development_hours": "1.00",
             "development_notes": "",
             "water_quality_colour": "",
@@ -1128,8 +1132,6 @@
             "bcgs_id": 10453,
             "decommission_reason": null,
             "decommission_method": null,
-            "sealant_material": null,
-            "backfill_material": null,
             "decommission_details": null,
             "water_quality_characteristics": [],
             "yield_estimation_method": "AIR_LIFT",
@@ -1185,7 +1187,9 @@
             "longitude": "-122.590000",
             "ground_elevation": null,
             "ground_elevation_method": null,
-            "drilling_methods": ["AIR_ROTARY"],
+            "drilling_methods": [
+                "AIR_ROTARY"
+            ],
             "well_orientation": true,
             "surface_seal_material": "BNTITE_CLY",
             "surface_seal_length": "18.00",
@@ -1210,7 +1214,9 @@
             "filter_pack_thickness": null,
             "filter_pack_material": null,
             "filter_pack_material_size": null,
-            "development_methods": ["AIR_LIFT"],
+            "development_methods": [
+                "AIR_LIFT"
+            ],
             "development_hours": null,
             "development_notes": "",
             "water_quality_colour": "",
@@ -1241,8 +1247,6 @@
             "bcgs_id": 13737,
             "decommission_reason": null,
             "decommission_method": null,
-            "sealant_material": null,
-            "backfill_material": null,
             "decommission_details": null,
             "water_quality_characteristics": [],
             "yield_estimation_method": "AIR_LIFT",
@@ -1298,7 +1302,9 @@
             "longitude": "-125.300830",
             "ground_elevation": "1.20",
             "ground_elevation_method": "GPS",
-            "drilling_methods": ["AIR_ROTARY"],
+            "drilling_methods": [
+                "AIR_ROTARY"
+            ],
             "well_orientation": true,
             "surface_seal_material": "BNTITE_CLY",
             "surface_seal_length": "15.00",
@@ -1323,7 +1329,9 @@
             "filter_pack_thickness": "1.000",
             "filter_pack_material": null,
             "filter_pack_material_size": null,
-            "development_methods": ["BAIL"],
+            "development_methods": [
+                "BAIL"
+            ],
             "development_hours": "3.00",
             "development_notes": "test",
             "water_quality_colour": "test",
@@ -1354,8 +1362,6 @@
             "bcgs_id": 6539,
             "decommission_reason": "SITE DEVELOPMENT",
             "decommission_method": "PUMPED",
-            "sealant_material": "CONCRETE",
-            "backfill_material": "test",
             "decommission_details": "NO ISSUES WITH CLOSURE. ONLY SLIGHT ARTESIAN FLOW IN NOV. 2014. CASING LEFT IN PLACE, PUMP PULLED.",
             "water_quality_characteristics": [],
             "yield_estimation_method": "AIR_LIFT",
@@ -1364,7 +1370,9 @@
             "static_level_before_test": null,
             "drawdown": "42.00",
             "hydro_fracturing_performed": false,
-            "hydro_fracturing_yield_increase": null
+            "hydro_fracturing_yield_increase": null,
+            "decommission_sealant_material": "CONCRETE",
+            "decommission_backfill_material": "test"
         }
     }
 ]

@@ -256,7 +256,9 @@ export default {
         land_district_code: '',
         name: 'Select district'
       }]
-      if (!this.codes || !this.codes.land_district_codes) {
+      // codes may not be loaded yet, or busy loading, so we have to check if we even have a map
+      // function available
+      if (!this.codes || !this.codes.land_district_codes || !this.codes.land_district_codes.map) {
         return initial
       }
       return initial.concat(

@@ -197,14 +197,6 @@ class WellTagSearchAPIView(ListAPIView):
         'owner_full_name',
     )
 
-    def get(self, request):
-        search = self.request.query_params.get('search', None)
-        if not search or len(search) < 3:
-            # avoiding responding with entire collection of wells
-            return Response([])
-        else:
-            return super().get(request)
-
 
 class PreSignedDocumentKey(APIView):
     """
