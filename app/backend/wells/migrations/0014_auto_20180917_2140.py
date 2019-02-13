@@ -7,8 +7,6 @@ from django.conf import settings
 
 
 class Migration(migrations.Migration):
-    atomic = settings.DATABASES.get('default').get('engine') == 'django.db.backends.postgresql'
-
     dependencies = [
         ('wells', '0013_auto_20180820_2028'),
     ]

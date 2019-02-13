@@ -61,16 +61,16 @@ Licensed under the Apache License, Version 2.0 (the "License");
             id="sealantMaterial"
             label="Sealant Material"
             v-model="sealantMaterialInput"
-            :errors="errors['sealant_material']"
-            :loaded="fieldsLoaded['sealant_material']"></form-input>
+            :errors="errors['decommission_sealant_material']"
+            :loaded="fieldsLoaded['decommission_sealant_material']"></form-input>
       </b-col>
       <b-col cols="12" md="6" lg="4">
         <form-input
             id="backfillMaterial"
             label="Backfill Material"
             v-model="backfillMaterialInput"
-            :errors="errors['backfill_material']"
-            :loaded="fieldsLoaded['backfill_material']"></form-input>
+            :errors="errors['decommission_backfill_material']"
+            :loaded="fieldsLoaded['decommission_backfill_material']"></form-input>
       </b-col>
     </b-row>
     <b-row>

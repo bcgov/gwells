@@ -408,11 +408,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <legend>Well Decommission Information</legend>
       <b-row>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Finished Well Depth:</span> {{ form.finished_well_depth }} {{ form.finished_well_depth ? 'feet':''}}</b-col>
-        <b-col cols="12" lg="4"><span class="font-weight-bold">Sealant Material:</span> {{ form.sealant_material }}</b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Sealant Material:</span> {{ form.decommission_sealant_material }}</b-col>
       </b-row>
       <b-row>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Reason for Decommission:</span> {{ form.decommission_reason }}</b-col>
-        <b-col cols="12" lg="4"><span class="font-weight-bold">Backfill Material:</span> {{ form.backfill_material }}</b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Backfill Material:</span> {{ form.decommission_backfill_material }}</b-col>
       </b-row>
       <b-row>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Method of Decommission:</span> {{ form.decommission_method }}</b-col>
