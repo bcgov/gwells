@@ -30,11 +30,17 @@ export default {
       let documentType = payload.documentType
       let recordId = payload.recordId
 
+      // Driller documents are always private
+      let isPrivate = context.state.isPrivate
+      if (documentType === "drillers") {
+        isPrivate = true
+      }
+
       let uploadPromises = []
 
       context.state.upload_files.forEach((file) => {
         uploadPromises.push(
-          ApiService.presignedPutUrl(documentType, recordId, file.name, context.state.isPrivate)
+          ApiService.presignedPutUrl(documentType, recordId, file.name, isPrivate)
             .then((response) => {
               let url = response.data.url
               let objectName = response.data.object_name
