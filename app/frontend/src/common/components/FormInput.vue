@@ -18,6 +18,7 @@
         @blur.native="$emit('blur', true)"
         :disabled="disabled"
         :required="required"
+        :multiple="multiple"
         @input="updateValue($event)"
     >
       <template slot="first" v-if="placeholder">
@@ -99,6 +100,10 @@ export default {
     placeholder: String,
     formatter: Function,
     lazyFormatter: Boolean,
+    multiple: {
+      type: Boolean,
+      default: false
+    },
     loaded: {
       required: false
     } // if changed to true, change contextual state temporarily (e.g. flash green on valid input)
