@@ -4,16 +4,12 @@ from __future__ import unicode_literals
 
 from django.db import migrations
 
-
 def forwards(apps, schema):
-    if schema.connection.vendor == 'postgresql':
-        schema.execute("alter sequence aquifer_aquifer_id_seq restart with 2000")
-
+    schema.execute("alter sequence aquifer_aquifer_id_seq restart with 2000")
 
 def backwards(apps, schema):
     # It's no big deal if we don't go back
     pass
-
 
 class Migration(migrations.Migration):
 

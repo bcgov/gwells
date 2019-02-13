@@ -69,7 +69,7 @@ import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 export default {
   mixins: [inputBindingsMixin],
   props: {
-    developmentMethod: String,
+    developmentMethod: Array,
     developmentHours: String,
     developmentNotes: String,
     errors: {

@@ -89,12 +89,5 @@ if should_collectstatic; then
   )
 fi
 
-# Run unit tests in build stage with the code below
-#echo "--> running Django unit tests"
-pushd backend
-python manage.py test -c nose.cfg
-popd backend
-
-
 # set permissions for any installed artifacts
 fix-permissions /opt/app-root
