@@ -399,7 +399,7 @@ export default {
           this.errors = { 'Server Error': error.response.statusText }
         }
         this.formSubmitError = true
-        // this.$noty.error(this.reduceErrors(this.errors), { timeout: false, killer: true })
+        this.$noty.error(this.reduceErrors(this.errors), { timeout: false, killer: true })
 
         // this.$nextTick(function () {
         //   window.scrollTo(0, 0)
@@ -412,9 +412,9 @@ export default {
       this.confirmSubmitModal = true
     },
     reduceErrors (data) {
-      let clean = Object.entries(data)
+      let clean = Object.entries(JSON.parse(JSON.stringify(data)))
       function walk (r, p) {
-        if (typeof (r) === 'object') {
+        if (r.length && typeof (r) === 'object') {
           return r.forEach(x => walk(x, p.concat(x[0])))
         }
         result.push([p])
@@ -704,8 +704,8 @@ export default {
   border: 5px solid #f3f3f3;
   border-top: 5px solid #5b7b9c;
   border-radius: 50%;
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   display: inline-block;
   text-align: center;
   vertical-align: middle;
