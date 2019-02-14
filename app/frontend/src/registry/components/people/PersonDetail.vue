@@ -373,11 +373,6 @@
                     v-model="files"
                     multiple
                     plain/>
-                  <div class="mt-3">
-                    <b-form-checkbox
-                     id="isPrivateCheckbox"
-                     v-model="privateDocument">Are these documents private?</b-form-checkbox>
-                  </div>
                   <div class="mt-3" v-if="upload_files.length > 0">
                     <b-list-group>
                       <b-list-group-item v-for="(f, index) in upload_files" :key="index">{{f.name}}</b-list-group-item>
@@ -483,14 +478,6 @@ export default {
         this.setFiles(value)
       }
     },
-    privateDocument: {
-      get: function () {
-        return this.isPrivate
-      },
-      set: function (value) {
-        this.setPrivate(value)
-      }
-    },
     showSpinner () {
       return this.currentDriller == null || this.loading || this.savingApplication
     },
@@ -566,7 +553,6 @@ export default {
       'files_uploading',
       'file_upload_error',
       'file_upload_success',
-      'isPrivate',
       'upload_files'
     ])
   },
@@ -576,8 +562,7 @@ export default {
       'fileUploadSuccess'
     ]),
     ...mapMutations('documentState', [
-      'setFiles',
-      'setPrivate'
+      'setFiles'
     ]),
     show (key) {
       return ((key === 'PUMP' && this.pumpApplication) || (key === 'DRILL' && this.drillApplication))

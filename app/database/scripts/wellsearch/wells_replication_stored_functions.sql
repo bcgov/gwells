@@ -358,7 +358,7 @@ BEGIN
      sealant_material                   character varying(100),
      backfill_material                  character varying(100),
      decommission_details               character varying(250),
-     comments                           character varying(255),
+     comments                           character varying(2000),
      create_date                        timestamp with time zone,
      update_date                        timestamp with time zone,
      create_user                         character varying(30),
