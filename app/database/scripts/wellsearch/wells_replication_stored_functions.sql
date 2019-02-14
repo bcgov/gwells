@@ -124,7 +124,6 @@ DECLARE
     sealant_material          ,
     backfill_material         ,
     decommission_details      ,
-    well_publication_status_code,    
     comments                  ,
     create_date               ,
     update_date               ,
@@ -257,7 +256,6 @@ DECLARE
     wells.sealant_material                             ,
     wells.backfill_material                            ,
     wells.closure_details                              ,
-    ''Published''                                      ,
     wells.general_remarks                              ,
     wells.when_created                                 ,
     COALESCE(wells.when_updated,wells.when_created)    ,
@@ -524,16 +522,17 @@ BEGIN
     development_hours        ,
     decommission_reason      ,
     decommission_method_code ,
-    decommission_sealant_material         ,
-    decommission_backfill_material        ,
+    decommission_sealant_material ,
+    decommission_backfill_material,
     yield_estimation_method_code ,
     yield_estimation_rate        ,
     yield_estimation_duration    ,
     static_level_before_test     ,
     drawdown                     ,
     hydro_fracturing_performed   ,
-    decommission_details     ,
-    comments
+    decommission_details         ,
+    comments                     ,
+    well_publication_status_code
     )
   SELECT
     xform.well_tag_number                        ,
@@ -635,7 +634,8 @@ BEGIN
     production_data.net_drawdown            ,
     false                                   ,
     xform.decommission_details              ,
-    xform.comments
+    xform.comments                          ,    
+    'Published'
   FROM xform_well xform
   LEFT JOIN wells.wells_production_data production_data ON production_data.well_id=xform.well_id;
 
