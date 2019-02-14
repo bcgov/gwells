@@ -1,3 +1,4 @@
+// Returns formatted errors for notifications
 export default function (data) {
   let clean = Object.entries(JSON.parse(JSON.stringify(data)))
   let result = []
@@ -6,7 +7,7 @@ export default function (data) {
   unique(merged)
   return flatten(merged)
 }
-
+// Recursive check for all values in multi-dimensional array
 function walk (r, p, s) {
   if (Array.isArray(r)) {
     return r.forEach(x => walk(x, combine(x[0], p), s))
@@ -15,7 +16,7 @@ function walk (r, p, s) {
   }
   s.push([p])
 }
-
+// Add proper strings to working array
 function combine (x, p) {
   if (typeof (x) === 'string' && x.length > 2) {
     return p.concat(x)
@@ -23,7 +24,7 @@ function combine (x, p) {
     return p
   }
 }
-
+// Eliminates duplicate arrays
 function unique (arr) {
   arr.forEach(r => {
     arr.forEach(x => {
@@ -37,7 +38,7 @@ function unique (arr) {
     })
   })
 }
-
+// Checks for subset array in superset
 function arrayContainsArray (superset, subset) {
   if (subset.length === 0) {
     return false
@@ -46,7 +47,7 @@ function arrayContainsArray (superset, subset) {
     return (superset.indexOf(value) >= 0)
   })
 }
-
+// Capitalizes first letter of array values and flattens array
 function flatten (arr) {
   let flt = []
   arr.forEach(r => {
@@ -59,11 +60,11 @@ function flatten (arr) {
   })
   return flt
 }
-
+// Capitalizes first letter of a string
 function jsUcfirst (string) {
   return string.charAt(0).toUpperCase() + string.slice(1)
 }
-
+// Flattens any dimension array
 // function flattenDeep (arr) {
 //   const flat = []
 //   arr.forEach(r => {
