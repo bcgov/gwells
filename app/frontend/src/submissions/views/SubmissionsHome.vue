@@ -16,25 +16,25 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <div class="card-body">
 
       <!-- Form submission success message -->
-      <b-modal
-        v-model="formSubmitSuccess"
-        hide-header
-        hide-footer
-        hide-header-close>
-        <b-alert
-            id="submissionSuccessAlert"
-            :show="formSubmitSuccess"
-            variant="success"
-            class="mt-3">
-          <i class="fa fa-2x fa-check-circle text-success mr-2 alert-icon" aria-hidden="true"></i>
-          <div v-if="isStaffEdit" class="alert-message">
-            Changes saved.
-          </div>
-          <div v-else class="alert-message">
-            Your well record was successfully submitted.
-          </div>
-        </b-alert>
-      </b-modal>
+      <!--<b-modal-->
+        <!--v-model="formSubmitSuccess"-->
+        <!--hide-header-->
+        <!--hide-footer-->
+        <!--hide-header-close>-->
+        <!--<b-alert-->
+            <!--id="submissionSuccessAlert"-->
+            <!--:show="formSubmitSuccess"-->
+            <!--variant="success"-->
+            <!--class="mt-3">-->
+          <!--<i class="fa fa-2x fa-check-circle text-success mr-2 alert-icon" aria-hidden="true"></i>-->
+          <!--<div v-if="isStaffEdit" class="alert-message">-->
+            <!--Changes saved.-->
+          <!--</div>-->
+          <!--<div v-else class="alert-message">-->
+            <!--Your well record was successfully submitted.-->
+          <!--</div>-->
+        <!--</b-alert>-->
+      <!--</b-modal>-->
 
       <!-- Document Uploading alerts -->
       <b-modal
@@ -57,53 +57,47 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </b-modal>
 
       <!-- Form saving message -->
-      <b-modal
-        v-model="formSubmitLoading"
-        hide-header
-        hide-footer
-        hide-header-close>
-        <b-container>
-          <b-col>
-            <b-row>
-              <div class="loader"></div>
-              <div class="alert-message">Saving...</div>
-            </b-row>
-          </b-col>
-        </b-container>
-      </b-modal>
+      <!--<b-modal-->
+        <!--v-model="formSubmitLoading"-->
+        <!--hide-header-->
+        <!--hide-footer-->
+        <!--hide-header-close>-->
+        <!--<b-container>-->
+          <!--<b-col>-->
+            <!--<b-row>-->
+              <!--<div class="loader"></div>-->
+              <!--<div class="alert-message">Saving...</div>-->
+            <!--</b-row>-->
+          <!--</b-col>-->
+        <!--</b-container>-->
+      <!--</b-modal>-->
 
       <!-- Form submission error message -->
-      <b-modal
-        v-model="formSubmitError"
-        hide-header
-        hide-footer
-        hide-header-close>
-        <b-alert
-            :show="formSubmitError"
-            dismissible
-            @dismissed="formSubmitError=false"
-            variant="danger"
-            class="mt-3">
+        <!--<b-alert-->
+            <!--:show="formSubmitError"-->
+            <!--dismissible-->
+            <!--@dismissed="formSubmitError=false"-->
+            <!--variant="danger"-->
+            <!--class="mt-3">-->
 
-          <i class="fa fa-2x fa-exclamation-circle text-danger mr-2 alert-icon" aria-hidden="true"></i>
-          <div class="alert-message">
-            <div v-if="isStaffEdit">
-              Your changes were not saved.
-            </div>
-            <div v-else>
-              Your well record was not submitted.
-            </div>
-            <span v-if="errors && errors.detail">
-              {{ errors.detail }}
-            </span>
-            <div v-if="errors && errors != {}">
-              <div v-for="(field, i) in Object.keys(errors)" :key="`submissionError${i}`">
-                {{field | readable}} : <span v-for="(e, j) in errors[field]" :key="`submissionError${i}-${j}`">{{ e }}</span>
-              </div>
-            </div>
-          </div>
-        </b-alert>
-      </b-modal>
+          <!--<i class="fa fa-2x fa-exclamation-circle text-danger mr-2 alert-icon" aria-hidden="true"></i>-->
+          <!--<div class="alert-message">-->
+            <!--<div v-if="isStaffEdit">-->
+              <!--Your changes were not saved.-->
+            <!--</div>-->
+            <!--<div v-else>-->
+              <!--Your well record was not submitted.-->
+            <!--</div>-->
+            <!--<span v-if="errors && errors.detail">-->
+              <!--{{ errors.detail }}-->
+            <!--</span>-->
+            <!--<div v-if="errors && errors != {}">-->
+              <!--<div v-for="(field, i) in Object.keys(errors)" :key="`submissionError${i}`">-->
+                <!--{{field | readable}} : <span v-for="(e, j) in errors[field]" :key="`submissionError${i}-${j}`">{{ e }}</span>-->
+              <!--</div>-->
+            <!--</div>-->
+          <!--</div>-->
+        <!--</b-alert>-->
 
       <b-form @submit.prevent="confirmSubmit">
         <!-- if preview === true : Preview -->
@@ -164,6 +158,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
 <script>
 import { mapActions, mapGetters, mapState } from 'vuex'
+import 'vuejs-noty/dist/vuejs-noty.css'
 import ApiService from '@/common/services/ApiService.js'
 import { FETCH_CODES, FETCH_WELLS } from '../store/actions.types.js'
 import inputFormatMixin from '@/common/inputFormatMixin.js'
@@ -354,6 +349,9 @@ export default {
       this.formSubmitError = false
       this.formSubmitSuccessWellTag = null
       this.errors = {}
+
+      this.$noty.info('<div class="loader"></div><div class="notifyText">Saving...</div>', { timeout: false })
+
       // Depending on the type of submission (construction/decommission/alteration/edit) we post to
       // different endpoints.
       const PATH = this.codes.activity_types.find((item) => item.code === this.activityType).path
@@ -362,6 +360,8 @@ export default {
         this.formSubmitSuccessWellTag = response.data.well
 
         this.$emit('formSaved')
+
+        this.$noty.success('<div class="notifyText">Changes Saved!</div>', { killer: true })
 
         if (!this.form.well_tag_number) {
           this.setWellTagNumber(response.data.well)
@@ -417,15 +417,30 @@ export default {
         }
 
         this.formSubmitError = true
-        this.$nextTick(function () {
-          window.scrollTo(0, 0)
-        })
+        // this.$noty.error(this.reduceErrors(this.errors), { timeout: false, killer: true })
+
+        // this.$nextTick(function () {
+        //   window.scrollTo(0, 0)
+        // })
       }).finally((response) => {
         this.formSubmitLoading = false
       })
     },
     confirmSubmit () {
       this.confirmSubmitModal = true
+    },
+    reduceErrors (data) {
+      let clean = Object.entries(data)
+      function walk (r, p) {
+        if (typeof (r) === 'object') {
+          return r.forEach(x => walk(x, p.concat(x[0])))
+        }
+        result.push([p])
+      }
+      let result = []
+      walk(clean, [])
+      console.log(result)
+      return result
     },
     resetForm () {
       this.form = {
@@ -708,13 +723,23 @@ export default {
   border: 5px solid #f3f3f3;
   border-top: 5px solid #5b7b9c;
   border-radius: 50%;
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
+  display: inline-block;
+  text-align: center;
+  vertical-align: middle;
   animation: spin 2s linear infinite;
 }
-
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+.notifyText {
+  font-size: 18px;
+  display: inline-block;
+  text-align: center;
+  vertical-align: middle;
+  margin-left: 10px;
+  padding-top: 3px;
 }
 </style>
