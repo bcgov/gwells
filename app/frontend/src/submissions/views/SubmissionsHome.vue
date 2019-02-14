@@ -350,7 +350,7 @@ export default {
       this.formSubmitError = false
       this.formSubmitSuccessWellTag = null
       this.errors = {}
-
+      // Save notification
       this.$noty.info('<div class="loader"></div><div class="notifyText">Saving...</div>', { timeout: false })
 
       // Depending on the type of submission (construction/decommission/alteration/edit) we post to
@@ -361,7 +361,7 @@ export default {
         this.formSubmitSuccessWellTag = response.data.well
 
         this.$emit('formSaved')
-
+        // Save completed notification
         this.$noty.success('<div class="notifyText">Changes Saved!</div>', { killer: true })
 
         if (!this.form.well_tag_number) {
@@ -420,6 +420,7 @@ export default {
         this.formSubmitError = true
         let cleanErrors = parseErrors(this.errors)
         let errTxt = cleanErrors.length > 1 ? 'Input Errors!' : 'Input Error!'
+        // Error notifications
         this.$noty.error('<div class="errorText">' + errTxt + '</div>', { timeout: 2000, killer: true })
         cleanErrors.forEach(e => {
           this.$noty.error('<b>Error: </b>' + e, { timeout: false })
