@@ -33,7 +33,7 @@ Vue.use(Vuex)
 Vue.use(VueNoty, {
   layout: 'topRight',
   theme: 'bootstrap-v4',
-  timeout: 2000
+  timeout: 1800
 })
 Vue.use(BootstrapVue)
 Vue.use(vueSmoothScroll)
