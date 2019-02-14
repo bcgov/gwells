@@ -15,27 +15,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
   <div class="card" v-if="userRoles.wells.edit || userRoles.submissions.edit">
     <div class="card-body">
 
-      <!-- Form submission success message -->
-      <!--<b-modal-->
-        <!--v-model="formSubmitSuccess"-->
-        <!--hide-header-->
-        <!--hide-footer-->
-        <!--hide-header-close>-->
-        <!--<b-alert-->
-            <!--id="submissionSuccessAlert"-->
-            <!--:show="formSubmitSuccess"-->
-            <!--variant="success"-->
-            <!--class="mt-3">-->
-          <!--<i class="fa fa-2x fa-check-circle text-success mr-2 alert-icon" aria-hidden="true"></i>-->
-          <!--<div v-if="isStaffEdit" class="alert-message">-->
-            <!--Changes saved.-->
-          <!--</div>-->
-          <!--<div v-else class="alert-message">-->
-            <!--Your well record was successfully submitted.-->
-          <!--</div>-->
-        <!--</b-alert>-->
-      <!--</b-modal>-->
-
       <!-- Document Uploading alerts -->
       <b-modal
         v-model="files_uploading"
@@ -55,49 +34,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
         hide-footer
         hide-header-close><b-alert show v-if="!files_uploading && file_upload_success" variant="success" >Successfully uploaded all files</b-alert>
       </b-modal>
-
-      <!-- Form saving message -->
-      <!--<b-modal-->
-        <!--v-model="formSubmitLoading"-->
-        <!--hide-header-->
-        <!--hide-footer-->
-        <!--hide-header-close>-->
-        <!--<b-container>-->
-          <!--<b-col>-->
-            <!--<b-row>-->
-              <!--<div class="loader"></div>-->
-              <!--<div class="alert-message">Saving...</div>-->
-            <!--</b-row>-->
-          <!--</b-col>-->
-        <!--</b-container>-->
-      <!--</b-modal>-->
-
-      <!-- Form submission error message -->
-        <!--<b-alert-->
-            <!--:show="formSubmitError"-->
-            <!--dismissible-->
-            <!--@dismissed="formSubmitError=false"-->
-            <!--variant="danger"-->
-            <!--class="mt-3">-->
-
-          <!--<i class="fa fa-2x fa-exclamation-circle text-danger mr-2 alert-icon" aria-hidden="true"></i>-->
-          <!--<div class="alert-message">-->
-            <!--<div v-if="isStaffEdit">-->
-              <!--Your changes were not saved.-->
-            <!--</div>-->
-            <!--<div v-else>-->
-              <!--Your well record was not submitted.-->
-            <!--</div>-->
-            <!--<span v-if="errors && errors.detail">-->
-              <!--{{ errors.detail }}-->
-            <!--</span>-->
-            <!--<div v-if="errors && errors != {}">-->
-              <!--<div v-for="(field, i) in Object.keys(errors)" :key="`submissionError${i}`">-->
-                <!--{{field | readable}} : <span v-for="(e, j) in errors[field]" :key="`submissionError${i}-${j}`">{{ e }}</span>-->
-              <!--</div>-->
-            <!--</div>-->
-          <!--</div>-->
-        <!--</b-alert>-->
 
       <b-form @submit.prevent="confirmSubmit">
         <!-- if preview === true : Preview -->
@@ -367,6 +303,13 @@ export default {
           this.setWellTagNumber(response.data.well)
         }
 
+        // Reloads only altered data in form for re-rendering
+        Object.keys(response.data).forEach((key) => {
+          if (meta.valueChanged && key in meta.valueChanged) {
+            this.form[key] = response.data[key]
+          }
+        })
+
         if (this.upload_files.length > 0) {
           if (response.data.filing_number) {
             this.uploadFiles({
@@ -391,14 +334,20 @@ export default {
           }
         }
       }).catch((error) => {
-        if (error.response.status === 400) {
-          // Bad request, the response.data will contain information relating to why the request was bad.
-          this.errors = error.response.data
+        if (error.response) {
+          if (error.response.status === 400) {
+            // Bad request, the response.data will contain information relating to why the request was bad.
+            this.errors = error.response.data
+          } else {
+            // Some other kind of server error. If for example, it's a 500, the response data is not of
+            // much use, so we just grab the status text.
+            this.errors = { 'Server Error': error.response.statusText }
+          }
         } else {
-          // Some other kind of server error. If for example, it's a 500, the response data is not of
-          // much use, so we just grab the status text.
-          this.errors = { 'Server Error': error.response.statusText }
+          // This is a generic js error, so just log it
+          console.log(error)
         }
+
         this.formSubmitError = true
         let cleanErrors = parseErrors(this.errors)
         let errTxt = cleanErrors.length > 1 ? 'Input Errors!' : 'Input Error!'

@@ -9,27 +9,6 @@
       </div>
     </div>
     <div v-else>
-      <div class="row no-gutters mt-3">
-        <div class="col-md-12">
-          <!-- public documents -->
-          <div v-if="error">
-            {{error}}
-          </div>
-          <ul v-else-if="files && files.public && files.public.length">
-            <li v-for="(file, index) in files.public" :key="index">
-              <a :href="file.url" :download="file.name" target="_blank">{{file.name}}</a>
-              <a class="fa fa-trash fa-lg"
-                variant="primary"
-                style="margin-left: .5em"
-                href="#"
-                v-on:click="confirmDeleteFile(file.name, 'public', $event)" />
-            </li>
-          </ul>
-          <div v-else>
-              No additional documentation currently available for this person.
-          </div>
-        </div>
-      </div>
       <div class="row no-gutters" v-if="userRoles.registry.edit">
         <div class="col-md-12">
           <h4>Internal documentation - authorized access only</h4>

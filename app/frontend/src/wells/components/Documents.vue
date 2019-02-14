@@ -32,11 +32,6 @@
           <ul v-else-if="files && files.public && files.public.length">
             <li v-for="(file, index) in files.public" :key="index">
               <a :href="file.url" :download="file.name" target="_blank" @click="handleDownloadEvent(file.name)">{{file.name}}</a>
-              <a class="fa fa-trash fa-lg"
-                variant="primary"
-                style="margin-left: .5em"
-                href="#"
-                v-on:click="confirmDeleteFile(file.name, 'public', $event)" />
             </li>
           </ul>
           <div v-else>
@@ -53,11 +48,6 @@
           <ul v-else-if="files && files.private && files.private.length">
             <li v-for="(file, index) in files.private" :key="index">
               <a :href="file.url" :download="file.name" target="_blank" @click="handleDownloadEvent(file.name)">{{file.name}}</a>
-              <a class="fa fa-trash fa-lg"
-                variant="primary"
-                style="margin-left: .5em"
-                href="#"
-                v-on:click="confirmDeleteFile(file.name, 'private', $event)" />
             </li>
           </ul>
             <div v-else>
