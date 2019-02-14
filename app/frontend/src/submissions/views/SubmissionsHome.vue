@@ -328,6 +328,13 @@ export default {
           window.scrollTo(0, 0)
         })
 
+        // Reloads only altered data in form for re-rendering
+        Object.keys(response.data).forEach((key) => {
+          if (key in meta.valueChanged) {
+            this.form[key] = response.data[key]
+          }
+        });
+
         if (this.upload_files.length > 0) {
           if (response.data.filing_number) {
             this.uploadFiles({
