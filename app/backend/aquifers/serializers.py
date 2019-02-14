@@ -139,4 +139,8 @@ class AquiferSerializerBasic(serializers.ModelSerializer):
         )
 
     def get_description(self, obj):
-        return '{} - {}'.format(obj.aquifer_id, obj.aquifer_name)
+        desc = str(obj.aquifer_id)
+        name = obj.aquifer_name
+        if name:
+            desc += ' - ' + name
+        return desc
