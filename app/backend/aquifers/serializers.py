@@ -140,7 +140,10 @@ class AquiferSerializerBasic(serializers.ModelSerializer):
 
     def get_description(self, obj):
         desc = str(obj.aquifer_id)
+
+        # if aquifers have a name (not all do), append it to the aquifer number
         name = obj.aquifer_name
         if name:
             desc += ' - ' + name
+
         return desc
