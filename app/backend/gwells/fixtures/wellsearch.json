@@ -1511,7 +1511,10 @@
             "hydro_fracturing_yield_increase": null,
             "recommended_pump_depth": null,
             "recommended_pump_rate": null,
-            "water_quality_characteristics": []
+            "water_quality_characteristics": [
+                "CLOUDY",
+                "SALTY"
+            ]
         }
     }
 ]
