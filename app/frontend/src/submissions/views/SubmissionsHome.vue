@@ -400,7 +400,12 @@ export default {
           this.errors = { 'Server Error': error.response.statusText }
         }
         this.formSubmitError = true
-        this.$noty.error(parseErrors(this.errors), { timeout: false, killer: true })
+        let cleanErrors = parseErrors(this.errors)
+        let errTxt = cleanErrors.length > 1 ? 'Input Errors!' : 'Input Error!'
+        this.$noty.error('<div class="errorText">' + errTxt + '</div>', { timeout: 2000, killer: true })
+        cleanErrors.forEach(e => {
+          this.$noty.error('<b>Error: </b>' + e, { timeout: false })
+        })
       }).finally((response) => {
         this.formSubmitLoading = false
       })
@@ -706,5 +711,8 @@ export default {
   vertical-align: middle;
   margin-left: 10px;
   padding-top: 3px;
+}
+.errorText {
+  font-size: 18px;
 }
 </style>

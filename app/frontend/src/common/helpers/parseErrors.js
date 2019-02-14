@@ -1,13 +1,10 @@
-
 export default function (data) {
   let clean = Object.entries(JSON.parse(JSON.stringify(data)))
-
   let result = []
   walk(clean, [], result)
-  let merged = result.flat()//[...new Set(flatten(result))]
-  console.log(merged)
-
-  return result
+  let merged = result.flat()
+  unique(merged)
+  return flatten(merged)
 }
 
 function walk (r, p, s) {
@@ -27,26 +24,54 @@ function combine (x, p) {
   }
 }
 
-function flatten (arr) {
-  const flat = []
-  arr.forEach(r => {
-    if (Array.isArray(r)) {
-      flat.push(...flatten(r))
-    } else {
-      flat.push(r)
-    }
-  })
-  return flat
-}
-
 function unique (arr) {
-  const uniq = []
-  const p = []
   arr.forEach(r => {
-    for (let i = 0; i < arr.length; i++) {
-      if(arr[i]){
-
+    arr.forEach(x => {
+      if (arrayContainsArray(r, x)) {
+        for (var i = 0; i < arr.length - 1; i++) {
+          if (arr[i] === x) {
+            arr.splice(i, 1)
+          }
+        }
       }
-    }
+    })
   })
 }
+
+function arrayContainsArray (superset, subset) {
+  if (subset.length === 0) {
+    return false
+  }
+  return subset.every(function (value) {
+    return (superset.indexOf(value) >= 0)
+  })
+}
+
+function flatten (arr) {
+  let flt = []
+  arr.forEach(r => {
+    for (var i = 0; i < r.length; i++) {
+      r[i] = jsUcfirst(r[i])
+    }
+  })
+  arr.forEach(m => {
+    flt.push(m.join(' - '))
+  })
+  return flt
+}
+
+function jsUcfirst (string) {
+  return string.charAt(0).toUpperCase() + string.slice(1)
+}
+
+// function flattenDeep (arr) {
+//   const flat = []
+//   arr.forEach(r => {
+//     if (Array.isArray(r)) {
+//       flat.push(...flattenDeep(r))
+//     } else {
+//       flat.push(r)
+//     }
+//   })
+//   return flat
+// }
