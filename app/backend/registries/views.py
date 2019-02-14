@@ -857,13 +857,9 @@ class PreSignedDocumentKey(APIView):
         filename = client.format_object_name(object_name, person.person_guid, "driller")
         bucket_name = get_env_variable("S3_REGISTRANT_BUCKET")
 
-        is_private = False
-        if request.GET.get("private") == "true":
-            is_private = True
-            bucket_name = get_env_variable("S3_PRIVATE_REGISTRANT_BUCKET")
-
+        # All documents are private for drillers
         url = client.get_presigned_put_url(
-            filename, bucket_name=bucket_name, private=is_private)
+            filename, bucket_name=bucket_name, private=True)
 
         return JsonResponse({"object_name": object_name, "url": url})
 
