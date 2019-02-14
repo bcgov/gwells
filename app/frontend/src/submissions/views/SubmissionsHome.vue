@@ -415,9 +415,16 @@ export default {
       let clean = Object.entries(JSON.parse(JSON.stringify(data)))
       function walk (r, p) {
         if (r.length && typeof (r) === 'object') {
-          return r.forEach(x => walk(x, p.concat(x[0])))
+          return r.forEach(x => walk(x, combine(x[0], p)))
         }
         result.push([p])
+      }
+      function combine (x, p) {
+        if (typeof (x) === 'string' && x.length > 2) {
+          return p.concat(x)
+        } else {
+          return p
+        }
       }
       let result = []
       walk(clean, [])
