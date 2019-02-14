@@ -32,7 +32,7 @@ export default {
 
       // Driller documents are always private
       let isPrivate = context.state.isPrivate
-      if (documentType === "drillers") {
+      if (documentType === 'drillers') {
         isPrivate = true
       }
 
