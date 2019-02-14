@@ -330,10 +330,10 @@ export default {
 
         // Reloads only altered data in form for re-rendering
         Object.keys(response.data).forEach((key) => {
-          if (key in meta.valueChanged) {
+          if (meta.valueChanged && key in meta.valueChanged) {
             this.form[key] = response.data[key]
           }
-        });
+        })
 
         if (this.upload_files.length > 0) {
           if (response.data.filing_number) {
@@ -359,14 +359,20 @@ export default {
           }
         }
       }).catch((error) => {
-        if (error.response.status === 400) {
-          // Bad request, the response.data will contain information relating to why the request was bad.
-          this.errors = error.response.data
+        if (error.response) {
+          if (error.response.status === 400) {
+            // Bad request, the response.data will contain information relating to why the request was bad.
+            this.errors = error.response.data
+          } else {
+            // Some other kind of server error. If for example, it's a 500, the response data is not of
+            // much use, so we just grab the status text.
+            this.errors = { 'Server Error': error.response.statusText }
+          }
         } else {
-          // Some other kind of server error. If for example, it's a 500, the response data is not of
-          // much use, so we just grab the status text.
-          this.errors = { 'Server Error': error.response.statusText }
+          // This is a generic js error, so just log it
+          console.log(error)
         }
+
         this.formSubmitError = true
         this.$nextTick(function () {
           window.scrollTo(0, 0)
