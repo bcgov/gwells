@@ -165,6 +165,7 @@ import inputFormatMixin from '@/common/inputFormatMixin.js'
 import SubmissionPreview from '@/submissions/components/SubmissionPreview/SubmissionPreview.vue'
 import filterBlankRows from '@/common/filterBlankRows.js'
 import ActivitySubmissionForm from '@/submissions/components/SubmissionForm/ActivitySubmissionForm.vue'
+import parseErrors from '@/common/helpers/parseErrors.js'
 export default {
   name: 'SubmissionsHome',
   mixins: [inputFormatMixin, filterBlankRows],
@@ -399,11 +400,7 @@ export default {
           this.errors = { 'Server Error': error.response.statusText }
         }
         this.formSubmitError = true
-        this.$noty.error(this.reduceErrors(this.errors), { timeout: false, killer: true })
-
-        // this.$nextTick(function () {
-        //   window.scrollTo(0, 0)
-        // })
+        this.$noty.error(parseErrors(this.errors), { timeout: false, killer: true })
       }).finally((response) => {
         this.formSubmitLoading = false
       })
