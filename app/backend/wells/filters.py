@@ -23,6 +23,8 @@ class WellListFilter(filters.FilterSet):
     street_address_or_city = filters.CharFilter(method='filter_street_address_or_city',
                                                 label='Street address or city')
     owner_full_name = filters.CharFilter(lookup_expr='icontains')
+    legal = filters.CharFilter(method='filter_combined_legal',
+                               label='Legal lot, District legal lot, Legal plan or Legal PID')
     date_of_work = filters.DateFromToRangeFilter(method='filter_date_of_work',
                                                  label='Date of work')
     well_depth = filters.RangeFilter(method='filter_well_depth',
@@ -99,11 +101,12 @@ class WellListFilter(filters.FilterSet):
             'street_address',
             'city',
             'owner_full_name',
+            'legal',
             'legal_lot',
             'legal_plan',
             'legal_district_lot',
-            'land_district',
             'legal_pid',
+            'land_district',
             'well_status',
             'licenced_status',
             'company_of_person_responsible',
@@ -213,6 +216,24 @@ class WellListFilter(filters.FilterSet):
     def filter_street_address_or_city(self, queryset, name, value):
         return queryset.filter(Q(street_address__icontains=value) |
                                Q(city__icontains=value))
+
+    def filter_combined_legal(self, queryset, name, value):
+        lookups = (
+            Q(legal_lot=value) |
+            Q(legal_plan=value) |
+            Q(legal_district_lot=value)
+        )
+        # Check if we have a positive integer before querying the
+        # legal_pid field.
+        try:
+            int_value = int(value)
+        except (TypeError, ValueError):
+            pass
+        else:
+            if int_value >= 0:
+                lookups = lookups | Q(legal_pid=int_value)
+
+        return queryset.filter(lookups)
 
     def filter_date_of_work(self, queryset, name, value):
         if value.start is not None and value.stop is not None:
