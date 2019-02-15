@@ -64,7 +64,8 @@ function flatten (arr) {
 function jsUcfirst (string) {
   return string.charAt(0).toUpperCase() + string.slice(1)
 }
-// Flattens any dimension array
+// Left commented out for future use
+// Flattens any dimension array into one single array of values
 // function flattenDeep (arr) {
 //   const flat = []
 //   arr.forEach(r => {
