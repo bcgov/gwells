@@ -14,7 +14,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
 <template>
   <div class="card" v-if="userRoles.wells.edit || userRoles.submissions.edit">
     <div class="card-body">
-
       <!-- Document Uploading alerts -->
       <b-modal
         v-model="files_uploading"
