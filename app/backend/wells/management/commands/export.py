@@ -177,17 +177,18 @@ class Command(BaseCommand):
  registries_person.person_guid = well.person_responsible_guid
  left join registries_organization on
  registries_organization.org_guid = well.org_of_person_responsible_guid
+ where well.well_publication_status_code = 'Published' or well.well_publication_status_code = null
  order by well_tag_number""")
         ###########
         # LITHOLOGY
         ###########
-        lithology_sql = ("""select well_tag_number, lithology_from, lithology_to, lithology_raw_data,
+        lithology_sql = ("""select lithology_description.well_tag_number, lithology_from, lithology_to, lithology_raw_data,
  ldc.description as lithology_description_code,
  lmc.description as lithology_material_code,
  lhc.description as lithology_hardness_code,
  lcc.description as lithology_colour_code,
  water_bearing_estimated_flow,
- well_yield_unit_code, lithology_observation
+ lithology_description.well_yield_unit_code, lithology_observation
  from lithology_description
  left join lithology_description_code as ldc on
  ldc.lithology_description_code = lithology_description.lithology_description_code
@@ -197,42 +198,50 @@ class Command(BaseCommand):
  lhc.lithology_hardness_code = lithology_description.lithology_hardness_code
  left join lithology_colour_code as lcc on
  lcc.lithology_colour_code = lithology_description.lithology_colour_code
- order by well_tag_number""")
+ inner join well on well.well_tag_number = lithology_description.well_tag_number
+ where well.well_publication_status_code = 'Published' or well.well_publication_status_code = null
+ order by lithology_description.well_tag_number""")
         ########
         # CASING
         ########
-        casing_sql = ("""select well_tag_number, casing_from, casing_to, diameter, casing_code,
+        casing_sql = ("""select casing.well_tag_number, casing_from, casing_to, casing.diameter, casing_code,
  casing_material_code, wall_thickness, drive_shoe from casing
- order by well_tag_number""")
+ inner join well on well.well_tag_number = casing.well_tag_number
+ where well.well_publication_status_code = 'Published' or well.well_publication_status_code = null
+ order by casing.well_tag_number""")
         ########
         # SCREEN
         ########
-        screen_sql = ("""select well_tag_number, screen_from, screen_to, internal_diameter,
+        screen_sql = ("""select screen.well_tag_number, screen_from, screen_to, internal_diameter,
  screen_assembly_type_code, slot_size from screen
- order by well_tag_number""")
+ inner join well on well.well_tag_number = screen.well_tag_number
+ where well.well_publication_status_code = 'Published' or well.well_publication_status_code = null
+ order by screen.well_tag_number""")
         ##############
         # PERFORATIONS
         ##############
-        perforation_sql = ("""select well_tag_number, liner_from, liner_to, liner_diameter,
- liner_perforation_from, liner_perforation_to, liner_thickness
- from
- perforation
- order by well_tag_number""")
+        perforation_sql = ("""select p.well_tag_number, p.liner_from, p.liner_to, p.liner_diameter,
+ liner_perforation_from, liner_perforation_to, p.liner_thickness from perforation as p
+ inner join well on well.well_tag_number = p.well_tag_number
+ where well.well_publication_status_code = 'Published' or well.well_publication_status_code = null
+ order by p.well_tag_number""")
         #################
         # DRILLING METHOD
         #################
         drilling_method_sql = ("""select well_id as well_tag_number,
 drillingmethodcode_id as drilling_method_code
-from
-well_drilling_methods
+from well_drilling_methods
+inner join well on well.well_tag_number = well_drilling_methods.well_id
+where well.well_publication_status_code = 'Published' or well.well_publication_status_code = null
 order by well_tag_number""")
         ####################
         # DEVELOPMENT METHOD
         ####################
         development_method_sql = ("""select well_id as well_tag_number,
 developmentmethodcode_id as development_method_code
-from
-well_development_methods
+from well_development_methods
+inner join well on well.well_tag_number = well_development_methods.well_id
+where well.well_publication_status_code = 'Published' or well.well_publication_status_code = null
 order by well_tag_number""")
 
         # Create a dictionary to iterate through when creating spreadsheets.

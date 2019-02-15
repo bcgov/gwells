@@ -419,6 +419,23 @@ class WellStatusCode(AuditModel):
         super(WellStatusCode, self).save(*args, **kwargs)
 
 
+class WellPublicationStatusCode(AuditModel):
+    """
+    Well Publication Status.
+    """
+    well_publication_status_code = models.CharField(
+        primary_key=True, max_length=20, editable=False, null=False)
+    description = models.CharField(max_length=255, null=False)
+    display_order = models.PositiveIntegerField(null=False)
+
+    effective_date = models.DateTimeField(null=False)
+    expiry_date = models.DateTimeField(null=False)
+
+    class Meta:
+        db_table = 'well_publication_status_code'
+        ordering = ['display_order', 'well_publication_status_code']
+
+
 class WellSubclassCode(AuditModel):
     """
     Subclass of Well type; we use GUID here as Django doesn't support multi-column PK's
@@ -539,6 +556,9 @@ class Well(AuditModel):
     well_status = models.ForeignKey(WellStatusCode, db_column='well_status_code',
                                     on_delete=models.CASCADE, blank=True, null=True,
                                     verbose_name='Well Status')
+    well_publication_status = models.ForeignKey(WellPublicationStatusCode, db_column='well_publication_status_code',
+                                                on_delete=models.CASCADE, verbose_name='Well Publication Status',
+                                                default='Published')
     licenced_status = models.ForeignKey(LicencedStatusCode, db_column='licenced_status_code',
                                         on_delete=models.CASCADE, blank=True, null=True,
                                         verbose_name='Licenced Status')
@@ -987,6 +1007,9 @@ class ActivitySubmission(AuditModel):
     well_status = models.ForeignKey(WellStatusCode, db_column='well_status_code',
                                     on_delete=models.CASCADE, blank=True, null=True,
                                     verbose_name='Well Status')
+    well_publication_status = models.ForeignKey(WellPublicationStatusCode, db_column='well_publication_status_code',
+                                                on_delete=models.CASCADE, verbose_name='Well Publication Status',
+                                                default='Published')
     well_class = models.ForeignKey(WellClassCode, blank=True, null=True, db_column='well_class_code',
                                    on_delete=models.CASCADE, verbose_name='Well Class')
     well_subclass = models.ForeignKey(WellSubclassCode, db_column='well_subclass_guid',

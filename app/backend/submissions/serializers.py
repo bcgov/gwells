@@ -66,6 +66,7 @@ from wells.models import (
     WellClassCode,
     WellSubclassCode,
     WellStatusCode,
+    WellPublicationStatusCode,
     WellYieldUnitCode,
     YieldEstimationMethodCode,
     ObsWellStatusCode,
@@ -423,6 +424,7 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
             'well_class',
             'well_subclass',
             'well_status',
+            'well_publication_status',
             'intended_water_use',
             'identification_plate_number',
             'well_identification_plate_attached',
@@ -864,6 +866,16 @@ class WellStatusCodeSerializer(serializers.ModelSerializer):
         model = WellStatusCode
         fields = (
             'well_status_code', 'description'
+        )
+
+
+class WellPublicationStatusCodeSerializer(serializers.ModelSerializer):
+    """ Serializes well publication status codes """
+
+    class Meta:
+        model = WellPublicationStatusCode
+        fields = (
+            'well_publication_status_code', 'description'
         )
 
 
