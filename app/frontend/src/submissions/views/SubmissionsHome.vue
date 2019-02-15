@@ -184,6 +184,7 @@ export default {
           'documents'
         ],
         STAFF_EDIT: [
+          'wellPublicationStatus',
           'wellType',
           'wellOwner',
           'personResponsible',
@@ -367,6 +368,7 @@ export default {
       this.form = {
         well: null,
         well_status: '',
+        well_publication_status: '',
         well_class: '',
         well_subclass: '',
         intended_water_use: '',
