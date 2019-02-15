@@ -10,8 +10,13 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update; \
     apt-get install -y \
         binutils \
+        gdal-bin \
+        libgeoip-dev \
+        libgeoip1 \
         libproj-dev \
-        gdal-bin; \
+        libspatialite-dbg \
+        postgis \
+        python-gdal; \
     apt-get autoclean; \
     apt-get clean; \
     rm -rf \
