@@ -1,0 +1,137 @@
+version: '3'
+# NOTE Before running `docker-compose -f docker-compose.openshift.yml up`, you need to:
+#     1. Be logged into the BC Gov OpenShift Console 
+#          https://console.pathfinder.gov.bc.ca:8443/console/catalog)
+#     2. Be logged into the BC Gov OpenShift Image Registry via
+#          docker login -u <github> -p `oc whoami -t` docker-registry.pathfinder.gov.bc.ca
+#
+#        For example:
+#          docker login -u garywong-bc -p `oc whoami -t` docker-registry.pathfinder.gov.bc.ca
+#
+# TODO fix reference to "image: docker-registry.pathfinder.gov.bc.ca/moe-gwells-tools/postgis-oracle-fdw:96-24-1"
+#      with a reference to a moe-gwells-tools copy of "/bcgov/postgresql-9.6-oracle-fdw:v1-stable"
+services:
+  minio-public:
+    image: minio/minio
+    hostname: minio
+    ports:
+    - "9000:9000"
+    volumes:
+    - ./.tmp/minio-public-files:/data
+    environment:
+      MINIO_ACCESS_KEY: minio
+      MINIO_SECRET_KEY: minio1234
+    command: server /data
+  minio-private:
+    image: minio/minio
+    hostname: minio
+    ports:
+    - "9001:9001"
+    volumes:
+    - ./.tmp/minio-private-files:/data
+    environment:
+      MINIO_ACCESS_KEY: minio
+      MINIO_SECRET_KEY: minio1234
+    command: server --address ":9001" /data
+  db:
+    image: docker-registry.pathfinder.gov.bc.ca/moe-gwells-tools/postgis-oracle-fdw:96-24-1
+    hostname: db
+    environment:
+      POSTGRESQL_USER: gwells
+      POSTGRESQL_PASSWORD: test1
+      POSTGRESQL_DATABASE: gwells
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/pgsql/data
+  frontend:
+    image: node:8.9.4
+    hostname: frontend
+    environment:
+      DEBUG: "True"
+      AXIOS_BASE_URL: http://127.0.0.1:8000/gwells/api/v1/
+      CHOKIDAR_USEPOLLING: "True"
+    command: /bin/bash -c "
+        set -x &&
+        cd /app/frontend &&
+        npm install &&
+        npm run build &&
+        npm run ${NPM_CMD:-dev}"
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./app:/app
+      - /app/frontend/node_modules/
+  backend:
+    image: docker-registry.pathfinder.gov.bc.ca/moe-gwells-tools/gwells-python:3.6
+    hostname: backend
+    environment:
+      APP_CONTEXT_ROOT: gwells
+      CSRF_COOKIE_SECURE: "False"
+      DATABASE_NAME: gwells
+      DATABASE_USER: gwells
+      DATABASE_PASSWORD: test1
+      DATABASE_SERVICE_NAME: gwells
+      DJANGO_ADMIN_URL: admin
+      DJANGO_DEBUG: "True"
+      DJANGO_SECRET_KEY: secret
+      ENABLE_ADDITIONAL_DOCUMENTS: "True"
+      ENABLE_AQUIFERS_SEARCH: "True"
+      ENABLE_DATA_ENTRY: "True"
+      ENABLE_GOOGLE_ANALYTICS: "False"
+      GDAL_LIBRARY_PATH: "/usr/local/lib/libgdal.so"
+      GEOS_LIBRARY_PATH: "/usr/local/lib/libgeos_c.so"
+      GWELLS_SERVICE_HOST: db
+      GWELLS_SERVICE_PORT: 5432
+      MINIO_ACCESS_KEY: minio
+      MINIO_SECRET_KEY: minio1234
+      PYTHONUNBUFFERED: "1"
+      SESSION_COOKIE_SECURE: "False"
+      SSO_AUDIENCE: gwells-test
+      SSO_CLIENT: gwells-test
+      SSO_AUTH_HOST: https://sso-test.pathfinder.gov.bc.ca/auth
+      SSO_IDP_HINT: "undefined"
+      SSO_PORT: 0
+      SSO_REALM: gwells
+      SSO_PUBKEY: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAh+5Hc4w/PKN04avW1LX/orSyXsJ7nJiEbErMyQqCvYAEKmQUeok7Yy+r6sVuJSyQQMCExk37NY3fUQOK92J83oC/9WGij7bvlWHew810edIisechoKpLuQbw63xlj/5ifQfJ977NM1n1RQgXF4hr4MDuhGbV+PAkQGdSPfufjEFleCwj8mvjUwTFnSwE9I+Rf78DVJzCHZbpFMq9skvrpCzeNsLNNoz+k1DENQ6MKnVnbUYskG+j5NZ3g+kxfkRf2G0tw2KisLYtxUSdfwutieT2Zxglk/kZeMWS7khXWzhwjvWf5a1qM5ebreVVYNhra7MjcrkXSh0v5IBcW+122wIDAQAB
+      S3_AQUIFER_BUCKET: aquifer-docs
+      S3_HOST: minio-public:9000
+      S3_PRIVATE_BUCKET: gwells
+      S3_PRIVATE_HOST: minio-private:9001
+      S3_PRIVATE_ROOT_BUCKET:  gwells
+      S3_PRIVATE_WELL_BUCKET: well-docs
+      S3_PRIVATE_AQUIFER_BUCKET: aquifer-docs
+      S3_PRIVATE_REGISTRANT_BUCKET: driller-docs
+      S3_PUBLIC_ACCESS_KEY: minio
+      S3_PUBLIC_SECRET_KEY: minio1234
+      S3_REGISTRANT_BUCKET: driller-docs
+      S3_ROOT_BUCKET:  gwells
+      S3_USE_SECURE: 0
+      S3_WELL_BUCKET: well-docs
+      S3_WELL_EXPORT_BUCKET: gwells
+    command: /bin/bash -c "sleep 3 &&
+            set -x &&
+            cd /app/backend &&
+            mkdir -p .pip &&
+            pip3 install --cache-dir=.pip -r requirements.txt &&
+            python3 manage.py migrate --noinput &&
+            echo Loading fixtures, this may take some time... &&
+            python3 manage.py loaddata
+                gwells-codetables.json
+                registries-codetables.json
+                registries.json
+                wellsearch-codetables.json
+                wellsearch.json
+                aquifers.json &&
+            python3 manage.py createinitialrevisions &&
+            python3 manage.py collectstatic --noinput &&
+            python3 manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./app:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+volumes:
+  db-data:
+
