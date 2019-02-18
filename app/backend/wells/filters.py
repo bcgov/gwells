@@ -45,7 +45,6 @@ class WellListFilter(filters.FilterSet):
     latitude = filters.RangeFilter()
     longitude = filters.RangeFilter()
     ground_elevation = filters.RangeFilter()
-    other_drilling_method = filters.CharFilter(lookup_expr='icontains')
     surface_seal_length = filters.RangeFilter()
     surface_seal_thickness = filters.RangeFilter()
     surface_seal_depth = filters.RangeFilter()
@@ -77,8 +76,8 @@ class WellListFilter(filters.FilterSet):
     utm_northing = filters.RangeFilter()
     utm_easting = filters.RangeFilter()
     decommission_reason = filters.CharFilter(lookup_expr='icontains')
-    sealant_material = filters.CharFilter(lookup_expr='icontains')
-    backfill_material = filters.CharFilter(lookup_expr='icontains')
+    decommission_sealant_material = filters.CharFilter(lookup_expr='icontains')
+    decommission_backfill_material = filters.CharFilter(lookup_expr='icontains')
     decommission_details = filters.CharFilter(lookup_expr='icontains')
     aquifer_vulnerability_index = filters.RangeFilter()
     storativity = filters.RangeFilter()
@@ -137,8 +136,7 @@ class WellListFilter(filters.FilterSet):
             'coordinate_acquisition_code',
             'ground_elevation',
             'ground_elevation_method',
-            'drilling_method',
-            'other_drilling_method',
+            'drilling_methods',
             'well_orientation',
             'surface_seal_material',
             'surface_seal_length',
@@ -165,7 +163,7 @@ class WellListFilter(filters.FilterSet):
             'filter_pack_thickness',
             'filter_pack_material',
             'filter_pack_material_size',
-            'development_method',
+            'development_methods',
             'development_hours',
             'development_notes',
             'yield_estimation_method',
@@ -194,8 +192,8 @@ class WellListFilter(filters.FilterSet):
             'bcgs_id',
             'decommission_reason',
             'decommission_method',
-            'sealant_material',
-            'backfill_material',
+            'decommission_sealant_material',
+            'decommission_backfill_material',
             'decommission_details',
             'aquifer_vulnerability_index',
             'storativity',

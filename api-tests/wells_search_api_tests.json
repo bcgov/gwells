@@ -1548,54 +1548,6 @@
 							"response": []
 						},
 						{
-							"name": "drilling_method param",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
-										"exec": [
-											"pm.test(\"Drilling method matches filter\", function () {",
-											"  const drillingMethod = pm.request.url.query.get(\"drilling_method\");",
-											"",
-											"  pm.response.json().results.forEach(function(result) {",
-											"    pm.expect(result.drilling_method).to.equal(drillingMethod);",
-											"  });",
-											"});"
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"method": "GET",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
-								"url": {
-									"raw": "{{base_url}}/api/v1/wells/?drilling_method=DUGOUT",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"api",
-										"v1",
-										"wells",
-										""
-									],
-									"query": [
-										{
-											"key": "drilling_method",
-											"value": "DUGOUT"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
 							"name": "surface_seal_material param",
 							"event": [
 								{
@@ -2786,54 +2738,6 @@
 								}
 							},
 							"response": []
-						},
-						{
-							"name": "other_drilling_method param",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
-										"exec": [
-											"pm.test(\"Other drilling method matches filter\", function () {",
-											"  const otherDrillingMethod = pm.request.url.query.get(\"other_drilling_method\");",
-											"",
-											"  pm.response.json().results.forEach(function(result) {",
-											"    pm.expect(result.other_drilling_method.toLowerCase()).to.contain(otherDrillingMethod.toLowerCase());",
-											"  });",
-											"});"
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"method": "GET",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
-								"url": {
-									"raw": "{{base_url}}/api/v1/wells/?other_drilling_method=not sure",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"api",
-										"v1",
-										"wells",
-										""
-									],
-									"query": [
-										{
-											"key": "other_drilling_method",
-											"value": "not sure"
-										}
-									]
-								}
-							},
-							"response": []
 						}
 					],
 					"description": "Case insensitive partial text matches.",
@@ -2911,6 +2815,54 @@
 										{
 											"key": "water_quality_characteristics",
 											"value": "CLOUDY"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "drilling_methods param",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"exec": [
+											"pm.test(\"Drilling method matches filter\", function () {",
+											"  const drillingMethod = pm.request.url.query.get(\"drilling_methods\");",
+											"",
+											"  pm.response.json().results.forEach(function(result) {",
+											"    pm.expect(result.drilling_methods).to.include(drillingMethod);",
+											"  });",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/wells/?drilling_methods=DUGOUT",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"wells",
+										""
+									],
+									"query": [
+										{
+											"key": "drilling_methods",
+											"value": "DUGOUT"
 										}
 									]
 								}

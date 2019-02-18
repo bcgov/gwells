@@ -1422,8 +1422,10 @@
             "longitude": null,
             "ground_elevation": null,
             "ground_elevation_method": null,
-            "drilling_method": "DUGOUT",
-            "other_drilling_method": "Not sure?",
+            "drilling_methods": [
+                "DUGOUT",
+                "EXCAVATING"
+            ],
             "well_orientation": false,
             "surface_seal_material": "SND_CMT_GT",
             "surface_seal_length": "11.00",
@@ -1450,7 +1452,7 @@
             "filter_pack_thickness": null,
             "filter_pack_material": null,
             "filter_pack_material_size": null,
-            "development_method": null,
+            "development_methods": [],
             "development_hours": null,
             "development_notes": null,
             "water_quality_colour": null,
@@ -1482,8 +1484,6 @@
             "bcgs_id": null,
             "decommission_reason": null,
             "decommission_method": null,
-            "sealant_material": null,
-            "backfill_material": null,
             "decommission_details": null,
             "ems_id": null,
             "aquifer": null,
@@ -1514,7 +1514,9 @@
             "water_quality_characteristics": [
                 "CLOUDY",
                 "SALTY"
-            ]
+            ],
+            "decommission_backfill_material": null,
+            "decommission_sealant_material": null
         }
     }
 ]
