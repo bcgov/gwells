@@ -249,10 +249,10 @@
               </div>
               <div class="row mb-2">
                 <div class="col-5 col-md-2 mb-1 mb-sm-0">
-                  Cell number:
+                  Email address:
                 </div>
                 <div class="col-7 col-md-4">
-                  {{ registration.surname }}
+                  {{ registration.organization.email }}
                 </div>
                 <div class="col-5 col-md-2">
                   Fax number:
@@ -262,12 +262,6 @@
                 </div>
               </div>
               <div class="row mb-2">
-                <div class="col-5 col-md-2 mb-1 mb-sm-0">
-                  Email address:
-                </div>
-                <div class="col-7 col-md-4">
-                  {{ registration.organization.email }}
-                </div>
                 <div class="col-5 col-md-2">
                   Website:
                 </div>
