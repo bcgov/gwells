@@ -103,7 +103,7 @@ services:
       S3_WELL_EXPORT_BUCKET: gwells
     command: /bin/bash -c "
       apt-get update &&
-      apt-get install binutils libproj-dev gdal-bin -y &&
+      apt-get install binutils libproj-dev gdal-bin python-gdal -y &&
       sleep 3 &&
       set -x &&
       cd /app/backend &&
