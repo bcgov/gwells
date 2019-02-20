@@ -352,9 +352,9 @@ export default {
         let cleanErrors = parseErrors(this.errors)
         let errTxt = cleanErrors.length > 1 ? 'Input Errors!' : 'Input Error!'
         // Error notifications
-        this.$noty.error('<div class="errorText">' + errTxt + '</div>', { timeout: 2000, killer: true })
+        this.$noty.error('<div class="errorTitle">' + errTxt + '</div>', { timeout: 2000, killer: true })
         cleanErrors.forEach(e => {
-          this.$noty.error('<b>Error: </b>' + e, { timeout: false })
+          this.$noty.error('<div class="closeBtn">x</div><div class="errorText"><b>Error: </b>' + e + '</div>', { timeout: false })
         })
       }).finally((response) => {
         this.formSubmitLoading = false
@@ -660,10 +660,16 @@ export default {
   display: inline-block;
   text-align: center;
   vertical-align: middle;
-  margin-left: 10px;
+  margin-left: 20px;
   padding-top: 3px;
 }
-.errorText {
+.errorTitle {
   font-size: 18px;
+}
+.errorText {
+  padding-right: 20px;
+}
+.closeBtn {
+  float: right;
 }
 </style>
