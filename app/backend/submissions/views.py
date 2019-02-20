@@ -62,6 +62,7 @@ from wells.models import (
     WellClassCode,
     WellSubclassCode,
     WellStatusCode,
+    WellPublicationStatusCode,
     YieldEstimationMethodCode,)
 from submissions.models import WellActivityCode
 from wells.serializers import (
@@ -104,6 +105,7 @@ from submissions.serializers import (
     WellActivityCodeSerializer,
     WellClassCodeSerializer,
     WellStatusCodeSerializer,
+    WellPublicationStatusCodeSerializer,
     WellSubclassCodeSerializer,
     YieldEstimationMethodCodeSerializer,
     WellStaffEditSubmissionSerializer,
@@ -311,6 +313,9 @@ class SubmissionsOptions(APIView):
         well_status_codes = WellStatusCodeSerializer(
             instance=WellStatusCode.objects.all(), many=True
         )
+        well_publication_status_codes = WellPublicationStatusCodeSerializer(
+            instance=WellPublicationStatusCode.objects.all(), many=True
+        )
         coordinate_acquisition_codes = CoordinateAcquisitionCodeSerializer(
             instance=CoordinateAcquisitionCode.objects.all(), many=True)
         observation_well_status = ObservationWellStatusCodeSerializer(
@@ -363,6 +368,7 @@ class SubmissionsOptions(APIView):
         options["lithology_moisture_codes"] = lithology_moisture.data
         options["lithology_descriptors"] = lithology_descriptors.data
         options["well_status_codes"] = well_status_codes.data
+        options["well_publication_status_codes"] = well_publication_status_codes.data
         options["observation_well_status"] = observation_well_status.data
 
         return Response(options)

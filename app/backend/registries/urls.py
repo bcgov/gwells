@@ -24,10 +24,11 @@ from . import views
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Well Driller and Pump Installer Registry API",
+        title="Groundwater Wells, Aquifers and Registry API",
         default_version='v1',
-        description=str("The Well Driller and Pump Installer Registry is a database of qualified well "
-                        "drillers and pump installers registered to operate in British Columbia."),
+        description=str("The groundwater wells, aquifers and registry API contains information "
+                        "related to groundwater wells and aquifers as well as a register of qualified "
+                        "well drillers and well pump installers registered to operate in B.C."),
         terms_of_service="http://www2.gov.bc.ca/gov/content?id=D1EE0A405E584363B205CD4353E02C88",
         contact=openapi.Contact(email="groundwater@gov.bc.ca"),
         license=openapi.License(name="Open Government License - British Columbia",

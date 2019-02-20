@@ -32,9 +32,9 @@ services:
     image: mdillon/postgis
     hostname: db
     environment:
-      POSTGRESQL_USER: gwells
-      POSTGRESQL_PASSWORD: test1
-      POSTGRESQL_DATABASE: gwells
+      POSTGRES_USER: gwells
+      POSTGRES_PASSWORD: test1
+      POSTGRES_DATABASE: gwells
     volumes:
       - /var/lib/postgresql
   frontend:
@@ -55,11 +55,12 @@ services:
       - ./app:/app
       - /app/frontend/node_modules/
   backend:
-    image: docker-registry.pathfinder.gov.bc.ca/moe-gwells-tools/gwells-python:3.6
+    image: python:3.6
     hostname: backend
     environment:
       APP_CONTEXT_ROOT: gwells
       CSRF_COOKIE_SECURE: "False"
+      CUSTOM_GDAL_GEOS: "False"
       DATABASE_NAME: gwells
       DATABASE_USER: gwells
       DATABASE_PASSWORD: test1
@@ -71,9 +72,6 @@ services:
       ENABLE_AQUIFERS_SEARCH: "True"
       ENABLE_DATA_ENTRY: "True"
       ENABLE_GOOGLE_ANALYTICS: "False"
-      POSTGRES_SERVICE_PORT: 5432
-      GDAL_LIBRARY_PATH: "/usr/local/lib/libgdal.so"
-      GEOS_LIBRARY_PATH: "/usr/local/lib/libgeos_c.so"
       GWELLS_SERVICE_HOST: db
       GWELLS_SERVICE_PORT: 5432
       MINIO_ACCESS_KEY: minio
@@ -102,23 +100,26 @@ services:
       S3_USE_SECURE: 0
       S3_WELL_BUCKET: well-docs
       S3_WELL_EXPORT_BUCKET: gwells
-    command: /bin/bash -c "sleep 3 &&
-            set -x &&
-            cd /app/backend &&
-            mkdir -p .pip &&
-            pip3 install --cache-dir=.pip -r requirements.txt &&
-            python3 manage.py migrate --noinput &&
-            echo Loading fixtures, this may take some time... &&
-            python3 manage.py loaddata
-                gwells-codetables.json
-                registries-codetables.json
-                registries.json
-                wellsearch-codetables.json
-                wellsearch.json
-                aquifers.json &&
-            python3 manage.py createinitialrevisions &&
-            python3 manage.py collectstatic --noinput &&
-            python3 manage.py runserver 0.0.0.0:8000"
+    command: /bin/bash -c "
+      apt-get update &&
+      apt-get install binutils libproj-dev gdal-bin python-gdal -y &&
+      sleep 3 &&
+      set -x &&
+      cd /app/backend &&
+      mkdir -p .pip &&
+      python3 -m pip install --cache-dir=.pip -r requirements.txt &&
+      python3 manage.py migrate --noinput &&
+      echo Loading fixtures, this may take some time... &&
+      python3 manage.py loaddata
+        gwells-codetables.json
+        registries-codetables.json
+        registries.json
+        wellsearch-codetables.json
+        wellsearch.json
+        aquifers.json &&
+      python3 manage.py createinitialrevisions &&
+      python3 manage.py collectstatic --noinput &&
+      python3 manage.py runserver 0.0.0.0:8000"
     volumes:
       - ./app:/app
     ports:

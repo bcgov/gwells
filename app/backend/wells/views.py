@@ -31,6 +31,7 @@ from rest_framework.response import Response
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.permissions import DjangoModelPermissionsOrAnonReadOnly
 
+from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 
 from minio import Minio
@@ -93,7 +94,8 @@ class WellDetail(RetrieveAPIView):
     """
     serializer_class = WellDetailSerializer
 
-    queryset = Well.objects.all()
+    # TODO Address viewing unpublished wells when advanced search has been merged
+    queryset = Well.objects.all()  # exclude(well_publication_status='Unpublished')
     lookup_field = 'well_tag_number'
 
     def get_serializer(self, *args, **kwargs):
@@ -153,7 +155,24 @@ class ListFiles(APIView):
     get: list files found for the well identified in the uri
     """
 
-    @swagger_auto_schema(auto_schema=None)
+    @swagger_auto_schema(responses={200: openapi.Response('OK',
+        openapi.Schema(type=openapi.TYPE_OBJECT, properties={
+            'public': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'url': openapi.Schema(type=openapi.TYPE_STRING),
+                    'name': openapi.Schema(type=openapi.TYPE_STRING)
+                }
+            )),
+            'private': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'url': openapi.Schema(type=openapi.TYPE_STRING),
+                    'name': openapi.Schema(type=openapi.TYPE_STRING)
+                }
+            ))
+        })
+    )})
     def get(self, request, tag):
         user_is_staff = self.request.user.groups.filter(
             name=WELLS_VIEWER_ROLE).exists()
@@ -175,7 +194,8 @@ class WellListAPIView(ListAPIView):
 
     permission_classes = (DjangoModelPermissionsOrAnonReadOnly,)
     model = Well
-    queryset = Well.objects.all()
+    # TODO Address viewing unpublished wells when advanced search has been merged
+    queryset = Well.objects.all()  # exclude(well_publication_status='Unpublished')
     pagination_class = APILimitOffsetPagination
     serializer_class = WellListSerializer
 
@@ -221,7 +241,7 @@ class WellTagSearchAPIView(ListAPIView):
 
     permission_classes = (DjangoModelPermissionsOrAnonReadOnly,)
     model = Well
-    queryset = Well.objects.only('well_tag_number', 'owner_full_name').all()
+    queryset = Well.objects.exclude(well_publication_status='Unpublished').only('well_tag_number', 'owner_full_name')
     pagination_class = None
     serializer_class = WellTagSearchSerializer
     lookup_field = 'well_tag_number'
@@ -325,7 +345,7 @@ class DeleteWellDocument(APIView):
     def delete(self, request, tag):
         well = get_object_or_404(self.queryset, pk=tag)
         client = MinioClient(
-            request=request, disable_private=True)
+            request=request, disable_private=False)
 
         is_private = False
         bucket_name = get_env_variable("S3_ROOT_BUCKET")

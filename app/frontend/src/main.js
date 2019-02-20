@@ -14,6 +14,7 @@
 import 'babel-polyfill'
 import Vue from 'vue'
 import Vuex, {mapActions} from 'vuex'
+import VueNoty from 'vuejs-noty'
 import BootstrapVue from 'bootstrap-vue'
 import App from './App'
 import router from './router.js'
@@ -32,6 +33,11 @@ import 'tabulator-tables/dist/css/bootstrap/tabulator_bootstrap4.min.css'
 import ApiService from '@/common/services/ApiService.js'
 
 Vue.use(Vuex)
+Vue.use(VueNoty, {
+  layout: 'topRight',
+  theme: 'bootstrap-v4',
+  timeout: 1800
+})
 Vue.use(BootstrapVue)
 Vue.use(vueSmoothScroll)
 Vue.use(VueMoment)

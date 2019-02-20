@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "5372c36b-759f-4701-9798-c1e4cedf70c1",
+		"_postman_id": "7c94f94b-7f5c-4b38-abf2-c7a0cb4089ae",
 		"name": "GWELLS Submissions API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -3090,6 +3090,70 @@
 									]
 								},
 								"description": "Submit a submission"
+							},
+							"response": []
+						},
+						{
+							"name": "Staff Edit - Publication Status",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "4611a207-a917-45e9-9ad8-d111e41d4c32",
+										"exec": [
+											"var jsonData = pm.response.json();",
+											"",
+											"",
+											"pm.test(\"Status code is 201\", function () {",
+											"   pm.expect(pm.response.code).to.equal(201);",
+											"})",
+											"",
+											"pm.test(\"Expect publication status to be updated\", function() {",
+											"    pm.expect(jsonData['well_publication_status']).to.equal('Unpublished')",
+											"})",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"well\": {{well_tag_number}},\n\t\"well_publication_status\": \"Unpublished\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/submissions/staff_edit?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"submissions",
+										"staff_edit"
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json"
+										}
+									]
+								},
+								"description": "publishing and unpublishing a well"
 							},
 							"response": []
 						}

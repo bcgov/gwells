@@ -12,56 +12,31 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-  <div class="container p-1 container-wide">
-    <div class="card" v-if="userRoles.wells.edit || userRoles.submissions.edit">
-      <div class="card-body">
 
-      <!-- Form submission success message -->
-      <b-alert
-          id="submissionSuccessAlert"
-          :show="formSubmitSuccess"
-          variant="success"
-          class="mt-3">
-        <i class="fa fa-2x fa-check-circle text-success mr-2 alert-icon" aria-hidden="true"></i>
-        <div v-if="isStaffEdit" class="alert-message">
-          Changes saved.
-        </div>
-        <div v-else class="alert-message">
-          Your well record was successfully submitted.
-        </div>
-      </b-alert>
+<!-- commented out temporarily  -->
+<!-- <div class="container p-1 container-wide"> -->
 
+  <div class="card" v-if="userRoles.wells.edit || userRoles.submissions.edit">
+    <div class="card-body">
       <!-- Document Uploading alerts -->
-      <b-alert show v-if="files_uploading">File Upload In Progress...</b-alert>
-      <b-alert show v-if="!files_uploading && file_upload_error" variant="warning" >{{file_upload_error}}</b-alert>
-      <b-alert show v-if="!files_uploading && file_upload_success" variant="success" >Successfully uploaded all files</b-alert>
-
-      <!-- Form submission error message -->
-      <b-alert
-          :show="formSubmitError"
-          dismissible
-          @dismissed="formSubmitError=false"
-          variant="danger"
-          class="mt-3">
-
-        <i class="fa fa-2x fa-exclamation-circle text-danger mr-2 alert-icon" aria-hidden="true"></i>
-        <div class="alert-message">
-          <div v-if="isStaffEdit">
-            Your changes were not saved.
-          </div>
-          <div v-else>
-            Your well record was not submitted.
-          </div>
-          <span v-if="errors && errors.detail">
-            {{ errors.detail }}
-          </span>
-          <div v-if="errors && errors != {}">
-            <div v-for="(field, i) in Object.keys(errors)" :key="`submissionError${i}`">
-              {{field | readable}} : <span v-for="(e, j) in errors[field]" :key="`submissionError${i}-${j}`">{{ e }}</span>
-            </div>
-          </div>
-        </div>
-      </b-alert>
+      <b-modal
+        v-model="files_uploading"
+        hide-header
+        hide-footer
+        hide-header-close><b-alert show v-if="files_uploading">File Upload In Progress...</b-alert>
+      </b-modal>
+      <b-modal
+        v-model="file_upload_error"
+        hide-header
+        hide-footer
+        hide-header-close><b-alert show v-if="!files_uploading && file_upload_error" variant="warning" >{{file_upload_error}}</b-alert>
+      </b-modal>
+      <b-modal
+        v-model="file_upload_success"
+        hide-header
+        hide-footer
+        hide-header-close><b-alert show v-if="!files_uploading && file_upload_success" variant="success" >Successfully uploaded all files</b-alert>
+      </b-modal>
 
       <b-form @submit.prevent="confirmSubmit">
         <!-- if preview === true : Preview -->
@@ -123,12 +98,14 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
 <script>
 import { mapActions, mapGetters, mapState } from 'vuex'
+import 'vuejs-noty/dist/vuejs-noty.css'
 import ApiService from '@/common/services/ApiService.js'
 import { FETCH_CODES, FETCH_WELLS } from '../store/actions.types.js'
 import inputFormatMixin from '@/common/inputFormatMixin.js'
 import SubmissionPreview from '@/submissions/components/SubmissionPreview/SubmissionPreview.vue'
 import filterBlankRows from '@/common/filterBlankRows.js'
 import ActivitySubmissionForm from '@/submissions/components/SubmissionForm/ActivitySubmissionForm.vue'
+import parseErrors from '@/common/helpers/parseErrors.js'
 export default {
   name: 'SubmissionsHome',
   mixins: [inputFormatMixin, filterBlankRows],
@@ -211,6 +188,7 @@ export default {
           'documents'
         ],
         STAFF_EDIT: [
+          'wellPublicationStatus',
           'wellType',
           'wellOwner',
           'personResponsible',
@@ -312,6 +290,9 @@ export default {
       this.formSubmitError = false
       this.formSubmitSuccessWellTag = null
       this.errors = {}
+      // Save notification
+      this.$noty.info('<div class="loader"></div><div class="notifyText">Saving...</div>', { timeout: false })
+
       // Depending on the type of submission (construction/decommission/alteration/edit) we post to
       // different endpoints.
       const PATH = this.codes.activity_types.find((item) => item.code === this.activityType).path
@@ -320,21 +301,19 @@ export default {
         this.formSubmitSuccessWellTag = response.data.well
 
         this.$emit('formSaved')
+        // Save completed notification
+        this.$noty.success('<div class="notifyText">Changes Saved!</div>', { killer: true })
 
         if (!this.form.well_tag_number) {
           this.setWellTagNumber(response.data.well)
         }
 
-        this.$nextTick(function () {
-          window.scrollTo(0, 0)
-        })
-
         // Reloads only altered data in form for re-rendering
         Object.keys(response.data).forEach((key) => {
-          if (key in meta.valueChanged) {
+          if (meta.valueChanged && key in meta.valueChanged) {
             this.form[key] = response.data[key]
           }
-        });
+        })
 
         if (this.upload_files.length > 0) {
           if (response.data.filing_number) {
@@ -360,17 +339,27 @@ export default {
           }
         }
       }).catch((error) => {
-        if (error.response.status === 400) {
-          // Bad request, the response.data will contain information relating to why the request was bad.
-          this.errors = error.response.data
+        if (error.response) {
+          if (error.response.status === 400) {
+            // Bad request, the response.data will contain information relating to why the request was bad.
+            this.errors = error.response.data
+          } else {
+            // Some other kind of server error. If for example, it's a 500, the response data is not of
+            // much use, so we just grab the status text.
+            this.errors = { 'Server Error': error.response.statusText }
+          }
         } else {
-          // Some other kind of server error. If for example, it's a 500, the response data is not of
-          // much use, so we just grab the status text.
-          this.errors = { 'Server Error': error.response.statusText }
+          // This is a generic js error, so just log it
+          console.log(error)
         }
+
         this.formSubmitError = true
-        this.$nextTick(function () {
-          window.scrollTo(0, 0)
+        let cleanErrors = parseErrors(this.errors)
+        let errTxt = cleanErrors.length > 1 ? 'Input Errors!' : 'Input Error!'
+        // Error notifications
+        this.$noty.error('<div class="errorText">' + errTxt + '</div>', { timeout: 2000, killer: true })
+        cleanErrors.forEach(e => {
+          this.$noty.error('<b>Error: </b>' + e, { timeout: false })
         })
       }).finally((response) => {
         this.formSubmitLoading = false
@@ -383,6 +372,7 @@ export default {
       this.form = {
         well: null,
         well_status: '',
+        well_publication_status: '',
         well_class: '',
         well_subclass: '',
         intended_water_use: '',
@@ -654,5 +644,31 @@ export default {
   }
   .input-width-medium {
     max-width: 6rem;
+  }
+  .loader {
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #5b7b9c;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: inline-block;
+    text-align: center;
+    vertical-align: middle;
+    animation: spin 2s linear infinite;
+  }
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  .notifyText {
+    font-size: 18px;
+    display: inline-block;
+    text-align: center;
+    vertical-align: middle;
+    margin-left: 10px;
+    padding-top: 3px;
+  }
+  .errorText {
+    font-size: 18px;
   }
 </style>
