@@ -670,6 +670,8 @@ export default {
   padding-right: 20px;
 }
 .closeBtn {
-  float: right;
+  position: absolute;
+  right: 10px;
+  top: 5px;
 }
 </style>
