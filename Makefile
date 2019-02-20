@@ -22,10 +22,10 @@ down:
 	docker-compose down --volumes
 
 vue: prep
-	set -m; NPM_CMD=dev docker-compose up
+	NPM_CMD=dev docker-compose up
 
 django: prep
-	set -m; NPM_CMD=watch docker-compose up
+	NPM_CMD=watch docker-compose up
 
 test-node:
 	docker exec -ti gwells_frontend_1 /bin/bash -c "cd /app/frontend/; npm run unit -- --runInBand"
@@ -36,3 +36,8 @@ test-django:
 
 admin-django:
 	docker exec -ti gwells_backend_1 /bin/bash -c "cd /app/backend; python manage.py createsuperuser"
+
+backend:
+	docker-compose pull backend
+	docker-compose build backend
+	docker-compose up backend
