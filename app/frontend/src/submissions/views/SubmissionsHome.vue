@@ -13,84 +13,83 @@ Licensed under the Apache License, Version 2.0 (the "License");
 */
 <template>
 
-<!-- commented out temporarily  -->
-<!-- <div class="container p-1 container-wide"> -->
+  <!-- commented out temporarily  -->
+  <div class="container p-1 container-wide">
+    <div class="card" v-if="userRoles.wells.edit || userRoles.submissions.edit">
+      <div class="card-body">
+        <!-- Document Uploading alerts -->
+        <b-modal
+          v-model="files_uploading"
+          hide-header
+          hide-footer
+          hide-header-close><b-alert show v-if="files_uploading">File Upload In Progress...</b-alert>
+        </b-modal>
+        <b-modal
+          v-model="file_upload_error"
+          hide-header
+          hide-footer
+          hide-header-close><b-alert show v-if="!files_uploading && file_upload_error" variant="warning" >{{file_upload_error}}</b-alert>
+        </b-modal>
+        <b-modal
+          v-model="file_upload_success"
+          hide-header
+          hide-footer
+          hide-header-close><b-alert show v-if="!files_uploading && file_upload_success" variant="success" >Successfully uploaded all files</b-alert>
+        </b-modal>
 
-  <div class="card" v-if="userRoles.wells.edit || userRoles.submissions.edit">
-    <div class="card-body">
-      <!-- Document Uploading alerts -->
-      <b-modal
-        v-model="files_uploading"
-        hide-header
-        hide-footer
-        hide-header-close><b-alert show v-if="files_uploading">File Upload In Progress...</b-alert>
-      </b-modal>
-      <b-modal
-        v-model="file_upload_error"
-        hide-header
-        hide-footer
-        hide-header-close><b-alert show v-if="!files_uploading && file_upload_error" variant="warning" >{{file_upload_error}}</b-alert>
-      </b-modal>
-      <b-modal
-        v-model="file_upload_success"
-        hide-header
-        hide-footer
-        hide-header-close><b-alert show v-if="!files_uploading && file_upload_success" variant="success" >Successfully uploaded all files</b-alert>
-      </b-modal>
+        <b-form @submit.prevent="confirmSubmit">
+          <!-- if preview === true : Preview -->
+          <submission-preview
+            v-if="preview"
+            :form="form"
+            :activity="activityType"
+            :sections="displayFormSection"
+            :errors="errors"
+            :reportSubmitted="formSubmitSuccess"
+            :formSubmitLoading="formSubmitLoading"
+            :uploadedFiles="uploadedFiles"
+            v-on:back="handlePreviewBackButton"
+            v-on:startNewReport="handleExitPreviewAfterSubmit"
+            />
+          <!-- if preview === false : Activity submission form -->
+          <activity-submission-form
+            v-else
+            :form="form"
+            :activityType.sync="activityType"
+            :sections="displayFormSection"
+            :formSteps="formSteps"
+            :errors="errors"
+            :formIsFlat.sync="formIsFlat"
+            :trackValueChanges="trackValueChanges"
+            :formSubmitLoading="formSubmitLoading"
+            :isStaffEdit="isStaffEdit"
+            :loading="loading"
+            :uploadedFiles="uploadedFiles"
+            v-on:preview="handlePreviewButton"
+            v-on:submit_edit="formSubmit"
+            v-on:resetForm="resetForm"
+            v-on:fetchFiles="fetchFiles"
+            />
 
-      <b-form @submit.prevent="confirmSubmit">
-        <!-- if preview === true : Preview -->
-        <submission-preview
-          v-if="preview"
-          :form="form"
-          :activity="activityType"
-          :sections="displayFormSection"
-          :errors="errors"
-          :reportSubmitted="formSubmitSuccess"
-          :formSubmitLoading="formSubmitLoading"
-          :uploadedFiles="uploadedFiles"
-          v-on:back="handlePreviewBackButton"
-          v-on:startNewReport="handleExitPreviewAfterSubmit"
-          />
-        <!-- if preview === false : Activity submission form -->
-        <activity-submission-form
-          v-else
-          :form="form"
-          :activityType.sync="activityType"
-          :sections="displayFormSection"
-          :formSteps="formSteps"
-          :errors="errors"
-          :formIsFlat.sync="formIsFlat"
-          :trackValueChanges="trackValueChanges"
-          :formSubmitLoading="formSubmitLoading"
-          :isStaffEdit="isStaffEdit"
-          :loading="loading"
-          :uploadedFiles="uploadedFiles"
-          v-on:preview="handlePreviewButton"
-          v-on:submit_edit="formSubmit"
-          v-on:resetForm="resetForm"
-          v-on:fetchFiles="fetchFiles"
-          />
-
-            <!-- Form submission confirmation -->
-            <b-modal
-                v-model="confirmSubmitModal"
-                id="confirmSubmitModal"
-                centered
-                title="Confirm submission"
-                @shown="$refs.confirmSubmitConfirmBtn.focus()"
-                :return-focus="$refs.activitySubmitBtn">
-              Are you sure you want to submit this activity report?
-              <div slot="modal-footer">
-                <b-btn variant="primary" @click="confirmSubmitModal=false;formSubmit()" ref="confirmSubmitConfirmBtn">
-                  Save
-                </b-btn>
-                <b-btn variant="light" @click="confirmSubmitModal=false">
-                  Cancel
-                </b-btn>
-              </div>
-            </b-modal>
-          </b-form>
+          <!-- Form submission confirmation -->
+          <b-modal
+              v-model="confirmSubmitModal"
+              id="confirmSubmitModal"
+              centered
+              title="Confirm submission"
+              @shown="$refs.confirmSubmitConfirmBtn.focus()"
+              :return-focus="$refs.activitySubmitBtn">
+            Are you sure you want to submit this activity report?
+            <div slot="modal-footer">
+              <b-btn variant="primary" @click="confirmSubmitModal=false;formSubmit()" ref="confirmSubmitConfirmBtn">
+                Save
+              </b-btn>
+              <b-btn variant="light" @click="confirmSubmitModal=false">
+                Cancel
+              </b-btn>
+            </div>
+          </b-modal>
+        </b-form>
       </div>
     </div>
   </div>
