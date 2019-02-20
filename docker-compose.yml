@@ -12,7 +12,10 @@ services:
     ports:
     - "9000:9000"
     volumes:
-    - ./.tmp/minio-public-files:/data
+    - /data/gwells
+    - /data/aquifer-docs
+    - /data/well-docs
+    - /data/driller-docs
     environment:
       MINIO_ACCESS_KEY: minio
       MINIO_SECRET_KEY: minio1234
@@ -23,7 +26,10 @@ services:
     ports:
     - "9001:9001"
     volumes:
-    - ./.tmp/minio-private-files:/data
+    - /data/gwells
+    - /data/aquifer-docs
+    - /data/well-docs
+    - /data/driller-docs
     environment:
       MINIO_ACCESS_KEY: minio
       MINIO_SECRET_KEY: minio1234
