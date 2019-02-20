@@ -16,7 +16,7 @@
                 key !== 'create_user' && // we will display these fields separately
                 key !== 'create_date'
             ">
-              <dt class="col-12 col-md-6 col-xl-2">{{key}}</dt><dd class="col-12 col-md-6 col-xl-10">{{value}}</dd>
+              <dt class="col-12 col-md-6 col-xl-2">{{key | readable}}</dt><dd class="col-12 col-md-6 col-xl-10">{{value}}</dd>
             </div>
           </template>
         </dl>
@@ -29,8 +29,12 @@
 import { mapGetters } from 'vuex'
 import ApiService from '@/common/services/ApiService.js'
 
+// adds 'readable' filter
+import inputFormatMixin from '@/common/inputFormatMixin.js'
+
 export default {
   name: 'SubmissionDetail',
+  mixins: [inputFormatMixin],
   data () {
     return {
       submission: null
