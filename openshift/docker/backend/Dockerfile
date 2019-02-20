@@ -9,14 +9,11 @@ ENV DEBIAN_FRONTEND noninteractive
 #
 RUN apt-get update; \
     apt-get install -y \
-        binutils \
-        gdal-bin \
-        libgeoip-dev \
-        libgeoip1 \
-        libproj-dev \
-        libspatialite-dbg \
-        postgis \
-        python-gdal; \
+      apt-utils \
+      binutils \
+      libproj-dev \
+      gdal-bin \
+      python-gdal; \
     apt-get autoclean; \
     apt-get clean; \
     rm -rf \
@@ -27,4 +24,6 @@ RUN apt-get update; \
       /usr/share/doc-base/ \
       /usr/share/man/
 
-USER 1001
+# Working directory
+#
+WORKDIR /app/backend
