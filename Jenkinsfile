@@ -287,6 +287,9 @@ def apiTest (String STAGE_NAME, String BASE_URL, String ENV_SUFFIX) {
                                 --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
                                 --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
                                 -r cli,junit,html
+                            newman run ./wells_search_api_tests.json \
+                                --global-var base_url=\$BASE_URL \
+                                -r cli,junit,html
                         """
                     } finally {
                         junit 'newman/*.xml'
