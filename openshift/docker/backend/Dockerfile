@@ -53,4 +53,9 @@ RUN echo "/usr/local/lib/" >> /etc/ld.so.conf && \
     ldconfig
 
 
+# Working directory
+#
+WORKDIR /app/backend
+
+
 USER 1001
