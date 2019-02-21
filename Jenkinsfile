@@ -108,7 +108,7 @@ def functionalTest (String STAGE_NAME, String BASE_URL, String ENV_SUFFIX, Strin
 // Can be limited by assinging toTest var
 def unitTestDjango (String STAGE_NAME, String ENV_PROJECT, String ENV_SUFFIX) {
     _openshift(env.STAGE_NAME, ENV_PROJECT) {
-        def DB_target = ENV_PROJECT == 'staging' ? "${APP_NAME}-pgsql-${ENV_SUFFIX}" : "${APP_NAME}-pgsql-${ENV_SUFFIX}-${PR_NUM}"
+        def DB_target = ENV_SUFFIX == "staging" ? "${APP_NAME}-pgsql-${ENV_SUFFIX}" : "${APP_NAME}-pgsql-${ENV_SUFFIX}-${PR_NUM}"
         def DB_newVersion = openshift.selector("dc", "${DB_target}").object().status.latestVersion
         def DB_pod = openshift.selector('pod', [deployment: "${DB_target}-${DB_newVersion}"])
         echo "Temporarily granting elevated DB rights"
@@ -121,7 +121,7 @@ def unitTestDjango (String STAGE_NAME, String ENV_PROJECT, String ENV_SUFFIX) {
         )
         echo "Temporary DB grant results: "+ db_ocoutput_grant.actions[0].out
 
-        def target = ENV_PROJECT == 'staging' ? "${APP_NAME}-${ENV_SUFFIX}" : "${APP_NAME}-${ENV_SUFFIX}-${PR_NUM}"
+        def target = ENV_SUFFIX == "staging" ? "${APP_NAME}-${ENV_SUFFIX}" : "${APP_NAME}-${ENV_SUFFIX}-${PR_NUM}"
         def newVersion = openshift.selector("dc", "${target}").object().status.latestVersion
         def pods = openshift.selector('pod', [deployment: "${target}-${newVersion}"])
 
