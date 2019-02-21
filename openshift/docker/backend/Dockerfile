@@ -47,4 +47,10 @@ RUN wget http://download.osgeo.org/gdal/2.4.0/gdal-2.4.0.tar.gz && \
     rm -rf /tmp/gdal-2.4.0 /tmp/gdal-2.4.0.tar.gz
 
 
+# Configure GDAL file locations
+#
+RUN echo "/usr/local/lib/" >> /etc/ld.so.conf && \
+    ldconfig
+
+
 USER 1001
