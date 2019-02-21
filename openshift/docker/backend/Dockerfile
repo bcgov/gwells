@@ -1,11 +1,12 @@
 FROM centos/python-36-centos7
 
 
+# Switch to root user
+#
 USER root
 
 
 # External libraries required by Python GIS extensions (e.g. GeoDjango, GeoAlchemy)
-
 # Install and configure GEOS
 #
 WORKDIR /tmp
@@ -18,6 +19,7 @@ RUN wget https://download.osgeo.org/geos/geos-3.7.1.tar.bz2 && \
     ldconfig && \
     cd /tmp && \
     rm -rf /tmp/geos-3.7.1 /tmp/geos-3.7.1.tar.bz2
+
 
 # Install and configure PROJ.4
 #
@@ -33,6 +35,7 @@ RUN wget https://download.osgeo.org/proj/proj-5.2.0.tar.gz && \
     && make install && \
     ldconfig && \
     rm -rf /tmp/proj-5.2.0 /tmp/proj-5.2.0.tar.gz /tmp/proj-datumgrid-north-america-1.1.tar.gz
+
 
 # Install and configure GDAL
 # (without SFCGAL as we aren't using "CREATE EXTENSION postgis_sfcgal;")
@@ -53,9 +56,7 @@ RUN echo "/usr/local/lib/" >> /etc/ld.so.conf && \
     ldconfig
 
 
-# Working directory
+# Set working directory and user
 #
 WORKDIR /app/backend
-
-
 USER 1001
