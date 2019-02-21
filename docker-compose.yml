@@ -56,9 +56,7 @@ services:
       - ./app:/app
       - /app/frontend/node_modules/
   backend:
-    build:
-      context: .
-      dockerfile: openshift/docker/backend/Dockerfile
+    image: gwells/backend
     hostname: backend
     environment:
       APP_CONTEXT_ROOT: gwells
