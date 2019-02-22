@@ -12,7 +12,7 @@ services:
     ports:
     - "9000:9000"
     volumes:
-    - ./.tmp/minio-public-files:/data
+    - /data
     environment:
       MINIO_ACCESS_KEY: minio
       MINIO_SECRET_KEY: minio1234
@@ -23,7 +23,7 @@ services:
     ports:
     - "9001:9001"
     volumes:
-    - ./.tmp/minio-private-files:/data
+    - /data
     environment:
       MINIO_ACCESS_KEY: minio
       MINIO_SECRET_KEY: minio1234
@@ -56,9 +56,7 @@ services:
       - ./app:/app
       - /app/frontend/node_modules/
   backend:
-    build:
-      context: .
-      dockerfile: openshift/docker/backend/Dockerfile
+    image: gwells/backend
     hostname: backend
     environment:
       APP_CONTEXT_ROOT: gwells
@@ -108,6 +106,7 @@ services:
       set -x &&
       cd /app/backend &&
       mkdir -p .pip &&
+      python3 -m pip install --upgrade pip &&
       python3 -m pip install --cache-dir=.pip -r requirements.txt &&
       python3 manage.py migrate --noinput &&
       echo Loading fixtures, this may take some time... &&

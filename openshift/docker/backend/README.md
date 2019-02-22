@@ -3,13 +3,13 @@
 Dockerfiles that are the source of GWELLS custom images.
 
 ## Python Images with GDAL, GEOS, and PROJ.4 compiled from source
-    * [OpenShift, based upon RHEL7](./python-gdal/Dockerfile.rhel7)
-    * [Local Development](./python-gdal/Dockerfile.centos)
+    * [OpenShift, based on RHEL7](Dockerfile.rhel7)
+    * [Local Development, based on CentOS](Dockerfile)
 
 
 ```
-docker build . -f Dockerfile.centos -t python-gis
-docker build . -f Dockerfile.centos -t local/python-gis
+docker build . -f Dockerfile -t python-gis
+docker build . -f Dockerfile -t local/python-gis
 docker run -it --rm  --user root --entrypoint /bin/bash local/python-gis
  
 ```
@@ -32,15 +32,14 @@ oc -n moe-gwells-tools tag gwells-python:latest gwells-python:GDAL
 
 
 ```
-cd docker-images/python-gdal/
-docker build . -f Dockerfile.centos -t gwells-python:gdal
+docker build . -f Dockerfile -t gwells-python:gdal
 
 ```
 
 ## Misc:
-oc -n csnr-devops-lab-tools new-build .  --name python-36-rhel7-gdal --context-dir=docker-images/python-gdal
+oc -n csnr-devops-lab-tools new-build .  --name python-36-rhel7-gdal --context-dir=.
 
-(or `oc -n csnr-devops-lab-tools new-build https://github.com/bcgov/gwells.git#feature/python-gdal --name python-36-rhel7-gdal --context-dir=docker-images/python-gdal` to reference a specific branch)
+(or `oc -n csnr-devops-lab-tools new-build https://github.com/bcgov/gwells.git#dev --name python-36-rhel7-gdal --context-dir=.` to reference a specific branch)
 
 To reset:
 oc -n moe-gwells-tools delete bc/tst-python-gdal istag/tst-python-gdal:latest is/tst-python-gdal
