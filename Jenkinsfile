@@ -507,61 +507,63 @@ pipeline {
         }
 
 
-        // the Django Unit Tests stage runs backend unit tests using a test DB that is
-        // created and destroyed afterwards.
-        stage('DEV - Django Unit Tests') {
+
+        stage('DEV - Testing') {
             when {
                 expression { env.CHANGE_TARGET != 'master' && env.CHANGE_TARGET != 'demo' }
             }
             steps {
-                script {
-                    _openshift(env.STAGE_NAME, DEV_PROJECT) {
-                        def result = unitTestDjango (env.STAGE_NAME, DEV_PROJECT, DEV_SUFFIX)
+                parallel(
+                    'DEV - Django Unit Tests': {
+                        // the Django Unit Tests stage runs backend unit tests using a test DB that is
+                        // created and destroyed afterwards.
+                        steps {
+                            script {
+                                _openshift(env.STAGE_NAME, DEV_PROJECT) {
+                                    def result = unitTestDjango (env.STAGE_NAME, DEV_PROJECT, DEV_SUFFIX)
+                                }
+                            }
+                        }
+                    },
+                    'DEV - Load Fixtures': {
+                        steps {
+                            script {
+                                _openshift(env.STAGE_NAME, DEV_PROJECT) {
+                                    def newVersion = openshift.selector("dc", "${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}").object().status.latestVersion
+                                    def pods = openshift.selector('pod', [deployment: "${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}-${newVersion}"])
+
+                                    echo "Loading fixtures"
+                                    def ocoutput = openshift.exec(
+                                        pods.objects()[0].metadata.name,
+                                        "--",
+                                        "bash -c '\
+                                            cd /opt/app-root/src/backend; \
+                                            python manage.py loaddata \
+                                            gwells-codetables.json \
+                                            wellsearch-codetables.json \
+                                            registries-codetables.json \
+                                            registries.json \
+                                            wellsearch.json \
+                                            aquifers.json \
+                                        '"
+                                    )
+                                    echo "Load Fixtures results: "+ ocoutput.actions[0].out
+
+                                    openshift.exec(
+                                        pods.objects()[0].metadata.name,
+                                        "--",
+                                        "bash -c '\
+                                            cd /opt/app-root/src/backend; \
+                                            python manage.py createinitialrevisions \
+                                        '"
+                                    )
+                                    def targetURL = "https://${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca/gwells"
+                                    createDeploymentStatus(DEV_SUFFIX, 'SUCCESS', targetURL)
+                                }
+                            }
+                        }
                     }
-                }
-            }
-        }
-
-
-        stage('DEV - Load Fixtures') {
-            when {
-                expression { env.CHANGE_TARGET != 'master' && env.CHANGE_TARGET != 'demo' }
-            }
-            steps {
-                script {
-                    _openshift(env.STAGE_NAME, DEV_PROJECT) {
-                        def newVersion = openshift.selector("dc", "${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}").object().status.latestVersion
-                        def pods = openshift.selector('pod', [deployment: "${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}-${newVersion}"])
-
-                        echo "Loading fixtures"
-                        def ocoutput = openshift.exec(
-                            pods.objects()[0].metadata.name,
-                            "--",
-                            "bash -c '\
-                                cd /opt/app-root/src/backend; \
-                                python manage.py loaddata \
-                                gwells-codetables.json \
-                                wellsearch-codetables.json \
-                                registries-codetables.json \
-                                registries.json \
-                                wellsearch.json \
-                                aquifers.json \
-                            '"
-                        )
-                        echo "Load Fixtures results: "+ ocoutput.actions[0].out
-
-                        openshift.exec(
-                            pods.objects()[0].metadata.name,
-                            "--",
-                            "bash -c '\
-                                cd /opt/app-root/src/backend; \
-                                python manage.py createinitialrevisions \
-                            '"
-                        )
-                        def targetURL = "https://${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca/gwells"
-                        createDeploymentStatus(DEV_SUFFIX, 'SUCCESS', targetURL)
-                    }
-                }
+                )
             }
         }
 
