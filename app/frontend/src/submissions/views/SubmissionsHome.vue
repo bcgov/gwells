@@ -14,48 +14,25 @@ Licensed under the Apache License, Version 2.0 (the "License");
 <template>
   <div class="card" v-if="userRoles.wells.edit || userRoles.submissions.edit">
     <div class="card-body">
-
-      <!-- Form submission success message -->
-      <b-alert
-          id="submissionSuccessAlert"
-          :show="formSubmitSuccess"
-          variant="success"
-          class="mt-3">
-        <i class="fa fa-2x fa-check-circle text-success mr-2 alert-icon" aria-hidden="true"></i>
-        <div v-if="isStaffEdit" class="alert-message">
-          Changes saved.
-        </div>
-        <div v-else class="alert-message">
-          Your well record was successfully submitted.
-        </div>
-      </b-alert>
-
-      <!-- Form submission error message -->
-      <b-alert
-          :show="formSubmitError"
-          dismissible
-          @dismissed="formSubmitError=false"
-          variant="danger"
-          class="mt-3">
-
-        <i class="fa fa-2x fa-exclamation-circle text-danger mr-2 alert-icon" aria-hidden="true"></i>
-        <div class="alert-message">
-          <div v-if="isStaffEdit">
-            Your changes were not saved.
-          </div>
-          <div v-else>
-            Your well record was not submitted.
-          </div>
-          <span v-if="errors && errors.detail">
-            {{ errors.detail }}
-          </span>
-          <div v-if="errors && errors != {}">
-            <div v-for="(field, i) in Object.keys(errors)" :key="`submissionError${i}`">
-              {{field | readable}} : <span v-for="(e, j) in errors[field]" :key="`submissionError${i}-${j}`">{{ e }}</span>
-            </div>
-          </div>
-        </div>
-      </b-alert>
+      <!-- Document Uploading alerts -->
+      <b-modal
+        v-model="files_uploading"
+        hide-header
+        hide-footer
+        hide-header-close><b-alert show v-if="files_uploading">File Upload In Progress...</b-alert>
+      </b-modal>
+      <b-modal
+        v-model="file_upload_error"
+        hide-header
+        hide-footer
+        hide-header-close><b-alert show v-if="!files_uploading && file_upload_error" variant="warning" >{{file_upload_error}}</b-alert>
+      </b-modal>
+      <b-modal
+        v-model="file_upload_success"
+        hide-header
+        hide-footer
+        hide-header-close><b-alert show v-if="!files_uploading && file_upload_success" variant="success" >Successfully uploaded all files</b-alert>
+      </b-modal>
 
       <b-form @submit.prevent="confirmSubmit">
         <!-- if preview === true : Preview -->
@@ -67,6 +44,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           :errors="errors"
           :reportSubmitted="formSubmitSuccess"
           :formSubmitLoading="formSubmitLoading"
+          :uploadedFiles="uploadedFiles"
           v-on:back="handlePreviewBackButton"
           v-on:startNewReport="handleExitPreviewAfterSubmit"
           />
@@ -83,9 +61,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
           :formSubmitLoading="formSubmitLoading"
           :isStaffEdit="isStaffEdit"
           :loading="loading"
+          :uploadedFiles="uploadedFiles"
           v-on:preview="handlePreviewButton"
           v-on:submit_edit="formSubmit"
           v-on:resetForm="resetForm"
+          v-on:fetchFiles="fetchFiles"
           />
 
         <!-- Form submission confirmation -->
@@ -112,13 +92,15 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapState } from 'vuex'
+import 'vuejs-noty/dist/vuejs-noty.css'
 import ApiService from '@/common/services/ApiService.js'
-import { FETCH_CODES } from '../store/actions.types.js'
+import { FETCH_CODES, FETCH_WELLS } from '../store/actions.types.js'
 import inputFormatMixin from '@/common/inputFormatMixin.js'
 import SubmissionPreview from '@/submissions/components/SubmissionPreview/SubmissionPreview.vue'
 import filterBlankRows from '@/common/filterBlankRows.js'
 import ActivitySubmissionForm from '@/submissions/components/SubmissionForm/ActivitySubmissionForm.vue'
+import parseErrors from '@/common/helpers/parseErrors.js'
 export default {
   name: 'SubmissionsHome',
   mixins: [inputFormatMixin, filterBlankRows],
@@ -142,6 +124,7 @@ export default {
       errors: {},
       form: {},
       formOptions: {},
+      uploadedFiles: {},
       formSteps: {
         CON: [
           'activityType',
@@ -161,7 +144,8 @@ export default {
           'wellYield',
           'waterQuality',
           'wellCompletion',
-          'comments'
+          'comments',
+          'documents'
         ],
         ALT: [
           'activityType',
@@ -181,7 +165,8 @@ export default {
           'wellYield',
           'waterQuality',
           'wellCompletion',
-          'comments'
+          'comments',
+          'documents'
         ],
         DEC: [
           'activityType',
@@ -194,9 +179,11 @@ export default {
           'closureDescription',
           'casings',
           'decommissionInformation',
-          'comments'
+          'comments',
+          'documents'
         ],
         STAFF_EDIT: [
+          'wellPublicationStatus',
           'wellType',
           'wellOwner',
           'personResponsible',
@@ -217,6 +204,7 @@ export default {
           'closureDescription',
           'decommissionInformation',
           'comments',
+          'documents',
           'aquiferData'
         ]
       }
@@ -238,9 +226,19 @@ export default {
     isStaffEdit () {
       return this.activityType === 'STAFF_EDIT'
     },
-    ...mapGetters(['codes', 'userRoles', 'well', 'keycloak'])
+    ...mapGetters(['codes', 'userRoles', 'well', 'keycloak']),
+    ...mapState('documentState', [
+      'files_uploading',
+      'file_upload_error',
+      'file_upload_success',
+      'upload_files'
+    ])
   },
   methods: {
+    ...mapActions('documentState', [
+      'uploadFiles',
+      'fileUploadSuccess'
+    ]),
     formSubmit () {
       const data = Object.assign({}, this.form)
       const meta = data.meta
@@ -258,8 +256,12 @@ export default {
       delete data.meta
 
       // replace the "person responsible" object with the person's guid
-      if (data.driller_responsible && data.driller_responsible.person_guid) {
-        data.driller_responsible = data.driller_responsible.person_guid
+      if (data.person_responsible && data.person_responsible.person_guid) {
+        data.person_responsible = data.person_responsible.person_guid
+      }
+      // replace the "company of person responsible" object with the company's guid
+      if (data.company_of_person_responsible && data.company_of_person_responsible.org_guid) {
+        data.company_of_person_responsible = data.company_of_person_responsible.org_guid
       }
 
       if (data.well && data.well.well_tag_number) {
@@ -283,6 +285,9 @@ export default {
       this.formSubmitError = false
       this.formSubmitSuccessWellTag = null
       this.errors = {}
+      // Save notification
+      this.$noty.info('<div class="loader"></div><div class="notifyText">Saving...</div>', { timeout: false })
+
       // Depending on the type of submission (construction/decommission/alteration/edit) we post to
       // different endpoints.
       const PATH = this.codes.activity_types.find((item) => item.code === this.activityType).path
@@ -291,28 +296,67 @@ export default {
         this.formSubmitSuccessWellTag = response.data.well
 
         this.$emit('formSaved')
+        // Save completed notification
+        this.$noty.success('<div class="notifyText">Changes Saved!</div>', { killer: true })
 
         if (!this.form.well_tag_number) {
           this.setWellTagNumber(response.data.well)
         }
 
-        this.$nextTick(function () {
-          window.scrollTo(0, 0)
+        // Reloads only altered data in form for re-rendering
+        Object.keys(response.data).forEach((key) => {
+          if (meta.valueChanged && key in meta.valueChanged) {
+            this.form[key] = response.data[key]
+          }
         })
-      }).catch((error) => {
-        if (error.response.status === 400) {
-          // Bad request, the response.data will contain information relating to why the request was bad.
-          this.errors = error.response.data
-        } else {
-          // Some other kind of server error. If for example, it's a 500, the response data is not of
-          // much use, so we just grab the status text.
-          this.errors = { 'Server Error': error.response.statusText }
+
+        if (this.upload_files.length > 0) {
+          if (response.data.filing_number) {
+            this.uploadFiles({
+              documentType: 'submissions',
+              recordId: response.data.filing_number
+            }).then(() => {
+              this.fileUploadSuccess()
+              this.fetchFiles()
+            }).catch((error) => {
+              console.log(error)
+            })
+          } else {
+            this.uploadFiles({
+              documentType: 'wells',
+              recordId: response.data.well
+            }).then(() => {
+              this.fileUploadSuccess()
+              this.fetchFiles()
+            }).catch((error) => {
+              console.log(error)
+            })
+          }
         }
+      }).catch((error) => {
+        if (error.response) {
+          if (error.response.status === 400) {
+            // Bad request, the response.data will contain information relating to why the request was bad.
+            this.errors = error.response.data
+          } else {
+            // Some other kind of server error. If for example, it's a 500, the response data is not of
+            // much use, so we just grab the status text.
+            this.errors = { 'Server Error': error.response.statusText }
+          }
+        } else {
+          // This is a generic js error, so just log it
+          console.log(error)
+        }
+
         this.formSubmitError = true
-        this.$nextTick(function () {
-          window.scrollTo(0, 0)
+        let cleanErrors = parseErrors(this.errors)
+        let errTxt = cleanErrors.length > 1 ? 'Input Errors!' : 'Input Error!'
+        // Error notifications
+        this.$noty.error('<div class="errorText">' + errTxt + '</div>', { timeout: 2000, killer: true })
+        cleanErrors.forEach(e => {
+          this.$noty.error('<b>Error: </b>' + e, { timeout: false })
         })
-      }).finally(() => {
+      }).finally((response) => {
         this.formSubmitLoading = false
       })
     },
@@ -323,6 +367,7 @@ export default {
       this.form = {
         well: null,
         well_status: '',
+        well_publication_status: '',
         well_class: '',
         well_subclass: '',
         intended_water_use: '',
@@ -331,7 +376,8 @@ export default {
         id_plate_attached_by: '',
         water_supply_system_well_name: '',
         water_supply_system_name: '',
-        driller_responsible: null,
+        person_responsible: null,
+        company_of_person_responsible: null,
         driller_name: '',
         consultant_name: '',
         consultant_company: '',
@@ -367,9 +413,8 @@ export default {
         coordinate_acquisition_code: null,
         ground_elevation: null,
         ground_elevation_method: '',
-        drilling_method: '',
-        other_drilling_method: '',
-        well_orientation: '',
+        well_orientation: true,
+        drilling_methods: [],
         lithologydescription_set: [],
         surface_seal_material: '',
         surface_seal_depth: '',
@@ -386,7 +431,7 @@ export default {
         screen_bottom: '',
         screen_set: [],
         screen_information: '',
-        development_method: '',
+        development_methods: [],
         development_hours: '',
         development_notes: '',
         yield_estimation_method: '',
@@ -395,7 +440,7 @@ export default {
         well_yield_unit: '',
         static_level_before_test: '',
         drawdown: '',
-        hydro_fracturing_performed: '',
+        hydro_fracturing_performed: false,
         hydro_fracturing_yield_increase: '',
         recommended_pump_depth: '',
         recommended_pump_rate: '',
@@ -425,8 +470,8 @@ export default {
         decommission_description_set: [],
         decommission_reason: '',
         decommission_method: '',
-        sealant_material: '',
-        backfill_material: '',
+        decommission_sealant_material: '',
+        decommission_backfill_material: '',
         decommission_details: '',
         observation_well_number: '',
         observation_well_status: '',
@@ -492,6 +537,17 @@ export default {
       this.$nextTick(function () {
         window.scrollTo(0, 0)
       })
+    },
+    fetchFiles () {
+      // this.form.well is sometimes the tag number, and sometimes an object. This detects which is which
+      let tag = this.form.well && isNaN(this.form.well) ? this.form.well.well_tag_number : this.form.well
+
+      if (tag) {
+        ApiService.query(`wells/${tag}/files`)
+          .then((response) => {
+            this.uploadedFiles = response.data
+          })
+      }
     }
   },
   watch: {
@@ -518,7 +574,7 @@ export default {
             this.form[key] = res.data[key]
           }
         })
-        if (this.form.driller_responsible && this.form.driller_responsible.name === this.form.driller_name) {
+        if (this.form.person_responsible && this.form.person_responsible.name === this.form.driller_name) {
           this.form.meta.drillerSameAsPersonResponsible = true
         }
         // Wait for the form update we just did to fire off change events.
@@ -534,7 +590,13 @@ export default {
       }).catch((e) => {
         console.error(e)
       })
+    } else {
+      // Some of our child components need the well data, we dispatch the request here, in hopes
+      // that the data will be available by the time those components render.
+      this.$store.dispatch(FETCH_WELLS)
     }
+
+    this.fetchFiles()
   }
 }
 </script>
@@ -577,5 +639,31 @@ export default {
 }
 .input-width-medium {
   max-width: 6rem;
+}
+.loader {
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #5b7b9c;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: inline-block;
+  text-align: center;
+  vertical-align: middle;
+  animation: spin 2s linear infinite;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.notifyText {
+  font-size: 18px;
+  display: inline-block;
+  text-align: center;
+  vertical-align: middle;
+  margin-left: 10px;
+  padding-top: 3px;
+}
+.errorText {
+  font-size: 18px;
 }
 </style>

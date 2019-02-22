@@ -1,5 +1,7 @@
 drop table if exists activity_submission                    cascade;
 drop table if exists activity_submission_water_quality      cascade;
+drop table if exists activity_submission_drilling_methods   cascade;
+drop table if exists activity_submission_development_methods    cascade;
 drop table if exists aquifer                                cascade;
 drop table if exists aquifer_demand_code                    cascade;
 drop table if exists aquifer_material_code                  cascade;
@@ -90,6 +92,8 @@ drop table if exists well_status_code                       cascade;
 drop table if exists well_subclass_code                     cascade;
 drop table if exists well_water_quality                     cascade;
 drop table if exists well_yield_unit_code                   cascade;
+drop table if exists well_drilling_methods                  cascade;
+drop table if exists well_development_methods		 		cascade;
 drop table if exists wells_decommissiondescription          cascade;
 drop table if exists wells_decommissionmaterialcode         cascade;
 drop table if exists xform_aquifers                         cascade;

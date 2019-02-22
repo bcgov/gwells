@@ -56,6 +56,7 @@ class Command(BaseCommand):
         logger.info('exporting {}'.format(worksheet_name))
         worksheet = workbook.create_sheet(worksheet_name)
         csv_file = '{}.csv'.format(worksheet_name)
+        # If any of the export files already exist, delete them
         if os.path.exists(csv_file):
             os.remove(csv_file)
         with open(csv_file, 'w') as csvfile:
@@ -111,6 +112,7 @@ class Command(BaseCommand):
 
         gwells_zip.write(csv_file)
         if os.path.exists(csv_file):
+            # After adding the csv file to the zip, delete it.
             os.remove(csv_file)
 
     def generate_files(self, zip_filename, spreadsheet_filename):
@@ -124,7 +126,7 @@ class Command(BaseCommand):
  intended_water_use_code, licenced_status_code,
  observation_well_number, obs_well_status_code, water_supply_system_name,
  water_supply_system_well_name,
- street_address, city, legal_lot, legal_plan, legal_district_lot, legal_block,
+ well.street_address, well.city, legal_lot, legal_plan, legal_district_lot, legal_block,
  legal_section, legal_township, legal_range,
  land_district_code,
  legal_pid,
@@ -139,7 +141,7 @@ class Command(BaseCommand):
  well_yield,
  well_yield_unit_code,
  artesian_flow, artesian_pressure, well_cap_type, well_disinfected,
- drilling_method_code, other_drilling_method, well_orientation,
+ well_orientation,
  alternative_specs_submitted,
  surface_seal_material_code, surface_seal_method_code, surface_seal_length,
  backfill_type,
@@ -148,7 +150,7 @@ class Command(BaseCommand):
  liner_from, liner_to,
  screen_intake_method_code, screen_type_code, screen_material_code,
  other_screen_material,
- screen_opening_code, screen_bottom_code, other_screen_bottom, development_method_code,
+ screen_opening_code, screen_bottom_code, other_screen_bottom,
  filter_pack_from,
  filter_pack_to, filter_pack_material_code,
  filter_pack_thickness,
@@ -159,30 +161,34 @@ class Command(BaseCommand):
  yield_estimation_rate,
  yield_estimation_duration, static_level_before_test, drawdown,
  hydro_fracturing_performed, hydro_fracturing_yield_increase,
- decommission_reason, decommission_method_code, decommission_details, sealant_material,
- backfill_material,
+ decommission_reason, decommission_method_code, decommission_details, decommission_sealant_material,
+ decommission_backfill_material,
  comments, aquifer_id,
  drilling_company.drilling_company_code,
  ems,
  aquifer_id,
- registries_person.surname as driller_responsible
+ registries_person.surname as person_responsible,
+ registries_organization.name as company_of_person_responsible
  from well
  left join well_subclass_code as wsc on wsc.well_subclass_guid = well.well_subclass_guid
  left join drilling_company on
  drilling_company.drilling_company_guid = well.drilling_company_guid
  left join registries_person on
- registries_person.person_guid = well.driller_responsible_guid
+ registries_person.person_guid = well.person_responsible_guid
+ left join registries_organization on
+ registries_organization.org_guid = well.org_of_person_responsible_guid
+ where well.well_publication_status_code = 'Published' or well.well_publication_status_code = null
  order by well_tag_number""")
         ###########
         # LITHOLOGY
         ###########
-        lithology_sql = ("""select well_tag_number, lithology_from, lithology_to, lithology_raw_data,
+        lithology_sql = ("""select lithology_description.well_tag_number, lithology_from, lithology_to, lithology_raw_data,
  ldc.description as lithology_description_code,
  lmc.description as lithology_material_code,
  lhc.description as lithology_hardness_code,
  lcc.description as lithology_colour_code,
  water_bearing_estimated_flow,
- well_yield_unit_code, lithology_observation
+ lithology_description.well_yield_unit_code, lithology_observation
  from lithology_description
  left join lithology_description_code as ldc on
  ldc.lithology_description_code = lithology_description.lithology_description_code
@@ -192,52 +198,74 @@ class Command(BaseCommand):
  lhc.lithology_hardness_code = lithology_description.lithology_hardness_code
  left join lithology_colour_code as lcc on
  lcc.lithology_colour_code = lithology_description.lithology_colour_code
- order by well_tag_number""")
+ inner join well on well.well_tag_number = lithology_description.well_tag_number
+ where well.well_publication_status_code = 'Published' or well.well_publication_status_code = null
+ order by lithology_description.well_tag_number""")
         ########
         # CASING
         ########
-        casing_sql = ("""select well_tag_number, casing_from, casing_to, diameter, casing_code,
+        casing_sql = ("""select casing.well_tag_number, casing_from, casing_to, casing.diameter, casing_code,
  casing_material_code, wall_thickness, drive_shoe from casing
- order by well_tag_number""")
+ inner join well on well.well_tag_number = casing.well_tag_number
+ where well.well_publication_status_code = 'Published' or well.well_publication_status_code = null
+ order by casing.well_tag_number""")
         ########
         # SCREEN
         ########
-        screen_sql = ("""select well_tag_number, screen_from, screen_to, internal_diameter,
+        screen_sql = ("""select screen.well_tag_number, screen_from, screen_to, internal_diameter,
  screen_assembly_type_code, slot_size from screen
- order by well_tag_number""")
+ inner join well on well.well_tag_number = screen.well_tag_number
+ where well.well_publication_status_code = 'Published' or well.well_publication_status_code = null
+ order by screen.well_tag_number""")
         ##############
         # PERFORATIONS
         ##############
-        perforation_sql = ("""select well_tag_number, liner_from, liner_to, liner_diameter,
- liner_perforation_from, liner_perforation_to, liner_thickness
- from
- perforation
- order by well_tag_number""")
+        perforation_sql = ("""select p.well_tag_number, p.liner_from, p.liner_to, p.liner_diameter,
+ liner_perforation_from, liner_perforation_to, p.liner_thickness from perforation as p
+ inner join well on well.well_tag_number = p.well_tag_number
+ where well.well_publication_status_code = 'Published' or well.well_publication_status_code = null
+ order by p.well_tag_number""")
+        #################
+        # DRILLING METHOD
+        #################
+        drilling_method_sql = ("""select well_id as well_tag_number,
+drillingmethodcode_id as drilling_method_code
+from well_drilling_methods
+inner join well on well.well_tag_number = well_drilling_methods.well_id
+where well.well_publication_status_code = 'Published' or well.well_publication_status_code = null
+order by well_tag_number""")
+        ####################
+        # DEVELOPMENT METHOD
+        ####################
+        development_method_sql = ("""select well_id as well_tag_number,
+developmentmethodcode_id as development_method_code
+from well_development_methods
+inner join well on well.well_tag_number = well_development_methods.well_id
+where well.well_publication_status_code = 'Published' or well.well_publication_status_code = null
+order by well_tag_number""")
 
+        # Create a dictionary to iterate through when creating spreadsheets.
+        sheets = {
+            'well': well_sql,
+            'lithology': lithology_sql,
+            'casing': casing_sql,
+            'screen': screen_sql,
+            'perforation': perforation_sql,
+            'drilling_method': drilling_method_sql,
+            'development_method': development_method_sql
+        }
+
+        # If there is an existing zip file, remove it.
         if os.path.exists(zip_filename):
             os.remove(zip_filename)
         with zipfile.ZipFile(zip_filename, 'w', compression=zipfile.ZIP_DEFLATED) as gwells_zip:
             if os.path.exists(spreadsheet_filename):
                 os.remove(spreadsheet_filename)
             workbook = Workbook(write_only=True)
-            # Well
-            with connection.cursor() as cursor:
-                cursor.execute(well_sql)
-                self.export(workbook, gwells_zip, 'well', cursor)
-            # Lithology
-            with connection.cursor() as cursor:
-                cursor.execute(lithology_sql)
-                self.export(workbook, gwells_zip, 'lithology', cursor)
-            # Casing
-            with connection.cursor() as cursor:
-                cursor.execute(casing_sql)
-                self.export(workbook, gwells_zip, 'casing', cursor)
-            # Screen
-            with connection.cursor() as cursor:
-                cursor.execute(screen_sql)
-                self.export(workbook, gwells_zip, 'screen', cursor)
-            # Perforation
-            with connection.cursor() as cursor:
-                cursor.execute(perforation_sql)
-                self.export(workbook, gwells_zip, 'perforation', cursor)
+
+            for sheet, sql in sheets.items():
+                logger.info('creating {} cursor'.format(sheet))
+                with connection.cursor() as cursor:
+                    cursor.execute(sql)
+                    self.export(workbook, gwells_zip, sheet, cursor)
             workbook.save(filename=spreadsheet_filename)

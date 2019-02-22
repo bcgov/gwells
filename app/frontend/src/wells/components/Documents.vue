@@ -31,7 +31,7 @@
           </div>
           <ul v-else-if="files && files.public && files.public.length">
             <li v-for="(file, index) in files.public" :key="index">
-              <a :href="file.url" :download="file.name" target="_blank">{{file.name}}</a>
+              <a :href="file.url" :download="file.name" target="_blank" @click="handleDownloadEvent(file.name)">{{file.name}}</a>
             </li>
           </ul>
           <div v-else>
@@ -42,33 +42,43 @@
       <div class="row no-gutters" v-if="userRoles.wells.view">
         <div class="col-md-12">
           <h4>Internal documentation - authorized access only</h4>
-            <div v-if="error">
-              {{error}}
-            </div>
-            <ul v-else-if="files && files.private && files.private.length">
-              <li v-for="(file, index) in files.private" :key="index">
-                <a :href="file.url" :download="file.name" target="_blank">{{file.name}}</a>
-              </li>
-            </ul>
-              <div v-else>
-                No additional private documentation currently available for this well.
-              </div>
+          <div v-if="error">
+            {{error}}
           </div>
+          <ul v-else-if="files && files.private && files.private.length">
+            <li v-for="(file, index) in files.private" :key="index">
+              <a :href="file.url" :download="file.name" target="_blank" @click="handleDownloadEvent(file.name)">{{file.name}}</a>
+            </li>
+          </ul>
+            <div v-else>
+              No additional private documentation currently available for this well.
+            </div>
         </div>
+      </div>
     </div>
+    <b-modal
+      ok-variant="primary"
+      cancel-variant="default"
+      v-on:ok="deleteFile"
+      ref="deleteModal" >
+      <p>Are you sure you would like to delete this file?</p>
+      <p>{{file}}</p>
+    </b-modal>
   </div>
 </template>
 
 <script>
 import ApiService from '@/common/services/ApiService.js'
-import { mapGetters } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
   data () {
     return {
       loading: true,
       files: null,
-      error: null
+      error: null,
+      file: '',
+      fileType: ''
     }
   },
   watch: {
@@ -95,6 +105,46 @@ export default {
         return wellMeta.content
       }
       return null
+    }
+  },
+  methods: {
+    ...mapActions('documentState',
+      ['removeFileFromStore']
+    ),
+    handleDownloadEvent (file) {
+      if (window.ga) {
+        // ga('send', 'event', 'Attachment', 'Accessed', 'Original Well Record')
+        window.ga('send', {
+          hitType: 'event',
+          eventCategory: 'Attachment',
+          eventAction: 'Accessed',
+          eventLabel: `Original Well Record ${file}`
+        })
+      }
+    },
+    showModal () {
+      this.$refs.deleteModal.show()
+    },
+    hideModal () {
+      this.$refs.deleteModal.hide()
+    },
+    confirmDeleteFile (file, fileType, e) {
+      e.preventDefault()
+      this.file = file
+      this.fileType = fileType
+      this.showModal()
+    },
+    deleteFile () {
+      this.hideModal()
+      let isPrivate = false
+      if (this.fileType === 'private') {
+        isPrivate = true
+      }
+
+      ApiService.deleteFile(`wells/${this.wellTag}/delete_document?filename=${this.file}&private=${isPrivate}`)
+        .then(() => {
+          this.removeFileFromStore(this.file)
+        })
     }
   }
 }

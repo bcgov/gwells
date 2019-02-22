@@ -78,7 +78,6 @@ DECLARE
     longitude                      ,
     ground_elevation               ,
     well_orientation               ,
-    other_drilling_method          ,
     drilling_method_code           ,
     ground_elevation_method_code   ,
     well_status_code               ,
@@ -189,7 +188,6 @@ DECLARE
        WHEN ''HORIZ'' THEN false
        ELSE true
     END AS well_orientation                                                  ,
-    null AS other_drilling_method, -- placeholder as it is brand new content
     wells.drilling_method_code AS drilling_method_code, -- supersedes CONSTRUCTION_METHOD_CODE
     wells.ground_elevation_method_code AS ground_elevation_method_code,
     CASE wells.status_of_well_code
@@ -313,7 +311,6 @@ BEGIN
      longitude                          numeric(9,6),
      ground_elevation                   numeric(10,2),
      well_orientation                   boolean,
-     other_drilling_method              character varying(50),
      drilling_method_code               character varying(10),
      ground_elevation_method_code       character varying(10),
      well_status_code                   character varying(10),
@@ -361,7 +358,7 @@ BEGIN
      sealant_material                   character varying(100),
      backfill_material                  character varying(100),
      decommission_details               character varying(250),
-     comments                           character varying(255),
+     comments                           character varying(2000),
      create_date                        timestamp with time zone,
      update_date                        timestamp with time zone,
      create_user                         character varying(30),
@@ -475,8 +472,6 @@ BEGIN
     longitude                   ,
     ground_elevation            ,
     well_orientation            ,
-    other_drilling_method       ,
-    drilling_method_code        ,
     ground_elevation_method_code,
     create_date                 ,
     update_date                 ,
@@ -524,20 +519,20 @@ BEGIN
     utm_easting              ,
     coordinate_acquisition_code,
     bcgs_id                  ,
-    development_method_code  ,
     development_hours        ,
     decommission_reason      ,
     decommission_method_code ,
-    sealant_material         ,
-    backfill_material        ,
+    decommission_sealant_material ,
+    decommission_backfill_material,
     yield_estimation_method_code ,
     yield_estimation_rate        ,
     yield_estimation_duration    ,
     static_level_before_test     ,
     drawdown                     ,
     hydro_fracturing_performed   ,
-    decommission_details     ,
-    comments
+    decommission_details         ,
+    comments                     ,
+    well_publication_status_code
     )
   SELECT
     xform.well_tag_number                        ,
@@ -577,8 +572,6 @@ BEGIN
     xform.longitude                         ,
     xform.ground_elevation                  ,
     xform.well_orientation                  ,
-    NULL                                    ,
-    xform.drilling_method_code              ,
     xform.ground_elevation_method_code      ,
     xform.create_date                       ,
     xform.update_date                       ,
@@ -626,7 +619,6 @@ BEGIN
     xform.utm_easting                       ,
     xform.coordinate_acquisition_code        ,
     xform.bcgs_id                           ,
-    xform.development_method_code           ,
     xform.development_duration              ,
     xform.decommission_reason               ,
     xform.decommission_method_code          ,
@@ -642,7 +634,8 @@ BEGIN
     production_data.net_drawdown            ,
     false                                   ,
     xform.decommission_details              ,
-    xform.comments
+    xform.comments                          ,    
+    'Published'
   FROM xform_well xform
   LEFT JOIN wells.wells_production_data production_data ON production_data.well_id=xform.well_id;
 
@@ -771,6 +764,72 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 COMMENT ON FUNCTION migrate_casings () IS 'Load Casing details, only for the wells that have been replicated.';
+
+
+-- DESCRIPTION
+--  Define the SQL INSERT command that copies the drilling method data from the legacy
+--  database to the GWELLS table (well_drilling_methods)
+--
+-- PARAMETERS
+--   None
+--
+-- RETURNS
+--  None as this is a stored procedure
+--
+CREATE OR REPLACE FUNCTION migrate_drilling_methods() RETURNS void as $$
+DECLARE
+  row_count integer;
+BEGIN
+  raise notice '...importing well_drilling_methods';
+  INSERT INTO well_drilling_methods(
+    well_id                 ,
+    drillingmethodcode_id
+  )
+  SELECT
+    xform.well_tag_number,
+    xform.drilling_method_code
+  FROM xform_well xform
+  WHERE xform.drilling_method_code IS NOT NULL;
+
+  raise notice '...well_drilling_methods data imported';
+  SELECT count(*) from well_drilling_methods into row_count;
+  raise notice '% rows loaded into the well_drilling_methods table', row_count;
+END;
+$$ LANGUAGE plpgsql;
+COMMENT ON FUNCTION migrate_drilling_methods () IS 'Load Well Drilling Method relationships for the wells that have been replicated.';
+
+
+-- DESCRIPTION
+--  Define the SQL INSERT command that copies the drilling method data from the legacy
+--  database to the GWELLS table (well_development_methods)
+--
+-- PARAMETERS
+--   None
+--
+-- RETURNS
+--  None as this is a stored procedure
+--
+CREATE OR REPLACE FUNCTION migrate_development_methods() RETURNS void as $$
+DECLARE
+  row_count integer;
+BEGIN
+  raise notice '...importing well_development_methods';
+  INSERT INTO well_development_methods(
+    well_id                 ,
+    developmentmethodcode_id
+  )
+  SELECT
+    xform.well_tag_number,
+    xform.development_method_code
+  FROM xform_well xform
+  WHERE xform.development_method_code IS NOT NULL;
+
+  raise notice '...well_development_methods data imported';
+  SELECT count(*) from well_development_methods into row_count;
+  raise notice '% rows loaded into the well_development_methods table', row_count;
+END;
+$$ LANGUAGE plpgsql;
+COMMENT ON FUNCTION migrate_development_methods () IS 'Load Well Development Method relationships for the wells that have been replicated.';
 
 
 -- DESCRIPTION
@@ -1134,6 +1193,8 @@ BEGIN
   PERFORM migrate_perforations();
   PERFORM migrate_aquifers();
   PERFORM migrate_lithology();
+  PERFORM migrate_drilling_methods();
+  PERFORM migrate_development_methods();
   DROP TABLE IF EXISTS xform_well;
   raise notice 'Finished replicating WELLS to GWELLS.';
 END;

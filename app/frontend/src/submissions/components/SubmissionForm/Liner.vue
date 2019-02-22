@@ -44,7 +44,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             id="linerDiameter"
             label="Liner Diameter"
             hint="inches"
-            type="number"
+            type="text"
             v-model.number="linerDiameterInput"
             :errors="errors['liner_diameter']"
             :loaded="fieldsLoaded['liner_diameter']"
@@ -55,7 +55,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             id="linerThickness"
             label="Liner Thickness"
             hint="inches"
-            type="number"
+            type="text"
             v-model.number="linerThicknessInput"
             :errors="errors['liner_thickness']"
             :loaded="fieldsLoaded['liner_thickness']"
@@ -68,7 +68,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             id="linerFrom"
             label="Liner From"
             hint="ft (bgl)"
-            type="number"
+            type="text"
             v-model.number="linerFromInput"
             :errors="errors['liner_from']"
             :loaded="fieldsLoaded['liner_from']"
@@ -79,7 +79,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             id="linerTo"
             label="Liner To"
             hint="ft (bgl)"
-            type="number"
+            type="text"
             v-model.number="linerToInput"
             :errors="errors['liner_to']"
             :loaded="fieldsLoaded['liner_to']"
@@ -102,7 +102,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 <td class="pb-0 pt-1">
                   <form-input
                     :id="`liner_perforated_from_${index}`"
-                    type="number"
+                    type="text"
                     class="mb-0"
                     v-model.number="liner.start"
                     :errors="getLinerPerforationError(index).start"
@@ -111,7 +111,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 <td class="pb-0 pt-1">
                   <form-input
                     :id="`liner_perforated_to_${index}`"
-                    type="number"
+                    type="text"
                     class="mb-0"
                     v-model.number="liner.end"
                     :errors="getLinerPerforationError(index).end"
@@ -233,7 +233,7 @@ export default {
   },
   created () {
     // When component created, add an initial row of lithology.
-    if (!this.linerPerforationsInput.length && !this.isStaffEdit) {
+    if (!this.linerPerforationsInput.length) {
       this.linerPerforationsInput.push({}, {}, {})
     }
   }

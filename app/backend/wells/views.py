@@ -14,7 +14,8 @@
 from urllib.parse import quote
 
 from django.db.models import Prefetch
-from django.http import Http404
+from django.http import Http404, HttpResponse, JsonResponse
+from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView
 
 from rest_framework import filters
@@ -23,7 +24,10 @@ from rest_framework.response import Response
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.permissions import DjangoModelPermissionsOrAnonReadOnly
 
+from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
+
+from django_filters import rest_framework as restfilters
 
 from minio import Minio
 
@@ -34,6 +38,7 @@ from gwells.roles import WELLS_VIEWER_ROLE, WELLS_EDIT_ROLE
 from gwells.pagination import APILimitOffsetPagination
 from gwells.settings.base import get_env_variable
 
+from wells.filters import WellListFilter
 from wells.models import Well
 from wells.serializers import (
     WellListSerializer,
@@ -68,7 +73,8 @@ class WellDetail(RetrieveAPIView):
     """
     serializer_class = WellDetailSerializer
 
-    queryset = Well.objects.all()
+    # TODO Address viewing unpublished wells when advanced search has been merged
+    queryset = Well.objects.all()  # exclude(well_publication_status='Unpublished')
     lookup_field = 'well_tag_number'
 
     def get_serializer(self, *args, **kwargs):
@@ -91,10 +97,11 @@ class ListExtracts(APIView):
     @swagger_auto_schema(auto_schema=None)
     def get(self, request):
         host = get_env_variable('S3_HOST')
+        use_secure = int(get_env_variable('S3_USE_SECURE', 1))
         minioClient = Minio(host,
                             access_key=get_env_variable('S3_PUBLIC_ACCESS_KEY'),
                             secret_key=get_env_variable('S3_PUBLIC_SECRET_KEY'),
-                            secure=True)
+                            secure=use_secure)
         objects = minioClient.list_objects(get_env_variable('S3_WELL_EXPORT_BUCKET'))
         urls = list(
             map(
@@ -127,7 +134,24 @@ class ListFiles(APIView):
     get: list files found for the well identified in the uri
     """
 
-    @swagger_auto_schema(auto_schema=None)
+    @swagger_auto_schema(responses={200: openapi.Response('OK',
+        openapi.Schema(type=openapi.TYPE_OBJECT, properties={
+            'public': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'url': openapi.Schema(type=openapi.TYPE_STRING),
+                    'name': openapi.Schema(type=openapi.TYPE_STRING)
+                }
+            )),
+            'private': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'url': openapi.Schema(type=openapi.TYPE_STRING),
+                    'name': openapi.Schema(type=openapi.TYPE_STRING)
+                }
+            ))
+        })
+    )})
     def get(self, request, tag):
         user_is_staff = self.request.user.groups.filter(
             name=WELLS_VIEWER_ROLE).exists()
@@ -136,7 +160,7 @@ class ListFiles(APIView):
             request=request, disable_private=(not user_is_staff))
 
         documents = client.get_documents(
-            int(tag), include_private=user_is_staff)
+            int(tag), resource="well", include_private=user_is_staff)
 
         return Response(documents)
 
@@ -149,9 +173,17 @@ class WellListAPIView(ListAPIView):
 
     permission_classes = (DjangoModelPermissionsOrAnonReadOnly,)
     model = Well
-    queryset = Well.objects.all()
+    # TODO Address viewing unpublished wells when advanced search has been merged
+    queryset = Well.objects.all()  # exclude(well_publication_status='Unpublished')
     pagination_class = APILimitOffsetPagination
     serializer_class = WellListSerializer
+
+    filter_backends = (restfilters.DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter)
+    ordering = ('well_tag_number',)
+    filterset_class = WellListFilter
+    search_fields = ('well_tag_number', 'identification_plate_number',
+                     'street_address', 'city', 'owner_full_name')
 
     def get_queryset(self):
         qs = self.queryset
@@ -183,22 +215,77 @@ class WellTagSearchAPIView(ListAPIView):
 
     permission_classes = (DjangoModelPermissionsOrAnonReadOnly,)
     model = Well
-    queryset = Well.objects.all()
+    queryset = Well.objects.exclude(well_publication_status='Unpublished').only('well_tag_number', 'owner_full_name')
     pagination_class = None
     serializer_class = WellTagSearchSerializer
     lookup_field = 'well_tag_number'
 
-    filter_backends = (filters.SearchFilter,)
-    ordering = ('well_tag_number',)
+    filter_backends = (filters.SearchFilter, filters.OrderingFilter)
+    ordering_fields = ('well_tag_number',)
     search_fields = (
         'well_tag_number',
         'owner_full_name',
     )
 
-    def get(self, request):
-        search = self.request.query_params.get('search', None)
-        if not search or len(search) < 3:
-            # avoiding responding with entire collection of wells
-            return Response([])
-        else:
-            return super().get(request)
+
+class PreSignedDocumentKey(APIView):
+    """
+    Get a pre-signed document key to upload into an S3 compatible document store
+
+    post: obtain a URL that is pre-signed to allow client-side uploads
+    """
+
+    queryset = Well.objects.all()
+    permission_classes = (WellsEditPermissions,)
+
+    @swagger_auto_schema(auto_schema=None)
+    def get(self, request, tag):
+        well = get_object_or_404(self.queryset, pk=tag)
+        client = MinioClient(
+            request=request, disable_private=False)
+
+        object_name = request.GET.get("filename")
+        filename = client.format_object_name(object_name, int(well.well_tag_number), "well")
+        bucket_name = get_env_variable("S3_ROOT_BUCKET")
+
+        is_private = False
+        if request.GET.get("private") == "true":
+            is_private = True
+            bucket_name = get_env_variable("S3_PRIVATE_ROOT_BUCKET")
+
+        # TODO: This should probably be "S3_WELL_BUCKET" but that will require a file migration
+        url = client.get_presigned_put_url(
+            filename, bucket_name=bucket_name, private=is_private)
+
+        return JsonResponse({"object_name": object_name, "url": url})
+
+
+class DeleteWellDocument(APIView):
+    """
+    Delete a document from a S3 compatible store
+
+    delete: remove the specified object from the S3 store
+    """
+
+    queryset = Well.objects.all()
+    permission_classes = (WellsEditPermissions,)
+
+    @swagger_auto_schema(auto_schema=None)
+    def delete(self, request, tag):
+        well = get_object_or_404(self.queryset, pk=tag)
+        client = MinioClient(
+            request=request, disable_private=False)
+
+        is_private = False
+        bucket_name = get_env_variable("S3_ROOT_BUCKET")
+
+        if request.GET.get("private") == "true":
+            is_private = True
+            bucket_name = get_env_variable("S3_PRIVATE_ROOT_BUCKET")
+
+        object_name = client.get_bucket_folder(int(well.well_tag_number), "well") + "/" + request.GET.get("filename")
+
+        # TODO: This should probably be "S3_WELL_BUCKET" but that will require a file migration
+        client.delete_document(object_name, bucket_name=bucket_name, private=is_private)
+
+        return HttpResponse(status=204)

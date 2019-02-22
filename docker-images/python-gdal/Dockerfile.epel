@@ -1,0 +1,49 @@
+FROM registry.access.redhat.com/rhscl/python-36-rhel7:1-21
+
+USER root
+
+# no gdal-python on rhel7?
+RUN yum-config-manager --enable epel && yum -y install make automake gcc gcc-c++ libcurl-devel proj-devel geos-devel
+
+# Compilation work for geos
+RUN export GEOS_VERSION=3.7.1 && mkdir -p "/tmp/geos-${GEOS_VERSION}-build" && \
+  cd "/tmp/geos-${GEOS_VERSION}-build" && \
+  curl -o "geos-${GEOS_VERSION}.tar.bz2" \
+    "http://download.osgeo.org/geos/geos-${GEOS_VERSION}.tar.bz2" && \
+  bunzip2 "geos-${GEOS_VERSION}.tar.bz2" && \
+  tar xvf "geos-${GEOS_VERSION}.tar" && \
+  cd "/tmp/geos-${GEOS_VERSION}-build/geos-${GEOS_VERSION}" && \
+  ./configure --prefix=/usr/local/geos && \
+  make && make install && ldconfig
+
+# Compilataion for PROJ.4
+RUN export PROJ4_VERSION=5.2.0 && mkdir -p "/tmp/proj-${PROJ4_VERSION}-build" && \
+  cd "/tmp/proj-${PROJ4_VERSION}-build" && \
+  curl -o "proj-${PROJ4_VERSION}.tar.gz" \
+    "http://download.osgeo.org/proj/proj-${PROJ4_VERSION}.tar.gz" && \
+  tar xfz "proj-${PROJ4_VERSION}.tar.gz" && \
+  cd "/tmp/proj-${PROJ4_VERSION}-build/proj-${PROJ4_VERSION}" && \
+  ./configure --prefix=/usr/local/proj4 && \
+  make && make install && ldconfig
+
+# Compilation work for GDAL
+RUN export PYTHON_VERSION=3.6.5 && export PYTHON_SHORT_VERSION=3.6 && pip${PYTHON_SHORT_VERSION} install numpy
+
+RUN export GDAL_VERSION=2.4.0 && mkdir -p "/tmp/gdal-${GDAL_VERSION}-build" && \
+  cd "/tmp/gdal-${GDAL_VERSION}-build" && \
+  curl -o "gdal-${GDAL_VERSION}.tar.gz" \
+    "http://download.osgeo.org/gdal/${GDAL_VERSION}/gdal-${GDAL_VERSION}.tar.gz" && \
+tar xfz "gdal-${GDAL_VERSION}.tar.gz" && \
+  cd "/tmp/gdal-${GDAL_VERSION}-build/gdal-${GDAL_VERSION}" && \
+  ./configure --prefix=/usr/local/gdal \
+            --with-curl=yes \
+            --with-static-proj4=/usr/local/proj4 \
+            --with-python=yes && \
+  make && make install && ldconfig
+
+# Configuring environment
+#export PATH="/usr/local/gdal/bin:$PATH"
+#export LD_LIBRARY_PATH="/usr/local/proj4/lib:/usr/local/gdal/lib:$LD_LIBRARY_PATH"
+#export GDAL_DATA="/usr/local/gdal/share/gdal"
+
+USER 1001

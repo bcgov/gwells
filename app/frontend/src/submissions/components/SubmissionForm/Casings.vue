@@ -44,7 +44,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               <form-input
                 group-class="my-0"
                 :id="'casingFrom_' + index"
-                type="number"
+                type="text"
                 v-model="casing.start"
                 :errors="getCasingError(index).start"
                 :loaded="getFieldsLoaded(index).start"/>
@@ -53,7 +53,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               <form-input
                 group-class="my-0"
                 :id="'casingTo_' + index"
-                type="number"
+                type="text"
                 v-model="casing.end"
                 :errors="getCasingError(index).end"
                 :loaded="getFieldsLoaded(index).end"/>
@@ -70,7 +70,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     text-field="description"
                     :state="getCasingError(index).casing_code ? false : null">
                   <template slot="first">
-                    <option :value="null" disabled>Select a type</option>
+                    <option value="">Select a type</option>
                   </template>
                 </b-form-select>
                 <b-form-invalid-feedback :id="`casingCodeInvalidFeedback${index}`">
@@ -92,7 +92,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     text-field="description"
                     :state="getCasingError(index).casing_material ? false : null">
                   <template slot="first">
-                    <option :value="null" disabled>Select a material</option>
+                    <option value="" enabled>Select a material</option>
                   </template>
                 </b-form-select>
                 <b-form-invalid-feedback :id="`casingCodeInvalidFeedback${index}`">
@@ -106,7 +106,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               <form-input
                 group-class="my-0"
                 :id="'casingDiameter_' + index"
-                type="number"
+                type="text"
                 v-model="casing.diameter"
                 :errors="getCasingError(index).diameter"
                 :loaded="getFieldsLoaded(index).diameter"/>
@@ -115,15 +115,15 @@ Licensed under the Apache License, Version 2.0 (the "License");
               <form-input
                 group-class="my-0"
                 :id="'casingWallThickness_' + index"
-                type="number"
+                type="text"
                 v-model="casing.wall_thickness"
                 :errors="getCasingError(index).wall_thickness"
                 :loaded="getFieldsLoaded(index).wall_thickness"/>
             </td>
             <td class="pt-0 py-0">
               <b-form-radio-group v-model="casing.drive_shoe"
-                                  :name="'drive_shoe_' + index"
-                                  :id="'casingDriveShoe_' + index">
+                :name="'drive_shoe_' + index"
+                :id="'casingDriveShoe_' + index">
                 <b-form-radio :value="false">No</b-form-radio>
                 <b-form-radio :value="true">Yes</b-form-radio>
               </b-form-radio-group>
@@ -191,7 +191,12 @@ export default {
   },
   methods: {
     addRow () {
-      this.casingsInput.push({})
+      this.casingsInput.push({
+        start: '',
+        end: '',
+        casing_code: '',
+        casing_material: ''
+      })
     },
     removeRowByIndex (index) {
       this.casingsInput.splice(index, 1)
@@ -235,7 +240,9 @@ export default {
   created () {
     // When component created, add an initial row of casings.
     if (!this.casingsInput.length) {
-      this.casingsInput.push({}, {}, {})
+      this.addRow()
+      this.addRow()
+      this.addRow()
     }
   }
 }

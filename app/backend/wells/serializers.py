@@ -17,7 +17,7 @@ from rest_framework import serializers
 from django.db import transaction
 from gwells.models import ProvinceStateCode
 from gwells.serializers import AuditModelSerializer
-from registries.serializers import PersonBasicSerializer
+from registries.serializers import PersonBasicSerializer, OrganizationNameListSerializer
 from wells.models import (
     ActivitySubmission,
     Casing,
@@ -129,6 +129,8 @@ class LithologyDescriptionSerializer(serializers.ModelSerializer):
             'lithology_colour',
             'lithology_hardness',
             'lithology_moisture',
+            'lithology_description',
+            'lithology_observation',
             'water_bearing_estimated_flow',
         )
 
@@ -138,7 +140,8 @@ class WellDetailSerializer(AuditModelSerializer):
     screen_set = ScreenSerializer(many=True)
     linerperforation_set = LinerPerforationSerializer(many=True)
     decommission_description_set = DecommissionDescriptionSerializer(many=True)
-    driller_responsible = PersonBasicSerializer()
+    person_responsible = PersonBasicSerializer()
+    company_of_person_responsible = OrganizationNameListSerializer()
     lithologydescription_set = LithologyDescriptionSerializer(many=True)
 
     # well vs. well_tag_number ; on submissions, we refer to well
@@ -160,6 +163,7 @@ class WellDetailSerializer(AuditModelSerializer):
             "well_subclass",
             "intended_water_use",
             "well_status",
+            "well_publication_status",
             "licenced_status",
             "street_address",
             "city",
@@ -178,7 +182,8 @@ class WellDetailSerializer(AuditModelSerializer):
             "alteration_end_date",
             "decommission_start_date",
             "decommission_end_date",
-            "driller_responsible",
+            "person_responsible",
+            "company_of_person_responsible",
             "drilling_company",
             "well_identification_plate_attached",
             "id_plate_attached_by",
@@ -189,8 +194,7 @@ class WellDetailSerializer(AuditModelSerializer):
             "coordinate_acquisition_code",
             "ground_elevation",
             "ground_elevation_method",
-            "drilling_method",
-            "other_drilling_method",
+            "drilling_methods",
             "well_orientation",
             "surface_seal_material",
             "surface_seal_length",
@@ -217,7 +221,7 @@ class WellDetailSerializer(AuditModelSerializer):
             "filter_pack_thickness",
             "filter_pack_material",
             "filter_pack_material_size",
-            "development_method",
+            "development_methods",
             "development_hours",
             "development_notes",
             "water_quality_characteristics",
@@ -249,8 +253,8 @@ class WellDetailSerializer(AuditModelSerializer):
             "bcgs_id",
             "decommission_reason",
             "decommission_method",
-            "sealant_material",
-            "backfill_material",
+            "decommission_sealant_material",
+            "decommission_backfill_material",
             "decommission_details",
             "aquifer_vulnerability_index",
             "storativity",
@@ -285,7 +289,8 @@ class WellDetailAdminSerializer(AuditModelSerializer):
     screen_set = ScreenSerializer(many=True)
     linerperforation_set = LinerPerforationSerializer(many=True)
     decommission_description_set = DecommissionDescriptionSerializer(many=True)
-    driller_responsible = PersonBasicSerializer()
+    person_responsible = PersonBasicSerializer()
+    company_of_person_responsible = OrganizationNameListSerializer()
     lithologydescription_set = LithologyDescriptionSerializer(many=True)
 
     # well vs. well_tag_number ; on submissions, we refer to well
@@ -365,6 +370,7 @@ class WellListSerializer(serializers.ModelSerializer):
             "well_subclass",
             "intended_water_use",
             "well_status",
+            "well_publication_status",
             "licenced_status",
             "street_address",
             "city",
@@ -380,6 +386,7 @@ class WellListSerializer(serializers.ModelSerializer):
             "well_location_description",
             "construction_start_date",
             "construction_end_date",
+            "alteration_start_date",
             "alteration_end_date",
             "decommission_start_date",
             "decommission_end_date",
@@ -393,8 +400,7 @@ class WellListSerializer(serializers.ModelSerializer):
             "coordinate_acquisition_code",
             "ground_elevation",
             "ground_elevation_method",
-            "drilling_method",
-            "other_drilling_method",
+            "drilling_methods",
             "well_orientation",
             "surface_seal_material",
             "surface_seal_length",
@@ -421,7 +427,7 @@ class WellListSerializer(serializers.ModelSerializer):
             "filter_pack_thickness",
             "filter_pack_material",
             "filter_pack_material_size",
-            "development_method",
+            "development_methods",
             "development_hours",
             "development_notes",
             "yield_estimation_method",
@@ -463,8 +469,8 @@ class WellListSerializer(serializers.ModelSerializer):
             "bcgs_id",
             "decommission_reason",
             "decommission_method",
-            "sealant_material",
-            "backfill_material",
+            "decommission_sealant_material",
+            "decommission_backfill_material",
             "decommission_details",
             "aquifer_vulnerability_index",
             "storativity",

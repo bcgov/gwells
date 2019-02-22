@@ -4,6 +4,7 @@ import VueMoment from 'vue-moment'
 import moxios from 'moxios'
 import PersonDetail from '@/registry/components/people/PersonDetail'
 import APIErrorMessage from '@/common/components/APIErrorMessage'
+import documentState from '@/common/store/documents.js'
 import { SET_DRILLER } from '@/registry/store/mutations.types'
 import { FETCH_DRILLER, FETCH_DRILLER_OPTIONS } from '@/registry/store/actions.types'
 import fakePerson from '../fakePerson'
@@ -35,7 +36,7 @@ describe('PersonDetail.vue', () => {
       [FETCH_DRILLER]: jest.fn(),
       [FETCH_DRILLER_OPTIONS]: jest.fn()
     }
-    store = new Vuex.Store({ getters, actions, mutations })
+    store = new Vuex.Store({ getters, actions, mutations, modules: { documentState } })
   })
 
   afterEach(() => {
@@ -64,7 +65,7 @@ describe('PersonDetail.vue', () => {
       drillers: () => [],
       userRoles: () => ({ registry: { edit: true, view: true, approve: true } })
     }
-    const storeError = new Vuex.Store({ getters, actions, mutations })
+    const storeError = new Vuex.Store({ getters, actions, mutations, modules: { documentState } })
     const wrapper = mount(PersonDetail, {
       store: storeError,
       localVue,

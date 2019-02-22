@@ -48,8 +48,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <fieldset class="my-3 detail-section">
       <legend>Person Responsible for Work</legend>
       <b-row>
-        <b-col cols="12" lg="4"><span class="font-weight-bold">Person Responsible for Work:</span> {{ form.driller_responsible ? form.driller_responsible['name'] : '' }}</b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Person Responsible for Work:</span> {{ form.person_responsible ? form.person_responsible['name'] : '' }}</b-col>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Person Who Performed Work:</span> {{ form.driller_name }}</b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Company of Person Responsible for Work:</span> {{ form.company_of_person_responsible ? form.company_of_person_responsible['org_verbose_name'] : '' }}</b-col>
       </b-row>
       <b-row>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Consultant Name:</span> {{ form.consultant_name }}</b-col>
@@ -161,10 +162,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <b-col cols="12" lg="4"><span class="font-weight-bold">Method of determining elevation:</span> {{ codeToDescription('ground_elevation_methods', form.ground_elevation_method) }}</b-col>
       </b-row>
       <b-row>
-        <b-col cols="12" lg="4"><span class="font-weight-bold">Drilling method:</span> {{ form.drilling_method }}</b-col>
-        <b-col cols="12" lg="3"><span class="font-weight-bold">Other drilling method:</span> {{ form.other_drilling_method }}</b-col>
-      </b-row>
-      <b-row>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Drilling methods:</span> <div v-for="(item, index) in form.drilling_methods" :key="index">{{ codeToDescription('drilling_methods', item) }}</div></b-col>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Orientation of well:</span> {{ form.well_orientation }}</b-col>
       </b-row>
     </fieldset>
@@ -185,6 +183,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             'colour',
             'hardness',
             'moisture',
+            'descriptor',
             'water_bearing_estimated_flow',
           ]">
           <template slot="description" slot-scope="data">{{data.item.lithology_raw_data}}</template>
@@ -193,7 +192,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <template slot="colour" slot-scope="data">{{codeToDescription('lithology_colours', data.item.lithology_colour) }}</template>
           <template slot="hardness" slot-scope="data">{{codeToDescription('lithology_hardness_codes', data.item.lithology_hardness) }}</template>
           <template slot="moisture" slot-scope="data">{{codeToDescription('lithology_moisture_codes', data.item.lithology_moisture) }}</template>
-
+          <template slot="descriptor" slot-scope="data">{{codeToDescription('lithology_descriptors', data.item.lithology_description) }}</template>
         </b-table>
       </div>
     </fieldset>
@@ -208,7 +207,12 @@ Licensed under the Apache License, Version 2.0 (the "License");
           :items="filterBlankRows(form.decommission_description_set)"
           :fields="['start', 'end', 'material', 'observations']"
           show-empty
-        ></b-table>
+        >
+          <template slot="start" slot-scope="data">{{data.item.start}} ft</template>
+          <template slot="end" slot-scope="data">{{data.item.end}} ft</template>
+          <template slot="material" slot-scope="data">{{codeToDescription('decommission_materials', data.item.material)}}</template>
+          <template slot="observations" slot-scope="data">{{codeToDescription('decommission_materials', data.item.observations)}}</template>
+        </b-table>
       </div>
     </fieldset>
 
@@ -337,7 +341,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <fieldset class="my-3 detail-section" v-if="sections.wellDevelopment">
       <legend>Well Development</legend>
       <b-row>
-        <b-col cols="12" lg="4"><span class="font-weight-bold">Developed by:</span> {{ codeToDescription('development_methods', form.development_method) }}</b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Developed by:</span> <div v-for="(item, index) in form.development_methods" :key="index"> {{ codeToDescription('development_methods', item) }}</div></b-col>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Development Total Duration:</span> {{ form.development_hours }} {{ form.development_hours ? 'hours':'' }}</b-col>
       </b-row>
     </fieldset>
@@ -404,11 +408,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <legend>Well Decommission Information</legend>
       <b-row>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Finished Well Depth:</span> {{ form.finished_well_depth }} {{ form.finished_well_depth ? 'feet':''}}</b-col>
-        <b-col cols="12" lg="4"><span class="font-weight-bold">Sealant Material:</span> {{ form.sealant_material }}</b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Sealant Material:</span> {{ form.decommission_sealant_material }}</b-col>
       </b-row>
       <b-row>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Reason for Decommission:</span> {{ form.decommission_reason }}</b-col>
-        <b-col cols="12" lg="4"><span class="font-weight-bold">Backfill Material:</span> {{ form.backfill_material }}</b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Backfill Material:</span> {{ form.decommission_backfill_material }}</b-col>
       </b-row>
       <b-row>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Method of Decommission:</span> {{ form.decommission_method }}</b-col>
@@ -426,6 +430,28 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </p>
     </fieldset>
 
+    <fieldset v-if="upload_files && upload_files.length > 0">
+      <legend>Documents to Upload</legend>
+      <b-row>
+        <b-col cols="12" lg="4">
+          <b-list-group>
+            <b-list-group-item v-for="(f, index) in upload_files" :key="index">{{f.name}}</b-list-group-item>
+          </b-list-group>
+        </b-col>
+      </b-row>
+    </fieldset>
+
+    <fieldset v-if="uploadedFiles && uploadedFiles.public && uploadedFiles.public.length > 0">
+      <legend>Uploaded Documents</legend>
+      <b-row>
+        <b-col cols="12" lg="4">
+          <b-list-group>
+            <b-list-group-item v-for="(f, index) in uploadedFiles.public" :key="index">{{f.name}}</b-list-group-item>
+          </b-list-group>
+        </b-col>
+      </b-row>
+    </fieldset>
+
     <!-- Back / Next / Submit controls -->
     <b-row v-if="!reportSubmitted" class="mt-5">
       <b-col>
@@ -439,7 +465,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 import CoordsMap from '@/submissions/components/SubmissionForm/CoordsMap.vue'
 import convertCoordinatesMixin from '@/common/convertCoordinatesMixin.js'
 import filterBlankRows from '@/common/filterBlankRows'
@@ -456,7 +482,8 @@ export default {
     'activity',
     'sections',
     'reportSubmitted',
-    'formSubmitLoading'
+    'formSubmitLoading',
+    'uploadedFiles'
   ],
   data () {
     return {
@@ -487,7 +514,10 @@ export default {
     // converts form lat/long and returns an object containing UTM easting, northing, and zone
       return this.convertToUTM(Number(this.form.longitude), Number(this.form.latitude))
     },
-    ...mapGetters(['codes'])
+    ...mapGetters(['codes']),
+    ...mapState('documentState', [
+      'upload_files'
+    ])
   }
 }
 </script>

@@ -24,10 +24,11 @@ from . import views
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Well Driller and Pump Installer Registry API",
+        title="Groundwater Wells, Aquifers and Registry API",
         default_version='v1',
-        description=str("The Well Driller and Pump Installer Registry is a database of qualified well "
-                        "drillers and pump installers registered to operate in British Columbia."),
+        description=str("The groundwater wells, aquifers and registry API contains information "
+                        "related to groundwater wells and aquifers as well as a register of qualified "
+                        "well drillers and well pump installers registered to operate in B.C."),
         terms_of_service="http://www2.gov.bc.ca/gov/content?id=D1EE0A405E584363B205CD4353E02C88",
         contact=openapi.Contact(email="groundwater@gov.bc.ca"),
         license=openapi.License(name="Open Government License - British Columbia",
@@ -62,6 +63,17 @@ urlpatterns = [
         never_cache(views.OrganizationListView.as_view()),
         name='organization-list'),
 
+    # Document Uploading (driller records)
+    url(r'^api/v1/drillers/(?P<person_guid>[-\w]+)/presigned_put_url$',
+        never_cache(views.PreSignedDocumentKey.as_view()), name='drillers-pre-signed-url'),
+
+    # Document Deleting (driller records)
+    url(r'^api/v1/drillers/(?P<person_guid>[-\w]+)/delete_document$',
+        never_cache(views.DeleteDrillerDocument.as_view()), name='driller-delete-document'),
+
+    url(r'^api/v1/drillers/(?P<person_guid>[-\w]+)/files/$',
+        never_cache(views.ListFiles.as_view()), name='drillers-file-list'),
+
     # Person note endpoints
     url(r'^api/v1/drillers/(?P<person_guid>[-\w]+)/notes/$',
         never_cache(views.PersonNoteListView.as_view()), name='person-note-list'),
@@ -69,6 +81,8 @@ urlpatterns = [
         views.PersonNoteDetailView.as_view(), name='person-note-detail'),
 
     # Person endpoints (drillers, well installers, and other instances of Person model)
+    # TODO: There's some confusion between drillers and persons. Sometimes we're looking only for drillers,
+    # sometimes we're actually looking for people (pump installers, drillers etc.)
     url(r'^api/v1/drillers/names/$',
         never_cache(views.PersonNameSearch.as_view()), name='person-search'),
     url(r'api/v1/drillers/options/',

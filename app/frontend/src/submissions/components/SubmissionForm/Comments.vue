@@ -49,13 +49,17 @@ Licensed under the Apache License, Version 2.0 (the "License");
     </b-row>
     <b-row class="mt-3">
       <b-col cols="12" sm="6">
-          <b-form-checkbox id="alternativeSpecsCheckbox"
-                v-model="alternativeSpecsSubmittedInput"
-                :value="true"
-                :unchecked-value="false">
-            Alternative specs submitted (if required)
-          </b-form-checkbox>
-      </b-col>
+        <b-form-group label="Alternative specs submitted (if required)">
+        <b-form-radio-group
+          id="alternativeSpecsCheckbox"
+          class="mt-1"
+          v-model="alternativeSpecsSubmittedInput"
+        >
+          <b-form-radio :value="false">No</b-form-radio>
+          <b-form-radio :value="true">Yes</b-form-radio>
+        </b-form-radio-group>
+      </b-form-group>
+    </b-col>
     </b-row>
   </fieldset>
 </template>

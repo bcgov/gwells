@@ -14,12 +14,14 @@
 import 'babel-polyfill'
 import Vue from 'vue'
 import Vuex, {mapActions} from 'vuex'
+import VueNoty from 'vuejs-noty'
 import BootstrapVue from 'bootstrap-vue'
 import App from './App'
 import router from './router'
 import { store } from './store'
 import '@/common/assets/css/bootstrap-theme.min.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
+import vueSmoothScroll from 'vue-smoothscroll'
 import vSelect from 'vue-select'
 import FormInput from '@/common/components/FormInput.vue'
 import {FETCH_CONFIG} from '@/common/store/config.js'
@@ -28,7 +30,13 @@ import {FETCH_CONFIG} from '@/common/store/config.js'
 import ApiService from '@/common/services/ApiService.js'
 
 Vue.use(Vuex)
+Vue.use(VueNoty, {
+  layout: 'topRight',
+  theme: 'bootstrap-v4',
+  timeout: 1800
+})
 Vue.use(BootstrapVue)
+Vue.use(vueSmoothScroll)
 Vue.component('v-select', vSelect)
 Vue.component('form-input', FormInput)
 
