@@ -159,6 +159,26 @@ class AquiferVulnerabilityCode(AuditModel):
         return '{} - {}'.format(self.code, self.description)
 
 
+class AquiferLithologyCode(AuditModel):
+    """
+    Choices for describing Completed Aquifer Lithology
+    """
+    code = models.CharField(primary_key=True, max_length=100, db_column='aquifer_lithology_code')
+    description = models.CharField(max_length=100)
+    display_order = models.PositiveIntegerField()
+
+    effective_date = models.DateTimeField(blank=True, null=True)
+    expiry_date = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'aquifer_lithology_code'
+        ordering = ['display_order', 'code']
+        verbose_name_plural = 'Aquifer Lithology Codes'
+
+    def __str__(self):
+        return '{} - {}'.format(self.code, self.description)
+
+
 @reversion.register()
 class Aquifer(AuditModel):
     """
@@ -198,6 +218,13 @@ class Aquifer(AuditModel):
         null=True,
         on_delete=models.PROTECT,
         verbose_name="Aquifer Vulnerabiliy")
+    lithology = models.ForeignKey(
+        AquiferLithologyCode,
+        db_column='aquifer_lithology_code',
+        blank=True,
+        null=True,
+        on_delete=models.PROTECT,
+        verbose_name="Aquifer Lithology")
     productivity = models.ForeignKey(
         AquiferProductivity,
         db_column='aquifer_productivity_code',

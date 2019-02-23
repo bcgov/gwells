@@ -66,6 +66,11 @@ urlpatterns = [
         name='aquifer-vulnerability-code-list'
         ),
 
+    url(r'^api/v1/aquifer-codes/lithology/$',
+        cache_page(CACHE_TTL)(views.AquiferLithologyListAPIView.as_view()),
+        name='aquifer-lithology-code-list'
+        ),
+
     url(r'^api/v1/aquifer-codes/subtypes/$',
         cache_page(CACHE_TTL)(views.AquiferSubtypeListAPIView.as_view()),
         name='aquifer-subtype-list'

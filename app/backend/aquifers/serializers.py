@@ -88,6 +88,15 @@ class AquiferVulnerabilitySerializer(serializers.ModelSerializer):
         )
 
 
+class AquiferLithologySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.AquiferLithologyCode
+        fields = (
+            'code',
+            'description'
+        )
+
+
 class AquiferSubtypeSerializer(serializers.ModelSerializer):
     description = serializers.CharField(source='__str__')
 
