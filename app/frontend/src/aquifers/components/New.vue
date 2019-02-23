@@ -59,7 +59,8 @@ export default {
   methods: {
     ...mapActions('documentState', [
       'uploadFiles',
-      'fileUploadSuccess'
+      'fileUploadSuccess',
+      'fileUploadFail'
     ]),
     navigateToView () {
       this.$router.push({ name: 'home' })
@@ -72,6 +73,9 @@ export default {
         }).then((values) => {
           this.fileUploadSuccess()
           this.$router.push({ name: 'view', params: { id: data.aquifer_id } })
+        }).catch((error) => {
+          this.fileUploadFail()
+          console.log(error)
         })
       } else {
         this.$router.push({ name: 'view', params: { id: data.aquifer_id } })

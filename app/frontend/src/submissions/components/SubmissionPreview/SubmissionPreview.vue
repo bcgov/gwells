@@ -489,6 +489,14 @@ export default {
     return {
     }
   },
+  methods: {
+    fetchFiles () {
+      this.$emit('fetchFiles')
+    },
+  },
+  created () {
+    this.fetchFiles()
+  },
   computed: {
     wellSubclass () {
       let subclassCodes = []

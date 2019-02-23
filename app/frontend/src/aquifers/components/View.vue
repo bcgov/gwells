@@ -160,7 +160,8 @@ export default {
   methods: {
     ...mapActions('documentState', [
       'uploadFiles',
-      'fileUploadSuccess'
+      'fileUploadSuccess',
+      'fileUploadFail'
     ]),
     handleSaveSuccess () {
       this.fetch()
@@ -178,6 +179,7 @@ export default {
           this.fileUploadSuccess()
           this.fetchFiles()
         }).catch((error) => {
+          this.fileUploadFail()
           console.log(error)
         })
       }
@@ -215,6 +217,8 @@ export default {
       ApiService.query(`aquifers/${id}`)
         .then((response) => {
           this.record = response.data
+        }).catch((error) => {
+          console.log(error)
         })
     },
     fetchFiles (id = this.id) {

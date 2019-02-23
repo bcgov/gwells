@@ -391,6 +391,7 @@ export default {
   methods: {
     ...mapActions('documentState', [
       'fileUploadSuccess',
+      'fileUploadFail',
       'uploadFiles'
     ]),
     ...mapMutations('documentState', [
@@ -451,6 +452,7 @@ export default {
             this.fileUploadSuccess()
             this.$router.push({ name: 'PersonDetail', params: { person_guid: response.data.person_guid } })
           }).catch((error) => {
+            this.fileUploadFail()
             console.log(error)
           })
         } else {
