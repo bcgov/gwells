@@ -492,7 +492,7 @@ export default {
   methods: {
     fetchFiles () {
       this.$emit('fetchFiles')
-    },
+    }
   },
   created () {
     this.fetchFiles()

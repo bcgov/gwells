@@ -292,10 +292,23 @@ SWAGGER_SETTINGS = {
     }
 }
 
+
 # matches subdomains of gov.bc.ca
 CORS_ORIGIN_REGEX_WHITELIST = (r'^(?:https?:\/\/)?(?:\w+\.)*gov\.bc\.ca$',)
 if DEBUG:
     CORS_ORIGIN_WHITELIST = ('localhost:8080', '127.0.0.1:8080')
+    CORS_ALLOW_HEADERS = (
+        'accept',
+        'accept-encoding',
+        'authorization',
+        'content-type',
+        'dnt',
+        'origin',
+        'user-agent',
+        'x-csrftoken',
+        'x-requested-with',
+        'x-ijt'
+    )
 
 ADD_REVERSION_ADMIN = True
 
