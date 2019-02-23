@@ -3,6 +3,9 @@
 import groovy.json.JsonOutput
 import bcgov.GitHubHelper
 
+// constants for controlling unit/API test behavior for tests that require fixtures to be loaded
+def ENABLE_FIXTURE_TESTS = true
+def DISABLE_FIXTURE_TESTS = false
 
 // Notify stage status and pass to Jenkins-GitHub library
 void notifyStageStatus (String name, String status) {
@@ -105,7 +108,7 @@ def functionalTest (String STAGE_NAME, String BASE_URL, String ENV_SUFFIX, Strin
 // Can be limited by assinging toTest var
 def unitTestDjango (String STAGE_NAME, String ENV_PROJECT, String ENV_SUFFIX) {
     _openshift(env.STAGE_NAME, ENV_PROJECT) {
-        def DB_target = ENV_PROJECT == 'staging' ? "${APP_NAME}-pgsql-${ENV_SUFFIX}" : "${APP_NAME}-pgsql-${ENV_SUFFIX}-${PR_NUM}"
+        def DB_target = ENV_SUFFIX == "staging" ? "${APP_NAME}-pgsql-${ENV_SUFFIX}" : "${APP_NAME}-pgsql-${ENV_SUFFIX}-${PR_NUM}"
         def DB_newVersion = openshift.selector("dc", "${DB_target}").object().status.latestVersion
         def DB_pod = openshift.selector('pod', [deployment: "${DB_target}-${DB_newVersion}"])
         echo "Temporarily granting elevated DB rights"
@@ -118,7 +121,7 @@ def unitTestDjango (String STAGE_NAME, String ENV_PROJECT, String ENV_SUFFIX) {
         )
         echo "Temporary DB grant results: "+ db_ocoutput_grant.actions[0].out
 
-        def target = ENV_PROJECT == 'staging' ? "${APP_NAME}-${ENV_SUFFIX}" : "${APP_NAME}-${ENV_SUFFIX}-${PR_NUM}"
+        def target = ENV_SUFFIX == "staging" ? "${APP_NAME}-${ENV_SUFFIX}" : "${APP_NAME}-${ENV_SUFFIX}-${PR_NUM}"
         def newVersion = openshift.selector("dc", "${target}").object().status.latestVersion
         def pods = openshift.selector('pod', [deployment: "${target}-${newVersion}"])
 
@@ -196,7 +199,7 @@ def _openshift(String name, String project, Closure body) {
 
 
 // API test function
-def apiTest (String STAGE_NAME, String BASE_URL, String ENV_SUFFIX) {
+def apiTest (String STAGE_NAME, String BASE_URL, String ENV_SUFFIX, Boolean run_fixture_tests) {
     _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
         podTemplate(
             label: "nodejs-${APP_NAME}-${ENV_SUFFIX}-${PR_NUM}",
@@ -288,6 +291,15 @@ def apiTest (String STAGE_NAME, String BASE_URL, String ENV_SUFFIX) {
                                 --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
                                 -r cli,junit,html
                         """
+
+                        if (run_fixture_tests) {
+                            sh """
+                                newman run ./wells_search_api_tests.json \
+                                --global-var base_url=\$BASE_URL \
+                                -r cli,junit,html
+                            """
+                        }
+
                     } finally {
                         junit 'newman/*.xml'
                         publishHTML (
@@ -579,7 +591,7 @@ pipeline {
                 script {
                     _openshift(env.STAGE_NAME, DEV_PROJECT) {
                         String BASE_URL = "https://${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca/gwells"
-                        def result = apiTest ('DEV - API Tests', BASE_URL, DEV_SUFFIX)
+                        def result = apiTest ('DEV - API Tests', BASE_URL, DEV_SUFFIX, ENABLE_FIXTURE_TESTS)
                     }
                 }
             }
@@ -758,7 +770,7 @@ pipeline {
                 script {
                     _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
                         String BASE_URL = "https://${STAGING_HOST}/gwells"
-                        def result = apiTest ('STAGING - API Tests', BASE_URL, STAGING_SUFFIX)
+                        def result = apiTest ('STAGING - API Tests', BASE_URL, STAGING_SUFFIX, DISABLE_FIXTURE_TESTS)
                     }
                 }
             }
@@ -932,7 +944,7 @@ pipeline {
                 script {
                     _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
                         String BASE_URL = "https://${DEMO_HOST}/gwells"
-                        def result = apiTest ('DEMO - API Tests', BASE_URL, DEMO_SUFFIX)
+                        def result = apiTest ('DEMO - API Tests', BASE_URL, DEMO_SUFFIX, DISABLE_FIXTURE_TESTS)
                     }
                 }
             }

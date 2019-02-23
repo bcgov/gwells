@@ -386,6 +386,7 @@ class WellListSerializer(serializers.ModelSerializer):
             "well_location_description",
             "construction_start_date",
             "construction_end_date",
+            "alteration_start_date",
             "alteration_end_date",
             "decommission_start_date",
             "decommission_end_date",
