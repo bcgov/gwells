@@ -45,7 +45,7 @@ void createDeploymentStatus (String suffix, String status, String targetURL) {
 
 // Functional test script
 // Can be limited by assinging toTest var
-def functionalTest (String STAGE_NAME, String BASE_URL, String ENV_SUFFIX, String toTest='all') {
+def functionalTest (String STAGE_NAME, String STAGE_URL, String ENV_SUFFIX, String toTest='all') {
     _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
         echo "Testing"
         podTemplate(
@@ -65,7 +65,7 @@ def functionalTest (String STAGE_NAME, String BASE_URL, String ENV_SUFFIX, Strin
                     command: '',
                     args: '${computer.jnlpmac} ${computer.name}',
                     envVars: [
-                        envVar(key:'BASE_URL', value: BASE_URL),
+                        envVar(key:'BASE_URL', value: "https://${STAGE_URL}/gwells"),
                         envVar(key:'OPENSHIFT_JENKINS_JVM_ARCH', value: 'x86_64')
                     ]
                 )
@@ -196,7 +196,7 @@ def _openshift(String name, String project, Closure body) {
 
 
 // API test function
-def apiTest (String STAGE_NAME, String BASE_URL, String ENV_SUFFIX, Boolean run_fixture_tests) {
+def apiTest (String STAGE_NAME, String STAGE_URL, String ENV_SUFFIX, Boolean run_fixture_tests) {
     _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
         podTemplate(
             label: "nodejs-${APP_NAME}-${ENV_SUFFIX}-${PR_NUM}",
@@ -218,7 +218,7 @@ def apiTest (String STAGE_NAME, String BASE_URL, String ENV_SUFFIX, Boolean run_
                     envVars: [
                         envVar(
                             key:'BASE_URL',
-                            value: "${BASE_URL}"
+                            value: "https://${STAGE_URL}/gwells"
                         ),
                         secretEnvVar(
                             key: 'GWELLS_API_TEST_USER',
@@ -334,7 +334,7 @@ pipeline {
         // DEV_PROJECT is the project where individual development environments are spun up
         DEV_PROJECT = "moe-gwells-dev"
         DEV_SUFFIX = "dev"
-        DEV_URL = "https://${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca/gwells"
+        DEV_URL = "${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca"
 
         // STAGING_PROJECT contains the test deployment. The test image is a candidate for promotion to prod.
         STAGING_PROJECT = "moe-gwells-test"
@@ -769,8 +769,7 @@ pipeline {
             steps {
                 script {
                     _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
-                        String BASE_URL = "https://${STAGING_HOST}/gwells"
-                        def result = apiTest ('STAGING - API Tests', BASE_URL, STAGING_SUFFIX, DISABLE_FIXTURE_TESTS)
+                        def result = apiTest ('STAGING - API Tests', STAGING_URL, STAGING_SUFFIX, DISABLE_FIXTURE_TESTS)
                     }
                 }
             }
@@ -785,8 +784,7 @@ pipeline {
             steps {
                 script {
                     _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
-                        String BASE_URL = "https://${STAGING_HOST}/gwells/"
-                        def result = functionalTest ('STAGING - Smoke Tests', BASE_URL, STAGING_SUFFIX, 'SearchSpecs')
+                        def result = functionalTest ('STAGING - Smoke Tests', STAGING_URL, STAGING_SUFFIX, 'SearchSpecs')
                     }
                 }
             }
@@ -943,8 +941,7 @@ pipeline {
             steps {
                 script {
                     _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
-                        String BASE_URL = "https://${DEMO_HOST}/gwells"
-                        def result = apiTest ('DEMO - API Tests', BASE_URL, DEMO_SUFFIX, DISABLE_FIXTURE_TESTS)
+                        def result = apiTest ('DEMO - API Tests', DEMO_URL, DEMO_SUFFIX, DISABLE_FIXTURE_TESTS)
                     }
                 }
             }
@@ -959,8 +956,7 @@ pipeline {
             steps {
                 script {
                     _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
-                        String BASE_URL = "https://${DEMO_HOST}/gwells/"
-                        def result = functionalTest ('DEMO - Smoke Tests', BASE_URL, DEMO_SUFFIX, 'SearchSpecs')
+                        def result = functionalTest ('DEMO - Smoke Tests', DEMO_URL, DEMO_SUFFIX, 'SearchSpecs')
                     }
                 }
             }
@@ -1117,8 +1113,7 @@ pipeline {
             steps {
                 script {
                     _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
-                        String BASE_URL = "https://${PROD_HOST}/gwells/"
-                        def result = functionalTest ('PROD - Smoke Tests', BASE_URL, PROD_SUFFIX, 'SearchSpecs')
+                        def result = functionalTest ('PROD - Smoke Tests', PROD_URL, PROD_SUFFIX, 'SearchSpecs')
                     }
                 }
             }
