@@ -515,43 +515,48 @@ pipeline {
             steps {
                 parallel(
                     'DEV - Django Unit Tests': {
+                        // the Django Unit Tests stage runs backend unit tests using a test DB that is
+                        // created and destroyed afterwards.
                         script {
-                            def dTResult = unitTestDjango (env.STAGE_NAME, DEV_PROJECT, DEV_SUFFIX)
+                            _openshift(env.STAGE_NAME, DEV_PROJECT) {
+                                echo "Django unit tests"
+                                def dTResult = unitTestDjango (env.STAGE_NAME, DEV_PROJECT, DEV_SUFFIX)
+                                echo "Results: "+ dTResult
+                            }
                         }
                     },
                     'DEV - Load Fixtures': {
                         script {
                             _openshift(env.STAGE_NAME, DEV_PROJECT) {
-                                def newVersion = openshift.selector("dc", "${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}").object().status.latestVersion
-                                def pods = openshift.selector('pod', [deployment: "${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}-${newVersion}"])
-
                                 echo "Loading fixtures"
-                                def ocoutput = openshift.exec(
-                                    pods.objects()[0].metadata.name,
-                                    "--",
-                                    "bash -c '\
-                                        cd /opt/app-root/src/backend; \
-                                        python manage.py loaddata \
-                                        gwells-codetables.json \
-                                        wellsearch-codetables.json \
-                                        registries-codetables.json \
-                                        registries.json \
-                                        wellsearch.json \
-                                        aquifers.json \
-                                    '"
+                                def shResult = sh (
+                                    script: """
+                                        oc rsh -n ${DEV_PROJECT} dc/${APP_NAME}-${DEV_SUFFIX}-${PR_NUM} bash -c '\
+                                            cd /opt/app-root/src/backend; \
+                                            python manage.py loaddata \
+                                            gwells-codetables.json \
+                                            wellsearch-codetables.json \
+                                            registries-codetables.json \
+                                            registries.json \
+                                            wellsearch.json \
+                                            aquifers.json \
+                                        '
+                                    """,
+                                    returnStdout: true
                                 )
-                                echo "Load Fixtures results: "+ ocoutput.actions[0].out
+                                echo "Results: "+ shResult
 
-                                openshift.exec(
-                                    pods.objects()[0].metadata.name,
-                                    "--",
-                                    "bash -c '\
-                                        cd /opt/app-root/src/backend; \
-                                        python manage.py createinitialrevisions \
-                                    '"
+                                echo "Create initial revisions"
+                                shResult = sh (
+                                    script: """
+                                        oc rsh -n ${DEV_PROJECT} dc/${APP_NAME}-${DEV_SUFFIX}-${PR_NUM} bash -c '\
+                                            cd /opt/app-root/src/backend; \
+                                            python manage.py createinitialrevisions \
+                                        '
+                                    """,
+                                    returnStdout: true
                                 )
-                                def targetURL = "https://${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca/gwells"
-                                createDeploymentStatus(DEV_SUFFIX, 'SUCCESS', targetURL)
+                                echo "Results: "+ shResult
                             }
                         }
                     },
