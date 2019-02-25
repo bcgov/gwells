@@ -527,65 +527,55 @@ pipeline {
                     },
                     'DEV - Load Fixtures': {
                         script {
-                            _openshift(env.STAGE_NAME, DEV_PROJECT) {
-                                echo "Loading fixtures"
-                                def shResult = sh (
-                                    script: """
-                                        oc rsh -n ${DEV_PROJECT} dc/${APP_NAME}-${DEV_SUFFIX}-${PR_NUM} bash -c '\
-                                            cd /opt/app-root/src/backend; \
-                                            python manage.py loaddata \
-                                            gwells-codetables.json \
-                                            wellsearch-codetables.json \
-                                            registries-codetables.json \
-                                            registries.json \
-                                            wellsearch.json \
-                                            aquifers.json \
-                                        '
-                                    """,
-                                    returnStdout: true
-                                )
-                                echo "Results: "+ shResult
+                            echo "Loading fixtures"
+                            def shResult = sh (
+                                script: """
+                                    oc rsh -n ${DEV_PROJECT} dc/${APP_NAME}-${DEV_SUFFIX}-${PR_NUM} bash -c '\
+                                        cd /opt/app-root/src/backend; \
+                                        python manage.py loaddata \
+                                        gwells-codetables.json \
+                                        wellsearch-codetables.json \
+                                        registries-codetables.json \
+                                        registries.json \
+                                        wellsearch.json \
+                                        aquifers.json \
+                                    '
+                                """,
+                                returnStdout: true
+                            )
+                            echo "Results: "+ shResult
 
-                                echo "Create initial revisions"
-                                shResult = sh (
-                                    script: """
-                                        oc rsh -n ${DEV_PROJECT} dc/${APP_NAME}-${DEV_SUFFIX}-${PR_NUM} bash -c '\
-                                            cd /opt/app-root/src/backend; \
-                                            python manage.py createinitialrevisions \
-                                        '
-                                    """,
-                                    returnStdout: true
-                                )
-                                echo "Results: "+ shResult
-                            }
-                        }
-                    },
-                    'DEV - Smoke Tests': {
-                        // Functional tests temporarily limited to smoke tests
-                        // See https://github.com/BCDevOps/BDDStack
-                        script {
-                            _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
-                                String BASE_URL = "https://${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca/gwells"
-                                def result = functionalTest ('DEV - Smoke Tests', BASE_URL, DEV_SUFFIX, 'SearchSpecs')
-                            }
+                            echo "Create initial revisions"
+                            shResult = sh (
+                                script: """
+                                    oc rsh -n ${DEV_PROJECT} dc/${APP_NAME}-${DEV_SUFFIX}-${PR_NUM} bash -c '\
+                                        cd /opt/app-root/src/backend; \
+                                        python manage.py createinitialrevisions \
+                                    '
+                                """,
+                                returnStdout: true
+                            )
+                            echo "Results: "+ shResult
+
+                            parallel(
+                                'DEV - API Tests': {
+                                    script {
+                                        String BASE_URL = "https://${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca/gwells"
+                                        apiTest ('DEV - API Tests', BASE_URL, DEV_SUFFIX, ENABLE_FIXTURE_TESTS)
+                                    }
+                                },
+                                'DEV - Smoke Tests': {
+                                    // Functional tests temporarily limited to smoke tests
+                                    // See https://github.com/BCDevOps/BDDStack
+                                    script {
+                                        String BASE_URL = "https://${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca/gwells"
+                                        functionalTest ('DEV - Smoke Tests', BASE_URL, DEV_SUFFIX, 'SearchSpecs')
+                                    }
+                                }
+                            )
                         }
                     }
                 )
-            }
-        }
-
-
-        stage('DEV - API Tests') {
-            when {
-                expression { env.CHANGE_TARGET != 'master' && env.CHANGE_TARGET != 'demo' }
-            }
-            steps {
-                script {
-                    _openshift(env.STAGE_NAME, DEV_PROJECT) {
-                        String BASE_URL = "https://${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca/gwells"
-                        def result = apiTest ('DEV - API Tests', BASE_URL, DEV_SUFFIX, ENABLE_FIXTURE_TESTS)
-                    }
-                }
             }
         }
 
