@@ -218,13 +218,6 @@ class Aquifer(AuditModel):
         null=True,
         on_delete=models.PROTECT,
         verbose_name="Aquifer Vulnerabiliy")
-    lithology = models.ForeignKey(
-        AquiferLithologyCode,
-        db_column='aquifer_lithology_code',
-        blank=True,
-        null=True,
-        on_delete=models.PROTECT,
-        verbose_name="Aquifer Lithology")
     productivity = models.ForeignKey(
         AquiferProductivity,
         db_column='aquifer_productivity_code',

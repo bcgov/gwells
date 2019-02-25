@@ -37,10 +37,5 @@ class Migration(migrations.Migration):
                 'ordering': ['display_order', 'code'],
             },
         ),
-        migrations.AddField(
-            model_name='aquifer',
-            name='lithology',
-            field=models.ForeignKey(blank=True, db_column='aquifer_lithology_code', null=True, on_delete=django.db.models.deletion.PROTECT, to='aquifers.AquiferLithologyCode', verbose_name='Aquifer Lithology'),
-        ),
         migrations.RunPython(code_fixture().load_fixture, reverse_code=code_fixture().unload_fixture),
     ]

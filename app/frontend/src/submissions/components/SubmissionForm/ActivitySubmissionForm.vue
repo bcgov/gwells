@@ -440,6 +440,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         :testingDuration.sync="form.testing_duration"
         :analyticSolutionType.sync="form.analytic_solution_type"
         :boundaryEffect.sync="form.boundary_effect"
+        :aquiferLithology.sync="form.aquifer_lithology"
         :errors="errors"
         :isStaffEdit="isStaffEdit"
         :saveDisabled="editSaveDisabled"

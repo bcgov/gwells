@@ -532,6 +532,7 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
             'observation_well_number',
             'observation_well_status',
             'aquifer_vulnerability_index',
+            'aquifer_lithology',
             'storativity',
             'transmissivity',
             'hydraulic_conductivity',

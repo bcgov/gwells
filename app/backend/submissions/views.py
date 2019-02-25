@@ -65,6 +65,8 @@ from wells.models import (
     WellPublicationStatusCode,
     YieldEstimationMethodCode,)
 from submissions.models import WellActivityCode
+from aquifers.models import AquiferLithologyCode
+from aquifers.serializers import AquiferLithologySerializer
 from wells.serializers import (
     CasingCodeSerializer,
     CasingMaterialSerializer
@@ -321,6 +323,7 @@ class SubmissionsOptions(APIView):
         observation_well_status = ObservationWellStatusCodeSerializer(
             instance=ObsWellStatusCode.objects.all(), many=True
         )
+        aquifer_lithology = AquiferLithologySerializer(instance=AquiferLithologyCode.objects.all(), many=True)
 
         lithology_hardness = LithologyHardnessSerializer(instance=LithologyHardnessCode.objects.all(), many=True)
         lithology_colours = LithologyColourSerializer(instance=LithologyColourCode.objects.all(), many=True)
@@ -362,6 +365,7 @@ class SubmissionsOptions(APIView):
         options["yield_estimation_methods"] = yield_estimation_methods.data
         options["water_quality_characteristics"] = water_quality_characteristics.data
         options["water_quality_colours"] = water_quality_colours.data
+        options["aquifer_lithology_codes"] = aquifer_lithology.data
         options["lithology_hardness_codes"] = lithology_hardness.data
         options["lithology_colours"] = lithology_colours.data
         options["lithology_materials"] = lithology_materials.data

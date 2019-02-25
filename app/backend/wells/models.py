@@ -25,7 +25,7 @@ from gwells.models.lithology import (
     LithologyMoistureCode, SurficialMaterialCode)
 from registries.models import Person, Organization
 from submissions.models import WellActivityCode
-from aquifers.models import Aquifer
+from aquifers.models import Aquifer, AquiferLithologyCode
 
 
 class DecommissionMethodCode(AuditModel):
@@ -829,6 +829,9 @@ class Well(AuditModel):
         max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Analytic Solution Type')
     boundary_effect = models.DecimalField(
         max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Boundary Effect')
+    aquifer_lithology = models.ForeignKey(
+        AquiferLithologyCode, db_column='aquifer_lithology_code', blank=True, null=True, on_delete=models.CASCADE,
+        verbose_name="Aquifer Lithology")
 
     # Production data related data
     yield_estimation_method = models.ForeignKey(
@@ -1286,6 +1289,9 @@ class ActivitySubmission(AuditModel):
         max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Analytic Solution Type')
     boundary_effect = models.DecimalField(
         max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Boundary Effect')
+    aquifer_lithology = models.ForeignKey(
+        AquiferLithologyCode, db_column='aquifer_lithology_code', blank=True, null=True, on_delete=models.CASCADE,
+        verbose_name="Aquifer Lithology")
 
     # Production data related data
     yield_estimation_method = models.ForeignKey(

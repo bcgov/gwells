@@ -160,6 +160,23 @@ Licensed under the Apache License, Version 2.0 (the "License");
             :loaded="fieldsLoaded['boundary_effect']"
         ></form-input>
       </b-col>
+      <b-col cols="12" md="4">
+        <b-form-group
+          id="aquiferLithology"
+          label="Aquifer Lithology">
+          <b-form-select
+            v-model="aquiferLithologyInput"
+            value-field="code"
+            :options="codes.aquifer_lithology_codes"
+            :errors="errors['aquifer_lithology']"
+            :loaded="fieldsLoaded['aquifer_lithology']"
+            text-field="description">
+            <template slot="first">
+              <option value="" disabled>Select Lithology</option>
+            </template>
+          </b-form-select>
+        </b-form-group>
+      </b-col>
     </b-row>
   </fieldset>
 </template>
@@ -185,6 +202,7 @@ export default {
     testingDuration: null,
     analyticSolutionType: null,
     boundaryEffect: null,
+    aquiferLithology: null,
     id: {
       type: String,
       isInput: false
@@ -217,7 +235,8 @@ export default {
     testingMethodInput: 'testingMethod',
     testingDurationInput: 'testingDuration',
     analyticSolutionInput: 'analyticSolutionType',
-    boundaryEffectInput: 'boundaryEffect'
+    boundaryEffectInput: 'boundaryEffect',
+    aquiferLithologyInput: 'aquiferLithology'
   },
   data () {
     return {
