@@ -18,7 +18,7 @@ void notifyStageStatus (String name, String status) {
 
 
 // Create deployment status and pass to Jenkins-GitHub library
-void createDeploymentStatus (String suffix, String status, String targetURL) {
+void createDeploymentStatus (String suffix, String status, String STAGE_URL) {
     def ghDeploymentId = new GitHubHelper().createDeployment(
         this,
         "pull/${env.CHANGE_ID}/head",
@@ -32,7 +32,7 @@ void createDeploymentStatus (String suffix, String status, String targetURL) {
         this,
         ghDeploymentId,
         "${status}",
-        ['targetUrl':"${targetURL}"]
+        ['targetUrl':"https://${STAGE_URL}/gwells"]
     )
 
     if ('SUCCESS'.equalsIgnoreCase("${status}")) {
@@ -486,8 +486,7 @@ pipeline {
                         openshift.tag("${TOOLS_PROJECT}/gwells-postgresql:dev", "${DEV_PROJECT}/gwells-postgresql-${DEV_SUFFIX}-${PR_NUM}:dev")  // todo: clean up labels/tags
 
                         // post a notification to Github that this pull request is being deployed
-                        def targetURL = "https://${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca/gwells"
-                        createDeploymentStatus(DEV_SUFFIX, 'PENDING', targetURL)
+                        createDeploymentStatus(DEV_SUFFIX, 'PENDING', DEV_URL)
 
                         // monitor the deployment status and wait until deployment is successful
                         echo "Waiting for deployment to dev..."
@@ -504,8 +503,7 @@ pipeline {
                         }
 
                         // Report a pass to GitHub
-                        def targetURL = "https://${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca/gwells"
-                        createDeploymentStatus(DEV_SUFFIX, 'SUCCESS', targetURL)
+                        createDeploymentStatus(DEV_SUFFIX, 'SUCCESS', DEV_URL)
                     }
                 }
             }
@@ -706,8 +704,7 @@ pipeline {
                             "${STAGING_PROJECT}/gwells-postgresql-${STAGING_SUFFIX}:${STAGING_SUFFIX}"
                         )  // todo: clean up labels/tags
 
-                        def targetTestURL = "https://${APP_NAME}-${STAGING_SUFFIX}.pathfinder.gov.bc.ca/gwells"
-                        createDeploymentStatus(STAGING_SUFFIX, 'PENDING', targetTestURL)
+                        createDeploymentStatus(STAGING_SUFFIX, 'PENDING', STAGING_URL)
 
                         // Create cronjob for well export
                         def cronTemplate = openshift.process("-f",
@@ -894,8 +891,7 @@ pipeline {
                             "${DEMO_PROJECT}/gwells-postgresql-${DEMO_SUFFIX}:${DEMO_SUFFIX}"
                         )  // todo: clean up labels/tags
 
-                        def targetDemoURL = "https://${APP_NAME}-${DEMO_SUFFIX}.pathfinder.gov.bc.ca/gwells"
-                        createDeploymentStatus(DEMO_SUFFIX, 'PENDING', targetDemoURL)
+                        createDeploymentStatus(DEMO_SUFFIX, 'PENDING', DEMO_URL)
 
                         // Create cronjob for well export
                         def cronTemplate = openshift.process("-f",
@@ -927,7 +923,7 @@ pipeline {
                             }
                         }
 
-                        createDeploymentStatus(DEMO_SUFFIX, 'SUCCESS', targetDemoURL)
+                        createDeploymentStatus(DEMO_SUFFIX, 'SUCCESS', DEMO_URL)
                     }
                 }
             }
@@ -1065,8 +1061,7 @@ pipeline {
                             "${PROD_PROJECT}/gwells-postgresql-${PROD_SUFFIX}:${PROD_SUFFIX}"
                         )  // todo: clean up labels/tags
 
-                        def targetProdURL = "https://apps.nrs.gov.bc.ca/gwells/"
-                        createDeploymentStatus(PROD_SUFFIX, 'PENDING', targetProdURL)
+                        createDeploymentStatus(PROD_SUFFIX, 'PENDING', PROD_URL)
 
                         // Create cronjob for well export
                         def cronTemplate = openshift.process("-f",
@@ -1098,7 +1093,7 @@ pipeline {
                             }
                         }
 
-                        createDeploymentStatus(PROD_SUFFIX, 'SUCCESS', targetProdURL)
+                        createDeploymentStatus(PROD_SUFFIX, 'SUCCESS', PROD_URL)
                     }
                 }
             }
