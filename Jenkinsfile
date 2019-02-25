@@ -609,7 +609,6 @@ pipeline {
             steps {
                 script {
                     _openshift(env.STAGE_NAME, STAGING_PROJECT) {
-                        input "Deploy to staging?"
                         echo "Preparing..."
 
                         // Process db and app template into list objects
