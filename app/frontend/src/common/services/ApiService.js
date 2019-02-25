@@ -38,22 +38,22 @@ const ApiService = {
     return axios.get(resource, { params: params })
   },
   get (resource, record) {
-    return axios.get(`${resource}/${record}/`)
+    return axios.get(`${resource}/${record}`)
   },
   post (resource, params) {
-    return axios.post(resource + '/', params)
+    return axios.post(resource, params)
   },
   patch (resource, record, params) {
-    return axios.patch(`${resource}/${record}/`, params)
+    return axios.patch(`${resource}/${record}`, params)
   },
   options (resource) {
     return axios.options(resource)
   },
   delete (resource, record) {
-    return axios.delete(`${resource}/${record}/`)
+    return axios.delete(`${resource}/${record}`)
   },
   history (resource, record) {
-    return axios.get(`${resource}/${record}/history/`)
+    return axios.get(`${resource}/${record}/history`)
   },
   presignedPutUrl (resource, record, filename, isPrivate) {
     return axios.get(`${resource}/${record}/presigned_put_url?filename=${filename}&private=${isPrivate}`)

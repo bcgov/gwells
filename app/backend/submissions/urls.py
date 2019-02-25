@@ -23,26 +23,26 @@ from submissions.views import (SubmissionsOptions, SubmissionListAPIView, Submis
 urlpatterns = [
 
     # Submissions form options
-    url(r'^api/v1/submissions/options/$',
+    url(r'^api/v1/submissions/options$',
         never_cache(SubmissionsOptions.as_view()), name='submissions-options'),
 
     # Submissions list
-    url(r'^api/v1/submissions/$',
+    url(r'^api/v1/submissions$',
         never_cache(SubmissionListAPIView.as_view()), name='submissions-list'),
     # Submission
     url(r'^api/v1/submissions/(?P<filing_number>[0-9]+)$',
         never_cache(SubmissionGetAPIView.as_view()), name='submissions-get'),
     # Construction submission
-    url(r'^api/v1/submissions/construction',
+    url(r'^api/v1/submissions/construction$',
         never_cache(SubmissionConstructionAPIView.as_view()), name='CON'),
     # Alteration submission
-    url(r'^api/v1/submissions/alteration',
+    url(r'^api/v1/submissions/alteration$',
         never_cache(SubmissionAlterationAPIView.as_view()), name='ALT'),
     # Decommission submission
-    url(r'^api/v1/submissions/decommission',
+    url(r'^api/v1/submissions/decommission$',
         never_cache(SubmissionDecommissionAPIView.as_view()), name='DEC'),
     # Edit submission
-    url(r'^api/v1/submissions/staff_edit',
+    url(r'^api/v1/submissions/staff_edit$',
         never_cache(SubmissionStaffEditAPIView().as_view()), name='STAFF_EDIT'),
 
     # Document Uploading (submission records)

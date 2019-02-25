@@ -22,15 +22,15 @@ urlpatterns = [
 
     # API endpoints
     # Well
-    url(r'^api/v1/wells/(?P<well_tag_number>[0-9]+)/$',
+    url(r'^api/v1/wells/(?P<well_tag_number>[0-9]+)$',
         never_cache(views.WellDetail.as_view()), name='well-detail'),
 
     # Well tag search
-    url(r'^api/v1/wells/tags/$',
+    url(r'^api/v1/wells/tags$',
         never_cache(views.WellTagSearchAPIView.as_view()), name='well-tag-search'),
 
     # Well tag search
-    url(r'^api/v1/wells/locations/$',
+    url(r'^api/v1/wells/locations$',
         never_cache(views.WellLocationListAPIView.as_view()), name='well-locations'),
 
     # Documents (well records)
@@ -49,7 +49,7 @@ urlpatterns = [
         never_cache(views.DeleteWellDocument.as_view()), name='well-delete-document'),
 
     # Well list
-    url(r'^api/v1/wells/$',
+    url(r'^api/v1/wells$',
         never_cache(views.WellListAPIView.as_view()), name='well-list'),
 
 ]

@@ -41,21 +41,21 @@ schema_view = get_schema_view(
 urlpatterns = [
 
     # Organization note endpoints
-    url(r'^api/v1/organizations/(?P<org_guid>[-\w]+)/notes/$',
+    url(r'^api/v1/organizations/(?P<org_guid>[-\w]+)/notes$',
         views.OrganizationNoteListView.as_view(), name='org-note-list'),
-    url(r'^api/v1/organizations/(?P<org_guid>[-\w]+)/notes/(?P<note_guid>[-\w]+)/$',
+    url(r'^api/v1/organizations/(?P<org_guid>[-\w]+)/notes/(?P<note_guid>[-\w]+)$',
         views.OrganizationNoteDetailView.as_view(), name='org-note-detail'),
 
     # Organization endpoints
-    url(r'^api/v1/organizations/names/$',
+    url(r'^api/v1/organizations/names$',
         never_cache(views.OrganizationNameListView.as_view()),
         name='organization-names'),
-    url(r'^api/v1/organizations/(?P<org_guid>[-\w]+)/history/$',
+    url(r'^api/v1/organizations/(?P<org_guid>[-\w]+)/history$',
         never_cache(views.OrganizationHistory.as_view()), name='organization-history'),
-    url(r'^api/v1/organizations/(?P<org_guid>[-\w]+)/$',
+    url(r'^api/v1/organizations/(?P<org_guid>[-\w]+)$',
         never_cache(views.OrganizationDetailView.as_view()),
         name='organization-detail'),
-    url(r'^api/v1/organizations/$',
+    url(r'^api/v1/organizations$',
         never_cache(views.OrganizationListView.as_view()),
         name='organization-list'),
 
@@ -67,50 +67,50 @@ urlpatterns = [
     url(r'^api/v1/drillers/(?P<person_guid>[-\w]+)/delete_document$',
         never_cache(views.DeleteDrillerDocument.as_view()), name='driller-delete-document'),
 
-    url(r'^api/v1/drillers/(?P<person_guid>[-\w]+)/files/$',
+    url(r'^api/v1/drillers/(?P<person_guid>[-\w]+)/files$',
         never_cache(views.ListFiles.as_view()), name='drillers-file-list'),
 
     # Person note endpoints
-    url(r'^api/v1/drillers/(?P<person_guid>[-\w]+)/notes/$',
+    url(r'^api/v1/drillers/(?P<person_guid>[-\w]+)/notes$',
         never_cache(views.PersonNoteListView.as_view()), name='person-note-list'),
-    url(r'^api/v1/drillers/(?P<person_guid>[-\w]+)/notes/(?P<note_guid>[-\w]+)/$',
+    url(r'^api/v1/drillers/(?P<person_guid>[-\w]+)/notes/(?P<note_guid>[-\w]+)$',
         views.PersonNoteDetailView.as_view(), name='person-note-detail'),
 
     # Person endpoints (drillers, well installers, and other instances of Person model)
     # TODO: There's some confusion between drillers and persons. Sometimes we're looking only for drillers,
     # sometimes we're actually looking for people (pump installers, drillers etc.)
-    url(r'^api/v1/drillers/names/$',
+    url(r'^api/v1/drillers/names$',
         never_cache(views.PersonNameSearch.as_view()), name='person-search'),
-    url(r'api/v1/drillers/options/',
+    url(r'api/v1/drillers/options$',
         views.PersonOptionsView.as_view(), name='person-options'),
-    url(r'^api/v1/drillers/(?P<person_guid>[-\w]+)/history/$',
+    url(r'^api/v1/drillers/(?P<person_guid>[-\w]+)/history$',
         never_cache(views.PersonHistory.as_view()), name='person-history'),
-    url(r'^api/v1/drillers/(?P<person_guid>[-\w]+)/$',
+    url(r'^api/v1/drillers/(?P<person_guid>[-\w]+)$',
         never_cache(views.PersonDetailView.as_view()),
         name='person-detail'),
-    url(r'^api/v1/drillers/$',
+    url(r'^api/v1/drillers$',
         never_cache(views.PersonListView.as_view()), name='person-list'),
 
     # Registration endpoints (a person may register as a driller or well pump installer)
-    url(r'api/v1/registrations/(?P<register_guid>[-\w]+)/$',
+    url(r'api/v1/registrations/(?P<register_guid>[-\w]+)$',
         never_cache(views.RegistrationDetailView.as_view()),
         name='register-detail'),
-    url(r'api/v1/registrations/',
+    url(r'api/v1/registrations$',
         never_cache(views.RegistrationListView.as_view()), name='register-list'),
 
     # Applications (applications to be qualified for a drilling activity)
-    url(r'api/v1/applications/(?P<application_guid>[-\w]+)/$',
+    url(r'api/v1/applications/(?P<application_guid>[-\w]+)$',
         never_cache(views.ApplicationDetailView.as_view()),
         name='application-detail'),
-    url(r'api/v1/applications/', never_cache(views.ApplicationListView.as_view()),
+    url(r'api/v1/applications$', never_cache(views.ApplicationListView.as_view()),
         name='application-list'),
 
     # List of cities that currently have registered drillers, pump installers etc.
-    url(r'^api/v1/cities/drillers/$',
+    url(r'^api/v1/cities/drillers$',
         never_cache(views.CitiesListView.as_view()),
         {'activity': 'drill'},
         name='city-list-drillers'),
-    url(r'^api/v1/cities/installers/$',
+    url(r'^api/v1/cities/installers$',
         never_cache(views.CitiesListView.as_view()),
         {'activity': 'install'},
         name='city-list-installers'),
