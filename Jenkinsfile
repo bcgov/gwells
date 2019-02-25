@@ -3,9 +3,6 @@
 import groovy.json.JsonOutput
 import bcgov.GitHubHelper
 
-// constants for controlling unit/API test behavior for tests that require fixtures to be loaded
-def ENABLE_FIXTURE_TESTS = true
-def DISABLE_FIXTURE_TESTS = false
 
 // Notify stage status and pass to Jenkins-GitHub library
 void notifyStageStatus (String name, String status) {
@@ -324,17 +321,20 @@ def apiTest (String STAGE_NAME, String BASE_URL, String ENV_SUFFIX, Boolean run_
 
 pipeline {
     environment {
-
+        // Project-wide settings - app name, repo
         APP_NAME = "gwells"
         REPOSITORY = 'https://www.github.com/bcgov/gwells.git'
+
+        // PR_NUM is the pull request number e.g. 'pr-4'
+        PR_NUM = "${env.JOB_BASE_NAME}".toLowerCase()
 
         // TOOLS_PROJECT is where images are built
         TOOLS_PROJECT = "moe-gwells-tools"
 
         // DEV_PROJECT is the project where individual development environments are spun up
-        // for example: a pull request PR-999 will result in gwells-dev-pr-999.pathfinder.gov.bc.ca
         DEV_PROJECT = "moe-gwells-dev"
         DEV_SUFFIX = "dev"
+        DEV_URL = "https://${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca/gwells"
 
         // STAGING_PROJECT contains the test deployment. The test image is a candidate for promotion to prod.
         STAGING_PROJECT = "moe-gwells-test"
@@ -347,13 +347,14 @@ pipeline {
         DEMO_HOST = "gwells-demo.pathfinder.gov.bc.ca"
 
         // PROD_PROJECT is the prod deployment.
-        // New production images can be deployed by tagging an existing "test" image as "prod".
+        // TODO: New production images can be deployed by tagging an existing "test" image as "prod".
         PROD_PROJECT = "moe-gwells-prod"
         PROD_SUFFIX = "production"
         PROD_HOST = "gwells-prod.pathfinder.gov.bc.ca"
 
-        // PR_NUM is the pull request number e.g. 'pr-4'
-        PR_NUM = "${env.JOB_BASE_NAME}".toLowerCase()
+        // constants for controlling unit/API test behavior for tests that require fixtures to be loaded
+        ENABLE_FIXTURE_TESTS = true
+        DISABLE_FIXTURE_TESTS = false
     }
     agent any
     stages {
@@ -577,8 +578,7 @@ pipeline {
             steps {
                 script {
                     _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
-                        String BASE_URL = "https://${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca/gwells"
-                        def result = functionalTest ('DEV - Smoke Tests', BASE_URL, DEV_SUFFIX, 'SearchSpecs')
+                        def result = functionalTest ('DEV - Smoke Tests', DEV_URL, DEV_SUFFIX, 'SearchSpecs')
                     }
                 }
             }
@@ -592,8 +592,7 @@ pipeline {
             steps {
                 script {
                     _openshift(env.STAGE_NAME, DEV_PROJECT) {
-                        String BASE_URL = "https://${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca/gwells"
-                        def result = apiTest ('DEV - API Tests', BASE_URL, DEV_SUFFIX, ENABLE_FIXTURE_TESTS)
+                        def result = apiTest ('DEV - API Tests', DEV_URL, DEV_SUFFIX, ENABLE_FIXTURE_TESTS)
                     }
                 }
             }
