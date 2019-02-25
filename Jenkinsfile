@@ -515,12 +515,8 @@ pipeline {
             steps {
                 parallel(
                     'DEV - Django Unit Tests': {
-                        // the Django Unit Tests stage runs backend unit tests using a test DB that is
-                        // created and destroyed afterwards.
                         script {
-                            _openshift(env.STAGE_NAME, DEV_PROJECT) {
-                                def result = unitTestDjango (env.STAGE_NAME, DEV_PROJECT, DEV_SUFFIX)
-                            }
+                            def dTResult = unitTestDjango (env.STAGE_NAME, DEV_PROJECT, DEV_SUFFIX)
                         }
                     },
                     'DEV - Load Fixtures': {
