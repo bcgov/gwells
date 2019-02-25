@@ -501,6 +501,10 @@ pipeline {
                                 }
                             }
                         }
+
+                        // Report a pass to GitHub
+                        def targetURL = "https://${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca/gwells"
+                        createDeploymentStatus(DEV_SUFFIX, 'SUCCESS', targetURL)
                     }
                 }
             }
@@ -558,8 +562,6 @@ pipeline {
                                 python manage.py createinitialrevisions \
                             '"
                         )
-                        def targetURL = "https://${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca/gwells"
-                        createDeploymentStatus(DEV_SUFFIX, 'SUCCESS', targetURL)
                     }
                 }
             }
