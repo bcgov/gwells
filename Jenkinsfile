@@ -604,7 +604,7 @@ pipeline {
         // this stage should only occur when the pull request is being made against the master branch.
         stage('STAGING - Deploy') {
             when {
-                expression { env.CHANGE_TARGET == 'master' || env.CHANGE_TARGET == 'dev' }
+                expression { env.CHANGE_TARGET == 'master' }
             }
             steps {
                 script {
@@ -764,7 +764,7 @@ pipeline {
 
         stage('STAGING - API Tests') {
             when {
-                expression { env.CHANGE_TARGET == 'master' || env.CHANGE_TARGET == 'dev' }
+                expression { env.CHANGE_TARGET == 'master' }
             }
             steps {
                 script {
@@ -780,7 +780,7 @@ pipeline {
         // Single functional test
         stage('STAGING - Smoke Tests') {
             when {
-                expression { env.CHANGE_TARGET == 'master' || env.CHANGE_TARGET == 'dev' }
+                expression { env.CHANGE_TARGET == 'master' }
             }
             steps {
                 script {
