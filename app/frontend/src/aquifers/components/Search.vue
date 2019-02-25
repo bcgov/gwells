@@ -211,7 +211,7 @@ export default {
       // trigger the Google Analytics search event
       this.triggerAnalyticsSearchEvent(this.query)
 
-      ApiService.query('aquifers/', this.query)
+      ApiService.query('aquifers', this.query)
         .then((response) => {
           this.response = response.data
           this.scrollToTableTop()
@@ -284,7 +284,7 @@ export default {
   },
   created () {
     // Fetch current surveys and add 'aquifer' surveys (if any) to this.surveys to be displayed
-    ApiService.query('surveys/').then((response) => {
+    ApiService.query('surveys').then((response) => {
       if (response.data) {
         response.data.forEach((survey) => {
           if (survey.survey_page === 'a') {

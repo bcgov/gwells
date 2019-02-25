@@ -173,7 +173,7 @@ export default {
       // add other search parameters into the params object.
       // these will be urlencoded and the API will filter on these values.
       Object.assign(params, this.searchParams)
-      return ApiService.query('wells/', params).then((response) => {
+      return ApiService.query('wells', params).then((response) => {
         this.numberOfRecords = response.data.count
         this.tableData = response.data.results
         this.tabulator.clearData()
@@ -200,7 +200,7 @@ export default {
         }
         params = Object.assign(params, boundBox)
       }
-      ApiService.query('wells/locations/', params).then((response) => {
+      ApiService.query('wells/locations', params).then((response) => {
         this.locations = response.data.map((well) => {
           return [well.latitude, well.longitude, well.well_tag_number]
         })

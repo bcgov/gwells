@@ -59,7 +59,7 @@ urlpatterns = [
         name='site_admin'),  # editable list view of surveys and other site admin features
 
     # API routes
-    url(r'^' + app_root_slash + 'api/v1/surveys/$',
+    url(r'^' + app_root_slash + 'api/v1/surveys$',
         SurveyListView.as_view(), name='survey-list'),
     url(r'^' + app_root_slash + DJANGO_ADMIN_URL + '/', admin.site.urls),
     url(r'^' + app_root_slash + 'accounts/',

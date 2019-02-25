@@ -192,7 +192,7 @@ describe('View Component', () => {
 
         wrapper.vm.save()
 
-        expect(axios.patch).toHaveBeenCalledWith('aquifers/10/', aquiferFixture)
+        expect(axios.patch).toHaveBeenCalledWith('aquifers/10', aquiferFixture)
       })
     })
   })

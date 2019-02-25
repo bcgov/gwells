@@ -69,7 +69,7 @@ const registriesStore = {
   },
   actions: {
     [FETCH_CITY_LIST] ({commit}, activity) {
-      ApiService.query('cities/' + activity + '/')
+      ApiService.query('cities/' + activity)
         .then((response) => {
           const list = Object.assign({}, this.state.cityList)
           const data = response.data
@@ -129,7 +129,7 @@ const registriesStore = {
     [FETCH_DRILLER_LIST] ({commit}, params) {
       return new Promise((resolve, reject) => {
         commit(SET_LOADING, true)
-        ApiService.query('drillers/', params)
+        ApiService.query('drillers', params)
           .then((response) => {
             commit(SET_LOADING, false)
             commit(SET_LIST_ERROR, null)
@@ -148,7 +148,7 @@ const registriesStore = {
       if (!this.state.drillerOptions) {
         return new Promise((resolve, reject) => {
           commit(SET_LOADING, true)
-          ApiService.query('drillers/options/', params)
+          ApiService.query('drillers/options', params)
             .then((response) => {
               commit(SET_LOADING, false)
               commit(SET_DRILLER_OPTIONS, response.data)

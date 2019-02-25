@@ -331,7 +331,7 @@ export default {
     this.FETCH_DRILLER_OPTIONS()
 
     // Fetch current surveys and add 'registries' surveys (if any) to this.surveys to be displayed
-    ApiService.query('surveys/').then((response) => {
+    ApiService.query('surveys').then((response) => {
       response.data.forEach((survey) => {
         if (survey.survey_page === 'r') {
           this.surveys.push(survey)
