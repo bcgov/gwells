@@ -14,25 +14,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
 <template>
   <div class="card" v-if="userRoles.wells.edit || userRoles.submissions.edit">
     <div class="card-body">
-      <!-- Document Uploading alerts -->
-      <b-modal
-        v-model="files_uploading"
-        hide-header
-        hide-footer
-        hide-header-close><b-alert show v-if="files_uploading">File Upload In Progress...</b-alert>
-      </b-modal>
-      <b-modal
-        v-model="file_upload_error"
-        hide-header
-        hide-footer
-        hide-header-close><b-alert show v-if="!files_uploading && file_upload_error" variant="warning" >{{file_upload_error}}</b-alert>
-      </b-modal>
-      <b-modal
-        v-model="file_upload_success"
-        hide-header
-        hide-footer
-        hide-header-close><b-alert show v-if="!files_uploading && file_upload_success" variant="success" >Successfully uploaded all files</b-alert>
-      </b-modal>
 
       <b-form @submit.prevent="confirmSubmit">
         <!-- if preview === true : Preview -->
@@ -47,6 +28,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           :uploadedFiles="uploadedFiles"
           v-on:back="handlePreviewBackButton"
           v-on:startNewReport="handleExitPreviewAfterSubmit"
+          v-on:fetchFiles="fetchFiles"
           />
         <!-- if preview === false : Activity submission form -->
         <activity-submission-form
@@ -237,7 +219,8 @@ export default {
   methods: {
     ...mapActions('documentState', [
       'uploadFiles',
-      'fileUploadSuccess'
+      'fileUploadSuccess',
+      'fileUploadFail'
     ]),
     formSubmit () {
       const data = Object.assign({}, this.form)
@@ -312,24 +295,32 @@ export default {
 
         if (this.upload_files.length > 0) {
           if (response.data.filing_number) {
+            this.$noty.info('<div class="loader"></div><div class="notifyText">File Upload In Progress...</div>')
             this.uploadFiles({
               documentType: 'submissions',
               recordId: response.data.filing_number
             }).then(() => {
               this.fileUploadSuccess()
               this.fetchFiles()
+              this.$noty.success('<div class="notifyText">Successfully Uploaded All Files</div>', { killer: true })
             }).catch((error) => {
-              console.log(error)
+              this.fileUploadFail()
+              console.error(error)
+              this.$noty.error('<div class="notifyText">Error Uploading Files</div>', { killer: true })
             })
           } else {
+            this.$noty.info('<div class="loader"></div><div class="notifyText">File Upload In Progress...</div>')
             this.uploadFiles({
               documentType: 'wells',
               recordId: response.data.well
             }).then(() => {
+              this.$noty.success('<div class="notifyText">Successfully Uploaded All Files</div>', { killer: true })
               this.fileUploadSuccess()
               this.fetchFiles()
             }).catch((error) => {
+              this.fileUploadFail()
               console.log(error)
+              this.$noty.error('<div class="notifyText">Error Uploading Files</div>', { killer: true })
             })
           }
         }
