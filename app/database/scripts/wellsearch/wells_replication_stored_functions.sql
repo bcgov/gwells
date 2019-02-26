@@ -128,7 +128,8 @@ DECLARE
     create_date               ,
     update_date               ,
     create_user               ,
-    update_user)
+    update_user               ,
+    aquifer_lithology_code)
   SELECT
     wells.well_tag_number                                                    ,
     wells.well_id                                                            ,
@@ -260,7 +261,12 @@ DECLARE
     wells.when_created                                 ,
     COALESCE(wells.when_updated,wells.when_created)    ,
     wells.who_created                                  ,
-    COALESCE(wells.who_updated,wells.who_created)
+    COALESCE(wells.who_updated,wells.who_created)      ,
+    CASE wells.aquifer_lithology_code
+      WHEN ''BED'' THEN ''Bedrock''
+      WHEN ''UNC'' THEN ''Unconsolidated''
+      ELSE ''Unknown''
+    END AS aquifer_lithology_code
   FROM wells.wells_wells wells LEFT OUTER JOIN wells.wells_owners owner ON owner.owner_id=wells.owner_id
               LEFT OUTER JOIN drilling_company drilling_company ON UPPER(wells.driller_company_code)=UPPER(drilling_company.drilling_company_code)
               LEFT OUTER JOIN well_subclass_code subclass ON UPPER(wells.subclass_of_well_classified_by)=UPPER(subclass.well_subclass_code)
@@ -362,7 +368,8 @@ BEGIN
      create_date                        timestamp with time zone,
      update_date                        timestamp with time zone,
      create_user                         character varying(30),
-     update_user                         character varying(30)
+     update_user                         character varying(30),
+     aquifer_lithology_code             character varying(30),
   );
 
   raise notice 'Created xform_well ETL table';
@@ -442,7 +449,7 @@ BEGIN
     owner_city                  ,
     owner_postal_code           ,
     owner_tel                   ,
-    owner_email                 ,    
+    owner_email                 ,
     street_address              ,
     city                        ,
     legal_lot                   ,
@@ -532,7 +539,8 @@ BEGIN
     hydro_fracturing_performed   ,
     decommission_details         ,
     comments                     ,
-    well_publication_status_code
+    well_publication_status_code ,
+    aquifer_lithology_code
     )
   SELECT
     xform.well_tag_number                        ,
@@ -634,8 +642,9 @@ BEGIN
     production_data.net_drawdown            ,
     false                                   ,
     xform.decommission_details              ,
-    xform.comments                          ,    
-    'Published'
+    xform.comments                          ,
+    'Published'                             ,
+    xform.aquifer_lithology_code
   FROM xform_well xform
   LEFT JOIN wells.wells_production_data production_data ON production_data.well_id=xform.well_id;
 
@@ -926,20 +935,20 @@ BEGIN
   -- 2018-SEPT-24 14:59 GW Aquifer app
   raise notice '...importing gw_aquifer_attrs data (aquifer)';
   INSERT INTO aquifer(
-    aquifer_id              
-    ,aquifer_name            
-    ,location_description    
-    ,area   
-    ,aquifer_vulnerablity_code               
+    aquifer_id
+    ,aquifer_name
+    ,location_description
+    ,area
+    ,aquifer_vulnerablity_code
     ,litho_stratographic_unit
-    ,mapping_year              
-    ,notes                     
-    ,aquifer_demand_code       
-    ,water_use_code            
-    ,aquifer_material_code     
-    ,aquifer_productivity_code 
-    ,quality_concern_code      
-    ,aquifer_subtype_code     
+    ,mapping_year
+    ,notes
+    ,aquifer_demand_code
+    ,water_use_code
+    ,aquifer_material_code
+    ,aquifer_productivity_code
+    ,quality_concern_code
+    ,aquifer_subtype_code
     ,create_user,create_date,update_user,update_date
     )
     SELECT
@@ -955,7 +964,7 @@ BEGIN
      END AS aquifer_vulnerablity_code
     ,attrs.litho_stratographic_unit
     ,null -- from spreadsheet temporary table
-    ,null 
+    ,null
     ,CASE attrs.demand
         WHEN 'Moderate' THEN 'M'
         WHEN 'Low'      THEN 'L'
@@ -1015,17 +1024,17 @@ BEGIN
 
   raise notice '...aquifer data updated from mapping spreadsheet';
 
--- With multiple aquifers per well, we choose the 'last updated' one 
+-- With multiple aquifers per well, we choose the 'last updated' one
   WITH best_match AS (
     SELECT DISTINCT ON (well.well_id)
-    well.well_tag_number,aws.aquifer_id  
+    well.well_tag_number,aws.aquifer_id
     FROM  wells.gw_aquifer_wells aws,
           wells.wells_wells well
     WHERE well.well_id = aws.well_id
-    ORDER BY well.well_id, coalesce(aws.when_updated, aws.when_created) DESC  
+    ORDER BY well.well_id, coalesce(aws.when_updated, aws.when_created) DESC
   )
   UPDATE well
-  SET   aquifer_id=best_match.aquifer_id 
+  SET   aquifer_id=best_match.aquifer_id
   FROM  best_match
   WHERE well.well_tag_number=best_match.well_tag_number;
 
@@ -1033,11 +1042,11 @@ BEGIN
 
   raise notice '...importing hydraulic_property data';
   INSERT INTO hydraulic_property(
-    hydraulic_property_guid  
-  ,storativity              
-  ,transmissivity           
+    hydraulic_property_guid
+  ,storativity
+  ,transmissivity
   ,avi
-  ,well_tag_number        
+  ,well_tag_number
   ,create_user,create_date,update_user,update_date
   )
   SELECT gen_random_uuid()
@@ -1178,7 +1187,7 @@ BEGIN
   TRUNCATE TABLE bcgs_number CASCADE;
   PERFORM migrate_bcgs();
   -- This truncates 'well' table too
-  TRUNCATE TABLE aquifer CASCADE; 
+  TRUNCATE TABLE aquifer CASCADE;
   PERFORM populate_well();
   PERFORM migrate_screens();
 END;
