@@ -63,13 +63,13 @@ from wells.models import (
     WellSubclassCode,
     WellStatusCode,
     WellPublicationStatusCode,
-    YieldEstimationMethodCode,)
+    YieldEstimationMethodCode,
+    AquiferLithologyCode,
+)
 from submissions.models import WellActivityCode
-from aquifers.models import AquiferLithologyCode
-from aquifers.serializers import AquiferLithologySerializer
 from wells.serializers import (
     CasingCodeSerializer,
-    CasingMaterialSerializer
+    CasingMaterialSerializer,
 )
 from submissions.serializers import (
     CoordinateAcquisitionCodeSerializer,
@@ -111,6 +111,7 @@ from submissions.serializers import (
     WellSubclassCodeSerializer,
     YieldEstimationMethodCodeSerializer,
     WellStaffEditSubmissionSerializer,
+    AquiferLithologySerializer,
 )
 
 

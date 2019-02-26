@@ -1,6 +1,6 @@
 [
     {
-        "model": "aquifers.aquiferlithologycode",
+        "model": "wells.aquiferlithologycode",
         "pk": "Unconsolidated",
         "fields": {
             "create_user": "DATALOAD_USER",
@@ -14,7 +14,7 @@
         }
     },
     {
-        "model": "aquifers.aquiferlithologycode",
+        "model": "wells.aquiferlithologycode",
         "pk": "Bedrock",
         "fields": {
             "create_user": "DATALOAD_USER",
@@ -28,7 +28,7 @@
         }
     },
     {
-        "model": "aquifers.aquiferlithologycode",
+        "model": "wells.aquiferlithologycode",
         "pk": "Unknown",
         "fields": {
             "create_user": "DATALOAD_USER",

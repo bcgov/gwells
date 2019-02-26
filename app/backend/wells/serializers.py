@@ -28,6 +28,7 @@ from wells.models import (
     LithologyDescription,
     Screen,
     Well,
+    AquiferLithologyCode,
 )
 
 

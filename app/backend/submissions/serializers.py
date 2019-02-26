@@ -70,6 +70,7 @@ from wells.models import (
     WellYieldUnitCode,
     YieldEstimationMethodCode,
     ObsWellStatusCode,
+    AquiferLithologyCode,
 )
 
 logger = logging.getLogger(__name__)
@@ -856,6 +857,15 @@ class LithologyMoistureSerializer(serializers.ModelSerializer):
         model = LithologyMoistureCode
         fields = (
             'lithology_moisture_code',
+            'description'
+        )
+
+
+class AquiferLithologySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AquiferLithologyCode
+        fields = (
+            'aquifer_lithology_code',
             'description'
         )
 

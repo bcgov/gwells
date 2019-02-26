@@ -25,7 +25,7 @@ from gwells.models.lithology import (
     LithologyMoistureCode, SurficialMaterialCode)
 from registries.models import Person, Organization
 from submissions.models import WellActivityCode
-from aquifers.models import Aquifer, AquiferLithologyCode
+from aquifers.models import Aquifer
 
 
 class DecommissionMethodCode(AuditModel):
@@ -516,6 +516,26 @@ class CoordinateAcquisitionCode(AuditModel):
 
     def __str__(self):
         return self.description
+
+
+class AquiferLithologyCode(AuditModel):
+    """
+    Choices for describing Completed Aquifer Lithology
+    """
+    aquifer_lithology_code = models.CharField(primary_key=True, max_length=100, db_column='aquifer_lithology_code')
+    description = models.CharField(max_length=100)
+    display_order = models.PositiveIntegerField()
+
+    effective_date = models.DateTimeField(blank=True, null=True)
+    expiry_date = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'aquifer_lithology_code'
+        ordering = ['display_order', 'aquifer_lithology_code']
+        verbose_name_plural = 'Aquifer Lithology Codes'
+
+    def __str__(self):
+        return '{} - {}'.format(self.code, self.description)
 
 
 # TODO: Consider having Well and Submission extend off a common base class, given that

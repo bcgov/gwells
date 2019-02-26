@@ -40,7 +40,6 @@ from aquifers.models import (
     AquiferProductivity,
     AquiferSubtype,
     AquiferVulnerabilityCode,
-    AquiferLithologyCode
 )
 from aquifers.permissions import HasAquiferEditRoleOrReadOnly, HasAquiferEditRole
 from gwells.change_history import generate_history_diff
@@ -102,14 +101,6 @@ class AquiferVulnerabilityListAPIView(ListAPIView):
     queryset = AquiferVulnerabilityCode.objects.all()
     serializer_class = serializers.AquiferVulnerabilitySerializer
 
-
-class AquiferLithologyListAPIView(ListAPIView):
-    """List aquifer lithology codes
-    get: return a list of aquifer lithology codes
-    """
-
-    queryset = AquiferLithologyCode.objects.all()
-    serializer_class = serializers.AquiferLithologySerializer
 
 class AquiferSubtypeListAPIView(ListAPIView):
     """List aquifer subtypes codes
