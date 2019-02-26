@@ -441,12 +441,23 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </b-row>
     </fieldset>
 
-    <fieldset v-if="uploadedFiles && uploadedFiles.public && uploadedFiles.public.length > 0">
+    <fieldset v-if="uploadedFiles && uploadedFiles.public && uploadedFiles.public.length > 0 && reportSubmitted">
       <legend>Uploaded Documents</legend>
       <b-row>
         <b-col cols="12" lg="4">
           <b-list-group>
             <b-list-group-item v-for="(f, index) in uploadedFiles.public" :key="index">{{f.name}}</b-list-group-item>
+          </b-list-group>
+        </b-col>
+      </b-row>
+    </fieldset>
+
+    <fieldset v-if="uploadedFiles && uploadedFiles.private && uploadedFiles.private.length > 0 && reportSubmitted">
+      <legend>Uploaded Internal Documentation</legend>
+      <b-row>
+        <b-col cols="12" lg="4">
+          <b-list-group>
+            <b-list-group-item v-for="(f, index) in uploadedFiles.private" :key="index">{{f.name}}</b-list-group-item>
           </b-list-group>
         </b-col>
       </b-row>
@@ -488,6 +499,14 @@ export default {
   data () {
     return {
     }
+  },
+  methods: {
+    fetchFiles () {
+      this.$emit('fetchFiles')
+    }
+  },
+  created () {
+    this.fetchFiles()
   },
   computed: {
     wellSubclass () {

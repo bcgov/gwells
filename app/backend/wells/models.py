@@ -518,6 +518,26 @@ class CoordinateAcquisitionCode(AuditModel):
         return self.description
 
 
+class AquiferLithologyCode(AuditModel):
+    """
+    Choices for describing Completed Aquifer Lithology
+    """
+    aquifer_lithology_code = models.CharField(primary_key=True, max_length=100, db_column='aquifer_lithology_code')
+    description = models.CharField(max_length=100)
+    display_order = models.PositiveIntegerField()
+
+    effective_date = models.DateTimeField(blank=True, null=True)
+    expiry_date = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'aquifer_lithology_code'
+        ordering = ['display_order', 'aquifer_lithology_code']
+        verbose_name_plural = 'Aquifer Lithology Codes'
+
+    def __str__(self):
+        return '{} - {}'.format(self.code, self.description)
+
+
 # TODO: Consider having Well and Submission extend off a common base class, given that
 #   they mostly have the exact same fields!
 class Well(AuditModel):
@@ -829,6 +849,9 @@ class Well(AuditModel):
         max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Analytic Solution Type')
     boundary_effect = models.DecimalField(
         max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Boundary Effect')
+    aquifer_lithology = models.ForeignKey(
+        AquiferLithologyCode, db_column='aquifer_lithology_code', blank=True, null=True, on_delete=models.CASCADE,
+        verbose_name="Aquifer Lithology")
 
     # Production data related data
     yield_estimation_method = models.ForeignKey(
@@ -1286,6 +1309,9 @@ class ActivitySubmission(AuditModel):
         max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Analytic Solution Type')
     boundary_effect = models.DecimalField(
         max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Boundary Effect')
+    aquifer_lithology = models.ForeignKey(
+        AquiferLithologyCode, db_column='aquifer_lithology_code', blank=True, null=True, on_delete=models.CASCADE,
+        verbose_name="Aquifer Lithology")
 
     # Production data related data
     yield_estimation_method = models.ForeignKey(
