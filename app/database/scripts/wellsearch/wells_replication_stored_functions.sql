@@ -42,7 +42,7 @@ DECLARE
     well_tag_number                ,
     well_id                        ,
     well_guid                      ,
-    acceptance_status_code         ,
+    well_publication_status_code   ,
     owner_full_name                ,
     owner_mailing_address          ,
     owner_city                     ,
