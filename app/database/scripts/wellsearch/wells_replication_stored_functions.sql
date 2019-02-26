@@ -369,7 +369,7 @@ BEGIN
      update_date                        timestamp with time zone,
      create_user                         character varying(30),
      update_user                         character varying(30),
-     aquifer_lithology_code             character varying(30),
+     aquifer_lithology_code             character varying(30)
   );
 
   raise notice 'Created xform_well ETL table';
