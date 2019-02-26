@@ -305,7 +305,7 @@ export default {
               this.$noty.success('<div class="notifyText">Successfully Uploaded All Files</div>', { killer: true })
             }).catch((error) => {
               this.fileUploadFail()
-              console.log(error)
+              console.error(error)
               this.$noty.error('<div class="notifyText">Error Uploading Files</div>', { killer: true })
             })
           } else {
