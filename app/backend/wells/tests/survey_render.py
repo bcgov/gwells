@@ -50,19 +50,6 @@ class DisabledSurveyTestCase(SurveyRenderTestCase):
         self.assertContains(response, survey_id, count=0)  # one and only one survey included
 
 
-class RegistryTestCase(SurveyRenderTestCase):
-    fixtures = ['survey_registry_fixture']
-
-    def test_registry(self):
-        url = reverse('registry-legacy')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, HTTPStatus.OK)
-        survey_id = 'id="survey:'
-        self.assertContains(response, survey_id, count=1)  # one and only one survey included
-        survey_id = survey_id + '495a9927-5a13-490e-bf1d-08bf2048b098'
-        self.assertContains(response, survey_id)  # the right survey included
-
-
 class SearchTestCase(SurveyRenderTestCase):
     fixtures = ['survey_search_fixture']
 
