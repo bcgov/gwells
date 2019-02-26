@@ -1,0 +1,32 @@
+[
+    {
+        "code": "SURFACE",
+        "create_user": "WELLS",
+        "create_date": "2018-08-14T17:42:52.421Z",
+        "update_user": "WELLS",
+        "update_date": "2018-08-14T17:42:52.421Z",
+        "description": "Surface casing",
+        "display_order": 0,
+        "effective_date": "2013-11-07T05:28:00.402Z"
+    },
+    {
+        "code": "PRODUCTION",
+        "create_user": "WELLS",
+        "create_date": "2018-08-14T17:42:52.423Z",
+        "update_user": "WELLS",
+        "update_date": "2018-08-14T17:42:52.423Z",
+        "description": "Production casing",
+        "display_order": 1,
+        "effective_date": "2018-08-14T17:42:52.423Z"
+    },
+    {
+        "code": "OPEN",
+        "create_user": "WELLS",
+        "create_date": "2018-08-14T17:42:52.416Z",
+        "update_user": "WELLS",
+        "update_date": "2018-08-14T17:42:52.416Z",
+        "description": "Open hole",
+        "display_order": 2,
+        "effective_date": "2018-08-14T17:42:52.416Z"
+    }
+]
