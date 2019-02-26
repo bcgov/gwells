@@ -42,7 +42,7 @@ DECLARE
     well_tag_number                ,
     well_id                        ,
     well_guid                      ,
-    acceptance_status_code         ,
+    well_publication_status_code   ,
     owner_full_name                ,
     owner_mailing_address          ,
     owner_city                     ,
@@ -134,7 +134,10 @@ DECLARE
     wells.well_tag_number                                                    ,
     wells.well_id                                                            ,
     gen_random_uuid()                                                        ,
-    wells.acceptance_status_code AS acceptance_status_code                   ,
+    CASE wells.acceptance_status_code
+      WHEN ''REJECTED'' THEN ''Unpublished''
+      ELSE ''Published''
+    END AS well_publication_status_code                                      ,
     concat_ws('' '', owner.giVEN_NAME,OWNER.SURNAME) AS owner_full_name      ,
     concat_ws('' '',OWNER.STREET_NUMBER,STREET_NAME) AS owner_mailing_address,
     owner.city AS owner_city                                                 ,
@@ -271,7 +274,7 @@ DECLARE
               LEFT OUTER JOIN drilling_company drilling_company ON UPPER(wells.driller_company_code)=UPPER(drilling_company.drilling_company_code)
               LEFT OUTER JOIN well_subclass_code subclass ON UPPER(wells.subclass_of_well_classified_by)=UPPER(subclass.well_subclass_code)
                 AND subclass.well_class_code = wells.class_of_well_codclassified_by
-  WHERE wells.acceptance_status_code NOT IN (''PENDING'', ''REJECTED'', ''NEW'') ';
+  WHERE wells.acceptance_status_code NOT IN (''PENDING'', ''NEW'') ';
 
 BEGIN
   raise notice 'Starting populate_xform() procedure...';
@@ -281,7 +284,7 @@ BEGIN
      well_tag_number                    integer,
      well_id                            bigint,
      well_guid                          uuid,
-     acceptance_status_code             character varying(10),
+     well_publication_status_code       character varying(20),
      owner_full_name                    character varying(200),
      owner_mailing_address              character varying(100),
      owner_city                         character varying(100),
@@ -643,7 +646,7 @@ BEGIN
     false                                   ,
     xform.decommission_details              ,
     xform.comments                          ,
-    'Published'                             ,
+    xform.well_publication_status_code      ,
     xform.aquifer_lithology_code
   FROM xform_well xform
   LEFT JOIN wells.wells_production_data production_data ON production_data.well_id=xform.well_id;
