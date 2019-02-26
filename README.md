@@ -18,7 +18,7 @@ The application is being developed as an open source solution.
 
 ### Running the GWELLS application locally
 
-Fork our repository into your own GitHub account, and/or clone it onto your local machine.
+Fork our repository into your own GitHub account, and clone it to your local machine.
 
 Run the GWELLS application with docker-compose:
 ```sh
