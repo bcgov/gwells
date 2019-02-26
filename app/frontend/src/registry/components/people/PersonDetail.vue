@@ -630,7 +630,7 @@ export default {
           window.scrollTo(0, 0)
         }).catch((error) => {
           this.fileUploadFail()
-          console.log(error)
+          console.error(error)
           window.scrollTo(0, 0)
         })
       }
