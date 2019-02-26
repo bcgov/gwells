@@ -448,11 +448,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
       />
 
       <!-- Back / Next / Submit controls -->
-      <b-row v-if="isStaffEdit" class="mt-5">
-        <b-col class="pr-4 text-right">
-          <b-btn variant="primary" @click="$emit('submit_edit')" :disabled="editSaveDisabled">Save</b-btn>
-        </b-col>
-      </b-row>
       <b-row v-else class="mt-5">
         <b-col v-if="!formIsFlat">
           <b-btn v-if="step > 1 && !formIsFlat" @click="step > 1 ? step-- : null" variant="primary">Back</b-btn>
