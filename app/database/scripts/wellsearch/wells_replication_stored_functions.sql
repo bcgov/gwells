@@ -133,9 +133,10 @@ DECLARE
     wells.well_tag_number                                                    ,
     wells.well_id                                                            ,
     gen_random_uuid()                                                        ,
-    CASE wells.acceptance_status_code AS well_publication_status_code
+    CASE wells.acceptance_status_code
       WHEN ''REJECTED'' THEN ''Unpublished''
-      ELSE ''Published'                                                      ,
+      ELSE ''Published'
+    END AS well_publication_status_code                                      ,
     concat_ws('' '', owner.giVEN_NAME,OWNER.SURNAME) AS owner_full_name      ,
     concat_ws('' '',OWNER.STREET_NUMBER,STREET_NAME) AS owner_mailing_address,
     owner.city AS owner_city                                                 ,
