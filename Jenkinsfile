@@ -29,7 +29,7 @@ void createDeploymentStatus (String suffix, String status, String STAGE_URL) {
     )
 
     new GitHubHelper().createDeploymentStatus(
-        this,
+        this,DEV_SUFFIX
         ghDeploymentId,
         "${status}",
         ['targetUrl':"https://${STAGE_URL}/gwells"]
@@ -95,11 +95,11 @@ def _openshift(String name, String project, Closure body) {
 // Functional test script
 // Can be limited by assinging toTest var
 def functionalTest (String STAGE_NAME, String STAGE_URL, String ENV_SUFFIX, String toTest='all') {
-    _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
+    _openshift(env.STAGE_NAME, toolsProject) {
         echo "Testing"
         podTemplate(
-            label: "bddstack-${ENV_SUFFIX}-${PR_NUM}",
-            name: "bddstack-${ENV_SUFFIX}-${PR_NUM}",
+            label: "bddstack-${ENV_SUFFIX}-${prNumber}",
+            name: "bddstack-${ENV_SUFFIX}-${prNumber}",
             serviceAccount: 'jenkins',
             cloud: 'openshift',
             containers: [
@@ -127,7 +127,7 @@ def functionalTest (String STAGE_NAME, String STAGE_URL, String ENV_SUFFIX, Stri
                 )
             ]
         ) {
-            node("bddstack-${ENV_SUFFIX}-${PR_NUM}") {
+            node("bddstack-${ENV_SUFFIX}-${prNumber}") {
                 //the checkout is mandatory, otherwise functional tests would fail
                 echo "checking out source"
                 checkout scm
@@ -154,7 +154,7 @@ def functionalTest (String STAGE_NAME, String STAGE_URL, String ENV_SUFFIX, Stri
 // Can be limited by assinging toTest var
 def unitTestDjango (String STAGE_NAME, String ENV_PROJECT, String ENV_SUFFIX) {
     _openshift(env.STAGE_NAME, ENV_PROJECT) {
-        def DB_target = ENV_SUFFIX == "staging" ? "${APP_NAME}-pgsql-${ENV_SUFFIX}" : "${APP_NAME}-pgsql-${ENV_SUFFIX}-${PR_NUM}"
+        def DB_target = ENV_SUFFIX == "staging" ? "${appName}-pgsql-${ENV_SUFFIX}" : "${appName}-pgsql-${ENV_SUFFIX}-${prNumber}"
         def DB_newVersion = openshift.selector("dc", "${DB_target}").object().status.latestVersion
         def DB_pod = openshift.selector('pod', [deployment: "${DB_target}-${DB_newVersion}"])
         echo "Temporarily granting elevated DB rights"
@@ -167,7 +167,7 @@ def unitTestDjango (String STAGE_NAME, String ENV_PROJECT, String ENV_SUFFIX) {
         )
         echo "Temporary DB grant results: "+ db_ocoutput_grant.actions[0].out
 
-        def target = ENV_SUFFIX == "staging" ? "${APP_NAME}-${ENV_SUFFIX}" : "${APP_NAME}-${ENV_SUFFIX}-${PR_NUM}"
+        def target = ENV_SUFFIX == "staging" ? "${appName}-${ENV_SUFFIX}" : "${appName}-${ENV_SUFFIX}-${prNumber}"
         def newVersion = openshift.selector("dc", "${target}").object().status.latestVersion
         def pods = openshift.selector('pod', [deployment: "${target}-${newVersion}"])
 
@@ -197,10 +197,10 @@ def unitTestDjango (String STAGE_NAME, String ENV_PROJECT, String ENV_SUFFIX) {
 
 // API test function
 def apiTest (String STAGE_NAME, String STAGE_URL, String ENV_SUFFIX) {
-    _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
+    _openshift(env.STAGE_NAME, toolsProject) {
         podTemplate(
-            label: "nodejs-${APP_NAME}-${ENV_SUFFIX}-${PR_NUM}",
-            name: "nodejs-${APP_NAME}-${ENV_SUFFIX}-${PR_NUM}",
+            label: "nodejs-${appName}-${ENV_SUFFIX}-${prNumber}",
+            name: "nodejs-${appName}-${ENV_SUFFIX}-${prNumber}",
             serviceAccount: 'jenkins',
             cloud: 'openshift',
             activeDeadlineSeconds: 1800,
@@ -249,7 +249,7 @@ def apiTest (String STAGE_NAME, String STAGE_URL, String ENV_SUFFIX) {
                 )
             ]
         ) {
-            node("nodejs-${APP_NAME}-${ENV_SUFFIX}-${PR_NUM}") {
+            node("nodejs-${appName}-${ENV_SUFFIX}-${prNumber}") {
                 checkout scm
                 dir('api-tests') {
                     sh 'npm install -g newman'
@@ -322,36 +322,36 @@ def apiTest (String STAGE_NAME, String STAGE_URL, String ENV_SUFFIX) {
 pipeline {
     environment {
         // Project-wide settings - app name, repo
-        APP_NAME = "gwells"
-        REPOSITORY = 'https://www.github.com/bcgov/gwells.git'
+        appName = "gwells"
+        repository = 'https://www.github.com/bcgov/gwells.git'
 
-        // PR_NUM is the pull request number e.g. 'pr-4'
-        PR_NUM = "${env.JOB_BASE_NAME}".toLowerCase()
+        // prNumber is the pull request number e.g. 'pr-4'
+        prNumber = "${env.JOB_BASE_NAME}".toLowerCase()
 
-        // TOOLS_PROJECT is where images are built
-        TOOLS_PROJECT = "moe-gwells-tools"
+        // toolsProject is where images are built
+        toolsProject = "moe-gwells-tools"
 
-        // DEV_PROJECT is the project where individual development environments are spun up
-        DEV_PROJECT = "moe-gwells-dev"
-        DEV_SUFFIX = "dev"
-        DEV_APPNAME = "${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}"
-        DEV_URL = "${DEV_APPNAME}.pathfinder.gov.bc.ca"
+        // devProject is the project where individual development environments are spun up
+        devProject = "moe-gwells-dev"
+        devSuffix = "dev"
+        devAppName = "${appName}-${devSuffix}-${prNumber}"
+        devUrl = "${devAppName}.pathfinder.gov.bc.ca"
 
-        // STAGING_PROJECT contains the test deployment. The test image is a candidate for promotion to prod.
-        STAGING_PROJECT = "moe-gwells-test"
-        STAGING_SUFFIX = "staging"
-        STAGING_HOST = "gwells-staging.pathfinder.gov.bc.ca"
+        // stagingProject contains the test deployment. The test image is a candidate for promotion to prod.
+        stagingProject = "moe-gwells-test"
+        stagingSuffix = "staging"
+        stagingHost = "gwells-staging.pathfinder.gov.bc.ca"
 
-        // DEMO_PROJECT is for a stable demo environment.  It can be for training or presentation.
-        DEMO_PROJECT = "moe-gwells-test"
-        DEMO_SUFFIX = "demo"
-        DEMO_HOST = "gwells-demo.pathfinder.gov.bc.ca"
+        // demoProject is for a stable demo environment.  It can be for training or presentation.
+        demoProject = "moe-gwells-test"
+        demoSuffix = "demo"
+        demoHost = "gwells-demo.pathfinder.gov.bc.ca"
 
-        // PROD_PROJECT is the prod deployment.
+        // prodProject is the prod deployment.
         // TODO: New production images can be deployed by tagging an existing "test" image as "prod".
-        PROD_PROJECT = "moe-gwells-prod"
-        PROD_SUFFIX = "production"
-        PROD_HOST = "gwells-prod.pathfinder.gov.bc.ca"
+        prodProject = "moe-gwells-prod"
+        prodSuffix = "production"
+        prodHost = "gwells-prod.pathfinder.gov.bc.ca"
     }
     agent any
     stages {
@@ -369,14 +369,14 @@ pipeline {
                     }
                     echo "Previous builds cancelled"
 
-                    _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
+                    _openshift(env.STAGE_NAME, toolsProject) {
                         //  - variable substitution
                         def buildtemplate = openshift.process("-f",
                             "openshift/backend.bc.json",
-                            "ENV_NAME=${DEV_SUFFIX}",
-                            "NAME_SUFFIX=-${DEV_SUFFIX}-${PR_NUM}",
-                            "APP_IMAGE_TAG=${PR_NUM}",
-                            "SOURCE_REPOSITORY_URL=${REPOSITORY}",
+                            "ENV_NAME=${devSuffix}",
+                            "NAME_SUFFIX=-${devSuffix}-${prNumber}",
+                            "APP_IMAGE_TAG=${prNumber}",
+                            "SOURCE_REPOSITORY_URL=${repository}",
                             "SOURCE_REPOSITORY_REF=pull/${CHANGE_ID}/head"
                         )
 
@@ -384,7 +384,7 @@ pipeline {
                         //  - add docker image reference as tag in gwells-application
                         //  - create build config
                         echo "Preparing backend imagestream and buildconfig"
-                        echo " \$ oc process -f openshift/backend.bc.json -p ENV_NAME=${DEV_SUFFIX} -p NAME_SUFFIX=-${DEV_SUFFIX}-${PR_NUM} -p APP_IMAGE_TAG=${PR_NUM} -p SOURCE_REPOSITORY_URL=${REPOSITORY} -p SOURCE_REPOSITORY_REF=pull/${CHANGE_ID}/head | oc apply -n moe-gwells-tools -f -"
+                        echo " \$ oc process -f openshift/backend.bc.json -p ENV_NAME=${devSuffix} -p NAME_SUFFIX=-${devSuffix}-${prNumber} -p APP_IMAGE_TAG=${prNumber} -p SOURCE_REPOSITORY_URL=${REPOSITORY} -p SOURCE_REPOSITORY_REF=pull/${CHANGE_ID}/head | oc apply -n moe-gwells-tools -f -"
                         openshift.apply(buildtemplate)
                     }
                 }
@@ -397,16 +397,16 @@ pipeline {
         stage('ALL - Build') {
             steps {
                 script {
-                    _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
+                    _openshift(env.STAGE_NAME, toolsProject) {
                         echo "Running unit tests and building images..."
                         echo "This may take several minutes. Logs are not forwarded to Jenkins by default (at this time)."
-                        echo "Additional logs can be found by monitoring builds in ${TOOLS_PROJECT}"
+                        echo "Additional logs can be found by monitoring builds in ${toolsProject}"
 
                         // Select appropriate buildconfig
-                        def appBuild = openshift.selector("bc", "${DEV_APPNAME}")
+                        def appBuild = openshift.selector("bc", "${devAppName}")
                         // temporarily set ENABLE_DATA_ENTRY=True during testing because False currently leads to a failing unit test
                         echo "Building"
-                        echo " \$ oc start-build -n moe-gwells-tools ${DEV_APPNAME} --wait --env=ENABLE_DATA_ENTRY=true --follow=true"
+                        echo " \$ oc start-build -n moe-gwells-tools ${devAppName} --wait --env=ENABLE_DATA_ENTRY=true --follow=true"
                         appBuild.startBuild("--wait", "--env=ENABLE_DATA_ENTRY=True").logs("-f")
                     }
                 }
@@ -422,28 +422,28 @@ pipeline {
             }
             steps {
                 script {
-                    _openshift(env.STAGE_NAME, DEV_PROJECT) {
+                    _openshift(env.STAGE_NAME, devProject) {
                         // Process postgres deployment config (sub in vars, create list items)
-                        echo " \$ oc process -f openshift/postgresql.dc.json -p DATABASE_SERVICE_NAME=gwells-pgsql-${DEV_SUFFIX}-${PR_NUM} -p IMAGE_STREAM_NAMESPACE=bcgov -p IMAGE_STREAM_NAME=postgresql-9.6-oracle-fdw -p IMAGE_STREAM_VERSION=v1-stable -p NAME_SUFFIX=-${DEV_SUFFIX}-${PR_NUM} -p POSTGRESQL_DATABASE=gwells -p VOLUME_CAPACITY=1Gi | oc apply -n moe-gwells-dev -f -"
+                        echo " \$ oc process -f openshift/postgresql.dc.json -p DATABASE_SERVICE_NAME=gwells-pgsql-${devSuffix}-${prNumber} -p IMAGE_STREAM_NAMESPACE=bcgov -p IMAGE_STREAM_NAME=postgresql-9.6-oracle-fdw -p IMAGE_STREAM_VERSION=v1-stable -p NAME_SUFFIX=-${devSuffix}-${prNumber} -p POSTGRESQL_DATABASE=gwells -p VOLUME_CAPACITY=1Gi | oc apply -n moe-gwells-dev -f -"
                         def deployDBTemplate = openshift.process("-f",
                             "openshift/postgresql.dc.json",
-                            "DATABASE_SERVICE_NAME=gwells-pgsql-${DEV_SUFFIX}-${PR_NUM}",
+                            "DATABASE_SERVICE_NAME=gwells-pgsql-${devSuffix}-${prNumber}",
                             "IMAGE_STREAM_NAMESPACE=bcgov",
                             "IMAGE_STREAM_NAME=postgresql-9.6-oracle-fdw",
                             "IMAGE_STREAM_VERSION=v1-stable",
-                            "NAME_SUFFIX=-${DEV_SUFFIX}-${PR_NUM}",
+                            "NAME_SUFFIX=-${devSuffix}-${prNumber}",
                             "POSTGRESQL_DATABASE=gwells",
                             "VOLUME_CAPACITY=1Gi"
                         )
 
                         // Process postgres deployment config (sub in vars, create list items)
-                        echo " \$ oc process -f openshift/backend.dc.json -p ENV_NAME=${DEV_SUFFIX} -p NAME_SUFFIX=-${DEV_SUFFIX}-${PR_NUM} | oc apply -n moe-gwells-dev -f -"
-                        echo "Processing deployment config for pull request ${PR_NUM}"
+                        echo " \$ oc process -f openshift/backend.dc.json -p ENV_NAME=${devSuffix} -p NAME_SUFFIX=-${devSuffix}-${prNumber} | oc apply -n moe-gwells-dev -f -"
+                        echo "Processing deployment config for pull request ${prNumber}"
                         def deployTemplate = openshift.process("-f",
                             "openshift/backend.dc.json",
-                            "ENV_NAME=${DEV_SUFFIX}",
-                            "HOST=${DEV_URL}",
-                            "NAME_SUFFIX=-${DEV_SUFFIX}-${PR_NUM}"
+                            "ENV_NAME=${devSuffix}",
+                            "HOST=${devUrl}",
+                            "NAME_SUFFIX=-${devSuffix}-${prNumber}"
                         )
 
                         // some objects need to be copied from a base secret or configmap
@@ -468,27 +468,27 @@ pipeline {
                             }
                         }
 
-                        echo "Applying deployment config for pull request ${PR_NUM} on ${DEV_PROJECT}"
+                        echo "Applying deployment config for pull request ${prNumber} on ${devProject}"
 
                         // apply the templates, which will create new objects or modify existing ones as necessary.
                         // the copies of base objects (secrets, configmaps) are also applied.
-                        openshift.apply(deployTemplate).label(['app':"${DEV_APPNAME}", 'app-name':"${APP_NAME}", 'env-name':"${DEV_SUFFIX}"], "--overwrite")
-                        openshift.apply(deployDBTemplate).label(['app':"${DEV_APPNAME}", 'app-name':"${APP_NAME}", 'env-name':"${DEV_SUFFIX}"], "--overwrite")
-                        openshift.apply(newObjectCopies).label(['app':"${DEV_APPNAME}", 'app-name':"${APP_NAME}", 'env-name':"${DEV_SUFFIX}"], "--overwrite")
-                        echo "Successfully applied deployment configs for ${PR_NUM}"
+                        openshift.apply(deployTemplate).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
+                        openshift.apply(deployDBTemplate).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
+                        openshift.apply(newObjectCopies).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
+                        echo "Successfully applied deployment configs for ${prNumber}"
 
                         // promote the newly built image to DEV
                         echo "Tagging new image to DEV imagestream."
-                        openshift.tag("${TOOLS_PROJECT}/gwells-application:${PR_NUM}", "${DEV_PROJECT}/${DEV_APPNAME}:dev")  // todo: clean up labels/tags
-                        openshift.tag("${TOOLS_PROJECT}/gwells-postgresql:dev", "${DEV_PROJECT}/gwells-postgresql-${DEV_SUFFIX}-${PR_NUM}:dev")  // todo: clean up labels/tags
+                        openshift.tag("${toolsProject}/gwells-application:${prNumber}", "${devProject}/${devAppName}:dev")  // todo: clean up labels/tags
+                        openshift.tag("${toolsProject}/gwells-postgresql:dev", "${devProject}/gwells-postgresql-${devSuffix}-${prNumber}:dev")  // todo: clean up labels/tags
 
                         // post a notification to Github that this pull request is being deployed
-                        createDeploymentStatus(DEV_SUFFIX, 'PENDING', DEV_URL)
+                        createDeploymentStatus(devSuffix, 'PENDING', devUrl)
 
                         // monitor the deployment status and wait until deployment is successful
                         echo "Waiting for deployment to dev..."
-                        def newVersion = openshift.selector("dc", "${DEV_APPNAME}").object().status.latestVersion
-                        def pods = openshift.selector('pod', [deployment: "${DEV_APPNAME}-${newVersion}"])
+                        def newVersion = openshift.selector("dc", "${devAppName}").object().status.latestVersion
+                        def pods = openshift.selector('pod', [deployment: "${devAppName}-${newVersion}"])
 
                         // wait until each container in this deployment's pod reports as ready
                         timeout(15) {
@@ -500,7 +500,7 @@ pipeline {
                         }
 
                         // Report a pass to GitHub
-                        createDeploymentStatus(DEV_SUFFIX, 'SUCCESS', DEV_URL)
+                        createDeploymentStatus(devSuffix, 'SUCCESS', devUrl)
                     }
                 }
             }
@@ -515,8 +515,8 @@ pipeline {
             }
             steps {
                 script {
-                    _openshift(env.STAGE_NAME, DEV_PROJECT) {
-                        def result = unitTestDjango (env.STAGE_NAME, DEV_PROJECT, DEV_SUFFIX)
+                    _openshift(env.STAGE_NAME, devProject) {
+                        def result = unitTestDjango (env.STAGE_NAME, devProject, devSuffix)
                     }
                 }
             }
@@ -529,9 +529,9 @@ pipeline {
             }
             steps {
                 script {
-                    _openshift(env.STAGE_NAME, DEV_PROJECT) {
-                        def newVersion = openshift.selector("dc", "${DEV_APPNAME}").object().status.latestVersion
-                        def pods = openshift.selector('pod', [deployment: "${DEV_APPNAME}-${newVersion}"])
+                    _openshift(env.STAGE_NAME, devProject) {
+                        def newVersion = openshift.selector("dc", "${devAppName}").object().status.latestVersion
+                        def pods = openshift.selector('pod', [deployment: "${devAppName}-${newVersion}"])
 
                         echo "Loading fixtures"
                         def ocoutput = openshift.exec(
@@ -572,8 +572,8 @@ pipeline {
             }
             steps {
                 script {
-                    _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
-                        def result = functionalTest ('DEV - Smoke Tests', DEV_URL, DEV_SUFFIX, 'SearchSpecs')
+                    _openshift(env.STAGE_NAME, toolsProject) {
+                        def result = functionalTest ('DEV - Smoke Tests', devUrl, devSuffix, 'SearchSpecs')
                     }
                 }
             }
@@ -586,8 +586,8 @@ pipeline {
             }
             steps {
                 script {
-                    _openshift(env.STAGE_NAME, DEV_PROJECT) {
-                        def result = apiTest ('DEV - API Tests', DEV_URL, DEV_SUFFIX)
+                    _openshift(env.STAGE_NAME, devProject) {
+                        def result = apiTest ('DEV - API Tests', devUrl, devSuffix)
                     }
                 }
             }
@@ -604,7 +604,7 @@ pipeline {
             }
             steps {
                 script {
-                    _openshift(env.STAGE_NAME, STAGING_PROJECT) {
+                    _openshift(env.STAGE_NAME, stagingProject) {
                         echo "Preparing..."
 
                         // Process db and app template into list objects
@@ -612,8 +612,8 @@ pipeline {
                         echo "Updating staging deployment..."
                         def deployDBTemplate = openshift.process("-f",
                             "openshift/postgresql.dc.json",
-                            "NAME_SUFFIX=-${STAGING_SUFFIX}",
-                            "DATABASE_SERVICE_NAME=gwells-pgsql-${STAGING_SUFFIX}",
+                            "NAME_SUFFIX=-${stagingSuffix}",
+                            "DATABASE_SERVICE_NAME=gwells-pgsql-${stagingSuffix}",
                             "IMAGE_STREAM_NAMESPACE=bcgov",
                             "IMAGE_STREAM_NAME=postgresql-9.6-oracle-fdw",
                             "IMAGE_STREAM_VERSION=v1-stable",
@@ -623,9 +623,9 @@ pipeline {
 
                         def deployTemplate = openshift.process("-f",
                             "openshift/backend.dc.json",
-                            "NAME_SUFFIX=-${STAGING_SUFFIX}",
-                            "ENV_NAME=${STAGING_SUFFIX}",
-                            "HOST=${STAGING_HOST}",
+                            "NAME_SUFFIX=-${stagingSuffix}",
+                            "ENV_NAME=${stagingSuffix}",
+                            "HOST=${stagingHost}",
                         )
 
                         // some objects need to be copied from a base secret or configmap
@@ -653,29 +653,29 @@ pipeline {
 
                         // apply the templates, which will create new objects or modify existing ones as necessary.
                         // the copies of base objects (secrets, configmaps) are also applied.
-                        echo "Applying deployment config for pull request ${PR_NUM} on ${STAGING_PROJECT}"
+                        echo "Applying deployment config for pull request ${prNumber} on ${stagingProject}"
 
                         openshift.apply(deployTemplate).label(
                             [
-                                'app':"gwells-${STAGING_SUFFIX}",
-                                'app-name':"${APP_NAME}",
-                                'env-name':"${STAGING_SUFFIX}"
+                                'app':"gwells-${stagingSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${stagingSuffix}"
                             ],
                             "--overwrite"
                         )
                         openshift.apply(deployDBTemplate).label(
                             [
-                                'app':"gwells-${STAGING_SUFFIX}",
-                                'app-name':"${APP_NAME}",
-                                'env-name':"${STAGING_SUFFIX}"
+                                'app':"gwells-${stagingSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${stagingSuffix}"
                             ],
                             "--overwrite"
                         )
                         openshift.apply(newObjectCopies).label(
                             [
-                                'app':"gwells-${STAGING_SUFFIX}",
-                                'app-name':"${APP_NAME}",
-                                'env-name':"${STAGING_SUFFIX}"
+                                'app':"gwells-${stagingSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${stagingSuffix}"
                             ],
                             "--overwrite"
                         )
@@ -686,43 +686,43 @@ pipeline {
 
                         // Application/database images are tagged in the tools imagestream as the new test/prod image
                         openshift.tag(
-                            "${TOOLS_PROJECT}/gwells-application:${PR_NUM}",
-                            "${TOOLS_PROJECT}/gwells-application:${STAGING_SUFFIX}"
+                            "${toolsProject}/gwells-application:${prNumber}",
+                            "${toolsProject}/gwells-application:${stagingSuffix}"
                         )  // todo: clean up labels/tags
-                        // openshift.tag("${TOOLS_PROJECT}/gwells-postgresql:staging", "${TOOLS_PROJECT}/gwells-postgresql:${STAGING_SUFFIX}")
+                        // openshift.tag("${toolsProject}/gwells-postgresql:staging", "${toolsProject}/gwells-postgresql:${stagingSuffix}")
 
                         // Images are then tagged into the target environment namespace (test or prod)
                         openshift.tag(
-                            "${TOOLS_PROJECT}/gwells-application:${STAGING_SUFFIX}",
-                            "${STAGING_PROJECT}/gwells-${STAGING_SUFFIX}:${STAGING_SUFFIX}"
+                            "${toolsProject}/gwells-application:${stagingSuffix}",
+                            "${stagingProject}/gwells-${stagingSuffix}:${stagingSuffix}"
                         )  // todo: clean up labels/tags
                         openshift.tag(
-                            "${TOOLS_PROJECT}/gwells-postgresql:${STAGING_SUFFIX}",
-                            "${STAGING_PROJECT}/gwells-postgresql-${STAGING_SUFFIX}:${STAGING_SUFFIX}"
+                            "${toolsProject}/gwells-postgresql:${stagingSuffix}",
+                            "${stagingProject}/gwells-postgresql-${stagingSuffix}:${stagingSuffix}"
                         )  // todo: clean up labels/tags
 
-                        createDeploymentStatus(STAGING_SUFFIX, 'PENDING', STAGING_URL)
+                        createDeploymentStatus(stagingSuffix, 'PENDING', STAGING_URL)
 
                         // Create cronjob for well export
                         def cronTemplate = openshift.process("-f",
                             "openshift/export-wells.cj.json",
-                            "ENV_NAME=${STAGING_SUFFIX}",
-                            "PROJECT=${STAGING_PROJECT}",
-                            "TAG=${STAGING_SUFFIX}"
+                            "ENV_NAME=${stagingSuffix}",
+                            "PROJECT=${stagingProject}",
+                            "TAG=${stagingSuffix}"
                         )
                         openshift.apply(cronTemplate).label(
                             [
-                                'app':"gwells-${STAGING_SUFFIX}",
-                                'app-name':"${APP_NAME}",
-                                'env-name':"${STAGING_SUFFIX}"
+                                'app':"gwells-${stagingSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${stagingSuffix}"
                             ],
                             "--overwrite"
                         )
 
                         // monitor the deployment status and wait until deployment is successful
                         echo "Waiting for deployment to STAGING..."
-                        def newVersion = openshift.selector("dc", "gwells-${STAGING_SUFFIX}").object().status.latestVersion
-                        def pods = openshift.selector('pod', [deployment: "gwells-${STAGING_SUFFIX}-${newVersion}"])
+                        def newVersion = openshift.selector("dc", "gwells-${stagingSuffix}").object().status.latestVersion
+                        def pods = openshift.selector('pod', [deployment: "gwells-${stagingSuffix}-${newVersion}"])
 
                         // wait until at least one pod reports as ready
                         timeout(15) {
@@ -733,7 +733,7 @@ pipeline {
                             }
                         }
 
-                        createDeploymentStatus(STAGING_SUFFIX, 'SUCCESS', targetTestURL)
+                        createDeploymentStatus(stagingSuffix, 'SUCCESS', targetTestURL)
                     }
                 }
             }
@@ -748,8 +748,8 @@ pipeline {
             }
             steps {
                 script {
-                    _openshift(env.STAGE_NAME, STAGING_PROJECT) {
-                        def result = unitTestDjango (env.STAGE_NAME, STAGING_PROJECT, STAGING_SUFFIX)
+                    _openshift(env.STAGE_NAME, stagingProject) {
+                        def result = unitTestDjango (env.STAGE_NAME, stagingProject, stagingSuffix)
                     }
                 }
             }
@@ -762,8 +762,8 @@ pipeline {
             }
             steps {
                 script {
-                    _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
-                        def result = apiTest ('STAGING - API Tests', STAGING_URL, STAGING_SUFFIX)
+                    _openshift(env.STAGE_NAME, toolsProject) {
+                        def result = apiTest ('STAGING - API Tests', STAGING_URL, stagingSuffix)
                     }
                 }
             }
@@ -777,8 +777,8 @@ pipeline {
             }
             steps {
                 script {
-                    _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
-                        def result = functionalTest ('STAGING - Smoke Tests', STAGING_URL, STAGING_SUFFIX, 'SearchSpecs')
+                    _openshift(env.STAGE_NAME, toolsProject) {
+                        def result = functionalTest ('STAGING - Smoke Tests', STAGING_URL, stagingSuffix, 'SearchSpecs')
                     }
                 }
             }
@@ -792,15 +792,15 @@ pipeline {
             }
             steps {
                 script {
-                    _openshift(env.STAGE_NAME, DEMO_PROJECT) {
+                    _openshift(env.STAGE_NAME, demoProject) {
                         echo "Preparing..."
 
                         // Process db and app template into list objects
                         echo "Updating staging deployment..."
                         def deployDBTemplate = openshift.process("-f",
                             "openshift/postgresql.dc.json",
-                            "NAME_SUFFIX=-${DEMO_SUFFIX}",
-                            "DATABASE_SERVICE_NAME=gwells-pgsql-${DEMO_SUFFIX}",
+                            "NAME_SUFFIX=-${demoSuffix}",
+                            "DATABASE_SERVICE_NAME=gwells-pgsql-${demoSuffix}",
                             "IMAGE_STREAM_NAMESPACE=bcgov",
                             "IMAGE_STREAM_NAME=postgresql-9.6-oracle-fdw",
                             "IMAGE_STREAM_VERSION=v1-stable",
@@ -810,9 +810,9 @@ pipeline {
 
                         def deployTemplate = openshift.process("-f",
                             "openshift/backend.dc.json",
-                            "NAME_SUFFIX=-${DEMO_SUFFIX}",
-                            "ENV_NAME=${DEMO_SUFFIX}",
-                            "HOST=${DEMO_HOST}",
+                            "NAME_SUFFIX=-${demoSuffix}",
+                            "ENV_NAME=${demoSuffix}",
+                            "HOST=${demoHost}",
                         )
 
                         // some objects need to be copied from a base secret or configmap
@@ -840,29 +840,29 @@ pipeline {
 
                         // apply the templates, which will create new objects or modify existing ones as necessary.
                         // the copies of base objects (secrets, configmaps) are also applied.
-                        echo "Applying deployment config for pull request ${PR_NUM} on ${DEMO_PROJECT}"
+                        echo "Applying deployment config for pull request ${prNumber} on ${demoProject}"
 
                         openshift.apply(deployTemplate).label(
                             [
-                                'app':"gwells-${DEMO_SUFFIX}",
-                                'app-name':"${APP_NAME}",
-                                'env-name':"${DEMO_SUFFIX}"
+                                'app':"gwells-${demoSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${demoSuffix}"
                             ],
                             "--overwrite"
                         )
                         openshift.apply(deployDBTemplate).label(
                             [
-                                'app':"gwells-${DEMO_SUFFIX}",
-                                'app-name':"${APP_NAME}",
-                                'env-name':"${DEMO_SUFFIX}"
+                                'app':"gwells-${demoSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${demoSuffix}"
                             ],
                             "--overwrite"
                         )
                         openshift.apply(newObjectCopies).label(
                             [
-                                'app':"gwells-${DEMO_SUFFIX}",
-                                'app-name':"${APP_NAME}",
-                                'env-name':"${DEMO_SUFFIX}"
+                                'app':"gwells-${demoSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${demoSuffix}"
                             ],
                             "--overwrite"
                         )
@@ -873,43 +873,43 @@ pipeline {
 
                         // Application/database images are tagged in the tools imagestream as the new test/prod image
                         openshift.tag(
-                            "${TOOLS_PROJECT}/gwells-application:${PR_NUM}",
-                            "${TOOLS_PROJECT}/gwells-application:${DEMO_SUFFIX}"
+                            "${toolsProject}/gwells-application:${prNumber}",
+                            "${toolsProject}/gwells-application:${demoSuffix}"
                         )  // todo: clean up labels/tags
-                        // openshift.tag("${TOOLS_PROJECT}/gwells-postgresql:staging", "${TOOLS_PROJECT}/gwells-postgresql:${DEMO_SUFFIX}")
+                        // openshift.tag("${toolsProject}/gwells-postgresql:staging", "${toolsProject}/gwells-postgresql:${demoSuffix}")
 
                         // Images are then tagged into the target environment namespace (test or prod)
                         openshift.tag(
-                            "${TOOLS_PROJECT}/gwells-application:${DEMO_SUFFIX}",
-                            "${DEMO_PROJECT}/gwells-${DEMO_SUFFIX}:${DEMO_SUFFIX}"
+                            "${toolsProject}/gwells-application:${demoSuffix}",
+                            "${demoProject}/gwells-${demoSuffix}:${demoSuffix}"
                         )  // todo: clean up labels/tags
                         openshift.tag(
-                            "${TOOLS_PROJECT}/gwells-postgresql:staging",
-                            "${DEMO_PROJECT}/gwells-postgresql-${DEMO_SUFFIX}:${DEMO_SUFFIX}"
+                            "${toolsProject}/gwells-postgresql:staging",
+                            "${demoProject}/gwells-postgresql-${demoSuffix}:${demoSuffix}"
                         )  // todo: clean up labels/tags
 
-                        createDeploymentStatus(DEMO_SUFFIX, 'PENDING', DEMO_URL)
+                        createDeploymentStatus(demoSuffix, 'PENDING', DEMO_URL)
 
                         // Create cronjob for well export
                         def cronTemplate = openshift.process("-f",
                             "openshift/export-wells.cj.json",
-                            "ENV_NAME=${DEMO_SUFFIX}",
-                            "PROJECT=${DEMO_PROJECT}",
-                            "TAG=${DEMO_SUFFIX}"
+                            "ENV_NAME=${demoSuffix}",
+                            "PROJECT=${demoProject}",
+                            "TAG=${demoSuffix}"
                         )
                         openshift.apply(cronTemplate).label(
                             [
-                                'app':"gwells-${DEMO_SUFFIX}",
-                                'app-name':"${APP_NAME}",
-                                'env-name':"${DEMO_SUFFIX}"
+                                'app':"gwells-${demoSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${demoSuffix}"
                             ],
                             "--overwrite"
                         )
 
                         // monitor the deployment status and wait until deployment is successful
                         echo "Waiting for deployment to DEMO..."
-                        def newVersion = openshift.selector("dc", "gwells-${DEMO_SUFFIX}").object().status.latestVersion
-                        def pods = openshift.selector('pod', [deployment: "gwells-${DEMO_SUFFIX}-${newVersion}"])
+                        def newVersion = openshift.selector("dc", "gwells-${demoSuffix}").object().status.latestVersion
+                        def pods = openshift.selector('pod', [deployment: "gwells-${demoSuffix}-${newVersion}"])
 
                         // wait until at least one pod reports as ready
                         timeout(15) {
@@ -920,7 +920,7 @@ pipeline {
                             }
                         }
 
-                        createDeploymentStatus(DEMO_SUFFIX, 'SUCCESS', DEMO_URL)
+                        createDeploymentStatus(demoSuffix, 'SUCCESS', DEMO_URL)
                     }
                 }
             }
@@ -933,8 +933,8 @@ pipeline {
             }
             steps {
                 script {
-                    _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
-                        def result = apiTest ('DEMO - API Tests', DEMO_URL, DEMO_SUFFIX)
+                    _openshift(env.STAGE_NAME, toolsProject) {
+                        def result = apiTest ('DEMO - API Tests', DEMO_URL, demoSuffix)
                     }
                 }
             }
@@ -948,8 +948,8 @@ pipeline {
             }
             steps {
                 script {
-                    _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
-                        def result = functionalTest ('DEMO - Smoke Tests', DEMO_URL, DEMO_SUFFIX, 'SearchSpecs')
+                    _openshift(env.STAGE_NAME, toolsProject) {
+                        def result = functionalTest ('DEMO - Smoke Tests', DEMO_URL, demoSuffix, 'SearchSpecs')
                     }
                 }
             }
@@ -962,14 +962,14 @@ pipeline {
             }
             steps {
                 script {
-                    _openshift(env.STAGE_NAME, PROD_PROJECT) {
+                    _openshift(env.STAGE_NAME, prodProject) {
                         input "Deploy to production?"
                         echo "Updating production deployment..."
 
                         def deployDBTemplate = openshift.process("-f",
                             "openshift/postgresql.dc.json",
-                            "NAME_SUFFIX=-${PROD_SUFFIX}",
-                            "DATABASE_SERVICE_NAME=gwells-pgsql-${PROD_SUFFIX}",
+                            "NAME_SUFFIX=-${prodSuffix}",
+                            "DATABASE_SERVICE_NAME=gwells-pgsql-${prodSuffix}",
                             "IMAGE_STREAM_NAMESPACE=bcgov",
                             "IMAGE_STREAM_NAME=postgresql-9.6-oracle-fdw",
                             "IMAGE_STREAM_VERSION=v1-stable",
@@ -979,9 +979,9 @@ pipeline {
 
                         def deployTemplate = openshift.process("-f",
                             "openshift/backend.dc.json",
-                            "NAME_SUFFIX=-${PROD_SUFFIX}",
-                            "ENV_NAME=${PROD_SUFFIX}",
-                            "HOST=${PROD_HOST}",
+                            "NAME_SUFFIX=-${prodSuffix}",
+                            "ENV_NAME=${prodSuffix}",
+                            "HOST=${prodHost}",
                         )
 
                         // some objects need to be copied from a base secret or configmap
@@ -1008,29 +1008,29 @@ pipeline {
 
                         // apply the templates, which will create new objects or modify existing ones as necessary.
                         // the copies of base objects (secrets, configmaps) are also applied.
-                        echo "Applying deployment config for pull request ${PR_NUM} on ${PROD_PROJECT}"
+                        echo "Applying deployment config for pull request ${prNumber} on ${prodProject}"
 
                         openshift.apply(deployDBTemplate).label(
                             [
-                                'app':"gwells-${PROD_SUFFIX}",
-                                'app-name':"${APP_NAME}",
-                                'env-name':"${PROD_SUFFIX}"
+                                'app':"gwells-${prodSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${prodSuffix}"
                             ],
                             "--overwrite"
                         )
                         openshift.apply(deployTemplate).label(
                             [
-                                'app':"gwells-${PROD_SUFFIX}",
-                                'app-name':"${APP_NAME}",
-                                'env-name':"${PROD_SUFFIX}"
+                                'app':"gwells-${prodSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${prodSuffix}"
                             ],
                             "--overwrite"
                         )
                         openshift.apply(newObjectCopies).label(
                             [
-                                'app':"gwells-${PROD_SUFFIX}",
-                                'app-name':"${APP_NAME}",
-                                'env-name':"${PROD_SUFFIX}"
+                                'app':"gwells-${prodSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${prodSuffix}"
                             ],
                             "--overwrite"
                         )
@@ -1041,45 +1041,45 @@ pipeline {
 
                         // Application/database images are tagged in the tools imagestream as the new prod image
                         openshift.tag(
-                            "${TOOLS_PROJECT}/gwells-application:${PR_NUM}",
-                            "${TOOLS_PROJECT}/gwells-application:${PROD_SUFFIX}"
+                            "${toolsProject}/gwells-application:${prNumber}",
+                            "${toolsProject}/gwells-application:${prodSuffix}"
                         )  // todo: clean up labels/tags
 
                         // TODO: determine best way to manage database images (at the moment they never change, but we don't want an unforeseen change to impact prod)
-                        // openshift.tag("${TOOLS_PROJECT}/gwells-postgresql:prod", "${TOOLS_PROJECT}/gwells-postgresql:${PROD_SUFFIX}")
+                        // openshift.tag("${toolsProject}/gwells-postgresql:prod", "${toolsProject}/gwells-postgresql:${prodSuffix}")
 
                         // Images are then tagged into the target environment namespace (prod)
                         openshift.tag(
-                            "${TOOLS_PROJECT}/gwells-application:${PROD_SUFFIX}",
-                            "${PROD_PROJECT}/gwells-${PROD_SUFFIX}:${PROD_SUFFIX}"
+                            "${toolsProject}/gwells-application:${prodSuffix}",
+                            "${prodProject}/gwells-${prodSuffix}:${prodSuffix}"
                         )  // todo: clean up labels/tags
                         openshift.tag(
-                            "${TOOLS_PROJECT}/gwells-postgresql:prod",
-                            "${PROD_PROJECT}/gwells-postgresql-${PROD_SUFFIX}:${PROD_SUFFIX}"
+                            "${toolsProject}/gwells-postgresql:prod",
+                            "${prodProject}/gwells-postgresql-${prodSuffix}:${prodSuffix}"
                         )  // todo: clean up labels/tags
 
-                        createDeploymentStatus(PROD_SUFFIX, 'PENDING', PROD_URL)
+                        createDeploymentStatus(prodSuffix, 'PENDING', PROD_URL)
 
                         // Create cronjob for well export
                         def cronTemplate = openshift.process("-f",
                             "openshift/export-wells.cj.json",
-                            "ENV_NAME=${PROD_SUFFIX}",
-                            "PROJECT=${PROD_PROJECT}",
-                            "TAG=${PROD_SUFFIX}"
+                            "ENV_NAME=${prodSuffix}",
+                            "PROJECT=${prodProject}",
+                            "TAG=${prodSuffix}"
                         )
                         openshift.apply(cronTemplate).label(
                             [
-                                'app':"gwells-${PROD_SUFFIX}",
-                                'app-name':"${APP_NAME}",
-                                'env-name':"${PROD_SUFFIX}"
+                                'app':"gwells-${prodSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${prodSuffix}"
                             ],
                             "--overwrite"
                         )
 
                         // monitor the deployment status and wait until deployment is successful
                         echo "Waiting for deployment to production..."
-                        def newVersion = openshift.selector("dc", "gwells-${PROD_SUFFIX}").object().status.latestVersion
-                        def pods = openshift.selector('pod', [deployment: "gwells-${PROD_SUFFIX}-${newVersion}"])
+                        def newVersion = openshift.selector("dc", "gwells-${prodSuffix}").object().status.latestVersion
+                        def pods = openshift.selector('pod', [deployment: "gwells-${prodSuffix}-${newVersion}"])
 
                         // wait until pods reports as ready
                         timeout(15) {
@@ -1090,7 +1090,7 @@ pipeline {
                             }
                         }
 
-                        createDeploymentStatus(PROD_SUFFIX, 'SUCCESS', PROD_URL)
+                        createDeploymentStatus(prodSuffix, 'SUCCESS', PROD_URL)
                     }
                 }
             }
@@ -1104,8 +1104,8 @@ pipeline {
             }
             steps {
                 script {
-                    _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
-                        def result = functionalTest ('PROD - Smoke Tests', PROD_URL, PROD_SUFFIX, 'SearchSpecs')
+                    _openshift(env.STAGE_NAME, toolsProject) {
+                        def result = functionalTest ('PROD - Smoke Tests', PROD_URL, prodSuffix, 'SearchSpecs')
                     }
                 }
             }
