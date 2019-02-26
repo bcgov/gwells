@@ -1627,7 +1627,6 @@
 									"listen": "test",
 									"script": {
 										"id": "bd75139a-e3d4-4e57-9eca-568872d2b9dc",
-										"type": "text/javascript",
 										"exec": [
 											"( function() {",
 											"    pm.test(\"Successful POST request\", function () {",
@@ -1638,7 +1637,8 @@
 											"    pm.environment.set(\"created_driller_guid\", jsonData.person_guid);",
 											"})();",
 											""
-										]
+										],
+										"type": "text/javascript"
 									}
 								}
 							],
@@ -1669,15 +1669,14 @@
 									]
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/drillers/?format=json",
+									"raw": "{{base_url}}/api/v1/drillers?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
 										"v1",
-										"drillers",
-										""
+										"drillers"
 									],
 									"query": [
 										{
@@ -1774,15 +1773,14 @@
 									]
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/organizations/?format=json",
+									"raw": "{{base_url}}/api/v1/organizations?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
 										"v1",
-										"organizations",
-										""
+										"organizations"
 									],
 									"query": [
 										{
