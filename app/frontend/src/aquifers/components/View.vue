@@ -218,7 +218,7 @@ export default {
         .then((response) => {
           this.record = response.data
         }).catch((error) => {
-          console.log(error)
+          console.error(error)
         })
     },
     fetchFiles (id = this.id) {
