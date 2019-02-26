@@ -40,6 +40,9 @@
                 id="drillORCSInput"
                 type="text"
                 v-model="personalInfoForm.well_driller_orcs_no"/>
+              <b-form-text id="drillerORCSExample">
+                ORCS format: 38000-25/DRILL XXXX X
+              </b-form-text>
             </b-form-group>
           </b-col>
           <b-col cols="12" md="5" offset-md="1">
@@ -51,6 +54,9 @@
                 id="pumpORCSInput"
                 type="text"
                 v-model="personalInfoForm.pump_installer_orcs_no"/>
+              <b-form-text id="pumpORCSExample">
+                ORCS format: 38000-25/PUMP XXXX X
+              </b-form-text>
             </b-form-group>
           </b-col>
         </b-row>
