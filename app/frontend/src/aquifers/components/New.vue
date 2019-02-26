@@ -75,7 +75,7 @@ export default {
           this.$router.push({ name: 'view', params: { id: data.aquifer_id } })
         }).catch((error) => {
           this.fileUploadFail()
-          console.log(error)
+          console.error(error)
         })
       } else {
         this.$router.push({ name: 'view', params: { id: data.aquifer_id } })
