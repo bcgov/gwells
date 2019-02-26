@@ -166,7 +166,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           label="Aquifer Lithology">
           <b-form-select
             v-model="aquiferLithologyInput"
-            value-field="code"
+            value-field="aquifer_lithology_code"
             :options="codes.aquifer_lithology_codes"
             :errors="errors['aquifer_lithology']"
             :loaded="fieldsLoaded['aquifer_lithology']"
