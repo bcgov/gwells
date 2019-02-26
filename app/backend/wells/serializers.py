@@ -28,6 +28,7 @@ from wells.models import (
     LithologyDescription,
     Screen,
     Well,
+    AquiferLithologyCode,
 )
 
 
@@ -257,6 +258,7 @@ class WellDetailSerializer(AuditModelSerializer):
             "decommission_backfill_material",
             "decommission_details",
             "aquifer_vulnerability_index",
+            "aquifer_lithology",
             "storativity",
             "transmissivity",
             "hydraulic_conductivity",
@@ -386,6 +388,7 @@ class WellListSerializer(serializers.ModelSerializer):
             "well_location_description",
             "construction_start_date",
             "construction_end_date",
+            "alteration_start_date",
             "alteration_end_date",
             "decommission_start_date",
             "decommission_end_date",
@@ -472,6 +475,7 @@ class WellListSerializer(serializers.ModelSerializer):
             "decommission_backfill_material",
             "decommission_details",
             "aquifer_vulnerability_index",
+            "aquifer_lithology",
             "storativity",
             "transmissivity",
             "hydraulic_conductivity",
