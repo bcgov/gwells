@@ -43,6 +43,55 @@ void createDeploymentStatus (String suffix, String status, String STAGE_URL) {
 }
 
 
+// Print stack trace of error
+@NonCPS
+private static String stackTraceAsString(Throwable t) {
+    StringWriter sw = new StringWriter();
+    t.printStackTrace(new PrintWriter(sw));
+    return sw.toString()
+}
+
+
+// OpenShift wrapper
+def _openshift(String name, String project, Closure body) {
+    script {
+        openshift.withCluster() {
+            openshift.withProject(project) {
+                echo "Running Stage '${name}'"
+                waitUntil {
+                    notifyStageStatus (name, 'PENDING')
+                    boolean isDone=false
+                    try {
+                        body()
+                        isDone=true
+                        notifyStageStatus(name, 'SUCCESS')
+                        echo "Completed Stage '${name}'"
+                    } catch (error){
+                        notifyStageStatus(name, 'FAILURE')
+                        echo "${stackTraceAsString(error)}"
+                        def inputAction = input(
+                            message: "This step (${name}) has failed. See related messages.",
+                            ok: 'Confirm',
+                            parameters: [
+                                choice(
+                                    name: 'action',
+                                    choices: 'Re-run\nIgnore',
+                                    description: 'What would you like to do?'
+                                )
+                            ]
+                        )
+                        if ('Ignore'.equalsIgnoreCase(inputAction)){
+                            isDone=true
+                        }
+                    }
+                    return isDone
+                }
+            }
+        }
+    }
+}
+
+
 // Functional test script
 // Can be limited by assinging toTest var
 def functionalTest (String STAGE_NAME, String STAGE_URL, String ENV_SUFFIX, String toTest='all') {
@@ -142,55 +191,6 @@ def unitTestDjango (String STAGE_NAME, String ENV_PROJECT, String ENV_SUFFIX) {
             '"
         )
         echo "DB Revocation results: "+ db_ocoutput_revoke.actions[0].out
-    }
-}
-
-
-// Print stack trace of error
-@NonCPS
-private static String stackTraceAsString(Throwable t) {
-    StringWriter sw = new StringWriter();
-    t.printStackTrace(new PrintWriter(sw));
-    return sw.toString()
-}
-
-
-// OpenShift wrapper
-def _openshift(String name, String project, Closure body) {
-    script {
-        openshift.withCluster() {
-            openshift.withProject(project) {
-                echo "Running Stage '${name}'"
-                waitUntil {
-                    notifyStageStatus (name, 'PENDING')
-                    boolean isDone=false
-                    try {
-                        body()
-                        isDone=true
-                        notifyStageStatus(name, 'SUCCESS')
-                        echo "Completed Stage '${name}'"
-                    } catch (error){
-                        notifyStageStatus(name, 'FAILURE')
-                        echo "${stackTraceAsString(error)}"
-                        def inputAction = input(
-                            message: "This step (${name}) has failed. See related messages.",
-                            ok: 'Confirm',
-                            parameters: [
-                                choice(
-                                    name: 'action',
-                                    choices: 'Re-run\nIgnore',
-                                    description: 'What would you like to do?'
-                                )
-                            ]
-                        )
-                        if ('Ignore'.equalsIgnoreCase(inputAction)){
-                            isDone=true
-                        }
-                    }
-                    return isDone
-                }
-            }
-        }
     }
 }
 
@@ -334,7 +334,8 @@ pipeline {
         // DEV_PROJECT is the project where individual development environments are spun up
         DEV_PROJECT = "moe-gwells-dev"
         DEV_SUFFIX = "dev"
-        DEV_URL = "${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca"
+        DEV_APPNAME = "${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}"
+        DEV_URL = "${DEV_APPNAME}.pathfinder.gov.bc.ca"
 
         // STAGING_PROJECT contains the test deployment. The test image is a candidate for promotion to prod.
         STAGING_PROJECT = "moe-gwells-test"
@@ -351,10 +352,6 @@ pipeline {
         PROD_PROJECT = "moe-gwells-prod"
         PROD_SUFFIX = "production"
         PROD_HOST = "gwells-prod.pathfinder.gov.bc.ca"
-
-        // constants for controlling unit/API test behavior for tests that require fixtures to be loaded
-        ENABLE_FIXTURE_TESTS = true
-        DISABLE_FIXTURE_TESTS = false
     }
     agent any
     stages {
@@ -406,10 +403,10 @@ pipeline {
                         echo "Additional logs can be found by monitoring builds in ${TOOLS_PROJECT}"
 
                         // Select appropriate buildconfig
-                        def appBuild = openshift.selector("bc", "${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}")
+                        def appBuild = openshift.selector("bc", "${DEV_APPNAME}")
                         // temporarily set ENABLE_DATA_ENTRY=True during testing because False currently leads to a failing unit test
                         echo "Building"
-                        echo " \$ oc start-build -n moe-gwells-tools ${APP_NAME}-${DEV_SUFFIX}-${PR_NUM} --wait --env=ENABLE_DATA_ENTRY=true --follow=true"
+                        echo " \$ oc start-build -n moe-gwells-tools ${DEV_APPNAME} --wait --env=ENABLE_DATA_ENTRY=true --follow=true"
                         appBuild.startBuild("--wait", "--env=ENABLE_DATA_ENTRY=True").logs("-f")
                     }
                 }
@@ -445,7 +442,7 @@ pipeline {
                         def deployTemplate = openshift.process("-f",
                             "openshift/backend.dc.json",
                             "ENV_NAME=${DEV_SUFFIX}",
-                            "HOST=${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}.pathfinder.gov.bc.ca",
+                            "HOST=${DEV_URL}",
                             "NAME_SUFFIX=-${DEV_SUFFIX}-${PR_NUM}"
                         )
 
@@ -475,14 +472,14 @@ pipeline {
 
                         // apply the templates, which will create new objects or modify existing ones as necessary.
                         // the copies of base objects (secrets, configmaps) are also applied.
-                        openshift.apply(deployTemplate).label(['app':"gwells-${DEV_SUFFIX}-${PR_NUM}", 'app-name':"${APP_NAME}", 'env-name':"${DEV_SUFFIX}"], "--overwrite")
-                        openshift.apply(deployDBTemplate).label(['app':"gwells-${DEV_SUFFIX}-${PR_NUM}", 'app-name':"${APP_NAME}", 'env-name':"${DEV_SUFFIX}"], "--overwrite")
-                        openshift.apply(newObjectCopies).label(['app':"gwells-${DEV_SUFFIX}-${PR_NUM}", 'app-name':"${APP_NAME}", 'env-name':"${DEV_SUFFIX}"], "--overwrite")
+                        openshift.apply(deployTemplate).label(['app':"${DEV_APPNAME}", 'app-name':"${APP_NAME}", 'env-name':"${DEV_SUFFIX}"], "--overwrite")
+                        openshift.apply(deployDBTemplate).label(['app':"${DEV_APPNAME}", 'app-name':"${APP_NAME}", 'env-name':"${DEV_SUFFIX}"], "--overwrite")
+                        openshift.apply(newObjectCopies).label(['app':"${DEV_APPNAME}", 'app-name':"${APP_NAME}", 'env-name':"${DEV_SUFFIX}"], "--overwrite")
                         echo "Successfully applied deployment configs for ${PR_NUM}"
 
                         // promote the newly built image to DEV
                         echo "Tagging new image to DEV imagestream."
-                        openshift.tag("${TOOLS_PROJECT}/gwells-application:${PR_NUM}", "${DEV_PROJECT}/gwells-${DEV_SUFFIX}-${PR_NUM}:dev")  // todo: clean up labels/tags
+                        openshift.tag("${TOOLS_PROJECT}/gwells-application:${PR_NUM}", "${DEV_PROJECT}/${DEV_APPNAME}:dev")  // todo: clean up labels/tags
                         openshift.tag("${TOOLS_PROJECT}/gwells-postgresql:dev", "${DEV_PROJECT}/gwells-postgresql-${DEV_SUFFIX}-${PR_NUM}:dev")  // todo: clean up labels/tags
 
                         // post a notification to Github that this pull request is being deployed
@@ -490,8 +487,8 @@ pipeline {
 
                         // monitor the deployment status and wait until deployment is successful
                         echo "Waiting for deployment to dev..."
-                        def newVersion = openshift.selector("dc", "${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}").object().status.latestVersion
-                        def pods = openshift.selector('pod', [deployment: "${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}-${newVersion}"])
+                        def newVersion = openshift.selector("dc", "${DEV_APPNAME}").object().status.latestVersion
+                        def pods = openshift.selector('pod', [deployment: "${DEV_APPNAME}-${newVersion}"])
 
                         // wait until each container in this deployment's pod reports as ready
                         timeout(15) {
@@ -533,8 +530,8 @@ pipeline {
             steps {
                 script {
                     _openshift(env.STAGE_NAME, DEV_PROJECT) {
-                        def newVersion = openshift.selector("dc", "${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}").object().status.latestVersion
-                        def pods = openshift.selector('pod', [deployment: "${APP_NAME}-${DEV_SUFFIX}-${PR_NUM}-${newVersion}"])
+                        def newVersion = openshift.selector("dc", "${DEV_APPNAME}").object().status.latestVersion
+                        def pods = openshift.selector('pod', [deployment: "${DEV_APPNAME}-${newVersion}"])
 
                         echo "Loading fixtures"
                         def ocoutput = openshift.exec(
