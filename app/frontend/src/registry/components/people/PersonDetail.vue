@@ -17,7 +17,7 @@
         <b-alert show>File Upload In Progress...</b-alert>
       </div>
       <div class="col-xs-12" v-if="!files_uploading && file_upload_error">
-        <b-alert show variant="warning" >{{file_upload_error}}</b-alert>
+        <b-alert show variant="warning" >File Upload Errors: {{file_upload_errors.map((e) => e.response.statusText)}}</b-alert>
       </div>
       <div class="col-xs-12" v-if="!files_uploading && file_upload_success">
         <b-alert show variant="success" >Successfully uploaded all files</b-alert>
@@ -548,6 +548,7 @@ export default {
     ...mapState('documentState', [
       'files_uploading',
       'file_upload_error',
+      'file_upload_errors',
       'file_upload_success',
       'upload_files'
     ])
@@ -555,7 +556,8 @@ export default {
   methods: {
     ...mapActions('documentState', [
       'uploadFiles',
-      'fileUploadSuccess'
+      'fileUploadSuccess',
+      'fileUploadFail'
     ]),
     ...mapMutations('documentState', [
       'setFiles'
@@ -629,7 +631,9 @@ export default {
           this.fetchFiles()
           window.scrollTo(0, 0)
         }).catch((error) => {
-          console.log(error)
+          this.fileUploadFail()
+          console.error(error)
+          window.scrollTo(0, 0)
         })
       }
     },
