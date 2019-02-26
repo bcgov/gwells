@@ -12,52 +12,44 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-<div class="container p-1 container-wide">
-  <div class="card" v-if="userRoles.wells.edit || userRoles.submissions.edit">
-    <div class="card-body">
+  <div class="container p-1 container-wide">
+    <div class="card" v-if="userRoles.wells.edit || userRoles.submissions.edit">
+      <div class="card-body">
 
-      <b-form @submit.prevent="confirmSubmit">
-        <!-- if preview === true : Preview -->
-        <submission-preview
-          v-if="preview"
-          :form="form"
-          :activity="activityType"
-          :sections="displayFormSection"
-          :errors="errors"
-          :reportSubmitted="formSubmitSuccess"
-          :formSubmitLoading="formSubmitLoading"
-          :uploadedFiles="uploadedFiles"
-          v-on:back="handlePreviewBackButton"
-          v-on:startNewReport="handleExitPreviewAfterSubmit"
-          v-on:fetchFiles="fetchFiles"
-          />
-        <!-- if preview === false : Activity submission form -->
-        <activity-submission-form
-          v-else
-          :form="form"
-          :activityType.sync="activityType"
-          :sections="displayFormSection"
-          :formSteps="formSteps"
-          :errors="errors"
-          :formIsFlat.sync="formIsFlat"
-          :trackValueChanges="trackValueChanges"
-          :formSubmitLoading="formSubmitLoading"
-          :isStaffEdit="isStaffEdit"
-          :loading="loading"
-          :uploadedFiles="uploadedFiles"
-          v-on:preview="handlePreviewButton"
-          v-on:submit_edit="formSubmit"
-          v-on:resetForm="resetForm"
-          v-on:fetchFiles="fetchFiles"
-          />
-
-          <!-- Form submission confirmation -->
-          <b-modal
-            v-model="file_upload_success"
-            hide-header
-            hide-footer
-            hide-header-close><b-alert show v-if="!files_uploading && file_upload_success" variant="success" >Successfully uploaded all files</b-alert>
-          </b-modal>
+        <b-form @submit.prevent="confirmSubmit">
+          <!-- if preview === true : Preview -->
+          <submission-preview
+            v-if="preview"
+            :form="form"
+            :activity="activityType"
+            :sections="displayFormSection"
+            :errors="errors"
+            :reportSubmitted="formSubmitSuccess"
+            :formSubmitLoading="formSubmitLoading"
+            :uploadedFiles="uploadedFiles"
+            v-on:back="handlePreviewBackButton"
+            v-on:startNewReport="handleExitPreviewAfterSubmit"
+            v-on:fetchFiles="fetchFiles"
+            />
+          <!-- if preview === false : Activity submission form -->
+          <activity-submission-form
+            v-else
+            :form="form"
+            :activityType.sync="activityType"
+            :sections="displayFormSection"
+            :formSteps="formSteps"
+            :errors="errors"
+            :formIsFlat.sync="formIsFlat"
+            :trackValueChanges="trackValueChanges"
+            :formSubmitLoading="formSubmitLoading"
+            :isStaffEdit="isStaffEdit"
+            :loading="loading"
+            :uploadedFiles="uploadedFiles"
+            v-on:preview="handlePreviewButton"
+            v-on:submit_edit="formSubmit"
+            v-on:resetForm="resetForm"
+            v-on:fetchFiles="fetchFiles"
+            />
 
           <!-- Form submission confirmation -->
           <b-modal
