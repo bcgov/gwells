@@ -28,6 +28,7 @@ from wells.models import (
     LithologyDescription,
     Screen,
     Well,
+    AquiferLithologyCode,
 )
 
 
@@ -257,6 +258,7 @@ class WellDetailSerializer(AuditModelSerializer):
             "decommission_backfill_material",
             "decommission_details",
             "aquifer_vulnerability_index",
+            "aquifer_lithology",
             "storativity",
             "transmissivity",
             "hydraulic_conductivity",
@@ -456,6 +458,7 @@ class WellListSerializer(serializers.ModelSerializer):
             "decommission_backfill_material",
             "decommission_details",
             "aquifer_vulnerability_index",
+            "aquifer_lithology",
             "storativity",
             "transmissivity",
             "hydraulic_conductivity",
