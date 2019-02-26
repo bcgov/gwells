@@ -1,77 +1,53 @@
-[![Quality Gate](https://sonarqube-moe-gwells-tools.pathfinder.gov.bc.ca/api/badges/gate?key=org.sonarqube:bcgov-gwells)](https://sonarqube-moe-gwells-tools.pathfinder.gov.bc.ca/dashboard?id=org.sonarqube%3Abcgov-gwells) [![Quality Gate](https://sonarqube-moe-gwells-tools.pathfinder.gov.bc.ca/api/badges/measure?key=org.sonarqube:bcgov-gwells&metric=coverage&template=FLAT)](https://sonarqube-moe-gwells-tools.pathfinder.gov.bc.ca/dashboard/index/org.sonarqube:bcgov-gwells)
-
-
-
-# Groundwater Wells
+# Groundwater Wells and Aquifers (GWELLS)
 
 ## Introduction
 
-The Ministry of Environment receives and processes groundwater data and information related to the construction, alteration and decommissioning of groundwater wells and stores that information in the WELLS system. Well construction and reporting requirements are regulated under the Water Sustainability Act and Groundwater Protection Regulation. The information collected and stored in WELLS is used by government and other users to help inform decisions related to the management of the groundwater resource in B.C.
+The Ministry of Environment receives and processes groundwater data and information related to the construction, alteration and decommissioning of groundwater wells. Well construction and reporting requirements are regulated under the Water Sustainability Act and Groundwater Protection Regulation. The information collected and stored is used by government and other users to help inform decisions related to the management of the groundwater resource in B.C.
 
-GWELLS is the new groundwater data repository and is intended to replace the current WELLS system. GWELLS aims to improve the user experience when submitting  and searching for well information, to improve the quality of the data being submitted, and to improve the overall functionality of the system to meet user and regulatory requirements.
+GWELLS is the new groundwater data repository and is intended to replace the current WELLS system. GWELLS aims to improve the user experience when submitting and searching for well information, to improve the quality of the data being submitted, and to improve the overall functionality of the system to meet user and regulatory requirements.
 
 The application is being developed as an open source solution.
 
-This is a [Django](http://www.djangoproject.com) project based on the [Openshift Django quickstart](https://github.com/openshift/django-ex) that is intended to be deployed on an [OpenShift](https://github.com/openshift/origin) cluster.
+## Developing GWELLS
 
-It uses the Openshift Source-to-Image (S2I) strategy with Python 3.5 on centos7.  See requirements.txt for Django and dependency versions.
+### Prerequisites
 
-## Development and Deployment
+* [Docker Community Edition (signup  required)](https://store.docker.com/search?type=edition&offering=community)
 
-0.  ##### Prerequisites
+* [git](https://git-scm.com/downloads)
 
-    Install Docker and Git
+### Running the GWELLS application locally
 
-    * [Docker Community Editions (signup  required)](https://store.docker.com/search?type=edition&offering=community)
+Fork our repository into your own GitHub account, and/or clone it onto your local machine.
 
-    * [Git Downloads](https://git-scm.com/downloads)
+Run the GWELLS application with docker-compose:
+```sh
+cd gwells
+docker-compose up
+```
 
-    OS X alternative: Xcode with Git
-    ```
-    xcode-select --install
-    ```
+Visit the following links to browse the API and frontend applications:
 
-    Configure Git (user details, push default and line endings)
-    ```
-    git config --global user.email <GitHub registered email address>
-    git config --global user.name <GitHub registered firstName LastName>
-    git config --global push.default simple
-    git config --global core.autocrlf input
-    ```
+* Django REST API development server: http://localhost:8000/gwells/api/
+* Vue frontend development server: http://localhost:8080/
 
-1.  ##### GWells Repository
+### Running tests:
 
-    Fork our repository into your own GitHub account.
+Django unit tests:
+```sh
+cd app/backend
+python manage.py test -c nose.cfg
+```
 
-    [GWells Repo (fork button in top right)](https://github.com/bcgov/gwells)
+Vue unit tests:
+```sh
+cd app/frontend
+npm run unit
+```
 
-    Clone and cd.
+Postman API tests:
+Import the json test collections in the `api-tests/` folder into [Postman](https://www.getpostman.com/).
 
-    ```
-    git clone https://github.com/<github-user>/gwells.git
-    cd gwells
-    ```
-
-    Add remote (upstream) origin.
-
-    ```
-    git remote add upstream https://github.com/bcgov/gwells.git
-    ```
-
-2.  ##### GWells App
-
-    Create a development deployment for working with Vue, Django or the API.
-    ```
-    cd gwells
-    make [vue|django|api]
-    ```
-
-    Visit the following links depending on development target.
-
-    * Django Frontend: http://localhost:8000/gwells/
-    * Node/API: http://localhost:8080/
-
-    <br>Changes will update dynamically in their respective environments.
 
 ## Contributing
 
@@ -82,19 +58,9 @@ Issues are tracked on the [GWELLS Trello board](https://trello.com/b/2UQZgXHR/we
 
 ## Architecture
 
-### Current
+GWELLS is built with PostgreSQL (with PostGIS), Django REST Framework, and Vue.js, and the production application runs on an OpenShift cluster.  OpenShift templates for services are located in the `openshift/` folder.
 
 ![GWELLS container diagram](pics/container_diagram.png)
-
-### Vision
-
-The current GWELLS architecture relies on Vue.js components being served up using Django templates. This 
-approach results in a complicated interdependence between Vue.js and Django.
-
-The intent is to completely seperate the front end into independently hosted Vue.js components and completely
-drop Django templates.
-
-![GWELLS container diagram (Vision)](pics/container_diagram_vision.png)
 
 ## License
 
