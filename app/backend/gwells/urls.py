@@ -18,7 +18,7 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.views.generic import TemplateView
 
-from gwells.views import SurveyListView, SearchView, RegistryView, HealthView
+from gwells.views import SurveyListView, SearchView, HealthView
 from gwells.views.admin import *
 from gwells.views import api
 from gwells.settings.base import get_env_variable
@@ -50,8 +50,6 @@ urlpatterns = [
         SearchView.well_search, name='search'),
     # url(r'^(?P<pk>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/$',
     #     views.DetailView.as_view(), name='detail'),
-    url(r'^' + app_root_slash + 'registry-legacy$',
-        RegistryView.as_view(), name='registry-legacy'),
     url(r'^' + app_root_slash + 'health$', HealthView.health, name='health'),
     url(r'^' + app_root_slash + 'groundwater-information',
         TemplateView.as_view(
