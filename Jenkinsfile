@@ -18,7 +18,7 @@ void notifyStageStatus (String name, String status) {
 
 
 // Create deployment status and pass to Jenkins-GitHub library
-void createDeploymentStatus (String suffix, String status, String STAGE_URL) {
+void createDeploymentStatus (String suffix, String status, String stageUrl) {
     def ghDeploymentId = new GitHubHelper().createDeployment(
         this,
         "pull/${env.CHANGE_ID}/head",
@@ -29,10 +29,10 @@ void createDeploymentStatus (String suffix, String status, String STAGE_URL) {
     )
 
     new GitHubHelper().createDeploymentStatus(
-        this,DEV_SUFFIX
+        this,
         ghDeploymentId,
         "${status}",
-        ['targetUrl':"https://${STAGE_URL}/gwells"]
+        ['targetUrl':"https://${stageUrl}/gwells"]
     )
 
     if ('SUCCESS'.equalsIgnoreCase("${status}")) {
@@ -94,12 +94,12 @@ def _openshift(String name, String project, Closure body) {
 
 // Functional test script
 // Can be limited by assinging toTest var
-def functionalTest (String STAGE_NAME, String STAGE_URL, String ENV_SUFFIX, String toTest='all') {
+def functionalTest (String stageName, String stageUrl, String envSuffix, String toTest='all') {
     _openshift(env.STAGE_NAME, toolsProject) {
         echo "Testing"
         podTemplate(
-            label: "bddstack-${ENV_SUFFIX}-${prNumber}",
-            name: "bddstack-${ENV_SUFFIX}-${prNumber}",
+            label: "bddstack-${envSuffix}-${prNumber}",
+            name: "bddstack-${envSuffix}-${prNumber}",
             serviceAccount: 'jenkins',
             cloud: 'openshift',
             containers: [
@@ -114,7 +114,7 @@ def functionalTest (String STAGE_NAME, String STAGE_URL, String ENV_SUFFIX, Stri
                     command: '',
                     args: '${computer.jnlpmac} ${computer.name}',
                     envVars: [
-                        envVar(key:'BASE_URL', value: "https://${STAGE_URL}/gwells"),
+                        envVar(key:'BASE_URL', value: "https://${stageUrl}/gwells"),
                         envVar(key:'OPENSHIFT_JENKINS_JVM_ARCH', value: 'x86_64')
                     ]
                 )
@@ -127,7 +127,7 @@ def functionalTest (String STAGE_NAME, String STAGE_URL, String ENV_SUFFIX, Stri
                 )
             ]
         ) {
-            node("bddstack-${ENV_SUFFIX}-${prNumber}") {
+            node("bddstack-${envSuffix}-${prNumber}") {
                 //the checkout is mandatory, otherwise functional tests would fail
                 echo "checking out source"
                 checkout scm
@@ -152,9 +152,9 @@ def functionalTest (String STAGE_NAME, String STAGE_URL, String ENV_SUFFIX, Stri
 
 // Functional test script
 // Can be limited by assinging toTest var
-def unitTestDjango (String STAGE_NAME, String ENV_PROJECT, String ENV_SUFFIX) {
-    _openshift(env.STAGE_NAME, ENV_PROJECT) {
-        def DB_target = ENV_SUFFIX == "staging" ? "${appName}-pgsql-${ENV_SUFFIX}" : "${appName}-pgsql-${ENV_SUFFIX}-${prNumber}"
+def unitTestDjango (String stageName, String envProject, String envSuffix) {
+    _openshift(env.STAGE_NAME, envProject) {
+        def DB_target = envSuffix == "staging" ? "${appName}-pgsql-${envSuffix}" : "${appName}-pgsql-${envSuffix}-${prNumber}"
         def DB_newVersion = openshift.selector("dc", "${DB_target}").object().status.latestVersion
         def DB_pod = openshift.selector('pod', [deployment: "${DB_target}-${DB_newVersion}"])
         echo "Temporarily granting elevated DB rights"
@@ -167,7 +167,7 @@ def unitTestDjango (String STAGE_NAME, String ENV_PROJECT, String ENV_SUFFIX) {
         )
         echo "Temporary DB grant results: "+ db_ocoutput_grant.actions[0].out
 
-        def target = ENV_SUFFIX == "staging" ? "${appName}-${ENV_SUFFIX}" : "${appName}-${ENV_SUFFIX}-${prNumber}"
+        def target = envSuffix == "staging" ? "${appName}-${envSuffix}" : "${appName}-${envSuffix}-${prNumber}"
         def newVersion = openshift.selector("dc", "${target}").object().status.latestVersion
         def pods = openshift.selector('pod', [deployment: "${target}-${newVersion}"])
 
@@ -196,11 +196,11 @@ def unitTestDjango (String STAGE_NAME, String ENV_PROJECT, String ENV_SUFFIX) {
 
 
 // API test function
-def apiTest (String STAGE_NAME, String STAGE_URL, String ENV_SUFFIX) {
+def apiTest (String stageName, String stageUrl, String envSuffix) {
     _openshift(env.STAGE_NAME, toolsProject) {
         podTemplate(
-            label: "nodejs-${appName}-${ENV_SUFFIX}-${prNumber}",
-            name: "nodejs-${appName}-${ENV_SUFFIX}-${prNumber}",
+            label: "nodejs-${appName}-${envSuffix}-${prNumber}",
+            name: "nodejs-${appName}-${envSuffix}-${prNumber}",
             serviceAccount: 'jenkins',
             cloud: 'openshift',
             activeDeadlineSeconds: 1800,
@@ -218,7 +218,7 @@ def apiTest (String STAGE_NAME, String STAGE_URL, String ENV_SUFFIX) {
                     envVars: [
                         envVar(
                             key:'BASE_URL',
-                            value: "https://${STAGE_URL}/gwells"
+                            value: "https://${stageUrl}/gwells"
                         ),
                         secretEnvVar(
                             key: 'GWELLS_API_TEST_USER',
@@ -249,7 +249,7 @@ def apiTest (String STAGE_NAME, String STAGE_URL, String ENV_SUFFIX) {
                 )
             ]
         ) {
-            node("nodejs-${appName}-${ENV_SUFFIX}-${prNumber}") {
+            node("nodejs-${appName}-${envSuffix}-${prNumber}") {
                 checkout scm
                 dir('api-tests') {
                     sh 'npm install -g newman'
@@ -289,7 +289,7 @@ def apiTest (String STAGE_NAME, String STAGE_URL, String ENV_SUFFIX) {
                                 -r cli,junit,html
                         """
 
-                        if ("dev".equalsIgnoreCase("${ENV_SUFFIX}")) {
+                        if ("dev".equalsIgnoreCase("${envSuffix}")) {
                             sh """
                                 newman run ./wells_search_api_tests.json \
                                 --global-var base_url=\$BASE_URL \
