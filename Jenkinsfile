@@ -196,7 +196,7 @@ def unitTestDjango (String STAGE_NAME, String ENV_PROJECT, String ENV_SUFFIX) {
 
 
 // API test function
-def apiTest (String STAGE_NAME, String STAGE_URL, String ENV_SUFFIX, Boolean run_fixture_tests) {
+def apiTest (String STAGE_NAME, String STAGE_URL, String ENV_SUFFIX) {
     _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
         podTemplate(
             label: "nodejs-${APP_NAME}-${ENV_SUFFIX}-${PR_NUM}",
@@ -289,7 +289,7 @@ def apiTest (String STAGE_NAME, String STAGE_URL, String ENV_SUFFIX, Boolean run
                                 -r cli,junit,html
                         """
 
-                        if (run_fixture_tests) {
+                        if ("dev".equalsIgnoreCase("${ENV_SUFFIX}")) {
                             sh """
                                 newman run ./wells_search_api_tests.json \
                                 --global-var base_url=\$BASE_URL \
@@ -587,7 +587,7 @@ pipeline {
             steps {
                 script {
                     _openshift(env.STAGE_NAME, DEV_PROJECT) {
-                        def result = apiTest ('DEV - API Tests', DEV_URL, DEV_SUFFIX, ENABLE_FIXTURE_TESTS)
+                        def result = apiTest ('DEV - API Tests', DEV_URL, DEV_SUFFIX)
                     }
                 }
             }
@@ -763,7 +763,7 @@ pipeline {
             steps {
                 script {
                     _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
-                        def result = apiTest ('STAGING - API Tests', STAGING_URL, STAGING_SUFFIX, DISABLE_FIXTURE_TESTS)
+                        def result = apiTest ('STAGING - API Tests', STAGING_URL, STAGING_SUFFIX)
                     }
                 }
             }
@@ -934,7 +934,7 @@ pipeline {
             steps {
                 script {
                     _openshift(env.STAGE_NAME, TOOLS_PROJECT) {
-                        def result = apiTest ('DEMO - API Tests', DEMO_URL, DEMO_SUFFIX, DISABLE_FIXTURE_TESTS)
+                        def result = apiTest ('DEMO - API Tests', DEMO_URL, DEMO_SUFFIX)
                     }
                 }
             }
