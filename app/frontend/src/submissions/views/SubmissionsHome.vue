@@ -485,6 +485,7 @@ export default {
         testing_duration: '',
         analytic_solution_type: '',
         boundary_effect: '',
+        aquifer_lithology: '',
 
         // non-form fields that should be saved with form
         meta: {

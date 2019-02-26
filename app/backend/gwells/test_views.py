@@ -81,9 +81,6 @@ class ViewsTestCase(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
-    def test_registry_ok(self):
-        self.ok('registry-legacy')
-
     def test_health_ok(self):
         self.ok('health')
 

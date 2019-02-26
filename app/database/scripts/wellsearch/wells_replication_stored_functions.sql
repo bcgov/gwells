@@ -128,7 +128,8 @@ DECLARE
     create_date               ,
     update_date               ,
     create_user               ,
-    update_user)
+    update_user               ,
+    aquifer_lithology_code)
   SELECT
     wells.well_tag_number                                                    ,
     wells.well_id                                                            ,
@@ -263,7 +264,12 @@ DECLARE
     wells.when_created                                 ,
     COALESCE(wells.when_updated,wells.when_created)    ,
     wells.who_created                                  ,
-    COALESCE(wells.who_updated,wells.who_created)
+    COALESCE(wells.who_updated,wells.who_created)      ,
+    CASE wells.aquifer_lithology_code
+      WHEN ''BED'' THEN ''Bedrock''
+      WHEN ''UNC'' THEN ''Unconsolidated''
+      ELSE ''Unknown''
+    END AS aquifer_lithology_code
   FROM wells.wells_wells wells LEFT OUTER JOIN wells.wells_owners owner ON owner.owner_id=wells.owner_id
               LEFT OUTER JOIN drilling_company drilling_company ON UPPER(wells.driller_company_code)=UPPER(drilling_company.drilling_company_code)
               LEFT OUTER JOIN well_subclass_code subclass ON UPPER(wells.subclass_of_well_classified_by)=UPPER(subclass.well_subclass_code)
@@ -365,7 +371,8 @@ BEGIN
      create_date                        timestamp with time zone,
      update_date                        timestamp with time zone,
      create_user                         character varying(30),
-     update_user                         character varying(30)
+     update_user                         character varying(30),
+     aquifer_lithology_code             character varying(30)
   );
 
   raise notice 'Created xform_well ETL table';
@@ -535,7 +542,8 @@ BEGIN
     hydro_fracturing_performed   ,
     decommission_details         ,
     comments                     ,
-    well_publication_status_code
+    well_publication_status_code ,
+    aquifer_lithology_code
     )
   SELECT
     xform.well_tag_number                        ,
@@ -638,7 +646,8 @@ BEGIN
     false                                   ,
     xform.decommission_details              ,
     xform.comments                          ,
-    xform.well_publication_status_code
+    xform.well_publication_status_code      ,
+    xform.aquifer_lithology_code
   FROM xform_well xform
   LEFT JOIN wells.wells_production_data production_data ON production_data.well_id=xform.well_id;
 
