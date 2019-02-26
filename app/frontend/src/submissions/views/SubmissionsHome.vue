@@ -354,7 +354,7 @@ export default {
         // Error notifications
         this.$noty.error('<div class="errorTitle">' + errTxt + '</div>', { timeout: 2000, killer: true })
         cleanErrors.forEach(e => {
-          this.$noty.error('<div class="closeBtn">x</div><div class="errorText"><b>Error: </b>' + e + '</div>', { timeout: false })
+          this.$noty.error('<div aria-label="Close" class="closeBtn">x</div><div class="errorText"><b>Error: </b>' + e + '</div>', { timeout: false })
         })
       }).finally((response) => {
         this.formSubmitLoading = false
