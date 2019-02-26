@@ -335,7 +335,7 @@ pipeline {
         devProject = "moe-gwells-dev"
         devSuffix = "dev"
         devAppName = "${appName}-${devSuffix}-${prNumber}"
-        devUrl = "${devAppName}.pathfinder.gov.bc.ca"
+        devHost = "${devAppName}.pathfinder.gov.bc.ca"
 
         // stagingProject contains the test deployment. The test image is a candidate for promotion to prod.
         stagingProject = "moe-gwells-test"
@@ -442,7 +442,7 @@ pipeline {
                         def deployTemplate = openshift.process("-f",
                             "openshift/backend.dc.json",
                             "ENV_NAME=${devSuffix}",
-                            "HOST=${devUrl}",
+                            "HOST=${devHost}",
                             "NAME_SUFFIX=-${devSuffix}-${prNumber}"
                         )
 
@@ -483,7 +483,7 @@ pipeline {
                         openshift.tag("${toolsProject}/gwells-postgresql:dev", "${devProject}/gwells-postgresql-${devSuffix}-${prNumber}:dev")  // todo: clean up labels/tags
 
                         // post a notification to Github that this pull request is being deployed
-                        createDeploymentStatus(devSuffix, 'PENDING', devUrl)
+                        createDeploymentStatus(devSuffix, 'PENDING', devHost)
 
                         // monitor the deployment status and wait until deployment is successful
                         echo "Waiting for deployment to dev..."
@@ -500,7 +500,7 @@ pipeline {
                         }
 
                         // Report a pass to GitHub
-                        createDeploymentStatus(devSuffix, 'SUCCESS', devUrl)
+                        createDeploymentStatus(devSuffix, 'SUCCESS', devHost)
                     }
                 }
             }
@@ -573,7 +573,7 @@ pipeline {
             steps {
                 script {
                     _openshift(env.STAGE_NAME, toolsProject) {
-                        def result = functionalTest ('DEV - Smoke Tests', devUrl, devSuffix, 'SearchSpecs')
+                        def result = functionalTest ('DEV - Smoke Tests', devHost, devSuffix, 'SearchSpecs')
                     }
                 }
             }
@@ -587,7 +587,7 @@ pipeline {
             steps {
                 script {
                     _openshift(env.STAGE_NAME, devProject) {
-                        def result = apiTest ('DEV - API Tests', devUrl, devSuffix)
+                        def result = apiTest ('DEV - API Tests', devHost, devSuffix)
                     }
                 }
             }
@@ -701,7 +701,7 @@ pipeline {
                             "${stagingProject}/gwells-postgresql-${stagingSuffix}:${stagingSuffix}"
                         )  // todo: clean up labels/tags
 
-                        createDeploymentStatus(stagingSuffix, 'PENDING', STAGING_URL)
+                        createDeploymentStatus(stagingSuffix, 'PENDING', stagingHost)
 
                         // Create cronjob for well export
                         def cronTemplate = openshift.process("-f",
@@ -733,7 +733,7 @@ pipeline {
                             }
                         }
 
-                        createDeploymentStatus(stagingSuffix, 'SUCCESS', targetTestURL)
+                        createDeploymentStatus(stagingSuffix, 'SUCCESS', stagingHost)
                     }
                 }
             }
@@ -763,7 +763,7 @@ pipeline {
             steps {
                 script {
                     _openshift(env.STAGE_NAME, toolsProject) {
-                        def result = apiTest ('STAGING - API Tests', STAGING_URL, stagingSuffix)
+                        def result = apiTest ('STAGING - API Tests', stagingHost, stagingSuffix)
                     }
                 }
             }
@@ -778,7 +778,7 @@ pipeline {
             steps {
                 script {
                     _openshift(env.STAGE_NAME, toolsProject) {
-                        def result = functionalTest ('STAGING - Smoke Tests', STAGING_URL, stagingSuffix, 'SearchSpecs')
+                        def result = functionalTest ('STAGING - Smoke Tests', stagingHost, stagingSuffix, 'SearchSpecs')
                     }
                 }
             }
@@ -888,7 +888,7 @@ pipeline {
                             "${demoProject}/gwells-postgresql-${demoSuffix}:${demoSuffix}"
                         )  // todo: clean up labels/tags
 
-                        createDeploymentStatus(demoSuffix, 'PENDING', DEMO_URL)
+                        createDeploymentStatus(demoSuffix, 'PENDING', demoHost)
 
                         // Create cronjob for well export
                         def cronTemplate = openshift.process("-f",
@@ -920,7 +920,7 @@ pipeline {
                             }
                         }
 
-                        createDeploymentStatus(demoSuffix, 'SUCCESS', DEMO_URL)
+                        createDeploymentStatus(demoSuffix, 'SUCCESS', demoHost)
                     }
                 }
             }
@@ -934,7 +934,7 @@ pipeline {
             steps {
                 script {
                     _openshift(env.STAGE_NAME, toolsProject) {
-                        def result = apiTest ('DEMO - API Tests', DEMO_URL, demoSuffix)
+                        def result = apiTest ('DEMO - API Tests', demoHost, demoSuffix)
                     }
                 }
             }
@@ -949,7 +949,7 @@ pipeline {
             steps {
                 script {
                     _openshift(env.STAGE_NAME, toolsProject) {
-                        def result = functionalTest ('DEMO - Smoke Tests', DEMO_URL, demoSuffix, 'SearchSpecs')
+                        def result = functionalTest ('DEMO - Smoke Tests', demoHost, demoSuffix, 'SearchSpecs')
                     }
                 }
             }
@@ -1058,7 +1058,7 @@ pipeline {
                             "${prodProject}/gwells-postgresql-${prodSuffix}:${prodSuffix}"
                         )  // todo: clean up labels/tags
 
-                        createDeploymentStatus(prodSuffix, 'PENDING', PROD_URL)
+                        createDeploymentStatus(prodSuffix, 'PENDING', prodUrl)
 
                         // Create cronjob for well export
                         def cronTemplate = openshift.process("-f",
@@ -1090,7 +1090,7 @@ pipeline {
                             }
                         }
 
-                        createDeploymentStatus(prodSuffix, 'SUCCESS', PROD_URL)
+                        createDeploymentStatus(prodSuffix, 'SUCCESS', prodUrl)
                     }
                 }
             }
@@ -1105,7 +1105,7 @@ pipeline {
             steps {
                 script {
                     _openshift(env.STAGE_NAME, toolsProject) {
-                        def result = functionalTest ('PROD - Smoke Tests', PROD_URL, prodSuffix, 'SearchSpecs')
+                        def result = functionalTest ('PROD - Smoke Tests', prodUrl, prodSuffix, 'SearchSpecs')
                     }
                 }
             }
