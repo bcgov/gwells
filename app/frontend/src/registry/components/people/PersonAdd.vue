@@ -453,7 +453,7 @@ export default {
             this.$router.push({ name: 'PersonDetail', params: { person_guid: response.data.person_guid } })
           }).catch((error) => {
             this.fileUploadFail()
-            console.log(error)
+            console.error(error)
           })
         } else {
           this.$router.push({ name: 'PersonDetail', params: { person_guid: response.data.person_guid } })
