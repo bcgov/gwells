@@ -142,6 +142,7 @@ export default {
   data () {
     return {
       isBusy: false,
+      isInitialSearch: true,
       currentPage: 1,
       perPage: 10,
       numberOfRecords: 0,
@@ -178,6 +179,16 @@ export default {
         this.tableData = response.data.results
         this.tabulator.clearData()
         this.tabulator.replaceData(this.tableData)
+
+        // the first search that happens when page loads doesn't need
+        // to automatically scroll the page.  Only scroll when updating
+        // the search results.
+        if (!this.isInitialSearch) {
+          this.$SmoothScroll(this.$el.querySelector('#map'))
+        }
+        // flag that the initial search that happens on page load
+        // has already occurred.
+        this.isInitialSearch = false
 
         return response.data.results || []
       }).catch((e) => {
