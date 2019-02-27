@@ -96,7 +96,7 @@ export default {
       if (this.well) {
         this.loadFiles()
       }
-    },
+    }
   },
   computed: {
     ...mapGetters(['userRoles', 'keycloak'])
