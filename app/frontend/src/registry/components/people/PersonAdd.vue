@@ -88,7 +88,7 @@
                     type="text"
                     v-model="drillerForm.person.well_driller_orcs_no"/>
                   <b-form-text id="drillerORCSExample">
-                  ORCS format: 38000-25/DRILL XXXX X
+                  ORCS format: 38000-25/DRI XXXX X
                   </b-form-text>
                 </b-form-group>
               </b-col>
