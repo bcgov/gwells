@@ -1,5 +1,5 @@
 <template>
-  <header>
+  <header id="header">
     <b-navbar type="dark" class="navbar-expand-lg d-print-block" bg-variant="primary">
       <!-- Navbar content -->
       <b-container class="container-wide">
