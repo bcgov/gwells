@@ -94,7 +94,7 @@ def _openshift(String name, String project, Closure body) {
 
 // Functional tests
 // Can be limited by assinging toTest var
-def functionalTest (String stageName, String stageUrl, String envSuffix, String toTest='all') {
+def functionalTest (String stageUrl, String envSuffix, String toTest='all') {
     // Re-add Smoke Tests when new ones are provided
     // Previous ones no longer work due to change in Django templates
     echo "Smoke tests temporarily skipped"
@@ -155,7 +155,7 @@ def functionalTest (String stageName, String stageUrl, String envSuffix, String 
 
 // Functional test script
 // Can be limited by assinging toTest var
-def unitTestDjango (String stageName, String envProject, String envSuffix) {
+def unitTestDjango (String envProject, String envSuffix) {
     def DB_target = envSuffix == "staging" ? "${appName}-pgsql-${envSuffix}" : "${appName}-pgsql-${envSuffix}-${prNumber}"
     def DB_newVersion = openshift.selector("dc", "${DB_target}").object().status.latestVersion
     def DB_pod = openshift.selector('pod', [deployment: "${DB_target}-${DB_newVersion}"])
@@ -197,7 +197,7 @@ def unitTestDjango (String stageName, String envProject, String envSuffix) {
 
 
 // API test function
-def apiTest (String stageName, String stageUrl, String envSuffix) {
+def apiTest (String stageUrl, String envSuffix) {
     podTemplate(
         label: "nodejs-${appName}-${envSuffix}-${prNumber}",
         name: "nodejs-${appName}-${envSuffix}-${prNumber}",
@@ -511,11 +511,9 @@ pipeline {
             steps {
                 parallel(
                     'DEV - Django Unit Tests': {
-                        // the Django Unit Tests stage runs backend unit tests using a test DB that is
-                        // created and destroyed afterwards.
                         script {
                             _openshift(env.STAGE_NAME, devProject) {
-                                def result = unitTestDjango (env.STAGE_NAME, devProject, devSuffix)
+                                def result = unitTestDjango (devProject, devSuffix)
                             }
                         }
                     },
@@ -555,17 +553,15 @@ pipeline {
                     },
                     'DEV - Smoke Tests': {
                         script {
-                            // Functional tests temporarily limited to smoke tests
-                            // See https://github.com/BCDevOps/BDDStack
                             _openshift(env.STAGE_NAME, toolsProject) {
-                                def result = functionalTest ('DEV - Smoke Tests', devHost, devSuffix, 'SearchSpecs')
+                                def result = functionalTest (devHost, devSuffix, 'SearchSpecs')
                             }
                         }
                     },
                     'DEV - API Tests': {
                         script {
                             _openshift(env.STAGE_NAME, devProject) {
-                                def result = apiTest ('DEV - API Tests', devHost, devSuffix)
+                                def result = apiTest (devHost, devSuffix)
                             }
                         }
                     }
@@ -729,7 +725,7 @@ pipeline {
             steps {
                 script {
                     _openshift(env.STAGE_NAME, stagingProject) {
-                        def result = unitTestDjango (env.STAGE_NAME, stagingProject, stagingSuffix)
+                        def result = unitTestDjango (stagingProject, stagingSuffix)
                     }
                 }
             }
@@ -743,7 +739,7 @@ pipeline {
             steps {
                 script {
                     _openshift(env.STAGE_NAME, toolsProject) {
-                        def result = apiTest ('STAGING - API Tests', stagingHost, stagingSuffix)
+                        def result = apiTest (stagingHost, stagingSuffix)
                     }
                 }
             }
@@ -758,7 +754,7 @@ pipeline {
             steps {
                 script {
                     _openshift(env.STAGE_NAME, toolsProject) {
-                        def result = functionalTest ('STAGING - Smoke Tests', stagingHost, stagingSuffix, 'SearchSpecs')
+                        def result = functionalTest (stagingHost, stagingSuffix, 'SearchSpecs')
                     }
                 }
             }
@@ -914,7 +910,7 @@ pipeline {
             steps {
                 script {
                     _openshift(env.STAGE_NAME, toolsProject) {
-                        def result = apiTest ('DEMO - API Tests', demoHost, demoSuffix)
+                        def result = apiTest (demoHost, demoSuffix)
                     }
                 }
             }
@@ -929,7 +925,7 @@ pipeline {
             steps {
                 script {
                     _openshift(env.STAGE_NAME, toolsProject) {
-                        def result = functionalTest ('DEMO - Smoke Tests', demoHost, demoSuffix, 'SearchSpecs')
+                        def result = functionalTest (demoHost, demoSuffix, 'SearchSpecs')
                     }
                 }
             }
@@ -1085,7 +1081,7 @@ pipeline {
             steps {
                 script {
                     _openshift(env.STAGE_NAME, toolsProject) {
-                        def result = functionalTest ('PROD - Smoke Tests', prodUrl, prodSuffix, 'SearchSpecs')
+                        def result = functionalTest (prodUrl, prodSuffix, 'SearchSpecs')
                     }
                 }
             }
