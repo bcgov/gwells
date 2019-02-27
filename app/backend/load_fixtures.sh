@@ -11,14 +11,14 @@ IFS=$'\n\t'
 # Parameters and defaults
 #
 COMMAND=${1:-"all"}
-FIXTURE_SET=${FIXTURES:-"\
-	gwells-codetables.json \
-	wellsearch-codetables.json \
-	registries-codetables.json \
-	registries.json \
-	wellsearch.json \
-	aquifers.json \
-"}
+FIXTURE_SET=(
+	"gwells-codetables.json"
+	"wellsearch-codetables.json"
+	"registries-codetables.json"
+	"registries.json"
+	"wellsearch.json"
+	"aquifers.json"
+)
 
 
 # Show message if pano params
@@ -42,7 +42,10 @@ fi
 #
 if [ "${COMMAND}" == "all" ]
 then
-	python manage.py loaddata "${FIXTURE_SET}"
+	for f in ${FIXTURE_SET[@]}
+	do
+		python manage.py loaddata $f
+	done
 else
 	python manage.py loaddata "${COMMAND}"
 fi
