@@ -58,7 +58,7 @@ npm install
 # npm run build
 # Run unit tests in build stage with the code below
 echo "--> testing and building frontend files"
-npm run unit -- --runInBand && npm run build
+npm run build
 cd ..
 
 if should_collectstatic; then
