@@ -499,90 +499,72 @@ pipeline {
             }
         }
 
-
-        // the Django Unit Tests stage runs backend unit tests using a test DB that is
-        // created and destroyed afterwards.
-        stage('DEV - Django Unit Tests') {
+        stage('DEV - Testing') {
             when {
                 expression { env.CHANGE_TARGET != 'master' && env.CHANGE_TARGET != 'demo' }
             }
             steps {
-                script {
-                    _openshift(env.STAGE_NAME, devProject) {
-                        def result = unitTestDjango (env.STAGE_NAME, devProject, devSuffix)
+                parallel(
+                    'DEV - Django Unit Tests': {
+                        // the Django Unit Tests stage runs backend unit tests using a test DB that is
+                        // created and destroyed afterwards.
+                        script {
+                            _openshift(env.STAGE_NAME, devProject) {
+                                def result = unitTestDjango (env.STAGE_NAME, devProject, devSuffix)
+                            }
+                        }
+                    },
+                    'DEV - Load Fixtures': {
+                        script {
+                            _openshift(env.STAGE_NAME, devProject) {
+                                def newVersion = openshift.selector("dc", "${devAppName}").object().status.latestVersion
+                                def pods = openshift.selector('pod', [deployment: "${devAppName}-${newVersion}"])
+
+                                echo "Loading fixtures"
+                                def ocoutput = openshift.exec(
+                                    pods.objects()[0].metadata.name,
+                                    "--",
+                                    "bash -c '\
+                                        cd /opt/app-root/src/backend; \
+                                        python manage.py loaddata \
+                                        gwells-codetables.json \
+                                        wellsearch-codetables.json \
+                                        registries-codetables.json \
+                                        registries.json \
+                                        wellsearch.json \
+                                        aquifers.json \
+                                    '"
+                                )
+                                echo "Load Fixtures results: "+ ocoutput.actions[0].out
+
+                                openshift.exec(
+                                    pods.objects()[0].metadata.name,
+                                    "--",
+                                    "bash -c '\
+                                        cd /opt/app-root/src/backend; \
+                                        python manage.py createinitialrevisions \
+                                    '"
+                                )
+                            }
+                        }
+                    },
+                    'DEV - Smoke Tests': {
+                        script {
+                            // Functional tests temporarily limited to smoke tests
+                            // See https://github.com/BCDevOps/BDDStack
+                            _openshift(env.STAGE_NAME, toolsProject) {
+                                def result = functionalTest ('DEV - Smoke Tests', devHost, devSuffix, 'SearchSpecs')
+                            }
+                        }
+                    },
+                    'DEV - API Tests': {
+                        script {
+                            _openshift(env.STAGE_NAME, devProject) {
+                                def result = apiTest ('DEV - API Tests', devHost, devSuffix)
+                            }
+                        }
                     }
-                }
-            }
-        }
-
-
-        stage('DEV - Load Fixtures') {
-            when {
-                expression { env.CHANGE_TARGET != 'master' && env.CHANGE_TARGET != 'demo' }
-            }
-            steps {
-                script {
-                    _openshift(env.STAGE_NAME, devProject) {
-                        def newVersion = openshift.selector("dc", "${devAppName}").object().status.latestVersion
-                        def pods = openshift.selector('pod', [deployment: "${devAppName}-${newVersion}"])
-
-                        echo "Loading fixtures"
-                        def ocoutput = openshift.exec(
-                            pods.objects()[0].metadata.name,
-                            "--",
-                            "bash -c '\
-                                cd /opt/app-root/src/backend; \
-                                python manage.py loaddata \
-                                gwells-codetables.json \
-                                wellsearch-codetables.json \
-                                registries-codetables.json \
-                                registries.json \
-                                wellsearch.json \
-                                aquifers.json \
-                            '"
-                        )
-                        echo "Load Fixtures results: "+ ocoutput.actions[0].out
-
-                        openshift.exec(
-                            pods.objects()[0].metadata.name,
-                            "--",
-                            "bash -c '\
-                                cd /opt/app-root/src/backend; \
-                                python manage.py createinitialrevisions \
-                            '"
-                        )
-                    }
-                }
-            }
-        }
-
-        
-        // Functional tests temporarily limited to smoke tests
-        // See https://github.com/BCDevOps/BDDStack
-        stage('DEV - Smoke Tests') {
-            when {
-                expression { env.CHANGE_TARGET != 'master' && env.CHANGE_TARGET != 'demo' }
-            }
-            steps {
-                script {
-                    _openshift(env.STAGE_NAME, toolsProject) {
-                        def result = functionalTest ('DEV - Smoke Tests', devHost, devSuffix, 'SearchSpecs')
-                    }
-                }
-            }
-        }
-
-
-        stage('DEV - API Tests') {
-            when {
-                expression { env.CHANGE_TARGET != 'master' && env.CHANGE_TARGET != 'demo' }
-            }
-            steps {
-                script {
-                    _openshift(env.STAGE_NAME, devProject) {
-                        def result = apiTest ('DEV - API Tests', devHost, devSuffix)
-                    }
-                }
+                )
             }
         }
 
