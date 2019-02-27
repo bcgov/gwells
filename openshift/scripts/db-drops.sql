@@ -96,6 +96,7 @@ drop table if exists well_drilling_methods                  cascade;
 drop table if exists well_development_methods		 		cascade;
 drop table if exists wells_decommissiondescription          cascade;
 drop table if exists wells_decommissionmaterialcode         cascade;
+drop table if exists well_publication_status_code           cascade; 
 drop table if exists xform_aquifers                         cascade;
 drop table if exists yield_estimation_method_code           cascade;
 drop table if exists coordinate_acquisition_code            cascade;

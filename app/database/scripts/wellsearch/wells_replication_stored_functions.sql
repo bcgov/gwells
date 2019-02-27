@@ -480,6 +480,7 @@ BEGIN
     well_yield_unit_code        ,
     latitude                    ,
     longitude                   ,
+    geom                        ,
     ground_elevation            ,
     well_orientation            ,
     ground_elevation_method_code,
@@ -581,6 +582,13 @@ BEGIN
     xform.well_yield_unit_code              ,
     xform.latitude                          ,
     xform.longitude                         ,
+    CASE 
+      WHEN xform.latitude is NULL OR
+          xform.longitude IS NULL THEN
+        NULL
+      ELSE  
+          ST_SetSRID(ST_MakePoint(longitude, latitude),3005) 
+    END AS geom                             ,
     xform.ground_elevation                  ,
     xform.well_orientation                  ,
     xform.ground_elevation_method_code      ,

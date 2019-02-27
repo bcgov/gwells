@@ -36,6 +36,7 @@
               "total_depth_drilled": null,
               "decommission_backfill_material": null,
               "latitude": 48.413551,
+              "geom": "POINT(-123.359973 48.413551)",
               "static_water_level": null,
               "artesian_flow": null,
               "alteration_end_date": null,
