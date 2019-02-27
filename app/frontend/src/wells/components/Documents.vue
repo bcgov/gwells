@@ -39,20 +39,22 @@
           </div>
         </div>
       </div>
-      <div class="row no-gutters" v-if="userRoles.wells.view">
-        <div class="col-md-12">
-          <h4>Internal documentation - authorized access only</h4>
-          <div v-if="error">
-            {{error}}
-          </div>
-          <ul v-else-if="files && files.private && files.private.length">
-            <li v-for="(file, index) in files.private" :key="index">
-              <a :href="file.url" :download="file.name" target="_blank" @click="handleDownloadEvent(file.name)">{{file.name}}</a>
-            </li>
-          </ul>
-            <div v-else>
-              No additional private documentation currently available for this well.
+      <div v-if="userRoles.submissions.edit">
+        <div class="row no-gutters" v-if="userRoles.wells.view">
+          <div class="col-md-12">
+            <h4>Internal documentation - authorized access only</h4>
+            <div v-if="error">
+              {{error}}
             </div>
+            <ul v-else-if="files && files.private && files.private.length">
+              <li v-for="(file, index) in files.private" :key="index">
+                <a :href="file.url" :download="file.name" target="_blank" @click="handleDownloadEvent(file.name)">{{file.name}}</a>
+              </li>
+            </ul>
+              <div v-else>
+                No additional private documentation currently available for this well.
+              </div>
+          </div>
         </div>
       </div>
     </div>
@@ -77,6 +79,9 @@ export default {
       required: true
     }
   },
+  created () {
+    this.loadFiles()
+  },
   data () {
     return {
       loading: true,
@@ -93,7 +98,7 @@ export default {
       if (this.well) {
         this.loadFiles()
       }
-    }
+    },
   },
   computed: {
     ...mapGetters(['userRoles', 'keycloak'])
