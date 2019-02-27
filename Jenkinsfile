@@ -208,10 +208,6 @@ def apiTest (String stageUrl, String envSuffix) {
             containerTemplate(
                 name: 'jnlp',
                 image: 'registry.access.redhat.com/openshift3/jenkins-agent-nodejs-8-rhel7',
-                resourceRequestCpu: '800m',
-                resourceLimitCpu: '800m',
-                resourceRequestMemory: '1Gi',
-                resourceLimitMemory: '1Gi',
                 workingDir: '/tmp',
                 command: '',
                 args: '${computer.jnlpmac} ${computer.name}',
@@ -247,7 +243,19 @@ def apiTest (String stageUrl, String envSuffix) {
                     )
                 ]
             )
-        ]
+        ],
+                yaml: """
+apiVersion: v1
+    resources:
+      limits:
+        cpu: 800m
+        memory: 1Gi
+      requests:
+        cpu: 800m
+        memory: 1Gi
+      metadata:
+        name: compute-resources-time-bound
+"""
     ) {
         node("nodejs-${appName}-${envSuffix}-${prNumber}") {
             checkout scm
