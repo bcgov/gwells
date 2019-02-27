@@ -512,9 +512,7 @@ pipeline {
                 parallel(
                     'DEV - Django Unit Tests': {
                         script {
-                            _openshift('DEV - Django Unit Tests', devProject) {
-                                def result = unitTestDjango (devProject, devSuffix)
-                            }
+                            def result = unitTestDjango (devProject, devSuffix)
                         }
                     },
                     'DEV - Load Fixtures': {
