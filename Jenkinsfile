@@ -522,13 +522,7 @@ pipeline {
                                 script: """
                                     oc rsh -n ${devProject} dc/${appName}-${devSuffix}-${prNumber} bash -c '\
                                         cd /opt/app-root/src/backend; \
-                                        python manage.py loaddata \
-                                        gwells-codetables.json \
-                                        wellsearch-codetables.json \
-                                        registries-codetables.json \
-                                        registries.json \
-                                        wellsearch.json \
-                                        aquifers.json \
+                                       ./load_fixtures.sh all \
                                     '
                                 """,
                                 returnStdout: true
