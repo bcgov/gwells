@@ -41,5 +41,4 @@ class WellsConfig(AppConfig):
     name = 'wells'
 
     def ready(self):
-        pass
         post_migrate.connect(post_migration_callback, sender=self)

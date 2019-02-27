@@ -72,13 +72,13 @@ export default {
           recordId: data.aquifer_id
         }).then((values) => {
           this.fileUploadSuccess()
-          this.$router.push({ name: 'view', params: { id: data.aquifer_id } })
+          this.$router.push({ name: 'aquifers-view', params: { id: data.aquifer_id } })
         }).catch((error) => {
           this.fileUploadFail()
           console.error(error)
         })
       } else {
-        this.$router.push({ name: 'view', params: { id: data.aquifer_id } })
+        this.$router.push({ name: 'aquifers-view', params: { id: data.aquifer_id } })
       }
     },
     handleError (error) {
