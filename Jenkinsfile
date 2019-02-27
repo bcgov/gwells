@@ -519,15 +519,10 @@ pipeline {
                     },
                     'DEV - Load Fixtures': {
                         script {
-                            _openshift('DEV - Load Fixtures', devProject) {
-                                def newVersion = openshift.selector("dc", "${devAppName}").object().status.latestVersion
-                                def pods = openshift.selector('pod', [deployment: "${devAppName}-${newVersion}"])
-
-                                echo "Loading fixtures"
-                                def ocoutput = openshift.exec(
-                                    pods.objects()[0].metadata.name,
-                                    "--",
-                                    "bash -c '\
+                            echo "Loading fixtures"
+                            def shResult = sh (
+                                script: """
+                                    oc rsh -n ${devProject} dc/${appName}-${devSuffix}-${prNumber} bash -c '\
                                         cd /opt/app-root/src/backend; \
                                         python manage.py loaddata \
                                         gwells-codetables.json \
@@ -536,26 +531,28 @@ pipeline {
                                         registries.json \
                                         wellsearch.json \
                                         aquifers.json \
-                                    '"
-                                )
-                                echo "Load Fixtures results: "+ ocoutput.actions[0].out
+                                    '
+                                """,
+                                returnStdout: true
+                            )
+                            echo "Results: "+ shResult
 
-                                openshift.exec(
-                                    pods.objects()[0].metadata.name,
-                                    "--",
-                                    "bash -c '\
+                            echo "Create initial revisions"
+                            shResult = sh (
+                                script: """
+                                    oc rsh -n ${devProject} dc/${appName}-${devSuffix}-${prNumber} bash -c '\
                                         cd /opt/app-root/src/backend; \
                                         python manage.py createinitialrevisions \
-                                    '"
-                                )
-                            }
+                                    '
+                                """,
+                                returnStdout: true
+                            )
+                            echo "Results: "+ shResult
                         }
                     },
                     'DEV - Smoke Tests': {
                         script {
-                            _openshift('DEV - Smoke Tests', toolsProject) {
-                                def result = functionalTest (devHost, devSuffix, 'SearchSpecs')
-                            }
+                            def result = functionalTest (devHost, devSuffix, 'SearchSpecs')
                         }
                     },
                     'DEV - API Tests': {
