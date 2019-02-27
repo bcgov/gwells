@@ -298,9 +298,6 @@ export default {
     isEditMode () {
       return this.mode === 'edit'
     }
-  },
-  created () {
-    this.FETCH_DRILLER_OPTIONS()
   }
 }
 </script>

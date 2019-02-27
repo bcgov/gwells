@@ -99,13 +99,6 @@ class AuditUpdateMixin(UpdateModelMixin):
         return super().perform_update(serializer)
 
 
-class RegistriesIndexView(TemplateView):
-    """
-    Index page for Registries app - contains js frontend web app
-    """
-    template_name = 'registries/registries.html'
-
-
 class OrganizationListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     """
     get:

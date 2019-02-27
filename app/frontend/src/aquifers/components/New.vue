@@ -14,7 +14,7 @@
 
 <template>
   <div>
-    <b-card no-body class="p-3 mb-4">
+    <b-card class="container container-wide p-1">
       <api-error v-if="error" :error="error"/>
 
       <b-container>

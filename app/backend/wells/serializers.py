@@ -282,7 +282,7 @@ class WellDetailSerializer(AuditModelSerializer):
             "screen_set",
             "linerperforation_set",
             "decommission_description_set",
-            "lithologydescription_set"
+            "lithologydescription_set",
         )
 
 
@@ -364,13 +364,8 @@ class WellListSerializer(serializers.ModelSerializer):
             "well_tag_number",
             "identification_plate_number",
             "owner_full_name",
-            # "owner_mailing_address", # temporarily disabled - required for staff, hidden for public
-            # "owner_city",
-            # "owner_province_state",
-            # "owner_postal_code",
             "well_class",
             "well_subclass",
-            "intended_water_use",
             "well_status",
             "well_publication_status",
             "licenced_status",
@@ -447,19 +442,7 @@ class WellListSerializer(serializers.ModelSerializer):
             "water_quality_odour",
             "total_depth_drilled",
             "finished_well_depth",
-            "final_casing_stick_up",
-            "bedrock_depth",
-            "water_supply_system_name",
-            "water_supply_system_well_name",
-            "static_water_level",
             "well_yield",
-            "artesian_flow",
-            "artesian_pressure",
-            "well_cap_type",
-            "well_disinfected",
-            "comments",
-            "alternative_specs_submitted",
-            "well_yield_unit",
             "diameter",
             "observation_well_number",
             "observation_well_status",
@@ -494,3 +477,11 @@ class WellTagSearchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Well
         fields = ("well_tag_number", "owner_full_name")
+
+
+class WellLocationSerializer(serializers.ModelSerializer):
+    """ serializes well locations """
+
+    class Meta:
+        model = Well
+        fields = ("well_tag_number", "latitude", "longitude")

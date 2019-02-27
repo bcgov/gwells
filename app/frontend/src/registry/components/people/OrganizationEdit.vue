@@ -486,7 +486,7 @@ export default {
     },
     loadCompanies () {
       // load full list of companies when page loads (for dropdown picker)
-      return ApiService.query('organizations/').then((response) => {
+      return ApiService.query('organizations').then((response) => {
         this.companies = response.data
       }).catch((e) => {
         this.companyListError = e.response

@@ -379,11 +379,6 @@ class SubmissionsOptions(APIView):
         return Response(options)
 
 
-class SubmissionsHomeView(TemplateView):
-    """Loads the html file containing the Submissions web app"""
-    template_name = 'submissions/submissions.html'
-
-
 class PreSignedDocumentKey(RetrieveAPIView):
     """
     Get a pre-signed document key to upload into an S3 compatible document store

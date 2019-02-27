@@ -311,7 +311,7 @@ export default {
     this.formReset()
     this.resetFieldErrors()
     if (this.section === 'company') {
-      ApiService.query('organizations/names/').then((response) => {
+      ApiService.query('organizations/names').then((response) => {
         this.companies = response.data
       }).catch(() => {
         this.orgListError = 'Unable to retrieve organization list.'

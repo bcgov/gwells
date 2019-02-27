@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "4159e8e0-2c15-44c3-90bb-f4375df2e15a",
-		"name": "GWELLS Well API",
+		"_postman_id": "cd39eefb-e356-4d4c-9cbb-2b77f49dfdb3",
+		"name": "GWELLS Well API copy",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -97,7 +97,6 @@
 							"listen": "test",
 							"script": {
 								"id": "20837dbe-0390-4709-b8dc-4ac3b22153f4",
-								"type": "text/javascript",
 								"exec": [
 									"var jsonData = pm.response.json()",
 									"",
@@ -105,7 +104,8 @@
 									"    pm.expect(pm.response.code).to.equal(200);",
 									"})",
 									""
-								]
+								],
+								"type": "text/javascript"
 							}
 						}
 					],
@@ -122,15 +122,14 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{base_url}}/api/v1/wells/?format=json",
+							"raw": "{{base_url}}/api/v1/wells?format=json",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
 								"v1",
-								"wells",
-								""
+								"wells"
 							],
 							"query": [
 								{

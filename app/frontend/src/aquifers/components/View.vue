@@ -13,7 +13,7 @@
 */
 
 <template>
-  <b-card no-body class="p-3 mb-4">
+  <b-card class="container container-wide p-1">
     <api-error v-if="error" :error="error"/>
     <b-alert show v-if="files_uploading">File Upload In Progress...</b-alert>
     <b-alert show v-if="!files_uploading && file_upload_error" variant="warning" >
@@ -163,7 +163,7 @@ export default {
       'fileUploadSuccess',
       'fileUploadFail'
     ]),
-    handleSaveSuccess () {
+    handleSaveSuccess (response) {
       this.fetch()
       this.navigateToView()
       if (this.$refs.aquiferHistory) {

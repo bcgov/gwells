@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "08a976cb-10f8-4557-953e-61a551dbdfd0",
+		"_postman_id": "87953bbc-eda0-4aa0-8c2c-17ec00c9eda6",
 		"name": "GWELLS Aquifers",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -307,7 +307,6 @@
 							"listen": "test",
 							"script": {
 								"id": "e291aa1f-95f3-4ca8-8e6c-f88b496980ba",
-								"type": "text/javascript",
 								"exec": [
 									"var jsonData = pm.response.json()",
 									"",
@@ -315,7 +314,8 @@
 									"    pm.expect(pm.response.code).to.equal(200);",
 									"})",
 									""
-								]
+								],
+								"type": "text/javascript"
 							}
 						}
 					],
@@ -327,15 +327,14 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{base_url}}/api/v1/aquifers/?aquifer_id=123",
+							"raw": "{{base_url}}/api/v1/aquifers?aquifer_id=123",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
 								"v1",
-								"aquifers",
-								""
+								"aquifers"
 							],
 							"query": [
 								{
@@ -354,7 +353,6 @@
 							"listen": "test",
 							"script": {
 								"id": "7ab4ef72-57cb-4c27-8b88-2cb379cab83c",
-								"type": "text/javascript",
 								"exec": [
 									"var jsonData = pm.response.json()",
 									"",
@@ -362,7 +360,8 @@
 									"    pm.expect(pm.response.code).to.equal(200);",
 									"})",
 									""
-								]
+								],
+								"type": "text/javascript"
 							}
 						}
 					],
@@ -374,15 +373,14 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{base_url}}/api/v1/aquifers/?search=asdf",
+							"raw": "{{base_url}}/api/v1/aquifers?search=asdf",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
 								"v1",
-								"aquifers",
-								""
+								"aquifers"
 							],
 							"query": [
 								{
@@ -403,7 +401,6 @@
 					"listen": "test",
 					"script": {
 						"id": "85664ee3-92d9-4510-b7d8-6bd6c44ec870",
-						"type": "text/javascript",
 						"exec": [
 							"var jsonData = pm.response.json()",
 							"",
@@ -411,7 +408,8 @@
 							"    pm.expect(pm.response.code).to.equal(200);",
 							"})",
 							""
-						]
+						],
+						"type": "text/javascript"
 					}
 				}
 			],
@@ -423,15 +421,14 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{base_url}}/api/v1/aquifers/",
+					"raw": "{{base_url}}/api/v1/aquifers",
 					"host": [
 						"{{base_url}}"
 					],
 					"path": [
 						"api",
 						"v1",
-						"aquifers",
-						""
+						"aquifers"
 					]
 				}
 			},
@@ -521,7 +518,6 @@
 					"listen": "test",
 					"script": {
 						"id": "8f3aa783-2831-40f6-a4f9-3ccf241c44aa",
-						"type": "text/javascript",
 						"exec": [
 							"var jsonData = pm.response.json()",
 							"pm.environment.set(\"aquifer_id\", jsonData.aquifer_id);",
@@ -581,7 +577,8 @@
 							"pm.test(\"Aquifer vulnerability equals name supplied in request\", function () {",
 							"    pm.expect(jsonData.vulnerability).to.eql(\"H\");",
 							"});"
-						]
+						],
+						"type": "text/javascript"
 					}
 				}
 			],
@@ -664,15 +661,14 @@
 					]
 				},
 				"url": {
-					"raw": "{{base_url}}/api/v1/aquifers/",
+					"raw": "{{base_url}}/api/v1/aquifers",
 					"host": [
 						"{{base_url}}"
 					],
 					"path": [
 						"api",
 						"v1",
-						"aquifers",
-						""
+						"aquifers"
 					]
 				}
 			},
@@ -868,7 +864,7 @@
 					]
 				},
 				"url": {
-					"raw": "{{base_url}}/api/v1/aquifers/{{aquifer_id}}/",
+					"raw": "{{base_url}}/api/v1/aquifers/{{aquifer_id}}",
 					"host": [
 						"{{base_url}}"
 					],
@@ -876,8 +872,7 @@
 						"api",
 						"v1",
 						"aquifers",
-						"{{aquifer_id}}",
-						""
+						"{{aquifer_id}}"
 					]
 				}
 			},

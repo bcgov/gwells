@@ -1,15 +1,12 @@
 import axios from 'axios'
 import qs from 'querystring'
 
-const logging = process.env.NODE_ENV !== 'production'
-
 const ApiService = {
   init () {
     axios.defaults.baseURL = process.env.AXIOS_BASE_URL
 
     axios.interceptors.request.use(function (request) {
       // log requests to console while logging is on
-      logging && console.log(request)
 
       if (request.method === 'POST') {
         // send data as x-www-form-urlencoded
@@ -17,14 +14,11 @@ const ApiService = {
       }
       return request
     }, function (error) {
-      logging && console.log(error)
       return Promise.reject(error)
     })
     axios.interceptors.response.use(function (response) {
-      logging && console.log(response)
       return response
     }, function (error) {
-      logging && console.log(error)
       return Promise.reject(error)
     })
   },
@@ -44,22 +38,22 @@ const ApiService = {
     return axios.get(resource, { params: params })
   },
   get (resource, record) {
-    return axios.get(`${resource}/${record}/`)
+    return axios.get(`${resource}/${record}`)
   },
   post (resource, params) {
-    return axios.post(resource + '/', params)
+    return axios.post(resource, params)
   },
   patch (resource, record, params) {
-    return axios.patch(`${resource}/${record}/`, params)
+    return axios.patch(`${resource}/${record}`, params)
   },
   options (resource) {
     return axios.options(resource)
   },
   delete (resource, record) {
-    return axios.delete(`${resource}/${record}/`)
+    return axios.delete(`${resource}/${record}`)
   },
   history (resource, record) {
-    return axios.get(`${resource}/${record}/history/`)
+    return axios.get(`${resource}/${record}/history`)
   },
   presignedPutUrl (resource, record, filename, isPrivate) {
     return axios.get(`${resource}/${record}/presigned_put_url?filename=${filename}&private=${isPrivate}`)

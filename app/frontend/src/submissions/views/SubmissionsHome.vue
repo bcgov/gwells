@@ -12,63 +12,65 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-  <div class="card" v-if="userRoles.wells.edit || userRoles.submissions.edit">
-    <div class="card-body">
+  <div class="container p-1 container-wide">
+    <div class="card" v-if="userRoles.wells.edit || userRoles.submissions.edit">
+      <div class="card-body">
 
-      <b-form @submit.prevent="confirmSubmit">
-        <!-- if preview === true : Preview -->
-        <submission-preview
-          v-if="preview"
-          :form="form"
-          :activity="activityType"
-          :sections="displayFormSection"
-          :errors="errors"
-          :reportSubmitted="formSubmitSuccess"
-          :formSubmitLoading="formSubmitLoading"
-          :uploadedFiles="uploadedFiles"
-          v-on:back="handlePreviewBackButton"
-          v-on:startNewReport="handleExitPreviewAfterSubmit"
-          v-on:fetchFiles="fetchFiles"
-          />
-        <!-- if preview === false : Activity submission form -->
-        <activity-submission-form
-          v-else
-          :form="form"
-          :activityType.sync="activityType"
-          :sections="displayFormSection"
-          :formSteps="formSteps"
-          :errors="errors"
-          :formIsFlat.sync="formIsFlat"
-          :trackValueChanges="trackValueChanges"
-          :formSubmitLoading="formSubmitLoading"
-          :isStaffEdit="isStaffEdit"
-          :loading="loading"
-          :uploadedFiles="uploadedFiles"
-          v-on:preview="handlePreviewButton"
-          v-on:submit_edit="formSubmit"
-          v-on:resetForm="resetForm"
-          v-on:fetchFiles="fetchFiles"
-          />
+        <b-form @submit.prevent="confirmSubmit">
+          <!-- if preview === true : Preview -->
+          <submission-preview
+            v-if="preview"
+            :form="form"
+            :activity="activityType"
+            :sections="displayFormSection"
+            :errors="errors"
+            :reportSubmitted="formSubmitSuccess"
+            :formSubmitLoading="formSubmitLoading"
+            :uploadedFiles="uploadedFiles"
+            v-on:back="handlePreviewBackButton"
+            v-on:startNewReport="handleExitPreviewAfterSubmit"
+            v-on:fetchFiles="fetchFiles"
+            />
+          <!-- if preview === false : Activity submission form -->
+          <activity-submission-form
+            v-else
+            :form="form"
+            :activityType.sync="activityType"
+            :sections="displayFormSection"
+            :formSteps="formSteps"
+            :errors="errors"
+            :formIsFlat.sync="formIsFlat"
+            :trackValueChanges="trackValueChanges"
+            :formSubmitLoading="formSubmitLoading"
+            :isStaffEdit="isStaffEdit"
+            :loading="loading"
+            :uploadedFiles="uploadedFiles"
+            v-on:preview="handlePreviewButton"
+            v-on:submit_edit="formSubmit"
+            v-on:resetForm="resetForm"
+            v-on:fetchFiles="fetchFiles"
+            />
 
-        <!-- Form submission confirmation -->
-        <b-modal
-            v-model="confirmSubmitModal"
-            id="confirmSubmitModal"
-            centered
-            title="Confirm submission"
-            @shown="$refs.confirmSubmitConfirmBtn.focus()"
-            :return-focus="$refs.activitySubmitBtn">
-          Are you sure you want to submit this activity report?
-          <div slot="modal-footer">
-            <b-btn variant="primary" @click="confirmSubmitModal=false;formSubmit()" ref="confirmSubmitConfirmBtn">
-              Save
-            </b-btn>
-            <b-btn variant="light" @click="confirmSubmitModal=false">
-              Cancel
-            </b-btn>
-          </div>
-        </b-modal>
-      </b-form>
+          <!-- Form submission confirmation -->
+          <b-modal
+              v-model="confirmSubmitModal"
+              id="confirmSubmitModal"
+              centered
+              title="Confirm submission"
+              @shown="$refs.confirmSubmitConfirmBtn.focus()"
+              :return-focus="$refs.activitySubmitBtn">
+            Are you sure you want to submit this activity report?
+            <div slot="modal-footer">
+              <b-btn variant="primary" @click="confirmSubmitModal=false;formSubmit()" ref="confirmSubmitConfirmBtn">
+                Save
+              </b-btn>
+              <b-btn variant="light" @click="confirmSubmitModal=false">
+                Cancel
+              </b-btn>
+            </div>
+          </b-modal>
+        </b-form>
+      </div>
     </div>
   </div>
 </template>
@@ -594,76 +596,77 @@ export default {
 </script>
 
 <style lang="scss">
-.slide-leave-active,
-.slide-enter-active {
-  transition: 1s;
-}
-.slide-enter {
-  transform: translate(100%, 0);
-}
-.slide-leave-to {
-  transform: translate(-100%, 0);
-}
-.bounce-enter-active {
-  animation: bounce-in .5s;
-}
-.bounce-leave-active {
-  animation: bounce-out .2s;
-}
-@keyframes bounce-in {
-  0% {
-    transform: scale(0);
+  .slide-leave-active,
+  .slide-enter-active {
+    transition: 1s;
   }
-  50% {
-    transform: scale(1.5);
+  .slide-enter {
+    transform: translate(100%, 0);
   }
-  100% {
-    transform: scale(1);
+  .slide-leave-to {
+    transform: translate(-100%, 0);
   }
-}
-@keyframes bounce-out {
-  100% {
-    transform: scale(0)
+  .bounce-enter-active {
+    animation: bounce-in .5s;
   }
-}
-.input-width-small {
-  max-width: 3rem;
-}
-.input-width-medium {
-  max-width: 6rem;
-}
-.loader {
-  border: 5px solid #f3f3f3;
-  border-top: 5px solid #5b7b9c;
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  display: inline-block;
-  text-align: center;
-  vertical-align: middle;
-  animation: spin 2s linear infinite;
-}
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-.notifyText {
-  font-size: 18px;
-  display: inline-block;
-  text-align: center;
-  vertical-align: middle;
-  margin-left: 20px;
-  padding-top: 3px;
-}
-.errorTitle {
-  font-size: 18px;
-}
-.errorText {
-  padding-right: 20px;
-}
-.closeBtn {
-  position: absolute;
-  right: 10px;
-  top: 5px;
-}
+  .bounce-leave-active {
+    animation: bounce-out .2s;
+  }
+  @keyframes bounce-in {
+    0% {
+      transform: scale(0);
+    }
+    50% {
+      transform: scale(1.5);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  @keyframes bounce-out {
+    100% {
+      transform: scale(0)
+    }
+  }
+  .input-width-small {
+    max-width: 3rem;
+  }
+  .input-width-medium {
+    max-width: 6rem;
+  }
+  .loader {
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #5b7b9c;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: inline-block;
+    text-align: center;
+    vertical-align: middle;
+    animation: spin 2s linear infinite;
+  }
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  .notifyText {
+    font-size: 18px;
+    display: inline-block;
+    text-align: center;
+    vertical-align: middle;
+    margin-left: 20px;
+    padding-top: 3px;
+  }
+  .errorTitle {
+    font-size: 18px;
+  }
+  .errorText {
+    font-size: 18px;
+    padding-right: 20px;
+  }
+  .closeBtn {
+    position: absolute;
+    right: 10px;
+    top: 5px;
+  }
 </style>
