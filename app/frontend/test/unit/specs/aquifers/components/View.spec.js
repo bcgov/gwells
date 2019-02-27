@@ -48,7 +48,7 @@ describe('View Component', () => {
     store: new Vuex.Store({
       modules: { auth, aquiferCodes, documentState }
     }),
-    stubs: ['aquifer-documents'],
+    stubs: ['aquifer-documents', 'aquifer-form'],
     ...options
   })
 
@@ -120,15 +120,15 @@ describe('View Component', () => {
     describe('On save', () => {
       it('resets showSaveSuccess to false', () => {
         const wrapper = component({
-          data() {
+          data () {
             return {
               record: aquiferFixture,
               showSaveSuccess: true
             }
           },
           methods: {
-            fetch() { },
-            fetchFiles() {
+            fetch () { },
+            fetchFiles () {
               return {
                 public: [],
                 private: []
@@ -154,8 +154,8 @@ describe('View Component', () => {
             }
           },
           methods: {
-            fetch() { },
-            fetchFiles() {
+            fetch () { },
+            fetchFiles () {
               return {
                 public: [],
                 private: []
@@ -175,8 +175,8 @@ describe('View Component', () => {
       it('sends a patch with the contents of record on save', () => {
         const wrapper = component({
           methods: {
-            fetch() { },
-            fetchFiles() {
+            fetch () { },
+            fetchFiles () {
               return {
                 public: [],
                 private: []
@@ -192,58 +192,8 @@ describe('View Component', () => {
 
         wrapper.vm.save()
 
-        expect(axios.patch).toHaveBeenCalledWith('aquifers/10/', aquiferFixture)
+        expect(axios.patch).toHaveBeenCalledWith('aquifers/10', aquiferFixture)
       })
     })
-  })
-
-  it('displays field errors messages', () => {
-    let errorMessage = 'error message'
-
-    const wrapper = component({
-      data () {
-        return {
-          fieldErrors: {
-            mapping_year: [errorMessage],
-            aquifer_name: [errorMessage],
-            litho_stratographic_unit: [errorMessage],
-            location_description: [errorMessage],
-            vulnerability: [errorMessage],
-            material: [errorMessage],
-            subtype: [errorMessage],
-            quality_concern: [errorMessage],
-            productivity: [errorMessage],
-            area: [errorMessage],
-            demand: [errorMessage],
-            known_water_use: [errorMessage],
-            notes: [errorMessage]
-          }
-        }
-      },
-      methods: {
-          fetch () {},
-          fetchFiles () {
-            return {
-              public: [],
-              private: []
-            }
-          }
-        },
-      propsData: { edit: true }
-    })
-
-    expect(wrapper.find('#aquifer-mapping-year + [role="alert"]').text()).toBe(errorMessage)
-    expect(wrapper.find('#aquifer-name + [role="alert"]').text()).toBe(errorMessage)
-    expect(wrapper.find('#aquifer-litho-stratigraphic-unit + [role="alert"]').text()).toBe(errorMessage)
-    expect(wrapper.find('#aquifer-location-description + [role="alert"]').text()).toBe(errorMessage)
-    expect(wrapper.find('#aquifer-vulnerability + [role="alert"]').text()).toBe(errorMessage)
-    expect(wrapper.find('#aquifer-material + [role="alert"]').text()).toBe(errorMessage)
-    expect(wrapper.find('#aquifer-subtype + [role="alert"]').text()).toBe(errorMessage)
-    expect(wrapper.find('#aquifer-quality-concern + [role="alert"]').text()).toBe(errorMessage)
-    expect(wrapper.find('#aquifer-productivity + [role="alert"]').text()).toBe(errorMessage)
-    expect(wrapper.find('#aquifer-area + [role="alert"]').text()).toBe(errorMessage)
-    expect(wrapper.find('#aquifer-demand + [role="alert"]').text()).toBe(errorMessage)
-    expect(wrapper.find('#aquifer-known-water-use + [role="alert"]').text()).toBe(errorMessage)
-    expect(wrapper.find('#aquifer-notes + [role="alert"]').text()).toBe(errorMessage)
   })
 })

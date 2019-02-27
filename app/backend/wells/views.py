@@ -18,6 +18,13 @@ from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView
 
+from django_filters import rest_framework as restfilters
+
+from functools import reduce
+import operator
+
+from django.db.models import Q
+
 from rest_framework import filters
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -44,8 +51,25 @@ from wells.serializers import (
     WellListSerializer,
     WellTagSearchSerializer,
     WellDetailSerializer,
-    WellDetailAdminSerializer)
+    WellDetailAdminSerializer,
+    WellLocationSerializer)
 from wells.permissions import WellsEditPermissions
+
+
+class WellSearchFilter(restfilters.FilterSet):
+    well_tag_number = restfilters.CharFilter()
+    identification_plate_number = restfilters.CharFilter()
+    owner_full_name = restfilters.CharFilter(lookup_expr='icontains')
+    street_address = restfilters.CharFilter(lookup_expr='icontains')
+    legal_plan = restfilters.CharFilter()
+    legal_lot = restfilters.CharFilter()
+
+
+class WellLocationFilter(WellSearchFilter, restfilters.FilterSet):
+    ne_lat = restfilters.NumberFilter(field_name='latitude', lookup_expr='lte')
+    ne_long = restfilters.NumberFilter(field_name='longitude', lookup_expr='lte')
+    sw_lat = restfilters.NumberFilter(field_name='latitude', lookup_expr='gte')
+    sw_long = restfilters.NumberFilter(field_name='longitude', lookup_expr='gte')
 
 
 class WellDetailView(DetailView):
@@ -194,6 +218,11 @@ class WellListAPIView(ListAPIView):
                 Prefetch("water_quality_characteristics")
             ) \
             .order_by("well_tag_number")
+
+        well_tag_or_plate = self.request.query_params.get('well', None)
+        if well_tag_or_plate:
+            qs = qs.filter(Q(well_tag_number=well_tag_or_plate) | Q(identification_plate_number=well_tag_or_plate))
+
         return qs
 
     def list(self, request):
@@ -226,6 +255,51 @@ class WellTagSearchAPIView(ListAPIView):
         'well_tag_number',
         'owner_full_name',
     )
+
+
+class WellLocationListAPIView(ListAPIView):
+    """ returns well locations for a given search
+
+        get: returns a list of wells with locations only
+    """
+
+    permission_classes = (DjangoModelPermissionsOrAnonReadOnly,)
+    model = Well
+    queryset = Well.objects.all()
+    serializer_class = WellLocationSerializer
+
+    # Allow searching on name fields, names of related companies, etc.
+    filter_backends = (restfilters.DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter)
+    ordering = ('well_tag_number',)
+    filterset_class = WellLocationFilter
+    pagination_class = None
+
+    # search_fields and get_queryset are fragile here.
+    # they need to match up with the search results returned by WellListAPIView.
+    # an attempt was made to factor out filtering logic into WellSearchFilter (which WellLocationFilter inherits),
+    # but so far, not all the searchable fields have been put into that class.
+    # Please note the difference between "searchable fields" (one query param will return results that are valid
+    # for any of these fields) and "filter fields" (search by a single individual fields)
+    search_fields = ('legal_pid', 'legal_plan', 'legal_district_lot', 'legal_block', 'legal_section', 'legal_township', 'legal_range')
+
+    def get_queryset(self):
+        qs = self.queryset
+
+        well_tag_or_plate = self.request.query_params.get('well', None)
+        if well_tag_or_plate:
+            qs = qs.filter(Q(well_tag_number=well_tag_or_plate) | Q(identification_plate_number=well_tag_or_plate))
+
+        return qs
+
+    def get(self, request):
+        """ cancels request if too many wells are found"""
+
+        count = WellLocationFilter(request.GET, queryset=Well.objects.all()).qs.count()
+        # return an empty response if there are too many wells to display
+        if count > 2000:
+            return Response([])
+        return super().get(request)
 
 
 class PreSignedDocumentKey(APIView):

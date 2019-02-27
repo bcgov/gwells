@@ -138,11 +138,6 @@ class WaterUseListAPIView(ListAPIView):
     serializer_class = serializers.WaterUseSerializer
 
 
-class AquiferHomeView(TemplateView):
-    """Loads the html file containing the Aquifer web app"""
-    template_name = 'aquifers/aquifers.html'
-
-
 class ListFiles(APIView):
     """
     List documents associated with an aquifer

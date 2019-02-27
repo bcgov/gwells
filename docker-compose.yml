@@ -48,7 +48,6 @@ services:
         set -x &&
         cd /app/frontend &&
         npm install &&
-        npm run build &&
         npm run ${NPM_CMD:-dev}"
     ports:
       - "8080:8080"

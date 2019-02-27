@@ -17,14 +17,17 @@ import Vuex, {mapActions} from 'vuex'
 import VueNoty from 'vuejs-noty'
 import BootstrapVue from 'bootstrap-vue'
 import App from './App'
-import router from './router'
+import router from './router.js'
 import { store } from './store'
 import '@/common/assets/css/bootstrap-theme.min.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import vueSmoothScroll from 'vue-smoothscroll'
 import vSelect from 'vue-select'
 import FormInput from '@/common/components/FormInput.vue'
+import VueMoment from 'vue-moment'
 import {FETCH_CONFIG} from '@/common/store/config.js'
+
+import 'tabulator-tables/dist/css/bootstrap/tabulator_bootstrap4.min.css'
 
 // GWELLS js API library (helper methods for working with API)
 import ApiService from '@/common/services/ApiService.js'
@@ -37,6 +40,7 @@ Vue.use(VueNoty, {
 })
 Vue.use(BootstrapVue)
 Vue.use(vueSmoothScroll)
+Vue.use(VueMoment)
 Vue.component('v-select', vSelect)
 Vue.component('form-input', FormInput)
 
@@ -52,9 +56,7 @@ new Vue({
   el: '#app',
   router,
   store,
-  components: {
-    App
-  },
+  components: { App },
   template: '<App/>',
   methods: {
     ...mapActions([

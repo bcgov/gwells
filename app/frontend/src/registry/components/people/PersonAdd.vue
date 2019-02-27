@@ -499,7 +499,7 @@ export default {
       })
     },
     newOrgHandler (orgGuid) {
-      ApiService.query('organizations/names/').then((response) => {
+      ApiService.query('organizations/names').then((response) => {
         this.companies = response.data
 
         // Find the new company with the "emitted" organization record UUID
@@ -520,7 +520,7 @@ export default {
     }
   },
   created () {
-    ApiService.query('organizations/names/').then((response) => {
+    ApiService.query('organizations/names').then((response) => {
       this.companies = response.data
     }).catch(() => {
       this.orgListError = 'Unable to retrieve organization list.'

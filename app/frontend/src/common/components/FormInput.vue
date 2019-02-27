@@ -4,6 +4,7 @@
     :id="id"
     :label="label"
     :label-for="`${id}Input`">
+    <slot></slot>
     <b-form-select v-if="select"
         :id="`${id}Input`"
         :state="validation"
