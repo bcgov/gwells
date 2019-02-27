@@ -11,7 +11,7 @@ IFS=$'\n\t'
 # Parameters and defaults
 #
 COMMAND=${1:-"all"}
-FIXTURE_SET=(
+FIXTURES=(
 	"gwells-codetables.json"
 	"wellsearch-codetables.json"
 	"registries-codetables.json"
@@ -23,16 +23,13 @@ FIXTURE_SET=(
 
 # Show message if pano params
 #
-if [ "${#}" -lt 1 ]
+if [ "${#}" -eq 0 ]
 then
 	echo
 	echo "Load Fixtures"
 	echo
 	echo "Specify which fixtures to load or 'all' for everything."
 	echo " './load_fixtures.sh <all|fixture.json>'"
-	echo
-	echo "Set variables to non-defaults at runtime.  E.g.:"
-	echo " 'VERBOSE=true FIXTURE_SET="fix1.json fix2.json" ./load_fixtures.sh all'"
 	echo
 	exit
 fi
@@ -42,7 +39,7 @@ fi
 #
 if [ "${COMMAND}" == "all" ]
 then
-	for f in ${FIXTURE_SET[@]}
+	for f in ${FIXTURES[@]}
 	do
 		python manage.py loaddata $f
 	done
