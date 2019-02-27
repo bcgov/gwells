@@ -512,14 +512,14 @@ pipeline {
                 parallel(
                     'DEV - Django Unit Tests': {
                         script {
-                            _openshift(env.STAGE_NAME, devProject) {
+                            _openshift('DEV - Django Unit Tests', devProject) {
                                 def result = unitTestDjango (devProject, devSuffix)
                             }
                         }
                     },
                     'DEV - Load Fixtures': {
                         script {
-                            _openshift(env.STAGE_NAME, devProject) {
+                            _openshift('DEV - Load Fixtures', devProject) {
                                 def newVersion = openshift.selector("dc", "${devAppName}").object().status.latestVersion
                                 def pods = openshift.selector('pod', [deployment: "${devAppName}-${newVersion}"])
 
@@ -553,14 +553,14 @@ pipeline {
                     },
                     'DEV - Smoke Tests': {
                         script {
-                            _openshift(env.STAGE_NAME, toolsProject) {
+                            _openshift('DEV - Smoke Tests', toolsProject) {
                                 def result = functionalTest (devHost, devSuffix, 'SearchSpecs')
                             }
                         }
                     },
                     'DEV - API Tests': {
                         script {
-                            _openshift(env.STAGE_NAME, devProject) {
+                            _openshift('DEV - API Tests', devProject) {
                                 def result = apiTest (devHost, devSuffix)
                             }
                         }
