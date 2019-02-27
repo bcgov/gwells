@@ -156,43 +156,43 @@ def functionalTest (String stageUrl, String envSuffix, String toTest='all') {
 // Functional test script
 // Can be limited by assinging toTest var
 def unitTestDjango (String envProject, String envSuffix) {
-    def DB_target = envSuffix == "staging" ? "${appName}-pgsql-${envSuffix}" : "${appName}-pgsql-${envSuffix}-${prNumber}"
-    def DB_newVersion = openshift.selector("dc", "${DB_target}").object().status.latestVersion
-    def DB_pod = openshift.selector('pod', [deployment: "${DB_target}-${DB_newVersion}"])
-    echo "Temporarily granting elevated DB rights"
-    def db_ocoutput_grant = openshift.exec(
-        DB_pod.objects()[0].metadata.name,
-        "--",
-        "bash -c '\
-            psql -c \"ALTER USER \\\"\${POSTGRESQL_USER}\\\" WITH SUPERUSER;\" \
-        '"
-    )
-    echo "Temporary DB grant results: "+ db_ocoutput_grant.actions[0].out
-
+    // Deployment config names for db and backend
+    def dbTarget = envSuffix == "staging" ? "${appName}-pgsql-${envSuffix}" : "${appName}-pgsql-${envSuffix}-${prNumber}"
     def target = envSuffix == "staging" ? "${appName}-${envSuffix}" : "${appName}-${envSuffix}-${prNumber}"
-    def newVersion = openshift.selector("dc", "${target}").object().status.latestVersion
-    def pods = openshift.selector('pod', [deployment: "${target}-${newVersion}"])
+
+    echo "Temporarily elevating DB rights"
+    def pgResult = sh (
+        script: """
+            oc rsh -n ${devProject} dc/${dbTarget} bash -c '\
+                psql -c \"ALTER USER \\\"\${POSTGRESQL_USER}\\\" WITH SUPERUSER;\" \
+            '
+        """,
+        returnStdout: true
+    )
+    echo "Results: "+ pgResult
 
     echo "Running Django unit tests"
-    def ocoutput = openshift.exec(
-        pods.objects()[0].metadata.name,
-        "--",
-        "bash -c '\
+    def dTResult = sh (
+        script: """
+            oc rsh -n ${envProject} dc/${appName}-${envSuffix}-${prNumber} bash -c '\
             cd /opt/app-root/src/backend; \
             python manage.py test -c nose.cfg \
-        '"
+            '
+        """,
+        returnStdout: true
     )
-    echo "Django test results: "+ ocoutput.actions[0].out
+    echo "Results: "+ dTResult
 
-    echo "Revoking ADMIN rights"
-    def db_ocoutput_revoke = openshift.exec(
-        DB_pod.objects()[0].metadata.name,
-        "--",
-        "bash -c '\
+    echo "Revoking temporary DB rights"
+    pgResult = sh (
+        script: """
+            oc rsh -n ${devProject} dc/${dbTarget} bash -c '\
             psql -c \"ALTER USER \\\"\${POSTGRESQL_USER}\\\" WITH NOSUPERUSER;\" \
-        '"
+            '
+        """,
+        returnStdout: true
     )
-    echo "DB Revocation results: "+ db_ocoutput_revoke.actions[0].out
+    echo "Results: "+ pgResult
 }
 
 
