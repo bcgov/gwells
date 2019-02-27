@@ -196,6 +196,26 @@ def unitTestDjango (String envProject, String envSuffix) {
 }
 
 
+// Functional test script
+// Can be limited by assinging toTest var
+def unitTestNode (String envProject, String envSuffix) {
+    // Deployment config name for frontend
+    def target = envSuffix == "staging" ? "${appName}-${envSuffix}" : "${appName}-${envSuffix}-${prNumber}"
+
+    echo "Running Node unit tests"
+    def nTResult = sh (
+        script: """
+            oc rsh -n ${envProject} dc/${appName}-${envSuffix}-${prNumber} bash -c '\
+                cd /opt/app-root/src/frontend; \
+                npm run unit -- --runInBand \
+            '
+        """,
+        returnStdout: true
+    )
+    echo "Results: "+ nTResult
+}
+
+
 // API test function
 def apiTest (String stageUrl, String envSuffix) {
     podTemplate(
@@ -521,6 +541,11 @@ pipeline {
                     'DEV - Django Unit Tests': {
                         script {
                             def result = unitTestDjango (devProject, devSuffix)
+                        }
+                    },
+                    'DEV - Node Unit Tests': {
+                        script {
+                            def result = unitTestNode (devProject, devSuffix)
                         }
                     },
                     'DEV - Load Fixtures': {
