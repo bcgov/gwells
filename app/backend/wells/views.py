@@ -159,23 +159,23 @@ class ListFiles(APIView):
     """
 
     @swagger_auto_schema(responses={200: openapi.Response('OK',
-        openapi.Schema(type=openapi.TYPE_OBJECT, properties={
-            'public': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
-                type=openapi.TYPE_OBJECT,
-                properties={
-                    'url': openapi.Schema(type=openapi.TYPE_STRING),
-                    'name': openapi.Schema(type=openapi.TYPE_STRING)
-                }
-            )),
-            'private': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
-                type=openapi.TYPE_OBJECT,
-                properties={
-                    'url': openapi.Schema(type=openapi.TYPE_STRING),
-                    'name': openapi.Schema(type=openapi.TYPE_STRING)
-                }
-            ))
-        })
-    )})
+                                                          openapi.Schema(type=openapi.TYPE_OBJECT, properties={
+                                                              'public': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
+                                                                  type=openapi.TYPE_OBJECT,
+                                                                  properties={
+                                                                      'url': openapi.Schema(type=openapi.TYPE_STRING),
+                                                                      'name': openapi.Schema(type=openapi.TYPE_STRING)
+                                                                  }
+                                                              )),
+                                                              'private': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
+                                                                  type=openapi.TYPE_OBJECT,
+                                                                  properties={
+                                                                      'url': openapi.Schema(type=openapi.TYPE_STRING),
+                                                                      'name': openapi.Schema(type=openapi.TYPE_STRING)
+                                                                  }
+                                                              ))
+                                                          })
+                                                          )})
     def get(self, request, tag):
         user_is_staff = self.request.user.groups.filter(
             name=WELLS_VIEWER_ROLE).exists()
@@ -295,9 +295,9 @@ class WellLocationListAPIView(ListAPIView):
     def get(self, request):
         """ cancels request if too many wells are found"""
 
-        count = WellLocationFilter(request.GET, queryset=Well.objects.all()).qs.count()
+        count = self.get_queryset().count()
         # return an empty response if there are too many wells to display
-        if count > 2000:
+        if count > 5000:
             return Response([])
         return super().get(request)
 
