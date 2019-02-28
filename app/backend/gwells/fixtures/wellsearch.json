@@ -8,7 +8,7 @@
             "update_user": null,
             "update_date": null,
             "activity_submission": null,
-            "well": 9193161,
+            "well": 112316,
             "start": "192.00",
             "end": "192.00",
             "internal_diameter": "6.00",
@@ -25,7 +25,7 @@
             "update_user": null,
             "update_date": null,
             "activity_submission": null,
-            "well": 9193161,
+            "well": 112316,
             "start": "195.00",
             "end": "200.00",
             "internal_diameter": "5.00",
@@ -42,7 +42,7 @@
             "update_user": null,
             "update_date": null,
             "activity_submission": null,
-            "well": 9193161,
+            "well": 112316,
             "start": "192.00",
             "end": "195.00",
             "internal_diameter": "5.00",
@@ -59,7 +59,7 @@
             "update_user": null,
             "update_date": null,
             "activity_submission": null,
-            "well": 2,
+            "well": 20143,
             "start": null,
             "end": null,
             "internal_diameter": null,
@@ -124,7 +124,7 @@
             "update_user": "PROXY_WELLS",
             "update_date": "2016-11-10T20:16:35Z",
             "aquifer_id": 25,
-            "well_tag_number": 2
+            "well_tag_number": 20143
         }
     },
     {
@@ -159,7 +159,7 @@
             "create_date": "2016-12-08T14:12:27Z",
             "update_user": null,
             "update_date": null,
-            "well_tag_number": 5013,
+            "well_tag_number": 112286,
             "liner_thickness": "0.188",
             "liner_diameter": "4.00",
             "liner_from": "25.00",
@@ -221,7 +221,7 @@
             "update_user": null,
             "update_date": null,
             "activity_submission": null,
-            "well": 9193161,
+            "well": 112316,
             "start": "0.00",
             "end": "195.00",
             "diameter": "6.630",
@@ -259,7 +259,7 @@
             "update_user": "PROXY_WELLS",
             "update_date": "2016-12-08T14:16:00Z",
             "activity_submission": null,
-            "well": 5013,
+            "well": 112286,
             "start": "0.00",
             "end": "38.80",
             "diameter": "6.000",
@@ -278,7 +278,7 @@
             "update_user": "PROXY_WELLS",
             "update_date": "2016-02-09T21:54:45Z",
             "activity_submission": null,
-            "well": 2,
+            "well": 20143,
             "start": "0.00",
             "end": "168.00",
             "diameter": "4.500",
@@ -297,7 +297,7 @@
             "update_user": "PROXY_EWELLS_USER",
             "update_date": "2016-12-10T23:39:17Z",
             "activity_submission": null,
-            "well": 9193161,
+            "well": 112316,
             "lithology_from": "1.00",
             "lithology_to": "144.00",
             "lithology_raw_data": "GRAVEL, FINE SAND",
@@ -326,7 +326,7 @@
             "update_user": "PROXY_EWELLS_USER",
             "update_date": "2016-12-10T23:39:17Z",
             "activity_submission": null,
-            "well": 9193161,
+            "well": 112316,
             "lithology_from": "175.00",
             "lithology_to": "200.00",
             "lithology_raw_data": "MEDIUM SAND, GRAVEL",
@@ -355,7 +355,7 @@
             "update_user": "PROXY_EWELLS_USER",
             "update_date": "2016-12-10T23:39:17Z",
             "activity_submission": null,
-            "well": 9193161,
+            "well": 112316,
             "lithology_from": "167.00",
             "lithology_to": "175.00",
             "lithology_raw_data": "GRAVEL, MEDIUM SAND",
@@ -384,7 +384,7 @@
             "update_user": "PROXY_EWELLS_USER",
             "update_date": "2016-12-10T23:39:17Z",
             "activity_submission": null,
-            "well": 9193161,
+            "well": 112316,
             "lithology_from": "144.00",
             "lithology_to": "167.00",
             "lithology_raw_data": "GRAVEL, FINE SAND",
@@ -413,7 +413,7 @@
             "update_user": "PROXY_EWELLS_USER",
             "update_date": "2016-12-10T23:39:17Z",
             "activity_submission": null,
-            "well": 9193161,
+            "well": 112316,
             "lithology_from": "0.00",
             "lithology_to": "1.00",
             "lithology_raw_data": "DARK BROWN TOPSOIL",
@@ -558,7 +558,7 @@
             "update_user": "PROXY_EWELLS_USER",
             "update_date": "2016-12-08T14:12:27Z",
             "activity_submission": null,
-            "well": 5013,
+            "well": 112286,
             "lithology_from": "37.00",
             "lithology_to": "182.00",
             "lithology_raw_data": "GRANIT, BEDROCK",
@@ -587,7 +587,7 @@
             "update_user": "PROXY_EWELLS_USER",
             "update_date": "2016-12-08T14:12:27Z",
             "activity_submission": null,
-            "well": 5013,
+            "well": 112286,
             "lithology_from": "7.00",
             "lithology_to": "19.00",
             "lithology_raw_data": "TILL, CLAY",
@@ -616,7 +616,7 @@
             "update_user": "PROXY_EWELLS_USER",
             "update_date": "2016-12-08T14:12:27Z",
             "activity_submission": null,
-            "well": 5013,
+            "well": 112286,
             "lithology_from": "0.00",
             "lithology_to": "7.00",
             "lithology_raw_data": "GRAVEL",
@@ -645,7 +645,7 @@
             "update_user": "PROXY_EWELLS_USER",
             "update_date": "2016-12-08T14:12:27Z",
             "activity_submission": null,
-            "well": 5013,
+            "well": 112286,
             "lithology_from": "19.00",
             "lithology_to": "37.00",
             "lithology_raw_data": "GRANITE, SOME CLAY",
@@ -674,7 +674,7 @@
             "update_user": "PROXY_WELLS",
             "update_date": "2016-02-09T21:43:55Z",
             "activity_submission": null,
-            "well": 2,
+            "well": 20143,
             "lithology_from": "60.00",
             "lithology_to": "260.00",
             "lithology_raw_data": "GRANITE & BLACK FRACTURED ROCK",
@@ -703,7 +703,7 @@
             "update_user": "PROXY_WELLS",
             "update_date": "2016-02-09T21:43:18Z",
             "activity_submission": null,
-            "well": 2,
+            "well": 20143,
             "lithology_from": "50.00",
             "lithology_to": "60.00",
             "lithology_raw_data": null,
@@ -732,7 +732,7 @@
             "update_user": "PROXY_WELLS",
             "update_date": "2016-02-09T21:44:36Z",
             "activity_submission": null,
-            "well": 2,
+            "well": 20143,
             "lithology_from": "260.00",
             "lithology_to": "267.00",
             "lithology_raw_data": null,
@@ -761,7 +761,7 @@
             "update_user": "PROXY_WELLS",
             "update_date": "2016-02-09T21:43:03Z",
             "activity_submission": null,
-            "well": 2,
+            "well": 20143,
             "lithology_from": "0.00",
             "lithology_to": "50.00",
             "lithology_raw_data": "SAND, GRAVEL, CLAY",
@@ -790,7 +790,7 @@
             "update_user": "PROXY_WELLS",
             "update_date": "2016-02-09T21:44:57Z",
             "activity_submission": null,
-            "well": 2,
+            "well": 20143,
             "lithology_from": "267.00",
             "lithology_to": "285.00",
             "lithology_raw_data": "SAND, BLUE CLAY & ROCK",
@@ -910,12 +910,13 @@
             "decommission_reason": null,
             "decommission_method": null,
             "decommission_details": null,
-            "water_quality_characteristics": []
+            "water_quality_characteristics": [],
+            "geom": "POINT(-122.540000 49.260000)"
         }
     },
     {
         "model": "wells.well",
-        "pk": 9193161,
+        "pk": 112316,
         "fields": {
             "create_user": "PROXY_EWELLS_USER",
             "create_date": "2016-12-10T23:39:17Z",
@@ -1025,7 +1026,8 @@
             "static_level_before_test": "141.20",
             "drawdown": "190.00",
             "hydro_fracturing_performed": false,
-            "hydro_fracturing_yield_increase": null
+            "hydro_fracturing_yield_increase": null,
+            "geom": "POINT(-122.540000 49.200000)"
         }
     },
     {
@@ -1140,12 +1142,13 @@
             "static_level_before_test": "80.00",
             "drawdown": null,
             "hydro_fracturing_performed": false,
-            "hydro_fracturing_yield_increase": null
+            "hydro_fracturing_yield_increase": null,
+            "geom": "POINT(-122.580000 49.230000)"
         }
     },
     {
         "model": "wells.well",
-        "pk": 5013,
+        "pk": 112286,
         "fields": {
             "create_user": "PROXY_EWELLS_USER",
             "create_date": "2016-12-08T14:12:27Z",
@@ -1255,12 +1258,13 @@
             "static_level_before_test": null,
             "drawdown": null,
             "hydro_fracturing_performed": false,
-            "hydro_fracturing_yield_increase": null
+            "hydro_fracturing_yield_increase": null,
+            "geom": "POINT(-122.590000 49.250000)"
         }
     },
     {
         "model": "wells.well",
-        "pk": 2,
+        "pk": 20143,
         "fields": {
             "create_user": "PROXY_EWELLS_USER",
             "create_date": "2016-02-09T21:42:04Z",
@@ -1372,7 +1376,8 @@
             "hydro_fracturing_performed": false,
             "hydro_fracturing_yield_increase": null,
             "decommission_sealant_material": "CONCRETE",
-            "decommission_backfill_material": "test"
+            "decommission_backfill_material": "test",
+            "geom": "POINT(-125.300830 52.465449)"
         }
     },
     {

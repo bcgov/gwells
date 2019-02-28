@@ -35,7 +35,7 @@
             </li>
           </ul>
           <div v-else>
-              No additional documentation available.
+              No additional documentation available for this well.
           </div>
         </div>
       </div>
@@ -50,9 +50,9 @@
               <a :href="file.url" :download="file.name" target="_blank" @click="handleDownloadEvent(file.name)">{{file.name}}</a>
             </li>
           </ul>
-            <div v-else>
-              No additional private documentation available.
-            </div>
+          <div v-else>
+            No additional private documentation available for this well.
+          </div>
         </div>
       </div>
     </div>
@@ -76,6 +76,9 @@ export default {
     well: {
       required: true
     }
+  },
+  created () {
+    this.loadFiles()
   },
   data () {
     return {

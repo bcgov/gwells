@@ -88,7 +88,7 @@
                     type="text"
                     v-model="drillerForm.person.well_driller_orcs_no"/>
                   <b-form-text id="drillerORCSExample">
-                  Example: 38000-25/DRI SMIT J
+                  ORCS format: 38000-25/DRI XXXX X
                   </b-form-text>
                 </b-form-group>
               </b-col>
@@ -103,7 +103,7 @@
                     type="text"
                     v-model="drillerForm.person.pump_installer_orcs_no"/>
                   <b-form-text id="pumpORCSExample">
-                    example: 38000-25/PUMP SMIT J
+                    ORCS format: 38000-25/PUMP XXXX X
                   </b-form-text>
                 </b-form-group>
               </b-col>
