@@ -482,6 +482,9 @@ class WellTagSearchSerializer(serializers.ModelSerializer):
 class WellLocationSerializer(serializers.ModelSerializer):
     """ serializes well locations """
 
+    geom_hash = serializers.CharField()
+    count = serializers.IntegerField()
+
     class Meta:
         model = Well
-        fields = ("well_tag_number", "latitude", "longitude")
+        fields = ("geom_hash", "count")

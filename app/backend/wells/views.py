@@ -46,6 +46,7 @@ from gwells.pagination import APILimitOffsetPagination
 from gwells.settings.base import get_env_variable
 
 from wells.filters import WellListFilter
+from wells.cluster import cluster
 from wells.models import Well
 from wells.serializers import (
     WellListSerializer,
@@ -159,23 +160,23 @@ class ListFiles(APIView):
     """
 
     @swagger_auto_schema(responses={200: openapi.Response('OK',
-        openapi.Schema(type=openapi.TYPE_OBJECT, properties={
-            'public': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
-                type=openapi.TYPE_OBJECT,
-                properties={
-                    'url': openapi.Schema(type=openapi.TYPE_STRING),
-                    'name': openapi.Schema(type=openapi.TYPE_STRING)
-                }
-            )),
-            'private': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
-                type=openapi.TYPE_OBJECT,
-                properties={
-                    'url': openapi.Schema(type=openapi.TYPE_STRING),
-                    'name': openapi.Schema(type=openapi.TYPE_STRING)
-                }
-            ))
-        })
-    )})
+                                                          openapi.Schema(type=openapi.TYPE_OBJECT, properties={
+                                                              'public': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
+                                                                  type=openapi.TYPE_OBJECT,
+                                                                  properties={
+                                                                      'url': openapi.Schema(type=openapi.TYPE_STRING),
+                                                                      'name': openapi.Schema(type=openapi.TYPE_STRING)
+                                                                  }
+                                                              )),
+                                                              'private': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
+                                                                  type=openapi.TYPE_OBJECT,
+                                                                  properties={
+                                                                      'url': openapi.Schema(type=openapi.TYPE_STRING),
+                                                                      'name': openapi.Schema(type=openapi.TYPE_STRING)
+                                                                  }
+                                                              ))
+                                                          })
+                                                          )})
     def get(self, request, tag):
         user_is_staff = self.request.user.groups.filter(
             name=WELLS_VIEWER_ROLE).exists()
@@ -268,9 +269,9 @@ class WellLocationListAPIView(ListAPIView):
     queryset = Well.objects.all()
     serializer_class = WellLocationSerializer
 
-    # Allow searching on name fields, names of related companies, etc.
-    filter_backends = (restfilters.DjangoFilterBackend,
-                       filters.SearchFilter, filters.OrderingFilter)
+    # # Allow searching on name fields, names of related companies, etc.
+    # filter_backends = (restfilters.DjangoFilterBackend,
+    #                    filters.SearchFilter, filters.OrderingFilter)
     ordering = ('well_tag_number',)
     filterset_class = WellLocationFilter
     pagination_class = None
@@ -287,18 +288,24 @@ class WellLocationListAPIView(ListAPIView):
         qs = self.queryset
 
         well_tag_or_plate = self.request.query_params.get('well', None)
+        ne_lat = float(self.request.query_params.get('ne_lat', None))
+        ne_long = float(self.request.query_params.get('ne_long', None))
+        sw_lat = float(self.request.query_params.get('sw_lat', None))
+        sw_long = float(self.request.query_params.get('sw_long', None))
+
         if well_tag_or_plate:
             qs = qs.filter(Q(well_tag_number=well_tag_or_plate) | Q(identification_plate_number=well_tag_or_plate))
 
-        return qs
+        print(cluster(qs, ne_lat, ne_long, sw_lat, sw_long))
+        return cluster(qs, ne_lat, ne_long, sw_lat, sw_long)
 
     def get(self, request):
-        """ cancels request if too many wells are found"""
+        # """ cancels request if too many wells are found"""
 
-        count = WellLocationFilter(request.GET, queryset=Well.objects.all()).qs.count()
-        # return an empty response if there are too many wells to display
-        if count > 2000:
-            return Response([])
+        # count = WellLocationFilter(request.GET, queryset=Well.objects.all()).qs.cluster()
+        # # return an empty response if there are too many wells to display
+        # if count > 2000:
+        #     return Response([])
         return super().get(request)
 
 
