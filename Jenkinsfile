@@ -229,9 +229,9 @@ def apiTest (String stageName, String stageUrl, String envSuffix) {
                 containerTemplate(
                     name: 'jnlp',
                     image: 'registry.access.redhat.com/openshift3/jenkins-agent-nodejs-8-rhel7',
-                    resourceRequestCpu: '800m',
+                    resourceRequestCpu: '500m',
                     resourceLimitCpu: '800m',
-                    resourceRequestMemory: '1Gi',
+                    resourceRequestMemory: '512Mi',
                     resourceLimitMemory: '1Gi',
                     activeDeadlineSeconds: '600',
                     podRetention: 'never',
