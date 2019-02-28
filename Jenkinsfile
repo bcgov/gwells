@@ -156,8 +156,8 @@ def functionalTest (String stageUrl, String envSuffix, String toTest='all') {
 // Django unit test function
 def unitTestDjango (String envProject, String envSuffix) {
     // Deployment config names for db and backend
-    def dbTarget = envSuffix == "staging" ? "${appName}-pgsql-${envSuffix}" : "${appName}-pgsql-${envSuffix}-${prNumber}"
-    def target = envSuffix == "staging" ? "${appName}-${envSuffix}" : "${appName}-${envSuffix}-${prNumber}"
+    def dbTarget = envSuffix == "dev" ? "${appName}-pgsql-${envSuffix}-${prNumber}" : "${appName}-pgsql-${envSuffix}"
+    def target = envSuffix == "dev" ? "${appName}-${envSuffix}-${prNumber}" : "${appName}-${envSuffix}"
 
     echo "Temporarily elevating DB rights"
     def pgResult = sh (
@@ -416,8 +416,7 @@ pipeline {
             steps {
                 script {
                     _openshift(env.STAGE_NAME, toolsProject) {
-                        echo "Running unit tests and building images..."
-                        echo "This may take several minutes. Logs are not forwarded to Jenkins by default (at this time)."
+                        echo "Building images. Logs are not forwarded to Jenkins by default (at this time)."
                         echo "Additional logs can be found by monitoring builds in ${toolsProject}"
 
                         // Select appropriate buildconfig
