@@ -199,107 +199,66 @@ def unitTestDjango (String stageName, String envProject, String envSuffix) {
 
 
 // API test function
-def apiTest (String stageUrl, String envSuffix) {
-    podTemplate(
-        label: "nodejs-${appName}-${envSuffix}-${prNumber}",
-        name: "nodejs-${appName}-${envSuffix}-${prNumber}",
-        serviceAccount: 'jenkins',
-        cloud: 'openshift',
-        activeDeadlineSeconds: 1800,
-        containers: [
-            containerTemplate(
-                name: 'jnlp',
-                image: 'registry.access.redhat.com/openshift3/jenkins-agent-nodejs-8-rhel7',
-                workingDir: '/tmp',
-                command: '',
-                args: '${computer.jnlpmac} ${computer.name}',
-                envVars: [
-                    envVar(
-                        key:'BASE_URL',
-                        value: "https://${stageUrl}/gwells"
-                    ),
-                    secretEnvVar(
-                        key: 'GWELLS_API_TEST_USER',
-                        secretName: 'apitest-secrets',
-                        secretKey: 'username'
-                    ),
-                    secretEnvVar(
-                        key: 'GWELLS_API_TEST_PASSWORD',
-                        secretName: 'apitest-secrets',
-                        secretKey: 'password'
-                    ),
-                    secretEnvVar(
-                        key: 'GWELLS_API_TEST_AUTH_SERVER',
-                        secretName: 'apitest-secrets',
-                        secretKey: 'auth_server'
-                    ),
-                    secretEnvVar(
-                        key: 'GWELLS_API_TEST_CLIENT_ID',
-                        secretName: 'apitest-secrets',
-                        secretKey: 'client_id'
-                    ),
-                    secretEnvVar(
-                        key: 'GWELLS_API_TEST_CLIENT_SECRET',
-                        secretName: 'apitest-secrets',
-                        secretKey: 'client_secret'
-                    )
-                ]
-            )
-        ],
-                yaml: """
-apiVersion: v1
-    resources:
-      limits:
-        cpu: 800m
-        memory: 1Gi
-      requests:
-        cpu: 800m
-        memory: 1Gi
-      metadata:
-        name: compute-resources-time-bound
-"""
-    ) {
-        node("nodejs-${appName}-${envSuffix}-${prNumber}") {
-            checkout scm
-            dir('api-tests') {
-                sh 'npm install -g newman'
-                try {
-                    sh """
-                        newman run ./registries_api_tests.json \
-                            --global-var test_user=\$GWELLS_API_TEST_USER \
-                            --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
-                            --global-var base_url=\$BASE_URL \
-                            --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
-                            --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
-                            --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
-                            -r cli,junit,html
-                        newman run ./wells_api_tests.json \
-                            --global-var test_user=\$GWELLS_API_TEST_USER \
-                            --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
-                            --global-var base_url=\$BASE_URL \
-                            --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
-                            --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
-                            --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
-                            -r cli,junit,html
-                        newman run ./submissions_api_tests.json \
-                            --global-var test_user=\$GWELLS_API_TEST_USER \
-                            --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
-                            --global-var base_url=\$BASE_URL \
-                            --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
-                            --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
-                            --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
-                            -r cli,junit,html
-                        newman run ./aquifers_api_tests.json \
-                            --global-var test_user=\$GWELLS_API_TEST_USER \
-                            --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
-                            --global-var base_url=\$BASE_URL \
-                            --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
-                            --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
-                            --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
-                            -r cli,junit,html
-                    """
-
-                    if ("dev".equalsIgnoreCase("${envSuffix}")) {
+def apiTest (String stageName, String stageUrl, String envSuffix) {
+    _openshift(env.STAGE_NAME, toolsProject) {
+        podTemplate(
+            label: "nodejs-${appName}-${envSuffix}-${prNumber}",
+            name: "nodejs-${appName}-${envSuffix}-${prNumber}",
+            serviceAccount: 'jenkins',
+            cloud: 'openshift',
+            activeDeadlineSeconds: 1800,
+            containers: [
+                containerTemplate(
+                    name: 'jnlp',
+                    image: 'registry.access.redhat.com/openshift3/jenkins-agent-nodejs-8-rhel7',
+                    resourceRequestCpu: '800m',
+                    resourceLimitCpu: '800m',
+                    resourceRequestMemory: '1Gi',
+                    resourceLimitMemory: '1Gi',
+                    activeDeadlineSeconds: '600',
+                    podRetention: 'never',
+                    workingDir: '/tmp',
+                    command: '',
+                    args: '${computer.jnlpmac} ${computer.name}',
+                    envVars: [
+                        envVar(
+                            key:'BASE_URL',
+                            value: "https://${stageUrl}/gwells"
+                        ),
+                        secretEnvVar(
+                            key: 'GWELLS_API_TEST_USER',
+                            secretName: 'apitest-secrets',
+                            secretKey: 'username'
+                        ),
+                        secretEnvVar(
+                            key: 'GWELLS_API_TEST_PASSWORD',
+                            secretName: 'apitest-secrets',
+                            secretKey: 'password'
+                        ),
+                        secretEnvVar(
+                            key: 'GWELLS_API_TEST_AUTH_SERVER',
+                            secretName: 'apitest-secrets',
+                            secretKey: 'auth_server'
+                        ),
+                        secretEnvVar(
+                            key: 'GWELLS_API_TEST_CLIENT_ID',
+                            secretName: 'apitest-secrets',
+                            secretKey: 'client_id'
+                        ),
+                        secretEnvVar(
+                            key: 'GWELLS_API_TEST_CLIENT_SECRET',
+                            secretName: 'apitest-secrets',
+                            secretKey: 'client_secret'
+                        )
+                    ]
+                )
+            ]
+        ) {
+            node("nodejs-${appName}-${envSuffix}-${prNumber}") {
+                checkout scm
+                dir('api-tests') {
+                    sh 'npm install -g newman'
+                    try {
                         sh """
                             newman run ./registries_api_tests.json \
                                 --global-var test_user=\$GWELLS_API_TEST_USER \
