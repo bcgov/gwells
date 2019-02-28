@@ -730,47 +730,28 @@ pipeline {
         }
 
 
-        // the Django Unit Tests stage runs backend unit tests using a test DB that is
-        // created and destroyed afterwards.
-        stage('Staging - Django Unit Tests') {
+        stage('STAGING - Testing') {
             when {
                 expression { env.CHANGE_TARGET == 'master' }
             }
             steps {
-                script {
-                    _openshift(env.STAGE_NAME, stagingProject) {
-                        def result = unitTestDjango (stagingProject, stagingSuffix)
+                parallel(
+                    'STAGING - Django Unit Tests': {
+                        script {
+                            unitTestDjango (stagingProject, stagingSuffix)
+                        }
+                    },
+                    'STAGING - Smoke Tests': {
+                        script {
+                            functionalTest (stagingHost, stagingSuffix, 'SearchSpecs')
+                        }
+                    },
+                    'STAGING - API Tests': {
+                        script {
+                            apiTest (stagingHost, stagingSuffix)
+                        }
                     }
-                }
-            }
-        }
-
-
-        stage('STAGING - API Tests') {
-            when {
-                expression { env.CHANGE_TARGET == 'master' }
-            }
-            steps {
-                script {
-                    _openshift(env.STAGE_NAME, toolsProject) {
-                        def result = apiTest (stagingHost, stagingSuffix)
-                    }
-                }
-            }
-        }
-
-
-        // Single functional test
-        stage('STAGING - Smoke Tests') {
-            when {
-                expression { env.CHANGE_TARGET == 'master' }
-            }
-            steps {
-                script {
-                    _openshift(env.STAGE_NAME, toolsProject) {
-                        def result = functionalTest (stagingHost, stagingSuffix, 'SearchSpecs')
-                    }
-                }
+                )
             }
         }
 
