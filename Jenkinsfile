@@ -274,7 +274,7 @@ def apiTest (String stageName, String stageUrl, String envSuffix) {
         ) {
             node("nodejs-${appName}-${envSuffix}-${prNumber}") {
                 checkout scm
-                dir('api-tests') {
+                dir('tests/api-tests') {
                     sh 'npm install -g newman'
                     try {
                         sh """
