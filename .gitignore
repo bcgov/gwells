@@ -77,7 +77,6 @@ var/
 .installed.cfg
 *.egg
 webpack-stats.json
-app/backend/*.sh
 app/backend/.env
 *.secret_env
 app/backend/.pip

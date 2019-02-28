@@ -54,8 +54,12 @@ services:
     volumes:
       - ./app:/app
       - /app/frontend/node_modules/
+    depends_on:
+      - backend
   backend:
-    image: gwells/backend
+    build:
+      context: ./app/backend
+      dockerfile: Dockerfile
     hostname: backend
     environment:
       APP_CONTEXT_ROOT: gwells
@@ -105,8 +109,7 @@ services:
       set -x &&
       cd /app/backend &&
       mkdir -p .pip &&
-      python3 -m pip install --upgrade pip &&
-      python3 -m pip install --cache-dir=.pip -r requirements.txt &&
+      ./pip_install_if_changed.sh &&
       python3 manage.py migrate --noinput &&
       echo Loading fixtures, this may take some time... &&
       python3 manage.py loaddata
@@ -121,6 +124,8 @@ services:
       python3 manage.py runserver 0.0.0.0:8000"
     volumes:
       - ./app:/app
+    depends_on:
+      - db
     ports:
       - "8000:8000"
     depends_on:
