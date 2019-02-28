@@ -49,7 +49,7 @@ const submissionStore = {
     [FETCH_WELLS] ({ commit }) {
       if (!this.state.wells) {
         // fetch the wells once
-        ApiService.query('wells/tags').then((res) => {
+        ApiService.query('wells/tags?ordering=well_tag_number').then((res) => {
           commit(SET_WELLS, res.data)
         }).catch((e) => {
           commit(SET_ERROR, e.response)
