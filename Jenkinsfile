@@ -198,7 +198,7 @@ def unitTestDjango (String envProject, String envSuffix) {
 //   test function
 def unitTestNode (String envProject, String envSuffix) {
     // Deployment config name for frontend
-    def target = envSuffix == "staging" ? "${appName}-${envSuffix}" : "${appName}-${envSuffix}-${prNumber}"
+    def target = envSuffix == "dev" ? "${appName}-${envSuffix}-${prNumber}" : "${appName}-${envSuffix}"
 
     echo "Running Node unit tests"
     def nTResult = sh (
