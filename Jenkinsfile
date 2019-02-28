@@ -153,8 +153,7 @@ def functionalTest (String stageUrl, String envSuffix, String toTest='all') {
 }
 
 
-// Functional test script
-// Can be limited by assinging toTest var
+// Django unit test function
 def unitTestDjango (String envProject, String envSuffix) {
     // Deployment config names for db and backend
     def dbTarget = envSuffix == "staging" ? "${appName}-pgsql-${envSuffix}" : "${appName}-pgsql-${envSuffix}-${prNumber}"
@@ -163,7 +162,7 @@ def unitTestDjango (String envProject, String envSuffix) {
     echo "Temporarily elevating DB rights"
     def pgResult = sh (
         script: """
-            oc rsh -n ${devProject} dc/${dbTarget} bash -c '\
+            oc rsh -n ${envProject} dc/${dbTarget} bash -c '\
                 psql -c \"ALTER USER \\\"\${POSTGRESQL_USER}\\\" WITH SUPERUSER;\" \
             '
         """,
@@ -174,7 +173,7 @@ def unitTestDjango (String envProject, String envSuffix) {
     echo "Running Django unit tests"
     def dTResult = sh (
         script: """
-            oc rsh -n ${envProject} dc/${appName}-${envSuffix}-${prNumber} bash -c '\
+            oc rsh -n ${envProject} dc/${target} bash -c '\
             cd /opt/app-root/src/backend; \
             python manage.py test -c nose.cfg \
             '
@@ -186,7 +185,7 @@ def unitTestDjango (String envProject, String envSuffix) {
     echo "Revoking temporary DB rights"
     pgResult = sh (
         script: """
-            oc rsh -n ${devProject} dc/${dbTarget} bash -c '\
+            oc rsh -n ${envProject} dc/${dbTarget} bash -c '\
             psql -c \"ALTER USER \\\"\${POSTGRESQL_USER}\\\" WITH NOSUPERUSER;\" \
             '
         """,
@@ -196,8 +195,7 @@ def unitTestDjango (String envProject, String envSuffix) {
 }
 
 
-// Functional test script
-// Can be limited by assinging toTest var
+// Node unit test function
 def unitTestNode (String envProject, String envSuffix) {
     // Deployment config name for frontend
     def target = envSuffix == "staging" ? "${appName}-${envSuffix}" : "${appName}-${envSuffix}-${prNumber}"
