@@ -295,7 +295,8 @@ class WellLocationListAPIView(ListAPIView):
     def get(self, request):
         """ cancels request if too many wells are found"""
 
-        count = self.get_queryset().count()
+        locations = WellLocationFilter(request.GET, queryset=Well.objects.all()).qs
+        count = WellSearchFilter(request.GET, queryset=locations).qs.count()
         # return an empty response if there are too many wells to display
         if count > 5000:
             return Response([])
