@@ -195,7 +195,7 @@ def unitTestDjango (String envProject, String envSuffix) {
 }
 
 
-// Node unit test function
+//   test function
 def unitTestNode (String envProject, String envSuffix) {
     // Deployment config name for frontend
     def target = envSuffix == "staging" ? "${appName}-${envSuffix}" : "${appName}-${envSuffix}-${prNumber}"
@@ -203,7 +203,7 @@ def unitTestNode (String envProject, String envSuffix) {
     echo "Running Node unit tests"
     def nTResult = sh (
         script: """
-            oc rsh -n ${envProject} dc/${appName}-${envSuffix}-${prNumber} bash -c '\
+            oc rsh -n ${envProject} dc/${target} bash -c '\
                 cd /opt/app-root/src/frontend; \
                 npm run unit -- --runInBand \
             '
@@ -739,6 +739,11 @@ pipeline {
                     'STAGING - Django Unit Tests': {
                         script {
                             unitTestDjango (stagingProject, stagingSuffix)
+                        }
+                    },
+                    'STAGING - Node Unit Tests': {
+                        script {
+                            def result = unitTestNode (stagingProject, stagingSuffix)
                         }
                     },
                     'STAGING - Smoke Tests': {
