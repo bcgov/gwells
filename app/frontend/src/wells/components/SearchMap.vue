@@ -134,7 +134,14 @@ export default {
           weight: 1,
           fillColor: '#0162fe', // The fill color of the circleMarker
           fillOpacity: 1.0 // How transparent the circleMarker's fill is
-        }).bindPopup(`<a href="/gwells/well/${item[2]}">${item[2]}</a>`)
+        }).bindPopup(`
+          <div>
+            Well Tag Number: <a href="/gwells/well/${item[2]}">${item[2]}</a>
+          </div>
+          <div>
+            Identification Plate Number: ${item[3] || ''}
+          </div>
+        `)
       }).forEach((marker) => {
         marker.addTo(this.markerGroup)
       })
@@ -152,6 +159,9 @@ export default {
       // In B.C. users are used to omitting the minus sign on longitude, it's always negative. So we're
       // very forgiving, and just always make sure longitude is negative.
       return this.longitude > 0 ? this.longitude * -1 : this.longitude
+    },
+    encodeHTML (input) {
+
     }
   }
 }

@@ -213,7 +213,7 @@ export default {
       }
       ApiService.query('wells/locations', params).then((response) => {
         this.locations = response.data.map((well) => {
-          return [well.latitude, well.longitude, well.well_tag_number]
+          return [well.latitude, well.longitude, well.well_tag_number, well.identification_plate_number]
         })
       })
     },
