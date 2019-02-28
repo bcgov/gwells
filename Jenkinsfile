@@ -532,12 +532,12 @@ pipeline {
                 parallel(
                     'DEV - Django Unit Tests': {
                         script {
-                            def result = unitTestDjango (devProject, devSuffix)
+                            unitTestDjango (devProject, devSuffix)
                         }
                     },
                     'DEV - Node Unit Tests': {
                         script {
-                            def result = unitTestNode (devProject, devSuffix)
+                            unitTestNode (devProject, devSuffix)
                         }
                     },
                     'DEV - Load Fixtures': {
@@ -569,7 +569,7 @@ pipeline {
                     },
                     'DEV - Smoke Tests': {
                         script {
-                            def result = functionalTest (devHost, devSuffix, 'SearchSpecs')
+                            functionalTest (devHost, devSuffix, 'SearchSpecs')
                         }
                     },
                     'DEV - API Tests': {
@@ -743,7 +743,7 @@ pipeline {
                     },
                     'STAGING - Node Unit Tests': {
                         script {
-                            def result = unitTestNode (stagingProject, stagingSuffix)
+                            unitTestNode (stagingProject, stagingSuffix)
                         }
                     },
                     'STAGING - Smoke Tests': {
@@ -903,31 +903,33 @@ pipeline {
         }
 
 
-        stage('DEMO - API Tests') {
+        stage('DEMO - Testing') {
             when {
                 expression { env.CHANGE_TARGET == 'demo' }
             }
             steps {
-                script {
-                    _openshift(env.STAGE_NAME, toolsProject) {
-                        def result = apiTest (demoHost, demoSuffix)
+                parallel(
+                    'DEMO - Django Unit Tests': {
+                        script {
+                            unitTestDjango (demoProject, demoSuffix)
+                        }
+                    },
+                    'DEMO - Node Unit Tests': {
+                        script {
+                            unitTestNode (demoProject, demoSuffix)
+                        }
+                    },
+                    'DEMO - Smoke Tests': {
+                        script {
+                            functionalTest (demoHost, demoSuffix, 'SearchSpecs')
+                        }
+                    },
+                    'DEMO - API Tests': {
+                        script {
+                            apiTest (demoHost, demoSuffix)
+                        }
                     }
-                }
-            }
-        }
-
-
-        // Single functional test
-        stage('DEMO - Smoke Tests') {
-            when {
-                expression { env.CHANGE_TARGET == 'demo' }
-            }
-            steps {
-                script {
-                    _openshift(env.STAGE_NAME, toolsProject) {
-                        def result = functionalTest (demoHost, demoSuffix, 'SearchSpecs')
-                    }
-                }
+                )
             }
         }
 
