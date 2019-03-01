@@ -31,27 +31,13 @@ from .survey import Survey, OnlineSurvey
 class Profile(models.Model):
     """
     Extended User Profile
-
-    SMGOV_USERDISPLAYNAME: The display name of the user that can be displayed on web pages
-    SMGOV_USEREMAIL: The email address of the user in local-part@domain format
-    SMGOV_USERIDENTIFIER: A character string that uniquely identifies the user.   This is 
-    typically a 32 character string consisting of hexadecimal characters but may be tailored 
-    to the requirements of the relying party.
-
     """
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name="profile")
-
     profile_guid = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False)
-    smgov_useridentifier = models.UUIDField(blank=True, null=True)
-    smgov_useremail = models.EmailField(unique=True, blank=True, null=True)
-    smgov_userdisplayname = models.CharField(
-        max_length=100, blank=True, null=True)
-    realm = models.CharField(max_length=10, default="Django")
+    username = models.CharField(max_length=100, blank=True, null=True)
     name = models.CharField(max_length=100, blank=True, null=True)
-
-    is_gwells_admin = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'profile'
