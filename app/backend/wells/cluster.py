@@ -1,5 +1,6 @@
 from django.contrib.gis.db import models
 from django.contrib.gis.db.models.functions import GeoHash
+from django.db.models import Case, CharField, Value, When
 
 
 def get_precision(ne_lat, ne_long, sw_lat, sw_long):
@@ -7,13 +8,6 @@ def get_precision(ne_lat, ne_long, sw_lat, sw_long):
 
     x = sw_long - ne_long
     y = ne_lat - sw_lat
-
-    if x + y > 10:
-        return 1
-
-    # a = x * y
-
-    # p = ((a / 180*360) + 1) * 6
 
     return 4
 
