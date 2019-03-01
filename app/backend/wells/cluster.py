@@ -10,8 +10,6 @@ def get_precision(ne_lat, ne_long, sw_lat, sw_long):
     y = abs(ne_lat - sw_lat)
     a = x*y
 
-    if a > 200:
-        return 2
     if a > 50:
         return 3
     if a > 10:

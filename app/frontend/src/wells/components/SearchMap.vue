@@ -112,21 +112,34 @@ export default {
       this.map.setMaxZoom(17)
     },
     createMarkers () {
+      // stop if this.locations does not contain geojson (e.g. it has not been loaded yet)
+      if (!this.locations.features && !this.locations.features.length) return
+
       // clear markers
       if (this.markerGroup) {
         this.map.removeLayer(this.markerGroup)
       }
 
+      const points = {}
+      points['type'] = 'FeatureCollection'
+      points['features'] = []
+
+      this.locations.features.forEach((feature) => {
+        for (let i = 0; i < feature.properties.count; i++) {
+          points.features.push(feature)
+        }
+      })
+
       const index = new Supercluster({
         radius: 40,
         maxZoom: 16
       })
-      index.load(this.locations)
+      index.load(points)
 
-      // const bounds = this.map.getBounds()
-      // const bbox = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()]
-      // const zoom = this.map.getZoom()
-      const clusters = index.getClusters([-180, -85, 180, 85], 2)
+      const bounds = this.map.getBounds()
+      const bbox = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()]
+      const zoom = this.map.getZoom()
+      const clusters = index.getClusters(bbox, zoom)
 
       const createClusterIcon = (feature, latlng) => {
         if (feature.properties.count === 1) {
