@@ -8,18 +8,14 @@ def get_precision(ne_lat, ne_long, sw_lat, sw_long):
     x = sw_long - ne_long
     y = ne_lat - sw_lat
 
-    if x > 360:
-        x = 360
-    if y > 180:
-        y = 180
+    if x + y > 10:
+        return 1
 
-    a = x * y
+    # a = x * y
 
     # p = ((a / 180*360) + 1) * 6
 
-    if a < 10:
-        return 7
-    return 6
+    return 4
 
 
 def geohash(qs, precision):

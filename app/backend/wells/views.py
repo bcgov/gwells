@@ -288,10 +288,10 @@ class WellLocationListAPIView(ListAPIView):
         qs = self.queryset
 
         well_tag_or_plate = self.request.query_params.get('well', None)
-        ne_lat = float(self.request.query_params.get('ne_lat', None))
-        ne_long = float(self.request.query_params.get('ne_long', None))
-        sw_lat = float(self.request.query_params.get('sw_lat', None))
-        sw_long = float(self.request.query_params.get('sw_long', None))
+        ne_lat = float(self.request.query_params.get('ne_lat', 60))
+        ne_long = float(self.request.query_params.get('ne_long', -112))
+        sw_lat = float(self.request.query_params.get('sw_lat', 48))
+        sw_long = float(self.request.query_params.get('sw_long', 142))
 
         if well_tag_or_plate:
             qs = qs.filter(Q(well_tag_number=well_tag_or_plate) | Q(identification_plate_number=well_tag_or_plate))
