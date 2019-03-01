@@ -17,6 +17,7 @@ from django.db.models import Prefetch
 from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView
+from django.contrib.gis.geos import Polygon
 
 from django_filters import rest_framework as restfilters
 
@@ -63,13 +64,6 @@ class WellSearchFilter(restfilters.FilterSet):
     street_address = restfilters.CharFilter(lookup_expr='icontains')
     legal_plan = restfilters.CharFilter()
     legal_lot = restfilters.CharFilter()
-
-
-class WellLocationFilter(WellSearchFilter, restfilters.FilterSet):
-    ne_lat = restfilters.NumberFilter(field_name='latitude', lookup_expr='lte')
-    ne_long = restfilters.NumberFilter(field_name='longitude', lookup_expr='lte')
-    sw_lat = restfilters.NumberFilter(field_name='latitude', lookup_expr='gte')
-    sw_long = restfilters.NumberFilter(field_name='longitude', lookup_expr='gte')
 
 
 class WellDetailView(DetailView):
@@ -272,8 +266,9 @@ class WellLocationListAPIView(ListAPIView):
     filter_backends = (restfilters.DjangoFilterBackend,
                        filters.SearchFilter, filters.OrderingFilter)
     ordering = ('well_tag_number',)
-    filterset_class = WellLocationFilter
+    filterset_class = WellSearchFilter
     pagination_class = None
+
 
     # search_fields and get_queryset are fragile here.
     # they need to match up with the search results returned by WellListAPIView.
@@ -294,8 +289,11 @@ class WellLocationListAPIView(ListAPIView):
 
     def get(self, request):
         """ cancels request if too many wells are found"""
+        bbox = (request.GET['sw_long'], request.GET['sw_lat'], request.GET['ne_long'], request.GET['ne_lat'])
+        poly = Polygon.from_bbox(bbox)
+        queryset = Well.objects.filter(geom__within=poly)
+        count = WellSearchFilter(request.GET, queryset).qs.count()
 
-        count = WellLocationFilter(request.GET, queryset=Well.objects.all()).qs.count()
         # return an empty response if there are too many wells to display
         if count > 2000:
             return Response([])

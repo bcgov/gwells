@@ -15,7 +15,7 @@ from functools import reduce
 import operator
 
 from django.db.models import Q
-
+from django.contrib.gis.geos import Polygon
 from wells.models import Well
 
 
@@ -73,8 +73,9 @@ class Search():
             max_long = max(start_long, end_long)
             min_long = min(start_long, end_long)
 
-            q_list.append(Q(latitude__gt=min_lat) & Q(latitude__lt=max_lat) &
-                          Q(longitude__gt=min_long) & Q(longitude__lt=max_long))
+            bbox = (min_long, min_lat, max_long, max_lat,)
+            poly = Polygon.from_bbox(bbox)
+            q_list.append(Q(geom__within=poly))
 
         if q_list:
             # If there are too many results, we return one plus the query limit to engage post-query logic in

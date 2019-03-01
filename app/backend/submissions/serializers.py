@@ -16,6 +16,7 @@ import logging
 from django.db import transaction
 from django.db.models import OneToOneField
 from rest_framework import serializers
+from django.contrib.gis.geos import Point
 
 from gwells.models import ProvinceStateCode
 from gwells.serializers import AuditModelSerializer
@@ -111,6 +112,10 @@ class WellSubmissionSerializerBase(serializers.ModelSerializer):
             foreign_keys_data[key] = validated_data.pop(key, None)
         # Create submission.
         validated_data['well_activity_type'] = self.get_well_activity_type()
+
+        # Convert lat long values into geom object stored on model
+        data = self.context['request'].data
+        validated_data['geom'] = Point(data['longitude'], data['latitude'])
 
         # If the yield_estimation_rate is specified, we default to USGPM
         if validated_data.get('yield_estimation_rate', None) and \

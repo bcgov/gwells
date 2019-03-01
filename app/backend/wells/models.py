@@ -632,10 +632,7 @@ class Well(AuditModel):
     id_plate_attached_by = models.CharField(
         max_length=100, blank=True, null=True, verbose_name='Well identification plate attached by')
 
-    latitude = models.DecimalField(
-        max_digits=8, decimal_places=6, blank=True, null=True, verbose_name='Latitude')
-    longitude = models.DecimalField(
-        max_digits=9, decimal_places=6, blank=True, null=True, verbose_name='Longitude')
+    # Contains Well Longitude and Latitude in that order
     geom = models.PointField(blank=True, null=True, verbose_name='Geo-referenced Location of the Well', srid=3005)
 
     ground_elevation = models.DecimalField(
@@ -907,6 +904,18 @@ class Well(AuditModel):
             "well_tag_number": self.well_tag_number
         }
 
+    def latitude(self):
+        if self.geom:
+            return self.geom.y
+        else:
+            return None
+
+    def longitude(self):
+        if self.geom:
+            return self.geom.x
+        else:
+            return None
+
 
 class Perforation(AuditModel):
     """
@@ -1112,10 +1121,9 @@ class ActivitySubmission(AuditModel):
     id_plate_attached_by = models.CharField(
         max_length=100, blank=True, null=True, verbose_name='Well identification plate attached by')
 
-    latitude = models.DecimalField(
-        max_digits=8, decimal_places=6, blank=True, null=True)
-    longitude = models.DecimalField(
-        max_digits=9, decimal_places=6, blank=True, null=True)
+    # Contains Well Longitude and Latitude in that order
+    geom = models.PointField(blank=True, null=True, verbose_name='Geo-referenced Location of the Well', srid=3005)
+
     coordinate_acquisition_code = models.ForeignKey(
         CoordinateAcquisitionCode, null=True, blank=True, verbose_name="Location Accuracy Code",
         db_column='coordinate_acquisition_code', on_delete=models.PROTECT)
@@ -1356,6 +1364,18 @@ class ActivitySubmission(AuditModel):
                                     self.well_activity_type.code, self.street_address)
         else:
             return '%s %s' % (self.activity_submission_guid, self.street_address)
+
+    def latitude(self):
+        if self.geom:
+            return self.geom.y
+        else:
+            return None
+
+    def longitude(self):
+        if self.geom:
+            return self.geom.x
+        else:
+            return None
 
 
 class LithologyDescription(AuditModel):
