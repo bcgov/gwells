@@ -299,15 +299,6 @@ class WellLocationListAPIView(ListAPIView):
         print(cluster(qs, ne_lat, ne_long, sw_lat, sw_long))
         return cluster(qs, ne_lat, ne_long, sw_lat, sw_long)
 
-    def get(self, request):
-        # """ cancels request if too many wells are found"""
-
-        # count = WellLocationFilter(request.GET, queryset=Well.objects.all()).qs.cluster()
-        # # return an empty response if there are too many wells to display
-        # if count > 2000:
-        #     return Response([])
-        return super().get(request)
-
 
 class PreSignedDocumentKey(APIView):
     """

@@ -6,6 +6,7 @@
 import L from 'leaflet'
 import { tiledMapLayer } from 'esri-leaflet'
 import debounce from 'lodash.debounce'
+import Supercluster from 'supercluster'
 
 // Extend control, making a locate
 L.Control.Locate = L.Control.extend({
@@ -37,10 +38,7 @@ export default {
     longitude: {
       type: Number
     },
-    locations: {
-      type: Array,
-      default: () => ([])
-    }
+    locations: null
   },
   data () {
     return {
@@ -119,25 +117,51 @@ export default {
         this.map.removeLayer(this.markerGroup)
       }
 
-      // create a new marker group
-      this.markerGroup = L.layerGroup()
+      const createClusterIcon = (feature, latlng) => {
+        if (feature.properties.count === 1) {
+          return L.circleMarker(latlng, {
+            radius: 4, // The radius of the circleMarker
+            color: '#000', // The color of the circleMarker
+            weight: 1,
+            fillColor: '#0162fe', // The fill color of the circleMarker
+            fillOpacity: 1.0 // How transparent the circleMarker's fill is
+          })
+        }
+
+        const count = feature.properties.count
+        const size =
+            count < 100 ? 'small'
+              : count < 1000 ? 'medium' : 'large'
+        const icon = L.divIcon({
+          html: `<div><span>${feature.properties.count}</span></div>`,
+          className: `marker-cluster marker-cluster-${size}`,
+          iconSize: L.point(40, 40)
+        })
+
+        return L.marker(latlng, {icon})
+      }
+
+      this.markerGroup = L.geoJSON(this.locations, {
+        pointToLayer: createClusterIcon
+      })
+
       this.markerGroup.addTo(this.map)
 
-      // filter locations for coordinates (coordinate either present or not),
-      // and then add them to the new marker group
-      this.locations.filter((item) => {
-        return item[0] && item[1]
-      }).map((item) => {
-        return L.circleMarker(L.latLng(item[0], item[1]), {
-          radius: 4, // The radius of the circleMarker
-          color: '#000', // The color of the circleMarker
-          weight: 1,
-          fillColor: '#0162fe', // The fill color of the circleMarker
-          fillOpacity: 1.0 // How transparent the circleMarker's fill is
-        }).bindPopup(`<a href="/gwells/well/${item[2]}">${item[2]}</a>`)
-      }).forEach((marker) => {
-        marker.addTo(this.markerGroup)
-      })
+      // create a new marker group
+
+      // this.locations.filter((item) => {
+      //   return item[0] && item[1]
+      // }).map((item) => {
+      //   return L.circleMarker(L.latLng(item[0], item[1]), {
+      //     radius: 4, // The radius of the circleMarker
+      //     color: '#000', // The color of the circleMarker
+      //     weight: 1,
+      //     fillColor: '#0162fe', // The fill color of the circleMarker
+      //     fillOpacity: 1.0 // How transparent the circleMarker's fill is
+      //   }).bindPopup(`<a href="/gwells/well/${item[2]}">${item[2]}</a>`)
+      // }).forEach((marker) => {
+      //   marker.addTo(this.markerGroup)
+      // })
     },
     setMarkerPopup (latitude, longitude) {
       this.marker.bindPopup('Latitude: ' + latitude + ', Longitude: ' + longitude)
@@ -174,4 +198,43 @@ export default {
 .geolocate:hover {
     opacity: 0.8;
 }
+
+.marker-cluster-small {
+  background-color: rgba(181, 226, 140, 0.6);
+}
+.marker-cluster-small div {
+  background-color: rgba(110, 204, 57, 0.6);
+}
+
+.marker-cluster-medium {
+  background-color: rgba(241, 211, 87, 0.6);
+}
+.marker-cluster-medium div {
+  background-color: rgba(240, 194, 12, 0.6);
+}
+
+.marker-cluster-large {
+  background-color: rgba(253, 156, 115, 0.6);
+}
+.marker-cluster-large div {
+  background-color: rgba(241, 128, 23, 0.6);
+}
+
+.marker-cluster {
+  background-clip: padding-box;
+  border-radius: 20px;
+}
+.marker-cluster div {
+  width: 30px;
+  height: 30px;
+  margin-left: 5px;
+  margin-top: 5px;
+  text-align: center;
+  border-radius: 15px;
+  font: 12px "Helvetica Neue", Arial, Helvetica, sans-serif;
+}
+.marker-cluster span {
+  line-height: 30px;
+}
+
 </style>

@@ -112,6 +112,7 @@ INSTALLED_APPS = (
     'django_filters',
     'django_extensions',
     'drf_multiple_model',
+    'rest_framework_gis',
     'reversion',
     'django.contrib.gis',
 )

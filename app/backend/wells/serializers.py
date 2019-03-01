@@ -12,6 +12,7 @@
     limitations under the License.
 """
 import logging
+import geohash
 
 from rest_framework import serializers
 from django.db import transaction
@@ -31,6 +32,11 @@ from wells.models import (
     AquiferLithologyCode,
 )
 
+from rest_framework_gis.serializers import (
+    GeoFeatureModelSerializer,
+    GeometrySerializerMethodField,
+)
+from django.contrib.gis.geos import Point
 
 logger = logging.getLogger(__name__)
 
@@ -479,12 +485,20 @@ class WellTagSearchSerializer(serializers.ModelSerializer):
         fields = ("well_tag_number", "owner_full_name")
 
 
-class WellLocationSerializer(serializers.ModelSerializer):
+class WellLocationSerializer(GeoFeatureModelSerializer):
     """ serializes well locations """
 
     geom_hash = serializers.CharField()
     count = serializers.IntegerField()
+    point = GeometrySerializerMethodField()
 
     class Meta:
         model = Well
-        fields = ("geom_hash", "count")
+        fields = ("geom_hash", "count", "point")
+        geo_field = "point"
+
+    def get_point(self, obj):
+        """Parse a geohashed point"""
+        print(obj)
+        y, x = geohash.decode(obj['geom_hash'])
+        return Point(x, y)
