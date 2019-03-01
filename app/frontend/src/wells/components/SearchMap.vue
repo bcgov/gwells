@@ -117,6 +117,17 @@ export default {
         this.map.removeLayer(this.markerGroup)
       }
 
+      const index = new Supercluster({
+        radius: 40,
+        maxZoom: 16
+      })
+      index.load(this.locations)
+
+      // const bounds = this.map.getBounds()
+      // const bbox = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()]
+      // const zoom = this.map.getZoom()
+      const clusters = index.getClusters([-180, -85, 180, 85], 2)
+
       const createClusterIcon = (feature, latlng) => {
         if (feature.properties.count === 1) {
           return L.circleMarker(latlng, {
@@ -141,7 +152,10 @@ export default {
         return L.marker(latlng, {icon})
       }
 
-      this.markerGroup = L.geoJSON(this.locations, {
+      console.log(JSON.parse(JSON.stringify(index)))
+      console.log(JSON.parse(JSON.stringify(clusters)))
+
+      this.markerGroup = L.geoJSON(index.points, {
         pointToLayer: createClusterIcon
       })
 

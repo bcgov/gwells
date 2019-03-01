@@ -14,6 +14,7 @@
 from urllib.parse import quote
 
 from django.db.models import Prefetch
+from django.contrib.gis.geos import Polygon
 from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView
@@ -64,13 +65,6 @@ class WellSearchFilter(restfilters.FilterSet):
     street_address = restfilters.CharFilter(lookup_expr='icontains')
     legal_plan = restfilters.CharFilter()
     legal_lot = restfilters.CharFilter()
-
-
-class WellLocationFilter(WellSearchFilter, restfilters.FilterSet):
-    ne_lat = restfilters.NumberFilter(field_name='latitude', lookup_expr='lte')
-    ne_long = restfilters.NumberFilter(field_name='longitude', lookup_expr='lte')
-    sw_lat = restfilters.NumberFilter(field_name='latitude', lookup_expr='gte')
-    sw_long = restfilters.NumberFilter(field_name='longitude', lookup_expr='gte')
 
 
 class WellDetailView(DetailView):
@@ -273,7 +267,7 @@ class WellLocationListAPIView(ListAPIView):
     # filter_backends = (restfilters.DjangoFilterBackend,
     #                    filters.SearchFilter, filters.OrderingFilter)
     ordering = ('well_tag_number',)
-    filterset_class = WellLocationFilter
+    filterset_class = WellSearchFilter
     pagination_class = None
 
     # search_fields and get_queryset are fragile here.
@@ -291,7 +285,11 @@ class WellLocationListAPIView(ListAPIView):
         ne_lat = float(self.request.query_params.get('ne_lat', 60))
         ne_long = float(self.request.query_params.get('ne_long', -112))
         sw_lat = float(self.request.query_params.get('sw_lat', 48))
-        sw_long = float(self.request.query_params.get('sw_long', 142))
+        sw_long = float(self.request.query_params.get('sw_long', -142))
+
+        geom = Polygon.from_bbox((sw_long, sw_lat, ne_long, ne_lat,))
+
+        qs = qs.filter(geom__contained=geom)
 
         if well_tag_or_plate:
             qs = qs.filter(Q(well_tag_number=well_tag_or_plate) | Q(identification_plate_number=well_tag_or_plate))
