@@ -298,7 +298,7 @@ class WellLocationListAPIView(ListAPIView):
         locations = WellLocationFilter(request.GET, queryset=Well.objects.all()).qs
         count = WellSearchFilter(request.GET, queryset=locations).qs.count()
         # return an empty response if there are too many wells to display
-        if count > 5000:
+        if count > 2000:
             return Response([])
         return super().get(request)
 
