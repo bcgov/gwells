@@ -140,15 +140,6 @@ export default {
       }).forEach((marker) => {
         marker.addTo(this.markerGroup)
       })
-
-      // if there's only one marker, set the map view to display it
-      // TODO: also zoom in on the bounding box of multiple markers
-      if (markers.length === 1) {
-        this.map.setView(L.latLng(markers[0][0], markers[0][1]), 13)
-      } else {
-        // setting latitude or longitude allows focusing map on a certain location (like a centroid of points)
-        this.map.setView([this.latitude ? this.latitude : 54.5, this.getLongitude() ? this.getLongitude() : -126.5, 5])
-      }
     },
     setMarkerPopup (latitude, longitude) {
       this.marker.bindPopup('Latitude: ' + latitude + ', Longitude: ' + longitude)
