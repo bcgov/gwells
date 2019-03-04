@@ -90,7 +90,7 @@ describe('Search Component', () => {
     wrapper.find('#aquifers-name').setValue('asdf')
     wrapper.find('form').trigger('submit')
 
-    expect(axios.get).toHaveBeenCalledWith('aquifers/', { 'params': { 'search': 'asdf' } })
+    expect(axios.get).toHaveBeenCalledWith('aquifers', { 'params': { 'search': 'asdf' } })
   })
 
   it('form reset resets response and query', () => {

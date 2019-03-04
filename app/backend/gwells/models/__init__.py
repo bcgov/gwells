@@ -17,7 +17,7 @@
 # See: https://www.python.org/dev/peps/pep-0008/#package-and-module-names
 import uuid
 
-from django.db import models
+from django.contrib.gis.db import models
 from django.contrib.auth.models import User
 from django.dispatch import receiver
 from django.db.models.signals import post_save
@@ -55,6 +55,27 @@ class Profile(models.Model):
 
     class Meta:
         db_table = 'profile'
+
+
+class Border(models.Model):
+    se_a_c_flg = models.CharField(max_length=254)
+    obejctid = models.FloatField()
+    shape = models.FloatField()
+    length_m = models.FloatField()
+    oic_number = models.CharField(max_length=7)
+    area_sqm = models.FloatField()
+    upt_date = models.CharField(max_length=20)
+    upt_type = models.CharField(max_length=50)
+    chng_org = models.CharField(max_length=30)
+    aa_parent = models.CharField(max_length=100)
+    aa_type = models.CharField(max_length=50)
+    aa_id = models.BigIntegerField()
+    aa_name = models.CharField(max_length=100)
+    abrvn = models.CharField(max_length=40)
+    bdy_type = models.CharField(max_length=20)
+    oic_year = models.CharField(max_length=4)
+    afctd_area = models.CharField(max_length=120)
+    geom = models.MultiPolygonField(srid=4269)
 
 
 @receiver(post_save, sender=User)

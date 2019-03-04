@@ -25,7 +25,6 @@ from drf_yasg.utils import swagger_auto_schema
 from reversion.views import RevisionMixin
 from rest_framework import filters, status, exceptions
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView
-from rest_framework.permissions import DjangoModelPermissionsOrAnonReadOnly
 from rest_framework.response import Response
 from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
 from rest_framework.views import APIView
@@ -34,7 +33,7 @@ from gwells.documents import MinioClient
 from gwells.roles import REGISTRIES_VIEWER_ROLE
 from gwells.models import ProvinceStateCode
 from gwells.pagination import APILimitOffsetPagination
-from gwells.roles import REGISTRIES_ADJUDICATOR_ROLE, REGISTRIES_AUTHORITY_ROLE
+from gwells.roles import REGISTRIES_EDIT_ROLE, REGISTRIES_VIEWER_ROLE
 from gwells.settings.base import get_env_variable
 from reversion.models import Version
 from registries.models import (
@@ -51,7 +50,7 @@ from registries.models import (
     RegistriesRemovalReason,
     SubactivityCode,
     WellClassCode)
-from registries.permissions import IsAdminOrReadOnly, RegistriesPermissions
+from registries.permissions import RegistriesEditPermissions, RegistriesEditOrReadOnly
 from registries.serializers import (
     ApplicationAdminSerializer,
     ApplicationStatusCodeSerializer,
@@ -99,13 +98,6 @@ class AuditUpdateMixin(UpdateModelMixin):
         return super().perform_update(serializer)
 
 
-class RegistriesIndexView(TemplateView):
-    """
-    Index page for Registries app - contains js frontend web app
-    """
-    template_name = 'registries/registries.html'
-
-
 class OrganizationListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     """
     get:
@@ -115,7 +107,7 @@ class OrganizationListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     Creates a new drilling organization record
     """
 
-    permission_classes = (RegistriesPermissions,)
+    permission_classes = (RegistriesEditPermissions,)
     serializer_class = OrganizationListSerializer
     pagination_class = None
 
@@ -153,7 +145,7 @@ class OrganizationDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDest
     Removes the specified drilling organization record
     """
 
-    permission_classes = (RegistriesPermissions,)
+    permission_classes = (RegistriesEditPermissions,)
 
     # 'pk' and 'id' have been replaced by 'org_guid' as primary key for Organization model
     lookup_field = "org_guid"
@@ -239,7 +231,7 @@ class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     Creates a new person record
     """
 
-    permission_classes = (DjangoModelPermissionsOrAnonReadOnly,)
+    permission_classes = (RegistriesEditOrReadOnly,)
     serializer_class = PersonAdminSerializer
     pagination_class = APILimitOffsetPagination
 
@@ -399,7 +391,7 @@ class PersonDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDestroyAPI
     Removes the specified person record
     """
 
-    permission_classes = (RegistriesPermissions,)
+    permission_classes = (RegistriesEditPermissions,)
     serializer_class = PersonAdminSerializer
 
     # pk field has been replaced by person_guid
@@ -455,7 +447,7 @@ class CitiesListView(ListAPIView):
     serializer_class = CityListSerializer
     lookup_field = 'register_guid'
     pagination_class = None
-    permission_classes = (DjangoModelPermissionsOrAnonReadOnly,)
+    permission_classes = (RegistriesEditOrReadOnly,)
     queryset = Register.objects \
         .exclude(organization__city__isnull=True) \
         .exclude(organization__city='') \
@@ -492,7 +484,7 @@ class RegistrationListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     Create a new well driller or well pump installer registration record for a person
     """
 
-    permission_classes = (RegistriesPermissions,)
+    permission_classes = (RegistriesEditPermissions,)
     serializer_class = RegistrationAdminSerializer
     queryset = Register.objects.all() \
         .select_related(
@@ -525,7 +517,7 @@ class RegistrationDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDest
     Removes the specified registration record from the database
     """
 
-    permission_classes = (RegistriesPermissions,)
+    permission_classes = (RegistriesEditPermissions,)
     serializer_class = RegistrationAdminSerializer
     lookup_field = 'register_guid'
     queryset = Register.objects.all() \
@@ -553,7 +545,7 @@ class ApplicationListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     Creates a new registries application
     """
 
-    permission_classes = (RegistriesPermissions,)
+    permission_classes = (RegistriesEditPermissions,)
     serializer_class = ApplicationAdminSerializer
     queryset = RegistriesApplication.objects.all() \
         .select_related(
@@ -577,7 +569,7 @@ class ApplicationDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDestr
     Removes the specified drilling application record
     """
 
-    permission_classes = (RegistriesPermissions,)
+    permission_classes = (RegistriesEditPermissions,)
     serializer_class = ApplicationAdminSerializer
     queryset = RegistriesApplication.objects.all() \
         .select_related(
@@ -592,7 +584,7 @@ class OrganizationNameListView(ListAPIView):
     Simple list of organizations with only organization names
     """
 
-    permission_classes = (RegistriesPermissions,)
+    permission_classes = (RegistriesEditPermissions,)
     serializer_class = OrganizationNameListSerializer
     queryset = Organization.objects \
         .filter(expired_date__isnull=True) \
@@ -610,7 +602,7 @@ class PersonNoteListView(AuditCreateMixin, ListCreateAPIView):
     Adds a note record to the specified Person record
     """
 
-    permission_classes = (RegistriesPermissions,)
+    permission_classes = (RegistriesEditPermissions,)
     serializer_class = PersonNoteSerializer
     swagger_schema = None
 
@@ -642,7 +634,7 @@ class PersonNoteDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     Removes a PersonNote record
     """
 
-    permission_classes = (RegistriesPermissions,)
+    permission_classes = (RegistriesEditPermissions,)
     serializer_class = PersonNoteSerializer
     swagger_schema = None
 
@@ -660,7 +652,7 @@ class OrganizationNoteListView(AuditCreateMixin, ListCreateAPIView):
     Adds a note record to the specified Organization record
     """
 
-    permission_classes = (RegistriesPermissions,)
+    permission_classes = (RegistriesEditPermissions,)
     serializer_class = OrganizationNoteSerializer
     swagger_schema = None
 
@@ -692,7 +684,7 @@ class OrganizationNoteDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView)
     Removes a OrganizationNote record
     """
 
-    permission_classes = (RegistriesPermissions,)
+    permission_classes = (RegistriesEditPermissions,)
     serializer_class = OrganizationNoteSerializer
     swagger_schema = None
 
@@ -706,7 +698,7 @@ class OrganizationHistory(APIView):
     get: returns a history of changes to an Organization model record
     """
 
-    permission_classes = (RegistriesPermissions,)
+    permission_classes = (RegistriesEditPermissions,)
     queryset = Organization.objects.all()
     swagger_schema = None
 
@@ -730,7 +722,7 @@ class PersonHistory(APIView):
     get: returns a history of changes to a Person model record
     """
 
-    permission_classes = (RegistriesPermissions,)
+    permission_classes = (RegistriesEditPermissions,)
     queryset = Person.objects.all()
     swagger_schema = None
 
@@ -784,7 +776,7 @@ class PersonHistory(APIView):
 class PersonNameSearch(ListAPIView):
     """Search for a person in the Register"""
 
-    permission_classes = (DjangoModelPermissionsOrAnonReadOnly,)
+    permission_classes = (RegistriesEditOrReadOnly,)
     serializer_class = PersonNameSerializer
     queryset = Person.objects.all()
     pagination_class = None
@@ -826,7 +818,7 @@ class ListFiles(APIView):
     )})
     def get(self, request, person_guid):
         user_is_staff = self.request.user.groups.filter(
-            Q(name=REGISTRIES_ADJUDICATOR_ROLE) | Q(name=REGISTRIES_AUTHORITY_ROLE)).exists()
+            Q(name=REGISTRIES_EDIT_ROLE) | Q(name=REGISTRIES_VIEWER_ROLE)).exists()
 
         client = MinioClient(
             request=request, disable_private=(not user_is_staff))
@@ -845,7 +837,7 @@ class PreSignedDocumentKey(APIView):
     """
 
     queryset = Person.objects.all()
-    permission_classes = (RegistriesPermissions,)
+    permission_classes = (RegistriesEditPermissions,)
 
     @swagger_auto_schema(auto_schema=None)
     def get(self, request, person_guid):
@@ -872,7 +864,7 @@ class DeleteDrillerDocument(APIView):
     """
 
     queryset = Person.objects.all()
-    permission_classes = (RegistriesPermissions,)
+    permission_classes = (RegistriesEditPermissions,)
 
     @swagger_auto_schema(auto_schema=None)
     def delete(self, request, person_guid):

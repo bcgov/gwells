@@ -9,11 +9,6 @@
   See the License for the specific language governing permissions and
   limitations under the License.
  */
-import Vue from 'vue'
-import Vuex from 'vuex'
-import auth from '@/common/store/auth.js'
-import config from '@/common/store/config.js'
-import documentState from '@/common/store/documents.js'
 import ApiService from '@/common/services/ApiService.js'
 import {
   FETCH_CITY_LIST,
@@ -31,14 +26,7 @@ import {
   SET_DRILLER_OPTIONS,
   SET_LAST_SEARCHED_ACTIVITY } from './mutations.types.js'
 
-Vue.use(Vuex)
-
-export const store = new Vuex.Store({
-  modules: {
-    auth: auth,
-    config: config,
-    documentState: documentState
-  },
+const registriesStore = {
   state: {
     user: null,
     loading: false,
@@ -81,7 +69,7 @@ export const store = new Vuex.Store({
   },
   actions: {
     [FETCH_CITY_LIST] ({commit}, activity) {
-      ApiService.query('cities/' + activity + '/')
+      ApiService.query('cities/' + activity)
         .then((response) => {
           const list = Object.assign({}, this.state.cityList)
           const data = response.data
@@ -141,7 +129,7 @@ export const store = new Vuex.Store({
     [FETCH_DRILLER_LIST] ({commit}, params) {
       return new Promise((resolve, reject) => {
         commit(SET_LOADING, true)
-        ApiService.query('drillers/', params)
+        ApiService.query('drillers', params)
           .then((response) => {
             commit(SET_LOADING, false)
             commit(SET_LIST_ERROR, null)
@@ -160,7 +148,7 @@ export const store = new Vuex.Store({
       if (!this.state.drillerOptions) {
         return new Promise((resolve, reject) => {
           commit(SET_LOADING, true)
-          ApiService.query('drillers/options/', params)
+          ApiService.query('drillers/options', params)
             .then((response) => {
               commit(SET_LOADING, false)
               commit(SET_DRILLER_OPTIONS, response.data)
@@ -214,4 +202,6 @@ export const store = new Vuex.Store({
       return options
     }
   }
-})
+}
+
+export default registriesStore

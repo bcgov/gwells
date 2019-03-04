@@ -49,8 +49,7 @@ export default {
 
               if (file.length !== 1) {
                 context.commit('addError', 'Error uploading file: ' + filename)
-                context.commit('setFileUploadError', true)
-                return
+                return Promise.reject(new Error('Error uploading file' + filename))
               }
 
               file = file[0]
@@ -67,14 +66,14 @@ export default {
                 })
                 .catch((error) => {
                   console.log(error)
-                  context.commit('setFileUploadError', true)
                   context.commit('addError', error)
+                  return Promise.reject(error)
                 })
             })
             .catch((error) => {
               console.log(error)
-              context.commit('setFileUploadError', true)
               context.commit('addError', error)
+              return Promise.reject(error)
             })
         )
       })
@@ -89,6 +88,13 @@ export default {
       setTimeout(() => {
         context.commit('setFileUploadSuccess', false)
       }, 5000)
+    },
+    fileUploadFail (context) {
+      context.commit('setFilesUploading', false)
+      context.commit('setFileUploadError', true)
+      context.commit('setFileUploadSuccess', false)
+      context.commit('setFiles', [])
+      context.commit('setPrivate', false)
     }
   },
   mutations: {

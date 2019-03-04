@@ -79,11 +79,19 @@ class Search():
         if q_list:
             # If there are too many results, we return one plus the query limit to engage post-query logic in
             # views.py
-            well_results = Well.objects.only('well_tag_number', 'identification_plate_number',
-                                             'owner_full_name', 'street_address', 'legal_lot', 'legal_plan',
-                                             'legal_district_lot', 'land_district', 'legal_pid', 'diameter',
-                                             'finished_well_depth', 'well_guid', 'latitude', 'longitude',
-                                             'city').filter(
-                reduce(operator.and_, q_list)).order_by('well_tag_number', 'create_date')[:query_limit+1]
+            well_results = Well.objects.exclude(well_publication_status='Unpublished').only(
+                'well_tag_number',
+                'identification_plate_number',
+                'owner_full_name',
+                'street_address',
+                'legal_lot', 'legal_plan',
+                'legal_district_lot',
+                'land_district',
+                'legal_pid', 'diameter',
+                'finished_well_depth',
+                'well_guid', 'latitude',
+                'longitude', 'city').filter(
+                reduce(operator.and_, q_list)).order_by(
+                'well_tag_number', 'create_date')[:query_limit + 1]
 
         return well_results

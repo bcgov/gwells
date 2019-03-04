@@ -419,6 +419,23 @@ class WellStatusCode(AuditModel):
         super(WellStatusCode, self).save(*args, **kwargs)
 
 
+class WellPublicationStatusCode(AuditModel):
+    """
+    Well Publication Status.
+    """
+    well_publication_status_code = models.CharField(
+        primary_key=True, max_length=20, editable=False, null=False)
+    description = models.CharField(max_length=255, null=False)
+    display_order = models.PositiveIntegerField(null=False)
+
+    effective_date = models.DateTimeField(null=False)
+    expiry_date = models.DateTimeField(null=False)
+
+    class Meta:
+        db_table = 'well_publication_status_code'
+        ordering = ['display_order', 'well_publication_status_code']
+
+
 class WellSubclassCode(AuditModel):
     """
     Subclass of Well type; we use GUID here as Django doesn't support multi-column PK's
@@ -501,6 +518,26 @@ class CoordinateAcquisitionCode(AuditModel):
         return self.description
 
 
+class AquiferLithologyCode(AuditModel):
+    """
+    Choices for describing Completed Aquifer Lithology
+    """
+    aquifer_lithology_code = models.CharField(primary_key=True, max_length=100, db_column='aquifer_lithology_code')
+    description = models.CharField(max_length=100)
+    display_order = models.PositiveIntegerField()
+
+    effective_date = models.DateTimeField(blank=True, null=True)
+    expiry_date = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'aquifer_lithology_code'
+        ordering = ['display_order', 'aquifer_lithology_code']
+        verbose_name_plural = 'Aquifer Lithology Codes'
+
+    def __str__(self):
+        return '{} - {}'.format(self.code, self.description)
+
+
 # TODO: Consider having Well and Submission extend off a common base class, given that
 #   they mostly have the exact same fields!
 class Well(AuditModel):
@@ -539,6 +576,9 @@ class Well(AuditModel):
     well_status = models.ForeignKey(WellStatusCode, db_column='well_status_code',
                                     on_delete=models.CASCADE, blank=True, null=True,
                                     verbose_name='Well Status')
+    well_publication_status = models.ForeignKey(WellPublicationStatusCode, db_column='well_publication_status_code',
+                                                on_delete=models.CASCADE, verbose_name='Well Publication Status',
+                                                default='Published')
     licenced_status = models.ForeignKey(LicencedStatusCode, db_column='licenced_status_code',
                                         on_delete=models.CASCADE, blank=True, null=True,
                                         verbose_name='Licenced Status')
@@ -596,6 +636,8 @@ class Well(AuditModel):
         max_digits=8, decimal_places=6, blank=True, null=True, verbose_name='Latitude')
     longitude = models.DecimalField(
         max_digits=9, decimal_places=6, blank=True, null=True, verbose_name='Longitude')
+    geom = models.PointField(blank=True, null=True, verbose_name='Geo-referenced Location of the Well', srid=3005)
+
     ground_elevation = models.DecimalField(
         max_digits=10, decimal_places=2, blank=True, null=True, verbose_name='Ground Elevation')
     ground_elevation_method = models.ForeignKey(GroundElevationMethodCode,
@@ -809,6 +851,9 @@ class Well(AuditModel):
         max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Analytic Solution Type')
     boundary_effect = models.DecimalField(
         max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Boundary Effect')
+    aquifer_lithology = models.ForeignKey(
+        AquiferLithologyCode, db_column='aquifer_lithology_code', blank=True, null=True, on_delete=models.CASCADE,
+        verbose_name="Aquifer Lithology")
 
     # Production data related data
     yield_estimation_method = models.ForeignKey(
@@ -987,6 +1032,9 @@ class ActivitySubmission(AuditModel):
     well_status = models.ForeignKey(WellStatusCode, db_column='well_status_code',
                                     on_delete=models.CASCADE, blank=True, null=True,
                                     verbose_name='Well Status')
+    well_publication_status = models.ForeignKey(WellPublicationStatusCode, db_column='well_publication_status_code',
+                                                on_delete=models.CASCADE, verbose_name='Well Publication Status',
+                                                default='Published')
     well_class = models.ForeignKey(WellClassCode, blank=True, null=True, db_column='well_class_code',
                                    on_delete=models.CASCADE, verbose_name='Well Class')
     well_subclass = models.ForeignKey(WellSubclassCode, db_column='well_subclass_guid',
@@ -1263,6 +1311,9 @@ class ActivitySubmission(AuditModel):
         max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Analytic Solution Type')
     boundary_effect = models.DecimalField(
         max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Boundary Effect')
+    aquifer_lithology = models.ForeignKey(
+        AquiferLithologyCode, db_column='aquifer_lithology_code', blank=True, null=True, on_delete=models.CASCADE,
+        verbose_name="Aquifer Lithology")
 
     # Production data related data
     yield_estimation_method = models.ForeignKey(
