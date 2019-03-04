@@ -101,7 +101,6 @@ COMMENT ON COLUMN activity_submission.update_user IS 'The user who last updated 
 COMMENT ON COLUMN activity_submission.water_supply_system_name IS 'Name or identifier given to a well that serves as a water supply system. Often, the name is a reflection of the community or system it serves, e.g. Town of Osoyoos or Keremeos Irrigation District.';
 COMMENT ON COLUMN activity_submission.water_supply_system_well_name IS 'The specific name given to a water supply system well. Often, the name reflects which well it is within the system, e.g. Well 1 or South Well';
 COMMENT ON COLUMN activity_submission.well_location_description IS 'Descriptive details of a well''s location. E.g. the well is located 20'' south west of the house; or the well is located in the pump house near the pond.';
-COMMENT ON COLUMN activity_submission.well_plate_attached IS 'Description of where the well identification plate has been attached on or near the well. ';
 COMMENT ON COLUMN activity_submission.work_end_date IS 'The date when an activity such as well construction, well alteration, or well decommission was ended.';
 COMMENT ON COLUMN activity_submission.work_start_date IS 'The date when an activity such as well construction, well alteration, or well decommission was started.';
 COMMENT ON COLUMN aquifer.aquifer_id IS 'System generated sequential number assigned to each aquifer. It is widely used by ground water administration staff as it is the only consistent unique identifier for a mapped aquifer. It is also commonly referred to as Aquifer Number.';
