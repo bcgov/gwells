@@ -78,7 +78,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       id="submissionHistory"
       :isStaffEdit="isStaffEdit"
     ></submission-history>
-    
+
     <!-- Publication Status of well -->
     <publication-status class="my-5"
       v-if="showSection('wellPublicationStatus')"
