@@ -29,7 +29,6 @@ from rest_framework import filters
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.generics import ListAPIView, RetrieveAPIView
-from rest_framework.permissions import DjangoModelPermissionsOrAnonReadOnly
 
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
@@ -53,7 +52,7 @@ from wells.serializers import (
     WellDetailSerializer,
     WellDetailAdminSerializer,
     WellLocationSerializer)
-from wells.permissions import WellsEditPermissions
+from wells.permissions import WellsEditPermissions, WellsEditOrReadOnly
 
 
 class WellSearchFilter(restfilters.FilterSet):
@@ -195,7 +194,7 @@ class WellListAPIView(ListAPIView):
     get: returns a list of wells
     """
 
-    permission_classes = (DjangoModelPermissionsOrAnonReadOnly,)
+    permission_classes = (WellsEditOrReadOnly,)
     model = Well
     # TODO Address viewing unpublished wells when advanced search has been merged
     queryset = Well.objects.all()  # exclude(well_publication_status='Unpublished')
@@ -242,7 +241,7 @@ class WellListAPIView(ListAPIView):
 class WellTagSearchAPIView(ListAPIView):
     """ seach for wells by tag or owner """
 
-    permission_classes = (DjangoModelPermissionsOrAnonReadOnly,)
+    permission_classes = (WellsEditOrReadOnly,)
     model = Well
     queryset = Well.objects.exclude(well_publication_status='Unpublished').only('well_tag_number', 'owner_full_name')
     pagination_class = None
@@ -263,7 +262,7 @@ class WellLocationListAPIView(ListAPIView):
         get: returns a list of wells with locations only
     """
 
-    permission_classes = (DjangoModelPermissionsOrAnonReadOnly,)
+    permission_classes = (WellsEditOrReadOnly,)
     model = Well
     queryset = Well.objects.all()
     serializer_class = WellLocationSerializer

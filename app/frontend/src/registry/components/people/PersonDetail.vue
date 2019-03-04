@@ -638,7 +638,7 @@ export default {
       }
     },
     fetchFiles () {
-      ApiService.query(`drillers/${this.$route.params.person_guid}/files/`)
+      ApiService.query(`drillers/${this.$route.params.person_guid}/files`)
         .then((response) => {
           this.person_files = response.data
           console.log(response.data)

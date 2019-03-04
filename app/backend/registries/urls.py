@@ -15,7 +15,6 @@ from django.conf.urls import url
 from django.views.decorators.cache import never_cache
 from rest_framework.documentation import include_docs_urls
 from rest_framework_jwt.views import obtain_jwt_token
-from rest_framework.permissions import DjangoModelPermissionsOrAnonReadOnly
 from drf_yasg.views import get_schema_view
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -35,7 +34,7 @@ schema_view = get_schema_view(
                                 url="https://www2.gov.bc.ca/gov/content?id=A519A56BC2BF44E4A008B33FCF527F61"),
     ),
     public=False,
-    permission_classes=(DjangoModelPermissionsOrAnonReadOnly,)
+    permission_classes=(permissions.RegistriesEditOrReadOnly,)
 )
 
 urlpatterns = [

@@ -12,7 +12,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 // These constants/codes are for reference only. Actual codes for submission are provided
-// by the API at /gwells/api/v1/submissions/options/
+// by the API at /gwells/api/v1/submissions/options
 //
 // Hardcoded references to these codes is discouraged but may be necessary to implement
 // some frontend UI-level business logic validation checks. To avoid upstream changes

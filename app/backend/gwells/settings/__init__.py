@@ -254,7 +254,7 @@ if DEBUG:
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': DRF_RENDERERS,
     'DEFAULT_PERMISSION_CLASSES': (
-        'registries.permissions.IsAdminOrReadOnly',
+        'gwells.permissions.ReadOnlyPermission',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'gwells.authentication.JwtOidcAuthentication',
