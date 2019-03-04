@@ -34,9 +34,7 @@ from registries.models import (
     ActivityCode,
     SubactivityCode)
 from registries.views import PersonListView, PersonDetailView
-from gwells.roles import (roles_to_groups,
-                          REGISTRIES_ADJUDICATOR_ROLE, ADMIN_ROLE, REGISTRIES_AUTHORITY_ROLE,
-                          REGISTRIES_VIEWER_ROLE)
+from gwells.roles import (roles_to_groups, REGISTRIES_VIEWER_ROLE, REGISTRIES_EDIT_ROLE)
 
 # Note: see postman/newman for more API tests.
 # Postman API tests include making requests with incomplete data, missing required fields etc.
@@ -53,16 +51,14 @@ class AuthenticatedAPITestCase(APITestCase):
     """
 
     def setUp(self):
-        self.user, created = User.objects.get_or_create(username='testuser')
-        if created:
-            Profile.objects.get_or_create(user=self.user)
-        self.user.is_staff = True
-        self.user.profile.is_gwells_admin = True
-        self.user.save()
-        self.user.profile.save()
+        # Prepare roles in DB ahead of test, to reduce amount of logging during tests.
+        roles = [REGISTRIES_EDIT_ROLE, REGISTRIES_VIEWER_ROLE]
+        for role in roles:
+            group = Group(name=role)
+            group.save()
 
-        roles_to_groups(self.user, [REGISTRIES_ADJUDICATOR_ROLE, REGISTRIES_AUTHORITY_ROLE,
-                                    REGISTRIES_VIEWER_ROLE])
+        self.user, created = User.objects.get_or_create(username='testuser')
+        roles_to_groups(self.user, roles)
         self.client.force_authenticate(self.user)
 
 

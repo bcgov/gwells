@@ -93,106 +93,7 @@ export default {
     SubmissionPreview
   },
   data () {
-    return {
-      activityType: 'CON',
-      formIsFlat: false,
-      preview: false,
-      loading: false,
-      confirmSubmitModal: false,
-      formSubmitSuccess: false,
-      formSubmitSuccessWellTag: null,
-      formSubmitError: false,
-      formSubmitLoading: false,
-      sliding: null,
-      trackValueChanges: false,
-      errors: {},
-      form: {},
-      formOptions: {},
-      uploadedFiles: {},
-      formSteps: {
-        CON: [
-          'activityType',
-          'wellType',
-          'wellOwner',
-          'personResponsible',
-          'wellLocation',
-          'wellCoords',
-          'method',
-          'casings',
-          'backfill',
-          'lithology',
-          'liner',
-          'screens',
-          'filterPack',
-          'wellDevelopment',
-          'wellYield',
-          'waterQuality',
-          'wellCompletion',
-          'comments',
-          'documents'
-        ],
-        ALT: [
-          'activityType',
-          'wellType',
-          'wellOwner',
-          'personResponsible',
-          'wellLocation',
-          'wellCoords',
-          'method',
-          'casings',
-          'backfill',
-          'lithology',
-          'liner',
-          'screens',
-          'filterPack',
-          'wellDevelopment',
-          'wellYield',
-          'waterQuality',
-          'wellCompletion',
-          'comments',
-          'documents'
-        ],
-        DEC: [
-          'activityType',
-          'wellType',
-          'wellOwner',
-          'personResponsible',
-          'wellLocation',
-          'wellCoords',
-          'method',
-          'closureDescription',
-          'casings',
-          'decommissionInformation',
-          'comments',
-          'documents'
-        ],
-        STAFF_EDIT: [
-          'wellPublicationStatus',
-          'wellType',
-          'wellOwner',
-          'personResponsible',
-          'wellLocation',
-          'wellCoords',
-          'method',
-          'casings',
-          'backfill',
-          'lithology',
-          'liner',
-          'screens',
-          'filterPack',
-          'wellDevelopment',
-          'wellYield',
-          'waterQuality',
-          'wellCompletion',
-          'observationWellInfo',
-          'closureDescription',
-          'decommissionInformation',
-          'comments',
-          'documents',
-          'aquiferData'
-        ]
-      }
-    }
+    return initialState()
   },
   computed: {
     displayFormSection () {
@@ -533,6 +434,8 @@ export default {
       })
     },
     fetchFiles () {
+      this.uploadedFiles = {}
+
       // this.form.well is sometimes the tag number, and sometimes an object. This detects which is which
       let tag = this.form.well && isNaN(this.form.well) ? this.form.well.well_tag_number : this.form.well
 
@@ -542,55 +445,168 @@ export default {
             this.uploadedFiles = response.data
           })
       }
+    },
+    setupPage () {
+      this.$data = initialState()
+      this.resetForm()
+      this.$store.dispatch(FETCH_CODES)
+
+      if (this.$route.params.id) {
+        this.setWellTagNumber(this.$route.params.id)
+      }
+      if (this.$route.name === 'SubmissionsEdit') {
+        this.activityType = 'STAFF_EDIT'
+        this.formIsFlat = true
+
+        this.loading = true
+
+        ApiService.query(`wells/${this.$route.params.id}`).then((res) => {
+          Object.keys(res.data).forEach((key) => {
+            if (key in this.form) {
+              this.form[key] = res.data[key]
+            }
+          })
+          if (this.form.person_responsible && this.form.person_responsible.name === this.form.driller_name) {
+            this.form.meta.drillerSameAsPersonResponsible = true
+          }
+          // Wait for the form update we just did to fire off change events.
+          this.$nextTick(() => {
+            this.form.meta.valueChanged = {}
+            this.loading = false
+            this.$nextTick(() => {
+              // We have to allow the UI to render all the components after the 'loading = false' setting,
+              // so we only start tracking changes after that.
+              this.trackValueChanges = true
+            })
+          })
+        }).catch((e) => {
+          console.error(e)
+        })
+      } else {
+        // Some of our child components need the well data, we dispatch the request here, in hopes
+        // that the data will be available by the time those components render.
+        this.$store.dispatch(FETCH_WELLS)
+        this.activityType = 'CON'
+        this.formIsFlat = false
+      }
+
+      this.fetchFiles()
     }
   },
   watch: {
     activityType () {
       this.resetForm()
+    },
+    // This watches for a route change between Submission and Well Edit and resets the page data
+    '$route' (to, from) {
+      this.setupPage()
     }
   },
   created () {
-    this.resetForm()
-    this.$store.dispatch(FETCH_CODES)
+    this.setupPage()
+  }
+}
 
-    if (this.$route.params.id) {
-      this.setWellTagNumber(this.$route.params.id)
+function initialState () {
+  return {
+    activityType: 'CON',
+    formIsFlat: false,
+    preview: false,
+    loading: false,
+    confirmSubmitModal: false,
+    formSubmitSuccess: false,
+    formSubmitSuccessWellTag: null,
+    formSubmitError: false,
+    formSubmitLoading: false,
+    sliding: null,
+    trackValueChanges: false,
+    errors: {},
+    form: {},
+    formOptions: {},
+    uploadedFiles: {},
+    formSteps: {
+      CON: [
+        'activityType',
+        'wellType',
+        'wellOwner',
+        'personResponsible',
+        'wellLocation',
+        'wellCoords',
+        'method',
+        'casings',
+        'backfill',
+        'lithology',
+        'liner',
+        'screens',
+        'filterPack',
+        'wellDevelopment',
+        'wellYield',
+        'waterQuality',
+        'wellCompletion',
+        'comments',
+        'documents'
+      ],
+      ALT: [
+        'activityType',
+        'wellType',
+        'wellOwner',
+        'personResponsible',
+        'wellLocation',
+        'wellCoords',
+        'method',
+        'casings',
+        'backfill',
+        'lithology',
+        'liner',
+        'screens',
+        'filterPack',
+        'wellDevelopment',
+        'wellYield',
+        'waterQuality',
+        'wellCompletion',
+        'comments',
+        'documents'
+      ],
+      DEC: [
+        'activityType',
+        'wellType',
+        'wellOwner',
+        'personResponsible',
+        'wellLocation',
+        'wellCoords',
+        'method',
+        'closureDescription',
+        'casings',
+        'decommissionInformation',
+        'comments',
+        'documents'
+      ],
+      STAFF_EDIT: [
+        'wellPublicationStatus',
+        'wellType',
+        'wellOwner',
+        'personResponsible',
+        'wellLocation',
+        'wellCoords',
+        'method',
+        'casings',
+        'backfill',
+        'lithology',
+        'liner',
+        'screens',
+        'filterPack',
+        'wellDevelopment',
+        'wellYield',
+        'waterQuality',
+        'wellCompletion',
+        'observationWellInfo',
+        'closureDescription',
+        'decommissionInformation',
+        'comments',
+        'documents',
+        'aquiferData'
+      ]
     }
-    if (this.$route.name === 'SubmissionsEdit') {
-      this.activityType = 'STAFF_EDIT'
-      this.formIsFlat = true
-
-      this.loading = true
-
-      ApiService.query(`wells/${this.$route.params.id}`).then((res) => {
-        Object.keys(res.data).forEach((key) => {
-          if (key in this.form) {
-            this.form[key] = res.data[key]
-          }
-        })
-        if (this.form.person_responsible && this.form.person_responsible.name === this.form.driller_name) {
-          this.form.meta.drillerSameAsPersonResponsible = true
-        }
-        // Wait for the form update we just did to fire off change events.
-        this.$nextTick(() => {
-          this.form.meta.valueChanged = {}
-          this.loading = false
-          this.$nextTick(() => {
-            // We have to allow the UI to render all the components after the 'loading = false' setting,
-            // so we only start tracking changes after that.
-            this.trackValueChanges = true
-          })
-        })
-      }).catch((e) => {
-        console.error(e)
-      })
-    } else {
-      // Some of our child components need the well data, we dispatch the request here, in hopes
-      // that the data will be available by the time those components render.
-      this.$store.dispatch(FETCH_WELLS)
-    }
-
-    this.fetchFiles()
   }
 }
 </script>
