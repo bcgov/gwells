@@ -42,7 +42,6 @@ COMMENT ON TABLE lithology_moisture_code IS 'Placeholder table comment.';
 COMMENT ON TABLE lithology_structure_code IS 'Placeholder table comment.';
 COMMENT ON TABLE ltsa_owner IS 'Placeholder table comment.';
 COMMENT ON TABLE perforation IS 'Placeholder table comment.';
-COMMENT ON TABLE production_data IS 'Placeholder table comment.';
 COMMENT ON TABLE province_state_code IS 'Province or state used for the mailing address for the company';
 COMMENT ON TABLE registries_accredited_certificate_code IS 'Describes the valid qualifications or certificates (prescribed qualifications) as issued by the certifying authority; used to register a well driller or well pump installer.  Individuals registered prior to 2006 may have qualified under the grandparenting provision. E.g., Water Well Driller Certificate issued by BC to register an applicant as a Well Driller.';
 COMMENT ON TABLE registries_activity_code IS 'Describes the registered individual''s allowable activity on a well; i.e. Well Driller, or Pump Installer.';
@@ -324,10 +323,6 @@ COMMENT ON COLUMN perforation.create_date IS 'Date and time (UTC) when the physi
 COMMENT ON COLUMN perforation.create_user IS 'The user who created this record in the database.';
 COMMENT ON COLUMN perforation.update_date IS 'Date and time (UTC) when the physical record was updated in the database. It will be the same as the create_date until the record is first updated after creation.';
 COMMENT ON COLUMN perforation.update_user IS 'The user who last updated this record in the database.';
-COMMENT ON COLUMN production_data.create_date IS 'Date and time (UTC) when the physical record was created in the database.';
-COMMENT ON COLUMN production_data.create_user IS 'The user who created this record in the database.';
-COMMENT ON COLUMN production_data.update_date IS 'Date and time (UTC) when the physical record was updated in the database. It will be the same as the create_date until the record is first updated after creation.';
-COMMENT ON COLUMN production_data.update_user IS 'The user who last updated this record in the database.';
 COMMENT ON COLUMN province_state_code.create_date IS 'Date and time (UTC) when the physical record was created in the database.';
 COMMENT ON COLUMN province_state_code.create_user IS 'The user who created this record in the database.';
 COMMENT ON COLUMN province_state_code.display_order IS 'The order in which the codes may display on screen.';
