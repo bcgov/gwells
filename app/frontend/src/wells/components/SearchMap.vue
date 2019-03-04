@@ -159,9 +159,6 @@ export default {
       // In B.C. users are used to omitting the minus sign on longitude, it's always negative. So we're
       // very forgiving, and just always make sure longitude is negative.
       return this.longitude > 0 ? this.longitude * -1 : this.longitude
-    },
-    encodeHTML (input) {
-
     }
   }
 }
