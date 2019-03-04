@@ -123,11 +123,13 @@ export default {
       this.markerGroup = L.layerGroup()
       this.markerGroup.addTo(this.map)
 
-      // filter locations for coordinates (coordinate either present or not),
-      // and then add them to the new marker group
-      this.locations.filter((item) => {
+      // filter locations for coordinates (coordinate either present or not)
+      const markers = this.locations.filter((item) => {
         return item[0] && item[1]
-      }).map((item) => {
+      })
+
+      // add markers to the new marker group
+      markers.map((item) => {
         return L.circleMarker(L.latLng(item[0], item[1]), {
           radius: 4, // The radius of the circleMarker
           color: '#000', // The color of the circleMarker
@@ -138,6 +140,15 @@ export default {
       }).forEach((marker) => {
         marker.addTo(this.markerGroup)
       })
+
+      // if there's only one marker, set the map view to display it
+      // TODO: also zoom in on the bounding box of multiple markers
+      if (markers.length === 1) {
+        this.map.setView(L.latLng(markers[0][0], markers[0][1]), 13)
+      } else {
+        // setting latitude or longitude allows focusing map on a certain location (like a centroid of points)
+        this.map.setView([this.latitude ? this.latitude : 54.5, this.getLongitude() ? this.getLongitude() : -126.5, 5])
+      }
     },
     setMarkerPopup (latitude, longitude) {
       this.marker.bindPopup('Latitude: ' + latitude + ', Longitude: ' + longitude)
