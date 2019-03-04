@@ -110,21 +110,30 @@ export default {
     updateCoords () {
       if (!isNaN(this.latitude) && !isNaN(this.getLongitude())) {
         const latlng = L.latLng(this.latitude, this.getLongitude())
-        this.insideBC(latlng.lat, latlng.lng).then((result) => {
-          if (result) {
-            if (this.marker) {
-              this.updateMarkerLatLong(latlng)
-              this.map.panTo(latlng)
+        if (typeof this.insideBC !== 'undefined') {
+          this.insideBC(latlng.lat, latlng.lng).then((result) => {
+            if (result) {
+              if (this.marker) {
+                this.updateMarkerLatLong(latlng)
+                this.map.panTo(latlng)
+              } else {
+                this.createMarker()
+              }
             } else {
-              this.createMarker()
+              if (this.marker) {
+                this.map.removeLayer(this.marker)
+                this.marker = null
+              }
             }
+          })
+        } else {
+          if (this.marker) {
+            this.updateMarkerLatLong(latlng)
+            this.map.panTo(latlng)
           } else {
-            if (this.marker) {
-              this.map.removeLayer(this.marker)
-              this.marker = null
-            }
+            this.createMarker()
           }
-        })
+        }
       }
     },
     handleDrag (ev) {

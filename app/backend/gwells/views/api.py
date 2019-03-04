@@ -2,9 +2,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from gwells.settings.base import get_env_variable
-# Once we have GeoDjango working:
-# from django.contrib.gis.geos import GEOSGeometry
-# from gwells.models import Border
+from django.contrib.gis.geos import Point, Polygon
 
 
 class KeycloakConfig(APIView):
@@ -47,16 +45,9 @@ class InsideBC(APIView):
         if latitude and longitude:
             latitude = float(latitude)
             longitude = float(longitude)
-            inside = latitude < 60 and latitude > 48.2 and longitude > -139.07 and longitude < -114
-            # Once we have GeoDjango working:
-            # wgs84_srid = 4326
-            # pnt = GEOSGeometry('POINT({} {})'.format(longitude, latitude), srid=wgs84_srid)
-            # result = Border.objects.filter(geom__contains=pnt)
-            # inside = result.count() > 0
-            # Alternatively:
-            # We could check this against databc by reverse geocoding change checking that the point is in BC
-            # - https://geocoder.api.gov.bc.ca/addresses.json?locationDescriptor=any&parcelPoint=55%2C-124
-            # But I'd prefer to use GeoDjango
+            bbox = (-139.07, 48.2, -114, 60)  # MinLong, MinLat, MaxLong, MaxLat for BC
+            poly = Polygon.from_bbox(bbox)
+            inside = poly.contains(Point(longitude, latitude))
 
         return Response({
             'inside': inside

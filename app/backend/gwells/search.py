@@ -73,7 +73,7 @@ class Search():
             max_long = max(start_long, end_long)
             min_long = min(start_long, end_long)
 
-            bbox = (min_long, min_lat, max_long, max_lat,)
+            bbox = (min_long, min_lat, max_long, max_lat)
             poly = Polygon.from_bbox(bbox)
             q_list.append(Q(geom__within=poly))
 
