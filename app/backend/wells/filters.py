@@ -106,6 +106,9 @@ class WellListFilter(AnyOrAllFilterSet):
     well_identification_plate_attached = filters.CharFilter(lookup_expr='icontains')
     water_supply_system_name = filters.CharFilter(lookup_expr='icontains')
     water_supply_system_well_name = filters.CharFilter(lookup_expr='icontains')
+    driller_name = filters.CharFilter(lookup_expr='icontains')
+    consultant_name = filters.CharFilter(lookup_expr='icontains')
+    consultant_company = filters.CharFilter(lookup_expr='icontains')
     latitude = filters.RangeFilter()
     longitude = filters.RangeFilter()
     ground_elevation = filters.RangeFilter()
@@ -179,6 +182,7 @@ class WellListFilter(AnyOrAllFilterSet):
             'aquifer',
             'well_class',
             'well_subclass',
+            'intended_water_use',
             'legal_block',
             'legal_section',
             'legal_township',
@@ -190,6 +194,7 @@ class WellListFilter(AnyOrAllFilterSet):
             'alteration_end_date',
             'decommission_start_date',
             'decommission_end_date',
+            'driller_name',
             'drilling_company',
             'well_identification_plate_attached',
             'id_plate_attached_by',

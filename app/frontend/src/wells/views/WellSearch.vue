@@ -18,11 +18,7 @@
           <b-row v-show="!showAdvancedSearch">
             <b-col>
               <b-form-group>
-                <form-input
-                  id="id_search"
-                  group-class="font-weight-bold"
-                  v-model="searchParams.search"
-                >
+                <form-input id="id_search" group-class="font-weight-bold" v-model="searchParams.search">
                   <label>
                     Search by well tag or ID plate number, street address, city or owner name
                     <b-badge pill variant="primary" v-b-popover.hover="'Enter the well electronic filing number or physical identification plate number, or the street address, city or well owner name.'"><i class="fa fa-question fa-lg"></i></b-badge>
@@ -41,39 +37,147 @@
             <b-col>
               <b-card no-body border-variant="dark">
                 <b-card-header>
-                  <b-button variant="link" @click="toggleAdvancedSearch">Advanced Search</b-button>
+                  <a class="card-link" href="#" @click.prevent="toggleAdvancedSearch">Advanced Search</a>
                 </b-card-header>
                 <b-collapse id="advanced_search_form" v-model="showAdvancedSearch">
                   <b-card-body body-border-variant="dark">
-                    <h3>Search By</h3>
-                    <!-- Any/all needs some work -->
-                    <form-input id="search-well-tag-or-id-plate" label="Well tag or ID plate number" label-cols="6" v-model="searchParams.well"/>
-                    <form-input id="search-street-address-or-city" label="Street address or city" label-cols="6" v-model="searchParams.street_address_or_city"/>
-                    <form-input id="search-well-owner-name" label="Well owner" label-cols="6" v-model="searchParams.owner_full_name"/>
-                    <h3>Location</h3>
-                    <form-input id="search-legal-input" label="Lot, Legal plan, District lot or PID" label-cols="6" v-model="searchParams.legal"/>
-                    <form-input select id="search-land-district" label="Land district" label-cols="6" v-model="searchParams.land_district" :options="landDistrictOptions"/>
-                    <h3>Well Details</h3>
-                    <form-input select id="search-well-status" label="Well status" label-cols="6" v-model="searchParams.well_status" :options="wellStatusOptions"/>
-                    <form-input select id="search-licenced-status" label="Well licence status" label-cols="6" v-model="searchParams.licenced_status" :options="licencedStatusOptions"/>
-                    <form-input select id="search-person-responsible" label="Person responsible for work" label-cols="6" v-model="searchParams.person_responsible" :options="personResponsibleOptions"/>
-                    <form-input select id="search-organization-of-person-responsible" label="Company that did the work" label-cols="6" v-model="searchParams.company_of_person_responsible" :options="orgOfPersonResponsibleOptions"/>
-                    <b-form-group label-cols="4" label="Date of work">
-                      <b-form-group label-cols="3" label="From" label-for="search-date-of-work-before" label-align="right">
-                        <b-form-input type="date" placeholder="YYYY/MM/DD" id="search-date-of-work-before" v-model="searchParams.date_of_work_before" />
-                      </b-form-group>
-                      <b-form-group label-cols="3" label="To" label-for="search-date-of-work-after" label-align="right">
-                        <b-form-input type="date" placeholder="YYYY/MM/DD" id="search-date-of-work-after" v-model="searchParams.date_of_work_after" />
-                      </b-form-group>
-                    </b-form-group>
-                    <b-form-group label-cols="4" label="Well depth (finished or total)">
-                      <b-form-group label-cols="3" label="From" label-for="search-well-depth-min" label-align="right">
-                        <b-form-input type="number" id="search-well-depth-min" v-model="searchParams.well_depth_min" />
-                      </b-form-group>
-                      <b-form-group label-cols="3" label="To" label-for="search-well-depth-max" label-align="right">
-                        <b-form-input type="number" id="search-well-depth-max" v-model="searchParams.well_depth_max" />
-                      </b-form-group>
-                    </b-form-group>
+                    <template v-for="section in defaultFilters">
+                      <h3 :key="section.header">{{ section.header }}</h3>
+                      <template v-for="field in section.fields">
+                        <search-form-radio
+                          v-if="field.type === 'radio'"
+                          :key="field.id"
+                          :id="`${field.id}Filter`"
+                          :label="field.label"
+                          label-cols="5"
+                          v-model="searchParams[field.param]"
+                          :options="field.options" />
+                        <search-form-range
+                          v-if="field.type === 'range'"
+                          :key="field.id"
+                          type="number"
+                          label-cols="6"
+                          :id="`${field.id}Filter`"
+                          :label="field.label"
+                          :errors="searchErrors[field.param]"
+                          :step="field.step ? field.step : 'any'"
+                          :min-value="searchParams[`${field.param}_min`]"
+                          v-on:start-input="searchParams[`${field.param}_min`] = $event"
+                          :max-value="searchParams[`${field.param}_max`]"
+                          v-on:end-input="searchParams[`${field.param}_max`] = $event"/>
+                        <search-form-range
+                          v-if="field.type === 'dateRange'"
+                          :key="field.id"
+                          type="date"
+                          label-cols="5"
+                          :id="`${field.id}Filter`"
+                          :label="field.label"
+                          placeholder="YYYY/MM/DD"
+                          :errors="searchErrors[field.param]"
+                          :min-value="searchParams[`${field.param}_after`]"
+                          v-on:start-input="searchParams[`${field.param}_after`] = $event"
+                          :max-value="searchParams[`${field.param}_before`]"
+                          v-on:end-input="searchParams[`${field.param}_before`] = $event"/>
+                        <search-form-select
+                          v-if="field.type === 'select'"
+                          :key="field.id"
+                          label-cols="6"
+                          :id="`${field.id}Filter`"
+                          :label="field.label"
+                          placeholder="----------"
+                          :errors="searchErrors[field.param]"
+                          v-model="searchParams[field.param]"
+                          :options="filterSelectOptions[field.id]"
+                          :value-field="field.valueField"
+                          :text-field="field.textField" />
+                        <search-form-input
+                          v-if="field.type === 'number' || field.type === 'text'"
+                          :key="field.id"
+                          :type="field.type"
+                          label-cols="6"
+                          :id="`${field.id}Filter`"
+                          :label="field.label"
+                          :errors="searchErrors[field.param]"
+                          v-model="searchParams[field.param]"/>
+                      </template>
+                    </template>
+                    <h3>Additional Fields</h3>
+                    <template v-for="field in selectedFilters">
+                      <b-row class="form-row" :key="field.id">
+                        <b-col>
+                          <search-form-radio
+                            v-if="field.type === 'radio'"
+                            :id="`${field.id}Filter`"
+                            :label="field.label"
+                            label-cols="5"
+                            v-model="searchParams[field.param]"
+                            :options="field.options" />
+                          <search-form-range
+                            v-if="field.type === 'range'"
+                            type="number"
+                            label-cols="6"
+                            :id="`${field.id}Filter`"
+                            :label="field.label"
+                            :errors="searchErrors[field.param]"
+                            :step="field.step ? field.step : 'any'"
+                            :min-value="searchParams[`${field.param}_min`]"
+                            v-on:start-input="searchParams[`${field.param}_min`] = $event"
+                            :max-value="searchParams[`${field.param}_max`]"
+                            v-on:end-input="searchParams[`${field.param}_max`] = $event"/>
+                          <search-form-range
+                            v-if="field.type === 'dateRange'"
+                            type="date"
+                            label-cols="5"
+                            :id="`${field.id}Filter`"
+                            :label="field.label"
+                            placeholder="YYYY/MM/DD"
+                            :errors="searchErrors[field.param]"
+                            :min-value="searchParams[`${field.param}_after`]"
+                            v-on:start-input="searchParams[`${field.param}_after`] = $event"
+                            :max-value="searchParams[`${field.param}_before`]"
+                            v-on:end-input="searchParams[`${field.param}_before`] = $event"/>
+                          <search-form-select
+                            v-if="field.type === 'select'"
+                            label-cols="6"
+                            :id="`${field.id}Filter`"
+                            :label="field.label"
+                            placeholder="----------"
+                            :errors="searchErrors[field.param]"
+                            v-model="searchParams[field.param]"
+                            :options="filterSelectOptions[field.id]"
+                            :value-field="field.valueField"
+                            :text-field="field.textField" />
+                          <search-form-input
+                            v-if="field.type === 'number' || field.type === 'text'"
+                            :type="field.type"
+                            label-cols="6"
+                            :id="`${field.id}Filter`"
+                            :label="field.label"
+                            :errors="searchErrors[field.param]"
+                            v-model="searchParams[field.param]"/>
+                        </b-col>
+                        <b-col cols="1">
+                          <b-button-close @click="removeSelectedFilter(field.id)" style="padding-top: calc(.375rem + 1px)">&times;</b-button-close>
+                        </b-col>
+                      </b-row>
+                    </template>
+                    <b-container class="pl-0">
+                      <b-row>
+                        <b-col cols="9">
+                          <b-form-select id="additionalFilterInput" v-model="selectedFilter">
+                            <option :value="null">Select a field to search on</option>
+                            <template>
+                              <optgroup v-for="section in additionalFilters" :key="section.header" :label="section.header">
+                                <option v-for="field in section.fields" :key="field.id" :value="field" :disabled="selectedFilterIds.includes(field.id)">{{ field.label }}</option>
+                              </optgroup>
+                            </template>
+                          </b-form-select>
+                        </b-col>
+                        <b-col class="pr-0">
+                          <b-button block variant="primary" @click="selectFilter" :disabled="selectedFilter === null">Add Field</b-button>
+                        </b-col>
+                      </b-row>
+                    </b-container>
                   </b-card-body>
                 </b-collapse>
               </b-card>
@@ -133,14 +237,23 @@ import { mapGetters } from 'vuex'
 import ApiService from '@/common/services/ApiService.js'
 import {FETCH_CODES} from '@/submissions/store/actions.types.js'
 import {FETCH_DRILLER_NAMES, FETCH_ORGANIZATION_NAMES} from '@/wells/store/actions.types.js'
+import SearchFormInput from '@/wells/components/SearchFormInput.vue'
+import SearchFormRadio from '@/wells/components/SearchFormRadio.vue'
+import SearchFormRange from '@/wells/components/SearchFormRange.vue'
+import SearchFormSelect from '@/wells/components/SearchFormSelect.vue'
 import SearchMap from '@/wells/components/SearchMap.vue'
 import Exports from '@/wells/components/Exports.vue'
+import searchFields from '@/wells/searchFields.js'
 
 const Tabulator = require('tabulator-tables')
 
 export default {
   name: 'WellSearch',
   components: {
+    'search-form-input': SearchFormInput,
+    'search-form-radio': SearchFormRadio,
+    'search-form-range': SearchFormRange,
+    'search-form-select': SearchFormSelect,
     'search-map': SearchMap,
     'well-exports': Exports
   },
@@ -156,42 +269,31 @@ export default {
       longitude: null,
       locations: [],
 
+      showAdvancedSearch: false,
+      selectedFilter: null,
+      selectedFilters: [],
+
       // testing tabulator
       tabulator: null,
       tableData: [],
 
       // searchParams will be set by searchParamsReset()
       searchParams: {},
+      searchErrors: {},
 
       // additional location search params
-      mapSearchParams: {}
+      mapSearchParams: {},
+      defaultFilters: searchFields.default,
+      additionalFilters: searchFields.optional
     }
   },
   computed: {
     ...mapGetters(['codes', 'drillerNames', 'organizationNames']),
-    personResponsibleOptions: function () {
-      if (!this.drillerNames) {
-        return []
-      }
-
-      return this.drillerNames.map((driller) => {
-        return {
-          value: driller.person_guid,
-          text: driller.name
-        }
-      })
+    selectedFilterIds: function () {
+      return this.selectedFilters.map(filter => filter.id)
     },
-    orgOfpersonResponsibleOptions: function () {
-      if (!this.organizationNames) {
-        return []
-      }
-
-      return this.organizationNames.map((org) => {
-        return {
-          value: org.org_guid,
-          text: org.name
-        }
-      })
+    additionalFilterFields: function () {
+      return this.additionalFilters.map(section => section.fields).reduce((a, b) => a.concat(b), [])
     },
     landDistrictOptions: function () {
       if (!this.codes.land_district_codes || Object.entries(this.codes.land_district_codes).length === 0) {
@@ -204,27 +306,39 @@ export default {
         }
       })
     },
-    licencedStatusOptions: function () {
-      if (!this.codes.licenced_status_codes) {
+    wellSubclassOptions: function () {
+      if (!this.codes.well_classes) {
         return []
       }
-      return this.codes.licenced_status_codes.map((status) => {
-        return {
-          value: status.licenced_status_code,
-          text: status.description
-        }
+      const options = []
+      this.codes.well_classes.forEach((wellClass) => {
+        wellClass.wellsubclasscode_set.forEach((wellSubclass) => {
+          options.push({
+            value: wellSubclass.well_subclass_guid,
+            text: `${wellClass.description} - ${wellSubclass.description}`
+          })
+        })
       })
+
+      return options
     },
-    wellStatusOptions: function () {
-      if (!this.codes.well_status_codes) {
-        return []
+    filterSelectOptions: function () {
+      return {
+        drillingMethods: this.codes.drilling_methods,
+        groundElevationMethod: this.codes.ground_elevation_methods,
+        intendedWaterUse: this.codes.intended_water_uses,
+        landDistrict: this.landDistrictOptions,
+        licencedStatus: this.codes.licenced_status_codes,
+        linerMaterial: this.codes.liner_material_codes,
+        orgResponsible: this.organizationNames,
+        personResponsible: this.drillerNames,
+        screenIntakeMethod: this.codes.screen_intake_methods,
+        surfaceSealMaterial: this.codes.surface_seal_materials,
+        surfaceSealMethod: this.codes.surface_seal_methods,
+        wellClass: this.codes.well_classes,
+        wellStatus: this.codes.well_status_codes,
+        wellSubclass: this.wellSubclassOptions
       }
-      return this.codes.well_status_codes.map((status) => {
-        return {
-          value: status.well_status_code,
-          text: status.description
-        }
-      })
     }
   },
   methods: {
@@ -241,6 +355,7 @@ export default {
       // these will be urlencoded and the API will filter on these values.
       Object.assign(params, this.searchParams)
       return ApiService.query('wells', params).then((response) => {
+        this.searchErrors = {}
         this.numberOfRecords = response.data.count
         this.tableData = response.data.results
         this.tabulator.clearData()
@@ -257,7 +372,11 @@ export default {
         this.isInitialSearch = false
 
         return response.data.results || []
-      }).catch((e) => {
+      }).catch((err) => {
+        if (err.response && err.response.data) {
+          this.searchErrors = err.response.data
+        }
+
         return []
       })
     },
@@ -294,7 +413,8 @@ export default {
       this.locationSearch()
     },
     searchParamsReset () {
-      this.searchParams = {}
+      this.searchParams = {match_any: 'false'}
+      this.selectedFilters = []
       this.$router.push({ query: null })
     },
     initSearchParams () {
@@ -306,6 +426,14 @@ export default {
       } else {
         this.searchParamsReset()
       }
+    },
+    initSelectedFilters () {
+      const query = this.$route.query
+      this.additionalFilterFields.filter((field) => {
+        return (query[field.param] !== undefined) ||
+          (field.minParam && query[field.minParam] !== undefined) ||
+          (field.maxParam && query[field.maxParam] !== undefined)
+      }).forEach(field => this.selectedFilters.push(field))
     },
     handleMapCoordinate (latln) {
       this.latitude = null
@@ -345,6 +473,17 @@ export default {
     },
     toggleAdvancedSearch () {
       this.showAdvancedSearch = !this.showAdvancedSearch
+    },
+    selectFilter () {
+      if (this.selectedFilter) {
+        this.selectedFilters.push(this.selectedFilter)
+      }
+
+      this.selectedFilter = null
+    },
+    removeSelectedFilter (filterId) {
+      const index = this.selectedFilters.findIndex(filter => filterId === filter.id)
+      this.selectedFilters.splice(index, 1)
     }
   },
   created () {
@@ -353,6 +492,7 @@ export default {
     this.$store.dispatch(FETCH_ORGANIZATION_NAMES)
 
     this.initSearchParams()
+    this.initSelectedFilters()
     setTimeout(() => {
       this.locationSearch()
     }, 0)
