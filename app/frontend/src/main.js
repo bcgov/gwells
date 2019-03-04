@@ -25,7 +25,6 @@ import vueSmoothScroll from 'vue-smoothscroll'
 import vSelect from 'vue-select'
 import VueMoment from 'vue-moment'
 import FormInput from '@/common/components/FormInput.vue'
-import VueMoment from 'vue-moment'
 import {FETCH_CONFIG} from '@/common/store/config.js'
 
 import 'tabulator-tables/dist/css/bootstrap/tabulator_bootstrap4.min.css'
@@ -42,7 +41,6 @@ Vue.use(VueNoty, {
 Vue.use(BootstrapVue)
 Vue.use(VueMoment)
 Vue.use(vueSmoothScroll)
-Vue.use(VueMoment)
 Vue.component('v-select', vSelect)
 Vue.component('form-input', FormInput)
 
