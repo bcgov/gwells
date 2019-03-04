@@ -292,7 +292,7 @@ def apiTest (String stageName, String stageUrl, String envSuffix) {
                                 -r cli,junit,html
                         """
 
-                        if ("release".equalsIgnoreCase("${envSuffix}")) {
+                        if ("dev".equalsIgnoreCase("${envSuffix}")) {
                             sh """
                                 newman run ./wells_search_api_tests.json \
                                 --global-var base_url=\$BASE_URL \

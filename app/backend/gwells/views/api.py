@@ -2,7 +2,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from gwells.settings.base import get_env_variable
-from django.contrib.gis.geos import Point, Polygon
+from django.contrib.gis.geos import GEOSGeometry
+from gwells.models import Border
 
 
 class KeycloakConfig(APIView):
@@ -37,7 +38,7 @@ class GeneralConfig(APIView):
 class InsideBC(APIView):
     """ Check if a given point, is inside BC """
 
-    def get(self, request):        
+    def get(self, request):
         latitude = request.query_params.get('latitude')
         longitude = request.query_params.get('longitude')
 
@@ -45,9 +46,11 @@ class InsideBC(APIView):
         if latitude and longitude:
             latitude = float(latitude)
             longitude = float(longitude)
-            bbox = (-139.07, 48.2, -114, 60)  # MinLong, MinLat, MaxLong, MaxLat for BC
-            poly = Polygon.from_bbox(bbox)
-            inside = poly.contains(Point(longitude, latitude))
+
+            wgs84_srid = 4269
+            pnt = GEOSGeometry('POINT({} {})'.format(longitude, latitude), srid=wgs84_srid)
+            result = Border.objects.filter(geom__contains=pnt)
+            inside = result.count() > 0
 
         return Response({
             'inside': inside
