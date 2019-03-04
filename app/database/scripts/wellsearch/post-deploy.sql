@@ -406,11 +406,11 @@ COMMENT ON COLUMN registries_person.create_user IS 'The user who created this re
 COMMENT ON COLUMN registries_person.effective_date IS 'The date and time that record became valid.';
 COMMENT ON COLUMN registries_person.expired_date IS 'The date and time after which the record is no longer valid and should not be used.';
 COMMENT ON COLUMN registries_person.first_name IS 'Legal first name of the well driller or well pump installer who has applied and/or is registered with the province.';
-COMMENT ON COLUMN registries_person.pump_installer_orcs_no IS 'Well pump installer's unique filing number used in the BC government Operational Records Classification Systems (ORCS) filing system. Each person has an ORCS number when a file is started with their correspondence, usually with the application for being registered. Each person can have a unique ORCS number as a well pump installer and as a well driller. E.g. 3800-25/PUMP PRIC W. The standard format for this number is 3800-25/PUMP {first 4 characters of last name} {initial of first name}.';
+COMMENT ON COLUMN registries_person.pump_installer_orcs_no IS 'Well pump installer''s unique filing number used in the BC government Operational Records Classification Systems (ORCS) filing system. Each person has an ORCS number when a file is started with their correspondence, usually with the application for being registered. Each person can have a unique ORCS number as a well pump installer and as a well driller. E.g. 3800-25/PUMP PRIC W. The standard format for this number is 3800-25/PUMP {first 4 characters of last name} {initial of first name}.';
 COMMENT ON COLUMN registries_person.surname IS 'Legal last name of the well driller or well pump installer who has applied and/or is registered with the province.';
 COMMENT ON COLUMN registries_person.update_date IS 'Date and time (UTC) when the physical record was updated in the database. It will be the same as the create_date until the record is first updated after creation.';
 COMMENT ON COLUMN registries_person.update_user IS 'The user who last updated this record in the database.';
-COMMENT ON COLUMN registries_person.well_driller_orcs_no IS 'Well driller's unique filing number used in the BC government Operational Records Classification Systems (ORCS) filing system. Each person has an ORCS number when a file is started with their correspondence, usually with the application for being registered. E.g. 3800-25/PUMP DRI W. The standard format for this number is 3800-25/DRI {first 4 characters of last name} {initial of first name}.';
+COMMENT ON COLUMN registries_person.well_driller_orcs_no IS 'Well driller''s unique filing number used in the BC government Operational Records Classification Systems (ORCS) filing system. Each person has an ORCS number when a file is started with their correspondence, usually with the application for being registered. E.g. 3800-25/PUMP DRI W. The standard format for this number is 3800-25/DRI {first 4 characters of last name} {initial of first name}.';
 COMMENT ON COLUMN registries_person_note.create_date IS 'Date and time (UTC) when the physical record was created in the database.';
 COMMENT ON COLUMN registries_person_note.create_user IS 'The user who created this record in the database.';
 COMMENT ON COLUMN registries_person_note.note IS 'Internal note used for the purposes of conducting business with an applicant.';
@@ -457,11 +457,11 @@ COMMENT ON COLUMN registries_subactivity_code.update_date IS 'Date and time (UTC
 COMMENT ON COLUMN registries_subactivity_code.update_user IS 'The user who last updated this record in the database.';
 COMMENT ON COLUMN registries_well_class_code.create_date IS 'Date and time (UTC) when the physical record was created in the database.';
 COMMENT ON COLUMN registries_well_class_code.create_user IS 'The user who created this record in the database.';
-COMMENT ON COLUMN registries_well_class_code.description IS 'Description for the registries_class_of_well_code that a driller is allowed to construct/alter/decommission based on the driller's classification e.g. Closed loop geoexchange well, Dewatering well, Geotechnical well.';
+COMMENT ON COLUMN registries_well_class_code.description IS 'Description for the registries_class_of_well_code that a driller is allowed to construct/alter/decommission based on the driller''s classification e.g. Closed loop geoexchange well, Dewatering well, Geotechnical well.';
 COMMENT ON COLUMN registries_well_class_code.display_order IS 'The order in which the codes may display on screen.';
 COMMENT ON COLUMN registries_well_class_code.effective_date IS 'The date and time that the code became valid and could be used.';
 COMMENT ON COLUMN registries_well_class_code.expired_date IS 'The date and time after which the code is no longer valid and should not be used.';
-COMMENT ON COLUMN registries_well_class_code.registries_well_class_code IS 'Codes for the type of well that a driller is allowed to construct/alter/decommission based on the driller's classification e.g. CLOS, DEWAT, GEO';
+COMMENT ON COLUMN registries_well_class_code.registries_well_class_code IS 'Codes for the type of well that a driller is allowed to construct/alter/decommission based on the driller''s classification e.g. CLOS, DEWAT, GEO';
 COMMENT ON COLUMN registries_well_class_code.update_date IS 'Date and time (UTC) when the physical record was updated in the database. It will be the same as the create_date until the record is first updated after creation.';
 COMMENT ON COLUMN registries_well_class_code.update_user IS 'The user who last updated this record in the database.';
 COMMENT ON COLUMN registries_well_qualification.create_date IS 'Date and time (UTC) when the physical record was created in the database.';
@@ -565,7 +565,7 @@ COMMENT ON COLUMN well.update_user IS 'The user who last updated this record in 
 COMMENT ON COLUMN well.water_supply_system_name IS 'Name or identifier given to a well that serves as a water supply system. Often, the name is a reflection of the community or system it serves; e.g. Town of Osoyoos or Keremeos Irrigation District.';
 COMMENT ON COLUMN well.water_supply_system_well_name IS 'The specific name given to a water supply system well. Often, the name reflects which well it is within the system, e.g. Well 1 or South Well';
 COMMENT ON COLUMN well.well_identification_plate_attached IS 'Description of where the well identification plate has been attached on or near the well. ';
-COMMENT ON COLUMN well.well_location_description IS 'Descriptive details of a well's location. E.g. the well is located 20' south west of the house; or the well is located in the pump house near the pond.';
+COMMENT ON COLUMN well.well_location_description IS 'Descriptive details of a well''s location. E.g. the well is located 20'' south west of the house; or the well is located in the pump house near the pond.';
 COMMENT ON COLUMN well_activity_code.create_date IS 'Date and time (UTC) when the physical record was created in the database.';
 COMMENT ON COLUMN well_activity_code.create_user IS 'The user who created this record in the database.';
 COMMENT ON COLUMN well_activity_code.display_order IS 'The order in which the codes may display on screen.';
