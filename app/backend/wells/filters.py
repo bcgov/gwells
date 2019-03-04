@@ -29,6 +29,8 @@ class WellListFilter(filters.FilterSet):
                                                  label='Date of work')
     well_depth = filters.RangeFilter(method='filter_well_depth',
                                      label='Well depth (finished or total)')
+    # Don't require a choice (i.e. select box) for aquifer
+    # aquifer = filters.NumberFilter()
 
     street_address = filters.CharFilter(lookup_expr='icontains')
     city = filters.CharFilter(lookup_expr='icontains')
