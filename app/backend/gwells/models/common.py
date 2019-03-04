@@ -14,6 +14,7 @@
 from django.contrib.gis.db import models
 from django.utils import timezone
 
+
 class AuditModel(models.Model):
     """
     An abstract base class model that provides audit fields.
