@@ -73,9 +73,12 @@ from wells.serializers import (
     CasingMaterialSerializer,
 )
 from submissions.serializers import (
+    AlterationSubmissionDisplaySerializer,
     CoordinateAcquisitionCodeSerializer,
+    ConstructionSubmissionDisplaySerializer,
     DecommissionMaterialCodeSerializer,
     DecommissionMethodCodeSerializer,
+    DecommissionSubmissionDisplaySerializer,
     DevelopmentMethodCodeSerializer,
     DrillingMethodCodeSerializer,
     FilterPackMaterialCodeSerializer,
@@ -163,11 +166,11 @@ class SubmissionGetAPIView(RetrieveAPIView):
 
         # There are different serializers; which one is used depends on well_activity_type
         if activity and activity == WellActivityCode.types.construction().code:
-            serializer_class = WellConstructionSubmissionSerializer
+            serializer_class = ConstructionSubmissionDisplaySerializer
         elif activity and activity == WellActivityCode.types.alteration().code:
-            serializer_class = WellAlterationSubmissionSerializer
+            serializer_class = AlterationSubmissionDisplaySerializer
         elif activity and activity == WellActivityCode.types.decommission().code:
-            serializer_class = WellDecommissionSubmissionSerializer
+            serializer_class = DecommissionSubmissionDisplaySerializer
 
         return serializer_class(*args, **kwargs)
 

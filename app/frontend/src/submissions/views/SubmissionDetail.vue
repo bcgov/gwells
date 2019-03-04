@@ -1,5 +1,9 @@
 <template>
-  <b-card v-if="userRoles.wells.edit || userRoles.submissions.edit">
+<div>
+    <b-card v-if="submission && breadcrumbs && breadcrumbs.length" no-body class="mb-3 container container-wide d-print-none">
+      <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"></b-breadcrumb>
+    </b-card>
+    <b-card v-if="userRoles.wells.edit || userRoles.submissions.edit" class="container p-1 container-wide">
     <b-card-body>
       <div v-if="submission">
         <h1>Activity Report Summary</h1>
@@ -23,6 +27,8 @@
       </div>
     </b-card-body>
   </b-card>
+</div>
+
 </template>
 
 <script>
@@ -37,7 +43,25 @@ export default {
   mixins: [inputFormatMixin],
   data () {
     return {
-      submission: null
+      breadcrumbs: [
+        {
+          text: `Well Search`,
+          to: { name: 'wells-home' }
+        },
+        {
+          text: `Well ${this.$route.params.id} Summary`,
+          to: { name: 'wells-detail', params: { id: this.$route.params.id } }
+        },
+        {
+          text: `Edit Well`,
+          to: { name: 'SubmissionsEdit', params: { id: this.$route.params.id } }
+        },
+        {
+          text: `Activity Report Summary`,
+          active: true
+        }
+      ],
+      submission: {}
     }
   },
   computed: {

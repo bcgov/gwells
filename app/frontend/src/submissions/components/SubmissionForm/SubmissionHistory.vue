@@ -28,7 +28,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             ref="submissionHistoryTable"
             :busy.sync="submissionsBusy"
             :items="fetchReports"
-            :fields="['report', 'date_entered', 'entered_by', 'date_work_finished']"
+            :fields="['report', 'date_entered', 'entered_by']"
             responsive
             :per-page="submissionsPerPage"
             :current-page="submissionsPage"
@@ -39,14 +39,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <template slot="date_entered" slot-scope="data">
             {{ data.item.create_date | moment("MMMM Do YYYY [at] LT") }}
           </template>
-          <template slot="date_work_finished" slot-scope="data">
-            {{ data.item.work_end_date | moment("MMMM Do YYYY [at] LT") }}
-          </template>
           <template slot="entered_by" slot-scope="data">
             {{ data.item.create_user }}
           </template>
         </b-table>
-        <b-pagination v-if="!!submissionsRecordsCount" size="md" :total-rows="submissionsRecordsCount" v-model="submissionsPage" :per-page="submissionsPerPage" :disabled="submissionsBusy" />
+        <b-pagination v-if="!!submissionsRecordsCount && submissionRecordsCount > submissionsPerPage" size="md" :total-rows="submissionsRecordsCount" v-model="submissionsPage" :per-page="submissionsPerPage" :disabled="submissionsBusy" />
       </b-col>
     </b-row>
   </fieldset>

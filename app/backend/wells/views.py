@@ -260,7 +260,7 @@ class WellTagSearchAPIView(ListAPIView):
 
 
 class WellSubmissionsListAPIView(ListAPIView):
-    """ lists submissions for a well 
+    """ lists submissions for a well
         get: returns submission records for a given well
     """
 

@@ -13,6 +13,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
 */
 <template>
   <div class="container p-1 container-wide">
+    <b-card v-if="breadcrumbs && breadcrumbs.length" no-body class="mb-3 d-print-none">
+      <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"></b-breadcrumb>
+    </b-card>
     <div class="card" v-if="userRoles.wells.edit || userRoles.submissions.edit">
       <div class="card-body">
 
@@ -112,6 +115,27 @@ export default {
     },
     isStaffEdit () {
       return this.activityType === 'STAFF_EDIT'
+    },
+    breadcrumbs () {
+      const breadcrumbs = []
+
+      if (this.isStaffEdit) {
+        breadcrumbs.push(
+          {
+            text: `Well Search`,
+            to: { name: 'wells-home' }
+          },
+          {
+            text: `Well ${this.$route.params.id} Summary`,
+            to: { name: 'wells-detail', params: { id: this.$route.params.id } }
+          },
+          {
+            text: `Edit Well`,
+            to: { name: 'SubmissionsEdit', params: { id: this.$route.params.id } }
+          }
+        )
+      }
+      return breadcrumbs
     },
     ...mapGetters(['codes', 'userRoles', 'well', 'keycloak']),
     ...mapState('documentState', [
@@ -584,6 +608,7 @@ function initialState () {
         'documents'
       ],
       STAFF_EDIT: [
+        'submissionHistory',
         'wellPublicationStatus',
         'wellType',
         'wellOwner',
