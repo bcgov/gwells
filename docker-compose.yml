@@ -12,7 +12,7 @@ services:
     ports:
     - "9000:9000"
     volumes:
-    - ./.tmp/minio-public-files:/data
+    - /data
     environment:
       MINIO_ACCESS_KEY: minio
       MINIO_SECRET_KEY: minio1234
@@ -23,7 +23,7 @@ services:
     ports:
     - "9001:9001"
     volumes:
-    - ./.tmp/minio-private-files:/data
+    - /data
     environment:
       MINIO_ACCESS_KEY: minio
       MINIO_SECRET_KEY: minio1234
@@ -48,7 +48,6 @@ services:
         set -x &&
         cd /app/frontend &&
         npm install &&
-        npm run build &&
         npm run ${NPM_CMD:-dev}"
     ports:
       - "8080:8080"
@@ -56,7 +55,7 @@ services:
       - ./app:/app
       - /app/frontend/node_modules/
   backend:
-    image: python:3.6
+    image: gwells/backend
     hostname: backend
     environment:
       APP_CONTEXT_ROOT: gwells
@@ -102,22 +101,14 @@ services:
       S3_WELL_BUCKET: well-docs
       S3_WELL_EXPORT_BUCKET: gwells
     command: /bin/bash -c "
-      apt-get update &&
-      apt-get install binutils libproj-dev gdal-bin -y &&
       sleep 3 &&
       set -x &&
       cd /app/backend &&
       mkdir -p .pip &&
+      python3 -m pip install --upgrade pip &&
       python3 -m pip install --cache-dir=.pip -r requirements.txt &&
       python3 manage.py migrate --noinput &&
-      echo Loading fixtures, this may take some time... &&
-      python3 manage.py loaddata
-        gwells-codetables.json
-        registries-codetables.json
-        registries.json
-        wellsearch-codetables.json
-        wellsearch.json
-        aquifers.json &&
+      ./load_fixtures.sh all &&
       python3 manage.py createinitialrevisions &&
       python3 manage.py collectstatic --noinput &&
       python3 manage.py runserver 0.0.0.0:8000"

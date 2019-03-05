@@ -73,6 +73,18 @@ Licensed under the Apache License, Version 2.0 (the "License");
         :wellActivityType.sync="activityTypeInput"
       />
 
+    <!-- Publication Status of well -->
+    <publication-status class="my-5"
+      v-if="showSection('wellPublicationStatus')"
+      id="wellPublicationStatus"
+      :wellPublicationStatusCode.sync="form.well_publication_status"
+      :errors="errors"
+      :fieldsLoaded="fieldsLoaded"
+      :isStaffEdit="isStaffEdit"
+      :saveDisabled="editSaveDisabled"
+      v-on:save="$emit('submit_edit')"
+    />
+
     <!-- Type of well -->
     <well-type class="my-5"
       v-if="showSection('wellType')"
@@ -428,6 +440,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         :testingDuration.sync="form.testing_duration"
         :analyticSolutionType.sync="form.analytic_solution_type"
         :boundaryEffect.sync="form.boundary_effect"
+        :aquiferLithology.sync="form.aquifer_lithology"
         :errors="errors"
         :isStaffEdit="isStaffEdit"
         :saveDisabled="editSaveDisabled"
@@ -435,11 +448,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
       />
 
       <!-- Back / Next / Submit controls -->
-      <b-row v-if="isStaffEdit" class="mt-5">
-        <b-col class="pr-4 text-right">
-          <b-btn variant="primary" @click="$emit('submit_edit')" :disabled="editSaveDisabled">Save</b-btn>
-        </b-col>
-      </b-row>
       <b-row v-else class="mt-5">
         <b-col v-if="!formIsFlat">
           <b-btn v-if="step > 1 && !formIsFlat" @click="step > 1 ? step-- : null" variant="primary">Back</b-btn>
@@ -477,6 +485,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 import ActivityType from './ActivityType.vue'
 import AquiferData from './AquiferData.vue'
 import WellType from './WellType.vue'
+import PublicationStatus from './PublicationStatus.vue'
 import PersonResponsible from './PersonResponsible.vue'
 import Owner from './Owner.vue'
 import Location from './Location.vue'
@@ -498,6 +507,7 @@ import ClosureDescription from './ClosureDescription.vue'
 import DecommissionInformation from './DecommissionInformation.vue'
 import ObservationWellInfo from './ObservationWellInfo.vue'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
+
 export default {
   name: 'SubmissionsForm',
   mixins: [inputBindingsMixin],
@@ -549,6 +559,7 @@ export default {
     ActivityType,
     AquiferData,
     WellType,
+    PublicationStatus,
     PersonResponsible,
     Owner,
     Location,
@@ -587,6 +598,7 @@ export default {
         'activityType': 'Type of work',
         'aquiferData': 'Well testing and aquifer details',
         'wellType': 'Well class',
+        'wellPublicationStatus': 'Well publication status',
         'wellOwner': 'Well owner',
         'wellLocation': 'Well location',
         'wellCoords': 'Geographic coordinates',

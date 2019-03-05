@@ -14,7 +14,7 @@
 
 <template>
   <div>
-    <b-card no-body class="p-3 mb-4">
+    <b-card class="container container-wide p-1">
       <api-error v-if="error" :error="error"/>
 
       <b-container>
@@ -59,7 +59,8 @@ export default {
   methods: {
     ...mapActions('documentState', [
       'uploadFiles',
-      'fileUploadSuccess'
+      'fileUploadSuccess',
+      'fileUploadFail'
     ]),
     navigateToView () {
       this.$router.push({ name: 'home' })
@@ -71,10 +72,13 @@ export default {
           recordId: data.aquifer_id
         }).then((values) => {
           this.fileUploadSuccess()
-          this.$router.push({ name: 'view', params: { id: data.aquifer_id } })
+          this.$router.push({ name: 'aquifers-view', params: { id: data.aquifer_id } })
+        }).catch((error) => {
+          this.fileUploadFail()
+          console.error(error)
         })
       } else {
-        this.$router.push({ name: 'view', params: { id: data.aquifer_id } })
+        this.$router.push({ name: 'aquifers-view', params: { id: data.aquifer_id } })
       }
     },
     handleError (error) {

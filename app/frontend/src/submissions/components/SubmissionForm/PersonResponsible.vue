@@ -259,10 +259,10 @@ export default {
     }
   },
   created () {
-    ApiService.query(`drillers/names/`).then((response) => {
+    ApiService.query(`drillers/names`).then((response) => {
       this.persons = response.data
     })
-    ApiService.query('organizations/names/').then((response) => {
+    ApiService.query('organizations/names').then((response) => {
       this.companies = response.data
     })
   }

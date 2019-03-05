@@ -30,7 +30,6 @@
 ######################
 *.log
 #*.sql
-*.sqlite
 
 # OS generated files #
 ######################
@@ -49,7 +48,6 @@ Thumbs.db
 ##################
 
 # Django
-db.sqlite3
 staticfiles/
 
 # Byte-compiled / optimized / DLL files

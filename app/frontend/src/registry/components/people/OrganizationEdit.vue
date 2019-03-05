@@ -175,6 +175,7 @@
                   id="orgEditWebsiteInput"
                   :state="validation.website_url"
                   aria-describedby="orgEditWebsiteFeedback"
+                  placeholder="eg. http://www.example.com"
                   type="text"
                   v-model="companyForm.website_url"/>
                 <b-form-invalid-feedback id="orgEditWebsiteFeedback">
@@ -182,6 +183,9 @@
                       {{ error }}
                     </div>
                 </b-form-invalid-feedback>
+                <b-form-text id="orgEditEmailInput">
+                  Use a full website address, including http://
+                </b-form-text>
               </b-form-group>
             </b-col>
           </b-row>
@@ -482,7 +486,7 @@ export default {
     },
     loadCompanies () {
       // load full list of companies when page loads (for dropdown picker)
-      return ApiService.query('organizations/').then((response) => {
+      return ApiService.query('organizations').then((response) => {
         this.companies = response.data
       }).catch((e) => {
         this.companyListError = e.response

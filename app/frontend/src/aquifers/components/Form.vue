@@ -13,7 +13,7 @@
 */
 
 <template>
-  <b-container>
+  <div class="container container-wide p-1">
     <b-row>
       <b-col md="6">
         <b-row v-if="showId">
@@ -276,7 +276,7 @@
       id="confirmCancel">
       <p>Are you sure you want to quit editing this record?</p>
     </b-modal>
-  </b-container>
+  </div>
 </template>
 
 <style>
@@ -287,6 +287,7 @@
 </style>
 
 <script>
+import ApiService from '@/common/services/ApiService.js'
 import { isEmpty, mapValues } from 'lodash'
 import { mapMutations, mapState } from 'vuex'
 
@@ -328,16 +329,34 @@ export default {
       'upload_files'
     ])
   },
-  methods: {
-    ...mapMutations('documentState', [
-      'setFiles',
-      'setPrivate'
-    ])
-  },
   props: {
     fieldErrors: Object,
     record: Object,
     showId: Boolean
+  },
+  methods: {
+    ...mapMutations('aquiferCodes', ['addCodes']),
+    ...mapMutations('documentState', [
+      'setFiles',
+      'setPrivate'
+    ]),
+    fetchCode (codePath, key) {
+      ApiService.query(codePath).then((response) => {
+        this.addCodes({key, codeTable: response.data.results})
+      })
+    },
+    fetchCodes () {
+      this.fetchCode('aquifer-codes/materials', 'material_codes')
+      this.fetchCode('aquifer-codes/quality-concerns', 'quality_concern_codes')
+      this.fetchCode('aquifer-codes/vulnerability', 'vulnerability_codes')
+      this.fetchCode('aquifer-codes/subtypes', 'subtype_codes')
+      this.fetchCode('aquifer-codes/productivity', 'productivity_codes')
+      this.fetchCode('aquifer-codes/demand', 'demand_codes')
+      this.fetchCode('aquifer-codes/water-use', 'known_water_use_codes')
+    }
+  },
+  created () {
+    this.fetchCodes()
   }
 }
 </script>

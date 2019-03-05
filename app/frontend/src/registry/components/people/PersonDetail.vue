@@ -17,7 +17,7 @@
         <b-alert show>File Upload In Progress...</b-alert>
       </div>
       <div class="col-xs-12" v-if="!files_uploading && file_upload_error">
-        <b-alert show variant="warning" >{{file_upload_error}}</b-alert>
+        <b-alert show variant="warning" >File Upload Errors: {{file_upload_errors.map((e) => e.response.statusText)}}</b-alert>
       </div>
       <div class="col-xs-12" v-if="!files_uploading && file_upload_success">
         <b-alert show variant="success" >Successfully uploaded all files</b-alert>
@@ -109,8 +109,9 @@
                   </thead>
                   <tbody>
                     <tr
-                        v-if="item.activity === registration.registries_activity"
-                        v-for="(item, index_c) in classifications" :key="`reg ${index} class ${index_c}`">
+                        v-for="(item, index_c) in classifications.filter((item) => {
+                          return item.activity === registration.registries_activity
+                        })" :key="`reg ${index} class ${index_c}`">
                       <td><router-link :to="{
                         name: 'ApplicationDetail',
                         params: { person_guid: currentDriller.person_guid, registration_guid: item.registration_guid, application_guid: item.application_guid } }">
@@ -249,10 +250,10 @@
               </div>
               <div class="row mb-2">
                 <div class="col-5 col-md-2 mb-1 mb-sm-0">
-                  Cell number:
+                  Email address:
                 </div>
                 <div class="col-7 col-md-4">
-                  {{ registration.surname }}
+                  {{ registration.organization.email }}
                 </div>
                 <div class="col-5 col-md-2">
                   Fax number:
@@ -262,12 +263,6 @@
                 </div>
               </div>
               <div class="row mb-2">
-                <div class="col-5 col-md-2 mb-1 mb-sm-0">
-                  Email address:
-                </div>
-                <div class="col-7 col-md-4">
-                  {{ registration.organization.email }}
-                </div>
                 <div class="col-5 col-md-2">
                   Website:
                 </div>
@@ -286,9 +281,10 @@
         <div class="card mb-3" v-if="userRoles.registry.edit && (!currentDriller.registrations || currentDriller.registrations.length !== 2)">
           <div class="card-body p-2 p-md-3">
             <div
-                v-for="(item, index) in registrationOptions"
-                :key="`unregistered activity ${index}`"
-                v-if="!currentDriller.registrations.some(reg => reg.registries_activity === item.code)">
+                v-for="(item, index) in registrationOptions.filter((item) => {
+                    return !currentDriller.registrations.some(reg => reg.registries_activity === item.code)
+                  })"
+                :key="`unregistered activity ${index}`">
               <b-button variant="primary" class="my-1 registries-action-button" :ref="`registerButton${item.code}`" @click="confirmRegisterModal[item.code]=true">
                 Register as a {{ item.desc }}
               </b-button>
@@ -552,6 +548,7 @@ export default {
     ...mapState('documentState', [
       'files_uploading',
       'file_upload_error',
+      'file_upload_errors',
       'file_upload_success',
       'upload_files'
     ])
@@ -559,7 +556,8 @@ export default {
   methods: {
     ...mapActions('documentState', [
       'uploadFiles',
-      'fileUploadSuccess'
+      'fileUploadSuccess',
+      'fileUploadFail'
     ]),
     ...mapMutations('documentState', [
       'setFiles'
@@ -633,12 +631,14 @@ export default {
           this.fetchFiles()
           window.scrollTo(0, 0)
         }).catch((error) => {
-          console.log(error)
+          this.fileUploadFail()
+          console.error(error)
+          window.scrollTo(0, 0)
         })
       }
     },
     fetchFiles () {
-      ApiService.query(`drillers/${this.$route.params.person_guid}/files/`)
+      ApiService.query(`drillers/${this.$route.params.person_guid}/files`)
         .then((response) => {
           this.person_files = response.data
           console.log(response.data)

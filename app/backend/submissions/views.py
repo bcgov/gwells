@@ -62,11 +62,14 @@ from wells.models import (
     WellClassCode,
     WellSubclassCode,
     WellStatusCode,
-    YieldEstimationMethodCode,)
+    WellPublicationStatusCode,
+    YieldEstimationMethodCode,
+    AquiferLithologyCode,
+)
 from submissions.models import WellActivityCode
 from wells.serializers import (
     CasingCodeSerializer,
-    CasingMaterialSerializer
+    CasingMaterialSerializer,
 )
 from submissions.serializers import (
     CoordinateAcquisitionCodeSerializer,
@@ -104,9 +107,11 @@ from submissions.serializers import (
     WellActivityCodeSerializer,
     WellClassCodeSerializer,
     WellStatusCodeSerializer,
+    WellPublicationStatusCodeSerializer,
     WellSubclassCodeSerializer,
     YieldEstimationMethodCodeSerializer,
     WellStaffEditSubmissionSerializer,
+    AquiferLithologySerializer,
 )
 
 
@@ -311,11 +316,15 @@ class SubmissionsOptions(APIView):
         well_status_codes = WellStatusCodeSerializer(
             instance=WellStatusCode.objects.all(), many=True
         )
+        well_publication_status_codes = WellPublicationStatusCodeSerializer(
+            instance=WellPublicationStatusCode.objects.all(), many=True
+        )
         coordinate_acquisition_codes = CoordinateAcquisitionCodeSerializer(
             instance=CoordinateAcquisitionCode.objects.all(), many=True)
         observation_well_status = ObservationWellStatusCodeSerializer(
             instance=ObsWellStatusCode.objects.all(), many=True
         )
+        aquifer_lithology = AquiferLithologySerializer(instance=AquiferLithologyCode.objects.all(), many=True)
 
         lithology_hardness = LithologyHardnessSerializer(instance=LithologyHardnessCode.objects.all(), many=True)
         lithology_colours = LithologyColourSerializer(instance=LithologyColourCode.objects.all(), many=True)
@@ -357,20 +366,17 @@ class SubmissionsOptions(APIView):
         options["yield_estimation_methods"] = yield_estimation_methods.data
         options["water_quality_characteristics"] = water_quality_characteristics.data
         options["water_quality_colours"] = water_quality_colours.data
+        options["aquifer_lithology_codes"] = aquifer_lithology.data
         options["lithology_hardness_codes"] = lithology_hardness.data
         options["lithology_colours"] = lithology_colours.data
         options["lithology_materials"] = lithology_materials.data
         options["lithology_moisture_codes"] = lithology_moisture.data
         options["lithology_descriptors"] = lithology_descriptors.data
         options["well_status_codes"] = well_status_codes.data
+        options["well_publication_status_codes"] = well_publication_status_codes.data
         options["observation_well_status"] = observation_well_status.data
 
         return Response(options)
-
-
-class SubmissionsHomeView(TemplateView):
-    """Loads the html file containing the Submissions web app"""
-    template_name = 'submissions/submissions.html'
 
 
 class PreSignedDocumentKey(RetrieveAPIView):
