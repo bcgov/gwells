@@ -215,6 +215,8 @@ def apiTest (String stageName, String stageUrl, String envSuffix) {
                     resourceLimitCpu: '800m',
                     resourceRequestMemory: '1Gi',
                     resourceLimitMemory: '1Gi',
+                    activeDeadlineSeconds: '600',
+                    podRetention: 'never',
                     workingDir: '/tmp',
                     command: '',
                     args: '${computer.jnlpmac} ${computer.name}',
