@@ -447,7 +447,7 @@ export default {
       }
     },
     setupPage () {
-      this.$data = initialState()
+      Object.assign(this.$data, initialState())
       this.resetForm()
       this.$store.dispatch(FETCH_CODES)
 
