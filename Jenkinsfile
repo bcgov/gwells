@@ -354,25 +354,22 @@ def zapTest (String stageName, String envUrl, String envSuffix) {
         ) {
             node("zap-${appName}-${envSuffix}-${prNumber}") {
                 checkout scm
-                dir('openshift/zap') {
-                    def retVal = sh ([
-                        script: "/zap/zap-baseline.py -r index.html -t $BASE_URL",
-                        returnStatus: true
-                    ])
-                    echo "Status: "+ retVal
+                sh (
+                    script: "/zap/zap-baseline.py -r index.html -t $BASE_URL",
+                    returnStatus: true
+                )
 
-                    publishHTML(
-                        target: [
-                            allowMissing: false,
-                            alwaysLinkToLastBuild: false,
-                            keepAll: true,
-                            reportDir: '/zap/wrk',
-                            reportFiles: 'index.html',
-                            reportName: 'ZAP Baseline Scan',
-                            reportTitles: 'ZAP Baseline Scan'
-                        ]
-                    )
-                }
+                publishHTML(
+                    target: [
+                        allowMissing: false,
+                        alwaysLinkToLastBuild: false,
+                        keepAll: true,
+                        reportDir: '/zap/wrk',
+                        reportFiles: 'index.html',
+                        reportName: 'ZAP Baseline Scan',
+                        reportTitles: 'ZAP Baseline Scan'
+                    ]
+                )
             }
         }
     }
@@ -656,9 +653,7 @@ pipeline {
             }
             steps {
                 script {
-                    _openshift(env.STAGE_NAME, devProject) {
-                        def result = zapTest ('DEV - ZAP Tests', devHost, devSuffix)
-                    }
+                    def result = zapTest ('DEV - ZAP Tests', devHost, devSuffix)
                 }
             }
         }
