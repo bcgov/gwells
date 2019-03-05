@@ -134,7 +134,7 @@ def functionalTest (String stageName, String stageUrl, String envSuffix, String 
         //         //the checkout is mandatory, otherwise functional tests would fail
         //         echo "checking out source"
         //         checkout scm
-        //         dir('functional-tests') {
+        //         dir('tests/functional-tests') {
         //             try {
         //                 echo "BASE_URL = ${BASE_URL}"
         //                 if ('all'.equalsIgnoreCase(toTest)) {
@@ -256,7 +256,7 @@ def apiTest (String stageName, String stageUrl, String envSuffix) {
         ) {
             node("nodejs-${appName}-${envSuffix}-${prNumber}") {
                 checkout scm
-                dir('api-tests') {
+                dir('tests/api-tests') {
                     sh 'npm install -g newman'
                     try {
                         sh """
