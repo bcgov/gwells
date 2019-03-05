@@ -123,11 +123,13 @@ export default {
       this.markerGroup = L.layerGroup()
       this.markerGroup.addTo(this.map)
 
-      // filter locations for coordinates (coordinate either present or not),
-      // and then add them to the new marker group
-      this.locations.filter((item) => {
+      // filter locations for coordinates (coordinate either present or not)
+      const markers = this.locations.filter((item) => {
         return item[0] && item[1]
-      }).map((item) => {
+      })
+
+      // add markers to the new marker group
+      markers.map((item) => {
         return L.circleMarker(L.latLng(item[0], item[1]), {
           radius: 4, // The radius of the circleMarker
           color: '#000', // The color of the circleMarker

@@ -215,6 +215,8 @@ def apiTest (String stageName, String stageUrl, String envSuffix) {
                     resourceLimitCpu: '800m',
                     resourceRequestMemory: '1Gi',
                     resourceLimitMemory: '1Gi',
+                    activeDeadlineSeconds: '600',
+                    podRetention: 'never',
                     workingDir: '/tmp',
                     command: '',
                     args: '${computer.jnlpmac} ${computer.name}',
@@ -542,13 +544,7 @@ pipeline {
                             "--",
                             "bash -c '\
                                 cd /opt/app-root/src/backend; \
-                                python manage.py loaddata \
-                                gwells-codetables.json \
-                                wellsearch-codetables.json \
-                                registries-codetables.json \
-                                registries.json \
-                                wellsearch.json \
-                                aquifers.json \
+                                ./load_fixtures.sh all \
                             '"
                         )
                         echo "Load Fixtures results: "+ ocoutput.actions[0].out
