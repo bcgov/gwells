@@ -20,7 +20,7 @@ def border_data(apps, schema_editor):
     #   --srid=4269 --mapping --multi
     Border = apps.get_model('gwells', 'Border')
 
-    zip_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '0010_BCGW_ABMS_PROV.zip')
+    zip_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '0003_BCGW_ABMS_PROV.zip')
     with ZipFile(zip_path, 'r') as zipObj:
         zipObj.extractall(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'tmp'))
 
@@ -64,7 +64,7 @@ def reverse_border_data(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('gwells', '0009_auto_20181116_2316'),
+        ('gwells', '0002_auto_20190301_2303'),
     ]
 
     operations = [

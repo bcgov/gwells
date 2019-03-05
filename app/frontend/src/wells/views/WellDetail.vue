@@ -136,7 +136,7 @@
           </b-col>
           <b-col cols="12" md="6" xl="6" offset-xl="1">
             <div>
-              <coords-map :latitude="Number(well.latitude) || 49" :longitude="Number(well.longitude) || -123" :draggable="false"></coords-map>
+              <single-well-map :latitude="Number(well.latitude)" :longitude="Number(well.longitude)" :draggable="false"></single-well-map>
             </div>
             <div class="my-3">&nbsp;</div>
             <div><span class="font-weight-bold">Geographic Coordinates - North American Datum of 1983 (NAD 83)</span></div>
@@ -390,7 +390,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import CoordsMap from '@/submissions/components/SubmissionForm/CoordsMap.vue'
+import SingleWellMap from '@/wells/components/SingleWellMap.vue'
 import Documents from '@/wells/components/Documents.vue'
 import convertCoordinatesMixin from '@/common/convertCoordinatesMixin.js'
 import ApiService from '@/common/services/ApiService.js'
@@ -399,7 +399,7 @@ import codeToDescription from '@/common/codeToDescription.js'
 export default {
   name: 'WellDetail',
   components: {
-    CoordsMap,
+    SingleWellMap,
     Documents
   },
   mixins: [
