@@ -325,7 +325,7 @@ def apiTest (String stageName, String stageUrl, String envSuffix) {
 
 
 // ZAP test function
-def zapTest (String stageName, String stageUrl, String envSuffix) {
+def zapTest (String stageName, String envUrl, String envSuffix) {
     _openshift(env.STAGE_NAME, toolsProject) {
         podTemplate(
             label: "zap-${appName}-${envSuffix}-${prNumber}",
@@ -342,17 +342,25 @@ def zapTest (String stageName, String stageUrl, String envSuffix) {
                     resourceLimitMemory: '4Gi',
                     workingDir: '/home/jenkins',
                     command: '',
-                    args: '${computer.jnlpmac} ${computer.name}'
+                    args: '${computer.jnlpmac} ${computer.name}',
+                    envVars: [
+                        envVar(
+                            key:'BASE_URL',
+                            value: "https://${envUrl}/gwells"
+                        )
+                    ]
                 )
             ]
         ) {
             node("zap-${appName}-${envSuffix}-${prNumber}") {
                 checkout scm
-                dir('zap') {
-                    sh """
-                        set -eux
-                        ./runzap.sh
-                    """
+                dir('openshift/zap') {
+                    def retVal = sh ([
+                        script: "/zap/zap-baseline.py -r index.html -t $BASE_URL",
+                        returnStatus: true
+                    ])
+                    echo "Status: "+ retVal
+
                     publishHTML(
                         target: [
                             allowMissing: false,
@@ -360,8 +368,8 @@ def zapTest (String stageName, String stageUrl, String envSuffix) {
                             keepAll: true,
                             reportDir: '/zap/wrk',
                             reportFiles: 'index.html',
-                            reportName: 'ZAP Full Scan',
-                            reportTitles: 'ZAP Full Scan'
+                            reportName: 'ZAP Baseline Scan',
+                            reportTitles: 'ZAP Baseline Scan'
                         ]
                     )
                 }
