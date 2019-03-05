@@ -216,6 +216,7 @@ export default {
     fetch (id = this.id) {
       ApiService.query(`aquifers/${id}`)
         .then((response) => {
+          console.log('record', response.data)
           this.record = response.data
         }).catch((error) => {
           console.error(error)

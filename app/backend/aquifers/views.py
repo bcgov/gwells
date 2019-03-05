@@ -35,6 +35,7 @@ from aquifers import models
 from aquifers import serializers
 from aquifers.models import (
     Aquifer,
+    AquiferResourceSection,
     AquiferDemand,
     AquiferMaterial,
     AquiferProductivity,
@@ -73,6 +74,16 @@ class AquiferListCreateAPIView(RevisionMixin, AuditCreateMixin, ListCreateAPIVie
     search_fields = ('aquifer_name',)
     ordering_fields = '__all__'
     ordering = ('aquifer_id',)
+
+
+
+class AquiferResourceSectionListAPIView(ListAPIView):
+    """List aquifer materials codes
+    get: return a list of aquifer material codes
+    """
+
+    queryset = AquiferResourceSection.objects.all()
+    serializer_class = serializers.AquiferResourceSectionSerializer
 
 
 class AquiferMaterialListAPIView(ListAPIView):

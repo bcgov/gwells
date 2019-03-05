@@ -245,6 +245,58 @@
       </b-col>
     </b-row>
 
+    <b-row class="mt-4"
+      v-for="(resource, index) in record.resources" :key="index">
+      <b-col cols="auto">
+        <b-form-group
+          label="Section"
+          label-for="section"
+          :invalid-feedback="fieldErrorMessages.section"
+          :state="fieldHasError.section">
+          <b-form-select
+            v-model="resource.section"
+            :options="[''].concat(aquifer_resource_sections)"
+            value-field="aquifer_resource_id"
+            text-field="name"/>
+        </b-form-group>
+      </b-col>
+      <b-col cols="auto">
+        <b-form-group
+          label="Name"
+          label-for="name"
+          :invalid-feedback="fieldErrorMessages.name"
+          :state="fieldHasError.name">
+          <b-form-input
+            type="text"
+            v-model="resource.name"/>
+        </b-form-group>
+      </b-col>
+      <b-col cols="auto">
+        <b-form-group
+          label="URL"
+          label-for="url"
+          :invalid-feedback="fieldErrorMessages.url"
+          :state="fieldHasError.url">
+          <b-form-input
+            type="text"
+            v-model="resource.url"/>
+        </b-form-group>
+      </b-col>
+      <b-col cols="auto">
+        <br>
+        <b-button>Delete</b-button>
+      </b-col>
+    </b-row>
+    <b-row class="mt-4">
+      <b-col cols="auto">
+        <b-button
+          variant="primary"
+          v-on:click="handleAddResource">
+          Add Resource
+        </b-button>
+      </b-col>
+    </b-row>
+
     <b-row class="mt-4">
       <b-col cols="auto">
         <b-button
@@ -288,6 +340,7 @@
 
 <script>
 import ApiService from '@/common/services/ApiService.js'
+// import AquiferResources from './AquiferResources.vue'
 import { isEmpty, mapValues } from 'lodash'
 import { mapMutations, mapState } from 'vuex'
 
@@ -317,6 +370,7 @@ export default {
     },
     ...mapState('aquiferCodes', [
       'demand_codes',
+      'aquifer_resource_sections',
       'known_water_use_codes',
       'material_codes',
       'productivity_codes',
@@ -340,12 +394,22 @@ export default {
       'setFiles',
       'setPrivate'
     ]),
+    handleAddResource () {
+      this.record.resources.push({
+        name: '',
+        url: '',
+        section: ''
+      })
+    },
     fetchCode (codePath, key) {
+      console.log(codePath, key);
       ApiService.query(codePath).then((response) => {
+        console.log(response)
         this.addCodes({key, codeTable: response.data.results})
       })
     },
     fetchCodes () {
+      this.fetchCode('aquifers/sections', 'aquifer_resource_sections')
       this.fetchCode('aquifer-codes/materials', 'material_codes')
       this.fetchCode('aquifer-codes/quality-concerns', 'quality_concern_codes')
       this.fetchCode('aquifer-codes/vulnerability', 'vulnerability_codes')

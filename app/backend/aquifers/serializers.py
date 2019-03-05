@@ -17,6 +17,29 @@ from rest_framework import serializers
 from aquifers import models
 
 
+class AquiferResourceSerializer(serializers.ModelSerializer):
+    """Serialize aquifer resourcelist"""
+    aquifer_id = serializers.PrimaryKeyRelatedField(queryset=models.Aquifer.objects.all(),source='aquifer.id')
+    section_id = serializers.PrimaryKeyRelatedField(queryset=models.AquiferResourceSection.objects.all(),source='section.id')
+
+    class Meta:
+        model = models.AquiferResource
+        fields = (
+            'aquifer_resource_id',
+            'name',
+            'url'
+        )
+
+
+    # def create(self, validated_data):
+    #     subject = Child.objects.create(
+    #         aquifer=validated_data['aquifer']['id'],
+    #         name=validated_data['name'],
+    #         name=validated_data['url'],
+    #         name=validated_data['section']['id'],
+    #     )
+        # return child
+
 class AquiferSerializer(serializers.ModelSerializer):
     """Serialize a aquifer list"""
     demand_description = serializers.SlugRelatedField(
@@ -33,7 +56,7 @@ class AquiferSerializer(serializers.ModelSerializer):
         source='quality_concern', read_only=True, slug_field='description')
     known_water_use_description = serializers.SlugRelatedField(
         source='known_water_use', read_only=True, slug_field='description')
-
+    resources = AquiferResourceSerializer(many=True)
     class Meta:
         model = models.Aquifer
         fields = (
@@ -57,9 +80,22 @@ class AquiferSerializer(serializers.ModelSerializer):
             'subtype_description',
             'subtype',
             'vulnerability_description',
-            'vulnerability'
+            'vulnerability',
+            'resources',
         )
 
+
+
+
+
+class AquiferResourceSectionSerializer(serializers.ModelSerializer):
+    """Serialize aquifer section list"""
+    class Meta:
+        model = models.AquiferResourceSection
+        fields = (
+            'id',
+            'name'
+        )
 
 class AquiferMaterialSerializer(serializers.ModelSerializer):
     class Meta:

@@ -255,3 +255,48 @@ class Aquifer(AuditModel):
 
     def __str__(self):
         return '{} - {}'.format(self.aquifer_id, self.aquifer_name)
+
+
+class AquiferResourceSection(AuditModel):
+    """
+    Defines the available sections (categories) of aquifer resources.
+    """
+    name = models.CharField(max_length=100)
+
+    class Meta:
+        ordering = ['name']
+        verbose_name_plural = 'Aquifer Resource Sections'
+
+    def __str__(self):
+        return self.name
+
+
+class AquiferResource(AuditModel):
+    """
+    A PDF document associated with a given aquifer.
+    """
+    id = models.AutoField(primary_key=True, verbose_name="Aquifer Resource Identifier" ,db_column='aquifer_resource_id')
+    aquifer = models.ForeignKey(
+        Aquifer,
+        related_name='resources',
+        on_delete=models.PROTECT)
+    section = models.ForeignKey(
+        AquiferResourceSection,
+        verbose_name="Aquifer Resource Section",
+        on_delete=models.PROTECT,
+        help_text="The section (category) of this resource.")
+    name = models.CharField(
+        max_length=100,
+        verbose_name="Aquifer Resource Name",
+        help_text="",
+        )
+    url = models.URLField(
+        verbose_name="PDF Document URL",
+        help_text="A resolvable link to the PDF document associated with this aquifer resource.")
+
+    class Meta:
+        ordering = ['name']
+        verbose_name_plural = 'Aquifer Resource'
+
+    def __str__(self):
+        return self.name

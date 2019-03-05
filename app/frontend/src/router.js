@@ -44,7 +44,7 @@ const router = new Router({
       props: true
     },
     {
-      path: '/:id/edit',
+      path: '/aquifers/:id/edit',
       component: AquiferView,
       name: 'edit',
       props: { edit: true },
