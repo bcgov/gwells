@@ -1,0 +1,324 @@
+{
+	"info": {
+		"_postman_id": "cd39eefb-e356-4d4c-9cbb-2b77f49dfdb3",
+		"name": "GWELLS Well API copy",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Log in",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "46c51db8-8a25-45d5-941f-f55f682ab9b6",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = pm.response.json()",
+									"pm.environment.set(\"token\", jsonData.access_token);",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.expect(pm.response.code, \"Login was not successful\").to.equal(200);",
+									"})",
+									"",
+									"pm.test(\"A token was returned\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.access_token, \"a token was not returned\").to.be.ok;",
+									"    pm.expect(jsonData.access_token.length).to.be.above(36);",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "{{test_user}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{test_password}}",
+									"type": "text"
+								},
+								{
+									"key": "grant_type",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{client_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{client_secret}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{auth_server}}",
+							"host": [
+								"{{auth_server}}"
+							]
+						},
+						"description": "Get token (log in)"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Wells",
+			"item": [
+				{
+					"name": "Well list",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "20837dbe-0390-4709-b8dc-4ac3b22153f4",
+								"exec": [
+									"var jsonData = pm.response.json()",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"})",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "JWT {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/wells?format=json",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"wells"
+							],
+							"query": [
+								{
+									"key": "format",
+									"value": "json"
+								}
+							]
+						},
+						"description": "Request a list of wells"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Well",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7a45223c-da07-49be-adc9-95919a90e263",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.environment.set(\"well_tag_number\", jsonData.well);",
+									"",
+									"pm.test(\"Status code is 201\", function () {",
+									"   pm.expect(pm.response.code).to.equal(201);",
+									"})",
+									"",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "JWT {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"driller_name\": \"Jimithy\",\n\t\"consultant_name\": \"Bobothy\",\n\t\"consultant_company\": \"Inc & Inc\",\n\t\"work_end_date\": \"2018-07-10\",\n\t\"owner_full_name\": \"Holly Homeowner\",\n\t\"work_start_date\": \"2018-07-01\",\n\t\"owner_province_state\": \"BC\",\n\t\"owner_mailing_address\": \"321 Main Street\",\n\t\"owner_city\": \"Anytown\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/submissions/construction?format=json",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"submissions",
+								"construction"
+							],
+							"query": [
+								{
+									"key": "format",
+									"value": "json"
+								}
+							]
+						},
+						"description": "Submit a submission"
+					},
+					"response": []
+				},
+				{
+					"name": "Well Single Instance Get",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "ebc2262c-3d93-4e5f-aa48-4904501c525a",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = pm.response.json()",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"})",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "JWT {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"wells",
+								"{{well_tag_number}}"
+							]
+						},
+						"description": "Request a list of wells"
+					},
+					"response": []
+				},
+				{
+					"name": "Wells Get PUT_URL",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "768133b0-7dd6-4197-97ca-ddca5cb1743f",
+								"exec": [
+									"var jsonData = pm.response.json()",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"})",
+									"",
+									"pm.test(\"Response contains URL with signature\", function() {",
+									"    var jsonData = pm.response.json()",
+									"    pm.expect(jsonData.url).to.not.eql(null)",
+									"    pm.expect(jsonData.url).to.include(\"X-Amz-Signature\")",
+									"})",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "4d7ea87d-32ab-4696-9176-b041b6673698",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "JWT {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/presigned_put_url?filename=file.pdf",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"wells",
+								"{{well_tag_number}}",
+								"presigned_put_url"
+							],
+							"query": [
+								{
+									"key": "filename",
+									"value": "file.pdf"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

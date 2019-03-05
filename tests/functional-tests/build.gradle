@@ -1,0 +1,161 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
+plugins {
+    id "groovy"
+    id "codenarc"
+    id "com.energizedwork.webdriver-binaries" version "1.4"
+    id "net.foragerr.jmeter" version "1.1.0-4.0"
+}
+
+ext {
+    // The drivers we want to use
+    drivers = ["firefox", "firefoxHeadless", "chrome", "chromeHeadless","ie","edge","safari"]
+
+    ext {
+        groovyVersion = '2.5.1' // Updating this past 2.5.1 causes spock reports to fail the test execution
+        gebVersion = '2.2'
+        seleniumVersion = '3.141.59'
+        chromeDriverVersion = '2.45'
+        geckoDriverVersion = '0.22.0'
+        ieDriverVersion = '3.14.0'
+        edgeDriverVersion = '3.14.0'
+        safariDriverVersion = '3.14.0'
+        spockCoreVersion = '1.2-groovy-2.5'
+        spockReportsVersion = '1.6.1'
+        slf4jApiVersion = '1.7.25'
+    }
+}
+
+apply from: "gradle/osSpecificDownloads.gradle"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // If using Spock, need to depend on geb-spock
+    testCompile "org.gebish:geb-spock:$gebVersion"
+    testCompile("org.spockframework:spock-core:$spockCoreVersion") {
+        exclude group: "org.codehaus.groovy"
+    }
+    testCompile "org.codehaus.groovy:groovy-all:$groovyVersion"
+
+    // If using JUnit, need to depend on geb-junit (3 or 4)
+    testCompile "org.gebish:geb-junit4:$gebVersion"
+
+    //Support
+    testCompile "org.seleniumhq.selenium:selenium-support:$seleniumVersion"
+
+    // Drivers
+    testCompile "org.seleniumhq.selenium:selenium-safari-driver:$seleniumVersion"
+    testCompile "org.seleniumhq.selenium:selenium-chrome-driver:$seleniumVersion"
+    testCompile "org.seleniumhq.selenium:selenium-firefox-driver:$seleniumVersion"
+    testCompile "org.seleniumhq.selenium:selenium-ie-driver:$seleniumVersion"
+    testCompile "org.seleniumhq.selenium:selenium-edge-driver:$seleniumVersion"
+
+    // Spock reports
+    testCompile( "com.athaydes:spock-reports:$spockReportsVersion" ) {
+        transitive = false // this avoids affecting your version of Groovy/Spock
+    }
+    testCompile "org.slf4j:slf4j-api:$slf4jApiVersion"
+    testCompile "org.slf4j:slf4j-simple:$slf4jApiVersion"
+}
+
+webdriverBinaries {
+    chromedriver chromeDriverVersion
+    geckodriver geckoDriverVersion
+    //iedriver ieDriverVersion
+}
+
+drivers.each { driver ->
+    task "${driver}Test"(type: Test) {
+        group JavaBasePlugin.VERIFICATION_GROUP
+
+        outputs.upToDateWhen { false }  // Always run tests
+
+        //parallel tests does NOT work! Need more testing.
+        //maxParallelForks = 2
+
+        systemProperty "geb.build.reportsDir", reporting.file("geb/$name")
+        systemProperty "geb.env", driver
+
+        /*
+         * Set environment variables from a .env file, if it exists.
+         * Equals sign separated key value pairs, one per new line: SOME_KEY=some value
+         * These local environment variables take precedence over any environment variables set at the system level.
+         */
+        def envFile = file('.env')
+        if (envFile.exists()) {
+            envFile.readLines().each() {
+                def (key, value) = it.tokenize('=')
+                if (key && value) {
+                    environment key, value
+                }
+            }
+        }
+    }
+}
+
+ieTest {
+    dependsOn unzipIeDriver
+
+    def iedriverFilename = Os.isFamily(Os.FAMILY_WINDOWS) ? "IEDriverServer.exe" : "IEDriverServer"
+    systemProperty "webdriver.ie.driver", new File(unzipIeDriver.outputs.files.singleFile, iedriverFilename).absolutePath
+}
+
+edgeTest {
+    dependsOn unzipEdgeDriver
+
+    def edgedriverFilename = Os.isFamily(Os.FAMILY_WINDOWS) ? "MicrosoftWebDriver.exe" : "MicrosoftWebDriver.exe"
+    systemProperty "webdriver.edge.driver", new File(unzipEdgeDriver.outputs.files.singleFile,edgedriverFilename).absolutePath
+}
+
+test {
+    dependsOn drivers.collect { tasks["${it}Test"] }
+    enabled = false
+}
+
+
+tasks.withType(Test) {
+    maxHeapSize = "1g"
+    jvmArgs '-XX:MaxMetaspaceSize=512m'
+    testLogging {
+        exceptionFormat = 'full'
+    }
+    // Spock Report settings
+    systemProperty 'com.athaydes.spockframework.report.outputDir', 'build/reports/spock'
+    systemProperty 'com.athaydes.spockframework.report.internal.HtmlReportCreator.inlineCss', false
+    systemProperty 'com.athaydes.spockframework.report.projectName',"GWELLS"
+}
+
+tasks.withType(GroovyCompile) {
+    groovyOptions.forkOptions.memoryMaximumSize = '256m'
+}
+
+jmeter {
+  jmTestFiles = [file("src/test/jmeter/test.jmx")] //if jmx file is not in the default location
+  jmSystemPropertiesFiles= [file("src/test/jmeter/jmeter.properties")] //to add additional system properties
+  //enableReports = true //produce Graphical and CSV reports
+  //enableExtendedReports = true //produce Graphical and CSV reports
+}
+
+codenarc {
+    toolVersion = '1.2.1'
+    reportFormat = 'html'
+}
+
+codenarcTest {
+    ignoreFailures = true
+    configFile = file("${projectDir}/codenarc.properties")
+}
+
+sourceSets {
+    test {
+        groovy {
+            srcDirs = ["src/test/groovy"]
+        }
+        resources {
+            srcDirs = ["src/test/resources"]
+        }
+    }
+}
