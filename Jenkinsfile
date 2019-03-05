@@ -324,8 +324,7 @@ def apiTest (String stageName, String stageUrl, String envSuffix) {
 }
 
 
-// ZAP test function
-def zapTest (String stageName, String envUrl, String envSuffix) {
+def zapTests (String stageName, String envUrl, String envSuffix) {
     _openshift(env.STAGE_NAME, toolsProject) {
         podTemplate(
             label: "zap-${appName}-${envSuffix}-${prNumber}",
@@ -338,8 +337,9 @@ def zapTest (String stageName, String envUrl, String envSuffix) {
                     image: 'docker-registry.default.svc:5000/openshift/jenkins-slave-zap',
                     resourceRequestCpu: '1',
                     resourceLimitCpu: '1',
-                    resourceRequestMemory: '4Gi',
-                    resourceLimitMemory: '4Gi',
+                    resourceRequestMemory: '1Gi',
+                    resourceLimitMemory: '1Gi',
+                    activeDeadlineSeconds: '600',
                     workingDir: '/home/jenkins',
                     command: '',
                     args: '${computer.jnlpmac} ${computer.name}',
@@ -653,7 +653,7 @@ pipeline {
             }
             steps {
                 script {
-                    def result = zapTest ('DEV - ZAP Tests', devHost, devSuffix)
+                    def result = zapTests ('DEV - ZAP Tests', devHost, devSuffix)
                 }
             }
         }
