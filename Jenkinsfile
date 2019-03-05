@@ -324,6 +324,55 @@ def apiTest (String stageName, String stageUrl, String envSuffix) {
 }
 
 
+// ZAP test function
+def zapTests (String stageName, String stageUrl, String envSuffix) {
+    _openshift(env.STAGE_NAME, toolsProject) {
+        podTemplate(
+            label: "zap-${appName}-${envSuffix}-${prNumber}",
+            name: "zap-${appName}-${envSuffix}-${prNumber}",
+            serviceAccount: "jenkins",
+            cloud: "openshift",
+            containers: [
+                containerTemplate(
+                    name: 'jnlp',
+                    image: 'docker-registry.default.svc:5000/moe-gwells-dev/owasp-zap-openshift',
+                    resourceRequestCpu: '1',
+                    resourceLimitCpu: '1',
+                    resourceRequestMemory: '4Gi',
+                    resourceLimitMemory: '4Gi',
+                    workingDir: '/home/jenkins',
+                    command: '',
+                    args: '${computer.jnlpmac} ${computer.name}'
+                )
+            ]
+        ) {
+            node("zap-${appName}-${envSuffix}-${prNumber}") {
+                checkout scm
+                dir('zap') {
+                    sh """
+                        set -eux
+                        ./runzap.sh
+                    """
+                    publishHTML(
+                        target: [
+                            allowMissing: false,
+                            alwaysLinkToLastBuild: false,
+                            keepAll: true,
+                            reportDir: '/zap/wrk',
+                            reportFiles: 'index.html',
+                            reportName: 'ZAP Full Scan',
+                            reportTitles: 'ZAP Full Scan'
+                        ]
+                    )
+                }
+            }
+        }
+    }
+    return true
+}
+
+
+
 pipeline {
     environment {
         // Project-wide settings - app name, repo
