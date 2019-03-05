@@ -325,7 +325,7 @@ def apiTest (String stageName, String stageUrl, String envSuffix) {
 
 
 // ZAP test function
-def zapTests (String stageName, String stageUrl, String envSuffix) {
+def zapTest (String stageName, String stageUrl, String envSuffix) {
     _openshift(env.STAGE_NAME, toolsProject) {
         podTemplate(
             label: "zap-${appName}-${envSuffix}-${prNumber}",
@@ -636,6 +636,20 @@ pipeline {
                 script {
                     _openshift(env.STAGE_NAME, devProject) {
                         def result = apiTest ('DEV - API Tests', devHost, devSuffix)
+                    }
+                }
+            }
+        }
+
+
+        stage('DEV - ZAP Tests') {
+            when {
+                expression { env.CHANGE_TARGET != 'master' && env.CHANGE_TARGET != 'demo' }
+            }
+            steps {
+                script {
+                    _openshift(env.STAGE_NAME, devProject) {
+                        def result = zapTest ('DEV - ZAP Tests', devHost, devSuffix)
                     }
                 }
             }
