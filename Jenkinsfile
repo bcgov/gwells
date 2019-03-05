@@ -335,7 +335,7 @@ def zapTest (String stageName, String stageUrl, String envSuffix) {
             containers: [
                 containerTemplate(
                     name: 'jnlp',
-                    image: 'docker-registry.default.svc:5000/moe-gwells-dev/owasp-zap-openshift',
+                    image: 'docker-registry.default.svc:5000/openshift/jenkins-slave-zap',
                     resourceRequestCpu: '1',
                     resourceLimitCpu: '1',
                     resourceRequestMemory: '4Gi',
