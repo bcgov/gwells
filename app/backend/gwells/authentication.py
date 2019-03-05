@@ -11,8 +11,10 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
+from datetime import datetime
 
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 from rest_framework import exceptions
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from gwells.models import Profile
@@ -21,57 +23,84 @@ from gwells.roles import roles_to_groups
 
 class JwtOidcAuthentication(JSONWebTokenAuthentication):
     """
-    Authenticate users who provide a JSON Web Token in the request headers (e.g. Authorization: JWT xxxxxxxxxx)
+    Authenticate users who provide a JSON Web Token in the request headers (e.g. Authorization: JWT xxxxxxxxx)
     """
 
     def authenticate_credentials(self, payload):
         User = get_user_model()
-
-        # get keycloak ID from JWT token
+        # Get keycloak ID from JWT token
         username = payload.get('sub')
-
         if username is None:
             raise exceptions.AuthenticationFailed(
                 'JWT did not contain a "sub" attribute')
 
-        # get or create a user with the keycloak ID
+        # There are various values we can get from the Token, we don't technically need most of them,
+        # but they are useful to put in the user table for debugging purposes.
+        payload_user_mapping = {
+            'email': 'email',
+            'given_name': 'first_name',
+            'family_name': 'last_name'
+        }
+        payload_profile_mapping = {
+            'preferred_username': 'username',
+            'name': 'name'
+        }
+        # We map auth_time to user.last_login ; this is true depending on your point of view. It's the
+        # last time the user logged into sso, which may not co-incide with the last time the user 
+        # logged into gwells.
+        auth_time = payload.get('auth_time')
+        if auth_time:
+            auth_time = datetime.fromtimestamp(auth_time, tz=timezone.utc)
+
+        # Get or create a user with the keycloak ID.
         try:
-            user, user_created = User.objects.get_or_create(username=username)
+            user, update = User.objects.get_or_create(username=username)
         except:
             raise exceptions.AuthenticationFailed(
                 'Failed to retrieve or create user')
 
-        if user_created:
-            # User created, set the email for the 1st time.
+        if update:
+            # User created, set various values for the 1'st time.
             user.set_password(User.objects.make_random_password(length=36))
-            user.email = payload.get('email')
-            user.save()
-        elif user.email != payload.get('email'):
-            # The email has changed, do an update.
-            user.email = payload.get('email')
+
+        # If one of these attributes has changed - do an update.
+        for source, target in payload_user_mapping.items():
+            value = payload.get(source)
+            if value and value != getattr(user, target):
+                update = True
+                setattr(user, target, value)
+        if auth_time and user.last_login != auth_time:
+            update = True
+            user.last_login = auth_time
+        if update:
             user.save()
 
-        # load the user's GWELLS profile
+        # Load the user's GWELLS profile.
         try:
-            profile, profile_created = Profile.objects.get_or_create(user=user.id)
+            profile, update = Profile.objects.get_or_create(user=user.id)
         except:
             raise exceptions.AuthenticationFailed(
                 'Failed to create user profile')
 
-        # get the name from the token and store it in the profile. If name not supplied, use the username.
-        name = payload.get('name') or payload.get('preferred_username')
-        if profile.name != name:
-            # Update the profile name if it's changed.
-            profile.name = name
+        for source, target in payload_profile_mapping.items():
+            value = payload.get(source)
+            if value and value != getattr(profile, target):
+                update = True
+                setattr(profile, target, value)
+        if not profile.name and profile.username:
+            # When the name of the user isn't available, fallback to the username
+            profile.name = profile.username
+            update = True
+        if update:
             profile.save()
 
-        # get the roles supplied by Keycloak for this user
+        # Get the roles supplied by Keycloak for this user.
         try:
             roles = payload.get('realm_access').get('roles')
         except:
             raise exceptions.AuthenticationFailed('Failed to retrieve roles')
 
-        # put user in groups based on role
+        # Put user in groups based on role.
         roles_to_groups(user, roles)
 
         return user
