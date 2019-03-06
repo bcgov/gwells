@@ -112,14 +112,7 @@ services:
       python3 -m pip install --upgrade pip &&
       python3 -m pip install --cache-dir=.pip -r requirements.txt &&
       python3 manage.py migrate --noinput &&
-      echo Loading fixtures, this may take some time... &&
-      python3 manage.py loaddata
-        gwells-codetables.json
-        registries-codetables.json
-        registries.json
-        wellsearch-codetables.json
-        wellsearch.json
-        aquifers.json &&
+      ./load_fixtures.sh all &&
       python3 manage.py createinitialrevisions &&
       python3 manage.py collectstatic --noinput &&
       python3 manage.py runserver 0.0.0.0:8000"

@@ -15,33 +15,34 @@ from typing import Tuple
 import logging
 
 from django.contrib.auth.models import Group, Permission
+from django.db.utils import IntegrityError
 
 
 logger = logging.getLogger(__name__)
 
 
 # Keycloak/SSO roles - these map to Django groups.
-ADMIN_ROLE = 'gwells_admin'
-# TODO: The ADJUDICATOR and AUTHORITY role should be removed. These concepts should exist as groups in
-#           keycloak, and the underlying actions should be defined as roles seperate from business rules.
-#           e.g.: an adjudicator may view and edit registries.
-REGISTRIES_ADJUDICATOR_ROLE = 'registries_adjudicator'
-REGISTRIES_AUTHORITY_ROLE = 'registries_statutory_authority'
+# The concept of groups such as "Registries Statutory Authority" exists only in Keycloak. The groups
+# defined in keycloak contain a number of keyloak rules. Those keycloak roles in turn, get mapped to django
+# groups.
+REGISTRIES_EDIT_ROLE = 'registries_edit'
 REGISTRIES_VIEWER_ROLE = 'registries_viewer'
+# REGISTRIES_APPROVE_ROLE = 'registries_approve' <-- this is a planned, unimplemented role
 WELLS_VIEWER_ROLE = 'wells_viewer'
 WELLS_EDIT_ROLE = 'wells_edit'
+# WELLS_APPROVE_ROLE = 'wells_approve' <-- this is a planned, unimplemented role
 AQUIFERS_VIEWER_ROLE = 'aquifers_view'
 AQUIFERS_EDIT_ROLE = 'aquifers_edit'
 
 # These roles are excluded, as they cannot be mapped to any particular useful groups.
-EXCLUDE = ('idir', 'offline_access', 'admin', 'uma_authorization')
+EXCLUDE = ('idir', 'offline_access', 'admin', 'uma_authorization', 'gwells_admin')
 
 
 def roles_to_groups(user, roles: Tuple[str] = None):
     """
     Add users to groups based on roles from single sign-on identity provider
 
-    roles:
+    Business role for registries:
       adjudicator: e.g. Groundwater Data Specialist
         Enters applications for new or existing registrants.
           read/write access to: Person, Organization, Application, Registration
@@ -51,12 +52,14 @@ def roles_to_groups(user, roles: Tuple[str] = None):
           read/write access to: Person, Organization, Application, Registration,
             ApplicationStatus, RegistrationStatus
 
-      admin: Application Administrator
-        Admin for GWELLS Registries application
-          read/write access to: all
-
       viewer: e.g. Groundwater Protection Officer
           read only access to: Person, Organization, Application, Registration
+
+    Business roles for aquifers:
+        TBD
+
+    Business roles for wells and submissions:
+        TBD
 
     """
     if user is None:
@@ -65,19 +68,44 @@ def roles_to_groups(user, roles: Tuple[str] = None):
 
     user_group_names = [group.name for group in user.groups.all()]
 
+    role_change = False
+
     for role in roles:
         # if user is not in their role group, add them
         if role not in user_group_names and role not in EXCLUDE:
+            # When a role/group is newly assigned, there may be many parallel processes that try to add
+            # a create a group, and add a user to a group.
+            # We don't want to lock - that can slow everything down. If there's an integrity error,
+            # we don't really care either, it just means someone beat us to it, so we don't allow the
+            # exception to bubble up, we just log it.
+            # This is an unfortunate side effect of how we've decided to handle sso->django integration.
             group = Group.objects.filter(name=role).first()
             if not group:
                 # From time to time, a new role will be added to keycloak, and this role will not yet
                 # exist in the django database as a group. When this happens, we create it.
                 logger.info('Group "{}" does not exist. Creating it....'.format(role))
                 group = Group(name=role)
-                group.save()
-            group.user_set.add(user)
+                try:
+                    group.save()
+                except IntegrityError as e:
+                    logger.info(e)
+                    # In the time we tried to create this group, someone may have beat us to it! Try to
+                    # reload it again.
+                    group = Group.objects.filter(name=role).first()
+                    if not group:
+                        # Uh oh - can't create it, can't load it - out of ideas!
+                        raise
+            try:
+                group.user_set.add(user)
+            except IntegrityError as e:
+                logger.info(e)
+            role_change = True
 
     # check if user has been removed from their SSO (Keycloak) group
     for group in user_group_names:
         if group not in roles:
             user.groups.get(name=group).user_set.remove(user)
+            role_change = True
+
+    if role_change:
+        user.refresh_from_db()
