@@ -327,6 +327,7 @@ def apiTest (String stageName, String stageUrl, String envSuffix) {
 def zapTests (String stageName, String envUrl, String envSuffix) {
     _openshift(env.STAGE_NAME, toolsProject) {
         def podName = envSuffix == "dev" ? "zap-${envSuffix}-${prNumber}" : "zap-${envSuffix}"
+        echo "podName: "+ podName
         podTemplate(
             label: "${podName}",
             name: "${podName}",
@@ -359,6 +360,7 @@ def zapTests (String stageName, String envUrl, String envSuffix) {
                     script: "/zap/zap-baseline.py -r index.html -t $BASE_URL",
                     returnStatus: true
                 )
+                echo "ZAP status: "+returnStatus
 
                 publishHTML(
                     target: [
@@ -371,6 +373,7 @@ def zapTests (String stageName, String envUrl, String envSuffix) {
                         reportTitles: 'ZAP Baseline Scan'
                     ]
                 )
+                echo "publishHTML complete"
             }
         }
     }
