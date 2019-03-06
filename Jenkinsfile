@@ -647,18 +647,6 @@ pipeline {
         }
 
 
-        stage('DEV - ZAP Tests') {
-            when {
-                expression { env.CHANGE_TARGET != 'master' && env.CHANGE_TARGET != 'demo' }
-            }
-            steps {
-                script {
-                    def result = zapTests ('DEV - ZAP Tests', devHost, devSuffix)
-                }
-            }
-        }
-
-
         // the Promote to Test stage allows approving the tagging of the newly built image into the test environment,
         // which will trigger an automatic deployment of that image.
         // The deployment configs in the openshift folder are applied first in case there are any changes to the templates.
@@ -845,6 +833,18 @@ pipeline {
                     _openshift(env.STAGE_NAME, toolsProject) {
                         def result = functionalTest ('STAGING - Smoke Tests', stagingHost, stagingSuffix, 'SearchSpecs')
                     }
+                }
+            }
+        }
+
+
+        stage('STAGING - ZAP Tests') {
+            when {
+                expression { env.CHANGE_TARGET == 'master' }
+            }
+            steps {
+                script {
+                    def result = zapTests ('STAGING - ZAP Tests', stagingHost, stagingSuffix)
                 }
             }
         }
