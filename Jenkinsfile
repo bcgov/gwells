@@ -134,7 +134,7 @@ def functionalTest (String stageName, String stageUrl, String envSuffix, String 
         //         //the checkout is mandatory, otherwise functional tests would fail
         //         echo "checking out source"
         //         checkout scm
-        //         dir('functional-tests') {
+        //         dir('tests/functional-tests') {
         //             try {
         //                 echo "BASE_URL = ${BASE_URL}"
         //                 if ('all'.equalsIgnoreCase(toTest)) {
@@ -211,10 +211,12 @@ def apiTest (String stageName, String stageUrl, String envSuffix) {
                 containerTemplate(
                     name: 'jnlp',
                     image: 'registry.access.redhat.com/openshift3/jenkins-agent-nodejs-8-rhel7',
-                    resourceRequestCpu: '800m',
+                    resourceRequestCpu: '500m',
                     resourceLimitCpu: '800m',
-                    resourceRequestMemory: '1Gi',
+                    resourceRequestMemory: '512Mi',
                     resourceLimitMemory: '1Gi',
+                    activeDeadlineSeconds: '600',
+                    podRetention: 'never',
                     workingDir: '/tmp',
                     command: '',
                     args: '${computer.jnlpmac} ${computer.name}',
@@ -254,7 +256,7 @@ def apiTest (String stageName, String stageUrl, String envSuffix) {
         ) {
             node("nodejs-${appName}-${envSuffix}-${prNumber}") {
                 checkout scm
-                dir('api-tests') {
+                dir('tests/api-tests') {
                     sh 'npm install -g newman'
                     try {
                         sh """
@@ -320,6 +322,61 @@ def apiTest (String stageName, String stageUrl, String envSuffix) {
     }
     return true
 }
+
+
+def zapTests (String stageName, String envUrl, String envSuffix) {
+    _openshift(env.STAGE_NAME, toolsProject) {
+        def podName = envSuffix == "dev" ? "zap-${envSuffix}-${prNumber}" : "zap-${envSuffix}"
+        podTemplate(
+            label: "${podName}",
+            name: "${podName}",
+            serviceAccount: "jenkins",
+            cloud: "openshift",
+            containers: [
+                containerTemplate(
+                    name: 'jnlp',
+                    image: 'docker-registry.default.svc:5000/openshift/jenkins-slave-zap',
+                    resourceRequestCpu: '1',
+                    resourceLimitCpu: '1',
+                    resourceRequestMemory: '2Gi',
+                    resourceLimitMemory: '2Gi',
+                    activeDeadlineSeconds: '600',
+                    workingDir: '/home/jenkins',
+                    command: '',
+                    args: '${computer.jnlpmac} ${computer.name}',
+                    envVars: [
+                        envVar(
+                            key:'BASE_URL',
+                            value: "https://${envUrl}/gwells"
+                        )
+                    ]
+                )
+            ]
+        ) {
+            node("${podName}") {
+                checkout scm
+                sh (
+                    script: "/zap/zap-baseline.py -r index.html -t $BASE_URL",
+                    returnStatus: true
+                )
+
+                publishHTML(
+                    target: [
+                        allowMissing: false,
+                        alwaysLinkToLastBuild: false,
+                        keepAll: true,
+                        reportDir: '/zap/wrk',
+                        reportFiles: 'index.html',
+                        reportName: 'ZAP Baseline Scan',
+                        reportTitles: 'ZAP Baseline Scan'
+                    ]
+                )
+            }
+        }
+    }
+    return true
+}
+
 
 
 pipeline {
@@ -518,9 +575,7 @@ pipeline {
             }
             steps {
                 script {
-                    _openshift(env.STAGE_NAME, devProject) {
-                        def result = unitTestDjango (env.STAGE_NAME, devProject, devSuffix)
-                    }
+                    def result = unitTestDjango (env.STAGE_NAME, devProject, devSuffix)
                 }
             }
         }
@@ -542,13 +597,7 @@ pipeline {
                             "--",
                             "bash -c '\
                                 cd /opt/app-root/src/backend; \
-                                python manage.py loaddata \
-                                gwells-codetables.json \
-                                wellsearch-codetables.json \
-                                registries-codetables.json \
-                                registries.json \
-                                wellsearch.json \
-                                aquifers.json \
+                                ./load_fixtures.sh all \
                             '"
                         )
                         echo "Load Fixtures results: "+ ocoutput.actions[0].out
@@ -575,9 +624,7 @@ pipeline {
             }
             steps {
                 script {
-                    _openshift(env.STAGE_NAME, toolsProject) {
-                        def result = functionalTest ('DEV - Smoke Tests', devHost, devSuffix, 'SearchSpecs')
-                    }
+                    def result = functionalTest ('DEV - Smoke Tests', devHost, devSuffix, 'SearchSpecs')
                 }
             }
         }
@@ -589,9 +636,7 @@ pipeline {
             }
             steps {
                 script {
-                    _openshift(env.STAGE_NAME, devProject) {
-                        def result = apiTest ('DEV - API Tests', devHost, devSuffix)
-                    }
+                    def result = apiTest ('DEV - API Tests', devHost, devSuffix)
                 }
             }
         }
@@ -751,9 +796,7 @@ pipeline {
             }
             steps {
                 script {
-                    _openshift(env.STAGE_NAME, stagingProject) {
-                        def result = unitTestDjango (env.STAGE_NAME, stagingProject, stagingSuffix)
-                    }
+                    def result = unitTestDjango (env.STAGE_NAME, stagingProject, stagingSuffix)
                 }
             }
         }
@@ -765,9 +808,7 @@ pipeline {
             }
             steps {
                 script {
-                    _openshift(env.STAGE_NAME, toolsProject) {
-                        def result = apiTest ('STAGING - API Tests', stagingHost, stagingSuffix)
-                    }
+                    def result = apiTest ('STAGING - API Tests', stagingHost, stagingSuffix)
                 }
             }
         }
@@ -780,9 +821,19 @@ pipeline {
             }
             steps {
                 script {
-                    _openshift(env.STAGE_NAME, toolsProject) {
-                        def result = functionalTest ('STAGING - Smoke Tests', stagingHost, stagingSuffix, 'SearchSpecs')
-                    }
+                    def result = functionalTest ('STAGING - Smoke Tests', stagingHost, stagingSuffix, 'SearchSpecs')
+                }
+            }
+        }
+
+
+        stage('STAGING - ZAP Tests') {
+            when {
+                expression { env.CHANGE_TARGET == 'master' }
+            }
+            steps {
+                script {
+                    def result = zapTests ('STAGING - ZAP Tests', stagingHost, stagingSuffix)
                 }
             }
         }
@@ -936,9 +987,7 @@ pipeline {
             }
             steps {
                 script {
-                    _openshift(env.STAGE_NAME, toolsProject) {
-                        def result = apiTest ('DEMO - API Tests', demoHost, demoSuffix)
-                    }
+                    def result = apiTest ('DEMO - API Tests', demoHost, demoSuffix)
                 }
             }
         }
@@ -951,9 +1000,7 @@ pipeline {
             }
             steps {
                 script {
-                    _openshift(env.STAGE_NAME, toolsProject) {
-                        def result = functionalTest ('DEMO - Smoke Tests', demoHost, demoSuffix, 'SearchSpecs')
-                    }
+                    def result = functionalTest ('DEMO - Smoke Tests', demoHost, demoSuffix, 'SearchSpecs')
                 }
             }
         }
@@ -1107,9 +1154,7 @@ pipeline {
             }
             steps {
                 script {
-                    _openshift(env.STAGE_NAME, toolsProject) {
-                        def result = functionalTest ('PROD - Smoke Tests', prodUrl, prodSuffix, 'SearchSpecs')
-                    }
+                    def result = functionalTest ('PROD - Smoke Tests', prodUrl, prodSuffix, 'SearchSpecs')
                 }
             }
         }
