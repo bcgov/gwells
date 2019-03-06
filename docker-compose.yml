@@ -13,9 +13,11 @@ services:
     - "9000:9000"
     volumes:
     - /data
+    - ./scripts/minio-entrypoint.sh:/minio-entrypoint.sh
     environment:
       MINIO_ACCESS_KEY: minio
       MINIO_SECRET_KEY: minio1234
+    entrypoint: /minio-entrypoint.sh
     command: server /data
   minio-private:
     image: minio/minio
@@ -24,10 +26,12 @@ services:
     - "9001:9001"
     volumes:
     - /data
+    - ./scripts/minio-entrypoint.sh:/minio-entrypoint.sh
     environment:
       MINIO_ACCESS_KEY: minio
       MINIO_SECRET_KEY: minio1234
-    command: server --address ":9001" /data
+    entrypoint: /minio-entrypoint.sh
+    command: server --address :9001 /data
   db:
     image: mdillon/postgis
     hostname: db
@@ -85,21 +89,21 @@ services:
       SSO_PORT: 0
       SSO_REALM: gwells
       SSO_PUBKEY: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAh+5Hc4w/PKN04avW1LX/orSyXsJ7nJiEbErMyQqCvYAEKmQUeok7Yy+r6sVuJSyQQMCExk37NY3fUQOK92J83oC/9WGij7bvlWHew810edIisechoKpLuQbw63xlj/5ifQfJ977NM1n1RQgXF4hr4MDuhGbV+PAkQGdSPfufjEFleCwj8mvjUwTFnSwE9I+Rf78DVJzCHZbpFMq9skvrpCzeNsLNNoz+k1DENQ6MKnVnbUYskG+j5NZ3g+kxfkRf2G0tw2KisLYtxUSdfwutieT2Zxglk/kZeMWS7khXWzhwjvWf5a1qM5ebreVVYNhra7MjcrkXSh0v5IBcW+122wIDAQAB
-      S3_AQUIFER_BUCKET: aquifer-docs
       S3_HOST: minio-public:9000
-      S3_PRIVATE_BUCKET: gwells
       S3_PRIVATE_HOST: minio-private:9001
+      S3_PRIVATE_BUCKET: gwells
       S3_PRIVATE_ROOT_BUCKET:  gwells
       S3_PRIVATE_WELL_BUCKET: well-docs
       S3_PRIVATE_AQUIFER_BUCKET: aquifer-docs
       S3_PRIVATE_REGISTRANT_BUCKET: driller-docs
       S3_PUBLIC_ACCESS_KEY: minio
       S3_PUBLIC_SECRET_KEY: minio1234
+      S3_AQUIFER_BUCKET: aquifer-docs
       S3_REGISTRANT_BUCKET: driller-docs
       S3_ROOT_BUCKET:  gwells
-      S3_USE_SECURE: 0
       S3_WELL_BUCKET: well-docs
       S3_WELL_EXPORT_BUCKET: gwells
+      S3_USE_SECURE: 0
     command: /bin/bash -c "
       sleep 3 &&
       set -x &&

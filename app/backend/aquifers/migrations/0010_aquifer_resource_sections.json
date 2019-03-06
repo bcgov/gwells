@@ -6,7 +6,67 @@
             "create_date": "2018-01-01T08:00:00Z",
             "update_user": "DATALOAD_USER",
             "update_date": "2018-01-01T08:00:00Z",
-            "name": "Artesian Advisory"
+            "name": "Artesian advisory"
+        }
+    },
+    {
+        "model": "aquifers.AquiferResourceSection",
+        "fields": {
+            "create_user": "DATALOAD_USER",
+            "create_date": "2018-01-01T08:00:00Z",
+            "update_user": "DATALOAD_USER",
+            "update_date": "2018-01-01T08:00:00Z",
+            "name": "Other"
+        }
+    },
+    {
+        "model": "aquifers.AquiferResourceSection",
+        "fields": {
+            "create_user": "DATALOAD_USER",
+            "create_date": "2018-01-01T08:00:00Z",
+            "update_user": "DATALOAD_USER",
+            "update_date": "2018-01-01T08:00:00Z",
+            "name": "Water budget"
+        }
+    },
+    {
+        "model": "aquifers.AquiferResourceSection",
+        "fields": {
+            "create_user": "DATALOAD_USER",
+            "create_date": "2018-01-01T08:00:00Z",
+            "update_user": "DATALOAD_USER",
+            "update_date": "2018-01-01T08:00:00Z",
+            "name": "Pumping stress index"
+        }
+    },
+    {
+        "model": "aquifers.AquiferResourceSection",
+        "fields": {
+            "create_user": "DATALOAD_USER",
+            "create_date": "2018-01-01T08:00:00Z",
+            "update_user": "DATALOAD_USER",
+            "update_date": "2018-01-01T08:00:00Z",
+            "name": "Numerical model"
+        }
+    },
+    {
+        "model": "aquifers.AquiferResourceSection",
+        "fields": {
+            "create_user": "DATALOAD_USER",
+            "create_date": "2018-01-01T08:00:00Z",
+            "update_user": "DATALOAD_USER",
+            "update_date": "2018-01-01T08:00:00Z",
+            "name": "Advanced mapping"
+        }
+    },
+    {
+        "model": "aquifers.AquiferResourceSection",
+        "fields": {
+            "create_user": "DATALOAD_USER",
+            "create_date": "2018-01-01T08:00:00Z",
+            "update_user": "DATALOAD_USER",
+            "update_date": "2018-01-01T08:00:00Z",
+            "name": "Other information"
         }
     }
 ]

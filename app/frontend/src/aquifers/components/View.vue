@@ -91,6 +91,19 @@
         <dt class="col-sm-2">Demand</dt>
         <dd class="col-sm-4">{{record.demand_description}}</dd>
       </dl>
+
+      <b-row v-if="viewMode">
+        <b-col>
+          <h5 class="mt-3 border-bottom">Knowledge Indicators</h5>
+          <div :key="section.id" v-for="section in aquifer_resource_sections">
+            <h6 class="mt-4">{{ section.name }}</h6>
+            <ul :key="resource.id" v-for="resource in bySection(record.resources, section)">
+              <li><a :href="resource.url">{{ resource.name }}</a></li>
+            </ul>
+            <p v-if="!bySection(record.resources, section).length">No information available.</p>
+          </div>
+        </b-col>
+      </b-row>
       <h5 class="mt-3 border-bottom">Documentation</h5>
       <aquifer-documents :files="aquiferFiles"
         :editMode="editMode"
@@ -129,6 +142,7 @@ export default {
   created () {
     this.fetch()
     this.fetchFiles()
+    this.fetchResourceSections()
   },
   data () {
     return {
@@ -137,7 +151,8 @@ export default {
       loading: false,
       record: {},
       showSaveSuccess: false,
-      aquiferFiles: {}
+      aquiferFiles: {},
+      aquifer_resource_sections: []
     }
   },
   computed: {
@@ -163,9 +178,15 @@ export default {
       'fileUploadSuccess',
       'fileUploadFail'
     ]),
+    bySection (resources, section) {
+      return (resources || []).filter(function(resource){
+        return resource.section_id === section.id
+      })
+    },
     handleSaveSuccess (response) {
       this.fetch()
       this.navigateToView()
+      
       if (this.$refs.aquiferHistory) {
         this.$refs.aquiferHistory.update()
       }
@@ -198,17 +219,18 @@ export default {
     save () {
       this.showSaveSuccess = false
       this.fieldErrors = {}
+      console.log(this.record)
 
       ApiService.patch('aquifers', this.id, this.record)
         .then(this.handleSaveSuccess)
         .catch(this.handlePatchError)
     },
     navigateToView () {
-      this.$router.push({ name: 'view', params: { id: this.id } })
+      this.$router.push({ name: 'aquifers-view', params: { id: this.id } })
     },
     navigateToEdit () {
       this.showSaveSuccess = false
-      this.$router.push({ name: 'edit', params: { id: this.id } })
+      this.$router.push({ name: 'aquifers-edit', params: { id: this.id } })
     },
     print () {
       window.print()
@@ -216,7 +238,6 @@ export default {
     fetch (id = this.id) {
       ApiService.query(`aquifers/${id}`)
         .then((response) => {
-          console.log('record', response.data)
           this.record = response.data
         }).catch((error) => {
           console.error(error)
@@ -227,6 +248,12 @@ export default {
         .then((response) => {
           this.aquiferFiles = response.data
         })
+    },
+    fetchResourceSections () {
+      ApiService.query("aquifers/sections").then((response) => {
+        this.aquifer_resource_sections = response.data.results
+        console.log(this.aquifer_resource_sections)
+      })
     }
   }
 }

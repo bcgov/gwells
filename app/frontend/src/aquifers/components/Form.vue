@@ -254,15 +254,15 @@
           :invalid-feedback="fieldErrorMessages.section"
           :state="fieldHasError.section">
           <b-form-select
-            v-model="resource.section"
+            v-model="resource.section_id"
             :options="[''].concat(aquifer_resource_sections)"
-            value-field="aquifer_resource_id"
+            value-field="id"
             text-field="name"/>
         </b-form-group>
       </b-col>
       <b-col cols="auto">
         <b-form-group
-          label="Name"
+          label="Document Name"
           label-for="name"
           :invalid-feedback="fieldErrorMessages.name"
           :state="fieldHasError.name">
@@ -273,7 +273,7 @@
       </b-col>
       <b-col cols="auto">
         <b-form-group
-          label="URL"
+          label="Document URL"
           label-for="url"
           :invalid-feedback="fieldErrorMessages.url"
           :state="fieldHasError.url">
@@ -284,7 +284,7 @@
       </b-col>
       <b-col cols="auto">
         <br>
-        <b-button>Delete</b-button>
+        <b-button @click="handleDeleteResource(index)">Remove</b-button>
       </b-col>
     </b-row>
     <b-row class="mt-4">
@@ -292,7 +292,7 @@
         <b-button
           variant="primary"
           v-on:click="handleAddResource">
-          Add Resource
+          Add additional link
         </b-button>
       </b-col>
     </b-row>
@@ -383,6 +383,7 @@ export default {
       'upload_files'
     ])
   },
+
   props: {
     fieldErrors: Object,
     record: Object,
@@ -398,13 +399,14 @@ export default {
       this.record.resources.push({
         name: '',
         url: '',
-        section: ''
+        section_id: '1'
       })
     },
+    handleDeleteResource (i) {
+      this.record.resources.splice(i, 1)
+    },
     fetchCode (codePath, key) {
-      console.log(codePath, key);
       ApiService.query(codePath).then((response) => {
-        console.log(response)
         this.addCodes({key, codeTable: response.data.results})
       })
     },

@@ -46,7 +46,7 @@ const router = new Router({
     {
       path: '/aquifers/:id/edit',
       component: AquiferView,
-      name: 'edit',
+      name: 'aquifers-edit',
       props: { edit: true },
       meta: {
         edit: true,
