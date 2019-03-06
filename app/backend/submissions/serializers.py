@@ -118,6 +118,10 @@ class WellSubmissionSerializerBase(serializers.ModelSerializer):
         if data['latitude'] and data['longitude']:
             validated_data['geom'] = Point(data['longitude'], data['latitude'])
 
+        # Remove the latitude and longitude fields if they exist
+        validated_data.pop('latitude', None)
+        validated_data.pop('longitude', None)
+
         # If the yield_estimation_rate is specified, we default to USGPM
         if validated_data.get('yield_estimation_rate', None) and \
                 not validated_data.get('well_yield_unit', None):
