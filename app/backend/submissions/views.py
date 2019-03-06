@@ -86,6 +86,7 @@ from submissions.serializers import (
     GroundElevationMethodCodeSerializer,
     IntendedWaterUseCodeSerializer,
     LandDistrictSerializer,
+    LegacyWellDisplaySerializer,
     LinerMaterialCodeSerializer,
     LithologyHardnessSerializer,
     LithologyColourSerializer,
@@ -171,6 +172,8 @@ class SubmissionGetAPIView(RetrieveAPIView):
             serializer_class = AlterationSubmissionDisplaySerializer
         elif activity and activity == WellActivityCode.types.decommission().code:
             serializer_class = DecommissionSubmissionDisplaySerializer
+        elif activity and activity == WellActivityCode.types.legacy().code:
+            serializer_class = LegacyWellDisplaySerializer
 
         return serializer_class(*args, **kwargs)
 

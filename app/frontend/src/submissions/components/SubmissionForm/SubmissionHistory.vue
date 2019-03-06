@@ -12,7 +12,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-  <fieldset class="mt-5">
+  <fieldset class="mt-5" v-if="submissionsRecordsCount > 0">
     <b-row>
       <b-col cols="12" lg="6">
         <legend :id="id">Activity Reports</legend>
@@ -20,16 +20,17 @@ Licensed under the Apache License, Version 2.0 (the "License");
     </b-row>
     <b-row>
       <b-col cols="12">
-        <p v-if="submissionsRecordsCount > 0">
+        <p>
           There {{ submissionsRecordsCount > 1 ? 'are' : 'is' }} {{ submissionsRecordsCount }} activity {{ submissionsRecordsCount > 1 ? 'reports' : 'report' }} for well {{ $route.params.id }}.
         </p>
         <b-table
             id="submissionHistoryTable"
             ref="submissionHistoryTable"
             :busy.sync="submissionsBusy"
-            :items="fetchReports"
+            :items="submissionReports"
             :fields="['report', 'date_entered', 'entered_by']"
             responsive
+            empty-text="There are no electronic submissions for this well."
             :per-page="submissionsPerPage"
             :current-page="submissionsPage"
           >
@@ -37,13 +38,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
             <router-link :to="{ name: 'SubmissionDetail', params: { id: $route.params.id, submissionId: data.item.filing_number }}">{{ data.item.well_activity_description }}</router-link>
           </template>
           <template slot="date_entered" slot-scope="data">
-            {{ data.item.create_date | moment("MMMM Do YYYY [at] LT") }}
+            <span v-if="data.item.create_date">{{ data.item.create_date | moment("MMMM Do YYYY [at] LT") }}</span>
           </template>
           <template slot="entered_by" slot-scope="data">
             {{ data.item.create_user }}
           </template>
         </b-table>
-        <b-pagination v-if="!!submissionsRecordsCount && submissionRecordsCount > submissionsPerPage" size="md" :total-rows="submissionsRecordsCount" v-model="submissionsPage" :per-page="submissionsPerPage" :disabled="submissionsBusy" />
+        <b-pagination v-if="!!submissionsRecordsCount && submissionsRecordsCount > submissionsPerPage" size="md" :total-rows="submissionsRecordsCount" v-model="submissionsPage" :per-page="submissionsPerPage" :disabled="submissionsBusy" />
       </b-col>
     </b-row>
   </fieldset>
@@ -74,7 +75,8 @@ export default {
       submissionsPerPage: 5,
       submissionsPage: 1,
       submissionsBusy: false,
-      submissionsRecordsCount: 0
+      submissionsRecordsCount: 0,
+      submissionReports: []
     }
   },
   computed: {
@@ -82,12 +84,6 @@ export default {
   },
   methods: {
     fetchReports (ctx = { perPage: this.perPage, currentPage: this.submissionsPage }) {
-      /**
-      * table items provider function
-      * https://bootstrap-vue.js.org/docs/components/table/
-      *
-      * a refresh can be triggered by this.$root.$emit('bv::refresh::table', 'submissionHistoryTable')
-      */
       const params = {
         limit: ctx.perPage,
         offset: ctx.perPage * (ctx.currentPage - 1)
@@ -102,11 +98,15 @@ export default {
         })
 
         this.submissionsRecordsCount = results.length
-        return results
+        this.submissionReports = results
       }).catch((e) => {
-        return []
+        this.submissionsRecordsCount = 0
+        this.submissionReports = []
       })
     }
+  },
+  created () {
+    this.fetchReports()
   }
 }
 </script>

@@ -91,7 +91,7 @@ class WellSubmissionListSerializer(serializers.ModelSerializer):
         many=True, required=False)
 
     class Meta:
-        fields = '__all__, well_activity_description'
+        fields = '__all__'
         model = ActivitySubmission
 
 
@@ -1484,8 +1484,6 @@ class LegacyWellDisplaySerializer(serializers.ModelSerializer):
 
     # related objects:  use human readable fields for display (e.g. well_class.description
     # instead of the well_class id)
-    well_activity_type = serializers.ReadOnlyField(
-        source='well_activity_type.description')
     well_class = serializers.ReadOnlyField(source='well_class.description')
     well_subclass = serializers.ReadOnlyField(
         source='well_subclass.description')

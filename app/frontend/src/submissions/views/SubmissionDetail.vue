@@ -7,7 +7,7 @@
     <b-card-body>
       <div v-if="submission">
         <h1>Activity Report Summary</h1>
-        <div>Filed: {{submission.create_date | moment("MMMM Do YYYY [at] LT") }}</div>
+        <div v-if="submission.create_date">Filed: {{submission.create_date | moment("MMMM Do YYYY [at] LT") }}</div>
         <div>By: {{submission.create_user}} </div>
         <dl class="mt-5">
           <template v-for="(value, key, i) in submission">
