@@ -324,6 +324,61 @@ def apiTest (String stageName, String stageUrl, String envSuffix) {
 }
 
 
+def zapTests (String stageName, String envUrl, String envSuffix) {
+    _openshift(env.STAGE_NAME, toolsProject) {
+        def podName = envSuffix == "dev" ? "zap-${envSuffix}-${prNumber}" : "zap-${envSuffix}"
+        podTemplate(
+            label: "${podName}",
+            name: "${podName}",
+            serviceAccount: "jenkins",
+            cloud: "openshift",
+            containers: [
+                containerTemplate(
+                    name: 'jnlp',
+                    image: 'docker-registry.default.svc:5000/openshift/jenkins-slave-zap',
+                    resourceRequestCpu: '1',
+                    resourceLimitCpu: '1',
+                    resourceRequestMemory: '2Gi',
+                    resourceLimitMemory: '2Gi',
+                    activeDeadlineSeconds: '600',
+                    workingDir: '/home/jenkins',
+                    command: '',
+                    args: '${computer.jnlpmac} ${computer.name}',
+                    envVars: [
+                        envVar(
+                            key:'BASE_URL',
+                            value: "https://${envUrl}/gwells"
+                        )
+                    ]
+                )
+            ]
+        ) {
+            node("${podName}") {
+                checkout scm
+                sh (
+                    script: "/zap/zap-baseline.py -r index.html -t $BASE_URL",
+                    returnStatus: true
+                )
+
+                publishHTML(
+                    target: [
+                        allowMissing: false,
+                        alwaysLinkToLastBuild: false,
+                        keepAll: true,
+                        reportDir: '/zap/wrk',
+                        reportFiles: 'index.html',
+                        reportName: 'ZAP Baseline Scan',
+                        reportTitles: 'ZAP Baseline Scan'
+                    ]
+                )
+            }
+        }
+    }
+    return true
+}
+
+
+
 pipeline {
     environment {
         // Project-wide settings - app name, repo
@@ -779,6 +834,18 @@ pipeline {
                     _openshift(env.STAGE_NAME, toolsProject) {
                         def result = functionalTest ('STAGING - Smoke Tests', stagingHost, stagingSuffix, 'SearchSpecs')
                     }
+                }
+            }
+        }
+
+
+        stage('STAGING - ZAP Tests') {
+            when {
+                expression { env.CHANGE_TARGET == 'master' }
+            }
+            steps {
+                script {
+                    def result = zapTests ('STAGING - ZAP Tests', stagingHost, stagingSuffix)
                 }
             }
         }
