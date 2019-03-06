@@ -326,9 +326,10 @@ def apiTest (String stageName, String stageUrl, String envSuffix) {
 
 def zapTests (String stageName, String envUrl, String envSuffix) {
     _openshift(env.STAGE_NAME, toolsProject) {
+        def podName = envSuffix == "dev" ? "zap-${envSuffix}-${prNumber}" : "zap-${envSuffix}"
         podTemplate(
-            label: "zap-${appName}-${envSuffix}-${prNumber}",
-            name: "zap-${appName}-${envSuffix}-${prNumber}",
+            label: "${podName}",
+            name: "${podName}",
             serviceAccount: "jenkins",
             cloud: "openshift",
             containers: [
@@ -352,7 +353,7 @@ def zapTests (String stageName, String envUrl, String envSuffix) {
                 )
             ]
         ) {
-            node("zap-${appName}-${envSuffix}-${prNumber}") {
+            node("${podName}") {
                 checkout scm
                 sh (
                     script: "/zap/zap-baseline.py -r index.html -t $BASE_URL",
