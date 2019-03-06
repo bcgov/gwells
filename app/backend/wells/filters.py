@@ -11,13 +11,75 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-from django.db.models import Q
+from collections import OrderedDict
+
+from django import forms
+from django.db.models import Q, QuerySet
 from django_filters import rest_framework as filters
+from django_filters.widgets import BooleanWidget
 
 from wells.models import Well
 
 
-class WellListFilter(filters.FilterSet):
+class AnyOrAllFilterSet(filters.FilterSet):
+    """
+    Filterset class that allows OR matches.
+    """
+
+    def get_form_class(self):
+        """
+        Adds a match_any filter to filters.
+        """
+        real_fields = [
+            (name, filter_.field)
+            for name, filter_ in self.filters.items()]
+        match_any_field = forms.NullBooleanField(label='Match any',
+                                                 help_text='If true, match any rather '
+                                                 'than all of the filters given.',
+                                                 required=False,
+                                                 widget=BooleanWidget)
+        fields = OrderedDict([('match_any', match_any_field)] + real_fields)
+
+        return type(str('%sForm' % self.__class__.__name__),
+                    (self._meta.form,), fields)
+
+    def filter_queryset(self, queryset):
+        """
+        If match_any is true, build the filter queryset using union.
+
+        This approach may be problematic. Unfortunately, django-filter doesn't
+        use Q objects to build its filters, and extracting the filters from
+        a QuerySet is difficult. We just | the QuerySets together.
+        """
+        match_any = self.form.cleaned_data.pop('match_any', False)
+
+        if not match_any:
+            return super().filter_queryset(queryset)
+
+        initial_queryset = queryset
+        queryset = queryset.all()
+
+        for name, value in self.form.cleaned_data.items():
+            # Ignore filters with no value. This may not work with all
+            # cases (e.g. booleans with meaningful false values)
+            # but it works for our use case.
+            # if value in (None, '') or isinstance(value, EmptyQuerySet):
+            #     continue
+
+            filtered_queryset = self.filters[name].filter(initial_queryset, value)
+            assert isinstance(filtered_queryset, QuerySet), \
+                "Expected '%s.%s' to return a QuerySet, but got a %s instead." \
+                % (type(self).__name__, name, type(queryset).__name__)
+
+            # Check for identity here, as most filters just return same queryset
+            # if they are inactive.
+            if filtered_queryset is not initial_queryset:
+                queryset = queryset | filtered_queryset
+
+        return queryset
+
+
+class WellListFilter(AnyOrAllFilterSet):
     well = filters.CharFilter(method='filter_well_tag_or_plate',
                               label='Well tag or identification plate number')
     street_address_or_city = filters.CharFilter(method='filter_street_address_or_city',
@@ -30,7 +92,7 @@ class WellListFilter(filters.FilterSet):
     well_depth = filters.RangeFilter(method='filter_well_depth',
                                      label='Well depth (finished or total)')
     # Don't require a choice (i.e. select box) for aquifer
-    # aquifer = filters.NumberFilter()
+    aquifer = filters.NumberFilter()
 
     street_address = filters.CharFilter(lookup_expr='icontains')
     city = filters.CharFilter(lookup_expr='icontains')
