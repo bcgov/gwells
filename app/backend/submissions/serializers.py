@@ -89,11 +89,9 @@ class WellSubmissionListSerializer(serializers.ModelSerializer):
         many=True, required=False)
     lithologydescription_set = LithologyDescriptionSerializer(
         many=True, required=False)
-    
-
 
     class Meta:
-        fields = '__all__'
+        fields = '__all__, well_activity_description'
         model = ActivitySubmission
 
 

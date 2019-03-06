@@ -34,7 +34,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             :current-page="submissionsPage"
           >
           <template slot="report" slot-scope="data">
-            <router-link :to="{ name: 'SubmissionDetail', params: { id: $route.params.id, submissionId: data.item.filing_number }}">{{ data.item.well_activity_type }}</router-link>
+            <router-link :to="{ name: 'SubmissionDetail', params: { id: $route.params.id, submissionId: data.item.filing_number }}">{{ data.item.well_activity_description }}</router-link>
           </template>
           <template slot="date_entered" slot-scope="data">
             {{ data.item.create_date | moment("MMMM Do YYYY [at] LT") }}
