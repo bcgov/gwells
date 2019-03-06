@@ -357,7 +357,7 @@ def zapTests (String stageName, String envUrl, String envSuffix) {
             node("${podName}") {
                 checkout scm
                 sh (
-                    script: "/zap/zap-baseline.py -r index.html -t $BASE_URL",
+                    script: "export HOME=/home/jenkins; source /usr/local/bin/generate_container_user; source /usr/local/bin/configure-slave; /zap/zap-baseline.py -t ${BASE_URL}/; if [ $? -le 2 ]; then exit 0; else exit 1; fi",
                     returnStatus: true
                 )
                 echo "ZAP status: "+returnStatus
