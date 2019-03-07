@@ -77,9 +77,6 @@ export default {
       required: true
     }
   },
-  created () {
-    this.loadFiles()
-  },
   data () {
     return {
       loading: true,
@@ -158,4 +155,5 @@ export default {
 </script>
 
 <style lang="scss">
+
 </style>
