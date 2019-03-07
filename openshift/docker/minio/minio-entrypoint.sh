@@ -1,8 +1,8 @@
 #!/bin/sh
 
-mkdir /data/aquifer-docs
-mkdir /data/driller-docs
-mkdir /data/gwells
-mkdir /data/well-docs
+mkdir -p /data/aquifer-docs
+mkdir -p /data/driller-docs
+mkdir -p /data/gwells
+mkdir -p /data/well-docs
 
 /usr/bin/docker-entrypoint.sh $@
