@@ -7,26 +7,26 @@ version: '3'
 #
 services:
   minio-public:
-    image: minio/minio
+    build:
+      context: ./openshift/docker/minio/
     hostname: minio
     ports:
     - "9000:9000"
     volumes:
     - /data
-    - ./scripts/minio-entrypoint.sh:/minio-entrypoint.sh
     environment:
       MINIO_ACCESS_KEY: minio
       MINIO_SECRET_KEY: minio1234
     entrypoint: /minio-entrypoint.sh
     command: server /data
   minio-private:
-    image: minio/minio
+    build:
+      context: ./openshift/docker/minio/
     hostname: minio
     ports:
     - "9001:9001"
     volumes:
     - /data
-    - ./scripts/minio-entrypoint.sh:/minio-entrypoint.sh
     environment:
       MINIO_ACCESS_KEY: minio
       MINIO_SECRET_KEY: minio1234
