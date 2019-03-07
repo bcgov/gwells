@@ -69,10 +69,13 @@ class AquiferSerializer(serializers.ModelSerializer):
 
         {
             resources: [{
-
+                url: 'http://...',
+                name: 'A resource',
+                section_id: 1
             }, {
-
-            }]
+                ...
+            }, ...]
+            ...
         }
         """
         resources_data = validated_data.pop('resources')
