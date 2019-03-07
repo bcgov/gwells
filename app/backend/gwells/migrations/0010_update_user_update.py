@@ -3,7 +3,8 @@ from django.db.models import F
 
 
 def update_fields(apps, schema_editor):
-    app_models = apps.all_models['gwells']
+    app_config = apps.get_app_config('gwells')
+    app_models = app_config.get_models()
     for model in app_models:
         if hasattr(model, 'update_user'):
             try:
