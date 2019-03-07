@@ -21,7 +21,7 @@ class AuditModel(models.Model):
     """
     create_user = models.CharField(max_length=60, null=False)
     create_date = models.DateTimeField(default=datetime.date.today, null=False)
-    update_user = models.CharField(max_length=60, null=True)
+    update_user = models.CharField(max_length=60, default='DATALOAD_USER', null=False)
     update_date = models.DateTimeField(default=datetime.date.today, null=False)
 
     def save(self, *args, **kwargs):
