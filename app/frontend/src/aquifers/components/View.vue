@@ -103,6 +103,9 @@
             <p v-if="!bySection(record.resources, section).length">No information available.</p>
           </div>
         </b-col>
+        <b-col>
+          <aquifer-map/>
+        </b-col>
       </b-row>
       <h5 class="mt-3 border-bottom">Documentation</h5>
       <aquifer-documents :files="aquiferFiles"
@@ -126,6 +129,8 @@ import ApiService from '@/common/services/ApiService.js'
 import APIErrorMessage from '@/common/components/APIErrorMessage'
 import AquiferForm from './Form'
 import Documents from './Documents.vue'
+import AquiferMap from './AquiferMap.vue'
+
 import ChangeHistory from '@/common/components/ChangeHistory.vue'
 import { mapActions, mapGetters, mapState } from 'vuex'
 
@@ -134,6 +139,7 @@ export default {
     'api-error': APIErrorMessage,
     'aquifer-form': AquiferForm,
     'aquifer-documents': Documents,
+    'aquifer-map': AquiferMap,
     ChangeHistory
   },
   props: {
