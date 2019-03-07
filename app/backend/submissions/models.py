@@ -13,6 +13,7 @@
 """
 from decimal import Decimal
 import uuid
+import datetime
 
 from django.contrib.gis.db import models
 from django.core.validators import MinValueValidator
@@ -45,8 +46,8 @@ class WellActivityCode(AuditModel):
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
-    effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date = models.DateTimeField(blank=True, null=True)
+    effective_date = models.DateTimeField(default=datetime.date.today, null=False)
+    expiry_date = models.DateTimeField(default=datetime.datetime.max, null=False)
 
     objects = models.Manager()
     types = WellActivityCodeTypeManager()
