@@ -186,7 +186,7 @@ export default {
     ]),
     bySection (resources, section) {
       return (resources || []).filter(function (resource) {
-        return resource.section_id === section.id
+        return resource.section_code === section.code
       })
     },
     handleSaveSuccess (response) {
