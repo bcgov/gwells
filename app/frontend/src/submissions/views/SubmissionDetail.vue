@@ -72,7 +72,8 @@ export default {
       ApiService.get('submissions', this.$route.params.submissionId).then((response) => {
         this.submission = response.data
       }).catch((e) => {
-
+        console.error(e)
+        this.$noty.info('Error retrieving activity report summary. Please try again later.', { killer: true })
       })
     }
   },
