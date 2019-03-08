@@ -9,7 +9,7 @@
         "description": "Other",
         "display_order": 60,
         "effective_date": "2018-05-25T07:00:00Z",
-        "expiry_date": null
+        "expiry_date": "9999-12-31T23:59:59Z"
     }
 },
 {
@@ -23,7 +23,7 @@
       "description": "Other",
       "display_order": 3,
       "effective_date": "2018-05-25T07:00:00Z",
-      "expiry_date": null
+      "expiry_date": "9999-12-31T23:59:59Z"
   }
 },
 {
@@ -36,6 +36,6 @@
         "update_date": "2017-07-01T08:00:00Z",
         "description": "Other",
         "effective_date": "2018-05-25T07:00:00Z",
-        "expiry_date": null
+        "expiry_date": "9999-12-31T23:59:59Z"
     }
 }]
