@@ -77,9 +77,6 @@ export default {
       required: true
     }
   },
-  created () {
-    this.loadFiles()
-  },
   data () {
     return {
       loading: true,
