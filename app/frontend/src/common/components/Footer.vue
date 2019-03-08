@@ -43,24 +43,22 @@ export default {
   @include media-breakpoint-up(sm) {
     height: 45px!important;
   }
-  position: absolute;
-  bottom: 0
 }
 .footer .nav-item {
-  font-size: 13px;
+  font-size: 13px!important;
 }
 .footer .nav-link {
-  padding: .1rem .5rem;
+  padding: .1rem .5rem!important;
 }
 .footer nav {
-  min-height: 45px;
+  min-height: 45px!important;
 }
 .footer a {
   color: #fff!important;
 }
 footer li+li  {
   @include media-breakpoint-up(sm) {
-    border-left: 1px solid #4b5e73;
+    border-left: 1px solid #4b5e73!important;
   }
 }
 </style>

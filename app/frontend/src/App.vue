@@ -1,8 +1,8 @@
 <template>
-  <div>
+  <div class="app-view d-flex flex-column">
     <gwells-header/>
-    <main role="main" class="p-0 mt-0 mt-sm-4">
-      <router-view/>
+    <main role="main" class="p-0 mt-0 mt-sm-4 main-body justify-content-center">
+        <router-view/>
     </main>
     <gwells-footer/>
   </div>
@@ -30,8 +30,10 @@ export default {
   @import './common/common.scss';
   @import './common/assets/css/ie10-viewport-bug-workaround.css';
 
-  .container-wide {
-    max-width: 1400px
+  @media (min-width: 1500px) {
+    .container {
+      max-width: 1400px
+    }
   }
 
   @media print {
@@ -42,4 +44,18 @@ export default {
       display: none!important;
     }
   }
+
+  .app-view {
+    min-height: 100vh;
+  }
+
+  .main-body {
+    display: flex;
+    flex: 1;
+  }
+
+  .body-wrapper {
+    flex: none;
+  }
+
 </style>

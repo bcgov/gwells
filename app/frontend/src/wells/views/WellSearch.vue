@@ -1,5 +1,5 @@
 <template>
-  <b-card class="container container-wide p-1">
+  <b-card class="container p-1">
     <h1 class="card-title" id="wellSearchTitle">Well Search</h1>
 
     <b-row class="mt-3">

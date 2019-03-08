@@ -4,6 +4,7 @@ $bcgov-font-path: '~@bcgov/bootstrap-theme/dist/fonts/';
 @import '~bootstrap/scss/_functions';
 @import '~bootstrap/scss/_variables';
 @import '~bootstrap/scss/mixins/_breakpoints';
+
 @import '~@bcgov/bootstrap-theme/dist/scss/bootstrap-theme.scss';
 
 @media print {
@@ -59,12 +60,12 @@ footer {
   font-weight: 500!important;
 }
 
-// BC Gov Bootstrap 4 theme override
-.custom-select[size]:not([size="0"]) {
-  height:auto;
-  padding-right:.75rem;
-  background-image:none;
-}
+// // BC Gov Bootstrap 4 theme override
+// .custom-select[size]:not([size="0"]) {
+//   height:auto;
+//   padding-right:.75rem;
+//   background-image:none;
+// }
 
 div.dropdown-toggle::after {
   display: none;
