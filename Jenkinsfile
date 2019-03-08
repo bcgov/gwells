@@ -1108,7 +1108,7 @@ pipeline {
                             "${prodProject}/gwells-postgresql-${prodSuffix}:${prodSuffix}"
                         )  // todo: clean up labels/tags
 
-                        createDeploymentStatus(prodSuffix, 'PENDING', prodUrl)
+                        createDeploymentStatus(prodSuffix, 'PENDING', prodHost)
 
                         // Create cronjob for well export
                         def cronTemplate = openshift.process("-f",
@@ -1140,7 +1140,7 @@ pipeline {
                             }
                         }
 
-                        createDeploymentStatus(prodSuffix, 'SUCCESS', prodUrl)
+                        createDeploymentStatus(prodSuffix, 'SUCCESS', prodHost)
                     }
                 }
             }
@@ -1154,7 +1154,7 @@ pipeline {
             }
             steps {
                 script {
-                    def result = functionalTest ('PROD - Smoke Tests', prodUrl, prodSuffix, 'SearchSpecs')
+                    def result = functionalTest ('PROD - Smoke Tests', prodHost, prodSuffix, 'SearchSpecs')
                 }
             }
         }
