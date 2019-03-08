@@ -12,7 +12,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-  <fieldset class="mt-5" v-if="submissionsRecordsCount > 0">
+  <fieldset class="mt-5" v-if="submissionsRecordsCount > 0 || expectedCount > 0">
     <b-row>
       <b-col cols="12" lg="6">
         <legend :id="id">Activity Reports</legend>
@@ -21,27 +21,42 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <b-row>
       <b-col cols="12">
         <p>
-          There {{ submissionsRecordsCount > 1 ? 'are' : 'is' }} {{ submissionsRecordsCount }} activity {{ submissionsRecordsCount > 1 ? 'reports' : 'report' }} for well {{ $route.params.id }}.
+          There {{ submissionsRecordsCount !== 1 ? 'are' : 'is' }} {{ submissionsRecordsCount }} activity {{ submissionsRecordsCount !== 1 ? 'reports' : 'report' }} for well {{ $route.params.id }}.
         </p>
         <b-table
             id="submissionHistoryTable"
             ref="submissionHistoryTable"
             :busy.sync="submissionsBusy"
             :items="submissionReports"
-            :fields="['report', 'date_entered', 'entered_by']"
+            :fields="tableHeaders"
             responsive
             empty-text="There are no electronic submissions for this well."
             :per-page="submissionsPerPage"
             :current-page="submissionsPage"
           >
           <template slot="report" slot-scope="data">
-            <router-link :to="{ name: 'SubmissionDetail', params: { id: $route.params.id, submissionId: data.item.filing_number }}">{{ data.item.well_activity_description }}</router-link>
+            <div v-if="data.item.preview">
+              <span class="skeleton">aaaa aaa aaaaa</span>
+            </div>
+            <div v-else>
+              <router-link :to="{ name: 'SubmissionDetail', params: { id: $route.params.id, submissionId: data.item.filing_number }}">{{ data.item.well_activity_description }}</router-link>
+            </div>
           </template>
           <template slot="date_entered" slot-scope="data">
-            <span v-if="data.item.create_date">{{ data.item.create_date | moment("MMMM Do YYYY [at] LT") }}</span>
+            <div v-if="data.item.preview">
+              <span class="skeleton">aaaa aaaaaa</span>
+            </div>
+            <div v-else>
+              <span v-if="data.item.create_date">{{ data.item.create_date | moment("MMMM Do YYYY [at] LT") }}</span>
+            </div>
           </template>
           <template slot="entered_by" slot-scope="data">
-            {{ data.item.create_user }}
+            <div v-if="data.item.preview">
+              <span class="skeleton">aaaa aaaaaa</span>
+            </div>
+            <div v-else>
+              {{ data.item.create_user }}
+            </div>
           </template>
         </b-table>
         <b-pagination v-if="!!submissionsRecordsCount && submissionsRecordsCount > submissionsPerPage" size="md" :total-rows="submissionsRecordsCount" v-model="submissionsPage" :per-page="submissionsPerPage" :disabled="submissionsBusy" />
@@ -68,6 +83,10 @@ export default {
     saveDisabled: {
       type: Boolean,
       isInput: false
+    },
+    expectedCount: {
+      type: Number,
+      default: 0
     }
   },
   data () {
@@ -76,7 +95,27 @@ export default {
       submissionsPage: 1,
       submissionsBusy: false,
       submissionsRecordsCount: 0,
-      submissionReports: []
+      submissionReports: [],
+      tableHeaders: {
+        report: {
+          label: 'Report',
+          thStyle: {
+            width: '33%'
+          }
+        },
+        date_entered: {
+          label: 'Date Entered',
+          thStyle: {
+            width: '33%'
+          }
+        },
+        entered_by: {
+          label: 'Entered By',
+          thStyle: {
+            width: '33%'
+          }
+        }
+      }
     }
   },
   computed: {
@@ -99,18 +138,37 @@ export default {
 
         this.submissionsRecordsCount = results.length
         this.submissionReports = results
+        return results
       }).catch((e) => {
         this.submissionsRecordsCount = 0
         this.submissionReports = []
+        return []
       })
+    },
+    populateTable (count = 0) {
+      this.submissionReports = []
+      for (let i = 0; i < count; i++) {
+        this.submissionReports.push({
+          preview: true
+        })
+      }
     }
   },
   created () {
+    this.populateTable(this.expectedCount)
     this.fetchReports()
   }
 }
 </script>
 
 <style>
-
+.skeleton {
+  min-width: 15rem;
+  color: transparent !important;
+  pointer-events: none;
+  user-select: none;
+  border-color: rgb(240, 240, 240) !important;
+  border-radius: 2px;
+  background-image: linear-gradient(rgb(240, 240, 240) 10px, transparent 0);
+}
 </style>

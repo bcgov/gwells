@@ -76,6 +76,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <submission-history
       v-if="showSection('submissionHistory')"
       id="submissionHistory"
+      :expected-count="submissionsCount"
       :isStaffEdit="isStaffEdit"
     ></submission-history>
 
@@ -560,6 +561,10 @@ export default {
     uploadedFiles: {
       type: Object,
       isInput: false
+    },
+    submissionsCount: {
+      type: Number,
+      default: 0
     }
   },
   components: {

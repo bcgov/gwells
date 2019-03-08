@@ -38,6 +38,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <activity-submission-form
             v-else
             :form="form"
+            :submissionsCount="submissionsCount"
             :activityType.sync="activityType"
             :sections="displayFormSection"
             :formSteps="formSteps"
@@ -495,6 +496,12 @@ export default {
           if (this.form.person_responsible && this.form.person_responsible.name === this.form.driller_name) {
             this.form.meta.drillerSameAsPersonResponsible = true
           }
+
+          // store the number of submissions already associated with this well
+          this.submissionsCount = Number(res.data.submissions_count || 0)
+          console.log(res.data.submissions_count)
+          console.log(res.data)
+
           // Wait for the form update we just did to fire off change events.
           this.$nextTick(() => {
             this.form.meta.valueChanged = {}
@@ -548,6 +555,7 @@ function initialState () {
     trackValueChanges: false,
     errors: {},
     form: {},
+    submissionsCount: 0, // this is the number of submissions for each well (comes into play for staff edits)
     formOptions: {},
     uploadedFiles: {},
     formSteps: {

@@ -283,6 +283,7 @@ class WellDetailSerializer(AuditModelSerializer):
             "linerperforation_set",
             "decommission_description_set",
             "lithologydescription_set",
+            "submissions_count"
         )
 
 
@@ -294,6 +295,7 @@ class WellDetailAdminSerializer(AuditModelSerializer):
     person_responsible = PersonBasicSerializer()
     company_of_person_responsible = OrganizationNameListSerializer()
     lithologydescription_set = LithologyDescriptionSerializer(many=True)
+    submissions_count = serializers.IntegerField()
 
     # well vs. well_tag_number ; on submissions, we refer to well
     well = serializers.IntegerField(source='well_tag_number')
