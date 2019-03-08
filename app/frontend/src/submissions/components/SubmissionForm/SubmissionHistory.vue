@@ -36,7 +36,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           >
           <template slot="report" slot-scope="data">
             <div v-if="data.item.preview">
-              <span class="skeleton">aaaa aaa aaaaa</span>
+              <span class="skeleton">report type</span> <span class="skeleton">loading</span>
             </div>
             <div v-else>
               <router-link :to="{ name: 'SubmissionDetail', params: { id: $route.params.id, submissionId: data.item.filing_number }}">{{ data.item.well_activity_description }}</router-link>
@@ -44,7 +44,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </template>
           <template slot="date_entered" slot-scope="data">
             <div v-if="data.item.preview">
-              <span class="skeleton">aaaa aaaaaa</span>
+              <span class="skeleton">date loading</span>
             </div>
             <div v-else>
               <span v-if="data.item.create_date">{{ data.item.create_date | moment("MMMM Do YYYY [at] LT") }}</span>
@@ -52,7 +52,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </template>
           <template slot="entered_by" slot-scope="data">
             <div v-if="data.item.preview">
-              <span class="skeleton">aaaa aaaaaa</span>
+              <span class="skeleton">name loading</span>
             </div>
             <div v-else>
               {{ data.item.create_user }}
@@ -155,7 +155,8 @@ export default {
     }
   },
   created () {
-    this.populateTable(this.expectedCount)
+    // populate table rows with either the expected number of submissions, or the max per page
+    this.populateTable(Math.min(this.submissionsPerPage, this.expectedCount))
     this.fetchReports()
   }
 }
@@ -163,12 +164,12 @@ export default {
 
 <style>
 .skeleton {
-  min-width: 15rem;
   color: transparent !important;
   pointer-events: none;
   user-select: none;
   border-color: rgb(240, 240, 240) !important;
-  border-radius: 2px;
-  background-image: linear-gradient(rgb(240, 240, 240) 10px, transparent 0);
+  border-radius: 4px;
+  -moz-border-radius: 4px;
+  background: rgb(240, 240, 240);
 }
 </style>
