@@ -1,6 +1,7 @@
 [
     {
         "model": "aquifers.AquiferResourceSection",
+        "pk": "A",
         "fields": {
             "create_user": "DATALOAD_USER",
             "create_date": "2018-01-01T08:00:00Z",
@@ -11,6 +12,7 @@
     },
     {
         "model": "aquifers.AquiferResourceSection",
+        "pk": "O",
         "fields": {
             "create_user": "DATALOAD_USER",
             "create_date": "2018-01-01T08:00:00Z",
@@ -21,6 +23,7 @@
     },
     {
         "model": "aquifers.AquiferResourceSection",
+        "pk": "W",
         "fields": {
             "create_user": "DATALOAD_USER",
             "create_date": "2018-01-01T08:00:00Z",
@@ -31,6 +34,7 @@
     },
     {
         "model": "aquifers.AquiferResourceSection",
+        "pk": "P",
         "fields": {
             "create_user": "DATALOAD_USER",
             "create_date": "2018-01-01T08:00:00Z",
@@ -41,6 +45,7 @@
     },
     {
         "model": "aquifers.AquiferResourceSection",
+        "pk": "N",
         "fields": {
             "create_user": "DATALOAD_USER",
             "create_date": "2018-01-01T08:00:00Z",
@@ -51,6 +56,7 @@
     },
     {
         "model": "aquifers.AquiferResourceSection",
+        "pk": "M",
         "fields": {
             "create_user": "DATALOAD_USER",
             "create_date": "2018-01-01T08:00:00Z",
@@ -61,6 +67,7 @@
     },
     {
         "model": "aquifers.AquiferResourceSection",
+        "pk": "I",
         "fields": {
             "create_user": "DATALOAD_USER",
             "create_date": "2018-01-01T08:00:00Z",

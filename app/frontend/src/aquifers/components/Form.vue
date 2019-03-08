@@ -254,9 +254,9 @@
           :invalid-feedback="fieldErrorMessages.section"
           :state="fieldHasError.section">
           <b-form-select
-            v-model="resource.section_id"
-            :options="[''].concat(aquifer_resource_sections)"
-            value-field="id"
+            v-model="resource.section_code"
+            :options="['-- Section --'].concat(aquifer_resource_sections)"
+            value-field="code"
             text-field="name"/>
         </b-form-group>
       </b-col>

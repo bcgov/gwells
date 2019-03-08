@@ -19,9 +19,9 @@ from aquifers import models
 
 class AquiferResourceSerializer(serializers.ModelSerializer):
     """Serialize aquifer resourcelist"""
-    section_id = serializers.PrimaryKeyRelatedField(
+    section_code = serializers.PrimaryKeyRelatedField(
         queryset=models.AquiferResourceSection.objects.all(),
-        source='section.id')
+        source='section.code')
 
     def to_internal_value(self, data):
         """
@@ -41,7 +41,7 @@ class AquiferResourceSerializer(serializers.ModelSerializer):
             'id',
             'name',
             'url',
-            'section_id'
+            'section_code'
         )
 
 
@@ -105,7 +105,7 @@ class AquiferSerializer(serializers.ModelSerializer):
         for resource_item in resources_data:
             if 'instance' in resource_item:
                 resource = resource_item['instance']
-                resource.section = resource_item['section']['id']
+                resource.section = resource_item['section']['code']
                 resource.name = resource_item['name']
                 resource.url = resource_item['url']
                 resource.save()
@@ -114,7 +114,7 @@ class AquiferSerializer(serializers.ModelSerializer):
                     url=resource_item['url'],
                     name=resource_item['name'],
                     aquifer=instance,
-                    section_id=resource_item['section']['id'].id)
+                    section_id=resource_item['section']['code'].code)
                 r.save()
 
         return instance
@@ -152,7 +152,7 @@ class AquiferResourceSectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.AquiferResourceSection
         fields = (
-            'id',
+            'code',
             'name'
         )
 

@@ -261,6 +261,7 @@ class AquiferResourceSection(AuditModel):
     """
     Defines the available sections (categories) of aquifer resources.
     """
+    code = models.CharField(primary_key=True, max_length=1, db_column='aquifer_resource_section_code')
     name = models.CharField(max_length=100)
 
     class Meta:
@@ -275,13 +276,17 @@ class AquiferResource(AuditModel):
     """
     A PDF document associated with a given aquifer.
     """
-    id = models.AutoField(primary_key=True, verbose_name="Aquifer Resource Identifier" ,db_column='aquifer_resource_id')
+    id = models.AutoField(
+        primary_key=True,
+        verbose_name="Aquifer Resource Identifier",
+        db_column='aquifer_resource_id')
     aquifer = models.ForeignKey(
         Aquifer,
         related_name='resources',
         on_delete=models.PROTECT)
     section = models.ForeignKey(
         AquiferResourceSection,
+        db_column='aquifer_resource_section_code',
         verbose_name="Aquifer Resource Section",
         on_delete=models.PROTECT,
         help_text="The section (category) of this resource.")

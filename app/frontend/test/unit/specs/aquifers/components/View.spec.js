@@ -38,7 +38,8 @@ const aquiferFixture = {
   area: '63.3',
   productivity_description: 'High',
   demand: 'Low',
-  mapping_year: '1993'
+  mapping_year: '1993',
+  resources: []
 }
 
 describe('View Component', () => {

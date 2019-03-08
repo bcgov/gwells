@@ -62,7 +62,7 @@
                 type="text"
                 v-model="search"/>
             </b-form-group>
-            <p v-for="section in aquifer_resource_sections">
+            <p :key="section.code" v-for="section in aquifer_resource_sections">
               <b-form-checkbox
                   id="checkbox1"
                   v-model="section.enabled"
@@ -194,7 +194,7 @@ export default {
       ],
       surveys: [],
       noSearchCriteriaError: false,
-      aquifer_resource_sections: [{name: 'Artesian Advisory', id:1, enabled: 'no'}]
+      aquifer_resource_sections: []
     }
   },
   computed: {
@@ -255,7 +255,6 @@ export default {
     triggerSearch () {
       delete this.filterParams.aquifer_id
       delete this.filterParams.search
-      delete this.filterParams.artesian_advisory
 
       if (this.aquifer_id) {
         this.filterParams.aquifer_id = this.aquifer_id
@@ -263,10 +262,6 @@ export default {
 
       if (this.search) {
         this.filterParams.search = this.search
-      }
-
-      if (this.aquifer_resource_sections[0].enabled) {
-        this.filterParams.artesian_advisory = 1
       }
 
       this.updateQueryParams()

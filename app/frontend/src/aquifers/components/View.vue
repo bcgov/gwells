@@ -185,14 +185,14 @@ export default {
       'fileUploadFail'
     ]),
     bySection (resources, section) {
-      return (resources || []).filter(function(resource){
+      return (resources || []).filter(function (resource) {
         return resource.section_id === section.id
       })
     },
     handleSaveSuccess (response) {
       this.fetch()
       this.navigateToView()
-      
+
       if (this.$refs.aquiferHistory) {
         this.$refs.aquiferHistory.update()
       }
@@ -225,8 +225,6 @@ export default {
     save () {
       this.showSaveSuccess = false
       this.fieldErrors = {}
-      console.log(this.record)
-
       ApiService.patch('aquifers', this.id, this.record)
         .then(this.handleSaveSuccess)
         .catch(this.handlePatchError)
@@ -256,9 +254,8 @@ export default {
         })
     },
     fetchResourceSections () {
-      ApiService.query("aquifers/sections").then((response) => {
+      ApiService.query('aquifers/sections').then((response) => {
         this.aquifer_resource_sections = response.data.results
-        console.log(this.aquifer_resource_sections)
       })
     }
   }
