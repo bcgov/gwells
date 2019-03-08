@@ -1,7 +1,10 @@
+$bcgov-font-path: '~@bcgov/bootstrap-theme/dist/fonts/';
+
 @import url('https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
 @import '~bootstrap/scss/_functions';
 @import '~bootstrap/scss/_variables';
 @import '~bootstrap/scss/mixins/_breakpoints';
+@import '~@bcgov/bootstrap-theme/dist/scss/bootstrap-theme.scss';
 
 @media print {
   body {
@@ -31,7 +34,7 @@
 }
 
 html {
-  font-size: 14px;
+  font-size: 14px!important;
   background-color: #f1f1f1
 }
 body {
@@ -81,4 +84,9 @@ div.dropdown-toggle::after {
   padding-left: 10px;
   display:table-cell;
   vertical-align: middle;
+}
+
+// adjust breadcrumb background
+.breadcrumb {
+  background-color: white;
 }
