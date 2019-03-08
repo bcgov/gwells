@@ -1,10 +1,12 @@
 version: '3'
-# NOTE Before running `docker-compose up`, you need be logged in to the OpenShift 
-#      to the OpenShift Image Registry via:
-#      docker login -u <github> -p `oc whoami -t` docker-registry.pathfinder.gov.bc.ca
-#      for example:
-#      docker login -u garywong-bc -p `oc whoami -t` docker-registry.pathfinder.gov.bc.ca
+# NOTE For Red Hat or other images on the internal registry please login as follows:
+#     1. Be logged into the BC Gov OpenShift Console 
+#          https://console.pathfinder.gov.bc.ca:8443/console/catalog)
+#     2. Be logged into the BC Gov OpenShift Image Registry via
+#          docker login -u <github> -p `oc whoami -t` docker-registry.pathfinder.gov.bc.ca
 #
+#        For example:
+#          docker login -u garywong-bc -p `oc whoami -t` docker-registry.pathfinder.gov.bc.ca
 services:
   minio-public:
     image: minio/minio
