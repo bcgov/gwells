@@ -487,4 +487,4 @@ class WellLocationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Well
-        fields = ("well_tag_number", "latitude", "longitude")
+        fields = ("well_tag_number", "identification_plate_number", "latitude", "longitude")
