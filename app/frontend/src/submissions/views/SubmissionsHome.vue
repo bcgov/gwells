@@ -25,7 +25,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         </b-card>
     </b-col>
     <b-col>
-      <div class="container p-1 container-wide">
+      <div :class="isStaffEdit ? '':'container container-wide'">
           <div class="card" v-if="userRoles.wells.edit || userRoles.submissions.edit">
             <div class="card-body">
               <b-form @submit.prevent="confirmSubmit">
