@@ -136,7 +136,14 @@ export default {
           weight: 1,
           fillColor: '#0162fe', // The fill color of the circleMarker
           fillOpacity: 1.0 // How transparent the circleMarker's fill is
-        }).bindPopup(`<a href="/gwells/well/${item[2]}">${item[2]}</a>`)
+        }).bindPopup(`
+          <div>
+            Well Tag Number: <a href="/gwells/well/${item[2]}">${item[2]}</a>
+          </div>
+          <div>
+            Identification Plate Number: ${item[3] || ''}
+          </div>
+        `)
       }).forEach((marker) => {
         marker.addTo(this.markerGroup)
       })

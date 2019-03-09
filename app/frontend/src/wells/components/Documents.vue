@@ -35,13 +35,13 @@
             </li>
           </ul>
           <div v-else>
-              No additional documentation currently available for this well.
+              No additional documentation available for this well.
           </div>
         </div>
       </div>
-      <div class="row no-gutters" v-if="userRoles.wells.view">
+      <div class="row no-gutters mt-3" v-if="userRoles.wells.view">
         <div class="col-md-12">
-          <h4>Internal documentation - authorized access only</h4>
+          <h5>Internal documentation - authorized access only</h5>
           <div v-if="error">
             {{error}}
           </div>
@@ -51,7 +51,7 @@
             </li>
           </ul>
           <div v-else>
-            No additional private documentation currently available for this well.
+            No additional private documentation available for this well.
           </div>
         </div>
       </div>
@@ -76,9 +76,6 @@ export default {
     well: {
       required: true
     }
-  },
-  created () {
-    this.loadFiles()
   },
   data () {
     return {
@@ -150,6 +147,9 @@ export default {
           this.removeFileFromStore(this.file)
         })
     }
+  },
+  created () {
+    this.loadFiles()
   }
 }
 </script>
