@@ -12,67 +12,82 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-  <div class="container p-1 container-wide">
-    <div class="card" v-if="userRoles.wells.edit || userRoles.submissions.edit">
-      <div class="card-body">
-
-        <b-form @submit.prevent="confirmSubmit">
-          <!-- if preview === true : Preview -->
-          <submission-preview
-            v-if="preview"
-            :form="form"
-            :activity="activityType"
-            :sections="displayFormSection"
-            :errors="errors"
-            :reportSubmitted="formSubmitSuccess"
-            :formSubmitLoading="formSubmitLoading"
-            :uploadedFiles="uploadedFiles"
-            v-on:back="handlePreviewBackButton"
-            v-on:startNewReport="handleExitPreviewAfterSubmit"
-            v-on:fetchFiles="fetchFiles"
-            />
-          <!-- if preview === false : Activity submission form -->
-          <activity-submission-form
-            v-else
-            :form="form"
-            :activityType.sync="activityType"
-            :sections="displayFormSection"
-            :formSteps="formSteps"
-            :errors="errors"
-            :formIsFlat.sync="formIsFlat"
-            :trackValueChanges="trackValueChanges"
-            :formSubmitLoading="formSubmitLoading"
-            :isStaffEdit="isStaffEdit"
-            :loading="loading"
-            :uploadedFiles="uploadedFiles"
-            v-on:preview="handlePreviewButton"
-            v-on:submit_edit="formSubmit"
-            v-on:resetForm="resetForm"
-            v-on:fetchFiles="fetchFiles"
-            />
-
-          <!-- Form submission confirmation -->
-          <b-modal
-              v-model="confirmSubmitModal"
-              id="confirmSubmitModal"
-              centered
-              title="Confirm submission"
-              @shown="$refs.confirmSubmitConfirmBtn.focus()"
-              :return-focus="$refs.activitySubmitBtn">
-            Are you sure you want to submit this activity report?
-            <div slot="modal-footer">
-              <b-btn variant="primary" @click="confirmSubmitModal=false;formSubmit()" ref="confirmSubmitConfirmBtn">
-                Save
-              </b-btn>
-              <b-btn variant="light" @click="confirmSubmitModal=false">
-                Cancel
-              </b-btn>
+<div class="container-fluid">
+  <b-row>
+    <b-col class="d-none d-xl-block" xl="2" v-if="isStaffEdit">
+        <b-card class="position-fixed">
+          <b-card-text>
+            <div v-for="(v, k) in formStepDescriptions" :key="`formLink${k}`">
+              <a :href="`#${k}`">{{v}}</a>
             </div>
-          </b-modal>
-        </b-form>
-      </div>
-    </div>
-  </div>
+            <div class="mt-5"><b-btn variant="primary">Save</b-btn><span class="ml-3">Back to top</span></div>
+          </b-card-text>
+        </b-card>
+    </b-col>
+    <b-col>
+      <div class="container p-1 container-wide">
+          <div class="card" v-if="userRoles.wells.edit || userRoles.submissions.edit">
+            <div class="card-body">
+              <b-form @submit.prevent="confirmSubmit">
+                <!-- if preview === true : Preview -->
+                <submission-preview
+                  v-if="preview"
+                  :form="form"
+                  :activity="activityType"
+                  :sections="displayFormSection"
+                  :errors="errors"
+                  :reportSubmitted="formSubmitSuccess"
+                  :formSubmitLoading="formSubmitLoading"
+                  :uploadedFiles="uploadedFiles"
+                  v-on:back="handlePreviewBackButton"
+                  v-on:startNewReport="handleExitPreviewAfterSubmit"
+                  v-on:fetchFiles="fetchFiles"
+                  />
+                <!-- if preview === false : Activity submission form -->
+                <activity-submission-form
+                  v-else
+                  :form="form"
+                  :activityType.sync="activityType"
+                  :sections="displayFormSection"
+                  :formSteps="formSteps"
+                  :errors="errors"
+                  :formIsFlat.sync="formIsFlat"
+                  :trackValueChanges="trackValueChanges"
+                  :formSubmitLoading="formSubmitLoading"
+                  :isStaffEdit="isStaffEdit"
+                  :loading="loading"
+                  :uploadedFiles="uploadedFiles"
+                  v-on:preview="handlePreviewButton"
+                  v-on:submit_edit="formSubmit"
+                  v-on:resetForm="resetForm"
+                  v-on:fetchFiles="fetchFiles"
+                  />
+
+                <!-- Form submission confirmation -->
+                <b-modal
+                    v-model="confirmSubmitModal"
+                    id="confirmSubmitModal"
+                    centered
+                    title="Confirm submission"
+                    @shown="$refs.confirmSubmitConfirmBtn.focus()"
+                    :return-focus="$refs.activitySubmitBtn">
+                  Are you sure you want to submit this activity report?
+                  <div slot="modal-footer">
+                    <b-btn variant="primary" @click="confirmSubmitModal=false;formSubmit()" ref="confirmSubmitConfirmBtn">
+                      Save
+                    </b-btn>
+                    <b-btn variant="light" @click="confirmSubmitModal=false">
+                      Cancel
+                    </b-btn>
+                  </div>
+                </b-modal>
+              </b-form>
+            </div>
+          </div>
+        </div>
+    </b-col>
+  </b-row>
+</div>
 </template>
 
 <script>
@@ -606,6 +621,32 @@ function initialState () {
         'documents',
         'aquiferData'
       ]
+    },
+    formStepDescriptions: {
+      'activityType': 'Type of work',
+      'aquiferData': 'Well testing and aquifer details',
+      'wellType': 'Well class',
+      'wellPublicationStatus': 'Well publication status',
+      'wellOwner': 'Well owner',
+      'wellLocation': 'Well location',
+      'wellCoords': 'Geographic coordinates',
+      'method': 'Method of drilling',
+      'closureDescription': 'Decommission description',
+      'lithology': 'Lithology',
+      'casings': 'Casing details',
+      'backfill': 'Surface seal and backfill information',
+      'liner': 'Liner information',
+      'screens': 'Screen information',
+      'filterPack': 'Filter pack',
+      'wellDevelopment': 'Well development',
+      'wellYield': 'Well yield estimation',
+      'waterQuality': 'Water quality',
+      'wellCompletion': 'Well completion data',
+      'decommissionInformation': 'Well decommission information',
+      'comments': 'Comments',
+      'personResponsible': 'Person responsible for work',
+      'observationWellInfo': 'Observation well information',
+      'documents': 'Attachments'
     }
   }
 }
