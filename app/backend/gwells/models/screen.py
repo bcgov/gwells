@@ -13,7 +13,7 @@
 """
 import uuid
 from decimal import Decimal
-import datetime
+from django.utils import timezone
 
 from django.db import models
 from django.core.validators import MinValueValidator
@@ -30,8 +30,8 @@ class ScreenTypeCode(AuditModel):
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
-    effective_date = models.DateTimeField(default=datetime.date.today, null=False)
-    expiry_date = models.DateTimeField(default=datetime.datetime.max, null=False)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'screen_type_code'
@@ -51,8 +51,8 @@ class ScreenAssemblyTypeCode(AuditModel):
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
-    effective_date = models.DateTimeField(default=datetime.date.today, null=False)
-    expiry_date = models.DateTimeField(default=datetime.datetime.max, null=False)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'screen_assembly_type_code'
@@ -71,8 +71,8 @@ class ScreenBottomCode(AuditModel):
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
-    effective_date = models.DateTimeField(default=datetime.date.today, null=False)
-    expiry_date = models.DateTimeField(default=datetime.datetime.max, null=False)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'screen_bottom_code'
@@ -91,8 +91,8 @@ class ScreenIntakeMethodCode(AuditModel):
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
-    effective_date = models.DateTimeField(default=datetime.date.today, null=False)
-    expiry_date = models.DateTimeField(default=datetime.datetime.max, null=False)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'screen_intake_method_code'
@@ -111,8 +111,8 @@ class ScreenMaterialCode(AuditModel):
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
-    effective_date = models.DateTimeField(default=datetime.date.today, null=False)
-    expiry_date = models.DateTimeField(default=datetime.datetime.max, null=False)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'screen_material_code'
@@ -131,8 +131,8 @@ class ScreenOpeningCode(AuditModel):
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
-    effective_date = models.DateTimeField(default=datetime.date.today, null=False)
-    expiry_date = models.DateTimeField(default=datetime.datetime.max, null=False)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'screen_opening_code'

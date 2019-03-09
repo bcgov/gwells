@@ -13,8 +13,7 @@
 """
 from decimal import Decimal
 import uuid
-import datetime
-
+from django.utils import timezone
 from django.db import models
 from django.core.validators import MinValueValidator
 
@@ -29,8 +28,8 @@ class BedrockMaterialDescriptorCode(AuditModel):
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
-    effective_date = models.DateTimeField(default=datetime.date.today, null=False)
-    expiry_date = models.DateTimeField(default=datetime.datetime.max, null=False)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'bedrock_material_descriptor_code'
@@ -49,8 +48,8 @@ class BedrockMaterialCode(AuditModel):
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
-    effective_date = models.DateTimeField(default=datetime.date.today, null=False)
-    expiry_date = models.DateTimeField(default=datetime.datetime.max, null=False)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'bedrock_material_code'
@@ -69,8 +68,8 @@ class SurficialMaterialCode(AuditModel):
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
-    effective_date = models.DateTimeField(default=datetime.date.today, null=False)
-    expiry_date = models.DateTimeField(default=datetime.datetime.max, null=False)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'surficial_material_code'
@@ -89,8 +88,8 @@ class LithologyColourCode(AuditModel):
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
-    effective_date = models.DateTimeField(default=datetime.date.today, null=False)
-    expiry_date = models.DateTimeField(default=datetime.datetime.max, null=False)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'lithology_colour_code'
@@ -106,8 +105,8 @@ class LithologyDescriptionCode(AuditModel):
     description = models.CharField(max_length=255, verbose_name='Description')
     display_order = models.PositiveIntegerField()
 
-    effective_date = models.DateTimeField(default=datetime.date.today, null=False)
-    expiry_date = models.DateTimeField(default=datetime.datetime.max, null=False)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'lithology_description_code'
@@ -126,8 +125,8 @@ class LithologyHardnessCode(AuditModel):
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
-    effective_date = models.DateTimeField(default=datetime.date.today, null=False)
-    expiry_date = models.DateTimeField(default=datetime.datetime.max, null=False)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'lithology_hardness_code'
@@ -143,8 +142,8 @@ class LithologyMaterialCode(AuditModel):
     description = models.CharField(max_length=255, verbose_name='Description')
     display_order = models.PositiveIntegerField()
 
-    effective_date = models.DateTimeField(default=datetime.date.today, null=False)
-    expiry_date = models.DateTimeField(default=datetime.datetime.max, null=False)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'lithology_material_code'
@@ -163,8 +162,8 @@ class LithologyStructureCode(AuditModel):
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
-    effective_date = models.DateTimeField(default=datetime.date.today, null=False)
-    expiry_date = models.DateTimeField(default=datetime.datetime.max, null=False)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'lithology_structure_code'
@@ -183,8 +182,8 @@ class LithologyMoistureCode(AuditModel):
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
-    effective_date = models.DateTimeField(default=datetime.date.today, null=False)
-    expiry_date = models.DateTimeField(default=datetime.datetime.max, null=False)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'lithology_moisture_code'

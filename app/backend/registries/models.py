@@ -12,7 +12,7 @@
     limitations under the License.
 """
 import uuid
-import datetime
+from django.utils import timezone
 import logging
 import reversion
 from django.contrib.gis.db import models
@@ -33,8 +33,8 @@ class ActivityCode(AuditModel):
         primary_key=True, max_length=10, editable=False)
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
-    effective_date = models.DateField(default=datetime.date.today, null=False)
-    expired_date = models.DateField(default=datetime.datetime.max, null=False)
+    effective_date = models.DateField(default=timezone.now, null=False)
+    expired_date = models.DateField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'registries_activity_code'
@@ -60,8 +60,8 @@ class SubactivityCode(AuditModel):
         on_delete=models.PROTECT)
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
-    effective_date = models.DateField(default=datetime.date.today, null=False)
-    expired_date = models.DateField(default=datetime.datetime.max, null=False)
+    effective_date = models.DateField(default=timezone.now, null=False)
+    expired_date = models.DateField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'registries_subactivity_code'
@@ -81,8 +81,8 @@ class CertifyingAuthorityCode(AuditModel):
         verbose_name="Certifying Authority Name")
     description = models.CharField(max_length=100, blank=True, null=True)
 
-    effective_date = models.DateField(default=datetime.date.today, null=False)
-    expired_date = models.DateField(default=datetime.datetime.max, null=False)
+    effective_date = models.DateField(default=timezone.now, null=False)
+    expired_date = models.DateField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'registries_certifying_authority_code'
@@ -112,8 +112,8 @@ class AccreditedCertificateCode(AuditModel):
                             verbose_name="Certificate Name")
     description = models.CharField(max_length=100, blank=True, null=True)
 
-    effective_date = models.DateField(default=datetime.date.today, null=False)
-    expired_date = models.DateField(default=datetime.datetime.max, null=False)
+    effective_date = models.DateField(default=timezone.now, null=False)
+    expired_date = models.DateField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'registries_accredited_certificate_code'
@@ -150,8 +150,8 @@ class Organization(AuditModel):
         null=True, blank=True, max_length=15, verbose_name="Fax number")
     website_url = models.URLField(
         null=True, blank=True, verbose_name="Website")
-    effective_date = models.DateField(default=datetime.date.today, null=False)
-    expired_date = models.DateField(default=datetime.datetime.max, null=False)
+    effective_date = models.DateField(default=timezone.now, null=False)
+    expired_date = models.DateField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
     email = models.EmailField(
         blank=True, null=True, verbose_name="Email adddress")
 
@@ -212,8 +212,8 @@ class Person(AuditModel):
     contact_email = models.EmailField(
         blank=True, null=True, verbose_name="Email address")
 
-    effective_date = models.DateField(default=datetime.date.today, null=False)
-    expired_date = models.DateField(default=datetime.datetime.max, null=False)
+    effective_date = models.DateField(default=timezone.now, null=False)
+    expired_date = models.DateField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     history = GenericRelation(Version)
 
@@ -238,8 +238,8 @@ class WellClassCode(AuditModel):
         primary_key=True, max_length=10, editable=False)
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
-    effective_date = models.DateField(default=datetime.date.today, null=False)
-    expired_date = models.DateField(default=datetime.datetime.max, null=False)
+    effective_date = models.DateField(default=timezone.now, null=False)
+    expired_date = models.DateField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'registries_well_class_code'
@@ -270,8 +270,8 @@ class Qualification(AuditModel):
         on_delete=models.PROTECT,
         related_name="qualification_set")
     display_order = models.PositiveIntegerField()
-    effective_date = models.DateField(default=datetime.date.today, null=False)
-    expired_date = models.DateField(default=datetime.datetime.max, null=False)
+    effective_date = models.DateField(default=timezone.now, null=False)
+    expired_date = models.DateField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'registries_well_qualification'
@@ -291,8 +291,8 @@ class RegistriesRemovalReason(AuditModel):
         primary_key=True, max_length=10, editable=False, db_column='registries_removal_reason_code')
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
-    effective_date = models.DateField(default=datetime.date.today, null=False)
-    expired_date = models.DateField(default=datetime.datetime.max, null=False)
+    effective_date = models.DateField(default=timezone.now, null=False)
+    expired_date = models.DateField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'registries_removal_reason_code'
@@ -352,8 +352,8 @@ class ApplicationStatusCode(AuditModel):
         primary_key=True, max_length=10, editable=False, db_column='registries_application_status_code')
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
-    effective_date = models.DateField(default=datetime.date.today, null=False)
-    expired_date = models.DateField(default=datetime.datetime.max, null=False)
+    effective_date = models.DateField(default=timezone.now, null=False)
+    expired_date = models.DateField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     objects = ApplicationStatusCodeManager()
 
@@ -375,8 +375,8 @@ class ProofOfAgeCode(AuditModel):
         primary_key=True, max_length=10, editable=False, db_column='registries_proof_of_age_code')
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
-    effective_date = models.DateField(default=datetime.date.today, null=False)
-    expired_date = models.DateField(default=datetime.datetime.max, null=False)
+    effective_date = models.DateField(default=timezone.now, null=False)
+    expired_date = models.DateField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'registries_proof_of_age_code'

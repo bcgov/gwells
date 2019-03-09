@@ -13,16 +13,15 @@
 """
 from django.contrib.gis.db import models
 from django.utils import timezone
-import datetime
 
 class AuditModel(models.Model):
     """
     An abstract base class model that provides audit fields.
     """
     create_user = models.CharField(max_length=60, null=False)
-    create_date = models.DateTimeField(default=datetime.date.today, null=False)
+    create_date = models.DateTimeField(default=timezone.now, null=False)
     update_user = models.CharField(max_length=60, default='DATALOAD_USER', null=False)
-    update_date = models.DateTimeField(default=datetime.date.today, null=False)
+    update_date = models.DateTimeField(default=timezone.now, null=False)
 
     def save(self, *args, **kwargs):
         ''' For all saves, populate "Update" fields '''
