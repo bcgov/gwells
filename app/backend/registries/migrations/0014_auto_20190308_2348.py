@@ -45,11 +45,6 @@ class Migration(migrations.Migration):
             field=models.DateTimeField(default=django.utils.timezone.now),
         ),
         migrations.AlterField(
-            model_name='accreditedcertificatecode',
-            name='update_user',
-            field=models.CharField(default='DATALOAD_USER', max_length=60),
-        ),
-        migrations.AlterField(
             model_name='activitycode',
             name='create_date',
             field=models.DateTimeField(default=django.utils.timezone.now),
@@ -68,11 +63,6 @@ class Migration(migrations.Migration):
             model_name='activitycode',
             name='update_date',
             field=models.DateTimeField(default=django.utils.timezone.now),
-        ),
-        migrations.AlterField(
-            model_name='activitycode',
-            name='update_user',
-            field=models.CharField(default='DATALOAD_USER', max_length=60),
         ),
         migrations.AlterField(
             model_name='applicationstatuscode',
@@ -95,11 +85,6 @@ class Migration(migrations.Migration):
             field=models.DateTimeField(default=django.utils.timezone.now),
         ),
         migrations.AlterField(
-            model_name='applicationstatuscode',
-            name='update_user',
-            field=models.CharField(default='DATALOAD_USER', max_length=60),
-        ),
-        migrations.AlterField(
             model_name='certifyingauthoritycode',
             name='create_date',
             field=models.DateTimeField(default=django.utils.timezone.now),
@@ -120,11 +105,6 @@ class Migration(migrations.Migration):
             field=models.DateTimeField(default=django.utils.timezone.now),
         ),
         migrations.AlterField(
-            model_name='certifyingauthoritycode',
-            name='update_user',
-            field=models.CharField(default='DATALOAD_USER', max_length=60),
-        ),
-        migrations.AlterField(
             model_name='organization',
             name='create_date',
             field=models.DateTimeField(default=django.utils.timezone.now),
@@ -143,11 +123,6 @@ class Migration(migrations.Migration):
             model_name='organization',
             name='update_date',
             field=models.DateTimeField(default=django.utils.timezone.now),
-        ),
-        migrations.AlterField(
-            model_name='organization',
-            name='update_user',
-            field=models.CharField(default='DATALOAD_USER', max_length=60),
         ),
         migrations.AlterField(
             model_name='organizationnote',
@@ -160,11 +135,6 @@ class Migration(migrations.Migration):
             field=models.DateTimeField(default=django.utils.timezone.now),
         ),
         migrations.AlterField(
-            model_name='organizationnote',
-            name='update_user',
-            field=models.CharField(default='DATALOAD_USER', max_length=60),
-        ),
-        migrations.AlterField(
             model_name='person',
             name='create_date',
             field=models.DateTimeField(default=django.utils.timezone.now),
@@ -183,11 +153,6 @@ class Migration(migrations.Migration):
             model_name='person',
             name='update_date',
             field=models.DateTimeField(default=django.utils.timezone.now),
-        ),
-        migrations.AlterField(
-            model_name='person',
-            name='update_user',
-            field=models.CharField(default='DATALOAD_USER', max_length=60),
         ),
         migrations.AlterField(
             model_name='personnote',
@@ -200,11 +165,6 @@ class Migration(migrations.Migration):
             field=models.DateTimeField(default=django.utils.timezone.now),
         ),
         migrations.AlterField(
-            model_name='personnote',
-            name='update_user',
-            field=models.CharField(default='DATALOAD_USER', max_length=60),
-        ),
-        migrations.AlterField(
             model_name='proofofagecode',
             name='create_date',
             field=models.DateTimeField(default=django.utils.timezone.now),
@@ -225,11 +185,6 @@ class Migration(migrations.Migration):
             field=models.DateTimeField(default=django.utils.timezone.now),
         ),
         migrations.AlterField(
-            model_name='proofofagecode',
-            name='update_user',
-            field=models.CharField(default='DATALOAD_USER', max_length=60),
-        ),
-        migrations.AlterField(
             model_name='qualification',
             name='create_date',
             field=models.DateTimeField(default=django.utils.timezone.now),
@@ -248,11 +203,6 @@ class Migration(migrations.Migration):
             model_name='qualification',
             name='update_date',
             field=models.DateTimeField(default=django.utils.timezone.now),
-        ),
-        migrations.AlterField(
-            model_name='qualification',
-            name='update_user',
-            field=models.CharField(default='DATALOAD_USER', max_length=60),
         ),
         migrations.AlterField(
             model_name='register',
@@ -265,11 +215,6 @@ class Migration(migrations.Migration):
             field=models.DateTimeField(default=django.utils.timezone.now),
         ),
         migrations.AlterField(
-            model_name='register',
-            name='update_user',
-            field=models.CharField(default='DATALOAD_USER', max_length=60),
-        ),
-        migrations.AlterField(
             model_name='register_note',
             name='create_date',
             field=models.DateTimeField(default=django.utils.timezone.now),
@@ -280,11 +225,6 @@ class Migration(migrations.Migration):
             field=models.DateTimeField(default=django.utils.timezone.now),
         ),
         migrations.AlterField(
-            model_name='register_note',
-            name='update_user',
-            field=models.CharField(default='DATALOAD_USER', max_length=60),
-        ),
-        migrations.AlterField(
             model_name='registriesapplication',
             name='create_date',
             field=models.DateTimeField(default=django.utils.timezone.now),
@@ -293,11 +233,6 @@ class Migration(migrations.Migration):
             model_name='registriesapplication',
             name='update_date',
             field=models.DateTimeField(default=django.utils.timezone.now),
-        ),
-        migrations.AlterField(
-            model_name='registriesapplication',
-            name='update_user',
-            field=models.CharField(default='DATALOAD_USER', max_length=60),
         ),
         migrations.AlterField(
             model_name='registriesremovalreason',
@@ -320,11 +255,6 @@ class Migration(migrations.Migration):
             field=models.DateTimeField(default=django.utils.timezone.now),
         ),
         migrations.AlterField(
-            model_name='registriesremovalreason',
-            name='update_user',
-            field=models.CharField(default='DATALOAD_USER', max_length=60),
-        ),
-        migrations.AlterField(
             model_name='subactivitycode',
             name='create_date',
             field=models.DateTimeField(default=django.utils.timezone.now),
@@ -345,11 +275,6 @@ class Migration(migrations.Migration):
             field=models.DateTimeField(default=django.utils.timezone.now),
         ),
         migrations.AlterField(
-            model_name='subactivitycode',
-            name='update_user',
-            field=models.CharField(default='DATALOAD_USER', max_length=60),
-        ),
-        migrations.AlterField(
             model_name='wellclasscode',
             name='create_date',
             field=models.DateTimeField(default=django.utils.timezone.now),
@@ -368,10 +293,5 @@ class Migration(migrations.Migration):
             model_name='wellclasscode',
             name='update_date',
             field=models.DateTimeField(default=django.utils.timezone.now),
-        ),
-        migrations.AlterField(
-            model_name='wellclasscode',
-            name='update_user',
-            field=models.CharField(default='DATALOAD_USER', max_length=60),
         ),
     ]

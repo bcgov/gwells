@@ -44,9 +44,4 @@ class Migration(migrations.Migration):
             name='update_date',
             field=models.DateTimeField(default=django.utils.timezone.now),
         ),
-        migrations.AlterField(
-            model_name='wellactivitycode',
-            name='update_user',
-            field=models.CharField(default='DATALOAD_USER', max_length=60),
-        ),
     ]

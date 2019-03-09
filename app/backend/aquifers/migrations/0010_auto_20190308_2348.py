@@ -35,11 +35,6 @@ class Migration(migrations.Migration):
             field=models.DateTimeField(default=django.utils.timezone.now),
         ),
         migrations.AlterField(
-            model_name='aquifer',
-            name='update_user',
-            field=models.CharField(default='DATALOAD_USER', max_length=60),
-        ),
-        migrations.AlterField(
             model_name='aquiferdemand',
             name='create_date',
             field=models.DateTimeField(default=django.utils.timezone.now),
@@ -58,11 +53,6 @@ class Migration(migrations.Migration):
             model_name='aquiferdemand',
             name='update_date',
             field=models.DateTimeField(default=django.utils.timezone.now),
-        ),
-        migrations.AlterField(
-            model_name='aquiferdemand',
-            name='update_user',
-            field=models.CharField(default='DATALOAD_USER', max_length=60),
         ),
         migrations.AlterField(
             model_name='aquifermaterial',
@@ -85,11 +75,6 @@ class Migration(migrations.Migration):
             field=models.DateTimeField(default=django.utils.timezone.now),
         ),
         migrations.AlterField(
-            model_name='aquifermaterial',
-            name='update_user',
-            field=models.CharField(default='DATALOAD_USER', max_length=60),
-        ),
-        migrations.AlterField(
             model_name='aquiferproductivity',
             name='create_date',
             field=models.DateTimeField(default=django.utils.timezone.now),
@@ -108,11 +93,6 @@ class Migration(migrations.Migration):
             model_name='aquiferproductivity',
             name='update_date',
             field=models.DateTimeField(default=django.utils.timezone.now),
-        ),
-        migrations.AlterField(
-            model_name='aquiferproductivity',
-            name='update_user',
-            field=models.CharField(default='DATALOAD_USER', max_length=60),
         ),
         migrations.AlterField(
             model_name='aquifersubtype',
@@ -135,11 +115,6 @@ class Migration(migrations.Migration):
             field=models.DateTimeField(default=django.utils.timezone.now),
         ),
         migrations.AlterField(
-            model_name='aquifersubtype',
-            name='update_user',
-            field=models.CharField(default='DATALOAD_USER', max_length=60),
-        ),
-        migrations.AlterField(
             model_name='aquifervulnerabilitycode',
             name='create_date',
             field=models.DateTimeField(default=django.utils.timezone.now),
@@ -158,11 +133,6 @@ class Migration(migrations.Migration):
             model_name='aquifervulnerabilitycode',
             name='update_date',
             field=models.DateTimeField(default=django.utils.timezone.now),
-        ),
-        migrations.AlterField(
-            model_name='aquifervulnerabilitycode',
-            name='update_user',
-            field=models.CharField(default='DATALOAD_USER', max_length=60),
         ),
         migrations.AlterField(
             model_name='qualityconcern',
@@ -185,11 +155,6 @@ class Migration(migrations.Migration):
             field=models.DateTimeField(default=django.utils.timezone.now),
         ),
         migrations.AlterField(
-            model_name='qualityconcern',
-            name='update_user',
-            field=models.CharField(default='DATALOAD_USER', max_length=60),
-        ),
-        migrations.AlterField(
             model_name='wateruse',
             name='create_date',
             field=models.DateTimeField(default=django.utils.timezone.now),
@@ -208,10 +173,5 @@ class Migration(migrations.Migration):
             model_name='wateruse',
             name='update_date',
             field=models.DateTimeField(default=django.utils.timezone.now),
-        ),
-        migrations.AlterField(
-            model_name='wateruse',
-            name='update_user',
-            field=models.CharField(default='DATALOAD_USER', max_length=60),
         ),
     ]

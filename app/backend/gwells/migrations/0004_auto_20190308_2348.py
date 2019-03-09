@@ -45,11 +45,6 @@ class Migration(migrations.Migration):
             field=models.DateTimeField(default=django.utils.timezone.now),
         ),
         migrations.AlterField(
-            model_name='bedrockmaterialcode',
-            name='update_user',
-            field=models.CharField(default='DATALOAD_USER', max_length=60),
-        ),
-        migrations.AlterField(
             model_name='bedrockmaterialdescriptorcode',
             name='create_date',
             field=models.DateTimeField(default=django.utils.timezone.now),
@@ -68,11 +63,6 @@ class Migration(migrations.Migration):
             model_name='bedrockmaterialdescriptorcode',
             name='update_date',
             field=models.DateTimeField(default=django.utils.timezone.now),
-        ),
-        migrations.AlterField(
-            model_name='bedrockmaterialdescriptorcode',
-            name='update_user',
-            field=models.CharField(default='DATALOAD_USER', max_length=60),
         ),
         migrations.AlterField(
             model_name='lithologycolourcode',
@@ -95,11 +85,6 @@ class Migration(migrations.Migration):
             field=models.DateTimeField(default=django.utils.timezone.now),
         ),
         migrations.AlterField(
-            model_name='lithologycolourcode',
-            name='update_user',
-            field=models.CharField(default='DATALOAD_USER', max_length=60),
-        ),
-        migrations.AlterField(
             model_name='lithologydescriptioncode',
             name='create_date',
             field=models.DateTimeField(default=django.utils.timezone.now),
@@ -118,11 +103,6 @@ class Migration(migrations.Migration):
             model_name='lithologydescriptioncode',
             name='update_date',
             field=models.DateTimeField(default=django.utils.timezone.now),
-        ),
-        migrations.AlterField(
-            model_name='lithologydescriptioncode',
-            name='update_user',
-            field=models.CharField(default='DATALOAD_USER', max_length=60),
         ),
         migrations.AlterField(
             model_name='lithologyhardnesscode',
@@ -145,11 +125,6 @@ class Migration(migrations.Migration):
             field=models.DateTimeField(default=django.utils.timezone.now),
         ),
         migrations.AlterField(
-            model_name='lithologyhardnesscode',
-            name='update_user',
-            field=models.CharField(default='DATALOAD_USER', max_length=60),
-        ),
-        migrations.AlterField(
             model_name='lithologymaterialcode',
             name='create_date',
             field=models.DateTimeField(default=django.utils.timezone.now),
@@ -168,11 +143,6 @@ class Migration(migrations.Migration):
             model_name='lithologymaterialcode',
             name='update_date',
             field=models.DateTimeField(default=django.utils.timezone.now),
-        ),
-        migrations.AlterField(
-            model_name='lithologymaterialcode',
-            name='update_user',
-            field=models.CharField(default='DATALOAD_USER', max_length=60),
         ),
         migrations.AlterField(
             model_name='lithologymoisturecode',
@@ -195,11 +165,6 @@ class Migration(migrations.Migration):
             field=models.DateTimeField(default=django.utils.timezone.now),
         ),
         migrations.AlterField(
-            model_name='lithologymoisturecode',
-            name='update_user',
-            field=models.CharField(default='DATALOAD_USER', max_length=60),
-        ),
-        migrations.AlterField(
             model_name='lithologystructurecode',
             name='create_date',
             field=models.DateTimeField(default=django.utils.timezone.now),
@@ -218,11 +183,6 @@ class Migration(migrations.Migration):
             model_name='lithologystructurecode',
             name='update_date',
             field=models.DateTimeField(default=django.utils.timezone.now),
-        ),
-        migrations.AlterField(
-            model_name='lithologystructurecode',
-            name='update_user',
-            field=models.CharField(default='DATALOAD_USER', max_length=60),
         ),
         migrations.AlterField(
             model_name='onlinesurvey',
@@ -240,11 +200,6 @@ class Migration(migrations.Migration):
             field=models.DateTimeField(default=django.utils.timezone.now),
         ),
         migrations.AlterField(
-            model_name='provincestatecode',
-            name='update_user',
-            field=models.CharField(default='DATALOAD_USER', max_length=60),
-        ),
-        migrations.AlterField(
             model_name='screenassemblytypecode',
             name='create_date',
             field=models.DateTimeField(default=django.utils.timezone.now),
@@ -263,11 +218,6 @@ class Migration(migrations.Migration):
             model_name='screenassemblytypecode',
             name='update_date',
             field=models.DateTimeField(default=django.utils.timezone.now),
-        ),
-        migrations.AlterField(
-            model_name='screenassemblytypecode',
-            name='update_user',
-            field=models.CharField(default='DATALOAD_USER', max_length=60),
         ),
         migrations.AlterField(
             model_name='screenbottomcode',
@@ -290,11 +240,6 @@ class Migration(migrations.Migration):
             field=models.DateTimeField(default=django.utils.timezone.now),
         ),
         migrations.AlterField(
-            model_name='screenbottomcode',
-            name='update_user',
-            field=models.CharField(default='DATALOAD_USER', max_length=60),
-        ),
-        migrations.AlterField(
             model_name='screenintakemethodcode',
             name='create_date',
             field=models.DateTimeField(default=django.utils.timezone.now),
@@ -313,11 +258,6 @@ class Migration(migrations.Migration):
             model_name='screenintakemethodcode',
             name='update_date',
             field=models.DateTimeField(default=django.utils.timezone.now),
-        ),
-        migrations.AlterField(
-            model_name='screenintakemethodcode',
-            name='update_user',
-            field=models.CharField(default='DATALOAD_USER', max_length=60),
         ),
         migrations.AlterField(
             model_name='screenmaterialcode',
@@ -340,11 +280,6 @@ class Migration(migrations.Migration):
             field=models.DateTimeField(default=django.utils.timezone.now),
         ),
         migrations.AlterField(
-            model_name='screenmaterialcode',
-            name='update_user',
-            field=models.CharField(default='DATALOAD_USER', max_length=60),
-        ),
-        migrations.AlterField(
             model_name='screenopeningcode',
             name='create_date',
             field=models.DateTimeField(default=django.utils.timezone.now),
@@ -363,11 +298,6 @@ class Migration(migrations.Migration):
             model_name='screenopeningcode',
             name='update_date',
             field=models.DateTimeField(default=django.utils.timezone.now),
-        ),
-        migrations.AlterField(
-            model_name='screenopeningcode',
-            name='update_user',
-            field=models.CharField(default='DATALOAD_USER', max_length=60),
         ),
         migrations.AlterField(
             model_name='screentypecode',
@@ -390,11 +320,6 @@ class Migration(migrations.Migration):
             field=models.DateTimeField(default=django.utils.timezone.now),
         ),
         migrations.AlterField(
-            model_name='screentypecode',
-            name='update_user',
-            field=models.CharField(default='DATALOAD_USER', max_length=60),
-        ),
-        migrations.AlterField(
             model_name='surficialmaterialcode',
             name='create_date',
             field=models.DateTimeField(default=django.utils.timezone.now),
@@ -413,11 +338,6 @@ class Migration(migrations.Migration):
             model_name='surficialmaterialcode',
             name='update_date',
             field=models.DateTimeField(default=django.utils.timezone.now),
-        ),
-        migrations.AlterField(
-            model_name='surficialmaterialcode',
-            name='update_user',
-            field=models.CharField(default='DATALOAD_USER', max_length=60),
         ),
         migrations.AlterField(
             model_name='survey',
@@ -428,10 +348,5 @@ class Migration(migrations.Migration):
             model_name='survey',
             name='update_date',
             field=models.DateTimeField(default=django.utils.timezone.now),
-        ),
-        migrations.AlterField(
-            model_name='survey',
-            name='update_user',
-            field=models.CharField(default='DATALOAD_USER', max_length=60),
         ),
     ]
