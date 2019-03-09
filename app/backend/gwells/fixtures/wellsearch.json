@@ -136,7 +136,7 @@
             "survey_enabled": true,
             "survey_page": "w",
             "effective_date": "2018-03-12",
-            "expiry_date": "9999-12-31T23:59:59Z"
+            "expiry_date": "9999-12-31"
         }
     },
     {
@@ -148,7 +148,7 @@
             "survey_enabled": false,
             "survey_page": "s",
             "effective_date": "2018-03-14",
-            "expiry_date": "9999-12-31T23:59:59Z"
+            "expiry_date": "9999-12-31"
         }
     },
     {
