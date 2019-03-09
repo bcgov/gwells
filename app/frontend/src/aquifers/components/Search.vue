@@ -61,8 +61,7 @@
                 id="aquifers-name"
                 type="text"
                 v-model="search"/>
-            </b-form-group>
-            <p :key="section.code" v-for="section in aquifer_resource_sections">
+            </b-form-group><p :key="section.code" v-for="section in aquifer_resource_sections">
               <b-form-checkbox
                   id="checkbox1"
                   v-model="section.enabled"
