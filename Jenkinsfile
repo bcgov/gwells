@@ -134,7 +134,7 @@ def functionalTest (String stageName, String stageUrl, String envSuffix, String 
         //         //the checkout is mandatory, otherwise functional tests would fail
         //         echo "checking out source"
         //         checkout scm
-        //         dir('functional-tests') {
+        //         dir('tests/functional-tests') {
         //             try {
         //                 echo "BASE_URL = ${BASE_URL}"
         //                 if ('all'.equalsIgnoreCase(toTest)) {
@@ -256,7 +256,7 @@ def apiTest (String stageName, String stageUrl, String envSuffix) {
         ) {
             node("nodejs-${appName}-${envSuffix}-${prNumber}") {
                 checkout scm
-                dir('api-tests') {
+                dir('tests/api-tests') {
                     sh 'npm install -g newman'
                     try {
                         sh """
@@ -575,9 +575,7 @@ pipeline {
             }
             steps {
                 script {
-                    _openshift(env.STAGE_NAME, devProject) {
-                        def result = unitTestDjango (env.STAGE_NAME, devProject, devSuffix)
-                    }
+                    def result = unitTestDjango (env.STAGE_NAME, devProject, devSuffix)
                 }
             }
         }
@@ -626,9 +624,7 @@ pipeline {
             }
             steps {
                 script {
-                    _openshift(env.STAGE_NAME, toolsProject) {
-                        def result = functionalTest ('DEV - Smoke Tests', devHost, devSuffix, 'SearchSpecs')
-                    }
+                    def result = functionalTest ('DEV - Smoke Tests', devHost, devSuffix, 'SearchSpecs')
                 }
             }
         }
@@ -640,9 +636,7 @@ pipeline {
             }
             steps {
                 script {
-                    _openshift(env.STAGE_NAME, devProject) {
-                        def result = apiTest ('DEV - API Tests', devHost, devSuffix)
-                    }
+                    def result = apiTest ('DEV - API Tests', devHost, devSuffix)
                 }
             }
         }
@@ -802,9 +796,7 @@ pipeline {
             }
             steps {
                 script {
-                    _openshift(env.STAGE_NAME, stagingProject) {
-                        def result = unitTestDjango (env.STAGE_NAME, stagingProject, stagingSuffix)
-                    }
+                    def result = unitTestDjango (env.STAGE_NAME, stagingProject, stagingSuffix)
                 }
             }
         }
@@ -816,9 +808,7 @@ pipeline {
             }
             steps {
                 script {
-                    _openshift(env.STAGE_NAME, toolsProject) {
-                        def result = apiTest ('STAGING - API Tests', stagingHost, stagingSuffix)
-                    }
+                    def result = apiTest ('STAGING - API Tests', stagingHost, stagingSuffix)
                 }
             }
         }
@@ -831,9 +821,7 @@ pipeline {
             }
             steps {
                 script {
-                    _openshift(env.STAGE_NAME, toolsProject) {
-                        def result = functionalTest ('STAGING - Smoke Tests', stagingHost, stagingSuffix, 'SearchSpecs')
-                    }
+                    def result = functionalTest ('STAGING - Smoke Tests', stagingHost, stagingSuffix, 'SearchSpecs')
                 }
             }
         }
@@ -999,9 +987,7 @@ pipeline {
             }
             steps {
                 script {
-                    _openshift(env.STAGE_NAME, toolsProject) {
-                        def result = apiTest ('DEMO - API Tests', demoHost, demoSuffix)
-                    }
+                    def result = apiTest ('DEMO - API Tests', demoHost, demoSuffix)
                 }
             }
         }
@@ -1014,9 +1000,7 @@ pipeline {
             }
             steps {
                 script {
-                    _openshift(env.STAGE_NAME, toolsProject) {
-                        def result = functionalTest ('DEMO - Smoke Tests', demoHost, demoSuffix, 'SearchSpecs')
-                    }
+                    def result = functionalTest ('DEMO - Smoke Tests', demoHost, demoSuffix, 'SearchSpecs')
                 }
             }
         }
@@ -1170,9 +1154,7 @@ pipeline {
             }
             steps {
                 script {
-                    _openshift(env.STAGE_NAME, toolsProject) {
-                        def result = functionalTest ('PROD - Smoke Tests', prodUrl, prodSuffix, 'SearchSpecs')
-                    }
+                    def result = functionalTest ('PROD - Smoke Tests', prodUrl, prodSuffix, 'SearchSpecs')
                 }
             }
         }
