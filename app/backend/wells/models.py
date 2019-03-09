@@ -14,7 +14,12 @@
 
 from django.contrib.gis.db import models
 from django.core.validators import MinValueValidator
+from django.contrib.contenttypes.fields import GenericRelation
+
 from decimal import Decimal
+import reversion
+from reversion.models import Version
+
 import uuid
 
 from gwells.models import AuditModel, ProvinceStateCode, ScreenIntakeMethodCode, ScreenMaterialCode,\
@@ -540,6 +545,7 @@ class AquiferLithologyCode(AuditModel):
 
 # TODO: Consider having Well and Submission extend off a common base class, given that
 #   they mostly have the exact same fields!
+@reversion.register()
 class Well(AuditModel):
     """
     Well information.
@@ -886,6 +892,8 @@ class Well(AuditModel):
     recommended_pump_rate = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True,
                                                 verbose_name='Recommended pump rate',
                                                 validators=[MinValueValidator(Decimal('0.00'))])
+
+    history = GenericRelation(Version)
 
     class Meta:
         db_table = 'well'

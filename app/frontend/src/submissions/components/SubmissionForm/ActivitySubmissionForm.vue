@@ -454,6 +454,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-on:save="$emit('submit_edit')"
       />
 
+      <edit-history class="my-5"
+        v-if="showSection('editHistory')"
+        id="editHistory"
+      ></edit-history>
+
       <!-- Back / Next / Submit controls -->
       <b-row v-else class="mt-5">
         <b-col v-if="!formIsFlat">
@@ -514,6 +519,7 @@ import ClosureDescription from './ClosureDescription.vue'
 import DecommissionInformation from './DecommissionInformation.vue'
 import ObservationWellInfo from './ObservationWellInfo.vue'
 import SubmissionHistory from './SubmissionHistory.vue'
+import EditHistory from './EditHistory.vue'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 
 export default {
@@ -592,7 +598,8 @@ export default {
     ClosureDescription,
     DecommissionInformation,
     ObservationWellInfo,
-    SubmissionHistory
+    SubmissionHistory,
+    EditHistory
   },
   data () {
     return {
@@ -632,7 +639,8 @@ export default {
         'personResponsible': 'Person responsible for work',
         'observationWellInfo': 'Observation well information',
         'submissionHistory': 'Activity report history',
-        'documents': 'Attachments'
+        'documents': 'Attachments',
+        'editHistory': 'Edit history'
       }
     }
   },

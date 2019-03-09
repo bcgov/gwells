@@ -22,8 +22,11 @@ urlpatterns = [
 
     # API endpoints
 
+    url(r'^api/v1/wells/(?P<well_id>[0-9]+)/history$',
+        never_cache(views.WellHistory.as_view()), name='well-history'),
+
     # Submissions for a well
-    url(r'^api/v1/wells/(?P<well>[0-9]+)/submissions$',
+    url(r'^api/v1/wells/(?P<well_id>[0-9]+)/submissions$',
         never_cache(views.WellSubmissionsListAPIView.as_view()), name='submissions-by-well'),
 
     # Well

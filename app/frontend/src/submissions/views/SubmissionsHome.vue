@@ -499,8 +499,6 @@ export default {
 
           // store the number of submissions already associated with this well
           this.submissionsCount = Number(res.data.submissions_count || 0)
-          console.log(res.data.submissions_count)
-          console.log(res.data)
 
           // Wait for the form update we just did to fire off change events.
           this.$nextTick(() => {
@@ -639,7 +637,8 @@ function initialState () {
         'decommissionInformation',
         'comments',
         'documents',
-        'aquiferData'
+        'aquiferData',
+        'editHistory'
       ]
     }
   }

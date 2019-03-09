@@ -25,6 +25,7 @@ import submissions.serializers
 from wells.models import Well, ActivitySubmission, WellStatusCode
 from wells.serializers import WellStackerSerializer
 
+import reversion
 
 logger = logging.getLogger(__name__)
 
@@ -167,6 +168,7 @@ class StackWells():
         for submission in records:
             # add a well_status based on the current activity submission
             # a staff edit could still override this with a different value.
+            composite['update_user'] = submission.create_user
             composite['well_status'] = well_status_map.get(
                 submission.well_activity_type.code, WellStatusCode.types.other().well_status_code)
             source_target_map = activity_type_map.get(submission.well_activity_type.code, {})
@@ -204,7 +206,8 @@ class StackWells():
         # Update the well view
         well_serializer = WellStackerSerializer(well, data=composite, partial=True)
         if well_serializer.is_valid(raise_exception=True):
-            well = well_serializer.save()
+            with reversion.create_revision():
+                well = well_serializer.save()
 
         return well
 
