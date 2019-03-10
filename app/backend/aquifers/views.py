@@ -15,6 +15,7 @@
 from django_filters import rest_framework as djfilters
 from django.http import Http404, HttpResponse, JsonResponse
 from django.views.generic import TemplateView
+from django.db.models import Q
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -59,6 +60,16 @@ class AquiferRetrieveUpdateAPIView(RevisionMixin, AuditUpdateMixin, RetrieveUpda
     serializer_class = serializers.AquiferSerializer
 
 
+class AquiferFilter(djfilters.FilterSet):
+    resources__section__code = djfilters.ModelMultipleChoiceFilter(
+        to_field_name="code",
+        queryset=AquiferResourceSection.objects.all())
+
+    class Meta:
+        model = Aquifer
+        fields = ['aquifer_id', 'resources__section__code']
+
+
 class AquiferListCreateAPIView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     """List aquifers
     get: return a list of aquifers
@@ -66,15 +77,30 @@ class AquiferListCreateAPIView(RevisionMixin, AuditCreateMixin, ListCreateAPIVie
     """
 
     permission_classes = (HasAquiferEditRoleOrReadOnly,)
-    queryset = Aquifer.objects.all()
     serializer_class = serializers.AquiferSerializer
     filter_backends = (djfilters.DjangoFilterBackend,
                        OrderingFilter, SearchFilter)
-    filter_fields = ('aquifer_id',)
-    search_fields = ('aquifer_name',)
+    #filterset_class = AquiferFilter
+    # filter_fields = ('aquifer_id',)
+    # search_fields = ('aquifer_name',)
     ordering_fields = '__all__'
     ordering = ('aquifer_id',)
 
+    def get_queryset(self):
+        qs = Aquifer.objects.all()
+        resources__section__code = self.request.GET.get(
+            "resources__section__code")
+        search = self.request.GET.get('search')
+        # truthy check - ignore missing and emptystring.
+        if resources__section__code:
+            qs = qs.filter(
+                resources__section__code__in=resources__section__code.split(','))
+        if search:  # truthy check - ignore missing and emptystring.
+            disjunction = Q(aquifer_name__icontains=search)
+            if search.isdigit():
+                disjunction = disjunction | Q(pk=int(search))
+            qs = qs.filter(disjunction)
+        return qs
 
 
 class AquiferResourceSectionListAPIView(ListAPIView):
@@ -157,23 +183,23 @@ class ListFiles(APIView):
     """
 
     @swagger_auto_schema(responses={200: openapi.Response('OK',
-        openapi.Schema(type=openapi.TYPE_OBJECT, properties={
-            'public': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
-                type=openapi.TYPE_OBJECT,
-                properties={
-                    'url': openapi.Schema(type=openapi.TYPE_STRING),
-                    'name': openapi.Schema(type=openapi.TYPE_STRING)
-                }
-            )),
-            'private': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
-                type=openapi.TYPE_OBJECT,
-                properties={
-                    'url': openapi.Schema(type=openapi.TYPE_STRING),
-                    'name': openapi.Schema(type=openapi.TYPE_STRING)
-                }
-            ))
-        })
-    )})
+                                                          openapi.Schema(type=openapi.TYPE_OBJECT, properties={
+                                                              'public': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
+                                                                  type=openapi.TYPE_OBJECT,
+                                                                  properties={
+                                                                      'url': openapi.Schema(type=openapi.TYPE_STRING),
+                                                                      'name': openapi.Schema(type=openapi.TYPE_STRING)
+                                                                  }
+                                                              )),
+                                                              'private': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
+                                                                  type=openapi.TYPE_OBJECT,
+                                                                  properties={
+                                                                      'url': openapi.Schema(type=openapi.TYPE_STRING),
+                                                                      'name': openapi.Schema(type=openapi.TYPE_STRING)
+                                                                  }
+                                                              ))
+                                                          })
+                                                          )})
     def get(self, request, aquifer_id):
         user_is_staff = self.request.user.groups.filter(
             name=AQUIFERS_EDIT_ROLE).exists()
@@ -237,7 +263,8 @@ class AquiferHistory(APIView):
         aquifer_history_diff = generate_history_diff(
             aquifer_history, 'aquifer ' + aquifer_id)
 
-        history_diff = sorted(aquifer_history_diff, key=lambda x: x['date'], reverse=True)
+        history_diff = sorted(aquifer_history_diff,
+                              key=lambda x: x['date'], reverse=True)
 
         return Response(history_diff)
 
@@ -257,7 +284,8 @@ class PreSignedDocumentKey(APIView):
             request=request, disable_private=False)
 
         object_name = request.GET.get("filename")
-        filename = client.format_object_name(object_name, int(aquifer_id), "aquifer")
+        filename = client.format_object_name(
+            object_name, int(aquifer_id), "aquifer")
         bucket_name = get_env_variable("S3_AQUIFER_BUCKET")
 
         is_private = False
@@ -292,7 +320,9 @@ class DeleteAquiferDocument(APIView):
             is_private = True
             bucket_name = get_env_variable("S3_PRIVATE_AQUIFER_BUCKET")
 
-        object_name = client.get_bucket_folder(int(aquifer_id), "aquifer") + "/" + request.GET.get("filename")
-        client.delete_document(object_name, bucket_name=bucket_name, private=is_private)
+        object_name = client.get_bucket_folder(
+            int(aquifer_id), "aquifer") + "/" + request.GET.get("filename")
+        client.delete_document(
+            object_name, bucket_name=bucket_name, private=is_private)
 
         return HttpResponse(status=204)

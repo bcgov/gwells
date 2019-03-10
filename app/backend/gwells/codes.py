@@ -1,6 +1,7 @@
 import os
 import json
 from io import open
+from django.conf import settings
 
 
 class CodeFixture():
@@ -22,7 +23,15 @@ class CodeFixture():
             app, model = item.get('model').split('.', 1)
             model = apps.get_model(app, model)
 
-            model.objects.create(pk=item.get('pk'), **data)
+            # in dev envs, nonexistent foreign keys may prevent data import, so ignore those.
+            if settings.DEBUG:
+                try:
+                    model.objects.create(pk=item.get('pk'), **data)
+                except ValueError:
+                    pass
+            # in production / staging, we want to know when data is inconsistent though.
+            else:
+                model.objects.create(pk=item.get('pk'), **data)
 
     def unload_fixture(self, apps, schema_editor):
         for item in self.fixture:

@@ -4,11 +4,22 @@ from django.db import migrations, models
 import django.db.models.deletion
 from gwells.codes import CodeFixture
 
+
 def aquifer_resource_sections():
     fixture = '0010_aquifer_resource_sections.json'
-    fixture_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), fixture)
-
+    fixture_path = os.path.join(os.path.dirname(
+        os.path.realpath(__file__)), fixture)
     return CodeFixture(fixture_path)
+
+
+def aquifer_resources():
+    fixture = '0010_aquifer_resources.json'
+    fixture_path = os.path.join(os.path.dirname(
+        os.path.realpath(__file__)), fixture)
+    return CodeFixture(fixture_path)
+
+# For all: I, https://onlinelibrary.wiley.com/doi/abs/10.1002/hyp.7724	Evaluating the use of a gridded climate surface for modelling groundwater recharge in a semi-arid region	I
+
 
 class Migration(migrations.Migration):
 
@@ -24,10 +35,14 @@ class Migration(migrations.Migration):
                 ('create_date', models.DateTimeField(blank=True, null=True)),
                 ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
-                ('id', models.AutoField(db_column='aquifer_resource_id', primary_key=True, serialize=False, verbose_name='Aquifer Resource Identifier')),
-                ('name', models.CharField(max_length=100, verbose_name='Aquifer Resource Name')),
-                ('url', models.URLField(help_text='A resolvable link to the PDF document associated with this aquifer resource.', verbose_name='PDF Document URL')),
-                ('aquifer', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='resources', to='aquifers.Aquifer')),
+                ('id', models.AutoField(db_column='aquifer_resource_id', primary_key=True,
+                                        serialize=False, verbose_name='Aquifer Resource Identifier')),
+                ('name', models.CharField(max_length=100,
+                                          verbose_name='Aquifer Resource Name')),
+                ('url', models.URLField(
+                    help_text='A resolvable link to the PDF document associated with this aquifer resource.', verbose_name='PDF Document URL')),
+                ('aquifer', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT,
+                                              related_name='resources', to='aquifers.Aquifer')),
             ],
             options={
                 'verbose_name_plural': 'Aquifer Resource',
@@ -41,7 +56,8 @@ class Migration(migrations.Migration):
                 ('create_date', models.DateTimeField(blank=True, null=True)),
                 ('update_user', models.CharField(max_length=60, null=True)),
                 ('update_date', models.DateTimeField(blank=True, null=True)),
-                ('code', models.CharField(db_column='aquifer_resource_section_code', max_length=1, primary_key=True, serialize=False)),
+                ('code', models.CharField(db_column='aquifer_resource_section_code',
+                                          max_length=1, primary_key=True, serialize=False)),
                 ('name', models.CharField(max_length=100)),
             ],
             options={
@@ -52,7 +68,15 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='aquiferresource',
             name='section',
-            field=models.ForeignKey(db_column='aquifer_resource_section_code', help_text='The section (category) of this resource.', on_delete=django.db.models.deletion.PROTECT, to='aquifers.AquiferResourceSection', verbose_name='Aquifer Resource Section'),
+            field=models.ForeignKey(db_column='aquifer_resource_section_code', help_text='The section (category) of this resource.',
+                                    on_delete=django.db.models.deletion.PROTECT, to='aquifers.AquiferResourceSection', verbose_name='Aquifer Resource Section'),
         ),
-        migrations.RunPython(aquifer_resource_sections().load_fixture, reverse_code=aquifer_resource_sections().unload_fixture),
+        migrations.RunPython(
+            aquifer_resource_sections().load_fixture,
+            reverse_code=aquifer_resource_sections().unload_fixture
+        ),
+        migrations.RunPython(
+            aquifer_resources().load_fixture,
+            reverse_code=aquifer_resources().unload_fixture
+        )
     ]

@@ -52,24 +52,15 @@
           <b-col cols="12" md="4">
             <b-form-group label="Aquifer number">
               <b-form-input
-                id="aquifers-number"
-                type="text"
-                v-model="aquifer_id"/>
-            </b-form-group>
-            <b-form-group label="Aquifer name">
-              <b-form-input
-                id="aquifers-name"
                 type="text"
                 v-model="search"/>
-            </b-form-group><p :key="section.code" v-for="section in aquifer_resource_sections">
-              <b-form-checkbox
-                  id="checkbox1"
-                  v-model="section.enabled"
-                  value="yes"
-                  unchecked-value="no"
-                > {{ section.name }}
-                </b-form-checkbox>
-            </p>
+            </b-form-group>
+            <b-form-checkbox-group
+              stacked
+              v-model="sections"
+              :options="aquifer_resource_sections"
+            />
+
           </b-col>
         </b-form-row>
         <b-form-row>
@@ -173,7 +164,7 @@ export default {
     return {
       ...orderingQueryStringToData(query.ordering),
       search: query.search,
-      aquifer_id: query.aquifer_id,
+      aquifer_search: query.aquifer_searcg,
       limit: LIMIT,
       currentPage: query.offset && (query.offset / LIMIT + 1),
       filterParams: Object.assign({}, query),
@@ -193,7 +184,8 @@ export default {
       ],
       surveys: [],
       noSearchCriteriaError: false,
-      aquifer_resource_sections: []
+      aquifer_resource_sections: [],
+      sections: query.resources__section__code ? query.resources__section__code.split(',') : []
     }
   },
   computed: {
@@ -226,6 +218,16 @@ export default {
           this.scrollToTableTop()
         })
     },
+    fetchResourceSections () {
+      ApiService.query('aquifers/sections').then((response) => {
+        this.aquifer_resource_sections = response.data.results.map(function (section) {
+          return {
+            text: section.name,
+            value: section.code
+          }
+        })
+      })
+    },
     scrollToTableTop () {
       this.$SmoothScroll(this.$el, 100)
     },
@@ -247,6 +249,7 @@ export default {
       this.filterParams = {}
       this.search = ''
       this.aquifer_id = ''
+      this.sections = []
       this.currentPage = 0
       this.noSearchCriteriaError = false
       this.updateQueryParams()
@@ -254,13 +257,14 @@ export default {
     triggerSearch () {
       delete this.filterParams.aquifer_id
       delete this.filterParams.search
-
-      if (this.aquifer_id) {
-        this.filterParams.aquifer_id = this.aquifer_id
-      }
+      delete this.filterParams.resources__section__code
 
       if (this.search) {
         this.filterParams.search = this.search
+      }
+
+      if (this.sections) {
+        this.filterParams.resources__section__code = this.sections.join(',')
       }
 
       this.updateQueryParams()
@@ -277,7 +281,7 @@ export default {
       this.updateQueryParams()
     },
     updateQueryParams () {
-      this.$router.replace({ query: this.filterParams })
+      this.$router.replace({query: this.filterParams})
     },
     triggerAnalyticsSearchEvent (params) {
       // trigger the search event, sending along the search params as a string
@@ -304,6 +308,7 @@ export default {
     }).catch((e) => {
       console.error(e)
     })
+    this.fetchResourceSections()
   },
   mounted () { this.fetchResults() },
   watch: {
