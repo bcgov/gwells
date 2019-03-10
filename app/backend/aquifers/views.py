@@ -60,16 +60,6 @@ class AquiferRetrieveUpdateAPIView(RevisionMixin, AuditUpdateMixin, RetrieveUpda
     serializer_class = serializers.AquiferSerializer
 
 
-class AquiferFilter(djfilters.FilterSet):
-    resources__section__code = djfilters.ModelMultipleChoiceFilter(
-        to_field_name="code",
-        queryset=AquiferResourceSection.objects.all())
-
-    class Meta:
-        model = Aquifer
-        fields = ['aquifer_id', 'resources__section__code']
-
-
 class AquiferListCreateAPIView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     """List aquifers
     get: return a list of aquifers
@@ -80,13 +70,17 @@ class AquiferListCreateAPIView(RevisionMixin, AuditCreateMixin, ListCreateAPIVie
     serializer_class = serializers.AquiferSerializer
     filter_backends = (djfilters.DjangoFilterBackend,
                        OrderingFilter, SearchFilter)
-    #filterset_class = AquiferFilter
-    # filter_fields = ('aquifer_id',)
-    # search_fields = ('aquifer_name',)
     ordering_fields = '__all__'
     ordering = ('aquifer_id',)
 
     def get_queryset(self):
+        """
+        We have a custom search which does a case insensitive substring of aquifer_name,
+        exact match on aquifer_id, and also looks at an array of provided resources attachments
+        of which we require one to be present if any are specified. The front-end doesn't use
+        DjangoFilterBackend's querystring array syntax, preferring ?a=1,2 rather than ?a[]=1&a[]=2,
+        so again we need a custom back-end implementation.
+        """
         qs = Aquifer.objects.all()
         resources__section__code = self.request.GET.get(
             "resources__section__code")
