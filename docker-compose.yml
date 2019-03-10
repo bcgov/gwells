@@ -44,6 +44,7 @@ services:
   frontend:
     image: node:8.9.4
     hostname: frontend
+    working_dir: /app/frontend
     environment:
       DEBUG: "True"
       AXIOS_BASE_URL: http://127.0.0.1:8000/gwells/api/v1/

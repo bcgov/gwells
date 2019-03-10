@@ -50,9 +50,11 @@
         v-on:reset="triggerReset">
         <b-form-row>
           <b-col cols="12" md="4">
-            <b-form-group label="Aquifer number">
+            <h5>Search by aquifer name or number</h5>
+            <b-form-group label="(leave blank to see all aquifers)">
               <b-form-input
                 type="text"
+                id="aquifers-search-field"
                 v-model="search"/>
             </b-form-group>
             <b-form-checkbox-group
