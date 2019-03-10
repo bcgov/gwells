@@ -19,6 +19,7 @@ from django.db.models import Q, QuerySet
 from django_filters import rest_framework as filters
 from django_filters.widgets import BooleanWidget, SuffixedMultiWidget
 
+from gwells.roles import WELLS_VIEWER_ROLE
 from wells.models import Well
 
 
@@ -405,3 +406,43 @@ class WellListFilter(AnyOrAllFilterSet):
             )
 
         return queryset
+
+
+class WellListAdminFilter(WellListFilter):
+    create_user = filters.CharFilter(lookup_expr='icontains')
+    create_date = filters.DateFromToRangeFilter()
+    update_user = filters.CharFilter(lookup_expr='icontains')
+    update_date = filters.DateFromToRangeFilter()
+    owner_mailing_address = filters.CharFilter(lookup_expr='icontains')
+    owner_city = filters.CharFilter(lookup_expr='icontains')
+    owner_postal_code = filters.CharFilter(lookup_expr='icontains')
+    internal_comments = filters.CharFilter(lookup_expr='icontains')
+
+    class Meta:
+        model = Well
+        fields = WellListFilter.Meta.fields + [
+            'create_user',
+            'create_date',
+            'update_user',
+            'update_date',
+            'well_publication_status',
+            'owner_mailing_address',
+            'owner_city',
+            'owner_province_state',
+            'owner_postal_code',
+            'internal_comments',
+        ]
+
+
+class WellListFilterBackend(filters.DjangoFilterBackend):
+    """Returns a different filterset class for admin users."""
+
+    def get_filterset(self, request, queryset, view):
+        filterset_class = WellListFilter
+        filterset_kwargs = super().get_filterset_kwargs(request, queryset, view)
+
+        if (request.user and request.user.is_authenticated and
+                request.user.groups.filter(name=WELLS_VIEWER_ROLE).exists()):
+            filterset_class = WellListAdminFilter
+
+        return filterset_class(**filterset_kwargs)

@@ -502,6 +502,23 @@ class WellListSerializer(serializers.ModelSerializer):
         )
 
 
+class WellListAdminSerializer(WellListSerializer):
+
+    class Meta:
+        model = Well
+        fields = WellListSerializer.Meta.fields + (
+            'create_user',
+            'create_date',
+            'update_user',
+            'update_date',
+            'well_publication_status',
+            'owner_mailing_address',
+            'owner_city',
+            'owner_province_state',
+            'owner_postal_code',
+            'internal_comments',
+        )
+
 class WellTagSearchSerializer(serializers.ModelSerializer):
     """ serializes fields used for searching for well tags """
 
