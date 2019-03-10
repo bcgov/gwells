@@ -14,11 +14,60 @@
 from collections import OrderedDict
 
 from django import forms
+from django.contrib.gis.geos import Polygon
 from django.db.models import Q, QuerySet
 from django_filters import rest_framework as filters
-from django_filters.widgets import BooleanWidget
+from django_filters.widgets import BooleanWidget, SuffixedMultiWidget
 
 from wells.models import Well
+
+
+class BoundingBoxWidget(SuffixedMultiWidget):
+    template_name = 'django_filters/widgets/multiwidget.html'
+    suffixes = ['x1', 'y1', 'x2', 'y2']
+
+    def __init__(self, attrs=None):
+        widgets = (forms.NumberInput, forms.NumberInput, forms.NumberInput,
+                   forms.NumberInput)
+        super().__init__(widgets, attrs)
+
+    def decompress(self, value):
+        if value:
+            return value.extent
+        return (None, None, None, None)
+
+
+class BoundingBoxField(forms.MultiValueField):
+    widget = BoundingBoxWidget
+
+    def __init__(self, fields=None, *args, **kwargs):
+        if fields is None:
+            fields = (forms.DecimalField(min_value=-180, max_value=180),
+                      forms.DecimalField(min_value=-90, max_value=90),
+                      forms.DecimalField(min_value=-180, max_value=180),
+                      forms.DecimalField(min_value=-90, max_value=90))
+        super().__init__(fields, *args, **kwargs)
+
+    def compress(self, data_list):
+        if data_list:
+            try:
+                points = tuple(float(point) for point in data_list)
+            except TypeError:
+                raise forms.ValidationError(
+                    'Please provide four points: x1, y1, x2, y2.',
+                    code='invalid_bbox')
+            return Polygon.from_bbox(points)
+        return None
+
+
+class BoundingBoxFilter(filters.Filter):
+    field_class = BoundingBoxField
+
+    def __init__(self, *args, **kwargs):
+        if 'lookup_expr' not in kwargs:
+            kwargs['lookup_expr'] = 'bboverlaps'
+
+        super().__init__(*args, **kwargs)
 
 
 class AnyOrAllFilterSet(filters.FilterSet):
@@ -156,6 +205,8 @@ class WellListFilter(AnyOrAllFilterSet):
     testing_duration = filters.RangeFilter()
     analytic_solution_type = filters.RangeFilter()
     boundary_effect = filters.RangeFilter()
+
+    within = BoundingBoxFilter(field_name='geom', label='Well location within bounds')
 
     class Meta:
         model = Well
