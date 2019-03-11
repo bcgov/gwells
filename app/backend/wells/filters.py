@@ -206,6 +206,12 @@ class WellListFilter(AnyOrAllFilterSet):
     testing_duration = filters.RangeFilter()
     analytic_solution_type = filters.RangeFilter()
     boundary_effect = filters.RangeFilter()
+    final_casing_stick_up = filters.RangeFilter()
+    bedrock_depth = filters.RangeFilter()
+    static_water_level = filters.RangeFilter()
+    artesian_flow = filters.RangeFilter()
+    artesian_pressure = filters.RangeFilter()
+    well_cap_type = filters.CharFilter(lookup_expr='icontains')
 
     within = BoundingBoxFilter(field_name='geom', label='Well location within bounds')
 
@@ -326,6 +332,13 @@ class WellListFilter(AnyOrAllFilterSet):
             'testing_duration',
             'analytic_solution_type',
             'boundary_effect',
+            'final_casing_stick_up',
+            'bedrock_depth',
+            'static_water_level',
+            'artesian_flow',
+            'artesian_pressure',
+            'well_cap_type',
+            'well_disinfected',
         ]
 
     def filter_well_tag_or_plate(self, queryset, name, value):

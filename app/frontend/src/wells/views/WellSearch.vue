@@ -56,7 +56,7 @@
                           v-if="field.type === 'range'"
                           :key="field.id"
                           type="number"
-                          label-cols="6"
+                          label-cols="3"
                           :id="`${field.id}Filter`"
                           :label="field.label"
                           :errors="searchErrors[field.param]"
@@ -69,7 +69,7 @@
                           v-if="field.type === 'dateRange'"
                           :key="field.id"
                           type="date"
-                          label-cols="5"
+                          label-cols="3"
                           :id="`${field.id}Filter`"
                           :label="field.label"
                           placeholder="YYYY/MM/DD"
@@ -166,9 +166,11 @@
                         <b-col cols="9">
                           <b-form-select id="additionalFilterInput" v-model="selectedFilter">
                             <option :value="null">Select a field to search on</option>
-                            <template>
-                              <optgroup v-for="section in additionalFilters" :key="section.header" :label="section.header">
-                                <option v-for="field in section.fields" :key="field.id" :value="field" :disabled="selectedFilterIds.includes(field.id)">{{ field.label }}</option>
+                            <template v-for="section in additionalFilters">
+                              <optgroup v-if="section.authenticated ? userRoles.wells.view : true" :key="section.header" :label="section.header">
+                                <template v-for="field in section.fields">
+                                  <option v-if="field.authenticated ? userRoles.wells.view : true" :key="field.id" :value="field" :disabled="selectedFilterIds.includes(field.id)">{{ field.label }}</option>
+                                </template>
                               </optgroup>
                             </template>
                           </b-form-select>
@@ -288,7 +290,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['codes', 'drillerNames', 'organizationNames']),
+    ...mapGetters(['codes', 'drillerNames', 'organizationNames', 'userRoles']),
     selectedFilterIds: function () {
       return this.selectedFilters.map(filter => filter.id)
     },
@@ -324,20 +326,33 @@ export default {
     },
     filterSelectOptions: function () {
       return {
+        coordinateAcquisitionCode: this.codes.coordinate_acquisition_codes,
+        developmentMethods: this.codes.development_methods,
         drillingMethods: this.codes.drilling_methods,
+        filterPackMaterial: this.codes.filter_pack_material,
+        filterPackMaterialSize: this.codes.filter_pack_material_size,
         groundElevationMethod: this.codes.ground_elevation_methods,
         intendedWaterUse: this.codes.intended_water_uses,
         landDistrict: this.landDistrictOptions,
         licencedStatus: this.codes.licenced_status_codes,
         linerMaterial: this.codes.liner_material_codes,
         orgResponsible: this.organizationNames,
+        ownerProvince: this.codes.province_codes,
         personResponsible: this.drillerNames,
+        publicationStatus: this.codes.well_publication_status_codes,
         screenIntakeMethod: this.codes.screen_intake_methods,
+        screenBottoms: this.codes.screen_bottoms,
+        screenMaterial: this.codes.screen_materials,
+        screenOpenings: this.codes.screen_openings,
+        screenType: this.codes.screen_types,
         surfaceSealMaterial: this.codes.surface_seal_materials,
         surfaceSealMethod: this.codes.surface_seal_methods,
+        waterQualityCharacteristics: this.codes.water_quality_characteristics,
+        waterQualityColour: this.codes.water_quality_colours,
         wellClass: this.codes.well_classes,
         wellStatus: this.codes.well_status_codes,
-        wellSubclass: this.wellSubclassOptions
+        wellSubclass: this.wellSubclassOptions,
+        yieldEstimationMethod: this.codes.yield_estimation_methods
       }
     }
   },

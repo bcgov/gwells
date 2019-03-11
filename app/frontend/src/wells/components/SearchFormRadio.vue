@@ -4,7 +4,8 @@
     :id="id"
     :label="label"
     :label-for="`${id}Input`"
-    :label-cols="labelCols">
+    :label-cols="labelCols"
+    horizontal>
     <slot></slot>
     <b-form-radio-group
       :id="`${id}Input`"

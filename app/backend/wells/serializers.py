@@ -499,6 +499,13 @@ class WellListSerializer(serializers.ModelSerializer):
             "testing_duration",
             "analytic_solution_type",
             "boundary_effect",
+            "final_casing_stick_up",
+            "bedrock_depth",
+            "artesian_flow",
+            "artesian_pressure",
+            "well_cap_type",
+            "well_disinfected",
+            "static_water_level",
         )
 
 
