@@ -26,7 +26,8 @@ class AquiferMaterial(AuditModel):
     """
     Material choices for describing Aquifer Material
     """
-    code = models.CharField(primary_key=True, max_length=10, db_column='aquifer_material_code')
+    code = models.CharField(primary_key=True, max_length=10,
+                            db_column='aquifer_material_code')
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
@@ -46,7 +47,8 @@ class AquiferSubtype(AuditModel):
     """
     Subtypes of Aquifer
     """
-    code = models.CharField(primary_key=True, max_length=3, db_column='aquifer_subtype_code')
+    code = models.CharField(primary_key=True, max_length=3,
+                            db_column='aquifer_subtype_code')
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
@@ -65,7 +67,8 @@ class AquiferProductivity(AuditModel):
     Productivity choices for describing Aquifer
     -------------------
     """
-    code = models.CharField(primary_key=True, max_length=1, db_column='aquifer_productivity_code')
+    code = models.CharField(primary_key=True, max_length=1,
+                            db_column='aquifer_productivity_code')
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
@@ -85,7 +88,8 @@ class AquiferDemand(AuditModel):
     """
     Demand choices for describing Aquifer
     """
-    code = models.CharField(primary_key=True, max_length=1, db_column='aquifer_demand_code')
+    code = models.CharField(primary_key=True, max_length=1,
+                            db_column='aquifer_demand_code')
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
@@ -103,10 +107,11 @@ class AquiferDemand(AuditModel):
 
 class WaterUse(AuditModel):
     """
-    Type of Known Water Use choices for describing Aquifer 
+    Type of Known Water Use choices for describing Aquifer
     -------------------
     """
-    code = models.CharField(primary_key=True, max_length=2, db_column='water_use_code')
+    code = models.CharField(
+        primary_key=True, max_length=2, db_column='water_use_code')
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
@@ -123,7 +128,8 @@ class WaterUse(AuditModel):
 
 
 class QualityConcern(AuditModel):
-    code = models.CharField(primary_key=True, max_length=2, db_column='quality_concern_code')
+    code = models.CharField(primary_key=True, max_length=2,
+                            db_column='quality_concern_code')
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
@@ -143,7 +149,8 @@ class AquiferVulnerabilityCode(AuditModel):
     """
     Demand choices for describing Aquifer
     """
-    code = models.CharField(primary_key=True, max_length=1, db_column='aquifer_vulnerability_code')
+    code = models.CharField(primary_key=True, max_length=1,
+                            db_column='aquifer_vulnerability_code')
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
@@ -163,10 +170,10 @@ class AquiferVulnerabilityCode(AuditModel):
 class Aquifer(AuditModel):
     """
     An underground layer of water-bearing permeable rock, rock fractures or unconsolidated materials
-    (gravel, sand, or silt), from which groundwater is extracted using a water well. 
+    (gravel, sand, or silt), from which groundwater is extracted using a water well.
 
     This table holds ONLY the aquifers to which we have associated one or more wells.  It is not
-    the definitive source of all aquifers in the province. 
+    the definitive source of all aquifers in the province.
     """
     aquifer_id = models.AutoField(
         primary_key=True, verbose_name="Aquifer ID Number")
@@ -261,7 +268,8 @@ class AquiferResourceSection(AuditModel):
     """
     Defines the available sections (categories) of aquifer resources.
     """
-    code = models.CharField(primary_key=True, max_length=1, db_column='aquifer_resource_section_code')
+    code = models.CharField(primary_key=True, max_length=1,
+                            db_column='aquifer_resource_section_code')
     name = models.CharField(max_length=100)
 
     class Meta:
@@ -291,12 +299,13 @@ class AquiferResource(AuditModel):
         on_delete=models.PROTECT,
         help_text="The section (category) of this resource.")
     name = models.CharField(
-        max_length=100,
+        max_length=255,
         verbose_name="Aquifer Resource Name",
         help_text="",
-        )
+    )
     url = models.URLField(
         verbose_name="PDF Document URL",
+        max_length=255,
         help_text="A resolvable link to the PDF document associated with this aquifer resource.")
 
     class Meta:
