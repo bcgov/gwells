@@ -76,7 +76,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <submission-history
       v-if="showSection('submissionHistory')"
       id="submissionHistory"
-      :expected-count="submissionsCount"
+      :submissionsHistory="submissionsHistory"
       :isStaffEdit="isStaffEdit"
     ></submission-history>
 
@@ -568,9 +568,9 @@ export default {
       type: Object,
       isInput: false
     },
-    submissionsCount: {
-      type: Number,
-      default: 0
+    submissionsHistory: {
+      type: Array,
+      default: () => ([])
     }
   },
   components: {

@@ -38,7 +38,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <activity-submission-form
             v-else
             :form="form"
-            :submissionsCount="submissionsCount"
+            :submissionsHistory="submissionsHistory"
             :activityType.sync="activityType"
             :sections="displayFormSection"
             :formSteps="formSteps"
@@ -498,7 +498,7 @@ export default {
           }
 
           // store the number of submissions already associated with this well
-          this.submissionsCount = Number(res.data.submissions_count || 0)
+          this.submissionsHistory = res.data.submission_reports || []
 
           // Wait for the form update we just did to fire off change events.
           this.$nextTick(() => {
@@ -553,7 +553,7 @@ function initialState () {
     trackValueChanges: false,
     errors: {},
     form: {},
-    submissionsCount: 0, // this is the number of submissions for each well (comes into play for staff edits)
+    submissionsHistory: [], // historical submissions for each well (comes into play for staff edits)
     formOptions: {},
     uploadedFiles: {},
     formSteps: {

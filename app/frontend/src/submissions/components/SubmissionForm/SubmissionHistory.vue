@@ -12,7 +12,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-  <fieldset class="mt-5" v-if="submissionsRecordsCount > 0 || expectedCount > 0">
+  <fieldset class="mt-5" v-if="filteredSubmissions && filteredSubmissions.length > 0">
     <b-row>
       <b-col cols="12" lg="6">
         <legend :id="id">Activity Reports</legend>
@@ -21,13 +21,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <b-row>
       <b-col cols="12">
         <p>
-          There {{ submissionsRecordsCount !== 1 ? 'are' : 'is' }} {{ submissionsRecordsCount }} activity {{ submissionsRecordsCount !== 1 ? 'reports' : 'report' }} for well {{ $route.params.id }}.
+          There {{ filteredSubmissions.length !== 1 ? 'are' : 'is' }} {{ filteredSubmissions.length }} activity {{ filteredSubmissions.length !== 1 ? 'reports' : 'report' }} for well {{ $route.params.id }}.
         </p>
         <b-table
             id="submissionHistoryTable"
             ref="submissionHistoryTable"
             :busy.sync="submissionsBusy"
-            :items="submissionReports"
+            :items="filteredSubmissions"
             :fields="tableHeaders"
             responsive
             empty-text="There are no electronic submissions for this well."
@@ -35,39 +35,28 @@ Licensed under the Apache License, Version 2.0 (the "License");
             :current-page="submissionsPage"
           >
           <template slot="report" slot-scope="data">
-            <div v-if="data.item.preview">
-              <span class="skeleton">report type</span> <span class="skeleton">loading</span>
-            </div>
-            <div v-else>
+            <div>
               <router-link :to="{ name: 'SubmissionDetail', params: { id: $route.params.id, submissionId: data.item.filing_number }}">{{ data.item.well_activity_description }}</router-link>
             </div>
           </template>
           <template slot="date_entered" slot-scope="data">
-            <div v-if="data.item.preview">
-              <span class="skeleton">date loading</span>
-            </div>
-            <div v-else>
+            <div>
               <span v-if="data.item.create_date">{{ data.item.create_date | moment("MMMM Do YYYY [at] LT") }}</span>
             </div>
           </template>
           <template slot="entered_by" slot-scope="data">
-            <div v-if="data.item.preview">
-              <span class="skeleton">name loading</span>
-            </div>
-            <div v-else>
+            <div>
               {{ data.item.create_user }}
             </div>
           </template>
         </b-table>
-        <b-pagination v-if="!!submissionsRecordsCount && submissionsRecordsCount > submissionsPerPage" size="md" :total-rows="submissionsRecordsCount" v-model="submissionsPage" :per-page="submissionsPerPage" :disabled="submissionsBusy" />
+        <b-pagination v-if="!!filteredSubmissions.length && filteredSubmissions.length > submissionsPerPage" size="md" :total-rows="filteredSubmissions.length" v-model="submissionsPage" :per-page="submissionsPerPage" :disabled="submissionsBusy" />
       </b-col>
     </b-row>
   </fieldset>
 </template>
 
 <script>
-import querystring from 'querystring'
-import ApiService from '@/common/services/ApiService.js'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -84,9 +73,9 @@ export default {
       type: Boolean,
       isInput: false
     },
-    expectedCount: {
-      type: Number,
-      default: 0
+    submissionsHistory: {
+      type: Array,
+      default: () => ([])
     }
   },
   data () {
@@ -95,7 +84,6 @@ export default {
       submissionsPage: 1,
       submissionsBusy: false,
       submissionsRecordsCount: 0,
-      submissionReports: [],
       tableHeaders: {
         report: {
           label: 'Report',
@@ -119,45 +107,12 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['codes'])
-  },
-  methods: {
-    fetchReports (ctx = { perPage: this.perPage, currentPage: this.submissionsPage }) {
-      const params = {
-        limit: ctx.perPage,
-        offset: ctx.perPage * (ctx.currentPage - 1)
-      }
-      // add other search parameters into the params object.
-      // these will be urlencoded and the API will filter on these values.
-      Object.assign(params, this.searchParams)
-      return ApiService.query(`wells/${this.$route.params.id}/submissions` + '?' + querystring.stringify(params)).then((response) => {
-        let results = response.data.results || []
-        results = response.data.results.filter((item) => {
-          return item.well_activity_type !== 'STAFF_EDIT'
-        })
-
-        this.submissionsRecordsCount = results.length
-        this.submissionReports = results
-        return results
-      }).catch((e) => {
-        this.submissionsRecordsCount = 0
-        this.submissionReports = []
-        return []
+    filteredSubmissions () {
+      return this.submissionsHistory.filter((i) => {
+        return i.well_activity_type !== 'STAFF_EDIT'
       })
     },
-    populateTable (count = 0) {
-      this.submissionReports = []
-      for (let i = 0; i < count; i++) {
-        this.submissionReports.push({
-          preview: true
-        })
-      }
-    }
-  },
-  created () {
-    // populate table rows with either the expected number of submissions, or the max per page
-    this.populateTable(Math.min(this.submissionsPerPage, this.expectedCount))
-    this.fetchReports()
+    ...mapGetters(['codes'])
   }
 }
 </script>

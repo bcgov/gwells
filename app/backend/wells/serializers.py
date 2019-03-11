@@ -28,6 +28,7 @@ from wells.models import (
     LithologyDescription,
     Screen,
     Well,
+    WellActivityCode,
     AquiferLithologyCode,
 )
 
@@ -287,6 +288,18 @@ class WellDetailSerializer(AuditModelSerializer):
         )
 
 
+class SubmissionReportsByWellSerializer(serializers.ModelSerializer):
+    """ serializes a list of submission reports for a given well, with basic info about each report """
+
+    well_activity_description = serializers.ReadOnlyField(
+        source='well_activity_type.description')
+
+    class Meta:
+        model = ActivitySubmission
+        fields = ("well", "well_activity_type", "create_user",
+                  "create_date", "well_activity_description", "filing_number")
+
+
 class WellDetailAdminSerializer(AuditModelSerializer):
     casing_set = CasingSerializer(many=True)
     screen_set = ScreenSerializer(many=True)
@@ -295,7 +308,7 @@ class WellDetailAdminSerializer(AuditModelSerializer):
     person_responsible = PersonBasicSerializer()
     company_of_person_responsible = OrganizationNameListSerializer()
     lithologydescription_set = LithologyDescriptionSerializer(many=True)
-    submissions_count = serializers.IntegerField()
+    submission_reports = serializers.SerializerMethodField()
 
     # well vs. well_tag_number ; on submissions, we refer to well
     well = serializers.IntegerField(source='well_tag_number')
@@ -303,6 +316,18 @@ class WellDetailAdminSerializer(AuditModelSerializer):
     class Meta:
         model = Well
         fields = '__all__'
+
+    def get_submission_reports(self, instance):
+        records = instance.activitysubmission_set \
+            .exclude(well_activity_type='STAFF_EDIT') \
+            .order_by('create_date')
+
+        records = sorted(records, key=lambda record:
+                         (record.well_activity_type.code != WellActivityCode.types.legacy().code,
+                          record.well_activity_type.code != WellActivityCode.types.construction().code,
+                          record.create_date), reverse=True)
+
+        return SubmissionReportsByWellSerializer(records, many=True).data
 
 
 class WellStackerSerializer(AuditModelSerializer):
@@ -350,7 +375,8 @@ class WellStackerSerializer(AuditModelSerializer):
                         # variable)
                         record_data.pop('well', None)
                         # Create new instance of of the casing/screen/whatever record.
-                        obj = foreign_class.objects.create(well=instance, **record_data)
+                        obj = foreign_class.objects.create(
+                            well=instance, **record_data)
             else:
                 raise 'UNEXPECTED FIELD! {}'.format(field)
         instance = super().update(instance, validated_data)
@@ -487,4 +513,5 @@ class WellLocationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Well
-        fields = ("well_tag_number", "identification_plate_number", "latitude", "longitude")
+        fields = ("well_tag_number", "identification_plate_number",
+                  "latitude", "longitude")
