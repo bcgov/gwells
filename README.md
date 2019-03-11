@@ -18,8 +18,6 @@ The application is being developed as an open source solution.
 
 ### Running the GWELLS application locally
 
-Fork our repository into your own GitHub account, and clone it to your local machine.
-
 Run the GWELLS application with docker-compose:
 ```sh
 cd gwells
@@ -47,7 +45,6 @@ npm run unit
 
 Postman API tests:
 Import the json test collections in the `api-tests/` folder into [Postman](https://www.getpostman.com/).
-
 
 ## Contributing
 
