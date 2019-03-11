@@ -1,7 +1,4 @@
 /* Additional updates to DB stucture, as Python's model.py has limited abilities to do this */
-/* TODO Drop this INDEX when (latitude, longitude) is replaced 100% by geom */
-DROP INDEX IF EXISTS well_latlong CASCADE;
-CREATE INDEX well_latlong ON well (latitude, longitude);
 
 DROP INDEX IF EXISTS bcgs_number_idx CASCADE;
 CREATE INDEX bcgs_number_idx ON bcgs_number (bcgs_number);
