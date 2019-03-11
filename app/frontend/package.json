@@ -17,7 +17,7 @@
     "watch": "./node_modules/.bin/webpack --config build/webpack.dev-watch.conf.js --watch --display-entrypoints"
   },
   "dependencies": {
-    "@bcgov/bootstrap-theme": "git+https://github.com/bcgov/bootstrap-theme.git",
+    "@bcgov/bootstrap-theme": "git+https://github.com/bcgov/bootstrap-theme.git#7809a4fae4f2e44686bda62df17540e487fa5413",
     "axios": "^0.18.0",
     "babel-polyfill": "^6.26.0",
     "bootstrap-vue": "^2.0.0-rc.14",
