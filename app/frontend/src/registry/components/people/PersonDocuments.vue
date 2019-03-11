@@ -26,7 +26,7 @@
             </li>
           </ul>
             <div v-else>
-              No additional private documentation currently available for this well.
+              No additional private documentation currently available.
             </div>
         </div>
       </div>
@@ -49,10 +49,7 @@ import ApiService from '@/common/services/ApiService.js'
 export default {
   name: 'PersonDocuments',
   props: {
-    files: {
-      type: Object,
-      default: null
-    },
+    files: null,
     guid: {
       type: String,
       default: null

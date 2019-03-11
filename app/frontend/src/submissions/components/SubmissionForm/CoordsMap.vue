@@ -33,7 +33,8 @@ export default {
       default: true
     },
     insideBC: {
-      type: Function
+      type: Function,
+      default: () => {}
     }
   },
   data () {
