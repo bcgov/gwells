@@ -17,7 +17,7 @@ from rest_framework import serializers
 from django.db import transaction
 from gwells.models import ProvinceStateCode
 from gwells.serializers import AuditModelSerializer
-from registries.serializers import PersonBasicSerializer, OrganizationNameListSerializer
+from registries.serializers import PersonNameSerializer, OrganizationNameListSerializer
 from wells.models import (
     ActivitySubmission,
     Casing,
@@ -142,7 +142,7 @@ class WellDetailSerializer(AuditModelSerializer):
     screen_set = ScreenSerializer(many=True)
     linerperforation_set = LinerPerforationSerializer(many=True)
     decommission_description_set = DecommissionDescriptionSerializer(many=True)
-    person_responsible = PersonBasicSerializer()
+    person_responsible = PersonNameSerializer()
     company_of_person_responsible = OrganizationNameListSerializer()
     lithologydescription_set = LithologyDescriptionSerializer(many=True)
 
@@ -305,7 +305,7 @@ class WellDetailAdminSerializer(AuditModelSerializer):
     screen_set = ScreenSerializer(many=True)
     linerperforation_set = LinerPerforationSerializer(many=True)
     decommission_description_set = DecommissionDescriptionSerializer(many=True)
-    person_responsible = PersonBasicSerializer()
+    person_responsible = PersonNameSerializer()
     company_of_person_responsible = OrganizationNameListSerializer()
     lithologydescription_set = LithologyDescriptionSerializer(many=True)
     submission_reports = serializers.SerializerMethodField()

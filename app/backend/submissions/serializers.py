@@ -21,6 +21,8 @@ from gwells.models import ProvinceStateCode
 from gwells.serializers import AuditModelSerializer
 import wells.stack
 
+from registries.serializers import PersonNameSerializer, OrganizationNameListSerializer
+
 from gwells.models.lithology import (
     LithologyColourCode, LithologyHardnessCode,
     LithologyMaterialCode, LithologyMoistureCode, LithologyDescriptionCode)
@@ -424,6 +426,13 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
         many=True, required=False)
     lithologydescription_set = LithologyDescriptionSerializer(
         many=True, required=False)
+
+    # Sets person_responsible and company_of back to object, otherwise client view only gets guid
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        response['person_responsible'] = PersonNameSerializer(instance.person_responsible).data
+        response['company_of_person_responsible'] = OrganizationNameListSerializer(instance.company_of_person_responsible).data
+        return response
 
     def get_well_activity_type(self):
         return WellActivityCode.types.staff_edit()

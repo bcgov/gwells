@@ -34,7 +34,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
             text-field="description"
             value-field="development_method_code"
             v-model="developmentMethodInput"
-            placeholder="Select method"
             :multiple="true"
             :errors="errors['development_method']"
             :loaded="fieldsLoaded['development_method']"></form-input>
