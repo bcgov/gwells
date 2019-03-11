@@ -1,10 +1,11 @@
 <template>
   <div class="app-view d-flex flex-column">
-    <gwells-header/>
+    <gwells-header ref="header"/>
     <main role="main" class="p-0 mt-0 mt-sm-4 main-body justify-content-center">
         <router-view/>
     </main>
     <gwells-footer/>
+    <back-to-top :target="$refs.header"/>
   </div>
 </template>
 
@@ -12,11 +13,13 @@
 import { mapGetters } from 'vuex'
 import Header from '@/common/components/Header'
 import Footer from '@/common/components/Footer'
+import BackToTop from '@/common/components/BackToTop'
 export default {
   name: 'App',
   components: {
     'gwells-header': Header,
-    'gwells-footer': Footer
+    'gwells-footer': Footer,
+    BackToTop
   },
   computed: {
     ...mapGetters([
