@@ -110,19 +110,13 @@ class AnyOrAllFilterSet(filters.FilterSet):
         queryset = queryset.all()
 
         for name, value in self.form.cleaned_data.items():
-            # Ignore filters with no value. This may not work with all
-            # cases (e.g. booleans with meaningful false values)
-            # but it works for our use case.
-            # if value in (None, '') or isinstance(value, EmptyQuerySet):
-            #     continue
-
             filtered_queryset = self.filters[name].filter(initial_queryset, value)
             assert isinstance(filtered_queryset, QuerySet), \
                 "Expected '%s.%s' to return a QuerySet, but got a %s instead." \
                 % (type(self).__name__, name, type(queryset).__name__)
 
             # Check for identity here, as most filters just return same queryset
-            # if they are inactive.
+            # if they are inactive, and equality checks evaluate the queryset.
             if filtered_queryset is not initial_queryset:
                 queryset = queryset | filtered_queryset
 
