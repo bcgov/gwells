@@ -53,7 +53,9 @@ export default {
     return {
       error: undefined,
       fieldErrors: {},
-      record: {}
+      record: {
+        resources:[]
+      }
     }
   },
   methods: {
