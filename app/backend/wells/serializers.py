@@ -284,7 +284,6 @@ class WellDetailSerializer(AuditModelSerializer):
             "linerperforation_set",
             "decommission_description_set",
             "lithologydescription_set",
-            "submissions_count"
         )
 
 

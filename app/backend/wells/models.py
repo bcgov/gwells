@@ -915,10 +915,6 @@ class Well(AuditModel):
             "street_address": self.street_address,
             "well_tag_number": self.well_tag_number
         }
-    
-    @property
-    def submissions_count(self):
-        return ActivitySubmission.objects.filter(well=self.well_tag_number).count()
 
 
 class Perforation(AuditModel):
