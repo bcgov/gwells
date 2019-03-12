@@ -8,6 +8,8 @@ exports[`Search Component Matches the snapshot 1`] = `
   <div
     class="card p-3 mb-4"
   >
+    <!---->
+    <!---->
     <h1>
       Aquifer Search
     </h1>
@@ -30,21 +32,17 @@ exports[`Search Component Matches the snapshot 1`] = `
           class="col-md-4 col-12"
         >
           <fieldset
-            aria-labelledby="__BVID__16__BV_label_"
-            class="b-form-group form-group"
-            id="__BVID__16"
-            role="group"
+            class="form-group"
           >
             <legend
               class="col-form-label pt-0"
-              id="__BVID__16__BV_label_"
+              tabindex="-1"
             >
               Aquifer number
             </legend>
             <div
-              aria-labelledby="__BVID__16__BV_label_"
-              class=""
               role="group"
+              tabindex="-1"
             >
               <input
                 class="form-control"
@@ -58,21 +56,17 @@ exports[`Search Component Matches the snapshot 1`] = `
           </fieldset>
            
           <fieldset
-            aria-labelledby="__BVID__18__BV_label_"
-            class="b-form-group form-group"
-            id="__BVID__18"
-            role="group"
+            class="form-group"
           >
             <legend
               class="col-form-label pt-0"
-              id="__BVID__18__BV_label_"
+              tabindex="-1"
             >
               Aquifer name
             </legend>
             <div
-              aria-labelledby="__BVID__18__BV_label_"
-              class=""
               role="group"
+              tabindex="-1"
             >
               <input
                 class="form-control"
@@ -94,14 +88,12 @@ exports[`Search Component Matches the snapshot 1`] = `
           class="col"
         >
           <fieldset
-            class="b-form-group form-group"
-            id="__BVID__20"
-            role="group"
+            class="form-group"
           >
             <!---->
             <div
-              class=""
               role="group"
+              tabindex="-1"
             >
               <button
                 class="btn btn-primary"
@@ -129,8 +121,7 @@ exports[`Search Component Matches the snapshot 1`] = `
     <table
       aria-busy="false"
       aria-colcount="11"
-      aria-rowcount="1"
-      class="mt-3 table b-table table-striped"
+      class="table b-table mt-3 table-striped"
       id="aquifers-results"
     >
       <!---->
@@ -138,12 +129,14 @@ exports[`Search Component Matches the snapshot 1`] = `
       <thead
         class=""
       >
+        <!---->
         <tr>
           <th
             aria-colindex="1"
             aria-label="Click to sort Descending"
             aria-sort="ascending"
-            class="sorting sorting_asc"
+            class=""
+            scope="col"
             tabindex="0"
           >
             Aquifer number
@@ -151,7 +144,9 @@ exports[`Search Component Matches the snapshot 1`] = `
           <th
             aria-colindex="2"
             aria-label="Click to sort Descending"
-            class="sorting"
+            aria-sort="none"
+            class=""
+            scope="col"
             tabindex="0"
           >
             Aquifer name
@@ -159,7 +154,9 @@ exports[`Search Component Matches the snapshot 1`] = `
           <th
             aria-colindex="3"
             aria-label="Click to sort Descending"
-            class="sorting"
+            aria-sort="none"
+            class=""
+            scope="col"
             tabindex="0"
           >
             Descriptive location
@@ -167,7 +164,9 @@ exports[`Search Component Matches the snapshot 1`] = `
           <th
             aria-colindex="4"
             aria-label="Click to sort Descending"
-            class="sorting"
+            aria-sort="none"
+            class=""
+            scope="col"
             tabindex="0"
           >
             Material
@@ -175,7 +174,9 @@ exports[`Search Component Matches the snapshot 1`] = `
           <th
             aria-colindex="5"
             aria-label="Click to sort Descending"
-            class="sorting"
+            aria-sort="none"
+            class=""
+            scope="col"
             tabindex="0"
           >
             Litho stratigraphic unit
@@ -183,7 +184,9 @@ exports[`Search Component Matches the snapshot 1`] = `
           <th
             aria-colindex="6"
             aria-label="Click to sort Descending"
-            class="sorting"
+            aria-sort="none"
+            class=""
+            scope="col"
             tabindex="0"
           >
             Subtype
@@ -191,7 +194,9 @@ exports[`Search Component Matches the snapshot 1`] = `
           <th
             aria-colindex="7"
             aria-label="Click to sort Descending"
-            class="sorting"
+            aria-sort="none"
+            class=""
+            scope="col"
             tabindex="0"
           >
             Vulnerability
@@ -199,7 +204,9 @@ exports[`Search Component Matches the snapshot 1`] = `
           <th
             aria-colindex="8"
             aria-label="Click to sort Descending"
-            class="sorting"
+            aria-sort="none"
+            class=""
+            scope="col"
             tabindex="0"
           >
             Size-km²
@@ -207,7 +214,9 @@ exports[`Search Component Matches the snapshot 1`] = `
           <th
             aria-colindex="9"
             aria-label="Click to sort Descending"
-            class="sorting"
+            aria-sort="none"
+            class=""
+            scope="col"
             tabindex="0"
           >
             Productivity
@@ -215,7 +224,9 @@ exports[`Search Component Matches the snapshot 1`] = `
           <th
             aria-colindex="10"
             aria-label="Click to sort Descending"
-            class="sorting"
+            aria-sort="none"
+            class=""
+            scope="col"
             tabindex="0"
           >
             Demand
@@ -223,7 +234,9 @@ exports[`Search Component Matches the snapshot 1`] = `
           <th
             aria-colindex="11"
             aria-label="Click to sort Descending"
-            class="sorting"
+            aria-sort="none"
+            class=""
+            scope="col"
             tabindex="0"
           >
             Year of mapping
@@ -339,6 +352,8 @@ exports[`Search Component Matches the snapshot 1`] = `
         <!---->
       </div>
     </div>
+    <!---->
+    <!---->
   </div>
 </div>
 `;
