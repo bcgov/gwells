@@ -54,7 +54,7 @@ export default {
       error: undefined,
       fieldErrors: {},
       record: {
-        resources:[]
+        resources: []
       }
     }
   },
