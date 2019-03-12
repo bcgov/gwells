@@ -115,7 +115,7 @@ class WellSubmissionSerializerBase(serializers.ModelSerializer):
 
         data = self.context['request'].data
         # Convert lat long values into geom object stored on model
-        if data['latitude'] and data['longitude']:
+        if data.get('latitude', None) and data.get('longitude', None):
             validated_data['geom'] = Point(data['longitude'], data['latitude'])
 
         # Remove the latitude and longitude fields if they exist

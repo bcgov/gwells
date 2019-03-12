@@ -98,6 +98,7 @@ INSTALLED_APPS = (
     'debug_toolbar',
     'django.contrib.postgres',
     'rest_framework',
+    'rest_framework_gis',
     'corsheaders',
     'drf_yasg',
     'gwells',

@@ -20,6 +20,7 @@ from django.views.generic import DetailView
 from django.contrib.gis.geos import Polygon
 
 from django_filters import rest_framework as restfilters
+from rest_framework_gis.filters import InBBoxFilter
 
 from functools import reduce
 import operator
@@ -194,8 +195,8 @@ class WellListAPIView(ListAPIView):
     queryset = Well.objects.all()  # exclude(well_publication_status='Unpublished')
     pagination_class = APILimitOffsetPagination
     serializer_class = WellListSerializer
-
-    filter_backends = (restfilters.DjangoFilterBackend,
+    bbox_filter_field = 'geom'
+    filter_backends = (restfilters.DjangoFilterBackend, InBBoxFilter,
                        filters.SearchFilter, filters.OrderingFilter)
     ordering = ('well_tag_number',)
     filterset_class = WellListFilter

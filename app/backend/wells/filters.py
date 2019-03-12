@@ -13,6 +13,7 @@
 """
 from django.db.models import Q
 from django_filters import rest_framework as filters
+from rest_framework_gis.filters import GeometryFilter
 
 from wells.models import Well
 
@@ -42,8 +43,7 @@ class WellListFilter(filters.FilterSet):
     well_identification_plate_attached = filters.CharFilter(lookup_expr='icontains')
     water_supply_system_name = filters.CharFilter(lookup_expr='icontains')
     water_supply_system_well_name = filters.CharFilter(lookup_expr='icontains')
-    latitude = filters.RangeFilter()
-    longitude = filters.RangeFilter()
+    geom = GeometryFilter()
     ground_elevation = filters.RangeFilter()
     surface_seal_length = filters.RangeFilter()
     surface_seal_thickness = filters.RangeFilter()
@@ -131,8 +131,6 @@ class WellListFilter(filters.FilterSet):
             'id_plate_attached_by',
             'water_supply_system_name',
             'water_supply_system_well_name',
-            'latitude',
-            'longitude',
             'coordinate_acquisition_code',
             'ground_elevation',
             'ground_elevation_method',
