@@ -165,7 +165,12 @@ class StackWells():
             WellActivityCode.types.decommission().code: WellStatusCode.types.decommission().well_status_code,
         }
 
+        action = None
+
         for submission in records:
+
+            action = submission.well_activity_type.description
+
             # add a well_status based on the current activity submission
             # a staff edit could still override this with a different value.
             composite['well_status'] = well_status_map.get(
@@ -209,6 +214,7 @@ class StackWells():
         if well_serializer.is_valid(raise_exception=True):
             with reversion.create_revision():
                 well = well_serializer.save()
+                reversion.set_comment(action)
 
         return well
 

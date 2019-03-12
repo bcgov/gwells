@@ -71,7 +71,8 @@ def generate_history_diff(collection, identifier=None):
             "diff": {},
             "prev": {},
             "user": cur['update_user'] or cur['create_user'],
-            "date": cur['update_date'] or cur['create_date']
+            "date": cur['update_date'] or cur['create_date'],
+            "comment": collection[i].revision.comment or ""
         }
 
         if identifier:

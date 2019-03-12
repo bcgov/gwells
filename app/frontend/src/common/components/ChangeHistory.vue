@@ -12,9 +12,10 @@
         <div class="mt-2" v-if="history && history.length && showHistory">
           <div class="mt-3" v-for="(version, index) in history" :key="`history-version ${index}`" :id="`history-version-${index}`">
               <span class="font-weight-bold">{{ version.user }}</span>
-                {{ version.created ? "created" : "edited" }}
+                {{ version.created ? "created" : 'edited' }}
                 {{ version.name ? version.name : 'record' }}
-                ({{ version.date | moment("MMMM Do YYYY [at] LT") }}){{ version.created ? "." : ":" }}
+                {{ version.comment ? `(${version.comment})`: ''}}
+                ({{ version.date | moment('MMMM Do YYYY [at] LT') }}){{ version.created ? '.' : ':' }}
               <div class="ml-4">
                 <!-- compare current value to prev value, ignoring insignificant type changes (null to empty string) -->
                 <div
