@@ -210,7 +210,15 @@ export default {
 
         this.$emit('formSaved')
         // Save completed notification
-        this.$noty.success('<div class="notifyText">Changes Saved!</div>', { killer: true })
+
+        if (this.isStaffEdit) {
+          this.$noty.success('<div class="notifyText">Changes Saved!</div>', { killer: true })
+        } else {
+          this.$noty.success('<div aria-label="Close" class="closeBtn">x</div><div class="notifyText">Well report submitted.</div>', { killer: true, timeout: false })
+          this.$nextTick(function () {
+            window.scrollTo(0, 0)
+          })
+        }
 
         if (!this.form.well_tag_number) {
           this.setWellTagNumber(response.data.well)
