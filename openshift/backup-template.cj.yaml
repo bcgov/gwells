@@ -1,0 +1,133 @@
+apiVersion: v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  labels:
+    cronjob: backup
+    template: backup-cronjob
+  name: backup
+objects:
+  - apiVersion: v1
+    data:
+      BACKUP_STRATEGY: rolling
+      DAILY_BACKUPS: '7'
+      DATABASE_SERVICE_NAME: gwells-pgsql-staging
+      DEFAULT_PORT: '5432'
+      MONTHLY_BACKUPS: '1'
+      NUM_BACKUPS: '5'
+      POSTGRESQL_DATABASE: gwells
+      WEEKLY_BACKUPS: '4'
+    kind: ConfigMap
+    metadata:
+      labels:
+        cronjob: backup
+        template: backup-config-template
+      name: backup-config
+      namespace: moe-gwells-test
+  - apiVersion: batch/v1beta1
+    kind: CronJob
+    metadata:
+      name: gwells-pgsql-staging-backup
+    spec:
+      concurrencyPolicy: Forbid
+      failedJobsHistoryLimit: 2
+      jobTemplate:
+        metadata:
+          creationTimestamp: null
+          labels:
+            cronjob: backup
+            template: backup-job
+        spec:
+          backoffLimit: 0
+          template:
+            metadata:
+              creationTimestamp: null
+            spec:
+              activeDeadlineSeconds: 1600
+              containers:
+              - command:
+                - /bin/bash
+                - -c
+                - /backup.sh -1
+                env:
+                - name: BACKUP_DIR
+                  value: /backups/
+                - name: BACKUP_STRATEGY
+                  valueFrom:
+                    configMapKeyRef:
+                      key: BACKUP_STRATEGY
+                      name: backup-config
+                - name: NUM_BACKUPS
+                  valueFrom:
+                    configMapKeyRef:
+                      key: NUM_BACKUPS
+                      name: backup-config
+                      optional: true
+                - name: DAILY_BACKUPS
+                  valueFrom:
+                    configMapKeyRef:
+                      key: DAILY_BACKUPS
+                      name: backup-config
+                      optional: true
+                - name: WEEKLY_BACKUPS
+                  valueFrom:
+                    configMapKeyRef:
+                      key: WEEKLY_BACKUPS
+                      name: backup-config
+                      optional: true
+                - name: MONTHLY_BACKUPS
+                  valueFrom:
+                    configMapKeyRef:
+                      key: MONTHLY_BACKUPS
+                      name: backup-config
+                      optional: true
+                - name: DATABASE_SERVICE_NAME
+                  valueFrom:
+                    configMapKeyRef:
+                      key: DATABASE_SERVICE_NAME
+                      name: backup-config
+                - name: DEFAULT_PORT
+                  valueFrom:
+                    configMapKeyRef:
+                      key: DEFAULT_PORT
+                      name: backup-config
+                      optional: true
+                - name: POSTGRESQL_DATABASE
+                  valueFrom:
+                    configMapKeyRef:
+                      key: POSTGRESQL_DATABASE
+                      name: backup-config
+                - name: POSTGRESQL_USER
+                  valueFrom:
+                    secretKeyRef:
+                      key: database-user
+                      name: gwells-pgsql-staging
+                - name: POSTGRESQL_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: database-password
+                      name: gwells-pgsql-staging
+                image: docker-registry.default.svc:5000/moe-gwells-tools/backup:latest
+                imagePullPolicy: Always
+                name: backup-cronjob
+                resources: {}
+                terminationMessagePath: /dev/termination-log
+                terminationMessagePolicy: File
+                volumeMounts:
+                - mountPath: /backups/
+                  name: backup
+              dnsPolicy: ClusterFirst
+              restartPolicy: Never
+              schedulerName: default-scheduler
+              securityContext: {}
+              serviceAccount: default
+              serviceAccountName: default
+              terminationGracePeriodSeconds: 30
+              volumes:
+              - name: backup
+                persistentVolumeClaim:
+                  claimName: gwells-pgsql-staging-backup
+      schedule: 50 21 * * *
+      # schedule: 0 13 * * *
+      successfulJobsHistoryLimit: 5
+      suspend: false
