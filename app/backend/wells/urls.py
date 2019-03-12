@@ -52,4 +52,10 @@ urlpatterns = [
     url(r'^api/v1/wells$',
         never_cache(views.WellListAPIView.as_view()), name='well-list'),
 
+    url(r'^api/v1/gis/wells$',
+        views.WellSpatial.as_view(), name='well-spatial'),
+
+    url(r'^api/v1/gis/lithology$',
+        views.WellLithologySpatial.as_view(), name='well-spatial-lithology')
+
 ]
