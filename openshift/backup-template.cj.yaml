@@ -44,8 +44,8 @@ parameters:
     displayName: "Database Service Name"
     description: "The name of the database service."
     required: true
-    value: "postgresql"
-  - name: "DATABASE_DEFAULT_PORT"
+    value: "gwells-pgsql-staging"
+  - name: "DEFAULT_PORT"
     displayName: "Database Service Port"
     description: "The configured port for the database service"
     required: true
@@ -113,12 +113,12 @@ parameters:
 objects:
   - apiVersion: v1
     data:
-      BACKUP_STRATEGY: rolling
-      DAILY_BACKUPS: '7'
-      DATABASE_SERVICE_NAME: gwells-pgsql-staging
-      DEFAULT_PORT: '5432'
-      MONTHLY_BACKUPS: '1'
-      NUM_BACKUPS: '5'
+      BACKUP_STRATEGY: ${BACKUP_STRATEGY}
+      DAILY_BACKUPS: ${DAILY_BACKUPS}
+      DATABASE_SERVICE_NAME: ${DATABASE_SERVICE_NAME}
+      DEFAULT_PORT: ${DEFAULT_PORT}
+      MONTHLY_BACKUPS: ${MONTHLY_BACKUPS}
+      NUM_BACKUPS: ${NUM_BACKUPS}
       POSTGRESQL_DATABASE: gwells
       WEEKLY_BACKUPS: '4'
     kind: ConfigMap
@@ -160,47 +160,47 @@ objects:
                   valueFrom:
                     configMapKeyRef:
                       key: BACKUP_STRATEGY
-                      name: ${JOB_NAME}
+                      name: ${JOB_NAME}-config
                 - name: NUM_BACKUPS
                   valueFrom:
                     configMapKeyRef:
                       key: NUM_BACKUPS
-                      name: ${JOB_NAME}
+                      name: ${JOB_NAME}-config
                       optional: true
                 - name: DAILY_BACKUPS
                   valueFrom:
                     configMapKeyRef:
                       key: DAILY_BACKUPS
-                      name: ${JOB_NAME}
+                      name: ${JOB_NAME}-config
                       optional: true
                 - name: WEEKLY_BACKUPS
                   valueFrom:
                     configMapKeyRef:
                       key: WEEKLY_BACKUPS
-                      name: ${JOB_NAME}
+                      name: ${JOB_NAME}-config
                       optional: true
                 - name: MONTHLY_BACKUPS
                   valueFrom:
                     configMapKeyRef:
                       key: MONTHLY_BACKUPS
-                      name: ${JOB_NAME}
+                      name: ${JOB_NAME}-config
                       optional: true
                 - name: DATABASE_SERVICE_NAME
                   valueFrom:
                     configMapKeyRef:
                       key: DATABASE_SERVICE_NAME
-                      name: ${JOB_NAME}
+                      name: ${JOB_NAME}-config
                 - name: DEFAULT_PORT
                   valueFrom:
                     configMapKeyRef:
                       key: DEFAULT_PORT
-                      name: ${JOB_NAME}
+                      name: ${JOB_NAME}-config
                       optional: true
                 - name: POSTGRESQL_DATABASE
                   valueFrom:
                     configMapKeyRef:
                       key: POSTGRESQL_DATABASE
-                      name: ${JOB_NAME}
+                      name: ${JOB_NAME}-config
                 - name: POSTGRESQL_USER
                   valueFrom:
                     secretKeyRef:
