@@ -428,7 +428,7 @@ export default {
       this.locationSearch()
     },
     searchParamsReset () {
-      this.searchParams = {match_any: 'false'}
+      this.searchParams = {match_any: 'true'}
       this.selectedFilters = []
       this.$router.push({ query: null })
     },
