@@ -14,6 +14,16 @@ parameters:
     description: "Name of the Scheduled Job to Create."
     value: "backup"
     required: true
+  - name: "SECRET"
+    displayName: "Secret Name"
+    description: "Name of the Secret to reference."
+    value: "gwells-pgsql-staging"
+    required: true
+  - name: "CONFIGMAP"
+    displayName: "Config Map Name"
+    description: "Name of the Config Map to reference or create."
+    value: "backup-config"
+    required: true
   - name: "JOB_PERSISTENT_STORAGE_NAME"
     displayName: "Backup Persistent Storage Name"
     description: "Pre-Created PVC to use for backup target"
@@ -54,7 +64,7 @@ parameters:
     displayName: "Database Name"
     description: "The name of the database."
     required: true
-    value: "MyDatabase"
+    value: "gwells"
   - name: "DATABASE_DEPLOYMENT_NAME"
     displayName: "Database Deployment Name"
     description: "The name associated to the database deployment resources.  In particular, this is used to wire up the credentials associated to the database."
@@ -119,14 +129,14 @@ objects:
       DEFAULT_PORT: ${DEFAULT_PORT}
       MONTHLY_BACKUPS: ${MONTHLY_BACKUPS}
       NUM_BACKUPS: ${NUM_BACKUPS}
-      POSTGRESQL_DATABASE: gwells
+      POSTGRESQL_DATABASE: ${DATABASE_NAME}
       WEEKLY_BACKUPS: '4'
     kind: ConfigMap
     metadata:
       labels:
         cronjob: backup
         template: ${JOB_NAME}-template
-      name: ${JOB_NAME}-config
+      name: ${CONFIGMAP}
       namespace: moe-gwells-test
   - apiVersion: batch/v1beta1
     kind: CronJob
@@ -160,57 +170,57 @@ objects:
                   valueFrom:
                     configMapKeyRef:
                       key: BACKUP_STRATEGY
-                      name: ${JOB_NAME}-config
+                      name: ${CONFIGMAP}
                 - name: NUM_BACKUPS
                   valueFrom:
                     configMapKeyRef:
                       key: NUM_BACKUPS
-                      name: ${JOB_NAME}-config
+                      name: ${CONFIGMAP}
                       optional: true
                 - name: DAILY_BACKUPS
                   valueFrom:
                     configMapKeyRef:
                       key: DAILY_BACKUPS
-                      name: ${JOB_NAME}-config
+                      name: ${CONFIGMAP}
                       optional: true
                 - name: WEEKLY_BACKUPS
                   valueFrom:
                     configMapKeyRef:
                       key: WEEKLY_BACKUPS
-                      name: ${JOB_NAME}-config
+                      name: ${CONFIGMAP}
                       optional: true
                 - name: MONTHLY_BACKUPS
                   valueFrom:
                     configMapKeyRef:
                       key: MONTHLY_BACKUPS
-                      name: ${JOB_NAME}-config
+                      name: ${CONFIGMAP}
                       optional: true
                 - name: DATABASE_SERVICE_NAME
                   valueFrom:
                     configMapKeyRef:
                       key: DATABASE_SERVICE_NAME
-                      name: ${JOB_NAME}-config
+                      name: ${CONFIGMAP}
                 - name: DEFAULT_PORT
                   valueFrom:
                     configMapKeyRef:
                       key: DEFAULT_PORT
-                      name: ${JOB_NAME}-config
+                      name: ${CONFIGMAP}
                       optional: true
                 - name: POSTGRESQL_DATABASE
                   valueFrom:
                     configMapKeyRef:
                       key: POSTGRESQL_DATABASE
-                      name: ${JOB_NAME}-config
+                      name: ${CONFIGMAP}
                 - name: POSTGRESQL_USER
                   valueFrom:
                     secretKeyRef:
                       key: database-user
-                      name: gwells-pgsql-staging
+                      name: ${SECRET}
                 - name: POSTGRESQL_PASSWORD
                   valueFrom:
                     secretKeyRef:
                       key: database-password
-                      name: gwells-pgsql-staging
+                      name: ${SECRET}
                 image: docker-registry.default.svc:5000/moe-gwells-tools/backup:latest
                 imagePullPolicy: Always
                 name: backup-cronjob
