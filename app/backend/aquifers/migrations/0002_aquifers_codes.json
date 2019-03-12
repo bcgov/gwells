@@ -10,7 +10,7 @@
             "description": "Unconfined sand and gravel - large river system",
             "display_order": 2,
             "effective_date": "1970-01-01T08:00:00Z",
-            "expiry_date": null
+            "expiry_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -24,7 +24,7 @@
             "description": "Unconfined sand and gravel aquifer - medium stream system",
             "display_order": 4,
             "effective_date": "1970-01-01T08:00:00Z",
-            "expiry_date": null
+            "expiry_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -38,7 +38,7 @@
             "description": "Unconfined sand and gravel aquifer - small stream system",
             "display_order": 6,
             "effective_date": "1970-01-01T08:00:00Z",
-            "expiry_date": null
+            "expiry_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -52,7 +52,7 @@
             "description": "Unconfined sand and gravel - deltaic",
             "display_order": 8,
             "effective_date": "1970-01-01T08:00:00Z",
-            "expiry_date": null
+            "expiry_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -66,7 +66,7 @@
             "description": "Unconfined sand and gravel - alluvial or colluvial fan",
             "display_order": 10,
             "effective_date": "1970-01-01T08:00:00Z",
-            "expiry_date": null
+            "expiry_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -80,7 +80,7 @@
             "description": "Unconfined sand and gravel - late glacial outwash",
             "display_order": 12,
             "effective_date": "1970-01-01T08:00:00Z",
-            "expiry_date": null
+            "expiry_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -94,7 +94,7 @@
             "description": "Confined sand and gravel - glacial",
             "display_order": 14,
             "effective_date": "1970-01-01T08:00:00Z",
-            "expiry_date": null
+            "expiry_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -108,7 +108,7 @@
             "description": "Confined sand and gravel - glacio-marine",
             "display_order": 16,
             "effective_date": "1970-01-01T08:00:00Z",
-            "expiry_date": null
+            "expiry_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -122,7 +122,7 @@
             "description": "Fractured sedimentary rock",
             "display_order": 18,
             "effective_date": "1970-01-01T08:00:00Z",
-            "expiry_date": null
+            "expiry_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -136,7 +136,7 @@
             "description": "Karstic limestone",
             "display_order": 20,
             "effective_date": "1970-01-01T08:00:00Z",
-            "expiry_date": null
+            "expiry_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -150,7 +150,7 @@
             "description": "Flat-lying to gently-dipping volcanic bedrock",
             "display_order": 22,
             "effective_date": "1970-01-01T08:00:00Z",
-            "expiry_date": null
+            "expiry_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -164,7 +164,7 @@
             "description": "Fractured crystalline bedrock",
             "display_order": 24,
             "effective_date": "1970-01-01T08:00:00Z",
-            "expiry_date": null
+            "expiry_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -178,7 +178,7 @@
             "description": "High",
             "display_order": 2,
             "effective_date": "1970-01-01T08:00:00Z",
-            "expiry_date": null
+            "expiry_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -192,7 +192,7 @@
             "description": "Low",
             "display_order": 4,
             "effective_date": "1970-01-01T08:00:00Z",
-            "expiry_date": null
+            "expiry_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -206,7 +206,7 @@
             "description": "Moderate",
             "display_order": 6,
             "effective_date": "1970-01-01T08:00:00Z",
-            "expiry_date": null
+            "expiry_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -220,7 +220,7 @@
             "description": "High",
             "display_order": 2,
             "effective_date": "1970-01-01T08:00:00Z",
-            "expiry_date": null
+            "expiry_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -234,7 +234,7 @@
             "description": "Low",
             "display_order": 4,
             "effective_date": "1970-01-01T08:00:00Z",
-            "expiry_date": null
+            "expiry_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -248,7 +248,7 @@
             "description": "Moderate",
             "display_order": 6,
             "effective_date": "1970-01-01T08:00:00Z",
-            "expiry_date": null
+            "expiry_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -262,7 +262,7 @@
             "description": "Isolated",
             "display_order": 2,
             "effective_date": "1970-01-01T08:00:00Z",
-            "expiry_date": null
+            "expiry_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -276,7 +276,7 @@
             "description": "Local",
             "display_order": 4,
             "effective_date": "1970-01-01T08:00:00Z",
-            "expiry_date": null
+            "expiry_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -290,7 +290,7 @@
             "description": "Regional",
             "display_order": 6,
             "effective_date": "1970-01-01T08:00:00Z",
-            "expiry_date": null
+            "expiry_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -304,7 +304,7 @@
             "description": "None",
             "display_order": 8,
             "effective_date": "1970-01-01T08:00:00Z",
-            "expiry_date": null
+            "expiry_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -318,7 +318,7 @@
             "description": "Bedrock",
             "display_order": 2,
             "effective_date": "1970-01-01T08:00:00Z",
-            "expiry_date": null
+            "expiry_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -332,7 +332,7 @@
             "description": "Gravel",
             "display_order": 4,
             "effective_date": "1970-01-01T08:00:00Z",
-            "expiry_date": null
+            "expiry_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -346,7 +346,7 @@
             "description": "Sand",
             "display_order": 6,
             "effective_date": "1970-01-01T08:00:00Z",
-            "expiry_date": null
+            "expiry_date": "9999-12-31T23:59:59Z"
         }
     },    
     {
@@ -360,7 +360,7 @@
             "description": "Sand and Gravel",
             "display_order": 8,
             "effective_date": "1970-01-01T08:00:00Z",
-            "expiry_date": null
+            "expiry_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -374,7 +374,7 @@
             "description": "Domestic",
             "display_order": 2,
             "effective_date": "1970-01-01T08:00:00Z",
-            "expiry_date": null
+            "expiry_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -388,7 +388,7 @@
             "description": "Multiple",
             "display_order": 4,
             "effective_date": "1970-01-01T08:00:00Z",
-            "expiry_date": null
+            "expiry_date": "9999-12-31T23:59:59Z"
         }
     },    
     {
@@ -402,7 +402,7 @@
             "description": "Potential Domestic",
             "display_order": 6,
             "effective_date": "1970-01-01T08:00:00Z",
-            "expiry_date": null
+            "expiry_date": "9999-12-31T23:59:59Z"
         }
     }
 ]
