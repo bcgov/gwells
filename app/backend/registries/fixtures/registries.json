@@ -5,7 +5,7 @@
     "fields": {
       "create_user": "bddfirst bddlast",
       "create_date": "2018-10-12T18:23:11.226Z",
-      "update_user": null,
+      "update_user": "",
       "update_date": "2018-10-12T18:23:11.226Z",
       "name": "Three Pump Company",
       "street_address": "333 Pump Ave",
@@ -15,8 +15,8 @@
       "main_tel": "(333) 654-0987",
       "fax_tel": "(333) 654-0987",
       "website_url": "https://www.google.ca/",
-      "effective_date": "2018-10-12",
-      "expired_date": null,
+      "effective_date": "2018-10-12T11:11:11Z",
+      "expired_date": "9999-12-31T23:59:59Z",
       "email": "threepumpcompany@fakeeemail.com"
     }
   }, {
@@ -35,8 +35,8 @@
       "main_tel": "(111) 098-1234",
       "fax_tel": "(111) 098-1234",
       "website_url": "https://www.google.ca/",
-      "effective_date": "2018-10-12",
-      "expired_date": null,
+      "effective_date": "2018-10-12T11:11:11Z",
+      "expired_date": "9999-12-31T23:59:59Z",
       "email": "onedrillpumpcompany@fakeeemail.com"
     }
   }, {
@@ -55,8 +55,8 @@
       "main_tel": "(111) 456-7890",
       "fax_tel": "(111) 456-7890",
       "website_url": "https://www.google.ca/",
-      "effective_date": "2018-10-12",
-      "expired_date": null,
+      "effective_date": "2018-10-12T18:20:35.936Z",
+      "expired_date": "9999-12-31T23:59:59Z",
       "email": "onedrillcompany@fakeeemail.com"
     }
   }, {
@@ -65,7 +65,7 @@
     "fields": {
       "create_user": "bddfirst bddlast",
       "create_date": "2018-10-12T18:20:54.873Z",
-      "update_user": null,
+      "update_user": "",
       "update_date": "2018-10-12T18:20:54.873Z",
       "name": "Three Drill Company",
       "street_address": "333 Drill Street",
@@ -75,8 +75,8 @@
       "main_tel": "(333) 456-7890",
       "fax_tel": "(333) 456-7890",
       "website_url": "https://www.google.ca/",
-      "effective_date": "2018-10-12",
-      "expired_date": null,
+      "effective_date": "2018-10-12T18:20:35.936Z",
+      "expired_date": "9999-12-31T23:59:59Z",
       "email": "threedrillcompany@fakeeemail.com"
     }
   }, {
@@ -85,7 +85,7 @@
     "fields": {
       "create_user": "bddfirst bddlast",
       "create_date": "2018-10-12T18:22:25.891Z",
-      "update_user": null,
+      "update_user": "",
       "update_date": "2018-10-12T18:22:25.891Z",
       "name": "Two Pump Company",
       "street_address": "222 Pump Ave",
@@ -95,8 +95,8 @@
       "main_tel": "(222) 654-0987",
       "fax_tel": "(222) 654-0987",
       "website_url": "https://www.google.ca/",
-      "effective_date": "2018-10-12",
-      "expired_date": null,
+      "effective_date": "2018-10-12T18:20:35.936Z",
+      "expired_date": "9999-12-31T23:59:59Z",
       "email": "twopumpcompany@fakeeemail.com"
     }
   }, {
@@ -105,7 +105,7 @@
     "fields": {
       "create_user": "bddfirst bddlast",
       "create_date": "2018-10-12T18:26:40.295Z",
-      "update_user": null,
+      "update_user": "",
       "update_date": "2018-10-12T18:26:40.295Z",
       "name": "Three DrillPump Company",
       "street_address": "333 DrillPump Rd",
@@ -115,8 +115,8 @@
       "main_tel": "(333) 098-1234",
       "fax_tel": "(333) 098-1234",
       "website_url": "https://www.google.ca/",
-      "effective_date": "2018-10-12",
-      "expired_date": null,
+      "effective_date": "2018-10-12T18:20:35.936Z",
+      "expired_date": "9999-12-31T23:59:59Z",
       "email": "threedrillpumpcompany@fakeeemail.com"
     }
   }, {
@@ -125,7 +125,7 @@
     "fields": {
       "create_user": "bddfirst bddlast",
       "create_date": "2018-10-12T18:21:50.849Z",
-      "update_user": null,
+      "update_user": "",
       "update_date": "2018-10-12T18:21:50.849Z",
       "name": "One Pump Company",
       "street_address": "111 Pump Ave",
@@ -135,8 +135,8 @@
       "main_tel": "(111) 654-0987",
       "fax_tel": "(111) 654-0987",
       "website_url": "https://www.google.ca/",
-      "effective_date": "2018-10-12",
-      "expired_date": null,
+      "effective_date": "2018-10-12T18:20:35.936Z",
+      "expired_date": "9999-12-31T23:59:59Z",
       "email": "onepumpcompany@fakeeemail.com"
     }
   }, {
@@ -155,8 +155,8 @@
       "main_tel": "(222) 456-7890",
       "fax_tel": "(222) 456-7890",
       "website_url": "https://www.google.ca/",
-      "effective_date": "2018-10-12",
-      "expired_date": null,
+      "effective_date": "2018-10-12T18:20:35.936Z",
+      "expired_date": "9999-12-31T23:59:59Z",
       "email": "twodrillcompany@fakeeemail.com"
     }
   }, {
@@ -165,7 +165,7 @@
     "fields": {
       "create_user": "bddfirst bddlast",
       "create_date": "2018-10-12T18:25:50.050Z",
-      "update_user": null,
+      "update_user": "",
       "update_date": "2018-10-12T18:25:50.050Z",
       "name": "Two DrillPump Company",
       "street_address": "222 DrillPump Rd",
@@ -175,8 +175,8 @@
       "main_tel": "(222) 098-1234",
       "fax_tel": "(222) 098-1234",
       "website_url": "https://www.google.ca/",
-      "effective_date": "2018-10-12",
-      "expired_date": null,
+      "effective_date": "2018-10-12T18:20:35.936Z",
+      "expired_date": "9999-12-31T23:59:59Z",
       "email": "twodrillpumpcompany@fakeeemail.com"
     }
   }, {
@@ -185,7 +185,7 @@
     "fields": {
       "create_user": "bddfirst bddlast",
       "create_date": "2018-10-12T18:29:39.431Z",
-      "update_user": null,
+      "update_user": "",
       "update_date": "2018-10-12T18:29:39.431Z",
       "first_name": "LongNameDriller",
       "surname": "WellDriller",
@@ -194,8 +194,8 @@
       "contact_tel": "(231) 456-7890",
       "contact_cell": null,
       "contact_email": "longdrilleremail@fakeeeeeeemail.com",
-      "effective_date": "2018-10-12",
-      "expired_date": null
+      "effective_date": "2018-10-12T18:20:35.936Z",
+      "expired_date": "9999-12-31T23:59:59Z"
     }
   }, {
     "model": "registries.person",
@@ -203,7 +203,7 @@
     "fields": {
       "create_user": "bddfirst bddlast",
       "create_date": "2018-10-15T16:31:57.916Z",
-      "update_user": null,
+      "update_user": "",
       "update_date": "2018-10-15T16:31:57.916Z",
       "first_name": "NotApproved",
       "surname": "Diller",
@@ -212,8 +212,8 @@
       "contact_tel": "(543) 345-6543",
       "contact_cell": null,
       "contact_email": "notapproveddriller@fakeeemail.com",
-      "effective_date": "2018-10-15",
-      "expired_date": null
+      "effective_date": "2018-10-15T18:20:35.936Z",
+      "expired_date": "9999-12-31T23:59:59Z"
     }
   }, {
     "model": "registries.person",
@@ -221,7 +221,7 @@
     "fields": {
       "create_user": "bddfirst bddlast",
       "create_date": "2018-10-15T16:41:41.128Z",
-      "update_user": null,
+      "update_user": "",
       "update_date": "2018-10-15T16:41:41.128Z",
       "first_name": "PumpsAndDrills",
       "surname": "Installer",
@@ -230,8 +230,8 @@
       "contact_tel": "(232) 132-11232",
       "contact_cell": null,
       "contact_email": "pumpsanddrills@fakeeeemail.com",
-      "effective_date": "2018-10-15",
-      "expired_date": null
+      "effective_date": "2018-10-15T18:20:35.936Z",
+      "expired_date": "9999-12-31T23:59:59Z"
     }
   }, {
     "model": "registries.person",
@@ -239,7 +239,7 @@
     "fields": {
       "create_user": "bddfirst bddlast",
       "create_date": "2018-10-12T18:27:50.728Z",
-      "update_user": null,
+      "update_user": "",
       "update_date": "2018-10-12T18:27:50.728Z",
       "first_name": "short",
       "surname": "Driller",
@@ -248,8 +248,8 @@
       "contact_tel": "(123) 456-7890",
       "contact_cell": null,
       "contact_email": "shortdriller@fakeeemail.com",
-      "effective_date": "2018-10-12",
-      "expired_date": null
+      "effective_date": "2018-10-12T18:20:35.936Z",
+      "expired_date": "9999-12-31T23:59:59Z"
     }
   }, {
     "model": "registries.person",
@@ -257,7 +257,7 @@
     "fields": {
       "create_user": "bddfirst bddlast",
       "create_date": "2018-10-15T16:31:11.747Z",
-      "update_user": null,
+      "update_user": "",
       "update_date": "2018-10-15T16:31:11.747Z",
       "first_name": "Pending",
       "surname": "Driller",
@@ -266,8 +266,8 @@
       "contact_tel": "(234) 123-4567",
       "contact_cell": null,
       "contact_email": "pendingdriller@fakeeemail.com",
-      "effective_date": "2018-10-15",
-      "expired_date": null
+      "effective_date": "2018-10-15T18:20:35.936Z",
+      "expired_date": "9999-12-31T23:59:59Z"
     }
   }, {
     "model": "registries.person",
@@ -275,7 +275,7 @@
     "fields": {
       "create_user": "bddfirst bddlast",
       "create_date": "2018-10-15T17:27:40.640Z",
-      "update_user": null,
+      "update_user": "",
       "update_date": "2018-10-15T17:27:40.640Z",
       "first_name": "Removed",
       "surname": "Pump",
@@ -284,8 +284,8 @@
       "contact_tel": "(321) 321-3333",
       "contact_cell": null,
       "contact_email": "removedpumper@fakeeeemail.com",
-      "effective_date": "2018-10-15",
-      "expired_date": null
+      "effective_date": "2018-10-15T18:20:35.936Z",
+      "expired_date": "9999-12-31T23:59:59Z"
     }
   }, {
     "model": "registries.person",
@@ -293,7 +293,7 @@
     "fields": {
       "create_user": "bddfirst bddlast",
       "create_date": "2018-10-15T16:43:55.317Z",
-      "update_user": null,
+      "update_user": "",
       "update_date": "2018-10-15T16:43:55.317Z",
       "first_name": "HalfNotApproved",
       "surname": "DrillPumper",
@@ -302,8 +302,8 @@
       "contact_tel": "(333) 333-3333",
       "contact_cell": null,
       "contact_email": "somewhatnotapproved@thisisalongeeemail.com",
-      "effective_date": "2018-10-15",
-      "expired_date": null
+      "effective_date": "2018-10-15T18:20:35.936Z",
+      "expired_date": "9999-12-31T23:59:59Z"
     }
   }, {
     "model": "registries.person",
@@ -311,7 +311,7 @@
     "fields": {
       "create_user": "bddfirst bddlast",
       "create_date": "2018-10-15T16:38:15.895Z",
-      "update_user": null,
+      "update_user": "",
       "update_date": "2018-10-15T16:38:15.895Z",
       "first_name": "Pump",
       "surname": "Installer",
@@ -320,8 +320,8 @@
       "contact_tel": "(154) 345-63124",
       "contact_cell": null,
       "contact_email": "pumpinstaller@fakeeemail.com",
-      "effective_date": "2018-10-15",
-      "expired_date": null
+      "effective_date": "2018-10-15T18:20:35.936Z",
+      "expired_date": "9999-12-31T23:59:59Z"
     }
   }, {
     "model": "registries.person",
@@ -329,7 +329,7 @@
     "fields": {
       "create_user": "bddfirst bddlast",
       "create_date": "2018-10-15T16:46:52.393Z",
-      "update_user": null,
+      "update_user": "",
       "update_date": "2018-10-15T16:46:52.393Z",
       "first_name": "Incomplete",
       "surname": "Pump",
@@ -338,8 +338,8 @@
       "contact_tel": "(444) 666-7777",
       "contact_cell": null,
       "contact_email": "IncompletePumpInstaller@fakeeemail.com",
-      "effective_date": "2018-10-15",
-      "expired_date": null
+      "effective_date": "2018-10-15T18:20:35.936Z",
+      "expired_date": "9999-12-31T23:59:59Z"
     }
   }, {
     "model": "registries.register",
@@ -347,7 +347,7 @@
     "fields": {
       "create_user": "bddfirst bddlast",
       "create_date": "2018-10-15T17:27:40.642Z",
-      "update_user": null,
+      "update_user": "",
       "update_date": "2018-10-15T17:27:40.642Z",
       "registries_activity": "PUMP",
       "person": "b29087c9-a5d7-4060-babb-b17f97d38b0a",
@@ -373,7 +373,7 @@
     "fields": {
       "create_user": "bddfirst bddlast",
       "create_date": "2018-10-15T16:41:41.139Z",
-      "update_user": null,
+      "update_user": "",
       "update_date": "2018-10-15T16:41:41.139Z",
       "registries_activity": "DRILL",
       "person": "7764a47a-020c-4c45-b729-7a2f6c0a488c",
@@ -386,7 +386,7 @@
     "fields": {
       "create_user": "bddfirst bddlast",
       "create_date": "2018-10-15T16:46:52.396Z",
-      "update_user": null,
+      "update_user": "",
       "update_date": "2018-10-15T16:46:52.396Z",
       "registries_activity": "PUMP",
       "person": "ef6bec85-2248-4373-812b-ea9330b13942",
@@ -412,7 +412,7 @@
     "fields": {
       "create_user": "bddfirst bddlast",
       "create_date": "2018-10-15T16:43:55.319Z",
-      "update_user": null,
+      "update_user": "",
       "update_date": "2018-10-15T16:43:55.319Z",
       "registries_activity": "DRILL",
       "person": "d660ccb1-46d1-4e7a-93f3-0e77f71ecf24",
@@ -425,7 +425,7 @@
     "fields": {
       "create_user": "bddfirst bddlast",
       "create_date": "2018-10-15T16:41:41.130Z",
-      "update_user": null,
+      "update_user": "",
       "update_date": "2018-10-15T16:41:41.130Z",
       "registries_activity": "PUMP",
       "person": "7764a47a-020c-4c45-b729-7a2f6c0a488c",
@@ -438,7 +438,7 @@
     "fields": {
       "create_user": "bddfirst bddlast",
       "create_date": "2018-10-15T16:43:55.322Z",
-      "update_user": null,
+      "update_user": "",
       "update_date": "2018-10-15T16:43:55.322Z",
       "registries_activity": "PUMP",
       "person": "d660ccb1-46d1-4e7a-93f3-0e77f71ecf24",
@@ -464,7 +464,7 @@
     "fields": {
       "create_user": "bddfirst bddlast",
       "create_date": "2018-10-15T16:38:15.897Z",
-      "update_user": null,
+      "update_user": "",
       "update_date": "2018-10-15T16:38:15.897Z",
       "registries_activity": "PUMP",
       "person": "d724011a-7ba3-4017-b180-4107b62b46a5",
@@ -477,7 +477,7 @@
     "fields": {
       "create_user": "bddfirst bddlast",
       "create_date": "2018-10-15T16:31:11.750Z",
-      "update_user": null,
+      "update_user": "",
       "update_date": "2018-10-15T16:31:11.750Z",
       "registries_activity": "DRILL",
       "person": "8c3affb2-9619-421d-9656-c939e1b3d662",
@@ -513,7 +513,7 @@
     "fields": {
       "create_user": "bddfirst bddlast",
       "create_date": "2018-10-12T18:30:25.039Z",
-      "update_user": null,
+      "update_user": "",
       "update_date": "2018-10-12T18:30:25.039Z",
       "registration": "6d622df3-cd01-4939-b541-4ca68d0c7d0d",
       "subactivity": "WATER",
@@ -605,7 +605,7 @@
     "fields": {
       "create_user": "bddfirst bddlast",
       "create_date": "2018-10-12T18:28:41.353Z",
-      "update_user": null,
+      "update_user": "",
       "update_date": "2018-10-12T18:28:41.353Z",
       "registration": "b4d27e45-b2ae-4437-8b87-f9d9f3762274",
       "subactivity": "GEOXCHG",
@@ -697,7 +697,7 @@
     "fields": {
       "create_user": "bddfirst bddlast",
       "create_date": "2018-10-15T16:31:11.752Z",
-      "update_user": null,
+      "update_user": "",
       "update_date": "2018-10-15T16:31:11.752Z",
       "registration": "d49ecac4-f863-499e-8a12-15f3a79f2408",
       "subactivity": "WATER",

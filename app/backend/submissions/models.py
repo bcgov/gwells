@@ -13,6 +13,7 @@
 """
 from decimal import Decimal
 import uuid
+from django.utils import timezone
 
 from django.contrib.gis.db import models
 from django.core.validators import MinValueValidator
@@ -45,8 +46,8 @@ class WellActivityCode(AuditModel):
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
-    effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date = models.DateTimeField(blank=True, null=True)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     objects = models.Manager()
     types = WellActivityCodeTypeManager()

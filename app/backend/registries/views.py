@@ -114,8 +114,8 @@ class OrganizationListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     # prefetch related objects for the queryset to prevent duplicate database trips later
     queryset = Organization.objects.all() \
         .select_related('province_state',) \
-        .prefetch_related('registrations', 'registrations__person') \
-        .filter(expired_date__isnull=True)
+        .filter(expired_date__gt=timezone.now()) \
+        .prefetch_related('registrations', 'registrations__person')
 
     # Allow searching against fields like organization name, address,
     # name or registration of organization contacts
@@ -154,8 +154,8 @@ class OrganizationDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDest
     # prefetch related province, contacts and person records to prevent future additional database trips
     queryset = Organization.objects.all() \
         .select_related('province_state',) \
-        .prefetch_related('registrations', 'registrations__person') \
-        .filter(expired_date__isnull=True)
+        .filter(expired_date__gt=timezone.now()) \
+        .prefetch_related('registrations', 'registrations__person')
 
     def destroy(self, request, *args, **kwargs):
         """
@@ -249,7 +249,7 @@ class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     )
 
     # fetch related companies and registration applications (prevent duplicate database trips)
-    queryset = Person.objects.filter(expired_date__isnull=True)
+    queryset = Person.objects.all().filter(expired_date__gt=timezone.now())
 
     def get_queryset(self):
         """ Returns Person queryset, removing non-active and unregistered drillers for anonymous users """
@@ -412,9 +412,7 @@ class PersonDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDestroyAPI
             'registrations__applications__subactivity',
             'registrations__applications__subactivity__qualification_set',
             'registrations__applications__subactivity__qualification_set__well_class'
-        ).filter(
-            expired_date__isnull=True
-        ).distinct()
+        ).filter(expired_date__gt=timezone.now()).distinct()
 
     def get_queryset(self):
         """
@@ -587,7 +585,7 @@ class OrganizationNameListView(ListAPIView):
     permission_classes = (RegistriesEditPermissions,)
     serializer_class = OrganizationNameListSerializer
     queryset = Organization.objects \
-        .filter(expired_date__isnull=True) \
+        .filter(expired_date__gt=timezone.now()) \
         .select_related('province_state')
     pagination_class = None
     lookup_field = 'organization_guid'
