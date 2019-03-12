@@ -541,7 +541,7 @@ class AquiferLithologyCode(AuditModel):
         verbose_name_plural = 'Aquifer Lithology Codes'
 
     def __str__(self):
-        return '{} - {}'.format(self.code, self.description)
+        return '{} - {}'.format(self.aquifer_lithology_code, self.description)
 
 
 # TODO: Consider having Well and Submission extend off a common base class, given that

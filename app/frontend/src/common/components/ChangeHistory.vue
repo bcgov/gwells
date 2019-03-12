@@ -21,7 +21,7 @@
                     v-for="(value, key) in version.diff"
                     v-if="!(value === '' && version.prev[key] === null)"
                     :key="`history-item-${key}-in-version ${index}`">
-                  {{ key | readable }} changed from {{ version.prev[key] }}<span v-if="!version.prev[key]">none</span> to {{ value }}<span v-if="!value">none</span>
+                  {{ key | readable }} changed from {{ version.prev[key] }}<span v-if="!version.prev[key]">none</span> to {{ value }}<span v-if="!value && value != false">none</span>
                 </div>
               </div>
           </div>
