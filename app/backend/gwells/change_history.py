@@ -77,8 +77,6 @@ def generate_history_diff(collection, identifier=None):
         if identifier:
             item["name"] = identifier
 
-        print("user is", cur['update_user'], "create_user is", cur['create_user'])
-
         # Check if revision is the first one (initial version of record)
         if prev is None:
             item['created'] = True
