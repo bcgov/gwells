@@ -54,7 +54,7 @@ export default {
 
   .main-body {
     display: flex;
-    flex: 1;
+    flex: 1 0 0%;
   }
 
   .body-wrapper {
