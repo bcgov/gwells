@@ -15,8 +15,8 @@
       "main_tel": "(333) 654-0987",
       "fax_tel": "(333) 654-0987",
       "website_url": "https://www.google.ca/",
-      "effective_date": "2018-10-12",
-      "expired_date": "9999-12-31",
+      "effective_date": "2018-10-12T11:11:11Z",
+      "expired_date": "9999-12-31T23:59:59Z",
       "email": "threepumpcompany@fakeeemail.com"
     }
   }, {
@@ -35,8 +35,8 @@
       "main_tel": "(111) 098-1234",
       "fax_tel": "(111) 098-1234",
       "website_url": "https://www.google.ca/",
-      "effective_date": "2018-10-12",
-      "expired_date": "9999-12-31",
+      "effective_date": "2018-10-12T11:11:11Z",
+      "expired_date": "9999-12-31T23:59:59Z",
       "email": "onedrillpumpcompany@fakeeemail.com"
     }
   }, {
@@ -55,8 +55,8 @@
       "main_tel": "(111) 456-7890",
       "fax_tel": "(111) 456-7890",
       "website_url": "https://www.google.ca/",
-      "effective_date": "2018-10-12",
-      "expired_date": "9999-12-31",
+      "effective_date": "2018-10-12T18:20:35.936Z",
+      "expired_date": "9999-12-31T23:59:59Z",
       "email": "onedrillcompany@fakeeemail.com"
     }
   }, {
@@ -75,8 +75,8 @@
       "main_tel": "(333) 456-7890",
       "fax_tel": "(333) 456-7890",
       "website_url": "https://www.google.ca/",
-      "effective_date": "2018-10-12",
-      "expired_date": "9999-12-31",
+      "effective_date": "2018-10-12T18:20:35.936Z",
+      "expired_date": "9999-12-31T23:59:59Z",
       "email": "threedrillcompany@fakeeemail.com"
     }
   }, {
@@ -95,8 +95,8 @@
       "main_tel": "(222) 654-0987",
       "fax_tel": "(222) 654-0987",
       "website_url": "https://www.google.ca/",
-      "effective_date": "2018-10-12",
-      "expired_date": "9999-12-31",
+      "effective_date": "2018-10-12T18:20:35.936Z",
+      "expired_date": "9999-12-31T23:59:59Z",
       "email": "twopumpcompany@fakeeemail.com"
     }
   }, {
@@ -115,8 +115,8 @@
       "main_tel": "(333) 098-1234",
       "fax_tel": "(333) 098-1234",
       "website_url": "https://www.google.ca/",
-      "effective_date": "2018-10-12",
-      "expired_date": "9999-12-31",
+      "effective_date": "2018-10-12T18:20:35.936Z",
+      "expired_date": "9999-12-31T23:59:59Z",
       "email": "threedrillpumpcompany@fakeeemail.com"
     }
   }, {
@@ -135,8 +135,8 @@
       "main_tel": "(111) 654-0987",
       "fax_tel": "(111) 654-0987",
       "website_url": "https://www.google.ca/",
-      "effective_date": "2018-10-12",
-      "expired_date": "9999-12-31",
+      "effective_date": "2018-10-12T18:20:35.936Z",
+      "expired_date": "9999-12-31T23:59:59Z",
       "email": "onepumpcompany@fakeeemail.com"
     }
   }, {
@@ -155,8 +155,8 @@
       "main_tel": "(222) 456-7890",
       "fax_tel": "(222) 456-7890",
       "website_url": "https://www.google.ca/",
-      "effective_date": "2018-10-12",
-      "expired_date": "9999-12-31",
+      "effective_date": "2018-10-12T18:20:35.936Z",
+      "expired_date": "9999-12-31T23:59:59Z",
       "email": "twodrillcompany@fakeeemail.com"
     }
   }, {
@@ -175,8 +175,8 @@
       "main_tel": "(222) 098-1234",
       "fax_tel": "(222) 098-1234",
       "website_url": "https://www.google.ca/",
-      "effective_date": "2018-10-12",
-      "expired_date": "9999-12-31",
+      "effective_date": "2018-10-12T18:20:35.936Z",
+      "expired_date": "9999-12-31T23:59:59Z",
       "email": "twodrillpumpcompany@fakeeemail.com"
     }
   }, {
@@ -194,8 +194,8 @@
       "contact_tel": "(231) 456-7890",
       "contact_cell": null,
       "contact_email": "longdrilleremail@fakeeeeeeemail.com",
-      "effective_date": "2018-10-12",
-      "expired_date": "9999-12-31"
+      "effective_date": "2018-10-12T18:20:35.936Z",
+      "expired_date": "9999-12-31T23:59:59Z"
     }
   }, {
     "model": "registries.person",
@@ -212,8 +212,8 @@
       "contact_tel": "(543) 345-6543",
       "contact_cell": null,
       "contact_email": "notapproveddriller@fakeeemail.com",
-      "effective_date": "2018-10-15",
-      "expired_date": "9999-12-31"
+      "effective_date": "2018-10-15T18:20:35.936Z",
+      "expired_date": "9999-12-31T23:59:59Z"
     }
   }, {
     "model": "registries.person",
@@ -230,8 +230,8 @@
       "contact_tel": "(232) 132-11232",
       "contact_cell": null,
       "contact_email": "pumpsanddrills@fakeeeemail.com",
-      "effective_date": "2018-10-15",
-      "expired_date": "9999-12-31"
+      "effective_date": "2018-10-15T18:20:35.936Z",
+      "expired_date": "9999-12-31T23:59:59Z"
     }
   }, {
     "model": "registries.person",
@@ -248,8 +248,8 @@
       "contact_tel": "(123) 456-7890",
       "contact_cell": null,
       "contact_email": "shortdriller@fakeeemail.com",
-      "effective_date": "2018-10-12",
-      "expired_date": "9999-12-31"
+      "effective_date": "2018-10-12T18:20:35.936Z",
+      "expired_date": "9999-12-31T23:59:59Z"
     }
   }, {
     "model": "registries.person",
@@ -266,8 +266,8 @@
       "contact_tel": "(234) 123-4567",
       "contact_cell": null,
       "contact_email": "pendingdriller@fakeeemail.com",
-      "effective_date": "2018-10-15",
-      "expired_date": "9999-12-31"
+      "effective_date": "2018-10-15T18:20:35.936Z",
+      "expired_date": "9999-12-31T23:59:59Z"
     }
   }, {
     "model": "registries.person",
@@ -284,8 +284,8 @@
       "contact_tel": "(321) 321-3333",
       "contact_cell": null,
       "contact_email": "removedpumper@fakeeeemail.com",
-      "effective_date": "2018-10-15",
-      "expired_date": "9999-12-31"
+      "effective_date": "2018-10-15T18:20:35.936Z",
+      "expired_date": "9999-12-31T23:59:59Z"
     }
   }, {
     "model": "registries.person",
@@ -302,8 +302,8 @@
       "contact_tel": "(333) 333-3333",
       "contact_cell": null,
       "contact_email": "somewhatnotapproved@thisisalongeeemail.com",
-      "effective_date": "2018-10-15",
-      "expired_date": "9999-12-31"
+      "effective_date": "2018-10-15T18:20:35.936Z",
+      "expired_date": "9999-12-31T23:59:59Z"
     }
   }, {
     "model": "registries.person",
@@ -320,8 +320,8 @@
       "contact_tel": "(154) 345-63124",
       "contact_cell": null,
       "contact_email": "pumpinstaller@fakeeemail.com",
-      "effective_date": "2018-10-15",
-      "expired_date": "9999-12-31"
+      "effective_date": "2018-10-15T18:20:35.936Z",
+      "expired_date": "9999-12-31T23:59:59Z"
     }
   }, {
     "model": "registries.person",
@@ -338,8 +338,8 @@
       "contact_tel": "(444) 666-7777",
       "contact_cell": null,
       "contact_email": "IncompletePumpInstaller@fakeeemail.com",
-      "effective_date": "2018-10-15",
-      "expired_date": "9999-12-31"
+      "effective_date": "2018-10-15T18:20:35.936Z",
+      "expired_date": "9999-12-31T23:59:59Z"
     }
   }, {
     "model": "registries.register",

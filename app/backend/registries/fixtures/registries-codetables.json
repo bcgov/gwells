@@ -9,8 +9,8 @@
             "update_date": "2018-01-01T08:00:00Z",
             "description": "Well Driller",
             "display_order": 2,
-            "effective_date": "2018-05-25",
-            "expired_date": "9999-12-31"
+            "effective_date": "2018-05-25T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -23,8 +23,8 @@
             "update_date": "2018-01-01T08:00:00Z",
             "description": "Pump Installer",
             "display_order": 4,
-            "effective_date": "2018-05-25",
-            "expired_date": "9999-12-31"
+            "effective_date": "2018-05-25T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -38,8 +38,8 @@
             "registries_activity": "DRILL",
             "description": "Geotechnical/Environmental Driller",
             "display_order": 4,
-            "effective_date": "2018-01-01",
-            "expired_date": "9999-12-31"
+            "effective_date": "2018-01-01T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -53,8 +53,8 @@
             "registries_activity": "DRILL",
             "description": "Geoexchange Driller",
             "display_order": 6,
-            "effective_date": "2018-01-01",
-            "expired_date": "9999-12-31"
+            "effective_date": "2018-01-01T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -68,8 +68,8 @@
             "registries_activity": "PUMP",
             "description": "Pump Installer",
             "display_order": 8,
-            "effective_date": "2018-01-01",
-            "expired_date": "9999-12-31"
+            "effective_date": "2018-01-01T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -83,8 +83,8 @@
             "registries_activity": "DRILL",
             "description": "Water Well Driller",
             "display_order": 2,
-            "effective_date": "2018-01-01",
-            "expired_date": "9999-12-31"
+            "effective_date": "2018-01-01T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -96,8 +96,8 @@
             "update_user": "DATALOAD_USER",
             "update_date": "2018-01-01T08:00:00Z",
             "description": "Province of Alberta",
-            "effective_date": "1970-01-01",
-            "expired_date": "9999-12-31"
+            "effective_date": "1970-01-01T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -109,8 +109,8 @@
             "update_user": "DATALOAD_USER",
             "update_date": "2018-01-01T08:00:00Z",
             "description": "Province of B.C.",
-            "effective_date": "1970-01-01",
-            "expired_date": "9999-12-31"
+            "effective_date": "1970-01-01T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -122,8 +122,8 @@
             "update_user": "DATALOAD_USER",
             "update_date": "2018-01-01T08:00:00Z",
             "description": "Canadian Ground Water Association",
-            "effective_date": "1970-01-01",
-            "expired_date": "9999-12-31"
+            "effective_date": "1970-01-01T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -135,8 +135,8 @@
             "update_user": "DATALOAD_USER",
             "update_date": "2018-01-01T08:00:00Z",
             "description": "Grand-fathered",
-            "effective_date": "1970-01-01",
-            "expired_date": "9999-12-31"
+            "effective_date": "1970-01-01T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -148,8 +148,8 @@
             "update_user": "DATALOAD_USER",
             "update_date": "2018-01-01T08:00:00Z",
             "description": "Province of Ontario",
-            "effective_date": "1970-01-01",
-            "expired_date": "9999-12-31"
+            "effective_date": "1970-01-01T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -161,8 +161,8 @@
             "update_user": "DATALOAD_USER",
             "update_date": "2018-01-01T08:00:00Z",
             "description": "Province of Saskatchewan",
-            "effective_date": "1970-01-01",
-            "expired_date": "9999-12-31"
+            "effective_date": "1970-01-01T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -177,8 +177,8 @@
             "registries_activity": "PUMP",
             "name": "Ground Water Pump Technician Certificate",
             "description": null,
-            "effective_date": "1970-01-01",
-            "expired_date": "9999-12-31"
+            "effective_date": "1970-01-01T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -193,8 +193,8 @@
             "registries_activity": "PUMP",
             "name": "Ground Water Pump Technician Certificate, Class 2",
             "description": null,
-            "effective_date": "1970-01-01",
-            "expired_date": "9999-12-31"
+            "effective_date": "1970-01-01T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -209,8 +209,8 @@
             "registries_activity": "DRILL",
             "name": "Geoexchange Driller Certificate",
             "description": null,
-            "effective_date": "1970-01-01",
-            "expired_date": "9999-12-31"
+            "effective_date": "1970-01-01T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -225,8 +225,8 @@
             "registries_activity": "DRILL",
             "name": "Ground Water Drilling Technician Certificate",
             "description": null,
-            "effective_date": "1970-01-01",
-            "expired_date": "9999-12-31"
+            "effective_date": "1970-01-01T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -241,8 +241,8 @@
             "registries_activity": "DRILL",
             "name": "Water Well Driller, Alberta Journeyman Certificate",
             "description": null,
-            "effective_date": "1970-01-01",
-            "expired_date": "9999-12-31"
+            "effective_date": "1970-01-01T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -257,8 +257,8 @@
             "registries_activity": "DRILL",
             "name": "Earth Loop Technician, Alberta Journeyman Certificate",
             "description": null,
-            "effective_date": "1970-01-01",
-            "expired_date": "9999-12-31"
+            "effective_date": "1970-01-01T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -273,8 +273,8 @@
             "registries_activity": "PUMP",
             "name": "Well Pump Installer Certificate",
             "description": null,
-            "effective_date": "1970-01-01",
-            "expired_date": "9999-12-31"
+            "effective_date": "1970-01-01T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -289,8 +289,8 @@
             "registries_activity": "PUMP",
             "name": "Well Technician Certificate",
             "description": null,
-            "effective_date": "1970-01-01",
-            "expired_date": "9999-12-31"
+            "effective_date": "1970-01-01T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -305,8 +305,8 @@
             "registries_activity": "DRILL",
             "name": "Well Technician Class 1 Drilling",
             "description": null,
-            "effective_date": "1970-01-01",
-            "expired_date": "9999-12-31"
+            "effective_date": "1970-01-01T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -321,8 +321,8 @@
             "registries_activity": "DRILL",
             "name": "Water Well Driller, Saskatchewan Journeyperson Certificate",
             "description": null,
-            "effective_date": "1970-01-01",
-            "expired_date": "9999-12-31"
+            "effective_date": "1970-01-01T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -337,8 +337,8 @@
             "registries_activity": "DRILL",
             "name": "Water Well Driller Certificate",
             "description": null,
-            "effective_date": "1970-01-01",
-            "expired_date": "9999-12-31"
+            "effective_date": "1970-01-01T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -353,8 +353,8 @@
             "registries_activity": "PUMP",
             "name": "Grand-parent",
             "description": null,
-            "effective_date": "1970-01-01",
-            "expired_date": "9999-12-31"
+            "effective_date": "1970-01-01T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -369,8 +369,8 @@
             "registries_activity": "DRILL",
             "name": "Geotechnical/Environmental Driller Certificate",
             "description": null,
-            "effective_date": "1970-01-01",
-            "expired_date": "9999-12-31"
+            "effective_date": "1970-01-01T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -385,8 +385,8 @@
             "registries_activity": "DRILL",
             "name": "Well Technician Certificate",
             "description": null,
-            "effective_date": "1970-01-01",
-            "expired_date": "9999-12-31"
+            "effective_date": "1970-01-01T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -401,8 +401,8 @@
             "registries_activity": "DRILL",
             "name": "Grand-parent",
             "description": null,
-            "effective_date": "1970-01-01",
-            "expired_date": "9999-12-31"
+            "effective_date": "1970-01-01T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -415,8 +415,8 @@
             "update_date": "2018-01-01T08:00:00Z",
             "description": "Closed loop geoexchange well",
             "display_order": 14,
-            "effective_date": "2018-05-25",
-            "expired_date": "9999-12-31"
+            "effective_date": "2018-05-25T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -429,8 +429,8 @@
             "update_date": "2018-01-01T08:00:00Z",
             "description": "Dewatering well",
             "display_order": 8,
-            "effective_date": "2018-05-25",
-            "expired_date": "9999-12-31"
+            "effective_date": "2018-05-25T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -443,8 +443,8 @@
             "update_date": "2018-01-01T08:00:00Z",
             "description": "Geotechnical well",
             "display_order": 12,
-            "effective_date": "2018-05-25",
-            "expired_date": "9999-12-31"
+            "effective_date": "2018-05-25T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -457,8 +457,8 @@
             "update_date": "2018-01-01T08:00:00Z",
             "description": "Monitoring well",
             "display_order": 4,
-            "effective_date": "2018-05-25",
-            "expired_date": "9999-12-31"
+            "effective_date": "2018-05-25T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -471,8 +471,8 @@
             "update_date": "2018-01-01T08:00:00Z",
             "description": "Install pump in Water supply, Recharge/Injection, or Dewatering well",
             "display_order": 20,
-            "effective_date": "2018-05-25",
-            "expired_date": "9999-12-31"
+            "effective_date": "2018-05-25T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -485,8 +485,8 @@
             "update_date": "2018-01-01T08:00:00Z",
             "description": "Recharge/Injection well",
             "display_order": 6,
-            "effective_date": "2018-05-25",
-            "expired_date": "9999-12-31"
+            "effective_date": "2018-05-25T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -499,8 +499,8 @@
             "update_date": "2018-01-01T08:00:00Z",
             "description": "Remediatation well",
             "display_order": 10,
-            "effective_date": "2018-05-25",
-            "expired_date": "9999-12-31"
+            "effective_date": "2018-05-25T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -513,8 +513,8 @@
             "update_date": "2018-01-01T08:00:00Z",
             "description": "Water supply well",
             "display_order": 2,
-            "effective_date": "2018-05-25",
-            "expired_date": "9999-12-31"
+            "effective_date": "2018-05-25T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -527,8 +527,8 @@
             "update_date": "2018-01-01T08:00:00Z",
             "description": "Registered",
             "display_order": 4,
-            "effective_date": "2018-05-25",
-            "expired_date": "9999-12-31"
+            "effective_date": "2018-05-25T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -541,8 +541,8 @@
             "update_date": "2018-01-01T08:00:00Z",
             "description": "Incomplete",
             "display_order": 10,
-            "effective_date": "2018-05-25",
-            "expired_date": "9999-12-31"
+            "effective_date": "2018-05-25T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -555,8 +555,8 @@
             "update_date": "2018-01-01T08:00:00Z",
             "description": "Not Approved",
             "display_order": 6,
-            "effective_date": "2018-05-25",
-            "expired_date": "9999-12-31"
+            "effective_date": "2018-05-25T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -569,8 +569,8 @@
             "update_date": "2018-01-01T08:00:00Z",
             "description": "Pending",
             "display_order": 2,
-            "effective_date": "2018-05-25",
-            "expired_date": "9999-12-31"
+            "effective_date": "2018-05-25T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -583,8 +583,8 @@
             "update_date": "2018-01-01T08:00:00Z",
             "description": "Birth Certificate",
             "display_order": 1,
-            "effective_date": "2018-04-26",
-            "expired_date": "9999-12-31"
+            "effective_date": "2018-04-26T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -597,8 +597,8 @@
             "update_date": "2018-01-01T08:00:00Z",
             "description": "Driver's Licence",
             "display_order": 1,
-            "effective_date": "2018-04-26",
-            "expired_date": "9999-12-31"
+            "effective_date": "2018-04-26T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -611,8 +611,8 @@
             "update_date": "2018-01-01T08:00:00Z",
             "description": "Passport",
             "display_order": 2,
-            "effective_date": "2018-04-26",
-            "expired_date": "9999-12-31"
+            "effective_date": "2018-04-26T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -625,8 +625,8 @@
             "update_date": "2018-01-01T08:00:00Z",
             "description": "Fails to meet a requirement for registration",
             "display_order": 1,
-            "effective_date": "2018-06-11",
-            "expired_date": "9999-12-31"
+            "effective_date": "2018-06-11T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -639,8 +639,8 @@
             "update_date": "2018-01-01T08:00:00Z",
             "description": "Fails to maintain a requirement for registration",
             "display_order": 1,
-            "effective_date": "2018-06-11",
-            "expired_date": "9999-12-31"
+            "effective_date": "2018-06-11T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -653,8 +653,8 @@
             "update_date": "2018-01-01T08:00:00Z",
             "description": "No longer actively working in Canada",
             "display_order": 1,
-            "effective_date": "2018-06-11",
-            "expired_date": "9999-12-31"
+            "effective_date": "2018-06-11T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -668,8 +668,8 @@
             "well_class": "CLOS",
             "subactivity": "GEOXCHG",
             "display_order": 2,
-            "effective_date": "2018-05-25",
-            "expired_date": "9999-12-31"
+            "effective_date": "2018-05-25T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -683,8 +683,8 @@
             "well_class": "GEO",
             "subactivity": "GEOTECH",
             "display_order": 6,
-            "effective_date": "2018-05-25",
-            "expired_date": "9999-12-31"
+            "effective_date": "2018-05-25T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -698,8 +698,8 @@
             "well_class": "PUMP",
             "subactivity": "PUMPINST",
             "display_order": 2,
-            "effective_date": "2018-05-25",
-            "expired_date": "9999-12-31"
+            "effective_date": "2018-05-25T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -713,8 +713,8 @@
             "well_class": "MON",
             "subactivity": "GEOTECH",
             "display_order": 2,
-            "effective_date": "2018-05-25",
-            "expired_date": "9999-12-31"
+            "effective_date": "2018-05-25T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -728,8 +728,8 @@
             "well_class": "GEO",
             "subactivity": "WATER",
             "display_order": 12,
-            "effective_date": "2018-05-25",
-            "expired_date": "9999-12-31"
+            "effective_date": "2018-05-25T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -743,8 +743,8 @@
             "well_class": "DEWAT",
             "subactivity": "WATER",
             "display_order": 8,
-            "effective_date": "2018-05-25",
-            "expired_date": "9999-12-31"
+            "effective_date": "2018-05-25T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -758,8 +758,8 @@
             "well_class": "REM",
             "subactivity": "WATER",
             "display_order": 10,
-            "effective_date": "2018-05-25",
-            "expired_date": "9999-12-31"
+            "effective_date": "2018-05-25T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -773,8 +773,8 @@
             "well_class": "RECH",
             "subactivity": "WATER",
             "display_order": 6,
-            "effective_date": "2018-05-25",
-            "expired_date": "9999-12-31"
+            "effective_date": "2018-05-25T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -788,8 +788,8 @@
             "well_class": "REM",
             "subactivity": "GEOTECH",
             "display_order": 4,
-            "effective_date": "2018-05-25",
-            "expired_date": "9999-12-31"
+            "effective_date": "2018-05-25T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -803,8 +803,8 @@
             "well_class": "MON",
             "subactivity": "WATER",
             "display_order": 4,
-            "effective_date": "2018-05-25",
-            "expired_date": "9999-12-31"
+            "effective_date": "2018-05-25T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     },
     {
@@ -818,8 +818,8 @@
             "well_class": "WAT",
             "subactivity": "WATER",
             "display_order": 2,
-            "effective_date": "2018-05-25",
-            "expired_date": "9999-12-31"
+            "effective_date": "2018-05-25T18:20:35.936Z",
+            "expired_date": "9999-12-31T23:59:59Z"
         }
     }
 ]

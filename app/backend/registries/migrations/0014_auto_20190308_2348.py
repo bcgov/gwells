@@ -19,12 +19,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='accreditedcertificatecode',
             name='effective_date',
-            field=models.DateField(default=django.utils.timezone.now),
+            field=models.DateTimeField(default=django.utils.timezone.now),
         ),
         migrations.AlterField(
             model_name='accreditedcertificatecode',
             name='expired_date',
-            field=models.DateField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc)),
+            field=models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc)),
         ),
         migrations.AlterField(
             model_name='accreditedcertificatecode',
@@ -39,12 +39,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='activitycode',
             name='effective_date',
-            field=models.DateField(default=django.utils.timezone.now),
+            field=models.DateTimeField(default=django.utils.timezone.now),
         ),
         migrations.AlterField(
             model_name='activitycode',
             name='expired_date',
-            field=models.DateField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc)),
+            field=models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc)),
         ),
         migrations.AlterField(
             model_name='activitycode',
@@ -59,12 +59,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='applicationstatuscode',
             name='effective_date',
-            field=models.DateField(default=django.utils.timezone.now),
+            field=models.DateTimeField(default=django.utils.timezone.now),
         ),
         migrations.AlterField(
             model_name='applicationstatuscode',
             name='expired_date',
-            field=models.DateField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc)),
+            field=models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc)),
         ),
         migrations.AlterField(
             model_name='applicationstatuscode',
@@ -79,12 +79,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='certifyingauthoritycode',
             name='effective_date',
-            field=models.DateField(default=django.utils.timezone.now),
+            field=models.DateTimeField(default=django.utils.timezone.now),
         ),
         migrations.AlterField(
             model_name='certifyingauthoritycode',
             name='expired_date',
-            field=models.DateField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc)),
+            field=models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc)),
         ),
         migrations.AlterField(
             model_name='certifyingauthoritycode',
@@ -99,12 +99,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='organization',
             name='effective_date',
-            field=models.DateField(default=django.utils.timezone.now),
+            field=models.DateTimeField(default=django.utils.timezone.now),
         ),
         migrations.AlterField(
             model_name='organization',
             name='expired_date',
-            field=models.DateField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc)),
+            field=models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc)),
         ),
         migrations.AlterField(
             model_name='organization',
@@ -129,12 +129,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='person',
             name='effective_date',
-            field=models.DateField(default=django.utils.timezone.now),
+            field=models.DateTimeField(default=django.utils.timezone.now),
         ),
         migrations.AlterField(
             model_name='person',
             name='expired_date',
-            field=models.DateField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc)),
+            field=models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc)),
         ),
         migrations.AlterField(
             model_name='person',
@@ -159,12 +159,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='proofofagecode',
             name='effective_date',
-            field=models.DateField(default=django.utils.timezone.now),
+            field=models.DateTimeField(default=django.utils.timezone.now),
         ),
         migrations.AlterField(
             model_name='proofofagecode',
             name='expired_date',
-            field=models.DateField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc)),
+            field=models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc)),
         ),
         migrations.AlterField(
             model_name='proofofagecode',
@@ -179,12 +179,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='qualification',
             name='effective_date',
-            field=models.DateField(default=django.utils.timezone.now),
+            field=models.DateTimeField(default=django.utils.timezone.now),
         ),
         migrations.AlterField(
             model_name='qualification',
             name='expired_date',
-            field=models.DateField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc)),
+            field=models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc)),
         ),
         migrations.AlterField(
             model_name='qualification',
@@ -229,12 +229,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='registriesremovalreason',
             name='effective_date',
-            field=models.DateField(default=django.utils.timezone.now),
+            field=models.DateTimeField(default=django.utils.timezone.now),
         ),
         migrations.AlterField(
             model_name='registriesremovalreason',
             name='expired_date',
-            field=models.DateField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc)),
+            field=models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc)),
         ),
         migrations.AlterField(
             model_name='registriesremovalreason',
@@ -249,12 +249,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='subactivitycode',
             name='effective_date',
-            field=models.DateField(default=django.utils.timezone.now),
+            field=models.DateTimeField(default=django.utils.timezone.now),
         ),
         migrations.AlterField(
             model_name='subactivitycode',
             name='expired_date',
-            field=models.DateField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc)),
+            field=models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc)),
         ),
         migrations.AlterField(
             model_name='subactivitycode',
@@ -269,12 +269,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='wellclasscode',
             name='effective_date',
-            field=models.DateField(default=django.utils.timezone.now),
+            field=models.DateTimeField(default=django.utils.timezone.now),
         ),
         migrations.AlterField(
             model_name='wellclasscode',
             name='expired_date',
-            field=models.DateField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc)),
+            field=models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc)),
         ),
         migrations.AlterField(
             model_name='wellclasscode',
