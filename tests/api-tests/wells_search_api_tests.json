@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "48dcde94-5490-4d05-a5a0-29bd1381fb37",
+		"_postman_id": "227d25df-5dde-4213-a9b3-c4b10916ed57",
 		"name": "Well List API filters",
 		"description": "Well List API endpoint filters required for advanced search options.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -2159,7 +2159,7 @@
 										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
 										"exec": [
 											"pm.test(\"Latitude matches filter\", function () {",
-											"  const latitudeMin = parseFloat(pm.request.url.query.get(\"latitude_min\"));",
+											"  const latitudeMin = 49.22;",
 											"",
 											"  pm.response.json().results.forEach(function(result) {",
 											"    const latitude = parseFloat(result.latitude);",
@@ -2180,7 +2180,7 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?latitude_min=49.22",
+									"raw": "{{base_url}}/api/v1/wells?in_bbox=-180,49.22,180,90",
 									"host": [
 										"{{base_url}}"
 									],
@@ -2191,8 +2191,8 @@
 									],
 									"query": [
 										{
-											"key": "latitude_min",
-											"value": "49.22"
+											"key": "in_bbox",
+											"value": "-180,49.22,180,90"
 										}
 									]
 								}
@@ -2208,7 +2208,7 @@
 										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
 										"exec": [
 											"pm.test(\"Latitude matches filter\", function () {",
-											"  const latitudeMax = parseFloat(pm.request.url.query.get(\"latitude_max\"));",
+											"  const latitudeMax = 49.22",
 											"",
 											"  pm.response.json().results.forEach(function(result) {",
 											"    const latitude = parseFloat(result.latitude);",
@@ -2229,7 +2229,7 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?latitude_max=49.24",
+									"raw": "{{base_url}}/api/v1/wells?in_bbox=-180,-90,180,49.22",
 									"host": [
 										"{{base_url}}"
 									],
@@ -2240,8 +2240,8 @@
 									],
 									"query": [
 										{
-											"key": "latitude_max",
-											"value": "49.24"
+											"key": "in_bbox",
+											"value": "-180,-90,180,49.22"
 										}
 									]
 								}
@@ -2257,7 +2257,7 @@
 										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
 										"exec": [
 											"pm.test(\"Longitude matches filter\", function () {",
-											"  const longitudeMin = parseFloat(pm.request.url.query.get(\"longitude_min\"));",
+											"  const longitudeMin = -122.58;",
 											"",
 											"  pm.response.json().results.forEach(function(result) {",
 											"    const longitude = parseFloat(result.longitude);",
@@ -2278,7 +2278,7 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?longitude_min=-122.58",
+									"raw": "{{base_url}}/api/v1/wells?in_bbox=-122.58,-90,180,90",
 									"host": [
 										"{{base_url}}"
 									],
@@ -2289,8 +2289,8 @@
 									],
 									"query": [
 										{
-											"key": "longitude_min",
-											"value": "-122.58"
+											"key": "in_bbox",
+											"value": "-122.58,-90,180,90"
 										}
 									]
 								}
@@ -2306,12 +2306,12 @@
 										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
 										"exec": [
 											"pm.test(\"Longitude matches filter\", function () {",
-											"  const longitudeMax = parseFloat(pm.request.url.query.get(\"longitude_max\"));",
+											"  const longitudeMin = -122.58;",
 											"",
 											"  pm.response.json().results.forEach(function(result) {",
 											"    const longitude = parseFloat(result.longitude);",
 											"",
-											"    pm.expect(longitude).to.be.at.most(longitudeMax);",
+											"    pm.expect(longitude).to.be.at.most(longitudeMin);",
 											"  });",
 											"});"
 										],
@@ -2327,7 +2327,7 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?longitude_max=-122.57",
+									"raw": "{{base_url}}/api/v1/wells?in_bbox=-180,-90,-122.58,90",
 									"host": [
 										"{{base_url}}"
 									],
@@ -2338,8 +2338,8 @@
 									],
 									"query": [
 										{
-											"key": "longitude_max",
-											"value": "-122.57"
+											"key": "in_bbox",
+											"value": "-180,-90,-122.58,90"
 										}
 									]
 								}
