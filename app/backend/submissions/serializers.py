@@ -115,10 +115,11 @@ class WellSubmissionSerializerBase(serializers.ModelSerializer):
         # Create submission.
         validated_data['well_activity_type'] = self.get_well_activity_type()
 
-        data = self.context['request'].data
-        # Convert lat long values into geom object stored on model
-        if data.get('latitude', None) and data.get('longitude', None):
-            validated_data['geom'] = Point(data['longitude'], data['latitude'])
+        if self.context.get('request', None):
+            data = self.context['request'].data
+            # Convert lat long values into geom object stored on model
+            if data.get('latitude', None) and data.get('longitude', None):
+                validated_data['geom'] = Point(data['longitude'], data['latitude'])
 
         # Remove the latitude and longitude fields if they exist
         validated_data.pop('latitude', None)
