@@ -1,11 +1,11 @@
 <template>
-  <div>
+  <div class="container">
 
     <!-- Active surveys -->
     <b-alert
         show
         variant="info"
-        class="container mb-3"
+        class="mb-3"
         v-for="(survey, index) in surveys"
         :key="`survey ${index}`">
       <p class="m-0">
@@ -16,7 +16,7 @@
     </b-alert>
 
     <!-- Main Registries content -->
-    <b-card class="container p-1">
+    <b-card class="p-1">
       <h1 class="card-title">Search for a Well Driller or Well Pump Installer</h1>
       <p>To update contact information or for general enquiries email <a href="mailto:Groundwater@gov.bc.ca">groundwater@gov.bc.ca</a>.</p>
       <p>

@@ -200,12 +200,19 @@
       <fieldset id="lithology_fieldset" class="my-3 detail-section">
         <legend>Lithology</legend>
         <b-table
+          :items="well.lithologydescription_set"
           striped
           small
           bordered
           show-empty
-          :fields="['from', 'to', 'description', 'relative hardness', 'colour', 'estimated_water_bearing_flow']"
-        ></b-table>
+          :fields="['from', 'to', 'description', 'hardness', 'colour', 'estimated_water_bearing_flow']"
+        >
+            <template slot="from" slot-scope="data">{{data.item.lithology_from}} ft</template>
+            <template slot="to" slot-scope="data">{{data.item.lithology_to}} ft</template>
+            <template slot="description" slot-scope="data">{{data.item.lithology_raw_data}}</template>
+            <template slot="hardness" slot-scope="data">{{data.item.lithology_hardness}}</template>
+            <template slot="colour" slot-scope="data">{{data.item.lithology_colour}}</template>
+        </b-table>
       </fieldset>
 
       <fieldset id="casing_fieldset" class="my-3 detail-section">
