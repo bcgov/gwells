@@ -61,7 +61,7 @@ class AquiferSerializer(serializers.ModelSerializer):
         source='quality_concern', read_only=True, slug_field='description')
     known_water_use_description = serializers.SlugRelatedField(
         source='known_water_use', read_only=True, slug_field='description')
-    resources = AquiferResourceSerializer(many=True)
+    resources = AquiferResourceSerializer(many=True, required=False)
     
     def create(self, validated_data):
         """
@@ -81,7 +81,12 @@ class AquiferSerializer(serializers.ModelSerializer):
         resources_data = validated_data.pop('resources')
         aquifer = models.Aquifer.objects.create(**validated_data)
         for resource_item in resources_data:
-            models.AquiferResource.objects.create(aquifer=aquifer, **resource_item)
+            r = models.AquiferResource(
+                url=resource_item['url'],
+                name=resource_item['name'],
+                aquifer=instance,
+                section_id=resource_item['section']['code'].code)
+            r.save()
         return aquifer
     
     def update(self, instance, validated_data):
