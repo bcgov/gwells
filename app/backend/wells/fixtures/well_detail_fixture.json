@@ -5,7 +5,7 @@
               "create_date": "2018-02-08T17:22:21.890Z",
               "display_order": 0,
               "update_date": "2018-02-08T17:22:21.891Z",
-              "update_user": null},
+              "update_user":""},
    "pk": "BC"},
 
   {"model": "wells.wellclasscode",
@@ -14,7 +14,7 @@
               "create_date": "2018-02-08T17:22:21.892Z",
               "display_order": 1,
               "update_date": "2018-02-08T17:22:21.893Z",
-              "update_user": null},
+              "update_user":""},
    "pk": "WCC"},
 
   {"model": "wells.well",
@@ -76,7 +76,7 @@
               "screen_intake_method": null,
               "water_quality_odour": "",
               "observation_well_number": null,
-              "update_user": null,
+              "update_user": "",
               "screen_bottom": null,
               "decommission_reason": null,
               "identification_plate_number": 123,

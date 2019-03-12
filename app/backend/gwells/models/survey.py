@@ -12,6 +12,7 @@
     limitations under the License.
 """
 import uuid
+from django.utils import timezone
 
 from django.db import models
 from django.utils import timezone
@@ -83,9 +84,8 @@ class OnlineSurvey(models.Model):
     survey_page = models.CharField(
         verbose_name="Page", choices=SURVEY_PAGE_CHOICES, max_length=1, default=WELL)
 
-    effective_date = models.DateField(
-        default=timezone.now, blank=False, null=False)
-    expiry_date = models.DateField(blank=True, null=True)
+    effective_date = models.DateField(default=timezone.now, blank=False, null=False)
+    expiry_date = models.DateField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     def __str__(self):
         return '{}: {} | {} | {}'.format(self.survey_introduction_text, self.survey_link, self.survey_enabled,
