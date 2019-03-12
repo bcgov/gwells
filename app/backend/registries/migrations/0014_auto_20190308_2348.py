@@ -1,7 +1,32 @@
 import datetime
 from django.db import migrations, models
 from django.utils.timezone import utc
+from django.db.models import F
 import django.utils.timezone
+
+
+def update_fields(apps, schema_editor):
+    app_config = apps.get_app_config('registries')
+    app_models = app_config.get_models()
+    for model in app_models:
+        if hasattr(model, 'expired_date'):
+            try:
+                model.objects.filter(expired_date__isnull=True)\
+                    .update(expired_date=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc))
+            except AttributeError:
+                print("skipping")
+        if hasattr(model, 'effective_date'):
+            try:
+                model.objects.filter(effective_date__isnull=True)\
+                    .update(effective_date=F('create_date'))
+            except AttributeError:
+                print("skipping")
+        if hasattr(model, 'update_date'):
+            try:
+                model.objects.filter(update_date__isnull=True)\
+                    .update(update_date=F('create_date'))
+            except AttributeError:
+                print("skipping")
 
 
 class Migration(migrations.Migration):
@@ -11,6 +36,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.RunPython(update_fields),
         migrations.AlterField(
             model_name='accreditedcertificatecode',
             name='create_date',
