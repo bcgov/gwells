@@ -84,7 +84,7 @@ class AquiferSerializer(serializers.ModelSerializer):
             r = models.AquiferResource(
                 url=resource_item['url'],
                 name=resource_item['name'],
-                aquifer=instance,
+                aquifer=aquifer,
                 section_id=resource_item['section']['code'].code)
             r.save()
         return aquifer
@@ -93,7 +93,7 @@ class AquiferSerializer(serializers.ModelSerializer):
         """
         Update the resources associated with an aquifer, inline of the aquifer API.
         """
-        resources_data = validated_data.pop('resources')
+        resources_data = validated_data.pop('resources', [])
         for k,v in validated_data.items():
             setattr(instance, k, v)
         instance.save()
