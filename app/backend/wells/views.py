@@ -12,8 +12,11 @@
     limitations under the License.
 """
 from urllib.parse import quote
+from datetime import datetime
+import logging
 
 from django.db.models import Prefetch
+from django.db import connection
 from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView
@@ -31,6 +34,7 @@ from rest_framework import filters
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.permissions import AllowAny
 
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
@@ -57,6 +61,9 @@ from wells.serializers import (
 from wells.permissions import WellsEditPermissions, WellsEditOrReadOnly
 
 
+logger = logging.getLogger(__name__)
+
+
 class WellSearchFilter(restfilters.FilterSet):
     well_tag_number = restfilters.CharFilter()
     identification_plate_number = restfilters.CharFilter()
@@ -64,6 +71,15 @@ class WellSearchFilter(restfilters.FilterSet):
     street_address = restfilters.CharFilter(lookup_expr='icontains')
     legal_plan = restfilters.CharFilter()
     legal_lot = restfilters.CharFilter()
+
+
+class WellLocationFilter(WellSearchFilter, restfilters.FilterSet):
+    ne_lat = restfilters.NumberFilter(field_name='latitude', lookup_expr='lte')
+    ne_long = restfilters.NumberFilter(
+        field_name='longitude', lookup_expr='lte')
+    sw_lat = restfilters.NumberFilter(field_name='latitude', lookup_expr='gte')
+    sw_long = restfilters.NumberFilter(
+        field_name='longitude', lookup_expr='gte')
 
 
 class WellDetailView(DetailView):
@@ -117,15 +133,19 @@ class ListExtracts(APIView):
         host = get_env_variable('S3_HOST')
         use_secure = int(get_env_variable('S3_USE_SECURE', 1))
         minioClient = Minio(host,
-                            access_key=get_env_variable('S3_PUBLIC_ACCESS_KEY'),
-                            secret_key=get_env_variable('S3_PUBLIC_SECRET_KEY'),
+                            access_key=get_env_variable(
+                                'S3_PUBLIC_ACCESS_KEY'),
+                            secret_key=get_env_variable(
+                                'S3_PUBLIC_SECRET_KEY'),
                             secure=use_secure)
-        objects = minioClient.list_objects(get_env_variable('S3_WELL_EXPORT_BUCKET'))
+        objects = minioClient.list_objects(
+            get_env_variable('S3_WELL_EXPORT_BUCKET'))
         urls = list(
             map(
                 lambda document: {
                     'url': 'https://{}/{}/{}'.format(host,
-                                                     quote(document.bucket_name),
+                                                     quote(
+                                                         document.bucket_name),
                                                      quote(document.object_name)),
                     'name': document.object_name,
                     'size': document.size,
@@ -153,23 +173,23 @@ class ListFiles(APIView):
     """
 
     @swagger_auto_schema(responses={200: openapi.Response('OK',
-        openapi.Schema(type=openapi.TYPE_OBJECT, properties={
-            'public': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
-                type=openapi.TYPE_OBJECT,
-                properties={
-                    'url': openapi.Schema(type=openapi.TYPE_STRING),
-                    'name': openapi.Schema(type=openapi.TYPE_STRING)
-                }
-            )),
-            'private': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
-                type=openapi.TYPE_OBJECT,
-                properties={
-                    'url': openapi.Schema(type=openapi.TYPE_STRING),
-                    'name': openapi.Schema(type=openapi.TYPE_STRING)
-                }
-            ))
-        })
-    )})
+                         openapi.Schema(type=openapi.TYPE_OBJECT, properties={
+                            'public': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
+                                type=openapi.TYPE_OBJECT,
+                                properties={
+                                    'url': openapi.Schema(type=openapi.TYPE_STRING),
+                                    'name': openapi.Schema(type=openapi.TYPE_STRING)
+                                }
+                            )),
+                            'private': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
+                                type=openapi.TYPE_OBJECT,
+                                properties={
+                                    'url': openapi.Schema(type=openapi.TYPE_STRING),
+                                    'name': openapi.Schema(type=openapi.TYPE_STRING)
+                                }
+                            ))
+                         })
+                         )})
     def get(self, request, tag):
         user_is_staff = self.request.user.groups.filter(
             name=WELLS_VIEWER_ROLE).exists()
@@ -215,7 +235,8 @@ class WellListAPIView(ListAPIView):
 
         well_tag_or_plate = self.request.query_params.get('well', None)
         if well_tag_or_plate:
-            qs = qs.filter(Q(well_tag_number=well_tag_or_plate) | Q(identification_plate_number=well_tag_or_plate))
+            qs = qs.filter(Q(well_tag_number=well_tag_or_plate) | Q(
+                identification_plate_number=well_tag_or_plate))
 
         return qs
 
@@ -238,7 +259,8 @@ class WellTagSearchAPIView(ListAPIView):
 
     permission_classes = (WellsEditOrReadOnly,)
     model = Well
-    queryset = Well.objects.exclude(well_publication_status='Unpublished').only('well_tag_number', 'owner_full_name')
+    queryset = Well.objects.exclude(well_publication_status='Unpublished').only(
+        'well_tag_number', 'owner_full_name')
     pagination_class = None
     serializer_class = WellTagSearchSerializer
     lookup_field = 'well_tag_number'
@@ -272,18 +294,22 @@ class WellLocationListAPIView(ListAPIView):
 
     # search_fields and get_queryset are fragile here.
     # they need to match up with the search results returned by WellListAPIView.
-    # an attempt was made to factor out filtering logic into WellSearchFilter (which WellLocationFilter inherits),
+    # an attempt was made to factor out filtering logic into WellSearchFilter (which WellLocationFilter
+    # inherits),
     # but so far, not all the searchable fields have been put into that class.
-    # Please note the difference between "searchable fields" (one query param will return results that are valid
+    # Please note the difference between "searchable fields" (one query param will return results that are
+    # valid
     # for any of these fields) and "filter fields" (search by a single individual fields)
-    search_fields = ('legal_pid', 'legal_plan', 'legal_district_lot', 'legal_block', 'legal_section', 'legal_township', 'legal_range')
+    search_fields = ('legal_pid', 'legal_plan', 'legal_district_lot',
+                     'legal_block', 'legal_section', 'legal_township', 'legal_range')
 
     def get_queryset(self):
         qs = self.queryset
 
         well_tag_or_plate = self.request.query_params.get('well', None)
         if well_tag_or_plate:
-            qs = qs.filter(Q(well_tag_number=well_tag_or_plate) | Q(identification_plate_number=well_tag_or_plate))
+            qs = qs.filter(Q(well_tag_number=well_tag_or_plate) | Q(
+                identification_plate_number=well_tag_or_plate))
 
         return qs
 
@@ -317,7 +343,8 @@ class PreSignedDocumentKey(APIView):
             request=request, disable_private=False)
 
         object_name = request.GET.get("filename")
-        filename = client.format_object_name(object_name, int(well.well_tag_number), "well")
+        filename = client.format_object_name(
+            object_name, int(well.well_tag_number), "well")
         bucket_name = get_env_variable("S3_ROOT_BUCKET")
 
         is_private = False
@@ -355,9 +382,156 @@ class DeleteWellDocument(APIView):
             is_private = True
             bucket_name = get_env_variable("S3_PRIVATE_ROOT_BUCKET")
 
-        object_name = client.get_bucket_folder(int(well.well_tag_number), "well") + "/" + request.GET.get("filename")
+        object_name = client.get_bucket_folder(
+            int(well.well_tag_number), "well") + "/" + request.GET.get("filename")
 
         # TODO: This should probably be "S3_WELL_BUCKET" but that will require a file migration
-        client.delete_document(object_name, bucket_name=bucket_name, private=is_private)
+        client.delete_document(
+            object_name, bucket_name=bucket_name, private=is_private)
 
         return HttpResponse(status=204)
+
+
+class WellSpatial(APIView):
+
+    permission_classes = (AllowAny,)
+
+    def get(self, request):
+        # IMPORTANT: If the underlying data structure changes (e.g. column name changes etc.), the
+        # property names have to stay the same! This endpoint is consumed by DataBC and must remain
+        # stable!
+        sql = ("""
+select row_to_json(fc)
+from (
+    select
+        'FeatureCollection' as "type",
+        array_to_json(array_agg(f)) as "features"
+    from (
+        select
+            'Feature' as "type",
+            ST_AsGeoJSON(geom) :: json as "geometry",
+            (
+                select json_strip_nulls(row_to_json(t))
+                from
+                (
+                    select
+                    well_tag_number,
+                    identification_plate_number,
+                    well_status_code.description as well_status_description,
+                    licenced_status_code.description as licenced_status,
+                    CONCAT('https://apps.nrs.gov.bc.ca/gwells/well/',well_tag_number) as detail,
+                    artesian_flow, 'usGPM' as artesian_flow_units, artesian_pressure,
+                    well_class_code.description as well_class_description,
+                    intended_water_use_code.description as intended_water_use_description,
+                    street_address,
+                    finished_well_depth,
+                    diameter,
+                    static_water_level,
+                    bedrock_depth,
+                    well_yield,
+                    well_yield_unit_code.description as well_yield_unit,
+                    aquifer_id
+                ) t
+            ) as properties
+            from well
+                left join well_status_code on well_status_code.well_status_code = well.well_status_code
+                left join licenced_status_code on
+                    licenced_status_code.licenced_status_code = well.licenced_status_code
+                left join well_class_code on well_class_code.well_class_code = well.well_class_code
+                left join intended_water_use_code on
+                    intended_water_use_code.intended_water_use_code = well.intended_water_use_code
+                left join well_yield_unit_code on
+                    well_yield_unit_code.well_yield_unit_code = well.well_yield_unit_code
+    ) as f
+) as fc;""")
+        start = datetime.now()
+        logger.info('fetching well spatial data from database...')
+        with connection.cursor() as cursor:
+            cursor.execute(sql)
+            row = cursor.fetchone()
+            logger.info('well spatial db query took: {}'.format(
+                datetime.now() - start))
+            return JsonResponse(row[0])
+
+
+class WellLithologySpatial(APIView):
+
+    permission_classes = (AllowAny,)
+
+    def get(self, request):
+        # IMPORTANT: If the underlying data structure changes (e.g. column name changes etc.), the
+        # property names have to stay the same! This endpoint is consumed by DataBC and must remain
+        # stable!
+        sql = ("""
+select row_to_json(fc)
+from (
+    select
+        'FeatureCollection' as "type",
+        array_to_json(array_agg(f)) as "features"
+    from (
+        select
+            'Feature' as "type",
+            ST_AsGeoJSON(geom) :: json as "geometry",
+            (
+                select json_strip_nulls(row_to_json(t))
+                from
+                (
+                    select
+                    well.well_tag_number,
+                    identification_plate_number,
+                    well_status_code.description as well_status_description,
+                    licenced_status_code.description as licenced_status_description,
+                    CONCAT('https://apps.nrs.gov.bc.ca/gwells/well/',well.well_tag_number) as detail,
+                    lithology_description.lithology_from,
+                    lithology_description.lithology_to,
+                    lithology_colour_code.description as lithology_colour_description,
+                    lithology_description_code.description as lithology_description,
+                    lithology_material_code.description as lithology_material_description,
+                    lithology_observation,
+                    lithology_hardness_code.description as lithology_hardness_description,
+                    well_class_code.description as well_class_description,
+                    intended_water_use_code.description as intended_water_use_description,
+                    street_address,
+                    finished_well_depth,
+                    diameter,
+                    static_water_level,
+                    bedrock_depth,
+                    well_yield,
+                    well_yield_unit_code.description as well_yield_unit,
+                    aquifer_id
+                ) t
+            ) as properties
+            from well
+                inner join lithology_description on
+                    lithology_description.well_tag_number = well.well_tag_number
+                left join well_status_code on
+                    well_status_code.well_status_code = well.well_status_code
+                left join licenced_status_code on
+                    licenced_status_code.licenced_status_code = well.licenced_status_code
+                left join lithology_material_code on
+                    lithology_material_code.lithology_material_code =
+                        lithology_description.lithology_material_code
+                left join lithology_colour_code on
+                    lithology_colour_code.lithology_colour_code = lithology_description.lithology_colour_code
+                left join lithology_description_code on
+                    lithology_description_code.lithology_description_code =
+                        lithology_description.lithology_description_code
+                left join lithology_hardness_code on
+                    lithology_hardness_code.lithology_hardness_code =
+                        lithology_description.lithology_hardness_code
+                left join well_class_code on well_class_code.well_class_code = well.well_class_code
+                left join intended_water_use_code on
+                    intended_water_use_code.intended_water_use_code = well.intended_water_use_code
+                left join well_yield_unit_code on
+                    well_yield_unit_code.well_yield_unit_code = well.well_yield_unit_code
+                order by well.well_tag_number, lithology_description.lithology_from
+    ) as f
+) as fc;""")
+        start = datetime.now()
+        logger.info('fetching lithology spatial data from database...')
+        with connection.cursor() as cursor:
+            cursor.execute(sql)
+            row = cursor.fetchone()
+            logger.info('lithology spatial db query took: {}'.format(
+                datetime.now() - start))
+            return JsonResponse(row[0])

@@ -1,3 +1,16 @@
+"""
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+"""
 import csv
 import zipfile
 import os
@@ -163,12 +176,12 @@ class Command(BaseCommand):
  hydro_fracturing_performed, hydro_fracturing_yield_increase,
  decommission_reason, decommission_method_code, decommission_details, decommission_sealant_material,
  decommission_backfill_material,
- comments, aquifer_id,
+ comments,
  drilling_company.drilling_company_code,
  ems,
- aquifer_id,
  registries_person.surname as person_responsible,
- registries_organization.name as company_of_person_responsible
+ registries_organization.name as company_of_person_responsible,
+ aquifer_id
  from well
  left join well_subclass_code as wsc on wsc.well_subclass_guid = well.well_subclass_guid
  left join drilling_company on

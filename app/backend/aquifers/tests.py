@@ -33,3 +33,12 @@ class TestAquifersEditRole(APITestCase):
         url = reverse('aquifer-retrieve-update', kwargs={'aquifer_id': 1})
         response = self.client.patch(url, {}, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+class TestAquifersSpatial(APITestCase):
+
+    def test_geodjango(self):
+        # This should catch if the sql query is no longer valid.
+        url = reverse('spatial-aquifer')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
