@@ -25,6 +25,21 @@ parameters:
 # Currently targeting 3:00 AM Daily
     value: "0 11 * * *"
     required: true
+  - name: "PVC_SIZE"
+    displayName: "PVC size"
+    description: "The size of the PVC to create."
+    required: false
+    value: "5Gi"
+  - name: "PVC_CLASS"
+    displayName: "PVC class"
+    description: "The class of PVC to create."
+    required: false
+    value: "gluster-file"
+  - name: "PVC_ACCESS"
+    displayName: "PVC access mode"
+    description: "The access mode of the PVC to create."
+    required: false
+    value: "ReadWriteOnce"
   - name: "SOURCE_IMAGE_NAME"
     displayName: "Source Image Name"
     description: "The name of the image to use for this resource."
@@ -112,6 +127,22 @@ objects:
         cronjob: ${JOB_NAME}
         template: ${JOB_NAME}-template
       name: ${TARGET}-backup
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      finalizers:
+      - kubernetes.io/pvc-protection
+      labels:
+        app: backup-persistent
+        template: backup-persistent-template
+      name: ${TARGET}-backup
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: ${PVC_SIZE}
+      storageClassName: ${PVC_CLASS}
   - apiVersion: batch/v1beta1
     kind: CronJob
     metadata:
