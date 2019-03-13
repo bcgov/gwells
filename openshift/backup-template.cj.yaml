@@ -9,25 +9,15 @@ metadata:
     template: "${JOB_NAME}-config-template"
   name: "${JOB_NAME}-cronjob-template"
 parameters:
+  - name: "TARGET"
+    displayName: "Database Service Name"
+    description: "The name of the database service, used in config map, secret and PVC names."
+    required: true
+    value: "gwells-pgsql-staging"
   - name: "JOB_NAME"
     displayName: "Job Name"
     description: "Name of the Scheduled Job to Create."
     value: "backup"
-    required: true
-  - name: "SECRET"
-    displayName: "Secret Name"
-    description: "Name of the Secret to reference."
-    value: "gwells-pgsql-staging"
-    required: true
-  - name: "CONFIGMAP"
-    displayName: "Config Map Name"
-    description: "Name of the Config Map to reference or create."
-    value: "backup-config"
-    required: true
-  - name: "JOB_PERSISTENT_STORAGE_NAME"
-    displayName: "Backup Persistent Storage Name"
-    description: "Pre-Created PVC to use for backup target"
-    value: "gwells-pgsql-staging-backup"
     required: true
   - name: "SCHEDULE"
     displayName: "Cron Schedule"
@@ -50,11 +40,6 @@ parameters:
     description: "The TAG name for this environment, e.g., dev, test, prod"
     required: true
     value: "dev"
-  - name: "DATABASE_SERVICE_NAME"
-    displayName: "Database Service Name"
-    description: "The name of the database service."
-    required: true
-    value: "gwells-pgsql-staging"
   - name: "DEFAULT_PORT"
     displayName: "Database Service Port"
     description: "The configured port for the database service"
@@ -125,7 +110,7 @@ objects:
     data:
       BACKUP_STRATEGY: ${BACKUP_STRATEGY}
       DAILY_BACKUPS: ${DAILY_BACKUPS}
-      DATABASE_SERVICE_NAME: ${DATABASE_SERVICE_NAME}
+      DATABASE_SERVICE_NAME: ${TARGET}
       DEFAULT_PORT: ${DEFAULT_PORT}
       MONTHLY_BACKUPS: ${MONTHLY_BACKUPS}
       NUM_BACKUPS: ${NUM_BACKUPS}
@@ -136,12 +121,12 @@ objects:
       labels:
         cronjob: ${JOB_NAME}
         template: ${JOB_NAME}-template
-      name: ${CONFIGMAP}
+      name: ${TARGET}-backup
       namespace: moe-gwells-test
   - apiVersion: batch/v1beta1
     kind: CronJob
     metadata:
-      name: ${JOB_NAME}-pgsql-staging-backup
+      name: ${TARGET}-backup
     spec:
       concurrencyPolicy: Forbid
       failedJobsHistoryLimit: 2
@@ -170,57 +155,57 @@ objects:
                   valueFrom:
                     configMapKeyRef:
                       key: BACKUP_STRATEGY
-                      name: ${CONFIGMAP}
+                      name: ${TARGET}-backup
                 - name: NUM_BACKUPS
                   valueFrom:
                     configMapKeyRef:
                       key: NUM_BACKUPS
-                      name: ${CONFIGMAP}
+                      name: ${TARGET}-backup
                       optional: true
                 - name: DAILY_BACKUPS
                   valueFrom:
                     configMapKeyRef:
                       key: DAILY_BACKUPS
-                      name: ${CONFIGMAP}
+                      name: ${TARGET}-backup
                       optional: true
                 - name: WEEKLY_BACKUPS
                   valueFrom:
                     configMapKeyRef:
                       key: WEEKLY_BACKUPS
-                      name: ${CONFIGMAP}
+                      name: ${TARGET}-backup
                       optional: true
                 - name: MONTHLY_BACKUPS
                   valueFrom:
                     configMapKeyRef:
                       key: MONTHLY_BACKUPS
-                      name: ${CONFIGMAP}
+                      name: ${TARGET}-backup
                       optional: true
                 - name: DATABASE_SERVICE_NAME
                   valueFrom:
                     configMapKeyRef:
                       key: DATABASE_SERVICE_NAME
-                      name: ${CONFIGMAP}
+                      name: ${TARGET}-backup
                 - name: DEFAULT_PORT
                   valueFrom:
                     configMapKeyRef:
                       key: DEFAULT_PORT
-                      name: ${CONFIGMAP}
+                      name: ${TARGET}-backup
                       optional: true
                 - name: POSTGRESQL_DATABASE
                   valueFrom:
                     configMapKeyRef:
                       key: POSTGRESQL_DATABASE
-                      name: ${CONFIGMAP}
+                      name: ${TARGET}-backup
                 - name: POSTGRESQL_USER
                   valueFrom:
                     secretKeyRef:
                       key: database-user
-                      name: ${SECRET}
+                      name: ${TARGET}
                 - name: POSTGRESQL_PASSWORD
                   valueFrom:
                     secretKeyRef:
                       key: database-password
-                      name: ${SECRET}
+                      name: ${TARGET}
                 image: docker-registry.default.svc:5000/moe-gwells-tools/backup:latest
                 imagePullPolicy: Always
                 name: backup-cronjob
@@ -240,7 +225,7 @@ objects:
               volumes:
               - name: ${JOB_NAME}
                 persistentVolumeClaim:
-                  claimName: ${JOB_PERSISTENT_STORAGE_NAME}
+                  claimName: ${TARGET}-backup
       schedule: ${SCHEDULE}
       successfulJobsHistoryLimit: 5
       suspend: false
