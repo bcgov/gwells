@@ -16,8 +16,9 @@ TARGET=$( echo ${PARAM} | cut -d "/" -f 2 )
 
 # App and build settings
 #
-OC_BUILD=${OC_BUILD:-../backup.bc.yaml}
-OC_DEPLOY=${OC_DEPLOY:-../backup.cj.yaml}
+SCRIPT_DIR=$(dirname $0)
+OC_BUILD=${OC_BUILD:-${SCRIPT_DIR}/../backup.bc.yaml}
+OC_DEPLOY=${OC_DEPLOY:-${SCRIPT_DIR}/../backup.cj.yaml}
 #
 DRY_RUN=${DRY_RUN:-false}
 SCHEDULE=${SCHEDULE:-}
