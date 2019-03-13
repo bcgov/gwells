@@ -90,4 +90,7 @@ urlpatterns = [
         cache_page(CACHE_TTL)(views.WaterUseListAPIView.as_view()),
         name='aquifer-water-use-code-list'
         ),
+
+    url(r'^api/v1/gis/aquifers$',
+        views.AquifersSpatial.as_view(), name='spatial-aquifer')
 ]

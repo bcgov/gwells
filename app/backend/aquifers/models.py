@@ -200,6 +200,7 @@ class Aquifer(AuditModel):
         max_digits=5, decimal_places=1, blank=True, null=True, verbose_name='Size (square km)')
     vulnerability = models.ForeignKey(
         AquiferVulnerabilityCode,
+        # TODO: Spelling mistake below!
         db_column='aquifer_vulnerablity_code',
         blank=True,
         null=True,
@@ -252,6 +253,7 @@ class Aquifer(AuditModel):
         blank=True,
         null=True,
         verbose_name='Notes on Aquifer, for internal use only.')
+    geom = models.PolygonField(srid=3005, null=True)
 
     history = GenericRelation(Version)
 
