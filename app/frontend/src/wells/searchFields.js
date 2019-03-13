@@ -122,8 +122,7 @@ const searchFields = {
         { id: 'linerMaterial', param: 'liner_material', label: 'Liner material', type: 'select', textField: 'description', valueField: 'liner_material_code' },
         { id: 'linerDiameter', param: 'liner_diameter', label: 'Liner diameter', type: 'range' },
         { id: 'linerThickness', param: 'liner_thickness', label: 'Liner thickness', type: 'range' },
-        { id: 'linerFrom', param: 'liner_from', label: 'Liner from', type: 'range' },
-        { id: 'linerTo', param: 'liner_to', label: 'Liner to', type: 'range' }
+        { id: 'linerRange', param: 'liner_range', label: 'Liner from/to', type: 'range' }
       ]
     },
     {
@@ -141,8 +140,7 @@ const searchFields = {
     {
       header: 'Filter pack',
       fields: [
-        { id: 'filterPackFrom', param: 'filter_pack_from', label: 'Filter pack from', type: 'range' },
-        { id: 'filterPackTo', param: 'filter_pack_to', label: 'Filter pack to', type: 'range' },
+        { id: 'filterPackRange', param: 'filter_pack_range', label: 'Filter pack from/to', type: 'range' },
         { id: 'filterPackMaterial', param: 'filter_pack_material', label: 'Filter pack material', type: 'select', textField: 'description', valueField: 'filter_pack_material_code' },
         { id: 'filterPackMaterialSize', param: 'filter_pack_material_size', label: 'Filter pack material size', type: 'select', textField: 'description', valueField: 'filter_pack_material_size_code' }
       ]

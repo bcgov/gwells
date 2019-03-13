@@ -135,6 +135,10 @@ class WellListFilter(AnyOrAllFilterSet):
                                                  label='Date of work')
     well_depth = filters.RangeFilter(method='filter_well_depth',
                                      label='Well depth (finished or total)')
+    filter_pack_range = filters.RangeFilter(method='filter_filter_pack_range',
+                                            label='Filter pack from/to range')
+    liner_range = filters.RangeFilter(method='filter_liner_range', label='Liner range')
+
     # Don't require a choice (i.e. select box) for aquifer
     aquifer = filters.NumberFilter()
 
@@ -410,6 +414,44 @@ class WellListFilter(AnyOrAllFilterSet):
             queryset = queryset.filter(
                 Q(finished_well_depth__lte=value.stop) |
                 Q(total_depth_drilled__lte=value.stop)
+            )
+
+        return queryset
+
+    def filter_filter_pack_range(self, queryset, name, value):
+        if value.start is not None and value.stop is not None:
+            queryset = queryset.filter(
+                Q(filter_pack_from__range=(value.start, value.stop)) |
+                Q(filter_pack_to__range=(value.start, value.stop))
+            )
+        elif value.start is not None:
+            queryset = queryset.filter(
+                Q(filter_pack_from__gte=value.start) |
+                Q(filter_pack_to__gte=value.start)
+            )
+        elif value.stop is not None:
+            queryset = queryset.filter(
+                Q(filter_pack_from__lte=value.stop) |
+                Q(filter_pack_to__lte=value.stop)
+            )
+
+        return queryset
+
+    def filter_liner_range(self, queryset, name, value):
+        if value.start is not None and value.stop is not None:
+            queryset = queryset.filter(
+                Q(liner_from__range=(value.start, value.stop)) |
+                Q(liner_to__range=(value.start, value.stop))
+            )
+        elif value.start is not None:
+            queryset = queryset.filter(
+                Q(liner_from__gte=value.start) |
+                Q(liner_to__gte=value.start)
+            )
+        elif value.stop is not None:
+            queryset = queryset.filter(
+                Q(liner_from__lte=value.stop) |
+                Q(liner_to__lte=value.stop)
             )
 
         return queryset
