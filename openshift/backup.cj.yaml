@@ -98,18 +98,23 @@ parameters:
     value: "1"
   - name: "SUCCESS_JOBS_HISTORY_LIMIT"
     displayName: "Successful Job History Limit"
-    description: "The number of successful jobs that will be retained"
+    description: "The number of successful jobs that will be retained."
     value: "5"
     required: true
   - name: "FAILED_JOBS_HISTORY_LIMIT"
     displayName: "Failed Job History Limit"
-    description: "The number of failed jobs that will be retained"
+    description: "The number of failed jobs that will be retained."
     value: "2"
     required: true
   - name: "JOB_BACKOFF_LIMIT"
     displayName: "Job Backoff Limit"
-    description: "The number of attempts to try for a successful job outcome"
+    description: "The number of attempts to try for a successful job outcome."
     value: "0"
+    required: false
+  - name: "JOB_DEADLINE_SECONDS"
+    displayName: "Job deadline (seconds)"
+    description: "The maximum amount of time to let this job run."
+    value: "600"
     required: false
 objects:
   - apiVersion: v1
@@ -166,7 +171,7 @@ objects:
             metadata:
               creationTimestamp: null
             spec:
-              activeDeadlineSeconds: 600
+              activeDeadlineSeconds: ${{JOB_DEADLINE_SECONDS}}
               containers:
               - command:
                 - /bin/bash
