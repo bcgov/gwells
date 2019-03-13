@@ -27,13 +27,13 @@ parameters:
   - name: "JOB_PERSISTENT_STORAGE_NAME"
     displayName: "Backup Persistent Storage Name"
     description: "Pre-Created PVC to use for backup target"
-    value: "bk-devex-von-tools-a9vlgd1jpsg1"
+    value: "gwells-pgsql-staging-backup"
     required: true
   - name: "SCHEDULE"
     displayName: "Cron Schedule"
     description: "Cron Schedule to Execute the Job (in UTC)"
-# Currently targeting 5:00 AM Daily
-    value: "0 13 * * *"
+# Currently targeting 3:00 AM Daily
+    value: "0 11 * * *"
     required: true
   - name: "SOURCE_IMAGE_NAME"
     displayName: "Source Image Name"
@@ -134,14 +134,14 @@ objects:
     kind: ConfigMap
     metadata:
       labels:
-        cronjob: backup
+        cronjob: ${JOB_NAME}
         template: ${JOB_NAME}-template
       name: ${CONFIGMAP}
       namespace: moe-gwells-test
   - apiVersion: batch/v1beta1
     kind: CronJob
     metadata:
-      name: gwells-pgsql-staging-backup
+      name: ${JOB_NAME}-pgsql-staging-backup
     spec:
       concurrencyPolicy: Forbid
       failedJobsHistoryLimit: 2
@@ -149,15 +149,15 @@ objects:
         metadata:
           creationTimestamp: null
           labels:
-            cronjob: backup
-            template: backup-job
+            cronjob: ${JOB_NAME}
+            template: ${JOB_NAME}-job
         spec:
           backoffLimit: 0
           template:
             metadata:
               creationTimestamp: null
             spec:
-              activeDeadlineSeconds: 1600
+              activeDeadlineSeconds: 600
               containers:
               - command:
                 - /bin/bash
@@ -238,10 +238,9 @@ objects:
               serviceAccountName: default
               terminationGracePeriodSeconds: 30
               volumes:
-              - name: backup
+              - name: ${JOB_NAME}
                 persistentVolumeClaim:
-                  claimName: gwells-pgsql-staging-backup
-      schedule: 50 21 * * *
-      # schedule: 0 13 * * *
+                  claimName: ${JOB_PERSISTENT_STORAGE_NAME}
+      schedule: ${SCHEDULE}
       successfulJobsHistoryLimit: 5
       suspend: false
