@@ -15,190 +15,194 @@
               </p>
             </b-col>
           </b-row>
-          <b-row v-show="!showAdvancedSearch">
-            <b-col>
-              <b-form-group>
-                <form-input id="id_search" group-class="font-weight-bold" v-model="searchParams.search">
-                  <label>
-                    Search by well tag or ID plate number, street address, city or owner name
-                    <b-badge pill variant="primary" v-b-popover.hover="'Enter the well electronic filing number or physical identification plate number, or the street address, city or well owner name.'"><i class="fa fa-question fa-lg"></i></b-badge>
-                  </label>
-                </form-input>
-              </b-form-group>
-            </b-col>
-          </b-row>
-          <b-row class="my-3">
-            <b-col>
-              <b-btn variant="primary" type="submit">Search</b-btn>
-              <b-btn variant="dark" type="reset" class="mx-2">Reset</b-btn>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col>
-              <b-card no-body border-variant="dark">
-                <b-card-header>
-                  <a class="card-link" href="#" @click.prevent="toggleAdvancedSearch">Advanced Search</a>
-                </b-card-header>
-                <b-collapse id="advanced_search_form" v-model="showAdvancedSearch">
-                  <b-card-body body-border-variant="dark">
-                    <template v-for="section in defaultFilters">
-                      <h3 :key="section.header">{{ section.header }}</h3>
-                      <template v-for="field in section.fields">
-                        <search-form-radio
-                          v-if="field.type === 'radio'"
-                          :key="field.id"
-                          :id="`${field.id}Filter`"
-                          :label="field.label"
-                          label-cols="5"
-                          v-model="searchParams[field.param]"
-                          :options="field.options" />
-                        <search-form-range
-                          v-if="field.type === 'range'"
-                          :key="field.id"
-                          type="number"
-                          label-cols="3"
-                          :id="`${field.id}Filter`"
-                          :label="field.label"
-                          :errors="searchErrors[field.param]"
-                          :step="field.step ? field.step : 'any'"
-                          :min-value="searchParams[`${field.param}_min`]"
-                          v-on:start-input="searchParams[`${field.param}_min`] = $event"
-                          :max-value="searchParams[`${field.param}_max`]"
-                          v-on:end-input="searchParams[`${field.param}_max`] = $event"/>
-                        <search-form-range
-                          v-if="field.type === 'dateRange'"
-                          :key="field.id"
-                          type="date"
-                          label-cols="3"
-                          :id="`${field.id}Filter`"
-                          :label="field.label"
-                          placeholder="YYYY/MM/DD"
-                          :errors="searchErrors[field.param]"
-                          :min-value="searchParams[`${field.param}_after`]"
-                          v-on:start-input="searchParams[`${field.param}_after`] = $event"
-                          :max-value="searchParams[`${field.param}_before`]"
-                          v-on:end-input="searchParams[`${field.param}_before`] = $event"/>
-                        <search-form-select
-                          v-if="field.type === 'select'"
-                          :key="field.id"
-                          label-cols="6"
-                          :id="`${field.id}Filter`"
-                          :label="field.label"
-                          placeholder="----------"
-                          :errors="searchErrors[field.param]"
-                          v-model="searchParams[field.param]"
-                          :options="filterSelectOptions[field.id]"
-                          :value-field="field.valueField"
-                          :text-field="field.textField" />
-                        <search-form-input
-                          v-if="field.type === 'number' || field.type === 'text'"
-                          :key="field.id"
-                          :type="field.type"
-                          label-cols="6"
-                          :id="`${field.id}Filter`"
-                          :label="field.label"
-                          :errors="searchErrors[field.param]"
-                          v-model="searchParams[field.param]"/>
-                      </template>
+          <b-card no-body border-variant="dark">
+            <b-tabs card>
+              <b-tab title="Basic Search" active>
+                <div class="card-text">
+                  <b-row>
+                    <b-col>
+                      <b-form-group>
+                        <form-input id="id_search" group-class="font-weight-bold" v-model="searchParams.search">
+                          <label>
+                            Search by well tag or ID plate number, street address, city or owner name
+                            <b-badge pill variant="primary" v-b-popover.hover="'Enter the well electronic filing number or physical identification plate number, or the street address, city or well owner name.'"><i class="fa fa-question fa-lg"></i></b-badge>
+                          </label>
+                        </form-input>
+                      </b-form-group>
+                    </b-col>
+                  </b-row>
+                  <b-row class="my-3">
+                    <b-col>
+                      <b-btn variant="primary" type="submit">Search</b-btn>
+                      <b-btn variant="dark" type="reset" class="mx-2">Reset</b-btn>
+                    </b-col>
+                  </b-row>
+                  <b-row>
+                    <b-col>
+                      <well-exports/>
+                    </b-col>
+                  </b-row>
+                  <b-row>
+                    <b-col>
+                      <p>For additional search options, try:</p>
+                      <ul>
+                          <li><a href="http://maps.gov.bc.ca/ess/hm/wrbc/" id="BCWRAtlas">B.C. Water Resource Atlas</a></li>
+                          <li><a href="http://maps.gov.bc.ca/ess/hm/imap4m/" id="iMapBC">iMapBC</a></li>
+                      </ul>
+                    </b-col>
+                  </b-row>
+                </div>
+              </b-tab>
+              <b-tab title="Advanced Search">
+                <div class="card-text">
+                  <div v-for="section in defaultFilters" :key="section.header">
+                    <b-row class="mt-1">
+                      <b-col>
+                        <h3>{{ section.header }}</h3>
+                      </b-col>
+                    </b-row>
+                    <template v-for="field in section.fields">
+                      <search-form-radio
+                        v-if="field.type === 'radio'"
+                        :key="field.id"
+                        :id="`${field.id}Filter`"
+                        :label="field.label"
+                        label-cols="5"
+                        v-model="searchParams[field.param]"
+                        :options="field.options" />
+                      <search-form-range
+                        v-else-if="field.type === 'range'"
+                        :key="field.id"
+                        type="number"
+                        label-cols="3"
+                        :id="`${field.id}Filter`"
+                        :label="field.label"
+                        :errors="searchErrors[field.param]"
+                        :step="field.step ? field.step : 'any'"
+                        :min-value="searchParams[`${field.param}_min`]"
+                        v-on:start-input="searchParams[`${field.param}_min`] = $event"
+                        :max-value="searchParams[`${field.param}_max`]"
+                        v-on:end-input="searchParams[`${field.param}_max`] = $event"/>
+                      <search-form-range
+                        v-else-if="field.type === 'dateRange'"
+                        :key="field.id"
+                        type="date"
+                        label-cols="3"
+                        :id="`${field.id}Filter`"
+                        :label="field.label"
+                        placeholder="YYYY/MM/DD"
+                        :errors="searchErrors[field.param]"
+                        :min-value="searchParams[`${field.param}_after`]"
+                        v-on:start-input="searchParams[`${field.param}_after`] = $event"
+                        :max-value="searchParams[`${field.param}_before`]"
+                        v-on:end-input="searchParams[`${field.param}_before`] = $event"/>
+                      <search-form-select
+                        v-else-if="field.type === 'select'"
+                        :key="field.id"
+                        label-cols="6"
+                        :id="`${field.id}Filter`"
+                        :label="field.label"
+                        placeholder="----------"
+                        :errors="searchErrors[field.param]"
+                        v-model="searchParams[field.param]"
+                        :options="filterSelectOptions[field.id]"
+                        :value-field="field.valueField"
+                        :text-field="field.textField" />
+                      <search-form-input
+                        v-else
+                        :key="field.id"
+                        :type="field.type"
+                        label-cols="6"
+                        :id="`${field.id}Filter`"
+                        :label="field.label"
+                        :errors="searchErrors[field.param]"
+                        v-model="searchParams[field.param]"/>
                     </template>
-                    <h3>Additional Fields</h3>
-                    <template v-for="field in selectedFilters">
-                      <b-row class="form-row" :key="field.id">
-                        <b-col>
-                          <search-form-radio
-                            v-if="field.type === 'radio'"
-                            :id="`${field.id}Filter`"
-                            :label="field.label"
-                            label-cols="5"
-                            v-model="searchParams[field.param]"
-                            :options="field.options" />
-                          <search-form-range
-                            v-if="field.type === 'range'"
-                            type="number"
-                            label-cols="6"
-                            :id="`${field.id}Filter`"
-                            :label="field.label"
-                            :errors="searchErrors[field.param]"
-                            :step="field.step ? field.step : 'any'"
-                            :min-value="searchParams[`${field.param}_min`]"
-                            v-on:start-input="searchParams[`${field.param}_min`] = $event"
-                            :max-value="searchParams[`${field.param}_max`]"
-                            v-on:end-input="searchParams[`${field.param}_max`] = $event"/>
-                          <search-form-range
-                            v-if="field.type === 'dateRange'"
-                            type="date"
-                            label-cols="5"
-                            :id="`${field.id}Filter`"
-                            :label="field.label"
-                            placeholder="YYYY/MM/DD"
-                            :errors="searchErrors[field.param]"
-                            :min-value="searchParams[`${field.param}_after`]"
-                            v-on:start-input="searchParams[`${field.param}_after`] = $event"
-                            :max-value="searchParams[`${field.param}_before`]"
-                            v-on:end-input="searchParams[`${field.param}_before`] = $event"/>
-                          <search-form-select
-                            v-if="field.type === 'select'"
-                            label-cols="6"
-                            :id="`${field.id}Filter`"
-                            :label="field.label"
-                            placeholder="----------"
-                            :errors="searchErrors[field.param]"
-                            v-model="searchParams[field.param]"
-                            :options="filterSelectOptions[field.id]"
-                            :value-field="field.valueField"
-                            :text-field="field.textField" />
-                          <search-form-input
-                            v-if="field.type === 'number' || field.type === 'text'"
-                            :type="field.type"
-                            label-cols="6"
-                            :id="`${field.id}Filter`"
-                            :label="field.label"
-                            :errors="searchErrors[field.param]"
-                            v-model="searchParams[field.param]"/>
-                        </b-col>
-                        <b-col cols="1">
-                          <b-button-close @click="removeSelectedFilter(field.id)" style="padding-top: calc(.375rem + 1px)">&times;</b-button-close>
-                        </b-col>
-                      </b-row>
-                    </template>
-                    <b-container class="pl-0">
-                      <b-row>
-                        <b-col cols="9">
-                          <b-form-select id="additionalFilterInput" v-model="selectedFilter">
-                            <option :value="null">Select a field to search on</option>
-                            <template v-for="section in additionalFilters">
-                              <optgroup v-if="section.authenticated ? userRoles.wells.view : true" :key="section.header" :label="section.header">
-                                <template v-for="field in section.fields">
-                                  <option v-if="field.authenticated ? userRoles.wells.view : true" :key="field.id" :value="field" :disabled="selectedFilterIds.includes(field.id)">{{ field.label }}</option>
-                                </template>
-                              </optgroup>
+                  </div>
+                  <b-row>
+                    <b-col class="my-3">
+                      <b-btn variant="primary" type="submit">Search</b-btn>
+                      <b-btn variant="dark" type="reset" class="mx-2">Reset</b-btn>
+                    </b-col>
+                  </b-row>
+                  <b-row class="mt-1">
+                    <b-col>
+                      <h3>Additional Fields</h3>
+                    </b-col>
+                  </b-row>
+                  <b-form-row v-for="field in selectedFilters" :key="field.id">
+                    <b-col>
+                      <search-form-radio
+                        v-if="field.type === 'radio'"
+                        :id="`${field.id}Filter`"
+                        :label="field.label"
+                        v-model="searchParams[field.param]"
+                        :options="field.options" />
+                      <search-form-range
+                        v-else-if="field.type === 'range'"
+                        type="number"
+                        :id="`${field.id}Filter`"
+                        :label="field.label"
+                        :errors="searchErrors[field.param]"
+                        :step="field.step ? field.step : 'any'"
+                        :min-value="searchParams[`${field.param}_min`]"
+                        v-on:start-input="searchParams[`${field.param}_min`] = $event"
+                        :max-value="searchParams[`${field.param}_max`]"
+                        v-on:end-input="searchParams[`${field.param}_max`] = $event"/>
+                      <search-form-range
+                        v-else-if="field.type === 'dateRange'"
+                        type="date"
+                        :id="`${field.id}Filter`"
+                        :label="field.label"
+                        placeholder="YYYY/MM/DD"
+                        :errors="searchErrors[field.param]"
+                        :min-value="searchParams[`${field.param}_after`]"
+                        v-on:start-input="searchParams[`${field.param}_after`] = $event"
+                        :max-value="searchParams[`${field.param}_before`]"
+                        v-on:end-input="searchParams[`${field.param}_before`] = $event"/>
+                      <search-form-select
+                        v-else-if="field.type === 'select'"
+                        :id="`${field.id}Filter`"
+                        :label="field.label"
+                        placeholder="----------"
+                        :errors="searchErrors[field.param]"
+                        v-model="searchParams[field.param]"
+                        :options="filterSelectOptions[field.id]"
+                        :value-field="field.valueField"
+                        :text-field="field.textField" />
+                      <search-form-input
+                        v-else-if="field.type === 'number' || field.type === 'text'"
+                        :type="field.type"
+                        :id="`${field.id}Filter`"
+                        :label="field.label"
+                        :errors="searchErrors[field.param]"
+                        v-model="searchParams[field.param]"/>
+                    </b-col>
+                    <b-col cols="1">
+                      <b-button-close @click="removeSelectedFilter(field.id)" class="pt-1">&times;</b-button-close>
+                    </b-col>
+                  </b-form-row>
+                  <b-row>
+                    <b-col cols="9">
+                      <b-form-select id="additionalFilterInput" v-model="selectedFilter">
+                        <option :value="null">Select a field to search on</option>
+                        <template v-for="section in additionalFilters">
+                          <optgroup v-if="section.authenticated ? userRoles.wells.view : true" :key="section.header" :label="section.header">
+                            <template v-for="field in section.fields">
+                              <option v-if="field.authenticated ? userRoles.wells.view : true" :key="field.id" :value="field" :disabled="selectedFilterIds.includes(field.id)">{{ field.label }}</option>
                             </template>
-                          </b-form-select>
-                        </b-col>
-                        <b-col class="pr-0">
-                          <b-button block variant="primary" @click="selectFilter" :disabled="selectedFilter === null">Add Field</b-button>
-                        </b-col>
-                      </b-row>
-                    </b-container>
-                  </b-card-body>
-                </b-collapse>
-              </b-card>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col>
-              <well-exports/>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col>
-              <p>For additional search options, try:</p>
-              <ul>
-                  <li><a href="http://maps.gov.bc.ca/ess/hm/wrbc/" id="BCWRAtlas">B.C. Water Resource Atlas</a></li>
-                  <li><a href="http://maps.gov.bc.ca/ess/hm/imap4m/" id="iMapBC">iMapBC</a></li>
-              </ul>
-            </b-col>
-          </b-row>
+                          </optgroup>
+                        </template>
+                      </b-form-select>
+                    </b-col>
+                    <b-col>
+                      <b-button block variant="primary" @click="selectFilter" :disabled="selectedFilter === null">Add Field</b-button>
+                    </b-col>
+                  </b-row>
+                </div>
+              </b-tab>
+            </b-tabs>
+          </b-card>
         </b-form>
       </b-col>
       <b-col>
@@ -263,7 +267,6 @@ export default {
     return {
       isBusy: false,
       isInitialSearch: true,
-      showAdvancedSearch: false,
       currentPage: 1,
       perPage: 10,
       numberOfRecords: 0,
@@ -271,7 +274,6 @@ export default {
       longitude: null,
       locations: [],
 
-      showAdvancedSearch: false,
       selectedFilter: null,
       selectedFilters: [],
 
@@ -485,9 +487,6 @@ export default {
       // otherwise add the params to the query string.  this allows
       // users to bookmark searches.
       this.$router.push({ query: paramsEmpty ? null : this.searchParams })
-    },
-    toggleAdvancedSearch () {
-      this.showAdvancedSearch = !this.showAdvancedSearch
     },
     selectFilter () {
       if (this.selectedFilter) {

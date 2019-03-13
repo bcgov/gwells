@@ -1,41 +1,39 @@
 <template>
-  <b-form-group
-    :class="groupClass"
-    :id="id"
-    :label="label"
-    :label-for="`${id}Input`"
-    :label-cols="labelCols"
-    horizontal>
-    <slot></slot>
-    <b-form-input
-      :id="`${id}Input`"
-      :type="type"
-      :state="validation"
-      :aria-describedby="`${id}InvalidFeedback ${id}Hint`"
-      :value="value"
-      :disabled="disabled"
-      :required="required"
-      :class="inputClass"
-      :list="list"
-      :step="step"
-      :max="max"
-      :min="min"
-      :maxlength="maxlength"
-      :formatter="formatter"
-      :lazy-formatter="lazyFormatter"
-      @input="updateValue($event)"
-      @focus.native="$emit('focus', true)"
-      @blur.native="$emit('blur', true)"
-      :placeholder="placeholder"/>
-    <b-form-invalid-feedback :id="`${id}InvalidFeedback`">
-      <div v-for="(error, index) in errors" :key="`${id}Input error ${index}`">
-        {{ error }}
-      </div>
-    </b-form-invalid-feedback>
-    <b-form-text :id="`${id}Hint`">
-      {{ hint }}
-    </b-form-text>
-  </b-form-group>
+  <b-form-row class="mb-1">
+    <b-col sm="6">
+      <label :id="`${id}Label`" :label-for="`${id}Input`">{{ label }}</label>
+    </b-col>
+    <b-col>
+      <b-form-input
+        :id="`${id}Input`"
+        :type="type"
+        :state="validation"
+        :aria-describedby="`${id}InvalidFeedback ${id}Hint`"
+        :value="value"
+        :disabled="disabled"
+        :required="required"
+        :class="inputClass"
+        :list="list"
+        :step="step"
+        :max="max"
+        :min="min"
+        :maxlength="maxlength"
+        :formatter="formatter"
+        :lazy-formatter="lazyFormatter"
+        @input="updateValue($event)"
+        @focus.native="$emit('focus', true)"
+        @blur.native="$emit('blur', true)"
+        :placeholder="placeholder"/>
+      <b-form-invalid-feedback :id="`${id}InvalidFeedback`">
+        <div v-for="(error, index) in errors" :key="`${id}Input error ${index}`">
+          {{ error }}
+        </div>
+      </b-form-invalid-feedback>
+      <b-form-text :id="`${id}Hint`">
+        {{ hint }}
+      </b-form-text>
+    </b-col>
+  </b-form-row>
 </template>
 
 <script>

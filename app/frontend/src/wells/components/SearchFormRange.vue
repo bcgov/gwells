@@ -1,70 +1,71 @@
 <template>
-  <b-form-group
-    :class="groupClass"
-    :id="id"
-    :label="label"
-    :label-cols="labelCols"
-    horizontal>
-    <slot></slot>
-    <b-container class="pr-0">
+  <b-form-row>
+    <b-col class="mb-1">
+      <legend tabindex="-1" :id="`${id}Label`" class="col-form-label">{{ label }}</legend>
+    </b-col>
+    <b-col sm="8">
       <b-form-row>
-        <b-col cols="2" class="text-right">
-          <label :for="`${id}StartInput`" class="col-form-label">From</label>
+        <b-col class="mb-1">
+          <b-form-row>
+            <label :id="`${id}StartLabel`" :label-for="`${id}StartInput`" class="col-sm-4 col-form-label text-right">From</label>
+            <b-col sm="8">
+              <b-form-input
+                :id="`${id}StartInput`"
+                :type="type"
+                :state="validation"
+                :aria-describedby="`${id}InvalidFeedback ${id}Hint`"
+                :value="minValue"
+                :disabled="disabled"
+                :required="required"
+                :class="inputClass"
+                :step="step"
+                :min="min"
+                :maxlength="maxlength"
+                :formatter="formatter"
+                :lazy-formatter="lazyFormatter"
+                @input="updateStartValue($event)"
+                @focus.native="$emit('focus', true)"
+                @blur.native="$emit('blur', true)"
+                :placeholder="placeholder"/>
+            </b-col>
+          </b-form-row>
         </b-col>
-        <b-col cols="4">
-          <b-form-input
-            :id="`${id}StartInput`"
-            :type="type"
-            :state="validation"
-            :aria-describedby="`${id}InvalidFeedback ${id}Hint`"
-            :value="minValue"
-            :disabled="disabled"
-            :required="required"
-            :class="inputClass"
-            :step="step"
-            :min="min"
-            :maxlength="maxlength"
-            :formatter="formatter"
-            :lazy-formatter="lazyFormatter"
-            @input="updateStartValue($event)"
-            @focus.native="$emit('focus', true)"
-            @blur.native="$emit('blur', true)"
-            :placeholder="placeholder"/>
-        </b-col>
-        <b-col cols="2" class="text-right">
-          <label :for="`${id}EndInput`" class="col-form-label">To</label>
-        </b-col>
-        <b-col cols="4">
-          <b-form-input
-            :id="`${id}EndInput`"
-            :type="type"
-            :state="validation"
-            :aria-describedby="`${id}InvalidFeedback ${id}Hint`"
-            :value="maxValue"
-            :disabled="disabled"
-            :required="required"
-            :class="inputClass"
-            :step="step"
-            :max="max"
-            :maxlength="maxlength"
-            :formatter="formatter"
-            :lazy-formatter="lazyFormatter"
-            @input="updateEndValue($event)"
-            @focus.native="$emit('focus', true)"
-            @blur.native="$emit('blur', true)"
-            :placeholder="placeholder"/>
+        <b-col class="mb-1">
+          <b-form-row>
+            <label :id="`${id}EndLabel`" :label-for="`${id}EndInput`" class="col-sm-4 col-form-label text-right">To</label>
+            <b-col sm="8">
+              <b-form-input
+                :id="`${id}EndInput`"
+                :type="type"
+                :state="validation"
+                :aria-describedby="`${id}InvalidFeedback ${id}Hint`"
+                :value="maxValue"
+                :disabled="disabled"
+                :required="required"
+                :class="inputClass"
+                :step="step"
+                :min="min"
+                :maxlength="maxlength"
+                :formatter="formatter"
+                :lazy-formatter="lazyFormatter"
+                @input="updateEndValue($event)"
+                @focus.native="$emit('focus', true)"
+                @blur.native="$emit('blur', true)"
+                :placeholder="placeholder"/>
+            </b-col>
+          </b-form-row>
         </b-col>
       </b-form-row>
-    </b-container>
-    <b-form-invalid-feedback :id="`${id}InvalidFeedback`">
-      <div v-for="(error, index) in errors" :key="`${id}Input error ${index}`">
-        {{ error }}
-      </div>
-    </b-form-invalid-feedback>
-    <b-form-text :id="`${id}Hint`">
-      {{ hint }}
-    </b-form-text>
-  </b-form-group>
+      <b-form-invalid-feedback :id="`${id}InvalidFeedback`">
+        <div v-for="(error, index) in errors" :key="`${id}Input error ${index}`">
+          {{ error }}
+        </div>
+      </b-form-invalid-feedback>
+      <b-form-text :id="`${id}Hint`">
+        {{ hint }}
+      </b-form-text>
+    </b-col>
+  </b-form-row>
 </template>
 
 <script>

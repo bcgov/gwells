@@ -1,32 +1,30 @@
 <template>
-  <b-form-group
-    :class="groupClass"
-    :id="id"
-    :label="label"
-    :label-for="`${id}Input`"
-    :label-cols="labelCols"
-    horizontal>
-    <slot></slot>
-    <b-form-radio-group
-      :id="`${id}Input`"
-      :checked="value"
-      :state="validation"
-      :aria-describedby="`${id}InvalidFeedback ${id}Hint`"
-      :required="required"
-      :class="inputClass"
-      :options="options"
-      @input="updateValue($event)"
-      @focus.native="$emit('focus', true)"
-      @blur.native="$emit('blur', true)"/>
-    <b-form-invalid-feedback :id="`${id}InvalidFeedback`">
-      <div v-for="(error, index) in errors" :key="`${id}Input error ${index}`">
-        {{ error }}
-      </div>
-    </b-form-invalid-feedback>
-    <b-form-text :id="`${id}Hint`">
-      {{ hint }}
-    </b-form-text>
-  </b-form-group>
+  <b-form-row class="pt-1 mb-1">
+    <b-col sm="6" v-if="label">
+      <legend :id="`${id}Label`">{{ label }}</legend>
+    </b-col>
+    <b-col>
+      <b-form-radio-group
+        :id="`${id}Input`"
+        :checked="value"
+        :state="validation"
+        :aria-describedby="`${id}InvalidFeedback ${id}Hint`"
+        :required="required"
+        :class="inputClass"
+        :options="options"
+        @input="updateValue($event)"
+        @focus.native="$emit('focus', true)"
+        @blur.native="$emit('blur', true)"/>
+      <b-form-invalid-feedback :id="`${id}InvalidFeedback`">
+        <div v-for="(error, index) in errors" :key="`${id}Input error ${index}`">
+          {{ error }}
+        </div>
+      </b-form-invalid-feedback>
+      <b-form-text :id="`${id}Hint`">
+        {{ hint }}
+      </b-form-text>
+    </b-col>
+  </b-form-row>
 </template>
 
 <script>
