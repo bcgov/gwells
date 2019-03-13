@@ -6,15 +6,15 @@ metadata:
     description: "Scheduled Task to perform a Database Backup"
     tags: "cronjob,backup"
   labels:
-    cronjob: "${JOB_NAME}"
+    app: ${JOB_NAME}-backup
+    cronjob: ${JOB_NAME}-backup
     template: "${JOB_NAME}-config-template"
   name: "${JOB_NAME}-cronjob-template"
 parameters:
   - name: "TARGET"
-    displayName: "Database Service Name"
-    description: "The name of the database service, used in config map, secret and PVC names."
+    displayName: "Database name (deployment config, not pod name)"
+    description: "The name of the database, by deployment config, to be backed up."
     required: true
-    value: "gwells-pgsql-staging"
   - name: "JOB_NAME"
     displayName: "Job Name"
     description: "Name of the Scheduled Job to Create."
@@ -23,7 +23,7 @@ parameters:
   - name: "SCHEDULE"
     displayName: "Cron Schedule"
     description: "Cron Schedule to Execute the Job (in UTC)"
-# Currently targeting 3:00 AM Daily
+    # 11:00 UTC = 3:00 AM PDT
     value: "0 11 * * *"
     required: true
   - name: "PVC_SIZE"
@@ -125,8 +125,9 @@ objects:
     kind: ConfigMap
     metadata:
       labels:
-        cronjob: ${JOB_NAME}
-        template: ${JOB_NAME}-template
+        app: ${JOB_NAME}-backup
+        cronjob: ${JOB_NAME}-backup
+        template: "${JOB_NAME}-config-template"
       name: ${TARGET}-backup
   - apiVersion: v1
     kind: PersistentVolumeClaim
@@ -134,8 +135,9 @@ objects:
       finalizers:
       - kubernetes.io/pvc-protection
       labels:
-        app: backup-persistent
-        template: backup-persistent-template
+        app: ${JOB_NAME}-backup
+        cronjob: ${JOB_NAME}-backup
+        template: "${JOB_NAME}-config-template"
       name: ${TARGET}-backup
     spec:
       accessModes:
@@ -155,8 +157,9 @@ objects:
         metadata:
           creationTimestamp: null
           labels:
-            cronjob: ${JOB_NAME}
-            template: ${JOB_NAME}-job
+            app: ${JOB_NAME}-backup
+            cronjob: ${JOB_NAME}-backup
+            template: "${JOB_NAME}-config-template"
         spec:
           backoffLimit: ${{JOB_BACKOFF_LIMIT}}
           template:
