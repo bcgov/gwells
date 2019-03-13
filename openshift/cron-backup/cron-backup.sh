@@ -29,13 +29,21 @@ if [ "${#}" -ne 1 ]
 then
 	set +x
 	echo
-	echo "PostgreSQL Backup Cronjob:"
+	echo "PostgreSQL Backup Cronjobs"
 	echo
-	echo "Provide a project and a command."
-	echo " ./cron-backup.sh PROJECT/TARGET"
+	echo "Setup backup cronjobs for a PostgreSQL deployment."
+	echo "Defaults to 11 AM UTC (3 AM PDT, 0 11 * * *)."
+	echo "Override defaults with runtime variables."
 	echo
-	echo "Set variables to non-defaults at runtime.  E.g.:"
-	echo " VERBOSE=true SCHEDULE=\"*/5 * * * *\" ./cron-backup.sh <...>"
+	echo "Usage:"
+	echo "  ./cron-backup.sh [project]/[database]"
+	echo
+	echo "Examples:"
+	echo "  # Deploy to staging environment"
+	echo "  ./cron-backup.sh moe-gwells-test/gwells-pgsql-staging"
+	echo
+	echo "  # Deploy to demo environment, custom testing schedule"
+	echo "  SCHEDULE=\"*/5 * * * *\" ./cron-backup.sh moe-gwells-test/gwells-pgsql-demo"
 	echo
 	exit
 fi
