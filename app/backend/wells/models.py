@@ -634,7 +634,7 @@ class Well(AuditModel):
         max_length=100, blank=True, null=True, verbose_name='Well identification plate attached by')
 
     # Contains Well Longitude and Latitude in that order
-    geom = models.PointField(blank=True, null=True, verbose_name='Geo-referenced Location of the Well', srid=3005)
+    geom = models.PointField(blank=True, null=True, verbose_name='Geo-referenced Location of the Well', srid=4326)
 
     ground_elevation = models.DecimalField(
         max_digits=10, decimal_places=2, blank=True, null=True, verbose_name='Ground Elevation')
@@ -1123,7 +1123,7 @@ class ActivitySubmission(AuditModel):
         max_length=100, blank=True, null=True, verbose_name='Well identification plate attached by')
 
     # Contains Well Longitude and Latitude in that order
-    geom = models.PointField(blank=True, null=True, verbose_name='Geo-referenced Location of the Well', srid=3005)
+    geom = models.PointField(blank=True, null=True, verbose_name='Geo-referenced Location of the Well', srid=4326)
 
     coordinate_acquisition_code = models.ForeignKey(
         CoordinateAcquisitionCode, null=True, blank=True, verbose_name="Location Accuracy Code",

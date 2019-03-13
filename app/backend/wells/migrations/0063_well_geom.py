@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='well',
             name='geom',
-            field=django.contrib.gis.db.models.fields.PointField(blank=True, null=True, srid=3005, verbose_name='Geo-referenced Location of the Well'),
+            field=django.contrib.gis.db.models.fields.PointField(blank=True, null=True, srid=4326, verbose_name='Geo-referenced Location of the Well'),
         ),
     ]
