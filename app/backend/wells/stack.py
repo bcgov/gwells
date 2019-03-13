@@ -202,7 +202,7 @@ class StackWells():
                         else:
                             composite[target_key] = value
 
-            composite['update_user'] = submission.create_user
+            composite['update_user'] = submission.create_user or composite['update_user']
 
         # Update the well view
         well_serializer = WellStackerSerializer(well, data=composite, partial=True)
