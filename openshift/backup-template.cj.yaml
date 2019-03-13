@@ -34,12 +34,12 @@ parameters:
     displayName: "Image Namespace"
     description: "The namespace of the OpenShift project containing the imagestream for the application."
     required: true
-    value: "backup-container"
+    value: "moe-gwells-tools"
   - name: "TAG_NAME"
     displayName: "Environment TAG name"
     description: "The TAG name for this environment, e.g., dev, test, prod"
     required: true
-    value: "dev"
+    value: "latest"
   - name: "DEFAULT_PORT"
     displayName: "Database Service Port"
     description: "The configured port for the database service"
@@ -50,11 +50,6 @@ parameters:
     description: "The name of the database."
     required: true
     value: "gwells"
-  - name: "DATABASE_DEPLOYMENT_NAME"
-    displayName: "Database Deployment Name"
-    description: "The name associated to the database deployment resources.  In particular, this is used to wire up the credentials associated to the database."
-    required: true
-    value: "postgresql"
   - name: "BACKUP_STRATEGY"
     displayName: "Backup Strategy"
     description: "The strategy to use for backups; for example daily, or rolling."
@@ -85,11 +80,6 @@ parameters:
     description: "The number of monthly backup files to be retained.  Used for the `rolling` backup strategy."
     required: false
     value: "1"
-  - name: "JOB_SERVICE_ACCOUNT"
-    displayName: "Service Account Name"
-    description: "Name of the Service Account To Exeucte the Job As."
-    value: "default"
-    required: true
   - name: "SUCCESS_JOBS_HISTORY_LIMIT"
     displayName: "Successful Job History Limit"
     description: "The number of successful jobs that will be retained"
@@ -128,7 +118,7 @@ objects:
       name: ${TARGET}-backup
     spec:
       concurrencyPolicy: Forbid
-      failedJobsHistoryLimit: 2
+      failedJobsHistoryLimit: ${{FAILED_JOBS_HISTORY_LIMIT}}
       jobTemplate:
         metadata:
           creationTimestamp: null
@@ -136,7 +126,7 @@ objects:
             cronjob: ${JOB_NAME}
             template: ${JOB_NAME}-job
         spec:
-          backoffLimit: 0
+          backoffLimit: ${{JOB_BACKOFF_LIMIT}}
           template:
             metadata:
               creationTimestamp: null
@@ -205,7 +195,7 @@ objects:
                     secretKeyRef:
                       key: database-password
                       name: ${TARGET}
-                image: docker-registry.default.svc:5000/moe-gwells-tools/backup:latest
+                image: docker-registry.default.svc:5000/${IMAGE_NAMESPACE}/${SOURCE_IMAGE_NAME}:${TAG_NAME}
                 imagePullPolicy: Always
                 name: backup-cronjob
                 resources: {}
@@ -226,5 +216,5 @@ objects:
                 persistentVolumeClaim:
                   claimName: ${TARGET}-backup
       schedule: ${SCHEDULE}
-      successfulJobsHistoryLimit: 5
+      successfulJobsHistoryLimit: ${{SUCCESS_JOBS_HISTORY_LIMIT}}
       suspend: false
