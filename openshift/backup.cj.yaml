@@ -126,7 +126,7 @@ objects:
       MONTHLY_BACKUPS: ${MONTHLY_BACKUPS}
       NUM_BACKUPS: ${NUM_BACKUPS}
       POSTGRESQL_DATABASE: ${DATABASE_NAME}
-      WEEKLY_BACKUPS: '4'
+      WEEKLY_BACKUPS: ${WEEKLY_BACKUPS}
     kind: ConfigMap
     metadata:
       labels:
