@@ -122,7 +122,6 @@ objects:
         cronjob: ${JOB_NAME}
         template: ${JOB_NAME}-template
       name: ${TARGET}-backup
-      namespace: moe-gwells-test
   - apiVersion: batch/v1beta1
     kind: CronJob
     metadata:
