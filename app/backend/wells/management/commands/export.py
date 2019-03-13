@@ -60,8 +60,9 @@ class Command(BaseCommand):
             with open(filename, 'rb') as file_data:
                 file_stat = os.stat(filename)
                 # Do we need to remove the existing files 1st?
+                target = 'export/{}'.format(filename)
                 minioClient.put_object(get_env_variable('S3_WELL_EXPORT_BUCKET'),
-                                       filename,
+                                       target,
                                        file_data,
                                        file_stat.st_size)
 

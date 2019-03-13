@@ -38,7 +38,7 @@ class TestAquifersEditRole(APITestCase):
 class TestAquifersSpatial(APITestCase):
 
     def test_geodjango(self):
-        # This should catch if the sql query is no longer valid.
+        # Currently we're re-directing to a static file.
         url = reverse('spatial-aquifer')
         response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_302_FOUND)
