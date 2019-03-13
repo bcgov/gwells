@@ -10,7 +10,7 @@
         <legend>
           <span class="h2">Well Summary</span>
           <div class="float-right d-print-none">
-            <router-link v-if="show.edit" :to="{ name: 'SubmissionsEdit', params: { id: well.well_tag_number || 0 } }" class="mr-3">
+            <router-link v-if="show.edit" :to="{ name: 'SubmissionsEdit', params: { id: $route.params.id } }" class="mr-3">
               <button class="btn btn-primary mb-1">Edit</button>
             </router-link>
             <b-btn variant="light" v-if="analytics" aria-label="Print" @click="ga('send', 'event', 'Button', 'print', 'Wells Summary Print'); handlePrint;"><i class="fa fa-print"></i></b-btn>

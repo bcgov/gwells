@@ -14,7 +14,12 @@
 
 from django.contrib.gis.db import models
 from django.core.validators import MinValueValidator
+from django.contrib.contenttypes.fields import GenericRelation
+
 from decimal import Decimal
+import reversion
+from reversion.models import Version
+
 from django.utils import timezone
 import uuid
 
@@ -536,11 +541,12 @@ class AquiferLithologyCode(AuditModel):
         verbose_name_plural = 'Aquifer Lithology Codes'
 
     def __str__(self):
-        return '{} - {}'.format(self.code, self.description)
+        return '{} - {}'.format(self.aquifer_lithology_code, self.description)
 
 
 # TODO: Consider having Well and Submission extend off a common base class, given that
 #   they mostly have the exact same fields!
+@reversion.register()
 class Well(AuditModel):
     """
     Well information.
@@ -884,6 +890,8 @@ class Well(AuditModel):
     recommended_pump_rate = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True,
                                                 verbose_name='Recommended pump rate',
                                                 validators=[MinValueValidator(Decimal('0.00'))])
+
+    history = GenericRelation(Version)
 
     class Meta:
         db_table = 'well'

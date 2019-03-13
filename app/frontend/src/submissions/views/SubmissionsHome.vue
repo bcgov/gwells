@@ -13,6 +13,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
 */
 <template>
   <div class="container p-1 container-wide">
+    <b-card v-if="breadcrumbs && breadcrumbs.length" no-body class="mb-3 d-print-none">
+      <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"></b-breadcrumb>
+    </b-card>
     <div class="card" v-if="userRoles.wells.edit || userRoles.submissions.edit">
       <div class="card-body">
 
@@ -35,6 +38,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <activity-submission-form
             v-else
             :form="form"
+            :submissionsHistory="submissionsHistory"
             :activityType.sync="activityType"
             :sections="displayFormSection"
             :formSteps="formSteps"
@@ -93,7 +97,9 @@ export default {
     SubmissionPreview
   },
   data () {
-    return initialState()
+    return {
+      ...initialState()
+    }
   },
   computed: {
     displayFormSection () {
@@ -110,6 +116,27 @@ export default {
     },
     isStaffEdit () {
       return this.activityType === 'STAFF_EDIT'
+    },
+    breadcrumbs () {
+      const breadcrumbs = []
+
+      if (this.isStaffEdit) {
+        breadcrumbs.push(
+          {
+            text: `Well Search`,
+            to: { name: 'wells-home' }
+          },
+          {
+            text: `Well ${this.$route.params.id} Summary`,
+            to: { name: 'wells-detail', params: { id: this.$route.params.id } }
+          },
+          {
+            text: `Edit Well`,
+            to: { name: 'SubmissionsEdit', params: { id: this.$route.params.id } }
+          }
+        )
+      }
+      return breadcrumbs
     },
     ...mapGetters(['codes', 'userRoles', 'well', 'keycloak']),
     ...mapState('documentState', [
@@ -185,7 +212,15 @@ export default {
 
         this.$emit('formSaved')
         // Save completed notification
-        this.$noty.success('<div class="notifyText">Changes Saved!</div>', { killer: true })
+
+        if (this.isStaffEdit) {
+          this.$noty.success('<div class="notifyText">Changes Saved!</div>', { killer: true })
+        } else {
+          this.$noty.success('<div aria-label="Close" class="closeBtn">x</div><div class="notifyText">Well report submitted.</div>', { killer: true, timeout: false })
+          this.$nextTick(function () {
+            window.scrollTo(0, 0)
+          })
+        }
 
         if (!this.form.well_tag_number) {
           this.setWellTagNumber(response.data.well)
@@ -471,6 +506,10 @@ export default {
           if (this.form.person_responsible && this.form.person_responsible.name === this.form.driller_name) {
             this.form.meta.drillerSameAsPersonResponsible = true
           }
+
+          // store the number of submissions already associated with this well
+          this.submissionsHistory = res.data.submission_reports || []
+
           // Wait for the form update we just did to fire off change events.
           this.$nextTick(() => {
             this.form.meta.valueChanged = {}
@@ -524,6 +563,7 @@ function initialState () {
     trackValueChanges: false,
     errors: {},
     form: {},
+    submissionsHistory: [], // historical submissions for each well (comes into play for staff edits)
     formOptions: {},
     uploadedFiles: {},
     formSteps: {
@@ -584,6 +624,7 @@ function initialState () {
         'documents'
       ],
       STAFF_EDIT: [
+        'submissionHistory',
         'wellPublicationStatus',
         'wellType',
         'wellOwner',
@@ -606,7 +647,8 @@ function initialState () {
         'decommissionInformation',
         'comments',
         'documents',
-        'aquiferData'
+        'aquiferData',
+        'editHistory'
       ]
     }
   }

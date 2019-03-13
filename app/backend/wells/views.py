@@ -44,14 +44,18 @@ from django_filters import rest_framework as restfilters
 from minio import Minio
 
 from gwells import settings
+from gwells.change_history import generate_history_diff
 from gwells.documents import MinioClient
 from gwells.models import Survey
 from gwells.roles import WELLS_VIEWER_ROLE, WELLS_EDIT_ROLE
 from gwells.pagination import APILimitOffsetPagination
 from gwells.settings.base import get_env_variable
 
+from submissions.serializers import WellSubmissionListSerializer
+from submissions.models import WellActivityCode
+
+from wells.models import Well, ActivitySubmission
 from wells.filters import WellListFilter
-from wells.models import Well
 from wells.serializers import (
     WellListSerializer,
     WellTagSearchSerializer,
@@ -273,6 +277,24 @@ class WellTagSearchAPIView(ListAPIView):
     )
 
 
+class WellSubmissionsListAPIView(ListAPIView):
+    """ lists submissions for a well
+        See also:  submissions.SubmissionListAPIView (list all submission records)
+        get: returns submission records for a given well
+    """
+
+    permission_classes = (WellsEditPermissions,)
+    serializer_class = WellSubmissionListSerializer
+
+    def get_queryset(self):
+        well = self.kwargs.get('well_id')
+        records = ActivitySubmission.objects.filter(well=well).select_related('well_activity_type').order_by('create_date')
+        return sorted(records, key=lambda record:
+                      (record.well_activity_type.code != WellActivityCode.types.legacy().code,
+                          record.well_activity_type.code != WellActivityCode.types.construction().code,
+                          record.create_date), reverse=True)
+
+
 class WellLocationListAPIView(ListAPIView):
     """ returns well locations for a given search
 
@@ -390,6 +412,37 @@ class DeleteWellDocument(APIView):
             object_name, bucket_name=bucket_name, private=is_private)
 
         return HttpResponse(status=204)
+
+
+class WellHistory(APIView):
+    """
+    get: returns a history of changes to a Well model record
+    """
+    permission_classes = (WellsEditPermissions,)
+    queryset = Well.objects.all()
+    swagger_schema = None
+
+    def get(self, request, well_id):
+        """
+        Retrieves version history for the specified Well record and creates a list of diffs
+        for each revision.
+        """
+
+        try:
+            well = Well.objects.get(well_tag_number=well_id)
+        except Well.DoesNotExist:
+            raise Http404("Well not found")
+
+        # query records in history for this model.
+        well_history = [obj for obj in well.history.all().order_by(
+            '-revision__date_created')]
+
+        well_history_diff = generate_history_diff(
+            well_history, 'well ' + well_id)
+
+        history_diff = sorted(well_history_diff, key=lambda x: x['date'], reverse=True)
+
+        return Response(history_diff)
 
 
 class WellSpatial(APIView):

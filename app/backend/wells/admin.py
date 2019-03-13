@@ -18,7 +18,8 @@ from wells.models import (
     WaterQualityCharacteristic,
     WaterQualityColour,
     FilterPackMaterialSizeCode,
-    FilterPackMaterialCode
+    FilterPackMaterialCode,
+    Well
 )
 from gwells.models.lithology import (
     LithologyColourCode, LithologyHardnessCode,
@@ -37,3 +38,4 @@ admin.site.register(LithologyMaterialCode)
 admin.site.register(LithologyMoistureCode)
 admin.site.register(FilterPackMaterialSizeCode)
 admin.site.register(FilterPackMaterialCode)
+admin.site.register(Well)
