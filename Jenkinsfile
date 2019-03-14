@@ -576,10 +576,12 @@ pipeline {
                     def dcName = devSuffix == "staging" ? "${appName}-pgsql-${devSuffix}" : "${appName}-pgsql-${devSuffix}-${prNumber}"
                     sh (
                         script: """
-                            mkdir -p /var/lib/pgsql/data/
-                            cd /var/lib/pgsql/data/
-                            pg_dump -U \${POSTGRESQL_USER} -d \${POSTGRESQL_DATABASE} -Fc -f ./\${HOSTNAME}-\$( date +%Y-%m-%d-%H%M ).dump --no-privileges --no-tablespaces --schema=public --exclude-table=spatial_ref_sys
-                            ls -lh
+                            oc rsh -n ${devProject} dc/${dcName} ' \
+                                mkdir -p /var/lib/pgsql/data/; \
+                                cd /var/lib/pgsql/data/; \
+                                pg_dump -U \${POSTGRESQL_USER} -d \${POSTGRESQL_DATABASE} -Fc -f ./\${HOSTNAME}-\$( date +%Y-%m-%d-%H%M ).dump --no-privileges --no-tablespaces --schema=public --exclude-table=spatial_ref_sys; \
+                                ls -lh \
+                            '
                         """,
                         returnStatus: true
                     )
