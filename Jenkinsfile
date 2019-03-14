@@ -566,6 +566,27 @@ pipeline {
             }
         }
 
+        // Backup database
+        stage('DEV - Database Backup') {
+            when {
+                expression { env.CHANGE_TARGET != 'master' && env.CHANGE_TARGET != 'demo' }
+            }
+            steps {
+                script {
+                    def dcName = envSuffix == "staging" ? "${appName}-pgsql-${envSuffix}" : "${appName}-pgsql-${envSuffix}-${prNumber}"
+                    sh (
+                        script: """
+                            mkdir -p /var/lib/pgsql/data/
+                            cd /var/lib/pgsql/data/
+                            pg_dump -U \${POSTGRESQL_USER} -d \${POSTGRESQL_DATABASE} -Fc -f ./\${HOSTNAME}-\$( date +%Y-%m-%d-%H%M ).dump --no-privileges --no-tablespaces --schema=public --exclude-table=spatial_ref_sys
+                            ls -lh
+                        """,
+                        returnStatus: true
+                    )
+                }
+            }
+        }
+
 
         // the Django Unit Tests stage runs backend unit tests using a test DB that is
         // created and destroyed afterwards.
