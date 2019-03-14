@@ -6,8 +6,8 @@ metadata:
     description: "Scheduled Task to perform a Database Backup"
     tags: "cronjob,backup"
   labels:
-    app: ${DATABASE_NAME}-backup
-    cronjob: ${DATABASE_NAME}-backup
+    app: ${TARGET}-backup
+    cronjob: ${TARGET}-backup
     template: "${JOB_NAME}-config-template"
   name: "${JOB_NAME}-cronjob-template"
 parameters:
@@ -130,8 +130,8 @@ objects:
     kind: ConfigMap
     metadata:
       labels:
-        app: ${DATABASE_NAME}-backup
-        cronjob: ${DATABASE_NAME}-backup
+        app: ${TARGET}-backup
+        cronjob: ${TARGET}-backup
         template: "${JOB_NAME}-config-template"
       name: ${TARGET}-backup
   - apiVersion: v1
@@ -140,8 +140,8 @@ objects:
       finalizers:
       - kubernetes.io/pvc-protection
       labels:
-        app: ${DATABASE_NAME}-backup
-        cronjob: ${DATABASE_NAME}-backup
+        app: ${TARGET}-backup
+        cronjob: ${TARGET}-backup
         template: "${JOB_NAME}-config-template"
       name: ${TARGET}-backup
     spec:
@@ -162,8 +162,8 @@ objects:
         metadata:
           creationTimestamp: null
           labels:
-            app: ${DATABASE_NAME}-backup
-            cronjob: ${DATABASE_NAME}-backup
+            app: ${TARGET}-backup
+            cronjob: ${TARGET}-backup
             template: "${JOB_NAME}-config-template"
         spec:
           backoffLimit: ${{JOB_BACKOFF_LIMIT}}
