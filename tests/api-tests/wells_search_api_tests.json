@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "48dcde94-5490-4d05-a5a0-29bd1381fb37",
+		"_postman_id": "80aaee05-0ba7-47ac-81f9-402ecb723010",
 		"name": "Well List API filters",
 		"description": "Well List API endpoint filters required for advanced search options.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -238,6 +238,33 @@
 						}
 					},
 					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "4836e08d-af4c-4af0-80ea-ca5c49ba6f5e",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "cfd20e05-db81-4565-82c0-15ff3c0519eb",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Response status ok\", function () {",
+							"  pm.response.to.be.ok;",
+							"});",
+							"pm.test(\"At least one result\", function () {",
+							"  pm.expect(pm.response.json().count).to.be.at.least(1);",
+							"});"
+						]
+					}
 				}
 			]
 		},
@@ -720,6 +747,33 @@
 						}
 					],
 					"description": "Tests for customized filters, i.e. those that search across multiple db fields.",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "38a07f32-d36f-4c9a-928c-fc9b6e3a732d",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "73823139-d38a-4c9c-89b4-12d2a4d97924",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Response status ok\", function () {",
+									"  pm.response.to.be.ok;",
+									"});",
+									"pm.test(\"At least one result\", function () {",
+									"  pm.expect(pm.response.json().count).to.be.at.least(1);",
+									"});"
+								]
+							}
+						}
+					],
 					"_postman_isSubFolder": true
 				},
 				{
@@ -1563,6 +1617,33 @@
 							"response": []
 						}
 					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "20e30eb4-2393-49e8-b606-be718fa1c6b5",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "0f8c39f1-546a-4879-9797-2c96ee885536",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Response status ok\", function () {",
+									"  pm.response.to.be.ok;",
+									"});",
+									"pm.test(\"At least one result\", function () {",
+									"  pm.expect(pm.response.json().count).to.be.at.least(1);",
+									"});"
+								]
+							}
+						}
+					],
 					"_postman_isSubFolder": true
 				},
 				{
@@ -2145,6 +2226,33 @@
 							"response": []
 						}
 					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "4e83bc7e-9776-4973-b75f-98525319da24",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "8d6bb995-6356-434e-9573-7f78f8e812be",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Response status ok\", function () {",
+									"  pm.response.to.be.ok;",
+									"});",
+									"pm.test(\"At least one result\", function () {",
+									"  pm.expect(pm.response.json().count).to.be.at.least(1);",
+									"});"
+								]
+							}
+						}
+					],
 					"_postman_isSubFolder": true
 				},
 				{
@@ -2347,6 +2455,33 @@
 							"response": []
 						}
 					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "081d1206-8782-4784-9078-b6c0b5b915ba",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "5d8f186c-7c77-4a07-8d18-854fd7886e61",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Response status ok\", function () {",
+									"  pm.response.to.be.ok;",
+									"});",
+									"pm.test(\"At least one result\", function () {",
+									"  pm.expect(pm.response.json().count).to.be.at.least(1);",
+									"});"
+								]
+							}
+						}
+					],
 					"_postman_isSubFolder": true
 				},
 				{
@@ -2396,6 +2531,33 @@
 								}
 							},
 							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "8aa83863-3424-454d-b02e-03d2077b9b48",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "716dd774-8ca7-4377-afa1-06796ba9fa76",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Response status ok\", function () {",
+									"  pm.response.to.be.ok;",
+									"});",
+									"pm.test(\"At least one result\", function () {",
+									"  pm.expect(pm.response.json().count).to.be.at.least(1);",
+									"});"
+								]
+							}
 						}
 					],
 					"_postman_isSubFolder": true
@@ -2702,7 +2864,12 @@
 								"id": "71dc461d-95ac-46ff-80ff-72ba2053df07",
 								"type": "text/javascript",
 								"exec": [
-									""
+									"pm.test(\"Response status ok\", function () {",
+									"  pm.response.to.be.ok;",
+									"});",
+									"pm.test(\"At least one result\", function () {",
+									"  pm.expect(pm.response.json().count).to.be.at.least(1);",
+									"});"
 								]
 							}
 						}
@@ -2805,6 +2972,210 @@
 										{
 											"key": "drilling_methods",
 											"value": "DUGOUT"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "d2a1ad34-bb98-4b02-b341-047338fc4fe1",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "0869bfa7-9392-4b7c-be3c-909241c29234",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Response status ok\", function () {",
+									"  pm.response.to.be.ok;",
+									"});",
+									"pm.test(\"At least one result\", function () {",
+									"  pm.expect(pm.response.json().count).to.be.at.least(1);",
+									"});"
+								]
+							}
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Bounding box filter",
+					"item": [
+						{
+							"name": "within param (valid)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "11f7946c-15e1-41ea-bcc8-ed7d121f5761",
+										"exec": [
+											"pm.test(\"Response status ok\", function () {",
+											"  pm.response.to.be.ok;",
+											"});",
+											"pm.test(\"At least one result\", function () {",
+											"  pm.expect(pm.response.json().count).to.be.at.least(1);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/wells?within_x1=-122.58&within_y1=49.24&within_x2=-122.60&within_y2=49.26",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"wells"
+									],
+									"query": [
+										{
+											"key": "within_x1",
+											"value": "-122.58"
+										},
+										{
+											"key": "within_y1",
+											"value": "49.24"
+										},
+										{
+											"key": "within_x2",
+											"value": "-122.60"
+										},
+										{
+											"key": "within_y2",
+											"value": "49.26"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "within param (missing point)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "19dcd02f-9e31-4876-9102-fe274f4d678e",
+										"exec": [
+											"pm.test(\"Response code 400\", function () {",
+											"  pm.response.to.be.clientError;",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/wells?within_x1=-122.58&within_y1=49.24&within_x2=-122.60",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"wells"
+									],
+									"query": [
+										{
+											"key": "within_x1",
+											"value": "-122.58"
+										},
+										{
+											"key": "within_y1",
+											"value": "49.24"
+										},
+										{
+											"key": "within_x2",
+											"value": "-122.60"
+										},
+										{
+											"key": "",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "within param (invalid point)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "19dcd02f-9e31-4876-9102-fe274f4d678e",
+										"exec": [
+											"pm.test(\"Response code 400\", function () {",
+											"  pm.response.to.be.clientError;",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/wells?within_x1=-122.58&within_y1=bar&within_x2=-122.60&within_y2=foo",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"wells"
+									],
+									"query": [
+										{
+											"key": "within_x1",
+											"value": "-122.58"
+										},
+										{
+											"key": "within_y1",
+											"value": "bar"
+										},
+										{
+											"key": "within_x2",
+											"value": "-122.60"
+										},
+										{
+											"key": "within_y2",
+											"value": "foo"
 										}
 									]
 								}
@@ -3055,52 +3426,12 @@
 						"id": "e815af75-b06c-4767-bf96-ed635dbff9be",
 						"type": "text/javascript",
 						"exec": [
-							"const resultOrderingSort = (propName, ascending=true) => {",
-							"  if (ascending) {",
-							"    return (a, b) => {",
-							"      const aProp = a[propName];",
-							"      const bProp = b[propName];",
-							"",
-							"      if (aProp === null){",
-							"        return 1;",
-							"      }",
-							"      else if (bProp === null) {",
-							"        return -1;",
-							"      }",
-							"      else if (aProp < bProp) {",
-							"        return -1;",
-							"      }",
-							"      else if (bProp < aProp) {",
-							"        return 1;",
-							"      }",
-							"      else {",
-							"        return 0;",
-							"      }",
-							"    };",
-							"  }",
-							"  else {",
-							"    return (a, b) => {",
-							"      const aProp = a[propName];",
-							"      const bProp = b[propName];",
-							"",
-							"      if (aProp === null){",
-							"        return 1;",
-							"      }",
-							"      else if (bProp === null) {",
-							"        return -1;",
-							"      }",
-							"      else if (aProp < bProp) {",
-							"        return -1;",
-							"      }",
-							"      else if (bProp < aProp) {",
-							"        return 1;",
-							"      }",
-							"      else {",
-							"        return 0;",
-							"      }",
-							"    };",
-							"  }",
-							"};"
+							"pm.test(\"Response status ok\", function () {",
+							"  pm.response.to.be.ok;",
+							"});",
+							"pm.test(\"At least one result\", function () {",
+							"  pm.expect(pm.response.json().count).to.be.at.least(1);",
+							"});"
 						]
 					}
 				}
@@ -3125,13 +3456,10 @@
 				"type": "text/javascript",
 				"exec": [
 					"pm.test(\"Response is valid JSON\", function () {",
-					"  pm.response.to.be.ok;",
 					"  pm.response.to.be.withBody;",
 					"  pm.response.to.be.json;",
 					"});",
-					"pm.test(\"At least one result\", function () {",
-					"  pm.expect(pm.response.json().count).to.be.at.least(1);",
-					"});"
+					""
 				]
 			}
 		}
