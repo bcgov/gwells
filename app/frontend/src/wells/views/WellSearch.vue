@@ -328,7 +328,9 @@ export default {
     },
     filterSelectOptions: function () {
       return {
+        aquiferLithology: this.codes.aquifer_lithology_codes,
         coordinateAcquisitionCode: this.codes.coordinate_acquisition_codes,
+        decommissionMethod: this.codes.decommission_methods,
         developmentMethods: this.codes.development_methods,
         drillingMethods: this.codes.drilling_methods,
         filterPackMaterial: this.codes.filter_pack_material,
@@ -338,6 +340,7 @@ export default {
         landDistrict: this.landDistrictOptions,
         licencedStatus: this.codes.licenced_status_codes,
         linerMaterial: this.codes.liner_material_codes,
+        observationWellStatus: this.codes.observation_well_status,
         orgResponsible: this.organizationNames,
         ownerProvince: this.codes.province_codes,
         personResponsible: this.drillerNames,

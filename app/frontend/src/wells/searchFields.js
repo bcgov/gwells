@@ -190,6 +190,48 @@ const searchFields = {
       ]
     },
     {
+      header: 'Observation well information',
+      fields: [
+        { id: 'observationWellNumber', param: 'observation_well_number', label: 'Observation well number', type: 'text' },
+        { id: 'observationWellStatus', param: 'observation_well_status', label: 'Observation well status', type: 'select', textField: 'description', valueField: 'obs_well_status_code' }
+      ]
+    },
+    {
+      header: 'Decommission',
+      fields: [
+        { id: 'finishedWellDepth', param: 'finished_well_depth', label: 'Finished well depth - decommission', type: 'range' },
+        { id: 'decommissionReason', param: 'decommission_reason', label: 'Reason for well decommission', type: 'text' },
+        { id: 'decommissionMethod', param: 'decommission_method', label: 'Decommission method', type: 'select', textField: 'description', valueField: 'decommission_method_code' },
+        { id: 'decommissionSealantMaterial', param: 'decommission_sealant_material', label: 'Sealant material', type: 'text' },
+        { id: 'decommissionBackfillMaterial', param: 'decommission_backfill_material', label: 'Backfill material', type: 'text' },
+        { id: 'decommissionDetails', param: 'decommission_details', label: 'Decommission details', type: 'text' }
+      ]
+    },
+    {
+      header: 'Comments',
+      fields: [
+        { id: 'comments', param: 'comments', label: 'Comments', type: 'text' },
+        { id: 'alternativeSpecsSubmitted', param: 'alternative_specs_submitted', label: 'Alt specs submitted', type: 'radio', options: [{ text: 'Yes', value: 'true' }, { text: 'No', value: 'false' }] },
+        { id: 'internalComments', param: 'internal_comments', authenticated: true, label: 'Internal office comments', type: 'text' }
+      ]
+    },
+    {
+      header: 'Well testing and aquifer details',
+      fields: [
+        { id: 'aquiferLithology', param: 'aquifer_lithology', label: 'Aquifer lithology', type: 'select', textField: 'description', valueField: 'aquifer_lithology_code' },
+        { id: 'aquiferVulnerabilityIndex', param: 'aquifer_vulnerability_index', label: 'AVI', type: 'range' },
+        { id: 'storativity', param: 'storativity', label: 'Storativity', type: 'range' },
+        { id: 'transmissivity', param: 'transmissivity', label: 'Transmissivity', type: 'range' },
+        { id: 'hydraulicConductivity', param: 'hydraulic_conductivity', label: 'Hydraulic Conductivity', type: 'text' },
+        { id: 'specificStorage', param: 'specific_storage', label: 'Specific Storage', type: 'text' },
+        { id: 'specificYield', param: 'specific_yield', label: 'Specific Yield', type: 'range' },
+        { id: 'testingMethod', param: 'testing_method', label: 'Testing method', type: 'text' },
+        { id: 'testingDuration', param: 'testing_duration', label: 'Testing duration', type: 'range' },
+        { id: 'analyticSolutionType', param: 'analytic_solution_type', label: 'Analytic solution', type: 'range' },
+        { id: 'boundaryEffect', param: 'boundary_effect', label: 'Boundary effect', type: 'range' }
+      ]
+    },
+    {
       header: 'Record maintenance',
       authenticated: true,
       fields: [
@@ -197,13 +239,6 @@ const searchFields = {
         { id: 'createDate', param: 'create_date', label: 'Created date', type: 'dateRange' },
         { id: 'updateUser', param: 'update_user', label: 'Updated by', type: 'text' },
         { id: 'updateDate', param: 'update_date', label: 'Updated date', type: 'dateRange' }
-      ]
-    },
-    {
-      header: 'Comments',
-      authenticated: true,
-      fields: [
-        { id: 'internalComments', param: 'internal_comments', label: 'Internal office comments', type: 'text' }
       ]
     }
   ]
