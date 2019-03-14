@@ -573,7 +573,7 @@ pipeline {
             }
             steps {
                 script {
-                    def dcName = envSuffix == "staging" ? "${appName}-pgsql-${envSuffix}" : "${appName}-pgsql-${envSuffix}-${prNumber}"
+                    def dcName = devSuffix == "staging" ? "${appName}-pgsql-${devSuffix}" : "${appName}-pgsql-${devSuffix}-${prNumber}"
                     sh (
                         script: """
                             mkdir -p /var/lib/pgsql/data/
