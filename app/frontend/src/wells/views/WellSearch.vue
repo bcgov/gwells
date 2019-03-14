@@ -62,61 +62,63 @@
                       </b-col>
                     </b-row>
                     <template v-for="field in section.fields">
-                      <search-form-radio
-                        v-if="field.type === 'radio'"
-                        :key="field.id"
-                        :id="`${field.id}Filter`"
-                        :label="field.label"
-                        label-cols="5"
-                        v-model="searchParams[field.param]"
-                        :options="field.options" />
-                      <search-form-range
-                        v-else-if="field.type === 'range'"
-                        :key="field.id"
-                        type="number"
-                        label-cols="3"
-                        :id="`${field.id}Filter`"
-                        :label="field.label"
-                        :errors="searchErrors[field.param]"
-                        :step="field.step ? field.step : 'any'"
-                        :min-value="searchParams[`${field.param}_min`]"
-                        v-on:start-input="searchParams[`${field.param}_min`] = $event"
-                        :max-value="searchParams[`${field.param}_max`]"
-                        v-on:end-input="searchParams[`${field.param}_max`] = $event"/>
-                      <search-form-range
-                        v-else-if="field.type === 'dateRange'"
-                        :key="field.id"
-                        type="date"
-                        label-cols="3"
-                        :id="`${field.id}Filter`"
-                        :label="field.label"
-                        placeholder="YYYY/MM/DD"
-                        :errors="searchErrors[field.param]"
-                        :min-value="searchParams[`${field.param}_after`]"
-                        v-on:start-input="searchParams[`${field.param}_after`] = $event"
-                        :max-value="searchParams[`${field.param}_before`]"
-                        v-on:end-input="searchParams[`${field.param}_before`] = $event"/>
-                      <search-form-select
-                        v-else-if="field.type === 'select'"
-                        :key="field.id"
-                        label-cols="6"
-                        :id="`${field.id}Filter`"
-                        :label="field.label"
-                        placeholder="----------"
-                        :errors="searchErrors[field.param]"
-                        v-model="searchParams[field.param]"
-                        :options="filterSelectOptions[field.id]"
-                        :value-field="field.valueField"
-                        :text-field="field.textField" />
-                      <search-form-input
-                        v-else
-                        :key="field.id"
-                        :type="field.type"
-                        label-cols="6"
-                        :id="`${field.id}Filter`"
-                        :label="field.label"
-                        :errors="searchErrors[field.param]"
-                        v-model="searchParams[field.param]"/>
+                      <template v-if="field.authenticated ? userRoles.wells.view : true">
+                        <search-form-radio
+                          v-if="field.type === 'radio'"
+                          :key="field.id"
+                          :id="`${field.id}Filter`"
+                          :label="field.label"
+                          label-cols="5"
+                          v-model="searchParams[field.param]"
+                          :options="field.options" />
+                        <search-form-range
+                          v-else-if="field.type === 'range'"
+                          :key="field.id"
+                          type="number"
+                          label-cols="3"
+                          :id="`${field.id}Filter`"
+                          :label="field.label"
+                          :errors="searchErrors[field.param]"
+                          :step="field.step ? field.step : 'any'"
+                          :min-value="searchParams[`${field.param}_min`]"
+                          v-on:start-input="searchParams[`${field.param}_min`] = $event"
+                          :max-value="searchParams[`${field.param}_max`]"
+                          v-on:end-input="searchParams[`${field.param}_max`] = $event"/>
+                        <search-form-range
+                          v-else-if="field.type === 'dateRange'"
+                          :key="field.id"
+                          type="date"
+                          label-cols="3"
+                          :id="`${field.id}Filter`"
+                          :label="field.label"
+                          placeholder="YYYY/MM/DD"
+                          :errors="searchErrors[field.param]"
+                          :min-value="searchParams[`${field.param}_after`]"
+                          v-on:start-input="searchParams[`${field.param}_after`] = $event"
+                          :max-value="searchParams[`${field.param}_before`]"
+                          v-on:end-input="searchParams[`${field.param}_before`] = $event"/>
+                        <search-form-select
+                          v-else-if="field.type === 'select'"
+                          :key="field.id"
+                          label-cols="6"
+                          :id="`${field.id}Filter`"
+                          :label="field.label"
+                          placeholder="----------"
+                          :errors="searchErrors[field.param]"
+                          v-model="searchParams[field.param]"
+                          :options="filterSelectOptions[field.id]"
+                          :value-field="field.valueField"
+                          :text-field="field.textField" />
+                        <search-form-input
+                          v-else
+                          :key="field.id"
+                          :type="field.type"
+                          label-cols="6"
+                          :id="`${field.id}Filter`"
+                          :label="field.label"
+                          :errors="searchErrors[field.param]"
+                          v-model="searchParams[field.param]"/>
+                      </template>
                     </template>
                   </div>
                   <b-row>

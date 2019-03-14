@@ -20,7 +20,8 @@ const searchFields = {
         { id: 'matchAny', param: 'match_any', type: 'radio', options: [{ text: 'Any field match', value: 'true' }, { text: 'All field match', value: 'false' }] },
         { id: 'well', param: 'well', label: 'Well tag or ID plate number', type: 'text' },
         { id: 'streetOrCity', param: 'street_address_or_city', label: 'Street address or city', type: 'text' },
-        { id: 'ownerName', param: 'owner_full_name', label: 'Well owner', type: 'text' }
+        { id: 'ownerName', param: 'owner_full_name', label: 'Well owner', type: 'text' },
+        { id: 'publicationStatus', param: 'well_publication_status', authenticated: true, label: 'Publication status', type: 'select', textField: 'description', valueField: 'well_publication_status_code' }
       ]
     },
     {
@@ -58,8 +59,7 @@ const searchFields = {
         { id: 'wellIdPlateAttached', param: 'well_identification_plate_attached', label: 'Where ID plate attached', type: 'text' },
         { id: 'idPlateAttachedBy', param: 'id_plate_attached_by', label: 'ID plate attached by', type: 'text' },
         { id: 'waterSupplySystemName', param: 'water_supply_system_name', label: 'Water supply system name', type: 'text' },
-        { id: 'waterSupplyWellName', param: 'water_supply_system_well_name', label: 'Water supply well name', type: 'text' },
-        { id: 'publicationStatus', param: 'well_publication_status', authenticated: true, label: 'Publication status', type: 'select', textField: 'description', valueField: 'well_publication_status_code' }
+        { id: 'waterSupplyWellName', param: 'water_supply_system_well_name', label: 'Water supply well name', type: 'text' }
       ]
     },
     {
