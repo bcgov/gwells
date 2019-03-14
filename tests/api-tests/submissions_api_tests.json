@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "2b9d4286-1136-440d-b277-565473306f1f",
+		"_postman_id": "e1d351d3-d80f-4e57-bb70-fcf2a1d38c3a",
 		"name": "GWELLS Submissions API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -2454,8 +2454,8 @@
 													"var jsonData = pm.response.json()",
 													"",
 													"var expected = {",
-													"\t\"latitude\": \"1.000000\",",
-													"\t\"longitude\": \"1.000000\",",
+													"\t\"latitude\": 1.000000,",
+													"\t\"longitude\": 1.000000,",
 													"\t\"coordinate_acquisition_code\": \"B\"",
 													"};",
 													"",
@@ -3563,8 +3563,8 @@
 									"})",
 									"",
 									"pm.test(\"Latitude/Longitude is same as the initial construction report\", function() {",
-									"    pm.expect(jsonData.latitude).to.equal(\"48.420133\");",
-									"    pm.expect(jsonData.longitude).to.equal(\"-123.370083\");",
+									"    pm.expect(jsonData.latitude).to.equal(48.420133);",
+									"    pm.expect(jsonData.longitude).to.equal(-123.370083);",
 									"})"
 								],
 								"type": "text/javascript"
