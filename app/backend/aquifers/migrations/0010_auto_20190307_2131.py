@@ -23,10 +23,11 @@ def generate_aquifer_resource_reverse(apps, schema_editor):
 
 
 def generate_aquifer_resource(apps, schema_editor):
+    AquiferResource = apps.get_model('aquifers', 'AquiferResource')
     Aquifer = apps.get_model('aquifers', 'Aquifer')
     for aquifer in Aquifer.objects.all():
-        AquiferResource.create(
-            aquifer=aqufier,
+        AquiferResource.objects.create(
+            aquifer=aquifer,
             section_id='I',
             url='https://onlinelibrary.wiley.com/doi/abs/10.1002/hyp.7724',
             name='Evaluating the use of a gridded climate surface for modelling groundwater recharge in a semi-arid region',
@@ -54,7 +55,7 @@ class Migration(migrations.Migration):
                 ('url', models.URLField(
                     max_length=255,
                     help_text='A resolvable link to the PDF document associated with this aquifer resource.', verbose_name='PDF Document URL')),
-                ('aquifer', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT,
+                ('aquifer', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
                                               related_name='resources', to='aquifers.Aquifer')),
             ],
             options={
@@ -74,6 +75,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=100)),
             ],
             options={
+                'db_table': 'aquifer_resource_section_code',
                 'verbose_name_plural': 'Aquifer Resource Sections',
                 'ordering': ['name'],
             },
@@ -82,7 +84,7 @@ class Migration(migrations.Migration):
             model_name='aquiferresource',
             name='section',
             field=models.ForeignKey(db_column='aquifer_resource_section_code', help_text='The section (category) of this resource.',
-                                    on_delete=django.db.models.deletion.PROTECT, to='aquifers.AquiferResourceSection', verbose_name='Aquifer Resource Section'),
+                                    on_delete=django.db.models.deletion.CASCADE, to='aquifers.AquiferResourceSection', verbose_name='Aquifer Resource Section'),
         ),
         migrations.RunPython(
             aquifer_resource_sections().load_fixture,
