@@ -52,9 +52,13 @@ from gwells.settings.base import get_env_variable
 from submissions.serializers import WellSubmissionListSerializer
 from submissions.models import WellActivityCode
 
+from wells.filters import (
+    WellListAdminFilter,
+    WellListFilter,
+    WellListFilterBackend)
 from wells.models import Well, ActivitySubmission
-from wells.filters import WellListFilter
 from wells.serializers import (
+    WellListAdminSerializer,
     WellListSerializer,
     WellTagSearchSerializer,
     WellDetailSerializer,
@@ -216,14 +220,21 @@ class WellListAPIView(ListAPIView):
     # TODO Address viewing unpublished wells when advanced search has been merged
     queryset = Well.objects.all()  # exclude(well_publication_status='Unpublished')
     pagination_class = APILimitOffsetPagination
-    serializer_class = WellListSerializer
 
-    filter_backends = (restfilters.DjangoFilterBackend,
-                       filters.SearchFilter, filters.OrderingFilter)
+    filter_backends = (WellListFilterBackend, filters.SearchFilter,
+                       filters.OrderingFilter)
     ordering = ('well_tag_number',)
-    filterset_class = WellListFilter
     search_fields = ('well_tag_number', 'identification_plate_number',
                      'street_address', 'city', 'owner_full_name')
+
+    def get_serializer_class(self):
+        """Returns a different serializer class for admin users."""
+        serializer_class = WellListSerializer
+        if (self.request.user and self.request.user.is_authenticated and
+                self.request.user.groups.filter(name=WELLS_VIEWER_ROLE).exists()):
+            serializer_class = WellListAdminSerializer
+
+        return serializer_class
 
     def get_queryset(self):
         qs = self.queryset
