@@ -9,6 +9,12 @@ def update_fields(apps, schema_editor):
     app_config = apps.get_app_config('registries')
     app_models = app_config.get_models()
     for model in app_models:
+        if hasattr(model, 'create_date'):
+            try:
+                model.objects.filter(create_date__isnull=True)\
+                    .update(create_date=datetime.datetime(2018, 1, 1, 8, 0, 0, 0, tzinfo=utc))
+            except AttributeError:
+                print("skipping")
         if hasattr(model, 'expired_date'):
             try:
                 model.objects.filter(expired_date__isnull=True)\
