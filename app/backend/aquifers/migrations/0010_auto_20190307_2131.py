@@ -6,7 +6,6 @@ from django.db import migrations, models
 import django.db.models.deletion
 from django.conf import settings
 
-from aquifers.models import AquiferResource, Aquifer
 from gwells.codes import CodeFixture
 
 
@@ -18,11 +17,13 @@ def aquifer_resource_sections():
 
 
 def generate_aquifer_resource_reverse(apps, schema_editor):
+    AquiferResource = apps.get_model('aquifers', 'AquiferResource')
     AquiferResource.objects.filter(
         url='https://onlinelibrary.wiley.com/doi/abs/10.1002/hyp.7724').delete()
 
 
 def generate_aquifer_resource(apps, schema_editor):
+    Aquifer = apps.get_model('aquifers', 'Aquifer')
     for aquifer in Aquifer.objects.all():
         AquiferResource.create(
             aquifer=aqufier,
