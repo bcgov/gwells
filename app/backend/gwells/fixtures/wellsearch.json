@@ -5,8 +5,8 @@
         "fields": {
             "create_user": "PROXY_WELLS",
             "create_date": "2016-12-10T23:42:51Z",
-            "update_user": null,
-            "update_date": null,
+            "update_user": "",
+            "update_date": "2016-12-10T23:42:51Z",
             "activity_submission": null,
             "well": 112316,
             "start": "192.00",
@@ -22,8 +22,8 @@
         "fields": {
             "create_user": "PROXY_WELLS",
             "create_date": "2016-12-10T23:43:33Z",
-            "update_user": null,
-            "update_date": null,
+            "update_user": "",
+            "update_date": "2016-12-10T23:42:51Z",
             "activity_submission": null,
             "well": 112316,
             "start": "195.00",
@@ -39,8 +39,8 @@
         "fields": {
             "create_user": "PROXY_WELLS",
             "create_date": "2016-12-10T23:43:09Z",
-            "update_user": null,
-            "update_date": null,
+            "update_user": "",
+            "update_date": "2016-12-10T23:42:51Z",
             "activity_submission": null,
             "well": 112316,
             "start": "192.00",
@@ -56,8 +56,8 @@
         "fields": {
             "create_user": "PROXY_WELLS",
             "create_date": "2016-02-09T21:45:27Z",
-            "update_user": null,
-            "update_date": null,
+            "update_user": "",
+            "update_date": "2016-12-10T23:42:51Z",
             "activity_submission": null,
             "well": 20143,
             "start": null,
@@ -73,8 +73,8 @@
         "fields": {
             "create_user": "PROXY_WELLS",
             "create_date": "2008-09-12T18:14:53Z",
-            "update_user": null,
-            "update_date": null,
+            "update_user": "",
+            "update_date": "2016-12-10T23:42:51Z",
             "drilling_company_code": "496",
             "name": "Flotonic Waterwell"
         }
@@ -136,7 +136,7 @@
             "survey_enabled": true,
             "survey_page": "w",
             "effective_date": "2018-03-12",
-            "expiry_date": null
+            "expiry_date": "9999-12-31"
         }
     },
     {
@@ -148,7 +148,7 @@
             "survey_enabled": false,
             "survey_page": "s",
             "effective_date": "2018-03-14",
-            "expiry_date": null
+            "expiry_date": "9999-12-31"
         }
     },
     {
@@ -157,8 +157,8 @@
         "fields": {
             "create_user": "PROXY_EWELLS_USER",
             "create_date": "2016-12-08T14:12:27Z",
-            "update_user": null,
-            "update_date": null,
+            "update_user": "",
+            "update_date": "2016-12-10T23:42:51Z",
             "well_tag_number": 112286,
             "liner_thickness": "0.188",
             "liner_diameter": "4.00",
@@ -174,8 +174,8 @@
         "fields": {
             "create_user": "WELLS",
             "create_date": "2003-08-13T16:11:35Z",
-            "update_user": null,
-            "update_date": null,
+            "update_user": "",
+            "update_date": "2016-12-10T23:42:51Z",
             "bcgs_number": "082F033334"
         }
     },
@@ -185,8 +185,8 @@
         "fields": {
             "create_user": "WELLS",
             "create_date": "2003-08-13T16:13:15Z",
-            "update_user": null,
-            "update_date": null,
+            "update_user": "",
+            "update_date": "2016-12-10T23:42:51Z",
             "bcgs_number": "093C044324"
         }
     },
@@ -196,8 +196,8 @@
         "fields": {
             "create_user": "PROXY_WELLS",
             "create_date": "2009-03-16T18:10:54Z",
-            "update_user": null,
-            "update_date": null,
+            "update_user": "",
+            "update_date": "2016-12-10T23:42:51Z",
             "bcgs_number": "082K079442"
         }
     },
@@ -207,8 +207,8 @@
         "fields": {
             "create_user": "PROXY_WELLS",
             "create_date": "2016-12-08T14:13:30Z",
-            "update_user": null,
-            "update_date": null,
+            "update_user": "",
+            "update_date": "2016-12-10T23:42:51Z",
             "bcgs_number": "092P049112"
         }
     },
@@ -218,8 +218,8 @@
         "fields": {
             "create_user": "PROXY_EWELLS_USER",
             "create_date": "2016-12-10T23:39:17Z",
-            "update_user": null,
-            "update_date": null,
+            "update_user": "",
+            "update_date": "2016-12-10T23:42:51Z",
             "activity_submission": null,
             "well": 112316,
             "start": "0.00",
@@ -237,8 +237,8 @@
         "fields": {
             "create_user": "PROXY_EWELLS_USER",
             "create_date": "2017-05-30T20:43:18Z",
-            "update_user": null,
-            "update_date": null,
+            "update_user": "",
+            "update_date": "2016-12-10T23:42:51Z",
             "activity_submission": null,
             "well": 113169,
             "start": "0.00",
@@ -816,7 +816,7 @@
         "fields": {
             "create_user": "",
             "create_date": "2018-02-08T17:06:47.229Z",
-            "update_user": null,
+            "update_user": "",
             "update_date": "2018-02-08T17:06:47.231Z",
             "well_guid": "28efc8dd-4f4e-4b1e-84ce-5e2e7313bdb1",
             "identification_plate_number": null,
@@ -1386,7 +1386,7 @@
         "fields": {
             "create_user": "PROXY_EWELLS_USER",
             "create_date": "2019-02-08T18:53:16.353Z",
-            "update_user": null,
+            "update_user": "",
             "update_date": "2019-02-11T01:47:46.945Z",
             "well_guid": "57c2de9a-b268-45a1-9b86-914b37018459",
             "identification_plate_number": 55555,

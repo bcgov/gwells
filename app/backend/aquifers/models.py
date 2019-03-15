@@ -31,8 +31,8 @@ class AquiferMaterial(AuditModel):
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
-    effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date = models.DateTimeField(blank=True, null=True)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'aquifer_material_code'
@@ -52,8 +52,8 @@ class AquiferSubtype(AuditModel):
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
-    effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date = models.DateTimeField(blank=True, null=True)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'aquifer_subtype_code'
@@ -72,8 +72,8 @@ class AquiferProductivity(AuditModel):
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
-    effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date = models.DateTimeField(blank=True, null=True)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'aquifer_productivity_code'
@@ -93,8 +93,8 @@ class AquiferDemand(AuditModel):
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
-    effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date = models.DateTimeField(blank=True, null=True)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'aquifer_demand_code'
@@ -115,8 +115,8 @@ class WaterUse(AuditModel):
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
-    effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date = models.DateTimeField(blank=True, null=True)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'water_use_code'
@@ -133,8 +133,8 @@ class QualityConcern(AuditModel):
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
-    effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date = models.DateTimeField(blank=True, null=True)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'quality_concern_code'
@@ -154,8 +154,8 @@ class AquiferVulnerabilityCode(AuditModel):
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
-    effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date = models.DateTimeField(blank=True, null=True)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'aquifer_vulnerability_code'
@@ -200,6 +200,7 @@ class Aquifer(AuditModel):
         max_digits=5, decimal_places=1, blank=True, null=True, verbose_name='Size (square km)')
     vulnerability = models.ForeignKey(
         AquiferVulnerabilityCode,
+        # TODO: Spelling mistake below!
         db_column='aquifer_vulnerablity_code',
         blank=True,
         null=True,
@@ -252,6 +253,7 @@ class Aquifer(AuditModel):
         blank=True,
         null=True,
         verbose_name='Notes on Aquifer, for internal use only.')
+    geom = models.PolygonField(srid=3005, null=True)
 
     history = GenericRelation(Version)
 

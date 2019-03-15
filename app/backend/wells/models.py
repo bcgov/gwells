@@ -14,7 +14,13 @@
 
 from django.contrib.gis.db import models
 from django.core.validators import MinValueValidator
+from django.contrib.contenttypes.fields import GenericRelation
+
 from decimal import Decimal
+import reversion
+from reversion.models import Version
+
+from django.utils import timezone
 import uuid
 
 from gwells.models import AuditModel, ProvinceStateCode, ScreenIntakeMethodCode, ScreenMaterialCode,\
@@ -34,8 +40,8 @@ class DecommissionMethodCode(AuditModel):
     description = models.CharField(max_length=255, verbose_name="Description")
     display_order = models.PositiveIntegerField()
 
-    effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date = models.DateTimeField(blank=True, null=True)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'decommission_method_code'
@@ -65,8 +71,8 @@ class ObsWellStatusCode(AuditModel):
     description = models.CharField(max_length=255)
     display_order = models.PositiveIntegerField()
 
-    effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date = models.DateTimeField(blank=True, null=True)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'obs_well_status_code'
@@ -85,8 +91,8 @@ class YieldEstimationMethodCode(AuditModel):
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
-    effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date = models.DateTimeField(blank=True, null=True)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'yield_estimation_method_code'
@@ -123,8 +129,8 @@ class DevelopmentMethodCode(AuditModel):
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
-    effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date = models.DateTimeField(blank=True, null=True)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'development_method_code'
@@ -142,8 +148,8 @@ class FilterPackMaterialSizeCode(AuditModel):
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
-    effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date = models.DateTimeField(blank=True, null=True)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'filter_pack_material_size_code'
@@ -161,8 +167,8 @@ class FilterPackMaterialCode(AuditModel):
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
-    effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date = models.DateTimeField(blank=True, null=True)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'filter_pack_material_code'
@@ -181,8 +187,8 @@ class LinerMaterialCode(AuditModel):
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
-    effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date = models.DateTimeField(blank=True, null=True)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'liner_material_code'
@@ -201,8 +207,8 @@ class SurfaceSealMethodCode(AuditModel):
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
-    effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date = models.DateTimeField(blank=True, null=True)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'surface_seal_method_code'
@@ -221,8 +227,8 @@ class SurfaceSealMaterialCode(AuditModel):
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
-    effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date = models.DateTimeField(blank=True, null=True)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'surface_seal_material_code'
@@ -240,8 +246,8 @@ class DrillingMethodCode(AuditModel):
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
-    effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date = models.DateTimeField(blank=True, null=True)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'drilling_method_code'
@@ -280,8 +286,8 @@ class LandDistrictCode(AuditModel):
     name = models.CharField(max_length=255)
     display_order = models.PositiveIntegerField()
 
-    effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date = models.DateTimeField(blank=True, null=True)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'land_district_code'
@@ -300,8 +306,8 @@ class LicencedStatusCode(AuditModel):
     description = models.CharField(max_length=255)
     display_order = models.PositiveIntegerField()
 
-    effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date = models.DateTimeField(blank=True, null=True)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'licenced_status_code'
@@ -321,8 +327,8 @@ class IntendedWaterUseCode(AuditModel):
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
-    effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date = models.DateTimeField(blank=True, null=True)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'intended_water_use_code'
@@ -342,8 +348,8 @@ class GroundElevationMethodCode(AuditModel):
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
-    effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date = models.DateTimeField(blank=True, null=True)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'ground_elevation_method_code'
@@ -362,8 +368,8 @@ class WellClassCode(AuditModel):
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
-    effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date = models.DateTimeField(blank=True, null=True)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'well_class_code'
@@ -404,8 +410,8 @@ class WellStatusCode(AuditModel):
     description = models.CharField(max_length=255)
     display_order = models.PositiveIntegerField()
 
-    effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date = models.DateTimeField(blank=True, null=True)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     objects = models.Manager()
     types = WellStatusCodeTypeManager()
@@ -428,8 +434,8 @@ class WellPublicationStatusCode(AuditModel):
     description = models.CharField(max_length=255, null=False)
     display_order = models.PositiveIntegerField(null=False)
 
-    effective_date = models.DateTimeField(null=False)
-    expiry_date = models.DateTimeField(null=False)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'well_publication_status_code'
@@ -448,8 +454,8 @@ class WellSubclassCode(AuditModel):
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
-    effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date = models.DateTimeField(blank=True, null=True)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'well_subclass_code'
@@ -477,8 +483,8 @@ class WellYieldUnitCode(AuditModel):
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
-    effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date = models.DateTimeField(blank=True, null=True)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'well_yield_unit_code'
@@ -507,8 +513,8 @@ class CoordinateAcquisitionCode(AuditModel):
                             db_column='coordinate_acquisition_code')
     description = models.CharField(max_length=250)
 
-    effective_date = models.DateTimeField()
-    expiry_date = models.DateTimeField(blank=True, null=True)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'coordinate_acquisition_code'
@@ -526,8 +532,8 @@ class AquiferLithologyCode(AuditModel):
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
-    effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date = models.DateTimeField(blank=True, null=True)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'aquifer_lithology_code'
@@ -535,11 +541,12 @@ class AquiferLithologyCode(AuditModel):
         verbose_name_plural = 'Aquifer Lithology Codes'
 
     def __str__(self):
-        return '{} - {}'.format(self.code, self.description)
+        return '{} - {}'.format(self.aquifer_lithology_code, self.description)
 
 
 # TODO: Consider having Well and Submission extend off a common base class, given that
 #   they mostly have the exact same fields!
+@reversion.register()
 class Well(AuditModel):
     """
     Well information.
@@ -887,6 +894,8 @@ class Well(AuditModel):
                                                 verbose_name='Recommended pump rate',
                                                 validators=[MinValueValidator(Decimal('0.00'))])
 
+    history = GenericRelation(Version)
+
     class Meta:
         db_table = 'well'
 
@@ -971,8 +980,8 @@ class CasingMaterialCode(AuditModel):
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
-    effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date = models.DateTimeField(blank=True, null=True)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'casing_material_code'
@@ -990,8 +999,8 @@ class CasingCode(AuditModel):
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
-    effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date = models.DateTimeField(blank=True, null=True)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'casing_code'
@@ -1566,8 +1575,8 @@ class WaterQualityColour(AuditModel):
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField()
 
-    effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date = models.DateTimeField(blank=True, null=True)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'water_quality_colour_code'
@@ -1625,8 +1634,8 @@ class DecommissionMaterialCode(AuditModel):
     code = models.CharField(primary_key=True, max_length=30, db_column='decommission_material_code')
     description = models.CharField(max_length=100)
 
-    effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date = models.DateTimeField(blank=True, null=True)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     def __str__(self):
         return '{} - {}'.format(self.code, self.description)
