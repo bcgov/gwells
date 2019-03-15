@@ -54,9 +54,13 @@ from gwells.settings.base import get_env_variable
 from submissions.serializers import WellSubmissionListSerializer
 from submissions.models import WellActivityCode
 
+from wells.filters import (
+    WellListAdminFilter,
+    WellListFilter,
+    WellListFilterBackend)
 from wells.models import Well, ActivitySubmission
-from wells.filters import WellListFilter
 from wells.serializers import (
+    WellListAdminSerializer,
     WellListSerializer,
     WellTagSearchSerializer,
     WellDetailSerializer,
@@ -220,12 +224,20 @@ class WellListAPIView(ListAPIView):
     pagination_class = APILimitOffsetPagination
     serializer_class = WellListSerializer
     bbox_filter_field = 'geom'
-    filter_backends = (restfilters.DjangoFilterBackend, InBBoxFilter,
+    filter_backends = (WellListFilterBackend, InBBoxFilter,
                        filters.SearchFilter, filters.OrderingFilter)
     ordering = ('well_tag_number',)
-    filterset_class = WellListFilter
     search_fields = ('well_tag_number', 'identification_plate_number',
                      'street_address', 'city', 'owner_full_name')
+
+    def get_serializer_class(self):
+        """Returns a different serializer class for admin users."""
+        serializer_class = WellListSerializer
+        if (self.request.user and self.request.user.is_authenticated and
+                self.request.user.groups.filter(name=WELLS_VIEWER_ROLE).exists()):
+            serializer_class = WellListAdminSerializer
+
+        return serializer_class
 
     def get_queryset(self):
         qs = self.queryset
@@ -338,7 +350,7 @@ class WellLocationListAPIView(ListAPIView):
     def get(self, request):
         """ cancels request if too many wells are found"""
         bbox = (request.GET['sw_long'], request.GET['sw_lat'], request.GET['ne_long'], request.GET['ne_lat'])
-        poly = Polygon.from_bbox(bbox)
+        poly = Polygon.from_bbox(bbox, srid=4326)
         queryset = Well.objects.filter(geom__within=poly)
         count = WellSearchFilter(request.GET, queryset).qs.count()
 

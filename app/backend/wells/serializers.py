@@ -186,7 +186,10 @@ class WellDetailSerializer(AuditModelSerializer):
             "decommission_end_date",
             "person_responsible",
             "company_of_person_responsible",
+            "driller_name",
             "drilling_company",
+            "consultant_name",
+            "consultant_company",
             "well_identification_plate_attached",
             "id_plate_attached_by",
             "water_supply_system_name",
@@ -506,8 +509,32 @@ class WellListSerializer(serializers.ModelSerializer):
             "testing_duration",
             "analytic_solution_type",
             "boundary_effect",
+            "final_casing_stick_up",
+            "bedrock_depth",
+            "artesian_flow",
+            "artesian_pressure",
+            "well_cap_type",
+            "well_disinfected",
+            "static_water_level",
         )
 
+
+class WellListAdminSerializer(WellListSerializer):
+
+    class Meta:
+        model = Well
+        fields = WellListSerializer.Meta.fields + (
+            'create_user',
+            'create_date',
+            'update_user',
+            'update_date',
+            'well_publication_status',
+            'owner_mailing_address',
+            'owner_city',
+            'owner_province_state',
+            'owner_postal_code',
+            'internal_comments',
+        )
 
 class WellTagSearchSerializer(serializers.ModelSerializer):
     """ serializes fields used for searching for well tags """
