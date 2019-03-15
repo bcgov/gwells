@@ -283,7 +283,7 @@ class AquiferResourceSection(AuditModel):
     effective_date = models.DateTimeField(default=timezone.now, null=False)
     expiry_date = models.DateTimeField(default=timezone.make_aware(
         timezone.datetime.max, timezone.get_default_timezone()), null=False)
-    description = models.CharField(max_length=100)
+    description = models.CharField(max_length=100, default="")
 
     class Meta:
         ordering = ['name']
