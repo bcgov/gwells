@@ -586,7 +586,7 @@ class OrganizationNameListView(ListAPIView):
     Simple list of organizations with only organization names
     """
 
-    permission_classes = (RegistriesEditPermissions,)
+    permission_classes = (RegistriesEditOrReadOnly,)
     serializer_class = OrganizationNameListSerializer
     queryset = Organization.objects \
         .select_related('province_state')

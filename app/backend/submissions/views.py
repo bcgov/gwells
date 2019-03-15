@@ -46,6 +46,7 @@ from wells.models import (
     GroundElevationMethodCode,
     IntendedWaterUseCode,
     LandDistrictCode,
+    LicencedStatusCode,
     LinerMaterialCode,
     ObsWellStatusCode,
     ScreenIntakeMethodCode,
@@ -117,6 +118,7 @@ from submissions.serializers import (
     YieldEstimationMethodCodeSerializer,
     WellStaffEditSubmissionSerializer,
     AquiferLithologySerializer,
+    LicencedStatusCodeSerializer,
 )
 
 
@@ -335,6 +337,8 @@ class SubmissionsOptions(APIView):
         lithology_moisture = LithologyMoistureSerializer(instance=LithologyMoistureCode.objects.all(), many=True)
         lithology_descriptors = LithologyDescriptionCodeSerializer(
             instance=LithologyDescriptionCode.objects.all(), many=True)
+        licenced_status_codes = LicencedStatusCodeSerializer(
+            instance=LicencedStatusCode.objects.all(), many=True)
 
         root = urljoin('/', app_root, 'api/v1/')
         for item in activity_codes.data:
@@ -378,6 +382,7 @@ class SubmissionsOptions(APIView):
         options["well_status_codes"] = well_status_codes.data
         options["well_publication_status_codes"] = well_publication_status_codes.data
         options["observation_well_status"] = observation_well_status.data
+        options["licenced_status_codes"] = licenced_status_codes.data
 
         return Response(options)
 
