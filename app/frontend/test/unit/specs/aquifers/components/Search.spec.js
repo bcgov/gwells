@@ -12,39 +12,39 @@
     limitations under the License.
 */
 
-import { shallowMount, createLocalVue } from "@vue/test-utils"
-import SearchComponent from "@/aquifers/components/Search.vue"
-import Vuex from "vuex"
-import axios from "axios"
-import VueRouter from "vue-router"
-import auth from "@/common/store/auth.js"
+import { shallowMount, createLocalVue } from '@vue/test-utils'
+import SearchComponent from '@/aquifers/components/Search.vue'
+import Vuex from 'vuex'
+import axios from 'axios'
+import VueRouter from 'vue-router'
+import auth from '@/common/store/auth.js'
 
-jest.mock("axios")
+jest.mock('axios')
 
 const localVue = createLocalVue()
 localVue.use(Vuex)
 localVue.use(VueRouter)
 
 const aquiferFixture = {
-  aquifer_id: "4",
-  aquifer_name: "Aggasiz",
-  location_description: "Aggasiz/Sea Bird Island",
-  material_description: "Sand and Gravel",
-  litho_stratographic_unit: "Fraser River Sediments",
-  subtype_description: "Unconfined sand and gravel - large river system",
-  vulnerability_description: "High",
-  area: "63.3",
-  productivity_description: "High",
-  demand: "Low",
-  mapping_year: "1993",
+  aquifer_id: '4',
+  aquifer_name: 'Aggasiz',
+  location_description: 'Aggasiz/Sea Bird Island',
+  material_description: 'Sand and Gravel',
+  litho_stratographic_unit: 'Fraser River Sediments',
+  subtype_description: 'Unconfined sand and gravel - large river system',
+  vulnerability_description: 'High',
+  area: '63.3',
+  productivity_description: 'High',
+  demand: 'Low',
+  mapping_year: '1993',
   resources: []
 }
 
-describe("Search Component", () => {
+describe('Search Component', () => {
   const component = options =>
     shallowMount(SearchComponent, {
       localVue,
-      stubs: ["router-link", "router-view"],
+      stubs: ['router-link', 'router-view'],
       router: new VueRouter(),
       store: new Vuex.Store({
         modules: { auth }
@@ -53,20 +53,20 @@ describe("Search Component", () => {
         scrollToTableTop() {},
         fetchResourceSections() {
           this.aquifer_resource_sections = [
-            { text: "aquifer section", value: "a" }
+            { text: 'aquifer section', value: 'a' }
           ]
         }
       },
       ...options
     })
 
-  it("has child checkboxes", () => {
+  it('has child checkboxes', () => {
     axios.get.mockResolvedValue({})
 
     expect(component({}).findAll('[type="checkbox"]').length).toEqual(1)
   })
 
-  it("Displays a message if no aquifers could be found", () => {
+  it('Displays a message if no aquifers could be found', () => {
     axios.get.mockResolvedValue({})
     const wrapper = component({
       computed: {
@@ -82,10 +82,10 @@ describe("Search Component", () => {
       }
     })
 
-    expect(wrapper.text()).toContain("No aquifers could be found")
+    expect(wrapper.text()).toContain('No aquifers could be found')
   })
 
-  it("Matches the snapshot", () => {
+  it('Matches the snapshot', () => {
     const wrapper = component({
       computed: {
         aquiferList() {
@@ -106,31 +106,31 @@ describe("Search Component", () => {
     expect(wrapper.element).toMatchSnapshot()
   })
 
-  it("search updates route query params", () => {
+  it('search updates route query params', () => {
     axios.get.mockResolvedValue({})
 
     const wrapper = component()
 
-    wrapper.find("#aquifers-search-field").setValue("asdf")
+    wrapper.find('#aquifers-search-field').setValue('asdf')
 
     wrapper.find('input[type="checkbox"]').setChecked()
-    wrapper.find("form").trigger("submit")
+    wrapper.find('form').trigger('submit')
 
-    expect(axios.get).toHaveBeenCalledWith("aquifers", {
-      params: { resources__section__code: "a", search: "asdf" }
+    expect(axios.get).toHaveBeenCalledWith('aquifers', {
+      params: { resources__section__code: 'a', search: 'asdf' }
     })
   })
 
-  it("form reset resets response and query", () => {
+  it('form reset resets response and query', () => {
     const wrapper = component()
     axios.get.mockResolvedValue({})
 
-    wrapper.find("#aquifers-search-field").setValue("asdf")
-    wrapper.find("form").trigger("submit")
+    wrapper.find('#aquifers-search-field').setValue('asdf')
+    wrapper.find('form').trigger('submit')
 
-    expect(wrapper.vm.query.search).toEqual("asdf")
+    expect(wrapper.vm.query.search).toEqual('asdf')
 
-    wrapper.find("form").trigger("reset")
+    wrapper.find('form').trigger('reset')
 
     expect(wrapper.vm.query.search).toEqual(undefined)
   })
