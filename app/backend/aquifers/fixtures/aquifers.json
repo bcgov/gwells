@@ -1,201 +1,256 @@
 [
   {
-      "model": "aquifers.aquifer",
-      "pk": 2,
-      "fields": {
-          "create_user": "WELLS",
-          "create_date": "2003-08-14T07:48:06Z",
-          "update_user": "PROXY_WELLS",
-          "update_date": "2016-04-13T09:34:11Z",
-          "aquifer_name": null,
-          "location_description": "Sardine Flats",
-          "material": "SG",
-          "subtype": "4b",
-          "area": "10.4",
-          "vulnerability": "L",
-          "productivity": "M",
-          "demand": "L",
-          "known_water_use": "D",
-          "quality_concern": null,
-          "litho_stratographic_unit": null,
-          "mapping_year": 2017,
-          "notes": null
-      }
+    "model": "aquifers.aquifer",
+    "pk": 2,
+    "fields": {
+      "create_user": "WELLS",
+      "create_date": "2003-08-14T07:48:06Z",
+      "update_user": "PROXY_WELLS",
+      "update_date": "2016-04-13T09:34:11Z",
+      "aquifer_name": null,
+      "location_description": "Sardine Flats",
+      "material": "SG",
+      "subtype": "4b",
+      "area": "10.4",
+      "vulnerability": "L",
+      "productivity": "M",
+      "demand": "L",
+      "known_water_use": "D",
+      "quality_concern": null,
+      "litho_stratographic_unit": null,
+      "mapping_year": 2017,
+      "notes": null
+    }
   },
   {
-      "model": "aquifers.aquifer",
-      "pk": 123,
-      "fields": {
-          "create_user": "WELLS",
-          "create_date": "2003-08-14T07:48:06Z",
-          "update_user": "PROXY_WELLS",
-          "update_date": "2017-07-21T11:05:18Z",
-          "aquifer_name": "Retired in 2017",
-          "location_description": "Merged with Aquifer 115",
-          "material": null,
-          "subtype": null,
-          "area": null,
-          "vulnerability": null,
-          "productivity": null,
-          "demand": null,
-          "known_water_use": null,
-          "quality_concern": null,
-          "litho_stratographic_unit": null,
-          "mapping_year": 2017,
-          "notes": null
-      }
+    "model": "aquifers.aquifer",
+    "pk": 123,
+    "fields": {
+      "create_user": "WELLS",
+      "create_date": "2003-08-14T07:48:06Z",
+      "update_user": "PROXY_WELLS",
+      "update_date": "2017-07-21T11:05:18Z",
+      "aquifer_name": "Retired in 2017",
+      "location_description": "Merged with Aquifer 115",
+      "material": null,
+      "subtype": null,
+      "area": null,
+      "vulnerability": null,
+      "productivity": null,
+      "demand": null,
+      "known_water_use": null,
+      "quality_concern": null,
+      "litho_stratographic_unit": null,
+      "mapping_year": 2017,
+      "notes": null
+    }
   },
   {
-      "model": "aquifers.aquifer",
-      "pk": 9193161,
-      "fields": {
-          "create_user": "WELLS",
-          "create_date": "2003-08-14T07:48:06Z",
-          "update_user": "PROXY_WELLS",
-          "update_date": "2016-04-13T09:34:31Z",
-          "aquifer_name": "Fraser Plateau Lava",
-          "location_description": "70 Mile House to 108 Mile Lake",
-          "material": "B",
-          "subtype": "6a",
-          "area": "6545.7",
-          "vulnerability": "M",
-          "productivity": "M",
-          "demand": "L",
-          "known_water_use": "M",
-          "quality_concern": null,
-          "litho_stratographic_unit": "Cenozoic, Tertiary, Miocene and/or Pliocene Epochs",
-          "mapping_year": 2000,
-          "notes": null
-      }
+    "model": "aquifers.aquifer",
+    "pk": 9193161,
+    "fields": {
+      "create_user": "WELLS",
+      "create_date": "2003-08-14T07:48:06Z",
+      "update_user": "PROXY_WELLS",
+      "update_date": "2016-04-13T09:34:31Z",
+      "aquifer_name": "Fraser Plateau Lava",
+      "location_description": "70 Mile House to 108 Mile Lake",
+      "material": "B",
+      "subtype": "6a",
+      "area": "6545.7",
+      "vulnerability": "M",
+      "productivity": "M",
+      "demand": "L",
+      "known_water_use": "M",
+      "quality_concern": null,
+      "litho_stratographic_unit": "Cenozoic, Tertiary, Miocene and/or Pliocene Epochs",
+      "mapping_year": 2000,
+      "notes": null
+    }
   },
   {
-      "model": "aquifers.aquifer",
-      "pk": 113169,
-      "fields": {
-          "create_user": "WELLS",
-          "create_date": "2003-08-14T07:48:06Z",
-          "update_user": "PROXY_WELLS",
-          "update_date": "2016-04-13T09:41:22Z",
-          "aquifer_name": null,
-          "location_description": "Pressy Lake",
-          "material": "SG",
-          "subtype": "4a",
-          "area": "5.4",
-          "vulnerability": "H",
-          "productivity": "M",
-          "demand": "L",
-          "known_water_use": "D",
-          "quality_concern": null,
-          "litho_stratographic_unit": null,
-          "mapping_year": 2000,
-          "notes": null
-      }
+    "model": "aquifers.aquifer",
+    "pk": 113169,
+    "fields": {
+      "create_user": "WELLS",
+      "create_date": "2003-08-14T07:48:06Z",
+      "update_user": "PROXY_WELLS",
+      "update_date": "2016-04-13T09:41:22Z",
+      "aquifer_name": null,
+      "location_description": "Pressy Lake",
+      "material": "SG",
+      "subtype": "4a",
+      "area": "5.4",
+      "vulnerability": "H",
+      "productivity": "M",
+      "demand": "L",
+      "known_water_use": "D",
+      "quality_concern": null,
+      "litho_stratographic_unit": null,
+      "mapping_year": 2000,
+      "notes": null
+    }
   },
   {
-      "model": "aquifers.aquifer",
-      "pk": 5013,
-      "fields": {
-          "create_user": "WELLS",
-          "create_date": "2003-08-14T07:48:06Z",
-          "update_user": "PROXY_WELLS",
-          "update_date": "2016-04-13T09:41:35Z",
-          "aquifer_name": "108 Mile Limestone",
-          "location_description": "Simon Lake",
-          "material": "B",
-          "subtype": "6b",
-          "area": "250.6",
-          "vulnerability": "M",
-          "productivity": "M",
-          "demand": "L",
-          "known_water_use": "M",
-          "quality_concern": "L",
-          "litho_stratographic_unit": "Mesozoic, Late Triassic, Karnian & Norian Epochs, Nicola Group",
-          "mapping_year": 2000,
-          "notes": null
-      }
+    "model": "aquifers.aquifer",
+    "pk": 5013,
+    "fields": {
+      "create_user": "WELLS",
+      "create_date": "2003-08-14T07:48:06Z",
+      "update_user": "PROXY_WELLS",
+      "update_date": "2016-04-13T09:41:35Z",
+      "aquifer_name": "108 Mile Limestone",
+      "location_description": "Simon Lake",
+      "material": "B",
+      "subtype": "6b",
+      "area": "250.6",
+      "vulnerability": "M",
+      "productivity": "M",
+      "demand": "L",
+      "known_water_use": "M",
+      "quality_concern": "L",
+      "litho_stratographic_unit": "Mesozoic, Late Triassic, Karnian & Norian Epochs, Nicola Group",
+      "mapping_year": 2000,
+      "notes": null
+    }
   },
   {
-      "model": "wells.hydraulicproperty",
-      "pk": "009134ec-2e0f-4807-a357-47947c1c1061",
-      "fields": {
-          "create_user": "PROXY_WELLS",
-          "create_date": "2018-08-24T17:08:36Z",
-          "update_user": "PROXY_WELLS",
-          "update_date": "2018-08-24T17:08:36Z",
-          "well": 20143,
-          "avi": null,
-          "storativity": null,
-          "transmissivity": null,
-          "hydraulic_conductivity": null,
-          "specific_storage": null,
-          "specific_yield": null,
-          "testing_method": null,
-          "testing_duration": null,
-          "analytic_solution_type": null,
-          "boundary_effect": null
-      }
+    "model": "wells.hydraulicproperty",
+    "pk": "009134ec-2e0f-4807-a357-47947c1c1061",
+    "fields": {
+      "create_user": "PROXY_WELLS",
+      "create_date": "2018-08-24T17:08:36Z",
+      "update_user": "PROXY_WELLS",
+      "update_date": "2018-08-24T17:08:36Z",
+      "well": 20143,
+      "avi": null,
+      "storativity": null,
+      "transmissivity": null,
+      "hydraulic_conductivity": null,
+      "specific_storage": null,
+      "specific_yield": null,
+      "testing_method": null,
+      "testing_duration": null,
+      "analytic_solution_type": null,
+      "boundary_effect": null
+    }
   },
   {
-      "model": "wells.hydraulicproperty",
-      "pk": "011a24d1-78a6-4190-afaa-51deb9264958",
-      "fields": {
-          "create_user": "PROXY_WELLS",
-          "create_date": "2012-01-15T21:03:21Z",
-          "update_user": "PROXY_WELLS",
-          "update_date": "2012-01-15T21:03:21Z",
-          "well": 123,
-          "avi": null,
-          "storativity": null,
-          "transmissivity": null,
-          "hydraulic_conductivity": null,
-          "specific_storage": null,
-          "specific_yield": null,
-          "testing_method": null,
-          "testing_duration": null,
-          "analytic_solution_type": null,
-          "boundary_effect": null
-      }
+    "model": "wells.hydraulicproperty",
+    "pk": "011a24d1-78a6-4190-afaa-51deb9264958",
+    "fields": {
+      "create_user": "PROXY_WELLS",
+      "create_date": "2012-01-15T21:03:21Z",
+      "update_user": "PROXY_WELLS",
+      "update_date": "2012-01-15T21:03:21Z",
+      "well": 123,
+      "avi": null,
+      "storativity": null,
+      "transmissivity": null,
+      "hydraulic_conductivity": null,
+      "specific_storage": null,
+      "specific_yield": null,
+      "testing_method": null,
+      "testing_duration": null,
+      "analytic_solution_type": null,
+      "boundary_effect": null
+    }
   },
   {
-      "model": "wells.hydraulicproperty",
-      "pk": "062b1f08-fccc-4530-8928-2473fc543f92",
-      "fields": {
-          "create_user": "PROXY_WELLS",
-          "create_date": "2018-08-24T17:08:21Z",
-          "update_user": "PROXY_WELLS",
-          "update_date": "2018-08-24T17:08:21Z",
-          "well": 112316,
-          "avi": null,
-          "storativity": null,
-          "transmissivity": null,
-          "hydraulic_conductivity": null,
-          "specific_storage": null,
-          "specific_yield": null,
-          "testing_method": null,
-          "testing_duration": null,
-          "analytic_solution_type": null,
-          "boundary_effect": null
-      }
+    "model": "wells.hydraulicproperty",
+    "pk": "062b1f08-fccc-4530-8928-2473fc543f92",
+    "fields": {
+      "create_user": "PROXY_WELLS",
+      "create_date": "2018-08-24T17:08:21Z",
+      "update_user": "PROXY_WELLS",
+      "update_date": "2018-08-24T17:08:21Z",
+      "well": 112316,
+      "avi": null,
+      "storativity": null,
+      "transmissivity": null,
+      "hydraulic_conductivity": null,
+      "specific_storage": null,
+      "specific_yield": null,
+      "testing_method": null,
+      "testing_duration": null,
+      "analytic_solution_type": null,
+      "boundary_effect": null
+    }
   },
   {
-      "model": "wells.hydraulicproperty",
-      "pk": "07ba0004-ef53-418d-a368-60cf0f704af8",
-      "fields": {
-          "create_user": "PROXY_WELLS",
-          "create_date": "2018-08-19T12:30:25Z",
-          "update_user": "PROXY_WELLS",
-          "update_date": "2018-08-19T12:30:25Z",
-          "well": 113169,
-          "avi": null,
-          "storativity": null,
-          "transmissivity": null,
-          "hydraulic_conductivity": null,
-          "specific_storage": null,
-          "specific_yield": null,
-          "testing_method": null,
-          "testing_duration": null,
-          "analytic_solution_type": null,
-          "boundary_effect": null
-      }
+    "model": "wells.hydraulicproperty",
+    "pk": "07ba0004-ef53-418d-a368-60cf0f704af8",
+    "fields": {
+      "create_user": "PROXY_WELLS",
+      "create_date": "2018-08-19T12:30:25Z",
+      "update_user": "PROXY_WELLS",
+      "update_date": "2018-08-19T12:30:25Z",
+      "well": 113169,
+      "avi": null,
+      "storativity": null,
+      "transmissivity": null,
+      "hydraulic_conductivity": null,
+      "specific_storage": null,
+      "specific_yield": null,
+      "testing_method": null,
+      "testing_duration": null,
+      "analytic_solution_type": null,
+      "boundary_effect": null
+    }
+  },
+  {
+    "model": "aquifers.AquiferResource",
+    "fields": {
+      "create_user": "DATALOAD_USER",
+      "update_user": "DATALOAD_USER",
+      "aquifer_id": 123,
+      "name": "Westwold advisory (PDF)",
+      "url": "https://www2.gov.bc.ca/assets/gov/environment/air-land-water/water/water-wells/flowing_artesian_advisory_-_westwold.pdf",
+      "section_id": "A"
+    }
+  },
+  {
+    "model": "aquifers.AquiferResource",
+    "fields": {
+      "create_user": "DATALOAD_USER",
+      "update_user": "DATALOAD_USER",
+      "name": "Numerical groundwater modeling in the Deep Creek watershed. Earth and Enviromental Sciences.",
+      "aquifer_id": 123,
+      "url": "http://a100.gov.bc.ca/pub/acat/public/viewReport.do?reportId=24663",
+      "section_id": "N"
+    }
+  },
+  {
+    "model": "aquifers.AquiferResource",
+    "fields": {
+      "create_user": "DATALOAD_USER",
+      "update_user": "DATALOAD_USER",
+      "aquifer_id": 123,
+      "url": "https://services6.arcgis.com/ubm4tcTYICKBpist/arcgis/rest/services/Aquifer_180613_NA/FeatureServer/0/508/attachments/508",
+      "name": "Stress Index Report",
+      "section_id": "P"
+    }
+  },
+  {
+    "model": "aquifers.AquiferResource",
+    "fields": {
+      "create_user": "DATALOAD_USER",
+      "update_user": "DATALOAD_USER",
+      "name": "Numerical groundwater modeling in the Deep Creek watershed. Earth and Enviromental Sciences.",
+      "aquifer_id": 5013,
+      "url": "http://a100.gov.bc.ca/pub/acat/public/viewReport.do?reportId=24667",
+      "section_id": "N"
+    }
+  },
+  {
+    "model": "aquifers.AquiferResource",
+    "fields": {
+      "create_user": "DATALOAD_USER",
+      "update_user": "DATALOAD_USER",
+      "name": "Groundwater Protection Plan District of Chilliwack",
+      "aquifer_id": 5013,
+      "url": "http://chilliwack.ca/main/attachments/Files/2400/Goundwater%20Protection%20Plan%20District%20of%20Chilliwack.pdf",
+      "section_id": "N"
+    }
   }
 ]
