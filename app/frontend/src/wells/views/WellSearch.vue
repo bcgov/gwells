@@ -16,8 +16,8 @@
             </b-col>
           </b-row>
           <b-card no-body border-variant="dark">
-            <b-tabs card>
-              <b-tab title="Basic Search" active>
+            <b-tabs card v-model="tabIndex">
+              <b-tab title="Basic Search">
                 <div class="card-text">
                   <b-row>
                     <b-col>
@@ -269,6 +269,7 @@ export default {
     return {
       isBusy: false,
       isInitialSearch: true,
+      tabIndex: 0,
       currentPage: 1,
       perPage: 10,
       numberOfRecords: 0,
@@ -295,13 +296,28 @@ export default {
   },
   computed: {
     ...mapGetters(['codes', 'drillerNames', 'organizationNames', 'userRoles']),
-    selectedFilterIds: function () {
+    selectedFilterIds () {
       return this.selectedFilters.map(filter => filter.id)
     },
-    additionalFilterFields: function () {
+    defaultFilterFields () {
+      return this.defaultFilters.map(section => section.fields).reduce((a, b) => a.concat(b), [])
+    },
+    additionalFilterFields () {
       return this.additionalFilters.map(section => section.fields).reduce((a, b) => a.concat(b), [])
     },
-    landDistrictOptions: function () {
+    defaultSearchParams () {
+      const params = {match_any: 'true'}
+      // Populate params with empty values for selects
+      const defaultSelectParams = this.defaultFilterFields.filter(filter => filter.type === 'select').map(filter => filter.param)
+      const additionalSelectParams = this.additionalFilterFields.filter(filter => filter.type === 'select').map(filter => filter.param)
+      const selectParams = [...defaultSelectParams, ...additionalSelectParams]
+      selectParams.forEach((param) => {
+        params[param] = ''
+      })
+
+      return params
+    },
+    landDistrictOptions () {
       if (!this.codes.land_district_codes || Object.entries(this.codes.land_district_codes).length === 0) {
         return []
       }
@@ -312,7 +328,7 @@ export default {
         }
       })
     },
-    wellSubclassOptions: function () {
+    wellSubclassOptions () {
       if (!this.codes.well_classes) {
         return []
       }
@@ -328,7 +344,7 @@ export default {
 
       return options
     },
-    filterSelectOptions: function () {
+    filterSelectOptions () {
       return {
         aquiferLithology: this.codes.aquifer_lithology_codes,
         coordinateAcquisitionCode: this.codes.coordinate_acquisition_codes,
@@ -425,6 +441,7 @@ export default {
       })
     },
     handleSearchSubmit () {
+      this.cleanSearchParams()
       this.updateQueryParams()
       this.wellSearch()
       this.locationSearch()
@@ -435,16 +452,24 @@ export default {
       this.locationSearch()
     },
     searchParamsReset () {
-      this.searchParams = {match_any: 'true'}
+      this.searchParams = {...this.defaultSearchParams}
       this.selectedFilters = []
       this.$router.push({ query: null })
+    },
+    initTabIndex () {
+      const hash = this.$route.hash
+      if (hash === '#advanced') {
+        this.tabIndex = 1
+      } else {
+        this.tabIndex = 0
+      }
     },
     initSearchParams () {
       const query = this.$route.query
       // check if the page loads with a query (e.g. user bookmarked a search)
       // if so, set the search boxes to the query params
       if (Object.entries(query).length !== 0 && query.constructor === Object) {
-        this.searchParams = Object.assign({}, query)
+        this.searchParams = Object.assign({...this.defaultSearchParams}, query)
       } else {
         this.searchParamsReset()
       }
@@ -452,9 +477,7 @@ export default {
     initSelectedFilters () {
       const query = this.$route.query
       this.additionalFilterFields.filter((field) => {
-        return (query[field.param] !== undefined) ||
-          (field.minParam && query[field.minParam] !== undefined) ||
-          (field.maxParam && query[field.maxParam] !== undefined)
+        return (query[field.param] !== undefined)
       }).forEach(field => this.selectedFilters.push(field))
     },
     handleMapCoordinate (latln) {
@@ -479,19 +502,25 @@ export default {
         url: `/gwells/well/${cell.getValue()}/`
       }
     },
+    cleanSearchParams () {
+      // Clear any null or empty string values, to keep URLs clean.
+      Object.entries(this.searchParams).forEach(([key, value]) => {
+        if (value === '' || value === null) {
+          delete this.searchParams[key]
+        }
+      })
+    },
     updateQueryParams () {
       const params = Object.assign({}, this.searchParams)
-
-      // check if every key on the params object is empty.
-      // evaluations to boolean
-      const paramsEmpty = Object.keys(params).every((x) => {
-        return params[x] === '' || params[x] === null
-      })
+      const paramsEmpty = Object.entries(params).length === 0 && params.constructor === Object
 
       // if params are completely empty, clear the query string,
       // otherwise add the params to the query string.  this allows
       // users to bookmark searches.
-      this.$router.push({ query: paramsEmpty ? null : this.searchParams })
+      const query = paramsEmpty ? null : params
+      const tabHash = (this.tabIndex === 1) ? 'advanced' : null
+
+      this.$router.push({ query: query, hash: tabHash })
     },
     selectFilter () {
       if (this.selectedFilter) {
@@ -511,6 +540,7 @@ export default {
     this.$store.dispatch(FETCH_ORGANIZATION_NAMES)
 
     this.initSearchParams()
+    this.initTabIndex()
     this.initSelectedFilters()
     setTimeout(() => {
       this.locationSearch()
