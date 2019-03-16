@@ -106,8 +106,9 @@ class AnyOrAllFilterSet(filters.FilterSet):
         if not match_any:
             return super().filter_queryset(queryset)
 
-        initial_queryset = queryset
-        queryset = queryset.all()
+        filter_applied = False
+        initial_queryset = queryset.all()
+        queryset = queryset.none()
 
         for name, value in self.form.cleaned_data.items():
             filtered_queryset = self.filters[name].filter(initial_queryset, value)
@@ -118,7 +119,12 @@ class AnyOrAllFilterSet(filters.FilterSet):
             # Check for identity here, as most filters just return same queryset
             # if they are inactive, and equality checks evaluate the queryset.
             if filtered_queryset is not initial_queryset:
+                filter_applied = True
                 queryset = queryset | filtered_queryset
+
+        # If there were no filters, return all results, not none.
+        if not filter_applied:
+            queryset = initial_queryset
 
         return queryset
 
