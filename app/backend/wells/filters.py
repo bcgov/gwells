@@ -20,7 +20,12 @@ from django_filters import rest_framework as filters
 from django_filters.widgets import BooleanWidget, SuffixedMultiWidget
 
 from gwells.roles import WELLS_VIEWER_ROLE
-from wells.models import Well
+from wells.models import (
+    DevelopmentMethodCode,
+    DrillingMethodCode,
+    WaterQualityCharacteristic,
+    Well,
+)
 
 
 class BoundingBoxWidget(SuffixedMultiWidget):
@@ -161,6 +166,7 @@ class WellListFilter(AnyOrAllFilterSet):
     water_supply_system_name = filters.CharFilter(lookup_expr='icontains')
     water_supply_system_well_name = filters.CharFilter(lookup_expr='icontains')
     driller_name = filters.CharFilter(lookup_expr='icontains')
+    drilling_methods = filters.ModelChoiceFilter(queryset=DrillingMethodCode.objects.all())
     consultant_name = filters.CharFilter(lookup_expr='icontains')
     consultant_company = filters.CharFilter(lookup_expr='icontains')
     latitude = filters.RangeFilter()
@@ -181,6 +187,8 @@ class WellListFilter(AnyOrAllFilterSet):
     filter_pack_from = filters.RangeFilter()
     filter_pack_to = filters.RangeFilter()
     filter_pack_thickness = filters.RangeFilter()
+    development_methods = filters.ModelChoiceFilter(
+        queryset=DevelopmentMethodCode.objects.all())
     development_hours = filters.RangeFilter()
     development_notes = filters.CharFilter(lookup_expr='icontains')
     yield_estimation_rate = filters.RangeFilter()
@@ -190,6 +198,8 @@ class WellListFilter(AnyOrAllFilterSet):
     hydro_fracturing_yield_increase = filters.RangeFilter()
     recommended_pump_depth = filters.RangeFilter()
     recommended_pump_rate = filters.RangeFilter()
+    water_quality_characteristics = filters.ModelChoiceFilter(
+        queryset=WaterQualityCharacteristic.objects.all())
     water_quality_colour = filters.CharFilter(lookup_expr='icontains')
     water_quality_odour = filters.CharFilter(lookup_expr='icontains')
     well_yield = filters.RangeFilter()
@@ -214,7 +224,11 @@ class WellListFilter(AnyOrAllFilterSet):
     bedrock_depth = filters.RangeFilter()
     static_water_level = filters.RangeFilter()
     artesian_flow = filters.RangeFilter()
+    artesian_flow_has_value = filters.BooleanFilter(method='filter_artesian_flow_has_value',
+                                                    label='Any value for artesian flow')
     artesian_pressure = filters.RangeFilter()
+    artesian_pressure_has_value = filters.BooleanFilter(method='filter_artesian_pressure_has_value',
+                                                        label='Any value for artesian pressure')
     well_cap_type = filters.CharFilter(lookup_expr='icontains')
     comments = filters.CharFilter(lookup_expr='icontains')
 
@@ -463,6 +477,18 @@ class WellListFilter(AnyOrAllFilterSet):
                 Q(liner_from__lte=value.stop) |
                 Q(liner_to__lte=value.stop)
             )
+
+        return queryset
+
+    def filter_artesian_flow_has_value(self, queryset, name, value):
+        if value:
+            return queryset.filter(artesian_flow__isnull=False)
+
+        return queryset
+
+    def filter_artesian_pressure_has_value(self, queryset, name, value):
+        if value:
+            return queryset.filter(artesian_pressure__isnull=False)
 
         return queryset
 
