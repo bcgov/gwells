@@ -32,7 +32,8 @@ class AquiferResourceSerializer(serializers.ModelSerializer):
         obj = super(AquiferResourceSerializer, self).to_internal_value(data)
         instance_id = data.get('id', None)
         if instance_id:
-            obj['instance'] = models.AquiferResource.objects.get(id=instance_id)
+            obj['instance'] = models.AquiferResource.objects.get(
+                id=instance_id)
         return obj
 
     class Meta:
@@ -62,7 +63,7 @@ class AquiferSerializer(serializers.ModelSerializer):
     known_water_use_description = serializers.SlugRelatedField(
         source='known_water_use', read_only=True, slug_field='description')
     resources = AquiferResourceSerializer(many=True, required=False)
-    
+
     def create(self, validated_data):
         """
         Allow creating resources inline of the aquifer API. ie)
@@ -88,13 +89,13 @@ class AquiferSerializer(serializers.ModelSerializer):
                 section_id=resource_item['section']['code'].code)
             r.save()
         return aquifer
-    
+
     def update(self, instance, validated_data):
         """
         Update the resources associated with an aquifer, inline of the aquifer API.
         """
         resources_data = validated_data.pop('resources', [])
-        for k,v in validated_data.items():
+        for k, v in validated_data.items():
             setattr(instance, k, v)
         instance.save()
 
@@ -123,7 +124,7 @@ class AquiferSerializer(serializers.ModelSerializer):
                 r.save()
 
         return instance
-    
+
     class Meta:
         model = models.Aquifer
         fields = (
@@ -149,6 +150,8 @@ class AquiferSerializer(serializers.ModelSerializer):
             'vulnerability_description',
             'vulnerability',
             'resources',
+            'shapefile',
+            'geom'
         )
 
 
@@ -160,6 +163,7 @@ class AquiferResourceSectionSerializer(serializers.ModelSerializer):
             'code',
             'name'
         )
+
 
 class AquiferMaterialSerializer(serializers.ModelSerializer):
     class Meta:

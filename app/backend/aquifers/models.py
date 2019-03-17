@@ -260,6 +260,8 @@ class Aquifer(AuditModel):
         blank=True,
         null=True,
         verbose_name='Notes on Aquifer, for internal use only.')
+
+    shapefile = models.FileField(blank=True, default='')
     geom = models.PolygonField(srid=3005, null=True)
 
     history = GenericRelation(Version)

@@ -242,6 +242,12 @@
             value-field="code"
             text-field="description"/>
         </b-form-group>
+        <b-form-group
+          horizontal
+          label-cols="4"
+          label="Shapefile">
+          <input type="file" id="shapefile" ref="shapefile" v-on:change="handleShapefileUpload()"/>
+        </b-form-group>
       </b-col>
     </b-row>
 
@@ -345,6 +351,11 @@ import { isEmpty, mapValues } from 'lodash'
 import { mapMutations, mapState } from 'vuex'
 
 export default {
+  data(){
+    return {
+      shapefile: ''
+    }
+  },
   computed: {
     fieldErrorMessages () {
       return mapValues(this.fieldErrors, (messages) => messages.join(', '))
@@ -401,6 +412,9 @@ export default {
         url: '',
         section_id: '1'
       })
+    },
+    handleShapefileUpload () {
+      this.shapefile = this.$refs.shapefile.files[0];
     },
     handleDeleteResource (i) {
       this.record.resources.splice(i, 1)

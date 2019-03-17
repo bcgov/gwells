@@ -51,6 +51,8 @@ from aquifers.permissions import HasAquiferEditRoleOrReadOnly, HasAquiferEditRol
 from gwells.change_history import generate_history_diff
 from registries.views import AuditCreateMixin, AuditUpdateMixin
 
+from django.contrib.gis.gdal import DataSource
+
 
 logger = logging.getLogger(__name__)
 
@@ -65,6 +67,20 @@ class AquiferRetrieveUpdateAPIView(RevisionMixin, AuditUpdateMixin, RetrieveUpda
     queryset = Aquifer.objects.all()
     lookup_field = 'aquifer_id'
     serializer_class = serializers.AquiferSerializer
+
+    def pre_save(self, obj):
+        if 'shapefile' in self.request.FILES:
+            self.shapefile = self.request.FILES.get('shapefile')
+            ds = DataSource(self.shapefile)
+            lyr = ds[0]
+            print('length:', len(lyr))
+            print('geom type:', str(lyr.geom_type))
+            assert(lyr.geom_type == "Polygon")
+            srs = lyr.srs
+            print('srs:', str(srs))
+            print('fields:', lyr.fields)
+            geom = lyr.GetNextFeature().GetGeometryRef().wkt
+            self.geometry = geom
 
 
 class AquiferListCreateAPIView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
@@ -98,6 +114,7 @@ class AquiferListCreateAPIView(RevisionMixin, AuditCreateMixin, ListCreateAPIVie
                 resources__section__code__in=resources__section__code.split(','))
         if search:  # truthy check - ignore missing and emptystring.
             disjunction = Q(aquifer_name__icontains=search)
+            # if a number is searched, assume it could be an Aquifer ID.
             if search.isdigit():
                 disjunction = disjunction | Q(pk=int(search))
             qs = qs.filter(disjunction)
@@ -385,5 +402,6 @@ from (
         with connection.cursor() as cursor:
             cursor.execute(sql)
             row = cursor.fetchone()
-            logger.info('aquifer spatial db query took: {}'.format(datetime.now() - start))
+            logger.info('aquifer spatial db query took: {}'.format(
+                datetime.now() - start))
             return JsonResponse(row[0])
