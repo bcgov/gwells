@@ -183,8 +183,8 @@ const searchFields = {
         { id: 'bedrockDepth', param: 'bedrock_depth', label: 'Depth to bedrock', type: 'range' },
         { id: 'staticWaterLevel', param: 'static_water_level', label: 'Static water level', type: 'range' },
         { id: 'wellYield', param: 'well_yield', label: 'Estimated well yield', type: 'range' },
-        { id: 'artesianFlow', param: 'artesian_flow', label: 'Artesian flow', type: 'range' },
-        { id: 'artesianPressure', param: 'artesian_pressure', label: 'Artesian pressure', type: 'range' },
+        { id: 'artesianFlow', param: 'artesian_flow', label: 'Artesian flow', type: 'booleanOrRange' },
+        { id: 'artesianPressure', param: 'artesian_pressure', label: 'Artesian pressure', type: 'booleanOrRange' },
         { id: 'wellCapType', param: 'well_cap_type', label: 'Well cap type', type: 'text' },
         { id: 'wellDisinfected', param: 'well_disinfected', label: 'Well disinfected', type: 'radio', options: [{ text: 'Yes', value: 'true' }, { text: 'No', value: 'false' }] }
       ]

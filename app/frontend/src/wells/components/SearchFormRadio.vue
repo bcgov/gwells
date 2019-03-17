@@ -53,7 +53,6 @@ export default {
     disabled: Boolean,
     groupClass: String, // optional pass-through class (use for formatting the form-group)
     inputClass: String, // optional pass-through input class (use for formatting the input field)
-    labelCols: [Number, String],
     valueField: String,
     textField: String,
     placeholder: String,

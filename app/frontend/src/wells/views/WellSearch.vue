@@ -151,6 +151,21 @@
                         v-on:start-input="searchParams[`${field.param}_min`] = $event"
                         :max-value="searchParams[`${field.param}_max`]"
                         v-on:end-input="searchParams[`${field.param}_max`] = $event"/>
+                      <search-form-boolean-or-range
+                        v-else-if="field.type === 'booleanOrRange'"
+                        type="number"
+                        :id="`${field.id}Filter`"
+                        :label="field.label"
+                        boolean-label="Any value"
+                        :errors="searchErrors[field.param]"
+                        :boolean-errors="searchErrors[`${field.param}_any_value`]"
+                        :step="field.step ? field.step : 'any'"
+                        :min-value="searchParams[`${field.param}_min`]"
+                        v-on:start-input="searchParams[`${field.param}_min`] = $event"
+                        :max-value="searchParams[`${field.param}_max`]"
+                        v-on:end-input="searchParams[`${field.param}_max`] = $event"
+                        :boolean-value="searchParams[`${field.param}_has_value`]"
+                        v-on:boolean-input="searchParams[`${field.param}_has_value`] = $event"/>
                       <search-form-range
                         v-else-if="field.type === 'dateRange'"
                         type="date"
@@ -249,6 +264,7 @@ import SearchFormInput from '@/wells/components/SearchFormInput.vue'
 import SearchFormRadio from '@/wells/components/SearchFormRadio.vue'
 import SearchFormRange from '@/wells/components/SearchFormRange.vue'
 import SearchFormSelect from '@/wells/components/SearchFormSelect.vue'
+import SearchFormBooleanOrRange from '@/wells/components/SearchFormBooleanOrRange.vue'
 import SearchMap from '@/wells/components/SearchMap.vue'
 import Exports from '@/wells/components/Exports.vue'
 import searchFields from '@/wells/searchFields.js'
@@ -258,6 +274,7 @@ const Tabulator = require('tabulator-tables')
 export default {
   name: 'WellSearch',
   components: {
+    'search-form-boolean-or-range': SearchFormBooleanOrRange,
     'search-form-input': SearchFormInput,
     'search-form-radio': SearchFormRadio,
     'search-form-range': SearchFormRange,
@@ -309,16 +326,14 @@ export default {
       const params = {match_any: 'true'}
       // Populate params with empty values for selects
       const defaultSelectParams = this.defaultFilterFields.filter(filter => filter.type === 'select').map(filter => filter.param)
-      const additionalSelectParams = this.additionalFilterFields.filter(filter => filter.type === 'select').map(filter => filter.param)
-      const selectParams = [...defaultSelectParams, ...additionalSelectParams]
-      selectParams.forEach((param) => {
+      defaultSelectParams.forEach((param) => {
         params[param] = ''
       })
 
       return params
     },
     landDistrictOptions () {
-      if (!this.codes.land_district_codes || Object.entries(this.codes.land_district_codes).length === 0) {
+      if (this.codes.land_district_codes === undefined || (this.codes.land_district_codes && Object.entries(this.codes.land_district_codes).length === 0)) {
         return []
       }
       return this.codes.land_district_codes.map((district) => {
@@ -346,36 +361,36 @@ export default {
     },
     filterSelectOptions () {
       return {
-        aquiferLithology: this.codes.aquifer_lithology_codes,
-        coordinateAcquisitionCode: this.codes.coordinate_acquisition_codes,
-        decommissionMethod: this.codes.decommission_methods,
-        developmentMethods: this.codes.development_methods,
-        drillingMethods: this.codes.drilling_methods,
-        filterPackMaterial: this.codes.filter_pack_material,
-        filterPackMaterialSize: this.codes.filter_pack_material_size,
-        groundElevationMethod: this.codes.ground_elevation_methods,
-        intendedWaterUse: this.codes.intended_water_uses,
+        aquiferLithology: this.codes.aquifer_lithology_codes || [],
+        coordinateAcquisitionCode: this.codes.coordinate_acquisition_codes || [],
+        decommissionMethod: this.codes.decommission_methods || [],
+        developmentMethods: this.codes.development_methods || [],
+        drillingMethods: this.codes.drilling_methods || [],
+        filterPackMaterial: this.codes.filter_pack_material || [],
+        filterPackMaterialSize: this.codes.filter_pack_material_size || [],
+        groundElevationMethod: this.codes.ground_elevation_methods || [],
+        intendedWaterUse: this.codes.intended_water_uses || [],
         landDistrict: this.landDistrictOptions,
-        licencedStatus: this.codes.licenced_status_codes,
-        linerMaterial: this.codes.liner_material_codes,
-        observationWellStatus: this.codes.observation_well_status,
-        orgResponsible: this.organizationNames,
-        ownerProvince: this.codes.province_codes,
-        personResponsible: this.drillerNames,
-        publicationStatus: this.codes.well_publication_status_codes,
-        screenIntakeMethod: this.codes.screen_intake_methods,
-        screenBottoms: this.codes.screen_bottoms,
-        screenMaterial: this.codes.screen_materials,
-        screenOpenings: this.codes.screen_openings,
-        screenType: this.codes.screen_types,
-        surfaceSealMaterial: this.codes.surface_seal_materials,
-        surfaceSealMethod: this.codes.surface_seal_methods,
-        waterQualityCharacteristics: this.codes.water_quality_characteristics,
-        waterQualityColour: this.codes.water_quality_colours,
-        wellClass: this.codes.well_classes,
-        wellStatus: this.codes.well_status_codes,
+        licencedStatus: this.codes.licenced_status_codes || [],
+        linerMaterial: this.codes.liner_material_codes || [],
+        observationWellStatus: this.codes.observation_well_status || [],
+        orgResponsible: this.organizationNames || [],
+        ownerProvince: this.codes.province_codes || [],
+        personResponsible: this.drillerNames || [],
+        publicationStatus: this.codes.well_publication_status_codes || [],
+        screenIntakeMethod: this.codes.screen_intake_methods || [],
+        screenBottoms: this.codes.screen_bottoms || [],
+        screenMaterial: this.codes.screen_materials || [],
+        screenOpenings: this.codes.screen_openings || [],
+        screenType: this.codes.screen_types || [],
+        surfaceSealMaterial: this.codes.surface_seal_materials || [],
+        surfaceSealMethod: this.codes.surface_seal_methods || [],
+        waterQualityCharacteristics: this.codes.water_quality_characteristics || [],
+        waterQualityColour: this.codes.water_quality_colours || [],
+        wellClass: this.codes.well_classes || [],
+        wellStatus: this.codes.well_status_codes || [],
         wellSubclass: this.wellSubclassOptions,
-        yieldEstimationMethod: this.codes.yield_estimation_methods
+        yieldEstimationMethod: this.codes.yield_estimation_methods || []
       }
     }
   },
@@ -477,7 +492,8 @@ export default {
     initSelectedFilters () {
       const query = this.$route.query
       this.additionalFilterFields.filter((field) => {
-        return (query[field.param] !== undefined)
+        const fieldParams = this.getParamNames(field)
+        return fieldParams.some(param => param in query)
       }).forEach(field => this.selectedFilters.push(field))
     },
     handleMapCoordinate (latln) {
@@ -505,7 +521,7 @@ export default {
     cleanSearchParams () {
       // Clear any null or empty string values, to keep URLs clean.
       Object.entries(this.searchParams).forEach(([key, value]) => {
-        if (value === '' || value === null) {
+        if (value === undefined || value === '' || value === null) {
           delete this.searchParams[key]
         }
       })
@@ -525,13 +541,38 @@ export default {
     selectFilter () {
       if (this.selectedFilter) {
         this.selectedFilters.push(this.selectedFilter)
+        // Set an empty value to show placeholder if we don't already have one.
+        if (this.selectedFilter.type === 'select' &&
+            !(this.selectedFilter.param in this.searchParams)) {
+          this.searchParams[this.selectedFilter.param] = ''
+        } else if (this.selectedFilter.type === 'booleanOrRange' &&
+            !(`${this.selectedFilter.param}_has_value` in this.searchParams)) {
+          this.searchParams[`${this.selectedFilter.param}_has_value`] = false
+        }
       }
 
       this.selectedFilter = null
     },
     removeSelectedFilter (filterId) {
       const index = this.selectedFilters.findIndex(filter => filterId === filter.id)
+      const filter = this.selectedFilters[index]
+      const params = this.getParamNames(filter)
+
       this.selectedFilters.splice(index, 1)
+      params.filter(
+        param => param in this.searchParams).forEach(
+        param => delete this.searchParams[param])
+    },
+    getParamNames (field) {
+      if (field.type === 'range') {
+        return [`${field.param}_min`, `${field.param}_max`]
+      } else if (field.type === 'dateRange') {
+        return [`${field.param}_before`, `${field.param}_after`]
+      } else if (field.type === 'booleanOrRange') {
+        return [`${field.param}_min`, `${field.param}_max`, `${field.param}_has_value`]
+      } else {
+        return [field.param]
+      }
     }
   },
   created () {

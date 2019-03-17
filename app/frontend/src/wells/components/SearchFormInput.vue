@@ -71,7 +71,6 @@ export default {
       type: String,
       default: 'text'
     },
-    labelCols: [Number, String],
     placeholder: String,
     formatter: Function,
     lazyFormatter: Boolean,

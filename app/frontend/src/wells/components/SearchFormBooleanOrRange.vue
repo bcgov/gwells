@@ -3,7 +3,22 @@
     <b-col class="mb-1">
       <legend tabindex="-1" :id="`${id}Label`" class="col-form-label">{{ label }}</legend>
     </b-col>
-    <b-col sm="8">
+    <b-col sm="3">
+      <b-form-row class="pt-2 d-flex justify-content-end">
+        <b-form-checkbox
+          :id="`${id}AnyValue`"
+          :checked="booleanChecked"
+          v-on:input="updateBooleanValue($event)">
+          {{ booleanLabel }}
+        </b-form-checkbox>
+      </b-form-row>
+      <b-form-invalid-feedback :id="`${id}AnyValueInvalidFeedback`">
+        <div v-for="(error, index) in booleanErrors" :key="`${id}Input error ${index}`">
+          {{ error }}
+        </div>
+      </b-form-invalid-feedback>
+    </b-col>
+    <b-col sm="7">
       <b-form-row>
         <b-col class="mb-1">
           <b-form-row>
@@ -15,7 +30,7 @@
                 :state="validation"
                 :aria-describedby="`${id}InvalidFeedback ${id}Hint`"
                 :value="minValue"
-                :disabled="disabled"
+                :disabled="rangeDisabled"
                 :required="required"
                 :class="inputClass"
                 :step="step"
@@ -40,7 +55,7 @@
                 :state="validation"
                 :aria-describedby="`${id}InvalidFeedback ${id}Hint`"
                 :value="maxValue"
-                :disabled="disabled"
+                :disabled="rangeDisabled"
                 :required="required"
                 :class="inputClass"
                 :step="step"
@@ -72,13 +87,13 @@
 /**
  * example usage in another component:
  *
- * <search-form-range
- *    id="dateOfWork"
- *    label="Date of work"
- *    v-model="ownerNameInput"
- *    hint="A date range"
- *    type="date"
- *    :errors="errors['dateOfWork']"/>   // errors for individual fields must be an array e.g. ['Name already taken']
+ * <search-form-boolean-or-range
+ *    id="artesianFlow"
+ *    label="Artesian Flow"
+ *    v-model="artesianFlow"
+ *    hint="A flow value"
+ *    type="number"
+ *    :errors="errors['artesianFlow']"/>   // errors for individual fields must be an array e.g. ['Name already taken']
  *
  */
 export default {
@@ -90,6 +105,12 @@ export default {
     label: String, // a label for the form input e.g.: "First name:"
     hint: String, // a hint for the user on how to enter text e.g. "Please use YYYY/MM/DD format"
     errors: null, // pass any "field errors" returned by the API into the "errors" prop
+    booleanLabel: String,
+    booleanErrors: null,
+    booleanValue: {
+      type: [Boolean, String],
+      default: false
+    },
     minValue: null, // internal (holds the value for the field)
     maxValue: null, // internal (holds the value for the field)
     required: String,
@@ -113,10 +134,21 @@ export default {
   },
   data () {
     return {
+      localBooleanValue: null,
       updated: false
     }
   },
   computed: {
+    booleanChecked () {
+      if (this.localBooleanValue === null) {
+        return (this.booleanValue === true) || (this.booleanValue === 'true')
+      } else {
+        return this.localBooleanValue
+      }
+    },
+    rangeDisabled () {
+      return this.disabled || this.booleanChecked === 'true' || this.booleanChecked === true
+    },
     validation () {
       return (this.errors && this.errors.length) ? false
         : (this.updated) ? true : null
@@ -128,6 +160,14 @@ export default {
     },
     updateEndValue (value) {
       this.$emit('end-input', value)
+    },
+    updateBooleanValue (value) {
+      this.localBooleanValue = value
+      // Clear other values if checked.
+      if (this.localBooleanValue) {
+        this.updateStartValue('')
+        this.updateEndValue('')
+      }
     }
   },
   watch: {
@@ -136,6 +176,9 @@ export default {
         this.updated = true
         setTimeout(() => { this.updated = false }, 500)
       }
+    },
+    localBooleanValue (value) {
+      this.$emit('boolean-input', value)
     }
   }
 }
