@@ -574,12 +574,16 @@ pipeline {
             steps {
                 script {
                     def dcName = devSuffix == "staging" ? "${appName}-pgsql-${devSuffix}" : "${appName}-pgsql-${devSuffix}-${prNumber}"
+                    def dumpDir = "/var/lib/pgsql/data/deployment-backups"
+                    def dumpName = "\${HOSTNAME}-\$( date +%Y-%m-%d-%H%M ).dump"
+                    def dumpOpts = "--no-privileges --no-tablespaces --schema=public --exclude-table=spatial_ref_sys"
                     sh (
                         script: """
-                            oc rsh -n ${devProject} dc/${dcName} ' \
-                                mkdir -p /var/lib/pgsql/data/; \
-                                cd /var/lib/pgsql/data/; \
-                                pg_dump -U \${POSTGRESQL_USER} -d \${POSTGRESQL_DATABASE} -Fc -f ./\${HOSTNAME}-\$( date +%Y-%m-%d-%H%M ).dump --no-privileges --no-tablespaces --schema=public --exclude-table=spatial_ref_sys; \
+                            oc rsh -n ${devProject} dc/${dcName} bash -c ' \
+                                set -e; \
+                                mkdir -p ${dumpDir}; \
+                                cd ${dumpDir}; \
+                                pg_dump -U \${POSTGRESQL_USER} -d \${POSTGRESQL_DATABASE} -Fc -f ./${dumpName} ${dumpOpts}; \
                                 ls -lh \
                             '
                         """,
