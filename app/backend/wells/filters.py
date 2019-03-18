@@ -14,61 +14,81 @@
 from collections import OrderedDict
 
 from django import forms
-from django.contrib.gis.geos import Polygon
+from django.contrib.gis.geos import Point
 from django.db.models import Q, QuerySet
 from django_filters import rest_framework as filters
+from django_filters.constants import EMPTY_VALUES
 from django_filters.widgets import BooleanWidget, SuffixedMultiWidget
 
 from gwells.roles import WELLS_VIEWER_ROLE
 from wells.models import Well
 
 
-class BoundingBoxWidget(SuffixedMultiWidget):
+class PointWidget(SuffixedMultiWidget):
     template_name = 'django_filters/widgets/multiwidget.html'
-    suffixes = ['x1', 'y1', 'x2', 'y2']
+    suffixes = ['long', 'lat']
 
     def __init__(self, attrs=None):
-        widgets = (forms.NumberInput, forms.NumberInput, forms.NumberInput,
-                   forms.NumberInput)
+        widgets = (forms.NumberInput, forms.NumberInput)
         super().__init__(widgets, attrs)
 
     def decompress(self, value):
         if value:
-            return value.extent
+            return (value.extent[0], value.extent[1])
         return (None, None, None, None)
 
 
-class BoundingBoxField(forms.MultiValueField):
-    widget = BoundingBoxWidget
+class PointField(forms.MultiValueField):
+    widget = PointWidget
 
     def __init__(self, fields=None, *args, **kwargs):
         if fields is None:
             fields = (forms.DecimalField(min_value=-180, max_value=180),
-                      forms.DecimalField(min_value=-90, max_value=90),
-                      forms.DecimalField(min_value=-180, max_value=180),
                       forms.DecimalField(min_value=-90, max_value=90))
         super().__init__(fields, *args, **kwargs)
 
     def compress(self, data_list):
         if data_list:
             try:
-                points = tuple(float(point) for point in data_list)
-            except TypeError:
+                x = float(data_list[0])
+                y = float(data_list[1])
+            except (TypeError, IndexError):
                 raise forms.ValidationError(
-                    'Please provide four points: x1, y1, x2, y2.',
-                    code='invalid_bbox')
-            return Polygon.from_bbox(points)
+                    'Please provide two point values (lat and long).',
+                    code='invalid_point')
+            return Point(x=x, y=y)
+
         return None
 
 
-class BoundingBoxFilter(filters.Filter):
-    field_class = BoundingBoxField
+class SWPointFilter(filters.Filter):
+    field_class = PointField
 
-    def __init__(self, *args, **kwargs):
-        if 'lookup_expr' not in kwargs:
-            kwargs['lookup_expr'] = 'bboverlaps'
+    def filter(self, qs, value):
+        if value in EMPTY_VALUES:
+            return qs
+        lookups = {
+            '{}__overlaps_right'.format(self.field_name): value,
+            '{}__overlaps_above'.format(self.field_name): value,
+        }
+        qs = self.get_method(qs)(**lookups)
 
-        super().__init__(*args, **kwargs)
+        return qs
+
+
+class NEPointFilter(filters.Filter):
+    field_class = PointField
+
+    def filter(self, qs, value):
+        if value in EMPTY_VALUES:
+            return qs
+        lookups = {
+            '{}__overlaps_left'.format(self.field_name): value,
+            '{}__overlaps_below'.format(self.field_name): value,
+        }
+        qs = self.get_method(qs)(**lookups)
+
+        return qs
 
 
 class AnyOrAllFilterSet(filters.FilterSet):
@@ -210,7 +230,12 @@ class WellListFilter(AnyOrAllFilterSet):
     well_cap_type = filters.CharFilter(lookup_expr='icontains')
     comments = filters.CharFilter(lookup_expr='icontains')
 
-    within = BoundingBoxFilter(field_name='geom', label='Well location within bounds')
+    sw = SWPointFilter(field_name='geom',
+                       label='Southwest Point',
+                       help_text='Well location is north and east of point.')
+    ne = NEPointFilter(field_name='geom',
+                       label='Northeast Point',
+                       help_text='Well location is south and west of point.')
 
     class Meta:
         model = Well
