@@ -55,13 +55,13 @@
               </b-tab>
               <b-tab title="Advanced Search">
                 <div class="card-text">
-                  <div v-for="section in defaultFilters" :key="section.header">
+                  <div v-for="section in defaultFilterSections" :key="section.header">
                     <b-row class="mt-1">
                       <b-col>
                         <h3>{{ section.header }}</h3>
                       </b-col>
                     </b-row>
-                    <template v-for="field in section.fields">
+                    <template v-for="field in getFields(section.fields)">
                       <template v-if="field.authenticated ? userRoles.wells.view : true">
                         <search-form-radio
                           v-if="field.type === 'radio'"
@@ -213,9 +213,9 @@
                     <b-col cols="9">
                       <b-form-select id="additionalFilterInput" v-model="selectedFilter">
                         <option :value="null">Select a field to search on</option>
-                        <template v-for="section in additionalFilters">
+                        <template v-for="section in additionalFilterSections">
                           <optgroup v-if="section.authenticated ? userRoles.wells.view : true" :key="section.header" :label="section.header">
-                            <template v-for="field in section.fields">
+                            <template v-for="field in getFields(section.fields)">
                               <option v-if="field.authenticated ? userRoles.wells.view : true" :key="field.id" :value="field" :disabled="selectedFilterIds.includes(field.id)">{{ field.label }}</option>
                             </template>
                           </optgroup>
@@ -234,38 +234,20 @@
       </b-col>
       <b-col>
         <search-map
-            :latitude="latitude"
-            :longitude="longitude"
-            :locations="locations"
-            :zoomToMarker="zoomToResults"
-            v-on:coordinate="handleMapCoordinate"
-            ref="searchMap"
-            @moved="handleMapMoveEnd"
-            />
+          :latitude="latitude"
+          :longitude="longitude"
+          :locations="locations"
+          :zoomToMarker="zoomToResults"
+          v-on:coordinate="handleMapCoordinate"
+          ref="searchMap"
+          @moved="handleMapMoveEnd"
+          />
         <b-alert variant="info" class="mt-2" :show="!!mapError">{{ mapError }}</b-alert>
       </b-col>
     </b-row>
     <b-row class="my-5" v-show="!isInitialSearch">
       <b-col>
-        <b-table
-          id="well-search-table"
-          :items="wellSearch"
-          :isBusy="!!pendingSearch"
-          :fields="wellSearchColumns"
-          :per-page="perPage"
-          :current-page="currentPage"
-        >
-        <template slot="well_tag_number" slot-scope="data">
-          <router-link :to="{ name: 'wells-detail', params: {id: data.value} }">{{data.value}}</router-link>
-        </template>
-        </b-table>
-        <b-row>
-          <b-col>
-            <div class="my-3" v-if="numberOfRecords > 0">Showing {{ currentRecordsCountStart }} to {{ currentRecordsCountEnd }} of {{ numberOfRecords }} {{ numberOfRecords === 1 ? 'record' : 'records'}}.</div>
-          </b-col>
-        </b-row>
-        <b-pagination v-show="numberOfRecords > perPage" class="mt-3" :disabled="!!pendingSearch" size="md" :total-rows="numberOfRecords" v-model="currentPage" :per-page="perPage" @input="wellSearch()">
-        </b-pagination>
+        <search-results />
       </b-col>
     </b-row>
     <b-row v-if="!isInitialSearch">
@@ -289,9 +271,16 @@ import querystring from 'querystring'
 import debounce from 'lodash.debounce'
 
 import { mapGetters } from 'vuex'
+import axios from 'axios'
 import ApiService from '@/common/services/ApiService.js'
 import {FETCH_CODES} from '@/submissions/store/actions.types.js'
-import {FETCH_DRILLER_NAMES, FETCH_ORGANIZATION_NAMES} from '@/wells/store/actions.types.js'
+import {
+  FETCH_DRILLER_NAMES,
+  FETCH_ORGANIZATION_NAMES,
+  RESET_WELLS_SEARCH,
+  SEARCH_WELLS
+} from '@/wells/store/actions.types.js'
+import {SET_SEARCH_BOUNDS, SET_SEARCH_PARAMS} from '@/wells/store/mutations.types.js'
 import SearchFormInput from '@/wells/components/SearchFormInput.vue'
 import SearchFormRadio from '@/wells/components/SearchFormRadio.vue'
 import SearchFormRange from '@/wells/components/SearchFormRange.vue'
@@ -299,8 +288,9 @@ import SearchFormSelect from '@/wells/components/SearchFormSelect.vue'
 import SearchFormBooleanOrRange from '@/wells/components/SearchFormBooleanOrRange.vue'
 import SearchFormBooleanOrText from '@/wells/components/SearchFormBooleanOrText.vue'
 import SearchMap from '@/wells/components/SearchMap.vue'
+import SearchResults from '@/wells/components/SearchResults.vue'
 import Exports from '@/wells/components/Exports.vue'
-import searchFields from '@/wells/searchFields.js'
+import {filterSections, searchFields} from '@/wells/searchFields.js'
 
 const triggers = {
   // the map trigger indicates a search was triggered by moving the map.
@@ -329,6 +319,7 @@ export default {
     'search-form-range': SearchFormRange,
     'search-form-select': SearchFormSelect,
     'search-map': SearchMap,
+    'search-results': SearchResults,
     'well-exports': Exports
   },
   data () {
@@ -342,9 +333,6 @@ export default {
       isBusy: false,
       isInitialSearch: true,
       tabIndex: 0,
-      currentPage: 1,
-      perPage: 10,
-      numberOfRecords: 0,
       latitude: null,
       longitude: null,
       locations: [],
@@ -352,45 +340,38 @@ export default {
       selectedFilter: null,
       selectedFilters: [],
 
-      wellSearchColumns: [
-        { label: 'Well Tag', key: 'well_tag_number', sortable: true },
-        { label: 'ID Plate', key: 'identification_plate_number', sortable: true },
-        { label: 'Owner Name', key: 'owner_full_name', sortable: true },
-        { label: 'Street Address', key: 'street_address', sortable: true },
-        { label: 'Legal Lot', key: 'legal_lot', sortable: true },
-        { label: 'Legal Plan', key: 'legal_plan', sortable: true },
-        { label: 'Legal District Lot', key: 'legal_district_lot', sortable: true },
-        { label: 'Land District', key: 'land_district', sortable: true },
-        { label: 'Legal PID', key: 'legal_pid', sortable: true },
-        { label: 'Diameter', key: 'diameter', sortable: true },
-        { label: 'Finished Well Depth', key: 'finished_well_depth', sortable: true }
-      ],
-
-      tableData: [],
-
-      // searchParams will be set by searchParamsReset()
-      searchParams: {},
-      searchErrors: {},
-
       // flag to indicate that the search should reset without a further API request
       searchShouldReset: false,
 
       // additional location search params
       mapSearchParams: {},
-      defaultFilters: searchFields.default,
-      additionalFilters: searchFields.optional
+      defaultFilterSections: filterSections.default,
+      additionalFilterSections: filterSections.optional
     }
   },
   computed: {
-    ...mapGetters(['codes', 'drillerNames', 'organizationNames', 'userRoles']),
+    ...mapGetters([
+      'codes',
+      'drillerNames',
+      'organizationNames',
+      'searchErrors',
+      'searchParams',
+      'userRoles'
+    ]),
     selectedFilterIds () {
       return this.selectedFilters.map(filter => filter.id)
     },
+    defaultFilterIds () {
+      return filterSections.default.map(section => section.fields).reduce((a, b) => a.concat(b), [])
+    },
     defaultFilterFields () {
-      return this.defaultFilters.map(section => section.fields).reduce((a, b) => a.concat(b), [])
+      return this.getFields(this.defaultFilterIds)
+    },
+    additionalFilterIds () {
+      return filterSections.optional.map(section => section.fields).reduce((a, b) => a.concat(b), [])
     },
     additionalFilterFields () {
-      return this.additionalFilters.map(section => section.fields).reduce((a, b) => a.concat(b), [])
+      return this.getFields(this.additionalFilterIds)
     },
     defaultSearchParams () {
       const params = {match_any: 'true'}
@@ -463,100 +444,11 @@ export default {
         yieldEstimationMethod: this.codes.yield_estimation_methods || []
       }
     },
-    // currentRecordsCountStart is the starting record number in the table of wells
-    // (e.g. the 1 in 'showing 1 to 10 of 25 records')
-    currentRecordsCountStart () {
-      return (this.currentPage - 1) * this.perPage + 1
-    },
-    // currentRecordsCountEnd is the last visible record number in the table of wells
-    // (e.g. the 10 in 'showing 1 to 10 of 25 records')
-    currentRecordsCountEnd () {
-      return (this.currentPage - 1) * this.perPage + this.tableData.length
-    },
     zoomToResults () {
       return this.lastSearchTrigger !== triggers.MAP
     }
   },
   methods: {
-    /**
-    * wellSearch searches for wells based on parameters in the querystring
-    */
-    wellSearch (ctx = {}) {
-      const { perPage = this.perPage, currentPage = this.currentPage, trigger = this.lastSearchTrigger } = ctx
-
-      // cancel previous search request and add a cancellation token for this request
-      if (this.pendingSearch) {
-        this.pendingSearch.cancel()
-      }
-
-      // if the searchShouldReset flag is true, stop the well search before making
-      // any requests and return an empty array to the table.
-      // we also stop here if the trigger has not been set; this is to avoid triggering
-      // searches without user input.
-      if (this.searchShouldReset || !trigger) {
-        this.searchErrors = {}
-        this.numberOfRecords = 0
-        this.currentPage = 1
-        this.searchShouldReset = false
-        return []
-      }
-
-      // add a cancellation token to this request
-      const CancelToken = axios.CancelToken
-      const requestContext = CancelToken.source()
-      this.pendingSearch = requestContext
-
-      const params = {
-        limit: perPage,
-        offset: perPage * (currentPage - 1)
-      }
-
-      // if the table has been ordered, add an 'ordering' param to the API call
-      if (ctx.sortBy) {
-        params['ordering'] = `${ctx.sortDesc ? '-' : ''}${ctx.sortBy}`
-      }
-
-      // add other search parameters into the params object.
-      // these will be urlencoded and the API will filter on these values.
-      Object.assign(params, this.searchParams)
-
-      // if triggering the search using the map, the search will be restricted to
-      // the visible map bounds
-      if (trigger === triggers.MAP) {
-        Object.assign(params, this.mapBounds)
-      }
-
-      // send the analytic event when triggering search by the search button
-      if (trigger === triggers.SEARCH) {
-        this.triggerAnalyticsSearchEvent(params)
-      }
-
-      return ApiService.query('wells', params, { cancelToken: this.pendingSearch.token }).then((response) => {
-        this.searchErrors = {}
-        this.numberOfRecords = response.data.count
-        this.tableData = response.data.results
-
-        // the first search that happens when page loads doesn't need
-        // to automatically scroll the page.  Only scroll when updating
-        // the search results.
-        if (!this.isInitialSearch && !this.scrolled) {
-          this.$SmoothScroll(this.$el.querySelector('#map'))
-        }
-        // flag that the initial search that happens on page load
-        // has already occurred.
-        this.isInitialSearch = false
-
-        return response.data.results || []
-      }).catch((err) => {
-        if (err.response && err.response.data) {
-          this.searchErrors = err.response.data
-        }
-
-        return []
-      }).finally(() => {
-        this.pendingSearch = null
-      })
-    },
     handleScroll () {
       const pos = this.$el.querySelector('#map').scrollTop | 100
       this.scrolled = window.scrollY > 0.9 * pos
@@ -615,6 +507,7 @@ export default {
           ne_long: ne.lng
         }
         this.mapBounds = boundBox
+        this.$store.commit(SET_SEARCH_BOUNDS, boundBox)
       }
     },
     resetMapBounds () {
@@ -627,9 +520,20 @@ export default {
       const { trigger = triggers.SEARCH } = options
       this.lastSearchTrigger = trigger
 
+      const searchContext = {}
+      if (trigger === triggers.MAP) {
+        searchContext['bounded]'] = true
+      }
+
       this.cleanSearchParams()
       this.updateQueryParams()
-      this.$root.$emit('bv::refresh::table', 'well-search-table')
+
+      // send the analytic event when triggering search by the search button
+      if (trigger === triggers.SEARCH) {
+        this.triggerAnalyticsSearchEvent(this.searchParams)
+      }
+  
+      this.$store.dispatch(SEARCH_WELLS, searchContext).then(this.onResultsUpdate())
       this.locationSearch(options)
     },
     handleReset () {
@@ -638,11 +542,22 @@ export default {
       this.tableData = []
       this.locations = []
       this.mapError = null
-      this.searchShouldReset = true
-      this.$root.$emit('bv::refresh::table', 'well-search-table')
+      this.$store.dispatch(RESET_WELLS_SEARCH).then(this.onResultsUpdate())
+    },
+    onResultsUpdate () {
+      // the first search that happens when page loads doesn't need
+      // to automatically scroll the page.  Only scroll when updating
+      // the search results.
+      if (!this.isInitialSearch && !this.scrolled) {
+        this.$SmoothScroll(this.$el.querySelector('#map'))
+      }
+      // flag that the initial search that happens on page load
+      // has already occurred.
+      this.isInitialSearch = false
     },
     searchParamsReset () {
-      this.searchParams = {...this.defaultSearchParams}
+      this.searchParams = { ...this.defaultSearchParams }
+      this.$store.commit(SET_SEARCH_PARAMS, { ...this.searchParams })
       this.selectedFilters = []
       this.$nextTick(() => {
         this.$router.push({ query: null })
@@ -665,7 +580,8 @@ export default {
       // check if the page loads with a query (e.g. user bookmarked a search)
       // if so, set the search boxes to the query params
       if (Object.entries(query).length !== 0 && query.constructor === Object) {
-        this.searchParams = Object.assign({...this.defaultSearchParams}, query)
+        const params = Object.assign({...this.defaultSearchParams}, query)
+        this.$store.commit(SET_SEARCH_PARAMS, params)
       } else {
         this.searchParamsReset()
       }
@@ -762,6 +678,11 @@ export default {
       } else {
         return [field.param]
       }
+    },
+    getFields (fieldIds) {
+      return fieldIds.map(id => {
+        return { ...searchFields[id], id: id }
+      })
     }
   },
   created () {
@@ -781,7 +702,7 @@ export default {
       setTimeout(() => {
         this.locationSearch()
       }, 0)
-      this.wellSearch()
+      this.$store.dispatch(SEARCH_WELLS, {}).then(this.onResultsUpdate())
     }
   },
   beforeMount () {

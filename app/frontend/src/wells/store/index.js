@@ -11,18 +11,59 @@
  */
 import Vue from 'vue'
 import Vuex from 'vuex'
+import axios from 'axios'
 import ApiService from '@/common/services/ApiService.js'
 
-import { FETCH_DRILLER_NAMES, FETCH_ORGANIZATION_NAMES } from './actions.types.js'
-import { SET_DRILLER_NAMES, SET_ERROR, SET_ORGANIZATION_NAMES } from './mutations.types.js'
+import {
+  FETCH_DRILLER_NAMES,
+  FETCH_ORGANIZATION_NAMES,
+  RESET_WELLS_SEARCH,
+  SEARCH_WELLS
+} from './actions.types.js'
+import {
+  SET_DRILLER_NAMES,
+  SET_ERROR,
+  SET_ORGANIZATION_NAMES,
+  SET_PENDING_SEARCH,
+  SET_SEARCH_BOUNDS,
+  SET_SEARCH_LIMIT,
+  SET_SEARCH_OFFSET,
+  SET_SEARCH_ORDERING,
+  SET_SEARCH_ERRORS,
+  SET_SEARCH_PARAMS,
+  SET_SEARCH_RESULT_COUNT,
+  SET_SEARCH_RESULT_FILTERS,
+  SET_SEARCH_RESULTS
+} from './mutations.types.js'
 
 Vue.use(Vuex)
+
+const cleanParams = (payload) => {
+  // Clear any null or empty string values, to keep URLs clean.
+  return Object.entries(payload).filter(([key, value]) => {
+    return !(value === undefined || value === '' || value === null)
+  }).reduce((cleanedParams, [key, value]) => {
+    cleanedParams[key] = value
+    return cleanedParams
+  }, {})
+}
 
 const wellsStore = {
   state: {
     error: null,
-    drillerNames: null,
-    organizationNames: null
+    drillerNames: [],
+    organizationNames: [],
+    pendingSearch: null,
+    searchBounds: {},
+    searchErrors: {},
+    searchLimit: 10,
+    searchOffset: 0,
+    searchOrdering: { param: 'well_tag_number', desc: false },
+    searchParams: {},
+    // searchResultFilters provides a second level of filtering.
+    searchResultFilters: {},
+    searchResults: null,
+    searchResultCount: 0
   },
   mutations: {
     [SET_ERROR] (state, payload) {
@@ -33,28 +74,100 @@ const wellsStore = {
     },
     [SET_ORGANIZATION_NAMES] (state, payload) {
       state.organizationNames = payload
+    },
+    [SET_PENDING_SEARCH] (state, payload) {
+      state.pendingSearch = payload
+    },
+    [SET_SEARCH_BOUNDS] (state, payload) {
+      state.searchBounds = payload
+    },
+    [SET_SEARCH_ERRORS] (state, payload) {
+      state.searchErrors = payload
+    },
+    [SET_SEARCH_LIMIT] (state, payload) {
+      state.searchLimit = payload
+    },
+    [SET_SEARCH_OFFSET] (state, payload) {
+      state.searchOffset = payload
+    },
+    [SET_SEARCH_ORDERING] (state, payload) {
+      state.searchOrdering = payload
+    },
+    [SET_SEARCH_PARAMS] (state, payload) {
+      state.searchParams = cleanParams(payload)
+    },
+    [SET_SEARCH_RESULT_FILTERS] (state, payload) {
+      state.searchResultFilters = cleanParams(payload)
+    },
+    [SET_SEARCH_RESULTS] (state, payload) {
+      state.searchResults = payload
+    },
+    [SET_SEARCH_RESULT_COUNT] (state, payload) {
+      state.searchResultCount = payload
     }
   },
   actions: {
     [FETCH_DRILLER_NAMES] ({ commit }) {
+      // fetch only once
       if (!this.state.drillerNames) {
-        // fetch codes once
-        ApiService.query('drillers/names').then((res) => {
-          commit(SET_DRILLER_NAMES, res.data)
-        }).catch((e) => {
-          commit(SET_ERROR, e.response)
+        ApiService.query('drillers/names').then((response) => {
+          commit(SET_DRILLER_NAMES, response.data)
+        }).catch((err) => {
+          commit(SET_ERROR, err.response)
         })
       }
     },
     [FETCH_ORGANIZATION_NAMES] ({ commit }) {
+      // fetch only once
       if (!this.state.organizationNames) {
-        // fetch the wells once
-        ApiService.query('organizations/names').then((res) => {
-          commit(SET_ORGANIZATION_NAMES, res.data)
-        }).catch((e) => {
-          commit(SET_ERROR, e.response)
+        ApiService.query('organizations/names').then((response) => {
+          commit(SET_ORGANIZATION_NAMES, response.data)
+        }).catch((err) => {
+          commit(SET_ERROR, err.response)
         })
       }
+    },
+    [RESET_WELLS_SEARCH] ({ commit }) {
+      commit(SET_SEARCH_ERRORS, {})
+      commit(SET_SEARCH_RESULTS, [])
+      commit(SET_SEARCH_RESULT_COUNT, 0)
+    },
+    [SEARCH_WELLS] ({ commit, state }, { bounded = false }) {
+      return new Promise((resolve, reject) => {
+        if (state.pendingSearch !== null) {
+          state.pendingSearch.cancel()
+        }
+        commit(SET_PENDING_SEARCH, axios.CancelToken.source())
+
+        const params = { ...state.searchParams, ...state.searchResultFilters }
+
+        // if triggering the search using the map, the search will be restricted to
+        // the visible map bounds
+        if (bounded) {
+          Object.assign(params, state.searchBounds)
+        }
+
+        params['limit'] = state.searchLimit
+        params['offset'] = state.searchOffset
+
+        if (state.searchOrdering.param) {
+          params['ordering'] = `${state.searchOrdering.desc ? '-' : ''}${state.searchOrdering.param}`
+        }
+
+        ApiService.query('wells', params, { cancelToken: state.pendingSearch.token }).then((response) => {
+          commit(SET_SEARCH_ERRORS, {})
+          commit(SET_SEARCH_RESULTS, response.data.results)
+          commit(SET_SEARCH_RESULT_COUNT, response.data.count)
+          resolve(response.data)
+        }).catch((err) => {
+          if (err.response && err.response.data) {
+            commit(SET_SEARCH_ERRORS, err.response.data)
+          }
+          reject(err)
+        }).finally(() => {
+          commit(SET_PENDING_SEARCH, null)
+        })
+      })
     }
   },
   getters: {
@@ -63,6 +176,33 @@ const wellsStore = {
     },
     organizationNames (state) {
       return state.organizationNames
+    },
+    searchBounds (state) {
+      return state.searchBounds
+    },
+    searchErrors (state) {
+      return state.searchErrors
+    },
+    searchLimit (state) {
+      return state.searchLimit
+    },
+    searchOffset (state) {
+      return state.searchOffset
+    },
+    searchOrdering (state) {
+      return state.searchOrdering
+    },
+    searchParams (state) {
+      return state.searchParams
+    },
+    searchResultFilters (state) {
+      return state.searchResultFilters
+    },
+    searchResultCount (state) {
+      return state.searchResultCount
+    },
+    searchResults (state) {
+      return state.searchResults
     }
   }
 }

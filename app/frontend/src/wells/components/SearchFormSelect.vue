@@ -1,6 +1,6 @@
 <template>
   <b-form-row class="mb-1">
-    <b-col sm="6">
+    <b-col sm="6" v-if="label">
       <label :id="`${id}Label`" :label-for="`${id}Input`" class="col-form-label">{{ label }}</label>
     </b-col>
     <b-col>

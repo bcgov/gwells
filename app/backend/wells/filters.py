@@ -212,6 +212,9 @@ class WellListFilter(AnyOrAllFilterSet):
     ems_has_value = filters.BooleanFilter(field_name='ems',
                                           method='filter_has_value',
                                           label='Any value for EMS id')
+    diameter = filters.RangeFilter()
+    finished_well_depth = filters.RangeFilter()
+    total_depth_drilled = filters.RangeFilter()
 
     class Meta:
         model = Well
