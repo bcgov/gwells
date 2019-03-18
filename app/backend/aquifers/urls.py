@@ -51,8 +51,13 @@ urlpatterns = [
     url(r'^api/v1/aquifers/(?P<aquifer_id>[0-9]+)/delete_document$',
         never_cache(views.DeleteAquiferDocument.as_view()), name='aquifer-delete-document'),
 
+    # Shapefile (aquifer geometry)
+    url(r'^api/v1/aquifers/(?P<aquifer_id>[0-9]+)/geometry$',
+        never_cache(views.SaveAquiferGeometry.as_view()), name='aquifer-save-geometry'),
+
     url(r'^api/v1/aquifers/sections$',
-        cache_page(CACHE_TTL)(views.AquiferResourceSectionListAPIView.as_view()),
+        cache_page(CACHE_TTL)(
+            views.AquiferResourceSectionListAPIView.as_view()),
         name='aquifer-section-list'
         ),
 

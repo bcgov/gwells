@@ -34,6 +34,18 @@ class TestAquifersEditRole(APITestCase):
         response = self.client.patch(url, {}, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    def test_upload_shapefile(self):
+
+        filepath = 'aquifers/fixtures/shp/test.zip'
+        with open(filepath, 'rb') as fh:
+            url = reverse('aquifer-save-geometry', kwargs={'aquifer_id': 1})
+
+            response = self.client.post(
+                url,
+                {'geometry': fh}
+            )
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+
 
 class TestAquifersSpatial(APITestCase):
 

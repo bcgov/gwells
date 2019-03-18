@@ -13,12 +13,17 @@
 """
 from datetime import datetime
 import logging
+import zipfile
+import os
+import tempfile
 
 from django_filters import rest_framework as djfilters
 from django.http import Http404, HttpResponse, JsonResponse
 from django.views.generic import TemplateView
 from django.db.models import Q
 from django.db import connection
+from django.contrib.gis.gdal import DataSource
+from django.contrib.gis.geos import GEOSGeometry
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -29,7 +34,9 @@ from rest_framework.response import Response
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveUpdateAPIView
 from rest_framework.permissions import AllowAny
-
+from rest_framework.exceptions import ParseError
+from rest_framework.parsers import FileUploadParser
+from rest_framework import status
 from reversion.views import RevisionMixin
 
 from gwells.documents import MinioClient
@@ -344,6 +351,58 @@ class DeleteAquiferDocument(APIView):
             object_name, bucket_name=bucket_name, private=is_private)
 
         return HttpResponse(status=204)
+
+
+class SaveAquiferGeometry(APIView):
+    """
+
+    """
+    permission_classes = (HasAquiferEditRole,)
+    parser_class = (FileUploadParser,)
+
+    @swagger_auto_schema(auto_schema=None)
+    def post(self, request, aquifer_id):
+        if 'geometry' not in request.data:
+            raise ParseError("Empty content")
+
+        f = request.data['geometry']
+        aquifer = Aquifer.objects.get(pk=aquifer_id)
+        aquifer.geometry = self._extract_geometry(f)
+        aquifer.save()
+        #aquifer.shapefile.save(f.name, f, save=True)
+        return Response(status=status.HTTP_200_OK)
+
+    def delete(self, request, aquifer_id):
+        aquifer = Aquifer.objects.get(pk=aquifer_id)
+        # aquifer.geometry.delete(save=True)
+        del aquifer.geometry
+        aquifer.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def _extract_geometry(self, f):
+
+        zip_ref = zipfile.ZipFile(f)
+
+        output_dir = tempfile.mkdtemp()
+        for item in zip_ref.namelist():
+            # Check filename endswith shp
+            zip_ref.extract(item, output_dir)
+            if item.endswith('.shp'):
+                # Extract a single file from zip
+                the_shapefile = os.path.join(output_dir, item)
+                # break
+        zip_ref.close()
+
+        assert os.path.exists(the_shapefile)
+
+        ds = DataSource(the_shapefile)
+        for layer in ds:
+            for feat in layer:
+                geom = feat.geom
+                # Make a GEOSGeometry object using the string representation.
+                wkt = geom.wkt
+                geos_geom = GEOSGeometry(wkt, srid=3005)
+                return geos_geom
 
 
 class AquifersSpatial(APIView):
