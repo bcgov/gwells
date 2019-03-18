@@ -586,16 +586,6 @@ pipeline {
             }
         }
 
-        stage('DEV - Database Backup') {
-            when {
-                expression { env.CHANGE_TARGET != 'master' && env.CHANGE_TARGET != 'demo' }
-            }
-            steps {
-                script {
-                    def result = dbBackup (devProject, devSuffix)
-                }
-            }
-        }
 
 
         // the Django Unit Tests stage runs backend unit tests using a test DB that is
@@ -668,6 +658,19 @@ pipeline {
             steps {
                 script {
                     def result = apiTest ('DEV - API Tests', devHost, devSuffix)
+                }
+            }
+        }
+
+
+        // Backup database
+        stage('STAGING - Database Backup') {
+            when {
+                expression { env.CHANGE_TARGET == 'master' }
+            }
+            steps {
+                script {
+                    def result = dbBackup (stagingProject, stagingSuffix)
                 }
             }
         }
