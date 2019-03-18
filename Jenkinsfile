@@ -752,13 +752,33 @@ pipeline {
                         createDeploymentStatus(stagingSuffix, 'PENDING', stagingHost)
 
                         // Create cronjob for well export
-                        def cronTemplate = openshift.process("-f",
-                            "openshift/export-wells.cj.json",
+                        def exportWellCronTemplate = openshift.process("-f",
+                            "openshift/export.cj.json",
                             "ENV_NAME=${stagingSuffix}",
                             "PROJECT=${stagingProject}",
-                            "TAG=${stagingSuffix}"
+                            "TAG=${stagingSuffix}",
+                            "NAME=export",
+                            "COMMAND=export"
                         )
-                        openshift.apply(cronTemplate).label(
+                        openshift.apply(exportWellCronTemplate).label(
+                            [
+                                'app':"gwells-${stagingSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${stagingSuffix}"
+                            ],
+                            "--overwrite"
+                        )
+
+                        // Create cronjob for databc export
+                        def exportDataBCTemplate = openshift.process("-f",
+                            "openshift/export.cj.json",
+                            "ENV_NAME=${stagingSuffix}",
+                            "PROJECT=${stagingProject}",
+                            "TAG=${stagingSuffix}",
+                            "NAME=export-databc",
+                            "COMMAND=export_databc"
+                        )
+                        openshift.apply(exportDataBCTemplate).label(
                             [
                                 'app':"gwells-${stagingSuffix}",
                                 'app-name':"${appName}",
@@ -945,13 +965,33 @@ pipeline {
                         createDeploymentStatus(demoSuffix, 'PENDING', demoHost)
 
                         // Create cronjob for well export
-                        def cronTemplate = openshift.process("-f",
-                            "openshift/export-wells.cj.json",
+                        def exportWellCronTemplate = openshift.process("-f",
+                            "openshift/export.cj.json",
                             "ENV_NAME=${demoSuffix}",
                             "PROJECT=${demoProject}",
-                            "TAG=${demoSuffix}"
+                            "TAG=${demoSuffix}",
+                            "NAME=export",
+                            "COMMAND=export"
                         )
-                        openshift.apply(cronTemplate).label(
+                        openshift.apply(exportWellCronTemplate).label(
+                            [
+                                'app':"gwells-${demoSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${demoSuffix}"
+                            ],
+                            "--overwrite"
+                        )
+
+                        // Create cronjob for databc export
+                        def exportDataBCCronTemplate = openshift.process("-f",
+                            "openshift/export.cj.json",
+                            "ENV_NAME=${demoSuffix}",
+                            "PROJECT=${demoProject}",
+                            "TAG=${demoSuffix}",
+                            "NAME=export-databc",
+                            "COMMAND=export_databc"
+                        )
+                        openshift.apply(exportDataBCCronTemplate).label(
                             [
                                 'app':"gwells-${demoSuffix}",
                                 'app-name':"${appName}",
@@ -1111,13 +1151,33 @@ pipeline {
                         createDeploymentStatus(prodSuffix, 'PENDING', prodHost)
 
                         // Create cronjob for well export
-                        def cronTemplate = openshift.process("-f",
-                            "openshift/export-wells.cj.json",
+                        def exportWellCronTemplate = openshift.process("-f",
+                            "openshift/export.cj.json",
                             "ENV_NAME=${prodSuffix}",
                             "PROJECT=${prodProject}",
-                            "TAG=${prodSuffix}"
+                            "TAG=${prodSuffix}",
+                            "NAME=export",
+                            "COMMAND=export"
                         )
-                        openshift.apply(cronTemplate).label(
+                        openshift.apply(exportWellCronTemplate).label(
+                            [
+                                'app':"gwells-${prodSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${prodSuffix}"
+                            ],
+                            "--overwrite"
+                        )
+
+                        // Create cronjob for databc export
+                        def exportDataBCCronTemplate = openshift.process("-f",
+                            "openshift/export.cj.json",
+                            "ENV_NAME=${prodSuffix}",
+                            "PROJECT=${prodProject}",
+                            "TAG=${prodSuffix}",
+                            "NAME=export-databc",
+                            "COMMAND=export_databc"
+                        )
+                        openshift.apply(exportDataBCCronTemplate).label(
                             [
                                 'app':"gwells-${prodSuffix}",
                                 'app-name':"${appName}",
