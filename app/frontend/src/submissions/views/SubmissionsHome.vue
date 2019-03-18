@@ -231,6 +231,8 @@ export default {
           }
         })
 
+        this.form.meta.valueChanged = {}
+
         if (this.upload_files.length > 0) {
           if (response.data.filing_number) {
             this.$noty.info('<div class="loader"></div><div class="notifyText">File Upload In Progress...</div>', { timeout: false })
