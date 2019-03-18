@@ -64,6 +64,9 @@
             />
 
           </b-col>
+          <b-col cols="12" md="8">
+            <aquifer-map/>
+          </b-col>
         </b-form-row>
         <b-form-row>
           <b-col>
@@ -146,6 +149,7 @@ ul.pagination {
 <script>
 import querystring from 'querystring'
 import ApiService from '@/common/services/ApiService.js'
+import AquiferMap from './AquiferMap.vue'
 import { mapGetters } from 'vuex'
 
 const LIMIT = 30
@@ -160,6 +164,9 @@ function orderingQueryStringToData (str) {
   }
 }
 export default {
+  components: {
+    'aquifer-map': AquiferMap
+  },
   data () {
     let query = this.$route.query || {}
 

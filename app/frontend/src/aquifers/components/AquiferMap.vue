@@ -7,13 +7,8 @@ import L from 'leaflet'
 import { tiledMapLayer } from 'esri-leaflet'
 
 export default {
-  name: 'SingleWellMap',
-  data () {
-    return {
-      map: null
-    }
-  },
-  mounted () {
+  name: 'AquiferMap',
+  created () {
     // There seems to be an issue loading leaflet immediately on mount, we use nextTick to ensure
     // that the view has been rendered at least once before injecting the map.
     this.$nextTick(function () {
@@ -39,12 +34,73 @@ export default {
 
       // Add map layers.
       tiledMapLayer({url: 'https://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer'}).addTo(this.map)
-      L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW/ows?', {
+
+      // Streams
+      L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_BASEMAPPING.FWA_STREAM_NETWORKS_SP/ows?', {
         format: 'image/png',
-        layers: 'pub:WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW',
-        styles: 'PMBC_Parcel_Fabric_Cadastre_Outlined',
+        layers: 'pub:WHSE_BASEMAPPING.FWA_STREAM_NETWORKS_SP',
         transparent: true
       }).addTo(this.map)
+
+      // Roads
+      L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_BASEMAPPING.DRA_DGTL_ROAD_ATLAS_MPAR_SP/ows?', {
+        format: 'image/png',
+        layers: 'pub:WHSE_BASEMAPPING.DRA_DGTL_ROAD_ATLAS_MPAR_SP',
+        transparent: true
+      }).addTo(this.map)
+
+      // Aquifer outlines
+      L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.GW_AQUIFERS_CLASSIFICATION_SVW/ows?', {
+        format: 'image/png',
+        layers: 'pub:WHSE_WATER_MANAGEMENT.GW_AQUIFERS_CLASSIFICATION_SVW',
+        transparent: true
+      }).addTo(this.map)
+
+      var mapLayers = {
+        // Aquifers likely hydralically connected:
+
+        'Artesian wells': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW/ows?', {
+          format: 'image/png',
+          layers: 'pub:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
+          styles: 'Water_Wells_Artesian',
+          transparent: true
+        }),
+        'Cadastral': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW/ows?', {
+          format: 'image/png',
+          layers: 'pub:WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW',
+          transparent: true
+        }),
+        'Ecocat - Water related reports': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_FISH.ACAT_REPORT_POINT_PUB_SVW/ows?', {
+          format: 'image/png',
+          layers: 'pub:WHSE_FISH.ACAT_REPORT_POINT_PUB_SVW',
+          transparent: true
+        }),
+        'Groundwater licenses': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.WLS_PWD_LICENCES_SVW/ows?', {
+          format: 'image/png',
+          layers: 'pub:WHSE_WATER_MANAGEMENT.WLS_PWD_LICENCES_SVW',
+          transparent: true
+        }),
+        'Observation wells - active': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW/ows?', {
+          format: 'image/png',
+          layers: 'pub:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
+          styles: 'Provincial_Groundwater_Observation_Wells_Active',
+          transparent: true
+        }),
+        'Observation wells - inactive': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW/ows?', {
+          format: 'image/png',
+          layers: 'pub:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
+          styles: 'Provincial_Groundwater_Observation_Wells_Inactive',
+          transparent: true
+        }),
+        'Wells - All': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW/ows?', {
+          format: 'image/png',
+          layers: 'pub:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
+          transparent: true
+        })
+      }
+
+      // Add checkboxes for layers
+      L.control.layers(null, mapLayers, {collapsed: false}).addTo(this.map)
     }
   }
 }
@@ -53,8 +109,7 @@ export default {
 @import "leaflet/dist/leaflet.css";
 
 .map {
-  width: 550px;
-  height: 500px;
+  height: 600px;
 }
 
 </style>
