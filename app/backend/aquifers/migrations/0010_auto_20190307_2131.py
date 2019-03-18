@@ -6,7 +6,6 @@ from django.db import migrations, models
 import django.db.models.deletion
 from django.conf import settings
 
-from aquifers.models import AquiferResource, Aquifer
 from gwells.codes import CodeFixture
 
 
@@ -17,25 +16,18 @@ def aquifer_resource_sections():
     return CodeFixture(fixture_path)
 
 
-TESTING = len(sys.argv) > 1 and sys.argv[1] == 'test'
-
-
-def aquifer_resources():
-    fixture = '0010_aquifer_resources.json'
-    fixture_path = os.path.join(os.path.dirname(
-        os.path.realpath(__file__)), fixture)
-    return CodeFixture(fixture_path)
-
-
 def generate_aquifer_resource_reverse(apps, schema_editor):
+    AquiferResource = apps.get_model('aquifers', 'AquiferResource')
     AquiferResource.objects.filter(
         url='https://onlinelibrary.wiley.com/doi/abs/10.1002/hyp.7724').delete()
 
 
 def generate_aquifer_resource(apps, schema_editor):
+    AquiferResource = apps.get_model('aquifers', 'AquiferResource')
+    Aquifer = apps.get_model('aquifers', 'Aquifer')
     for aquifer in Aquifer.objects.all():
-        AquiferResource.create(
-            aquifer=aqufier,
+        AquiferResource.objects.create(
+            aquifer=aquifer,
             section_id='I',
             url='https://onlinelibrary.wiley.com/doi/abs/10.1002/hyp.7724',
             name='Evaluating the use of a gridded climate surface for modelling groundwater recharge in a semi-arid region',
@@ -63,7 +55,7 @@ class Migration(migrations.Migration):
                 ('url', models.URLField(
                     max_length=255,
                     help_text='A resolvable link to the PDF document associated with this aquifer resource.', verbose_name='PDF Document URL')),
-                ('aquifer', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT,
+                ('aquifer', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
                                               related_name='resources', to='aquifers.Aquifer')),
             ],
             options={
@@ -83,6 +75,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=100)),
             ],
             options={
+                'db_table': 'aquifer_resource_section_code',
                 'verbose_name_plural': 'Aquifer Resource Sections',
                 'ordering': ['name'],
             },
@@ -91,7 +84,7 @@ class Migration(migrations.Migration):
             model_name='aquiferresource',
             name='section',
             field=models.ForeignKey(db_column='aquifer_resource_section_code', help_text='The section (category) of this resource.',
-                                    on_delete=django.db.models.deletion.PROTECT, to='aquifers.AquiferResourceSection', verbose_name='Aquifer Resource Section'),
+                                    on_delete=django.db.models.deletion.CASCADE, to='aquifers.AquiferResourceSection', verbose_name='Aquifer Resource Section'),
         ),
         migrations.RunPython(
             aquifer_resource_sections().load_fixture,
@@ -102,13 +95,3 @@ class Migration(migrations.Migration):
             reverse_code=generate_aquifer_resource_reverse
         )
     ]
-    # TODO: we have a large set of production aquifer resources we're attempting to import mid-migrations.
-    # This methodology presents a dilemma because these resources only work if the entire production aquifer dataset is present,
-    # not the case on dev or test. What should we do?
-    if not settings.DEBUG and not TESTING:
-        operations.append(
-            migrations.RunPython(
-                aquifer_resources().load_fixture,
-                reverse_code=aquifer_resources().unload_fixture
-            )
-        )

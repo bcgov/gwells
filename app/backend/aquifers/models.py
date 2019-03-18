@@ -32,7 +32,8 @@ class AquiferMaterial(AuditModel):
     display_order = models.PositiveIntegerField()
 
     effective_date = models.DateTimeField(default=timezone.now, null=False)
-    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(
+        timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'aquifer_material_code'
@@ -53,7 +54,8 @@ class AquiferSubtype(AuditModel):
     display_order = models.PositiveIntegerField()
 
     effective_date = models.DateTimeField(default=timezone.now, null=False)
-    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(
+        timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'aquifer_subtype_code'
@@ -73,7 +75,8 @@ class AquiferProductivity(AuditModel):
     display_order = models.PositiveIntegerField()
 
     effective_date = models.DateTimeField(default=timezone.now, null=False)
-    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(
+        timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'aquifer_productivity_code'
@@ -94,7 +97,8 @@ class AquiferDemand(AuditModel):
     display_order = models.PositiveIntegerField()
 
     effective_date = models.DateTimeField(default=timezone.now, null=False)
-    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(
+        timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'aquifer_demand_code'
@@ -116,7 +120,8 @@ class WaterUse(AuditModel):
     display_order = models.PositiveIntegerField()
 
     effective_date = models.DateTimeField(default=timezone.now, null=False)
-    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(
+        timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'water_use_code'
@@ -134,7 +139,8 @@ class QualityConcern(AuditModel):
     display_order = models.PositiveIntegerField()
 
     effective_date = models.DateTimeField(default=timezone.now, null=False)
-    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(
+        timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'quality_concern_code'
@@ -155,7 +161,8 @@ class AquiferVulnerabilityCode(AuditModel):
     display_order = models.PositiveIntegerField()
 
     effective_date = models.DateTimeField(default=timezone.now, null=False)
-    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(
+        timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'aquifer_vulnerability_code'
@@ -273,10 +280,18 @@ class AquiferResourceSection(AuditModel):
     code = models.CharField(primary_key=True, max_length=1,
                             db_column='aquifer_resource_section_code')
     name = models.CharField(max_length=100)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(
+        timezone.datetime.max, timezone.get_default_timezone()), null=False)
+    description = models.CharField(max_length=100, default="")
 
     class Meta:
         ordering = ['name']
         verbose_name_plural = 'Aquifer Resource Sections'
+        db_table = 'aquifer_resource_section_code'
+
+    def __str__(self):
+        return '{} - {}'.format(self.code, self.description)
 
     def __str__(self):
         return self.name
@@ -293,12 +308,12 @@ class AquiferResource(AuditModel):
     aquifer = models.ForeignKey(
         Aquifer,
         related_name='resources',
-        on_delete=models.PROTECT)
+        on_delete=models.CASCADE)
     section = models.ForeignKey(
         AquiferResourceSection,
         db_column='aquifer_resource_section_code',
         verbose_name="Aquifer Resource Section",
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         help_text="The section (category) of this resource.")
     name = models.CharField(
         max_length=255,

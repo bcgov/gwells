@@ -49,6 +49,7 @@ from wells.models import (
     GroundElevationMethodCode,
     IntendedWaterUseCode,
     LandDistrictCode,
+    LicencedStatusCode,
     LinerMaterialCode,
     LinerPerforation,
     LithologyDescription,
@@ -1687,3 +1688,16 @@ class LegacyWellDisplaySerializer(serializers.ModelSerializer):
 
     def get_well_disinfected(self, obj):
         return "Yes" if obj.well_disinfected else "No"
+
+
+class LicencedStatusCodeSerializer(serializers.ModelSerializer):
+    """
+    Serializes licenced status codes.
+    """
+
+    class Meta:
+        model = LicencedStatusCode
+        fields = (
+            'licenced_status_code',
+            'description',
+        )
