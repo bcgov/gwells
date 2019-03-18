@@ -15,7 +15,7 @@ from datetime import datetime
 import logging
 
 from django_filters import rest_framework as djfilters
-from django.http import Http404, HttpResponse, JsonResponse
+from django.http import Http404, HttpResponse, JsonResponse, HttpResponseRedirect
 from django.views.generic import TemplateView
 from django.db import connection
 
@@ -299,56 +299,10 @@ class AquifersSpatial(APIView):
     permission_classes = (AllowAny,)
 
     def get(self, request):
-        sql = ("""
-select row_to_json(fc)
-from (
-    select
-        'FeatureCollection' as "type",
-        array_to_json(array_agg(f)) as "features"
-    from (
-        select
-            'Feature' as "type",
-            ST_AsGeoJSON(geom) :: json as "geometry",
-            (
-                select json_strip_nulls(row_to_json(t))
-                from (
-                    select aquifer_id,
-                    aquifer_name,
-                    location_description,
-                    aquifer_material_code.description as aquifer_material_description,
-                    aquifer_subtype_code.description as aquifer_subtype_description,
-                    area,
-                    aquifer_vulnerability_code.description as aquifer_vulnerablity_description,
-                    aquifer_productivity_code.description as aquifer_productivity_description,
-                    aquifer_demand_code.description as aquifer_demand_description,
-                    water_use_code.description as water_use_description,
-                    quality_concern_code.description as quality_concern_description,
-                    litho_stratographic_unit,
-                    mapping_year,
-                    notes
-                ) t
-            ) as properties
-            from aquifer
-                left join aquifer_material_code on
-                    aquifer_material_code.aquifer_material_code = aquifer.aquifer_material_code
-                left join aquifer_subtype_code on
-                    aquifer_subtype_code.aquifer_subtype_code = aquifer.aquifer_subtype_code
-                left join aquifer_vulnerability_code on
-                    aquifer_vulnerability_code.aquifer_vulnerability_code = aquifer.aquifer_vulnerablity_code
-                left join aquifer_productivity_code on
-                    aquifer_productivity_code.aquifer_productivity_code = aquifer.aquifer_productivity_code
-                left join aquifer_demand_code on
-                    aquifer_demand_code.aquifer_demand_code = aquifer.aquifer_demand_code
-                left join water_use_code on
-                    water_use_code.water_use_code = aquifer.water_use_code
-                left join quality_concern_code on
-                    quality_concern_code.quality_concern_code = aquifer.quality_concern_code
-    ) as f
-) as fc;""")
-        start = datetime.now()
-        logger.info('fetching aquifer spatial data from database...')
-        with connection.cursor() as cursor:
-            cursor.execute(sql)
-            row = cursor.fetchone()
-            logger.info('aquifer spatial db query took: {}'.format(datetime.now() - start))
-            return JsonResponse(row[0])
+        # Generating spatial data realtime is much too slow,
+        # so we have to redirect to a pre-generated instance.
+        url = 'https://{}/{}/{}'.format(
+            get_env_variable('S3_HOST'),
+            get_env_variable('S3_WELL_EXPORT_BUCKET'),
+            'api/v1/gis/aquifers.json')
+        return HttpResponseRedirect(url)

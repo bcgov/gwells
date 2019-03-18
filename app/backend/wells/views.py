@@ -17,7 +17,7 @@ import logging
 
 from django.db.models import Prefetch
 from django.db import connection
-from django.http import Http404, HttpResponse, JsonResponse
+from django.http import Http404, HttpResponse, JsonResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView
 
@@ -145,7 +145,7 @@ class ListExtracts(APIView):
                                 'S3_PUBLIC_SECRET_KEY'),
                             secure=use_secure)
         objects = minioClient.list_objects(
-            get_env_variable('S3_WELL_EXPORT_BUCKET'))
+            get_env_variable('S3_WELL_EXPORT_BUCKET'), 'export/')
         urls = list(
             map(
                 lambda document: {
@@ -457,61 +457,13 @@ class WellSpatial(APIView):
     permission_classes = (AllowAny,)
 
     def get(self, request):
-        # IMPORTANT: If the underlying data structure changes (e.g. column name changes etc.), the
-        # property names have to stay the same! This endpoint is consumed by DataBC and must remain
-        # stable!
-        sql = ("""
-select row_to_json(fc)
-from (
-    select
-        'FeatureCollection' as "type",
-        array_to_json(array_agg(f)) as "features"
-    from (
-        select
-            'Feature' as "type",
-            ST_AsGeoJSON(geom) :: json as "geometry",
-            (
-                select json_strip_nulls(row_to_json(t))
-                from
-                (
-                    select
-                    well_tag_number,
-                    identification_plate_number,
-                    well_status_code.description as well_status_description,
-                    licenced_status_code.description as licenced_status,
-                    CONCAT('https://apps.nrs.gov.bc.ca/gwells/well/',well_tag_number) as detail,
-                    artesian_flow, 'usGPM' as artesian_flow_units, artesian_pressure,
-                    well_class_code.description as well_class_description,
-                    intended_water_use_code.description as intended_water_use_description,
-                    street_address,
-                    finished_well_depth,
-                    diameter,
-                    static_water_level,
-                    bedrock_depth,
-                    well_yield,
-                    well_yield_unit_code.description as well_yield_unit,
-                    aquifer_id
-                ) t
-            ) as properties
-            from well
-                left join well_status_code on well_status_code.well_status_code = well.well_status_code
-                left join licenced_status_code on
-                    licenced_status_code.licenced_status_code = well.licenced_status_code
-                left join well_class_code on well_class_code.well_class_code = well.well_class_code
-                left join intended_water_use_code on
-                    intended_water_use_code.intended_water_use_code = well.intended_water_use_code
-                left join well_yield_unit_code on
-                    well_yield_unit_code.well_yield_unit_code = well.well_yield_unit_code
-    ) as f
-) as fc;""")
-        start = datetime.now()
-        logger.info('fetching well spatial data from database...')
-        with connection.cursor() as cursor:
-            cursor.execute(sql)
-            row = cursor.fetchone()
-            logger.info('well spatial db query took: {}'.format(
-                datetime.now() - start))
-            return JsonResponse(row[0])
+        # Generating spatial data realtime is much too slow,
+        # so we have to redirect to a pre-generated instance.
+        url = 'https://{}/{}/{}'.format(
+            get_env_variable('S3_HOST'),
+            get_env_variable('S3_WELL_EXPORT_BUCKET'),
+            'api/v1/gis/wells.json')
+        return HttpResponseRedirect(url)
 
 
 class WellLithologySpatial(APIView):
@@ -519,79 +471,10 @@ class WellLithologySpatial(APIView):
     permission_classes = (AllowAny,)
 
     def get(self, request):
-        # IMPORTANT: If the underlying data structure changes (e.g. column name changes etc.), the
-        # property names have to stay the same! This endpoint is consumed by DataBC and must remain
-        # stable!
-        sql = ("""
-select row_to_json(fc)
-from (
-    select
-        'FeatureCollection' as "type",
-        array_to_json(array_agg(f)) as "features"
-    from (
-        select
-            'Feature' as "type",
-            ST_AsGeoJSON(geom) :: json as "geometry",
-            (
-                select json_strip_nulls(row_to_json(t))
-                from
-                (
-                    select
-                    well.well_tag_number,
-                    identification_plate_number,
-                    well_status_code.description as well_status_description,
-                    licenced_status_code.description as licenced_status_description,
-                    CONCAT('https://apps.nrs.gov.bc.ca/gwells/well/',well.well_tag_number) as detail,
-                    lithology_description.lithology_from,
-                    lithology_description.lithology_to,
-                    lithology_colour_code.description as lithology_colour_description,
-                    lithology_description_code.description as lithology_description,
-                    lithology_material_code.description as lithology_material_description,
-                    lithology_observation,
-                    lithology_hardness_code.description as lithology_hardness_description,
-                    well_class_code.description as well_class_description,
-                    intended_water_use_code.description as intended_water_use_description,
-                    street_address,
-                    finished_well_depth,
-                    diameter,
-                    static_water_level,
-                    bedrock_depth,
-                    well_yield,
-                    well_yield_unit_code.description as well_yield_unit,
-                    aquifer_id
-                ) t
-            ) as properties
-            from well
-                inner join lithology_description on
-                    lithology_description.well_tag_number = well.well_tag_number
-                left join well_status_code on
-                    well_status_code.well_status_code = well.well_status_code
-                left join licenced_status_code on
-                    licenced_status_code.licenced_status_code = well.licenced_status_code
-                left join lithology_material_code on
-                    lithology_material_code.lithology_material_code =
-                        lithology_description.lithology_material_code
-                left join lithology_colour_code on
-                    lithology_colour_code.lithology_colour_code = lithology_description.lithology_colour_code
-                left join lithology_description_code on
-                    lithology_description_code.lithology_description_code =
-                        lithology_description.lithology_description_code
-                left join lithology_hardness_code on
-                    lithology_hardness_code.lithology_hardness_code =
-                        lithology_description.lithology_hardness_code
-                left join well_class_code on well_class_code.well_class_code = well.well_class_code
-                left join intended_water_use_code on
-                    intended_water_use_code.intended_water_use_code = well.intended_water_use_code
-                left join well_yield_unit_code on
-                    well_yield_unit_code.well_yield_unit_code = well.well_yield_unit_code
-                order by well.well_tag_number, lithology_description.lithology_from
-    ) as f
-) as fc;""")
-        start = datetime.now()
-        logger.info('fetching lithology spatial data from database...')
-        with connection.cursor() as cursor:
-            cursor.execute(sql)
-            row = cursor.fetchone()
-            logger.info('lithology spatial db query took: {}'.format(
-                datetime.now() - start))
-            return JsonResponse(row[0])
+        # Generating spatial data realtime is much too slow,
+        # so we have to redirect to a pre-generated instance.
+        url = 'https://{}/{}/{}'.format(
+            get_env_variable('S3_HOST'),
+            get_env_variable('S3_WELL_EXPORT_BUCKET'),
+            'api/v1/gis/lithology.json')
+        return HttpResponseRedirect(url)
