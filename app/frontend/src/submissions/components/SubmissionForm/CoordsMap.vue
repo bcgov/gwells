@@ -39,7 +39,8 @@ export default {
   },
   data () {
     return {
-      map: null
+      map: null,
+      timeout: null
     }
   },
   mounted () {
@@ -118,18 +119,24 @@ export default {
     updateCoords () {
       if (this.latitude && this.longitude) {
         const latlng = L.latLng(this.latitude, this.getLongitude())
-        this.insideBC(latlng.lat, latlng.lng).then((result) => {
-          if (result) {
-            if (this.marker) {
-              this.updateMarkerLatLong(latlng)
-              this.map.panTo(latlng)
+        clearTimeout(this.timeout)
+        this.timeout = setTimeout(() => {
+          this.insideBC(latlng.lat, latlng.lng).then((result) => {
+            if (result) {
+              if (this.marker) {
+                this.updateMarkerLatLong(latlng)
+                this.map.panTo(latlng)
+              } else {
+                this.createMarker()
+              }
             } else {
-              this.createMarker()
+              if (this.marker) {
+                this.map.removeLayer(this.marker)
+                this.marker = null
+              }
             }
-          } else {
-            this.resetMap()
-          }
-        })
+          })
+        }, 500)
       } else {
         this.resetMap()
       }
