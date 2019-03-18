@@ -378,6 +378,26 @@ def zapTests (String stageName, String envUrl, String envSuffix) {
 }
 
 
+// Database backup
+def dbBackup (String envProject, String envSuffix) {
+    def dcName = envSuffix == "dev" ? "${appName}-pgsql-${envSuffix}-${prNumber}" : "${appName}-pgsql-${envSuffix}"
+    def dumpDir = "/var/lib/pgsql/data/deployment-backups"
+    def dumpName = "\${HOSTNAME}-\$( date +%Y-%m-%d-%H%M ).dump"
+    def dumpOpts = "--no-privileges --no-tablespaces --schema=public --exclude-table=spatial_ref_sys"
+    sh (
+        script: """
+            oc rsh -n ${envProject} dc/${dcName} bash -c ' \
+                set -e; \
+                mkdir -p ${dumpDir}; \
+                cd ${dumpDir}; \
+                pg_dump -U \${POSTGRESQL_USER} -d \${POSTGRESQL_DATABASE} -Fc -f ./${dumpName} ${dumpOpts}; \
+                ls -lh \
+            '
+        """,
+        returnStatus: true
+    )
+}
+
 
 pipeline {
     environment {
@@ -566,29 +586,13 @@ pipeline {
             }
         }
 
-        // Backup database
         stage('DEV - Database Backup') {
             when {
                 expression { env.CHANGE_TARGET != 'master' && env.CHANGE_TARGET != 'demo' }
             }
             steps {
                 script {
-                    def dcName = devSuffix == "staging" ? "${appName}-pgsql-${devSuffix}" : "${appName}-pgsql-${devSuffix}-${prNumber}"
-                    def dumpDir = "/var/lib/pgsql/data/deployment-backups"
-                    def dumpName = "\${HOSTNAME}-\$( date +%Y-%m-%d-%H%M ).dump"
-                    def dumpOpts = "--no-privileges --no-tablespaces --schema=public --exclude-table=spatial_ref_sys"
-                    sh (
-                        script: """
-                            oc rsh -n ${devProject} dc/${dcName} bash -c ' \
-                                set -e; \
-                                mkdir -p ${dumpDir}; \
-                                cd ${dumpDir}; \
-                                pg_dump -U \${POSTGRESQL_USER} -d \${POSTGRESQL_DATABASE} -Fc -f ./${dumpName} ${dumpOpts}; \
-                                ls -lh \
-                            '
-                        """,
-                        returnStatus: true
-                    )
+                    def result = dbBackup (devProject, devSuffix)
                 }
             }
         }
