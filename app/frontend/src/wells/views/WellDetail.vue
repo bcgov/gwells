@@ -459,10 +459,10 @@ export default {
       }
     },
     UTM () {
-    // converts form lat/long and returns an object containing UTM easting, northing, and zone
-      // if (this.well && this.well.latitude && this.well.longitude) {
-      //   return this.convertToUTM(Number(this.well.longitude), Number(this.well.latitude))
-      // }
+      // converts form lat/long and returns an object containing UTM easting, northing, and zone
+      if (this.well && this.well.latitude && this.well.longitude) {
+        return this.convertToUTM(Number(this.well.longitude), Number(this.well.latitude))
+      }
       return {}
     },
     ...mapGetters(['userRoles', 'config'])

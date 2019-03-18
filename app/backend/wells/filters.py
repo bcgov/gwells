@@ -157,8 +157,6 @@ class WellListFilter(AnyOrAllFilterSet):
     driller_name = filters.CharFilter(lookup_expr='icontains')
     consultant_name = filters.CharFilter(lookup_expr='icontains')
     consultant_company = filters.CharFilter(lookup_expr='icontains')
-    latitude = filters.RangeFilter()
-    longitude = filters.RangeFilter()
     ground_elevation = filters.RangeFilter()
     surface_seal_length = filters.RangeFilter()
     surface_seal_thickness = filters.RangeFilter()
@@ -270,7 +268,6 @@ class WellListFilter(AnyOrAllFilterSet):
             'identification_plate_number',
             'intended_water_use',
             'land_district',
-            'latitude',
             'legal',
             'legal_block',
             'legal_district_lot',
@@ -286,7 +283,6 @@ class WellListFilter(AnyOrAllFilterSet):
             'liner_material',
             'liner_thickness',
             'liner_to',
-            'longitude',
             'observation_well_number',
             'observation_well_status',
             'other_screen_bottom',
