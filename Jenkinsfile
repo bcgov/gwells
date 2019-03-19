@@ -382,7 +382,7 @@ def zapTests (String stageName, String envUrl, String envSuffix) {
 def dbBackup (String envProject, String envSuffix) {
     def dcName = envSuffix == "dev" ? "${appName}-pgsql-${envSuffix}-${prNumber}" : "${appName}-pgsql-${envSuffix}"
     def dumpDir = "/var/lib/pgsql/data/deployment-backups"
-    def dumpName = "\${HOSTNAME}-\$( date +%Y-%m-%d-%H%M ).dump"
+    def dumpName = "${envSuffix}-\$( date +%Y-%m-%d-%H%M ).dump"
     def dumpOpts = "--no-privileges --no-tablespaces --schema=public --exclude-table=spatial_ref_sys"
     sh (
         script: """
