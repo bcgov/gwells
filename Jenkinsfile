@@ -1067,8 +1067,7 @@ pipeline {
         }
 
 
-        // Backup database
-        stage('PROD - Database Backup') {
+        stage('PROD - Deploy') {
             when {
                 expression { env.CHANGE_TARGET == 'master' }
             }
@@ -1076,19 +1075,12 @@ pipeline {
                 script {
                     input "Deploy to production?"
                     echo "Updating production deployment..."
-                    def result = dbBackup (prodProject, prodSuffix)
-                }
-            }
-        }
 
-
-        stage('PROD - Deploy') {
-            when {
-                expression { env.CHANGE_TARGET == 'master' }
-            }
-            steps {
-                script {
                     _openshift(env.STAGE_NAME, prodProject) {
+
+                        // Pre-deployment database backup
+                        def dbBackupResult = dbBackup (prodProject, prodSuffix)
+
                         def deployDBTemplate = openshift.process("-f",
                             "openshift/postgresql.dc.json",
                             "NAME_SUFFIX=-${prodSuffix}",
