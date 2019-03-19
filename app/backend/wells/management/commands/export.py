@@ -54,7 +54,7 @@ class Command(BaseCommand):
         minioClient = Minio(get_env_variable('S3_HOST'),
                             access_key=get_env_variable('S3_PUBLIC_ACCESS_KEY'),
                             secret_key=get_env_variable('S3_PUBLIC_SECRET_KEY'),
-                            secure=True)
+                            secure='minio' not in get_env_variable('S3_HOST'))
         for filename in (zip_filename, spreadsheet_filename):
             logger.info('uploading {}'.format(filename))
             with open(filename, 'rb') as file_data:
