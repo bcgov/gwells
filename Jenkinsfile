@@ -378,6 +378,25 @@ def zapTests (String stageName, String envUrl, String envSuffix) {
 }
 
 
+// Database backup
+def dbBackup (String envProject, String envSuffix) {
+    def dcName = envSuffix == "dev" ? "${appName}-pgsql-${envSuffix}-${prNumber}" : "${appName}-pgsql-${envSuffix}"
+    def dumpDir = "/var/lib/pgsql/data/deployment-backups"
+    def dumpName = "${envSuffix}-\$( date +%Y-%m-%d-%H%M ).dump"
+    def dumpOpts = "--no-privileges --no-tablespaces --schema=public --exclude-table=spatial_ref_sys"
+    return sh (
+        script: """
+            oc rsh -n ${envProject} dc/${dcName} bash -c ' \
+                set -e; \
+                mkdir -p ${dumpDir}; \
+                cd ${dumpDir}; \
+                pg_dump -U \${POSTGRESQL_USER} -d \${POSTGRESQL_DATABASE} -Fc -f ./${dumpName} ${dumpOpts}; \
+                ls -lh \
+            '
+        """
+    )
+}
+
 
 pipeline {
     environment {
@@ -565,6 +584,7 @@ pipeline {
                 }
             }
         }
+
 
 
         // the Django Unit Tests stage runs backend unit tests using a test DB that is
@@ -1052,9 +1072,13 @@ pipeline {
             }
             steps {
                 script {
+                    input "Deploy to production?"
+                    echo "Updating production deployment..."
+
                     _openshift(env.STAGE_NAME, prodProject) {
-                        input "Deploy to production?"
-                        echo "Updating production deployment..."
+
+                        // Pre-deployment database backup
+                        def dbBackupResult = dbBackup (prodProject, prodSuffix)
 
                         def deployDBTemplate = openshift.process("-f",
                             "openshift/postgresql.dc.json",
