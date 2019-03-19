@@ -104,7 +104,7 @@ export default {
       this.marker.bindPopup('Latitude: ' + latitude + ', Longitude: ' + longitude)
     },
     updateCoords () {
-      if (!isNaN(this.latitude) && !isNaN(this.getLongitude())) {
+      if (this.latitude && this.longitude) {
         const latlng = L.latLng(this.latitude, this.getLongitude())
         if (this.marker) {
           this.updateMarkerLatLong(latlng)

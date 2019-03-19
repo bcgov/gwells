@@ -144,8 +144,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
             <b-col cols="12" lg="6"><span class="font-weight-bold">Longitude:</span> {{form.longitude}}</b-col>
           </b-row>
           <b-row>
-            <b-col cols="12" lg="4"><span class="font-weight-bold">UTM Easting:</span> {{Math.round(UTM.easting)}}</b-col>
-            <b-col cols="12" lg="6"><span class="font-weight-bold">UTM Northing:</span> {{Math.round(UTM.northing)}}</b-col>
+            <b-col cols="12" lg="4"><span class="font-weight-bold">UTM Easting:</span> {{UTM.easting}}</b-col>
+            <b-col cols="12" lg="6"><span class="font-weight-bold">UTM Northing:</span> {{UTM.northing}}</b-col>
           </b-row>
           <b-row>
             <b-col cols="12" lg="4"><span class="font-weight-bold">Zone:</span> {{UTM.zone}}</b-col>
@@ -531,7 +531,18 @@ export default {
     },
     UTM () {
     // converts form lat/long and returns an object containing UTM easting, northing, and zone
-      return this.convertToUTM(Number(this.form.longitude), Number(this.form.latitude))
+      if (this.form.latitude || this.form.longitude) {
+        let utm = this.convertToUTM(Number(this.form.longitude), Number(this.form.latitude))
+        utm.easting = Math.round(utm.easting)
+        utm.northing = Math.round(utm.northing)
+        return utm
+      } else {
+        return {
+          easting: null,
+          northing: null,
+          zone: null
+        }
+      }
     },
     ...mapGetters(['codes']),
     ...mapState('documentState', [

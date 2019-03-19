@@ -109,8 +109,15 @@ export default {
     setMarkerPopup (latitude, longitude) {
       this.marker.bindPopup('Latitude: ' + latitude + ', Longitude: ' + longitude)
     },
+    resetMap () {
+      if (this.marker) {
+        this.map.removeLayer(this.marker)
+        this.marker = null
+      }
+      this.map.setView([54.5, -126.5], 5)
+    },
     updateCoords () {
-      if (!isNaN(this.latitude) && !isNaN(this.getLongitude())) {
+      if (this.latitude && this.getLongitude()) {
         const latlng = L.latLng(this.latitude, this.getLongitude())
         clearTimeout(this.timeout)
         this.timeout = setTimeout(() => {
@@ -130,6 +137,8 @@ export default {
             }
           })
         }, 500)
+      } else {
+        this.resetMap()
       }
     },
     handleDrag (ev) {

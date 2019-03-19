@@ -639,11 +639,10 @@ class Well(AuditModel):
     id_plate_attached_by = models.CharField(
         max_length=100, blank=True, null=True, verbose_name='Well identification plate attached by')
 
-    latitude = models.DecimalField(
-        max_digits=8, decimal_places=6, blank=True, null=True, verbose_name='Latitude')
-    longitude = models.DecimalField(
-        max_digits=9, decimal_places=6, blank=True, null=True, verbose_name='Longitude')
-    geom = models.PointField(blank=True, null=True, verbose_name='Geo-referenced Location of the Well', srid=3005)
+    # Contains Well Longitude and Latitude in that order,
+    # Values are BC Albers. but we are using WGS84 Lat Lon to avoid rounding errors
+    geom = models.PointField(blank=True, null=True, verbose_name='Geo-referenced Location of the Well', srid=4326)
+
 
     ground_elevation = models.DecimalField(
         max_digits=10, decimal_places=2, blank=True, null=True, verbose_name='Ground Elevation')
@@ -916,6 +915,18 @@ class Well(AuditModel):
             "well_tag_number": self.well_tag_number
         }
 
+    def latitude(self):
+        if self.geom:
+            return self.geom.y
+        else:
+            return None
+
+    def longitude(self):
+        if self.geom:
+            return self.geom.x
+        else:
+            return None
+
 
 class Perforation(AuditModel):
     """
@@ -1121,10 +1132,10 @@ class ActivitySubmission(AuditModel):
     id_plate_attached_by = models.CharField(
         max_length=100, blank=True, null=True, verbose_name='Well identification plate attached by')
 
-    latitude = models.DecimalField(
-        max_digits=8, decimal_places=6, blank=True, null=True)
-    longitude = models.DecimalField(
-        max_digits=9, decimal_places=6, blank=True, null=True)
+    # Contains Well Longitude and Latitude in that order
+    # Values are BC Albers. but we are using WGS84 Lat Lon to avoid rounding errors
+    geom = models.PointField(blank=True, null=True, verbose_name='Geo-referenced Location of the Well', srid=4326)
+
     coordinate_acquisition_code = models.ForeignKey(
         CoordinateAcquisitionCode, null=True, blank=True, verbose_name="Location Accuracy Code",
         db_column='coordinate_acquisition_code', on_delete=models.PROTECT)
@@ -1366,6 +1377,17 @@ class ActivitySubmission(AuditModel):
         else:
             return '%s %s' % (self.activity_submission_guid, self.street_address)
 
+    def latitude(self):
+        if self.geom:
+            return self.geom.y
+        else:
+            return None
+
+    def longitude(self):
+        if self.geom:
+            return self.geom.x
+        else:
+            return None
 
 class LithologyDescription(AuditModel):
     """

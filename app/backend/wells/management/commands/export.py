@@ -145,7 +145,7 @@ class Command(BaseCommand):
  land_district_code,
  legal_pid,
  well_location_description,
- latitude, longitude, utm_zone_code, utm_northing, utm_easting,
+ st_y(geom) as latitude, st_x(geom) as longitude, utm_zone_code, utm_northing, utm_easting,
  coordinate_acquisition_code, bcgs_id,
  construction_start_date, construction_end_date, alteration_start_date,
  alteration_end_date, decommission_start_date, decommission_end_date,

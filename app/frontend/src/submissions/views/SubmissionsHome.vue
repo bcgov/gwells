@@ -157,11 +157,13 @@ export default {
       const meta = data.meta
 
       if (this.isStaffEdit) {
-        // Remove any fields that aren't changed
+        // We have to include both lat and lon for geom updates so we check if one has changed here
+        let skipLatLon = 'latitude' in meta.valueChanged || 'longitude' in meta.valueChanged
         Object.keys(data).forEach((key) => {
-          if (key !== 'well' && !(key in meta.valueChanged)) {
-            delete data[key]
-          }
+          // Skip lat lon if one of them has changed
+         if ((key === 'latitude' || key === 'longitude') && skipLatLon) { return }
+         // Remove any fields that aren't changed
+         if (key !== 'well' && !(key in meta.valueChanged)) { delete data[key] }
         })
       }
 
