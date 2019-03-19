@@ -21,16 +21,16 @@ from rest_framework import status
 class TestWellsSpatial(APITestCase):
 
     def test_geodjango(self):
-        # This should catch if the sql query is no longer valid.
+        # Currently we're re-directing to a static file.
         url = reverse('well-spatial')
         response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_302_FOUND)
 
 
 class TestWellsLithologySpatial(APITestCase):
 
     def test_geodjango(self):
-        # This should catch if the sql query is no longer valid.
+        # Currently we're re-directing to a static file.
         url = reverse('well-spatial-lithology')
         response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_302_FOUND)

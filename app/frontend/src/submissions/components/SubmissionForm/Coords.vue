@@ -295,7 +295,8 @@ export default {
       latitudeDMSValidation: false,
       coordinateLookup: new Map(),
       coordinateResolveLookup: new Map(),
-      validCoordinate: null
+      validCoordinate: null,
+      timeout: null
     }
   },
   created () {
@@ -594,9 +595,12 @@ export default {
       })
     },
     checkIfCoordinateIsValid (latitude, longitude) {
-      this.insideBC(latitude, longitude).then((result) => {
-        this.validCoordinate = result
-      })
+      clearTimeout(this.timeout)
+      this.timeout = setTimeout(() => {
+        this.insideBC(latitude, longitude).then((result) => {
+          this.validCoordinate = result
+        })
+      }, 500)
     }
   }
 }
