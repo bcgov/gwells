@@ -8,6 +8,7 @@ import { tiledMapLayer } from 'esri-leaflet'
 
 export default {
   name: 'SingleAquiferMap',
+  props: ['geom'],
   data () {
     return {
       map: null
@@ -45,6 +46,15 @@ export default {
         styles: 'PMBC_Parcel_Fabric_Cadastre_Outlined',
         transparent: true
       }).addTo(this.map)
+      console.log('GEOM',this.geom)
+
+      var mapData = {
+        'type': 'Feature',
+        'properties': {},
+        'geometry': this.geom
+      }
+
+      L.geoJSON(mapData).addTo(this.map)
     }
   }
 }
@@ -53,7 +63,6 @@ export default {
 @import "leaflet/dist/leaflet.css";
 
 .map {
-  width: 550px;
   height: 500px;
 }
 

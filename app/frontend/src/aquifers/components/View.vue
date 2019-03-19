@@ -60,39 +60,48 @@
         v-if="editMode"
         />
 
-      <dl v-if="viewMode" class="row">
-        <dt class="col-sm-2">Aquifer number</dt>
-        <dd class="col-sm-4" id="aquifer-view-number">{{record.aquifer_id}}</dd>
-        <dt class="col-sm-2">Year of mapping</dt>
-        <dd class="col-sm-4">{{record.mapping_year}}</dd>
+      <b-row v-if="viewMode">
+        <b-col class="aquifer-detail" cols="12" md="4">
+          <dt class="col-sm-6">Aquifer number</dt>
+          <dd class="col-sm-5" id="aquifer-view-number">{{record.aquifer_id}}</dd>
+          <dt class="col-sm-6">Year of mapping</dt>
+          <dd class="col-sm-5">{{record.mapping_year}}</dd>
 
-        <dt class="col-sm-2">Aquifer name</dt>
-        <dd class="col-sm-4" id="aquifer-view-name">{{record.aquifer_name}}</dd>
-        <dt class="col-sm-2">Litho stratigraphic unit</dt>
-        <dd class="col-sm-4">{{record.litho_stratographic_unit}}</dd>
+          <dt class="col-sm-6">Aquifer name</dt>
+          <dd class="col-sm-5" id="aquifer-view-name">{{record.aquifer_name}}</dd>
+          <dt class="col-sm-6">Litho stratigraphic unit</dt>
+          <dd class="col-sm-5">{{record.litho_stratographic_unit}}</dd>
 
-        <dt class="col-sm-2">Descriptive location</dt>
-        <dd class="col-sm-4">{{record.location_description}}</dd>
-        <dt class="col-sm-2">Vulnerability</dt>
-        <dd class="col-sm-4">{{record.vulnerability_description}}</dd>
+          <dt class="col-sm-6">Descriptive location</dt>
+          <dd class="col-sm-5">{{record.location_description}}</dd>
+          <dt class="col-sm-6">Vulnerability</dt>
+          <dd class="col-sm-5">{{record.vulnerability_description}}</dd>
 
-        <dt class="col-sm-2">Material type</dt>
-        <dd class="col-sm-4">{{record.material_description}}</dd>
-        <dt class="col-sm-2">Subtype</dt>
-        <dd class="col-sm-4">{{record.subtype_description}}</dd>
+          <dt class="col-sm-6">Material type</dt>
+          <dd class="col-sm-5">{{record.material_description}}</dd>
+          <dt class="col-sm-6">Subtype</dt>
+          <dd class="col-sm-5">{{record.subtype_description}}</dd>
 
-        <dt class="col-sm-2">Quality concerns</dt>
-        <dd class="col-sm-4">{{record.quality_concern_description}}</dd>
-        <dt class="col-sm-2">Productivity</dt>
-        <dd class="col-sm-4">{{record.productivity_description}}</dd>
+          <dt class="col-sm-6">Quality concerns</dt>
+          <dd class="col-sm-5">{{record.quality_concern_description}}</dd>
+          <dt class="col-sm-6">Productivity</dt>
+          <dd class="col-sm-5">{{record.productivity_description}}</dd>
 
-        <dt class="col-sm-2">Size (km²)</dt>
-        <dd class="col-sm-4">{{record.area}}</dd>
-        <dt class="col-sm-2">Demand</dt>
-        <dd class="col-sm-4">{{record.demand_description}}</dd>
-      </dl>
+          <dt class="col-sm-6">Size (km²)</dt>
+          <dd class="col-sm-5">{{record.area}}</dd>
+          <dt class="col-sm-6">Demand</dt>
+          <dd class="col-sm-5">{{record.demand_description}}</dd>
+        </b-col>
+        <b-col cols="12" md="8">
+          <single-aquifer-map v-bind:geom="record.geom"/>
+        </b-col>
+      </b-row>
 
       <b-row v-if="viewMode">
+        <b-col>
+          <h5 class="mt-3 border-bottom">Licensing Information</h5>
+          <h5 class="mt-3 border-bottom">Well Information</h5>
+        </b-col>
         <b-col>
           <h5 class="mt-3 border-bottom">Knowledge Indicators</h5>
           <div :key="section.id" v-for="section in aquifer_resource_sections">
@@ -102,9 +111,6 @@
             </ul>
             <p v-if="!bySection(record.resources, section).length">No information available.</p>
           </div>
-        </b-col>
-        <b-col>
-          <single-aquifer-map/>
         </b-col>
       </b-row>
       <h5 class="mt-3 border-bottom">Documentation</h5>
@@ -122,6 +128,12 @@
   color: black;
   text-decoration: none;
 }
+.aquifer-detail dt,
+.aquifer-detail dd {
+  display: inline-block;
+  vertical-align: top;
+  margin-bottom: 9px;
+}
 </style>
 
 <script>
@@ -130,10 +142,8 @@ import APIErrorMessage from '@/common/components/APIErrorMessage'
 import AquiferForm from './Form'
 import Documents from './Documents.vue'
 import SingleAquiferMap from './SingleAquiferMap.vue'
-
 import ChangeHistory from '@/common/components/ChangeHistory.vue'
 import { mapActions, mapGetters, mapState } from 'vuex'
-
 export default {
   components: {
     'api-error': APIErrorMessage,
@@ -192,12 +202,10 @@ export default {
     handleSaveSuccess (response) {
       this.fetch()
       this.navigateToView()
-
       if (this.$refs.aquiferHistory) {
         this.$refs.aquiferHistory.update()
       }
       this.showSaveSuccess = true
-
       if (this.upload_files.length > 0) {
         this.uploadFiles({
           documentType: 'aquifers',
