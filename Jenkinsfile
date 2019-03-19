@@ -663,19 +663,6 @@ pipeline {
         }
 
 
-        // Backup database
-        stage('STAGING - Database Backup') {
-            when {
-                expression { env.CHANGE_TARGET == 'master' }
-            }
-            steps {
-                script {
-                    def result = dbBackup (stagingProject, stagingSuffix)
-                }
-            }
-        }
-
-
         // the Promote to Test stage allows approving the tagging of the newly built image into the test environment,
         // which will trigger an automatic deployment of that image.
         // The deployment configs in the openshift folder are applied first in case there are any changes to the templates.
@@ -1080,6 +1067,21 @@ pipeline {
         }
 
 
+        // Backup database
+        stage('PROD - Database Backup') {
+            when {
+                expression { env.CHANGE_TARGET == 'master' }
+            }
+            steps {
+                script {
+                    input "Deploy to production?"
+                    echo "Updating production deployment..."
+                    def result = dbBackup (prodProject, prodSuffix)
+                }
+            }
+        }
+
+
         stage('PROD - Deploy') {
             when {
                 expression { env.CHANGE_TARGET == 'master' }
@@ -1087,9 +1089,6 @@ pipeline {
             steps {
                 script {
                     _openshift(env.STAGE_NAME, prodProject) {
-                        input "Deploy to production?"
-                        echo "Updating production deployment..."
-
                         def deployDBTemplate = openshift.process("-f",
                             "openshift/postgresql.dc.json",
                             "NAME_SUFFIX=-${prodSuffix}",
