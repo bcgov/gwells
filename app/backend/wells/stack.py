@@ -25,6 +25,7 @@ import submissions.serializers
 from wells.models import Well, ActivitySubmission, WellStatusCode
 from wells.serializers import WellStackerSerializer
 
+import reversion
 
 logger = logging.getLogger(__name__)
 
@@ -201,10 +202,13 @@ class StackWells():
                         else:
                             composite[target_key] = value
 
+            composite['update_user'] = submission.create_user or composite['update_user']
+
         # Update the well view
         well_serializer = WellStackerSerializer(well, data=composite, partial=True)
         if well_serializer.is_valid(raise_exception=True):
-            well = well_serializer.save()
+            with reversion.create_revision():
+                well = well_serializer.save()
 
         return well
 

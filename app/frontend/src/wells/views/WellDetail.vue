@@ -10,7 +10,7 @@
         <legend>
           <span class="h2">Well Summary</span>
           <div class="float-right d-print-none">
-            <router-link v-if="show.edit" :to="{ name: 'SubmissionsEdit', params: { id: well.well_tag_number || 0 } }" class="mr-3">
+            <router-link v-if="show.edit" :to="{ name: 'SubmissionsEdit', params: { id: $route.params.id } }" class="mr-3">
               <button class="btn btn-primary mb-1">Edit</button>
             </router-link>
             <b-btn variant="light" v-if="analytics" aria-label="Print" @click="ga('send', 'event', 'Button', 'print', 'Wells Summary Print'); handlePrint;"><i class="fa fa-print"></i></b-btn>
@@ -203,8 +203,9 @@
           striped
           small
           bordered
+          :items="well.lithologydescription_set"
           show-empty
-          :fields="['from', 'to', 'description', 'relative hardness', 'colour', 'estimated_water_bearing_flow']"
+          :fields="lithology_fields"
         ></b-table>
       </fieldset>
 
@@ -219,8 +220,10 @@
               :fields="['from', 'to', 'casing_type', 'casing_material', 'diameter', 'wall_thickness', 'drive_shoe']"
               show-empty>
 
-            <template slot="from" slot-scope="data">{{data.item.start}} ft</template>
-            <template slot="to" slot-scope="data">{{data.item.end}} ft</template>
+            <template slot="from" slot-scope="data">{{data.item.start}}</template>
+            <template slot="HEAD_from" slot-scope="data">{{ data.label }} (ft)</template>
+            <template slot="to" slot-scope="data">{{data.item.end}}</template>
+            <template slot="HEAD_to" slot-scope="data">{{ data.label }} (ft)</template>
             <template slot="casing_type" slot-scope="data">{{codeToDescription('casing_codes', data.item.casing_code)}}</template>
             <template slot="casing_material" slot-scope="data">{{codeToDescription('casing_materials', data.item.casing_material)}}</template>
           </b-table>
@@ -417,7 +420,33 @@ export default {
           active: true
         }
       ],
-      well: {}
+      well: {},
+      lithology_fields: {
+        lithology_from: {
+          label: 'From (ft bgl)'
+        },
+        lithology_to: {
+          label: 'To (ft bgl)'
+        },
+        lithology_description: {
+          label: 'Description'
+        },
+        lithology_moisture: {
+          label: 'Moisture'
+        },
+        lithology_colour: {
+          label: 'Colour'
+        },
+        lithology_hardness: {
+          label: 'Hardness'
+        },
+        lithology_observation: {
+          label: 'Observations'
+        },
+        water_bearing_estimated_flow: {
+          label: 'Water Bearing Flow Estimate (USGPM)'
+        }
+      }
     }
   },
   computed: {

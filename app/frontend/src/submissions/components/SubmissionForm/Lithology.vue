@@ -273,7 +273,7 @@ export default {
   created () {
     // When component created, add an initial row of lithology.
     if (!this.lithologyInput.length) {
-      for (let i = 0; i < 3; i++) {
+      for (let i = 0; i < 10; i++) {
         this.addLithologyRow()
       }
     }

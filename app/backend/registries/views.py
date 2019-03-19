@@ -81,7 +81,8 @@ class AuditCreateMixin(CreateModelMixin):
     """
 
     def perform_create(self, serializer):
-        serializer.validated_data['create_user'] = (self.request.user.profile.name or
+        serializer.validated_data['create_user'] = (self.request.user.profile.username or
+                                                    self.request.user.profile.name or
                                                     self.request.user.get_username())
         return super().perform_create(serializer)
 
@@ -93,7 +94,8 @@ class AuditUpdateMixin(UpdateModelMixin):
     """
 
     def perform_update(self, serializer):
-        serializer.validated_data['update_user'] = (self.request.user.profile.name or
+        serializer.validated_data['update_user'] = (self.request.user.profile.username or
+                                                    self.request.user.profile.name or
                                                     self.request.user.get_username())
         return super().perform_update(serializer)
 
@@ -586,7 +588,7 @@ class OrganizationNameListView(ListAPIView):
     Simple list of organizations with only organization names
     """
 
-    permission_classes = (RegistriesEditPermissions,)
+    permission_classes = (RegistriesEditOrReadOnly,)
     serializer_class = OrganizationNameListSerializer
     queryset = Organization.objects \
         .select_related('province_state')

@@ -31,6 +31,7 @@ from gwells.models.lithology import (
     LithologyMaterialCode, LithologyMoistureCode, LithologyDescriptionCode)
 from gwells.serializers import ProvinceStateCodeSerializer
 from gwells.settings.base import get_env_variable
+from registries.views import AuditCreateMixin
 from wells.models import (
     ActivitySubmission,
     CasingCode,
@@ -45,6 +46,7 @@ from wells.models import (
     GroundElevationMethodCode,
     IntendedWaterUseCode,
     LandDistrictCode,
+    LicencedStatusCode,
     LinerMaterialCode,
     ObsWellStatusCode,
     ScreenIntakeMethodCode,
@@ -72,9 +74,12 @@ from wells.serializers import (
     CasingMaterialSerializer,
 )
 from submissions.serializers import (
+    AlterationSubmissionDisplaySerializer,
     CoordinateAcquisitionCodeSerializer,
+    ConstructionSubmissionDisplaySerializer,
     DecommissionMaterialCodeSerializer,
     DecommissionMethodCodeSerializer,
+    DecommissionSubmissionDisplaySerializer,
     DevelopmentMethodCodeSerializer,
     DrillingMethodCodeSerializer,
     FilterPackMaterialCodeSerializer,
@@ -82,6 +87,7 @@ from submissions.serializers import (
     GroundElevationMethodCodeSerializer,
     IntendedWaterUseCodeSerializer,
     LandDistrictSerializer,
+    LegacyWellDisplaySerializer,
     LinerMaterialCodeSerializer,
     LithologyHardnessSerializer,
     LithologyColourSerializer,
@@ -112,6 +118,7 @@ from submissions.serializers import (
     YieldEstimationMethodCodeSerializer,
     WellStaffEditSubmissionSerializer,
     AquiferLithologySerializer,
+    LicencedStatusCodeSerializer,
 )
 
 
@@ -162,20 +169,21 @@ class SubmissionGetAPIView(RetrieveAPIView):
 
         # There are different serializers; which one is used depends on well_activity_type
         if activity and activity == WellActivityCode.types.construction().code:
-            serializer_class = WellConstructionSubmissionSerializer
+            serializer_class = ConstructionSubmissionDisplaySerializer
         elif activity and activity == WellActivityCode.types.alteration().code:
-            serializer_class = WellAlterationSubmissionSerializer
+            serializer_class = AlterationSubmissionDisplaySerializer
         elif activity and activity == WellActivityCode.types.decommission().code:
-            serializer_class = WellDecommissionSubmissionSerializer
+            serializer_class = DecommissionSubmissionDisplaySerializer
+        elif activity and activity == WellActivityCode.types.legacy().code:
+            serializer_class = LegacyWellDisplaySerializer
 
         return serializer_class(*args, **kwargs)
 
 
 class SubmissionListAPIView(ListAPIView):
-    """List and create submissions
+    """List submissions
 
     get: returns a list of well activity submissions
-    post: adds a new submission
     """
 
     permission_classes = (WellsEditPermissions,)
@@ -201,10 +209,9 @@ class SubmissionListAPIView(ListAPIView):
         return Response(serializer.data)
 
 
-class SubmissionConstructionAPIView(ListCreateAPIView):
-    """Create a construction submission
+class SubmissionConstructionAPIView(AuditCreateMixin, ListCreateAPIView):
+    """Create a construction submission"""
 
-    """
     model = ActivitySubmission
     serializer_class = WellConstructionSubmissionSerializer
     permission_classes = (WellsEditPermissions,)
@@ -215,10 +222,9 @@ class SubmissionConstructionAPIView(ListCreateAPIView):
             .filter(well_activity_type=WellActivityCode.types.construction())
 
 
-class SubmissionAlterationAPIView(ListCreateAPIView):
-    """Create an alteration submission
+class SubmissionAlterationAPIView(AuditCreateMixin, ListCreateAPIView):
+    """Create an alteration submission"""
 
-    """
     model = ActivitySubmission
     serializer_class = WellAlterationSubmissionSerializer
     permission_classes = (WellsEditPermissions,)
@@ -229,10 +235,9 @@ class SubmissionAlterationAPIView(ListCreateAPIView):
             .filter(well_activity_type=WellActivityCode.types.alteration())
 
 
-class SubmissionDecommissionAPIView(ListCreateAPIView):
-    """Create an decommission submission
+class SubmissionDecommissionAPIView(AuditCreateMixin, ListCreateAPIView):
+    """Create a decommission submission"""
 
-    """
     model = ActivitySubmission
     serializer_class = WellDecommissionSubmissionSerializer
     permission_classes = (WellsEditPermissions,)
@@ -243,7 +248,7 @@ class SubmissionDecommissionAPIView(ListCreateAPIView):
             .filter(well_activity_type=WellActivityCode.types.decommission())
 
 
-class SubmissionStaffEditAPIView(ListCreateAPIView):
+class SubmissionStaffEditAPIView(AuditCreateMixin, ListCreateAPIView):
     """ Create a staff edit submission
     TODO: Implement this class fully
     """
@@ -332,6 +337,8 @@ class SubmissionsOptions(APIView):
         lithology_moisture = LithologyMoistureSerializer(instance=LithologyMoistureCode.objects.all(), many=True)
         lithology_descriptors = LithologyDescriptionCodeSerializer(
             instance=LithologyDescriptionCode.objects.all(), many=True)
+        licenced_status_codes = LicencedStatusCodeSerializer(
+            instance=LicencedStatusCode.objects.all(), many=True)
 
         root = urljoin('/', app_root, 'api/v1/')
         for item in activity_codes.data:
@@ -375,6 +382,7 @@ class SubmissionsOptions(APIView):
         options["well_status_codes"] = well_status_codes.data
         options["well_publication_status_codes"] = well_publication_status_codes.data
         options["observation_well_status"] = observation_well_status.data
+        options["licenced_status_codes"] = licenced_status_codes.data
 
         return Response(options)
 
