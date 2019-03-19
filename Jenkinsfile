@@ -384,7 +384,7 @@ def dbBackup (String envProject, String envSuffix) {
     def dumpDir = "/var/lib/pgsql/data/deployment-backups"
     def dumpName = "${envSuffix}-\$( date +%Y-%m-%d-%H%M ).dump"
     def dumpOpts = "--no-privileges --no-tablespaces --schema=public --exclude-table=spatial_ref_sys"
-    sh (
+    return sh (
         script: """
             oc rsh -n ${envProject} dc/${dcName} bash -c ' \
                 set -e; \
@@ -393,8 +393,7 @@ def dbBackup (String envProject, String envSuffix) {
                 pg_dump -U \${POSTGRESQL_USER} -d \${POSTGRESQL_DATABASE} -Fc -f ./${dumpName} ${dumpOpts}; \
                 ls -lh \
             '
-        """,
-        returnStatus: true
+        """
     )
 }
 
