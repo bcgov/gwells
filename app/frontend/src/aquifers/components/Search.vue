@@ -130,14 +130,12 @@ table.b-table > thead > tr > th.sorting::before,
 table.b-table > tfoot > tr > th.sorting::before {
   display: none !important;
 }
-
 table.b-table > thead > tr > th.sorting::after,
 table.b-table > tfoot > tr > th.sorting::after {
   content: "\f0dc" !important;
   font-family: "FontAwesome";
   opacity: 1 !important;
 }
-
 ul.pagination {
   justify-content: end;
 }
@@ -147,13 +145,10 @@ ul.pagination {
 import querystring from 'querystring'
 import ApiService from '@/common/services/ApiService.js'
 import { mapGetters } from 'vuex'
-
 const LIMIT = 30
 const DEFAULT_ORDERING_STRING = 'aquifer_id'
-
 function orderingQueryStringToData (str) {
   str = str || DEFAULT_ORDERING_STRING
-
   return {
     sortDesc: str.charAt(0) === '-',
     sortBy: str.replace(/^-/, '')
@@ -162,7 +157,6 @@ function orderingQueryStringToData (str) {
 export default {
   data () {
     let query = this.$route.query || {}
-
     return {
       ...orderingQueryStringToData(query.ordering),
       search: query.search,
@@ -197,7 +191,6 @@ export default {
       if (!this.response) {
         return undefined
       }
-
       return this.offset + this.response.results.length
     },
     aquiferList () { return this.response && this.response.results },
@@ -213,7 +206,6 @@ export default {
     fetchResults () {
       // trigger the Google Analytics search event
       this.triggerAnalyticsSearchEvent(this.query)
-
       ApiService.query('aquifers', this.query)
         .then((response) => {
           this.response = response.data
@@ -235,15 +227,12 @@ export default {
     },
     triggerPagination () {
       const i = (this.currentPage || 1) - 1
-
       delete this.filterParams.limit
       delete this.filterParams.offset
-
       if (i > 0) {
         this.filterParams.limit = LIMIT
         this.filterParams.offset = i * LIMIT
       }
-
       this.updateQueryParams()
     },
     triggerReset () {
@@ -260,26 +249,20 @@ export default {
       delete this.filterParams.aquifer_id
       delete this.filterParams.search
       delete this.filterParams.resources__section__code
-
       if (this.search) {
         this.filterParams.search = this.search
       }
-
       if (this.sections) {
         this.filterParams.resources__section__code = this.sections.join(',')
       }
-
       this.updateQueryParams()
     },
     triggerSort () {
       delete this.filterParams.ordering
-
       let ordering = `${this.sortDesc ? '-' : ''}${this.sortBy}`
-
       if (ordering !== DEFAULT_ORDERING_STRING) {
         this.filterParams.ordering = ordering
       }
-
       this.updateQueryParams()
     },
     updateQueryParams () {

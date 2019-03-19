@@ -130,10 +130,8 @@ import APIErrorMessage from '@/common/components/APIErrorMessage'
 import AquiferForm from './Form'
 import Documents from './Documents.vue'
 import AquiferMap from './AquiferMap.vue'
-
 import ChangeHistory from '@/common/components/ChangeHistory.vue'
 import { mapActions, mapGetters, mapState } from 'vuex'
-
 export default {
   components: {
     'api-error': APIErrorMessage,
@@ -192,12 +190,10 @@ export default {
     handleSaveSuccess (response) {
       this.fetch()
       this.navigateToView()
-
       if (this.$refs.aquiferHistory) {
         this.$refs.aquiferHistory.update()
       }
       this.showSaveSuccess = true
-
       if (this.upload_files.length > 0) {
         this.uploadFiles({
           documentType: 'aquifers',
