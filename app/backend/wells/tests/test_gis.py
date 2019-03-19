@@ -22,7 +22,7 @@ class TestWellsSpatial(APITestCase):
 
     def test_geodjango(self):
         # Currently we're re-directing to a static file.
-        url = reverse('well-spatial')
+        url = reverse('well-geojson')
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_302_FOUND)
 
@@ -31,6 +31,6 @@ class TestWellsLithologySpatial(APITestCase):
 
     def test_geodjango(self):
         # Currently we're re-directing to a static file.
-        url = reverse('well-spatial-lithology')
+        url = reverse('well-lithology-geojson')
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_302_FOUND)
