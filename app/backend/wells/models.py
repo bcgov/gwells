@@ -112,7 +112,7 @@ class WaterQualityCharacteristic(AuditModel):
     display_order = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'water_quality_characteristic'
+        db_table = 'water_quality_characteristic_code'
         ordering = ['display_order', 'description']
 
     def __str__(self):
@@ -733,8 +733,13 @@ class Well(AuditModel):
         max_length=255, blank=True, null=True, verbose_name='Development Notes')
 
     water_quality_characteristics = models.ManyToManyField(
-        WaterQualityCharacteristic, db_table='well_water_quality', blank=True,
+        WaterQualityCharacteristic, db_table='well_water_quality', related_name='well_water_quality_characteristics_old', blank=True,
         verbose_name='Obvious Water Quality Characteristics')
+
+    water_quality_characteristics_new = models.ManyToManyField(
+        WaterQualityCharacteristic, through='WellWaterQuality',
+        verbose_name='Obvious Water Quality Characteristics')
+
     water_quality_colour = models.CharField(
         max_length=60, blank=True, null=True, verbose_name='Water Quality Colour')
     water_quality_odour = models.CharField(
@@ -1227,8 +1232,13 @@ class ActivitySubmission(AuditModel):
         max_length=255, blank=True, null=True, verbose_name='Development Notes')
 
     water_quality_characteristics = models.ManyToManyField(
-        WaterQualityCharacteristic, db_table='activity_submission_water_quality', blank=True,
+        WaterQualityCharacteristic, db_table='activity_submission_water_quality', related_name='submission_water_quality_characteristics_old', blank=True,
         verbose_name='Obvious Water Quality Characteristics')
+
+    water_quality_characteristics_new = models.ManyToManyField(
+        WaterQualityCharacteristic, through='ActivitySubmissionWaterQuality',
+        verbose_name='Obvious Water Quality Characteristics')
+
     water_quality_colour = models.CharField(
         max_length=60, blank=True, null=True, verbose_name='Water Quality Colour')
     water_quality_odour = models.CharField(
@@ -1365,6 +1375,28 @@ class ActivitySubmission(AuditModel):
                                     self.well_activity_type.code, self.street_address)
         else:
             return '%s %s' % (self.activity_submission_guid, self.street_address)
+
+
+class WellWaterQuality(AuditModel):
+    """ Intermediate table for many-to-many between Well and WaterQualityCharacteristic """
+    id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False, db_column='well_water_quality_id')
+    well = models.ForeignKey(Well, on_delete=models.CASCADE, db_column='well_tag_number', to_field='well_tag_number')
+    characteristic = models.ForeignKey(WaterQualityCharacteristic, on_delete=models.CASCADE, db_column='water_quality_characteristic_code', to_field='code')
+
+    class Meta:
+        db_table = 'well_water_quality_xref'
+
+
+class ActivitySubmissionWaterQuality(AuditModel):
+    """ Intermediate table for many-to-many between ActivitySubmission and WaterQualityCharacteristic """
+    id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False, db_column='activity_submission_water_quality_id')
+    activity_submission = models.ForeignKey(ActivitySubmission, on_delete=models.CASCADE, db_column='filing_number')
+    characteristic = models.ForeignKey(WaterQualityCharacteristic, on_delete=models.CASCADE, db_column='water_quality_characteristic_code')
+
+    class Meta:
+        db_table = 'activity_submission_water_quality_xref'
 
 
 class LithologyDescription(AuditModel):
