@@ -47,7 +47,7 @@
   },
   {
       "model": "aquifers.aquifer",
-      "pk": 9193161,
+      "pk": 2000,
       "fields": {
           "create_user": "WELLS",
           "create_date": "2003-08-14T07:48:06Z",
@@ -70,7 +70,7 @@
   },
   {
       "model": "aquifers.aquifer",
-      "pk": 113169,
+      "pk": 2001,
       "fields": {
           "create_user": "WELLS",
           "create_date": "2003-08-14T07:48:06Z",
@@ -93,7 +93,7 @@
   },
   {
       "model": "aquifers.aquifer",
-      "pk": 5013,
+      "pk": 2002,
       "fields": {
           "create_user": "WELLS",
           "create_date": "2003-08-14T07:48:06Z",

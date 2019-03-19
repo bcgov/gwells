@@ -793,7 +793,8 @@ pipeline {
                             "PROJECT=${stagingProject}",
                             "TAG=${stagingSuffix}",
                             "NAME=export",
-                            "COMMAND=export"
+                            "COMMAND=export",
+                            "SCHEDULE=0 12 * * *"
                         )
                         openshift.apply(exportWellCronTemplate).label(
                             [
@@ -811,7 +812,8 @@ pipeline {
                             "PROJECT=${stagingProject}",
                             "TAG=${stagingSuffix}",
                             "NAME=export-databc",
-                            "COMMAND=export_databc"
+                            "COMMAND=export_databc",
+                            "SCHEDULE=0 13 * * *"
                         )
                         openshift.apply(exportDataBCTemplate).label(
                             [
@@ -1006,7 +1008,8 @@ pipeline {
                             "PROJECT=${demoProject}",
                             "TAG=${demoSuffix}",
                             "NAME=export",
-                            "COMMAND=export"
+                            "COMMAND=export",
+                            "SCHEDULE=0 12 * * *"
                         )
                         openshift.apply(exportWellCronTemplate).label(
                             [
@@ -1024,7 +1027,8 @@ pipeline {
                             "PROJECT=${demoProject}",
                             "TAG=${demoSuffix}",
                             "NAME=export-databc",
-                            "COMMAND=export_databc"
+                            "COMMAND=export_databc",
+                            "SCHEDULE=0 13 * * *"
                         )
                         openshift.apply(exportDataBCCronTemplate).label(
                             [
@@ -1196,7 +1200,8 @@ pipeline {
                             "PROJECT=${prodProject}",
                             "TAG=${prodSuffix}",
                             "NAME=export",
-                            "COMMAND=export"
+                            "COMMAND=export",
+                            "SCHEDULE=0 12 * * *"
                         )
                         openshift.apply(exportWellCronTemplate).label(
                             [
@@ -1214,7 +1219,8 @@ pipeline {
                             "PROJECT=${prodProject}",
                             "TAG=${prodSuffix}",
                             "NAME=export-databc",
-                            "COMMAND=export_databc"
+                            "COMMAND=export_databc",
+                            "SCHEDULE=0 13 * * *"
                         )
                         openshift.apply(exportDataBCCronTemplate).label(
                             [
