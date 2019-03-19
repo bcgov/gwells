@@ -402,15 +402,14 @@ def dbBackup (String envProject, String envSuffix) {
 def dbKeepOnly (String envProject, String envSuffix, int maxBackups = 10) {
     def dcName = envSuffix == "dev" ? "${appName}-pgsql-${envSuffix}-${prNumber}" : "${appName}-pgsql-${envSuffix}"
     def dumpDir = "/var/lib/pgsql/data/deployment-backups"
-    def toRemove = sh (
+    return sh (
         script: """
             oc rsh -n ${envProject} dc/${dcName} bash -c " \
                 find ${dumpDir} -name *.dump -printf '%Ts\t%p\n' \
                     | sort -nr | cut -f2 | tail -n +${maxBackups} | xargs rm 2>/dev/null\
                     || echo 'No extra backups to remove'
             "
-        """,
-        returnStdout: true
+        """
     )
 }
 
@@ -1267,10 +1266,10 @@ pipeline {
             steps {
                 script {
                     // Backup
-                    def dbBackupResult = dbBackup (prodProject, prodSuffix)
+                    dbBackup (prodProject, prodSuffix)
 
                     // Clean backupsq
-                    def dbKeepOnly = dbKeepOnly (prodProject, prodSuffix, 10)
+                    dbKeepOnly (prodProject, prodSuffix, 10)
                 }
             }
         }
