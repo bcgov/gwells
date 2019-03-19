@@ -603,23 +603,6 @@ pipeline {
         }
 
 
-        // Backup database
-        stage('DEV - Post-Deploy Cleanup') {
-            when {
-                expression { true }
-            }
-            steps {
-                script {
-                    // Backup
-                    def dbBackupResult = dbBackup (devProject, devSuffix)
-
-                    // Clean backups
-                    def dbKeepOnly = dbKeepOnly (devProject, devSuffix, 10)
-                }
-            }
-        }
-
-
         // the Django Unit Tests stage runs backend unit tests using a test DB that is
         // created and destroyed afterwards.
         stage('DEV - Django Unit Tests') {
@@ -1272,6 +1255,22 @@ pipeline {
             steps {
                 script {
                     def result = functionalTest ('PROD - Smoke Tests', prodHost, prodSuffix, 'SearchSpecs')
+                }
+            }
+        }
+
+
+        stage('PROD - Post-Deploy Cleanup') {
+            when {
+                expression { env.CHANGE_TARGET == 'master' }
+            }
+            steps {
+                script {
+                    // Backup
+                    def dbBackupResult = dbBackup (prodProject, prodSuffix)
+
+                    // Clean backupsq
+                    def dbKeepOnly = dbKeepOnly (prodProject, prodSuffix, 10)
                 }
             }
         }
