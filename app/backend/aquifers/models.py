@@ -12,9 +12,14 @@
     limitations under the License.
 """
 import reversion
+import zipfile
+import tempfile
+import os
 
 from django.utils import timezone
 from django.contrib.gis.db import models
+from django.contrib.gis.gdal import DataSource
+from django.contrib.gis.geos import GEOSGeometry
 
 from gwells.models import AuditModel
 from django.contrib.contenttypes.fields import GenericRelation
@@ -261,10 +266,40 @@ class Aquifer(AuditModel):
         null=True,
         verbose_name='Notes on Aquifer, for internal use only.')
 
-    shapefile = models.FileField(blank=True, default='')
+    #shapefile = models.FileField(blank=True, default='')
     geom = models.PolygonField(srid=3005, null=True)
 
     history = GenericRelation(Version)
+
+    def load_shapefile(self, f):
+
+        zip_ref = zipfile.ZipFile(f)
+
+        output_dir = tempfile.mkdtemp()
+        for item in zip_ref.namelist():
+            # Check filename endswith shp
+            zip_ref.extract(item, output_dir)
+            if item.endswith('.shp'):
+                # Extract a single file from zip
+                the_shapefile = os.path.join(output_dir, item)
+                # break
+        zip_ref.close()
+
+        assert os.path.exists(the_shapefile)
+
+        ds = DataSource(the_shapefile)
+        for layer in ds:
+            for feat in layer:
+                geom = feat.geom
+                # Make a GEOSGeometry object using the string representation.
+                wkt = geom.wkt
+                geos_geom = GEOSGeometry(wkt, srid=3005)
+                # Just return the first feature in the shapefile.
+                # TODO: should we have validation that the shapefile just contains one
+                # POLYGON feature?
+                self.geom = geos_geom
+                return geos_geom
+        # TODO: cleanup temporary files
 
     class Meta:
         db_table = 'aquifer'

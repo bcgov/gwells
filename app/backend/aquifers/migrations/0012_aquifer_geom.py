@@ -2,6 +2,19 @@
 
 import django.contrib.gis.db.models.fields
 from django.db import migrations
+from aquifers.models import Aquifer as NewAquifer
+
+
+def add_shapefile(apps, schema_editor):
+    Aquifer = apps.get_model('aquifers', 'Aquifer')
+    for aquifer in Aquifer.objects.all():
+        NewAquifer.load_shapefile(
+            aquifer, "aquifers/fixtures/shp/shapefile.zip")
+        aquifer.save()
+
+
+def remove_shapefile(apps, schema_editor):
+    pass  # column is deleted, don't worry about it.
 
 
 class Migration(migrations.Migration):
@@ -14,6 +27,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='aquifer',
             name='geom',
-            field=django.contrib.gis.db.models.fields.PolygonField(null=True, srid=3005),
+            field=django.contrib.gis.db.models.fields.PolygonField(
+                null=True, srid=3005),
+        ),
+        migrations.RunPython(
+            add_shapefile,
+            reverse_code=remove_shapefile
         ),
     ]

@@ -12,6 +12,8 @@
     limitations under the License.
 """
 
+import json
+
 from rest_framework import serializers
 
 from aquifers import models
@@ -125,6 +127,13 @@ class AquiferSerializer(serializers.ModelSerializer):
 
         return instance
 
+    def to_representation(self, instance):
+        """Convert `username` to lowercase."""
+        ret = super().to_representation(instance)
+        if instance.geom:
+            ret['geom'] = json.loads(instance.geom.json)
+        return ret
+
     class Meta:
         model = models.Aquifer
         fields = (
@@ -150,8 +159,8 @@ class AquiferSerializer(serializers.ModelSerializer):
             'vulnerability_description',
             'vulnerability',
             'resources',
-            'shapefile',
-            'geom'
+            # 'shapefile',
+            # 'geom'
         )
 
 

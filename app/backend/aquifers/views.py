@@ -13,17 +13,14 @@
 """
 from datetime import datetime
 import logging
-import zipfile
 import os
-import tempfile
 
 from django_filters import rest_framework as djfilters
 from django.http import Http404, HttpResponse, JsonResponse
 from django.views.generic import TemplateView
 from django.db.models import Q
 from django.db import connection
-from django.contrib.gis.gdal import DataSource
-from django.contrib.gis.geos import GEOSGeometry
+
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -75,19 +72,19 @@ class AquiferRetrieveUpdateAPIView(RevisionMixin, AuditUpdateMixin, RetrieveUpda
     lookup_field = 'aquifer_id'
     serializer_class = serializers.AquiferSerializer
 
-    def pre_save(self, obj):
-        if 'shapefile' in self.request.FILES:
-            self.shapefile = self.request.FILES.get('shapefile')
-            ds = DataSource(self.shapefile)
-            lyr = ds[0]
-            print('length:', len(lyr))
-            print('geom type:', str(lyr.geom_type))
-            assert(lyr.geom_type == "Polygon")
-            srs = lyr.srs
-            print('srs:', str(srs))
-            print('fields:', lyr.fields)
-            geom = lyr.GetNextFeature().GetGeometryRef().wkt
-            self.geometry = geom
+    # def pre_save(self, obj):
+    #     if 'shapefile' in self.request.FILES:
+    #         self.shapefile = self.request.FILES.get('shapefile')
+    #         ds = DataSource(self.shapefile)
+    #         lyr = ds[0]
+    #         print('length:', len(lyr))
+    #         print('geom type:', str(lyr.geom_type))
+    #         assert(lyr.geom_type == "Polygon")
+    #         srs = lyr.srs
+    #         print('srs:', str(srs))
+    #         print('fields:', lyr.fields)
+    #         geom = lyr.GetNextFeature().GetGeometryRef().wkt
+    #         self.geom = geom
 
 
 class AquiferListCreateAPIView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
@@ -207,24 +204,25 @@ class ListFiles(APIView):
     get: list files found for the aquifer identified in the uri
     """
 
-    @swagger_auto_schema(responses={200: openapi.Response('OK',
-                                                          openapi.Schema(type=openapi.TYPE_OBJECT, properties={
-                                                              'public': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
-                                                                  type=openapi.TYPE_OBJECT,
-                                                                  properties={
-                                                                      'url': openapi.Schema(type=openapi.TYPE_STRING),
-                                                                      'name': openapi.Schema(type=openapi.TYPE_STRING)
-                                                                  }
-                                                              )),
-                                                              'private': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
-                                                                  type=openapi.TYPE_OBJECT,
-                                                                  properties={
-                                                                      'url': openapi.Schema(type=openapi.TYPE_STRING),
-                                                                      'name': openapi.Schema(type=openapi.TYPE_STRING)
-                                                                  }
-                                                              ))
-                                                          })
-                                                          )})
+    @swagger_auto_schema(responses={200: openapi.Response(
+        'OK',
+        openapi.Schema(type=openapi.TYPE_OBJECT, properties={
+            'public': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'url': openapi.Schema(type=openapi.TYPE_STRING),
+                    'name': openapi.Schema(type=openapi.TYPE_STRING)
+                }
+            )),
+            'private': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'url': openapi.Schema(type=openapi.TYPE_STRING),
+                    'name': openapi.Schema(type=openapi.TYPE_STRING)
+                }
+            ))
+        })
+    )})
     def get(self, request, aquifer_id):
         user_is_staff = self.request.user.groups.filter(
             name=AQUIFERS_EDIT_ROLE).exists()
@@ -367,42 +365,16 @@ class SaveAquiferGeometry(APIView):
 
         f = request.data['geometry']
         aquifer = Aquifer.objects.get(pk=aquifer_id)
-        aquifer.geometry = self._extract_geometry(f)
+        aquifer.load_shapefile(f)
         aquifer.save()
         #aquifer.shapefile.save(f.name, f, save=True)
         return Response(status=status.HTTP_200_OK)
 
     def delete(self, request, aquifer_id):
         aquifer = Aquifer.objects.get(pk=aquifer_id)
-        # aquifer.geometry.delete(save=True)
-        del aquifer.geometry
+        del aquifer.geom
         aquifer.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-    def _extract_geometry(self, f):
-
-        zip_ref = zipfile.ZipFile(f)
-
-        output_dir = tempfile.mkdtemp()
-        for item in zip_ref.namelist():
-            # Check filename endswith shp
-            zip_ref.extract(item, output_dir)
-            if item.endswith('.shp'):
-                # Extract a single file from zip
-                the_shapefile = os.path.join(output_dir, item)
-                # break
-        zip_ref.close()
-
-        assert os.path.exists(the_shapefile)
-
-        ds = DataSource(the_shapefile)
-        for layer in ds:
-            for feat in layer:
-                geom = feat.geom
-                # Make a GEOSGeometry object using the string representation.
-                wkt = geom.wkt
-                geos_geom = GEOSGeometry(wkt, srid=3005)
-                return geos_geom
 
 
 class AquifersSpatial(APIView):

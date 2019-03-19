@@ -36,7 +36,7 @@ class TestAquifersEditRole(APITestCase):
 
     def test_upload_shapefile(self):
 
-        filepath = 'aquifers/fixtures/shp/test.zip'
+        filepath = 'aquifers/fixtures/shp/shapefile.zip'
         with open(filepath, 'rb') as fh:
             url = reverse('aquifer-save-geometry', kwargs={'aquifer_id': 1})
 
