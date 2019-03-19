@@ -51,10 +51,11 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS('export complete'))
 
     def upload_files(self, zip_filename, spreadsheet_filename):
+        is_secure = get_env_variable('S3_USE_SECURE', '1', warn=False) is '1'
         minioClient = Minio(get_env_variable('S3_HOST'),
                             access_key=get_env_variable('S3_PUBLIC_ACCESS_KEY'),
                             secret_key=get_env_variable('S3_PUBLIC_SECRET_KEY'),
-                            secure=int(get_env_variable('S3_USE_SECURE', 1, warn=False)))
+                            secure=bool(get_env_variable('S3_USE_SECURE', 1, warn=False)))
         for filename in (zip_filename, spreadsheet_filename):
             logger.info('uploading {}'.format(filename))
             with open(filename, 'rb') as file_data:
