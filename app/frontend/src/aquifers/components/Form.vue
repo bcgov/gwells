@@ -351,7 +351,7 @@ import { isEmpty, mapValues } from 'lodash'
 import { mapMutations, mapState } from 'vuex'
 
 export default {
-  data(){
+  data () {
     return {
       shapefile: ''
     }
@@ -414,7 +414,7 @@ export default {
       })
     },
     handleShapefileUpload () {
-      this.shapefile = this.$refs.shapefile.files[0];
+      this.shapefile = this.$refs.shapefile.files[0]
     },
     handleDeleteResource (i) {
       this.record.resources.splice(i, 1)
