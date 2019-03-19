@@ -316,8 +316,8 @@ class WellLocationListAPIView(ListAPIView):
     serializer_class = WellLocationSerializer
 
     # Allow searching on name fields, names of related companies, etc.
-    filter_backends = (restfilters.DjangoFilterBackend,
-                       filters.SearchFilter, filters.OrderingFilter)
+    filter_backends = (WellListFilterBackend, filters.SearchFilter,
+                       filters.OrderingFilter)
     ordering = ('well_tag_number',)
     filterset_class = WellLocationFilter
     pagination_class = None
@@ -346,9 +346,9 @@ class WellLocationListAPIView(ListAPIView):
     def get(self, request):
         """ cancels request if too many wells are found"""
 
-        locations = WellLocationFilter(
+        locations = WellListFilter(
             request.GET, queryset=Well.objects.all()).qs
-        count = WellSearchFilter(request.GET, queryset=locations).qs.count()
+        count = locations.count()
         # return an empty response if there are too many wells to display
         if count > 2000:
             return Response([])
