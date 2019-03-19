@@ -204,6 +204,9 @@ class WellListFilter(AnyOrAllFilterSet):
     water_quality_odour = filters.CharFilter(lookup_expr='icontains')
     well_yield = filters.RangeFilter()
     observation_well_number = filters.CharFilter(lookup_expr='icontains')
+    observation_well_number_has_value = filters.BooleanFilter(field_name='observation_well_number',
+                                                              method='filter_has_value',
+                                                              label='Any value for observation well number')
     utm_northing = filters.RangeFilter()
     utm_easting = filters.RangeFilter()
     decommission_reason = filters.CharFilter(lookup_expr='icontains')
@@ -224,13 +227,18 @@ class WellListFilter(AnyOrAllFilterSet):
     bedrock_depth = filters.RangeFilter()
     static_water_level = filters.RangeFilter()
     artesian_flow = filters.RangeFilter()
-    artesian_flow_has_value = filters.BooleanFilter(method='filter_artesian_flow_has_value',
+    artesian_flow_has_value = filters.BooleanFilter(field_name='artesian_flow',
+                                                    method='filter_has_value',
                                                     label='Any value for artesian flow')
     artesian_pressure = filters.RangeFilter()
-    artesian_pressure_has_value = filters.BooleanFilter(method='filter_artesian_pressure_has_value',
+    artesian_pressure_has_value = filters.BooleanFilter(field_name='artesian_pressure',
+                                                        method='filter_has_value',
                                                         label='Any value for artesian pressure')
     well_cap_type = filters.CharFilter(lookup_expr='icontains')
     comments = filters.CharFilter(lookup_expr='icontains')
+    ems_has_value = filters.BooleanFilter(field_name='ems',
+                                          method='filter_has_value',
+                                          label='Any value for EMS id')
 
     within = BoundingBoxFilter(field_name='geom', label='Well location within bounds')
 
@@ -480,15 +488,10 @@ class WellListFilter(AnyOrAllFilterSet):
 
         return queryset
 
-    def filter_artesian_flow_has_value(self, queryset, name, value):
+    def filter_has_value(self, queryset, name, value):
         if value:
-            return queryset.filter(artesian_flow__isnull=False)
-
-        return queryset
-
-    def filter_artesian_pressure_has_value(self, queryset, name, value):
-        if value:
-            return queryset.filter(artesian_pressure__isnull=False)
+            lookup = '__'.join([name, 'isnull'])
+            return queryset.filter(**{lookup: False})
 
         return queryset
 

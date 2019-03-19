@@ -19,58 +19,26 @@
       </b-form-invalid-feedback>
     </b-col>
     <b-col sm="7">
-      <b-form-row>
-        <b-col>
-          <b-form-row>
-            <label :id="`${id}StartLabel`" :label-for="`${id}StartInput`" class="col-sm-4 col-form-label text-right">From</label>
-            <b-col sm="8">
-              <b-form-input
-                :id="`${id}StartInput`"
-                :type="type"
-                :state="validation"
-                :aria-describedby="`${id}InvalidFeedback ${id}Hint`"
-                :value="minValue"
-                :disabled="rangeDisabled"
-                :required="required"
-                :class="inputClass"
-                :step="step"
-                :min="min"
-                :maxlength="maxlength"
-                :formatter="formatter"
-                :lazy-formatter="lazyFormatter"
-                @input="updateStartValue($event)"
-                @focus.native="$emit('focus', true)"
-                @blur.native="$emit('blur', true)"
-                :placeholder="placeholder"/>
-            </b-col>
-          </b-form-row>
-        </b-col>
-        <b-col>
-          <b-form-row>
-            <label :id="`${id}EndLabel`" :label-for="`${id}EndInput`" class="col-sm-4 col-form-label text-right">To</label>
-            <b-col sm="8">
-              <b-form-input
-                :id="`${id}EndInput`"
-                :type="type"
-                :state="validation"
-                :aria-describedby="`${id}InvalidFeedback ${id}Hint`"
-                :value="maxValue"
-                :disabled="rangeDisabled"
-                :required="required"
-                :class="inputClass"
-                :step="step"
-                :min="min"
-                :maxlength="maxlength"
-                :formatter="formatter"
-                :lazy-formatter="lazyFormatter"
-                @input="updateEndValue($event)"
-                @focus.native="$emit('focus', true)"
-                @blur.native="$emit('blur', true)"
-                :placeholder="placeholder"/>
-            </b-col>
-          </b-form-row>
-        </b-col>
-      </b-form-row>
+      <b-form-input
+        :id="`${id}Input`"
+        :type="type"
+        :state="validation"
+        :aria-describedby="`${id}InvalidFeedback ${id}Hint`"
+        :value="value"
+        :disabled="inputDisabled"
+        :required="required"
+        :class="inputClass"
+        :list="list"
+        :step="step"
+        :max="max"
+        :min="min"
+        :maxlength="maxlength"
+        :formatter="formatter"
+        :lazy-formatter="lazyFormatter"
+        @input="updateValue($event)"
+        @focus.native="$emit('focus', true)"
+        @blur.native="$emit('blur', true)"
+        :placeholder="placeholder"/>
       <b-form-invalid-feedback :id="`${id}InvalidFeedback`">
         <div v-for="(error, index) in errors" :key="`${id}Input error ${index}`">
           {{ error }}
@@ -87,13 +55,12 @@
 /**
  * example usage in another component:
  *
- * <search-form-boolean-or-range
- *    id="artesianFlow"
- *    label="Artesian Flow"
- *    v-model="artesianFlow"
- *    hint="A flow value"
- *    type="number"
- *    :errors="errors['artesianFlow']"/>   // errors for individual fields must be an array e.g. ['Name already taken']
+ * <search-form-boolean-or-text
+ *    id="observationWellNumber"
+ *    label="Observation Well Number"
+ *    v-model="observationWellNumber"
+ *    hint="A well number"
+ *    :errors="errors['observationWellNumber']"/>   // errors for individual fields must be an array e.g. ['Name already taken']
  *
  */
 export default {
@@ -111,8 +78,7 @@ export default {
       type: [Boolean, String],
       default: false
     },
-    minValue: null, // internal (holds the value for the field)
-    maxValue: null, // internal (holds the value for the field)
+    value: null, // internal (holds the value for the field)
     required: String,
     disabled: Boolean,
     groupClass: String, // optional pass-through class (use for formatting the form-group)
@@ -121,9 +87,9 @@ export default {
     max: Number,
     min: Number,
     maxlength: Number,
-    type: { // the type of input (e.g. number, date)
+    type: { // the type of input (e.g. number, text)
       type: String,
-      default: 'number'
+      default: 'text'
     },
     placeholder: String,
     formatter: Function,
@@ -146,7 +112,7 @@ export default {
         return this.localBooleanValue
       }
     },
-    rangeDisabled () {
+    inputDisabled () {
       return this.disabled || this.booleanChecked === 'true' || this.booleanChecked === true
     },
     validation () {
@@ -155,18 +121,14 @@ export default {
     }
   },
   methods: {
-    updateStartValue (value) {
-      this.$emit('start-input', value)
-    },
-    updateEndValue (value) {
-      this.$emit('end-input', value)
+    updateValue (value) {
+      this.$emit('input', value)
     },
     updateBooleanValue (value) {
       this.localBooleanValue = value
       // Clear other values if checked.
       if (this.localBooleanValue) {
-        this.updateStartValue('')
-        this.updateEndValue('')
+        this.updateValue('')
       }
     }
   },

@@ -166,6 +166,16 @@
                         v-on:end-input="searchParams[`${field.param}_max`] = $event"
                         :boolean-value="searchParams[`${field.param}_has_value`]"
                         v-on:boolean-input="searchParams[`${field.param}_has_value`] = $event"/>
+                      <search-form-boolean-or-text
+                        v-else-if="field.type === 'booleanOrText'"
+                        :type="text"
+                        :id="`${field.id}Filter`"
+                        :label="field.label"
+                        boolean-label="Any value"
+                        :errors="searchErrors[field.param]"
+                        v-model="searchParams[field.param]"
+                        :boolean-value="searchParams[`${field.param}_has_value`]"
+                        v-on:boolean-input="searchParams[`${field.param}_has_value`] = $event"/>
                       <search-form-range
                         v-else-if="field.type === 'dateRange'"
                         type="date"
@@ -265,6 +275,7 @@ import SearchFormRadio from '@/wells/components/SearchFormRadio.vue'
 import SearchFormRange from '@/wells/components/SearchFormRange.vue'
 import SearchFormSelect from '@/wells/components/SearchFormSelect.vue'
 import SearchFormBooleanOrRange from '@/wells/components/SearchFormBooleanOrRange.vue'
+import SearchFormBooleanOrText from '@/wells/components/SearchFormBooleanOrText.vue'
 import SearchMap from '@/wells/components/SearchMap.vue'
 import Exports from '@/wells/components/Exports.vue'
 import searchFields from '@/wells/searchFields.js'
@@ -274,6 +285,7 @@ const Tabulator = require('tabulator-tables')
 export default {
   name: 'WellSearch',
   components: {
+    'search-form-boolean-or-text': SearchFormBooleanOrText,
     'search-form-boolean-or-range': SearchFormBooleanOrRange,
     'search-form-input': SearchFormInput,
     'search-form-radio': SearchFormRadio,
@@ -570,6 +582,8 @@ export default {
         return [`${field.param}_before`, `${field.param}_after`]
       } else if (field.type === 'booleanOrRange') {
         return [`${field.param}_min`, `${field.param}_max`, `${field.param}_has_value`]
+      } else if (field.type === 'booleanOrText') {
+        return [field.param, `${field.param}_has_value`]
       } else {
         return [field.param]
       }

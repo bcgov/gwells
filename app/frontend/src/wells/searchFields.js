@@ -173,7 +173,7 @@ const searchFields = {
         { id: 'waterQualityCharacteristics', param: 'water_quality_characteristics', label: 'Water quality characteristics', type: 'select', textField: 'description', valueField: 'code' },
         { id: 'waterQualityColour', param: 'water_quality_colour', label: 'Water quality colour', type: 'select', textField: 'description', valueField: 'code' },
         { id: 'waterQualityOdor', param: 'water_quality_odor', label: 'Water quality odor', type: 'text' },
-        { id: 'ems', param: 'ems', label: 'EMS Id', type: 'text' }
+        { id: 'ems', param: 'ems', label: 'EMS Id', type: 'booleanOrText' }
       ]
     },
     {
@@ -192,7 +192,7 @@ const searchFields = {
     {
       header: 'Observation well information',
       fields: [
-        { id: 'observationWellNumber', param: 'observation_well_number', label: 'Observation well number', type: 'text' },
+        { id: 'observationWellNumber', param: 'observation_well_number', label: 'Observation well number', type: 'booleanOrText' },
         { id: 'observationWellStatus', param: 'observation_well_status', label: 'Observation well status', type: 'select', textField: 'description', valueField: 'obs_well_status_code' }
       ]
     },

@@ -1,7 +1,7 @@
 <template>
   <b-form-row class="mb-1">
     <b-col sm="6">
-      <label :id="`${id}Label`" :label-for="`${id}Input`">{{ label }}</label>
+      <label :id="`${id}Label`" :label-for="`${id}Input`" class="col-form-label">{{ label }}</label>
     </b-col>
     <b-col>
       <b-form-select
