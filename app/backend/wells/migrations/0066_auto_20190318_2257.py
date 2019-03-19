@@ -11,6 +11,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        # # Values are BC Albers. but we are using WGS84 Lat Lon to avoid rounding errors
         migrations.RunSQL(
             "SELECT UpdateGeometrySRID('well','geom',4326);"
         ),

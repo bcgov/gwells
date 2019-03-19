@@ -639,7 +639,8 @@ class Well(AuditModel):
     id_plate_attached_by = models.CharField(
         max_length=100, blank=True, null=True, verbose_name='Well identification plate attached by')
 
-    # Contains Well Longitude and Latitude in that order
+    # Contains Well Longitude and Latitude in that order,
+    # Values are BC Albers. but we are using WGS84 Lat Lon to avoid rounding errors
     geom = models.PointField(blank=True, null=True, verbose_name='Geo-referenced Location of the Well', srid=4326)
 
 
@@ -1132,6 +1133,7 @@ class ActivitySubmission(AuditModel):
         max_length=100, blank=True, null=True, verbose_name='Well identification plate attached by')
 
     # Contains Well Longitude and Latitude in that order
+    # Values are BC Albers. but we are using WGS84 Lat Lon to avoid rounding errors
     geom = models.PointField(blank=True, null=True, verbose_name='Geo-referenced Location of the Well', srid=4326)
 
     coordinate_acquisition_code = models.ForeignKey(
