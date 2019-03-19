@@ -46,6 +46,12 @@ npm run unit
 Postman API tests:
 Import the json test collections in the `api-tests/` folder into [Postman](https://www.getpostman.com/).
 
+### Import a Shapefile
+
+```
+docker-compose exec backend python manage.py import_shapefile 2 aquifers/fixtures/shp/shapefile.zip
+```
+
 ## Contributing
 
 Please see [CONTRIBUTING.md](https://github.com/bcgov/gwells/blob/master/CONTRIBUTING.md)
