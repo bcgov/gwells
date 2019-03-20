@@ -140,6 +140,12 @@ class AnyOrAllFilterSet(filters.FilterSet):
             if filtered_queryset is not initial_queryset:
                 queryset = queryset | filtered_queryset
 
+        # Additional filtering in an area defined by two corners 'ne' and 'sw'.
+        # This happens after iterating through filters because even if "match_any" is
+        # true, the bounding box still needs to be applied using 'ne' and 'sw' together.
+        queryset = self.filters['ne'].filter(queryset, self.form.cleaned_data.get('ne'))
+        queryset = self.filters['sw'].filter(queryset, self.form.cleaned_data.get('sw'))
+
         return queryset
 
 
