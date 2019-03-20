@@ -72,20 +72,6 @@ class AquiferRetrieveUpdateAPIView(RevisionMixin, AuditUpdateMixin, RetrieveUpda
     lookup_field = 'aquifer_id'
     serializer_class = serializers.AquiferSerializer
 
-    # def pre_save(self, obj):
-    #     if 'shapefile' in self.request.FILES:
-    #         self.shapefile = self.request.FILES.get('shapefile')
-    #         ds = DataSource(self.shapefile)
-    #         lyr = ds[0]
-    #         print('length:', len(lyr))
-    #         print('geom type:', str(lyr.geom_type))
-    #         assert(lyr.geom_type == "Polygon")
-    #         srs = lyr.srs
-    #         print('srs:', str(srs))
-    #         print('fields:', lyr.fields)
-    #         geom = lyr.GetNextFeature().GetGeometryRef().wkt
-    #         self.geom = geom
-
 
 class AquiferListCreateAPIView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     """List aquifers

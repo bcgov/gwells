@@ -7,10 +7,13 @@ from aquifers.models import Aquifer as NewAquifer
 
 def add_shapefile(apps, schema_editor):
     Aquifer = apps.get_model('aquifers', 'Aquifer')
-    for aquifer in Aquifer.objects.all():
-        NewAquifer.load_shapefile(
-            aquifer, "aquifers/fixtures/shp/shapefile.zip")
-        aquifer.save()
+    aquifers = Aquifer.objects.all()
+    aquifer = aquifers[0]
+    NewAquifer.load_shapefile(aquifer, "aquifers/fixtures/shp/aquifer1193.zip")
+    aquifer.save()
+    aquifer = aquifers[1]
+    NewAquifer.load_shapefile(aquifer, "aquifers/fixtures/shp/aquiferagate.zip")
+    aquifer.save()
 
 
 def remove_shapefile(apps, schema_editor):

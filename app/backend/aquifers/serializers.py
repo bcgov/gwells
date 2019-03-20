@@ -131,6 +131,7 @@ class AquiferSerializer(serializers.ModelSerializer):
         """Convert `username` to lowercase."""
         ret = super().to_representation(instance)
         if instance.geom:
+            instance.geom.transform(4326)
             ret['geom'] = json.loads(instance.geom.json)
         return ret
 

@@ -285,20 +285,21 @@ class Aquifer(AuditModel):
                 # break
         zip_ref.close()
 
-        assert os.path.exists(the_shapefile)
-
         ds = DataSource(the_shapefile)
         for layer in ds:
             for feat in layer:
                 geom = feat.geom
                 # Make a GEOSGeometry object using the string representation.
                 wkt = geom.wkt
+                if not geom.srid == 3005:
+                    raise Exception("Only BC Albers data is accepted.")
                 geos_geom = GEOSGeometry(wkt, srid=3005)
                 # Just return the first feature in the shapefile.
                 # TODO: should we have validation that the shapefile just contains one
                 # POLYGON feature?
                 self.geom = geos_geom
                 return geos_geom
+        raise Exception('no feature found.')
         # TODO: cleanup temporary files
 
     class Meta:
