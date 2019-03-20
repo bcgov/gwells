@@ -330,8 +330,6 @@ class WellLocationListAPIView(ListAPIView):
         if count > 2000:
             return Response([])
 
-        print(count)
-
         return super().get(request)
 
 
