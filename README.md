@@ -48,8 +48,17 @@ Import the json test collections in the `api-tests/` folder into [Postman](https
 
 ### Import a Shapefile
 
+Single shapefile, with aquifer ID specified in CLI.
 ```
 docker-compose exec backend python manage.py import_shapefile 2 aquifers/fixtures/shp/shapefile.zip
+```
+
+Bulk import, requires the AQ_NUMBER attribute on each polygon. Requires a folder with shapefiles to be prepared and passed in (zipped or not)
+```
+mkdir app/backend/bulk
+mv DATABC_EXPORT_FILE.zip app/backend/bulk/
+
+docker-compose exec backend python manage.py import_bulk_shapefile bulk
 ```
 
 ## Contributing
