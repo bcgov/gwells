@@ -23,6 +23,7 @@ from django.contrib.gis.geos.prototypes.io import wkt_w
 from django.core.management.base import BaseCommand
 from django.contrib.gis.gdal import DataSource
 from django.contrib.gis.geos import GEOSGeometry
+from django.contrib.gis import geos
 
 import logging
 
@@ -44,7 +45,7 @@ class Command(BaseCommand):
             for root, directories, filenames in os.walk(options['path']):
                 for filename in filenames: 
                     if filename.lower().endswith(".zip"):
-                        print("unzipping", filename)
+                        logging.info("unzipping {}".format(filename))
                         zip_ref = zipfile.ZipFile(os.path.join(root, filename))
                         zip_ref.extractall(root)
                         zip_ref.close()
@@ -55,7 +56,7 @@ class Command(BaseCommand):
         for root, directories, filenames in os.walk(options['path']):
             for filename in filenames: 
                 if filename.lower().endswith(".shp"):
-                    print("processing shapefile", filename)
+                    logging.info("processing shapefile".format(filename))
                     ds = DataSource(os.path.join(root, filename))
                     for layer in ds:
                         for feat in layer:
@@ -69,17 +70,32 @@ class Command(BaseCommand):
                             if not geom.srid == 3005:
                                 logging.info("Non BC-albers feature, skipping.")
                                 continue
+
                             aquifer_id = feat.get("AQ_NUMBER")
                             try:
                                 aquifer = Aquifer.objects.get(pk=2) #int(aquifer_id))
                             except Aquifer.DoesNotExist:
                                 logging.info("Aquifer {} not found in database, skipping import.".format(aquifer_id))
                                 continue
-                            wkt = wkt_w(dim=2).write( GEOSGeometry(geom.wkt, srid=3005)).decode()
-                            try:
-                                aquifer.geom = GEOSGeometry(wkt, srid=3005)
-                            except Exception as e:
 
-                                logging.info("import failed. {}".format(e))
+                            wkt = wkt_w(dim=2).write( GEOSGeometry(geom.wkt, srid=3005)).decode()
+                            geos_geom = GEOSGeometry(wkt, srid=3005)
+                            if isinstance(geos_geom, geos.MultiPolygon):
+                                geos_geom_out = geos_geom[0]
+                                for g in geos_geom:
+                                    if len(g.wkt) > len(geos_geom_out.wkt):
+                                        geos_geom_out = g
+                            elif isinstance(geos_geom, geos.Polygon):
+                                geos_geom_out = geos_geom
+                            else:
+                                logging.info("Bad geometry type: {}, skipping.".format(geos_geom.__class__))
                                 continue
+                            
+                            try:
+                                aquifer.geom = geos_geom_out
+                            except Exception as e:
+                                logging.info("import failed. {}".format(e))
+                                import code; code.interact(local = locals())
+                                sys.exit(1)
+
                             aquifer.save()
