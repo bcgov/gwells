@@ -21,6 +21,14 @@ export default {
     })
   },
 
+  watch: {
+    aquifers: function (oldAquifers, newAquifers) {
+      console.log(oldAquifers);
+      console.log(newAquifers);
+      console.log("Prop Changed");
+    }
+  },
+
   methods: {
     initLeaflet () {
       // There is a known issue using leaflet with webpack, this is a workaround
@@ -107,7 +115,6 @@ export default {
       // Add checkboxes for layers
       L.control.layers(null, mapLayers, {collapsed: true}).addTo(this.map)
 
-      console.log(this.aquifers)
 
     }
   }
