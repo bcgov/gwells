@@ -246,25 +246,7 @@ class WellListAPIView(ListAPIView):
             ) \
             .order_by("well_tag_number")
 
-        well_tag_or_plate = self.request.query_params.get('well', None)
-        if well_tag_or_plate:
-            qs = qs.filter(Q(well_tag_number=well_tag_or_plate) | Q(
-                identification_plate_number=well_tag_or_plate))
-
         return qs
-
-    def list(self, request):
-        """ List wells with pagination """
-        queryset = self.get_queryset()
-        filtered_queryset = self.filter_queryset(queryset)
-
-        page = self.paginate_queryset(filtered_queryset)
-        if page is not None:
-            serializer = WellListSerializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = WellListSerializer(filtered_queryset, many=True)
-        return Response(serializer.data)
 
 
 class WellTagSearchAPIView(ListAPIView):
@@ -335,11 +317,6 @@ class WellLocationListAPIView(ListAPIView):
 
     def get_queryset(self):
         qs = self.queryset
-
-        well_tag_or_plate = self.request.query_params.get('well', None)
-        if well_tag_or_plate:
-            qs = qs.filter(Q(well_tag_number=well_tag_or_plate) | Q(
-                identification_plate_number=well_tag_or_plate))
 
         return qs
 

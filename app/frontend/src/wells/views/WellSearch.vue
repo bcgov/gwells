@@ -16,8 +16,8 @@
             </b-col>
           </b-row>
           <b-card no-body border-variant="dark">
-            <b-tabs card>
-              <b-tab title="Basic Search" active>
+            <b-tabs card v-model="tabIndex">
+              <b-tab title="Basic Search">
                 <div class="card-text">
                   <b-row>
                     <b-col>
@@ -151,6 +151,31 @@
                         v-on:start-input="searchParams[`${field.param}_min`] = $event"
                         :max-value="searchParams[`${field.param}_max`]"
                         v-on:end-input="searchParams[`${field.param}_max`] = $event"/>
+                      <search-form-boolean-or-range
+                        v-else-if="field.type === 'booleanOrRange'"
+                        type="number"
+                        :id="`${field.id}Filter`"
+                        :label="field.label"
+                        boolean-label="Any value"
+                        :errors="searchErrors[field.param]"
+                        :boolean-errors="searchErrors[`${field.param}_any_value`]"
+                        :step="field.step ? field.step : 'any'"
+                        :min-value="searchParams[`${field.param}_min`]"
+                        v-on:start-input="searchParams[`${field.param}_min`] = $event"
+                        :max-value="searchParams[`${field.param}_max`]"
+                        v-on:end-input="searchParams[`${field.param}_max`] = $event"
+                        :boolean-value="searchParams[`${field.param}_has_value`]"
+                        v-on:boolean-input="searchParams[`${field.param}_has_value`] = $event"/>
+                      <search-form-boolean-or-text
+                        v-else-if="field.type === 'booleanOrText'"
+                        :type="text"
+                        :id="`${field.id}Filter`"
+                        :label="field.label"
+                        boolean-label="Any value"
+                        :errors="searchErrors[field.param]"
+                        v-model="searchParams[field.param]"
+                        :boolean-value="searchParams[`${field.param}_has_value`]"
+                        v-on:boolean-input="searchParams[`${field.param}_has_value`] = $event"/>
                       <search-form-range
                         v-else-if="field.type === 'dateRange'"
                         type="date"
@@ -249,6 +274,8 @@ import SearchFormInput from '@/wells/components/SearchFormInput.vue'
 import SearchFormRadio from '@/wells/components/SearchFormRadio.vue'
 import SearchFormRange from '@/wells/components/SearchFormRange.vue'
 import SearchFormSelect from '@/wells/components/SearchFormSelect.vue'
+import SearchFormBooleanOrRange from '@/wells/components/SearchFormBooleanOrRange.vue'
+import SearchFormBooleanOrText from '@/wells/components/SearchFormBooleanOrText.vue'
 import SearchMap from '@/wells/components/SearchMap.vue'
 import Exports from '@/wells/components/Exports.vue'
 import searchFields from '@/wells/searchFields.js'
@@ -258,6 +285,8 @@ const Tabulator = require('tabulator-tables')
 export default {
   name: 'WellSearch',
   components: {
+    'search-form-boolean-or-text': SearchFormBooleanOrText,
+    'search-form-boolean-or-range': SearchFormBooleanOrRange,
     'search-form-input': SearchFormInput,
     'search-form-radio': SearchFormRadio,
     'search-form-range': SearchFormRange,
@@ -269,6 +298,7 @@ export default {
     return {
       isBusy: false,
       isInitialSearch: true,
+      tabIndex: 0,
       currentPage: 1,
       perPage: 10,
       numberOfRecords: 0,
@@ -295,14 +325,27 @@ export default {
   },
   computed: {
     ...mapGetters(['codes', 'drillerNames', 'organizationNames', 'userRoles']),
-    selectedFilterIds: function () {
+    selectedFilterIds () {
       return this.selectedFilters.map(filter => filter.id)
     },
-    additionalFilterFields: function () {
+    defaultFilterFields () {
+      return this.defaultFilters.map(section => section.fields).reduce((a, b) => a.concat(b), [])
+    },
+    additionalFilterFields () {
       return this.additionalFilters.map(section => section.fields).reduce((a, b) => a.concat(b), [])
     },
-    landDistrictOptions: function () {
-      if (!this.codes.land_district_codes || Object.entries(this.codes.land_district_codes).length === 0) {
+    defaultSearchParams () {
+      const params = {match_any: 'true'}
+      // Populate params with empty values for selects
+      const defaultSelectParams = this.defaultFilterFields.filter(filter => filter.type === 'select').map(filter => filter.param)
+      defaultSelectParams.forEach((param) => {
+        params[param] = ''
+      })
+
+      return params
+    },
+    landDistrictOptions () {
+      if (this.codes.land_district_codes === undefined || (this.codes.land_district_codes && Object.entries(this.codes.land_district_codes).length === 0)) {
         return []
       }
       return this.codes.land_district_codes.map((district) => {
@@ -312,7 +355,7 @@ export default {
         }
       })
     },
-    wellSubclassOptions: function () {
+    wellSubclassOptions () {
       if (!this.codes.well_classes) {
         return []
       }
@@ -328,38 +371,38 @@ export default {
 
       return options
     },
-    filterSelectOptions: function () {
+    filterSelectOptions () {
       return {
-        aquiferLithology: this.codes.aquifer_lithology_codes,
-        coordinateAcquisitionCode: this.codes.coordinate_acquisition_codes,
-        decommissionMethod: this.codes.decommission_methods,
-        developmentMethods: this.codes.development_methods,
-        drillingMethods: this.codes.drilling_methods,
-        filterPackMaterial: this.codes.filter_pack_material,
-        filterPackMaterialSize: this.codes.filter_pack_material_size,
-        groundElevationMethod: this.codes.ground_elevation_methods,
-        intendedWaterUse: this.codes.intended_water_uses,
+        aquiferLithology: this.codes.aquifer_lithology_codes || [],
+        coordinateAcquisitionCode: this.codes.coordinate_acquisition_codes || [],
+        decommissionMethod: this.codes.decommission_methods || [],
+        developmentMethods: this.codes.development_methods || [],
+        drillingMethods: this.codes.drilling_methods || [],
+        filterPackMaterial: this.codes.filter_pack_material || [],
+        filterPackMaterialSize: this.codes.filter_pack_material_size || [],
+        groundElevationMethod: this.codes.ground_elevation_methods || [],
+        intendedWaterUse: this.codes.intended_water_uses || [],
         landDistrict: this.landDistrictOptions,
-        licencedStatus: this.codes.licenced_status_codes,
-        linerMaterial: this.codes.liner_material_codes,
-        observationWellStatus: this.codes.observation_well_status,
-        orgResponsible: this.organizationNames,
-        ownerProvince: this.codes.province_codes,
-        personResponsible: this.drillerNames,
-        publicationStatus: this.codes.well_publication_status_codes,
-        screenIntakeMethod: this.codes.screen_intake_methods,
-        screenBottoms: this.codes.screen_bottoms,
-        screenMaterial: this.codes.screen_materials,
-        screenOpenings: this.codes.screen_openings,
-        screenType: this.codes.screen_types,
-        surfaceSealMaterial: this.codes.surface_seal_materials,
-        surfaceSealMethod: this.codes.surface_seal_methods,
-        waterQualityCharacteristics: this.codes.water_quality_characteristics,
-        waterQualityColour: this.codes.water_quality_colours,
-        wellClass: this.codes.well_classes,
-        wellStatus: this.codes.well_status_codes,
+        licencedStatus: this.codes.licenced_status_codes || [],
+        linerMaterial: this.codes.liner_material_codes || [],
+        observationWellStatus: this.codes.observation_well_status || [],
+        orgResponsible: this.organizationNames || [],
+        ownerProvince: this.codes.province_codes || [],
+        personResponsible: this.drillerNames || [],
+        publicationStatus: this.codes.well_publication_status_codes || [],
+        screenIntakeMethod: this.codes.screen_intake_methods || [],
+        screenBottoms: this.codes.screen_bottoms || [],
+        screenMaterial: this.codes.screen_materials || [],
+        screenOpenings: this.codes.screen_openings || [],
+        screenType: this.codes.screen_types || [],
+        surfaceSealMaterial: this.codes.surface_seal_materials || [],
+        surfaceSealMethod: this.codes.surface_seal_methods || [],
+        waterQualityCharacteristics: this.codes.water_quality_characteristics || [],
+        waterQualityColour: this.codes.water_quality_colours || [],
+        wellClass: this.codes.well_classes || [],
+        wellStatus: this.codes.well_status_codes || [],
         wellSubclass: this.wellSubclassOptions,
-        yieldEstimationMethod: this.codes.yield_estimation_methods
+        yieldEstimationMethod: this.codes.yield_estimation_methods || []
       }
     }
   },
@@ -425,6 +468,7 @@ export default {
       })
     },
     handleSearchSubmit () {
+      this.cleanSearchParams()
       this.updateQueryParams()
       this.wellSearch()
       this.locationSearch()
@@ -435,16 +479,24 @@ export default {
       this.locationSearch()
     },
     searchParamsReset () {
-      this.searchParams = {match_any: 'true'}
+      this.searchParams = {...this.defaultSearchParams}
       this.selectedFilters = []
       this.$router.push({ query: null })
+    },
+    initTabIndex () {
+      const hash = this.$route.hash
+      if (hash === '#advanced') {
+        this.tabIndex = 1
+      } else {
+        this.tabIndex = 0
+      }
     },
     initSearchParams () {
       const query = this.$route.query
       // check if the page loads with a query (e.g. user bookmarked a search)
       // if so, set the search boxes to the query params
       if (Object.entries(query).length !== 0 && query.constructor === Object) {
-        this.searchParams = Object.assign({}, query)
+        this.searchParams = Object.assign({...this.defaultSearchParams}, query)
       } else {
         this.searchParamsReset()
       }
@@ -452,9 +504,8 @@ export default {
     initSelectedFilters () {
       const query = this.$route.query
       this.additionalFilterFields.filter((field) => {
-        return (query[field.param] !== undefined) ||
-          (field.minParam && query[field.minParam] !== undefined) ||
-          (field.maxParam && query[field.maxParam] !== undefined)
+        const fieldParams = this.getParamNames(field)
+        return fieldParams.some(param => param in query)
       }).forEach(field => this.selectedFilters.push(field))
     },
     handleMapCoordinate (latln) {
@@ -479,30 +530,63 @@ export default {
         url: `/gwells/well/${cell.getValue()}/`
       }
     },
+    cleanSearchParams () {
+      // Clear any null or empty string values, to keep URLs clean.
+      Object.entries(this.searchParams).forEach(([key, value]) => {
+        if (value === undefined || value === '' || value === null) {
+          delete this.searchParams[key]
+        }
+      })
+    },
     updateQueryParams () {
       const params = Object.assign({}, this.searchParams)
-
-      // check if every key on the params object is empty.
-      // evaluations to boolean
-      const paramsEmpty = Object.keys(params).every((x) => {
-        return params[x] === '' || params[x] === null
-      })
+      const paramsEmpty = Object.entries(params).length === 0 && params.constructor === Object
 
       // if params are completely empty, clear the query string,
       // otherwise add the params to the query string.  this allows
       // users to bookmark searches.
-      this.$router.push({ query: paramsEmpty ? null : this.searchParams })
+      const query = paramsEmpty ? null : params
+      const tabHash = (this.tabIndex === 1) ? 'advanced' : null
+
+      this.$router.push({ query: query, hash: tabHash })
     },
     selectFilter () {
       if (this.selectedFilter) {
         this.selectedFilters.push(this.selectedFilter)
+        // Set an empty value to show placeholder if we don't already have one.
+        if (this.selectedFilter.type === 'select' &&
+            !(this.selectedFilter.param in this.searchParams)) {
+          this.searchParams[this.selectedFilter.param] = ''
+        } else if (this.selectedFilter.type === 'booleanOrRange' &&
+            !(`${this.selectedFilter.param}_has_value` in this.searchParams)) {
+          this.searchParams[`${this.selectedFilter.param}_has_value`] = false
+        }
       }
 
       this.selectedFilter = null
     },
     removeSelectedFilter (filterId) {
       const index = this.selectedFilters.findIndex(filter => filterId === filter.id)
+      const filter = this.selectedFilters[index]
+      const params = this.getParamNames(filter)
+
       this.selectedFilters.splice(index, 1)
+      params.filter(
+        param => param in this.searchParams).forEach(
+        param => delete this.searchParams[param])
+    },
+    getParamNames (field) {
+      if (field.type === 'range') {
+        return [`${field.param}_min`, `${field.param}_max`]
+      } else if (field.type === 'dateRange') {
+        return [`${field.param}_before`, `${field.param}_after`]
+      } else if (field.type === 'booleanOrRange') {
+        return [`${field.param}_min`, `${field.param}_max`, `${field.param}_has_value`]
+      } else if (field.type === 'booleanOrText') {
+        return [field.param, `${field.param}_has_value`]
+      } else {
+        return [field.param]
+      }
     }
   },
   created () {
@@ -511,6 +595,7 @@ export default {
     this.$store.dispatch(FETCH_ORGANIZATION_NAMES)
 
     this.initSearchParams()
+    this.initTabIndex()
     this.initSelectedFilters()
     setTimeout(() => {
       this.locationSearch()
