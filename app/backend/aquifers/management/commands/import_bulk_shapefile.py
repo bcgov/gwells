@@ -73,7 +73,7 @@ class Command(BaseCommand):
 
                             aquifer_id = feat.get("AQ_NUMBER")
                             try:
-                                aquifer = Aquifer.objects.get(pk=2) #int(aquifer_id))
+                                aquifer = Aquifer.objects.get(pk=int(aquifer_id))
                             except Aquifer.DoesNotExist:
                                 logging.info("Aquifer {} not found in database, skipping import.".format(aquifer_id))
                                 continue
@@ -94,7 +94,7 @@ class Command(BaseCommand):
                             try:
                                 aquifer.geom = geos_geom_out
                             except Exception as e:
-                                logging.info("import failed. {}".format(e))
+                                logging.info("import failed. {}, droppin into shell for inspection".format(e))
                                 import code; code.interact(local = locals())
                                 sys.exit(1)
 
