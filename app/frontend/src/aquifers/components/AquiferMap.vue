@@ -8,6 +8,10 @@ import { tiledMapLayer } from 'esri-leaflet'
 
 export default {
   name: 'AquiferMap',
+  props: ['aquifers'],
+  // watch: {
+  //   aquifers
+  // },
   created () {
     // There seems to be an issue loading leaflet immediately on mount, we use nextTick to ensure
     // that the view has been rendered at least once before injecting the map.
@@ -16,6 +20,7 @@ export default {
       this.initMap()
     })
   },
+
   methods: {
     initLeaflet () {
       // There is a known issue using leaflet with webpack, this is a workaround
@@ -100,7 +105,10 @@ export default {
       }
 
       // Add checkboxes for layers
-      L.control.layers(null, mapLayers, {collapsed: false}).addTo(this.map)
+      L.control.layers(null, mapLayers, {collapsed: true}).addTo(this.map)
+
+      console.log(this.aquifers)
+
     }
   }
 }

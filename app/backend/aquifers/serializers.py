@@ -161,7 +161,7 @@ class AquiferSerializer(serializers.ModelSerializer):
             'vulnerability',
             'resources',
             # 'shapefile',
-            # 'geom'
+            'geom'
         )
 
 
