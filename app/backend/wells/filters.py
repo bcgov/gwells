@@ -28,6 +28,11 @@ from wells.models import (
     Well,
 )
 
+# List of filters that must be applied as AND, not OR
+# These will be excluded from the "match any" filter behavior.
+# e.g. 'sw' and 'ne' form a bounding box; they must be applied together.
+MATCH_ANY_EXCLUDED_FILTERS = ('sw', 'ne')
+
 
 class PointWidget(SuffixedMultiWidget):
     template_name = 'django_filters/widgets/multiwidget.html'
@@ -136,6 +141,11 @@ class AnyOrAllFilterSet(filters.FilterSet):
         queryset = queryset.none()
 
         for name, value in self.form.cleaned_data.items():
+            # some filters aren't compatible with the match_any behavior,
+            # namely filters like 'sw' and 'ne' that only make sense when run together
+            if name in MATCH_ANY_EXCLUDED_FILTERS:
+                continue
+
             filtered_queryset = self.filters[name].filter(initial_queryset, value)
             assert isinstance(filtered_queryset, QuerySet), \
                 "Expected '%s.%s' to return a QuerySet, but got a %s instead." \
@@ -151,11 +161,10 @@ class AnyOrAllFilterSet(filters.FilterSet):
         if not filter_applied:
             queryset = initial_queryset
 
-        # Additional filtering in an area defined by two corners 'ne' and 'sw'.
-        # This happens after iterating through filters because even if "match_any" is
-        # true, the bounding box still needs to be applied using 'ne' and 'sw' together.
-        queryset = self.filters['ne'].filter(queryset, self.form.cleaned_data.get('ne'))
-        queryset = self.filters['sw'].filter(queryset, self.form.cleaned_data.get('sw'))
+        # Additional filtering that can't be included in the "match any" filtering
+        # these filters need to be applied together
+        for excluded_filter in MATCH_ANY_EXCLUDED_FILTERS:
+            queryset = self.filters[excluded_filter].filter(queryset, self.form.cleaned_data.get(excluded_filter))
 
         return queryset
 
