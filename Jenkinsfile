@@ -398,6 +398,22 @@ def dbBackup (String envProject, String envSuffix) {
 }
 
 
+// Database purge
+def dbKeepOnly (String envProject, String envSuffix, int maxBackups = 10) {
+    def dcName = envSuffix == "dev" ? "${appName}-pgsql-${envSuffix}-${prNumber}" : "${appName}-pgsql-${envSuffix}"
+    def dumpDir = "/var/lib/pgsql/data/deployment-backups"
+    return sh (
+        script: """
+            oc rsh -n ${envProject} dc/${dcName} bash -c " \
+                find ${dumpDir} -name *.dump -printf '%Ts\t%p\n' \
+                    | sort -nr | cut -f2 | tail -n +${maxBackups} | xargs rm 2>/dev/null\
+                    || echo 'No extra backups to remove'
+            "
+        """
+    )
+}
+
+
 pipeline {
     environment {
         // Project-wide settings - app name, repo
@@ -584,7 +600,6 @@ pipeline {
                 }
             }
         }
-
 
 
         // the Django Unit Tests stage runs backend unit tests using a test DB that is
@@ -1239,6 +1254,22 @@ pipeline {
             steps {
                 script {
                     def result = functionalTest ('PROD - Smoke Tests', prodHost, prodSuffix, 'SearchSpecs')
+                }
+            }
+        }
+
+
+        stage('PROD - Post-Deploy Cleanup') {
+            when {
+                expression { env.CHANGE_TARGET == 'master' }
+            }
+            steps {
+                script {
+                    // Backup
+                    dbBackup (prodProject, prodSuffix)
+
+                    // Clean backupsq
+                    dbKeepOnly (prodProject, prodSuffix, 10)
                 }
             }
         }
