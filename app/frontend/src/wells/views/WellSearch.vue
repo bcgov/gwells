@@ -504,7 +504,7 @@ export default {
     searchParamsReset () {
       this.searchParams = {...this.defaultSearchParams}
       this.selectedFilters = []
-      // this.$router.push({ query: null })
+      this.$router.push({ query: null })
     },
     initTabIndex () {
       const hash = this.$route.hash
