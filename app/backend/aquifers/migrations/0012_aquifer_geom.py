@@ -33,8 +33,8 @@ class Migration(migrations.Migration):
             field=django.contrib.gis.db.models.fields.PolygonField(
                 null=True, srid=3005),
         ),
-        migrations.RunPython(
-            add_shapefile,
-            reverse_code=remove_shapefile
-        ),
+        # migrations.RunPython(
+        #     add_shapefile,
+        #     reverse_code=remove_shapefile
+        # ),
     ]
