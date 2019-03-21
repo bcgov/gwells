@@ -180,7 +180,8 @@ export default {
       'files_uploading',
       'file_upload_error',
       'file_upload_success',
-      'upload_files'
+      'upload_files',
+      'shapeFile'
     ])
   },
   watch: {
@@ -231,6 +232,8 @@ export default {
       }
     },
     save () {
+      console.log("Attempt to get file from child");
+      console.log(AquiferForm.data());
       this.showSaveSuccess = false
       this.fieldErrors = {}
       ApiService.patch('aquifers', this.id, this.record)

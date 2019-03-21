@@ -246,7 +246,8 @@
           horizontal
           label-cols="4"
           label="Shapefile">
-          <input type="file" id="shapefile" ref="shapefile" v-on:change="handleShapefileUpload()"/>
+          <b-form-file
+            v-model="shapefile"/>
         </b-form-group>
       </b-col>
     </b-row>
@@ -353,10 +354,13 @@ import { mapMutations, mapState } from 'vuex'
 export default {
   data () {
     return {
-      shapefile: ''
+    
     }
   },
   computed: {
+
+
+
     fieldErrorMessages () {
       return mapValues(this.fieldErrors, (messages) => messages.join(', '))
     },
@@ -371,6 +375,16 @@ export default {
         this.setFiles(value)
       }
     },
+
+    shapefile: {
+      get: function () {
+        return this.shapeFile
+      },
+      set: function (value) {
+        this.setShapeFile(value)
+      }
+    },
+  
     privateDocument: {
       get: function () {
         return this.isPrivate
@@ -391,7 +405,8 @@ export default {
     ]),
     ...mapState('documentState', [
       'isPrivate',
-      'upload_files'
+      'upload_files',
+      'shapeFile'
     ])
   },
 
@@ -404,7 +419,8 @@ export default {
     ...mapMutations('aquiferCodes', ['addCodes']),
     ...mapMutations('documentState', [
       'setFiles',
-      'setPrivate'
+      'setPrivate',
+      'setShapeFile'
     ]),
     handleAddResource () {
       this.record.resources.push({
@@ -412,9 +428,6 @@ export default {
         url: '',
         section_id: '1'
       })
-    },
-    handleShapefileUpload () {
-      this.shapefile = this.$refs.shapefile.files[0]
     },
     handleDeleteResource (i) {
       this.record.resources.splice(i, 1)
