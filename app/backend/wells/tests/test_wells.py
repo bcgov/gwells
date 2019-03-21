@@ -19,6 +19,7 @@ from rest_framework import status
 
 
 class TestWellLocationsSearch(APITestCase):
+    fixtures = ['wellsearch-codetables', 'wellsearch']
 
     def test_well_locations(self):
         # Basic test to ensure that the well location search returns a non-error response
