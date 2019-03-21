@@ -458,6 +458,10 @@ export default {
       })
     },
     handleMapMove () {
+      this.setMapBounds()
+      this.handleSearchSubmit()
+    },
+    setMapBounds () {
       if (this.$refs.searchMap && this.$refs.searchMap.map) {
         const bounds = this.$refs.searchMap.map.getBounds()
         const sw = bounds.getSouthWest()
@@ -470,7 +474,12 @@ export default {
         }
         this.mapBounds = boundBox
       }
-      this.handleSearchSubmit()
+    },
+    resetMapBounds () {
+      if (this.$refs.searchMap && this.$refs.searchMap.resetView) {
+        this.$refs.searchMap.resetView()
+        this.setMapBounds()
+      }
     },
     handleSearchSubmit () {
       this.cleanSearchParams()
@@ -479,6 +488,7 @@ export default {
       this.locationSearch()
     },
     resetButtonHandler () {
+      this.resetMapBounds()
       this.searchParamsReset()
       this.wellSearch()
       this.locationSearch()
@@ -486,7 +496,7 @@ export default {
     searchParamsReset () {
       this.searchParams = {...this.defaultSearchParams}
       this.selectedFilters = []
-      this.$router.push({ query: null })
+      // this.$router.push({ query: null })
     },
     initTabIndex () {
       const hash = this.$route.hash
