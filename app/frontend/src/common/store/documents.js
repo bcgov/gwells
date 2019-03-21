@@ -22,9 +22,21 @@ export default {
     files_uploading: false,
     file_upload_errors: [],
     file_upload_error: false,
-    file_upload_success: false
+    file_upload_success: false,
+    shapeFile: null
   },
   actions: {
+    uploadShapeFile (context, payload) {
+      const file = context.state.shapeFile;
+      let formData = new FormData();
+      formData.append('geometry', file);
+      const url = `${payload.documentType}/${payload.recordId}/geometry`;
+      ApiService.post(url, formData).then( (response) => { 
+        context.commit('setShapeFile', null);
+      }).catch( (response) => { 
+        context.commit('setShapeFile', null);
+      });
+    },
     uploadFiles (context, payload) {
       context.commit('setFilesUploading', true)
       let documentType = payload.documentType
@@ -109,6 +121,9 @@ export default {
     },
     setFileUploadSuccess (state, payload) {
       state.file_upload_success = payload
+    },
+    setShapeFile (state, payload) {
+      state.shapeFile = payload
     },
     setFiles (state, payload) {
       state.upload_files = payload
