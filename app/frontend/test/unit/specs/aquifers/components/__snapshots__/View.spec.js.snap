@@ -2,7 +2,7 @@
 
 exports[`View Component Edit mode matches the snapshot 1`] = `
 <div
-  class="card container container-wide p-1"
+  class="card container p-1"
 >
   <div
     class="card-body"
@@ -63,7 +63,7 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
 
 exports[`View Component View mode matches the snapshot 1`] = `
 <div
-  class="card container container-wide p-1"
+  class="card container p-1"
 >
   <div
     class="card-body"
