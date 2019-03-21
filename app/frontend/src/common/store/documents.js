@@ -13,6 +13,7 @@
 */
 
 import ApiService from '@/common/services/ApiService.js'
+import axios from 'axios';
 
 export default {
   namespaced: true,
@@ -26,6 +27,20 @@ export default {
     shapeFile: null
   },
   actions: {
+    uploadShapeFile (context, payload) {
+      const file = context.state.shapeFile;
+      console.log("Context", context);
+      console.log("Payload", payload);
+      let formData = new FormData();
+      formData.append('geometry', file);
+      console.log('FormData', formData);
+      const url = `${payload.documentType}/${payload.recordId}/geometry`;
+      axios.post(url, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        }
+      }).then( (response) => { console.log(response) }).catch( (response) => { console.log(response) });
+    },
     uploadFiles (context, payload) {
       context.commit('setFilesUploading', true)
       let documentType = payload.documentType

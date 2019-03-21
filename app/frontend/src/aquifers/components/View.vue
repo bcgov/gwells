@@ -192,6 +192,7 @@ export default {
   methods: {
     ...mapActions('documentState', [
       'uploadFiles',
+      'uploadShapeFile',
       'fileUploadSuccess',
       'fileUploadFail'
     ]),
@@ -203,6 +204,7 @@ export default {
     handleSaveSuccess (response) {
       this.fetch()
       this.navigateToView()
+    
       if (this.$refs.aquiferHistory) {
         this.$refs.aquiferHistory.update()
       }
@@ -219,6 +221,18 @@ export default {
           console.log(error)
         })
       }
+
+    if (this.shapeFile) {
+      console.log("Shape File Exists")
+      console.log(this.shapeFile);
+      this.uploadShapeFile({
+        documentType: 'aquifers',
+        recordId: this.id
+      });
+    } else {
+      console.log("Shape file does not exist");
+      console.log(this.shapeFile);
+    }
     },
     handlePatchError (error) {
       if (error.response) {
