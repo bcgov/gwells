@@ -2972,7 +2972,7 @@
 							"response": []
 						},
 						{
-							"name": "sw_long and sw_lat params (valid)",
+							"name": "sw_long, sw_lat and ne_long params (missing ne_lat)",
 							"event": [
 								{
 									"listen": "test",
@@ -2998,7 +2998,7 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?sw_long=-122.60&sw_lat=49.24",
+									"raw": "{{base_url}}/api/v1/wells?sw_long=-122.60&sw_lat=49.24&ne_long=-122.58",
 									"host": [
 										"{{base_url}}"
 									],
@@ -3015,6 +3015,10 @@
 										{
 											"key": "sw_lat",
 											"value": "49.24"
+										},
+										{
+											"key": "ne_long",
+											"value": "-122.58"
 										}
 									]
 								}
@@ -3022,12 +3026,12 @@
 							"response": []
 						},
 						{
-							"name": "ne_long and ne_lat params (valid)",
+							"name": "sw_long, sw_lat, ne_long and ne_lat param (invalid)",
 							"event": [
 								{
 									"listen": "test",
 									"script": {
-										"id": "11f7946c-15e1-41ea-bcc8-ed7d121f5761",
+										"id": "19dcd02f-9e31-4876-9102-fe274f4d678e",
 										"exec": [
 											"pm.test(\"Response status ok\", function () {",
 											"  pm.response.to.be.ok;",
@@ -3048,104 +3052,7 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?ne_long=-122.58&ne_lat=49.26",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"api",
-										"v1",
-										"wells"
-									],
-									"query": [
-										{
-											"key": "ne_long",
-											"value": "-122.58"
-										},
-										{
-											"key": "ne_lat",
-											"value": "49.26"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "ne_long param (missing ne_lat)",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"id": "19dcd02f-9e31-4876-9102-fe274f4d678e",
-										"exec": [
-											"pm.test(\"Response code 400\", function () {",
-											"  pm.response.to.be.clientError;",
-											"});",
-											""
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"method": "GET",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
-								"url": {
-									"raw": "{{base_url}}/api/v1/wells?ne_long=-122.58",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"api",
-										"v1",
-										"wells"
-									],
-									"query": [
-										{
-											"key": "ne_long",
-											"value": "-122.58"
-										},
-										{
-											"key": "",
-											"value": "",
-											"disabled": true
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "sw_lat and sw_long param (invalid point)",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"id": "19dcd02f-9e31-4876-9102-fe274f4d678e",
-										"exec": [
-											"pm.test(\"Response code 400\", function () {",
-											"  pm.response.to.be.clientError;",
-											"});",
-											""
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"method": "GET",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
-								"url": {
-									"raw": "{{base_url}}/api/v1/wells?sw_lat=bar&sw_long=foo",
+									"raw": "{{base_url}}/api/v1/wells?sw_lat=bar&sw_long=foo&ne_long=test&ne_lat=avalue",
 									"host": [
 										"{{base_url}}"
 									],
@@ -3162,6 +3069,14 @@
 										{
 											"key": "sw_long",
 											"value": "foo"
+										},
+										{
+											"key": "ne_long",
+											"value": "test"
+										},
+										{
+											"key": "ne_lat",
+											"value": "avalue"
 										}
 									]
 								}

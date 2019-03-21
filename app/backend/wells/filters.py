@@ -14,11 +14,11 @@
 from collections import OrderedDict
 
 from django import forms
-from django.contrib.gis.geos import Point
+from django.contrib.gis.geos import GEOSException, Polygon
 from django.db.models import Q, QuerySet
 from django_filters import rest_framework as filters
-from django_filters.constants import EMPTY_VALUES
-from django_filters.widgets import BooleanWidget, SuffixedMultiWidget
+from django_filters.widgets import BooleanWidget
+from rest_framework.filters import BaseFilterBackend
 
 from gwells.roles import WELLS_VIEWER_ROLE
 from wells.models import (
@@ -29,71 +29,26 @@ from wells.models import (
 )
 
 
-class PointWidget(SuffixedMultiWidget):
-    template_name = 'django_filters/widgets/multiwidget.html'
-    suffixes = ['long', 'lat']
+class BoundingBoxFilterBackend(BaseFilterBackend):
+    """
+    Filter that allows geographic filtering with a bounding box.
+    """
 
-    def __init__(self, attrs=None):
-        widgets = (forms.NumberInput, forms.NumberInput)
-        super().__init__(widgets, attrs)
+    def filter_queryset(self, request, queryset, view):
+        sw_long = request.query_params.get('sw_long')
+        sw_lat = request.query_params.get('sw_lat')
+        ne_long = request.query_params.get('ne_long')
+        ne_lat = request.query_params.get('ne_lat')
 
-    def decompress(self, value):
-        if value:
-            return (value.extent[0], value.extent[1])
-        return (None, None, None, None)
-
-
-class PointField(forms.MultiValueField):
-    widget = PointWidget
-
-    def __init__(self, fields=None, *args, **kwargs):
-        if fields is None:
-            fields = (forms.DecimalField(min_value=-180, max_value=180),
-                      forms.DecimalField(min_value=-90, max_value=90))
-        super().__init__(fields, *args, **kwargs)
-
-    def compress(self, data_list):
-        if data_list:
+        if sw_long and sw_lat and ne_long and ne_lat:
             try:
-                x = float(data_list[0])
-                y = float(data_list[1])
-            except (TypeError, IndexError):
-                raise forms.ValidationError(
-                    'Please provide two point values (lat and long).',
-                    code='invalid_point')
-            return Point(x=x, y=y)
+                bbox = Polygon.from_bbox((sw_long, sw_lat, ne_long, ne_lat))
+            except (ValueError, GEOSException):
+                pass
+            else:
+                queryset = queryset.filter(geom__bboverlaps=bbox)
 
-        return None
-
-
-class SWPointFilter(filters.Filter):
-    field_class = PointField
-
-    def filter(self, qs, value):
-        if value in EMPTY_VALUES:
-            return qs
-        lookups = {
-            '{}__overlaps_right'.format(self.field_name): value,
-            '{}__overlaps_above'.format(self.field_name): value,
-        }
-        qs = self.get_method(qs)(**lookups)
-
-        return qs
-
-
-class NEPointFilter(filters.Filter):
-    field_class = PointField
-
-    def filter(self, qs, value):
-        if value in EMPTY_VALUES:
-            return qs
-        lookups = {
-            '{}__overlaps_left'.format(self.field_name): value,
-            '{}__overlaps_below'.format(self.field_name): value,
-        }
-        qs = self.get_method(qs)(**lookups)
-
-        return qs
+        return queryset
 
 
 class AnyOrAllFilterSet(filters.FilterSet):
@@ -150,12 +105,6 @@ class AnyOrAllFilterSet(filters.FilterSet):
         # If there were no filters, return all results, not none.
         if not filter_applied:
             queryset = initial_queryset
-
-        # Additional filtering in an area defined by two corners 'ne' and 'sw'.
-        # This happens after iterating through filters because even if "match_any" is
-        # true, the bounding box still needs to be applied using 'ne' and 'sw' together.
-        queryset = self.filters['ne'].filter(queryset, self.form.cleaned_data.get('ne'))
-        queryset = self.filters['sw'].filter(queryset, self.form.cleaned_data.get('sw'))
 
         return queryset
 
@@ -263,13 +212,6 @@ class WellListFilter(AnyOrAllFilterSet):
     ems_has_value = filters.BooleanFilter(field_name='ems',
                                           method='filter_has_value',
                                           label='Any value for EMS id')
-
-    sw = SWPointFilter(field_name='geom',
-                       label='Southwest Point',
-                       help_text='Well location is north and east of point.')
-    ne = NEPointFilter(field_name='geom',
-                       label='Northeast Point',
-                       help_text='Well location is south and west of point.')
 
     class Meta:
         model = Well
