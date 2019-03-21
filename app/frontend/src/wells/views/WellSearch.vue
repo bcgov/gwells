@@ -1,20 +1,19 @@
 <template>
-  <b-card class="container container-wide p-1">
+  <b-card class="container p-1">
     <h1 class="card-title" id="wellSearchTitle">Well Search</h1>
-
-    <b-row class="mt-3">
+    <div>
+      <div>
+        <p>
+          Not all groundwater wells are registered with the province, as registration was voluntary until February 29, 2016. Data quality issues may impact search results.
+        </p>
+        <p>
+          Search by one of the fields below, or zoom to a location on the map and select the "Search Wells in this Area" button.
+        </p>
+      </div>
+    </div>
+    <b-row class="mt-4">
       <b-col cols="12" lg="6" xl="5">
         <b-form @submit.prevent="handleSearchSubmit()" @reset.prevent="resetButtonHandler()">
-          <b-row>
-            <b-col>
-              <p>
-                Not all groundwater wells are registered with the province, as registration was voluntary until February 29, 2016. Data quality issues may impact search results.
-              </p>
-              <p>
-                Search by one of the fields below, or zoom to a location on the map and select the "Search Wells in this Area" button.
-              </p>
-            </b-col>
-          </b-row>
           <b-card no-body border-variant="dark">
             <b-tabs card v-model="tabIndex">
               <b-tab title="Basic Search">
@@ -239,7 +238,7 @@
             :locations="locations"
             v-on:coordinate="handleMapCoordinate"
             ref="searchMap"
-            @moved="locationSearch"
+            @moved="handleMapMove"
             />
       </b-col>
     </b-row>
@@ -305,7 +304,7 @@ export default {
       latitude: null,
       longitude: null,
       locations: [],
-
+      mapBounds: {},
       selectedFilter: null,
       selectedFilters: [],
 
@@ -419,6 +418,7 @@ export default {
       // add other search parameters into the params object.
       // these will be urlencoded and the API will filter on these values.
       Object.assign(params, this.searchParams)
+      Object.assign(params, this.mapBounds)
       return ApiService.query('wells', params).then((response) => {
         this.searchErrors = {}
         this.numberOfRecords = response.data.count
@@ -447,25 +447,30 @@ export default {
     },
     locationSearch () {
       let params = Object.assign({}, this.searchParams)
-      if (this.$refs.searchMap && this.$refs.searchMap.map) {
-        const bounds = this.$refs.searchMap.map.getBounds()
-        const sw = bounds.getSouthWest()
-        const ne = bounds.getNorthEast()
-        const boundBox = {
 
-          sw_lat: sw.lat,
-          sw_long: sw.lng,
-          ne_lat: ne.lat,
-          ne_long: ne.lng
+      // merge in map bounds, if any
+      params = Object.assign(params, this.mapBounds)
 
-        }
-        params = Object.assign(params, boundBox)
-      }
       ApiService.query('wells/locations', params).then((response) => {
         this.locations = response.data.map((well) => {
           return [well.latitude, well.longitude, well.well_tag_number, well.identification_plate_number]
         })
       })
+    },
+    handleMapMove () {
+      if (this.$refs.searchMap && this.$refs.searchMap.map) {
+        const bounds = this.$refs.searchMap.map.getBounds()
+        const sw = bounds.getSouthWest()
+        const ne = bounds.getNorthEast()
+        const boundBox = {
+          sw_lat: sw.lat,
+          sw_long: sw.lng,
+          ne_lat: ne.lat,
+          ne_long: ne.lng
+        }
+        this.mapBounds = boundBox
+      }
+      this.handleSearchSubmit()
     },
     handleSearchSubmit () {
       this.cleanSearchParams()
