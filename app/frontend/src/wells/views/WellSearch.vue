@@ -22,9 +22,9 @@
                     <b-col>
                       <b-form-group>
                         <form-input id="id_search" group-class="font-weight-bold" v-model="searchParams.search">
-                          <label class="d-flex flex-row search-label">
+                          <label>
                             Search by well tag or ID plate number, street address, city or owner name
-                            <b-btn id="basicSearchInfo" size="sm" variant="primary" class="info-button"><i class="fa fa-question"></i></b-btn>
+                            <b-badge pill variant="primary" id="basicSearchInfo" tabindex="0"><i class="fa fa-question fa-lg"></i></b-badge>
                             <b-popover target="basicSearchInfo" triggers="hover focus" content="Enter the well electronic filing number or physical identification plate number, or the street address, city or well owner name."></b-popover>
                           </label>
                         </form-input>
@@ -654,17 +654,4 @@ export default {
 </script>
 
 <style>
-.info-button {
-  border-radius: 50%;
-  height: 1rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 1rem;
-  margin-left: 0.5rem;
-  margin-bottom: 3px;
-}
-.search-label {
-  align-items: center;
-}
 </style>
