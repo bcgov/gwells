@@ -240,7 +240,9 @@ class WellListAPIView(ListAPIView):
             .select_related(
                 "bcgs_id",
             ).prefetch_related(
-                Prefetch("water_quality_characteristics")
+                "water_quality_characteristics",
+                "drilling_methods",
+                "development_methods"
             ) \
             .order_by("well_tag_number")
 
