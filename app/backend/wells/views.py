@@ -52,10 +52,7 @@ from gwells.settings.base import get_env_variable
 from submissions.serializers import WellSubmissionListSerializer
 from submissions.models import WellActivityCode
 
-from wells.filters import (
-    WellListAdminFilter,
-    WellListFilter,
-    WellListFilterBackend)
+from wells.filters import BoundingBoxFilterBackend, WellListFilterBackend
 from wells.models import Well, ActivitySubmission
 from wells.serializers import (
     WellListAdminSerializer,
@@ -221,8 +218,8 @@ class WellListAPIView(ListAPIView):
     queryset = Well.objects.all()  # exclude(well_publication_status='Unpublished')
     pagination_class = APILimitOffsetPagination
 
-    filter_backends = (WellListFilterBackend, filters.SearchFilter,
-                       filters.OrderingFilter)
+    filter_backends = (WellListFilterBackend, BoundingBoxFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter)
     ordering = ('well_tag_number',)
     search_fields = ('well_tag_number', 'identification_plate_number',
                      'street_address', 'city', 'owner_full_name')
@@ -298,8 +295,8 @@ class WellLocationListAPIView(ListAPIView):
     serializer_class = WellLocationSerializer
 
     # Allow searching on name fields, names of related companies, etc.
-    filter_backends = (WellListFilterBackend, filters.SearchFilter,
-                       filters.OrderingFilter)
+    filter_backends = (WellListFilterBackend, BoundingBoxFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter)
     ordering = ('well_tag_number',)
     filterset_class = WellLocationFilter
     pagination_class = None
