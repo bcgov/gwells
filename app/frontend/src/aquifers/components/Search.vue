@@ -67,7 +67,7 @@
         </b-form-row>
         <b-form-row>
           <b-col>
-            <b-form-group>
+            <b-form-group class="aquifer-search-actions">
               <b-button variant="primary" type="submit" id="aquifers-search">Search</b-button>
               <b-button variant="default" type="reset">Reset</b-button>
             </b-form-group>
@@ -138,6 +138,10 @@ table.b-table > tfoot > tr > th.sorting::after {
 }
 ul.pagination {
   justify-content: end;
+}
+
+.aquifer-search-actions {
+  margin-top: 1em
 }
 </style>
 
