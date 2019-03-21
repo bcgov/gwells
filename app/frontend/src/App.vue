@@ -33,8 +33,10 @@ export default {
   @import './common/common.scss';
   @import './common/assets/css/ie10-viewport-bug-workaround.css';
 
-  .container-wide {
-    max-width: 1400px
+  @media (min-width: 1500px) {
+    .container {
+      max-width: 1400px
+    }
   }
 
   @media print {

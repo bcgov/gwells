@@ -1,5 +1,5 @@
 <template>
-  <b-card class="container container-wide p-1 vpHeight">
+  <b-card class="container p-1 vpHeight">
     <b-row>
       <b-col sm="2"/>
       <b-col class="centerItems" sm="8">
