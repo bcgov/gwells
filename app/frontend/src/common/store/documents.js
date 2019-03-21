@@ -13,7 +13,6 @@
 */
 
 import ApiService from '@/common/services/ApiService.js'
-import axios from 'axios';
 
 export default {
   namespaced: true,
