@@ -22,9 +22,9 @@ from django.test import TestCase
 class DataBCTest(TestCase):
 
     # Minio and the file system are mocked out - so that we don't create any artifacts during this test.
-    @patch('wells.management.commands.export.open')
-    @patch('wells.management.commands.export.Minio')
-    @patch('wells.management.commands.export.os')
+    @patch('gwells.management.commands.export_databc.open')
+    @patch('gwells.management.commands.export_databc.Minio')
+    @patch('gwells.management.commands.export_databc.os')
     def test_export_no_exceptions(self, fake_os, fake_minio, fake_open):
         # This is a very simple test, that just checks to see that the export can be run without any
         # exceptions. This should catch most of the situations that could cause an export to fail.
