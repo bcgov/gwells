@@ -29,17 +29,14 @@ export default {
   actions: {
     uploadShapeFile (context, payload) {
       const file = context.state.shapeFile;
-      console.log("Context", context);
-      console.log("Payload", payload);
       let formData = new FormData();
       formData.append('geometry', file);
-      console.log('FormData', formData);
       const url = `${payload.documentType}/${payload.recordId}/geometry`;
-      axios.post(url, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        }
-      }).then( (response) => { console.log(response) }).catch( (response) => { console.log(response) });
+      ApiService.post(url, formData).then( (response) => { 
+        context.commit('setShapeFile', null);
+      }).catch( (response) => { 
+        context.commit('setShapeFile', null);
+      });
     },
     uploadFiles (context, payload) {
       context.commit('setFilesUploading', true)

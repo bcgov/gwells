@@ -43,9 +43,6 @@ const ApiService = {
   post (resource, params) {
     return axios.post(resource, params)
   },
-  postForm (resource, formData, params) {
-    return axios.post(resource, formData, params)
-  },
   patch (resource, record, params) {
     return axios.patch(`${resource}/${record}`, params)
   },
