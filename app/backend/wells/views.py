@@ -17,7 +17,7 @@ import logging
 
 from django.db.models import Prefetch
 from django.db import connection
-from django.http import Http404, HttpResponse, JsonResponse, HttpResponseRedirect
+from django.http import Http404, HttpResponse, JsonResponse, HttpResponseRedirect, HttpResponseNotFound
 from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView
 
@@ -113,9 +113,17 @@ class WellDetail(RetrieveAPIView):
     """
     serializer_class = WellDetailSerializer
 
-    # TODO Address viewing unpublished wells when advanced search has been merged
-    queryset = Well.objects.all()  # exclude(well_publication_status='Unpublished')
     lookup_field = 'well_tag_number'
+
+    def get_queryset(self):
+
+        """ Excludes Unpublished wells for users without edit permissions """
+        if self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
+            qs = Well.objects.all()
+        else:
+            qs = Well.objects.all().exclude(well_publication_status='Unpublished')
+
+        return qs
 
     def get_serializer(self, *args, **kwargs):
         """ returns a different serializer for admin users """
@@ -197,6 +205,12 @@ class ListFiles(APIView):
                          })
                          )})
     def get(self, request, tag):
+
+        if Well.objects.get(pk=tag).well_publication_status\
+                .well_publication_status_code == 'Unpublished':
+            if not self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
+                return HttpResponseNotFound()
+
         user_is_staff = self.request.user.groups.filter(
             name=WELLS_VIEWER_ROLE).exists()
 
@@ -217,8 +231,6 @@ class WellListAPIView(ListAPIView):
 
     permission_classes = (WellsEditOrReadOnly,)
     model = Well
-    # TODO Address viewing unpublished wells when advanced search has been merged
-    queryset = Well.objects.all()  # exclude(well_publication_status='Unpublished')
     pagination_class = APILimitOffsetPagination
 
     filter_backends = (WellListFilterBackend, filters.SearchFilter,
@@ -237,7 +249,13 @@ class WellListAPIView(ListAPIView):
         return serializer_class
 
     def get_queryset(self):
-        qs = self.queryset
+
+        """ Excludes Unpublished wells for users without edit permissions """
+        if self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
+            qs = Well.objects.all()
+        else:
+            qs = Well.objects.all().exclude(well_publication_status='Unpublished')
+
         qs = qs \
             .select_related(
                 "bcgs_id",
@@ -254,8 +272,6 @@ class WellTagSearchAPIView(ListAPIView):
 
     permission_classes = (WellsEditOrReadOnly,)
     model = Well
-    queryset = Well.objects.exclude(well_publication_status='Unpublished').only(
-        'well_tag_number', 'owner_full_name')
     pagination_class = None
     serializer_class = WellTagSearchSerializer
     lookup_field = 'well_tag_number'
@@ -266,6 +282,16 @@ class WellTagSearchAPIView(ListAPIView):
         'well_tag_number',
         'owner_full_name',
     )
+
+    def get_queryset(self):
+
+        """ Excludes Unpublished wells for users without edit permissions """
+        if self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
+            qs = Well.objects.all()
+        else:
+            qs = Well.objects.all().exclude(well_publication_status='Unpublished')
+
+        return qs.only('well_tag_number', 'owner_full_name')
 
 
 class WellSubmissionsListAPIView(ListAPIView):
@@ -294,7 +320,6 @@ class WellLocationListAPIView(ListAPIView):
 
     permission_classes = (WellsEditOrReadOnly,)
     model = Well
-    queryset = Well.objects.all()
     serializer_class = WellLocationSerializer
 
     # Allow searching on name fields, names of related companies, etc.
@@ -316,7 +341,12 @@ class WellLocationListAPIView(ListAPIView):
                      'legal_block', 'legal_section', 'legal_township', 'legal_range')
 
     def get_queryset(self):
-        qs = self.queryset
+
+        """ Excludes Unpublished wells for users without edit permissions """
+        if self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
+            qs = Well.objects.all()
+        else:
+            qs = Well.objects.all().exclude(well_publication_status='Unpublished')
 
         return qs
 
