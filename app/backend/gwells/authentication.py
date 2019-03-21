@@ -36,8 +36,7 @@ class JwtOidcAuthentication(JSONWebTokenAuthentication):
 
         # Make sure the preferred username contains either idir\ or bceid\
         # so we know that the user is coming from a known sso authority
-        preferred_username = payload.get('preferred_username')
-        if not ('idir\\' in preferred_username or 'bceid\\' in preferred_username):
+        if not self.known_sso_authority(payload):
             raise exceptions.AuthenticationFailed(
                 'Preferred username is invalid.')
 
@@ -111,3 +110,8 @@ class JwtOidcAuthentication(JSONWebTokenAuthentication):
         roles_to_groups(user, roles)
 
         return user
+
+    @staticmethod
+    def known_sso_authority(payload):
+        preferred_username = payload.get('preferred_username')
+        return 'idir\\' in preferred_username or 'bceid\\' in preferred_username
