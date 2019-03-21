@@ -28,7 +28,8 @@ import operator
 
 from django.db.models import Q
 
-from rest_framework import filters
+from rest_framework import filters, status
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.generics import ListAPIView, RetrieveAPIView
@@ -301,14 +302,6 @@ class WellLocationListAPIView(ListAPIView):
     filterset_class = WellLocationFilter
     pagination_class = None
 
-    # search_fields and get_queryset are fragile here.
-    # they need to match up with the search results returned by WellListAPIView.
-    # an attempt was made to factor out filtering logic into WellSearchFilter (which WellLocationFilter
-    # inherits),
-    # but so far, not all the searchable fields have been put into that class.
-    # Please note the difference between "searchable fields" (one query param will return results that are
-    # valid
-    # for any of these fields) and "filter fields" (search by a single individual fields)
     search_fields = ('legal_pid', 'legal_plan', 'legal_district_lot',
                      'legal_block', 'legal_section', 'legal_township', 'legal_range')
 
@@ -325,7 +318,7 @@ class WellLocationListAPIView(ListAPIView):
         count = locations.count()
         # return an empty response if there are too many wells to display
         if count > 2000:
-            return Response([])
+            raise PermissionDenied("Too many wells to display on map. Please refine your search criteria or search in a smaller area.")
 
         return super().get(request)
 

@@ -22,9 +22,10 @@
                     <b-col>
                       <b-form-group>
                         <form-input id="id_search" group-class="font-weight-bold" v-model="searchParams.search">
-                          <label>
+                          <label class="d-flex flex-row search-label">
                             Search by well tag or ID plate number, street address, city or owner name
-                            <b-badge pill variant="primary" v-b-popover.hover="'Enter the well electronic filing number or physical identification plate number, or the street address, city or well owner name.'"><i class="fa fa-question fa-lg"></i></b-badge>
+                            <b-btn id="basicSearchInfo" size="sm" variant="primary" class="info-button"><i class="fa fa-question"></i></b-btn>
+                            <b-popover target="basicSearchInfo" triggers="hover focus" content="Enter the well electronic filing number or physical identification plate number, or the street address, city or well owner name."></b-popover>
                           </label>
                         </form-input>
                       </b-form-group>
@@ -240,6 +241,7 @@
             ref="searchMap"
             @moved="handleMapMove"
             />
+        <b-alert variant="info" class="mt-2" :show="!!mapError">{{ mapError }}</b-alert>
       </b-col>
     </b-row>
     <b-row class="my-5">
@@ -295,6 +297,7 @@ export default {
   },
   data () {
     return {
+      mapError: null,
       isBusy: false,
       isInitialSearch: true,
       tabIndex: 0,
@@ -452,9 +455,14 @@ export default {
       params = Object.assign(params, this.mapBounds)
 
       ApiService.query('wells/locations', params).then((response) => {
+        this.mapError = null
         this.locations = response.data.map((well) => {
           return [well.latitude, well.longitude, well.well_tag_number, well.identification_plate_number]
         })
+      }).catch((e) => {
+        if (e.response.status === 403 && e.response.data) {
+          this.mapError = e.response.data.detail
+        }
       })
     },
     handleMapMove () {
@@ -612,10 +620,16 @@ export default {
     this.initSearchParams()
     this.initTabIndex()
     this.initSelectedFilters()
-    setTimeout(() => {
-      this.locationSearch()
-    }, 0)
-    this.wellSearch()
+
+    // if the page loaded with a query, start a search.
+    // Otherwise, the search does not need to run (see #1713)
+    const query = this.$route.query
+    if (Object.entries(query).length !== 0 && query.constructor === Object) {
+      setTimeout(() => {
+        this.locationSearch()
+      }, 0)
+      this.wellSearch()
+    }
   },
   mounted () {
     this.tabulator = new Tabulator(this.$refs.tabulator, {
@@ -640,4 +654,17 @@ export default {
 </script>
 
 <style>
+.info-button {
+  border-radius: 50%;
+  height: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 1rem;
+  margin-left: 0.5rem;
+  margin-bottom: 3px;
+}
+.search-label {
+  align-items: center;
+}
 </style>
