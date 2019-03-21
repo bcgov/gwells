@@ -29,7 +29,7 @@ import operator
 from django.db.models import Q
 
 from rest_framework import filters, status
-from rest_framework.exceptions import PermissionDenied
+from rest_framework.exceptions import PermissionDenied, NotFound
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.generics import ListAPIView, RetrieveAPIView
@@ -319,6 +319,9 @@ class WellLocationListAPIView(ListAPIView):
         # return an empty response if there are too many wells to display
         if count > 2000:
             raise PermissionDenied("Too many wells to display on map. Please refine your search criteria or search in a smaller area.")
+
+        if count is 0:
+            raise NotFound("No well records could be found.")
 
         return super().get(request)
 

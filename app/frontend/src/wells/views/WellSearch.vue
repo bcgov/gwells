@@ -460,7 +460,7 @@ export default {
           return [well.latitude, well.longitude, well.well_tag_number, well.identification_plate_number]
         })
       }).catch((e) => {
-        if (e.response.status === 403 && e.response.data) {
+        if (e.response.data) {
           this.mapError = e.response.data.detail
         }
       })
