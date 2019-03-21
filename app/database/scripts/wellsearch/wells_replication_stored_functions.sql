@@ -845,7 +845,7 @@ BEGIN
   WHERE xform.water_quality_characteristic_code IS NOT NULL;
 
   raise notice '...water_quality_characteristic data imported';
-  SELECT count(*) from water_quality_characteristics into row_count;
+  SELECT count(*) from water_quality_characteristic into row_count;
   raise notice '% rows loaded into the water_quality_characteristic table', row_count;
 END;
 $$ LANGUAGE plpgsql;
