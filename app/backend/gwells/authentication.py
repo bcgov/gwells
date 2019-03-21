@@ -34,6 +34,13 @@ class JwtOidcAuthentication(JSONWebTokenAuthentication):
             raise exceptions.AuthenticationFailed(
                 'JWT did not contain a "sub" attribute')
 
+        # Make sure the preferred username contains either idir\ or bceid\
+        # so we know that the user is coming from a known sso authority
+        preferred_username = payload.get('preferred_username')
+        if not ('idir\\' in preferred_username or 'bceid\\' in preferred_username):
+            raise exceptions.AuthenticationFailed(
+                'Preferred username is invalid.')
+
         # There are various values we can get from the Token, we don't technically need most of them,
         # but they are useful to put in the user table for debugging purposes.
         payload_user_mapping = {
