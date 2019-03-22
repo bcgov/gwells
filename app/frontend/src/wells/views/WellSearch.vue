@@ -1,20 +1,19 @@
 <template>
-  <b-card class="container container-wide p-1">
+  <b-card class="container p-1">
     <h1 class="card-title" id="wellSearchTitle">Well Search</h1>
-
-    <b-row class="mt-3">
+    <div>
+      <div>
+        <p>
+          Not all groundwater wells are registered with the province, as registration was voluntary until February 29, 2016. Data quality issues may impact search results.
+        </p>
+        <p>
+          Search by one of the fields below, or zoom to a location on the map and select the "Search Wells in this Area" button.
+        </p>
+      </div>
+    </div>
+    <b-row class="mt-4">
       <b-col cols="12" lg="6" xl="5">
         <b-form @submit.prevent="handleSearchSubmit()" @reset.prevent="resetButtonHandler()">
-          <b-row>
-            <b-col>
-              <p>
-                Not all groundwater wells are registered with the province, as registration was voluntary until February 29, 2016. Data quality issues may impact search results.
-              </p>
-              <p>
-                Search by one of the fields below, or zoom to a location on the map and select the "Search Wells in this Area" button.
-              </p>
-            </b-col>
-          </b-row>
           <b-card no-body border-variant="dark">
             <b-tabs card v-model="tabIndex">
               <b-tab title="Basic Search">
@@ -25,7 +24,8 @@
                         <form-input id="id_search" group-class="font-weight-bold" v-model="searchParams.search">
                           <label>
                             Search by well tag or ID plate number, street address, city or owner name
-                            <b-badge pill variant="primary" v-b-popover.hover="'Enter the well electronic filing number or physical identification plate number, or the street address, city or well owner name.'"><i class="fa fa-question fa-lg"></i></b-badge>
+                            <b-badge pill variant="primary" id="basicSearchInfo" tabindex="0"><i class="fa fa-question fa-lg"></i></b-badge>
+                            <b-popover target="basicSearchInfo" triggers="hover focus" content="Enter the well electronic filing number or physical identification plate number, or the street address, city or well owner name."></b-popover>
                           </label>
                         </form-input>
                       </b-form-group>
@@ -239,8 +239,9 @@
             :locations="locations"
             v-on:coordinate="handleMapCoordinate"
             ref="searchMap"
-            @moved="locationSearch"
+            @moved="handleMapMove"
             />
+        <b-alert variant="info" class="mt-2" :show="!!mapError">{{ mapError }}</b-alert>
       </b-col>
     </b-row>
     <b-row class="my-5">
@@ -296,6 +297,7 @@ export default {
   },
   data () {
     return {
+      mapError: null,
       isBusy: false,
       isInitialSearch: true,
       tabIndex: 0,
@@ -305,7 +307,7 @@ export default {
       latitude: null,
       longitude: null,
       locations: [],
-
+      mapBounds: {},
       selectedFilter: null,
       selectedFilters: [],
 
@@ -419,6 +421,7 @@ export default {
       // add other search parameters into the params object.
       // these will be urlencoded and the API will filter on these values.
       Object.assign(params, this.searchParams)
+      Object.assign(params, this.mapBounds)
       return ApiService.query('wells', params).then((response) => {
         this.searchErrors = {}
         this.numberOfRecords = response.data.count
@@ -447,25 +450,45 @@ export default {
     },
     locationSearch () {
       let params = Object.assign({}, this.searchParams)
+
+      // merge in map bounds, if any
+      params = Object.assign(params, this.mapBounds)
+
+      ApiService.query('wells/locations', params).then((response) => {
+        this.mapError = null
+        this.locations = response.data.map((well) => {
+          return [well.latitude, well.longitude, well.well_tag_number, well.identification_plate_number]
+        })
+      }).catch((e) => {
+        if (e.response.data) {
+          this.mapError = e.response.data.detail
+        }
+        this.locations = []
+      })
+    },
+    handleMapMove () {
+      this.setMapBounds()
+      this.handleSearchSubmit()
+    },
+    setMapBounds () {
       if (this.$refs.searchMap && this.$refs.searchMap.map) {
         const bounds = this.$refs.searchMap.map.getBounds()
         const sw = bounds.getSouthWest()
         const ne = bounds.getNorthEast()
         const boundBox = {
-
           sw_lat: sw.lat,
           sw_long: sw.lng,
           ne_lat: ne.lat,
           ne_long: ne.lng
-
         }
-        params = Object.assign(params, boundBox)
+        this.mapBounds = boundBox
       }
-      ApiService.query('wells/locations', params).then((response) => {
-        this.locations = response.data.map((well) => {
-          return [well.latitude, well.longitude, well.well_tag_number, well.identification_plate_number]
-        })
-      })
+    },
+    resetMapBounds () {
+      if (this.$refs.searchMap && this.$refs.searchMap.resetView) {
+        this.$refs.searchMap.resetView()
+        this.setMapBounds()
+      }
     },
     handleSearchSubmit () {
       this.cleanSearchParams()
@@ -474,6 +497,7 @@ export default {
       this.locationSearch()
     },
     resetButtonHandler () {
+      this.resetMapBounds()
       this.searchParamsReset()
       this.wellSearch()
       this.locationSearch()
@@ -597,10 +621,16 @@ export default {
     this.initSearchParams()
     this.initTabIndex()
     this.initSelectedFilters()
-    setTimeout(() => {
-      this.locationSearch()
-    }, 0)
-    this.wellSearch()
+
+    // if the page loaded with a query, start a search.
+    // Otherwise, the search does not need to run (see #1713)
+    const query = this.$route.query
+    if (Object.entries(query).length !== 0 && query.constructor === Object) {
+      setTimeout(() => {
+        this.locationSearch()
+      }, 0)
+      this.wellSearch()
+    }
   },
   mounted () {
     this.tabulator = new Tabulator(this.$refs.tabulator, {
