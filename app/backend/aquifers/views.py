@@ -101,7 +101,7 @@ class AquiferListCreateAPIView(RevisionMixin, AuditCreateMixin, ListCreateAPIVie
             if search.isdigit():
                 disjunction = disjunction | Q(pk=int(search))
             qs = qs.filter(disjunction)
-        return qs
+        return qs.distinct()
 
 
 class AquiferResourceSectionListAPIView(ListAPIView):
@@ -385,5 +385,6 @@ from (
         with connection.cursor() as cursor:
             cursor.execute(sql)
             row = cursor.fetchone()
-            logger.info('aquifer spatial db query took: {}'.format(datetime.now() - start))
+            logger.info('aquifer spatial db query took: {}'.format(
+                datetime.now() - start))
             return JsonResponse(row[0])
