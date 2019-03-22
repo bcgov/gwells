@@ -1,5 +1,5 @@
 <template>
-  <div id="map" class="map"/>
+  <div id="map" class="search-map"/>
 </template>
 
 <script>
@@ -173,7 +173,7 @@ export default {
 <style>
 @import "leaflet/dist/leaflet.css";
 
-.map {
+.search-map {
   height: 600px;
 }
 .geolocate {
