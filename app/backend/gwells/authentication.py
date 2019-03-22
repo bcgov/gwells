@@ -92,6 +92,8 @@ class JwtOidcAuthentication(JSONWebTokenAuthentication):
             value = payload.get(source)
             if value and value != getattr(profile, target):
                 update = True
+                if source == 'preferred_username':
+                    value = value.upper()
                 setattr(profile, target, value)
         if not profile.name and profile.username:
             # When the name of the user isn't available, fallback to the username
