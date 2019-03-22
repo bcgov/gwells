@@ -733,12 +733,12 @@ class Well(AuditModel):
         max_length=255, blank=True, null=True, verbose_name='Development Notes')
 
     water_quality_characteristics = models.ManyToManyField(
-        WaterQualityCharacteristic, db_table='well_water_quality', related_name='well_water_quality_characteristics_old', blank=True,
+        WaterQualityCharacteristic, db_table='well_water_quality', related_name='well_water_quality_characteristics', blank=True,
         verbose_name='Obvious Water Quality Characteristics')
 
-    water_quality_characteristics_new = models.ManyToManyField(
-        WaterQualityCharacteristic, through='WellWaterQuality',
-        verbose_name='Obvious Water Quality Characteristics')
+    # water_quality_characteristics_new = models.ManyToManyField(
+    #     WaterQualityCharacteristic, through='WellWaterQuality',
+    #     verbose_name='Obvious Water Quality Characteristics')
 
     water_quality_colour = models.CharField(
         max_length=60, blank=True, null=True, verbose_name='Water Quality Colour')
@@ -1232,12 +1232,13 @@ class ActivitySubmission(AuditModel):
         max_length=255, blank=True, null=True, verbose_name='Development Notes')
 
     water_quality_characteristics = models.ManyToManyField(
-        WaterQualityCharacteristic, db_table='activity_submission_water_quality', related_name='submission_water_quality_characteristics_old', blank=True,
+        WaterQualityCharacteristic, db_table='activity_submission_water_quality',
+        related_name='activity_submission_water_quality_characteristics',
+        blank=True,
         verbose_name='Obvious Water Quality Characteristics')
 
-    water_quality_characteristics_new = models.ManyToManyField(
-        WaterQualityCharacteristic, through='ActivitySubmissionWaterQuality',
-        verbose_name='Obvious Water Quality Characteristics')
+        # through='ActivitySubmissionWaterQuality',
+
 
     water_quality_colour = models.CharField(
         max_length=60, blank=True, null=True, verbose_name='Water Quality Colour')
@@ -1391,7 +1392,7 @@ class WellWaterQuality(AuditModel):
 class ActivitySubmissionWaterQuality(AuditModel):
     """ Intermediate table for many-to-many between ActivitySubmission and WaterQualityCharacteristic """
     id = models.UUIDField(
-        primary_key=True, default=uuid.uuid4, editable=False, db_column='activity_submission_water_quality_id')
+        primary_key=True, default=uuid.uuid4, editable=False, db_column='activity_submission_water_quality_guid')
     activity_submission = models.ForeignKey(ActivitySubmission, on_delete=models.CASCADE, db_column='filing_number')
     characteristic = models.ForeignKey(WaterQualityCharacteristic, on_delete=models.CASCADE, db_column='water_quality_characteristic_code')
 
