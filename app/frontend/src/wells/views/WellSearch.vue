@@ -246,8 +246,8 @@
     </b-row>
     <b-row class="my-5">
       <b-col>
-        <div ref="tabulator"></div>
-        <b-pagination class="mt-3" :disabled="isBusy" size="md" :total-rows="numberOfRecords" v-model="currentPage" :per-page="perPage" @input="wellSearch()">
+        <div ref="tabulator" class="wellTable" :aria-busy="!!pendingSearches.length"></div>
+        <b-pagination class="mt-3" size="md" :total-rows="numberOfRecords" v-model="currentPage" :per-page="perPage" @input="wellSearch()" :disabled="!!pendingSearches.length">
         </b-pagination>
       </b-col>
     </b-row>
@@ -267,6 +267,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 import { mapGetters } from 'vuex'
 import ApiService from '@/common/services/ApiService.js'
 import {FETCH_CODES} from '@/submissions/store/actions.types.js'
@@ -297,6 +298,8 @@ export default {
   },
   data () {
     return {
+      pendingSearches: [],
+      pendingMapUpdates: [],
       scrolled: false,
       mapError: null,
       isBusy: false,
@@ -414,6 +417,12 @@ export default {
     * wellSearch searches for wells based on parameters in the querystring
     */
     wellSearch (ctx = { perPage: this.perPage, currentPage: this.currentPage }) {
+      this.cancelWellSearches()
+      const CancelToken = axios.CancelToken
+      const requestContext = CancelToken.source()
+
+      this.pendingSearches.unshift(requestContext)
+
       const params = {
         limit: ctx.perPage,
         offset: ctx.perPage * (ctx.currentPage - 1)
@@ -447,19 +456,39 @@ export default {
         }
 
         return []
+      }).finally(() => {
+        this.pendingSearches.shift()
       })
     },
     handleScroll () {
       const pos = this.$el.querySelector('#map').scrollTop | 100
       this.scrolled = window.scrollY > 0.9 * pos
     },
+    cancelWellSearches () {
+      for (let i = 0; i < this.pendingSearches.length; i++) {
+        const req = this.pendingSearches.pop()
+        req.cancel()
+      }
+    },
+    cancelMapUpdates () {
+      for (let i = 0; i < this.pendingMapUpdates.length; i++) {
+        const req = this.pendingMapUpdates.pop()
+        req.cancel()
+      }
+    },
     locationSearch () {
+      this.cancelMapUpdates()
+      const CancelToken = axios.CancelToken
+      const ctx = CancelToken.source()
+
+      this.pendingMapUpdates.unshift(ctx)
+
       let params = Object.assign({}, this.searchParams)
 
       // merge in map bounds, if any
       params = Object.assign(params, this.mapBounds)
 
-      ApiService.query('wells/locations', params).then((response) => {
+      ApiService.query('wells/locations', params, { cancelToken: ctx.token }).then((response) => {
         this.mapError = null
         this.locations = response.data.map((well) => {
           return [well.latitude, well.longitude, well.well_tag_number, well.identification_plate_number]
@@ -469,6 +498,8 @@ export default {
           this.mapError = e.response.data.detail
         }
         this.locations = []
+      }).finally(() => {
+        this.pendingMapUpdates.shift()
       })
     },
     handleMapMove () {
@@ -667,4 +698,10 @@ export default {
 </script>
 
 <style>
+.wellTable[aria-busy='false'] {
+  opacity: 1;
+}
+.wellTable[aria-busy='true'] {
+  opacity: 0.6;
+}
 </style>
