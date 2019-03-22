@@ -161,9 +161,9 @@ export default {
         let skipLatLon = 'latitude' in meta.valueChanged || 'longitude' in meta.valueChanged
         Object.keys(data).forEach((key) => {
           // Skip lat lon if one of them has changed
-         if ((key === 'latitude' || key === 'longitude') && skipLatLon) { return }
-         // Remove any fields that aren't changed
-         if (key !== 'well' && !(key in meta.valueChanged)) { delete data[key] }
+          if ((key === 'latitude' || key === 'longitude') && skipLatLon) { return }
+          // Remove any fields that aren't changed
+          if (key !== 'well' && !(key in meta.valueChanged)) { delete data[key] }
         })
       }
 
