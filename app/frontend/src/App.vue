@@ -35,7 +35,7 @@ export default {
 
   @media (min-width: 1500px) {
     .container {
-      max-width: 1400px
+      max-width: 1400px!important;
     }
   }
 
