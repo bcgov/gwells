@@ -112,6 +112,7 @@ INSTALLED_APPS = (
     'django_filters',
     'django_extensions',
     'drf_multiple_model',
+    'rest_framework_gis',
     'reversion',
     'django.contrib.gis',
 )
@@ -325,5 +326,7 @@ class DisableMigrations(object):
 
     def __getitem__(self, item):
         return None
+
+
 if get_env_variable('DISABLE_MIGRATIONS', None, strict=False, warn=False) == 'DISABLE_MIGRATIONS':
     MIGRATION_MODULES = DisableMigrations()

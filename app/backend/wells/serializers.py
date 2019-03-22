@@ -32,6 +32,13 @@ from wells.models import (
     AquiferLithologyCode,
 )
 
+from rest_framework_gis.serializers import (
+    GeoFeatureModelSerializer,
+    GeometrySerializerMethodField,
+)
+from django.contrib.gis.geos import Point
+
+import geohash
 
 logger = logging.getLogger(__name__)
 
@@ -536,6 +543,7 @@ class WellListAdminSerializer(WellListSerializer):
             'internal_comments',
         )
 
+
 class WellTagSearchSerializer(serializers.ModelSerializer):
     """ serializes fields used for searching for well tags """
 
@@ -544,10 +552,36 @@ class WellTagSearchSerializer(serializers.ModelSerializer):
         fields = ("well_tag_number", "owner_full_name")
 
 
-class WellLocationSerializer(serializers.ModelSerializer):
+class WellLocationClusterSerializer(GeoFeatureModelSerializer):
     """ serializes well locations """
+
+    geohash_l5 = serializers.CharField()
+    count = serializers.IntegerField()
+    point = GeometrySerializerMethodField()
 
     class Meta:
         model = Well
-        fields = ("well_tag_number", "identification_plate_number",
-                  "latitude", "longitude")
+        fields = ("geohash_l5", "count", "point")
+        geo_field = "point"
+
+    def get_point(self, obj):
+        """Parse a geohashed point"""
+        y, x = geohash.decode(obj['geohash_l5'])
+        return Point(x, y)
+
+
+class WellLocationSerializer(GeoFeatureModelSerializer):
+    """ serializes well locations """
+
+    point = GeometrySerializerMethodField()
+    well_tag_number = serializers.IntegerField()
+
+    class Meta:
+        model = Well
+        fields = ("well_tag_number", "point")
+        geo_field = "point"
+
+    def get_point(self, obj):
+        """Parse a geohashed point"""
+
+        return obj['geom']

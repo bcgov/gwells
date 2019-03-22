@@ -896,7 +896,7 @@ class Well(AuditModel):
 
     history = GenericRelation(Version)
 
-    geohash_l5 = models.CharField(max_length=20, default=lambda: self.geohash_cluster(5))
+    geohash_l5 = models.CharField(max_length=20, null=True, blank=True)
 
     class Meta:
         db_table = 'well'
@@ -931,7 +931,12 @@ class Well(AuditModel):
             return None
 
     def geohash_cluster(self, precision):
-        return GeoHash(self.geom, precision)
+        return GeoHash('geom', precision)
+
+    def save(self, *args, **kwargs):
+        self.geohash_l5 = self.geohash_cluster(5)
+        super().save(*args, **kwargs)
+
 
 class Perforation(AuditModel):
     """

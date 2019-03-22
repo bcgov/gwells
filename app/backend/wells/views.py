@@ -20,6 +20,7 @@ from django.db import connection
 from django.http import Http404, HttpResponse, JsonResponse, HttpResponseRedirect, HttpResponseNotFound
 from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView
+from django.contrib.gis.db import models
 
 from django_filters import rest_framework as restfilters
 
@@ -60,7 +61,8 @@ from wells.serializers import (
     WellTagSearchSerializer,
     WellDetailSerializer,
     WellDetailAdminSerializer,
-    WellLocationSerializer)
+    WellLocationSerializer,
+    WellLocationClusterSerializer)
 from wells.permissions import WellsEditPermissions, WellsEditOrReadOnly
 
 
@@ -355,9 +357,15 @@ class WellLocationListAPIView(ListAPIView):
         count = locations.count()
         # return an empty response if there are too many wells to display
         if count > 2000:
-            return Response([])
+            qs = qs.values('geohash_l5').exclude(geohash_l5__isnull=True).annotate(count=models.Count('geohash_l5')).order_by('count')
+            serializer = WellLocationClusterSerializer(qs, many=True).data
+            return Response(serializer)
+        
+        qs = qs.values('well_tag_number', 'geom').exclude(geom__isnull=True)
+        serializer = WellLocationSerializer(qs, many=True).data
+        return Response(serializer)
 
-        return super().get(request)
+        # return super().get(request)
 
 
 class PreSignedDocumentKey(APIView):
