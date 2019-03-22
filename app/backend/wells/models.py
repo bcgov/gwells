@@ -33,6 +33,7 @@ from registries.models import Person, Organization
 from submissions.models import WellActivityCode
 from aquifers.models import Aquifer
 
+from django.contrib.gis.db.models.functions import GeoHash
 
 class DecommissionMethodCode(AuditModel):
     decommission_method_code = models.CharField(primary_key=True, max_length=10, editable=False,
@@ -895,6 +896,8 @@ class Well(AuditModel):
 
     history = GenericRelation(Version)
 
+    geohash_l5 = models.CharField(max_length=20, default=lambda: self.geohash_cluster(5))
+
     class Meta:
         db_table = 'well'
 
@@ -927,6 +930,8 @@ class Well(AuditModel):
         else:
             return None
 
+    def geohash_cluster(self, precision):
+        return GeoHash(self.geom, precision)
 
 class Perforation(AuditModel):
     """
