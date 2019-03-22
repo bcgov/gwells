@@ -194,17 +194,17 @@ export default {
         return resource.section_code === section.code
       })
     },
-    handleArtesianSearch() {
-      this.$router.push({ 
-        name: 'wells-home', 
-        query: { 
-          'match_any': false, 
-          'aquifer': this.id, 
-          'artesian_flow_has_value': true, 
-          'artesian_pressure_has_value': true,  
+    handleArtesianSearch () {
+      this.$router.push({
+        name: 'wells-home',
+        query: {
+          'match_any': false,
+          'aquifer': this.id,
+          'artesian_flow_has_value': true,
+          'artesian_pressure_has_value': true
         },
         hash: '#advanced'
-      });
+      })
     },
     handleSaveSuccess (response) {
       this.fetch()
