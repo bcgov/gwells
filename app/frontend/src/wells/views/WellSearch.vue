@@ -463,6 +463,7 @@ export default {
         if (e.response.data) {
           this.mapError = e.response.data.detail
         }
+        this.locations = []
       })
     },
     handleMapMove () {
