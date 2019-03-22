@@ -297,6 +297,7 @@ export default {
   },
   data () {
     return {
+      scrolled: false,
       mapError: null,
       isBusy: false,
       isInitialSearch: true,
@@ -432,7 +433,7 @@ export default {
         // the first search that happens when page loads doesn't need
         // to automatically scroll the page.  Only scroll when updating
         // the search results.
-        if (!this.isInitialSearch) {
+        if (!this.isInitialSearch && !this.scrolled) {
           this.$SmoothScroll(this.$el.querySelector('#map'))
         }
         // flag that the initial search that happens on page load
@@ -447,6 +448,10 @@ export default {
 
         return []
       })
+    },
+    handleScroll () {
+      const pos = this.$el.querySelector('#map').scrollTop | 100
+      this.scrolled = window.scrollY > 0.9 * pos
     },
     locationSearch () {
       let params = Object.assign({}, this.searchParams)
@@ -650,6 +655,13 @@ export default {
         { title: 'Finished Well Depth', field: 'finished_well_depth' }
       ]
     })
+  },
+  beforeMount () {
+    this.scrolled = window.scrollY > 100
+    window.addEventListener('scroll', this.handleScroll)
+  },
+  beforeDestroy () {
+    window.removeEventListener('scroll', this.handleScroll)
   }
 }
 </script>
