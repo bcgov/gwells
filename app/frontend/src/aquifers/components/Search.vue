@@ -299,7 +299,6 @@ export default {
     })
     this.fetchResourceSections()
   },
-  mounted () { this.fetchResults() },
   watch: {
     query () { this.fetchResults() },
     currentPage () { this.triggerPagination() },
