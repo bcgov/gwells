@@ -90,6 +90,9 @@
         <dd class="col-sm-4">{{record.area}}</dd>
         <dt class="col-sm-2">Demand</dt>
         <dd class="col-sm-4">{{record.demand_description}}</dd>
+
+        <dt class="col-sm-2">Artesian Conditions</dt>
+        <dd class="col-sm-4 artesian-search" @click.prevent='handleArtesianSearch'>Advanced Search</dd>
       </dl>
 
       <b-row v-if="viewMode">
@@ -121,6 +124,10 @@
 .print, .print:hover {
   color: black;
   text-decoration: none;
+}
+
+.artesian-search {
+  cursor: pointer;
 }
 </style>
 
@@ -186,6 +193,18 @@ export default {
       return (resources || []).filter(function (resource) {
         return resource.section_code === section.code
       })
+    },
+    handleArtesianSearch() {
+      this.$router.push({ 
+        name: 'wells-home', 
+        query: { 
+          'match_any': false, 
+          'aquifer': this.id, 
+          'artesian_flow_has_value': true, 
+          'artesian_pressure_has_value': true,  
+        },
+        hash: '#advanced'
+      });
     },
     handleSaveSuccess (response) {
       this.fetch()
