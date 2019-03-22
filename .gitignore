@@ -98,6 +98,9 @@ nosetests.xml
 coverage.xml
 *,cover
 
+# Test outputs
+*.xlsx
+
 # Translations
 *.mo
 *.pot
