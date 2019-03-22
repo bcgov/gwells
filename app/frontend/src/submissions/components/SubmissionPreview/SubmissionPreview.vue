@@ -463,6 +463,24 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </b-row>
     </fieldset>
 
+    <fieldset class="my-3 detail-section">
+      <legend>General Disclaimer</legend>
+      <b-row>
+        <b-col cols="12" lg="9">
+          This information is collected by the Ministry of Environment and Climate Change Strategy under section 26
+          (c) of the Freedom of Information and Protection of Privacy Act.<br><br>
+          Information, including personal information, will be used to determine well location and confirm that the
+          construction, alteration, or decommission of a well has been done in accordance with the Water Sustainability
+          Act (WSA) and Groundwater Protection Regulation (GWPR). Well reports submitted to the Comptroller, or
+          retained by the person responsible, as required under Sec 57 the WSA and Part 10 of the GWPR, shall be
+          considered part of the Provincial Government records. Documents or images uploaded as part of submission
+          and that contain personal information not covered under this legislation will be deleted.<br><br>
+          Should you have any questions about the collection or use of this information, please contact the
+          Groundwater Data Specialist: <br>phone: 778-698-4867 <br>email: groundwater@gov.bc.ca
+        </b-col>
+      </b-row>
+    </fieldset>
+
     <!-- Back / Next / Submit controls -->
     <b-row v-if="!reportSubmitted" class="mt-5">
       <b-col>
