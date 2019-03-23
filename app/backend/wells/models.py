@@ -896,7 +896,8 @@ class Well(AuditModel):
 
     history = GenericRelation(Version)
 
-    geohash_l5 = models.CharField(max_length=20, null=True, blank=True)
+    geohash_l5 = models.CharField(max_length=20, null=True, blank=True, db_index=True)
+    geohash_l8 = models.CharField(max_length=20, null=True, blank=True, db_index=True)
 
     class Meta:
         db_table = 'well'
@@ -934,7 +935,8 @@ class Well(AuditModel):
         return GeoHash('geom', precision)
 
     def save(self, *args, **kwargs):
-        self.geohash_l5 = self.geohash_cluster(5)
+        self.geohash_l5 = self.geohash_cluster(3)
+        self.geohash_l8 = self.geohash_cluster(4)
         super().save(*args, **kwargs)
 
 
