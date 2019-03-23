@@ -27,7 +27,7 @@ from django_filters import rest_framework as restfilters
 from functools import reduce
 import operator
 
-from django.db.models import Q
+from django.db.models import Q, F
 
 from rest_framework import filters
 from rest_framework.views import APIView
@@ -356,11 +356,16 @@ class WellLocationListAPIView(ListAPIView):
         locations = self.filter_queryset(qs)
         count = locations.count()
         # return an empty response if there are too many wells to display
-        if count > 2000:
-            qs = qs.values('geohash_l5').exclude(geohash_l5__isnull=True).annotate(count=models.Count('geohash_l5')).order_by('count')
+        if count > 3:
+            qs = qs.annotate(geohash=F('geohash_l5')).values('geohash').exclude(geohash__isnull=True).annotate(count=models.Count('geohash')).order_by('count')
             serializer = WellLocationClusterSerializer(qs, many=True).data
             return Response(serializer)
         
+        if count > 2:
+            qs = qs.annotate(geohash=F('geohash_l8')).values('geohash').exclude(geohash__isnull=True).annotate(count=models.Count('geohash')).order_by('count')
+            serializer = WellLocationClusterSerializer(qs, many=True).data
+            return Response(serializer)
+
         qs = qs.values('well_tag_number', 'geom').exclude(geom__isnull=True)
         serializer = WellLocationSerializer(qs, many=True).data
         return Response(serializer)

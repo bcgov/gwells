@@ -936,7 +936,7 @@ class Well(AuditModel):
 
     def save(self, *args, **kwargs):
         self.geohash_l5 = self.geohash_cluster(3)
-        self.geohash_l8 = self.geohash_cluster(4)
+        self.geohash_l8 = self.geohash_cluster(5)
         super().save(*args, **kwargs)
 
 

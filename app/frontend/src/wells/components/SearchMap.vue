@@ -127,7 +127,7 @@ export default {
       // })
 
       const createClusterIcon = (feature, latlng) => {
-        if (feature.properties.count === 1) {
+        if (!feature.properties.count || feature.properties.count === 1) {
           return L.circleMarker(latlng, {
             radius: 4, // The radius of the circleMarker
             color: '#000', // The color of the circleMarker
@@ -136,9 +136,9 @@ export default {
             fillOpacity: 1.0 // How transparent the circleMarker's fill is
           })
         }
-        const count = feature.properties.count
+        const count = feature.properties.count || 1
         const size =
-            count < 100 ? 'small'
+            !count || count < 100 ? 'small'
               : count < 1000 ? 'medium' : 'large'
         const icon = L.divIcon({
           html: `<div><span>${feature.properties.count}</span></div>`,

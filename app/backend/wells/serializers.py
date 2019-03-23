@@ -555,18 +555,18 @@ class WellTagSearchSerializer(serializers.ModelSerializer):
 class WellLocationClusterSerializer(GeoFeatureModelSerializer):
     """ serializes well locations """
 
-    geohash_l5 = serializers.CharField()
+    geohash = serializers.CharField()
     count = serializers.IntegerField()
     point = GeometrySerializerMethodField()
 
     class Meta:
         model = Well
-        fields = ("geohash_l5", "count", "point")
+        fields = ("geohash", "count", "point")
         geo_field = "point"
 
     def get_point(self, obj):
         """Parse a geohashed point"""
-        y, x = geohash.decode(obj['geohash_l5'])
+        y, x = geohash.decode(obj['geohash'])
         return Point(x, y)
 
 
