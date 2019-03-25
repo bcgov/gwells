@@ -13,9 +13,6 @@ import 'leaflet-geosearch/assets/css/leaflet.css'
 export default {
   name: 'AquiferMap',
   props: ['aquifers'],
-  // watch: {
-  //   aquifers
-  // },
   created () {
     // There seems to be an issue loading leaflet immediately on mount, we use nextTick to ensure
     // that the view has been rendered at least once before injecting the map.
@@ -128,19 +125,26 @@ export default {
       this.addAquifersToMap(this.aquifers)
     },
     addAquifersToMap (aquifers) {
-      var myStyle = {
-        'color': 'red'
-      }
+      if (aquifers !== undefined && aquifers.constructor === Array && aquifers.length > 0) {
+        var myStyle = {
+          'color': 'red'
+        }
 
-      aquifers.forEach(aquifer => {
-        L.geoJSON(aquifer.geom, {
-          style: myStyle,
-          onEachFeature: function (feature, layer) {
-            layer.bindPopup(`<p>Aquifer: <a href="/gwells/aquifers/${aquifer.aquifer_id}">${aquifer.aquifer_id}</a></p><p>Aquifer Name: ${aquifer.aquifer_name}</p>
-              <p>Subtype: ${aquifer.subtype}</p>`)
-          }
-        }).addTo(this.map)
-      })
+        aquifers.forEach(aquifer => {
+          L.geoJSON(aquifer.geom, {
+            style: myStyle,
+            onEachFeature: function (feature, layer) {
+              layer.bindPopup(`<p>Aquifer: <a href="/gwells/aquifers/${aquifer.aquifer_id}">${aquifer.aquifer_id}</a></p><p>Aquifer Name: ${aquifer.aquifer_name}</p>
+                <p>Subtype: ${aquifer.subtype}</p>`)
+            }
+          }).addTo(this.map)
+        })
+      }
+    },
+    zoomToSelectedAquifer (data) {
+      var aquiferGeom = L.geoJSON(data.geom)
+      this.map.fitBounds(aquiferGeom.getBounds())
+      this.$SmoothScroll(document.getElementById('map'))
     }
   }
 }

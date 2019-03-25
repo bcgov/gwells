@@ -55,7 +55,7 @@ export default {
       }).addTo(this.map)
 
       // Set map view to aquifer
-      this.map.fitBounds(aquiferGeom.getBounds());
+      this.map.fitBounds(aquiferGeom.getBounds())
     }
   }
 }

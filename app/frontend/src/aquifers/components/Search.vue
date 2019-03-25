@@ -65,7 +65,7 @@
 
           </b-col>
           <b-col cols="12" md="8">
-            <aquifer-map v-bind:aquifers="response.results"/>
+            <aquifer-map ref="aquiferMap" v-bind:aquifers="response.results"/>
           </b-col>
         </b-form-row>
         <b-form-row>
@@ -91,7 +91,7 @@
         striped
         v-if="aquiferList">
         <template slot="aquifer_id" slot-scope="data">
-          <router-link :to="{ name: 'aquifers-view', params: {id: data.value} }">{{data.value}}</router-link>
+          <p class="aquifer-id" v-on:click="onAquiferIdClick(data)">{{data.value}}</p>
         </template>
         <template slot="material" slot-scope="row">
           {{row.item.material_description}}
@@ -139,6 +139,12 @@ table.b-table > tfoot > tr > th.sorting::after {
   content: "\f0dc" !important;
   font-family: "FontAwesome";
   opacity: 1 !important;
+}
+
+table.b-table .aquifer-id {
+  color: blue;
+  cursor: pointer;
+  text-decoration: underline;
 }
 
 ul.pagination {
@@ -302,6 +308,9 @@ export default {
           eventLabel: querystring.stringify(params)
         })
       }
+    },
+    onAquiferIdClick (data) {
+      this.$refs.aquiferMap.zoomToSelectedAquifer(data.item)
     }
   },
   created () {
