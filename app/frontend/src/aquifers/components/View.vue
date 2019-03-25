@@ -91,19 +91,30 @@
         <dt class="col-sm-2">Demand</dt>
         <dd class="col-sm-4">{{record.demand_description}}</dd>
 
-        <dt class="col-sm-2">Artesian Conditions</dt>
-        <dd class="col-sm-4 artesian-search" @click.prevent='handleArtesianSearch'>Advanced Search</dd>
+
       </dl>
 
       <b-row v-if="viewMode">
         <b-col>
-          <h5 class="mt-3 border-bottom">Knowledge Indicators</h5>
-          <div :key="section.id" v-for="section in aquifer_resource_sections">
-            <h6 class="mt-4">{{ section.name }}</h6>
+          <h5 class="mt-2 border-bottom mb-4">Knowledge Indicators</h5>
+          <div :key="section.id" v-for="(section, index) in aquifer_resource_sections">
+
+            <div class="artesian-conditions" v-if="index === 1">
+              <h6 class="mt-2 font-weight-bold">Artesian Conditions</h6>
+              <a @click="handleArtesianSearch">[#] artesian wells in aquifer</a>
+            </div>            
+            <div class="observational-wells" v-if="index === 2">
+              <h6 class="mt-2 font-weight-bold">Observational Wells</h6>
+              <a :href="getWellLink()">Observation Well 20402</a>
+              <p>Water Level Analysis: <a :href="getAnalysisLink()">Increasing</a></p>
+            </div>
+            <h6 class="mt-2 font-weight-bold">{{ section.name }}</h6>
             <ul :key="resource.id" v-for="resource in bySection(record.resources, section)">
               <li><a :href="resource.url">{{ resource.name }}</a></li>
             </ul>
             <p v-if="!bySection(record.resources, section).length">No information available.</p>
+          </div>
+          <div>
           </div>
         </b-col>
         <b-col>
@@ -163,7 +174,8 @@ export default {
       record: {},
       showSaveSuccess: false,
       aquiferFiles: {},
-      aquifer_resource_sections: []
+      aquifer_resource_sections: [],
+      wells: []
     }
   },
   computed: {
@@ -262,6 +274,18 @@ export default {
           console.error(error)
         })
     },
+
+    fetchWells (id = this.id) {
+      /*
+      ApiService.query(`aquifers/${id}/details`)
+        .then((response) => {
+          this.wells = response.data
+        }).catch((error) => {
+          console.error(error)
+        })
+      */
+      this.wells = [{id: 20402}]
+    },
     fetchFiles (id = this.id) {
       ApiService.query(`aquifers/${id}/files`)
         .then((response) => {
@@ -272,6 +296,12 @@ export default {
       ApiService.query('aquifers/sections').then((response) => {
         this.aquifer_resource_sections = response.data.results
       })
+    },
+    getWellLink () {
+      return 'https://governmentofbc.maps.arcgis.com/apps/webappviewer/index.html?id=b53cb0bf3f6848e79d66ffd09b74f00d&find=OBS%20WELL%20402'
+    },
+    getAnalysisLink () {
+      return 'http://www.env.gov.bc.ca/soe/indicators/water/groundwater-levels.html'
     }
   }
 }
