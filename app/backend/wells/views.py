@@ -350,7 +350,7 @@ class WellLocationListAPIView(ListAPIView):
         count = locations.count()
         # return an empty response if there are too many wells to display
         if count > 2000:
-            raise PermissionDenied("Too many wells to display on map. Please refine your search criteria or search in a smaller area.")
+            raise PermissionDenied("Too many wells to display on map. Please zoom in or change your search criteria.")
 
         if count is 0:
             raise NotFound("No well records could be found.")
