@@ -97,17 +97,9 @@
       <b-row v-if="viewMode">
         <b-col>
           <h5 class="mt-2 border-bottom mb-4">Knowledge Indicators</h5>
-          <div :key="section.id" v-for="(section, index) in aquifer_resource_sections">
+          <div :key="section.id" v-for="(section) in aquifer_resource_sections">
 
-            <div class="artesian-conditions" v-if="index === 1">
-              <h6 class="mt-2 font-weight-bold">Artesian Conditions</h6>
-              <a @click="handleArtesianSearch">[#] artesian wells in aquifer</a>
-            </div>            
-            <div class="observational-wells" v-if="index === 2">
-              <h6 class="mt-2 font-weight-bold">Observational Wells</h6>
-              <a :href="getWellLink()">Observation Well 20402</a>
-              <p>Water Level Analysis: <a :href="getAnalysisLink()">Increasing</a></p>
-            </div>
+
             <h6 class="mt-2 font-weight-bold">{{ section.name }}</h6>
             <ul :key="resource.id" v-for="resource in bySection(record.resources, section)">
               <li><a :href="resource.url">{{ resource.name }}</a></li>
