@@ -4,7 +4,7 @@
 
 <script>
 import L from 'leaflet'
-import '../../common/assets/js/leaflet-areaselect.js'
+//import '../../common/assets/js/leaflet-areaselect.js'
 import { tiledMapLayer } from 'esri-leaflet'
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch'
 import 'leaflet-geosearch/dist/style.css'
