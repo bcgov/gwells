@@ -140,6 +140,10 @@
 .artesian-search {
   cursor: pointer;
 }
+
+a {
+  text-decoration-skip-ink: none;
+}
 </style>
 
 <script>
