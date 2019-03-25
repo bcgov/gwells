@@ -65,7 +65,7 @@
 
           </b-col>
           <b-col cols="12" md="8">
-            <aquifer-map v-bind:aquifers="response"/>
+            <aquifer-map v-bind:aquifers="response.results"/>
           </b-col>
         </b-form-row>
         <b-form-row>
@@ -321,7 +321,7 @@ export default {
   },
   mounted () {
     this.fetchResults()
-    },
+  },
   watch: {
     query () { this.fetchResults() },
     currentPage () { this.triggerPagination() },

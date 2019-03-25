@@ -4,7 +4,11 @@
 
 <script>
 import L from 'leaflet'
+import '../../common/assets/js/leaflet-areaselect.js'
 import { tiledMapLayer } from 'esri-leaflet'
+import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch'
+import 'leaflet-geosearch/dist/style.css'
+import 'leaflet-geosearch/assets/css/leaflet.css'
 
 export default {
   name: 'AquiferMap',
@@ -22,10 +26,9 @@ export default {
   },
 
   watch: {
-    aquifers: function (oldAquifers, newAquifers) {
-      console.log(oldAquifers);
-      console.log(newAquifers);
-      console.log("Prop Changed");
+    aquifers: function (newAquifers, oldAquifers) {
+      this.map.removeLayer(L.geoJson)
+      this.addAquifersToMap(newAquifers)
     }
   },
 
@@ -44,6 +47,13 @@ export default {
       // Create map, with default centered and zoomed to show entire BC.
       this.map = L.map('map').setView([54.5, -126.5], 5)
       L.control.scale().addTo(this.map)
+
+      // Add geo search
+      const provider = new OpenStreetMapProvider()
+      const searchControl = new GeoSearchControl({
+        provider: provider
+      })
+      this.map.addControl(searchControl)
 
       // Add map layers.
       tiledMapLayer({url: 'https://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer'}).addTo(this.map)
@@ -115,7 +125,22 @@ export default {
       // Add checkboxes for layers
       L.control.layers(null, mapLayers, {collapsed: true}).addTo(this.map)
 
+      this.addAquifersToMap(this.aquifers)
+    },
+    addAquifersToMap (aquifers) {
+      var myStyle = {
+        'color': 'red'
+      }
 
+      aquifers.forEach(aquifer => {
+        L.geoJSON(aquifer.geom, {
+          style: myStyle,
+          onEachFeature: function (feature, layer) {
+            layer.bindPopup(`<p>Aquifer: <a href="/gwells/aquifers/${aquifer.aquifer_id}">${aquifer.aquifer_id}</a></p><p>Aquifer Name: ${aquifer.aquifer_name}</p>
+              <p>Subtype: ${aquifer.subtype}</p>`)
+          }
+        }).addTo(this.map)
+      })
     }
   }
 }
