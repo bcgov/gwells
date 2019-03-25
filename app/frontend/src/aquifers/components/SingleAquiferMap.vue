@@ -35,7 +35,7 @@ export default {
     },
     initMap () {
       // Create map, with default centered and zoomed to show entire BC.
-      this.map = L.map('map').setView([54.5, -126.5], 5)
+      this.map = L.map('map')
       L.control.scale().addTo(this.map)
 
       // Add map layers.
@@ -46,15 +46,16 @@ export default {
         styles: 'PMBC_Parcel_Fabric_Cadastre_Outlined',
         transparent: true
       }).addTo(this.map)
-      console.log('GEOM',this.geom)
 
-      var mapData = {
-        'type': 'Feature',
-        'properties': {},
-        'geometry': this.geom
-      }
+      // Add aquifer to map
+      var aquiferGeom = L.geoJSON(this.geom, {
+        style: {
+          'color': 'red'
+        },
+      }).addTo(this.map)
 
-      L.geoJSON(mapData).addTo(this.map)
+      // Set map view to aquifer
+      this.map.fitBounds(aquiferGeom.getBounds());
     }
   }
 }
