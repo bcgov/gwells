@@ -65,6 +65,45 @@ class AquiferSerializer(serializers.ModelSerializer):
         source='quality_concern', read_only=True, slug_field='description')
     known_water_use_description = serializers.SlugRelatedField(
         source='known_water_use', read_only=True, slug_field='description')
+
+    def to_representation(self, instance):
+        """Convert `username` to lowercase."""
+        ret = super().to_representation(instance)
+        if instance.geom:
+            instance.geom.transform(4326)
+            ret['geom'] = json.loads(instance.geom.json)
+        return ret
+
+    class Meta:
+        model = models.Aquifer
+        fields = (
+            'aquifer_id',
+            'aquifer_name',
+            'area',
+            'demand_description',
+            'demand',
+            'known_water_use_description',
+            'known_water_use',
+            'litho_stratographic_unit',
+            'location_description',
+            'mapping_year',
+            'material_description',
+            'material',
+            'notes',
+            'productivity_description',
+            'productivity',
+            'quality_concern_description',
+            'quality_concern',
+            'subtype_description',
+            'subtype',
+            'vulnerability_description',
+            'vulnerability',
+            # 'shapefile',
+            'geom',
+        )
+
+
+class AquiferDetailSerializer(AquiferSerializer):
     resources = AquiferResourceSerializer(many=True, required=False)
     licence_details = serializers.JSONField(read_only=True)
 
@@ -159,32 +198,9 @@ class AquiferSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Aquifer
-        fields = (
-            'aquifer_id',
-            'aquifer_name',
-            'area',
-            'demand_description',
-            'demand',
-            'known_water_use_description',
-            'known_water_use',
-            'litho_stratographic_unit',
-            'location_description',
-            'mapping_year',
-            'material_description',
-            'material',
-            'notes',
-            'productivity_description',
-            'productivity',
-            'quality_concern_description',
-            'quality_concern',
-            'subtype_description',
-            'subtype',
-            'vulnerability_description',
-            'vulnerability',
+        fields = AquiferSerializer.Meta.fields + (
+            'licence_details',
             'resources',
-            # 'shapefile',
-            'geom',
-            'licence_details'
         )
 
 
