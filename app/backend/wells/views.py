@@ -329,11 +329,10 @@ class WellLocationListAPIView(ListAPIView):
     filterset_class = WellLocationFilter
     pagination_class = None
 
-    search_fields = ('legal_pid', 'legal_plan', 'legal_district_lot',
-                     'legal_block', 'legal_section', 'legal_township', 'legal_range')
+    search_fields = ('well_tag_number', 'identification_plate_number',
+                     'street_address', 'city', 'owner_full_name')
 
     def get_queryset(self):
-
         """ Excludes Unpublished wells for users without edit permissions """
         if self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
             qs = Well.objects.all()

@@ -13,7 +13,7 @@
     </div>
     <b-row class="mt-4">
       <b-col cols="12" lg="6" xl="5">
-        <b-form @submit.prevent="handleSearchSubmit()" @reset.prevent="resetButtonHandler()">
+        <b-form @submit.prevent="handleSearchSubmit({ trigger: 'search' })" @reset.prevent="handleReset()">
           <b-card no-body border-variant="dark">
             <b-tabs card v-model="tabIndex">
               <b-tab title="Basic Search">
@@ -237,6 +237,7 @@
             :latitude="latitude"
             :longitude="longitude"
             :locations="locations"
+            :zoomToMarker="zoomToResults"
             v-on:coordinate="handleMapCoordinate"
             ref="searchMap"
             @moved="handleMapMove"
@@ -302,6 +303,8 @@ export default {
       pendingMapUpdates: [],
       scrolled: false,
       mapError: null,
+      lastSearchTrigger: null,
+
       isBusy: false,
       isInitialSearch: true,
       tabIndex: 0,
@@ -410,13 +413,18 @@ export default {
         wellSubclass: this.wellSubclassOptions,
         yieldEstimationMethod: this.codes.yield_estimation_methods || []
       }
+    },
+    zoomToResults () {
+      return this.lastSearchTrigger !== 'map'
     }
   },
   methods: {
     /**
     * wellSearch searches for wells based on parameters in the querystring
     */
-    wellSearch (ctx = { perPage: this.perPage, currentPage: this.currentPage }) {
+    wellSearch (options = {}) {
+      const { perPage = this.perPage, currentPage = this.currentPage, trigger = 'search' } = options
+
       this.cancelWellSearches()
       const CancelToken = axios.CancelToken
       const requestContext = CancelToken.source()
@@ -424,14 +432,17 @@ export default {
       this.pendingSearches.unshift(requestContext)
 
       const params = {
-        limit: ctx.perPage,
-        offset: ctx.perPage * (ctx.currentPage - 1)
+        limit: perPage,
+        offset: perPage * (currentPage - 1)
       }
 
       // add other search parameters into the params object.
       // these will be urlencoded and the API will filter on these values.
       Object.assign(params, this.searchParams)
-      Object.assign(params, this.mapBounds)
+
+      if (trigger === 'map') {
+        Object.assign(params, this.mapBounds)
+      }
       return ApiService.query('wells', params).then((response) => {
         this.searchErrors = {}
         this.numberOfRecords = response.data.count
@@ -448,6 +459,8 @@ export default {
         // flag that the initial search that happens on page load
         // has already occurred.
         this.isInitialSearch = false
+
+        // set flag to indicate how the search was triggered
 
         return response.data.results || []
       }).catch((err) => {
@@ -476,7 +489,8 @@ export default {
         req.cancel()
       }
     },
-    locationSearch () {
+    locationSearch (options = {}) {
+      const { trigger = 'search' } = options
       this.cancelMapUpdates()
       const CancelToken = axios.CancelToken
       const ctx = CancelToken.source()
@@ -485,8 +499,9 @@ export default {
 
       let params = Object.assign({}, this.searchParams)
 
-      // merge in map bounds, if any
-      params = Object.assign(params, this.mapBounds)
+      if (trigger === 'map') {
+        Object.assign(params, this.mapBounds)
+      }
 
       ApiService.query('wells/locations', params, { cancelToken: ctx.token }).then((response) => {
         this.mapError = null
@@ -504,7 +519,7 @@ export default {
     },
     handleMapMove () {
       this.setMapBounds()
-      this.handleSearchSubmit()
+      this.handleSearchSubmit({ trigger: 'map' })
     },
     setMapBounds () {
       if (this.$refs.searchMap && this.$refs.searchMap.map) {
@@ -526,22 +541,28 @@ export default {
         this.setMapBounds()
       }
     },
-    handleSearchSubmit () {
+    handleSearchSubmit (options) {
+      const { trigger = 'search' } = options
+      this.lastSearchTrigger = trigger
+
       this.cleanSearchParams()
       this.updateQueryParams()
-      this.wellSearch()
-      this.locationSearch()
+      this.wellSearch(options)
+      this.locationSearch(options)
     },
-    resetButtonHandler () {
+    handleReset () {
       this.resetMapBounds()
       this.searchParamsReset()
-      this.wellSearch()
-      this.locationSearch()
+      this.tabulator.clearData()
+      this.locations = []
+      this.mapError = null
     },
     searchParamsReset () {
       this.searchParams = {...this.defaultSearchParams}
       this.selectedFilters = []
-      this.$router.push({ query: null })
+      this.$nextTick(() => {
+        this.$router.push({ query: null })
+      })
     },
     initTabIndex () {
       const hash = this.$route.hash
