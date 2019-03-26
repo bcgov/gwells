@@ -44,6 +44,8 @@ export default {
       // Create map, with default centered and zoomed to show entire BC.
       this.map = L.map('map').setView([54.5, -126.5], 5)
       L.control.scale().addTo(this.map)
+      var areaSelect = L.areaSelect({width:200, height:300});
+      areaSelect.addTo(this.map);
 
       // Add geo search
       const provider = new OpenStreetMapProvider()
@@ -139,6 +141,10 @@ export default {
             }
           }).addTo(this.map)
         })
+        console.log(L.geoJson)
+        // this.map.eachLayer(function(layer){
+          // console.log(layer)
+        // });
       }
     },
     zoomToSelectedAquifer (data) {
@@ -154,6 +160,22 @@ export default {
 
 .map {
   height: 600px;
+}
+
+.leaflet-areaselect-shade {
+    position: absolute;
+    background: rgba(0,0,0, 0.4);
+}
+.leaflet-areaselect-handle {
+    position: absolute;
+    background: #fff;
+    border: 1px solid #666;
+    -moz-box-shadow: 1px 1px rgba(0,0,0, 0.2);
+    -webkit-box-shadow: 1px 1px rgba(0,0,0, 0.2);
+    box-shadow: 1px 1px rgba(0,0,0, 0.2);
+    width: 14px;
+    height: 14px;
+    cursor: move;
 }
 
 </style>
