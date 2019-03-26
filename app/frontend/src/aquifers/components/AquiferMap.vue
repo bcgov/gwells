@@ -1,10 +1,18 @@
 <template>
-  <div id="map" class="map"/>
+  <div class="aquifer-map">
+    <div id="map" class="map"/>
+    <ul>
+      <li v-for="activeLayer in activeLayers" :key="activeLayer.layerId">
+        {{ activeLayer.layerName }}
+      </li>
+    </ul>
+  </div>
 </template>
 
 <script>
 import L from 'leaflet'
 import { tiledMapLayer } from 'esri-leaflet'
+import { filter } from 'lodash'
 export default {
   name: 'AquiferMap',
   props: ['aquifers'],
@@ -18,6 +26,12 @@ export default {
       this.initLeaflet()
       this.initMap()
     })
+  },
+
+  data () {
+    return {
+      activeLayers: []
+    }
   },
 
   watch: {
@@ -66,44 +80,62 @@ export default {
           format: 'image/png',
           layers: 'pub:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
           styles: 'Water_Wells_Artesian',
-          transparent: true
+          transparent: true,
+          name: 'Artesian wells'
         }),
         'Cadastral': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW/ows?', {
           format: 'image/png',
           layers: 'pub:WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW',
-          transparent: true
+          transparent: true,
+          name: 'Cadastral'
         }),
         'Ecocat - Water related reports': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_FISH.ACAT_REPORT_POINT_PUB_SVW/ows?', {
           format: 'image/png',
           layers: 'pub:WHSE_FISH.ACAT_REPORT_POINT_PUB_SVW',
-          transparent: true
+          transparent: true,
+          name: 'Ecocat - Water related reports'
         }),
         'Groundwater licenses': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.WLS_PWD_LICENCES_SVW/ows?', {
           format: 'image/png',
           layers: 'pub:WHSE_WATER_MANAGEMENT.WLS_PWD_LICENCES_SVW',
-          transparent: true
+          transparent: true,
+          name: 'Groundwater licenses'
         }),
         'Observation wells - active': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW/ows?', {
           format: 'image/png',
           layers: 'pub:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
           styles: 'Provincial_Groundwater_Observation_Wells_Active',
-          transparent: true
+          transparent: true,
+          name: 'Observation wells - active'
         }),
         'Observation wells - inactive': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW/ows?', {
           format: 'image/png',
           layers: 'pub:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
           styles: 'Provincial_Groundwater_Observation_Wells_Inactive',
-          transparent: true
+          transparent: true,
+          name: 'Observation wells - inactive'
         }),
         'Wells - All': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW/ows?', {
           format: 'image/png',
           layers: 'pub:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
-          transparent: true
+          transparent: true,
+          name: 'Wells - All'
         })
       }
 
       // Add checkboxes for layers
       L.control.layers(null, mapLayers, {collapsed: true}).addTo(this.map)
+      this.map.on('layeradd', (e) => {
+        const layerId = e.layer._leaflet_id
+        const layerName = e.layer.options.name
+        this.activeLayers.push({layerId, layerName})
+      })
+
+      this.map.on('layerremove', (e) => {
+        const layerId = e.layer._leaflet_id
+        this.activeLayers = filter(this.activeLayers, o => o.layerId !== layerId)
+      })
+      
     }
   }
 }
