@@ -425,6 +425,7 @@ export default {
     wellSearch (options = {}) {
       const { perPage = this.perPage, currentPage = this.currentPage, trigger = 'search' } = options
 
+      // cancel previous search requests and add a cancellation token for this request
       this.cancelWellSearches()
       const CancelToken = axios.CancelToken
       const requestContext = CancelToken.source()

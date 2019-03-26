@@ -291,7 +291,11 @@ class WellTagSearchAPIView(ListAPIView):
         else:
             qs = Well.objects.all().exclude(well_publication_status='Unpublished')
 
-        return qs.only('well_tag_number', 'owner_full_name')
+        return qs
+
+    def get(self, request):
+        data = self.get_queryset().values('well_tag_number', 'owner_full_name')
+        return Response(data)
 
 
 class WellSubmissionsListAPIView(ListAPIView):
