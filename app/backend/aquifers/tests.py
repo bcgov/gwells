@@ -38,6 +38,8 @@ class TestAquifersEditRole(APITestCase):
             group = Group(name=role)
             group.save()
         user, _created = User.objects.get_or_create(username='test')
+        user.profile.username = user.username
+        user.save()
         roles_to_groups(user, roles)
         self.client.force_authenticate(user)
         Aquifer(aquifer_id=1).save()
