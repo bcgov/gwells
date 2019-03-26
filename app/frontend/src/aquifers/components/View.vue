@@ -13,7 +13,7 @@
 */
 
 <template>
-  <b-card class="container container-wide p-1">
+  <b-card class="container p-1">
     <api-error v-if="error" :error="error"/>
     <b-alert show v-if="files_uploading">File Upload In Progress...</b-alert>
     <b-alert show v-if="!files_uploading && file_upload_error" variant="warning" >

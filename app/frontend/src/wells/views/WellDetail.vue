@@ -1,9 +1,9 @@
 <template>
   <div>
-    <b-card no-body class="mb-3 container container-wide d-print-none">
+    <b-card no-body class="mb-3 container d-print-none">
       <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"></b-breadcrumb>
     </b-card>
-    <b-card class="container container-wide p-1">
+    <b-card class="container p-1">
 
       <!-- SUMMARY -->
       <fieldset id="summary_fieldset" class="detail-section mb-3">

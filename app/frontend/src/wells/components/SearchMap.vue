@@ -1,5 +1,5 @@
 <template>
-  <div id="map" class="map"/>
+  <div id="map" class="search-map"/>
 </template>
 
 <script>
@@ -161,6 +161,11 @@ export default {
       // In B.C. users are used to omitting the minus sign on longitude, it's always negative. So we're
       // very forgiving, and just always make sure longitude is negative.
       return this.longitude > 0 ? this.longitude * -1 : this.longitude
+    },
+    resetView () {
+      if (this.map) {
+        this.map.setView([this.latitude ? this.latitude : 54.5, this.getLongitude() ? this.getLongitude() : -126.5], 5)
+      }
     }
   }
 }
@@ -168,7 +173,7 @@ export default {
 <style>
 @import "leaflet/dist/leaflet.css";
 
-.map {
+.search-map {
   height: 600px;
 }
 .geolocate {

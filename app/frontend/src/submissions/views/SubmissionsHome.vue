@@ -12,7 +12,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-  <div class="container p-1 container-wide">
+  <div class="container p-1">
     <b-card v-if="breadcrumbs && breadcrumbs.length" no-body class="mb-3 d-print-none">
       <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"></b-breadcrumb>
     </b-card>
