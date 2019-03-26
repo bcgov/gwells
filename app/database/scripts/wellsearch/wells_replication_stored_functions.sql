@@ -479,8 +479,6 @@ BEGIN
     well_class_code             ,
     well_subclass_guid          ,
     well_yield_unit_code        ,
-    latitude                    ,
-    longitude                   ,
     geom                        ,
     ground_elevation            ,
     well_orientation            ,
@@ -581,14 +579,12 @@ BEGIN
     xform.well_class_code                   ,
     xform.well_subclass_guid                ,
     xform.well_yield_unit_code              ,
-    xform.latitude                          ,
-    xform.longitude                         ,
     CASE
       WHEN xform.latitude is NULL OR
           xform.longitude IS NULL THEN
         NULL
       ELSE
-          ST_SetSRID(ST_MakePoint(longitude, latitude),3005)
+          ST_SetSRID(ST_MakePoint(xform.longitude, xform.latitude),4326) -- Values are BC Albers. but we are using WGS84 Lat Lon to avoid rounding errors
     END AS geom                             ,
     xform.ground_elevation                  ,
     xform.well_orientation                  ,

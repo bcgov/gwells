@@ -318,6 +318,16 @@ class WellDetailAdminSerializer(AuditModelSerializer):
     class Meta:
         model = Well
         fields = '__all__'
+        extra_fields = ['latitude', 'longitude']
+
+    # this allows us to call model methods on top of __all__
+    def get_field_names(self, declared_fields, info):
+        expanded_fields = super(WellDetailAdminSerializer, self).get_field_names(declared_fields, info)
+
+        if getattr(self.Meta, 'extra_fields', None):
+            return expanded_fields + self.Meta.extra_fields
+        else:
+            return expanded_fields
 
     def get_submission_reports(self, instance):
         records = instance.activitysubmission_set \

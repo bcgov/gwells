@@ -1,7 +1,7 @@
 <template>
   <b-form-row class="pt-1 mb-1">
     <b-col sm="6" v-if="label">
-      <legend :id="`${id}Label`">{{ label }}</legend>
+      <legend :id="`${id}Label`" class="col-form-label pt-0">{{ label }}</legend>
     </b-col>
     <b-col>
       <b-form-radio-group
@@ -53,7 +53,6 @@ export default {
     disabled: Boolean,
     groupClass: String, // optional pass-through class (use for formatting the form-group)
     inputClass: String, // optional pass-through input class (use for formatting the input field)
-    labelCols: [Number, String],
     valueField: String,
     textField: String,
     placeholder: String,
