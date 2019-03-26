@@ -27,6 +27,65 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from reversion.models import Version
 
 
+class WaterRightsPurpose(AuditModel):
+    """
+    Material choices for describing Aquifer Material
+    """
+    code = models.CharField(primary_key=True, max_length=10,
+                            db_column='water_rights_purpose_code')
+    description = models.CharField(max_length=100)
+    display_order = models.PositiveIntegerField(default=0)
+
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(
+        timezone.datetime.max, timezone.get_default_timezone()), null=False)
+
+    class Meta:
+        db_table = 'water_rights_purpose_code'
+        ordering = ['display_order', 'code']
+        verbose_name_plural = 'Water Rights Purpose Codes'
+
+    def __str__(self):
+        return '{} - {}'.format(self.code, self.description)
+
+
+class WaterRightsLicence(AuditModel):
+    """
+    Material choices for describing Aquifer Material
+    """
+
+    aquifer_licence_id = models.AutoField(
+        primary_key=True, verbose_name="Aquifer ID Number")
+
+    purpose = models.ForeignKey(
+        WaterRightsPurpose,
+        db_column='water_rights_purpose_code',
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE,
+        verbose_name="Water Rights Purpose Reference",
+        related_name='licences')
+
+    licence_number = models.BigIntegerField(db_index=True)
+    quantity = models.DecimalField(
+        max_digits=12, decimal_places=3, blank=True, null=True, verbose_name='Quanitity')
+
+    well = models.ForeignKey(
+        'wells.Well',
+        related_name='licences',
+        on_delete=models.CASCADE
+    )
+
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    updated_date = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name_plural = 'Aquifer Licences'
+
+    def __str__(self):
+        return '{} - {}'.format(self.well, self.licence_number)
+
+
 class AquiferMaterial(AuditModel):
     """
     Material choices for describing Aquifer Material

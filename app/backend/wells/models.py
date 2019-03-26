@@ -1276,7 +1276,7 @@ class ActivitySubmission(AuditModel):
         verbose_name="Observation Well Status", on_delete=models.PROTECT)
     # aquifer association
     aquifer = models.ForeignKey(Aquifer, db_column='aquifer_id', on_delete=models.PROTECT, blank=True,
-                                null=True, verbose_name='Aquifer ID Number')
+        related_name='wells', null=True, verbose_name='Aquifer ID Number')
 
     # Decommission info
     decommission_reason = models.CharField(
