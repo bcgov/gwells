@@ -22,9 +22,9 @@ export default {
 
   watch: {
     aquifers: function (oldAquifers, newAquifers) {
-      console.log(oldAquifers);
-      console.log(newAquifers);
-      console.log("Prop Changed");
+      console.log(oldAquifers)
+      console.log(newAquifers)
+      console.log('Prop Changed')
     }
   },
 
@@ -104,8 +104,6 @@ export default {
 
       // Add checkboxes for layers
       L.control.layers(null, mapLayers, {collapsed: true}).addTo(this.map)
-
-
     }
   }
 }
@@ -113,7 +111,7 @@ export default {
 <style>
 @import "leaflet/dist/leaflet.css";
 .map {
-  width: 550px;
+  width: 100%;
   height: 500px;
 }
 </style>

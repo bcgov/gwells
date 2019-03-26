@@ -352,15 +352,7 @@ import { isEmpty, mapValues } from 'lodash'
 import { mapMutations, mapState } from 'vuex'
 
 export default {
-  data () {
-    return {
-    
-    }
-  },
   computed: {
-
-
-
     fieldErrorMessages () {
       return mapValues(this.fieldErrors, (messages) => messages.join(', '))
     },
@@ -375,7 +367,6 @@ export default {
         this.setFiles(value)
       }
     },
-
     shapefile: {
       get: function () {
         return this.shapeFile
@@ -384,7 +375,6 @@ export default {
         this.setShapeFile(value)
       }
     },
-  
     privateDocument: {
       get: function () {
         return this.isPrivate

@@ -108,7 +108,7 @@
             <div class="artesian-conditions" v-if="index === 1">
               <h6 class="mt-2 font-weight-bold">Artesian Conditions</h6>
               <a @click="handleArtesianSearch">[#] artesian wells in aquifer</a>
-            </div>            
+            </div>
             <div class="observational-wells" v-if="index === 2">
               <h6 class="mt-2 font-weight-bold">Observational Wells</h6>
               <a :href="getWellLink()">Observation Well 20402</a>
@@ -207,12 +207,12 @@ export default {
       'fileUploadFail'
     ]),
     fetchWells (id = this.id) {
-        ApiService.query(`aquifers/${id}/details`)
-          .then((response) => {
-            this.wells = response.data
-          }).catch((error) => {
-            console.error(error)
-          })
+      ApiService.query(`aquifers/${id}/details`)
+        .then((response) => {
+          this.wells = response.data
+        }).catch((error) => {
+          console.error(error)
+        })
       this.wells = [{id: 20402}]
     },
     handleArtesianSearch () {
@@ -235,7 +235,6 @@ export default {
     handleSaveSuccess (response) {
       this.fetch()
       this.navigateToView()
-    
       if (this.$refs.aquiferHistory) {
         this.$refs.aquiferHistory.update()
       }
@@ -253,17 +252,17 @@ export default {
         })
       }
 
-    if (this.shapeFile) {
-      console.log("Shape File Exists")
-      console.log(this.shapeFile);
-      this.uploadShapeFile({
-        documentType: 'aquifers',
-        recordId: this.id
-      });
-    } else {
-      console.log("Shape file does not exist");
-      console.log(this.shapeFile);
-    }
+      if (this.shapeFile) {
+        console.log('Shape File Exists')
+        console.log(this.shapeFile)
+        this.uploadShapeFile({
+          documentType: 'aquifers',
+          recordId: this.id
+        })
+      } else {
+        console.log('Shape file does not exist')
+        console.log(this.shapeFile)
+      }
     },
     handlePatchError (error) {
       if (error.response) {
@@ -277,8 +276,8 @@ export default {
       }
     },
     save () {
-      console.log("Attempt to get file from child");
-      console.log(AquiferForm.data());
+      console.log('Attempt to get file from child')
+      console.log(AquiferForm.data())
       this.showSaveSuccess = false
       this.fieldErrors = {}
       ApiService.patch('aquifers', this.id, this.record)

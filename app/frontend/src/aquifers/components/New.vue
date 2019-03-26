@@ -95,7 +95,7 @@ export default {
       }
     },
     save () {
-      console.log("Save Called")
+      console.log('Save Called')
       this.showSaveSuccess = false
       this.fieldErrors = {}
       ApiService.post('aquifers', this.record)
