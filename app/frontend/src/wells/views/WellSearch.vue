@@ -251,7 +251,7 @@
         </b-pagination>
       </b-col>
     </b-row>
-    <b-row>
+    <b-row v-if="!isInitialSearch">
       <b-col>
         <p>
           Can’t find the well you are looking for? Try your search again using a different set of criteria. If you still need more assistance, Contact <a href="https://portal.nrs.gov.bc.ca/web/client/contact">FrontCounterBC</a>.
