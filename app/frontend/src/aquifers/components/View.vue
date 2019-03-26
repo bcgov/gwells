@@ -104,7 +104,16 @@
         </b-col>
         <b-col>
           <h5 class="mt-3 border-bottom">Knowledge Indicators</h5>
-          <div :key="section.id" v-for="section in aquifer_resource_sections">
+          <div :key="section.id" v-for="(section, index) in aquifer_resource_sections">
+            <div class="artesian-conditions" v-if="index === 1">
+              <h6 class="mt-2 font-weight-bold">Artesian Conditions</h6>
+              <a @click="handleArtesianSearch">[#] artesian wells in aquifer</a>
+            </div>            
+            <div class="observational-wells" v-if="index === 2">
+              <h6 class="mt-2 font-weight-bold">Observational Wells</h6>
+              <a :href="getWellLink()">Observation Well 20402</a>
+              <p>Water Level Analysis: <a :href="getAnalysisLink()">Increasing</a></p>
+            </div>
             <h6 class="mt-4">{{ section.name }}</h6>
             <ul :key="resource.id" v-for="resource in bySection(record.resources, section)">
               <li><a :href="resource.url">{{ resource.name }}</a></li>
@@ -168,7 +177,8 @@ export default {
       record: {},
       showSaveSuccess: false,
       aquiferFiles: {},
-      aquifer_resource_sections: []
+      aquifer_resource_sections: [],
+      wells: []
     }
   },
   computed: {
@@ -196,6 +206,27 @@ export default {
       'fileUploadSuccess',
       'fileUploadFail'
     ]),
+    fetchWells (id = this.id) {
+        ApiService.query(`aquifers/${id}/details`)
+          .then((response) => {
+            this.wells = response.data
+          }).catch((error) => {
+            console.error(error)
+          })
+      this.wells = [{id: 20402}]
+    },
+    handleArtesianSearch () {
+      this.$router.push({
+        name: 'wells-home',
+        query: {
+          'match_any': false,
+          'aquifer': this.id,
+          'artesian_flow_has_value': true,
+          'artesian_pressure_has_value': true
+        },
+        hash: '#advanced'
+      })
+    },
     bySection (resources, section) {
       return (resources || []).filter(function (resource) {
         return resource.section_code === section.code
@@ -283,6 +314,12 @@ export default {
       ApiService.query('aquifers/sections').then((response) => {
         this.aquifer_resource_sections = response.data.results
       })
+    },
+    getWellLink () {
+      return 'https://governmentofbc.maps.arcgis.com/apps/webappviewer/index.html?id=b53cb0bf3f6848e79d66ffd09b74f00d&find=OBS%20WELL%20402'
+    },
+    getAnalysisLink () {
+      return 'http://www.env.gov.bc.ca/soe/indicators/water/groundwater-levels.html'
     }
   }
 }

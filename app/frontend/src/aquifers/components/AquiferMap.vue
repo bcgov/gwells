@@ -4,15 +4,13 @@
 
 <script>
 import L from 'leaflet'
-//import '../../common/assets/js/leaflet-areaselect.js'
 import { tiledMapLayer } from 'esri-leaflet'
-import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch'
-import 'leaflet-geosearch/dist/style.css'
-import 'leaflet-geosearch/assets/css/leaflet.css'
-
 export default {
   name: 'AquiferMap',
   props: ['aquifers'],
+  // watch: {
+  //   aquifers
+  // },
   created () {
     // There seems to be an issue loading leaflet immediately on mount, we use nextTick to ensure
     // that the view has been rendered at least once before injecting the map.
@@ -23,9 +21,10 @@ export default {
   },
 
   watch: {
-    aquifers: function (newAquifers, oldAquifers) {
-      this.map.removeLayer(L.geoJson)
-      this.addAquifersToMap(newAquifers)
+    aquifers: function (oldAquifers, newAquifers) {
+      console.log(oldAquifers);
+      console.log(newAquifers);
+      console.log("Prop Changed");
     }
   },
 
@@ -44,28 +43,12 @@ export default {
       // Create map, with default centered and zoomed to show entire BC.
       this.map = L.map('map').setView([54.5, -126.5], 5)
       L.control.scale().addTo(this.map)
-
-      // Add geo search
-      const provider = new OpenStreetMapProvider()
-      const searchControl = new GeoSearchControl({
-        provider: provider
-      })
-      this.map.addControl(searchControl)
-
       // Add map layers.
       tiledMapLayer({url: 'https://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer'}).addTo(this.map)
-
-      // Streams
-      L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_BASEMAPPING.FWA_STREAM_NETWORKS_SP/ows?', {
+      L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW/ows?', {
         format: 'image/png',
-        layers: 'pub:WHSE_BASEMAPPING.FWA_STREAM_NETWORKS_SP',
-        transparent: true
-      }).addTo(this.map)
-
-      // Roads
-      L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_BASEMAPPING.DRA_DGTL_ROAD_ATLAS_MPAR_SP/ows?', {
-        format: 'image/png',
-        layers: 'pub:WHSE_BASEMAPPING.DRA_DGTL_ROAD_ATLAS_MPAR_SP',
+        layers: 'pub:WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW',
+        styles: 'PMBC_Parcel_Fabric_Cadastre_Outlined',
         transparent: true
       }).addTo(this.map)
 
@@ -122,38 +105,15 @@ export default {
       // Add checkboxes for layers
       L.control.layers(null, mapLayers, {collapsed: true}).addTo(this.map)
 
-      this.addAquifersToMap(this.aquifers)
-    },
-    addAquifersToMap (aquifers) {
-      if (aquifers !== undefined && aquifers.constructor === Array && aquifers.length > 0) {
-        var myStyle = {
-          'color': 'red'
-        }
 
-        aquifers.forEach(aquifer => {
-          L.geoJSON(aquifer.geom, {
-            style: myStyle,
-            onEachFeature: function (feature, layer) {
-              layer.bindPopup(`<p>Aquifer: <a href="/gwells/aquifers/${aquifer.aquifer_id}">${aquifer.aquifer_id}</a></p><p>Aquifer Name: ${aquifer.aquifer_name}</p>
-                <p>Subtype: ${aquifer.subtype}</p>`)
-            }
-          }).addTo(this.map)
-        })
-      }
-    },
-    zoomToSelectedAquifer (data) {
-      var aquiferGeom = L.geoJSON(data.geom)
-      this.map.fitBounds(aquiferGeom.getBounds())
-      this.$SmoothScroll(document.getElementById('map'))
     }
   }
 }
 </script>
 <style>
 @import "leaflet/dist/leaflet.css";
-
 .map {
-  height: 600px;
+  width: 550px;
+  height: 500px;
 }
-
 </style>
