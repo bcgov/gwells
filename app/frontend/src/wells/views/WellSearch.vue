@@ -460,8 +460,6 @@ export default {
         // has already occurred.
         this.isInitialSearch = false
 
-        // set flag to indicate how the search was triggered
-
         return response.data.results || []
       }).catch((err) => {
         if (err.response && err.response.data) {
