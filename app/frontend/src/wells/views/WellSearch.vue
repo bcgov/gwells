@@ -483,7 +483,7 @@ export default {
       }
     },
     cancelMapUpdates () {
-      for (let i = this.pendingSearches.length - 1; i >= 0; i--) {
+      for (let i = this.pendingMapUpdates.length - 1; i >= 0; i--) {
         const req = this.pendingMapUpdates.pop()
         req.cancel()
       }
