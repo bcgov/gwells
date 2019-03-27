@@ -167,6 +167,11 @@ export default {
       }
     },
     zoomToSelectedAquifer (data) {
+      this.map.eachLayer(function(layer) {
+        if ( layer.options.aquifer_id === data.aquifer_id ) {
+          layer.openPopup()
+        }
+      });
       var aquiferGeom = L.geoJSON(data.geom)
       this.map.fitBounds(aquiferGeom.getBounds())
       this.$SmoothScroll(document.getElementById('map'))
