@@ -522,6 +522,8 @@ export default {
               this.trackValueChanges = true
             })
           })
+          // Set initial form fields for comparison with user input changes
+          Object.assign(this.compareForm, this.form)
         }).catch((e) => {
           console.error(e)
         })
@@ -565,6 +567,7 @@ function initialState () {
     trackValueChanges: false,
     errors: {},
     form: {},
+    compareForm: {},
     submissionsHistory: [], // historical submissions for each well (comes into play for staff edits)
     formOptions: {},
     uploadedFiles: {},
