@@ -568,6 +568,9 @@ export default {
       type: Object,
       isInput: false
     },
+    formChanges: {
+      type: Function
+    },
     submissionsHistory: {
       type: Array,
       default: () => ([])
@@ -737,8 +740,13 @@ export default {
         this.$options.watch[`form.${key}`] = {
           handler (newValue, oldValue) {
             if (this.trackValueChanges && !this.loading && !this.formSubmitLoading) {
-              this.formValueChanged = true
-              this.form.meta.valueChanged[key] = true
+              if (this.formChanges()) {
+                this.formValueChanged = true
+                this.form.meta.valueChanged[key] = true
+              } else {
+                this.formValueChanged = false
+                this.form.meta.valueChanged = {}
+              }
             }
           },
           deep: true
