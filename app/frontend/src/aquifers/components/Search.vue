@@ -28,10 +28,9 @@
       </p>
     </b-alert>
 
-    <b-card no-body class="p-3 mb-4">
-      <h1>Aquifer Search</h1>
+    <b-card no-body class="main-search-card mb-4">
 
-      <div class="pb-2">
+      <div v-if='userRoles.aquifers.edit' class="pb-2">
         <b-button
           id="aquifers-add"
           v-on:click="navigateToNew"
@@ -49,80 +48,112 @@
         v-on:submit.prevent="triggerSearch"
         v-on:reset="triggerReset">
         <b-form-row>
-          <b-col cols="12" md="4">
-            <h5>Search by aquifer name or number</h5>
-            <b-form-group label="(leave blank to see all aquifers)">
-              <b-form-input
-                type="text"
-                id="aquifers-search-field"
-                v-model="search"/>
-            </b-form-group>
-            <b-form-checkbox-group
-              stacked
-              v-model="sections"
-              :options="aquifer_resource_sections"
-            />
-
+          <b-col cols="12" md="4" class="p-4">
+            <h1 class="main-title">Aquifer Search</h1>
+            <b-form-row>
+              <b-col cols="12" md="6" class="p-4 aquifer-search-column">
+                <h5>Search by aquifer name or number</h5>
+                <b-form-group label="(leave blank to see all aquifers)">
+                  <b-form-input
+                    type="text"
+                    id="aquifers-search-field"
+                    v-model="search"/>
+                </b-form-group>
+                <b-form-checkbox-group
+                  stacked
+                  v-model="sections"
+                  :options="aquifer_resource_sections"
+                />
+                <b-form-row>
+                  <b-col>
+                    <b-form-group class="aquifer-search-actions">
+                      <b-button variant="primary" type="submit" id="aquifers-search">Search</b-button>
+                      <b-button variant="default" type="reset">Reset</b-button>
+                    </b-form-group>
+                  </b-col>
+                </b-form-row>
+                <h6>Download all aquifers</h6>
+                <ul>
+                  <li>-<a href="#"></a>Aquifer extract (XLSX)</li>
+                  <li>-<a href="#"></a>Aquifer extract (ZIP)</li>
+                </ul>
+              </b-col>
+              <b-col cols="12" md="6" class="p-4">
+                <h5>Search by street address</h5>
+                <b-form-group label="(leave blank to see all aquifers)">
+                  <b-form-input
+                    type="text"
+                    id="aquifers-search-field"
+                    v-model="search"/>
+                </b-form-group>
+                <b-form-checkbox-group
+                  stacked
+                  v-model="sections"
+                  :options="aquifer_resource_sections"
+                />
+              </b-col>
+            </b-form-row>
           </b-col>
-          <b-col cols="12" md="8">
+
+          <b-col cols="12" md="8" class="map-column">
             <aquifer-map ref="aquiferMap" v-bind:aquifers="response.results"/>
           </b-col>
         </b-form-row>
-        <b-form-row>
-          <b-col>
-            <b-form-group class="aquifer-search-actions">
-              <b-button variant="primary" type="submit" id="aquifers-search">Search</b-button>
-              <b-button variant="default" type="reset">Reset</b-button>
-            </b-form-group>
-          </b-col>
-        </b-form-row>
+
       </b-form>
 
-      <b-table
-        id="aquifers-results"
-        class="mt-3"
-        :fields="aquiferListFields"
-        :items="aquiferList"
-        :show-empty="emptyResults"
-        :sort-by.sync="sortBy"
-        :sort-desc.sync="sortDesc"
-        empty-text="No aquifers could be found"
-        no-local-sorting
-        striped
-        v-if="aquiferList">
-        <template slot="aquifer_id" slot-scope="data">
-          <p class="aquifer-id" v-on:click="onAquiferIdClick(data)">{{data.value}}</p>
-        </template>
-        <template slot="material" slot-scope="row">
-          {{row.item.material_description}}
-        </template>
-        <template slot="subtype" slot-scope="row">
-          {{row.item.subtype_description}}
-        </template>
-        <template slot="vulnerability" slot-scope="row">
-          {{row.item.vulnerability_description}}
-        </template>
-        <template slot="vulnerability" slot-scope="row">
-          {{row.item.vulnerability_description}}
-        </template>
-        <template slot="productivity" slot-scope="row">
-          {{row.item.productivity_description}}
-        </template>
-        <template slot="demand" slot-scope="row">
-          {{row.item.demand_description}}
-        </template>
-      </b-table>
+      <b-row>
+        <b-col cols="12" class="p-5">
+          <b-container fluid v-if="aquiferList && !emptyResults" class="p-0">
+            <b-row>
+              <b-col cols="12">
+                Showing {{ displayOffset }} to {{ displayPageLength }} of {{ response.count }}
+              </b-col>
+              <b-col v-if="displayPagination">
+                <b-pagination :total-rows="response.count" :per-page="limit" v-model="currentPage" />
+              </b-col>
+            </b-row>
+          </b-container>
 
-      <b-container v-if="aquiferList && !emptyResults">
-        <b-row>
-          <b-col>
-            Showing {{ displayOffset }} to {{ displayPageLength }} of {{ response.count }}
-          </b-col>
-          <b-col v-if="displayPagination">
-            <b-pagination :total-rows="response.count" :per-page="limit" v-model="currentPage" />
-          </b-col>
-        </b-row>
-      </b-container>
+          <b-table
+            id="aquifers-results"
+            class=""
+            :fields="aquiferListFields"
+            :items="aquiferList"
+            :show-empty="emptyResults"
+            :sort-by.sync="sortBy"
+            :sort-desc.sync="sortDesc"
+            empty-text="No aquifers could be found"
+            no-local-sorting
+            striped
+            v-if="aquiferList">
+            <template slot="aquifer_id" slot-scope="data">
+              <p class="aquifer-id" v-on:click="onAquiferIdClick(data)">{{data.value}}</p>
+            </template>
+            <template slot="material" slot-scope="row">
+              {{row.item.material_description}}
+            </template>
+            <template slot="subtype" slot-scope="row">
+              {{row.item.subtype_description}}
+            </template>
+            <template slot="vulnerability" slot-scope="row">
+              {{row.item.vulnerability_description}}
+            </template>
+            <template slot="vulnerability" slot-scope="row">
+              {{row.item.vulnerability_description}}
+            </template>
+            <template slot="productivity" slot-scope="row">
+              {{row.item.productivity_description}}
+            </template>
+            <template slot="demand" slot-scope="row">
+              {{row.item.demand_description}}
+            </template>
+          </b-table>
+
+
+        </b-col>
+      </b-row>
+
 
     </b-card>
   </div>
@@ -153,11 +184,26 @@ ul.pagination {
 .aquifer-search-actions {
   margin-top: 1em
 }
+
+.main-title {
+  border-bottom: 1px solid rgba(0,0,0,0.2);
+  padding-bottom: 1rem;
+  font-size: 1.8em;
+}
+
+.map-column {
+  margin-right: -2rem;
+}
+
+.aquifer-search-column {
+  border-right: 1px solid rgba(0,0,0,0.2);
+}
 </style>
 
 <script>
 import querystring from 'querystring'
 import ApiService from '@/common/services/ApiService.js'
+import AquiferMap from './AquiferMap.vue'
 import { mapGetters } from 'vuex'
 const LIMIT = 30
 const DEFAULT_ORDERING_STRING = 'aquifer_id'
@@ -169,6 +215,9 @@ function orderingQueryStringToData (str) {
   }
 }
 export default {
+  components: {
+    'aquifer-map': AquiferMap
+  },
   data () {
     let query = this.$route.query || {}
     return {

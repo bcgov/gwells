@@ -18,9 +18,6 @@ import 'leaflet-geosearch/assets/css/leaflet.css'
 export default {
   name: 'AquiferMap',
   props: ['aquifers'],
-  // watch: {
-  //   aquifers
-  // },
   created () {
     // There seems to be an issue loading leaflet immediately on mount, we use nextTick to ensure
     // that the view has been rendered at least once before injecting the map.
@@ -38,7 +35,9 @@ export default {
 
   watch: {
     aquifers: function (newAquifers, oldAquifers) {
+      console.log(newAquifers)
       this.map.removeLayer(L.geoJson)
+      console.log(this.map)
       this.addAquifersToMap(newAquifers)
     }
   },
@@ -135,6 +134,7 @@ export default {
 
       // Add checkboxes for layers
       L.control.layers(null, mapLayers, {collapsed: true}).addTo(this.map)
+      /*
       this.map.on('layeradd', (e) => {
         const layerId = e.layer._leaflet_id
         const layerName = e.layer.options.name
@@ -145,7 +145,7 @@ export default {
         const layerId = e.layer._leaflet_id
         this.activeLayers = filter(this.activeLayers, o => o.layerId !== layerId)
       })
-      
+      */
       this.addAquifersToMap(this.aquifers)
     },
     addAquifersToMap (aquifers) {
@@ -156,6 +156,7 @@ export default {
 
         aquifers.forEach(aquifer => {
           L.geoJSON(aquifer.geom, {
+            aquifer_id: aquifer['aquifer_id'],
             style: myStyle,
             onEachFeature: function (feature, layer) {
               layer.bindPopup(`<p>Aquifer: <a href="/gwells/aquifers/${aquifer.aquifer_id}">${aquifer.aquifer_id}</a></p><p>Aquifer Name: ${aquifer.aquifer_name}</p>
@@ -163,10 +164,6 @@ export default {
             }
           }).addTo(this.map)
         })
-        console.log(L.geoJson)
-        // this.map.eachLayer(function(layer){
-          // console.log(layer)
-        // });
       }
     },
     zoomToSelectedAquifer (data) {
