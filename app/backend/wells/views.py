@@ -114,7 +114,6 @@ class WellDetail(RetrieveAPIView):
     lookup_field = 'well_tag_number'
 
     def get_queryset(self):
-
         """ Excludes Unpublished wells for users without edit permissions """
         if self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
             qs = Well.objects.all()
@@ -185,23 +184,23 @@ class ListFiles(APIView):
     """
 
     @swagger_auto_schema(responses={200: openapi.Response('OK',
-                         openapi.Schema(type=openapi.TYPE_OBJECT, properties={
-                            'public': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
-                                type=openapi.TYPE_OBJECT,
-                                properties={
-                                    'url': openapi.Schema(type=openapi.TYPE_STRING),
-                                    'name': openapi.Schema(type=openapi.TYPE_STRING)
-                                }
-                            )),
-                            'private': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
-                                type=openapi.TYPE_OBJECT,
-                                properties={
-                                    'url': openapi.Schema(type=openapi.TYPE_STRING),
-                                    'name': openapi.Schema(type=openapi.TYPE_STRING)
-                                }
-                            ))
-                         })
-                         )})
+                                                          openapi.Schema(type=openapi.TYPE_OBJECT, properties={
+                                                              'public': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
+                                                                  type=openapi.TYPE_OBJECT,
+                                                                  properties={
+                                                                      'url': openapi.Schema(type=openapi.TYPE_STRING),
+                                                                      'name': openapi.Schema(type=openapi.TYPE_STRING)
+                                                                  }
+                                                              )),
+                                                              'private': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
+                                                                  type=openapi.TYPE_OBJECT,
+                                                                  properties={
+                                                                      'url': openapi.Schema(type=openapi.TYPE_STRING),
+                                                                      'name': openapi.Schema(type=openapi.TYPE_STRING)
+                                                                  }
+                                                              ))
+                                                          })
+                                                          )})
     def get(self, request, tag):
 
         if Well.objects.get(pk=tag).well_publication_status\
@@ -247,7 +246,6 @@ class WellListAPIView(ListAPIView):
         return serializer_class
 
     def get_queryset(self):
-
         """ Excludes Unpublished wells for users without edit permissions """
         if self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
             qs = Well.objects.all()
@@ -284,7 +282,6 @@ class WellTagSearchAPIView(ListAPIView):
     )
 
     def get_queryset(self):
-
         """ Excludes Unpublished wells for users without edit permissions """
         if self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
             qs = Well.objects.all()
@@ -294,7 +291,7 @@ class WellTagSearchAPIView(ListAPIView):
         return qs
 
     def get(self, request):
-        data = self.get_queryset().values('well_tag_number', 'owner_full_name')
+        data = self.get_queryset().values('well_tag_number', 'owner_full_name').order_by('well_tag_number')
         return Response(data)
 
 
