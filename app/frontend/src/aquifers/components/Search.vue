@@ -74,22 +74,23 @@
                 </b-form-row>
                 <h6 class="mt-3">Download all aquifers</h6>
                 <ul class="aquifer-download-list">
-                  <li>- <a href="#">Aquifer extract (XLSX</a></li>
+                  <li>- <a href="#">Aquifer extract (XLSX)</a></li>
                   <li>- <a href="#">Aquifer extract (ZIP)</a></li>
                 </ul>
               </b-col>
               <b-col cols="12" md="6" class="pt-3 pl-4 pr-4 mt-3">
-                <h5>Search by street address</h5>
-                <b-form-group label="(leave blank to see all aquifers)">
+                <h5 class="search-title mb-4">Search by street address</h5>
+                <b-form-group>
                   <b-form-input
                     type="text"
                     id="aquifers-search-field"
                     v-model="search"/>
                 </b-form-group>
+                <h6>Map Layers:</h6>
                 <b-form-checkbox-group class="aquifer-checkbox-group"
                   stacked
-                  v-model="sections"
-                  :options="aquifer_resource_sections"
+                  v-model="activeLayers"
+                  :options='layers'
                 />
               </b-col>
             </b-form-row>
@@ -114,7 +115,6 @@
 
           <b-table
             id="aquifers-results"
-            class=""
             :fields="aquiferListFields"
             :items="aquiferList"
             :show-empty="emptyResults"
@@ -282,6 +282,8 @@ export default {
         { key: 'demand', label: 'Demand', sortable: true },
         { key: 'mapping_year', label: 'Year of mapping', sortable: true }
       ],
+      activeLayers: [],
+      layers: ['Layer 1', 'Layer 2', 'Layer 3'],
       surveys: [],
       noSearchCriteriaError: false,
       aquifer_resource_sections: [],
