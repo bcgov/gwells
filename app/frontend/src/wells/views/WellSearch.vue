@@ -477,13 +477,13 @@ export default {
       this.scrolled = window.scrollY > 0.9 * pos
     },
     cancelWellSearches () {
-      for (let i = 0; i < this.pendingSearches.length; i++) {
+      for (let i = this.pendingSearches.length - 1; i >= 0; i--) {
         const req = this.pendingSearches.pop()
         req.cancel()
       }
     },
     cancelMapUpdates () {
-      for (let i = 0; i < this.pendingMapUpdates.length; i++) {
+      for (let i = this.pendingMapUpdates.length - 1; i >= 0; i--) {
         const req = this.pendingMapUpdates.pop()
         req.cancel()
       }

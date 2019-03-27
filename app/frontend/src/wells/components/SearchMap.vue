@@ -69,13 +69,13 @@ export default {
     latitude () {
       this.setSearchLock(true)
       setTimeout(() => {
-        this.map.setView([this.latitude ? this.latitude : 54.5, this.getLongitude() ? this.getLongitude() : -126.5])
+        this.map.setView([this.latitude ? this.latitude : 54.5, this.getLongitude() ? this.getLongitude() : -126.5], 15)
       }, 0)
     },
     longitude () {
       this.setSearchLock(true)
       setTimeout(() => {
-        this.map.setView([this.latitude ? this.latitude : 54.5, this.getLongitude() ? this.getLongitude() : -126.5])
+        this.map.setView([this.latitude ? this.latitude : 54.5, this.getLongitude() ? this.getLongitude() : -126.5], 15)
       }, 0)
     }
   },
