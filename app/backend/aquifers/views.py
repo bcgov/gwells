@@ -108,7 +108,7 @@ class AquiferListCreateAPIView(RevisionMixin, AuditCreateMixin, ListCreateAPIVie
             if search.isdigit():
                 disjunction = disjunction | Q(pk=int(search))
             qs = qs.filter(disjunction)
-        return qs
+        return qs.distinct()
 
 
 class AquiferResourceSectionListAPIView(ListAPIView):

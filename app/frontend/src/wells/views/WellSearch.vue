@@ -515,7 +515,6 @@ export default {
     setTimeout(() => {
       this.locationSearch()
     }, 0)
-    this.wellSearch()
   },
   mounted () {
     this.tabulator = new Tabulator(this.$refs.tabulator, {

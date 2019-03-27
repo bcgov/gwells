@@ -199,5 +199,4 @@ export default {
     height: 14px;
     cursor: move;
 }
-
 </style>

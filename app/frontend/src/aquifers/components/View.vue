@@ -120,6 +120,11 @@
             </ul>
             <p v-if="!bySection(record.resources, section).length">No information available.</p>
           </div>
+          <div>
+          </div>
+        </b-col>
+        <b-col>
+          <aquifer-map/>
         </b-col>
       </b-row>
       <h5 class="mt-3 border-bottom">Documentation</h5>
@@ -143,6 +148,13 @@
   vertical-align: top;
   margin-bottom: 9px;
 }
+.artesian-search {
+  cursor: pointer;
+}
+
+a {
+  text-decoration-skip-ink: none;
+}
 </style>
 
 <script>
@@ -151,6 +163,7 @@ import APIErrorMessage from '@/common/components/APIErrorMessage'
 import AquiferForm from './Form'
 import Documents from './Documents.vue'
 import SingleAquiferMap from './SingleAquiferMap.vue'
+import AquiferMap from './AquiferMap.vue'
 import ChangeHistory from '@/common/components/ChangeHistory.vue'
 import { mapActions, mapGetters, mapState } from 'vuex'
 export default {
@@ -158,7 +171,7 @@ export default {
     'api-error': APIErrorMessage,
     'aquifer-form': AquiferForm,
     'aquifer-documents': Documents,
-    'single-aquifer-map': SingleAquiferMap,
+    'aquifer-map': AquiferMap,
     ChangeHistory
   },
   props: {
@@ -232,6 +245,18 @@ export default {
         return resource.section_code === section.code
       })
     },
+    handleArtesianSearch () {
+      this.$router.push({
+        name: 'wells-home',
+        query: {
+          'match_any': false,
+          'aquifer': this.id,
+          'artesian_flow_has_value': true,
+          'artesian_pressure_has_value': true
+        },
+        hash: '#advanced'
+      })
+    },
     handleSaveSuccess (response) {
       this.fetch()
       this.navigateToView()
@@ -297,7 +322,6 @@ export default {
     fetch (id = this.id) {
       ApiService.query(`aquifers/${id}`)
         .then((response) => {
-          console.log(response.data)
           this.record = response.data
         }).catch((error) => {
           console.error(error)
