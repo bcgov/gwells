@@ -48,37 +48,37 @@
         v-on:submit.prevent="triggerSearch"
         v-on:reset="triggerReset">
         <b-form-row>
-          <b-col cols="12" md="4" class="p-4">
-            <h1 class="main-title">Aquifer Search</h1>
+          <b-col cols="12" md="5" class="p-4">
+            <h1 class="main-title ml-4 mt-2">Aquifer Search</h1>
             <b-form-row>
-              <b-col cols="12" md="6" class="p-4 aquifer-search-column">
-                <h5>Search by aquifer name or number</h5>
-                <b-form-group label="(leave blank to see all aquifers)">
+              <b-col cols="12" md="6" class="pt-3 pl-4 pr-4 aquifer-search-column mt-3">
+                <h5 class="search-title">Search by aquifer name or number (leave blank to see all aquifers)</h5>
+                <b-form-group class="search-title mt-3 mb-3">
                   <b-form-input
                     type="text"
                     id="aquifers-search-field"
-                    v-model="search"/>
+                    v-model="search"
+                    class="w-75"/>
                 </b-form-group>
                 <b-form-checkbox-group
                   stacked
                   v-model="sections"
                   :options="aquifer_resource_sections"
+                  class="aquifer-checkbox-group"
                 />
                 <b-form-row>
-                  <b-col>
                     <b-form-group class="aquifer-search-actions">
-                      <b-button variant="primary" type="submit" id="aquifers-search">Search</b-button>
-                      <b-button variant="default" type="reset">Reset</b-button>
+                      <b-button class="aquifer-buttons" variant="primary" type="submit" id="aquifers-search">Search</b-button>
+                      <b-button class="aquifer-buttons" variant="default" type="reset">Reset</b-button>
                     </b-form-group>
-                  </b-col>
                 </b-form-row>
-                <h6>Download all aquifers</h6>
-                <ul>
-                  <li>-<a href="#"></a>Aquifer extract (XLSX)</li>
-                  <li>-<a href="#"></a>Aquifer extract (ZIP)</li>
+                <h6 class="mt-3">Download all aquifers</h6>
+                <ul class="aquifer-download-list">
+                  <li>- <a href="#">Aquifer extract (XLSX</a></li>
+                  <li>- <a href="#">Aquifer extract (ZIP)</a></li>
                 </ul>
               </b-col>
-              <b-col cols="12" md="6" class="p-4">
+              <b-col cols="12" md="6" class="pt-3 pl-4 pr-4 mt-3">
                 <h5>Search by street address</h5>
                 <b-form-group label="(leave blank to see all aquifers)">
                   <b-form-input
@@ -86,7 +86,7 @@
                     id="aquifers-search-field"
                     v-model="search"/>
                 </b-form-group>
-                <b-form-checkbox-group
+                <b-form-checkbox-group class="aquifer-checkbox-group"
                   stacked
                   v-model="sections"
                   :options="aquifer_resource_sections"
@@ -95,7 +95,7 @@
             </b-form-row>
           </b-col>
 
-          <b-col cols="12" md="8" class="map-column">
+          <b-col cols="12" md="7" class="map-column">
             <aquifer-map ref="aquiferMap" v-bind:aquifers="response.results"/>
           </b-col>
         </b-form-row>
@@ -106,11 +106,8 @@
         <b-col cols="12" class="p-5">
           <b-container fluid v-if="aquiferList && !emptyResults" class="p-0">
             <b-row>
-              <b-col cols="12">
+              <b-col cols="12" class="mb-3">
                 Showing {{ displayOffset }} to {{ displayPageLength }} of {{ response.count }}
-              </b-col>
-              <b-col v-if="displayPagination">
-                <b-pagination :total-rows="response.count" :per-page="limit" v-model="currentPage" />
               </b-col>
             </b-row>
           </b-container>
@@ -126,6 +123,8 @@
             empty-text="No aquifers could be found"
             no-local-sorting
             striped
+            outlined
+            
             v-if="aquiferList">
             <template slot="aquifer_id" slot-scope="data">
               <p class="aquifer-id" v-on:click="onAquiferIdClick(data)">{{data.value}}</p>
@@ -149,8 +148,7 @@
               {{row.item.demand_description}}
             </template>
           </b-table>
-
-
+          <b-pagination class="pull-right" v-if="displayPagination" :total-rows="response.count" :per-page="limit" v-model="currentPage" />
         </b-col>
       </b-row>
 
@@ -171,10 +169,17 @@ table.b-table > tfoot > tr > th.sorting::after {
   opacity: 1 !important;
 }
 
+table.b-table td {
+  padding: .5rem;
+  vertical-align: middle;
+}
 table.b-table .aquifer-id {
-  color: blue;
+  color: #37598A;
   cursor: pointer;
   text-decoration: underline;
+  font-weight: bold;
+  display: inline;
+
 }
 
 ul.pagination {
@@ -186,7 +191,7 @@ ul.pagination {
 }
 
 .main-title {
-  border-bottom: 1px solid rgba(0,0,0,0.2);
+  border-bottom: 1px solid rgba(0,0,0,0.1);
   padding-bottom: 1rem;
   font-size: 1.8em;
 }
@@ -196,7 +201,43 @@ ul.pagination {
 }
 
 .aquifer-search-column {
-  border-right: 1px solid rgba(0,0,0,0.2);
+  border-right: 1px solid rgba(0,0,0,0.1);
+}
+
+.search-title {
+  font-size: 1.1em;
+  padding: 0;
+  margin: 0;
+}
+
+.aquifer-checkbox-group .custom-control-label:before {
+  background-color: white;
+  border: 1px solid #CED4DA;
+}
+
+.aquifer-buttons {
+  padding: .300rem 1.5rem;
+}
+
+#aquifers-search {
+  background-color: #38598A;
+}
+
+.aquifer-download-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.aquifer-download-list li {
+  color: #37598A;
+}
+
+.aquifer-download-list li a {
+  color: #37598A;
+  text-decoration: underline;
+  text-decoration-color: #37598A;
+  text-decoration-skip-ink: none;
 }
 </style>
 
@@ -277,6 +318,7 @@ export default {
     },
     fetchResourceSections () {
       ApiService.query('aquifers/sections').then((response) => {
+        this.$router.replace({query: { offset: 1  }})
         this.aquifer_resource_sections = response.data.results.map(function (section) {
           return {
             text: section.name,
