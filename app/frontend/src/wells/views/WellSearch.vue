@@ -253,7 +253,7 @@
         </b-table>
         <b-row>
           <b-col>
-            <div class="my-3" v-if="numberOfRecords > 0">Showing {{ (currentPage - 1) * perPage + 1 }} to {{ (currentPage - 1) * perPage + tableData.length }} of {{ numberOfRecords }} {{ numberOfRecords === 1 ? 'record' : 'records'}}.</div>
+            <div class="my-3" v-if="numberOfRecords > 0">Showing {{ currentRecordsCountStart }} to {{ currentRecordsCountEnd }} of {{ numberOfRecords }} {{ numberOfRecords === 1 ? 'record' : 'records'}}.</div>
           </b-col>
         </b-row>
         <b-pagination class="mt-3" :disabled="isBusy" size="md" :total-rows="numberOfRecords" v-model="currentPage" :per-page="perPage" @input="wellSearch()">
@@ -425,6 +425,16 @@ export default {
         wellSubclass: this.wellSubclassOptions,
         yieldEstimationMethod: this.codes.yield_estimation_methods || []
       }
+    },
+    // currentRecordsCountStart is the starting record number in the table of wells
+    // (e.g. the 1 in 'showing 1 to 10 of 25 records')
+    currentRecordsCountStart () {
+      return (this.currentPage - 1) * this.perPage + 1
+    },
+    // currentRecordsCountEnd is the last visible record number in the table of wells
+    // (e.g. the 10 in 'showing 1 to 10 of 25 records')
+    currentRecordsCountEnd () {
+      return (this.currentPage - 1) * this.perPage + this.tableData.length
     }
   },
   methods: {
