@@ -240,7 +240,7 @@
             :zoomToMarker="zoomToResults"
             v-on:coordinate="handleMapCoordinate"
             ref="searchMap"
-            @moved="handleMapMove"
+            @moved="handleMapMoveEnd"
             />
         <b-alert variant="info" class="mt-2" :show="!!mapError">{{ mapError }}</b-alert>
       </b-col>
@@ -293,6 +293,7 @@ import SearchFormBooleanOrText from '@/wells/components/SearchFormBooleanOrText.
 import SearchMap from '@/wells/components/SearchMap.vue'
 import Exports from '@/wells/components/Exports.vue'
 import searchFields from '@/wells/searchFields.js'
+import debounce from 'lodash.debounce'
 
 export default {
   name: 'WellSearch',
@@ -497,6 +498,8 @@ export default {
         Object.assign(params, this.mapBounds)
       }
       return ApiService.query('wells', params, { cancelToken: this.pendingSearch.token }).then((response) => {
+        console.log(JSON.parse(JSON.stringify(requestContext)))
+
         this.searchErrors = {}
         this.numberOfRecords = response.data.count
         this.tableData = response.data.results
@@ -558,9 +561,15 @@ export default {
         this.pendingMapSearch = null
       })
     },
-    handleMapMove () {
-      this.setMapBounds()
+    debounceSearch: debounce(function () {
       this.handleSearchSubmit({ trigger: 'map' })
+    }, 500),
+    handleMapMoveEnd () {
+      this.setMapBounds()
+      if (this.pendingMapSearch) {
+        this.pendingSearch.cancel()
+      }
+      this.debounceSearch()
     },
     setMapBounds () {
       if (this.$refs.searchMap && this.$refs.searchMap.map) {
