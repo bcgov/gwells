@@ -13,7 +13,7 @@
 */
 
 <template>
-  <b-card class="container container-wide p-1">
+  <b-card class="container container-wide p-0 card-container">
     <api-error v-if="error" :error="error"/>
     <b-alert show v-if="files_uploading">File Upload In Progress...</b-alert>
     <b-alert show v-if="!files_uploading && file_upload_error" variant="warning" >
@@ -25,7 +25,7 @@
     <b-alert variant="success" :show="showSaveSuccess" id="aquifer-success-alert">
       Record successfully updated.
     </b-alert>
-    <b-container>
+    <b-container fluid>
       <b-row v-if="loading" class="border-bottom mb-3 pb-2">
         <b-col><h5>Loading...</h5></b-col>
       </b-row>
@@ -34,22 +34,7 @@
         <b-col><h4>Aquifer {{record.aquifer_id}} Summary - Edit</h4></b-col>
       </b-row>
 
-      <b-row v-if="viewMode" class="border-bottom mb-3 pb-2">
-        <b-col><h4 class="pt-2">Aquifer Summary</h4></b-col>
-        <b-col cols="auto">
-          <b-button
-            variant="default"
-            v-if="userRoles.aquifers.edit"
-            v-on:click.prevent="navigateToEdit">
-            <span title="Edit" class="fa fa-edit"/> Edit
-          </b-button>
-          <a class="ml-2 print fa fa-print fa-lg d-print-none"
-            href="#"
-            title="Print"
-            v-on:click.prevent="print"
-           />
-        </b-col>
-      </b-row>
+
 
       <aquifer-form
         v-on:save="save"
@@ -61,38 +46,61 @@
         />
 
       <b-row v-if="viewMode">
-        <b-col class="aquifer-detail" cols="12" md="4">
-          <dt class="col-sm-6">Aquifer number</dt>
-          <dd class="col-sm-5" id="aquifer-view-number">{{record.aquifer_id}}</dd>
-          <dt class="col-sm-6">Year of mapping</dt>
-          <dd class="col-sm-5">{{record.mapping_year}}</dd>
+        <b-col class="aquifer-detail" cols="12" md="5">
+          <b-row>
+            <b-col class="p-4">
+              <div class="d-flex justify-content-between align-items-center">
+              <h4 class="color-grey main-title mt-4">Aquifer {{ id }} Summary</h4>
+                <div>
+                <b-button
+                  variant="default"
+                  v-on:click.prevent="navigateToEdit">
+                  <span title="Edit" class="fa fa-edit"/> Edit
+                </b-button>
+                <a class="ml-2 print fa fa-print fa-lg d-print-none"
+                  href="#"
+                  title="Print"
+                  v-on:click.prevent="print"
+                />
+                </div>
+              </div>
+              <hr class="m-0 mt-2"/>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col cols="6" sm="6">
+              <dt>Aquifer number</dt>
+              <dt>Year of mapping</dt>
+              <dt>Aquifer name</dt>
+              <dt>Litho stratigraphic unit</dt>
+              <dt>Descriptive location</dt>
+              <dt>Vulnerability</dt>
+              <dt>Material type</dt>
+              <dt>Subtype</dt>
+              <dt>Quality concerns</dt>
+              <dt>Productivity</dt>
+              <dt>Size (km²)</dt>
+              <dt>Demand</dt>
+            </b-col>
+            <b-col cols="6" sm="6">
+              <dd id="aquifer-view-number">{{record.aquifer_id}}</dd>
+              <dd>{{record.mapping_year}}</dd>
+              <dd id="aquifer-view-name">{{record.aquifer_name}}</dd>
+              <dd>{{record.litho_stratographic_unit}}</dd>
+              <dd>{{record.location_description}}</dd>
+              <dd>{{record.vulnerability_description}}</dd>
+              <dd>{{record.material_description}}</dd>
+              <dd>{{record.subtype_description}}</dd>
+              <dd>{{record.quality_concern_description}}</dd>
+              <dd>{{record.productivity_description}}</dd>
+              <dd>{{record.area}}</dd>
+              <dd>{{record.demand_description}}</dd>
+            </b-col>
+          </b-row>
 
-          <dt class="col-sm-6">Aquifer name</dt>
-          <dd class="col-sm-5" id="aquifer-view-name">{{record.aquifer_name}}</dd>
-          <dt class="col-sm-6">Litho stratigraphic unit</dt>
-          <dd class="col-sm-5">{{record.litho_stratographic_unit}}</dd>
 
-          <dt class="col-sm-6">Descriptive location</dt>
-          <dd class="col-sm-5">{{record.location_description}}</dd>
-          <dt class="col-sm-6">Vulnerability</dt>
-          <dd class="col-sm-5">{{record.vulnerability_description}}</dd>
-
-          <dt class="col-sm-6">Material type</dt>
-          <dd class="col-sm-5">{{record.material_description}}</dd>
-          <dt class="col-sm-6">Subtype</dt>
-          <dd class="col-sm-5">{{record.subtype_description}}</dd>
-
-          <dt class="col-sm-6">Quality concerns</dt>
-          <dd class="col-sm-5">{{record.quality_concern_description}}</dd>
-          <dt class="col-sm-6">Productivity</dt>
-          <dd class="col-sm-5">{{record.productivity_description}}</dd>
-
-          <dt class="col-sm-6">Size (km²)</dt>
-          <dd class="col-sm-5">{{record.area}}</dd>
-          <dt class="col-sm-6">Demand</dt>
-          <dd class="col-sm-5">{{record.demand_description}}</dd>
         </b-col>
-        <b-col cols="12" md="8">
+        <b-col cols="12" md="7" class="p-0">
           <single-aquifer-map v-bind:geom="record.geom"/>
         </b-col>
       </b-row>
@@ -123,9 +131,6 @@
           <div>
           </div>
         </b-col>
-        <b-col>
-          <aquifer-map/>
-        </b-col>
       </b-row>
       <h5 class="mt-3 border-bottom">Documentation</h5>
       <aquifer-documents :files="aquiferFiles"
@@ -144,9 +149,7 @@
 }
 .aquifer-detail dt,
 .aquifer-detail dd {
-  display: inline-block;
-  vertical-align: top;
-  margin-bottom: 9px;
+  display: block;
 }
 .artesian-search {
   cursor: pointer;
@@ -154,6 +157,21 @@
 
 a {
   text-decoration-skip-ink: none;
+}
+
+.card-container .card-body {
+  padding: 0;
+  margin: 0;
+}
+
+.color-grey {
+  color: #494949
+}
+
+.main-title {
+  padding-bottom: 1rem;
+  font-size: 1.8em;
+  display: inline-block;
 }
 </style>
 
@@ -172,6 +190,7 @@ export default {
     'aquifer-form': AquiferForm,
     'aquifer-documents': Documents,
     'aquifer-map': AquiferMap,
+    'single-aquifer-map': SingleAquiferMap,
     ChangeHistory
   },
   props: {

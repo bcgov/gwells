@@ -171,13 +171,11 @@ export default {
       }
     },
     zoomToSelectedAquifer (data) {
-  
       this.map.eachLayer((layer) => {
         if ( (layer.options.aquifer_id === data.aquifer_id) && layer.feature) {
           this.$nextTick(function() {
             layer.openPopup()
-          })
-          
+          }) 
         }
       });
       var aquiferGeom = L.geoJSON(data.geom)
