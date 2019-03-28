@@ -245,7 +245,7 @@
         <b-alert variant="info" class="mt-2" :show="!!mapError">{{ mapError }}</b-alert>
       </b-col>
     </b-row>
-    <b-row class="my-5">
+    <b-row class="my-5" v-show="!isInitialSearch">
       <b-col>
         <b-table
           id="well-search-table"
@@ -294,6 +294,23 @@ import SearchMap from '@/wells/components/SearchMap.vue'
 import Exports from '@/wells/components/Exports.vue'
 import searchFields from '@/wells/searchFields.js'
 import debounce from 'lodash.debounce'
+
+const triggers = {
+  // the map trigger indicates a search was triggered by moving the map.
+  // this should update the search results table to only show visible wells
+  MAP: 'map',
+
+  // the QUERY trigger means the search was triggered by a querystring in the URL
+  // e.g. the user bookmarked a search or shared a link.
+  QUERY: 'query',
+
+  // the search trigger means the basic or advanced search form was used to search for wells.
+  SEARCH: 'search',
+
+  // the 'none' trigger indicates a search hasn't been explicitly requested by user input yet,
+  // and the search will not run.
+  NONE: null
+}
 
 export default {
   name: 'WellSearch',
@@ -450,7 +467,7 @@ export default {
       return (this.currentPage - 1) * this.perPage + this.tableData.length
     },
     zoomToResults () {
-      return this.lastSearchTrigger !== 'map'
+      return this.lastSearchTrigger !== triggers.MAP
     }
   },
   methods: {
@@ -467,7 +484,9 @@ export default {
 
       // if the searchShouldReset flag is true, stop the well search before making
       // any requests and return an empty array to the table.
-      if (this.searchShouldReset) {
+      // we also stop here if the trigger has not been set; this is to avoid triggering
+      // searches without user input.
+      if (this.searchShouldReset || !trigger) {
         this.searchErrors = {}
         this.numberOfRecords = 0
         this.currentPage = 1
@@ -494,7 +513,9 @@ export default {
       // these will be urlencoded and the API will filter on these values.
       Object.assign(params, this.searchParams)
 
-      if (trigger === 'map') {
+      // if triggering the search using the map, the search will be restricted to
+      // the visible map bounds
+      if (trigger === triggers.MAP) {
         Object.assign(params, this.mapBounds)
       }
       return ApiService.query('wells', params, { cancelToken: this.pendingSearch.token }).then((response) => {
@@ -528,7 +549,7 @@ export default {
       this.scrolled = window.scrollY > 0.9 * pos
     },
     locationSearch (ctx = {}) {
-      const { trigger = 'search' } = ctx
+      const { trigger = triggers.SEARCH } = ctx
 
       // cancel previous location search request and add a cancellation token for this request
       if (this.pendingMapSearch) {
@@ -541,7 +562,7 @@ export default {
 
       let params = Object.assign({}, this.searchParams)
 
-      if (trigger === 'map') {
+      if (trigger === triggers.MAP) {
         Object.assign(params, this.mapBounds)
       }
 
@@ -560,7 +581,7 @@ export default {
       })
     },
     debounceSearch: debounce(function () {
-      this.handleSearchSubmit({ trigger: 'map' })
+      this.handleSearchSubmit({ trigger: triggers.MAP })
     }, 500),
     handleMapMoveEnd () {
       this.setMapBounds()
@@ -590,7 +611,7 @@ export default {
       }
     },
     handleSearchSubmit (options) {
-      const { trigger = 'search' } = options
+      const { trigger = triggers.SEARCH } = options
       this.lastSearchTrigger = trigger
 
       this.cleanSearchParams()
@@ -737,6 +758,7 @@ export default {
     // Otherwise, the search does not need to run (see #1713)
     const query = this.$route.query
     if (Object.entries(query).length !== 0 && query.constructor === Object) {
+      this.lastSearchTrigger = triggers.QUERY
       setTimeout(() => {
         this.locationSearch()
       }, 0)
