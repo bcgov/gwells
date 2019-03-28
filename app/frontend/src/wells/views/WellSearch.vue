@@ -253,6 +253,9 @@
           :isBusy="!!pendingSearch"
           :fields="wellSearchColumns"
         >
+        <template slot="well_tag_number" slot-scope="data">
+          <router-link :to="{ name: 'wells-detail', params: {id: data.value} }">{{data.value}}</router-link>
+        </template>
         </b-table>
         <b-row>
           <b-col>
