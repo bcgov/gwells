@@ -284,7 +284,7 @@
       </b-col>
       <b-col cols="auto">
         <br>
-        <b-button @click="handleDeleteResource(index)">Remove</b-button>
+        <b-button variant="primary" @click="handleDeleteResource(index)">Remove</b-button>
       </b-col>
     </b-row>
     <b-row class="mt-4">
