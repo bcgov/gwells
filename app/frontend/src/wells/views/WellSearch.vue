@@ -444,8 +444,6 @@ export default {
         params['ordering'] = `${ctx.sortDesc ? '-' : ''}${ctx.sortBy}`
       }
 
-      console.log(ctx)
-
       // add other search parameters into the params object.
       // these will be urlencoded and the API will filter on these values.
       Object.assign(params, this.searchParams)
