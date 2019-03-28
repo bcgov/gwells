@@ -54,6 +54,7 @@
                 <div>
                 <b-button
                   variant="default"
+                  v-if="userRoles.aquifers.edit"
                   v-on:click.prevent="navigateToEdit">
                   <span title="Edit" class="fa fa-edit"/> Edit
                 </b-button>
@@ -68,33 +69,58 @@
             </b-col>
           </b-row>
           <b-row>
-            <b-col cols="6" sm="6">
-              <dt>Aquifer number</dt>
-              <dt>Year of mapping</dt>
-              <dt>Aquifer name</dt>
-              <dt>Litho stratigraphic unit</dt>
-              <dt>Descriptive location</dt>
-              <dt>Vulnerability</dt>
-              <dt>Material type</dt>
-              <dt>Subtype</dt>
-              <dt>Quality concerns</dt>
-              <dt>Productivity</dt>
-              <dt>Size (km²)</dt>
-              <dt>Demand</dt>
-            </b-col>
-            <b-col cols="6" sm="6">
-              <dd id="aquifer-view-number">{{record.aquifer_id}}</dd>
-              <dd>{{record.mapping_year}}</dd>
-              <dd id="aquifer-view-name">{{record.aquifer_name}}</dd>
-              <dd>{{record.litho_stratographic_unit}}</dd>
-              <dd>{{record.location_description}}</dd>
-              <dd>{{record.vulnerability_description}}</dd>
-              <dd>{{record.material_description}}</dd>
-              <dd>{{record.subtype_description}}</dd>
-              <dd>{{record.quality_concern_description}}</dd>
-              <dd>{{record.productivity_description}}</dd>
-              <dd>{{record.area}}</dd>
-              <dd>{{record.demand_description}}</dd>
+            <b-col cols="12" sm="12" class="pl-4 pr-4">
+              <ul class="m-0 p-0 aquifer-summary-list">
+              <div class="aquifer-summary-list-divider"></div>
+              <li>
+                <dt>Aquifer number</dt>
+                <dd id="aquifer-view-number">{{record.aquifer_id}}</dd>
+              </li>
+              <li>
+                <dt>Year of mapping</dt>
+                <dd>{{record.mapping_year}}</dd>
+              </li>
+              <li>
+                <dt>Aquifer name</dt>
+                <dd id="aquifer-view-name">{{record.aquifer_name}}</dd>
+              </li>
+              <li>
+                <dt>Litho stratigraphic unit</dt>
+                <dd>{{record.litho_stratographic_unit}}</dd>
+              </li>
+              <li>
+                <dt>Descriptive location</dt>
+                <dd>{{record.location_description}}</dd>
+              </li>
+              <li>
+                <dt>Vulnerability</dt>
+                <dd>{{record.vulnerability_description}}</dd>
+              </li>
+              <li>
+                <dt>Material type</dt>
+                <dd>{{record.material_description}}</dd>
+              </li>
+              <li>
+                <dt>Subtype</dt>
+                <dd>{{record.subtype_description}}</dd>
+              </li>
+              <li>
+                <dt>Quality concerns</dt>
+                <dd>{{record.quality_concern_description}}</dd>
+              </li>
+              <li>
+                <dt>Productivity</dt>
+                <dd>{{record.productivity_description}}</dd>
+              </li>
+              <li>
+                <dt>Size (km²)</dt>
+                <dd>{{record.area}}</dd>
+              </li>
+              <li>
+                <dt>Demand</dt>
+                <dd>{{record.demand_description}}</dd>
+              </li>
+              </ul>
             </b-col>
           </b-row>
 
@@ -171,7 +197,39 @@ a {
 .main-title {
   padding-bottom: 1rem;
   font-size: 1.8em;
+}
+
+.aquifer-summary-list {
+  list-style-type: none;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.aquifer-summary-list li {
+  display: block;
+  width: 100%;
+  font-size: 0;
+  margin: 0.3rem 0;
+}
+.aquifer-summary-list dt,
+.aquifer-summary-list dd {
   display: inline-block;
+  vertical-align: top;
+  width: 50%;
+  font-size: 1rem;
+}
+
+.aquifer-summary-list dd {
+  padding-left: 3rem;
+}
+
+.aquifer-summary-list-divider {
+  position: absolute;
+  top: 0;
+  width: 1px;
+  height: 100%;
+  background-color: rgba(0,0,0,0.1);
+  left: calc(50% - 0.5px);
 }
 </style>
 

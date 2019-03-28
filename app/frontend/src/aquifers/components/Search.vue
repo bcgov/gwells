@@ -30,13 +30,6 @@
 
     <b-card no-body class="main-search-card mb-4">
 
-      <div v-if='userRoles.aquifers.edit' class="pb-2">
-        <b-button
-          id="aquifers-add"
-          v-on:click="navigateToNew"
-          v-if="userRoles.aquifers.edit"
-          variant="primary">Add new Aquifer</b-button>
-      </div>
 
       <b-alert
         :show="noSearchCriteriaError"
@@ -49,7 +42,16 @@
         v-on:reset="triggerReset">
         <b-form-row>
           <b-col cols="12" md="5" class="p-4">
-            <h1 class="main-title ml-4 mt-2">Aquifer Search</h1>
+            <h1 class="main-title ml-4 mt-2">Aquifer Search
+              <div v-if='userRoles.aquifers.edit' class="pb-2 pull-right">
+              <b-button
+                id="aquifers-add"
+                v-on:click="navigateToNew"
+                v-if="userRoles.aquifers.edit"
+                variant="primary">Add new Aquifer</b-button>
+              </div>
+            </h1>
+
             <b-form-row>
               <b-col cols="12" md="6" class="pt-3 pl-4 pr-4 aquifer-search-column mt-3">
                 <h5 class="search-title">Search by aquifer name or number (leave blank to see all aquifers)</h5>
