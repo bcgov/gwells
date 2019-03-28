@@ -246,7 +246,16 @@
     </b-row>
     <b-row class="my-5">
       <b-col>
-        <div ref="tabulator"></div>
+        <b-table
+          :items="wellSearch"
+          :fields="wellSearchColumns"
+        >
+        </b-table>
+        <b-row>
+          <b-col>
+            <div class="my-3" v-if="numberOfRecords > 0">Showing {{ (currentPage - 1) * perPage + 1 }} to {{ (currentPage - 1) * perPage + tableData.length }} of {{ numberOfRecords }} {{ numberOfRecords === 1 ? 'record' : 'records'}}.</div>
+          </b-col>
+        </b-row>
         <b-pagination class="mt-3" :disabled="isBusy" size="md" :total-rows="numberOfRecords" v-model="currentPage" :per-page="perPage" @input="wellSearch()">
         </b-pagination>
       </b-col>
@@ -281,8 +290,6 @@ import SearchMap from '@/wells/components/SearchMap.vue'
 import Exports from '@/wells/components/Exports.vue'
 import searchFields from '@/wells/searchFields.js'
 
-const Tabulator = require('tabulator-tables')
-
 export default {
   name: 'WellSearch',
   components: {
@@ -310,6 +317,20 @@ export default {
       mapBounds: {},
       selectedFilter: null,
       selectedFilters: [],
+
+      wellSearchColumns: [
+        { label: 'Well Tag', key: 'well_tag_number', sortable: true },
+        { label: 'ID Plate', key: 'identification_plate_number', sortable: true },
+        { label: 'Owner Name', key: 'owner_full_name' },
+        { label: 'Street Address', key: 'street_address' },
+        { label: 'Legal Lot', key: 'legal_lot' },
+        { label: 'Legal Plan', key: 'legal_plan' },
+        { label: 'Legal District Lot', key: 'legal_district_lot' },
+        { label: 'Land District', key: 'land_district' },
+        { label: 'Legal PID', key: 'legal_pid' },
+        { label: 'Diameter', key: 'diameter' },
+        { label: 'Finished Well Depth', key: 'finished_well_depth', sortable: true }
+      ],
 
       // testing tabulator
       tabulator: null,
@@ -418,6 +439,8 @@ export default {
         offset: ctx.perPage * (ctx.currentPage - 1)
       }
 
+      console.log(ctx)
+
       // add other search parameters into the params object.
       // these will be urlencoded and the API will filter on these values.
       Object.assign(params, this.searchParams)
@@ -426,8 +449,6 @@ export default {
         this.searchErrors = {}
         this.numberOfRecords = response.data.count
         this.tableData = response.data.results
-        this.tabulator.clearData()
-        this.tabulator.replaceData(this.tableData)
 
         // the first search that happens when page loads doesn't need
         // to automatically scroll the page.  Only scroll when updating
@@ -631,25 +652,6 @@ export default {
       }, 0)
       this.wellSearch()
     }
-  },
-  mounted () {
-    this.tabulator = new Tabulator(this.$refs.tabulator, {
-      data: this.tableData,
-      height: '36rem',
-      columns: [
-        { title: 'Well Tag', field: 'well_tag_number', formatter: 'link', formatterParams: (cell) => ({ url: `/gwells/well/${cell.getValue()}` }) },
-        { title: 'ID Plate', field: 'identification_plate_number' },
-        { title: 'Owner Name', field: 'owner_full_name' },
-        { title: 'Street Address', field: 'street_address' },
-        { title: 'Legal Lot', field: 'legal_lot' },
-        { title: 'Legal Plan', field: 'legal_plan' },
-        { title: 'Legal District Lot', field: 'legal_district_lot' },
-        { title: 'Land District', field: 'land_district' },
-        { title: 'Legal PID', field: 'legal_pid' },
-        { title: 'Diameter', field: 'diameter' },
-        { title: 'Finished Well Depth', field: 'finished_well_depth' }
-      ]
-    })
   }
 }
 </script>
