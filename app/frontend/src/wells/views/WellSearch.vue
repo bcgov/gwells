@@ -446,7 +446,7 @@ export default {
       if (trigger === 'map') {
         Object.assign(params, this.mapBounds)
       }
-      return ApiService.query('wells', params, { cancelToken: requestContext.token }).then((response) => {
+      return ApiService.query('wells', params, { cancelToken: this.pendingSearch.token }).then((response) => {
         this.searchErrors = {}
         this.numberOfRecords = response.data.count
         this.tableData = response.data.results
@@ -496,7 +496,7 @@ export default {
         Object.assign(params, this.mapBounds)
       }
 
-      ApiService.query('wells/locations', params, { cancelToken: requestContext.token }).then((response) => {
+      ApiService.query('wells/locations', params, { cancelToken: this.pendingMapSearch.token }).then((response) => {
         this.mapError = null
         this.locations = response.data.map((well) => {
           return [well.latitude, well.longitude, well.well_tag_number, well.identification_plate_number]
