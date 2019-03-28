@@ -428,6 +428,9 @@ export default {
         lithology_to: {
           label: 'To (ft bgl)'
         },
+        lithology_raw_data: {
+          label: 'Raw Data'
+        },
         lithology_description: {
           label: 'Description'
         },
