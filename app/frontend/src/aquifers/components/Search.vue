@@ -86,8 +86,21 @@
                   <b-form-input
                     type="text"
                     id="aquifers-search-field"
-                    v-model="search"/>
+                    v-model="searchAddress"/>
                 </b-form-group>
+                <div v-if="searchAddressResults">
+                  <h6>Search Results</h6>
+                  <div v-if="searchAddressResults.length === 0">
+                    Your results are empty
+                  </div>
+                  <div v-else>
+                    <ul class="p-0 m-0 list-unstyled">
+                      <li v-for="place in searchAddressResults.slice(0,3)" @click="handleAddressResult">
+                        {{ place.label }}
+                      </li>
+                    </ul>
+                  </div>
+                </div>
                 <h6>Map Layers:</h6>
                 <b-form-checkbox-group class="aquifer-checkbox-group"
                   stacked
@@ -99,7 +112,7 @@
           </b-col>
 
           <b-col cols="12" md="7" class="map-column">
-            <aquifer-map ref="aquiferMap" v-bind:aquifers="response.results"/>
+            <aquifer-map ref="aquiferMap" v-bind:aquifers="response.results" v-bind:searchAddress="searchAddress"/>
           </b-col>
         </b-form-row>
 
@@ -266,6 +279,8 @@ export default {
     return {
       ...orderingQueryStringToData(query.ordering),
       search: query.search,
+      searchAddress: '',
+      searchAddressResults: '',
       aquifer_search: query.aquifer_searcg,
       limit: LIMIT,
       currentPage: query.offset && (query.offset / LIMIT + 1),
@@ -390,6 +405,12 @@ export default {
     },
     onAquiferIdClick (data) {
       this.$refs.aquiferMap.zoomToSelectedAquifer(data.item)
+    },
+    handleSearchAddresses(data) {
+      console.log("it Got here")
+    },
+    handleAddressResult(data) {
+      console.log("Address result")
     }
   },
   created () {
@@ -406,6 +427,12 @@ export default {
       console.error(e)
     })
     this.fetchResourceSections()
+  },
+  mounted() {
+    this.$on('searchResults', (data) => {
+      console.log(data)
+      this.searchAddressResults = data
+    })
   },
   watch: {
     query () { this.fetchResults() },

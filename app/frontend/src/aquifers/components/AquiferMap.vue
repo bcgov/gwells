@@ -15,9 +15,16 @@ import { tiledMapLayer } from 'esri-leaflet'
 import { filter } from 'lodash'
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch'
 import 'leaflet-geosearch/assets/css/leaflet.css'
+import { debounce } from 'lodash'
+
+const provider = new OpenStreetMapProvider()
+const searchControl = new GeoSearchControl({
+  provider: provider
+});
+
 export default {
   name: 'AquiferMap',
-  props: ['aquifers'],
+  props: ['aquifers', 'searchAddress'],
   created () {
     // There seems to be an issue loading leaflet immediately on mount, we use nextTick to ensure
     // that the view has been rendered at least once before injecting the map.
@@ -34,6 +41,14 @@ export default {
   },
 
   watch: {
+    searchAddress: async function(newAddress, oldAddress) {
+      const self = this;
+      const debounced = debounce(async function() {
+        const result = await provider.search({ query: newAddress })
+        self.$parent.$emit('searchResults', result)
+        }, 2000)
+      debounced()
+    },
     aquifers: function (newAquifers, oldAquifers) {
       this.map.eachLayer((layer) => {
        if ( layer.options.type === "geojsonfeature" ) {
@@ -63,10 +78,8 @@ export default {
       //areaSelect.addTo(this.map);
 
       // Add geo search
-      const provider = new OpenStreetMapProvider()
-      const searchControl = new GeoSearchControl({
-        provider: provider
-      })
+      console.log(this)
+      console.log(searchControl)
       this.map.addControl(searchControl)
 
       // Add map layers.
@@ -86,7 +99,6 @@ export default {
       }).addTo(this.map)
 
       var mapLayers = {
-        // Aquifers likely hydralically connected:
 
         'Artesian wells': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW/ows?', {
           format: 'image/png',
