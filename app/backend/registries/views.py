@@ -84,7 +84,7 @@ class AuditCreateMixin(CreateModelMixin):
         if self.request.user.profile.username is None:
             raise exceptions.ValidationError(('Username must be set.'))
 
-        serializer.validated_data['create_user'] = (self.request.user.profile.username)
+        serializer.validated_data['create_user'] = self.request.user.profile.username
         return super().perform_create(serializer)
 
 
