@@ -43,4 +43,11 @@ describe('auth', () => {
       } } }
     expect(auth.getters.userRoles(state).submissions.edit).toBe(true)
   })
+  it('If keycloak has role as wells_submission, then submissions.edit === true', () => {
+    const state = { keycloak: { authenticated: true,
+      hasRealmRole (key) {
+        return key === 'wells_submission'
+      } } }
+    expect(auth.getters.userRoles(state).submissions.edit).toBe(true)
+  })
 })

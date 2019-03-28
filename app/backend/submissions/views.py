@@ -24,7 +24,7 @@ from rest_framework.views import APIView
 from gwells.documents import MinioClient
 from gwells.urls import app_root
 from gwells.pagination import APILimitOffsetPagination
-from wells.permissions import WellsEditPermissions
+from wells.permissions import WellsEditPermissions, WellsSubmissionPermissions
 from gwells.models import ProvinceStateCode
 from gwells.models.lithology import (
     LithologyColourCode, LithologyHardnessCode,
@@ -150,7 +150,7 @@ def get_submission_queryset(qs):
 class SubmissionGetAPIView(RetrieveAPIView):
     """Get a submission"""
 
-    permission_classes = (WellsEditPermissions,)
+    permission_classes = (WellsSubmissionPermissions,)
     queryset = ActivitySubmission.objects.all()
     model = ActivitySubmission
     lookup_field = 'filing_number'
@@ -186,7 +186,7 @@ class SubmissionListAPIView(ListAPIView):
     get: returns a list of well activity submissions
     """
 
-    permission_classes = (WellsEditPermissions,)
+    permission_classes = (WellsSubmissionPermissions,)
     model = ActivitySubmission
     queryset = ActivitySubmission.objects.all()
     pagination_class = APILimitOffsetPagination
@@ -214,7 +214,7 @@ class SubmissionConstructionAPIView(AuditCreateMixin, ListCreateAPIView):
 
     model = ActivitySubmission
     serializer_class = WellConstructionSubmissionSerializer
-    permission_classes = (WellsEditPermissions,)
+    permission_classes = (WellsSubmissionPermissions,)
     queryset = ActivitySubmission.objects.all()
 
     def get_queryset(self):
@@ -227,7 +227,7 @@ class SubmissionAlterationAPIView(AuditCreateMixin, ListCreateAPIView):
 
     model = ActivitySubmission
     serializer_class = WellAlterationSubmissionSerializer
-    permission_classes = (WellsEditPermissions,)
+    permission_classes = (WellsSubmissionPermissions,)
     queryset = ActivitySubmission.objects.all()
 
     def get_queryset(self):
@@ -240,7 +240,7 @@ class SubmissionDecommissionAPIView(AuditCreateMixin, ListCreateAPIView):
 
     model = ActivitySubmission
     serializer_class = WellDecommissionSubmissionSerializer
-    permission_classes = (WellsEditPermissions,)
+    permission_classes = (WellsSubmissionPermissions,)
     queryset = ActivitySubmission.objects.all()
 
     def get_queryset(self):
@@ -395,7 +395,7 @@ class PreSignedDocumentKey(RetrieveAPIView):
     """
 
     queryset = ActivitySubmission.objects.all()
-    permission_classes = (WellsEditPermissions,)
+    permission_classes = (WellsSubmissionPermissions,)
 
     def get(self, request, submission_id):
         submission = get_object_or_404(self.queryset, pk=submission_id)

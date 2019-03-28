@@ -12,7 +12,7 @@
     limitations under the License.
 """
 from rest_framework.permissions import BasePermission, SAFE_METHODS
-from gwells.roles import WELLS_VIEWER_ROLE, WELLS_EDIT_ROLE
+from gwells.roles import WELLS_VIEWER_ROLE, WELLS_EDIT_ROLE, WELLS_SUBMISSION_ROLE
 
 
 class WellsEditOrReadOnly(BasePermission):
@@ -50,3 +50,18 @@ class WellsEditPermissions(BasePermission):
         """
         return request.user and request.user.is_authenticated and\
             request.user.groups.filter(name=WELLS_EDIT_ROLE).exists()
+
+
+class WellsSubmissionPermissions(BasePermission):
+    """
+    Grants permissions to well submissions to users
+    """
+
+    def has_permission(self, request, view):
+        """
+        Refuse permission if user is not in a submission group.
+        If user is in the submission group, then group permissions will dictate (e.g. user is
+        in a group that has 'add_submission' permission)
+        """
+        return request.user and request.user.is_authenticated and\
+            request.user.groups.filter(name=WELLS_SUBMISSION_ROLE).exists()
