@@ -248,6 +248,7 @@
     <b-row class="my-5">
       <b-col>
         <b-table
+          id="well-search-table"
           :items="wellSearch"
           :isBusy="!!pendingSearch"
           :fields="wellSearchColumns"
@@ -258,7 +259,7 @@
             <div class="my-3" v-if="numberOfRecords > 0">Showing {{ currentRecordsCountStart }} to {{ currentRecordsCountEnd }} of {{ numberOfRecords }} {{ numberOfRecords === 1 ? 'record' : 'records'}}.</div>
           </b-col>
         </b-row>
-        <b-pagination class="mt-3" :disabled="!!pendingSearch" size="md" :total-rows="numberOfRecords" v-model="currentPage" :per-page="perPage" @input="wellSearch()">
+        <b-pagination v-show="numberOfRecords > perPage" class="mt-3" :disabled="!!pendingSearch" size="md" :total-rows="numberOfRecords" v-model="currentPage" :per-page="perPage" @input="wellSearch()">
         </b-pagination>
       </b-col>
     </b-row>
@@ -345,6 +346,9 @@ export default {
       // searchParams will be set by searchParamsReset()
       searchParams: {},
       searchErrors: {},
+
+      // flag to indicate that the search should reset without a further API request
+      searchShouldReset: false,
 
       // additional location search params
       mapSearchParams: {},
@@ -453,13 +457,24 @@ export default {
     * wellSearch searches for wells based on parameters in the querystring
     */
     wellSearch (ctx = {}) {
-      const { perPage = this.perPage, currentPage = this.currentPage, trigger = 'search' } = ctx
+      const { perPage = this.perPage, currentPage = this.currentPage, trigger = this.lastSearchTrigger } = ctx
 
       // cancel previous search request and add a cancellation token for this request
       if (this.pendingSearch) {
         this.pendingSearch.cancel()
       }
 
+      // if the searchShouldReset flag is true, stop the well search before making
+      // any requests and return an empty array to the table.
+      if (this.searchShouldReset) {
+        this.searchErrors = {}
+        this.numberOfRecords = 0
+        this.currentPage = 1
+        this.searchShouldReset = false
+        return []
+      }
+
+      // add a cancellation token to this request
       const CancelToken = axios.CancelToken
       const requestContext = CancelToken.source()
       this.pendingSearch = requestContext
@@ -573,15 +588,17 @@ export default {
 
       this.cleanSearchParams()
       this.updateQueryParams()
-      this.wellSearch(options)
+      this.$root.$emit('bv::refresh::table', 'well-search-table')
       this.locationSearch(options)
     },
     handleReset () {
       this.resetMapBounds()
       this.searchParamsReset()
-      this.tabulator.clearData()
+      this.tableData = []
       this.locations = []
       this.mapError = null
+      this.searchShouldReset = true
+      this.$root.$emit('bv::refresh::table', 'well-search-table')
     },
     searchParamsReset () {
       this.searchParams = {...this.defaultSearchParams}
