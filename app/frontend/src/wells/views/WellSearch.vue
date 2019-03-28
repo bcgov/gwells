@@ -321,14 +321,14 @@ export default {
       wellSearchColumns: [
         { label: 'Well Tag', key: 'well_tag_number', sortable: true },
         { label: 'ID Plate', key: 'identification_plate_number', sortable: true },
-        { label: 'Owner Name', key: 'owner_full_name' },
-        { label: 'Street Address', key: 'street_address' },
-        { label: 'Legal Lot', key: 'legal_lot' },
-        { label: 'Legal Plan', key: 'legal_plan' },
-        { label: 'Legal District Lot', key: 'legal_district_lot' },
-        { label: 'Land District', key: 'land_district' },
-        { label: 'Legal PID', key: 'legal_pid' },
-        { label: 'Diameter', key: 'diameter' },
+        { label: 'Owner Name', key: 'owner_full_name', sortable: true },
+        { label: 'Street Address', key: 'street_address', sortable: true },
+        { label: 'Legal Lot', key: 'legal_lot', sortable: true },
+        { label: 'Legal Plan', key: 'legal_plan', sortable: true },
+        { label: 'Legal District Lot', key: 'legal_district_lot', sortable: true },
+        { label: 'Land District', key: 'land_district', sortable: true },
+        { label: 'Legal PID', key: 'legal_pid', sortable: true },
+        { label: 'Diameter', key: 'diameter', sortable: true },
         { label: 'Finished Well Depth', key: 'finished_well_depth', sortable: true }
       ],
 
@@ -437,6 +437,11 @@ export default {
       const params = {
         limit: ctx.perPage,
         offset: ctx.perPage * (ctx.currentPage - 1)
+      }
+
+      // if the table has been ordered, add an 'ordering' param to the API call
+      if (ctx.sortBy) {
+        params['ordering'] = `${ctx.sortDesc ? '-' : ''}${ctx.sortBy}`
       }
 
       console.log(ctx)
