@@ -35,6 +35,11 @@ export default {
 
   watch: {
     aquifers: function (newAquifers, oldAquifers) {
+      this.map.eachLayer((layer) => {
+       if ( layer.options.type === "geojsonfeature" ) {
+         this.map.removeLayer(layer)
+       }
+      })
       this.map.removeLayer(L.geoJSON)
       this.addAquifersToMap(newAquifers)
     }
@@ -144,7 +149,6 @@ export default {
         this.activeLayers = filter(this.activeLayers, o => o.layerId !== layerId)
       })
       */
-      this.addAquifersToMap(this.aquifers)
     },
     addAquifersToMap (aquifers) {
       console.log("Add Called")
@@ -167,10 +171,13 @@ export default {
       }
     },
     zoomToSelectedAquifer (data) {
-      this.map.eachLayer(function(layer) {
+  
+      this.map.eachLayer((layer) => {
         if ( (layer.options.aquifer_id === data.aquifer_id) && layer.feature) {
-          console.log("It got here", layer)
-          layer.openPopup()
+          this.$nextTick(function() {
+            layer.openPopup()
+          })
+          
         }
       });
       var aquiferGeom = L.geoJSON(data.geom)
