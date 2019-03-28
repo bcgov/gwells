@@ -114,7 +114,6 @@ class WellDetail(RetrieveAPIView):
     lookup_field = 'well_tag_number'
 
     def get_queryset(self):
-
         """ Excludes Unpublished wells for users without edit permissions """
         if self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
             qs = Well.objects.all()
@@ -185,23 +184,23 @@ class ListFiles(APIView):
     """
 
     @swagger_auto_schema(responses={200: openapi.Response('OK',
-                         openapi.Schema(type=openapi.TYPE_OBJECT, properties={
-                            'public': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
-                                type=openapi.TYPE_OBJECT,
-                                properties={
-                                    'url': openapi.Schema(type=openapi.TYPE_STRING),
-                                    'name': openapi.Schema(type=openapi.TYPE_STRING)
-                                }
-                            )),
-                            'private': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
-                                type=openapi.TYPE_OBJECT,
-                                properties={
-                                    'url': openapi.Schema(type=openapi.TYPE_STRING),
-                                    'name': openapi.Schema(type=openapi.TYPE_STRING)
-                                }
-                            ))
-                         })
-                         )})
+                                                          openapi.Schema(type=openapi.TYPE_OBJECT, properties={
+                                                              'public': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
+                                                                  type=openapi.TYPE_OBJECT,
+                                                                  properties={
+                                                                      'url': openapi.Schema(type=openapi.TYPE_STRING),
+                                                                      'name': openapi.Schema(type=openapi.TYPE_STRING)
+                                                                  }
+                                                              )),
+                                                              'private': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
+                                                                  type=openapi.TYPE_OBJECT,
+                                                                  properties={
+                                                                      'url': openapi.Schema(type=openapi.TYPE_STRING),
+                                                                      'name': openapi.Schema(type=openapi.TYPE_STRING)
+                                                                  }
+                                                              ))
+                                                          })
+                                                          )})
     def get(self, request, tag):
 
         if Well.objects.get(pk=tag).well_publication_status\
@@ -247,7 +246,6 @@ class WellListAPIView(ListAPIView):
         return serializer_class
 
     def get_queryset(self):
-
         """ Excludes Unpublished wells for users without edit permissions """
         if self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
             qs = Well.objects.all()
@@ -284,14 +282,17 @@ class WellTagSearchAPIView(ListAPIView):
     )
 
     def get_queryset(self):
-
         """ Excludes Unpublished wells for users without edit permissions """
         if self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
             qs = Well.objects.all()
         else:
             qs = Well.objects.all().exclude(well_publication_status='Unpublished')
 
-        return qs.only('well_tag_number', 'owner_full_name')
+        return qs
+
+    def get(self, request):
+        data = self.get_queryset().values('well_tag_number', 'owner_full_name').order_by('well_tag_number')
+        return Response(data)
 
 
 class WellSubmissionsListAPIView(ListAPIView):
@@ -329,11 +330,10 @@ class WellLocationListAPIView(ListAPIView):
     filterset_class = WellLocationFilter
     pagination_class = None
 
-    search_fields = ('legal_pid', 'legal_plan', 'legal_district_lot',
-                     'legal_block', 'legal_section', 'legal_township', 'legal_range')
+    search_fields = ('well_tag_number', 'identification_plate_number',
+                     'street_address', 'city', 'owner_full_name')
 
     def get_queryset(self):
-
         """ Excludes Unpublished wells for users without edit permissions """
         if self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
             qs = Well.objects.all()
@@ -350,7 +350,7 @@ class WellLocationListAPIView(ListAPIView):
         count = locations.count()
         # return an empty response if there are too many wells to display
         if count > 2000:
-            raise PermissionDenied("Too many wells to display on map. Please refine your search criteria or search in a smaller area.")
+            raise PermissionDenied("Too many wells to display on map. Please zoom in or change your search criteria.")
 
         if count is 0:
             raise NotFound("No well records could be found.")
