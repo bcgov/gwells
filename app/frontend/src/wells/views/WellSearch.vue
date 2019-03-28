@@ -332,8 +332,6 @@ export default {
         { label: 'Finished Well Depth', key: 'finished_well_depth', sortable: true }
       ],
 
-      // testing tabulator
-      tabulator: null,
       tableData: [],
 
       // searchParams will be set by searchParamsReset()
