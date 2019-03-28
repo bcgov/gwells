@@ -51,17 +51,19 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS('export complete'))
 
     def upload_files(self, zip_filename, spreadsheet_filename):
+        is_secure = get_env_variable('S3_USE_SECURE', '1', warn=False) is '1'
         minioClient = Minio(get_env_variable('S3_HOST'),
                             access_key=get_env_variable('S3_PUBLIC_ACCESS_KEY'),
                             secret_key=get_env_variable('S3_PUBLIC_SECRET_KEY'),
-                            secure=True)
+                            secure=is_secure)
         for filename in (zip_filename, spreadsheet_filename):
             logger.info('uploading {}'.format(filename))
             with open(filename, 'rb') as file_data:
                 file_stat = os.stat(filename)
                 # Do we need to remove the existing files 1st?
+                target = 'export/{}'.format(filename)
                 minioClient.put_object(get_env_variable('S3_WELL_EXPORT_BUCKET'),
-                                       filename,
+                                       target,
                                        file_data,
                                        file_stat.st_size)
 
@@ -144,7 +146,7 @@ class Command(BaseCommand):
  land_district_code,
  legal_pid,
  well_location_description,
- latitude, longitude, utm_zone_code, utm_northing, utm_easting,
+ st_y(geom) as latitude, st_x(geom) as longitude, utm_zone_code, utm_northing, utm_easting,
  coordinate_acquisition_code, bcgs_id,
  construction_start_date, construction_end_date, alteration_start_date,
  alteration_end_date, decommission_start_date, decommission_end_date,

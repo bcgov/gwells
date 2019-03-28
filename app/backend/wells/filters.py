@@ -14,61 +14,41 @@
 from collections import OrderedDict
 
 from django import forms
-from django.contrib.gis.geos import Polygon
+from django.contrib.gis.geos import GEOSException, Polygon
 from django.db.models import Q, QuerySet
 from django_filters import rest_framework as filters
-from django_filters.widgets import BooleanWidget, SuffixedMultiWidget
+from django_filters.widgets import BooleanWidget
+from rest_framework.filters import BaseFilterBackend
 
 from gwells.roles import WELLS_VIEWER_ROLE
-from wells.models import Well
+from wells.models import (
+    DevelopmentMethodCode,
+    DrillingMethodCode,
+    WaterQualityCharacteristic,
+    Well,
+)
 
 
-class BoundingBoxWidget(SuffixedMultiWidget):
-    template_name = 'django_filters/widgets/multiwidget.html'
-    suffixes = ['x1', 'y1', 'x2', 'y2']
+class BoundingBoxFilterBackend(BaseFilterBackend):
+    """
+    Filter that allows geographic filtering with a bounding box.
+    """
 
-    def __init__(self, attrs=None):
-        widgets = (forms.NumberInput, forms.NumberInput, forms.NumberInput,
-                   forms.NumberInput)
-        super().__init__(widgets, attrs)
+    def filter_queryset(self, request, queryset, view):
+        sw_long = request.query_params.get('sw_long')
+        sw_lat = request.query_params.get('sw_lat')
+        ne_long = request.query_params.get('ne_long')
+        ne_lat = request.query_params.get('ne_lat')
 
-    def decompress(self, value):
-        if value:
-            return value.extent
-        return (None, None, None, None)
-
-
-class BoundingBoxField(forms.MultiValueField):
-    widget = BoundingBoxWidget
-
-    def __init__(self, fields=None, *args, **kwargs):
-        if fields is None:
-            fields = (forms.DecimalField(min_value=-180, max_value=180),
-                      forms.DecimalField(min_value=-90, max_value=90),
-                      forms.DecimalField(min_value=-180, max_value=180),
-                      forms.DecimalField(min_value=-90, max_value=90))
-        super().__init__(fields, *args, **kwargs)
-
-    def compress(self, data_list):
-        if data_list:
+        if sw_long and sw_lat and ne_long and ne_lat:
             try:
-                points = tuple(float(point) for point in data_list)
-            except TypeError:
-                raise forms.ValidationError(
-                    'Please provide four points: x1, y1, x2, y2.',
-                    code='invalid_bbox')
-            return Polygon.from_bbox(points)
-        return None
+                bbox = Polygon.from_bbox((sw_long, sw_lat, ne_long, ne_lat))
+            except (ValueError, GEOSException):
+                pass
+            else:
+                queryset = queryset.filter(geom__bboverlaps=bbox)
 
-
-class BoundingBoxFilter(filters.Filter):
-    field_class = BoundingBoxField
-
-    def __init__(self, *args, **kwargs):
-        if 'lookup_expr' not in kwargs:
-            kwargs['lookup_expr'] = 'bboverlaps'
-
-        super().__init__(*args, **kwargs)
+        return queryset
 
 
 class AnyOrAllFilterSet(filters.FilterSet):
@@ -106,8 +86,9 @@ class AnyOrAllFilterSet(filters.FilterSet):
         if not match_any:
             return super().filter_queryset(queryset)
 
-        initial_queryset = queryset
-        queryset = queryset.all()
+        filter_applied = False
+        initial_queryset = queryset.all()
+        queryset = queryset.none()
 
         for name, value in self.form.cleaned_data.items():
             filtered_queryset = self.filters[name].filter(initial_queryset, value)
@@ -118,7 +99,12 @@ class AnyOrAllFilterSet(filters.FilterSet):
             # Check for identity here, as most filters just return same queryset
             # if they are inactive, and equality checks evaluate the queryset.
             if filtered_queryset is not initial_queryset:
+                filter_applied = True
                 queryset = queryset | filtered_queryset
+
+        # If there were no filters, return all results, not none.
+        if not filter_applied:
+            queryset = initial_queryset
 
         return queryset
 
@@ -155,10 +141,9 @@ class WellListFilter(AnyOrAllFilterSet):
     water_supply_system_name = filters.CharFilter(lookup_expr='icontains')
     water_supply_system_well_name = filters.CharFilter(lookup_expr='icontains')
     driller_name = filters.CharFilter(lookup_expr='icontains')
+    drilling_methods = filters.ModelChoiceFilter(queryset=DrillingMethodCode.objects.all())
     consultant_name = filters.CharFilter(lookup_expr='icontains')
     consultant_company = filters.CharFilter(lookup_expr='icontains')
-    latitude = filters.RangeFilter()
-    longitude = filters.RangeFilter()
     ground_elevation = filters.RangeFilter()
     surface_seal_length = filters.RangeFilter()
     surface_seal_thickness = filters.RangeFilter()
@@ -175,6 +160,8 @@ class WellListFilter(AnyOrAllFilterSet):
     filter_pack_from = filters.RangeFilter()
     filter_pack_to = filters.RangeFilter()
     filter_pack_thickness = filters.RangeFilter()
+    development_methods = filters.ModelChoiceFilter(
+        queryset=DevelopmentMethodCode.objects.all())
     development_hours = filters.RangeFilter()
     development_notes = filters.CharFilter(lookup_expr='icontains')
     yield_estimation_rate = filters.RangeFilter()
@@ -184,10 +171,15 @@ class WellListFilter(AnyOrAllFilterSet):
     hydro_fracturing_yield_increase = filters.RangeFilter()
     recommended_pump_depth = filters.RangeFilter()
     recommended_pump_rate = filters.RangeFilter()
+    water_quality_characteristics = filters.ModelChoiceFilter(
+        queryset=WaterQualityCharacteristic.objects.all())
     water_quality_colour = filters.CharFilter(lookup_expr='icontains')
     water_quality_odour = filters.CharFilter(lookup_expr='icontains')
     well_yield = filters.RangeFilter()
     observation_well_number = filters.CharFilter(lookup_expr='icontains')
+    observation_well_number_has_value = filters.BooleanFilter(field_name='observation_well_number',
+                                                              method='filter_has_value',
+                                                              label='Any value for observation well number')
     utm_northing = filters.RangeFilter()
     utm_easting = filters.RangeFilter()
     decommission_reason = filters.CharFilter(lookup_expr='icontains')
@@ -208,11 +200,18 @@ class WellListFilter(AnyOrAllFilterSet):
     bedrock_depth = filters.RangeFilter()
     static_water_level = filters.RangeFilter()
     artesian_flow = filters.RangeFilter()
+    artesian_flow_has_value = filters.BooleanFilter(field_name='artesian_flow',
+                                                    method='filter_has_value',
+                                                    label='Any value for artesian flow')
     artesian_pressure = filters.RangeFilter()
+    artesian_pressure_has_value = filters.BooleanFilter(field_name='artesian_pressure',
+                                                        method='filter_has_value',
+                                                        label='Any value for artesian pressure')
     well_cap_type = filters.CharFilter(lookup_expr='icontains')
     comments = filters.CharFilter(lookup_expr='icontains')
-
-    within = BoundingBoxFilter(field_name='geom', label='Well location within bounds')
+    ems_has_value = filters.BooleanFilter(field_name='ems',
+                                          method='filter_has_value',
+                                          label='Any value for EMS id')
 
     class Meta:
         model = Well
@@ -270,7 +269,6 @@ class WellListFilter(AnyOrAllFilterSet):
             'identification_plate_number',
             'intended_water_use',
             'land_district',
-            'latitude',
             'legal',
             'legal_block',
             'legal_district_lot',
@@ -286,7 +284,6 @@ class WellListFilter(AnyOrAllFilterSet):
             'liner_material',
             'liner_thickness',
             'liner_to',
-            'longitude',
             'observation_well_number',
             'observation_well_status',
             'other_screen_bottom',
@@ -457,6 +454,13 @@ class WellListFilter(AnyOrAllFilterSet):
                 Q(liner_from__lte=value.stop) |
                 Q(liner_to__lte=value.stop)
             )
+
+        return queryset
+
+    def filter_has_value(self, queryset, name, value):
+        if value:
+            lookup = '__'.join([name, 'isnull'])
+            return queryset.filter(**{lookup: False})
 
         return queryset
 

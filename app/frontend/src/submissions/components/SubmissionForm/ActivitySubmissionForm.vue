@@ -736,7 +736,7 @@ export default {
         // We have to add the watches in beforeCreate.
         this.$options.watch[`form.${key}`] = {
           handler (newValue, oldValue) {
-            if (this.trackValueChanges && !this.loading) {
+            if (this.trackValueChanges && !this.loading && !this.formSubmitLoading) {
               this.formValueChanged = true
               this.form.meta.valueChanged[key] = true
             }

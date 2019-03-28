@@ -2,7 +2,7 @@
 
 exports[`Search Component Matches the snapshot 1`] = `
 <div
-  class="container container-wide p-1"
+  class="container p-1"
 >
    
   <div

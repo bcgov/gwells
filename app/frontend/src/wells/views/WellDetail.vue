@@ -1,9 +1,9 @@
 <template>
   <div>
-    <b-card no-body class="mb-3 container container-wide d-print-none">
+    <b-card no-body class="mb-3 container d-print-none">
       <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"></b-breadcrumb>
     </b-card>
-    <b-card class="container container-wide p-1">
+    <b-card class="container p-1">
 
       <!-- SUMMARY -->
       <fieldset id="summary_fieldset" class="detail-section mb-3">
@@ -203,8 +203,9 @@
           striped
           small
           bordered
+          :items="well.lithologydescription_set"
           show-empty
-          :fields="['from', 'to', 'description', 'relative hardness', 'colour', 'estimated_water_bearing_flow']"
+          :fields="lithology_fields"
         ></b-table>
       </fieldset>
 
@@ -219,8 +220,10 @@
               :fields="['from', 'to', 'casing_type', 'casing_material', 'diameter', 'wall_thickness', 'drive_shoe']"
               show-empty>
 
-            <template slot="from" slot-scope="data">{{data.item.start}} ft</template>
-            <template slot="to" slot-scope="data">{{data.item.end}} ft</template>
+            <template slot="from" slot-scope="data">{{data.item.start}}</template>
+            <template slot="HEAD_from" slot-scope="data">{{ data.label }} (ft)</template>
+            <template slot="to" slot-scope="data">{{data.item.end}}</template>
+            <template slot="HEAD_to" slot-scope="data">{{ data.label }} (ft)</template>
             <template slot="casing_type" slot-scope="data">{{codeToDescription('casing_codes', data.item.casing_code)}}</template>
             <template slot="casing_material" slot-scope="data">{{codeToDescription('casing_materials', data.item.casing_material)}}</template>
           </b-table>
@@ -417,7 +420,33 @@ export default {
           active: true
         }
       ],
-      well: {}
+      well: {},
+      lithology_fields: {
+        lithology_from: {
+          label: 'From (ft bgl)'
+        },
+        lithology_to: {
+          label: 'To (ft bgl)'
+        },
+        lithology_description: {
+          label: 'Description'
+        },
+        lithology_moisture: {
+          label: 'Moisture'
+        },
+        lithology_colour: {
+          label: 'Colour'
+        },
+        lithology_hardness: {
+          label: 'Hardness'
+        },
+        lithology_observation: {
+          label: 'Observations'
+        },
+        water_bearing_estimated_flow: {
+          label: 'Water Bearing Flow Estimate (USGPM)'
+        }
+      }
     }
   },
   computed: {
@@ -430,10 +459,10 @@ export default {
       }
     },
     UTM () {
-    // converts form lat/long and returns an object containing UTM easting, northing, and zone
-      // if (this.well && this.well.latitude && this.well.longitude) {
-      //   return this.convertToUTM(Number(this.well.longitude), Number(this.well.latitude))
-      // }
+      // converts form lat/long and returns an object containing UTM easting, northing, and zone
+      if (this.well && this.well.latitude && this.well.longitude) {
+        return this.convertToUTM(Number(this.well.longitude), Number(this.well.latitude))
+      }
       return {}
     },
     ...mapGetters(['userRoles', 'config'])
