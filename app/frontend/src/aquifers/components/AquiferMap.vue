@@ -35,9 +35,7 @@ export default {
 
   watch: {
     aquifers: function (newAquifers, oldAquifers) {
-      console.log(newAquifers)
-      this.map.removeLayer(L.geoJson)
-      console.log(this.map)
+      this.map.removeLayer(L.geoJSON)
       this.addAquifersToMap(newAquifers)
     }
   },
@@ -149,15 +147,17 @@ export default {
       this.addAquifersToMap(this.aquifers)
     },
     addAquifersToMap (aquifers) {
+      console.log("Add Called")
       if (aquifers !== undefined && aquifers.constructor === Array && aquifers.length > 0) {
         var myStyle = {
           'color': 'purple'
         }
-
+        aquifers = aquifers.filter((a) => a.geom !== null)
         aquifers.forEach(aquifer => {
           L.geoJSON(aquifer.geom, {
             aquifer_id: aquifer['aquifer_id'],
             style: myStyle,
+            type: 'geojsonfeature',
             onEachFeature: function (feature, layer) {
               layer.bindPopup(`<p>Aquifer: <a href="/gwells/aquifers/${aquifer.aquifer_id}">${aquifer.aquifer_id}</a></p><p>Aquifer Name: ${aquifer.aquifer_name}</p>
                 <p>Subtype: ${aquifer.subtype}</p>`)
@@ -168,7 +168,8 @@ export default {
     },
     zoomToSelectedAquifer (data) {
       this.map.eachLayer(function(layer) {
-        if ( layer.options.aquifer_id === data.aquifer_id ) {
+        if ( (layer.options.aquifer_id === data.aquifer_id) && layer.feature) {
+          console.log("It got here", layer)
           layer.openPopup()
         }
       });

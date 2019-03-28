@@ -127,7 +127,7 @@
             
             v-if="aquiferList">
             <template slot="aquifer_id" slot-scope="data">
-              <p class="aquifer-id" v-on:click="onAquiferIdClick(data)">{{data.value}}</p>
+              <p class="aquifer-id" v-on:click.prevent="onAquiferIdClick(data)">{{data.value}}</p>
             </template>
             <template slot="material" slot-scope="row">
               {{row.item.material_description}}
@@ -320,7 +320,7 @@ export default {
     },
     fetchResourceSections () {
       ApiService.query('aquifers/sections').then((response) => {
-        this.$router.replace({query: { offset: 1  }})
+        //this.$router.replace({query: { offset: 1  }})
         this.aquifer_resource_sections = response.data.results.map(function (section) {
           return {
             text: section.name,
