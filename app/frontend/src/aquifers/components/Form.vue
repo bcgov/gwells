@@ -13,7 +13,7 @@
 */
 
 <template>
-  <div class="container container-wide p-1">
+  <div class="container p-1">
     <b-row>
       <b-col md="6">
         <b-row v-if="showId">

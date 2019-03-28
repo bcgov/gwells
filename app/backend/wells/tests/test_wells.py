@@ -18,19 +18,11 @@ from rest_framework.test import APITestCase
 from rest_framework import status
 
 
-class TestWellsSpatial(APITestCase):
+class TestWellLocationsSearch(APITestCase):
+    fixtures = ['gwells-codetables', 'wellsearch-codetables', 'wellsearch']
 
-    def test_geodjango(self):
-        # Currently we're re-directing to a static file.
-        url = reverse('well-spatial')
+    def test_well_locations(self):
+        # Basic test to ensure that the well location search returns a non-error response
+        url = reverse('well-locations')
         response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_302_FOUND)
-
-
-class TestWellsLithologySpatial(APITestCase):
-
-    def test_geodjango(self):
-        # Currently we're re-directing to a static file.
-        url = reverse('well-spatial-lithology')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_302_FOUND)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)

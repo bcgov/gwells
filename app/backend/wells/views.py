@@ -17,7 +17,7 @@ import logging
 
 from django.db.models import Prefetch
 from django.db import connection
-from django.http import Http404, HttpResponse, JsonResponse
+from django.http import Http404, HttpResponse, JsonResponse, HttpResponseRedirect, HttpResponseNotFound
 from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView
 
@@ -28,7 +28,8 @@ import operator
 
 from django.db.models import Q
 
-from rest_framework import filters
+from rest_framework import filters, status
+from rest_framework.exceptions import PermissionDenied, NotFound
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.generics import ListAPIView, RetrieveAPIView
@@ -52,10 +53,7 @@ from gwells.settings.base import get_env_variable
 from submissions.serializers import WellSubmissionListSerializer
 from submissions.models import WellActivityCode
 
-from wells.filters import (
-    WellListAdminFilter,
-    WellListFilter,
-    WellListFilterBackend)
+from wells.filters import BoundingBoxFilterBackend, WellListFilterBackend
 from wells.models import Well, ActivitySubmission
 from wells.serializers import (
     WellListAdminSerializer,
@@ -113,9 +111,17 @@ class WellDetail(RetrieveAPIView):
     """
     serializer_class = WellDetailSerializer
 
-    # TODO Address viewing unpublished wells when advanced search has been merged
-    queryset = Well.objects.all()  # exclude(well_publication_status='Unpublished')
     lookup_field = 'well_tag_number'
+
+    def get_queryset(self):
+
+        """ Excludes Unpublished wells for users without edit permissions """
+        if self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
+            qs = Well.objects.all()
+        else:
+            qs = Well.objects.all().exclude(well_publication_status='Unpublished')
+
+        return qs
 
     def get_serializer(self, *args, **kwargs):
         """ returns a different serializer for admin users """
@@ -145,7 +151,7 @@ class ListExtracts(APIView):
                                 'S3_PUBLIC_SECRET_KEY'),
                             secure=use_secure)
         objects = minioClient.list_objects(
-            get_env_variable('S3_WELL_EXPORT_BUCKET'))
+            get_env_variable('S3_WELL_EXPORT_BUCKET'), 'export/')
         urls = list(
             map(
                 lambda document: {
@@ -197,6 +203,12 @@ class ListFiles(APIView):
                          })
                          )})
     def get(self, request, tag):
+
+        if Well.objects.get(pk=tag).well_publication_status\
+                .well_publication_status_code == 'Unpublished':
+            if not self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
+                return HttpResponseNotFound()
+
         user_is_staff = self.request.user.groups.filter(
             name=WELLS_VIEWER_ROLE).exists()
 
@@ -217,12 +229,10 @@ class WellListAPIView(ListAPIView):
 
     permission_classes = (WellsEditOrReadOnly,)
     model = Well
-    # TODO Address viewing unpublished wells when advanced search has been merged
-    queryset = Well.objects.all()  # exclude(well_publication_status='Unpublished')
     pagination_class = APILimitOffsetPagination
 
-    filter_backends = (WellListFilterBackend, filters.SearchFilter,
-                       filters.OrderingFilter)
+    filter_backends = (WellListFilterBackend, BoundingBoxFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter)
     ordering = ('well_tag_number',)
     search_fields = ('well_tag_number', 'identification_plate_number',
                      'street_address', 'city', 'owner_full_name')
@@ -237,34 +247,24 @@ class WellListAPIView(ListAPIView):
         return serializer_class
 
     def get_queryset(self):
-        qs = self.queryset
+
+        """ Excludes Unpublished wells for users without edit permissions """
+        if self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
+            qs = Well.objects.all()
+        else:
+            qs = Well.objects.all().exclude(well_publication_status='Unpublished')
+
         qs = qs \
             .select_related(
                 "bcgs_id",
             ).prefetch_related(
-                Prefetch("water_quality_characteristics")
+                "water_quality_characteristics",
+                "drilling_methods",
+                "development_methods"
             ) \
             .order_by("well_tag_number")
 
-        well_tag_or_plate = self.request.query_params.get('well', None)
-        if well_tag_or_plate:
-            qs = qs.filter(Q(well_tag_number=well_tag_or_plate) | Q(
-                identification_plate_number=well_tag_or_plate))
-
         return qs
-
-    def list(self, request):
-        """ List wells with pagination """
-        queryset = self.get_queryset()
-        filtered_queryset = self.filter_queryset(queryset)
-
-        page = self.paginate_queryset(filtered_queryset)
-        if page is not None:
-            serializer = WellListSerializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = WellListSerializer(filtered_queryset, many=True)
-        return Response(serializer.data)
 
 
 class WellTagSearchAPIView(ListAPIView):
@@ -272,8 +272,6 @@ class WellTagSearchAPIView(ListAPIView):
 
     permission_classes = (WellsEditOrReadOnly,)
     model = Well
-    queryset = Well.objects.exclude(well_publication_status='Unpublished').only(
-        'well_tag_number', 'owner_full_name')
     pagination_class = None
     serializer_class = WellTagSearchSerializer
     lookup_field = 'well_tag_number'
@@ -284,6 +282,16 @@ class WellTagSearchAPIView(ListAPIView):
         'well_tag_number',
         'owner_full_name',
     )
+
+    def get_queryset(self):
+
+        """ Excludes Unpublished wells for users without edit permissions """
+        if self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
+            qs = Well.objects.all()
+        else:
+            qs = Well.objects.all().exclude(well_publication_status='Unpublished')
+
+        return qs.only('well_tag_number', 'owner_full_name')
 
 
 class WellSubmissionsListAPIView(ListAPIView):
@@ -312,46 +320,41 @@ class WellLocationListAPIView(ListAPIView):
 
     permission_classes = (WellsEditOrReadOnly,)
     model = Well
-    queryset = Well.objects.all()
     serializer_class = WellLocationSerializer
 
     # Allow searching on name fields, names of related companies, etc.
-    filter_backends = (restfilters.DjangoFilterBackend,
+    filter_backends = (WellListFilterBackend, BoundingBoxFilterBackend,
                        filters.SearchFilter, filters.OrderingFilter)
     ordering = ('well_tag_number',)
     filterset_class = WellLocationFilter
     pagination_class = None
 
-    # search_fields and get_queryset are fragile here.
-    # they need to match up with the search results returned by WellListAPIView.
-    # an attempt was made to factor out filtering logic into WellSearchFilter (which WellLocationFilter
-    # inherits),
-    # but so far, not all the searchable fields have been put into that class.
-    # Please note the difference between "searchable fields" (one query param will return results that are
-    # valid
-    # for any of these fields) and "filter fields" (search by a single individual fields)
     search_fields = ('legal_pid', 'legal_plan', 'legal_district_lot',
                      'legal_block', 'legal_section', 'legal_township', 'legal_range')
 
     def get_queryset(self):
-        qs = self.queryset
 
-        well_tag_or_plate = self.request.query_params.get('well', None)
-        if well_tag_or_plate:
-            qs = qs.filter(Q(well_tag_number=well_tag_or_plate) | Q(
-                identification_plate_number=well_tag_or_plate))
+        """ Excludes Unpublished wells for users without edit permissions """
+        if self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
+            qs = Well.objects.all()
+        else:
+            qs = Well.objects.all().exclude(well_publication_status='Unpublished')
 
         return qs
 
     def get(self, request):
         """ cancels request if too many wells are found"""
 
-        locations = WellLocationFilter(
-            request.GET, queryset=Well.objects.all()).qs
-        count = WellSearchFilter(request.GET, queryset=locations).qs.count()
+        qs = self.get_queryset()
+        locations = self.filter_queryset(qs)
+        count = locations.count()
         # return an empty response if there are too many wells to display
         if count > 2000:
-            return Response([])
+            raise PermissionDenied("Too many wells to display on map. Please refine your search criteria or search in a smaller area.")
+
+        if count is 0:
+            raise NotFound("No well records could be found.")
+
         return super().get(request)
 
 
@@ -457,61 +460,13 @@ class WellSpatial(APIView):
     permission_classes = (AllowAny,)
 
     def get(self, request):
-        # IMPORTANT: If the underlying data structure changes (e.g. column name changes etc.), the
-        # property names have to stay the same! This endpoint is consumed by DataBC and must remain
-        # stable!
-        sql = ("""
-select row_to_json(fc)
-from (
-    select
-        'FeatureCollection' as "type",
-        array_to_json(array_agg(f)) as "features"
-    from (
-        select
-            'Feature' as "type",
-            ST_AsGeoJSON(geom) :: json as "geometry",
-            (
-                select json_strip_nulls(row_to_json(t))
-                from
-                (
-                    select
-                    well_tag_number,
-                    identification_plate_number,
-                    well_status_code.description as well_status_description,
-                    licenced_status_code.description as licenced_status,
-                    CONCAT('https://apps.nrs.gov.bc.ca/gwells/well/',well_tag_number) as detail,
-                    artesian_flow, 'usGPM' as artesian_flow_units, artesian_pressure,
-                    well_class_code.description as well_class_description,
-                    intended_water_use_code.description as intended_water_use_description,
-                    street_address,
-                    finished_well_depth,
-                    diameter,
-                    static_water_level,
-                    bedrock_depth,
-                    well_yield,
-                    well_yield_unit_code.description as well_yield_unit,
-                    aquifer_id
-                ) t
-            ) as properties
-            from well
-                left join well_status_code on well_status_code.well_status_code = well.well_status_code
-                left join licenced_status_code on
-                    licenced_status_code.licenced_status_code = well.licenced_status_code
-                left join well_class_code on well_class_code.well_class_code = well.well_class_code
-                left join intended_water_use_code on
-                    intended_water_use_code.intended_water_use_code = well.intended_water_use_code
-                left join well_yield_unit_code on
-                    well_yield_unit_code.well_yield_unit_code = well.well_yield_unit_code
-    ) as f
-) as fc;""")
-        start = datetime.now()
-        logger.info('fetching well spatial data from database...')
-        with connection.cursor() as cursor:
-            cursor.execute(sql)
-            row = cursor.fetchone()
-            logger.info('well spatial db query took: {}'.format(
-                datetime.now() - start))
-            return JsonResponse(row[0])
+        # Generating spatial data realtime is much too slow,
+        # so we have to redirect to a pre-generated instance.
+        url = 'https://{}/{}/{}'.format(
+            get_env_variable('S3_HOST'),
+            get_env_variable('S3_WELL_EXPORT_BUCKET'),
+            'api/v1/gis/wells.json')
+        return HttpResponseRedirect(url)
 
 
 class WellLithologySpatial(APIView):
@@ -519,79 +474,10 @@ class WellLithologySpatial(APIView):
     permission_classes = (AllowAny,)
 
     def get(self, request):
-        # IMPORTANT: If the underlying data structure changes (e.g. column name changes etc.), the
-        # property names have to stay the same! This endpoint is consumed by DataBC and must remain
-        # stable!
-        sql = ("""
-select row_to_json(fc)
-from (
-    select
-        'FeatureCollection' as "type",
-        array_to_json(array_agg(f)) as "features"
-    from (
-        select
-            'Feature' as "type",
-            ST_AsGeoJSON(geom) :: json as "geometry",
-            (
-                select json_strip_nulls(row_to_json(t))
-                from
-                (
-                    select
-                    well.well_tag_number,
-                    identification_plate_number,
-                    well_status_code.description as well_status_description,
-                    licenced_status_code.description as licenced_status_description,
-                    CONCAT('https://apps.nrs.gov.bc.ca/gwells/well/',well.well_tag_number) as detail,
-                    lithology_description.lithology_from,
-                    lithology_description.lithology_to,
-                    lithology_colour_code.description as lithology_colour_description,
-                    lithology_description_code.description as lithology_description,
-                    lithology_material_code.description as lithology_material_description,
-                    lithology_observation,
-                    lithology_hardness_code.description as lithology_hardness_description,
-                    well_class_code.description as well_class_description,
-                    intended_water_use_code.description as intended_water_use_description,
-                    street_address,
-                    finished_well_depth,
-                    diameter,
-                    static_water_level,
-                    bedrock_depth,
-                    well_yield,
-                    well_yield_unit_code.description as well_yield_unit,
-                    aquifer_id
-                ) t
-            ) as properties
-            from well
-                inner join lithology_description on
-                    lithology_description.well_tag_number = well.well_tag_number
-                left join well_status_code on
-                    well_status_code.well_status_code = well.well_status_code
-                left join licenced_status_code on
-                    licenced_status_code.licenced_status_code = well.licenced_status_code
-                left join lithology_material_code on
-                    lithology_material_code.lithology_material_code =
-                        lithology_description.lithology_material_code
-                left join lithology_colour_code on
-                    lithology_colour_code.lithology_colour_code = lithology_description.lithology_colour_code
-                left join lithology_description_code on
-                    lithology_description_code.lithology_description_code =
-                        lithology_description.lithology_description_code
-                left join lithology_hardness_code on
-                    lithology_hardness_code.lithology_hardness_code =
-                        lithology_description.lithology_hardness_code
-                left join well_class_code on well_class_code.well_class_code = well.well_class_code
-                left join intended_water_use_code on
-                    intended_water_use_code.intended_water_use_code = well.intended_water_use_code
-                left join well_yield_unit_code on
-                    well_yield_unit_code.well_yield_unit_code = well.well_yield_unit_code
-                order by well.well_tag_number, lithology_description.lithology_from
-    ) as f
-) as fc;""")
-        start = datetime.now()
-        logger.info('fetching lithology spatial data from database...')
-        with connection.cursor() as cursor:
-            cursor.execute(sql)
-            row = cursor.fetchone()
-            logger.info('lithology spatial db query took: {}'.format(
-                datetime.now() - start))
-            return JsonResponse(row[0])
+        # Generating spatial data realtime is much too slow,
+        # so we have to redirect to a pre-generated instance.
+        url = 'https://{}/{}/{}'.format(
+            get_env_variable('S3_HOST'),
+            get_env_variable('S3_WELL_EXPORT_BUCKET'),
+            'api/v1/gis/lithology.json')
+        return HttpResponseRedirect(url)
