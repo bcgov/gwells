@@ -621,6 +621,10 @@ export default {
       } else {
         this.tabIndex = 0
       }
+      // add a watcher for tabIndex after setting the initial value
+      this.$watch('tabIndex', function () {
+        this.searchParamsReset()
+      })
     },
     initSearchParams () {
       const query = this.$route.query
