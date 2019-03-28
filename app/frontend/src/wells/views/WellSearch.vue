@@ -299,8 +299,8 @@ export default {
   },
   data () {
     return {
-      pendingSearches: [],
-      pendingMapUpdates: [],
+      pendingSearch: null,
+      pendingMapSearch: null,
       scrolled: false,
       mapError: null,
       lastSearchTrigger: null,
@@ -425,12 +425,14 @@ export default {
     wellSearch (options = {}) {
       const { perPage = this.perPage, currentPage = this.currentPage, trigger = 'search' } = options
 
-      // cancel previous search requests and add a cancellation token for this request
-      this.cancelWellSearches()
+      // cancel previous search request and add a cancellation token for this request
+      if (this.pendingSearch) {
+        this.pendingSearch.cancel()
+      }
+      
       const CancelToken = axios.CancelToken
       const requestContext = CancelToken.source()
-
-      this.pendingSearches.unshift(requestContext)
+      this.pendingSearch = requestContext
 
       const params = {
         limit: perPage,
@@ -469,32 +471,29 @@ export default {
 
         return []
       }).finally(() => {
-        this.pendingSearches.shift()
+        this.pendingSearch = null
       })
     },
     handleScroll () {
       const pos = this.$el.querySelector('#map').scrollTop | 100
       this.scrolled = window.scrollY > 0.9 * pos
     },
-    cancelWellSearches () {
-      for (let i = this.pendingSearches.length - 1; i >= 0; i--) {
-        const req = this.pendingSearches.pop()
-        req.cancel()
-      }
-    },
-    cancelMapUpdates () {
-      for (let i = this.pendingMapUpdates.length - 1; i >= 0; i--) {
-        const req = this.pendingMapUpdates.pop()
-        req.cancel()
-      }
-    },
     locationSearch (options = {}) {
       const { trigger = 'search' } = options
-      this.cancelMapUpdates()
-      const CancelToken = axios.CancelToken
-      const ctx = CancelToken.source()
 
-      this.pendingMapUpdates.unshift(ctx)
+      // cancel previous location search request and add a cancellation token for this request
+      if (this.pendingMapSearch) {
+        this.pendingMapSearch.cancel()
+      }
+      
+      const CancelToken = axios.CancelToken
+      const requestContext = CancelToken.source()
+      this.pendingMapSearch = requestContext
+
+      const params = {
+        limit: perPage,
+        offset: perPage * (currentPage - 1)
+      }
 
       let params = Object.assign({}, this.searchParams)
 
@@ -513,7 +512,7 @@ export default {
         }
         this.locations = []
       }).finally(() => {
-        this.pendingMapUpdates.shift()
+        this.pendingMapSearch = null
       })
     },
     handleMapMove () {

@@ -46,36 +46,4 @@ describe('WellSearch.vue', () => {
 
     expect(wrapper.find('#wellSearchTitle').text()).toBe('Well Search')
   })
-  it('a well search request adds a token to pending request list', () => {
-    const wrapper = shallowMount(WellSearch, {
-      localVue,
-      store,
-      router,
-      stubs: ['router-link', 'search-form-select', 'b-popover'],
-      sync: false
-    })
-    expect(wrapper.vm.pendingSearches.length).toBe(0)
-    wrapper.vm.wellSearch()
-    expect(wrapper.vm.pendingSearches.length).toBe(1)
-  })
-  it('cancelWellSearches() cancels previous requests', () => {
-    const wrapper = shallowMount(WellSearch, {
-      localVue,
-      store,
-      router,
-      stubs: ['router-link', 'search-form-select', 'b-popover'],
-      sync: false
-    })
-    const testReq = {
-      cancel: jest.fn()
-    }
-    for (let i = 0; i < 10; i++) {
-      wrapper.vm.pendingSearches.push(testReq)
-    }
-
-    wrapper.vm.cancelWellSearches()
-
-    expect(testReq.cancel.mock.calls.length).toBe(10)
-    expect(wrapper.vm.pendingSearches.length).toBe(0)
-  })
 })
