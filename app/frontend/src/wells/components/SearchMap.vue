@@ -93,8 +93,13 @@ export default {
     initMap () {
       // Create map, with default centered and zoomed to show entire BC.
       this.map = L.map('map', {
-        preferCanvas: true
-      }).setView([this.latitude ? this.latitude : 54.5, this.getLongitude() ? this.getLongitude() : -126.5], 5)
+        preferCanvas: true,
+        minZoom: 4,
+        maxZoom: 17
+      }).setView([54.5, -126.5], 5)
+      this.$nextTick(() => {
+        this.map.setMaxBounds(this.map.getBounds())
+      })
       L.control.scale().addTo(this.map)
       // Add map layers.
       tiledMapLayer({url: 'https://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer'}).addTo(this.map)
