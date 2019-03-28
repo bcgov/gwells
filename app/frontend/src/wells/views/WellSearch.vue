@@ -498,8 +498,6 @@ export default {
         Object.assign(params, this.mapBounds)
       }
       return ApiService.query('wells', params, { cancelToken: this.pendingSearch.token }).then((response) => {
-        console.log(JSON.parse(JSON.stringify(requestContext)))
-
         this.searchErrors = {}
         this.numberOfRecords = response.data.count
         this.tableData = response.data.results
