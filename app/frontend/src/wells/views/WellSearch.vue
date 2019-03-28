@@ -13,7 +13,7 @@
     </div>
     <b-row class="mt-4">
       <b-col cols="12" lg="6" xl="5">
-        <b-form @submit.prevent="handleSearchSubmit()" @reset.prevent="resetButtonHandler()">
+        <b-form @submit.prevent="handleSearchSubmit({ trigger: 'search' })" @reset.prevent="handleReset()">
           <b-card no-body border-variant="dark">
             <b-tabs card v-model="tabIndex">
               <b-tab title="Basic Search">
@@ -237,6 +237,7 @@
             :latitude="latitude"
             :longitude="longitude"
             :locations="locations"
+            :zoomToMarker="zoomToResults"
             v-on:coordinate="handleMapCoordinate"
             ref="searchMap"
             @moved="handleMapMove"
@@ -248,6 +249,7 @@
       <b-col>
         <b-table
           :items="wellSearch"
+          :isBusy="!!pendingSearch"
           :fields="wellSearchColumns"
         >
         </b-table>
@@ -256,11 +258,11 @@
             <div class="my-3" v-if="numberOfRecords > 0">Showing {{ currentRecordsCountStart }} to {{ currentRecordsCountEnd }} of {{ numberOfRecords }} {{ numberOfRecords === 1 ? 'record' : 'records'}}.</div>
           </b-col>
         </b-row>
-        <b-pagination class="mt-3" :disabled="isBusy" size="md" :total-rows="numberOfRecords" v-model="currentPage" :per-page="perPage" @input="wellSearch()">
+        <b-pagination class="mt-3" :disabled="!!pendingSearch" size="md" :total-rows="numberOfRecords" v-model="currentPage" :per-page="perPage" @input="wellSearch()">
         </b-pagination>
       </b-col>
     </b-row>
-    <b-row>
+    <b-row v-if="!isInitialSearch">
       <b-col>
         <p>
           Can’t find the well you are looking for? Try your search again using a different set of criteria. If you still need more assistance, Contact <a href="https://portal.nrs.gov.bc.ca/web/client/contact">FrontCounterBC</a>.
@@ -276,6 +278,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 import { mapGetters } from 'vuex'
 import ApiService from '@/common/services/ApiService.js'
 import {FETCH_CODES} from '@/submissions/store/actions.types.js'
@@ -304,7 +307,12 @@ export default {
   },
   data () {
     return {
+      pendingSearch: null,
+      pendingMapSearch: null,
+      scrolled: false,
       mapError: null,
+      lastSearchTrigger: null,
+
       isBusy: false,
       isInitialSearch: true,
       tabIndex: 0,
@@ -435,16 +443,30 @@ export default {
     // (e.g. the 10 in 'showing 1 to 10 of 25 records')
     currentRecordsCountEnd () {
       return (this.currentPage - 1) * this.perPage + this.tableData.length
+    },
+    zoomToResults () {
+      return this.lastSearchTrigger !== 'map'
     }
   },
   methods: {
     /**
     * wellSearch searches for wells based on parameters in the querystring
     */
-    wellSearch (ctx = { perPage: this.perPage, currentPage: this.currentPage }) {
+    wellSearch (ctx = {}) {
+      const { perPage = this.perPage, currentPage = this.currentPage, trigger = 'search' } = ctx
+
+      // cancel previous search request and add a cancellation token for this request
+      if (this.pendingSearch) {
+        this.pendingSearch.cancel()
+      }
+
+      const CancelToken = axios.CancelToken
+      const requestContext = CancelToken.source()
+      this.pendingSearch = requestContext
+
       const params = {
-        limit: ctx.perPage,
-        offset: ctx.perPage * (ctx.currentPage - 1)
+        limit: perPage,
+        offset: perPage * (currentPage - 1)
       }
 
       // if the table has been ordered, add an 'ordering' param to the API call
@@ -455,8 +477,11 @@ export default {
       // add other search parameters into the params object.
       // these will be urlencoded and the API will filter on these values.
       Object.assign(params, this.searchParams)
-      Object.assign(params, this.mapBounds)
-      return ApiService.query('wells', params).then((response) => {
+
+      if (trigger === 'map') {
+        Object.assign(params, this.mapBounds)
+      }
+      return ApiService.query('wells', params, { cancelToken: this.pendingSearch.token }).then((response) => {
         this.searchErrors = {}
         this.numberOfRecords = response.data.count
         this.tableData = response.data.results
@@ -464,7 +489,7 @@ export default {
         // the first search that happens when page loads doesn't need
         // to automatically scroll the page.  Only scroll when updating
         // the search results.
-        if (!this.isInitialSearch) {
+        if (!this.isInitialSearch && !this.scrolled) {
           this.$SmoothScroll(this.$el.querySelector('#map'))
         }
         // flag that the initial search that happens on page load
@@ -478,15 +503,33 @@ export default {
         }
 
         return []
+      }).finally(() => {
+        this.pendingSearch = null
       })
     },
-    locationSearch () {
+    handleScroll () {
+      const pos = this.$el.querySelector('#map').scrollTop | 100
+      this.scrolled = window.scrollY > 0.9 * pos
+    },
+    locationSearch (ctx = {}) {
+      const { trigger = 'search' } = ctx
+
+      // cancel previous location search request and add a cancellation token for this request
+      if (this.pendingMapSearch) {
+        this.pendingMapSearch.cancel()
+      }
+
+      const CancelToken = axios.CancelToken
+      const requestContext = CancelToken.source()
+      this.pendingMapSearch = requestContext
+
       let params = Object.assign({}, this.searchParams)
 
-      // merge in map bounds, if any
-      params = Object.assign(params, this.mapBounds)
+      if (trigger === 'map') {
+        Object.assign(params, this.mapBounds)
+      }
 
-      ApiService.query('wells/locations', params).then((response) => {
+      ApiService.query('wells/locations', params, { cancelToken: this.pendingMapSearch.token }).then((response) => {
         this.mapError = null
         this.locations = response.data.map((well) => {
           return [well.latitude, well.longitude, well.well_tag_number, well.identification_plate_number]
@@ -496,11 +539,13 @@ export default {
           this.mapError = e.response.data.detail
         }
         this.locations = []
+      }).finally(() => {
+        this.pendingMapSearch = null
       })
     },
     handleMapMove () {
       this.setMapBounds()
-      this.handleSearchSubmit()
+      this.handleSearchSubmit({ trigger: 'map' })
     },
     setMapBounds () {
       if (this.$refs.searchMap && this.$refs.searchMap.map) {
@@ -522,22 +567,28 @@ export default {
         this.setMapBounds()
       }
     },
-    handleSearchSubmit () {
+    handleSearchSubmit (options) {
+      const { trigger = 'search' } = options
+      this.lastSearchTrigger = trigger
+
       this.cleanSearchParams()
       this.updateQueryParams()
-      this.wellSearch()
-      this.locationSearch()
+      this.wellSearch(options)
+      this.locationSearch(options)
     },
-    resetButtonHandler () {
+    handleReset () {
       this.resetMapBounds()
       this.searchParamsReset()
-      this.wellSearch()
-      this.locationSearch()
+      this.tabulator.clearData()
+      this.locations = []
+      this.mapError = null
     },
     searchParamsReset () {
       this.searchParams = {...this.defaultSearchParams}
       this.selectedFilters = []
-      this.$router.push({ query: null })
+      this.$nextTick(() => {
+        this.$router.push({ query: null })
+      })
     },
     initTabIndex () {
       const hash = this.$route.hash
@@ -663,9 +714,22 @@ export default {
       }, 0)
       this.wellSearch()
     }
+  },
+  beforeMount () {
+    this.scrolled = window.scrollY > 100
+    window.addEventListener('scroll', this.handleScroll)
+  },
+  beforeDestroy () {
+    window.removeEventListener('scroll', this.handleScroll)
   }
 }
 </script>
 
 <style>
+.wellTable[aria-busy='false'] {
+  opacity: 1;
+}
+.wellTable[aria-busy='true'] {
+  opacity: 0.6;
+}
 </style>
