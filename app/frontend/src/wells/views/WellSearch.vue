@@ -247,8 +247,8 @@
     </b-row>
     <b-row class="my-5">
       <b-col>
-        <div ref="tabulator" class="wellTable" :aria-busy="!!pendingSearches.length"></div>
-        <b-pagination class="mt-3" size="md" :total-rows="numberOfRecords" v-model="currentPage" :per-page="perPage" @input="wellSearch()" :disabled="!!pendingSearches.length">
+        <div ref="tabulator" class="wellTable" :aria-busy="!!pendingSearch"></div>
+        <b-pagination class="mt-3" size="md" :total-rows="numberOfRecords" v-model="currentPage" :per-page="perPage" @input="wellSearch()" :disabled="!!pendingSearch">
         </b-pagination>
       </b-col>
     </b-row>
@@ -422,14 +422,14 @@ export default {
     /**
     * wellSearch searches for wells based on parameters in the querystring
     */
-    wellSearch (options = {}) {
-      const { perPage = this.perPage, currentPage = this.currentPage, trigger = 'search' } = options
+    wellSearch (ctx = {}) {
+      const { perPage = this.perPage, currentPage = this.currentPage, trigger = 'search' } = ctx
 
       // cancel previous search request and add a cancellation token for this request
       if (this.pendingSearch) {
         this.pendingSearch.cancel()
       }
-      
+
       const CancelToken = axios.CancelToken
       const requestContext = CancelToken.source()
       this.pendingSearch = requestContext
@@ -446,7 +446,7 @@ export default {
       if (trigger === 'map') {
         Object.assign(params, this.mapBounds)
       }
-      return ApiService.query('wells', params).then((response) => {
+      return ApiService.query('wells', params, { cancelToken: requestContext.token }).then((response) => {
         this.searchErrors = {}
         this.numberOfRecords = response.data.count
         this.tableData = response.data.results
@@ -478,22 +478,17 @@ export default {
       const pos = this.$el.querySelector('#map').scrollTop | 100
       this.scrolled = window.scrollY > 0.9 * pos
     },
-    locationSearch (options = {}) {
-      const { trigger = 'search' } = options
+    locationSearch (ctx = {}) {
+      const { trigger = 'search' } = ctx
 
       // cancel previous location search request and add a cancellation token for this request
       if (this.pendingMapSearch) {
         this.pendingMapSearch.cancel()
       }
-      
+
       const CancelToken = axios.CancelToken
       const requestContext = CancelToken.source()
       this.pendingMapSearch = requestContext
-
-      const params = {
-        limit: perPage,
-        offset: perPage * (currentPage - 1)
-      }
 
       let params = Object.assign({}, this.searchParams)
 
@@ -501,7 +496,7 @@ export default {
         Object.assign(params, this.mapBounds)
       }
 
-      ApiService.query('wells/locations', params, { cancelToken: ctx.token }).then((response) => {
+      ApiService.query('wells/locations', params, { cancelToken: requestContext.token }).then((response) => {
         this.mapError = null
         this.locations = response.data.map((well) => {
           return [well.latitude, well.longitude, well.well_tag_number, well.identification_plate_number]
