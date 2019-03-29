@@ -701,7 +701,11 @@ pipeline {
                             "IMAGE_STREAM_NAME=postgresql-9.6-oracle-fdw",
                             "IMAGE_STREAM_VERSION=v1-stable",
                             "POSTGRESQL_DATABASE=gwells",
-                            "VOLUME_CAPACITY=5Gi"
+                            "VOLUME_CAPACITY=5Gi",
+                            "REQUEST_CPU=400m",
+                            "REQUEST_MEMORY=2Gi",
+                            "LIMIT_CPU=400m",
+                            "LIMIT_MEMORY=2Gi"
                         )
 
                         def deployTemplate = openshift.process("-f",
@@ -916,7 +920,11 @@ pipeline {
                             "IMAGE_STREAM_NAME=postgresql-9.6-oracle-fdw",
                             "IMAGE_STREAM_VERSION=v1-stable",
                             "POSTGRESQL_DATABASE=gwells",
-                            "VOLUME_CAPACITY=5Gi"
+                            "VOLUME_CAPACITY=5Gi",
+                            "REQUEST_CPU=400m",
+                            "REQUEST_MEMORY=2Gi",
+                            "LIMIT_CPU=400m",
+                            "LIMIT_MEMORY=2Gi"
                         )
 
                         def deployTemplate = openshift.process("-f",
@@ -1107,7 +1115,11 @@ pipeline {
                             "IMAGE_STREAM_NAME=postgresql-9.6-oracle-fdw",
                             "IMAGE_STREAM_VERSION=v1-stable",
                             "POSTGRESQL_DATABASE=gwells",
-                            "VOLUME_CAPACITY=20Gi"
+                            "VOLUME_CAPACITY=20Gi",
+                            "REQUEST_CPU=800m",
+                            "REQUEST_MEMORY=4Gi",
+                            "LIMIT_CPU=800m",
+                            "LIMIT_MEMORY=4Gi"
                         )
 
                         def deployTemplate = openshift.process("-f",
