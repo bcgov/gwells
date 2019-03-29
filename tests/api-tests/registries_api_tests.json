@@ -585,7 +585,7 @@
 											"        pm.expect(jsonData[0].diff.city).to.eql(\"Victoria\");",
 											"    });",
 											"    pm.test(\"Username is logged for recent update\", function () {",
-											"        pm.expect(jsonData[0].user).to.be(\"TESTUSER\" || \"testuser\");",
+											"        pm.expect(jsonData[0].user).to.eql(\"TESTUSER\" || \"testuser\");",
 											"    });",
 											"})();",
 											""
