@@ -36,7 +36,7 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{base_url}}/api/v1/wells?search=9193183",
+							"raw": "{{base_url}}/api/v1/wells?search=216265",
 							"host": [
 								"{{base_url}}"
 							],
@@ -48,7 +48,7 @@
 							"query": [
 								{
 									"key": "search",
-									"value": "9193183"
+									"value": "216265"
 								}
 							]
 						}
@@ -301,7 +301,7 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?well=9193183",
+									"raw": "{{base_url}}/api/v1/wells?well=216265",
 									"host": [
 										"{{base_url}}"
 									],
@@ -313,7 +313,7 @@
 									"query": [
 										{
 											"key": "well",
-											"value": "9193183"
+											"value": "216265"
 										}
 									]
 								}
@@ -806,7 +806,7 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?well_tag_number=9193183",
+									"raw": "{{base_url}}/api/v1/wells?well_tag_number=216265",
 									"host": [
 										"{{base_url}}"
 									],
@@ -818,7 +818,7 @@
 									"query": [
 										{
 											"key": "well_tag_number",
-											"value": "9193183"
+											"value": "216265"
 										}
 									]
 								}

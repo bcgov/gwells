@@ -42,7 +42,7 @@ const fakePerson = JSON.parse(JSON.stringify({
               'description': 'Approved',
               'notified_date': '2018-04-12',
               'effective_date': '2018-04-12',
-              'expired_date': null
+              'expiry_date': null
             }
           ],
           'subactivity': {
@@ -94,7 +94,7 @@ const fakePerson = JSON.parse(JSON.stringify({
               'description': 'Approved',
               'notified_date': '2018-04-12',
               'effective_date': '2018-04-12',
-              'expired_date': null
+              'expiry_date': null
             }
           ],
           'subactivity': {

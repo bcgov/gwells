@@ -60,10 +60,11 @@ urlpatterns = [
     url(r'^api/v1/wells$',
         never_cache(views.WellListAPIView.as_view()), name='well-list'),
 
+    # GeoJSON well endpoint for DataBC.
     url(r'^api/v1/gis/wells$',
-        views.WellSpatial.as_view(), name='well-spatial'),
+        views.well_geojson, name='well-geojson'),
 
+    # GeoJSON lithology endpoint for DataBC.
     url(r'^api/v1/gis/lithology$',
-        views.WellLithologySpatial.as_view(), name='well-spatial-lithology')
-
+        views.lithology_geojson, name='well-lithology-geojson')
 ]
