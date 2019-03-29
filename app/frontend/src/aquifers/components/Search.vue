@@ -96,7 +96,7 @@
                   <div v-else>
                     <ul class="p-0 m-0 list-unstyled">
                       <li v-for="place in searchAddressResults.slice(0,3)" @click="handleAddressResult">
-                        {{ place.label }}
+                        <a href="#">{{ place.label }}</a>
                       </li>
                     </ul>
                   </div>
@@ -106,6 +106,8 @@
                   stacked
                   v-model="activeLayers"
                   :options='layers'
+                  disabled
+                  :checked="activeLayers"
                 />
               </b-col>
             </b-form-row>
@@ -300,7 +302,7 @@ export default {
         { key: 'mapping_year', label: 'Year of mapping', sortable: true }
       ],
       activeLayers: [],
-      layers: ['Layer 1', 'Layer 2', 'Layer 3'],
+      layers: [],
       surveys: [],
       noSearchCriteriaError: false,
       aquifer_resource_sections: [],
@@ -429,10 +431,17 @@ export default {
     this.fetchResourceSections()
   },
   mounted() {
+
     this.$on('searchResults', (data) => {
       console.log(data)
       this.searchAddressResults = data
     })
+
+    this.$on('activeLayers', (data) => {
+      console.log(data)
+      this.layers = data.filter(o => o.layerName).map(o => o.layerName)
+      console.log(this.layers)
+    });
   },
   watch: {
     query () { this.fetchResults() },

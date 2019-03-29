@@ -1,11 +1,6 @@
 <template>
   <div class="aquifer-map">
-    <div id="map" class="map"/>
-    <ul>
-      <li v-for="activeLayer in activeLayers" :key="activeLayer.layerId">
-        {{ activeLayer.layerName }}
-      </li>
-    </ul>
+    <div id="map" class="map"/> 
   </div>
 </template>
 
@@ -149,18 +144,20 @@ export default {
 
       // Add checkboxes for layers
       L.control.layers(null, mapLayers, {collapsed: true}).addTo(this.map)
-      /*
+      
       this.map.on('layeradd', (e) => {
         const layerId = e.layer._leaflet_id
         const layerName = e.layer.options.name
         this.activeLayers.push({layerId, layerName})
+        this.$parent.$emit('activeLayers', this.activeLayers)
       })
 
       this.map.on('layerremove', (e) => {
         const layerId = e.layer._leaflet_id
         this.activeLayers = filter(this.activeLayers, o => o.layerId !== layerId)
+        this.$parent.$emit('activeLayers', this.activeLayers)
       })
-      */
+      
     },
     addAquifersToMap (aquifers) {
       console.log("Add Called")
