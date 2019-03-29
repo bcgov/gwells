@@ -14,14 +14,17 @@
 from urllib.parse import quote
 from datetime import datetime
 import logging
+import sys
 
 from django.db.models import Prefetch
-from django.db import connection
-from django.http import Http404, HttpResponse, JsonResponse, HttpResponseRedirect, HttpResponseNotFound
+from django.http import (
+    Http404, HttpResponse, JsonResponse, HttpResponseRedirect, HttpResponseNotFound, StreamingHttpResponse)
 from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView
-
 from django_filters import rest_framework as restfilters
+from django.db.models import Q
+from django_filters import rest_framework as restfilters
+from django.db import connection
 
 from functools import reduce
 import operator
@@ -29,6 +32,7 @@ import operator
 from django.db.models import Q
 
 from rest_framework import filters, status
+from rest_framework.decorators import api_view
 from rest_framework.exceptions import PermissionDenied, NotFound
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -37,8 +41,6 @@ from rest_framework.permissions import AllowAny
 
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
-
-from django_filters import rest_framework as restfilters
 
 from minio import Minio
 
@@ -49,12 +51,31 @@ from gwells.models import Survey
 from gwells.roles import WELLS_VIEWER_ROLE, WELLS_EDIT_ROLE
 from gwells.pagination import APILimitOffsetPagination
 from gwells.settings.base import get_env_variable
+from gwells.db_comments import get_column_description
+from gwells.open_api import (
+    get_geojson_schema, get_model_feature_schema, GEO_JSON_302_MESSAGE, GEO_JSON_PARAMS)
+from gwells.management.commands.export_databc import (WELLS_SQL, LITHOLOGY_SQL, GeoJSONIterator,
+                                                      LITHOLOGY_CHUNK_SIZE, WELL_CHUNK_SIZE,
+                                                      MAX_LITHOLOGY_SQL, MAX_WELLS_SQL)
 
 from submissions.serializers import WellSubmissionListSerializer
 from submissions.models import WellActivityCode
 
 from wells.filters import BoundingBoxFilterBackend, WellListFilterBackend
-from wells.models import Well, ActivitySubmission
+from wells.models import (
+    ActivitySubmission,
+    Casing,
+    IntendedWaterUseCode,
+    LicencedStatusCode,
+    LithologyColourCode,
+    LithologyDescription,
+    LithologyDescriptionCode,
+    LithologyHardnessCode,
+    LithologyMaterialCode,
+    Well,
+    WellClassCode,
+    WellYieldUnitCode,
+    WellStatusCode)
 from wells.serializers import (
     WellListAdminSerializer,
     WellListSerializer,
@@ -114,7 +135,6 @@ class WellDetail(RetrieveAPIView):
     lookup_field = 'well_tag_number'
 
     def get_queryset(self):
-
         """ Excludes Unpublished wells for users without edit permissions """
         if self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
             qs = Well.objects.all()
@@ -177,6 +197,26 @@ class ListExtracts(APIView):
             return None
 
 
+LIST_FILES_OK = openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        'public': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'url': openapi.Schema(type=openapi.TYPE_STRING),
+                'name': openapi.Schema(type=openapi.TYPE_STRING)
+            }
+        )),
+        'private': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'url': openapi.Schema(type=openapi.TYPE_STRING),
+                'name': openapi.Schema(type=openapi.TYPE_STRING)
+            }
+        ))
+    })
+
+
 class ListFiles(APIView):
     """
     List documents associated with a well (e.g. well construction report)
@@ -184,24 +224,7 @@ class ListFiles(APIView):
     get: list files found for the well identified in the uri
     """
 
-    @swagger_auto_schema(responses={200: openapi.Response('OK',
-                         openapi.Schema(type=openapi.TYPE_OBJECT, properties={
-                            'public': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
-                                type=openapi.TYPE_OBJECT,
-                                properties={
-                                    'url': openapi.Schema(type=openapi.TYPE_STRING),
-                                    'name': openapi.Schema(type=openapi.TYPE_STRING)
-                                }
-                            )),
-                            'private': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
-                                type=openapi.TYPE_OBJECT,
-                                properties={
-                                    'url': openapi.Schema(type=openapi.TYPE_STRING),
-                                    'name': openapi.Schema(type=openapi.TYPE_STRING)
-                                }
-                            ))
-                         })
-                         )})
+    @swagger_auto_schema(responses={200: openapi.Response('OK', LIST_FILES_OK)})
     def get(self, request, tag):
 
         if Well.objects.get(pk=tag).well_publication_status\
@@ -247,7 +270,6 @@ class WellListAPIView(ListAPIView):
         return serializer_class
 
     def get_queryset(self):
-
         """ Excludes Unpublished wells for users without edit permissions """
         if self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
             qs = Well.objects.all()
@@ -284,14 +306,17 @@ class WellTagSearchAPIView(ListAPIView):
     )
 
     def get_queryset(self):
-
         """ Excludes Unpublished wells for users without edit permissions """
         if self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
             qs = Well.objects.all()
         else:
             qs = Well.objects.all().exclude(well_publication_status='Unpublished')
 
-        return qs.only('well_tag_number', 'owner_full_name')
+        return qs
+
+    def get(self, request):
+        data = self.get_queryset().values('well_tag_number', 'owner_full_name').order_by('well_tag_number')
+        return Response(data)
 
 
 class WellSubmissionsListAPIView(ListAPIView):
@@ -305,7 +330,8 @@ class WellSubmissionsListAPIView(ListAPIView):
 
     def get_queryset(self):
         well = self.kwargs.get('well_id')
-        records = ActivitySubmission.objects.filter(well=well).select_related('well_activity_type').order_by('create_date')
+        records = ActivitySubmission.objects.filter(well=well).select_related(
+            'well_activity_type').order_by('create_date')
         return sorted(records, key=lambda record:
                       (record.well_activity_type.code != WellActivityCode.types.legacy().code,
                           record.well_activity_type.code != WellActivityCode.types.construction().code,
@@ -329,11 +355,10 @@ class WellLocationListAPIView(ListAPIView):
     filterset_class = WellLocationFilter
     pagination_class = None
 
-    search_fields = ('legal_pid', 'legal_plan', 'legal_district_lot',
-                     'legal_block', 'legal_section', 'legal_township', 'legal_range')
+    search_fields = ('well_tag_number', 'identification_plate_number',
+                     'street_address', 'city', 'owner_full_name')
 
     def get_queryset(self):
-
         """ Excludes Unpublished wells for users without edit permissions """
         if self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
             qs = Well.objects.all()
@@ -350,7 +375,8 @@ class WellLocationListAPIView(ListAPIView):
         count = locations.count()
         # return an empty response if there are too many wells to display
         if count > 2000:
-            raise PermissionDenied("Too many wells to display on map. Please refine your search criteria or search in a smaller area.")
+            raise PermissionDenied('Too many wells to display on map. '
+                                   'Please zoom in or change your search criteria.')
 
         if count is 0:
             raise NotFound("No well records could be found.")
@@ -450,16 +476,67 @@ class WellHistory(APIView):
         well_history_diff = generate_history_diff(
             well_history, 'well ' + well_id)
 
-        history_diff = sorted(well_history_diff, key=lambda x: x['date'], reverse=True)
+        history_diff = sorted(
+            well_history_diff, key=lambda x: x['date'], reverse=True)
 
         return Response(history_diff)
 
 
-class WellSpatial(APIView):
+WELL_PROPERTIES = openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    title='GeoJSON Feature properties.',
+    description='See: https://tools.ietf.org/html/rfc7946#section-3.2',
+    properties={
+        'well_tag_number': get_model_feature_schema(Well, 'well_tag_number'),
+        'identification_plate_number': get_model_feature_schema(Well, 'identification_plate_number'),
+        'well_status': get_model_feature_schema(WellStatusCode, 'description'),
+        'licenced_status': get_model_feature_schema(LicencedStatusCode, 'description'),
+        'detail': openapi.Schema(
+            type=openapi.TYPE_STRING,
+            max_length=255,
+            title='Detail',
+            description='Well summary.'),
+        'artesian_flow': get_model_feature_schema(Well, 'artesian_flow'),
+        'artesian_flow_units': openapi.Schema(
+            type=openapi.TYPE_STRING,
+            max_length=255,
+            title='Artesian Flow',
+            description='Unit of measure for artesian flow'),
+        'artesian_pressure': get_model_feature_schema(Well, 'artesian_pressure'),
+        'well_class': get_model_feature_schema(WellClassCode, 'description'),
+        'intended_water_use': get_model_feature_schema(IntendedWaterUseCode, 'description'),
+        'street_address': get_model_feature_schema(Well, 'street_address'),
+        'finished_well_depth': get_model_feature_schema(Well, 'finished_well_depth'),
+        'diameter': get_model_feature_schema(Casing, 'diameter'),
+        'static_water_level': get_model_feature_schema(Well, 'static_water_level'),
+        'bedrock_depth': get_model_feature_schema(Well, 'bedrock_depth'),
+        'yield': get_model_feature_schema(Well, 'well_yield'),
+        'yield_unit': get_model_feature_schema(WellYieldUnitCode, 'description'),
+        'aquifer_id': get_model_feature_schema(Well, 'aquifer')
+    })
 
-    permission_classes = (AllowAny,)
 
-    def get(self, request):
+@swagger_auto_schema(
+    operation_description=('Get GeoJSON (see https://tools.ietf.org/html/rfc7946) dump of wells.'),
+    method='get',
+    manual_parameters=[GEO_JSON_PARAMS],
+    responses={
+        302: openapi.Response(GEO_JSON_302_MESSAGE),
+        200: openapi.Response(
+            'GeoJSON data for well.',
+            get_geojson_schema(WELL_PROPERTIES, 'Point'))
+    }
+)
+@api_view(['GET'])
+def well_geojson(request):
+    realtime = request.GET.get('realtime') in ('True', 'true')
+    if realtime:
+        iterator = GeoJSONIterator(WELLS_SQL, WELL_CHUNK_SIZE, connection.cursor(), MAX_WELLS_SQL)
+        response = StreamingHttpResponse((item for item in iterator),
+                                         content_type='application/json')
+        response['Content-Disposition'] = 'attachment; filename="well.json"'
+        return response
+    else:
         # Generating spatial data realtime is much too slow,
         # so we have to redirect to a pre-generated instance.
         url = 'https://{}/{}/{}'.format(
@@ -469,11 +546,63 @@ class WellSpatial(APIView):
         return HttpResponseRedirect(url)
 
 
-class WellLithologySpatial(APIView):
+LITHOLOGY_PROPERTIES = openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    title='GeoJSON Feature properties.',
+    description='See: https://tools.ietf.org/html/rfc7946#section-3.2',
+    properties={
+        'well_tag_number': get_model_feature_schema(Well, 'well_tag_number'),
+        'identification_plate_number': get_model_feature_schema(Well, 'identification_plate_number'),
+        'well_status': get_model_feature_schema(WellStatusCode, 'description'),
+        'licenced_status': get_model_feature_schema(LicencedStatusCode, 'description'),
+        'detail': openapi.Schema(
+            type=openapi.TYPE_STRING,
+            max_length=255,
+            title='Detail',
+            description='Well summary.'),
+        'from': get_model_feature_schema(LithologyDescription, 'lithology_from'),
+        'to': get_model_feature_schema(LithologyDescription, 'lithology_to'),
+        'colour': get_model_feature_schema(LithologyColourCode, 'description'),
+        'description': get_model_feature_schema(LithologyDescriptionCode, 'description'),
+        'material': get_model_feature_schema(LithologyMaterialCode, 'description'),
+        'observation': get_model_feature_schema(LithologyDescription, 'lithology_observation'),
+        'hardness': get_model_feature_schema(LithologyHardnessCode, 'description'),
+        'well_class': get_model_feature_schema(WellClassCode, 'description'),
+        'intended_water_use': get_model_feature_schema(IntendedWaterUseCode, 'description'),
+        'street_address': get_model_feature_schema(Well, 'street_address'),
+        'finished_well_depth': get_model_feature_schema(Well, 'finished_well_depth'),
+        'diameter': get_model_feature_schema(Casing, 'diameter'),
+        'static_water_level': get_model_feature_schema(Well, 'static_water_level'),
+        'bedrock_depth': get_model_feature_schema(Well, 'bedrock_depth'),
+        'yield': get_model_feature_schema(Well, 'well_yield'),
+        'yield_unit': get_model_feature_schema(WellYieldUnitCode, 'description'),
+        'aquifer': get_model_feature_schema(Well, 'aquifer')
+    })
 
-    permission_classes = (AllowAny,)
 
-    def get(self, request):
+@swagger_auto_schema(
+    operation_description=('Get GeoJSON (see https://tools.ietf.org/html/rfc7946) dump of well '
+                           'lithology.'),
+    method='get',
+    manual_parameters=[GEO_JSON_PARAMS],
+    responses={
+        302: openapi.Response(GEO_JSON_302_MESSAGE),
+        200: openapi.Response(
+            'GeoJSON data for well lithology.',
+            get_geojson_schema(LITHOLOGY_PROPERTIES, 'Point'))
+    }
+)
+@api_view(['GET'])
+def lithology_geojson(request):
+    realtime = request.GET.get('realtime') in ('True', 'true')
+    if realtime:
+        iterator = GeoJSONIterator(LITHOLOGY_SQL, LITHOLOGY_CHUNK_SIZE, connection.cursor(),
+                                   MAX_LITHOLOGY_SQL)
+        response = StreamingHttpResponse((item for item in iterator),
+                                         content_type='application/json')
+        response['Content-Disposition'] = 'attachment; filename="lithology.json"'
+        return response
+    else:
         # Generating spatial data realtime is much too slow,
         # so we have to redirect to a pre-generated instance.
         url = 'https://{}/{}/{}'.format(

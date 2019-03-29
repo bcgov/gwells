@@ -81,9 +81,10 @@ class AuditCreateMixin(CreateModelMixin):
     """
 
     def perform_create(self, serializer):
-        serializer.validated_data['create_user'] = (self.request.user.profile.username or
-                                                    self.request.user.profile.name or
-                                                    self.request.user.get_username())
+        if self.request.user.profile.username is None:
+            raise exceptions.ValidationError(('Username must be set.'))
+
+        serializer.validated_data['create_user'] = self.request.user.profile.username
         return super().perform_create(serializer)
 
 
@@ -94,9 +95,10 @@ class AuditUpdateMixin(UpdateModelMixin):
     """
 
     def perform_update(self, serializer):
-        serializer.validated_data['update_user'] = (self.request.user.profile.username or
-                                                    self.request.user.profile.name or
-                                                    self.request.user.get_username())
+        if self.request.user.profile.username is None:
+            raise exceptions.ValidationError(('Username must be set.'))
+
+        serializer.validated_data['update_user'] = self.request.user.profile.username
         return super().perform_update(serializer)
 
 
@@ -131,7 +133,7 @@ class OrganizationListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     )
 
     def get_queryset(self):
-        return self.queryset.filter(expired_date__gt=timezone.now())
+        return self.queryset.filter(expiry_date__gt=timezone.now())
 
 
 class OrganizationDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
@@ -161,20 +163,20 @@ class OrganizationDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDest
         .prefetch_related('registrations', 'registrations__person')
 
     def get_queryset(self):
-        return self.queryset.filter(expired_date__gt=timezone.now())
+        return self.queryset.filter(expiry_date__gt=timezone.now())
 
     def destroy(self, request, *args, **kwargs):
         """
-        Set expired_date to current date
+        Set expiry_date to current date
         """
 
         instance = self.get_object()
         for reg in instance.registrations.all():
-            if reg.person.expired_date is None:
+            if reg.person.expiry_date is None:
                 raise exceptions.ValidationError(
                     ('Organization has registrations associated with it. ')
                     ('Remove this organization from registration records first.'))
-        instance.expired_date = timezone.now()
+        instance.expiry_date = timezone.now()
         instance.save()
 
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -259,7 +261,7 @@ class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
 
     def get_queryset(self):
         """ Returns Person queryset, removing non-active and unregistered drillers for anonymous users """
-        qs = self.queryset.filter(expired_date__gt=timezone.now())
+        qs = self.queryset.filter(expiry_date__gt=timezone.now())
 
         # base registration and application querysets
         registrations_qs = Register.objects.all()
@@ -424,7 +426,7 @@ class PersonDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDestroyAPI
         """
         Returns only registered people (i.e. drillers with active registration) to anonymous users
         """
-        qs = self.queryset.filter(expired_date__gt=timezone.now())
+        qs = self.queryset.filter(expiry_date__gt=timezone.now())
         if not self.request.user.groups.filter(name=REGISTRIES_VIEWER_ROLE).exists():
             qs = qs.filter(Q(applications__current_status__code='A'),
                            Q(applications__removal_date__isnull=True))
@@ -432,11 +434,11 @@ class PersonDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDestroyAPI
 
     def destroy(self, request, *args, **kwargs):
         """
-        Set expired_date to current date
+        Set expiry_date to current date
         """
 
         instance = self.get_object()
-        instance.expired_date = timezone.now()
+        instance.expiry_date = timezone.now()
         instance.save()
 
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -596,7 +598,7 @@ class OrganizationNameListView(ListAPIView):
     lookup_field = 'organization_guid'
 
     def get_queryset(self):
-        return self.queryset.filter(expired_date__gt=timezone.now())
+        return self.queryset.filter(expiry_date__gt=timezone.now())
 
 
 class PersonNoteListView(AuditCreateMixin, ListCreateAPIView):
