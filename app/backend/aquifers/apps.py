@@ -12,5 +12,18 @@
     limitations under the License.
 """
 from django.apps import AppConfig
+from django.db.models.signals import post_migrate
+
+from gwells.db_comments import db_actions
+
+
+def post_migration_callback(sender, **kwargs):
+    # Dynamic comments from models
+    db_actions.create_db_comments_from_models(db_actions.get_all_model_classes('aquifers.models'))
+
+
 class AquifersConfig(AppConfig):
     name = 'aquifers'
+
+    def ready(self):
+        post_migrate.connect(post_migration_callback, sender=self)
