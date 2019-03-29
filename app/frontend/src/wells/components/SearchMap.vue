@@ -5,7 +5,6 @@
 <script>
 import L from 'leaflet'
 import { tiledMapLayer } from 'esri-leaflet'
-import debounce from 'lodash.debounce'
 
 // Extend control, making a locate
 L.Control.Locate = L.Control.extend({
@@ -119,21 +118,13 @@ export default {
         this.$emit('coordinate', ev.latlng)
       })
 
-      this.pendingMovedEvent = debounce(() => {
-        this.$emit('moved', true)
-      }, 500)
-
       const handleMoved = () => {
         if (!this.searchLock) {
-          this.pendingMovedEvent()
-          return
+          this.$emit('moved', true)
         }
-        this.pendingMovedEvent.cancel()
-
         setTimeout(() => {
           this.setSearchLock(false)
         }, 0)
-        return () => {}
       }
 
       this.map.on('moveend', handleMoved)
