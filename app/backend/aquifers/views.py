@@ -326,7 +326,7 @@ AQUIFER_PROPERTIES = openapi.Schema(
 @swagger_auto_schema(
     operation_description=('Get GeoJSON (see https://tools.ietf.org/html/rfc7946) dump of aquifers.'),
     method='get',
-    manual_parameters=[GEO_JSON_PARAMS],
+    manual_parameters=GEO_JSON_PARAMS,
     responses={
         302: openapi.Response(GEO_JSON_302_MESSAGE),
         200: openapi.Response(
@@ -337,7 +337,20 @@ AQUIFER_PROPERTIES = openapi.Schema(
 def aquifer_geojson(request):
     realtime = request.GET.get('realtime') in ('True', 'true')
     if realtime:
-        iterator = GeoJSONIterator(AQUIFERS_SQL, AQUIFER_CHUNK_SIZE, connection.cursor(), MAX_AQUIFERS_SQL)
+        sw_long = request.query_params.get('sw_long')
+        sw_lat = request.query_params.get('sw_lat')
+        ne_long = request.query_params.get('ne_long')
+        ne_lat = request.query_params.get('ne_lat')
+
+        if sw_long and sw_lat and ne_long and ne_lat:
+            bounds_sql = 'and geom @ ST_Transform(ST_MakeEnvelope(%s, %s, %s, %s, 4326), 3005)'
+            bounds = (sw_long, sw_lat, ne_long, ne_lat)
+
+        iterator = GeoJSONIterator(AQUIFERS_SQL.format(bounds=bounds_sql),
+                                   AQUIFER_CHUNK_SIZE,
+                                   connection.cursor(),
+                                   MAX_AQUIFERS_SQL,
+                                   bounds)
         response = StreamingHttpResponse((item for item in iterator),
                                          content_type='application/json')
         response['Content-Disposition'] = 'attachment; filename="aquifers.json"'
