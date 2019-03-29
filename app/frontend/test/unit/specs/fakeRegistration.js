@@ -73,7 +73,7 @@ const fakeRegistration = JSON.parse(JSON.stringify(
             'description': 'Pending',
             'notified_date': '2018-05-25',
             'effective_date': '2018-05-25',
-            'expired_date': null
+            'expiry_date': null
           }
         ],
         'current_status': {
@@ -81,7 +81,7 @@ const fakeRegistration = JSON.parse(JSON.stringify(
           'description': 'Pending',
           'notified_date': '2018-05-25',
           'effective_date': '2018-05-25',
-          'expired_date': null
+          'expiry_date': null
         }
       },
       {
@@ -150,7 +150,7 @@ const fakeRegistration = JSON.parse(JSON.stringify(
             'description': 'Pending',
             'notified_date': '2018-05-28',
             'effective_date': '2018-05-28',
-            'expired_date': null
+            'expiry_date': null
           }
         ],
         'current_status': {
@@ -158,7 +158,7 @@ const fakeRegistration = JSON.parse(JSON.stringify(
           'description': 'Pending',
           'notified_date': '2018-05-28',
           'effective_date': '2018-05-28',
-          'expired_date': null
+          'expiry_date': null
         }
       },
       {
@@ -223,7 +223,7 @@ const fakeRegistration = JSON.parse(JSON.stringify(
             'description': 'Pending',
             'notified_date': '2018-05-28',
             'effective_date': '2018-05-28',
-            'expired_date': null
+            'expiry_date': null
           }
         ],
         'current_status': {
@@ -231,7 +231,7 @@ const fakeRegistration = JSON.parse(JSON.stringify(
           'description': 'Pending',
           'notified_date': '2018-05-28',
           'effective_date': '2018-05-28',
-          'expired_date': null
+          'expiry_date': null
         }
       }
     ],
