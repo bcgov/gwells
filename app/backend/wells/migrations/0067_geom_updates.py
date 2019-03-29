@@ -13,7 +13,6 @@ def update_fields(apps, schema_editor):
         schema_editor.execute("update activity_submission set geom = ST_SetSrid(ST_MakePoint(longitude, latitude), 4326);")
     except FieldDoesNotExist:
         logger.error('Field does not exist.')
-        pass
 
     well = apps.get_model('wells', 'well')
     try:
@@ -21,7 +20,6 @@ def update_fields(apps, schema_editor):
         schema_editor.execute("update well set geom = ST_SetSrid(ST_MakePoint(longitude, latitude), 4326);")
     except FieldDoesNotExist:
         logger.error('Field does not exist.')
-        pass
 
 
 def reverse_update_fields(apps, schema_editor):
