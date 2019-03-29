@@ -9,6 +9,8 @@ import L from 'leaflet'
 import { tiledMapLayer } from 'esri-leaflet'
 import { filter } from 'lodash'
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch'
+import 'leaflet.locatecontrol/dist/L.Control.Locate.min.css'
+import 'leaflet.locatecontrol/dist/L.Control.Locate.min.js'
 import 'leaflet-geosearch/assets/css/leaflet.css'
 import { debounce } from 'lodash'
 
@@ -141,6 +143,9 @@ export default {
           name: 'Wells - All'
         })
       }
+      L.control.locate({
+        position: 'topleft',
+      }).addTo(this.map);
 
       // Add checkboxes for layers
       L.control.layers(null, mapLayers, {collapsed: true}).addTo(this.map)
