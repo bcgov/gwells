@@ -252,6 +252,8 @@
           :items="wellSearch"
           :isBusy="!!pendingSearch"
           :fields="wellSearchColumns"
+          :per-page="perPage"
+          :current-page="currentPage"
         >
         <template slot="well_tag_number" slot-scope="data">
           <router-link :to="{ name: 'wells-detail', params: {id: data.value} }">{{data.value}}</router-link>
