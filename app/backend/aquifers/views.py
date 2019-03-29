@@ -337,7 +337,7 @@ AQUIFER_PROPERTIES = openapi.Schema(
 def aquifer_geojson(request):
     realtime = request.GET.get('realtime') in ('True', 'true')
     if realtime:
-        iterator = GeoJSONIterator(AQUIFERS_SQL, AQUIFER_CHUNK_SIZE, connection.cursor())
+        iterator = GeoJSONIterator(AQUIFERS_SQL, AQUIFER_CHUNK_SIZE, connection.cursor(), MAX_AQUIFERS_SQL)
         response = StreamingHttpResponse((item for item in iterator),
                                          content_type='application/json')
         response['Content-Disposition'] = 'attachment; filename="aquifers.json"'

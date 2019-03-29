@@ -597,7 +597,7 @@ def lithology_geojson(request):
     realtime = request.GET.get('realtime') in ('True', 'true')
     if realtime:
         iterator = GeoJSONIterator(LITHOLOGY_SQL, LITHOLOGY_CHUNK_SIZE, connection.cursor(),
-                                   MAX_LITHOLOGY_QUERY)
+                                   MAX_LITHOLOGY_SQL)
         response = StreamingHttpResponse((item for item in iterator),
                                          content_type='application/json')
         response['Content-Disposition'] = 'attachment; filename="lithology.json"'

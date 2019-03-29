@@ -29,6 +29,9 @@ from wells.models import Well
 Run from command line :
 python manage.py export_databc
 
+During development/testing it may be useful to instead run:
+python manage.py export_databc --cleanup=0 --upload=0
+
 This command runs in an OpenShift cronjob, defined in export.cj.json
 """
 
@@ -299,7 +302,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         """Entry point for Django Command."""
         files = ('wells.json', 'aquifers.json', 'lithology.json')
-        print(options)
         logger.info('Starting GeoJSON export.')
         try:
             self.generate_wells('wells.json')
@@ -349,7 +351,7 @@ class Command(BaseCommand):
                 reader = GeoJSONIterator(sql, chunk_size, cursor, max_query)
                 count = 0
                 for item in reader:
-                    f.write('{}\r\n'.format(item))
+                    f.write('{}\n'.format(item))
                     count += 1
 
     def generate_lithology(self, target):
