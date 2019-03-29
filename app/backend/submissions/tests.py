@@ -5,7 +5,7 @@ from django.contrib.auth.models import User, Group
 from rest_framework.test import APITestCase
 from rest_framework import status
 
-from gwells.roles import roles_to_groups, WELLS_EDIT_ROLE, WELLS_VIEWER_ROLE
+from gwells.roles import roles_to_groups, WELLS_EDIT_ROLE, WELLS_VIEWER_ROLE, WELLS_SUBMISSION_ROLE
 from submissions.serializers import (WellSubmissionListSerializer, WellConstructionSubmissionSerializer,
                                      WellAlterationSubmissionSerializer, WellDecommissionSubmissionSerializer)
 
@@ -74,11 +74,11 @@ class TestPermissionsSubmissionRights(APITestCase):
     fixtures = ['gwells-codetables.json', 'wellsearch-codetables.json' ]
 
     def setUp(self):
-        roles = [WELLS_EDIT_ROLE, ]
+        roles = [WELLS_SUBMISSION_ROLE, ]
         for role in roles:
             group = Group(name=role)
             group.save()
-        user, created = User.objects.get_or_create(username='edit_rights')
+        user, created = User.objects.get_or_create(username='submission_rights')
         user.profile.username = user.username
         user.save()
         roles_to_groups(user, roles)
