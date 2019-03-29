@@ -299,7 +299,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         """Entry point for Django Command."""
         files = ('wells.json', 'aquifers.json', 'lithology.json')
-        print(options)
         logger.info('Starting GeoJSON export.')
         try:
             self.generate_wells('wells.json')

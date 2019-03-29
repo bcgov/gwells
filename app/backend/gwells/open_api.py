@@ -20,7 +20,7 @@ from drf_yasg import openapi
 
 logger = logging.getLogger(__name__)
 
-GEO_JSON_302_MESSAGE = ('All requests to this endpoint result in a redirect to a pre-generated '
+GEO_JSON_302_MESSAGE = ('All requests to this endpoint result by default in a redirect to a pre-generated '
                         'GeoJSON file (as documented in 200 OK Response) hosted on a seperate server.')
 
 
