@@ -81,9 +81,10 @@ class AuditCreateMixin(CreateModelMixin):
     """
 
     def perform_create(self, serializer):
-        serializer.validated_data['create_user'] = (self.request.user.profile.username or
-                                                    self.request.user.profile.name or
-                                                    self.request.user.get_username())
+        if self.request.user.profile.username is None:
+            raise exceptions.ValidationError(('Username must be set.'))
+
+        serializer.validated_data['create_user'] = self.request.user.profile.username
         return super().perform_create(serializer)
 
 
@@ -94,9 +95,10 @@ class AuditUpdateMixin(UpdateModelMixin):
     """
 
     def perform_update(self, serializer):
-        serializer.validated_data['update_user'] = (self.request.user.profile.username or
-                                                    self.request.user.profile.name or
-                                                    self.request.user.get_username())
+        if self.request.user.profile.username is None:
+            raise exceptions.ValidationError(('Username must be set.'))
+
+        serializer.validated_data['update_user'] = self.request.user.profile.username
         return super().perform_update(serializer)
 
 

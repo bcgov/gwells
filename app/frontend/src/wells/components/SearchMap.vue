@@ -5,7 +5,6 @@
 <script>
 import L from 'leaflet'
 import { tiledMapLayer } from 'esri-leaflet'
-import debounce from 'lodash.debounce'
 
 // Extend control, making a locate
 L.Control.Locate = L.Control.extend({
@@ -40,13 +39,17 @@ export default {
     locations: {
       type: Array,
       default: () => ([])
-    }
+    },
+    zoomToMarker: Boolean
   },
   data () {
     return {
       map: null,
       cluster: null,
-      markerGroup: null
+      markerGroup: null,
+      // searchLock prevents the "moved" event from being emitted to help
+      // control when searches are automatically triggered
+      searchLock: false
     }
   },
   created () {
@@ -63,10 +66,16 @@ export default {
       this.createMarkers()
     },
     latitude () {
-      this.map.setView([this.latitude ? this.latitude : 54.5, this.getLongitude() ? this.getLongitude() : -126.5])
+      this.setSearchLock(true)
+      setTimeout(() => {
+        this.map.setView([this.latitude ? this.latitude : 54.5, this.getLongitude() ? this.getLongitude() : -126.5], 15)
+      }, 0)
     },
     longitude () {
-      this.map.setView([this.latitude ? this.latitude : 54.5, this.getLongitude() ? this.getLongitude() : -126.5])
+      this.setSearchLock(true)
+      setTimeout(() => {
+        this.map.setView([this.latitude ? this.latitude : 54.5, this.getLongitude() ? this.getLongitude() : -126.5], 15)
+      }, 0)
     }
   },
   methods: {
@@ -83,8 +92,13 @@ export default {
     initMap () {
       // Create map, with default centered and zoomed to show entire BC.
       this.map = L.map('map', {
-        preferCanvas: true
-      }).setView([this.latitude ? this.latitude : 54.5, this.getLongitude() ? this.getLongitude() : -126.5], 5)
+        preferCanvas: true,
+        minZoom: 4,
+        maxZoom: 17
+      }).setView([54.5, -126.5], 5)
+      this.$nextTick(() => {
+        this.map.setMaxBounds(this.map.getBounds())
+      })
       L.control.scale().addTo(this.map)
       // Add map layers.
       tiledMapLayer({url: 'https://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer'}).addTo(this.map)
@@ -104,12 +118,17 @@ export default {
         this.$emit('coordinate', ev.latlng)
       })
 
-      const debouncedEmitMoved = debounce(() => {
-        this.$emit('moved', true)
-      }, 500)
+      const handleMoved = () => {
+        if (!this.searchLock) {
+          this.$emit('moved', true)
+        }
+        setTimeout(() => {
+          this.setSearchLock(false)
+        }, 0)
+      }
 
-      this.map.on('moveend', debouncedEmitMoved)
-      this.map.on('zoomend', debouncedEmitMoved)
+      this.map.on('moveend', handleMoved)
+      this.map.on('zoomend', handleMoved)
 
       this.map.setMaxZoom(17)
     },
@@ -120,7 +139,7 @@ export default {
       }
 
       // create a new marker group
-      this.markerGroup = L.layerGroup()
+      this.markerGroup = L.featureGroup()
       this.markerGroup.addTo(this.map)
 
       // filter locations for coordinates (coordinate either present or not)
@@ -147,6 +166,13 @@ export default {
       }).forEach((marker) => {
         marker.addTo(this.markerGroup)
       })
+
+      if (this.zoomToMarker) {
+        this.setSearchLock(true)
+        setTimeout(() => {
+          this.map.fitBounds(this.markerGroup.getBounds().pad(0.5))
+        }, 0)
+      }
     },
     setMarkerPopup (latitude, longitude) {
       this.marker.bindPopup('Latitude: ' + latitude + ', Longitude: ' + longitude)
@@ -164,7 +190,20 @@ export default {
     },
     resetView () {
       if (this.map) {
-        this.map.setView([this.latitude ? this.latitude : 54.5, this.getLongitude() ? this.getLongitude() : -126.5], 5)
+        this.setSearchLock(true)
+        setTimeout(() => {
+          this.map.setView([this.latitude ? this.latitude : 54.5, this.getLongitude() ? this.getLongitude() : -126.5], 5)
+        }, 0)
+      }
+    },
+    // setSearchLock prevents the 'moved' event from being emitted the next time the map moves.
+    // this can be used to prevent searches from being triggered when programmatically moving
+    // the map e.g. with setView
+    setSearchLock (setting = true) {
+      if (setting) {
+        this.searchLock = true
+      } else {
+        this.searchLock = false
       }
     }
   }
