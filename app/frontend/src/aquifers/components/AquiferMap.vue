@@ -1,6 +1,6 @@
 <template>
   <div class="aquifer-map">
-    <div id="map" class="map"/> 
+    <div id="map" class="map"/>
   </div>
 </template>
 
@@ -9,15 +9,15 @@ import L from 'leaflet'
 import { tiledMapLayer } from 'esri-leaflet'
 import { filter } from 'lodash'
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch'
-import 'leaflet.locatecontrol/dist/L.Control.Locate.min.css'
-import 'leaflet.locatecontrol/dist/L.Control.Locate.min.js'
 import 'leaflet-geosearch/assets/css/leaflet.css'
-import { debounce } from 'lodash'
+import 'leaflet.locatecontrol'
+
+
 
 const provider = new OpenStreetMapProvider()
 const searchControl = new GeoSearchControl({
   provider: provider
-});
+})
 
 export default {
   name: 'AquiferMap',
@@ -38,19 +38,11 @@ export default {
   },
 
   watch: {
-    searchAddress: async function(newAddress, oldAddress) {
-      const self = this;
-      const debounced = debounce(async function() {
-        const result = await provider.search({ query: newAddress })
-        self.$parent.$emit('searchResults', result)
-        }, 2000)
-      debounced()
-    },
     aquifers: function (newAquifers, oldAquifers) {
       this.map.eachLayer((layer) => {
-       if ( layer.options.type === "geojsonfeature" ) {
-         this.map.removeLayer(layer)
-       }
+        if (layer.options.type === 'geojsonfeature') {
+          this.map.removeLayer(layer)
+        }
       })
       this.map.removeLayer(L.geoJSON)
       this.addAquifersToMap(newAquifers)
@@ -71,13 +63,11 @@ export default {
       // Create map, with default centered and zoomed to show entire BC.
       this.map = L.map('map').setView([54.5, -126.5], 5)
       L.control.scale().addTo(this.map)
-      //var areaSelect = L.areaSelect({width:200, height:300});
-      //areaSelect.addTo(this.map);
-
       // Add geo search
-      console.log(this)
-      console.log(searchControl)
       this.map.addControl(searchControl)
+      L.control.locate({
+        position: 'topleft'
+      }).addTo(this.map)
 
       // Add map layers.
       tiledMapLayer({url: 'https://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer'}).addTo(this.map)
@@ -143,13 +133,9 @@ export default {
           name: 'Wells - All'
         })
       }
-      L.control.locate({
-        position: 'topleft',
-      }).addTo(this.map);
 
       // Add checkboxes for layers
       L.control.layers(null, mapLayers, {collapsed: true}).addTo(this.map)
-      
       this.map.on('layeradd', (e) => {
         const layerId = e.layer._leaflet_id
         const layerName = e.layer.options.name
@@ -162,10 +148,8 @@ export default {
         this.activeLayers = filter(this.activeLayers, o => o.layerId !== layerId)
         this.$parent.$emit('activeLayers', this.activeLayers)
       })
-      
     },
     addAquifersToMap (aquifers) {
-      console.log("Add Called")
       if (aquifers !== undefined && aquifers.constructor === Array && aquifers.length > 0) {
         var myStyle = {
           'color': 'purple'
@@ -177,7 +161,9 @@ export default {
             style: myStyle,
             type: 'geojsonfeature',
             onEachFeature: function (feature, layer) {
-              layer.bindPopup(`<p>Aquifer: <a href="/gwells/aquifers/${aquifer.aquifer_id}">${aquifer.aquifer_id}</a></p><p>Aquifer Name: ${aquifer.aquifer_name}</p>
+              layer.bindPopup(`
+                <p>Aquifer: <a href="/gwells/aquifers/${aquifer.aquifer_id}">${aquifer.aquifer_id}</a></p>
+                <p>Aquifer Name: ${aquifer.aquifer_name}</p>
                 <p>Subtype: ${aquifer.subtype}</p>`)
             }
           }).addTo(this.map)
@@ -186,12 +172,12 @@ export default {
     },
     zoomToSelectedAquifer (data) {
       this.map.eachLayer((layer) => {
-        if ( (layer.options.aquifer_id === data.aquifer_id) && layer.feature) {
-          this.$nextTick(function() {
+        if ((layer.options.aquifer_id === data.aquifer_id) && layer.feature) {
+          this.$nextTick(function () {
             layer.openPopup()
-          }) 
+          })
         }
-      });
+      })
       var aquiferGeom = L.geoJSON(data.geom)
       this.map.fitBounds(aquiferGeom.getBounds())
       this.$SmoothScroll(document.getElementById('map'))

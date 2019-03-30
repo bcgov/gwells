@@ -53,7 +53,7 @@ export default {
       var aquiferGeom = L.geoJSON(newGeom, {
         style: {
           'color': 'red'
-        },
+        }
       }).addTo(this.map)
 
       // Set map view to aquifer

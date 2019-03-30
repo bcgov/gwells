@@ -18,7 +18,7 @@
       <api-error v-if="error" :error="error"/>
 
       <b-container>
-        <b-row class="border-bottom mb-3 pb-2">
+        <b-row class="border-bottom mb-3 pb-2 pt-2">
           <b-col><h4>Add new Aquifer</h4></b-col>
         </b-row>
 

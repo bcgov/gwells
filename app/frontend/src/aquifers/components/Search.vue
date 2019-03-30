@@ -29,14 +29,11 @@
     </b-alert>
 
     <b-card no-body class="main-search-card mb-4">
-
-
       <b-alert
         :show="noSearchCriteriaError"
         variant="danger">
         <i class="fa fa-exclamation-circle"/>&nbsp;&nbsp;At least one search field is required
       </b-alert>
-
       <b-form
         v-on:submit.prevent="triggerSearch"
         v-on:reset="triggerReset">
@@ -81,40 +78,22 @@
                 </ul>
               </b-col>
               <b-col cols="12" md="6" class="pt-3 pl-4 pr-4 mt-3">
-                <h5 class="search-title mb-4">Search by street address</h5>
-                <b-form-group>
-                  <b-form-input
-                    type="text"
-                    id="aquifers-search-field"
-                    v-model="searchAddress"/>
-                </b-form-group>
-                <div v-if="searchAddressResults">
-                  <h6>Search Results</h6>
-                  <div v-if="searchAddressResults.length === 0">
-                    Your results are empty
-                  </div>
-                  <div v-else>
-                    <ul class="p-0 m-0 list-unstyled">
-                      <li v-for="place in searchAddressResults.slice(0,3)" @click="handleAddressResult">
-                        <a href="#">{{ place.label }}</a>
-                      </li>
-                    </ul>
-                  </div>
+                <div v-if="activeLayers.length > 0">
+                  <h6>Map Layers:</h6>
+                  <b-form-checkbox-group class="aquifer-checkbox-group"
+                    stacked
+                    v-model="activeLayers"
+                    :options='layers'
+                    disabled
+                    :checked="activeLayers"
+                  />
                 </div>
-                <h6>Map Layers:</h6>
-                <b-form-checkbox-group class="aquifer-checkbox-group"
-                  stacked
-                  v-model="activeLayers"
-                  :options='layers'
-                  disabled
-                  :checked="activeLayers"
-                />
               </b-col>
             </b-form-row>
           </b-col>
 
           <b-col cols="12" md="7" class="map-column">
-            <aquifer-map ref="aquiferMap" v-bind:aquifers="response.results" v-bind:searchAddress="searchAddress"/>
+            <aquifer-map ref="aquiferMap" v-bind:aquifers="response.results"/>
           </b-col>
         </b-form-row>
 
@@ -141,7 +120,6 @@
             no-local-sorting
             striped
             outlined
-            
             v-if="aquiferList">
             <template slot="aquifer_id" slot-scope="data">
               <p class="aquifer-id" v-on:click.prevent="onAquiferIdClick(data)">{{data.value}}</p>
@@ -168,8 +146,6 @@
           <b-pagination class="pull-right" v-if="displayPagination" :total-rows="response.count" :per-page="limit" v-model="currentPage" />
         </b-col>
       </b-row>
-
-
     </b-card>
   </div>
 </template>
@@ -281,9 +257,7 @@ export default {
     return {
       ...orderingQueryStringToData(query.ordering),
       search: query.search,
-      searchAddress: '',
-      searchAddressResults: '',
-      aquifer_search: query.aquifer_searcg,
+      aquifer_search: query.aquifer_search,
       limit: LIMIT,
       currentPage: query.offset && (query.offset / LIMIT + 1),
       filterParams: Object.assign({}, query),
@@ -339,7 +313,6 @@ export default {
     },
     fetchResourceSections () {
       ApiService.query('aquifers/sections').then((response) => {
-        //this.$router.replace({query: { offset: 1  }})
         this.aquifer_resource_sections = response.data.results.map(function (section) {
           return {
             text: section.name,
@@ -407,12 +380,6 @@ export default {
     },
     onAquiferIdClick (data) {
       this.$refs.aquiferMap.zoomToSelectedAquifer(data.item)
-    },
-    handleSearchAddresses(data) {
-      console.log("it Got here")
-    },
-    handleAddressResult(data) {
-      console.log("Address result")
     }
   },
   created () {
@@ -430,18 +397,10 @@ export default {
     })
     this.fetchResourceSections()
   },
-  mounted() {
-
-    this.$on('searchResults', (data) => {
-      console.log(data)
-      this.searchAddressResults = data
-    })
-
+  mounted () {
     this.$on('activeLayers', (data) => {
-      console.log(data)
       this.layers = data.filter(o => o.layerName).map(o => o.layerName)
-      console.log(this.layers)
-    });
+    })
   },
   watch: {
     query () { this.fetchResults() },
