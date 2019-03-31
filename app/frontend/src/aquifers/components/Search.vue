@@ -78,7 +78,7 @@
                 </ul>
               </b-col>
               <b-col cols="12" md="6" class="pt-3 pl-4 pr-4 mt-3">
-                <div v-if="activeLayers.length > 0">
+                <div v-if="layers.length > 0">
                   <h6>Map Layers:</h6>
                   <b-form-checkbox-group class="aquifer-checkbox-group"
                     stacked
@@ -399,6 +399,7 @@ export default {
   },
   mounted () {
     this.$on('activeLayers', (data) => {
+      
       this.layers = data.filter(o => o.layerName).map(o => o.layerName)
     })
   },

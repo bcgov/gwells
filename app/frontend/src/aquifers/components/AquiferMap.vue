@@ -10,7 +10,9 @@ import { tiledMapLayer } from 'esri-leaflet'
 import { filter } from 'lodash'
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch'
 import 'leaflet-geosearch/assets/css/leaflet.css'
-import 'leaflet.locatecontrol'
+import 'leaflet.locatecontrol/dist/L.Control.Locate.min.css'
+import 'leaflet.locatecontrol/dist/L.Control.Locate.min.js'
+
 
 
 
@@ -68,6 +70,19 @@ export default {
       L.control.locate({
         position: 'topleft'
       }).addTo(this.map)
+
+      const areaSelect =  L.Control.extend({
+        options: {
+          position: 'topleft'
+        },
+        onAdd: function (map) {
+          var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-areasearch');
+          container.innerHTML = '<a class="leaflet-bar-part leaflet-bar-part-single"><span class="fa fa-pencil"></span></a>'
+          return container
+        }
+      });
+
+      this.map.addControl(new areaSelect())
 
       // Add map layers.
       tiledMapLayer({url: 'https://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer'}).addTo(this.map)
