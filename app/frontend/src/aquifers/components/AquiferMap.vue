@@ -11,7 +11,7 @@ import { filter } from 'lodash'
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch'
 import 'leaflet-geosearch/assets/css/leaflet.css'
 import 'leaflet.locatecontrol/dist/L.Control.Locate.min.css'
-import 'leaflet.locatecontrol/dist/L.Control.Locate.min.js'
+import '../../common/leaflet-locateControl.js'
 
 
 
@@ -67,7 +67,7 @@ export default {
       L.control.scale().addTo(this.map)
       // Add geo search
       this.map.addControl(searchControl)
-      L.control.locate({
+      L.control.locateplugin({
         position: 'topleft'
       }).addTo(this.map)
 

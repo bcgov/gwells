@@ -85,7 +85,7 @@
                     v-model="activeLayers"
                     :options='layers'
                     disabled
-                    :checked="activeLayers"
+                    checked="activeLayers"
                   />
                 </div>
               </b-col>
