@@ -34,6 +34,12 @@ class JwtOidcAuthentication(JSONWebTokenAuthentication):
             raise exceptions.AuthenticationFailed(
                 'JWT did not contain a "sub" attribute')
 
+        # Make sure the preferred username contains either idir\ or bceid\
+        # so we know that the user is coming from a known sso authority
+        if not self.known_sso_authority(payload):
+            raise exceptions.AuthenticationFailed(
+                'Preferred username is invalid.')
+
         # There are various values we can get from the Token, we don't technically need most of them,
         # but they are useful to put in the user table for debugging purposes.
         payload_user_mapping = {
@@ -86,6 +92,8 @@ class JwtOidcAuthentication(JSONWebTokenAuthentication):
             value = payload.get(source)
             if value and value != getattr(profile, target):
                 update = True
+                if source == 'preferred_username':
+                    value = value.upper()  # Uppercase to match existing data
                 setattr(profile, target, value)
         if not profile.name and profile.username:
             # When the name of the user isn't available, fallback to the username
@@ -104,3 +112,8 @@ class JwtOidcAuthentication(JSONWebTokenAuthentication):
         roles_to_groups(user, roles)
 
         return user
+
+    @staticmethod
+    def known_sso_authority(payload):
+        preferred_username = payload.get('preferred_username')
+        return 'idir\\' in preferred_username or 'bceid\\' in preferred_username or preferred_username == 'testuser'
