@@ -5,7 +5,7 @@ from django.contrib.auth.models import User, Group
 from rest_framework.test import APITestCase
 from rest_framework import status
 
-from gwells.roles import roles_to_groups, WELLS_EDIT_ROLE, WELLS_VIEWER_ROLE, WELLS_SUBMISSION_ROLE
+from gwells.roles import roles_to_groups, WELLS_SUBMISSION_ROLE, WELLS_SUBMISSION_VIEWER_ROLE
 from submissions.serializers import (WellSubmissionListSerializer, WellConstructionSubmissionSerializer,
                                      WellAlterationSubmissionSerializer, WellDecommissionSubmissionSerializer)
 
@@ -36,7 +36,7 @@ class TestPermissionsNoRights(APITestCase):
 class TestPermissionsViewRights(APITestCase):
 
     def setUp(self):
-        roles = [WELLS_VIEWER_ROLE, ]
+        roles = [WELLS_SUBMISSION_VIEWER_ROLE, ]
         for role in roles:
             group = Group(name=role)
             group.save()
