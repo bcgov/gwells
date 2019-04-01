@@ -12,6 +12,8 @@ import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch'
 import 'leaflet-geosearch/assets/css/leaflet.css'
 import 'leaflet.locatecontrol/dist/L.Control.Locate.min.css'
 import '../../common/leaflet-locateControl.js'
+import 'leaflet-selectareafeature/dist/Leaflet.SelectAreaFeature.js'
+
 
 
 
@@ -71,6 +73,8 @@ export default {
         position: 'topleft'
       }).addTo(this.map)
 
+      
+      const self = this;
       const areaSelect =  L.Control.extend({
         options: {
           position: 'topleft'
@@ -78,11 +82,19 @@ export default {
         onAdd: function (map) {
           var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-areasearch');
           container.innerHTML = '<a class="leaflet-bar-part leaflet-bar-part-single"><span class="fa fa-pencil"></span></a>'
+          let areaSelectOn = false;
+          container.onclick = () => {
+            areaSelectOn ? map.selectAreaFeature.disable() : map.selectAreaFeature.enable()
+            areaSelectOn = !areaSelectOn
+          }
           return container
         }
       });
 
       this.map.addControl(new areaSelect())
+
+      //var selectfeature = this.map.selectAreaFeature.enable();
+      //console.log(selectfeature)
 
       // Add map layers.
       tiledMapLayer({url: 'https://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer'}).addTo(this.map)
