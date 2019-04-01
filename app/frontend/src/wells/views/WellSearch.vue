@@ -274,7 +274,7 @@
           Can’t find the well you are looking for? Try your search again using a different set of criteria. If you still need more assistance, Contact <a href="https://portal.nrs.gov.bc.ca/web/client/contact">FrontCounterBC</a>.
         </p>
         <p>
-          <a href="http://www.frontcounterbc.gov.bc.ca/Start/surface-water/" onclick="handleOutboundLinkClicks('www.frontcounterbc.gov.bc.ca/Start/surface-water/')">
+          <a href="http://www.frontcounterbc.gov.bc.ca/Start/surface-water/" @click="handleOutboundLinkClicks('www.frontcounterbc.gov.bc.ca/Start/surface-water/')">
               Learn about and submit water license applications
           </a>  with FrontCounterBC.
         </p>
@@ -285,6 +285,9 @@
 
 <script>
 import axios from 'axios'
+import querystring from 'querystring'
+import debounce from 'lodash.debounce'
+
 import { mapGetters } from 'vuex'
 import ApiService from '@/common/services/ApiService.js'
 import {FETCH_CODES} from '@/submissions/store/actions.types.js'
@@ -298,7 +301,6 @@ import SearchFormBooleanOrText from '@/wells/components/SearchFormBooleanOrText.
 import SearchMap from '@/wells/components/SearchMap.vue'
 import Exports from '@/wells/components/Exports.vue'
 import searchFields from '@/wells/searchFields.js'
-import debounce from 'lodash.debounce'
 
 const triggers = {
   // the map trigger indicates a search was triggered by moving the map.
@@ -523,6 +525,12 @@ export default {
       if (trigger === triggers.MAP) {
         Object.assign(params, this.mapBounds)
       }
+
+      // send the analytic event when triggering search by the search button
+      if (trigger === triggers.SEARCH) {
+        this.triggerAnalyticsSearchEvent(params)
+      }
+
       return ApiService.query('wells', params, { cancelToken: this.pendingSearch.token }).then((response) => {
         this.searchErrors = {}
         this.numberOfRecords = response.data.count
@@ -686,9 +694,15 @@ export default {
         })
       }
     },
-    tableLinkParams (cell) {
-      return {
-        url: `/gwells/well/${cell.getValue()}/`
+    triggerAnalyticsSearchEvent (params) {
+      // trigger the search event, sending along the search params as a string
+      if (window.ga) {
+        window.ga('send', {
+          hitType: 'event',
+          eventCategory: 'Button',
+          eventAction: 'WellSearch',
+          eventLabel: querystring.stringify(params)
+        })
       }
     },
     cleanSearchParams () {
