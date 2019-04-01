@@ -70,7 +70,7 @@
             "displayName": "Memory resource request",
             "name": "REQUEST_MEMORY",
             "required": false,
-            "value": "512mi"
+            "value": "512Mi"
         },
         {
             "description": "Limit for CPU resources measured in cpu units, e.g. 200m",
