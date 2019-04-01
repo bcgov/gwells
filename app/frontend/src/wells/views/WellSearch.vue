@@ -522,7 +522,7 @@ export default {
 
       const searchContext = {}
       if (trigger === triggers.MAP) {
-        searchContext['bounded]'] = true
+        searchContext['bounded'] = true
       }
 
       this.cleanSearchParams()
