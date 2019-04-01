@@ -12,16 +12,16 @@ def update_fields(apps, schema_editor):
         activitySubmission._meta.get_field('longitude')
         activitySubmission._meta.get_field('latitude')
         schema_editor.execute("update activity_submission set geom = ST_SetSrid(ST_MakePoint(longitude, latitude), 4326);")
-    except Exception:
-        logger.error('Field does not exist.')
+    except:
+        logger.error('Latitude or Longitude does not exist.')
 
     well = apps.get_model('wells', 'well')
     try:
         well._meta.get_field('longitude')
         well._meta.get_field('latitude')
         schema_editor.execute("update well set geom = ST_SetSrid(ST_MakePoint(longitude, latitude), 4326);")
-    except Exception:
-        logger.error('Field does not exist.')
+    except:
+        logger.error('Latitude or Longitude does not exist.')
 
 
 def reverse_update_fields(apps, schema_editor):
