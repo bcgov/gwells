@@ -148,6 +148,15 @@ class WellDetailSerializer(AuditModelSerializer):
 
     # well vs. well_tag_number ; on submissions, we refer to well
     well = serializers.IntegerField(source='well_tag_number')
+    well_class = serializers.ReadOnlyField(source='well_class.description')
+    well_subclass = serializers.ReadOnlyField(source='well_subclass.description')
+    intended_water_use = serializers.ReadOnlyField(source='intended_water_use.description')
+    well_status = serializers.ReadOnlyField(source='well_status.description')
+    well_publication_status = serializers.ReadOnlyField(source='well_publication_status.description')
+    licenced_status = serializers.ReadOnlyField(source='licenced_status.description')
+    coordinate_acquisition_code = serializers.ReadOnlyField(source='coordinate_acquisition_code.description')
+    intended_water_use = serializers.ReadOnlyField(source='intended_water_use.description')
+    ground_elevation_method = serializers.ReadOnlyField(source='ground_elevation_method.description')
 
     class Meta:
         model = Well
@@ -535,6 +544,7 @@ class WellListAdminSerializer(WellListSerializer):
             'owner_postal_code',
             'internal_comments',
         )
+
 
 class WellTagSearchSerializer(serializers.ModelSerializer):
     """ serializes fields used for searching for well tags """
