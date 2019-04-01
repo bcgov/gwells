@@ -31,6 +31,7 @@ REGISTRIES_VIEWER_ROLE = 'registries_viewer'
 WELLS_VIEWER_ROLE = 'wells_viewer'
 WELLS_EDIT_ROLE = 'wells_edit'
 WELLS_SUBMISSION_ROLE = 'wells_submission'
+WELLS_SUBMISSION_VIEWER_ROLE = 'wells_submission_viewer'
 # WELLS_APPROVE_ROLE = 'wells_approve' <-- this is a planned, unimplemented role
 AQUIFERS_VIEWER_ROLE = 'aquifers_view'
 AQUIFERS_EDIT_ROLE = 'aquifers_edit'

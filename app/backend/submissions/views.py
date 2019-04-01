@@ -24,7 +24,7 @@ from rest_framework.views import APIView
 from gwells.documents import MinioClient
 from gwells.urls import app_root
 from gwells.pagination import APILimitOffsetPagination
-from wells.permissions import WellsEditPermissions, WellsSubmissionPermissions
+from wells.permissions import WellsEditPermissions, WellsSubmissionPermissions, WellsSubmissionViewerPermissions
 from gwells.models import ProvinceStateCode
 from gwells.models.lithology import (
     LithologyColourCode, LithologyHardnessCode,
@@ -150,7 +150,7 @@ def get_submission_queryset(qs):
 class SubmissionGetAPIView(RetrieveAPIView):
     """Get a submission"""
 
-    permission_classes = (WellsSubmissionPermissions,)
+    permission_classes = (WellsSubmissionViewerPermissions,)
     queryset = ActivitySubmission.objects.all()
     model = ActivitySubmission
     lookup_field = 'filing_number'
@@ -186,7 +186,7 @@ class SubmissionListAPIView(ListAPIView):
     get: returns a list of well activity submissions
     """
 
-    permission_classes = (WellsSubmissionPermissions,)
+    permission_classes = (WellsSubmissionViewerPermissions,)
     model = ActivitySubmission
     queryset = ActivitySubmission.objects.all()
     pagination_class = APILimitOffsetPagination
