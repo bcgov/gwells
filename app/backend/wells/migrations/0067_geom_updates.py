@@ -9,16 +9,18 @@ logger = logging.getLogger(__name__)
 def update_fields(apps, schema_editor):
     activitySubmission = apps.get_model('wells', 'activitysubmission')
     try:
+        activitySubmission._meta.get_field('longitude')
         activitySubmission._meta.get_field('latitude')
         schema_editor.execute("update activity_submission set geom = ST_SetSrid(ST_MakePoint(longitude, latitude), 4326);")
-    except FieldDoesNotExist:
+    except Exception:
         logger.error('Field does not exist.')
 
     well = apps.get_model('wells', 'well')
     try:
+        well._meta.get_field('longitude')
         well._meta.get_field('latitude')
         schema_editor.execute("update well set geom = ST_SetSrid(ST_MakePoint(longitude, latitude), 4326);")
-    except FieldDoesNotExist:
+    except Exception:
         logger.error('Field does not exist.')
 
 
