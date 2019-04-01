@@ -194,6 +194,9 @@ class AquiferDetailSerializer(AquiferSerializer):
             artesian_flow__isnull=False).count()
         # Wells associated to an aquifer
         ret['licence_details']['num_wells'] = instance.well_set.all().count()
+        ret['licence_details']['obs_wells'] = instance.well_set.filter(
+            observation_well_number__isnull=False
+        ).values('well_tag_number', 'observation_well_number', 'observation_well_status_code')
         return ret
 
     class Meta:

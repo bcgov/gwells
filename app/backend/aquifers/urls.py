@@ -25,6 +25,11 @@ urlpatterns = [
         name='aquifers-list-create'
         ),
 
+    url(r'^api/v1/aquifers/csv$',
+        never_cache(views.csv_export,
+        name='aquifers-list-csv'
+        ),
+
     url(r'^api/v1/aquifers/names$',
         never_cache(views.AquiferNameList.as_view()),
         name='aquifer-name-list'

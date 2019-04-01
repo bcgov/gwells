@@ -14,13 +14,15 @@
 from datetime import datetime
 import logging
 import os
+import csv
 
 from django_filters import rest_framework as djfilters
 from django.http import Http404, HttpResponse, JsonResponse, HttpResponseRedirect
 from django.views.generic import TemplateView
 from django.db.models import Q
 from django.db import connection
-
+from django.http import HttpResponse
+from django.contrib.gis.gdal import DataSource
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -55,8 +57,6 @@ from aquifers.permissions import HasAquiferEditRoleOrReadOnly, HasAquiferEditRol
 from gwells.change_history import generate_history_diff
 from registries.views import AuditCreateMixin, AuditUpdateMixin
 
-from django.contrib.gis.gdal import DataSource
-
 
 logger = logging.getLogger(__name__)
 
@@ -73,6 +73,33 @@ class AquiferRetrieveUpdateAPIView(RevisionMixin, AuditUpdateMixin, RetrieveUpda
     serializer_class = serializers.AquiferDetailSerializer
 
 
+def _aquifer_qs(query):
+    """
+    We have a custom search which does a case insensitive substring of aquifer_name,
+    exact match on aquifer_id, and also looks at an array of provided resources attachments
+    of which we require one to be present if any are specified. The front-end doesn't use
+    DjangoFilterBackend's querystring array syntax, preferring ?a=1,2 rather than ?a[]=1&a[]=2,
+    so again we need a custom back-end implementation.
+
+    @param query - the dict containing querystring arguments.
+    """
+    qs = Aquifer.objects.all()
+    resources__section__code = query.get(
+        "resources__section__code")
+    search = query.get('search')
+    # truthy check - ignore missing and emptystring.
+    if resources__section__code:
+        qs = qs.filter(
+            resources__section__code__in=resources__section__code.split(','))
+    if search:  # truthy check - ignore missing and emptystring.
+        disjunction = Q(aquifer_name__icontains=search)
+        # if a number is searched, assume it could be an Aquifer ID.
+        if search.isdigit():
+            disjunction = disjunction | Q(pk=int(search))
+        qs = qs.filter(disjunction)
+    return qs
+
+
 class AquiferListCreateAPIView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     """List aquifers
     get: return a list of aquifers
@@ -87,28 +114,7 @@ class AquiferListCreateAPIView(RevisionMixin, AuditCreateMixin, ListCreateAPIVie
     ordering = ('aquifer_id',)
 
     def get_queryset(self):
-        """
-        We have a custom search which does a case insensitive substring of aquifer_name,
-        exact match on aquifer_id, and also looks at an array of provided resources attachments
-        of which we require one to be present if any are specified. The front-end doesn't use
-        DjangoFilterBackend's querystring array syntax, preferring ?a=1,2 rather than ?a[]=1&a[]=2,
-        so again we need a custom back-end implementation.
-        """
-        qs = Aquifer.objects.all()
-        resources__section__code = self.request.GET.get(
-            "resources__section__code")
-        search = self.request.GET.get('search')
-        # truthy check - ignore missing and emptystring.
-        if resources__section__code:
-            qs = qs.filter(
-                resources__section__code__in=resources__section__code.split(','))
-        if search:  # truthy check - ignore missing and emptystring.
-            disjunction = Q(aquifer_name__icontains=search)
-            # if a number is searched, assume it could be an Aquifer ID.
-            if search.isdigit():
-                disjunction = disjunction | Q(pk=int(search))
-            qs = qs.filter(disjunction)
-        return qs
+        return _aquifer_qs(self.request.GET)
 
 
 class AquiferResourceSectionListAPIView(ListAPIView):
@@ -378,3 +384,52 @@ class AquifersSpatial(APIView):
             get_env_variable('S3_WELL_EXPORT_BUCKET'),
             'api/v1/gis/aquifers.json')
         return HttpResponseRedirect(url)
+
+
+def csv_export(request):
+    """
+    Export aquifers as CSV. This is done in a vanilla functional Django view instead of DRF,
+    because DRF doesn't have native CSV support.
+    """
+
+    _fields = [
+        'aquifer_id',
+        'aquifer_name',
+        'area',
+        'demand_description',
+        'demand',
+        'known_water_use_description',
+        'known_water_use',
+        'litho_stratographic_unit',
+        'location_description',
+        'mapping_year',
+        'material_description',
+        'material',
+        'notes',
+        'productivity_description',
+        'productivity',
+        'quality_concern_description',
+        'quality_concern',
+        'subtype_description',
+        'subtype',
+        'vulnerability_description',
+        'vulnerability',
+    ]
+
+    # Create the HttpResponse object with the appropriate CSV header.
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="aquifer-{}.csv"'.format(
+        aquifer_id)
+    writer = csv.writer(response)
+    writer.writerow(fields)
+
+    queryset = _aquifer_qs(qs)
+    for aquifer in queryset:
+        writer.writerow([getattr(aquifer, f) for f in fields])
+
+    return response
+
+
+def shp_export(request):
+
+    return response
