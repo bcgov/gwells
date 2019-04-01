@@ -3107,6 +3107,122 @@
 						}
 					],
 					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Filter groups",
+					"item": [
+						{
+							"name": "Standard filters + 1 group",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/wells?well_orientation=False&well_status=OTHER&match_any=false&filter_group={\"owner_full_name\": \"Smith\", \"match_any\": false}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"wells"
+									],
+									"query": [
+										{
+											"key": "well_orientation",
+											"value": "False"
+										},
+										{
+											"key": "well_status",
+											"value": "OTHER"
+										},
+										{
+											"key": "match_any",
+											"value": "false"
+										},
+										{
+											"key": "filter_group",
+											"value": "{\"owner_full_name\": \"Smith\", \"match_any\": false}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Standard filters + 2 groups",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/wells?well_orientation=True&well_status=OTHER&match_any=true&filter_group={\"surface_seal_material\": \"BNTITE_CLY\"}&filter_group={\"owner_full_name\": \"MOUNTED\", \"match_any\": true}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"wells"
+									],
+									"query": [
+										{
+											"key": "well_orientation",
+											"value": "True"
+										},
+										{
+											"key": "well_status",
+											"value": "OTHER"
+										},
+										{
+											"key": "match_any",
+											"value": "true"
+										},
+										{
+											"key": "filter_group",
+											"value": "{\"surface_seal_material\": \"BNTITE_CLY\"}"
+										},
+										{
+											"key": "filter_group",
+											"value": "{\"owner_full_name\": \"MOUNTED\", \"match_any\": true}"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
 				}
 			],
 			"event": [

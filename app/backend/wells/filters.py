@@ -11,14 +11,17 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
+import json
 from collections import OrderedDict
 
 from django import forms
+from django.http import QueryDict
 from django.contrib.gis.geos import GEOSException, Polygon
 from django.db.models import Q, QuerySet
 from django_filters import rest_framework as filters
 from django_filters.widgets import BooleanWidget
 from rest_framework.filters import BaseFilterBackend
+from rest_framework.request import clone_request
 
 from gwells.roles import WELLS_VIEWER_ROLE
 from wells.models import (
@@ -495,7 +498,12 @@ class WellListAdminFilter(WellListFilter):
 
 
 class WellListFilterBackend(filters.DjangoFilterBackend):
-    """Returns a different filterset class for admin users."""
+    """
+    Custom well list filtering logic.
+    
+    Returns a different filterset class for admin users, and allows additional
+    'filter_group' params.
+    """
 
     def get_filterset(self, request, queryset, view):
         filterset_class = WellListFilter
@@ -506,3 +514,26 @@ class WellListFilterBackend(filters.DjangoFilterBackend):
             filterset_class = WellListAdminFilter
 
         return filterset_class(**filterset_kwargs)
+
+    def filter_queryset(self, request, queryset, view):
+        filtered_queryset = super().filter_queryset(request, queryset, view)
+
+        filter_groups = request.query_params.getlist('filter_group', [])
+        for group in filter_groups:
+            try:
+                group_params = json.loads(group)
+            except ValueError:
+                # We ignore malformed JSON, so it doesn't break the request
+                pass
+
+            if not group_params:
+                continue
+
+            request_querydict = QueryDict(mutable=True)
+            request_querydict.update(group_params)
+            request_clone = clone_request(request, 'GET')
+            request_clone._request.GET = request_querydict
+            group_filterset = self.get_filterset(request_clone, filtered_queryset, view)
+            filtered_queryset = group_filterset.qs
+
+        return filtered_queryset
