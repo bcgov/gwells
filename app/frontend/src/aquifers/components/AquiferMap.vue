@@ -10,12 +10,7 @@ import { tiledMapLayer } from 'esri-leaflet'
 import { filter } from 'lodash'
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch'
 import 'leaflet-geosearch/assets/css/leaflet.css'
-import 'leaflet.locatecontrol/dist/L.Control.Locate.min.css'
-import '../../common/leaflet-locateControl.js'
 import 'leaflet-lasso'
-
-
-
 
 const provider = new OpenStreetMapProvider()
 const searchControl = new GeoSearchControl({
@@ -68,33 +63,24 @@ export default {
       L.control.scale().addTo(this.map)
       // Add geo search
       this.map.addControl(searchControl)
-      L.control.locateplugin({
-        position: 'topleft'
-      }).addTo(this.map)
-
-      
-      const lasso = L.lasso(this.map);
-      const areaSelect =  L.Control.extend({
+      const lasso = L.lasso(this.map)
+      const AreaSelect = L.Control.extend({
         options: {
           position: 'topleft'
         },
         onAdd: function (map) {
-          var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+          var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control')
           container.innerHTML = '<a class="leaflet-bar-part leaflet-bar-part-single"><span class="fa fa-hand-paper-o"></span></a>'
-          container.onclick = function(map) {
+          container.onclick = function (map) {
             lasso.enable()
           }
           return container
         }
-      });
-
-      this.map.addControl(new areaSelect())
-
-      
+      })
+      this.map.addControl(new AreaSelect())
       this.map.on('lasso.finished', (event) => {
-          this.map.fitBounds(event.latLngs)
-      });
-
+        this.map.fitBounds(event.latLngs)
+      })
       // Add map layers.
       tiledMapLayer({url: 'https://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer'}).addTo(this.map)
       L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW/ows?', {

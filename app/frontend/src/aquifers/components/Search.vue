@@ -399,7 +399,6 @@ export default {
   },
   mounted () {
     this.$on('activeLayers', (data) => {
-      
       this.layers = data.filter(o => o.layerName).map(o => o.layerName)
     })
   },
