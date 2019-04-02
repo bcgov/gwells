@@ -499,7 +499,7 @@ export default {
 
         this.loading = true
 
-        ApiService.query(`wells/${this.$route.params.id}?codes=true`).then((res) => {
+        ApiService.query(`wells/${this.$route.params.id}/edit`).then((res) => {
           Object.keys(res.data).forEach((key) => {
             if (key in this.form) {
               this.form[key] = res.data[key]

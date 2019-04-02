@@ -143,20 +143,15 @@ class WellDetail(RetrieveAPIView):
 
         return qs
 
-    def get_serializer(self, *args, **kwargs):
-        """ returns a different serializer for admin users """
 
-        serializer = self.serializer_class
+class WellStaffEditDetail(RetrieveAPIView):
+    """
+    Return well detail for use in a staff edit
+    """
+    serializer_class = WellDetailAdminSerializer
 
-        # If 'codes=true' is included in the query params, display codes instead of descriptions.
-        # Otherwise, default to using human readable descriptions (like 'Domestic' instead of DOM).
-        # This is used to populate the staff edit page with codes.
-        display_codes = self.request.query_params.get('codes', False) == 'true'
-
-        if (display_codes and self.request.user and self.request.user.is_authenticated and
-                self.request.user.groups.filter(name=WELLS_VIEWER_ROLE).exists()):
-            serializer = WellDetailAdminSerializer
-        return serializer(*args, **kwargs)
+    lookup_field = 'well_tag_number'
+    permission_classes = (WellsEditPermissions,)
 
 
 class ListExtracts(APIView):
