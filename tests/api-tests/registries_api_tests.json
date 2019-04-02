@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "d5828a42-da4e-40ad-8566-a51e3cb2cf6a",
+		"_postman_id": "c40faa5e-f2c3-4a5b-82ea-f20bc18a9869",
 		"name": "GWELLS Registries API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -585,7 +585,7 @@
 											"        pm.expect(jsonData[0].diff.city).to.eql(\"Victoria\");",
 											"    });",
 											"    pm.test(\"Username is logged for recent update\", function () {",
-											"        pm.expect(jsonData[0].user).to.eql(\"testuser\");",
+											"        pm.expect(jsonData[0].user).to.be.oneOf([\"TESTUSER\", \"testuser\"]);",
 											"    });",
 											"})();",
 											""

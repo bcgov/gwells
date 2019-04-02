@@ -701,7 +701,11 @@ pipeline {
                             "IMAGE_STREAM_NAME=postgresql-9.6-oracle-fdw",
                             "IMAGE_STREAM_VERSION=v1-stable",
                             "POSTGRESQL_DATABASE=gwells",
-                            "VOLUME_CAPACITY=5Gi"
+                            "VOLUME_CAPACITY=5Gi",
+                            "REQUEST_CPU=400m",
+                            "REQUEST_MEMORY=2Gi",
+                            "LIMIT_CPU=400m",
+                            "LIMIT_MEMORY=2Gi"
                         )
 
                         def deployTemplate = openshift.process("-f",
@@ -793,7 +797,8 @@ pipeline {
                             "PROJECT=${stagingProject}",
                             "TAG=${stagingSuffix}",
                             "NAME=export",
-                            "COMMAND=export"
+                            "COMMAND=export",
+                            "SCHEDULE='0 12 * * *'"
                         )
                         openshift.apply(exportWellCronTemplate).label(
                             [
@@ -811,7 +816,8 @@ pipeline {
                             "PROJECT=${stagingProject}",
                             "TAG=${stagingSuffix}",
                             "NAME=export-databc",
-                            "COMMAND=export_databc"
+                            "COMMAND=export_databc",
+                            "SCHEDULE='0 13 * * *'"
                         )
                         openshift.apply(exportDataBCTemplate).label(
                             [
@@ -914,7 +920,11 @@ pipeline {
                             "IMAGE_STREAM_NAME=postgresql-9.6-oracle-fdw",
                             "IMAGE_STREAM_VERSION=v1-stable",
                             "POSTGRESQL_DATABASE=gwells",
-                            "VOLUME_CAPACITY=5Gi"
+                            "VOLUME_CAPACITY=5Gi",
+                            "REQUEST_CPU=400m",
+                            "REQUEST_MEMORY=2Gi",
+                            "LIMIT_CPU=400m",
+                            "LIMIT_MEMORY=2Gi"
                         )
 
                         def deployTemplate = openshift.process("-f",
@@ -1006,7 +1016,8 @@ pipeline {
                             "PROJECT=${demoProject}",
                             "TAG=${demoSuffix}",
                             "NAME=export",
-                            "COMMAND=export"
+                            "COMMAND=export",
+                            "SCHEDULE='0 12 * * *'"
                         )
                         openshift.apply(exportWellCronTemplate).label(
                             [
@@ -1024,7 +1035,8 @@ pipeline {
                             "PROJECT=${demoProject}",
                             "TAG=${demoSuffix}",
                             "NAME=export-databc",
-                            "COMMAND=export_databc"
+                            "COMMAND=export_databc",
+                            "SCHEDULE='0 13 * * *'"
                         )
                         openshift.apply(exportDataBCCronTemplate).label(
                             [
@@ -1103,7 +1115,11 @@ pipeline {
                             "IMAGE_STREAM_NAME=postgresql-9.6-oracle-fdw",
                             "IMAGE_STREAM_VERSION=v1-stable",
                             "POSTGRESQL_DATABASE=gwells",
-                            "VOLUME_CAPACITY=20Gi"
+                            "VOLUME_CAPACITY=20Gi",
+                            "REQUEST_CPU=800m",
+                            "REQUEST_MEMORY=4Gi",
+                            "LIMIT_CPU=800m",
+                            "LIMIT_MEMORY=4Gi"
                         )
 
                         def deployTemplate = openshift.process("-f",
@@ -1196,7 +1212,8 @@ pipeline {
                             "PROJECT=${prodProject}",
                             "TAG=${prodSuffix}",
                             "NAME=export",
-                            "COMMAND=export"
+                            "COMMAND=export",
+                            "SCHEDULE='0 12 * * *'"
                         )
                         openshift.apply(exportWellCronTemplate).label(
                             [
@@ -1214,7 +1231,8 @@ pipeline {
                             "PROJECT=${prodProject}",
                             "TAG=${prodSuffix}",
                             "NAME=export-databc",
-                            "COMMAND=export_databc"
+                            "COMMAND=export_databc",
+                            "SCHEDULE='0 13 * * *'"
                         )
                         openshift.apply(exportDataBCCronTemplate).label(
                             [

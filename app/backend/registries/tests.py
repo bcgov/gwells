@@ -58,6 +58,8 @@ class AuthenticatedAPITestCase(APITestCase):
             group.save()
 
         self.user, created = User.objects.get_or_create(username='testuser')
+        self.user.profile.username = self.user.username
+        self.user.save()
         roles_to_groups(self.user, roles)
         self.client.force_authenticate(self.user)
 
