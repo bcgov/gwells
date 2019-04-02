@@ -29,19 +29,12 @@ describe('auth', () => {
       } } }
     expect(auth.getters.userRoles(state).wells.edit).toBe(true)
   })
-  it('If keycloak has role as wells_viewer, then submissions.view === true', () => {
+  it('If keycloak has role as wells_submission_viewer, then submissions.view === true', () => {
     const state = { keycloak: { authenticated: true,
       hasRealmRole (key) {
-        return key === 'wells_viewer'
+        return key === 'wells_submission_test'
       } } }
     expect(auth.getters.userRoles(state).submissions.view).toBe(true)
-  })
-  it('If keycloak has role as wells_edit, then submissions.edit === true', () => {
-    const state = { keycloak: { authenticated: true,
-      hasRealmRole (key) {
-        return key === 'wells_edit'
-      } } }
-    expect(auth.getters.userRoles(state).submissions.edit).toBe(true)
   })
   it('If keycloak has role as wells_submission, then submissions.edit === true', () => {
     const state = { keycloak: { authenticated: true,
