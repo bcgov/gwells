@@ -5,10 +5,10 @@
         "fields": {
             "create_user": "PROXY_WELLS",
             "create_date": "2016-12-10T23:42:51Z",
-            "update_user": null,
-            "update_date": null,
+            "update_user": "",
+            "update_date": "2016-12-10T23:42:51Z",
             "activity_submission": null,
-            "well": 9193161,
+            "well": 112316,
             "start": "192.00",
             "end": "192.00",
             "internal_diameter": "6.00",
@@ -22,10 +22,10 @@
         "fields": {
             "create_user": "PROXY_WELLS",
             "create_date": "2016-12-10T23:43:33Z",
-            "update_user": null,
-            "update_date": null,
+            "update_user": "",
+            "update_date": "2016-12-10T23:42:51Z",
             "activity_submission": null,
-            "well": 9193161,
+            "well": 112316,
             "start": "195.00",
             "end": "200.00",
             "internal_diameter": "5.00",
@@ -39,10 +39,10 @@
         "fields": {
             "create_user": "PROXY_WELLS",
             "create_date": "2016-12-10T23:43:09Z",
-            "update_user": null,
-            "update_date": null,
+            "update_user": "",
+            "update_date": "2016-12-10T23:42:51Z",
             "activity_submission": null,
-            "well": 9193161,
+            "well": 112316,
             "start": "192.00",
             "end": "195.00",
             "internal_diameter": "5.00",
@@ -56,10 +56,10 @@
         "fields": {
             "create_user": "PROXY_WELLS",
             "create_date": "2016-02-09T21:45:27Z",
-            "update_user": null,
-            "update_date": null,
+            "update_user": "",
+            "update_date": "2016-12-10T23:42:51Z",
             "activity_submission": null,
-            "well": 2,
+            "well": 20143,
             "start": null,
             "end": null,
             "internal_diameter": null,
@@ -73,8 +73,8 @@
         "fields": {
             "create_user": "PROXY_WELLS",
             "create_date": "2008-09-12T18:14:53Z",
-            "update_user": null,
-            "update_date": null,
+            "update_user": "",
+            "update_date": "2016-12-10T23:42:51Z",
             "drilling_company_code": "496",
             "name": "Flotonic Waterwell"
         }
@@ -124,7 +124,7 @@
             "update_user": "PROXY_WELLS",
             "update_date": "2016-11-10T20:16:35Z",
             "aquifer_id": 25,
-            "well_tag_number": 2
+            "well_tag_number": 20143
         }
     },
     {
@@ -136,7 +136,7 @@
             "survey_enabled": true,
             "survey_page": "w",
             "effective_date": "2018-03-12",
-            "expiry_date": null
+            "expiry_date": "9999-12-31"
         }
     },
     {
@@ -148,7 +148,7 @@
             "survey_enabled": false,
             "survey_page": "s",
             "effective_date": "2018-03-14",
-            "expiry_date": null
+            "expiry_date": "9999-12-31"
         }
     },
     {
@@ -157,9 +157,9 @@
         "fields": {
             "create_user": "PROXY_EWELLS_USER",
             "create_date": "2016-12-08T14:12:27Z",
-            "update_user": null,
-            "update_date": null,
-            "well_tag_number": 5013,
+            "update_user": "",
+            "update_date": "2016-12-10T23:42:51Z",
+            "well_tag_number": 112286,
             "liner_thickness": "0.188",
             "liner_diameter": "4.00",
             "liner_from": "25.00",
@@ -174,8 +174,8 @@
         "fields": {
             "create_user": "WELLS",
             "create_date": "2003-08-13T16:11:35Z",
-            "update_user": null,
-            "update_date": null,
+            "update_user": "",
+            "update_date": "2016-12-10T23:42:51Z",
             "bcgs_number": "082F033334"
         }
     },
@@ -185,8 +185,8 @@
         "fields": {
             "create_user": "WELLS",
             "create_date": "2003-08-13T16:13:15Z",
-            "update_user": null,
-            "update_date": null,
+            "update_user": "",
+            "update_date": "2016-12-10T23:42:51Z",
             "bcgs_number": "093C044324"
         }
     },
@@ -196,8 +196,8 @@
         "fields": {
             "create_user": "PROXY_WELLS",
             "create_date": "2009-03-16T18:10:54Z",
-            "update_user": null,
-            "update_date": null,
+            "update_user": "",
+            "update_date": "2016-12-10T23:42:51Z",
             "bcgs_number": "082K079442"
         }
     },
@@ -207,8 +207,8 @@
         "fields": {
             "create_user": "PROXY_WELLS",
             "create_date": "2016-12-08T14:13:30Z",
-            "update_user": null,
-            "update_date": null,
+            "update_user": "",
+            "update_date": "2016-12-10T23:42:51Z",
             "bcgs_number": "092P049112"
         }
     },
@@ -218,10 +218,10 @@
         "fields": {
             "create_user": "PROXY_EWELLS_USER",
             "create_date": "2016-12-10T23:39:17Z",
-            "update_user": null,
-            "update_date": null,
+            "update_user": "",
+            "update_date": "2016-12-10T23:42:51Z",
             "activity_submission": null,
-            "well": 9193161,
+            "well": 112316,
             "start": "0.00",
             "end": "195.00",
             "diameter": "6.630",
@@ -237,8 +237,8 @@
         "fields": {
             "create_user": "PROXY_EWELLS_USER",
             "create_date": "2017-05-30T20:43:18Z",
-            "update_user": null,
-            "update_date": null,
+            "update_user": "",
+            "update_date": "2016-12-10T23:42:51Z",
             "activity_submission": null,
             "well": 113169,
             "start": "0.00",
@@ -259,7 +259,7 @@
             "update_user": "PROXY_WELLS",
             "update_date": "2016-12-08T14:16:00Z",
             "activity_submission": null,
-            "well": 5013,
+            "well": 112286,
             "start": "0.00",
             "end": "38.80",
             "diameter": "6.000",
@@ -278,7 +278,7 @@
             "update_user": "PROXY_WELLS",
             "update_date": "2016-02-09T21:54:45Z",
             "activity_submission": null,
-            "well": 2,
+            "well": 20143,
             "start": "0.00",
             "end": "168.00",
             "diameter": "4.500",
@@ -297,7 +297,7 @@
             "update_user": "PROXY_EWELLS_USER",
             "update_date": "2016-12-10T23:39:17Z",
             "activity_submission": null,
-            "well": 9193161,
+            "well": 112316,
             "lithology_from": "1.00",
             "lithology_to": "144.00",
             "lithology_raw_data": "GRAVEL, FINE SAND",
@@ -326,7 +326,7 @@
             "update_user": "PROXY_EWELLS_USER",
             "update_date": "2016-12-10T23:39:17Z",
             "activity_submission": null,
-            "well": 9193161,
+            "well": 112316,
             "lithology_from": "175.00",
             "lithology_to": "200.00",
             "lithology_raw_data": "MEDIUM SAND, GRAVEL",
@@ -355,7 +355,7 @@
             "update_user": "PROXY_EWELLS_USER",
             "update_date": "2016-12-10T23:39:17Z",
             "activity_submission": null,
-            "well": 9193161,
+            "well": 112316,
             "lithology_from": "167.00",
             "lithology_to": "175.00",
             "lithology_raw_data": "GRAVEL, MEDIUM SAND",
@@ -384,7 +384,7 @@
             "update_user": "PROXY_EWELLS_USER",
             "update_date": "2016-12-10T23:39:17Z",
             "activity_submission": null,
-            "well": 9193161,
+            "well": 112316,
             "lithology_from": "144.00",
             "lithology_to": "167.00",
             "lithology_raw_data": "GRAVEL, FINE SAND",
@@ -413,7 +413,7 @@
             "update_user": "PROXY_EWELLS_USER",
             "update_date": "2016-12-10T23:39:17Z",
             "activity_submission": null,
-            "well": 9193161,
+            "well": 112316,
             "lithology_from": "0.00",
             "lithology_to": "1.00",
             "lithology_raw_data": "DARK BROWN TOPSOIL",
@@ -558,7 +558,7 @@
             "update_user": "PROXY_EWELLS_USER",
             "update_date": "2016-12-08T14:12:27Z",
             "activity_submission": null,
-            "well": 5013,
+            "well": 112286,
             "lithology_from": "37.00",
             "lithology_to": "182.00",
             "lithology_raw_data": "GRANIT, BEDROCK",
@@ -587,7 +587,7 @@
             "update_user": "PROXY_EWELLS_USER",
             "update_date": "2016-12-08T14:12:27Z",
             "activity_submission": null,
-            "well": 5013,
+            "well": 112286,
             "lithology_from": "7.00",
             "lithology_to": "19.00",
             "lithology_raw_data": "TILL, CLAY",
@@ -616,7 +616,7 @@
             "update_user": "PROXY_EWELLS_USER",
             "update_date": "2016-12-08T14:12:27Z",
             "activity_submission": null,
-            "well": 5013,
+            "well": 112286,
             "lithology_from": "0.00",
             "lithology_to": "7.00",
             "lithology_raw_data": "GRAVEL",
@@ -645,7 +645,7 @@
             "update_user": "PROXY_EWELLS_USER",
             "update_date": "2016-12-08T14:12:27Z",
             "activity_submission": null,
-            "well": 5013,
+            "well": 112286,
             "lithology_from": "19.00",
             "lithology_to": "37.00",
             "lithology_raw_data": "GRANITE, SOME CLAY",
@@ -674,7 +674,7 @@
             "update_user": "PROXY_WELLS",
             "update_date": "2016-02-09T21:43:55Z",
             "activity_submission": null,
-            "well": 2,
+            "well": 20143,
             "lithology_from": "60.00",
             "lithology_to": "260.00",
             "lithology_raw_data": "GRANITE & BLACK FRACTURED ROCK",
@@ -703,7 +703,7 @@
             "update_user": "PROXY_WELLS",
             "update_date": "2016-02-09T21:43:18Z",
             "activity_submission": null,
-            "well": 2,
+            "well": 20143,
             "lithology_from": "50.00",
             "lithology_to": "60.00",
             "lithology_raw_data": null,
@@ -732,7 +732,7 @@
             "update_user": "PROXY_WELLS",
             "update_date": "2016-02-09T21:44:36Z",
             "activity_submission": null,
-            "well": 2,
+            "well": 20143,
             "lithology_from": "260.00",
             "lithology_to": "267.00",
             "lithology_raw_data": null,
@@ -761,7 +761,7 @@
             "update_user": "PROXY_WELLS",
             "update_date": "2016-02-09T21:43:03Z",
             "activity_submission": null,
-            "well": 2,
+            "well": 20143,
             "lithology_from": "0.00",
             "lithology_to": "50.00",
             "lithology_raw_data": "SAND, GRAVEL, CLAY",
@@ -790,7 +790,7 @@
             "update_user": "PROXY_WELLS",
             "update_date": "2016-02-09T21:44:57Z",
             "activity_submission": null,
-            "well": 2,
+            "well": 20143,
             "lithology_from": "267.00",
             "lithology_to": "285.00",
             "lithology_raw_data": "SAND, BLUE CLAY & ROCK",
@@ -816,7 +816,7 @@
         "fields": {
             "create_user": "",
             "create_date": "2018-02-08T17:06:47.229Z",
-            "update_user": null,
+            "update_user": "",
             "update_date": "2018-02-08T17:06:47.231Z",
             "well_guid": "28efc8dd-4f4e-4b1e-84ce-5e2e7313bdb1",
             "identification_plate_number": null,
@@ -850,8 +850,6 @@
             "decommission_end_date": null,
             "drilling_company": null,
             "well_identification_plate_attached": null,
-            "latitude": "49.260000",
-            "longitude": "-122.540000",
             "ground_elevation": null,
             "ground_elevation_method": null,
             "well_orientation": true,
@@ -910,12 +908,13 @@
             "decommission_reason": null,
             "decommission_method": null,
             "decommission_details": null,
-            "water_quality_characteristics": []
+            "water_quality_characteristics": [],
+            "geom": "POINT(-122.540000 49.260000)"
         }
     },
     {
         "model": "wells.well",
-        "pk": 9193161,
+        "pk": 112316,
         "fields": {
             "create_user": "PROXY_EWELLS_USER",
             "create_date": "2016-12-10T23:39:17Z",
@@ -953,8 +952,6 @@
             "decommission_end_date": null,
             "drilling_company": "f606669c-a60c-422d-859a-fdc54278d9b0",
             "well_identification_plate_attached": "SIDE OF CASING",
-            "latitude": "49.200000",
-            "longitude": "-122.540000",
             "ground_elevation": "1697.00",
             "ground_elevation_method": null,
             "drilling_methods": [
@@ -1025,7 +1022,8 @@
             "static_level_before_test": "141.20",
             "drawdown": "190.00",
             "hydro_fracturing_performed": false,
-            "hydro_fracturing_yield_increase": null
+            "hydro_fracturing_yield_increase": null,
+            "geom": "POINT(-122.540000 49.200000)"
         }
     },
     {
@@ -1068,8 +1066,6 @@
             "decommission_end_date": null,
             "drilling_company": "1237493e-ebd8-41e2-83ca-0a600da00bc9",
             "well_identification_plate_attached": "Top of Casing",
-            "latitude": "49.230000",
-            "longitude": "-122.580000",
             "ground_elevation": "3091.00",
             "ground_elevation_method": "GPS",
             "drilling_methods": [
@@ -1140,12 +1136,13 @@
             "static_level_before_test": "80.00",
             "drawdown": null,
             "hydro_fracturing_performed": false,
-            "hydro_fracturing_yield_increase": null
+            "hydro_fracturing_yield_increase": null,
+            "geom": "POINT(-122.580000 49.230000)"
         }
     },
     {
         "model": "wells.well",
-        "pk": 5013,
+        "pk": 112286,
         "fields": {
             "create_user": "PROXY_EWELLS_USER",
             "create_date": "2016-12-08T14:12:27Z",
@@ -1183,8 +1180,6 @@
             "decommission_end_date": null,
             "drilling_company": "69f5459a-5ec1-49e1-94b6-58b0eb90b368",
             "well_identification_plate_attached": "CASING STICK UP",
-            "latitude": "49.250000",
-            "longitude": "-122.590000",
             "ground_elevation": null,
             "ground_elevation_method": null,
             "drilling_methods": [
@@ -1255,12 +1250,13 @@
             "static_level_before_test": null,
             "drawdown": null,
             "hydro_fracturing_performed": false,
-            "hydro_fracturing_yield_increase": null
+            "hydro_fracturing_yield_increase": null,
+            "geom": "POINT(-122.590000 49.250000)"
         }
     },
     {
         "model": "wells.well",
-        "pk": 2,
+        "pk": 20143,
         "fields": {
             "create_user": "PROXY_EWELLS_USER",
             "create_date": "2016-02-09T21:42:04Z",
@@ -1298,8 +1294,6 @@
             "decommission_end_date": "2014-11-23",
             "drilling_company": "bf5d31ea-8a5a-4363-8a5e-6c00eed03058",
             "well_identification_plate_attached": "ON TOP",
-            "latitude": "52.465449",
-            "longitude": "-125.300830",
             "ground_elevation": "1.20",
             "ground_elevation_method": "GPS",
             "drilling_methods": [
@@ -1372,16 +1366,17 @@
             "hydro_fracturing_performed": false,
             "hydro_fracturing_yield_increase": null,
             "decommission_sealant_material": "CONCRETE",
-            "decommission_backfill_material": "test"
+            "decommission_backfill_material": "test",
+            "geom": "POINT(-125.300830 52.465449)"
         }
     },
     {
         "model": "wells.well",
-        "pk": 9193183,
+        "pk": 216265,
         "fields": {
             "create_user": "PROXY_EWELLS_USER",
             "create_date": "2019-02-08T18:53:16.353Z",
-            "update_user": null,
+            "update_user": "",
             "update_date": "2019-02-11T01:47:46.945Z",
             "well_guid": "57c2de9a-b268-45a1-9b86-914b37018459",
             "identification_plate_number": 55555,
@@ -1418,8 +1413,6 @@
             "drilling_company": null,
             "well_identification_plate_attached": null,
             "id_plate_attached_by": null,
-            "latitude": null,
-            "longitude": null,
             "ground_elevation": null,
             "ground_elevation_method": null,
             "drilling_methods": [
@@ -1516,7 +1509,8 @@
                 "SALTY"
             ],
             "decommission_backfill_material": null,
-            "decommission_sealant_material": null
+            "decommission_sealant_material": null,
+            "geom": null
         }
     }
 ]

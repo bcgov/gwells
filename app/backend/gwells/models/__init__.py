@@ -17,12 +17,12 @@
 # See: https://www.python.org/dev/peps/pep-0008/#package-and-module-names
 import uuid
 
-from django.db import models
+from django.contrib.gis.db import models
 from django.contrib.auth.models import User
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 
-from .common import AuditModel, ProvinceStateCode
+from .common import AuditModel, ProvinceStateCode, CodeTableModel, BasicCodeTableModel
 from .screen import ScreenIntakeMethodCode, ScreenMaterialCode, ScreenOpeningCode, ScreenBottomCode,\
     ScreenTypeCode, ScreenAssemblyTypeCode
 from .survey import Survey, OnlineSurvey
@@ -31,30 +31,37 @@ from .survey import Survey, OnlineSurvey
 class Profile(models.Model):
     """
     Extended User Profile
-
-    SMGOV_USERDISPLAYNAME: The display name of the user that can be displayed on web pages
-    SMGOV_USEREMAIL: The email address of the user in local-part@domain format
-    SMGOV_USERIDENTIFIER: A character string that uniquely identifies the user.   This is 
-    typically a 32 character string consisting of hexadecimal characters but may be tailored 
-    to the requirements of the relying party.
-
     """
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name="profile")
-
     profile_guid = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False)
-    smgov_useridentifier = models.UUIDField(blank=True, null=True)
-    smgov_useremail = models.EmailField(unique=True, blank=True, null=True)
-    smgov_userdisplayname = models.CharField(
-        max_length=100, blank=True, null=True)
-    realm = models.CharField(max_length=10, default="Django")
+    username = models.CharField(max_length=100, blank=True, null=True)
     name = models.CharField(max_length=100, blank=True, null=True)
-
-    is_gwells_admin = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'profile'
+
+
+class Border(models.Model):
+    se_a_c_flg = models.CharField(max_length=254)
+    obejctid = models.FloatField()
+    shape = models.FloatField()
+    length_m = models.FloatField()
+    oic_number = models.CharField(max_length=7)
+    area_sqm = models.FloatField()
+    upt_date = models.CharField(max_length=20)
+    upt_type = models.CharField(max_length=50)
+    chng_org = models.CharField(max_length=30)
+    aa_parent = models.CharField(max_length=100)
+    aa_type = models.CharField(max_length=50)
+    aa_id = models.BigIntegerField()
+    aa_name = models.CharField(max_length=100)
+    abrvn = models.CharField(max_length=40)
+    bdy_type = models.CharField(max_length=20)
+    oic_year = models.CharField(max_length=4)
+    afctd_area = models.CharField(max_length=120)
+    geom = models.MultiPolygonField(srid=4269)
 
 
 @receiver(post_save, sender=User)

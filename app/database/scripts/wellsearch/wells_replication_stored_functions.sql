@@ -42,7 +42,7 @@ DECLARE
     well_tag_number                ,
     well_id                        ,
     well_guid                      ,
-    acceptance_status_code         ,
+    well_publication_status_code   ,
     owner_full_name                ,
     owner_mailing_address          ,
     owner_city                     ,
@@ -128,12 +128,16 @@ DECLARE
     create_date               ,
     update_date               ,
     create_user               ,
-    update_user)
+    update_user               ,
+    aquifer_lithology_code)
   SELECT
     wells.well_tag_number                                                    ,
     wells.well_id                                                            ,
     gen_random_uuid()                                                        ,
-    wells.acceptance_status_code AS acceptance_status_code                   ,
+    CASE wells.acceptance_status_code
+      WHEN ''REJECTED'' THEN ''Unpublished''
+      ELSE ''Published''
+    END AS well_publication_status_code                                      ,
     concat_ws('' '', owner.giVEN_NAME,OWNER.SURNAME) AS owner_full_name      ,
     concat_ws('' '',OWNER.STREET_NUMBER,STREET_NAME) AS owner_mailing_address,
     owner.city AS owner_city                                                 ,
@@ -260,12 +264,17 @@ DECLARE
     wells.when_created                                 ,
     COALESCE(wells.when_updated,wells.when_created)    ,
     wells.who_created                                  ,
-    COALESCE(wells.who_updated,wells.who_created)
+    COALESCE(wells.who_updated,wells.who_created)      ,
+    CASE wells.aquifer_lithology_code
+      WHEN ''BED'' THEN ''Bedrock''
+      WHEN ''UNC'' THEN ''Unconsolidated''
+      ELSE ''Unknown''
+    END AS aquifer_lithology_code
   FROM wells.wells_wells wells LEFT OUTER JOIN wells.wells_owners owner ON owner.owner_id=wells.owner_id
               LEFT OUTER JOIN drilling_company drilling_company ON UPPER(wells.driller_company_code)=UPPER(drilling_company.drilling_company_code)
               LEFT OUTER JOIN well_subclass_code subclass ON UPPER(wells.subclass_of_well_classified_by)=UPPER(subclass.well_subclass_code)
                 AND subclass.well_class_code = wells.class_of_well_codclassified_by
-  WHERE wells.acceptance_status_code NOT IN (''PENDING'', ''REJECTED'', ''NEW'') ';
+  WHERE wells.acceptance_status_code NOT IN (''PENDING'', ''NEW'') ';
 
 BEGIN
   raise notice 'Starting populate_xform() procedure...';
@@ -275,7 +284,7 @@ BEGIN
      well_tag_number                    integer,
      well_id                            bigint,
      well_guid                          uuid,
-     acceptance_status_code             character varying(10),
+     well_publication_status_code       character varying(20),
      owner_full_name                    character varying(200),
      owner_mailing_address              character varying(100),
      owner_city                         character varying(100),
@@ -362,7 +371,8 @@ BEGIN
      create_date                        timestamp with time zone,
      update_date                        timestamp with time zone,
      create_user                         character varying(30),
-     update_user                         character varying(30)
+     update_user                         character varying(30),
+     aquifer_lithology_code             character varying(30)
   );
 
   raise notice 'Created xform_well ETL table';
@@ -407,7 +417,8 @@ BEGIN
      create_user, create_date, update_user, update_date, bcgs_id, bcgs_number
     )
     SELECT
-     who_created ,when_created ,who_updated ,when_updated, bcgs_id, bcgs_number
+     who_created, when_created, coalesce(who_updated, who_created),
+     coalesce(when_updated, when_created), bcgs_id, bcgs_number
     FROM WELLS.WELLS_BCGS_NUMBERS
     ORDER BY BCGS_NUMBER;
 
@@ -442,7 +453,7 @@ BEGIN
     owner_city                  ,
     owner_postal_code           ,
     owner_tel                   ,
-    owner_email                 ,    
+    owner_email                 ,
     street_address              ,
     city                        ,
     legal_lot                   ,
@@ -468,8 +479,7 @@ BEGIN
     well_class_code             ,
     well_subclass_guid          ,
     well_yield_unit_code        ,
-    latitude                    ,
-    longitude                   ,
+    geom                        ,
     ground_elevation            ,
     well_orientation            ,
     ground_elevation_method_code,
@@ -532,7 +542,8 @@ BEGIN
     hydro_fracturing_performed   ,
     decommission_details         ,
     comments                     ,
-    well_publication_status_code
+    well_publication_status_code ,
+    aquifer_lithology_code
     )
   SELECT
     xform.well_tag_number                        ,
@@ -568,8 +579,13 @@ BEGIN
     xform.well_class_code                   ,
     xform.well_subclass_guid                ,
     xform.well_yield_unit_code              ,
-    xform.latitude                          ,
-    xform.longitude                         ,
+    CASE
+      WHEN xform.latitude is NULL OR
+          xform.longitude IS NULL THEN
+        NULL
+      ELSE
+          ST_SetSRID(ST_MakePoint(xform.longitude, xform.latitude),4326) -- Values are BC Albers. but we are using WGS84 Lat Lon to avoid rounding errors
+    END AS geom                             ,
     xform.ground_elevation                  ,
     xform.well_orientation                  ,
     xform.ground_elevation_method_code      ,
@@ -634,8 +650,9 @@ BEGIN
     production_data.net_drawdown            ,
     false                                   ,
     xform.decommission_details              ,
-    xform.comments                          ,    
-    'Published'
+    xform.comments                          ,
+    xform.well_publication_status_code      ,
+    xform.aquifer_lithology_code
   FROM xform_well xform
   LEFT JOIN wells.wells_production_data production_data ON production_data.well_id=xform.well_id;
 
@@ -689,9 +706,9 @@ BEGIN
     END AS screen_assembly_type_code,
     screens.screen_slot_size        ,
     screens.when_created            ,
-    screens.when_updated            ,
+    coalesce(screens.when_updated, screens.when_created),
     screens.who_created             ,
-    screens.who_updated
+    coalesce(screens.who_updated, screens.who_created)
   FROM wells.wells_screens screens
   INNER JOIN xform_well xform ON xform.well_id=screens.well_id;
 
@@ -754,7 +771,10 @@ BEGIN
             WHEN 'Y' THEN TRUE
             WHEN 'N' THEN FALSE
         END                               ,
-        casings.when_created, casings.when_updated, casings.who_created, casings.who_updated
+        casings.when_created,
+        coalesce(casings.when_updated, casings.when_created),
+        casings.who_created,
+        coalesce(casings.who_updated, casings.who_created)
     FROM wells.wells_casings casings
     INNER JOIN xform_well xform ON xform.well_id=casings.well_id;
 
@@ -871,7 +891,10 @@ BEGIN
     perforations.liner_to              ,
     perforations.liner_perforation_from,
     perforations.liner_perforation_to  ,
-    perforations.who_created, perforations.when_created, perforations.who_updated, perforations.when_updated
+    perforations.who_created,
+    perforations.when_created,
+    coalesce(perforations.who_updated, perforations.who_created),
+    coalesce(perforations.when_updated, perforations.when_created)
   FROM wells.wells_perforations perforations
   INNER JOIN xform_well xform ON perforations.well_id=xform.well_id
   WHERE NOT (liner_from is  null
@@ -926,20 +949,20 @@ BEGIN
   -- 2018-SEPT-24 14:59 GW Aquifer app
   raise notice '...importing gw_aquifer_attrs data (aquifer)';
   INSERT INTO aquifer(
-    aquifer_id              
-    ,aquifer_name            
-    ,location_description    
-    ,area   
-    ,aquifer_vulnerablity_code               
+    aquifer_id
+    ,aquifer_name
+    ,location_description
+    ,area
+    ,aquifer_vulnerablity_code
     ,litho_stratographic_unit
-    ,mapping_year              
-    ,notes                     
-    ,aquifer_demand_code       
-    ,water_use_code            
-    ,aquifer_material_code     
-    ,aquifer_productivity_code 
-    ,quality_concern_code      
-    ,aquifer_subtype_code     
+    ,mapping_year
+    ,notes
+    ,aquifer_demand_code
+    ,water_use_code
+    ,aquifer_material_code
+    ,aquifer_productivity_code
+    ,quality_concern_code
+    ,aquifer_subtype_code
     ,create_user,create_date,update_user,update_date
     )
     SELECT
@@ -955,7 +978,7 @@ BEGIN
      END AS aquifer_vulnerablity_code
     ,attrs.litho_stratographic_unit
     ,null -- from spreadsheet temporary table
-    ,null 
+    ,null
     ,CASE attrs.demand
         WHEN 'Moderate' THEN 'M'
         WHEN 'Low'      THEN 'L'
@@ -1015,17 +1038,17 @@ BEGIN
 
   raise notice '...aquifer data updated from mapping spreadsheet';
 
--- With multiple aquifers per well, we choose the 'last updated' one 
+-- With multiple aquifers per well, we choose the 'last updated' one
   WITH best_match AS (
     SELECT DISTINCT ON (well.well_id)
-    well.well_tag_number,aws.aquifer_id  
+    well.well_tag_number,aws.aquifer_id
     FROM  wells.gw_aquifer_wells aws,
           wells.wells_wells well
     WHERE well.well_id = aws.well_id
-    ORDER BY well.well_id, coalesce(aws.when_updated, aws.when_created) DESC  
+    ORDER BY well.well_id, coalesce(aws.when_updated, aws.when_created) DESC
   )
   UPDATE well
-  SET   aquifer_id=best_match.aquifer_id 
+  SET   aquifer_id=best_match.aquifer_id
   FROM  best_match
   WHERE well.well_tag_number=best_match.well_tag_number;
 
@@ -1033,11 +1056,11 @@ BEGIN
 
   raise notice '...importing hydraulic_property data';
   INSERT INTO hydraulic_property(
-    hydraulic_property_guid  
-  ,storativity              
-  ,transmissivity           
+    hydraulic_property_guid
+  ,storativity
+  ,transmissivity
   ,avi
-  ,well_tag_number        
+  ,well_tag_number
   ,create_user,create_date,update_user,update_date
   )
   SELECT gen_random_uuid()
@@ -1178,7 +1201,7 @@ BEGIN
   TRUNCATE TABLE bcgs_number CASCADE;
   PERFORM migrate_bcgs();
   -- This truncates 'well' table too
-  TRUNCATE TABLE aquifer CASCADE; 
+  TRUNCATE TABLE aquifer CASCADE;
   PERFORM populate_well();
   PERFORM migrate_screens();
 END;

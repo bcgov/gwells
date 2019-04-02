@@ -25,6 +25,7 @@ import submissions.serializers
 from wells.models import Well, ActivitySubmission, WellStatusCode
 from wells.serializers import WellStackerSerializer
 
+import reversion
 
 logger = logging.getLogger(__name__)
 
@@ -174,7 +175,7 @@ class StackWells():
             for source_key, value in serializer.data.items():
                 # We only consider items with values, and keys that are in our target
                 # an exception is STAFF_EDIT submissions (we need to be able to accept empty values)
-                if value or value is False or value == 0:
+                if value is not None:
                     target_key = source_target_map.get(source_key, source_key)
                     if target_key in target_keys:
                         # The composite dict is built up by applying the set of submissions/edits in order.
@@ -201,10 +202,13 @@ class StackWells():
                         else:
                             composite[target_key] = value
 
+            composite['update_user'] = submission.create_user or composite['update_user']
+
         # Update the well view
         well_serializer = WellStackerSerializer(well, data=composite, partial=True)
         if well_serializer.is_valid(raise_exception=True):
-            well = well_serializer.save()
+            with reversion.create_revision():
+                well = well_serializer.save()
 
         return well
 

@@ -33,8 +33,9 @@ export default {
             const keyCloakScript = document.createElement('script')
             keyCloakScript.onload = () => {
               // Construct the Keycloak object and resolve the promise.
-              const keycloak = window.Keycloak(response.data)
-              resolve(keycloak)
+              Vue.prototype.$keycloak = window.Keycloak(response.data)
+
+              resolve(Vue.prototype.$keycloak)
             }
             keyCloakScript.async = true
             keyCloakScript.setAttribute('src', jsUrl)
@@ -75,16 +76,26 @@ export default {
     }, delay * 1000)
   },
 
-  renewToken (instance) {
+  renewToken (instance, retries = 0) {
+    const maxRetries = 2
+
     instance.updateToken(1800).success((refreshed) => {
       if (refreshed) {
         this.setLocalToken(instance)
       }
       this.scheduleRenewal(instance)
-    }).error(() => {
+    }).error((e) => {
+      console.log(e)
       // The refresh token is expired or was rejected
-      this.removeLocalToken()
-      instance.clearToken()
+      // we will retry after 60 sec (up to the count defined by maxRetries)
+      if (retries > maxRetries) {
+        this.removeLocalToken()
+        instance.clearToken()
+      } else {
+        setTimeout(() => {
+          this.renewToken(instance, retries + 1)
+        }, 60000)
+      }
     })
   },
 

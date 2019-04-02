@@ -17,7 +17,7 @@ from rest_framework import serializers
 from django.db import transaction
 from gwells.models import ProvinceStateCode
 from gwells.serializers import AuditModelSerializer
-from registries.serializers import PersonBasicSerializer, OrganizationNameListSerializer
+from registries.serializers import PersonNameSerializer, OrganizationNameListSerializer
 from wells.models import (
     ActivitySubmission,
     Casing,
@@ -28,6 +28,8 @@ from wells.models import (
     LithologyDescription,
     Screen,
     Well,
+    WellActivityCode,
+    AquiferLithologyCode,
 )
 
 
@@ -140,7 +142,7 @@ class WellDetailSerializer(AuditModelSerializer):
     screen_set = ScreenSerializer(many=True)
     linerperforation_set = LinerPerforationSerializer(many=True)
     decommission_description_set = DecommissionDescriptionSerializer(many=True)
-    person_responsible = PersonBasicSerializer()
+    person_responsible = PersonNameSerializer()
     company_of_person_responsible = OrganizationNameListSerializer()
     lithologydescription_set = LithologyDescriptionSerializer(many=True)
 
@@ -184,7 +186,10 @@ class WellDetailSerializer(AuditModelSerializer):
             "decommission_end_date",
             "person_responsible",
             "company_of_person_responsible",
+            "driller_name",
             "drilling_company",
+            "consultant_name",
+            "consultant_company",
             "well_identification_plate_attached",
             "id_plate_attached_by",
             "water_supply_system_name",
@@ -257,6 +262,7 @@ class WellDetailSerializer(AuditModelSerializer):
             "decommission_backfill_material",
             "decommission_details",
             "aquifer_vulnerability_index",
+            "aquifer_lithology",
             "storativity",
             "transmissivity",
             "hydraulic_conductivity",
@@ -280,8 +286,20 @@ class WellDetailSerializer(AuditModelSerializer):
             "screen_set",
             "linerperforation_set",
             "decommission_description_set",
-            "lithologydescription_set"
+            "lithologydescription_set",
         )
+
+
+class SubmissionReportsByWellSerializer(serializers.ModelSerializer):
+    """ serializes a list of submission reports for a given well, with basic info about each report """
+
+    well_activity_description = serializers.ReadOnlyField(
+        source='well_activity_type.description')
+
+    class Meta:
+        model = ActivitySubmission
+        fields = ("well", "well_activity_type", "create_user",
+                  "create_date", "well_activity_description", "filing_number")
 
 
 class WellDetailAdminSerializer(AuditModelSerializer):
@@ -289,9 +307,10 @@ class WellDetailAdminSerializer(AuditModelSerializer):
     screen_set = ScreenSerializer(many=True)
     linerperforation_set = LinerPerforationSerializer(many=True)
     decommission_description_set = DecommissionDescriptionSerializer(many=True)
-    person_responsible = PersonBasicSerializer()
+    person_responsible = PersonNameSerializer()
     company_of_person_responsible = OrganizationNameListSerializer()
     lithologydescription_set = LithologyDescriptionSerializer(many=True)
+    submission_reports = serializers.SerializerMethodField()
 
     # well vs. well_tag_number ; on submissions, we refer to well
     well = serializers.IntegerField(source='well_tag_number')
@@ -299,6 +318,28 @@ class WellDetailAdminSerializer(AuditModelSerializer):
     class Meta:
         model = Well
         fields = '__all__'
+        extra_fields = ['latitude', 'longitude']
+
+    # this allows us to call model methods on top of __all__
+    def get_field_names(self, declared_fields, info):
+        expanded_fields = super(WellDetailAdminSerializer, self).get_field_names(declared_fields, info)
+
+        if getattr(self.Meta, 'extra_fields', None):
+            return expanded_fields + self.Meta.extra_fields
+        else:
+            return expanded_fields
+
+    def get_submission_reports(self, instance):
+        records = instance.activitysubmission_set \
+            .exclude(well_activity_type='STAFF_EDIT') \
+            .order_by('create_date')
+
+        records = sorted(records, key=lambda record:
+                         (record.well_activity_type.code != WellActivityCode.types.legacy().code,
+                          record.well_activity_type.code != WellActivityCode.types.construction().code,
+                          record.create_date), reverse=True)
+
+        return SubmissionReportsByWellSerializer(records, many=True).data
 
 
 class WellStackerSerializer(AuditModelSerializer):
@@ -308,6 +349,7 @@ class WellStackerSerializer(AuditModelSerializer):
     linerperforation_set = LinerPerforationSerializer(many=True)
     decommission_description_set = DecommissionDescriptionSerializer(many=True)
     lithologydescription_set = LithologyDescriptionSerializer(many=True)
+    update_user = serializers.CharField()
 
     class Meta:
         model = Well
@@ -345,7 +387,8 @@ class WellStackerSerializer(AuditModelSerializer):
                         # variable)
                         record_data.pop('well', None)
                         # Create new instance of of the casing/screen/whatever record.
-                        obj = foreign_class.objects.create(well=instance, **record_data)
+                        obj = foreign_class.objects.create(
+                            well=instance, **record_data)
             else:
                 raise 'UNEXPECTED FIELD! {}'.format(field)
         instance = super().update(instance, validated_data)
@@ -362,13 +405,8 @@ class WellListSerializer(serializers.ModelSerializer):
             "well_tag_number",
             "identification_plate_number",
             "owner_full_name",
-            # "owner_mailing_address", # temporarily disabled - required for staff, hidden for public
-            # "owner_city",
-            # "owner_province_state",
-            # "owner_postal_code",
             "well_class",
             "well_subclass",
-            "intended_water_use",
             "well_status",
             "well_publication_status",
             "licenced_status",
@@ -445,19 +483,7 @@ class WellListSerializer(serializers.ModelSerializer):
             "water_quality_odour",
             "total_depth_drilled",
             "finished_well_depth",
-            "final_casing_stick_up",
-            "bedrock_depth",
-            "water_supply_system_name",
-            "water_supply_system_well_name",
-            "static_water_level",
             "well_yield",
-            "artesian_flow",
-            "artesian_pressure",
-            "well_cap_type",
-            "well_disinfected",
-            "comments",
-            "alternative_specs_submitted",
-            "well_yield_unit",
             "diameter",
             "observation_well_number",
             "observation_well_status",
@@ -473,6 +499,7 @@ class WellListSerializer(serializers.ModelSerializer):
             "decommission_backfill_material",
             "decommission_details",
             "aquifer_vulnerability_index",
+            "aquifer_lithology",
             "storativity",
             "transmissivity",
             "hydraulic_conductivity",
@@ -482,8 +509,32 @@ class WellListSerializer(serializers.ModelSerializer):
             "testing_duration",
             "analytic_solution_type",
             "boundary_effect",
+            "final_casing_stick_up",
+            "bedrock_depth",
+            "artesian_flow",
+            "artesian_pressure",
+            "well_cap_type",
+            "well_disinfected",
+            "static_water_level",
         )
 
+
+class WellListAdminSerializer(WellListSerializer):
+
+    class Meta:
+        model = Well
+        fields = WellListSerializer.Meta.fields + (
+            'create_user',
+            'create_date',
+            'update_user',
+            'update_date',
+            'well_publication_status',
+            'owner_mailing_address',
+            'owner_city',
+            'owner_province_state',
+            'owner_postal_code',
+            'internal_comments',
+        )
 
 class WellTagSearchSerializer(serializers.ModelSerializer):
     """ serializes fields used for searching for well tags """
@@ -491,3 +542,12 @@ class WellTagSearchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Well
         fields = ("well_tag_number", "owner_full_name")
+
+
+class WellLocationSerializer(serializers.ModelSerializer):
+    """ serializes well locations """
+
+    class Meta:
+        model = Well
+        fields = ("well_tag_number", "identification_plate_number",
+                  "latitude", "longitude")

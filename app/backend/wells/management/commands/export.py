@@ -1,3 +1,16 @@
+"""
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+"""
 import csv
 import zipfile
 import os
@@ -38,17 +51,19 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS('export complete'))
 
     def upload_files(self, zip_filename, spreadsheet_filename):
+        is_secure = get_env_variable('S3_USE_SECURE', '1', warn=False) is '1'
         minioClient = Minio(get_env_variable('S3_HOST'),
                             access_key=get_env_variable('S3_PUBLIC_ACCESS_KEY'),
                             secret_key=get_env_variable('S3_PUBLIC_SECRET_KEY'),
-                            secure=True)
+                            secure=is_secure)
         for filename in (zip_filename, spreadsheet_filename):
             logger.info('uploading {}'.format(filename))
             with open(filename, 'rb') as file_data:
                 file_stat = os.stat(filename)
                 # Do we need to remove the existing files 1st?
+                target = 'export/{}'.format(filename)
                 minioClient.put_object(get_env_variable('S3_WELL_EXPORT_BUCKET'),
-                                       filename,
+                                       target,
                                        file_data,
                                        file_stat.st_size)
 
@@ -131,7 +146,7 @@ class Command(BaseCommand):
  land_district_code,
  legal_pid,
  well_location_description,
- latitude, longitude, utm_zone_code, utm_northing, utm_easting,
+ st_y(geom) as latitude, st_x(geom) as longitude, utm_zone_code, utm_northing, utm_easting,
  coordinate_acquisition_code, bcgs_id,
  construction_start_date, construction_end_date, alteration_start_date,
  alteration_end_date, decommission_start_date, decommission_end_date,
@@ -163,12 +178,12 @@ class Command(BaseCommand):
  hydro_fracturing_performed, hydro_fracturing_yield_increase,
  decommission_reason, decommission_method_code, decommission_details, decommission_sealant_material,
  decommission_backfill_material,
- comments, aquifer_id,
+ comments,
  drilling_company.drilling_company_code,
  ems,
- aquifer_id,
  registries_person.surname as person_responsible,
- registries_organization.name as company_of_person_responsible
+ registries_organization.name as company_of_person_responsible,
+ aquifer_id
  from well
  left join well_subclass_code as wsc on wsc.well_subclass_guid = well.well_subclass_guid
  left join drilling_company on

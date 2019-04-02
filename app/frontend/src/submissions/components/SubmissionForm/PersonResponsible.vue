@@ -237,18 +237,22 @@ export default {
       }
     },
     personNameReg (option) {
-      const drillReg = option.registrations.find((item) => {
-        return item.registries_activity === 'DRILL'
-      })
-      const drillNo = (drillReg && drillReg.registration_no) ? drillReg.registration_no : 'Registration Number Unavailable'
-      return option.name + ' (' + drillNo + ')'
+      if (option && option.registrations) {
+        const drillReg = option.registrations.find((item) => {
+          return item.registries_activity === 'DRILL'
+        })
+        const drillNo = (drillReg && drillReg.registration_no) ? drillReg.registration_no : 'Registration Number Unavailable'
+        return option.name + ' (' + drillNo + ')'
+      } else {
+        return ''
+      }
     }
   },
   watch: {
     personResponsible (val, prev) {
       // reset list of people when user finished selecting a person
       this.personOptions = []
-      if (prev) {
+      if (val && prev && val.name !== prev.name) {
         this.drillerSameAsPersonResponsibleInput = false
       }
       this.drillerNameInput = (this.personResponsible && this.drillerSameAsPersonResponsible) ? this.personResponsible.name : ''
@@ -259,10 +263,10 @@ export default {
     }
   },
   created () {
-    ApiService.query(`drillers/names/`).then((response) => {
+    ApiService.query(`drillers/names`).then((response) => {
       this.persons = response.data
     })
-    ApiService.query('organizations/names/').then((response) => {
+    ApiService.query('organizations/names').then((response) => {
       this.companies = response.data
     })
   }

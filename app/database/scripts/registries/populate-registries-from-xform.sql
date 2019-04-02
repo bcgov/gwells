@@ -29,7 +29,7 @@ INSERT INTO registries_organization (
 ,'DATALOAD_USER'
 ,'2018-01-01 00:00:00-08'::timestamp
 ,'1970-01-01 00:00:00-08'::timestamp
-,null::timestamp
+,'9999-12-31 23:59:59-999999'::timestamp
 ,gen_random_uuid()
 ,companyaddress
 ,companycity
@@ -75,7 +75,7 @@ INSERT INTO registries_organization (
 ,'DATALOAD_USER'
 ,'2018-01-01 00:00:00-08'::timestamp
 ,'1970-01-01 00:00:00-08'::timestamp
-,null::timestamp
+,'9999-12-31 23:59:59-999999'::timestamp
 ,gen_random_uuid()
 ,companyaddress
 ,companycity
@@ -122,7 +122,7 @@ INSERT INTO registries_organization (
 ,'DATALOAD_USER'
 ,'2018-01-01 00:00:00-08'::timestamp
 ,'1970-01-01 00:00:00-08'::timestamp
-,null::timestamp
+,'9999-12-31 23:59:59-999999'::timestamp
 ,gen_random_uuid()
 ,companyaddress
 ,companycity
@@ -158,12 +158,12 @@ SELECT
  firstname
 ,lastname
 ,'1970-01-01 00:00:00-08'
-,null
+,'9999-12-31 23:59:59-999999'
 ,reg_guid
 ,'DATALOAD_USER'
 ,'2018-01-01 00:00:00-08'
 ,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08' 
+,'2018-01-01 00:00:00-08'
 from xform_registries_drillers_reg xform;
 
 -- Driller Contact details 286 / 285
@@ -184,9 +184,9 @@ INSERT INTO registries_contact_detail (
  'DATALOAD_USER'
 ,'2018-01-01 00:00:00-08'
 ,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08' 
+,'2018-01-01 00:00:00-08'
 ,'1970-01-01 00:00:00-08'
-,null
+,'9999-12-31 23:59:59-999999'
 ,gen_random_uuid()
 ,cell_phone
 ,null
@@ -211,12 +211,12 @@ SELECT
  firstname
 ,lastname
 ,'1970-01-01 00:00:00-08'
-,null
+,'9999-12-31 23:59:59-999999'
 ,reg_guid
 ,'DATALOAD_USER'
 ,'2018-01-01 00:00:00-08'
 ,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08' 
+,'2018-01-01 00:00:00-08'
 from xform_registries_pump_installers_reg xform
 where not exists (
     select 1 from registries_person existing
@@ -238,13 +238,13 @@ INSERT INTO registries_contact_detail (
 ,contact_tel
 ,contact_email
 ,person_guid
-) SELECT 
+) SELECT
  'DATALOAD_USER'
 ,'2018-01-01 00:00:00-08'
 ,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08' 
+,'2018-01-01 00:00:00-08'
 ,'1970-01-01 00:00:00-08'
-,null
+,'9999-12-31 23:59:59-999999'
 ,gen_random_uuid()
 ,cell_phone
 ,null
@@ -276,12 +276,12 @@ SELECT
  firstname
 ,lastname
 ,'1970-01-01 00:00:00-08'
-,null
+,'9999-12-31 23:59:59-999999'
 ,removed_guid
 ,'DATALOAD_USER'
 ,'2018-01-01 00:00:00-08'
 ,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08' 
+,'2018-01-01 00:00:00-08'
 from xform_registries_removed_from xform
 where not exists (
     select 1 from registries_person existing
@@ -303,7 +303,7 @@ and per.person_guid = xform.removed_guid
 and per.organization_guid is null;
 */
 
--- TODO NOTE we need to redo Data Model so that a Person can have multiple Contact Details, 
+-- TODO NOTE we need to redo Data Model so that a Person can have multiple Contact Details,
 -- and can indeed work for more than one company at a time (e.g. Pump Installer & Driller )
 -- so Person --< Relationship (PUMP, DRILLER) >- Organizatino
 
@@ -325,9 +325,9 @@ INSERT INTO registries_contact_detail (
  'DATALOAD_USER'
 ,'2018-01-01 00:00:00-08'
 ,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08' 
+,'2018-01-01 00:00:00-08'
 ,'1970-01-01 00:00:00-08'
-,null
+,'9999-12-31 23:59:59-999999'
 ,gen_random_uuid()
 ,null -- TODO why no cellphone?
 ,companyemail
@@ -362,7 +362,7 @@ SELECT
  'DATALOAD_USER'
 ,'2018-01-01 00:00:00-08'
 ,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08' 
+,'2018-01-01 00:00:00-08'
 ,gen_random_uuid()
 ,welldrillerregno
 ,registrationdate
@@ -410,7 +410,7 @@ SELECT
  'DATALOAD_USER'
 ,'2018-01-01 00:00:00-08'
 ,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08' 
+,'2018-01-01 00:00:00-08'
 ,gen_random_uuid()
 ,xform.wellpumpinstallerregno
 ,xform.registrationdate
@@ -427,7 +427,7 @@ and   xform.lastname = per.surname;
 -- TODO Cannot use reg_guid as this PERSON may have been
 --      entered as driller
 
- 
+
 -- Attach companies for whom the pump installers work 295 / 286
 \echo '...Updating Register, attaching companies from Pump Installer Registry'
 UPDATE registries_register reg
@@ -464,7 +464,7 @@ SELECT
  'DATALOAD_USER'
 ,'2018-01-01 00:00:00-08'
 ,'DATALOAD_USER'
-,'2018-01-01 00:00:00-08' 
+,'2018-01-01 00:00:00-08'
 ,gen_random_uuid()
 ,xform.registrationnumber
 ,xform.registrationdate::date
@@ -557,16 +557,16 @@ SELECT
 ,COALESCE(xform.certificatenumber, 'N/A')
 ,CASE typeofcertificate
   WHEN 'Water Well Driller, Prov. Of BC'                 THEN  'a4b2e41c-3796-4c4c-ae28-eb6ad30202d9'::uuid
-  WHEN 'Geoexchange Driller, Prov. Of BC'                THEN '28bf8730-dbb7-4218-8e9f-06bd51f60161'::uuid 
+  WHEN 'Geoexchange Driller, Prov. Of BC'                THEN '28bf8730-dbb7-4218-8e9f-06bd51f60161'::uuid
   WHEN 'Geotechnical/Envrionmental Driller, Prov. Of BC' THEN 'da85087a-9764-410b-908e-b2b65f3dfb48'::uuid
   WHEN 'Geotechnical / Environmental, Prov. Of BC'       THEN 'da85087a-9764-410b-908e-b2b65f3dfb48'::uuid
   WHEN 'Geotechnical/Environmental Driller, Prov. Of BC' THEN 'da85087a-9764-410b-908e-b2b65f3dfb48'::uuid
-  WHEN 'Groundwater Drilling Technician, CGWA4'          THEN '4a059930-265f-43f5-9dbb-c71862ccc5b5'::uuid 
-  WHEN 'Ground Water Drilling Technician, CGWA'          THEN '4a059930-265f-43f5-9dbb-c71862ccc5b5'::uuid 
-  WHEN 'Water Well Driller, Alberta Journeyman Certificate'         THEN '5856eb50-7ea3-45c7-b882-a8863cc36b73'::uuid 
-  WHEN 'Water Well Driller, Saskatchewan Journeyperson Certificate' THEN 'a17cc1f8-62c7-4715-93fb-b4c66986d9a7'::uuid 
-  WHEN 'Well Technician Class 1 Drilling, Ontario Ministry of Environment' THEN '9349a159-6739-4623-9f7d-80b904b8f885'::uuid 
-  WHEN 'Ontario Well Technician Licence'     THEN 'e0d774bd-aba9-4a6c-9d5e-4020cfe82865'::uuid 
+  WHEN 'Groundwater Drilling Technician, CGWA4'          THEN '4a059930-265f-43f5-9dbb-c71862ccc5b5'::uuid
+  WHEN 'Ground Water Drilling Technician, CGWA'          THEN '4a059930-265f-43f5-9dbb-c71862ccc5b5'::uuid
+  WHEN 'Water Well Driller, Alberta Journeyman Certificate'         THEN '5856eb50-7ea3-45c7-b882-a8863cc36b73'::uuid
+  WHEN 'Water Well Driller, Saskatchewan Journeyperson Certificate' THEN 'a17cc1f8-62c7-4715-93fb-b4c66986d9a7'::uuid
+  WHEN 'Well Technician Class 1 Drilling, Ontario Ministry of Environment' THEN '9349a159-6739-4623-9f7d-80b904b8f885'::uuid
+  WHEN 'Ontario Well Technician Licence'     THEN 'e0d774bd-aba9-4a6c-9d5e-4020cfe82865'::uuid
   ELSE 'e368e066-137b-491a-af2a-da3bf2936e6d'::uuid
  END AS acc_cert_guid
 ,reg.register_guid
@@ -606,7 +606,7 @@ SELECT
 ,gen_random_uuid()
 ,xform.registrationdate -- default in this case
 ,xform.registrationdate -- default in this case
-,null -- still Registered 
+,'9999-12-31 23:59:59-999999' -- still Registered
 ,app.application_guid
 ,'A'
 from registries_register reg,
@@ -645,7 +645,7 @@ SELECT
 ,gen_random_uuid()
 ,xform.registrationdate -- default in this case
 ,xform.registrationdate -- default in this case
-,null -- still Registered 
+,'9999-12-31 23:59:59-999999' -- still Registered
 ,app.application_guid
 ,'A'
 from registries_register reg,
@@ -735,16 +735,16 @@ SELECT
 ,COALESCE(xform.certificatenumber, 'N/A')
 ,CASE typeofcertificate
   WHEN 'Water Well Driller, Prov. Of BC'                 THEN  'a4b2e41c-3796-4c4c-ae28-eb6ad30202d9'::uuid
-  WHEN 'Geoexchange Driller, Prov. Of BC'                THEN '28bf8730-dbb7-4218-8e9f-06bd51f60161'::uuid 
+  WHEN 'Geoexchange Driller, Prov. Of BC'                THEN '28bf8730-dbb7-4218-8e9f-06bd51f60161'::uuid
   WHEN 'Geotechnical/Envrionmental Driller, Prov. Of BC' THEN 'da85087a-9764-410b-908e-b2b65f3dfb48'::uuid
   WHEN 'Geotechnical / Environmental, Prov. Of BC'       THEN 'da85087a-9764-410b-908e-b2b65f3dfb48'::uuid
   WHEN 'Geotechnical/Environmental Driller, Prov. Of BC' THEN 'da85087a-9764-410b-908e-b2b65f3dfb48'::uuid
-  WHEN 'Groundwater Drilling Technician, CGWA4'          THEN '4a059930-265f-43f5-9dbb-c71862ccc5b5'::uuid 
-  WHEN 'Ground Water Drilling Technician, CGWA'          THEN '4a059930-265f-43f5-9dbb-c71862ccc5b5'::uuid 
-  WHEN 'Water Well Driller, Alberta Journeyman Certificate'         THEN '5856eb50-7ea3-45c7-b882-a8863cc36b73'::uuid 
-  WHEN 'Water Well Driller, Saskatchewan Journeyperson Certificate' THEN 'a17cc1f8-62c7-4715-93fb-b4c66986d9a7'::uuid 
-  WHEN 'Well Technician Class 1 Drilling, Ontario Ministry of Environment' THEN '9349a159-6739-4623-9f7d-80b904b8f885'::uuid 
-  WHEN 'Ontario Well Technician Licence'     THEN 'e0d774bd-aba9-4a6c-9d5e-4020cfe82865'::uuid 
+  WHEN 'Groundwater Drilling Technician, CGWA4'          THEN '4a059930-265f-43f5-9dbb-c71862ccc5b5'::uuid
+  WHEN 'Ground Water Drilling Technician, CGWA'          THEN '4a059930-265f-43f5-9dbb-c71862ccc5b5'::uuid
+  WHEN 'Water Well Driller, Alberta Journeyman Certificate'         THEN '5856eb50-7ea3-45c7-b882-a8863cc36b73'::uuid
+  WHEN 'Water Well Driller, Saskatchewan Journeyperson Certificate' THEN 'a17cc1f8-62c7-4715-93fb-b4c66986d9a7'::uuid
+  WHEN 'Well Technician Class 1 Drilling, Ontario Ministry of Environment' THEN '9349a159-6739-4623-9f7d-80b904b8f885'::uuid
+  WHEN 'Ontario Well Technician Licence'     THEN 'e0d774bd-aba9-4a6c-9d5e-4020cfe82865'::uuid
   ELSE 'e368e066-137b-491a-af2a-da3bf2936e6d'::uuid
  END AS acc_cert_guid
 ,reg.register_guid
@@ -784,7 +784,7 @@ SELECT
 ,gen_random_uuid()
 ,xform.registrationdate -- default in this case
 ,xform.registrationdate -- default in this case
-,null -- still Registered 
+,'9999-12-31 23:59:59-999999' -- still Registered
 ,app.application_guid
 ,'A'
 from registries_register reg,
@@ -824,7 +824,7 @@ SELECT
 ,gen_random_uuid()
 ,xform.registrationdate -- default in this case
 ,xform.registrationdate -- default in this case
-,null -- still Registered 
+,'9999-12-31 23:59:59-999999' -- still Registered
 ,app.application_guid
 ,'A'
 from registries_register reg,
@@ -913,16 +913,16 @@ SELECT
 ,COALESCE(xform.certificatenumber, 'N/A')
 ,CASE typeofcertificate
   WHEN 'Water Well Driller, Prov. Of BC'                 THEN  'a4b2e41c-3796-4c4c-ae28-eb6ad30202d9'::uuid
-  WHEN 'Geoexchange Driller, Prov. Of BC'                THEN '28bf8730-dbb7-4218-8e9f-06bd51f60161'::uuid 
+  WHEN 'Geoexchange Driller, Prov. Of BC'                THEN '28bf8730-dbb7-4218-8e9f-06bd51f60161'::uuid
   WHEN 'Geotechnical/Envrionmental Driller, Prov. Of BC' THEN 'da85087a-9764-410b-908e-b2b65f3dfb48'::uuid
   WHEN 'Geotechnical / Environmental, Prov. Of BC'       THEN 'da85087a-9764-410b-908e-b2b65f3dfb48'::uuid
   WHEN 'Geotechnical/Environmental Driller, Prov. Of BC' THEN 'da85087a-9764-410b-908e-b2b65f3dfb48'::uuid
-  WHEN 'Groundwater Drilling Technician, CGWA4'          THEN '4a059930-265f-43f5-9dbb-c71862ccc5b5'::uuid 
-  WHEN 'Ground Water Drilling Technician, CGWA'          THEN '4a059930-265f-43f5-9dbb-c71862ccc5b5'::uuid 
-  WHEN 'Water Well Driller, Alberta Journeyman Certificate'         THEN '5856eb50-7ea3-45c7-b882-a8863cc36b73'::uuid 
-  WHEN 'Water Well Driller, Saskatchewan Journeyperson Certificate' THEN 'a17cc1f8-62c7-4715-93fb-b4c66986d9a7'::uuid 
-  WHEN 'Well Technician Class 1 Drilling, Ontario Ministry of Environment' THEN '9349a159-6739-4623-9f7d-80b904b8f885'::uuid 
-  WHEN 'Ontario Well Technician Licence'     THEN 'e0d774bd-aba9-4a6c-9d5e-4020cfe82865'::uuid 
+  WHEN 'Groundwater Drilling Technician, CGWA4'          THEN '4a059930-265f-43f5-9dbb-c71862ccc5b5'::uuid
+  WHEN 'Ground Water Drilling Technician, CGWA'          THEN '4a059930-265f-43f5-9dbb-c71862ccc5b5'::uuid
+  WHEN 'Water Well Driller, Alberta Journeyman Certificate'         THEN '5856eb50-7ea3-45c7-b882-a8863cc36b73'::uuid
+  WHEN 'Water Well Driller, Saskatchewan Journeyperson Certificate' THEN 'a17cc1f8-62c7-4715-93fb-b4c66986d9a7'::uuid
+  WHEN 'Well Technician Class 1 Drilling, Ontario Ministry of Environment' THEN '9349a159-6739-4623-9f7d-80b904b8f885'::uuid
+  WHEN 'Ontario Well Technician Licence'     THEN 'e0d774bd-aba9-4a6c-9d5e-4020cfe82865'::uuid
   ELSE 'e368e066-137b-491a-af2a-da3bf2936e6d'::uuid
  END AS acc_cert_guid
 ,reg.register_guid
@@ -961,7 +961,7 @@ SELECT
 ,gen_random_uuid()
 ,xform.registrationdate -- default in this case
 ,xform.registrationdate -- default in this case
-,null -- still Registered 
+,'9999-12-31 23:59:59-999999' -- still Registered
 ,app.application_guid
 ,'A'
 from registries_register reg,
@@ -1001,7 +1001,7 @@ SELECT
 ,gen_random_uuid()
 ,xform.registrationdate -- default in this case
 ,xform.registrationdate -- default in this case
-,null -- still Registered 
+,'9999-12-31 23:59:59-999999' -- still Registered
 ,app.application_guid
 ,'A'
 from registries_register reg,
@@ -1017,7 +1017,7 @@ and xform.registrationdate >  '2016-02-29'
 and xform.name = concat(per.surname, ', ', per.first_name)
 ;
 
--- 320 
+-- 320
 \echo 'Inserting "Fake" Applications for Pump Installers (PUMPINST)'
 \echo '.. to be fixed manually post-migration or via a '
 \echo '.. subsequent re-migration after data cleanup in'
@@ -1048,7 +1048,7 @@ SELECT
 ,'N/A' -- why no cert #?
 ,CASE typeofcertificate
   WHEN 'Ground Water Pump Technician, CGWA'           THEN '1886daa8-e799-49f0-9034-33d02bad543d'::uuid
-  WHEN 'Ground Water Pump Technician, Class 2, CGWA'  THEN '1dfd37f5-5082-497a-be4e-6facd1d4dee9'::uuid 
+  WHEN 'Ground Water Pump Technician, Class 2, CGWA'  THEN '1dfd37f5-5082-497a-be4e-6facd1d4dee9'::uuid
   WHEN 'Well Pump Installer, Prov. Of BC'             THEN '7bf968aa-c6e0-4f57-b4f4-58723214de80'::uuid
   WHEN 'ITA'                                          THEN '7bf968aa-c6e0-4f57-b4f4-58723214de80'::uuid
   WHEN 'Well Technician, Ontario Ministry of Environment' THEN '88d5d0aa-d2aa-450a-9708-a911dce42f7f'::uuid
@@ -1089,7 +1089,7 @@ SELECT
 ,gen_random_uuid()
 ,xform.registrationdate -- default in this case
 ,xform.registrationdate -- default in this case
-,null -- still Registered 
+,'9999-12-31 23:59:59-999999' -- still Registered
 ,app.application_guid
 ,'A'
 from registries_register reg,
@@ -1267,10 +1267,10 @@ SELECT
 ,xform.notes
 ,null
 ,xform.wellpumpinstallerregno
-,CASE 
-  WHEN typeofcertificate like '%Ontario%' THEN '88d5d0aa-d2aa-450a-9708-a911dce42f7f'::uuid 
-  WHEN typeofcertificate like '%CGWA%'    THEN '1886daa8-e799-49f0-9034-33d02bad543d'::uuid 
-  WHEN typeofcertificate like '%BC%'      THEN '7bf968aa-c6e0-4f57-b4f4-58723214de80'::uuid 
+,CASE
+  WHEN typeofcertificate like '%Ontario%' THEN '88d5d0aa-d2aa-450a-9708-a911dce42f7f'::uuid
+  WHEN typeofcertificate like '%CGWA%'    THEN '1886daa8-e799-49f0-9034-33d02bad543d'::uuid
+  WHEN typeofcertificate like '%BC%'      THEN '7bf968aa-c6e0-4f57-b4f4-58723214de80'::uuid
   ELSE 'a53d3f1e-65eb-46b7-8999-e662d654df77'::uuid
  END AS acc_cert_guid
 ,reg.register_guid

@@ -1,6 +1,6 @@
 from django.urls import reverse
 from django.test import TestCase
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 
 from rest_framework.test import APITestCase
 from rest_framework import status
@@ -36,8 +36,12 @@ class TestPermissionsNoRights(APITestCase):
 class TestPermissionsViewRights(APITestCase):
 
     def setUp(self):
+        roles = [WELLS_VIEWER_ROLE, ]
+        for role in roles:
+            group = Group(name=role)
+            group.save()
         user, created = User.objects.get_or_create(username='view_rights')
-        roles_to_groups(user, [WELLS_VIEWER_ROLE, ])
+        roles_to_groups(user, roles)
         self.client.force_authenticate(user)
 
     def test_view_rights_attempts_get_submission_list(self):
@@ -70,8 +74,14 @@ class TestPermissionsSubmissionRights(APITestCase):
     fixtures = ['gwells-codetables.json', 'wellsearch-codetables.json' ]
 
     def setUp(self):
+        roles = [WELLS_EDIT_ROLE, ]
+        for role in roles:
+            group = Group(name=role)
+            group.save()
         user, created = User.objects.get_or_create(username='edit_rights')
-        roles_to_groups(user, [WELLS_EDIT_ROLE, ])
+        user.profile.username = user.username
+        user.save()
+        roles_to_groups(user, roles)
         self.client.force_authenticate(user)
 
     def test_edit_rights_attempts_construction_submition(self):

@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('gwells', '0001_initial'),
+        # ('gwells', '0001_initial'),
     ]
 
     operations = [
@@ -144,7 +144,10 @@ class Migration(migrations.Migration):
                 ('website_url', models.URLField(null=True, verbose_name='Website')),
                 ('effective_date', models.DateField(default=datetime.date.today)),
                 ('expired_date', models.DateField(blank=True, null=True)),
-                ('province_state', models.ForeignKey(db_column='province_state_code', on_delete=django.db.models.deletion.PROTECT, related_name='companies', to='gwells.ProvinceStateCode', verbose_name='Province/State')),
+                ('province_state', models.IntegerField(db_column='province_state_code', null=True)),
+                # In order to avoid a circular dependancy error, the province_state beings life as an Integer
+                # and is set to be a ForeignKey in a later migration step. (0013_auto_20180712_2107.py)
+                # ('province_state', models.ForeignKey(db_column='province_state_code', on_delete=django.db.models.deletion.PROTECT, related_name='companies', to='gwells.ProvinceStateCode', verbose_name='Province/State')),
             ],
             options={
                 'verbose_name_plural': 'Organizations',

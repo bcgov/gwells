@@ -12,81 +12,70 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-  <div class="card" v-if="userRoles.wells.edit || userRoles.submissions.edit">
-    <div class="card-body">
-      <!-- Document Uploading alerts -->
-      <b-modal
-        v-model="files_uploading"
-        hide-header
-        hide-footer
-        hide-header-close><b-alert show v-if="files_uploading">File Upload In Progress...</b-alert>
-      </b-modal>
-      <b-modal
-        v-model="file_upload_error"
-        hide-header
-        hide-footer
-        hide-header-close><b-alert show v-if="!files_uploading && file_upload_error" variant="warning" >{{file_upload_error}}</b-alert>
-      </b-modal>
-      <b-modal
-        v-model="file_upload_success"
-        hide-header
-        hide-footer
-        hide-header-close><b-alert show v-if="!files_uploading && file_upload_success" variant="success" >Successfully uploaded all files</b-alert>
-      </b-modal>
+  <div class="container p-1">
+    <b-card v-if="breadcrumbs && breadcrumbs.length" no-body class="mb-3 d-print-none">
+      <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"></b-breadcrumb>
+    </b-card>
+    <div class="card" v-if="userRoles.wells.edit || userRoles.submissions.edit">
+      <div class="card-body">
 
-      <b-form @submit.prevent="confirmSubmit">
-        <!-- if preview === true : Preview -->
-        <submission-preview
-          v-if="preview"
-          :form="form"
-          :activity="activityType"
-          :sections="displayFormSection"
-          :errors="errors"
-          :reportSubmitted="formSubmitSuccess"
-          :formSubmitLoading="formSubmitLoading"
-          :uploadedFiles="uploadedFiles"
-          v-on:back="handlePreviewBackButton"
-          v-on:startNewReport="handleExitPreviewAfterSubmit"
-          />
-        <!-- if preview === false : Activity submission form -->
-        <activity-submission-form
-          v-else
-          :form="form"
-          :activityType.sync="activityType"
-          :sections="displayFormSection"
-          :formSteps="formSteps"
-          :errors="errors"
-          :formIsFlat.sync="formIsFlat"
-          :trackValueChanges="trackValueChanges"
-          :formSubmitLoading="formSubmitLoading"
-          :isStaffEdit="isStaffEdit"
-          :loading="loading"
-          :uploadedFiles="uploadedFiles"
-          v-on:preview="handlePreviewButton"
-          v-on:submit_edit="formSubmit"
-          v-on:resetForm="resetForm"
-          v-on:fetchFiles="fetchFiles"
-          />
+        <b-form @submit.prevent="confirmSubmit">
+          <!-- if preview === true : Preview -->
+          <submission-preview
+            v-if="preview"
+            :form="form"
+            :activity="activityType"
+            :sections="displayFormSection"
+            :errors="errors"
+            :reportSubmitted="formSubmitSuccess"
+            :formSubmitLoading="formSubmitLoading"
+            :uploadedFiles="uploadedFiles"
+            v-on:back="handlePreviewBackButton"
+            v-on:startNewReport="handleExitPreviewAfterSubmit"
+            v-on:fetchFiles="fetchFiles"
+            />
+          <!-- if preview === false : Activity submission form -->
+          <activity-submission-form
+            v-else
+            :form="form"
+            :submissionsHistory="submissionsHistory"
+            :activityType.sync="activityType"
+            :sections="displayFormSection"
+            :formSteps="formSteps"
+            :errors="errors"
+            :formIsFlat.sync="formIsFlat"
+            :trackValueChanges="trackValueChanges"
+            :formSubmitLoading="formSubmitLoading"
+            :isStaffEdit="isStaffEdit"
+            :loading="loading"
+            :uploadedFiles="uploadedFiles"
+            :formChanges="formChanges"
+            v-on:preview="handlePreviewButton"
+            v-on:submit_edit="formSubmit"
+            v-on:resetForm="resetForm"
+            v-on:fetchFiles="fetchFiles"
+            />
 
-        <!-- Form submission confirmation -->
-        <b-modal
-            v-model="confirmSubmitModal"
-            id="confirmSubmitModal"
-            centered
-            title="Confirm submission"
-            @shown="$refs.confirmSubmitConfirmBtn.focus()"
-            :return-focus="$refs.activitySubmitBtn">
-          Are you sure you want to submit this activity report?
-          <div slot="modal-footer">
-            <b-btn variant="primary" @click="confirmSubmitModal=false;formSubmit()" ref="confirmSubmitConfirmBtn">
-              Save
-            </b-btn>
-            <b-btn variant="light" @click="confirmSubmitModal=false">
-              Cancel
-            </b-btn>
-          </div>
-        </b-modal>
-      </b-form>
+          <!-- Form submission confirmation -->
+          <b-modal
+              v-model="confirmSubmitModal"
+              id="confirmSubmitModal"
+              centered
+              title="Confirm submission"
+              @shown="$refs.confirmSubmitConfirmBtn.focus()"
+              :return-focus="$refs.activitySubmitBtn">
+            Are you sure you want to submit this activity report?
+            <div slot="modal-footer">
+              <b-btn variant="primary" @click="confirmSubmitModal=false;formSubmit()" ref="confirmSubmitConfirmBtn">
+                Save
+              </b-btn>
+              <b-btn variant="light" @click="confirmSubmitModal=false">
+                Cancel
+              </b-btn>
+            </div>
+          </b-modal>
+        </b-form>
+      </div>
     </div>
   </div>
 </template>
@@ -101,6 +90,8 @@ import SubmissionPreview from '@/submissions/components/SubmissionPreview/Submis
 import filterBlankRows from '@/common/filterBlankRows.js'
 import ActivitySubmissionForm from '@/submissions/components/SubmissionForm/ActivitySubmissionForm.vue'
 import parseErrors from '@/common/helpers/parseErrors.js'
+import { diff } from 'deep-diff'
+
 export default {
   name: 'SubmissionsHome',
   mixins: [inputFormatMixin, filterBlankRows],
@@ -110,104 +101,7 @@ export default {
   },
   data () {
     return {
-      activityType: 'CON',
-      formIsFlat: false,
-      preview: false,
-      loading: false,
-      confirmSubmitModal: false,
-      formSubmitSuccess: false,
-      formSubmitSuccessWellTag: null,
-      formSubmitError: false,
-      formSubmitLoading: false,
-      sliding: null,
-      trackValueChanges: false,
-      errors: {},
-      form: {},
-      formOptions: {},
-      uploadedFiles: {},
-      formSteps: {
-        CON: [
-          'activityType',
-          'wellType',
-          'wellOwner',
-          'personResponsible',
-          'wellLocation',
-          'wellCoords',
-          'method',
-          'casings',
-          'backfill',
-          'lithology',
-          'liner',
-          'screens',
-          'filterPack',
-          'wellDevelopment',
-          'wellYield',
-          'waterQuality',
-          'wellCompletion',
-          'comments',
-          'documents'
-        ],
-        ALT: [
-          'activityType',
-          'wellType',
-          'wellOwner',
-          'personResponsible',
-          'wellLocation',
-          'wellCoords',
-          'method',
-          'casings',
-          'backfill',
-          'lithology',
-          'liner',
-          'screens',
-          'filterPack',
-          'wellDevelopment',
-          'wellYield',
-          'waterQuality',
-          'wellCompletion',
-          'comments',
-          'documents'
-        ],
-        DEC: [
-          'activityType',
-          'wellType',
-          'wellOwner',
-          'personResponsible',
-          'wellLocation',
-          'wellCoords',
-          'method',
-          'closureDescription',
-          'casings',
-          'decommissionInformation',
-          'comments',
-          'documents'
-        ],
-        STAFF_EDIT: [
-          'wellPublicationStatus',
-          'wellType',
-          'wellOwner',
-          'personResponsible',
-          'wellLocation',
-          'wellCoords',
-          'method',
-          'casings',
-          'backfill',
-          'lithology',
-          'liner',
-          'screens',
-          'filterPack',
-          'wellDevelopment',
-          'wellYield',
-          'waterQuality',
-          'wellCompletion',
-          'observationWellInfo',
-          'closureDescription',
-          'decommissionInformation',
-          'comments',
-          'documents',
-          'aquiferData'
-        ]
-      }
+      ...initialState()
     }
   },
   computed: {
@@ -226,6 +120,27 @@ export default {
     isStaffEdit () {
       return this.activityType === 'STAFF_EDIT'
     },
+    breadcrumbs () {
+      const breadcrumbs = []
+
+      if (this.isStaffEdit) {
+        breadcrumbs.push(
+          {
+            text: `Well Search`,
+            to: { name: 'wells-home' }
+          },
+          {
+            text: `Well ${this.$route.params.id} Summary`,
+            to: { name: 'wells-detail', params: { id: this.$route.params.id } }
+          },
+          {
+            text: `Edit Well`,
+            to: { name: 'SubmissionsEdit', params: { id: this.$route.params.id } }
+          }
+        )
+      }
+      return breadcrumbs
+    },
     ...mapGetters(['codes', 'userRoles', 'well', 'keycloak']),
     ...mapState('documentState', [
       'files_uploading',
@@ -237,18 +152,25 @@ export default {
   methods: {
     ...mapActions('documentState', [
       'uploadFiles',
-      'fileUploadSuccess'
+      'fileUploadSuccess',
+      'fileUploadFail'
     ]),
     formSubmit () {
+      if (!this.formChanges()) {
+        return
+      }
+
       const data = Object.assign({}, this.form)
       const meta = data.meta
 
       if (this.isStaffEdit) {
-        // Remove any fields that aren't changed
+        // We have to include both lat and lon for geom updates so we check if one has changed here
+        let skipLatLon = 'latitude' in meta.valueChanged || 'longitude' in meta.valueChanged
         Object.keys(data).forEach((key) => {
-          if (key !== 'well' && !(key in meta.valueChanged)) {
-            delete data[key]
-          }
+          // Skip lat lon if one of them has changed
+          if ((key === 'latitude' || key === 'longitude') && skipLatLon) { return }
+          // Remove any fields that aren't changed
+          if (key !== 'well' && !(key in meta.valueChanged)) { delete data[key] }
         })
       }
 
@@ -291,13 +213,22 @@ export default {
       // Depending on the type of submission (construction/decommission/alteration/edit) we post to
       // different endpoints.
       const PATH = this.codes.activity_types.find((item) => item.code === this.activityType).path
+
       ApiService.post(PATH, data).then((response) => {
         this.formSubmitSuccess = true
         this.formSubmitSuccessWellTag = response.data.well
 
         this.$emit('formSaved')
         // Save completed notification
-        this.$noty.success('<div class="notifyText">Changes Saved!</div>', { killer: true })
+
+        if (this.isStaffEdit) {
+          this.$noty.success('<div class="notifyText">Changes Saved!</div>', { killer: true })
+        } else {
+          this.$noty.success('<div aria-label="Close" class="closeBtn">x</div><div class="notifyText">Well report submitted.</div>', { killer: true, timeout: false })
+          this.$nextTick(function () {
+            window.scrollTo(0, 0)
+          })
+        }
 
         if (!this.form.well_tag_number) {
           this.setWellTagNumber(response.data.well)
@@ -310,26 +241,38 @@ export default {
           }
         })
 
+        this.form.meta.valueChanged = {}
+        // Set initial form fields for comparison with user input changes
+        Object.assign(this.compareForm, this.form)
+
         if (this.upload_files.length > 0) {
           if (response.data.filing_number) {
+            this.$noty.info('<div class="loader"></div><div class="notifyText">File Upload In Progress...</div>', { timeout: false })
             this.uploadFiles({
               documentType: 'submissions',
               recordId: response.data.filing_number
             }).then(() => {
               this.fileUploadSuccess()
               this.fetchFiles()
+              this.$noty.success('<div class="notifyText">Successfully Uploaded All Files</div>', { killer: true })
             }).catch((error) => {
-              console.log(error)
+              this.fileUploadFail()
+              console.error(error)
+              this.$noty.error('<div class="notifyText">Error Uploading Files</div>', { killer: true })
             })
           } else {
+            this.$noty.info('<div class="loader"></div><div class="notifyText">File Upload In Progress...</div>', { timeout: false })
             this.uploadFiles({
               documentType: 'wells',
               recordId: response.data.well
             }).then(() => {
+              this.$noty.success('<div class="notifyText">Successfully Uploaded All Files</div>', { killer: true })
               this.fileUploadSuccess()
               this.fetchFiles()
             }).catch((error) => {
+              this.fileUploadFail()
               console.log(error)
+              this.$noty.error('<div class="notifyText">Error Uploading Files</div>', { killer: true })
             })
           }
         }
@@ -352,13 +295,25 @@ export default {
         let cleanErrors = parseErrors(this.errors)
         let errTxt = cleanErrors.length > 1 ? 'Input Errors!' : 'Input Error!'
         // Error notifications
-        this.$noty.error('<div class="errorText">' + errTxt + '</div>', { timeout: 2000, killer: true })
+        this.$noty.error('<div class="errorTitle">' + errTxt + '</div>', { timeout: 2000, killer: true })
         cleanErrors.forEach(e => {
-          this.$noty.error('<b>Error: </b>' + e, { timeout: false })
+          this.$noty.error('<div aria-label="Close" class="closeBtn">x</div><div class="errorText"><b>Error: </b>' + e + '</div>', { timeout: false })
         })
       }).finally((response) => {
         this.formSubmitLoading = false
       })
+    },
+    formChanges () {
+      let differences = diff(this.compareForm, this.form)
+      if (differences) {
+        differences.forEach(function (d) {
+          if (d.lhs == null && d.rhs === '') {
+            this.form[d.path[0]] = null
+          }
+        })
+        return true
+      }
+      return false
     },
     confirmSubmit () {
       this.confirmSubmitModal = true
@@ -485,6 +440,7 @@ export default {
         testing_duration: '',
         analytic_solution_type: '',
         boundary_effect: '',
+        aquifer_lithology: '',
 
         // non-form fields that should be saved with form
         meta: {
@@ -539,6 +495,8 @@ export default {
       })
     },
     fetchFiles () {
+      this.uploadedFiles = {}
+
       // this.form.well is sometimes the tag number, and sometimes an object. This detects which is which
       let tag = this.form.well && isNaN(this.form.well) ? this.form.well.well_tag_number : this.form.well
 
@@ -548,122 +506,254 @@ export default {
             this.uploadedFiles = response.data
           })
       }
+    },
+    setupPage () {
+      Object.assign(this.$data, initialState())
+      this.resetForm()
+      this.$store.dispatch(FETCH_CODES)
+
+      if (this.$route.params.id) {
+        this.setWellTagNumber(this.$route.params.id)
+      }
+      if (this.$route.name === 'SubmissionsEdit') {
+        this.activityType = 'STAFF_EDIT'
+        this.formIsFlat = true
+
+        this.loading = true
+
+        ApiService.query(`wells/${this.$route.params.id}`).then((res) => {
+          Object.keys(res.data).forEach((key) => {
+            if (key in this.form) {
+              this.form[key] = res.data[key]
+            }
+          })
+          if (this.form.person_responsible && this.form.person_responsible.name === this.form.driller_name) {
+            this.form.meta.drillerSameAsPersonResponsible = true
+          }
+
+          // store the number of submissions already associated with this well
+          this.submissionsHistory = res.data.submission_reports || []
+
+          // Wait for the form update we just did to fire off change events.
+          this.$nextTick(() => {
+            this.form.meta.valueChanged = {}
+            this.loading = false
+            this.$nextTick(() => {
+              // We have to allow the UI to render all the components after the 'loading = false' setting,
+              // so we only start tracking changes after that.
+              this.trackValueChanges = true
+            })
+          })
+          // Set initial form fields for comparison with user input changes
+          Object.assign(this.compareForm, this.form)
+        }).catch((e) => {
+          console.error(e)
+        })
+      } else {
+        // Some of our child components need the well data, we dispatch the request here, in hopes
+        // that the data will be available by the time those components render.
+        this.$store.dispatch(FETCH_WELLS)
+        this.activityType = 'CON'
+        this.formIsFlat = false
+      }
+
+      this.fetchFiles()
     }
   },
   watch: {
     activityType () {
       this.resetForm()
+    },
+    // This watches for a route change between Submission and Well Edit and resets the page data
+    '$route' (to, from) {
+      this.setupPage()
     }
   },
   created () {
-    this.resetForm()
-    this.$store.dispatch(FETCH_CODES)
+    this.setupPage()
+  }
+}
 
-    if (this.$route.params.id) {
-      this.setWellTagNumber(this.$route.params.id)
+function initialState () {
+  return {
+    activityType: 'CON',
+    formIsFlat: false,
+    preview: false,
+    loading: false,
+    confirmSubmitModal: false,
+    formSubmitSuccess: false,
+    formSubmitSuccessWellTag: null,
+    formSubmitError: false,
+    formSubmitLoading: false,
+    sliding: null,
+    trackValueChanges: false,
+    errors: {},
+    form: {},
+    compareForm: {},
+    submissionsHistory: [], // historical submissions for each well (comes into play for staff edits)
+    formOptions: {},
+    uploadedFiles: {},
+    formSteps: {
+      CON: [
+        'activityType',
+        'wellType',
+        'wellOwner',
+        'personResponsible',
+        'wellLocation',
+        'wellCoords',
+        'method',
+        'casings',
+        'backfill',
+        'lithology',
+        'liner',
+        'screens',
+        'filterPack',
+        'wellDevelopment',
+        'wellYield',
+        'waterQuality',
+        'wellCompletion',
+        'comments',
+        'documents'
+      ],
+      ALT: [
+        'activityType',
+        'wellType',
+        'wellOwner',
+        'personResponsible',
+        'wellLocation',
+        'wellCoords',
+        'method',
+        'casings',
+        'backfill',
+        'lithology',
+        'liner',
+        'screens',
+        'filterPack',
+        'wellDevelopment',
+        'wellYield',
+        'waterQuality',
+        'wellCompletion',
+        'comments',
+        'documents'
+      ],
+      DEC: [
+        'activityType',
+        'wellType',
+        'wellOwner',
+        'personResponsible',
+        'wellLocation',
+        'wellCoords',
+        'method',
+        'closureDescription',
+        'casings',
+        'decommissionInformation',
+        'comments',
+        'documents'
+      ],
+      STAFF_EDIT: [
+        'submissionHistory',
+        'wellPublicationStatus',
+        'wellType',
+        'wellOwner',
+        'personResponsible',
+        'wellLocation',
+        'wellCoords',
+        'method',
+        'casings',
+        'backfill',
+        'lithology',
+        'liner',
+        'screens',
+        'filterPack',
+        'wellDevelopment',
+        'wellYield',
+        'waterQuality',
+        'wellCompletion',
+        'observationWellInfo',
+        'closureDescription',
+        'decommissionInformation',
+        'comments',
+        'documents',
+        'aquiferData',
+        'editHistory'
+      ]
     }
-    if (this.$route.name === 'SubmissionsEdit') {
-      this.activityType = 'STAFF_EDIT'
-      this.formIsFlat = true
-
-      this.loading = true
-
-      ApiService.query(`wells/${this.$route.params.id}`).then((res) => {
-        Object.keys(res.data).forEach((key) => {
-          if (key in this.form) {
-            this.form[key] = res.data[key]
-          }
-        })
-        if (this.form.person_responsible && this.form.person_responsible.name === this.form.driller_name) {
-          this.form.meta.drillerSameAsPersonResponsible = true
-        }
-        // Wait for the form update we just did to fire off change events.
-        this.$nextTick(() => {
-          this.form.meta.valueChanged = {}
-          this.loading = false
-          this.$nextTick(() => {
-            // We have to allow the UI to render all the components after the 'loading = false' setting,
-            // so we only start tracking changes after that.
-            this.trackValueChanges = true
-          })
-        })
-      }).catch((e) => {
-        console.error(e)
-      })
-    } else {
-      // Some of our child components need the well data, we dispatch the request here, in hopes
-      // that the data will be available by the time those components render.
-      this.$store.dispatch(FETCH_WELLS)
-    }
-
-    this.fetchFiles()
   }
 }
 </script>
 
 <style lang="scss">
-.slide-leave-active,
-.slide-enter-active {
-  transition: 1s;
-}
-.slide-enter {
-  transform: translate(100%, 0);
-}
-.slide-leave-to {
-  transform: translate(-100%, 0);
-}
-.bounce-enter-active {
-  animation: bounce-in .5s;
-}
-.bounce-leave-active {
-  animation: bounce-out .2s;
-}
-@keyframes bounce-in {
-  0% {
-    transform: scale(0);
+  .slide-leave-active,
+  .slide-enter-active {
+    transition: 1s;
   }
-  50% {
-    transform: scale(1.5);
+  .slide-enter {
+    transform: translate(100%, 0);
   }
-  100% {
-    transform: scale(1);
+  .slide-leave-to {
+    transform: translate(-100%, 0);
   }
-}
-@keyframes bounce-out {
-  100% {
-    transform: scale(0)
+  .bounce-enter-active {
+    animation: bounce-in .5s;
   }
-}
-.input-width-small {
-  max-width: 3rem;
-}
-.input-width-medium {
-  max-width: 6rem;
-}
-.loader {
-  border: 5px solid #f3f3f3;
-  border-top: 5px solid #5b7b9c;
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  display: inline-block;
-  text-align: center;
-  vertical-align: middle;
-  animation: spin 2s linear infinite;
-}
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-.notifyText {
-  font-size: 18px;
-  display: inline-block;
-  text-align: center;
-  vertical-align: middle;
-  margin-left: 10px;
-  padding-top: 3px;
-}
-.errorText {
-  font-size: 18px;
-}
+  .bounce-leave-active {
+    animation: bounce-out .2s;
+  }
+  @keyframes bounce-in {
+    0% {
+      transform: scale(0);
+    }
+    50% {
+      transform: scale(1.5);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  @keyframes bounce-out {
+    100% {
+      transform: scale(0)
+    }
+  }
+  .input-width-small {
+    max-width: 3rem;
+  }
+  .input-width-medium {
+    max-width: 6rem;
+  }
+  .loader {
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #5b7b9c;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: inline-block;
+    text-align: center;
+    vertical-align: middle;
+    animation: spin 2s linear infinite;
+  }
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  .notifyText {
+    font-size: 18px;
+    display: inline-block;
+    text-align: center;
+    vertical-align: middle;
+    margin-left: 20px;
+    padding-top: 3px;
+  }
+  .errorTitle {
+    font-size: 18px;
+  }
+  .errorText {
+    font-size: 18px;
+    padding-right: 20px;
+  }
+  .closeBtn {
+    position: absolute;
+    right: 10px;
+    top: 5px;
+  }
 </style>

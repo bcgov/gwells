@@ -13,10 +13,12 @@
 """
 from decimal import Decimal
 import uuid
+from django.utils import timezone
 
 from django.contrib.gis.db import models
 from django.core.validators import MinValueValidator
-from gwells.models import AuditModel
+from gwells.models import AuditModel, CodeTableModel
+
 
 class WellActivityCodeTypeManager(models.Manager):
 
@@ -36,17 +38,13 @@ class WellActivityCodeTypeManager(models.Manager):
         return self.get_queryset().get(code='STAFF_EDIT')
 
 
-class WellActivityCode(AuditModel):
+class WellActivityCode(CodeTableModel):
     """
     Types of Well Activity.
     """
     code = models.CharField(
         primary_key=True, max_length=10,  editable=False, db_column='well_activity_type_code')
     description = models.CharField(max_length=100)
-    display_order = models.PositiveIntegerField()
-
-    effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date = models.DateTimeField(blank=True, null=True)
 
     objects = models.Manager()
     types = WellActivityCodeTypeManager()
@@ -54,6 +52,8 @@ class WellActivityCode(AuditModel):
     class Meta:
         db_table = 'well_activity_code'
         ordering = ['display_order', 'description']
+
+    db_table_comment = 'Placeholder table comment.'
 
     def __str__(self):
         return self.description

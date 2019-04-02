@@ -1,14 +1,16 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Search Component Matches the snapshot 1`] = `
-<div>
+<div
+  class="container p-1"
+>
    
   <div
     class="card p-3 mb-4"
   >
-    <h4>
+    <h1>
       Aquifer Search
-    </h4>
+    </h1>
      
     <div
       class="pb-2"
@@ -128,7 +130,7 @@ exports[`Search Component Matches the snapshot 1`] = `
       aria-busy="false"
       aria-colcount="11"
       aria-rowcount="1"
-      class="table b-table table-striped"
+      class="mt-3 table b-table table-striped"
       id="aquifers-results"
     >
       <!---->
@@ -241,7 +243,7 @@ exports[`Search Component Matches the snapshot 1`] = `
             class=""
           >
             <router-link-stub
-              to="4/"
+              to="[object Object]"
             />
           </td>
           <td

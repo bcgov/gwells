@@ -1,0 +1,260 @@
+---
+apiVersion: v1
+kind: Template
+metadata:
+  annotations:
+    description: "Scheduled Task to perform a Database Backup"
+    tags: "cronjob,backup"
+  labels:
+    app: ${TARGET}-backup
+    cronjob: ${TARGET}-backup
+    template: "${JOB_NAME}-config-template"
+  name: "${JOB_NAME}-cronjob-template"
+parameters:
+  - name: "TARGET"
+    displayName: "Database name (deployment config, not pod name)"
+    description: "The name of the database, by deployment config, to be backed up."
+    required: true
+  - name: "JOB_NAME"
+    displayName: "Job Name"
+    description: "Name of the Scheduled Job to Create."
+    value: "backup"
+    required: true
+  - name: "SCHEDULE"
+    displayName: "Cron Schedule"
+    description: "Cron Schedule to Execute the Job (in UTC)"
+    # 11:00 UTC = 3:00 AM PDT
+    value: "0 11 * * *"
+    required: true
+  - name: "PVC_SIZE"
+    displayName: "PVC size"
+    description: "The size of the PVC to create."
+    required: false
+    value: "5Gi"
+  - name: "PVC_CLASS"
+    displayName: "PVC class"
+    description: "The class of PVC to create."
+    required: false
+    value: "gluster-file"
+  - name: "PVC_ACCESS"
+    displayName: "PVC access mode"
+    description: "The access mode of the PVC to create."
+    required: false
+    value: "ReadWriteOnce"
+  - name: "SOURCE_IMAGE_NAME"
+    displayName: "Source Image Name"
+    description: "The name of the image to use for this resource."
+    required: true
+    value: "backup"
+  - name: "IMAGE_NAMESPACE"
+    displayName: "Image Namespace"
+    description: "The namespace of the OpenShift project containing the imagestream for the application."
+    required: true
+    value: "moe-gwells-tools"
+  - name: "TAG_NAME"
+    displayName: "Environment TAG name"
+    description: "The TAG name for this environment, e.g., dev, test, prod"
+    required: true
+    value: "latest"
+  - name: "DEFAULT_PORT"
+    displayName: "Database Service Port"
+    description: "The configured port for the database service"
+    required: true
+    value: "5432"
+  - name: "DATABASE_NAME"
+    displayName: "Database Name"
+    description: "The name of the database."
+    required: true
+    value: "gwells"
+  - name: "BACKUP_STRATEGY"
+    displayName: "Backup Strategy"
+    description: "The strategy to use for backups; for example daily, or rolling."
+    required: true
+    value: "rolling"
+  - name: "BACKUP_DIR"
+    displayName: "The root backup directory"
+    description: "The name of the root backup directory"
+    required: true
+    value: "/backups/"
+  - name: "NUM_BACKUPS"
+    displayName: "The number of backup files to be retained"
+    description: "The number of backup files to be retained.  Used for the `daily` backup strategy.  Ignored when using the `rolling` backup strategy."
+    required: false
+    value: "5"
+  - name: "DAILY_BACKUPS"
+    displayName: "Number of Daily Backups to Retain"
+    description: "The number of daily backup files to be retained.  Used for the `rolling` backup strategy."
+    required: false
+    value: "7"
+  - name: "WEEKLY_BACKUPS"
+    displayName: "Number of Weekly Backups to Retain"
+    description: "The number of weekly backup files to be retained.  Used for the `rolling` backup strategy."
+    required: false
+    value: "4"
+  - name: "MONTHLY_BACKUPS"
+    displayName: "Number of Monthly Backups to Retain"
+    description: "The number of monthly backup files to be retained.  Used for the `rolling` backup strategy."
+    required: false
+    value: "1"
+  - name: "SUCCESS_JOBS_HISTORY_LIMIT"
+    displayName: "Successful Job History Limit"
+    description: "The number of successful jobs that will be retained."
+    value: "5"
+    required: true
+  - name: "FAILED_JOBS_HISTORY_LIMIT"
+    displayName: "Failed Job History Limit"
+    description: "The number of failed jobs that will be retained."
+    value: "2"
+    required: true
+  - name: "JOB_BACKOFF_LIMIT"
+    displayName: "Job Backoff Limit"
+    description: "The number of attempts to try for a successful job outcome."
+    value: "0"
+    required: false
+  - name: "JOB_DEADLINE_SECONDS"
+    displayName: "Job deadline (seconds)"
+    description: "The maximum amount of time to let this job run."
+    value: "600"
+    required: false
+objects:
+  - apiVersion: v1
+    data:
+      BACKUP_STRATEGY: ${BACKUP_STRATEGY}
+      DAILY_BACKUPS: ${DAILY_BACKUPS}
+      DATABASE_SERVICE_NAME: ${TARGET}
+      DEFAULT_PORT: ${DEFAULT_PORT}
+      MONTHLY_BACKUPS: ${MONTHLY_BACKUPS}
+      NUM_BACKUPS: ${NUM_BACKUPS}
+      POSTGRESQL_DATABASE: ${DATABASE_NAME}
+      WEEKLY_BACKUPS: ${WEEKLY_BACKUPS}
+    kind: ConfigMap
+    metadata:
+      labels:
+        app: ${TARGET}-backup
+        cronjob: ${TARGET}-backup
+        template: "${JOB_NAME}-config-template"
+      name: ${TARGET}-backup
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      finalizers:
+      - kubernetes.io/pvc-protection
+      labels:
+        app: ${TARGET}-backup
+        cronjob: ${TARGET}-backup
+        template: "${JOB_NAME}-config-template"
+      name: ${TARGET}-backup
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: ${PVC_SIZE}
+      storageClassName: ${PVC_CLASS}
+  - apiVersion: batch/v1beta1
+    kind: CronJob
+    metadata:
+      name: ${TARGET}-backup
+    spec:
+      concurrencyPolicy: Forbid
+      failedJobsHistoryLimit: ${{FAILED_JOBS_HISTORY_LIMIT}}
+      jobTemplate:
+        metadata:
+          creationTimestamp: null
+          labels:
+            app: ${TARGET}-backup
+            cronjob: ${TARGET}-backup
+            template: "${JOB_NAME}-config-template"
+        spec:
+          backoffLimit: ${{JOB_BACKOFF_LIMIT}}
+          template:
+            metadata:
+              creationTimestamp: null
+            spec:
+              activeDeadlineSeconds: ${{JOB_DEADLINE_SECONDS}}
+              containers:
+              - command:
+                - /bin/bash
+                - -c
+                - /backup.sh -1
+                env:
+                - name: BACKUP_DIR
+                  value: /backups/
+                - name: BACKUP_STRATEGY
+                  valueFrom:
+                    configMapKeyRef:
+                      key: BACKUP_STRATEGY
+                      name: ${TARGET}-backup
+                - name: NUM_BACKUPS
+                  valueFrom:
+                    configMapKeyRef:
+                      key: NUM_BACKUPS
+                      name: ${TARGET}-backup
+                      optional: true
+                - name: DAILY_BACKUPS
+                  valueFrom:
+                    configMapKeyRef:
+                      key: DAILY_BACKUPS
+                      name: ${TARGET}-backup
+                      optional: true
+                - name: WEEKLY_BACKUPS
+                  valueFrom:
+                    configMapKeyRef:
+                      key: WEEKLY_BACKUPS
+                      name: ${TARGET}-backup
+                      optional: true
+                - name: MONTHLY_BACKUPS
+                  valueFrom:
+                    configMapKeyRef:
+                      key: MONTHLY_BACKUPS
+                      name: ${TARGET}-backup
+                      optional: true
+                - name: DATABASE_SERVICE_NAME
+                  valueFrom:
+                    configMapKeyRef:
+                      key: DATABASE_SERVICE_NAME
+                      name: ${TARGET}-backup
+                - name: DEFAULT_PORT
+                  valueFrom:
+                    configMapKeyRef:
+                      key: DEFAULT_PORT
+                      name: ${TARGET}-backup
+                      optional: true
+                - name: POSTGRESQL_DATABASE
+                  valueFrom:
+                    configMapKeyRef:
+                      key: POSTGRESQL_DATABASE
+                      name: ${TARGET}-backup
+                - name: POSTGRESQL_USER
+                  valueFrom:
+                    secretKeyRef:
+                      key: database-user
+                      name: ${TARGET}
+                - name: POSTGRESQL_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: database-password
+                      name: ${TARGET}
+                image: docker-registry.default.svc:5000/${IMAGE_NAMESPACE}/${SOURCE_IMAGE_NAME}:${TAG_NAME}
+                imagePullPolicy: Always
+                name: backup-cronjob
+                resources: {}
+                terminationMessagePath: /dev/termination-log
+                terminationMessagePolicy: File
+                volumeMounts:
+                - mountPath: /backups/
+                  name: backup
+              dnsPolicy: ClusterFirst
+              restartPolicy: Never
+              schedulerName: default-scheduler
+              securityContext: {}
+              serviceAccount: default
+              serviceAccountName: default
+              terminationGracePeriodSeconds: 30
+              volumes:
+              - name: ${JOB_NAME}
+                persistentVolumeClaim:
+                  claimName: ${TARGET}-backup
+      schedule: ${SCHEDULE}
+      successfulJobsHistoryLimit: ${{SUCCESS_JOBS_HISTORY_LIMIT}}
+      suspend: false

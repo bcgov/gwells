@@ -1,5 +1,5 @@
 <template>
-  <header>
+  <header id="header">
     <b-navbar type="dark" class="navbar-expand-lg d-print-block" bg-variant="primary">
       <!-- Navbar content -->
       <b-container>
@@ -26,7 +26,7 @@
         </b-navbar-nav>
         <b-navbar-nav class="ml-auto">
           <li>
-            <keycloak-auth class="d-none d-sm-block" v-if="auth !== 'hide'" id="keycloak-auth"/>
+            <keycloak-auth class="d-none d-sm-block d-print-none" v-if="auth !== 'hide'" id="keycloak-auth"/>
           </li>
         </b-navbar-nav>
         <b-navbar-nav class="ml-auto d-sm-none">
@@ -40,11 +40,11 @@
           <b-container id="navContainer">
             <b-nav-text class="d-sm-none text-light">Groundwater Wells and Aquifers</b-nav-text>
             <b-navbar-nav class="gwells-nav">
-              <b-nav-item id="ribbon-search" class="navbar-link lvl2-link" href="/gwells">Well Search</b-nav-item>
-              <b-nav-item id="ribbon-aquifers" v-if="show.aquifers" class="navbar-link lvl2-link" href="/gwells/aquifers">Aquifers</b-nav-item>
-              <b-nav-item id="ribbon-groundwaterinfo" class="navbar-link lvl2-link" href="/gwells/groundwater-information">Groundwater Information</b-nav-item>
-              <b-nav-item id="ribbon-registry" class="navbar-link lvl2-link" href="/gwells/registries">Registry</b-nav-item>
-              <b-nav-item class="navbar-link lvl2-link" v-if="show.dataEntry" href="/gwells/submissions">Submit Report</b-nav-item>
+              <b-nav-item id="ribbon-search" class="navbar-link lvl2-link" :to="{ name: 'wells-home'}">Well Search</b-nav-item>
+              <b-nav-item id="ribbon-aquifers" v-if="show.aquifers" class="navbar-link lvl2-link" :to="{ name: 'aquifers-home' }">Aquifers</b-nav-item>
+              <b-nav-item id="ribbon-groundwaterinfo" class="navbar-link lvl2-link" :to="{ name: 'groundwater-information' }">Groundwater Information</b-nav-item>
+              <b-nav-item id="ribbon-registry" class="navbar-link lvl2-link" :to="{ name: 'SearchHome'}">Registry</b-nav-item>
+              <b-nav-item class="navbar-link lvl2-link" v-if="show.dataEntry" :to="{ name: 'SubmissionsHome'}">Submit Report</b-nav-item>
               <b-nav-item id="ribbon-admin" class="navbar-link lvl2-link" v-if="show.admin" href="/gwells/admin">Admin</b-nav-item>
               <b-nav-item class="d-sm-none"><keycloak-auth v-if="auth !== 'hide'" id="keycloak-auth-xs"/></b-nav-item>
             </b-navbar-nav>

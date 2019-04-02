@@ -13,63 +13,56 @@
 """
 from decimal import Decimal
 import uuid
-
+from django.utils import timezone
 from django.db import models
 from django.core.validators import MinValueValidator
 
-from gwells.models import AuditModel
+from gwells.models import AuditModel, CodeTableModel
 
 
-class BedrockMaterialDescriptorCode(AuditModel):
+class BedrockMaterialDescriptorCode(CodeTableModel):
     """
     Further descriptor of the bedrock material encountered in lithology
     """
     bedrock_material_descriptor_code = models.CharField(primary_key=True, max_length=10, editable=False)
     description = models.CharField(max_length=100)
-    display_order = models.PositiveIntegerField()
-
-    effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         db_table = 'bedrock_material_descriptor_code'
         ordering = ['display_order', 'description']
 
+    db_table_comment = ('An adjective that describes the characteristics of the bedrock material in more '
+                        'detail.')
+
     def __str__(self):
         return self.description
 
 
-class BedrockMaterialCode(AuditModel):
+class BedrockMaterialCode(CodeTableModel):
     """
     The bedrock material encountered in lithology
     """
     bedrock_material_code = models.CharField(
         primary_key=True, max_length=10, editable=False,)
     description = models.CharField(max_length=100)
-    display_order = models.PositiveIntegerField()
-
-    effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         db_table = 'bedrock_material_code'
         ordering = ['display_order', 'description']
 
+    db_table_comment = 'Bedrock material encountered during drilling and reported in lithologic description.'
+
     def __str__(self):
         return self.description
 
 
-class SurficialMaterialCode(AuditModel):
+class SurficialMaterialCode(CodeTableModel):
     """
     The surficial material encountered in lithology
     """
     surficial_material_code = models.CharField(
         primary_key=True, max_length=10, editable=False)
     description = models.CharField(max_length=100)
-    display_order = models.PositiveIntegerField()
-
-    effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         db_table = 'surficial_material_code'
@@ -79,91 +72,104 @@ class SurficialMaterialCode(AuditModel):
         return self.description
 
 
-class LithologyColourCode(AuditModel):
+class LithologyColourCode(CodeTableModel):
     """
     Colour of the lithology
     """
     lithology_colour_code = models.CharField(
-        primary_key=True, max_length=10, editable=False)
-    description = models.CharField(max_length=100)
-    display_order = models.PositiveIntegerField()
-
-    effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date = models.DateTimeField(blank=True, null=True)
+        primary_key=True, max_length=10, editable=False,
+        db_comment=('Valid options for the colour of the lithologic material identified at time of'
+                    ' drilling. E.g. Black, dark, tan, rust-coloured'))
+    description = models.CharField(
+        max_length=100,
+        verbose_name='Colour Description',
+        db_comment=('Describes the colour of the lithologic material identified at time of drilling.'
+                    ' E.g. Black, dark, tan, rust-coloured'))
 
     class Meta:
         db_table = 'lithology_colour_code'
         ordering = ['display_order', 'description']
 
+    db_table_comment = ('Describes the colour of the lithologic material identified at time of drilling. '
+                        'E.g. Black, dark, tan, rust-coloured')
+
     def __str__(self):
         return self.description
 
 
-class LithologyDescriptionCode(AuditModel):
+class LithologyDescriptionCode(CodeTableModel):
     lithology_description_code = models.CharField(
-        primary_key=True, max_length=10, editable=False, verbose_name='Code')
-    description = models.CharField(max_length=255, verbose_name='Description')
-    display_order = models.PositiveIntegerField()
-
-    effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date = models.DateTimeField(blank=True, null=True)
+        primary_key=True, max_length=10, editable=False, verbose_name='Code',
+        db_comment=('Standard terms used to characterize the different qualities of lithologic'
+                    ' materials. E.g. dry, loose, weathered, soft.'))
+    description = models.CharField(
+        max_length=255,
+        verbose_name='Description',
+        db_comment=('Describes the standard terms used to characterize the different qualities of'
+                    ' lithologic materials. E.g. dry, loose, weathered, soft.'))
 
     class Meta:
         db_table = 'lithology_description_code'
         ordering = ['display_order']
 
+    db_table_comment = ('Standard terms used to characterize the different qualities of lithologic '
+                        'materials. E.g. dry, loose, weathered, soft.')
+
     def __str__(self):
         return 'lithology_description_code {} {}'.format(self.code, self.description)
 
 
-class LithologyHardnessCode(AuditModel):
+class LithologyHardnessCode(CodeTableModel):
     """
     Hardness of the lithology
     """
     lithology_hardness_code = models.CharField(
-        primary_key=True, max_length=10, editable=False)
-    description = models.CharField(max_length=100)
-    display_order = models.PositiveIntegerField()
-
-    effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date = models.DateTimeField(blank=True, null=True)
+        primary_key=True, max_length=10, editable=False,
+        db_comment=('Code that represents the hardness of the material that a well is drilled into (the'
+                    ' lithology). E.g. Very hard, Hard, Dense, Stiff, Medium, Loose, Soft, Very soft.'))
+    description = models.CharField(
+        max_length=100, verbose_name='Hardness',
+        db_comment=('Describes the hardness of the material that a well is drilled into (the lithology).'
+                    ' E.g. Very hard, Hard, Dense, Stiff, Medium, Loose, Soft, Very soft.'))
 
     class Meta:
         db_table = 'lithology_hardness_code'
         ordering = ['display_order', 'description']
 
+    db_table_comment = ('Describes the hardness of the material that a well is drilled into (the lithology).'
+                        ' E.g. Very hard, Hard, Dense, Stiff, Medium, Loose, Soft, Very soft.')
+
     def __str__(self):
         return self.description
 
 
-class LithologyMaterialCode(AuditModel):
+class LithologyMaterialCode(CodeTableModel):
     lithology_material_code = models.CharField(
-        primary_key=True, max_length=10, editable=False, verbose_name='Code')
-    description = models.CharField(max_length=255, verbose_name='Description')
-    display_order = models.PositiveIntegerField()
-
-    effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date = models.DateTimeField(blank=True, null=True)
+        primary_key=True, max_length=10, editable=False, verbose_name='Code',
+        db_comment=('Standard terms used for defining the material noted for lithology. E.g. Rock, Clay,'
+                    ' Sand, Unspecified.'))
+    description = models.CharField(
+        max_length=255, verbose_name='Material Description',
+        db_comment=('Description of terms used for defining the material noted for lithology. E.g. Rock,'
+                    ' Clay, Sand, Unspecified.'))
 
     class Meta:
         db_table = 'lithology_material_code'
         ordering = ['display_order']
 
+    db_table_comment = 'Describes the material noted for lithology. E.g. Rock, Clay, Sand, Unspecified.'
+
     def __str__(self):
         return 'lithology_material {} {}'.format(self.lithology_material_code, self.description)
 
 
-class LithologyStructureCode(AuditModel):
+class LithologyStructureCode(CodeTableModel):
     """
     Structure of the lithology
     """
     lithology_structure_code = models.CharField(
         primary_key=True, max_length=10, editable=False)
     description = models.CharField(max_length=100)
-    display_order = models.PositiveIntegerField()
-
-    effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         db_table = 'lithology_structure_code'
@@ -173,21 +179,20 @@ class LithologyStructureCode(AuditModel):
         return self.description
 
 
-class LithologyMoistureCode(AuditModel):
+class LithologyMoistureCode(CodeTableModel):
     """
     Moisture of the lithology
     """
     lithology_moisture_code = models.CharField(
         primary_key=True, max_length=10, editable=False)
     description = models.CharField(max_length=100)
-    display_order = models.PositiveIntegerField()
-
-    effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         db_table = 'lithology_moisture_code'
         ordering = ['display_order', 'description']
+
+    db_table_comment = ('Code that describes the level of water within the lithologic layer. i.e. Dry, '
+                        'Damp, Moist, Wet')
 
     def __str__(self):
         return self.description

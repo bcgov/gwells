@@ -13,7 +13,7 @@
 */
 
 <template>
-  <b-card no-body class="p-3 mb-4">
+  <b-card class="container p-1">
     <api-error v-if="error" :error="error"/>
     <b-alert show v-if="files_uploading">File Upload In Progress...</b-alert>
     <b-alert show v-if="!files_uploading && file_upload_error" variant="warning" >
@@ -160,9 +160,10 @@ export default {
   methods: {
     ...mapActions('documentState', [
       'uploadFiles',
-      'fileUploadSuccess'
+      'fileUploadSuccess',
+      'fileUploadFail'
     ]),
-    handleSaveSuccess () {
+    handleSaveSuccess (response) {
       this.fetch()
       this.navigateToView()
       if (this.$refs.aquiferHistory) {
@@ -178,6 +179,7 @@ export default {
           this.fileUploadSuccess()
           this.fetchFiles()
         }).catch((error) => {
+          this.fileUploadFail()
           console.log(error)
         })
       }
@@ -215,6 +217,8 @@ export default {
       ApiService.query(`aquifers/${id}`)
         .then((response) => {
           this.record = response.data
+        }).catch((error) => {
+          console.error(error)
         })
     },
     fetchFiles (id = this.id) {

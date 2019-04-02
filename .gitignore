@@ -30,7 +30,6 @@
 ######################
 *.log
 #*.sql
-*.sqlite
 
 # OS generated files #
 ######################
@@ -49,7 +48,6 @@ Thumbs.db
 ##################
 
 # Django
-db.sqlite3
 staticfiles/
 
 # Byte-compiled / optimized / DLL files
@@ -99,6 +97,9 @@ htmlcov/
 nosetests.xml
 coverage.xml
 *,cover
+
+# Test outputs
+*.xlsx
 
 # Translations
 *.mo

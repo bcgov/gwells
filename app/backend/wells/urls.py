@@ -19,18 +19,27 @@ from . import views
 
 
 urlpatterns = [
-    # Template views
-    url(r'^well/(?P<pk>[0-9]+)$',
-        views.WellDetailView.as_view(), name='well_detail'),
 
     # API endpoints
+
+    url(r'^api/v1/wells/(?P<well_id>[0-9]+)/history$',
+        never_cache(views.WellHistory.as_view()), name='well-history'),
+
+    # Submissions for a well
+    url(r'^api/v1/wells/(?P<well_id>[0-9]+)/submissions$',
+        never_cache(views.WellSubmissionsListAPIView.as_view()), name='submissions-by-well'),
+
     # Well
     url(r'^api/v1/wells/(?P<well_tag_number>[0-9]+)$',
         never_cache(views.WellDetail.as_view()), name='well-detail'),
 
     # Well tag search
-    url(r'^api/v1/wells/tags/$',
+    url(r'^api/v1/wells/tags$',
         never_cache(views.WellTagSearchAPIView.as_view()), name='well-tag-search'),
+
+    # Well tag search
+    url(r'^api/v1/wells/locations$',
+        never_cache(views.WellLocationListAPIView.as_view()), name='well-locations'),
 
     # Documents (well records)
     url(r'^api/v1/wells/(?P<tag>[0-9]+)/files$',
@@ -48,7 +57,14 @@ urlpatterns = [
         never_cache(views.DeleteWellDocument.as_view()), name='well-delete-document'),
 
     # Well list
-    url(r'^api/v1/wells/$',
+    url(r'^api/v1/wells$',
         never_cache(views.WellListAPIView.as_view()), name='well-list'),
 
+    # GeoJSON well endpoint for DataBC.
+    url(r'^api/v1/gis/wells$',
+        views.well_geojson, name='well-geojson'),
+
+    # GeoJSON lithology endpoint for DataBC.
+    url(r'^api/v1/gis/lithology$',
+        views.lithology_geojson, name='well-lithology-geojson')
 ]

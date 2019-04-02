@@ -63,7 +63,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <form-input id="ownerPostalCode" label="Postal Code" v-model="ownerPostalCodeInput" :errors="errors['owner_postal_code']" :loaded="fieldsLoaded['owner_postal_code']"></form-input>
       </b-col>
     </b-row>
-    <b-row>
+    <b-row v-if="isStaffEdit">
       <b-col cols="12" md="6" lg="4" xl="4">
         <form-input id="ownerEmail" label="Email address" v-model="ownerEmailInput" :errors="errors['owner_email']" :loaded="fieldsLoaded['owner_email']"></form-input>
       </b-col>
