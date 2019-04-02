@@ -276,7 +276,7 @@ DECLARE
               LEFT OUTER JOIN drilling_company drilling_company ON UPPER(wells.driller_company_code)=UPPER(drilling_company.drilling_company_code)
               LEFT OUTER JOIN well_subclass_code subclass ON UPPER(wells.subclass_of_well_classified_by)=UPPER(subclass.well_subclass_code)
                 AND subclass.well_class_code = wells.class_of_well_codclassified_by
-  WHERE wells.acceptance_status_code NOT IN (''PENDING'', ''NEW'') ';
+  ';
 
 BEGIN
   raise notice 'Starting populate_xform() procedure...';
