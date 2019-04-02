@@ -45,10 +45,10 @@ class TestPermissionsViewRights(APITestCase):
         self.client.force_authenticate(user)
 
     def test_view_rights_attempts_get_submission_list(self):
-        # As a user with view rights, I should not be able to get a submission list.
+        # As a user with view rights, I should be able to get a submission list.
         url = reverse('submissions-list')
         response = self.client.get(url, {}, format='json')
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_view_rights_attempts_construction_submission(self):
         # As a user with view rights, I should not be able to create a construction submission.
@@ -84,9 +84,15 @@ class TestPermissionsSubmissionRights(APITestCase):
         roles_to_groups(user, roles)
         self.client.force_authenticate(user)
 
-    def test_edit_rights_attempts_construction_submition(self):
+    def test_submission_rights_attempts_get_submission_list(self):
+        # As a user with submission rights, I should not be able to get a submission list.
+        url = reverse('submissions-list')
+        response = self.client.get(url, {}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_submission_rights_attempts_construction_submission(self):
         url = reverse('CON')
-        # As a user with edit rights, I should be able to make a construction submission.
+        # As a user with submission rights, I should be able to make a construction submission.
         data = {
             'owner_full_name': 'molly',
             'owner_mailing_address': 'somewhere',
@@ -97,9 +103,9 @@ class TestPermissionsSubmissionRights(APITestCase):
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-    def test_edit_rights_attempts_alteration_submition(self):
+    def test_submission_rights_attempts_alteration_submission(self):
         url = reverse('ALT')
-        # As a user with edit rights, I should be able to make an alteration submission.
+        # As a user with submission rights, I should be able to make an alteration submission.
         data = {
             'owner_full_name': 'molly',
             'owner_mailing_address': 'somewhere',
@@ -110,9 +116,9 @@ class TestPermissionsSubmissionRights(APITestCase):
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-    def test_edit_rights_attempts_decommission_submition(self):
+    def test_submission_rights_attempts_decommission_submission(self):
         url = reverse('DEC')
-        # As a user with edit rights, I should be able to make a decommission submission.
+        # As a user with submission rights, I should be able to make a decommission submission.
         data = {
             'owner_full_name': 'molly',
             'owner_mailing_address': 'somewhere',
