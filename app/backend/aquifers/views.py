@@ -161,23 +161,23 @@ class ListFiles(APIView):
     """
 
     @swagger_auto_schema(responses={200: openapi.Response('OK',
-        openapi.Schema(type=openapi.TYPE_OBJECT, properties={
-            'public': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
-                type=openapi.TYPE_OBJECT,
-                properties={
-                    'url': openapi.Schema(type=openapi.TYPE_STRING),
-                    'name': openapi.Schema(type=openapi.TYPE_STRING)
-                }
-            )),
-            'private': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
-                type=openapi.TYPE_OBJECT,
-                properties={
-                    'url': openapi.Schema(type=openapi.TYPE_STRING),
-                    'name': openapi.Schema(type=openapi.TYPE_STRING)
-                }
-            ))
-        })
-    )})
+                                                          openapi.Schema(type=openapi.TYPE_OBJECT, properties={
+                                                              'public': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
+                                                                  type=openapi.TYPE_OBJECT,
+                                                                  properties={
+                                                                      'url': openapi.Schema(type=openapi.TYPE_STRING),
+                                                                      'name': openapi.Schema(type=openapi.TYPE_STRING)
+                                                                  }
+                                                              )),
+                                                              'private': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
+                                                                  type=openapi.TYPE_OBJECT,
+                                                                  properties={
+                                                                      'url': openapi.Schema(type=openapi.TYPE_STRING),
+                                                                      'name': openapi.Schema(type=openapi.TYPE_STRING)
+                                                                  }
+                                                              ))
+                                                          })
+                                                          )})
     def get(self, request, aquifer_id):
         user_is_staff = self.request.user.groups.filter(
             name=AQUIFERS_EDIT_ROLE).exists()
@@ -208,11 +208,12 @@ class AquiferNameList(ListAPIView):
 
     def get(self, request):
         search = self.request.query_params.get('search', None)
-        if not search or len(search) < 3:
+        if not search:
             # avoiding responding with excess results
             return Response([])
-        else:
-            return super().get(request)
+        results = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer_class()
+        return Response(serializer(results[:20], many=True).data)
 
 
 class AquiferHistory(APIView):
@@ -332,7 +333,7 @@ AQUIFER_PROPERTIES = openapi.Schema(
         200: openapi.Response(
             'GeoJSON data for aquifers.',
             get_geojson_schema(AQUIFER_PROPERTIES, 'Polygon'))
-        })
+    })
 @api_view(['GET'])
 def aquifer_geojson(request):
     realtime = request.GET.get('realtime') in ('True', 'true')
