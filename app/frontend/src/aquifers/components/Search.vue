@@ -71,11 +71,13 @@
                       <b-button class="aquifer-buttons" variant="default" type="reset">Reset</b-button>
                     </b-form-group>
                 </b-form-row>
+                <!--
                 <h6 class="mt-3">Download all aquifers</h6>
                 <ul class="aquifer-download-list">
                   <li>- <a href="#">Aquifer extract (XLSX)</a></li>
                   <li>- <a href="#">Aquifer extract (ZIP)</a></li>
                 </ul>
+                -->
               </b-col>
               <b-col cols="12" md="6" class="pt-3 pl-4 pr-4 mt-3">
                 <div v-if="layers.length > 0">
