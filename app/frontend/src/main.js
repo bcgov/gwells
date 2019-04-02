@@ -27,8 +27,6 @@ import VueMoment from 'vue-moment'
 import FormInput from '@/common/components/FormInput.vue'
 import {FETCH_CONFIG} from '@/common/store/config.js'
 
-import 'tabulator-tables/dist/css/bootstrap/tabulator_bootstrap4.min.css'
-
 // GWELLS js API library (helper methods for working with API)
 import ApiService from '@/common/services/ApiService.js'
 

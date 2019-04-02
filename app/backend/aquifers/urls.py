@@ -96,6 +96,7 @@ urlpatterns = [
         name='aquifer-water-use-code-list'
         ),
 
+    # GeoJSON aquifers endpoint for DataBC.
     url(r'^api/v1/gis/aquifers$',
-        views.AquifersSpatial.as_view(), name='spatial-aquifer')
+        views.aquifer_geojson, name='aquifer-geojson')
 ]

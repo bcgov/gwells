@@ -79,6 +79,8 @@ class TestPermissionsSubmissionRights(APITestCase):
             group = Group(name=role)
             group.save()
         user, created = User.objects.get_or_create(username='edit_rights')
+        user.profile.username = user.username
+        user.save()
         roles_to_groups(user, roles)
         self.client.force_authenticate(user)
 

@@ -15,22 +15,6 @@ class Migration(migrations.Migration):
         migrations.RunSQL(
             "SELECT UpdateGeometrySRID('well','geom',4326);"
         ),
-        migrations.RemoveField(
-            model_name='activitysubmission',
-            name='latitude',
-        ),
-        migrations.RemoveField(
-            model_name='activitysubmission',
-            name='longitude',
-        ),
-        migrations.RemoveField(
-            model_name='well',
-            name='latitude',
-        ),
-        migrations.RemoveField(
-            model_name='well',
-            name='longitude',
-        ),
         migrations.AddField(
             model_name='activitysubmission',
             name='geom',

@@ -58,6 +58,9 @@ class Survey(AuditModel):
     class Meta:
         db_table = 'gwells_survey'
 
+    db_table_comment = ('A stand-alone table used by the minstry to record client satisfaction surveys. '
+                        'Temporary table to be removed.')
+
 
 class OnlineSurvey(models.Model):
     """
@@ -84,8 +87,12 @@ class OnlineSurvey(models.Model):
     survey_page = models.CharField(
         verbose_name="Page", choices=SURVEY_PAGE_CHOICES, max_length=1, default=WELL)
 
-    effective_date = models.DateField(default=timezone.now, blank=False, null=False)
-    expiry_date = models.DateField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
+    effective_date = models.DateField(
+        default=timezone.now, blank=False, null=False,
+        db_comment='The date and time that record became valid.')
+    expiry_date = models.DateField(
+        default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False,
+        db_comment='The date and time after which the record is no longer valid and should not be used.')
 
     def __str__(self):
         return '{}: {} | {} | {}'.format(self.survey_introduction_text, self.survey_link, self.survey_enabled,
