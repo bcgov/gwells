@@ -164,7 +164,7 @@ export default {
     return {
       ...orderingQueryStringToData(query.ordering),
       search: query.search,
-      aquifer_search: query.aquifer_searcg,
+      aquifer_search: query.aquifer_search,
       limit: LIMIT,
       currentPage: query.offset && (query.offset / LIMIT + 1),
       filterParams: Object.assign({}, query),

@@ -6,7 +6,7 @@
 import L from 'leaflet'
 import { tiledMapLayer } from 'esri-leaflet'
 export default {
-  name: 'SingleWellMap',
+  name: 'AquiferMap',
   data () {
     return {
       map: null
