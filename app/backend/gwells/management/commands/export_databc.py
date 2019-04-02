@@ -82,6 +82,7 @@ from well
     where well.well_tag_number >= %s and well.well_tag_number < %s
         and (well.well_publication_status_code = 'Published' or well.well_publication_status_code = null)
         and well.geom is not null
+        {bounds}
     order by well.well_tag_number
 """)
 MAX_WELLS_SQL = 'select max(well_tag_number) from well'
@@ -147,6 +148,7 @@ from well
     where well.well_tag_number >= %s and well.well_tag_number < %s
         and (well.well_publication_status_code = 'Published' or well.well_publication_status_code = null)
         and well.geom is not null
+        {bounds}
     order by well.well_tag_number, lithology_description.lithology_from
 """)
 MAX_LITHOLOGY_SQL = MAX_WELLS_SQL
@@ -188,6 +190,7 @@ from aquifer
         quality_concern_code.quality_concern_code = aquifer.quality_concern_code
     where aquifer.aquifer_id >= %s and aquifer.aquifer_id < %s
         and aquifer.geom is not null
+        {bounds}
     order by aquifer.aquifer_id
 """)
 MAX_AQUIFERS_SQL = 'select max(aquifer_id) from aquifer'
@@ -204,7 +207,7 @@ class LazyEncoder(json.JSONEncoder):
 
 class GeoJSONIterator():
 
-    def __init__(self, sql, chunk_size, cursor, max_query):
+    def __init__(self, sql, chunk_size, cursor, max_query, bounds=None):
         # Keep track of the start time (purely for logging).
         self.send_header = True
         self.done = False
@@ -212,6 +215,7 @@ class GeoJSONIterator():
         self.first_record = True
         self.current_index = 0
         self.chunk_size = chunk_size
+        self.bounds = bounds
         self.sql = sql
         self.cursor = cursor
         self.max_index = self.get_max_index(max_query)
@@ -229,7 +233,10 @@ class GeoJSONIterator():
         logger.info('fetching {current_index}...{next_index}'.format(
             current_index=self.current_index,
             next_index=self.current_index+self.chunk_size))
-        self.cursor.execute(self.sql, (self.current_index, self.current_index+self.chunk_size))
+        params = (self.current_index, self.current_index+self.chunk_size)
+        if self.bounds:
+            params = params + self.bounds
+        self.cursor.execute(self.sql, params)
 
     def get_header(self):
         return """{"type": "FeatureCollection","features": ["""
@@ -355,10 +362,12 @@ class Command(BaseCommand):
                     count += 1
 
     def generate_lithology(self, target):
-        self.generate_geojson_chunks(LITHOLOGY_SQL, target, LITHOLOGY_CHUNK_SIZE, MAX_LITHOLOGY_SQL)
+        self.generate_geojson_chunks(
+            LITHOLOGY_SQL.format(bounds=''), target, LITHOLOGY_CHUNK_SIZE, MAX_LITHOLOGY_SQL)
 
     def generate_aquifers(self, filename):
-        self.generate_geojson_chunks(AQUIFERS_SQL, filename, AQUIFER_CHUNK_SIZE, MAX_AQUIFERS_SQL)
+        self.generate_geojson_chunks(
+            AQUIFERS_SQL.format(bounds=''), filename, AQUIFER_CHUNK_SIZE, MAX_AQUIFERS_SQL)
 
     def generate_wells(self, filename):
-        self.generate_geojson_chunks(WELLS_SQL, filename, WELL_CHUNK_SIZE, MAX_WELLS_SQL)
+        self.generate_geojson_chunks(WELLS_SQL.format(bounds=''), filename, WELL_CHUNK_SIZE, MAX_WELLS_SQL)
