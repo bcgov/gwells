@@ -32,7 +32,7 @@ describe('auth', () => {
   it('If keycloak has role as wells_submission_viewer, then submissions.view === true', () => {
     const state = { keycloak: { authenticated: true,
       hasRealmRole (key) {
-        return key === 'wells_submission_test'
+        return key === 'wells_submission_viewer'
       } } }
     expect(auth.getters.userRoles(state).submissions.view).toBe(true)
   })
