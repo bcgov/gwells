@@ -54,6 +54,25 @@ class CasingCodeSerializer(serializers.ModelSerializer):
         )
 
 
+class CasingSummarySerializer(serializers.ModelSerializer):
+    """Serializes casings for well summary (using descriptions instead of codes)"""
+    casing_material = serializers.ReadOnlyField(source='casing_material.description')
+    casing_code = serializers.ReadOnlyField(source='casing_code.description')
+    drive_shoe = serializers.ReadOnlyField(source='get_drive_shoe_display')
+
+    class Meta:
+        model = Casing
+        fields = (
+            'start',
+            'end',
+            'diameter',
+            'casing_code',
+            'casing_material',
+            'drive_shoe',
+            'wall_thickness'
+        )
+
+
 class CasingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Casing
@@ -138,7 +157,7 @@ class LithologyDescriptionSerializer(serializers.ModelSerializer):
 
 
 class WellDetailSerializer(AuditModelSerializer):
-    casing_set = CasingSerializer(many=True)
+    casing_set = CasingSummarySerializer(many=True)
     screen_set = ScreenSerializer(many=True)
     linerperforation_set = LinerPerforationSerializer(many=True)
     decommission_description_set = DecommissionDescriptionSerializer(many=True)
@@ -148,6 +167,8 @@ class WellDetailSerializer(AuditModelSerializer):
 
     # well vs. well_tag_number ; on submissions, we refer to well
     well = serializers.IntegerField(source='well_tag_number')
+
+    # convert codes to their human-readable descriptions
     well_class = serializers.ReadOnlyField(source='well_class.description')
     well_subclass = serializers.ReadOnlyField(source='well_subclass.description')
     intended_water_use = serializers.ReadOnlyField(source='intended_water_use.description')
@@ -157,6 +178,17 @@ class WellDetailSerializer(AuditModelSerializer):
     coordinate_acquisition_code = serializers.ReadOnlyField(source='coordinate_acquisition_code.description')
     intended_water_use = serializers.ReadOnlyField(source='intended_water_use.description')
     ground_elevation_method = serializers.ReadOnlyField(source='ground_elevation_method.description')
+    surface_seal_material = serializers.ReadOnlyField(source='surface_seal_material.description')
+    surface_seal_method = serializers.ReadOnlyField(source='surface_seal_method.description')
+    liner_material = serializers.ReadOnlyField(source='liner_material.description')
+    screen_intake_method = serializers.ReadOnlyField(source='screen_intake_method.description')
+    screen_type = serializers.ReadOnlyField(source='screen_type.description')
+    screen_material = serializers.ReadOnlyField(source='screen_material.description')
+    screen_opening = serializers.ReadOnlyField(source='screen_opening.description')
+    screen_bottom = serializers.ReadOnlyField(source='screen_bottom.description')
+    well_orientation = serializers.ReadOnlyField(source='get_well_orientation_display')
+    well_disinfected = serializers.ReadOnlyField(source='get_well_disinfected_display')
+    alternative_specs_submitted = serializers.ReadOnlyField(source='get_alternative_specs_submitted_display')
 
     class Meta:
         model = Well
