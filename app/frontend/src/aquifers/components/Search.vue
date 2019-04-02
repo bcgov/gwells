@@ -13,7 +13,7 @@
 */
 
 <template>
-  <div class="container container-wide p-1">
+  <div class="container p-1">
     <!-- Active surveys -->
     <b-alert
         show

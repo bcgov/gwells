@@ -13,7 +13,7 @@
 */
 
 <template>
-  <div class="container container-wide p-1">
+  <div class="container p-1">
     <b-row>
       <b-col md="6">
         <b-row v-if="showId">
@@ -291,7 +291,7 @@
       </b-col>
       <b-col cols="auto">
         <br>
-        <b-button @click="handleDeleteResource(index)">Remove</b-button>
+        <b-button variant="primary" @click="handleDeleteResource(index)">Remove</b-button>
       </b-col>
     </b-row>
     <b-row class="mt-4">

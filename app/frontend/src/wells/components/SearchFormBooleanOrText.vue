@@ -1,16 +1,31 @@
 <template>
   <b-form-row class="mb-1">
-    <b-col sm="6">
-      <label :id="`${id}Label`" :label-for="`${id}Input`" class="col-form-label">{{ label }}</label>
-    </b-col>
     <b-col>
+      <legend tabindex="-1" :id="`${id}Label`" class="col-form-label">{{ label }}</legend>
+    </b-col>
+    <b-col sm="3">
+      <b-form-row class="pt-2 d-flex justify-content-end">
+        <b-form-checkbox
+          :id="`${id}AnyValue`"
+          :checked="booleanChecked"
+          v-on:input="updateBooleanValue($event)">
+          {{ booleanLabel }}
+        </b-form-checkbox>
+      </b-form-row>
+      <b-form-invalid-feedback :id="`${id}AnyValueInvalidFeedback`">
+        <div v-for="(error, index) in booleanErrors" :key="`${id}Input error ${index}`">
+          {{ error }}
+        </div>
+      </b-form-invalid-feedback>
+    </b-col>
+    <b-col sm="7">
       <b-form-input
         :id="`${id}Input`"
         :type="type"
         :state="validation"
         :aria-describedby="`${id}InvalidFeedback ${id}Hint`"
         :value="value"
-        :disabled="disabled"
+        :disabled="inputDisabled"
         :required="required"
         :class="inputClass"
         :list="list"
@@ -40,12 +55,12 @@
 /**
  * example usage in another component:
  *
- * <search-form-input
- *    id="ownerName"
- *    label="Well owner name:"
- *    v-model="ownerNameInput"
- *    hint="Type a name!"
- *    :errors="errors['ownerName']"/>   // errors for individual fields must be an array e.g. ['Name already taken']
+ * <search-form-boolean-or-text
+ *    id="observationWellNumber"
+ *    label="Observation Well Number"
+ *    v-model="observationWellNumber"
+ *    hint="A well number"
+ *    :errors="errors['observationWellNumber']"/>   // errors for individual fields must be an array e.g. ['Name already taken']
  *
  */
 export default {
@@ -57,17 +72,22 @@ export default {
     label: String, // a label for the form input e.g.: "First name:"
     hint: String, // a hint for the user on how to enter text e.g. "Please use YYYY/MM/DD format"
     errors: null, // pass any "field errors" returned by the API into the "errors" prop
+    booleanLabel: String,
+    booleanErrors: null,
+    booleanValue: {
+      type: [Boolean, String],
+      default: false
+    },
     value: null, // internal (holds the value for the field)
     required: String,
     disabled: Boolean,
     groupClass: String, // optional pass-through class (use for formatting the form-group)
     inputClass: String, // optional pass-through input class (use for formatting the input field)
-    list: String, // optional pass-through ID of a datalist of suggested inputs
-    step: Number,
+    step: [String, Number],
     max: Number,
     min: Number,
     maxlength: Number,
-    type: { // the type of input (e.g. text, number, email)
+    type: { // the type of input (e.g. number, text)
       type: String,
       default: 'text'
     },
@@ -80,10 +100,21 @@ export default {
   },
   data () {
     return {
+      localBooleanValue: null,
       updated: false
     }
   },
   computed: {
+    booleanChecked () {
+      if (this.localBooleanValue === null) {
+        return (this.booleanValue === true) || (this.booleanValue === 'true')
+      } else {
+        return this.localBooleanValue
+      }
+    },
+    inputDisabled () {
+      return this.disabled || this.booleanChecked === 'true' || this.booleanChecked === true
+    },
     validation () {
       return (this.errors && this.errors.length) ? false
         : (this.updated) ? true : null
@@ -92,6 +123,13 @@ export default {
   methods: {
     updateValue (value) {
       this.$emit('input', value)
+    },
+    updateBooleanValue (value) {
+      this.localBooleanValue = value
+      // Clear other values if checked.
+      if (this.localBooleanValue) {
+        this.updateValue('')
+      }
     }
   },
   watch: {
@@ -100,6 +138,9 @@ export default {
         this.updated = true
         setTimeout(() => { this.updated = false }, 500)
       }
+    },
+    localBooleanValue (value) {
+      this.$emit('boolean-input', value)
     }
   }
 }

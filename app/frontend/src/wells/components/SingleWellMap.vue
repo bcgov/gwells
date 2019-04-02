@@ -12,7 +12,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-  <div id="map" class="map"/>
+  <div id="map" class="single-well-map"/>
 </template>
 
 <script>
@@ -104,7 +104,7 @@ export default {
       this.marker.bindPopup('Latitude: ' + latitude + ', Longitude: ' + longitude)
     },
     updateCoords () {
-      if (!isNaN(this.latitude) && !isNaN(this.getLongitude())) {
+      if (this.latitude && this.longitude) {
         const latlng = L.latLng(this.latitude, this.getLongitude())
         if (this.marker) {
           this.updateMarkerLatLong(latlng)
@@ -125,7 +125,7 @@ export default {
 <style>
 @import "leaflet/dist/leaflet.css";
 
-.map {
+.single-well-map {
   width: 550px;
   height: 500px;
 }

@@ -370,7 +370,6 @@ class AquifersSpatial(APIView):
     permission_classes = (AllowAny,)
 
     def get(self, request):
-
         # Generating spatial data realtime is much too slow,
         # so we have to redirect to a pre-generated instance.
         url = 'https://{}/{}/{}'.format(
