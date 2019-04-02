@@ -391,7 +391,9 @@ def dbBackup (String envProject, String envSuffix) {
                 mkdir -p ${dumpDir}; \
                 cd ${dumpDir}; \
                 pg_dump -U \${POSTGRESQL_USER} -d \${POSTGRESQL_DATABASE} -Fc -f ./${dumpName} ${dumpOpts}; \
-                ls -lh \
+                ls -lh; \
+                createdb db_verify; \
+                pgsql -q -d db_verify -f ./${dumpName}
             '
         """
     )
