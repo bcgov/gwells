@@ -23,11 +23,11 @@
               scope="col">
               {{ column.label }}
               <b-button
-                v-if="column.param === ordering.param"
+                v-if="column.param === orderingParam"
                 class="sort-button active"
                 variant="link"
-                @click="sortResults({ param: column.param, desc: !ordering.desc })">
-                {{ ordering.desc ? '&#x2191;' : '&#x2193;' }}
+                @click="sortResults({ param: column.param, desc: !orderingDesc })">
+                {{ orderingDesc ? '&#x2191;' : '&#x2193;' }}
               </b-button>
               <b-button
                 v-else
@@ -120,7 +120,6 @@ export default {
     return {
       isBusy: false,
       columnIds: [...resultColumns.default],
-      defaultLimit: 10,
       limitOptions: [
         { value: 10, text: '10' },
         { value: 25, text: '25' },
@@ -158,6 +157,16 @@ export default {
       }
       return (this.currentPage - 1) * this.limit + this.results.length
     },
+    orderingParam () {
+      if (this.orderingDesc) {
+        return this.ordering.substr(1)
+      } else {
+        return this.ordering
+      }
+    },
+    orderingDesc () {
+      return this.ordering.startsWith('-')
+    },
     columnCount () {
       return this.columnIds.length
     },
@@ -168,25 +177,47 @@ export default {
   methods: {
     setLimit (limit) {
       this.$store.commit(SET_SEARCH_LIMIT, limit)
+      this.$emit('limit-changed', limit)
 
       this.$store.dispatch(SEARCH_WELLS, {})
     },
     changePage (page) {
       const offset = this.limit * (page - 1)
       this.$store.commit(SET_SEARCH_OFFSET, offset)
+      this.$emit('page-changed', page)
 
       this.$store.dispatch(SEARCH_WELLS, {})
     },
     sortResults ({ param, desc }) {
-      this.$store.commit(SET_SEARCH_ORDERING, {param: param, desc: desc})
+      const sort = `${desc ? '-' : ''}${param}`
+      this.$store.commit(SET_SEARCH_ORDERING, sort)
+      this.$emit('sort-changed', sort)
 
       this.$store.dispatch(SEARCH_WELLS, {})
     },
     applyFilter ({ id }, values) {
       this.filterParams[id] = values
-      this.$store.commit(SET_SEARCH_RESULT_FILTERS, {...this.searchQueryParams})
+      const filterGroup = {...this.searchQueryParams}
+      this.$store.commit(SET_SEARCH_RESULT_FILTERS, filterGroup)
+      this.$emit('filter-changed', filterGroup)
 
       this.$store.dispatch(SEARCH_WELLS, {})
+    },
+    initFilterParams () {
+      const filterParams = {}
+      Object.keys(this.searchFields).forEach(id => {
+        filterParams[id] = {}
+      })
+
+      Object.entries(this.resultFilters).forEach(([param, value]) => {
+        this.columns.forEach(column => {
+          if (column.params.includes(param)) {
+            filterParams[column.id] = {[param]: value}
+          }
+        })
+      })
+
+      this.filterParams = filterParams
     }
   },
   watch: {
@@ -195,6 +226,7 @@ export default {
     }
   },
   created () {
+    this.initFilterParams()
     this.$store.subscribeAction((action, state) => {
       if (action.type === SEARCH_WELLS) {
         this.isBusy = true

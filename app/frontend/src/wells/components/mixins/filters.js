@@ -5,7 +5,7 @@ import { searchFields } from '@/wells/searchFields.js'
 export default {
   data () {
     return {
-      filterParams: this.initFilterParams() // filterId: {param1: val, param2: val}
+      filterParams: {} // filterId: {param1: val, param2: val}
     }
   },
   computed: {
@@ -105,14 +105,6 @@ export default {
     }
   },
   methods: {
-    initFilterParams () {
-      const params = {}
-      Object.keys(searchFields).forEach(id => {
-        params[id] = {}
-      })
-
-      return params
-    },
     getParamNames ({ param, type }) {
       if (type === 'range') {
         return [`${param}_min`, `${param}_max`]

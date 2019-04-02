@@ -58,7 +58,7 @@ const wellsStore = {
     searchErrors: {},
     searchLimit: 10,
     searchOffset: 0,
-    searchOrdering: { param: 'well_tag_number', desc: false },
+    searchOrdering: '-well_tag_number',
     searchParams: {},
     // searchResultFilters provides a second level of filtering.
     searchResultFilters: {},
@@ -85,6 +85,9 @@ const wellsStore = {
       state.searchErrors = payload
     },
     [SET_SEARCH_LIMIT] (state, payload) {
+      if (!(payload === 10 || payload === 25 || payload === 50)) {
+        return
+      }
       state.searchLimit = payload
     },
     [SET_SEARCH_OFFSET] (state, payload) {
@@ -139,8 +142,11 @@ const wellsStore = {
         }
         commit(SET_PENDING_SEARCH, axios.CancelToken.source())
 
-        const params = { ...state.searchParams, ...state.searchResultFilters }
+        const params = { ...state.searchParams }
 
+        if (Object.entries(state.searchResultFilters).length >= 0) {
+          params['filter_group'] = JSON.stringify(state.searchResultFilters)
+        }
         // if triggering the search using the map, the search will be restricted to
         // the visible map bounds
         if (bounded) {
@@ -149,10 +155,7 @@ const wellsStore = {
 
         params['limit'] = state.searchLimit
         params['offset'] = state.searchOffset
-
-        if (state.searchOrdering.param) {
-          params['ordering'] = `${state.searchOrdering.desc ? '-' : ''}${state.searchOrdering.param}`
-        }
+        params['ordering'] = state.searchOrdering
 
         ApiService.query('wells', params, { cancelToken: state.pendingSearch.token }).then((response) => {
           commit(SET_SEARCH_ERRORS, {})

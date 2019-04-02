@@ -247,7 +247,11 @@
     </b-row>
     <b-row class="my-5" v-show="!isInitialSearch">
       <b-col>
-        <search-results />
+        <search-results
+          @page-changed="updateQueryParams()"
+          @sort-changed="updateQueryParams()"
+          @limit-changed="updateQueryParams()"
+          @filter-changed="updateQueryParams()" />
       </b-col>
     </b-row>
     <b-row v-if="!isInitialSearch">
@@ -280,7 +284,14 @@ import {
   RESET_WELLS_SEARCH,
   SEARCH_WELLS
 } from '@/wells/store/actions.types.js'
-import {SET_SEARCH_BOUNDS, SET_SEARCH_PARAMS} from '@/wells/store/mutations.types.js'
+import {
+  SET_SEARCH_BOUNDS,
+  SET_SEARCH_LIMIT,
+  SET_SEARCH_OFFSET,
+  SET_SEARCH_ORDERING,
+  SET_SEARCH_PARAMS,
+  SET_SEARCH_RESULT_FILTERS
+} from '@/wells/store/mutations.types.js'
 import SearchFormInput from '@/wells/components/SearchFormInput.vue'
 import SearchFormRadio from '@/wells/components/SearchFormRadio.vue'
 import SearchFormRange from '@/wells/components/SearchFormRange.vue'
@@ -355,7 +366,11 @@ export default {
       'drillerNames',
       'organizationNames',
       'searchErrors',
+      'searchLimit',
+      'searchOffset',
+      'searchOrdering',
       'searchParams',
+      'searchResultFilters',
       'userRoles'
     ]),
     selectedFilterIds () {
@@ -580,6 +595,28 @@ export default {
       // check if the page loads with a query (e.g. user bookmarked a search)
       // if so, set the search boxes to the query params
       if (Object.entries(query).length !== 0 && query.constructor === Object) {
+        // Update the store with any result params in the query string
+        if (query.filter_group !== undefined) {
+          try {
+            const resultFilters = JSON.parse(query.filter_group)
+            this.$store.commit(SET_SEARCH_RESULT_FILTERS, resultFilters)
+          } catch (SyntaxError) {} finally {
+            delete query.filter_group
+          }
+        }
+        if (query.limit !== undefined) {
+          this.$store.commit(SET_SEARCH_LIMIT, query.limit)
+          delete query.limit
+        }
+        if (query.offset !== undefined) {
+          this.$store.commit(SET_SEARCH_OFFSET, query.offset)
+          delete query.offset
+        }
+        if (query.ordering !== undefined) {
+          this.$store.commit(SET_SEARCH_ORDERING, query.ordering)
+          delete query.ordering
+        }
+
         const params = Object.assign({...this.defaultSearchParams}, query)
         this.$store.commit(SET_SEARCH_PARAMS, params)
       } else {
@@ -635,8 +672,18 @@ export default {
 
       // if params are completely empty, clear the query string,
       // otherwise add the params to the query string.  this allows
-      // users to bookmark searches.
+      // users to bookmark searches. Only add result params to the
+      // query string if we have a search.
       const query = paramsEmpty ? null : params
+      if (query !== null) {
+        if (Object.entries(this.searchResultFilters).length > 0) {
+          query.filter_group = JSON.stringify(this.searchResultFilters)
+        }
+        query.limit = this.searchLimit
+        query.offset = this.searchOffset
+        query.ordering = this.searchOrdering
+      }
+
       const tabHash = (this.tabIndex === 1) ? 'advanced' : null
 
       this.$router.push({ query: query, hash: tabHash })
