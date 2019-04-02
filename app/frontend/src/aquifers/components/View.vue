@@ -338,8 +338,6 @@ export default {
       }
     },
     save () {
-      console.log('Attempt to get file from child')
-      console.log(AquiferForm.data())
       this.showSaveSuccess = false
       this.fieldErrors = {}
       ApiService.patch('aquifers', this.id, this.record)
