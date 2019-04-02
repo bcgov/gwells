@@ -18,12 +18,17 @@ from django.db.models.signals import post_migrate
 
 from django.db.models import Max
 
+from gwells.db_comments import db_actions
+
 logger = logging.getLogger(__name__)
 
 
 def post_migration_callback(sender, **kwargs):
-    # NOTE: His is a temporary measure to reduce issues surrounding the well_tag_number sequece being
-    # incorrect after replication wells. This should be removed once we switch over to gwells for createing
+    # Dynamic comments from models
+    db_actions.create_db_comments_from_models(db_actions.get_all_model_classes('wells.models'))
+
+    # NOTE: This is a temporary measure to reduce issues surrounding the well_tag_number sequece being
+    # incorrect after replication wells. This should be removed once we switch over to gwells for creating
     # wells.
     from wells.models import Well
     from django.db import connection

@@ -49,6 +49,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             :isStaffEdit="isStaffEdit"
             :loading="loading"
             :uploadedFiles="uploadedFiles"
+            :formChanges="formChanges"
             v-on:preview="handlePreviewButton"
             v-on:submit_edit="formSubmit"
             v-on:resetForm="resetForm"
@@ -89,6 +90,8 @@ import SubmissionPreview from '@/submissions/components/SubmissionPreview/Submis
 import filterBlankRows from '@/common/filterBlankRows.js'
 import ActivitySubmissionForm from '@/submissions/components/SubmissionForm/ActivitySubmissionForm.vue'
 import parseErrors from '@/common/helpers/parseErrors.js'
+import { diff } from 'deep-diff'
+
 export default {
   name: 'SubmissionsHome',
   mixins: [inputFormatMixin, filterBlankRows],
@@ -153,6 +156,10 @@ export default {
       'fileUploadFail'
     ]),
     formSubmit () {
+      if (!this.formChanges()) {
+        return
+      }
+
       const data = Object.assign({}, this.form)
       const meta = data.meta
 
@@ -206,6 +213,7 @@ export default {
       // Depending on the type of submission (construction/decommission/alteration/edit) we post to
       // different endpoints.
       const PATH = this.codes.activity_types.find((item) => item.code === this.activityType).path
+
       ApiService.post(PATH, data).then((response) => {
         this.formSubmitSuccess = true
         this.formSubmitSuccessWellTag = response.data.well
@@ -234,6 +242,8 @@ export default {
         })
 
         this.form.meta.valueChanged = {}
+        // Set initial form fields for comparison with user input changes
+        Object.assign(this.compareForm, this.form)
 
         if (this.upload_files.length > 0) {
           if (response.data.filing_number) {
@@ -292,6 +302,18 @@ export default {
       }).finally((response) => {
         this.formSubmitLoading = false
       })
+    },
+    formChanges () {
+      let differences = diff(this.compareForm, this.form)
+      if (differences) {
+        differences.forEach(function (d) {
+          if (d.lhs == null && d.rhs === '') {
+            this.form[d.path[0]] = null
+          }
+        })
+        return true
+      }
+      return false
     },
     confirmSubmit () {
       this.confirmSubmitModal = true
@@ -522,6 +544,8 @@ export default {
               this.trackValueChanges = true
             })
           })
+          // Set initial form fields for comparison with user input changes
+          Object.assign(this.compareForm, this.form)
         }).catch((e) => {
           console.error(e)
         })
@@ -565,6 +589,7 @@ function initialState () {
     trackValueChanges: false,
     errors: {},
     form: {},
+    compareForm: {},
     submissionsHistory: [], // historical submissions for each well (comes into play for staff edits)
     formOptions: {},
     uploadedFiles: {},
