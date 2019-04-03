@@ -67,8 +67,8 @@
           </b-row>
           <b-row>
             <b-col cols="12" sm="12" class="pl-4 pr-4">
-              <ul class="m-0 p-0 aquifer-summary-list">
-              <div class="aquifer-summary-list-divider"></div>
+              <ul class="m-0 p-0 aquifer-information-list">
+              <div class="aquifer-information-list-divider"></div>
               <li>
                 <dt>Aquifer number</dt>
                 <dd id="aquifer-view-number">{{record.aquifer_id}}</dd>
@@ -141,16 +141,19 @@
         </b-col>
         <b-col cols="4">
           <h5 class="mt-3 border-bottom pb-4 main-title">Knowledge Indicators</h5>
-          <div :key="section.id" v-for="section in aquifer_resource_sections">
-            <h6 class="mt-4">{{ section.name }}</h6>
-            <ul :key="resource.id" v-for="resource in bySection(record.resources, section)">
-              <li><a :href="resource.url">{{ resource.name }}</a></li>
-            </ul>
-
-            <p v-if="!bySection(record.resources, section).length">No information available.</p>
-          </div>
-          <div>
-          </div>
+          <ul class="ml-0 mr-0 mb-0 mt-4 p-0 aquifer-information-list">
+            <div class="aquifer-information-list-divider"></div>
+          <li :key="section.id" v-for="section in aquifer_resource_sections">
+              <dt>{{ section.name }}</dt>
+              <dd>
+                <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
+                  <li><a :href="resource.url">{{ resource.name }}</a></li>
+                </ul>
+                <p v-if="!bySection(record.resources, section).length">No information available.</p>
+              </dd>
+          </li>
+            
+          </ul>
         </b-col>
         <b-col cols="12" sm="6">
           <change-history v-if="userRoles.aquifers.edit" class="mt-5" :id="id" resource="aquifers" ref="aquiferHistory"/>
@@ -192,31 +195,31 @@ a {
   color: #494949;
 }
 
-.aquifer-summary-list {
+.aquifer-information-list {
   list-style-type: none;
   box-sizing: border-box;
   position: relative;
 }
 
-.aquifer-summary-list li {
+.aquifer-information-list > li {
   display: block;
   width: 100%;
   font-size: 0;
   margin: 0.3rem 0;
 }
-.aquifer-summary-list dt,
-.aquifer-summary-list dd {
+.aquifer-information-list dt,
+.aquifer-information-list dd {
   display: inline-block;
   vertical-align: top;
   width: 50%;
   font-size: 1rem;
 }
 
-.aquifer-summary-list dd {
+.aquifer-information-list dd {
   padding-left: 3rem;
 }
 
-.aquifer-summary-list-divider {
+.aquifer-information-list-divider {
   position: absolute;
   top: 0;
   width: 1px;
@@ -382,6 +385,7 @@ export default {
     fetchResourceSections () {
       ApiService.query('aquifers/sections').then((response) => {
         this.aquifer_resource_sections = response.data.results
+        console.log(this.aquifer_resource_sections)
       })
     }
   }
