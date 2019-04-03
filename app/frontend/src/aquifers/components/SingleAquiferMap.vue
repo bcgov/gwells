@@ -46,12 +46,14 @@ export default {
         styles: 'PMBC_Parcel_Fabric_Cadastre_Outlined',
         transparent: true
       }).addTo(this.map)
-
-      // Add aquifer to map
-      var aquiferGeom = L.geoJSON(this.geom, {
+    }
+  },
+  watch: {
+    geom: function (newGeom, oldGeom) {
+      var aquiferGeom = L.geoJSON(newGeom, {
         style: {
           'color': 'red'
-        },
+        }
       }).addTo(this.map)
 
       // Set map view to aquifer

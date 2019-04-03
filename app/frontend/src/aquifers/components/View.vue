@@ -13,7 +13,7 @@
 */
 
 <template>
-  <b-card class="container container-wide p-1">
+  <b-card class="container container-wide p-0 card-container pb-3" :class="{ 'p-4': editMode }">
     <api-error v-if="error" :error="error"/>
     <b-alert show v-if="files_uploading">File Upload In Progress...</b-alert>
     <b-alert show v-if="!files_uploading && file_upload_error" variant="warning" >
@@ -25,7 +25,7 @@
     <b-alert variant="success" :show="showSaveSuccess" id="aquifer-success-alert">
       Record successfully updated.
     </b-alert>
-    <b-container>
+    <b-container fluid>
       <b-row v-if="loading" class="border-bottom mb-3 pb-2">
         <b-col><h5>Loading...</h5></b-col>
       </b-row>
@@ -33,24 +33,6 @@
       <b-row v-if="editMode && !loading" class="border-bottom mb-3 pb-2">
         <b-col><h4>Aquifer {{record.aquifer_id}} Summary - Edit</h4></b-col>
       </b-row>
-
-      <b-row v-if="viewMode" class="border-bottom mb-3 pb-2">
-        <b-col><h4 class="pt-2">Aquifer Summary</h4></b-col>
-        <b-col cols="auto">
-          <b-button
-            variant="default"
-            v-if="userRoles.aquifers.edit"
-            v-on:click.prevent="navigateToEdit">
-            <span title="Edit" class="fa fa-edit"/> Edit
-          </b-button>
-          <a class="ml-2 print fa fa-print fa-lg d-print-none"
-            href="#"
-            title="Print"
-            v-on:click.prevent="print"
-           />
-        </b-col>
-      </b-row>
-
       <aquifer-form
         v-on:save="save"
         v-on:cancel="navigateToView"
@@ -61,64 +43,119 @@
         />
 
       <b-row v-if="viewMode">
-        <b-col class="aquifer-detail" cols="12" md="4">
-          <dt class="col-sm-6">Aquifer number</dt>
-          <dd class="col-sm-5" id="aquifer-view-number">{{record.aquifer_id}}</dd>
-          <dt class="col-sm-6">Year of mapping</dt>
-          <dd class="col-sm-5">{{record.mapping_year}}</dd>
-
-          <dt class="col-sm-6">Aquifer name</dt>
-          <dd class="col-sm-5" id="aquifer-view-name">{{record.aquifer_name}}</dd>
-          <dt class="col-sm-6">Litho stratigraphic unit</dt>
-          <dd class="col-sm-5">{{record.litho_stratographic_unit}}</dd>
-
-          <dt class="col-sm-6">Descriptive location</dt>
-          <dd class="col-sm-5">{{record.location_description}}</dd>
-          <dt class="col-sm-6">Vulnerability</dt>
-          <dd class="col-sm-5">{{record.vulnerability_description}}</dd>
-
-          <dt class="col-sm-6">Material type</dt>
-          <dd class="col-sm-5">{{record.material_description}}</dd>
-          <dt class="col-sm-6">Subtype</dt>
-          <dd class="col-sm-5">{{record.subtype_description}}</dd>
-
-          <dt class="col-sm-6">Quality concerns</dt>
-          <dd class="col-sm-5">{{record.quality_concern_description}}</dd>
-          <dt class="col-sm-6">Productivity</dt>
-          <dd class="col-sm-5">{{record.productivity_description}}</dd>
-
-          <dt class="col-sm-6">Size (km²)</dt>
-          <dd class="col-sm-5">{{record.area}}</dd>
-          <dt class="col-sm-6">Demand</dt>
-          <dd class="col-sm-5">{{record.demand_description}}</dd>
+        <b-col class="aquifer-detail" cols="12" md="5">
+          <b-row>
+            <b-col class="p-4">
+              <div class="d-flex justify-content-between align-items-center">
+              <h4 class="color-grey main-title mt-4">Aquifer {{ id }} Summary</h4>
+                <div>
+                <b-button
+                  variant="default"
+                  v-if="userRoles.aquifers.edit"
+                  v-on:click.prevent="navigateToEdit">
+                  <span title="Edit" class="fa fa-edit"/> Edit
+                </b-button>
+                <a class="ml-2 print fa fa-print fa-lg d-print-none"
+                  href="#"
+                  title="Print"
+                  v-on:click.prevent="print"
+                />
+                </div>
+              </div>
+              <hr class="m-0 mt-2"/>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col cols="12" sm="12" class="pl-4 pr-4">
+              <ul class="m-0 p-0 aquifer-summary-list">
+              <div class="aquifer-summary-list-divider"></div>
+              <li>
+                <dt>Aquifer number</dt>
+                <dd id="aquifer-view-number">{{record.aquifer_id}}</dd>
+              </li>
+              <li>
+                <dt>Year of mapping</dt>
+                <dd>{{record.mapping_year}}</dd>
+              </li>
+              <li>
+                <dt>Aquifer name</dt>
+                <dd id="aquifer-view-name">{{record.aquifer_name}}</dd>
+              </li>
+              <li>
+                <dt>Litho stratigraphic unit</dt>
+                <dd>{{record.litho_stratographic_unit}}</dd>
+              </li>
+              <li>
+                <dt>Descriptive location</dt>
+                <dd>{{record.location_description}}</dd>
+              </li>
+              <li>
+                <dt>Vulnerability</dt>
+                <dd>{{record.vulnerability_description}}</dd>
+              </li>
+              <li>
+                <dt>Material type</dt>
+                <dd>{{record.material_description}}</dd>
+              </li>
+              <li>
+                <dt>Subtype</dt>
+                <dd>{{record.subtype_description}}</dd>
+              </li>
+              <li>
+                <dt>Quality concerns</dt>
+                <dd>{{record.quality_concern_description}}</dd>
+              </li>
+              <li>
+                <dt>Productivity</dt>
+                <dd>{{record.productivity_description}}</dd>
+              </li>
+              <li>
+                <dt>Size (km²)</dt>
+                <dd>{{record.area}}</dd>
+              </li>
+              <li>
+                <dt>Demand</dt>
+                <dd>{{record.demand_description}}</dd>
+              </li>
+              </ul>
+            </b-col>
+          </b-row>
         </b-col>
-        <b-col cols="12" md="8">
+        <b-col cols="12" md="7" class="p-0">
           <single-aquifer-map v-bind:geom="record.geom"/>
         </b-col>
       </b-row>
 
-      <b-row v-if="viewMode">
-        <b-col>
-          <h5 class="mt-3 border-bottom">Licensing Information</h5>
-          <h5 class="mt-3 border-bottom">Well Information</h5>
+      <b-row v-if="viewMode" class="mt-5">
+        <b-col cols="4" >
+          <h5 class="mt-3 border-bottom pb-4 main-title">Well Information</h5>
+          <h5 class="mt-3 border-bottom pb-4 main-title">Documentation</h5>
+          <aquifer-documents :files="aquiferFiles"
+            :editMode="editMode"
+            :id="this.id"
+            v-on:fetchFiles="fetchFiles">
+          </aquifer-documents>
         </b-col>
-        <b-col>
-          <h5 class="mt-3 border-bottom">Knowledge Indicators</h5>
+        <b-col cols="4">
+          <h5 class="mt-3 border-bottom pb-4 main-title">Licensing Information</h5>
+        </b-col>
+        <b-col cols="4">
+          <h5 class="mt-3 border-bottom pb-4 main-title">Knowledge Indicators</h5>
           <div :key="section.id" v-for="section in aquifer_resource_sections">
             <h6 class="mt-4">{{ section.name }}</h6>
             <ul :key="resource.id" v-for="resource in bySection(record.resources, section)">
               <li><a :href="resource.url">{{ resource.name }}</a></li>
             </ul>
+
             <p v-if="!bySection(record.resources, section).length">No information available.</p>
           </div>
+          <div>
+          </div>
+        </b-col>
+        <b-col cols="12" sm="6">
+          <change-history v-if="userRoles.aquifers.edit" class="mt-5" :id="id" resource="aquifers" ref="aquiferHistory"/>
         </b-col>
       </b-row>
-      <h5 class="mt-3 border-bottom">Documentation</h5>
-      <aquifer-documents :files="aquiferFiles"
-        :editMode="editMode"
-        :id="this.id"
-        v-on:fetchFiles="fetchFiles"></aquifer-documents>
-      <change-history v-if="userRoles.aquifers.edit" class="mt-5" :id="id" resource="aquifers" ref="aquiferHistory"/>
     </b-container>
   </b-card>
 </template>
@@ -130,9 +167,62 @@
 }
 .aquifer-detail dt,
 .aquifer-detail dd {
+  display: block;
+}
+.artesian-search {
+  cursor: pointer;
+}
+
+a {
+  text-decoration-skip-ink: none;
+}
+
+.card-container .card-body {
+  padding: 0;
+  margin: 0;
+}
+
+.color-grey {
+  color: #494949
+}
+
+.main-title {
+  padding-bottom: 1rem;
+  font-size: 1.8em;
+  color: #494949;
+}
+
+.aquifer-summary-list {
+  list-style-type: none;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.aquifer-summary-list li {
+  display: block;
+  width: 100%;
+  font-size: 0;
+  margin: 0.3rem 0;
+}
+.aquifer-summary-list dt,
+.aquifer-summary-list dd {
   display: inline-block;
   vertical-align: top;
-  margin-bottom: 9px;
+  width: 50%;
+  font-size: 1rem;
+}
+
+.aquifer-summary-list dd {
+  padding-left: 3rem;
+}
+
+.aquifer-summary-list-divider {
+  position: absolute;
+  top: 0;
+  width: 1px;
+  height: 100%;
+  background-color: rgba(0,0,0,0.1);
+  left: calc(50% - 0.5px);
 }
 </style>
 
@@ -142,6 +232,7 @@ import APIErrorMessage from '@/common/components/APIErrorMessage'
 import AquiferForm from './Form'
 import Documents from './Documents.vue'
 import SingleAquiferMap from './SingleAquiferMap.vue'
+import AquiferMap from './AquiferMap.vue'
 import ChangeHistory from '@/common/components/ChangeHistory.vue'
 import { mapActions, mapGetters, mapState } from 'vuex'
 export default {
@@ -149,6 +240,7 @@ export default {
     'api-error': APIErrorMessage,
     'aquifer-form': AquiferForm,
     'aquifer-documents': Documents,
+    'aquifer-map': AquiferMap,
     'single-aquifer-map': SingleAquiferMap,
     ChangeHistory
   },
@@ -159,6 +251,7 @@ export default {
     this.fetch()
     this.fetchFiles()
     this.fetchResourceSections()
+    
   },
   data () {
     return {
@@ -168,7 +261,8 @@ export default {
       record: {},
       showSaveSuccess: false,
       aquiferFiles: {},
-      aquifer_resource_sections: []
+      aquifer_resource_sections: [],
+      wells: []
     }
   },
   computed: {
@@ -196,6 +290,15 @@ export default {
       'fileUploadSuccess',
       'fileUploadFail'
     ]),
+    fetchWells (id = this.id) {
+      ApiService.query(`aquifers/${id}/details`)
+        .then((response) => {
+          this.wells = response.data
+        }).catch((error) => {
+          console.error(error)
+        })
+      this.wells = [{id: 20402}]
+    },
     bySection (resources, section) {
       return (resources || []).filter(function (resource) {
         return resource.section_code === section.code
@@ -204,7 +307,6 @@ export default {
     handleSaveSuccess (response) {
       this.fetch()
       this.navigateToView()
-    
       if (this.$refs.aquiferHistory) {
         this.$refs.aquiferHistory.update()
       }
@@ -222,17 +324,17 @@ export default {
         })
       }
 
-    if (this.shapeFile) {
-      console.log("Shape File Exists")
-      console.log(this.shapeFile);
-      this.uploadShapeFile({
-        documentType: 'aquifers',
-        recordId: this.id
-      });
-    } else {
-      console.log("Shape file does not exist");
-      console.log(this.shapeFile);
-    }
+      if (this.shapeFile) {
+        console.log('Shape File Exists')
+        console.log(this.shapeFile)
+        this.uploadShapeFile({
+          documentType: 'aquifers',
+          recordId: this.id
+        })
+      } else {
+        console.log('Shape file does not exist')
+        console.log(this.shapeFile)
+      }
     },
     handlePatchError (error) {
       if (error.response) {
@@ -246,8 +348,6 @@ export default {
       }
     },
     save () {
-      console.log("Attempt to get file from child");
-      console.log(AquiferForm.data());
       this.showSaveSuccess = false
       this.fieldErrors = {}
       ApiService.patch('aquifers', this.id, this.record)
@@ -266,8 +366,8 @@ export default {
     },
     fetch (id = this.id) {
       ApiService.query(`aquifers/${id}`)
-        .then((response) => {
-          console.log(response.data)
+        .then((response) => { 
+          console.log("Aquifer", response)
           this.record = response.data
         }).catch((error) => {
           console.error(error)

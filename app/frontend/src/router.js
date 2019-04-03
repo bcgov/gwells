@@ -176,6 +176,9 @@ const router = new Router({
     {
       path: '/',
       name: 'wells-home',
+      meta: {
+        allowPushWithoutScroll: true
+      },
       component: WellSearch
     },
     {
@@ -194,6 +197,10 @@ const router = new Router({
     // }
   ],
   scrollBehavior (to, from, savedPosition) {
+    if (to.name === from.name && to.matched.some(m => m.meta.allowPushWithoutScroll)) {
+      return
+    }
+
     return { x: 0, y: 0 }
   }
 })

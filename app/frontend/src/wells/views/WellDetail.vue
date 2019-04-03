@@ -1,9 +1,9 @@
 <template>
   <div>
-    <b-card no-body class="mb-3 container container-wide d-print-none">
+    <b-card no-body class="mb-3 container d-print-none">
       <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"></b-breadcrumb>
     </b-card>
-    <b-card class="container container-wide p-1">
+    <b-card class="container p-1">
 
       <!-- SUMMARY -->
       <fieldset id="summary_fieldset" class="detail-section mb-3">
@@ -428,6 +428,9 @@ export default {
         lithology_to: {
           label: 'To (ft bgl)'
         },
+        lithology_raw_data: {
+          label: 'Raw Data'
+        },
         lithology_description: {
           label: 'Description'
         },
@@ -459,10 +462,10 @@ export default {
       }
     },
     UTM () {
-    // converts form lat/long and returns an object containing UTM easting, northing, and zone
-      // if (this.well && this.well.latitude && this.well.longitude) {
-      //   return this.convertToUTM(Number(this.well.longitude), Number(this.well.latitude))
-      // }
+      // converts form lat/long and returns an object containing UTM easting, northing, and zone
+      if (this.well && this.well.latitude && this.well.longitude) {
+        return this.convertToUTM(Number(this.well.longitude), Number(this.well.latitude))
+      }
       return {}
     },
     ...mapGetters(['userRoles', 'config'])

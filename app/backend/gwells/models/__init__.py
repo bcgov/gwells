@@ -22,7 +22,7 @@ from django.contrib.auth.models import User
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 
-from .common import AuditModel, ProvinceStateCode
+from .common import AuditModel, ProvinceStateCode, CodeTableModel, BasicCodeTableModel
 from .screen import ScreenIntakeMethodCode, ScreenMaterialCode, ScreenOpeningCode, ScreenBottomCode,\
     ScreenTypeCode, ScreenAssemblyTypeCode
 from .survey import Survey, OnlineSurvey

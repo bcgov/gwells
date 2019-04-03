@@ -23,6 +23,10 @@
         {
             "name": "COMMAND",
             "required": true
+        },
+        {
+            "name": "SCHEDULE",
+            "required": true
         }
     ],
     "objects": [
@@ -33,7 +37,7 @@
                 "name": "${NAME}"
             },
             "spec": {
-                "schedule": "1 11 * * *",
+                "schedule": "${SCHEDULE}",
                 "concurrencyPolicy": "Forbid",
                 "jobTemplate": {
                     "spec": {
@@ -43,6 +47,7 @@
                                     {
                                         "name": "${NAME}",
                                         "image": "docker-registry.default.svc:5000/${PROJECT}/gwells-${ENV_NAME}:${TAG}",
+                                        "imagePullPolicy": "Always",
                                         "command": [
                                             "python",
                                             "backend/manage.py",

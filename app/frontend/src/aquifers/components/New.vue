@@ -14,11 +14,11 @@
 
 <template>
   <div>
-    <b-card class="container container-wide p-1">
+    <b-card class="container p-1">
       <api-error v-if="error" :error="error"/>
 
       <b-container>
-        <b-row class="border-bottom mb-3 pb-2">
+        <b-row class="border-bottom mb-3 pb-2 pt-2">
           <b-col><h4>Add new Aquifer</h4></b-col>
         </b-row>
 
@@ -95,7 +95,7 @@ export default {
       }
     },
     save () {
-      console.log("Save Called")
+      console.log('Save Called')
       this.showSaveSuccess = false
       this.fieldErrors = {}
       ApiService.post('aquifers', this.record)

@@ -17,7 +17,7 @@ import os
 import csv
 
 from django_filters import rest_framework as djfilters
-from django.http import Http404, HttpResponse, JsonResponse, HttpResponseRedirect
+from django.http import Http404, HttpResponse, JsonResponse, HttpResponseRedirect, StreamingHttpResponse
 from django.views.generic import TemplateView
 from django.db.models import Q
 from django.db import connection
@@ -28,6 +28,7 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
 from rest_framework import filters
+from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.filters import SearchFilter, OrderingFilter
@@ -52,10 +53,17 @@ from aquifers.models import (
     AquiferProductivity,
     AquiferSubtype,
     AquiferVulnerabilityCode,
+    AquiferMaterial,
+    QualityConcern,
+    WaterUse
 )
 from aquifers.permissions import HasAquiferEditRoleOrReadOnly, HasAquiferEditRole
 from gwells.change_history import generate_history_diff
 from registries.views import AuditCreateMixin, AuditUpdateMixin
+from gwells.open_api import (
+    get_geojson_schema, get_model_feature_schema, GEO_JSON_302_MESSAGE, GEO_JSON_PARAMS)
+from gwells.management.commands.export_databc import AQUIFERS_SQL, GeoJSONIterator, AQUIFER_CHUNK_SIZE, \
+    MAX_AQUIFERS_SQL
 
 
 logger = logging.getLogger(__name__)
@@ -66,7 +74,7 @@ class AquiferRetrieveUpdateAPIView(RevisionMixin, AuditUpdateMixin, RetrieveUpda
     get: return details of aquifers
     patch: update aquifer
     """
-
+    print("it went here")
     permission_classes = (HasAquiferEditRoleOrReadOnly,)
     queryset = Aquifer.objects.all()
     lookup_field = 'aquifer_id'
@@ -371,12 +379,49 @@ class SaveAquiferGeometry(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class AquifersSpatial(APIView):
+AQUIFER_PROPERTIES = openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    title='GeoJSON Feature properties.',
+    description='See: https://tools.ietf.org/html/rfc7946#section-3.2',
+    properties={
+        'aquifer_id': get_model_feature_schema(Aquifer, 'aquifer_id'),
+        'name': get_model_feature_schema(Aquifer, 'aquifer_name'),
+        'location': get_model_feature_schema(Aquifer, 'location_description'),
+        'material': get_model_feature_schema(AquiferMaterial, 'description'),
+        'subtype': get_model_feature_schema(AquiferSubtype, 'description'),
+        'vulnerability': get_model_feature_schema(AquiferVulnerabilityCode, 'description'),
+        'productivity': get_model_feature_schema(AquiferProductivity, 'description'),
+        'demand': get_model_feature_schema(AquiferDemand, 'description'),
+        'water_use': get_model_feature_schema(WaterUse, 'description'),
+        'quality_concern': get_model_feature_schema(QualityConcern, 'description'),
+        'litho_stratographic_unit': get_model_feature_schema(Aquifer, 'litho_stratographic_unit'),
+        'mapping_year': get_model_feature_schema(Aquifer, 'mapping_year'),
+        'notes': get_model_feature_schema(Aquifer, 'notes')
+    })
 
-    permission_classes = (AllowAny,)
 
-    def get(self, request):
-
+@swagger_auto_schema(
+    operation_description=(
+        'Get GeoJSON (see https://tools.ietf.org/html/rfc7946) dump of aquifers.'),
+    method='get',
+    manual_parameters=[GEO_JSON_PARAMS],
+    responses={
+        302: openapi.Response(GEO_JSON_302_MESSAGE),
+        200: openapi.Response(
+            'GeoJSON data for aquifers.',
+            get_geojson_schema(AQUIFER_PROPERTIES, 'Polygon'))
+    })
+@api_view(['GET'])
+def aquifer_geojson(request):
+    realtime = request.GET.get('realtime') in ('True', 'true')
+    if realtime:
+        iterator = GeoJSONIterator(
+            AQUIFERS_SQL, AQUIFER_CHUNK_SIZE, connection.cursor(), MAX_AQUIFERS_SQL)
+        response = StreamingHttpResponse((item for item in iterator),
+                                         content_type='application/json')
+        response['Content-Disposition'] = 'attachment; filename="aquifers.json"'
+        return response
+    else:
         # Generating spatial data realtime is much too slow,
         # so we have to redirect to a pre-generated instance.
         url = 'https://{}/{}/{}'.format(

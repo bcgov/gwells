@@ -16,6 +16,7 @@ import csv
 import zipfile
 import os
 
+from django.conf import settings
 from django.contrib.gis.geos.prototypes.io import wkt_w
 
 # Run from command line :
@@ -53,6 +54,7 @@ class Command(BaseCommand):
                         found_zip = True
         
         # Recursively search for shapefiles and import them.
+        shp_idx = 0
         for root, directories, filenames in os.walk(options['path']):
             for filename in filenames: 
                 if filename.lower().endswith(".shp"):
@@ -72,11 +74,17 @@ class Command(BaseCommand):
                                 continue
 
                             aquifer_id = feat.get("AQ_NUMBER")
-                            try:
-                                aquifer = Aquifer.objects.get(pk=int(aquifer_id))
-                            except Aquifer.DoesNotExist:
-                                logging.info("Aquifer {} not found in database, skipping import.".format(aquifer_id))
-                                continue
+                            # In dev environments, just assign these geometries to random aquifers.
+                            if settings.DEBUG:
+                                ct = Aquifer.objects.count() - 1
+                                aquifer = Aquifer.objects.all()[shp_idx % ct:][0]
+                                shp_idx += 1
+                            else:
+                                try:
+                                    aquifer = Aquifer.objects.get(pk=int(aquifer_id))
+                                except Aquifer.DoesNotExist:
+                                    logging.info("Aquifer {} not found in database, skipping import.".format(aquifer_id))
+                                    continue
 
                             wkt = wkt_w(dim=2).write( GEOSGeometry(geom.wkt, srid=3005)).decode()
                             geos_geom = GEOSGeometry(wkt, srid=3005)

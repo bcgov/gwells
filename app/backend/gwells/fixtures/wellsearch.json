@@ -850,8 +850,6 @@
             "decommission_end_date": null,
             "drilling_company": null,
             "well_identification_plate_attached": null,
-            "latitude": "49.260000",
-            "longitude": "-122.540000",
             "ground_elevation": null,
             "ground_elevation_method": null,
             "well_orientation": true,
@@ -954,8 +952,6 @@
             "decommission_end_date": null,
             "drilling_company": "f606669c-a60c-422d-859a-fdc54278d9b0",
             "well_identification_plate_attached": "SIDE OF CASING",
-            "latitude": "49.200000",
-            "longitude": "-122.540000",
             "ground_elevation": "1697.00",
             "ground_elevation_method": null,
             "drilling_methods": [
@@ -1070,8 +1066,6 @@
             "decommission_end_date": null,
             "drilling_company": "1237493e-ebd8-41e2-83ca-0a600da00bc9",
             "well_identification_plate_attached": "Top of Casing",
-            "latitude": "49.230000",
-            "longitude": "-122.580000",
             "ground_elevation": "3091.00",
             "ground_elevation_method": "GPS",
             "drilling_methods": [
@@ -1186,8 +1180,6 @@
             "decommission_end_date": null,
             "drilling_company": "69f5459a-5ec1-49e1-94b6-58b0eb90b368",
             "well_identification_plate_attached": "CASING STICK UP",
-            "latitude": "49.250000",
-            "longitude": "-122.590000",
             "ground_elevation": null,
             "ground_elevation_method": null,
             "drilling_methods": [
@@ -1302,8 +1294,6 @@
             "decommission_end_date": "2014-11-23",
             "drilling_company": "bf5d31ea-8a5a-4363-8a5e-6c00eed03058",
             "well_identification_plate_attached": "ON TOP",
-            "latitude": "52.465449",
-            "longitude": "-125.300830",
             "ground_elevation": "1.20",
             "ground_elevation_method": "GPS",
             "drilling_methods": [
@@ -1382,7 +1372,7 @@
     },
     {
         "model": "wells.well",
-        "pk": 9193183,
+        "pk": 216265,
         "fields": {
             "create_user": "PROXY_EWELLS_USER",
             "create_date": "2019-02-08T18:53:16.353Z",
@@ -1423,8 +1413,6 @@
             "drilling_company": null,
             "well_identification_plate_attached": null,
             "id_plate_attached_by": null,
-            "latitude": null,
-            "longitude": null,
             "ground_elevation": null,
             "ground_elevation_method": null,
             "drilling_methods": [
@@ -1521,7 +1509,8 @@
                 "SALTY"
             ],
             "decommission_backfill_material": null,
-            "decommission_sealant_material": null
+            "decommission_sealant_material": null,
+            "geom": null
         }
     }
 ]

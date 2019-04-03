@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "80aaee05-0ba7-47ac-81f9-402ecb723010",
+		"_postman_id": "4463d1cb-afac-47db-8fc6-d67d3886a4e3",
 		"name": "Well List API filters",
 		"description": "Well List API endpoint filters required for advanced search options.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -36,7 +36,7 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{base_url}}/api/v1/wells?search=9193183",
+							"raw": "{{base_url}}/api/v1/wells?search=216265",
 							"host": [
 								"{{base_url}}"
 							],
@@ -48,7 +48,7 @@
 							"query": [
 								{
 									"key": "search",
-									"value": "9193183"
+									"value": "216265"
 								}
 							]
 						}
@@ -301,7 +301,7 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?well=9193183",
+									"raw": "{{base_url}}/api/v1/wells?well=216265",
 									"host": [
 										"{{base_url}}"
 									],
@@ -313,7 +313,7 @@
 									"query": [
 										{
 											"key": "well",
-											"value": "9193183"
+											"value": "216265"
 										}
 									]
 								}
@@ -806,7 +806,7 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?well_tag_number=9193183",
+									"raw": "{{base_url}}/api/v1/wells?well_tag_number=216265",
 									"host": [
 										"{{base_url}}"
 									],
@@ -818,7 +818,7 @@
 									"query": [
 										{
 											"key": "well_tag_number",
-											"value": "9193183"
+											"value": "216265"
 										}
 									]
 								}
@@ -2259,20 +2259,20 @@
 					"name": "Numeric range filters",
 					"item": [
 						{
-							"name": "latitude param (range minimum)",
+							"name": "liner_diameter param (range minimum)",
 							"event": [
 								{
 									"listen": "test",
 									"script": {
 										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
 										"exec": [
-											"pm.test(\"Latitude matches filter\", function () {",
-											"  const latitudeMin = parseFloat(pm.request.url.query.get(\"latitude_min\"));",
+											"pm.test(\"Liner diameter matches filter\", function () {",
+											"  const linerDiameter = parseFloat(pm.request.url.query.get(\"liner_diameter_min\"));",
 											"",
 											"  pm.response.json().results.forEach(function(result) {",
-											"    const latitude = parseFloat(result.latitude);",
+											"    const liner_diameter = parseFloat(result.liner_diameter);",
 											"",
-											"    pm.expect(latitude).to.be.at.least(latitudeMin);",
+											"    pm.expect(liner_diameter).to.be.at.least(linerDiameter);",
 											"  });",
 											"});"
 										],
@@ -2288,7 +2288,7 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?latitude_min=49.22",
+									"raw": "{{base_url}}/api/v1/wells?liner_diameter_min=1.3",
 									"host": [
 										"{{base_url}}"
 									],
@@ -2299,8 +2299,8 @@
 									],
 									"query": [
 										{
-											"key": "latitude_min",
-											"value": "49.22"
+											"key": "liner_diameter_min",
+											"value": "1.3"
 										}
 									]
 								}
@@ -2308,20 +2308,20 @@
 							"response": []
 						},
 						{
-							"name": "latitude param (range maximum)",
+							"name": "liner_diameter param (range maximum)",
 							"event": [
 								{
 									"listen": "test",
 									"script": {
 										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
 										"exec": [
-											"pm.test(\"Latitude matches filter\", function () {",
-											"  const latitudeMax = parseFloat(pm.request.url.query.get(\"latitude_max\"));",
+											"pm.test(\"Liner diameter matches filter\", function () {",
+											"  const linerDiameter = parseFloat(pm.request.url.query.get(\"liner_diameter_max\"));",
 											"",
 											"  pm.response.json().results.forEach(function(result) {",
-											"    const latitude = parseFloat(result.latitude);",
+											"    const liner_diameter = parseFloat(result.liner_diameter);",
 											"",
-											"    pm.expect(latitude).to.be.at.most(latitudeMax);",
+											"    pm.expect(liner_diameter).to.be.at.most(linerDiameter);",
 											"  });",
 											"});"
 										],
@@ -2337,7 +2337,7 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?latitude_max=49.24",
+									"raw": "{{base_url}}/api/v1/wells?liner_diameter_max=1.6",
 									"host": [
 										"{{base_url}}"
 									],
@@ -2348,106 +2348,8 @@
 									],
 									"query": [
 										{
-											"key": "latitude_max",
-											"value": "49.24"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "longitude param (range minimum)",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
-										"exec": [
-											"pm.test(\"Longitude matches filter\", function () {",
-											"  const longitudeMin = parseFloat(pm.request.url.query.get(\"longitude_min\"));",
-											"",
-											"  pm.response.json().results.forEach(function(result) {",
-											"    const longitude = parseFloat(result.longitude);",
-											"",
-											"    pm.expect(longitude).to.be.at.least(longitudeMin);",
-											"  });",
-											"});"
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"method": "GET",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
-								"url": {
-									"raw": "{{base_url}}/api/v1/wells?longitude_min=-122.58",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"api",
-										"v1",
-										"wells"
-									],
-									"query": [
-										{
-											"key": "longitude_min",
-											"value": "-122.58"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "longitude param (range maximum)",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
-										"exec": [
-											"pm.test(\"Longitude matches filter\", function () {",
-											"  const longitudeMax = parseFloat(pm.request.url.query.get(\"longitude_max\"));",
-											"",
-											"  pm.response.json().results.forEach(function(result) {",
-											"    const longitude = parseFloat(result.longitude);",
-											"",
-											"    pm.expect(longitude).to.be.at.most(longitudeMax);",
-											"  });",
-											"});"
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"method": "GET",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
-								"url": {
-									"raw": "{{base_url}}/api/v1/wells?longitude_max=-122.57",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"api",
-										"v1",
-										"wells"
-									],
-									"query": [
-										{
-											"key": "longitude_max",
-											"value": "-122.57"
+											"key": "liner_diameter_max",
+											"value": "1.6"
 										}
 									]
 								}
@@ -3009,10 +2911,10 @@
 					"_postman_isSubFolder": true
 				},
 				{
-					"name": "Bounding box filter",
+					"name": "Lat/long point filters",
 					"item": [
 						{
-							"name": "within param (valid)",
+							"name": "sw_long, sw_lat, ne_long and ne_lat params (valid)",
 							"event": [
 								{
 									"listen": "test",
@@ -3038,7 +2940,7 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?within_x1=-122.58&within_y1=49.24&within_x2=-122.60&within_y2=49.26",
+									"raw": "{{base_url}}/api/v1/wells?sw_long=-122.60&sw_lat=49.24&ne_long=-122.58&ne_lat=49.26",
 									"host": [
 										"{{base_url}}"
 									],
@@ -3049,19 +2951,19 @@
 									],
 									"query": [
 										{
-											"key": "within_x1",
-											"value": "-122.58"
-										},
-										{
-											"key": "within_y1",
-											"value": "49.24"
-										},
-										{
-											"key": "within_x2",
+											"key": "sw_long",
 											"value": "-122.60"
 										},
 										{
-											"key": "within_y2",
+											"key": "sw_lat",
+											"value": "49.24"
+										},
+										{
+											"key": "ne_long",
+											"value": "-122.58"
+										},
+										{
+											"key": "ne_lat",
 											"value": "49.26"
 										}
 									]
@@ -3070,17 +2972,19 @@
 							"response": []
 						},
 						{
-							"name": "within param (missing point)",
+							"name": "sw_long, sw_lat and ne_long params (missing ne_lat)",
 							"event": [
 								{
 									"listen": "test",
 									"script": {
-										"id": "19dcd02f-9e31-4876-9102-fe274f4d678e",
+										"id": "11f7946c-15e1-41ea-bcc8-ed7d121f5761",
 										"exec": [
-											"pm.test(\"Response code 400\", function () {",
-											"  pm.response.to.be.clientError;",
+											"pm.test(\"Response status ok\", function () {",
+											"  pm.response.to.be.ok;",
 											"});",
-											""
+											"pm.test(\"At least one result\", function () {",
+											"  pm.expect(pm.response.json().count).to.be.at.least(1);",
+											"});"
 										],
 										"type": "text/javascript"
 									}
@@ -3094,7 +2998,7 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?within_x1=-122.58&within_y1=49.24&within_x2=-122.60",
+									"raw": "{{base_url}}/api/v1/wells?sw_long=-122.60&sw_lat=49.24&ne_long=-122.58",
 									"host": [
 										"{{base_url}}"
 									],
@@ -3105,21 +3009,16 @@
 									],
 									"query": [
 										{
-											"key": "within_x1",
-											"value": "-122.58"
-										},
-										{
-											"key": "within_y1",
-											"value": "49.24"
-										},
-										{
-											"key": "within_x2",
+											"key": "sw_long",
 											"value": "-122.60"
 										},
 										{
-											"key": "",
-											"value": "",
-											"disabled": true
+											"key": "sw_lat",
+											"value": "49.24"
+										},
+										{
+											"key": "ne_long",
+											"value": "-122.58"
 										}
 									]
 								}
@@ -3127,17 +3026,19 @@
 							"response": []
 						},
 						{
-							"name": "within param (invalid point)",
+							"name": "sw_long, sw_lat, ne_long and ne_lat param (invalid)",
 							"event": [
 								{
 									"listen": "test",
 									"script": {
 										"id": "19dcd02f-9e31-4876-9102-fe274f4d678e",
 										"exec": [
-											"pm.test(\"Response code 400\", function () {",
-											"  pm.response.to.be.clientError;",
+											"pm.test(\"Response status ok\", function () {",
+											"  pm.response.to.be.ok;",
 											"});",
-											""
+											"pm.test(\"At least one result\", function () {",
+											"  pm.expect(pm.response.json().count).to.be.at.least(1);",
+											"});"
 										],
 										"type": "text/javascript"
 									}
@@ -3151,7 +3052,7 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?within_x1=-122.58&within_y1=bar&within_x2=-122.60&within_y2=foo",
+									"raw": "{{base_url}}/api/v1/wells?sw_lat=bar&sw_long=foo&ne_long=test&ne_lat=avalue",
 									"host": [
 										"{{base_url}}"
 									],
@@ -3162,25 +3063,47 @@
 									],
 									"query": [
 										{
-											"key": "within_x1",
-											"value": "-122.58"
-										},
-										{
-											"key": "within_y1",
+											"key": "sw_lat",
 											"value": "bar"
 										},
 										{
-											"key": "within_x2",
-											"value": "-122.60"
+											"key": "sw_long",
+											"value": "foo"
 										},
 										{
-											"key": "within_y2",
-											"value": "foo"
+											"key": "ne_long",
+											"value": "test"
+										},
+										{
+											"key": "ne_lat",
+											"value": "avalue"
 										}
 									]
 								}
 							},
 							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "9ec0a743-32fa-41cc-bde9-490baab9459a",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "62d9d922-c2e8-4c93-abbd-a4a3aa409a69",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
 						}
 					],
 					"_postman_isSubFolder": true

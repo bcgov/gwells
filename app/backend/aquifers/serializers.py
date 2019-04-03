@@ -196,7 +196,7 @@ class AquiferDetailSerializer(AquiferSerializer):
         ret['licence_details']['num_wells'] = instance.well_set.all().count()
         ret['licence_details']['obs_wells'] = instance.well_set.filter(
             observation_well_number__isnull=False
-        ).values('well_tag_number', 'observation_well_number', 'observation_well_status_code')
+        ).values('well_tag_number', 'observation_well_number')
         return ret
 
     class Meta:
