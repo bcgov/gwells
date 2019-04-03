@@ -20,7 +20,7 @@ const searchControl = new GeoSearchControl({
 export default {
   name: 'AquiferMap',
   props: ['aquifers', 'searchAddress'],
-  created () {
+  mounted () {
     // There seems to be an issue loading leaflet immediately on mount, we use nextTick to ensure
     // that the view has been rendered at least once before injecting the map.
     this.$nextTick(function () {
@@ -58,6 +58,7 @@ export default {
       })
     },
     initMap () {
+      console.log("Refs", this)
       // Create map, with default centered and zoomed to show entire BC.
       this.map = L.map('map').setView([54.5, -126.5], 5)
       L.control.scale().addTo(this.map)

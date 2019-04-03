@@ -157,7 +157,15 @@
           <h5 class="mt-3 border-bottom pb-4 main-title">Knowledge Indicators</h5>
           <ul class="ml-0 mr-0 mb-0 mt-4 p-0 aquifer-information-list">
             <div class="aquifer-information-list-divider"></div>
-          <li :key="section.id" v-for="section in aquifer_resource_sections">
+          <li :key="section.id" v-for="(section, index) in aquifer_resource_sections">
+              <div class="artesian-conditions" v-if="index === 1">
+                <dt>Artesian Conditions</dt>
+                <dd @click="handleArtesianSearch()">{{ licence_details.num_artesian_wells }} artesian wells in aquifer</dd>
+              </div>
+              <div class="observational-wells" v-if="index === 2">
+                <dt>Observational Wells</dt>
+                <dd><p>Observation Well 20402<br/>Water Level Analysis: Increasing</p></dd>
+              </div>
               <dt>{{ section.name }}</dt>
               <dd>
                 <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
@@ -253,7 +261,6 @@ import APIErrorMessage from '@/common/components/APIErrorMessage'
 import AquiferForm from './Form'
 import Documents from './Documents.vue'
 import SingleAquiferMap from './SingleAquiferMap.vue'
-import AquiferMap from './AquiferMap.vue'
 import ChangeHistory from '@/common/components/ChangeHistory.vue'
 import { mapActions, mapGetters, mapState } from 'vuex'
 export default {
@@ -261,7 +268,6 @@ export default {
     'api-error': APIErrorMessage,
     'aquifer-form': AquiferForm,
     'aquifer-documents': Documents,
-    'aquifer-map': AquiferMap,
     'single-aquifer-map': SingleAquiferMap,
     ChangeHistory
   },
@@ -418,7 +424,18 @@ export default {
           'aquifer': this.record.aquifer_id
         }
       })
+    },
+    handleArtesianSearch () {
+      this.$router.push({
+        name: 'wells-home',
+        query: {
+          'match_any': false,
+          'aquifer': this.id,
+          'artesian_flow_has_value': true,
+          'artesian_pressure_has_value': true
+        },
+        hash: '#advanced'
+      })
     }
-  }
-}
+  }}
 </script>
