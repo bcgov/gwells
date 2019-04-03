@@ -170,6 +170,7 @@ const router = new Router({
       name: 'wells-detail',
       component: WellDetail
     },
+    { path: '/search', redirect: '/' },
     {
       path: '/',
       name: 'wells-home',
