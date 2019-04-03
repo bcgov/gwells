@@ -133,7 +133,7 @@
             <div class="aquifer-information-list-divider"></div>
             <li>
               <dt>Number of wells associated to the aquifer</dt>
-              <dd>{{ licence_details.num_wells }}</dd>
+              <dd><a @click="handleWellSearch()">{{ licence_details.num_wells }}</a></dd>
             </li>
           </ul>
           <h5 class="mt-5 border-bottom pb-4 main-title">Documentation</h5>
@@ -391,6 +391,7 @@ export default {
         .then((response) => { 
           
           this.record = response.data
+          console.log(this.record)
           this.licence_details = response.data.licence_details
         }).catch((error) => {
           console.error(error)
@@ -405,6 +406,17 @@ export default {
     fetchResourceSections () {
       ApiService.query('aquifers/sections').then((response) => {
         this.aquifer_resource_sections = response.data.results
+      })
+    },
+    handleWellSearch () {
+      this.$router.push({
+        path: '/',
+        query: {
+          'match_any': false,
+          'search': '',
+          'well': '',
+          'aquifer': this.record.aquifer_id
+        }
       })
     }
   }
