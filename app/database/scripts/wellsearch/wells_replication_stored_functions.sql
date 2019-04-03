@@ -821,7 +821,7 @@ COMMENT ON FUNCTION migrate_drilling_methods () IS 'Load Well Drilling Method re
 
 -- DESCRIPTION
 --  Define the SQL INSERT command that copies the water quality data from the legacy
---  database to the GWELLS table (water_quality_characteristics)
+--  database to the GWELLS table (well_water_quality)
 --
 -- PARAMETERS
 --   None
@@ -829,27 +829,29 @@ COMMENT ON FUNCTION migrate_drilling_methods () IS 'Load Well Drilling Method re
 -- RETURNS
 --  None as this is a stored procedure
 --
-CREATE OR REPLACE FUNCTION migrate_water_quality_characteristics() RETURNS void as $$
+CREATE OR REPLACE FUNCTION migrate_well_water_quality() RETURNS void as $$
 DECLARE
   row_count integer;
 BEGIN
-  raise notice '...importing water_quality_characteristic';
-  INSERT INTO water_quality_characteristic(
+  raise notice '...importing well_water_quality';
+
+  INSERT INTO well_water_quality(
     well_id                 ,
     waterqualitycharacteristic_id
   )
   SELECT
-    xform.well_tag_number,
-    xform.water_quality_characteristic_code
-  FROM xform_well xform
-  WHERE xform.water_quality_characteristic_code IS NOT NULL;
+    xform.well_tag_number             ,
+    water_quality.water_quality_characteristic_code
+  FROM wells.well_water_quality water_quality
+  INNER JOIN xform_well xform ON xform.well_id=water_quality.well_id
+  WHERE water_quality.water_quality_characteristic_code IS NOT NULL;
 
-  raise notice '...water_quality_characteristic data imported';
-  SELECT count(*) from water_quality_characteristic into row_count;
-  raise notice '% rows loaded into the water_quality_characteristic table', row_count;
+  raise notice '...well_water_quality data imported';
+  SELECT count(*) from well_water_quality into row_count;
+  raise notice '% rows loaded into the well_water_quality table', row_count;
 END;
 $$ LANGUAGE plpgsql;
-COMMENT ON FUNCTION migrate_water_quality_characteristics () IS 'Load well water quality relationships for the wells that have been replicated.';
+COMMENT ON FUNCTION migrate_well_water_quality () IS 'Load well water quality relationships for the wells that have been replicated.';
 
 
 -- DESCRIPTION
@@ -1248,7 +1250,7 @@ BEGIN
   PERFORM migrate_lithology();
   PERFORM migrate_drilling_methods();
   PERFORM migrate_development_methods();
-  PERFORM migrate_water_quality_characteristics();
+  PERFORM migrate_well_water_quality();
   DROP TABLE IF EXISTS xform_well;
   raise notice 'Finished replicating WELLS to GWELLS.';
 END;
