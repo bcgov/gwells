@@ -34,6 +34,11 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         with open(options['filename'], newline='') as csvfile:
             reader = csv.DictReader(csvfile)
+            
+            # used in DEBUG mode only.
+            counter = 0
+            num_wells = Well.objects.count()
+
             for row in reader:
 
                 if row['PD_SBTYPE'] not in ['PWD', 'PG']:
@@ -45,7 +50,8 @@ class Command(BaseCommand):
 
                 # In dev envs, desecrate the data so it fits our fake fixtures.
                 if settings.DEBUG:
-                    well = Well.objects.first()
+                    counter += 1
+                    well = Well.objects.all()[counter % num_wells:][0]
                     # we need our wells to actually have an aquifir for nontrivial testing.
                     if not well.aquifer:
                         well.aquifer = Aquifer.objects.first()
