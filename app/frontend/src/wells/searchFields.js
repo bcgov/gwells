@@ -27,7 +27,12 @@ const searchFields = {
     label: 'Street address or city',
     type: 'text'
   },
-  ownerName: { param: 'owner_full_name', label: 'Well owner', type: 'text' },
+  ownerName: {
+    param: 'owner_full_name',
+    label: 'Well owner',
+    resultLabel: 'Owner name',
+    type: 'text'
+  },
   publicationStatus: {
     param: 'well_publication_status',
     authenticated: true,
@@ -458,6 +463,7 @@ const searchFields = {
   finishedWellDepth: {
     param: 'finished_well_depth',
     label: 'Finished well depth - decommission',
+    resultLabel: 'Finished well depth (feet)',
     type: 'range'
   },
   decommissionReason: {
@@ -595,11 +601,13 @@ const searchFields = {
   legalLot: {
     param: 'legal_lot',
     label: 'Legal lot',
+    resultLabel: 'Lot',
     type: 'text'
   },
   legalPlan: {
     param: 'legal_plan',
     label: 'Legal plan',
+    resultLabel: 'Plan',
     type: 'text'
   },
   legalDistrictLot: {
@@ -614,7 +622,7 @@ const searchFields = {
   },
   diameter: {
     param: 'diameter',
-    label: 'Well diameter',
+    label: 'Diameter (inches)',
     type: 'range'
   },
   constructionStartDate: {

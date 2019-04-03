@@ -21,7 +21,7 @@
               :key="column.id"
               class="text-nowrap"
               scope="col">
-              {{ column.label }}
+              {{ column.resultLabel ? column.resultLabel : column.label }}
               <b-button
                 v-if="column.param === orderingParam"
                 class="sort-button active"
@@ -74,6 +74,9 @@
             <td v-for="column in columns" :key="column.id">
               <template v-if="column.param === 'well_tag_number'">
                 <router-link :to="{ name: 'wells-detail', params: {id: item.well_tag_number} }">{{ item.well_tag_number }}</router-link>
+              </template>
+              <template v-else-if="column.param === 'street_address'">
+                {{ item.city ? `${item.street_address}, ${item.city}` : item.street_address }}
               </template>
               <template v-else>
                 {{ item[column.param] }}
