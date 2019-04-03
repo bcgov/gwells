@@ -306,7 +306,7 @@ export default {
     formChanges () {
       let differences = diff(this.compareForm, this.form)
       if (differences) {
-        differences.forEach(function (d) {
+        differences.forEach((d) => {
           if (d.lhs == null && d.rhs === '') {
             this.form[d.path[0]] = null
           }
