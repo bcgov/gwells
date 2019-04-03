@@ -5,6 +5,7 @@ import WellSearch from '@/wells/views/WellSearch.vue'
 
 import {FETCH_CODES} from '@/submissions/store/actions.types.js'
 import {FETCH_DRILLER_NAMES, FETCH_ORGANIZATION_NAMES} from '@/wells/store/actions.types.js'
+import {SET_SEARCH_PARAMS} from '@/wells/store/mutations.types.js'
 
 const localVue = createLocalVue()
 localVue.use(Vuex)
@@ -15,6 +16,7 @@ const router = new VueRouter()
 describe('WellSearch.vue', () => {
   let store
   let getters
+  let mutations
   let actions
 
   beforeEach(() => {
@@ -22,7 +24,11 @@ describe('WellSearch.vue', () => {
       codes: () => ({}),
       drillerNames: () => ({}),
       organizationNames: () => ({}),
+      searchErrors: () => ({}),
       userRoles: () => ({ wells: { view: false } })
+    }
+    mutations = {
+      [SET_SEARCH_PARAMS]: jest.fn()
     }
     actions = {
       [FETCH_CODES]: jest.fn(),
@@ -31,6 +37,7 @@ describe('WellSearch.vue', () => {
     }
     store = new Vuex.Store({
       getters,
+      mutations,
       actions
     })
   })
