@@ -841,10 +841,10 @@ BEGIN
   )
   SELECT
     xform.well_tag_number             ,
-    water_quality.water_quality_characteristic_code
-  FROM wells.well_water_quality water_quality
+    water_quality.water_qual_characteristics_cd
+  FROM wells.gw_well_water_quality_xrefs water_quality
   INNER JOIN xform_well xform ON xform.well_id=water_quality.well_id
-  WHERE water_quality.water_quality_characteristic_code IS NOT NULL;
+  WHERE water_quality.water_qual_characteristics_cd IS NOT NULL;
 
   raise notice '...well_water_quality data imported';
   SELECT count(*) from well_water_quality into row_count;
