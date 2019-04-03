@@ -253,7 +253,6 @@ import APIErrorMessage from '@/common/components/APIErrorMessage'
 import AquiferForm from './Form'
 import Documents from './Documents.vue'
 import SingleAquiferMap from './SingleAquiferMap.vue'
-import AquiferMap from './AquiferMap.vue'
 import ChangeHistory from '@/common/components/ChangeHistory.vue'
 import { mapActions, mapGetters, mapState } from 'vuex'
 export default {
@@ -261,7 +260,6 @@ export default {
     'api-error': APIErrorMessage,
     'aquifer-form': AquiferForm,
     'aquifer-documents': Documents,
-    'aquifer-map': AquiferMap,
     'single-aquifer-map': SingleAquiferMap,
     ChangeHistory
   },
