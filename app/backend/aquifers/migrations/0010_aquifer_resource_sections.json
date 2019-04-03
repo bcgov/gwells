@@ -1,0 +1,68 @@
+[
+    {
+        "model": "aquifers.AquiferResourceSection",
+        "pk": "A",
+        "fields": {
+            "create_user": "DATALOAD_USER",
+            "create_date": "2018-01-01T08:00:00Z",
+            "update_user": "DATALOAD_USER",
+            "update_date": "2018-01-01T08:00:00Z",
+            "name": "Artesian advisory"
+        }
+    },
+    {
+        "model": "aquifers.AquiferResourceSection",
+        "pk": "W",
+        "fields": {
+            "create_user": "DATALOAD_USER",
+            "create_date": "2018-01-01T08:00:00Z",
+            "update_user": "DATALOAD_USER",
+            "update_date": "2018-01-01T08:00:00Z",
+            "name": "Water budget"
+        }
+    },
+    {
+        "model": "aquifers.AquiferResourceSection",
+        "pk": "P",
+        "fields": {
+            "create_user": "DATALOAD_USER",
+            "create_date": "2018-01-01T08:00:00Z",
+            "update_user": "DATALOAD_USER",
+            "update_date": "2018-01-01T08:00:00Z",
+            "name": "Pumping stress index"
+        }
+    },
+    {
+        "model": "aquifers.AquiferResourceSection",
+        "pk": "N",
+        "fields": {
+            "create_user": "DATALOAD_USER",
+            "create_date": "2018-01-01T08:00:00Z",
+            "update_user": "DATALOAD_USER",
+            "update_date": "2018-01-01T08:00:00Z",
+            "name": "Numerical model"
+        }
+    },
+    {
+        "model": "aquifers.AquiferResourceSection",
+        "pk": "M",
+        "fields": {
+            "create_user": "DATALOAD_USER",
+            "create_date": "2018-01-01T08:00:00Z",
+            "update_user": "DATALOAD_USER",
+            "update_date": "2018-01-01T08:00:00Z",
+            "name": "Advanced mapping"
+        }
+    },
+    {
+        "model": "aquifers.AquiferResourceSection",
+        "pk": "I",
+        "fields": {
+            "create_user": "DATALOAD_USER",
+            "create_date": "2018-01-01T08:00:00Z",
+            "update_user": "DATALOAD_USER",
+            "update_date": "2018-01-01T08:00:00Z",
+            "name": "Other information"
+        }
+    }
+]

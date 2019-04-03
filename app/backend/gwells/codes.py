@@ -2,6 +2,8 @@ import os
 import json
 from io import open
 
+from django.db.utils import IntegrityError
+
 
 class CodeFixture():
     """Loads JSON code table fixtures into database using migrations.

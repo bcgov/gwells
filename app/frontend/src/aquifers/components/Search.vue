@@ -50,23 +50,24 @@
         v-on:reset="triggerReset">
         <b-form-row>
           <b-col cols="12" md="4">
-            <b-form-group label="Aquifer number">
+            <h5>Search by aquifer name or number</h5>
+            <b-form-group label="(leave blank to see all aquifers)">
               <b-form-input
-                id="aquifers-number"
                 type="text"
-                v-model="aquifer_id"/>
-            </b-form-group>
-            <b-form-group label="Aquifer name">
-              <b-form-input
-                id="aquifers-name"
-                type="text"
+                id="aquifers-search-field"
                 v-model="search"/>
             </b-form-group>
+            <b-form-checkbox-group
+              stacked
+              v-model="sections"
+              :options="aquifer_resource_sections"
+            />
+
           </b-col>
         </b-form-row>
         <b-form-row>
           <b-col>
-            <b-form-group>
+            <b-form-group class="aquifer-search-actions">
               <b-button variant="primary" type="submit" id="aquifers-search">Search</b-button>
               <b-button variant="default" type="reset">Reset</b-button>
             </b-form-group>
@@ -129,16 +130,18 @@ table.b-table > thead > tr > th.sorting::before,
 table.b-table > tfoot > tr > th.sorting::before {
   display: none !important;
 }
-
 table.b-table > thead > tr > th.sorting::after,
 table.b-table > tfoot > tr > th.sorting::after {
   content: "\f0dc" !important;
   font-family: "FontAwesome";
   opacity: 1 !important;
 }
-
 ul.pagination {
   justify-content: end;
+}
+
+.aquifer-search-actions {
+  margin-top: 1em
 }
 </style>
 
@@ -146,13 +149,10 @@ ul.pagination {
 import querystring from 'querystring'
 import ApiService from '@/common/services/ApiService.js'
 import { mapGetters } from 'vuex'
-
 const LIMIT = 30
 const DEFAULT_ORDERING_STRING = 'aquifer_id'
-
 function orderingQueryStringToData (str) {
   str = str || DEFAULT_ORDERING_STRING
-
   return {
     sortDesc: str.charAt(0) === '-',
     sortBy: str.replace(/^-/, '')
@@ -161,11 +161,10 @@ function orderingQueryStringToData (str) {
 export default {
   data () {
     let query = this.$route.query || {}
-
     return {
       ...orderingQueryStringToData(query.ordering),
       search: query.search,
-      aquifer_id: query.aquifer_id,
+      aquifer_search: query.aquifer_search,
       limit: LIMIT,
       currentPage: query.offset && (query.offset / LIMIT + 1),
       filterParams: Object.assign({}, query),
@@ -184,7 +183,9 @@ export default {
         { key: 'mapping_year', label: 'Year of mapping', sortable: true }
       ],
       surveys: [],
-      noSearchCriteriaError: false
+      noSearchCriteriaError: false,
+      aquifer_resource_sections: [],
+      sections: query.resources__section__code ? query.resources__section__code.split(',') : []
     }
   },
   computed: {
@@ -194,7 +195,6 @@ export default {
       if (!this.response) {
         return undefined
       }
-
       return this.offset + this.response.results.length
     },
     aquiferList () { return this.response && this.response.results },
@@ -210,27 +210,33 @@ export default {
     fetchResults () {
       // trigger the Google Analytics search event
       this.triggerAnalyticsSearchEvent(this.query)
-
       ApiService.query('aquifers', this.query)
         .then((response) => {
           this.response = response.data
           this.scrollToTableTop()
         })
     },
+    fetchResourceSections () {
+      ApiService.query('aquifers/sections').then((response) => {
+        this.aquifer_resource_sections = response.data.results.map(function (section) {
+          return {
+            text: section.name,
+            value: section.code
+          }
+        })
+      })
+    },
     scrollToTableTop () {
       this.$SmoothScroll(this.$el, 100)
     },
     triggerPagination () {
       const i = (this.currentPage || 1) - 1
-
       delete this.filterParams.limit
       delete this.filterParams.offset
-
       if (i > 0) {
         this.filterParams.limit = LIMIT
         this.filterParams.offset = i * LIMIT
       }
-
       this.updateQueryParams()
     },
     triggerReset () {
@@ -238,6 +244,7 @@ export default {
       this.filterParams = {}
       this.search = ''
       this.aquifer_id = ''
+      this.sections = []
       this.currentPage = 0
       this.noSearchCriteriaError = false
       this.updateQueryParams()
@@ -245,30 +252,25 @@ export default {
     triggerSearch () {
       delete this.filterParams.aquifer_id
       delete this.filterParams.search
-
-      if (this.aquifer_id) {
-        this.filterParams.aquifer_id = this.aquifer_id
-      }
-
+      delete this.filterParams.resources__section__code
       if (this.search) {
         this.filterParams.search = this.search
       }
-
+      if (this.sections) {
+        this.filterParams.resources__section__code = this.sections.join(',')
+      }
       this.updateQueryParams()
     },
     triggerSort () {
       delete this.filterParams.ordering
-
       let ordering = `${this.sortDesc ? '-' : ''}${this.sortBy}`
-
       if (ordering !== DEFAULT_ORDERING_STRING) {
         this.filterParams.ordering = ordering
       }
-
       this.updateQueryParams()
     },
     updateQueryParams () {
-      this.$router.replace({ query: this.filterParams })
+      this.$router.replace({query: this.filterParams})
     },
     triggerAnalyticsSearchEvent (params) {
       // trigger the search event, sending along the search params as a string
@@ -295,8 +297,8 @@ export default {
     }).catch((e) => {
       console.error(e)
     })
+    this.fetchResourceSections()
   },
-  mounted () { this.fetchResults() },
   watch: {
     query () { this.fetchResults() },
     currentPage () { this.triggerPagination() },

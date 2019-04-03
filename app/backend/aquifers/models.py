@@ -29,6 +29,7 @@ class AquiferMaterial(CodeTableModel):
     """
     Material choices for describing Aquifer Material
     """
+
     code = models.CharField(
         primary_key=True, max_length=10, db_column='aquifer_material_code',
         db_comment=('Standard terms used to define the broad grouping of geological material found in'
@@ -54,6 +55,7 @@ class AquiferSubtype(CodeTableModel):
     """
     Subtypes of Aquifer
     """
+
     code = models.CharField(
         primary_key=True, max_length=3, db_column='aquifer_subtype_code',
         db_comment=('Valid codes to define how the aquifer was formed geologically (depositional'
@@ -94,6 +96,7 @@ class AquiferProductivity(CodeTableModel):
     Productivity choices for describing Aquifer
     -------------------
     """
+
     code = models.CharField(
         primary_key=True, max_length=1, db_column='aquifer_productivity_code',
         db_comment=('Standard terms that define the aquifer\'s productivity which represent an aquifers'
@@ -181,7 +184,6 @@ class QualityConcern(CodeTableModel):
         db_comment=('Description of the standard terms used to represent the extent of documented'
                     ' concerns of contaminants in the aquifer at the time of mapping. i.e. isloated,'
                     ' local, regional, none.'))
-
     class Meta:
         db_table = 'quality_concern_code'
         ordering = ['display_order', 'code']
@@ -368,3 +370,63 @@ class Aquifer(AuditModel):
 
     def __str__(self):
         return '{} - {}'.format(self.aquifer_id, self.aquifer_name)
+
+
+class AquiferResourceSection(AuditModel):
+    """
+    Defines the available sections (categories) of aquifer resources.
+    """
+    code = models.CharField(primary_key=True, max_length=1,
+                            db_column='aquifer_resource_section_code')
+    name = models.CharField(max_length=100)
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(
+        timezone.datetime.max, timezone.get_default_timezone()), null=False)
+    description = models.CharField(max_length=100, default="")
+
+    class Meta:
+        ordering = ['name']
+        verbose_name_plural = 'Aquifer Resource Sections'
+        db_table = 'aquifer_resource_section_code'
+
+    def __str__(self):
+        return '{} - {}'.format(self.code, self.description)
+
+    def __str__(self):
+        return self.name
+
+
+class AquiferResource(AuditModel):
+    """
+    A PDF document associated with a given aquifer.
+    """
+    id = models.AutoField(
+        primary_key=True,
+        verbose_name="Aquifer Resource Identifier",
+        db_column='aquifer_resource_id')
+    aquifer = models.ForeignKey(
+        Aquifer,
+        related_name='resources',
+        on_delete=models.CASCADE)
+    section = models.ForeignKey(
+        AquiferResourceSection,
+        db_column='aquifer_resource_section_code',
+        verbose_name="Aquifer Resource Section",
+        on_delete=models.CASCADE,
+        help_text="The section (category) of this resource.")
+    name = models.CharField(
+        max_length=255,
+        verbose_name="Aquifer Resource Name",
+        help_text="",
+    )
+    url = models.URLField(
+        verbose_name="PDF Document URL",
+        max_length=255,
+        help_text="A resolvable link to the PDF document associated with this aquifer resource.")
+
+    class Meta:
+        ordering = ['name']
+        verbose_name_plural = 'Aquifer Resource'
+
+    def __str__(self):
+        return self.name
