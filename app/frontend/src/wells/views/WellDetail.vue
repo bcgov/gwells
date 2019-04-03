@@ -458,7 +458,7 @@ export default {
     },
     show () {
       return {
-        edit: (!!this.config && this.config.enable_data_entry === true) && this.userRoles.submissions.edit === true
+        edit: (!!this.config && this.config.enable_data_entry === true) && this.userRoles.wells.edit === true
       }
     },
     UTM () {

@@ -224,7 +224,7 @@ export default {
         if (this.isStaffEdit) {
           this.$noty.success('<div class="notifyText">Changes Saved!</div>', { killer: true })
         } else {
-          this.$noty.success('<div aria-label="Close" class="closeBtn">x</div><div class="notifyText">Well report submitted.</div>', { killer: true, timeout: false })
+          this.$noty.success('<div aria-label="Close" class="closeBtn">x</div><div class="notifyText">Well Report Submitted.</div>', { killer: true })
           this.$nextTick(function () {
             window.scrollTo(0, 0)
           })
