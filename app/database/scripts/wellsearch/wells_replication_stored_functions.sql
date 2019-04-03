@@ -137,6 +137,8 @@ DECLARE
     gen_random_uuid()                                                        ,
     CASE wells.acceptance_status_code
       WHEN ''REJECTED'' THEN ''Unpublished''
+      WHEN ''PENDING'' THEN ''Unpublished''
+      WHEN ''NEW'' THEN ''Unpublished''
       ELSE ''Published''
     END AS well_publication_status_code                                      ,
     concat_ws('' '', owner.giVEN_NAME,OWNER.SURNAME) AS owner_full_name      ,
