@@ -441,36 +441,27 @@ def csv_export(request):
         'aquifer_id',
         'aquifer_name',
         'area',
-        'demand_description',
         'demand',
-        'known_water_use_description',
         'known_water_use',
         'litho_stratographic_unit',
-        'location_description',
         'mapping_year',
-        'material_description',
         'material',
         'notes',
-        'productivity_description',
         'productivity',
-        'quality_concern_description',
         'quality_concern',
-        'subtype_description',
         'subtype',
-        'vulnerability_description',
         'vulnerability',
     ]
 
     # Create the HttpResponse object with the appropriate CSV header.
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="aquifer-{}.csv"'.format(
-        aquifer_id)
+    response['Content-Disposition'] = 'attachment; filename="aquifers.csv"'
     writer = csv.writer(response)
-    writer.writerow(fields)
+    writer.writerow(_fields)
 
-    queryset = _aquifer_qs(qs)
+    queryset = _aquifer_qs(request.GET)
     for aquifer in queryset:
-        writer.writerow([getattr(aquifer, f) for f in fields])
+        writer.writerow([getattr(aquifer, f) for f in _fields])
 
     return response
 

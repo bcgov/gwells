@@ -53,7 +53,7 @@ Single shapefile, with aquifer ID specified in CLI.
 docker-compose exec backend python manage.py import_shapefile 2 aquifers/fixtures/shp/shapefile.zip
 ```
 
-Bulk import, requires the AQ_NUMBER attribute on each polygon. Requires a folder with shapefiles to be prepared and passed in (zipped or not)
+Bulk import, requires the AQ_NUMBER attribute on each polygon. Requires a folder with shapefiles to be prepared and passed in (zipped or not). Note: if DEBUG=True, all geometries will be uploaded to a random aquifer instead of the one matching its' number, so we can test locally with a development database.
 ```
 mkdir app/backend/bulk
 mv DATABC_EXPORT_FILE.zip app/backend/bulk/
