@@ -129,7 +129,14 @@
       <b-row v-if="viewMode" class="mt-5">
         <b-col cols="4" >
           <h5 class="mt-3 border-bottom pb-4 main-title">Well Information</h5>
-          <h5 class="mt-3 border-bottom pb-4 main-title">Documentation</h5>
+          <ul class="ml-0 mr-0 mt-4 mb-0 p-0 aquifer-information-list">
+            <div class="aquifer-information-list-divider"></div>
+            <li>
+              <dt>Number of wells associated to the aquifer</dt>
+              <dd>{{ licence_details.num_wells }}</dd>
+            </li>
+          </ul>
+          <h5 class="mt-5 border-bottom pb-4 main-title">Documentation</h5>
           <aquifer-documents :files="aquiferFiles"
             :editMode="editMode"
             :id="this.id"
@@ -138,6 +145,13 @@
         </b-col>
         <b-col cols="4">
           <h5 class="mt-3 border-bottom pb-4 main-title">Licensing Information</h5>
+          <ul class="ml-0 mr-0 mt-4 mb-0 p-0 aquifer-information-list">
+            <div class="aquifer-information-list-divider"></div>
+            <li>
+              <dt>Number of groundwater licenses</dt>
+              <dd>{{ licence_details.licence_count }}</dd>
+            </li>
+          </ul>
         </b-col>
         <b-col cols="4">
           <h5 class="mt-3 border-bottom pb-4 main-title">Knowledge Indicators</h5>
@@ -215,8 +229,12 @@ a {
   font-size: 1rem;
 }
 
+.aquifer-information-list dt {
+  padding-right: 2rem;
+}
+
 .aquifer-information-list dd {
-  padding-left: 3rem;
+  padding-left: 2rem;
 }
 
 .aquifer-information-list-divider {
@@ -262,6 +280,7 @@ export default {
       fieldErrors: {},
       loading: false,
       record: {},
+      licence_details: {},
       showSaveSuccess: false,
       aquiferFiles: {},
       aquifer_resource_sections: [],
@@ -370,8 +389,10 @@ export default {
     fetch (id = this.id) {
       ApiService.query(`aquifers/${id}`)
         .then((response) => { 
-          console.log("Aquifer", response)
+          
           this.record = response.data
+          console.log(response.data)
+          this.licence_details = response.data.licence_details
         }).catch((error) => {
           console.error(error)
         })
