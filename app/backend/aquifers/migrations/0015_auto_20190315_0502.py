@@ -19,7 +19,7 @@ def update_fields(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('aquifers', '0013_merge_20190313_1801'),
+        ('aquifers', '0014_auto_20190315_0502'),
     ]
 
     operations = [
