@@ -820,7 +820,42 @@ COMMENT ON FUNCTION migrate_drilling_methods () IS 'Load Well Drilling Method re
 
 
 -- DESCRIPTION
---  Define the SQL INSERT command that copies the drilling method data from the legacy
+--  Define the SQL INSERT command that copies the water quality data from the legacy
+--  database to the GWELLS table (well_water_quality)
+--
+-- PARAMETERS
+--   None
+--
+-- RETURNS
+--  None as this is a stored procedure
+--
+CREATE OR REPLACE FUNCTION migrate_well_water_quality() RETURNS void as $$
+DECLARE
+  row_count integer;
+BEGIN
+  raise notice '...importing well_water_quality';
+
+  INSERT INTO well_water_quality(
+    well_id                 ,
+    waterqualitycharacteristic_id
+  )
+  SELECT
+    xform.well_tag_number             ,
+    water_quality.water_qual_characteristics_cd
+  FROM wells.gw_well_water_quality_xrefs water_quality
+  INNER JOIN xform_well xform ON xform.well_id=water_quality.well_id
+  WHERE water_quality.water_qual_characteristics_cd IS NOT NULL;
+
+  raise notice '...well_water_quality data imported';
+  SELECT count(*) from well_water_quality into row_count;
+  raise notice '% rows loaded into the well_water_quality table', row_count;
+END;
+$$ LANGUAGE plpgsql;
+COMMENT ON FUNCTION migrate_well_water_quality () IS 'Load well water quality relationships for the wells that have been replicated.';
+
+
+-- DESCRIPTION
+--  Define the SQL INSERT command that copies the development method data from the legacy
 --  database to the GWELLS table (well_development_methods)
 --
 -- PARAMETERS
@@ -1218,6 +1253,7 @@ BEGIN
   PERFORM migrate_lithology();
   PERFORM migrate_drilling_methods();
   PERFORM migrate_development_methods();
+  PERFORM migrate_well_water_quality();
   DROP TABLE IF EXISTS xform_well;
   raise notice 'Finished replicating WELLS to GWELLS.';
 END;
