@@ -391,7 +391,6 @@ export default {
         .then((response) => { 
           
           this.record = response.data
-          console.log(response.data)
           this.licence_details = response.data.licence_details
         }).catch((error) => {
           console.error(error)
@@ -406,7 +405,6 @@ export default {
     fetchResourceSections () {
       ApiService.query('aquifers/sections').then((response) => {
         this.aquifer_resource_sections = response.data.results
-        console.log(this.aquifer_resource_sections)
       })
     }
   }

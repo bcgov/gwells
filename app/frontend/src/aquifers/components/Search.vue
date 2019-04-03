@@ -310,6 +310,9 @@ export default {
       ApiService.query('aquifers', this.query)
         .then((response) => {
           console.log("Response", response)
+          console.log("Filtered", response.data.results.filter(o => {
+            
+          }));
           this.response = response.data
           this.scrollToTableTop()
         })
