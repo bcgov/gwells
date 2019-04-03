@@ -51,13 +51,16 @@
             </th>
           </tr>
         </thead>
-        <tbody role="rowgroup" v-if="(isBusy || isEmpty)">
+        <tbody role="rowgroup" v-if="(isBusy || isEmpty || isReset)">
           <tr :class="{loading: isBusy}">
             <td :colspan="columnCount">
               <div class="d-flex justify-content-center my-2">
                 <div v-if="isBusy" class="spinner-border m-3" role="status" aria-hidden="true"></div>
                 <strong v-if="isBusy" class="align-middle my-3 pt-1">
                   Loading...
+                </strong>
+                <strong v-else-if="isReset" class="align-middle my-3 pt-1">
+                  Enter some criteria in the form above to search.
                 </strong>
                 <strong v-else-if="isEmpty" class="align-middle my-3 pt-1">
                   No results matched your search criteria.
@@ -171,7 +174,10 @@ export default {
       return this.columnIds.length
     },
     isEmpty () {
-      return (this.results === null || this.results.length === 0)
+      return (this.results !== null && this.resultCount === 0)
+    },
+    isReset () {
+      return (this.results === null)
     }
   },
   methods: {

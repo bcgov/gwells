@@ -350,6 +350,7 @@ export default {
       mapBounds: {},
       selectedFilter: null,
       selectedFilters: [],
+      searchParams: {},
 
       // flag to indicate that the search should reset without a further API request
       searchShouldReset: false,
@@ -369,7 +370,6 @@ export default {
       'searchLimit',
       'searchOffset',
       'searchOrdering',
-      'searchParams',
       'searchResultFilters',
       'userRoles'
     ]),
@@ -548,6 +548,7 @@ export default {
         this.triggerAnalyticsSearchEvent(this.searchParams)
       }
   
+      this.$store.commit(SET_SEARCH_PARAMS, { ...this.searchParams })
       this.$store.dispatch(SEARCH_WELLS, searchContext).then(this.onResultsUpdate())
       this.locationSearch(options)
     },
@@ -617,8 +618,7 @@ export default {
           delete query.ordering
         }
 
-        const params = Object.assign({...this.defaultSearchParams}, query)
-        this.$store.commit(SET_SEARCH_PARAMS, params)
+        this.searchParams = Object.assign({...this.defaultSearchParams}, query)
       } else {
         this.searchParamsReset()
       }
@@ -749,6 +749,7 @@ export default {
       setTimeout(() => {
         this.locationSearch()
       }, 0)
+      this.$store.commit(SET_SEARCH_PARAMS, { ...this.searchParams })
       this.$store.dispatch(SEARCH_WELLS, {}).then(this.onResultsUpdate())
     }
   },

@@ -132,7 +132,7 @@ const wellsStore = {
     },
     [RESET_WELLS_SEARCH] ({ commit }) {
       commit(SET_SEARCH_ERRORS, {})
-      commit(SET_SEARCH_RESULTS, [])
+      commit(SET_SEARCH_RESULTS, null)
       commit(SET_SEARCH_RESULT_COUNT, 0)
     },
     [SEARCH_WELLS] ({ commit, state }, { bounded = false }) {
