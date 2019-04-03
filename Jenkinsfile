@@ -384,23 +384,53 @@ def dbBackup (String envProject, String envSuffix) {
     def dumpDir = "/var/lib/pgsql/data/deployment-backups"
     def dumpName = "${envSuffix}-\$( date +%Y-%m-%d-%H%M ).dump"
     def dumpOpts = "--no-privileges --no-tablespaces --schema=public --exclude-table=spatial_ref_sys"
+    def dumpTemp = "/tmp/unverified.dump"
+    def minBytes = 1000000
 
-    return sh (
+    // Dump to temporary file
+    sh (
         script: """
             oc rsh -n ${envProject} dc/${dcName} bash -c ' \
-                set -e; \
-                mkdir -p ${dumpDir}; \
-                cd ${dumpDir}; \
-                pg_dump -U \${POSTGRESQL_USER} -d \${POSTGRESQL_DATABASE} -Fc -f ./unverified.dump ${dumpOpts}; \
+                pg_dump -U \${POSTGRESQL_USER} -d \${POSTGRESQL_DATABASE} -Fc -f ${dumpTemp} ${dumpOpts}
+            '
+        """
+    )
+
+    // Verify dump size
+    int dumpBytes = sh (
+        script: """
+            oc rsh -n ${envProject} dc/${dcName} bash -c ' \
+                stat --printf="%s" ./${dumpTemp}
+            '
+        """,
+        returnStdout: true
+    )
+    echo "dumpBytes: "+dumpBytes
+    echo "minBytes: "+minBytes
+    assert dumpBytes > minBytes
+
+    // Restore (w/ extensions) to temporary db
+    sh (
+        script: """
+            oc rsh -n ${envProject} dc/${dcName} bash -c ' \
                 psql -c "DROP DATABASE IF EXISTS db_verify"; \
                 createdb db_verify; \
                 psql -d db_verify -c "CREATE EXTENSION IF NOT EXISTS oracle_fdw;"; \
                 psql -d db_verify -c "CREATE EXTENSION IF NOT EXISTS postgis;COMMIT;"; \
                 psql -d db_verify -c "CREATE EXTENSION IF NOT EXISTS pgcrypto;COMMIT;"; \
                 pg_restore -U \${POSTGRESQL_USER} -d db_verify --schema-only --create ./unverified.dump; \
-                psql -c "DROP DATABASE IF EXISTS db_verify"; \
-                mv ./unverified.dump ./${dumpName}; \
-                ls -lh
+                psql -c "DROP DATABASE IF EXISTS db_verify"
+            '
+        """
+    )
+
+    // Store verified dump
+    sh (
+        script: """
+            oc rsh -n ${envProject} dc/${dcName} bash -c ' \
+                mkdir -p ${dumpDir}; \
+                mv ${dumpTemp} ${dumpDir}/${dumpName}; \
+                ls -lh ${dumpDir}
             '
         """
     )
