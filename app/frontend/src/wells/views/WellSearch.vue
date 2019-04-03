@@ -275,7 +275,6 @@ import querystring from 'querystring'
 import debounce from 'lodash.debounce'
 
 import { mapGetters } from 'vuex'
-import axios from 'axios'
 import ApiService from '@/common/services/ApiService.js'
 import {FETCH_CODES} from '@/submissions/store/actions.types.js'
 import {
