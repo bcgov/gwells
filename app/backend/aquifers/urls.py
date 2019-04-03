@@ -51,6 +51,11 @@ urlpatterns = [
     url(r'^api/v1/aquifers/(?P<aquifer_id>[0-9]+)/delete_document$',
         never_cache(views.DeleteAquiferDocument.as_view()), name='aquifer-delete-document'),
 
+    url(r'^api/v1/aquifers/sections$',
+        cache_page(CACHE_TTL)(views.AquiferResourceSectionListAPIView.as_view()),
+        name='aquifer-section-list'
+        ),
+
     url(r'^api/v1/aquifer-codes/materials$',
         cache_page(CACHE_TTL)(views.AquiferMaterialListAPIView.as_view()),
         name='aquifer-material-list'
@@ -86,6 +91,7 @@ urlpatterns = [
         name='aquifer-water-use-code-list'
         ),
 
+    # GeoJSON aquifers endpoint for DataBC.
     url(r'^api/v1/gis/aquifers$',
-        views.AquifersSpatial.as_view(), name='spatial-aquifer')
+        views.aquifer_geojson, name='aquifer-geojson')
 ]

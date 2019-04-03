@@ -15,6 +15,18 @@
             "name": "TAG",
             "required": false,
             "value": "${ENV_NAME}"
+        },
+        {
+            "name": "NAME",
+            "required": true
+        },
+        {
+            "name": "COMMAND",
+            "required": true
+        },
+        {
+            "name": "SCHEDULE",
+            "required": true
         }
     ],
     "objects": [
@@ -22,10 +34,10 @@
             "apiVersion": "batch/v1beta1",
             "kind": "CronJob",
             "metadata": {
-                "name": "export"
+                "name": "${NAME}"
             },
             "spec": {
-                "schedule": "1 11 * * *",
+                "schedule": "${SCHEDULE}",
                 "concurrencyPolicy": "Forbid",
                 "jobTemplate": {
                     "spec": {
@@ -33,12 +45,13 @@
                             "spec": {
                                 "containers": [
                                     {
-                                        "name": "export",
+                                        "name": "${NAME}",
                                         "image": "docker-registry.default.svc:5000/${PROJECT}/gwells-${ENV_NAME}:${TAG}",
+                                        "imagePullPolicy": "Always",
                                         "command": [
                                             "python",
                                             "backend/manage.py",
-                                            "export"
+                                            "${COMMAND}"
                                         ],
                                         "env": [
                                             {

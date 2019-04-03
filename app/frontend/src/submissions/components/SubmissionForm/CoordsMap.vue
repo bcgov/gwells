@@ -12,7 +12,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-  <div id="map" class="map"/>
+  <div id="map" class="coords-map"/>
 </template>
 
 <script>
@@ -39,7 +39,8 @@ export default {
   },
   data () {
     return {
-      map: null
+      map: null,
+      timeout: null
     }
   },
   mounted () {
@@ -108,24 +109,36 @@ export default {
     setMarkerPopup (latitude, longitude) {
       this.marker.bindPopup('Latitude: ' + latitude + ', Longitude: ' + longitude)
     },
+    resetMap () {
+      if (this.marker) {
+        this.map.removeLayer(this.marker)
+        this.marker = null
+      }
+      this.map.setView([54.5, -126.5], 5)
+    },
     updateCoords () {
-      if (!isNaN(this.latitude) && !isNaN(this.getLongitude())) {
+      if (this.latitude && this.getLongitude()) {
         const latlng = L.latLng(this.latitude, this.getLongitude())
-        this.insideBC(latlng.lat, latlng.lng).then((result) => {
-          if (result) {
-            if (this.marker) {
-              this.updateMarkerLatLong(latlng)
-              this.map.panTo(latlng)
+        clearTimeout(this.timeout)
+        this.timeout = setTimeout(() => {
+          this.insideBC(latlng.lat, latlng.lng).then((result) => {
+            if (result) {
+              if (this.marker) {
+                this.updateMarkerLatLong(latlng)
+                this.map.panTo(latlng)
+              } else {
+                this.createMarker()
+              }
             } else {
-              this.createMarker()
+              if (this.marker) {
+                this.map.removeLayer(this.marker)
+                this.marker = null
+              }
             }
-          } else {
-            if (this.marker) {
-              this.map.removeLayer(this.marker)
-              this.marker = null
-            }
-          }
-        })
+          })
+        }, 500)
+      } else {
+        this.resetMap()
       }
     },
     handleDrag (ev) {
@@ -154,7 +167,7 @@ export default {
 <style>
 @import "leaflet/dist/leaflet.css";
 
-.map {
+.coords-map {
   width: 550px;
   height: 500px;
 }

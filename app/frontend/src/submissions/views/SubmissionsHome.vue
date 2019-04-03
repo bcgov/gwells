@@ -12,7 +12,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-  <div class="container p-1 container-wide">
+  <div class="container p-1">
     <b-card v-if="breadcrumbs && breadcrumbs.length" no-body class="mb-3 d-print-none">
       <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"></b-breadcrumb>
     </b-card>
@@ -49,6 +49,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             :isStaffEdit="isStaffEdit"
             :loading="loading"
             :uploadedFiles="uploadedFiles"
+            :formChanges="formChanges"
             v-on:preview="handlePreviewButton"
             v-on:submit_edit="formSubmit"
             v-on:resetForm="resetForm"
@@ -89,6 +90,8 @@ import SubmissionPreview from '@/submissions/components/SubmissionPreview/Submis
 import filterBlankRows from '@/common/filterBlankRows.js'
 import ActivitySubmissionForm from '@/submissions/components/SubmissionForm/ActivitySubmissionForm.vue'
 import parseErrors from '@/common/helpers/parseErrors.js'
+import { diff } from 'deep-diff'
+
 export default {
   name: 'SubmissionsHome',
   mixins: [inputFormatMixin, filterBlankRows],
@@ -153,15 +156,21 @@ export default {
       'fileUploadFail'
     ]),
     formSubmit () {
+      if (!this.formChanges()) {
+        return
+      }
+
       const data = Object.assign({}, this.form)
       const meta = data.meta
 
       if (this.isStaffEdit) {
-        // Remove any fields that aren't changed
+        // We have to include both lat and lon for geom updates so we check if one has changed here
+        let skipLatLon = 'latitude' in meta.valueChanged || 'longitude' in meta.valueChanged
         Object.keys(data).forEach((key) => {
-          if (key !== 'well' && !(key in meta.valueChanged)) {
-            delete data[key]
-          }
+          // Skip lat lon if one of them has changed
+          if ((key === 'latitude' || key === 'longitude') && skipLatLon) { return }
+          // Remove any fields that aren't changed
+          if (key !== 'well' && !(key in meta.valueChanged)) { delete data[key] }
         })
       }
 
@@ -204,6 +213,7 @@ export default {
       // Depending on the type of submission (construction/decommission/alteration/edit) we post to
       // different endpoints.
       const PATH = this.codes.activity_types.find((item) => item.code === this.activityType).path
+
       ApiService.post(PATH, data).then((response) => {
         this.formSubmitSuccess = true
         this.formSubmitSuccessWellTag = response.data.well
@@ -214,7 +224,7 @@ export default {
         if (this.isStaffEdit) {
           this.$noty.success('<div class="notifyText">Changes Saved!</div>', { killer: true })
         } else {
-          this.$noty.success('<div aria-label="Close" class="closeBtn">x</div><div class="notifyText">Well report submitted.</div>', { killer: true, timeout: false })
+          this.$noty.success('<div aria-label="Close" class="closeBtn">x</div><div class="notifyText">Well Report Submitted.</div>', { killer: true })
           this.$nextTick(function () {
             window.scrollTo(0, 0)
           })
@@ -230,6 +240,10 @@ export default {
             this.form[key] = response.data[key]
           }
         })
+
+        this.form.meta.valueChanged = {}
+        // Set initial form fields for comparison with user input changes
+        Object.assign(this.compareForm, this.form)
 
         if (this.upload_files.length > 0) {
           if (response.data.filing_number) {
@@ -288,6 +302,18 @@ export default {
       }).finally((response) => {
         this.formSubmitLoading = false
       })
+    },
+    formChanges () {
+      let differences = diff(this.compareForm, this.form)
+      if (differences) {
+        differences.forEach(function (d) {
+          if (d.lhs == null && d.rhs === '') {
+            this.form[d.path[0]] = null
+          }
+        })
+        return true
+      }
+      return false
     },
     confirmSubmit () {
       this.confirmSubmitModal = true
@@ -518,6 +544,8 @@ export default {
               this.trackValueChanges = true
             })
           })
+          // Set initial form fields for comparison with user input changes
+          Object.assign(this.compareForm, this.form)
         }).catch((e) => {
           console.error(e)
         })
@@ -561,6 +589,7 @@ function initialState () {
     trackValueChanges: false,
     errors: {},
     form: {},
+    compareForm: {},
     submissionsHistory: [], // historical submissions for each well (comes into play for staff edits)
     formOptions: {},
     uploadedFiles: {},

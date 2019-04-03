@@ -100,7 +100,6 @@ export default {
     max: Number,
     min: Number,
     maxlength: Number,
-    labelCols: [String, Number],
     type: { // the type of input (e.g. number, date)
       type: String,
       default: 'number'

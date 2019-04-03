@@ -14,14 +14,30 @@
 from django.contrib.gis.db import models
 from django.utils import timezone
 
-class AuditModel(models.Model):
+from gwells.db_comments.model_mixins import DBComments
+from gwells.db_comments.patch_fields import patch_fields
+
+patch_fields()
+
+
+class AuditModel(models.Model, DBComments):
     """
     An abstract base class model that provides audit fields.
     """
-    create_user = models.CharField(max_length=60, null=False)
-    create_date = models.DateTimeField(default=timezone.now, null=False)
-    update_user = models.CharField(max_length=60, default='DATALOAD_USER', null=False)
-    update_date = models.DateTimeField(default=timezone.now, null=False)
+    create_user = models.CharField(
+        max_length=60, null=False,
+        db_comment=('The user who created this record in the database.'))
+    create_date = models.DateTimeField(
+        default=timezone.now, null=False,
+        db_comment=('Date and time (UTC) when the physical record was created in the database.'))
+    update_user = models.CharField(
+        max_length=60, default='DATALOAD_USER', null=False,
+        db_comment=('The user who last updated this record in the database.'))
+    update_date = models.DateTimeField(
+        default=timezone.now, null=False,
+        db_comment=('Date and time (UTC) when the physical record was updated in the database. '
+                    'It will be the same as the create_date until the record is first updated after '
+                    'creation.'))
 
     def save(self, *args, **kwargs):
         ''' For all saves, populate "Update" fields '''
@@ -42,6 +58,38 @@ class AuditModel(models.Model):
         abstract = True
 
 
+class BasicCodeTableModel(AuditModel):
+    """
+    An abstract class for code table models, without an order field
+    """
+    effective_date = models.DateTimeField(
+        default=timezone.now, null=False,
+        db_comment='The date and time that the code became valid and could be used.')
+    expiry_date = models.DateTimeField(
+        default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False,
+        db_comment='The date and time after which the code is no longer valid and should not be used.')
+
+    class Meta:
+        abstract = True
+
+
+class CodeTableModel(AuditModel):
+    """
+    An abstract class for code table models.
+    """
+    display_order = models.PositiveIntegerField(
+        db_comment='The order in which the codes may display on screen.')
+    effective_date = models.DateTimeField(
+        default=timezone.now, null=False,
+        db_comment='The date and time that the code became valid and could be used.')
+    expiry_date = models.DateTimeField(
+        default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False,
+        db_comment='The date and time after which the code is no longer valid and should not be used.')
+
+    class Meta:
+        abstract = True
+
+
 class ProvinceStateCode(AuditModel):
     """
     Lookup of Provinces/States.
@@ -51,7 +99,9 @@ class ProvinceStateCode(AuditModel):
     """
     province_state_code = models.CharField(primary_key=True, max_length=10)
     description = models.CharField(max_length=100)
-    display_order = models.PositiveIntegerField(db_index=True)
+    display_order = models.PositiveIntegerField(
+        db_index=True,
+        db_comment='The order in which the codes may display on screen.')
 
     """
     Tue 13 Feb 22:24:26 2018 GW Disabled for now until Code With Us sprint is complete
@@ -61,6 +111,8 @@ class ProvinceStateCode(AuditModel):
     class Meta:
         db_table = 'province_state_code'
         ordering = ['display_order']
+
+    db_table_comment = 'Province or state used for the mailing address for the company'
 
     def __str__(self):
         return self.description

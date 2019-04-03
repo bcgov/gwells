@@ -26,6 +26,9 @@ import OrganizationEdit from '@/registry/components/people/OrganizationEdit.vue'
 import SubmissionsHome from '@/submissions/views/SubmissionsHome.vue'
 import SubmissionDetail from '@/submissions/views/SubmissionDetail.vue'
 
+// Common components
+import PageNotFound from '@/common/components/PageNotFound.vue'
+
 Vue.use(Router)
 
 const router = new Router({
@@ -45,9 +48,9 @@ const router = new Router({
       props: true
     },
     {
-      path: '/:id/edit',
+      path: '/aquifers/:id/edit',
       component: AquiferView,
-      name: 'edit',
+      name: 'aquifers-edit',
       props: { edit: true },
       meta: {
         edit: true,
@@ -174,7 +177,15 @@ const router = new Router({
     {
       path: '/',
       name: 'wells-home',
+      meta: {
+        allowPushWithoutScroll: true
+      },
       component: WellSearch
+    },
+    {
+      path: '*',
+      name: 'page-not-found',
+      component: PageNotFound
     }
 
     // {
@@ -187,6 +198,10 @@ const router = new Router({
     // }
   ],
   scrollBehavior (to, from, savedPosition) {
+    if (to.name === from.name && to.matched.some(m => m.meta.allowPushWithoutScroll)) {
+      return
+    }
+
     return { x: 0, y: 0 }
   }
 })

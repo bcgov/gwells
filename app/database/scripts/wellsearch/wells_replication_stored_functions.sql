@@ -417,7 +417,8 @@ BEGIN
      create_user, create_date, update_user, update_date, bcgs_id, bcgs_number
     )
     SELECT
-     who_created ,when_created ,who_updated ,when_updated, bcgs_id, bcgs_number
+     who_created, when_created, coalesce(who_updated, who_created),
+     coalesce(when_updated, when_created), bcgs_id, bcgs_number
     FROM WELLS.WELLS_BCGS_NUMBERS
     ORDER BY BCGS_NUMBER;
 
@@ -478,8 +479,6 @@ BEGIN
     well_class_code             ,
     well_subclass_guid          ,
     well_yield_unit_code        ,
-    latitude                    ,
-    longitude                   ,
     geom                        ,
     ground_elevation            ,
     well_orientation            ,
@@ -580,14 +579,12 @@ BEGIN
     xform.well_class_code                   ,
     xform.well_subclass_guid                ,
     xform.well_yield_unit_code              ,
-    xform.latitude                          ,
-    xform.longitude                         ,
-    CASE 
+    CASE
       WHEN xform.latitude is NULL OR
           xform.longitude IS NULL THEN
         NULL
-      ELSE  
-          ST_SetSRID(ST_MakePoint(longitude, latitude),3005) 
+      ELSE
+          ST_SetSRID(ST_MakePoint(xform.longitude, xform.latitude),4326) -- Values are BC Albers. but we are using WGS84 Lat Lon to avoid rounding errors
     END AS geom                             ,
     xform.ground_elevation                  ,
     xform.well_orientation                  ,
@@ -709,9 +706,9 @@ BEGIN
     END AS screen_assembly_type_code,
     screens.screen_slot_size        ,
     screens.when_created            ,
-    screens.when_updated            ,
+    coalesce(screens.when_updated, screens.when_created),
     screens.who_created             ,
-    screens.who_updated
+    coalesce(screens.who_updated, screens.who_created)
   FROM wells.wells_screens screens
   INNER JOIN xform_well xform ON xform.well_id=screens.well_id;
 
@@ -774,7 +771,10 @@ BEGIN
             WHEN 'Y' THEN TRUE
             WHEN 'N' THEN FALSE
         END                               ,
-        casings.when_created, casings.when_updated, casings.who_created, casings.who_updated
+        casings.when_created,
+        coalesce(casings.when_updated, casings.when_created),
+        casings.who_created,
+        coalesce(casings.who_updated, casings.who_created)
     FROM wells.wells_casings casings
     INNER JOIN xform_well xform ON xform.well_id=casings.well_id;
 
@@ -926,7 +926,10 @@ BEGIN
     perforations.liner_to              ,
     perforations.liner_perforation_from,
     perforations.liner_perforation_to  ,
-    perforations.who_created, perforations.when_created, perforations.who_updated, perforations.when_updated
+    perforations.who_created,
+    perforations.when_created,
+    coalesce(perforations.who_updated, perforations.who_created),
+    coalesce(perforations.when_updated, perforations.when_created)
   FROM wells.wells_perforations perforations
   INNER JOIN xform_well xform ON perforations.well_id=xform.well_id
   WHERE NOT (liner_from is  null

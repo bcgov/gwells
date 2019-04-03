@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "87953bbc-eda0-4aa0-8c2c-17ec00c9eda6",
+		"_postman_id": "ae4f4475-6ff7-4dbe-844f-e45a646d7319",
 		"name": "GWELLS Aquifers",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -576,6 +576,22 @@
 							"",
 							"pm.test(\"Aquifer vulnerability equals name supplied in request\", function () {",
 							"    pm.expect(jsonData.vulnerability).to.eql(\"H\");",
+							"});",
+							"",
+							"pm.test(\"Aquifer resources length equals length supplied in request\", function () {",
+							"    pm.expect(jsonData.resources.length).to.eql(1);",
+							"});",
+							"",
+							"pm.test(\"Aquifer resource name equals name supplied in request\", function () {",
+							"    pm.expect(jsonData.resources[0].name).to.eql(\"resource 1\");",
+							"});",
+							"",
+							"pm.test(\"Aquifer resource url equals url supplied in request\", function () {",
+							"    pm.expect(jsonData.resources[0].url).to.eql(\"http://www.example.com/\");",
+							"});",
+							"",
+							"pm.test(\"Aquifer resource section code equals section code supplied in request\", function () {",
+							"    pm.expect(jsonData.resources[0].section_code).to.eql(\"M\");",
 							"});"
 						],
 						"type": "text/javascript"
@@ -588,77 +604,17 @@
 					{
 						"key": "Authorization",
 						"value": "JWT {{token}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
 					}
 				],
 				"body": {
-					"mode": "formdata",
-					"formdata": [
-						{
-							"key": "aquifer_name",
-							"value": "Aquifer Name\n",
-							"type": "text"
-						},
-						{
-							"key": "area",
-							"value": "10",
-							"type": "text"
-						},
-						{
-							"key": "demand",
-							"value": "H",
-							"type": "text"
-						},
-						{
-							"key": "known_water_use",
-							"value": "M",
-							"type": "text"
-						},
-						{
-							"key": "litho_stratographic_unit",
-							"value": "Aquifer Litho Stratographic Unit",
-							"type": "text"
-						},
-						{
-							"key": "location_description",
-							"value": "Location Description",
-							"type": "text"
-						},
-						{
-							"key": "mapping_year",
-							"value": "1991",
-							"type": "text"
-						},
-						{
-							"key": "material",
-							"value": "B",
-							"type": "text"
-						},
-						{
-							"key": "notes",
-							"value": "Notes",
-							"type": "text"
-						},
-						{
-							"key": "productivity",
-							"value": "H",
-							"type": "text"
-						},
-						{
-							"key": "quality_concern",
-							"value": "N",
-							"type": "text"
-						},
-						{
-							"key": "subtype",
-							"value": "1a",
-							"type": "text"
-						},
-						{
-							"key": "vulnerability",
-							"value": "H",
-							"type": "text"
-						}
-					]
+					"mode": "raw",
+					"raw": "{ \n\t\"aquifer_name\":\"Aquifer Name \",\n\t\"area\":\"10\",\n\t\"demand\":\"H\",\n\t\"known_water_use\":\"M\",\n\t\"litho_stratographic_unit\":\"Aquifer Litho Stratographic Unit\",\n\t\"location_description\":\"Location Description\",\n\t\"mapping_year\":\"1991\",\n\t\"material\":\"B\",\n\t\"notes\":\"Notes\",\n\t\"productivity\":\"H\",\n\t\"quality_concern\":\"N\",\n\t\"subtype\":\"1a\",\n\t\"vulnerability\":\"H\",\n\t\"resources\": [\n\t\t{ \"name\": \"resource 1\", \"url\": \"http://www.example.com/\", \"section_code\": \"M\" }\n\t]\n}\n"
 				},
 				"url": {
 					"raw": "{{base_url}}/api/v1/aquifers",
@@ -779,6 +735,10 @@
 							"",
 							"pm.test(\"Aquifer vulnerability equals name supplied in request\", function () {",
 							"    pm.expect(jsonData.vulnerability).to.eql(\"H\");",
+							"});",
+							"",
+							"pm.test(\"Aquifer resources length equals length supplied in request\", function () {",
+							"    pm.expect(jsonData.resources.length).to.eql(0);",
 							"});"
 						],
 						"type": "text/javascript"
@@ -791,77 +751,16 @@
 					{
 						"key": "Authorization",
 						"value": "JWT {{token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
 					}
 				],
 				"body": {
-					"mode": "formdata",
-					"formdata": [
-						{
-							"key": "aquifer_name",
-							"value": "Aquifer Name\n",
-							"type": "text"
-						},
-						{
-							"key": "area",
-							"value": "10",
-							"type": "text"
-						},
-						{
-							"key": "demand",
-							"value": "H",
-							"type": "text"
-						},
-						{
-							"key": "known_water_use",
-							"value": "M",
-							"type": "text"
-						},
-						{
-							"key": "litho_stratographic_unit",
-							"value": "Aquifer Litho Stratographic Unit",
-							"type": "text"
-						},
-						{
-							"key": "location_description",
-							"value": "Location Description",
-							"type": "text"
-						},
-						{
-							"key": "mapping_year",
-							"value": "1991",
-							"type": "text"
-						},
-						{
-							"key": "material",
-							"value": "B",
-							"type": "text"
-						},
-						{
-							"key": "notes",
-							"value": "Notes",
-							"type": "text"
-						},
-						{
-							"key": "productivity",
-							"value": "H",
-							"type": "text"
-						},
-						{
-							"key": "quality_concern",
-							"value": "N",
-							"type": "text"
-						},
-						{
-							"key": "subtype",
-							"value": "1a",
-							"type": "text"
-						},
-						{
-							"key": "vulnerability",
-							"value": "H",
-							"type": "text"
-						}
-					]
+					"mode": "raw",
+					"raw": "{ \n\t\"aquifer_name\":\"Aquifer Name \",\n\t\"area\":\"10\",\n\t\"demand\":\"H\",\n\t\"known_water_use\":\"M\",\n\t\"litho_stratographic_unit\":\"Aquifer Litho Stratographic Unit\",\n\t\"location_description\":\"Location Description\",\n\t\"mapping_year\":\"1991\",\n\t\"material\":\"B\",\n\t\"notes\":\"Notes\",\n\t\"productivity\":\"H\",\n\t\"quality_concern\":\"N\",\n\t\"subtype\":\"1a\",\n\t\"vulnerability\":\"H\",\n\t\"resources\": []\n}\n"
 				},
 				"url": {
 					"raw": "{{base_url}}/api/v1/aquifers/{{aquifer_id}}",

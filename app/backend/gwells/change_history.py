@@ -91,7 +91,7 @@ def generate_history_diff(collection, identifier=None):
                         key != "update_user" and
                         key != "create_date" and
                         key != "create_user" and
-                        key != "expired_date"):
+                        key != "expiry_date"):
 
                     if re.match('[\w]+_id$', key):
                         # key looks like a foreign key field

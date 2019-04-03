@@ -20,20 +20,15 @@ class AquifersSearchPage extends BaseAppPage {
   static content = {
     pageTitle { $('main h4') }
 
-    nameField { $('#aquifers-name') }
-    numberField { $('#aquifers-number') }
+    searchField { $('#aquifers-search-field') }
 
     searchButton { $('#aquifers-search') }
 
     searchResultsTable(required:false) { $('#aquifers-results') }
   }
 
-  void setAquiferName(String name) {
-    nameField.value(name)
-  }
-
-  void setAquiferNumber(int number) {
-    numberField.value(number)
+  void setAquiferSearch(String search) {
+    searchField.value(search)
   }
 
   void clickSearchButton() {

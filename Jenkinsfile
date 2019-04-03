@@ -378,6 +378,41 @@ def zapTests (String stageName, String envUrl, String envSuffix) {
 }
 
 
+// Database backup
+def dbBackup (String envProject, String envSuffix) {
+    def dcName = envSuffix == "dev" ? "${appName}-pgsql-${envSuffix}-${prNumber}" : "${appName}-pgsql-${envSuffix}"
+    def dumpDir = "/var/lib/pgsql/data/deployment-backups"
+    def dumpName = "${envSuffix}-\$( date +%Y-%m-%d-%H%M ).dump"
+    def dumpOpts = "--no-privileges --no-tablespaces --schema=public --exclude-table=spatial_ref_sys"
+    return sh (
+        script: """
+            oc rsh -n ${envProject} dc/${dcName} bash -c ' \
+                set -e; \
+                mkdir -p ${dumpDir}; \
+                cd ${dumpDir}; \
+                pg_dump -U \${POSTGRESQL_USER} -d \${POSTGRESQL_DATABASE} -Fc -f ./${dumpName} ${dumpOpts}; \
+                ls -lh \
+            '
+        """
+    )
+}
+
+
+// Database purge
+def dbKeepOnly (String envProject, String envSuffix, int maxBackups = 10) {
+    def dcName = envSuffix == "dev" ? "${appName}-pgsql-${envSuffix}-${prNumber}" : "${appName}-pgsql-${envSuffix}"
+    def dumpDir = "/var/lib/pgsql/data/deployment-backups"
+    return sh (
+        script: """
+            oc rsh -n ${envProject} dc/${dcName} bash -c " \
+                find ${dumpDir} -name *.dump -printf '%Ts\t%p\n' \
+                    | sort -nr | cut -f2 | tail -n +${maxBackups} | xargs rm 2>/dev/null\
+                    || echo 'No extra backups to remove'
+            "
+        """
+    )
+}
+
 
 pipeline {
     environment {
@@ -666,7 +701,11 @@ pipeline {
                             "IMAGE_STREAM_NAME=postgresql-9.6-oracle-fdw",
                             "IMAGE_STREAM_VERSION=v1-stable",
                             "POSTGRESQL_DATABASE=gwells",
-                            "VOLUME_CAPACITY=5Gi"
+                            "VOLUME_CAPACITY=5Gi",
+                            "REQUEST_CPU=400m",
+                            "REQUEST_MEMORY=2Gi",
+                            "LIMIT_CPU=400m",
+                            "LIMIT_MEMORY=2Gi"
                         )
 
                         def deployTemplate = openshift.process("-f",
@@ -752,13 +791,35 @@ pipeline {
                         createDeploymentStatus(stagingSuffix, 'PENDING', stagingHost)
 
                         // Create cronjob for well export
-                        def cronTemplate = openshift.process("-f",
-                            "openshift/export-wells.cj.json",
+                        def exportWellCronTemplate = openshift.process("-f",
+                            "openshift/export.cj.json",
                             "ENV_NAME=${stagingSuffix}",
                             "PROJECT=${stagingProject}",
-                            "TAG=${stagingSuffix}"
+                            "TAG=${stagingSuffix}",
+                            "NAME=export",
+                            "COMMAND=export",
+                            "SCHEDULE='0 12 * * *'"
                         )
-                        openshift.apply(cronTemplate).label(
+                        openshift.apply(exportWellCronTemplate).label(
+                            [
+                                'app':"gwells-${stagingSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${stagingSuffix}"
+                            ],
+                            "--overwrite"
+                        )
+
+                        // Create cronjob for databc export
+                        def exportDataBCTemplate = openshift.process("-f",
+                            "openshift/export.cj.json",
+                            "ENV_NAME=${stagingSuffix}",
+                            "PROJECT=${stagingProject}",
+                            "TAG=${stagingSuffix}",
+                            "NAME=export-databc",
+                            "COMMAND=export_databc",
+                            "SCHEDULE='0 13 * * *'"
+                        )
+                        openshift.apply(exportDataBCTemplate).label(
                             [
                                 'app':"gwells-${stagingSuffix}",
                                 'app-name':"${appName}",
@@ -859,7 +920,11 @@ pipeline {
                             "IMAGE_STREAM_NAME=postgresql-9.6-oracle-fdw",
                             "IMAGE_STREAM_VERSION=v1-stable",
                             "POSTGRESQL_DATABASE=gwells",
-                            "VOLUME_CAPACITY=5Gi"
+                            "VOLUME_CAPACITY=5Gi",
+                            "REQUEST_CPU=400m",
+                            "REQUEST_MEMORY=2Gi",
+                            "LIMIT_CPU=400m",
+                            "LIMIT_MEMORY=2Gi"
                         )
 
                         def deployTemplate = openshift.process("-f",
@@ -945,13 +1010,35 @@ pipeline {
                         createDeploymentStatus(demoSuffix, 'PENDING', demoHost)
 
                         // Create cronjob for well export
-                        def cronTemplate = openshift.process("-f",
-                            "openshift/export-wells.cj.json",
+                        def exportWellCronTemplate = openshift.process("-f",
+                            "openshift/export.cj.json",
                             "ENV_NAME=${demoSuffix}",
                             "PROJECT=${demoProject}",
-                            "TAG=${demoSuffix}"
+                            "TAG=${demoSuffix}",
+                            "NAME=export",
+                            "COMMAND=export",
+                            "SCHEDULE='0 12 * * *'"
                         )
-                        openshift.apply(cronTemplate).label(
+                        openshift.apply(exportWellCronTemplate).label(
+                            [
+                                'app':"gwells-${demoSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${demoSuffix}"
+                            ],
+                            "--overwrite"
+                        )
+
+                        // Create cronjob for databc export
+                        def exportDataBCCronTemplate = openshift.process("-f",
+                            "openshift/export.cj.json",
+                            "ENV_NAME=${demoSuffix}",
+                            "PROJECT=${demoProject}",
+                            "TAG=${demoSuffix}",
+                            "NAME=export-databc",
+                            "COMMAND=export_databc",
+                            "SCHEDULE='0 13 * * *'"
+                        )
+                        openshift.apply(exportDataBCCronTemplate).label(
                             [
                                 'app':"gwells-${demoSuffix}",
                                 'app-name':"${appName}",
@@ -1012,9 +1099,13 @@ pipeline {
             }
             steps {
                 script {
+                    input "Deploy to production?"
+                    echo "Updating production deployment..."
+
                     _openshift(env.STAGE_NAME, prodProject) {
-                        input "Deploy to production?"
-                        echo "Updating production deployment..."
+
+                        // Pre-deployment database backup
+                        def dbBackupResult = dbBackup (prodProject, prodSuffix)
 
                         def deployDBTemplate = openshift.process("-f",
                             "openshift/postgresql.dc.json",
@@ -1024,7 +1115,11 @@ pipeline {
                             "IMAGE_STREAM_NAME=postgresql-9.6-oracle-fdw",
                             "IMAGE_STREAM_VERSION=v1-stable",
                             "POSTGRESQL_DATABASE=gwells",
-                            "VOLUME_CAPACITY=20Gi"
+                            "VOLUME_CAPACITY=20Gi",
+                            "REQUEST_CPU=800m",
+                            "REQUEST_MEMORY=4Gi",
+                            "LIMIT_CPU=800m",
+                            "LIMIT_MEMORY=4Gi"
                         )
 
                         def deployTemplate = openshift.process("-f",
@@ -1111,13 +1206,35 @@ pipeline {
                         createDeploymentStatus(prodSuffix, 'PENDING', prodHost)
 
                         // Create cronjob for well export
-                        def cronTemplate = openshift.process("-f",
-                            "openshift/export-wells.cj.json",
+                        def exportWellCronTemplate = openshift.process("-f",
+                            "openshift/export.cj.json",
                             "ENV_NAME=${prodSuffix}",
                             "PROJECT=${prodProject}",
-                            "TAG=${prodSuffix}"
+                            "TAG=${prodSuffix}",
+                            "NAME=export",
+                            "COMMAND=export",
+                            "SCHEDULE='0 12 * * *'"
                         )
-                        openshift.apply(cronTemplate).label(
+                        openshift.apply(exportWellCronTemplate).label(
+                            [
+                                'app':"gwells-${prodSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${prodSuffix}"
+                            ],
+                            "--overwrite"
+                        )
+
+                        // Create cronjob for databc export
+                        def exportDataBCCronTemplate = openshift.process("-f",
+                            "openshift/export.cj.json",
+                            "ENV_NAME=${prodSuffix}",
+                            "PROJECT=${prodProject}",
+                            "TAG=${prodSuffix}",
+                            "NAME=export-databc",
+                            "COMMAND=export_databc",
+                            "SCHEDULE='0 13 * * *'"
+                        )
+                        openshift.apply(exportDataBCCronTemplate).label(
                             [
                                 'app':"gwells-${prodSuffix}",
                                 'app-name':"${appName}",
@@ -1155,6 +1272,22 @@ pipeline {
             steps {
                 script {
                     def result = functionalTest ('PROD - Smoke Tests', prodHost, prodSuffix, 'SearchSpecs')
+                }
+            }
+        }
+
+
+        stage('PROD - Post-Deploy Cleanup') {
+            when {
+                expression { env.CHANGE_TARGET == 'master' }
+            }
+            steps {
+                script {
+                    // Backup
+                    dbBackup (prodProject, prodSuffix)
+
+                    // Clean backupsq
+                    dbKeepOnly (prodProject, prodSuffix, 10)
                 }
             }
         }

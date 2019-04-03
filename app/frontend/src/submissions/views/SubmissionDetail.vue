@@ -1,9 +1,9 @@
 <template>
 <div>
-    <b-card v-if="submission && breadcrumbs && breadcrumbs.length" no-body class="mb-3 container container-wide d-print-none">
+    <b-card v-if="submission && breadcrumbs && breadcrumbs.length" no-body class="mb-3 container d-print-none">
       <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"></b-breadcrumb>
     </b-card>
-    <b-card v-if="userRoles.wells.edit || userRoles.submissions.edit" class="container p-1 container-wide">
+    <b-card v-if="userRoles.wells.edit || userRoles.submissions.edit" class="container p-1">
     <b-card-body>
       <div v-if="submission">
         <h1>Activity Report Summary</h1>

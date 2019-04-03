@@ -173,7 +173,7 @@ const searchFields = {
         { id: 'waterQualityCharacteristics', param: 'water_quality_characteristics', label: 'Water quality characteristics', type: 'select', textField: 'description', valueField: 'code' },
         { id: 'waterQualityColour', param: 'water_quality_colour', label: 'Water quality colour', type: 'select', textField: 'description', valueField: 'code' },
         { id: 'waterQualityOdor', param: 'water_quality_odor', label: 'Water quality odor', type: 'text' },
-        { id: 'ems', param: 'ems', label: 'EMS Id', type: 'text' }
+        { id: 'ems', param: 'ems', label: 'EMS Id', type: 'booleanOrText' }
       ]
     },
     {
@@ -183,8 +183,8 @@ const searchFields = {
         { id: 'bedrockDepth', param: 'bedrock_depth', label: 'Depth to bedrock', type: 'range' },
         { id: 'staticWaterLevel', param: 'static_water_level', label: 'Static water level', type: 'range' },
         { id: 'wellYield', param: 'well_yield', label: 'Estimated well yield', type: 'range' },
-        { id: 'artesianFlow', param: 'artesian_flow', label: 'Artesian flow', type: 'range' },
-        { id: 'artesianPressure', param: 'artesian_pressure', label: 'Artesian pressure', type: 'range' },
+        { id: 'artesianFlow', param: 'artesian_flow', label: 'Artesian flow', type: 'booleanOrRange' },
+        { id: 'artesianPressure', param: 'artesian_pressure', label: 'Artesian pressure', type: 'booleanOrRange' },
         { id: 'wellCapType', param: 'well_cap_type', label: 'Well cap type', type: 'text' },
         { id: 'wellDisinfected', param: 'well_disinfected', label: 'Well disinfected', type: 'radio', options: [{ text: 'Yes', value: 'true' }, { text: 'No', value: 'false' }] }
       ]
@@ -192,7 +192,7 @@ const searchFields = {
     {
       header: 'Observation well information',
       fields: [
-        { id: 'observationWellNumber', param: 'observation_well_number', label: 'Observation well number', type: 'text' },
+        { id: 'observationWellNumber', param: 'observation_well_number', label: 'Observation well number', type: 'booleanOrText' },
         { id: 'observationWellStatus', param: 'observation_well_status', label: 'Observation well status', type: 'select', textField: 'description', valueField: 'obs_well_status_code' }
       ]
     },

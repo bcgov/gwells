@@ -21,16 +21,36 @@ from rest_framework import status
 class TestWellsSpatial(APITestCase):
 
     def test_geodjango(self):
-        # This should catch if the sql query is no longer valid.
-        url = reverse('well-spatial')
+        # Currently we're re-directing to a static file.
+        url = reverse('well-geojson')
         response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_302_FOUND)
+
+    def test_geodjango_bounds(self):
+        # Currently we're re-directing to a static file.
+        url = reverse('well-geojson')
+        response = self.client.get(
+            url,
+            {
+                'realtime': 'true', 'sw_lat': 49, 'sw_long': -125, 'ne_lat': 49, 'ne_long': -124
+            })
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
 class TestWellsLithologySpatial(APITestCase):
 
     def test_geodjango(self):
-        # This should catch if the sql query is no longer valid.
-        url = reverse('well-spatial-lithology')
+        # Currently we're re-directing to a static file.
+        url = reverse('well-lithology-geojson')
         response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_302_FOUND)
+
+    def test_geodjango_bounds(self):
+        # Currently we're re-directing to a static file.
+        url = reverse('well-lithology-geojson')
+        response = self.client.get(
+            url,
+            {
+                'realtime': 'true', 'sw_lat': 49, 'sw_long': -125, 'ne_lat': 49, 'ne_long': -124
+            })
         self.assertEqual(response.status_code, status.HTTP_200_OK)
