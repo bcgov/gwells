@@ -384,16 +384,23 @@ def dbBackup (String envProject, String envSuffix) {
     def dumpDir = "/var/lib/pgsql/data/deployment-backups"
     def dumpName = "${envSuffix}-\$( date +%Y-%m-%d-%H%M ).dump"
     def dumpOpts = "--no-privileges --no-tablespaces --schema=public --exclude-table=spatial_ref_sys"
+
     return sh (
         script: """
             oc rsh -n ${envProject} dc/${dcName} bash -c ' \
                 set -e; \
                 mkdir -p ${dumpDir}; \
                 cd ${dumpDir}; \
-                pg_dump -U \${POSTGRESQL_USER} -d \${POSTGRESQL_DATABASE} -Fc -f ./${dumpName} ${dumpOpts}; \
-                ls -lh; \
+                pg_dump -U \${POSTGRESQL_USER} -d \${POSTGRESQL_DATABASE} -Fc -f ./unverified.dump ${dumpOpts}; \
+                psql -c "DROP DATABASE IF EXISTS db_verify"; \
                 createdb db_verify; \
-                pgsql -q -d db_verify -f ./${dumpName}
+                psql -d db_verify -c "CREATE EXTENSION IF NOT EXISTS oracle_fdw;"; \
+                psql -d db_verify -c "CREATE EXTENSION IF NOT EXISTS postgis;COMMIT;"; \
+                psql -d db_verify -c "CREATE EXTENSION IF NOT EXISTS pgcrypto;COMMIT;"; \
+                pg_restore -U \${POSTGRESQL_USER} -d db_verify --create ./unverified.dump; \
+                psql -c "DROP DATABASE IF EXISTS db_verify"; \
+                mv ./unverified.dump ./${dumpName}; \
+                ls -lh
             '
         """
     )
