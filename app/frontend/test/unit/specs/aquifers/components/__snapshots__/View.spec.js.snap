@@ -44,6 +44,8 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
        
       <!---->
        
+      <!---->
+       
       <h5
         class="mt-3 border-bottom"
       >
@@ -102,6 +104,8 @@ exports[`View Component View mode matches the snapshot 1`] = `
         record="[object Object]"
         showid=""
       />
+       
+      <!---->
        
       <!---->
        

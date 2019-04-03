@@ -15,6 +15,7 @@
 export default {
   namespaced: true,
   state: {
+    aquifer_resource_sections: [],
     demand_codes: [],
     known_water_use_codes: [],
     material_codes: [],
