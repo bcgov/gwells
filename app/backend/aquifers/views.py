@@ -56,8 +56,7 @@ from gwells.change_history import generate_history_diff
 from registries.views import AuditCreateMixin, AuditUpdateMixin
 from gwells.open_api import (
     get_geojson_schema, get_model_feature_schema, GEO_JSON_302_MESSAGE, GEO_JSON_PARAMS)
-from gwells.management.commands.export_databc import AQUIFERS_SQL, GeoJSONIterator, AQUIFER_CHUNK_SIZE, \
-    MAX_AQUIFERS_SQL
+from gwells.management.commands.export_databc import AQUIFERS_SQL, GeoJSONIterator, AQUIFER_CHUNK_SIZE
 
 
 logger = logging.getLogger(__name__)
@@ -380,11 +379,12 @@ def aquifer_geojson(request):
         if sw_long and sw_lat and ne_long and ne_lat:
             bounds_sql = 'and geom @ ST_Transform(ST_MakeEnvelope(%s, %s, %s, %s, 4326), 3005)'
             bounds = (sw_long, sw_lat, ne_long, ne_lat)
+        else:
+            bounds_sql = ''
 
         iterator = GeoJSONIterator(AQUIFERS_SQL.format(bounds=bounds_sql),
                                    AQUIFER_CHUNK_SIZE,
                                    connection.cursor(),
-                                   MAX_AQUIFERS_SQL,
                                    bounds)
         response = StreamingHttpResponse((item for item in iterator),
                                          content_type='application/json')
