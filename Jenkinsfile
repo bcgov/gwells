@@ -408,9 +408,10 @@ def dbBackup (String envProject, String envSuffix) {
                 psql -c "DROP DATABASE IF EXISTS db_verify"; \
                 createdb db_verify; \
                 psql -d db_verify -c "CREATE EXTENSION IF NOT EXISTS oracle_fdw;"; \
-                psql -d db_verify -c "CREATE EXTENSION IF NOT EXISTS postgis;COMMIT;"; \
-                psql -d db_verify -c "CREATE EXTENSION IF NOT EXISTS pgcrypto;COMMIT;"; \
-                pg_restore -U \${POSTGRESQL_USER} -d db_verify --schema-only --create ${dumpTemp}; \
+                psql -d db_verify -c "CREATE EXTENSION IF NOT EXISTS postgis;"; \
+                psql -d db_verify -c "CREATE EXTENSION IF NOT EXISTS pgcrypto;"; \
+                psql -d db_verify -c "COMMIT;"; \
+                pg_restore -d db_verify --schema-only --create ${dumpTemp}; \
                 psql -c "DROP DATABASE IF EXISTS db_verify"
             '
         """
