@@ -385,6 +385,7 @@ def dbBackup (String envProject, String envSuffix) {
     def dumpName = "${envSuffix}-\$( date +%Y-%m-%d-%H%M ).dump"
     def dumpOpts = "--no-privileges --no-tablespaces --schema=public --exclude-table=spatial_ref_sys"
     def dumpTemp = "/tmp/unverified.dump"
+    int maxBackups = 10
 
     // Dump to temporary file
     sh "oc rsh -n ${envProject} dc/${dcName} bash -c ' \
@@ -423,22 +424,13 @@ def dbBackup (String envProject, String envSuffix) {
         mv ${dumpTemp} ${dumpDir}/${dumpName}; \
         ls -lh ${dumpDir} \
     '"
-}
 
-
-// Database purge
-def dbKeepOnly (String envProject, String envSuffix, int maxBackups = 10) {
-    def dcName = envSuffix == "dev" ? "${appName}-pgsql-${envSuffix}-${prNumber}" : "${appName}-pgsql-${envSuffix}"
-    def dumpDir = "/var/lib/pgsql/data/deployment-backups"
-    return sh (
-        script: """
-            oc rsh -n ${envProject} dc/${dcName} bash -c " \
-                find ${dumpDir} -name *.dump -printf '%Ts\t%p\n' \
-                    | sort -nr | cut -f2 | tail -n +${maxBackups} | xargs rm 2>/dev/null\
-                    || echo 'No extra backups to remove'
-            "
-        """
-    )
+    // Database purge
+    sh "oc rsh -n ${envProject} dc/${dcName} bash -c \" \
+            find ${dumpDir} -name *.dump -printf '%Ts\t%p\n' \
+                | sort -nr | cut -f2 | tail -n +${maxBackups} | xargs rm 2>/dev/null \
+                || echo 'No extra backups to remove' \
+        \""
 }
 
 
@@ -1313,9 +1305,6 @@ pipeline {
                 script {
                     // Backup
                     dbBackup (prodProject, prodSuffix)
-
-                    // Clean backupsq
-                    dbKeepOnly (prodProject, prodSuffix, 10)
                 }
             }
         }
