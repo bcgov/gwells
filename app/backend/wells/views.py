@@ -149,7 +149,7 @@ class WellStaffEditDetail(RetrieveAPIView):
     Return well detail for use in a staff edit
     """
     serializer_class = WellDetailAdminSerializer
-
+    queryset = Well.objects.all()
     lookup_field = 'well_tag_number'
     permission_classes = (WellsEditPermissions,)
 

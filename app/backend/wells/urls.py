@@ -22,7 +22,7 @@ urlpatterns = [
 
     # API endpoints
     # Submissions for a well
-    url(r'^api/v1/wells/(?P<well_id>[0-9]+)/edit$',
+    url(r'^api/v1/wells/(?P<well_tag_number>[0-9]+)/edit$',
         never_cache(views.WellStaffEditDetail.as_view()), name='well-edit-details'),
 
 
