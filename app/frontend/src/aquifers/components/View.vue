@@ -164,7 +164,15 @@
               </div>
               <div class="observational-wells" v-if="index === 2">
                 <dt>Observational Wells</dt>
-                <dd><p>Observation Well 20402<br/>Water Level Analysis: Increasing</p></dd>
+                <dd v-if="obs_wells.length > 0">
+                  <p v-for="owell in obs_wells" :key="owell.observation_well_number">
+                    <a :href="getObservationWellLink(owell.observation_well_number)">Observation Well {{ owell.observation_well_number }}</a>
+                    <br/>Water Level Analysis: {{ (waterLevels.find(o => o.wellNumber = owell.observation_well_number).levels )}}
+                  </p>
+                </dd> 
+                <dd v-else>
+                  No information available.
+                </dd>
               </div>
               <dt>{{ section.name }}</dt>
               <dd>
@@ -290,7 +298,9 @@ export default {
       showSaveSuccess: false,
       aquiferFiles: {},
       aquifer_resource_sections: [],
-      wells: []
+      wells: [],
+      obs_wells: [],
+      waterLevels: []
     }
   },
   computed: {
@@ -309,6 +319,9 @@ export default {
   watch: {
     id () {
       this.fetch()
+    },
+    obs_wells (newObsWells, oldObsWells) {
+      this.getWaterLevels(newObsWells)
     }
   },
   methods: {
@@ -399,6 +412,7 @@ export default {
           this.record = response.data
           console.log(this.record)
           this.licence_details = response.data.licence_details
+          this.obs_wells = response.data.licence_details.obs_wells
         }).catch((error) => {
           console.error(error)
         })
@@ -436,6 +450,28 @@ export default {
         },
         hash: '#advanced'
       })
+    },
+    getObservationWellLink (wellNumber) {
+      return `https://governmentofbc.maps.arcgis.com/apps/webappviewer/index.html?id=b53cb0bf3f6848e79d66ffd09b74f00d&find=OBS%20WELL%${wellNumber}`
+    },
+    getWaterLevels (obsWells) {
+
+
+      obsWells.map((owell) => {
+        function getRequestUrl (wellNumber) {
+          return `https://catalogue.data.gov.bc.ca/api/3/action/datastore_search?resource_id=a8933793-eadb-4a9c-992c-da4f6ac8ca51&fields=EMS_ID,Well_Num,trend_line_slope,category&filters=%7b%22Well_Num%22:%22${wellNumber}%22%7d`
+        }
+        let wellNumber = owell.observation_well_number;
+        ApiService.query(getRequestUrl(wellNumber)).then((response) => {
+          console.log("Water Level Response", response)
+          this.waterLevels.push({ wellNumber, levels: response.data.result.records[0].category })
+          console.log("Water Levels", this.waterLevels)
+        })
+      })
+      
+
+
+      
     }
   }}
 </script>
