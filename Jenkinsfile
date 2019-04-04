@@ -1111,6 +1111,18 @@ pipeline {
         }
 
 
+        stage('PROD - Backup') {
+            when {
+                expression { env.CHANGE_TARGET == 'master' }
+            }
+            steps {
+                script {
+                    dbBackup (prodProject, prodSuffix)
+                }
+            }
+        }
+
+
         stage('PROD - Deploy') {
             when {
                 expression { env.CHANGE_TARGET == 'master' }
@@ -1290,19 +1302,6 @@ pipeline {
             steps {
                 script {
                     def result = functionalTest ('PROD - Smoke Tests', prodHost, prodSuffix, 'SearchSpecs')
-                }
-            }
-        }
-
-
-        stage('PROD - Post-Deploy Cleanup') {
-            when {
-                expression { env.CHANGE_TARGET == 'master' }
-            }
-            steps {
-                script {
-                    // Backup
-                    dbBackup (prodProject, prodSuffix)
                 }
             }
         }
