@@ -248,7 +248,7 @@ export default {
   },
   methods: {
     aquiferSearch: debounce((loading, search, vm) => {
-      ApiService.query(`aquifers/names/?search=${escape(search)}`).then((response) => {
+      ApiService.query(`aquifers/names?search=${escape(search)}`).then((response) => {
         vm.aquiferList = response.data
         loading(false)
       }).catch(() => {

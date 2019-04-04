@@ -48,9 +48,9 @@ const router = new Router({
       props: true
     },
     {
-      path: '/:id/edit',
+      path: '/aquifers/:id/edit',
       component: AquiferView,
-      name: 'edit',
+      name: 'aquifers-edit',
       props: { edit: true },
       meta: {
         edit: true,
@@ -173,6 +173,7 @@ const router = new Router({
       name: 'wells-detail',
       component: WellDetail
     },
+    { path: '/search', redirect: '/' },
     {
       path: '/',
       name: 'wells-home',

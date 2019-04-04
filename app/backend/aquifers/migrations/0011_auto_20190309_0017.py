@@ -1,5 +1,10 @@
+import logging
+
 from django.db import migrations, models
 from django.db.models import F
+
+
+logger = logging.getLogger(__name__)
 
 
 def update_fields(apps, schema_editor):
@@ -8,9 +13,14 @@ def update_fields(apps, schema_editor):
     for model in app_models:
         if hasattr(model, 'update_user'):
             try:
-                model.objects.filter(update_user__isnull=True).update(update_user=F('create_user'))
+                model.objects.filter(update_user__isnull=True).update(
+                    update_user=F('create_user'))
             except AttributeError:
-                print("skipping")
+                logger.error("skipping")
+
+
+def reverse_update_fields(apps, schema_editor):
+    pass
 
 
 class Migration(migrations.Migration):
@@ -20,7 +30,10 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(update_fields),
+        migrations.RunPython(
+            update_fields,
+            reverse_code=reverse_update_fields
+        ),
         migrations.AlterField(
             model_name='aquifer',
             name='update_user',

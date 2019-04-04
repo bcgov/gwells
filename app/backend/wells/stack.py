@@ -175,7 +175,7 @@ class StackWells():
             for source_key, value in serializer.data.items():
                 # We only consider items with values, and keys that are in our target
                 # an exception is STAFF_EDIT submissions (we need to be able to accept empty values)
-                if value is not None:
+                if value or value is False or value == 0 or value == '':
                     target_key = source_target_map.get(source_key, source_key)
                     if target_key in target_keys:
                         # The composite dict is built up by applying the set of submissions/edits in order.

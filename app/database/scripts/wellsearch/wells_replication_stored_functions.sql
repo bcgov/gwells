@@ -92,6 +92,7 @@ DECLARE
     decommission_start_date        ,
     decommission_end_date          ,
     drilling_company_guid          ,
+    driller_name                   ,
     final_casing_stick_up          ,
     artesian_flow                  ,
     artesian_pressure              ,
@@ -136,6 +137,8 @@ DECLARE
     gen_random_uuid()                                                        ,
     CASE wells.acceptance_status_code
       WHEN ''REJECTED'' THEN ''Unpublished''
+      WHEN ''PENDING'' THEN ''Unpublished''
+      WHEN ''NEW'' THEN ''Unpublished''
       ELSE ''Published''
     END AS well_publication_status_code                                      ,
     concat_ws('' '', owner.giVEN_NAME,OWNER.SURNAME) AS owner_full_name      ,
@@ -216,6 +219,7 @@ DECLARE
     wells.closure_start_date AT TIME ZONE ''GMT''      ,
     wells.closure_end_date AT TIME ZONE ''GMT''        ,
     drilling_company.drilling_company_guid             ,
+    wells.crew_driller_name                            ,
     wells.final_casing_stick_up                        ,
     wells.artesian_flow_value                          ,
     wells.artesian_pressure                            ,
@@ -274,7 +278,7 @@ DECLARE
               LEFT OUTER JOIN drilling_company drilling_company ON UPPER(wells.driller_company_code)=UPPER(drilling_company.drilling_company_code)
               LEFT OUTER JOIN well_subclass_code subclass ON UPPER(wells.subclass_of_well_classified_by)=UPPER(subclass.well_subclass_code)
                 AND subclass.well_class_code = wells.class_of_well_codclassified_by
-  WHERE wells.acceptance_status_code NOT IN (''PENDING'', ''NEW'') ';
+  ';
 
 BEGIN
   raise notice 'Starting populate_xform() procedure...';
@@ -334,6 +338,7 @@ BEGIN
      decommission_start_date            timestamp with time zone,
      decommission_end_date              timestamp with time zone,
      drilling_company_guid              uuid,
+     driller_name                       character varying(100),
      final_casing_stick_up              integer,
      artesian_flow                      numeric(7,2),
      artesian_pressure                  numeric(5,2),
@@ -511,6 +516,7 @@ BEGIN
     decommission_start_date     ,
     decommission_end_date       ,
     drilling_company_guid       ,
+    driller_name                ,
     final_casing_stick_up       ,
     artesian_flow               ,
     artesian_pressure           ,
@@ -617,6 +623,7 @@ BEGIN
     xform.decommission_start_date           ,
     xform.decommission_end_date             ,
     xform.drilling_company_guid             ,
+    xform.driller_name                      ,
     xform.final_casing_stick_up             ,
     xform.artesian_flow                     ,
     xform.artesian_pressure                 ,
@@ -820,7 +827,42 @@ COMMENT ON FUNCTION migrate_drilling_methods () IS 'Load Well Drilling Method re
 
 
 -- DESCRIPTION
---  Define the SQL INSERT command that copies the drilling method data from the legacy
+--  Define the SQL INSERT command that copies the water quality data from the legacy
+--  database to the GWELLS table (well_water_quality)
+--
+-- PARAMETERS
+--   None
+--
+-- RETURNS
+--  None as this is a stored procedure
+--
+CREATE OR REPLACE FUNCTION migrate_well_water_quality() RETURNS void as $$
+DECLARE
+  row_count integer;
+BEGIN
+  raise notice '...importing well_water_quality';
+
+  INSERT INTO well_water_quality(
+    well_id                 ,
+    waterqualitycharacteristic_id
+  )
+  SELECT
+    xform.well_tag_number             ,
+    water_quality.water_qual_characteristics_cd
+  FROM wells.gw_well_water_quality_xrefs water_quality
+  INNER JOIN xform_well xform ON xform.well_id=water_quality.well_id
+  WHERE water_quality.water_qual_characteristics_cd IS NOT NULL;
+
+  raise notice '...well_water_quality data imported';
+  SELECT count(*) from well_water_quality into row_count;
+  raise notice '% rows loaded into the well_water_quality table', row_count;
+END;
+$$ LANGUAGE plpgsql;
+COMMENT ON FUNCTION migrate_well_water_quality () IS 'Load well water quality relationships for the wells that have been replicated.';
+
+
+-- DESCRIPTION
+--  Define the SQL INSERT command that copies the development method data from the legacy
 --  database to the GWELLS table (well_development_methods)
 --
 -- PARAMETERS
@@ -1218,6 +1260,7 @@ BEGIN
   PERFORM migrate_lithology();
   PERFORM migrate_drilling_methods();
   PERFORM migrate_development_methods();
+  PERFORM migrate_well_water_quality();
   DROP TABLE IF EXISTS xform_well;
   raise notice 'Finished replicating WELLS to GWELLS.';
 END;

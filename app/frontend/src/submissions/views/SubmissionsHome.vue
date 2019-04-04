@@ -224,7 +224,7 @@ export default {
         if (this.isStaffEdit) {
           this.$noty.success('<div class="notifyText">Changes Saved!</div>', { killer: true })
         } else {
-          this.$noty.success('<div aria-label="Close" class="closeBtn">x</div><div class="notifyText">Well report submitted.</div>', { killer: true, timeout: false })
+          this.$noty.success('<div aria-label="Close" class="closeBtn">x</div><div class="notifyText">Well Report Submitted.</div>', { killer: true })
           this.$nextTick(function () {
             window.scrollTo(0, 0)
           })
@@ -306,7 +306,7 @@ export default {
     formChanges () {
       let differences = diff(this.compareForm, this.form)
       if (differences) {
-        differences.forEach(function (d) {
+        differences.forEach((d) => {
           if (d.lhs == null && d.rhs === '') {
             this.form[d.path[0]] = null
           }
@@ -521,7 +521,7 @@ export default {
 
         this.loading = true
 
-        ApiService.query(`wells/${this.$route.params.id}`).then((res) => {
+        ApiService.query(`wells/${this.$route.params.id}/edit`).then((res) => {
           Object.keys(res.data).forEach((key) => {
             if (key in this.form) {
               this.form[key] = res.data[key]

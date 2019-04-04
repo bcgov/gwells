@@ -1,7 +1,10 @@
-
+import logging
 
 from django.db import migrations, models
 from django.db.models import F
+
+
+logger = logging.getLogger(__name__)
 
 
 def update_fields(apps, schema_editor):
@@ -12,7 +15,7 @@ def update_fields(apps, schema_editor):
             try:
                 model.objects.filter(update_user__isnull=True).update(update_user=F('create_user'))
             except AttributeError:
-                print("skipping")
+                logger.error("skipping")
 
 
 class Migration(migrations.Migration):

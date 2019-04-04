@@ -143,15 +143,15 @@ class WellDetail(RetrieveAPIView):
 
         return qs
 
-    def get_serializer(self, *args, **kwargs):
-        """ returns a different serializer for admin users """
 
-        serializer = self.serializer_class
-
-        if (self.request.user and self.request.user.is_authenticated and
-                self.request.user.groups.filter(name=WELLS_VIEWER_ROLE).exists()):
-            serializer = WellDetailAdminSerializer
-        return serializer(*args, **kwargs)
+class WellStaffEditDetail(RetrieveAPIView):
+    """
+    Return well detail for use in a staff edit
+    """
+    serializer_class = WellDetailAdminSerializer
+    queryset = Well.objects.all()
+    lookup_field = 'well_tag_number'
+    permission_classes = (WellsEditPermissions,)
 
 
 class ListExtracts(APIView):

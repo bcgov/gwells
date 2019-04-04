@@ -21,9 +21,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
                               stacked
                               name="submissionTypeRadio"
                               id="reportType">
-            <b-form-radio value="CON" v-if="userRoles.submissions.edit">Construction</b-form-radio>
-            <b-form-radio value="ALT" v-if="userRoles.submissions.edit">Alteration</b-form-radio>
-            <b-form-radio value="DEC" v-if="userRoles.submissions.edit">Decommission</b-form-radio>
+            <b-form-radio value="CON" v-if="show.edit">Construction</b-form-radio>
+            <b-form-radio value="ALT" v-if="show.edit">Alteration</b-form-radio>
+            <b-form-radio value="DEC" v-if="show.edit">Decommission</b-form-radio>
           </b-form-radio-group>
         </b-form-group>
       </b-col>
@@ -44,7 +44,12 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['userRoles'])
+    ...mapGetters(['userRoles']),
+    show () {
+      return {
+        edit: this.userRoles.submissions.edit || this.userRoles.wells.edit
+      }
+    }
   }
 }
 </script>

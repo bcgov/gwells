@@ -36,32 +36,49 @@ const aquiferFixture = {
   area: '63.3',
   productivity_description: 'High',
   demand: 'Low',
-  mapping_year: '1993'
+  mapping_year: '1993',
+  resources: []
 }
 
 describe('Search Component', () => {
-  const component = (options) => shallowMount(SearchComponent, {
-    localVue,
-    stubs: ['router-link', 'router-view'],
-    router: new VueRouter(),
-    store: new Vuex.Store({
-      modules: { auth }
-    }),
-    methods: {
-      scrollToTableTop () {}
-    },
-    ...options
+  const component = options =>
+    shallowMount(SearchComponent, {
+      localVue,
+      stubs: ['router-link', 'router-view'],
+      router: new VueRouter(),
+      store: new Vuex.Store({
+        modules: { auth }
+      }),
+      methods: {
+        scrollToTableTop() {},
+        fetchResourceSections() {
+          this.aquifer_resource_sections = [
+            { text: 'aquifer section', value: 'a' }
+          ]
+        }
+      },
+      ...options
+    })
+
+  it('has child checkboxes', () => {
+    axios.get.mockResolvedValue({})
+
+    expect(component({}).findAll('[type="checkbox"]').length).toEqual(1)
   })
 
   it('Displays a message if no aquifers could be found', () => {
     axios.get.mockResolvedValue({})
     const wrapper = component({
       computed: {
-        aquiferList () { return [] },
-        emptyResults () { return true }
+        aquiferList() {
+          return []
+        },
+        emptyResults() {
+          return true
+        }
       },
       methods: {
-        fetchResults () {}
+        fetchResults() {}
       }
     })
 
@@ -71,12 +88,18 @@ describe('Search Component', () => {
   it('Matches the snapshot', () => {
     const wrapper = component({
       computed: {
-        aquiferList () { return [aquiferFixture] },
-        emptyResults () { return false },
-        displayPageLength () { return 0 }
+        aquiferList() {
+          return [aquiferFixture]
+        },
+        emptyResults() {
+          return false
+        },
+        displayPageLength() {
+          return 0
+        }
       },
       methods: {
-        fetchResults () {}
+        fetchResults() {}
       }
     })
 
@@ -87,17 +110,22 @@ describe('Search Component', () => {
     axios.get.mockResolvedValue({})
 
     const wrapper = component()
-    wrapper.find('#aquifers-name').setValue('asdf')
+
+    wrapper.find('#aquifers-search-field').setValue('asdf')
+
+    wrapper.find('input[type="checkbox"]').setChecked()
     wrapper.find('form').trigger('submit')
 
-    expect(axios.get).toHaveBeenCalledWith('aquifers', { 'params': { 'search': 'asdf' } })
+    expect(axios.get).toHaveBeenCalledWith('aquifers', {
+      params: { resources__section__code: 'a', search: 'asdf' }
+    })
   })
 
   it('form reset resets response and query', () => {
     const wrapper = component()
     axios.get.mockResolvedValue({})
 
-    wrapper.find('#aquifers-name').setValue('asdf')
+    wrapper.find('#aquifers-search-field').setValue('asdf')
     wrapper.find('form').trigger('submit')
 
     expect(wrapper.vm.query.search).toEqual('asdf')
