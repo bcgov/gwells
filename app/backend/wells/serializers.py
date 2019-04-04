@@ -139,6 +139,29 @@ class LinerPerforationSerializer(serializers.ModelSerializer):
         )
 
 
+class LithologyDescriptionSummarySerializer(serializers.ModelSerializer):
+    """Serializes lithology description records for the well summary, using descriptions instead of codes"""
+
+    lithology_description = serializers.ReadOnlyField(source='lithology_description.description')
+    lithology_colour = serializers.ReadOnlyField(source='lithology_colour.description')
+    lithology_hardness = serializers.ReadOnlyField(source='lithology_hardness.description')
+    lithology_moisture = serializers.ReadOnlyField(source='lithology_moisture.description')
+
+    class Meta:
+        model = LithologyDescription
+        fields = (
+            'lithology_from',
+            'lithology_to',
+            'lithology_raw_data',
+            'lithology_colour',
+            'lithology_hardness',
+            'lithology_moisture',
+            'lithology_description',
+            'lithology_observation',
+            'water_bearing_estimated_flow',
+        )
+
+
 class LithologyDescriptionSerializer(serializers.ModelSerializer):
     """Serializes lithology description records"""
     class Meta:
@@ -163,7 +186,7 @@ class WellDetailSerializer(AuditModelSerializer):
     decommission_description_set = DecommissionDescriptionSerializer(many=True)
     person_responsible = PersonNameSerializer()
     company_of_person_responsible = OrganizationNameListSerializer()
-    lithologydescription_set = LithologyDescriptionSerializer(many=True)
+    lithologydescription_set = LithologyDescriptionSummarySerializer(many=True)
 
     # well vs. well_tag_number ; on submissions, we refer to well
     well = serializers.IntegerField(source='well_tag_number')

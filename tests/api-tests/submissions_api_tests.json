@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "5372c36b-759f-4701-9798-c1e4cedf70c1",
+		"_postman_id": "0e5385e5-42f4-46f2-b1a9-c535b6264e8e",
 		"name": "GWELLS Submissions API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -455,13 +455,8 @@
 										"api",
 										"v1",
 										"wells",
-										"{{well_tag_number}}"
-									],
-									"query": [
-										{
-											"key": "codes",
-											"value": "true"
-										}
+										"{{well_tag_number}}",
+										"edit"
 									]
 								},
 								"description": "Check if the created well matched submission"
@@ -706,13 +701,8 @@
 										"api",
 										"v1",
 										"wells",
-										"{{well_tag_number}}"
-									],
-									"query": [
-										{
-											"key": "codes",
-											"value": "true"
-										}
+										"{{well_tag_number}}",
+										"edit"
 									]
 								},
 								"description": "Check if the created well matched submission"
@@ -888,13 +878,8 @@
 										"api",
 										"v1",
 										"wells",
-										"{{well_tag_number}}"
-									],
-									"query": [
-										{
-											"key": "codes",
-											"value": "true"
-										}
+										"{{well_tag_number}}",
+										"edit"
 									]
 								},
 								"description": "Check if the created well matched submission"
@@ -1072,13 +1057,8 @@
 										"api",
 										"v1",
 										"wells",
-										"{{well_tag_number}}"
-									],
-									"query": [
-										{
-											"key": "codes",
-											"value": "true"
-										}
+										"{{well_tag_number}}",
+										"edit"
 									]
 								},
 								"description": "Check if the created well matched submission"
@@ -1196,13 +1176,8 @@
 										"api",
 										"v1",
 										"wells",
-										"{{well_tag_number}}"
-									],
-									"query": [
-										{
-											"key": "codes",
-											"value": "true"
-										}
+										"{{well_tag_number}}",
+										"edit"
 									]
 								},
 								"description": "Check if the created well matched submission"
@@ -1397,13 +1372,8 @@
 										"api",
 										"v1",
 										"wells",
-										"{{well_tag_number}}"
-									],
-									"query": [
-										{
-											"key": "codes",
-											"value": "true"
-										}
+										"{{well_tag_number}}",
+										"edit"
 									]
 								},
 								"description": "Check if the created well matched submission"
@@ -1525,13 +1495,8 @@
 										"api",
 										"v1",
 										"wells",
-										"{{well_tag_number}}"
-									],
-									"query": [
-										{
-											"key": "codes",
-											"value": "true"
-										}
+										"{{well_tag_number}}",
+										"edit"
 									]
 								},
 								"description": "Check if the created well matched submission"
@@ -1907,13 +1872,8 @@
 										"api",
 										"v1",
 										"wells",
-										"{{well_tag_number}}"
-									],
-									"query": [
-										{
-											"key": "codes",
-											"value": "true"
-										}
+										"{{well_tag_number}}",
+										"edit"
 									]
 								},
 								"description": "Request a list of wells"
@@ -2037,13 +1997,8 @@
 										"api",
 										"v1",
 										"wells",
-										"{{well_tag_number}}"
-									],
-									"query": [
-										{
-											"key": "codes",
-											"value": "true"
-										}
+										"{{well_tag_number}}",
+										"edit"
 									]
 								},
 								"description": "Check if the created well matched submission"
@@ -2352,13 +2307,8 @@
 												"api",
 												"v1",
 												"wells",
-												"{{well_tag_number}}"
-											],
-											"query": [
-												{
-													"key": "codes",
-													"value": "true"
-												}
+												"{{well_tag_number}}",
+												"edit"
 											]
 										},
 										"description": "Get a well"
@@ -2486,13 +2436,8 @@
 												"api",
 												"v1",
 												"wells",
-												"{{well_tag_number}}"
-											],
-											"query": [
-												{
-													"key": "codes",
-													"value": "true"
-												}
+												"{{well_tag_number}}",
+												"edit"
 											]
 										},
 										"description": "Get a well"
@@ -2754,13 +2699,8 @@
 										"api",
 										"v1",
 										"wells",
-										"{{well_tag_number}}"
-									],
-									"query": [
-										{
-											"key": "codes",
-											"value": "true"
-										}
+										"{{well_tag_number}}",
+										"edit"
 									]
 								},
 								"description": "Request a list of wells"
@@ -3280,13 +3220,8 @@
 								"api",
 								"v1",
 								"wells",
-								"{{well_tag_number}}"
-							],
-							"query": [
-								{
-									"key": "codes",
-									"value": "true"
-								}
+								"{{well_tag_number}}",
+								"edit"
 							]
 						},
 						"description": "Check if the created well matched submission"
@@ -3410,13 +3345,8 @@
 								"api",
 								"v1",
 								"wells",
-								"{{well_tag_number}}"
-							],
-							"query": [
-								{
-									"key": "codes",
-									"value": "true"
-								}
+								"{{well_tag_number}}",
+								"edit"
 							]
 						},
 						"description": "Check if the created well has stacked data"
@@ -3547,13 +3477,8 @@
 								"api",
 								"v1",
 								"wells",
-								"{{well_tag_number}}"
-							],
-							"query": [
-								{
-									"key": "codes",
-									"value": "true"
-								}
+								"{{well_tag_number}}",
+								"edit"
 							]
 						},
 						"description": "Check if the created well has stacked data"
