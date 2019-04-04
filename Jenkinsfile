@@ -385,29 +385,20 @@ def dbBackup (String envProject, String envSuffix) {
     def dumpName = "${envSuffix}-\$( date +%Y-%m-%d-%H%M ).dump"
     def dumpOpts = "--no-privileges --no-tablespaces --schema=public --exclude-table=spatial_ref_sys"
     def dumpTemp = "/tmp/unverified.dump"
-    def minBytes = 1000000
 
     // Dump to temporary file
-    sh (
-        script: """
-            oc rsh -n ${envProject} dc/${dcName} bash -c ' \
-                pg_dump -U \${POSTGRESQL_USER} -d \${POSTGRESQL_DATABASE} -Fc -f ${dumpTemp} ${dumpOpts}
-            '
-        """
-    )
+    sh "oc rsh -n ${envProject} dc/${dcName} bash -c ' \
+        pg_dump -U \${POSTGRESQL_USER} -d \${POSTGRESQL_DATABASE} -Fc -f ${dumpTemp} ${dumpOpts} \
+    '"
 
-    // Verify dump size
-    int dumpBytes = sh (
-        script: """
-            oc rsh -n ${envProject} dc/${dcName} bash -c ' \
-                stat --printf="%s" ./${dumpTemp}
-            '
-        """,
+    // Verify dump size is at least 1M
+    int sizeAtLeast1M = sh (
+        script: "oc rsh -n ${envProject} dc/${dcName} bash -c ' \
+            du --threshold=1M ${dumpTemp} | wc -l \
+        '",
         returnStdout: true
     )
-    echo "dumpBytes: "+dumpBytes
-    echo "minBytes: "+minBytes
-    assert dumpBytes > minBytes
+    assert sizeAtLeast1M == 1
 
     // Restore (w/ extensions) to temporary db
     sh (
@@ -425,15 +416,11 @@ def dbBackup (String envProject, String envSuffix) {
     )
 
     // Store verified dump
-    sh (
-        script: """
-            oc rsh -n ${envProject} dc/${dcName} bash -c ' \
-                mkdir -p ${dumpDir}; \
-                mv ${dumpTemp} ${dumpDir}/${dumpName}; \
-                ls -lh ${dumpDir}
-            '
-        """
-    )
+    sh "oc rsh -n ${envProject} dc/${dcName} bash -c ' \
+        mkdir -p ${dumpDir}; \
+        mv ${dumpTemp} ${dumpDir}/${dumpName}; \
+        ls -lh ${dumpDir} \
+    '"
 }
 
 
