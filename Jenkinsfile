@@ -401,22 +401,20 @@ def dbBackup (String envProject, String envSuffix) {
     )
     assert sizeAtLeast1M == 1
 
-    // Restore (w/ extensions) to temporary db
-    sh (
-        script: """
-            oc rsh -n ${envProject} dc/${dcName} bash -c ' \
-                set -e; \
-                psql -c "DROP DATABASE IF EXISTS db_verify"; \
-                createdb db_verify; \
-                psql -d db_verify -c "CREATE EXTENSION IF NOT EXISTS oracle_fdw;"; \
-                psql -d db_verify -c "CREATE EXTENSION IF NOT EXISTS postgis;"; \
-                psql -d db_verify -c "CREATE EXTENSION IF NOT EXISTS pgcrypto;"; \
-                psql -d db_verify -c "COMMIT;"; \
-                pg_restore -d db_verify --schema-only --create ${dumpTemp}; \
-                psql -c "DROP DATABASE IF EXISTS db_verify"
-            '
-        """
-    )
+    // Restore (schema only, w/ extensions) to temporary db
+    sh """
+        oc rsh -n ${envProject} dc/${dcName} bash -c ' \
+            set -e; \
+            psql -c "DROP DATABASE IF EXISTS db_verify"; \
+            createdb db_verify; \
+            psql -d db_verify -c "CREATE EXTENSION IF NOT EXISTS oracle_fdw;"; \
+            psql -d db_verify -c "CREATE EXTENSION IF NOT EXISTS postgis;"; \
+            psql -d db_verify -c "CREATE EXTENSION IF NOT EXISTS pgcrypto;"; \
+            psql -d db_verify -c "COMMIT;"; \
+            pg_restore -d db_verify --schema-only --create ${dumpTemp}; \
+            psql -c "DROP DATABASE IF EXISTS db_verify"
+        '
+    """
 
     // Store verified dump
     sh "oc rsh -n ${envProject} dc/${dcName} bash -c ' \
@@ -430,7 +428,7 @@ def dbBackup (String envProject, String envSuffix) {
             find ${dumpDir} -name *.dump -printf '%Ts\t%p\n' \
                 | sort -nr | cut -f2 | tail -n +${maxBackups} | xargs rm 2>/dev/null \
                 || echo 'No extra backups to remove' \
-        \""
+    \""
 }
 
 
