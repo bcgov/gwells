@@ -404,12 +404,13 @@ def dbBackup (String envProject, String envSuffix) {
     sh (
         script: """
             oc rsh -n ${envProject} dc/${dcName} bash -c ' \
+                set -e; \
                 psql -c "DROP DATABASE IF EXISTS db_verify"; \
                 createdb db_verify; \
                 psql -d db_verify -c "CREATE EXTENSION IF NOT EXISTS oracle_fdw;"; \
                 psql -d db_verify -c "CREATE EXTENSION IF NOT EXISTS postgis;COMMIT;"; \
                 psql -d db_verify -c "CREATE EXTENSION IF NOT EXISTS pgcrypto;COMMIT;"; \
-                pg_restore -U \${POSTGRESQL_USER} -d db_verify --schema-only --create ./unverified.dump; \
+                pg_restore -U \${POSTGRESQL_USER} -d db_verify --schema-only --create ${dumpTemp}; \
                 psql -c "DROP DATABASE IF EXISTS db_verify"
             '
         """
