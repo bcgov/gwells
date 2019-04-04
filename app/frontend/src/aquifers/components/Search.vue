@@ -75,7 +75,7 @@
                 <h6 class="mt-3">Download all aquifers</h6>
                 <ul class="aquifer-download-list">
                   <li>- <a href="#">Aquifer extract (XLSX)</a></li>
-                  <li>- <a href="#">Aquifer extract (ZIP)</a></li>
+                  <li>- <a href="#" @click.prevent="downloadCSV()">Aquifer extract (CSV)</a></li>
                 </ul>
                 
               </b-col>
@@ -309,12 +309,19 @@ export default {
       this.triggerAnalyticsSearchEvent(this.query)
       ApiService.query('aquifers', this.query)
         .then((response) => {
-          console.log("Response", response)
-          console.log("Filtered", response.data.results.filter(o => {
-            
-          }));
           this.response = response.data
           this.scrollToTableTop()
+        })
+    },
+    downloadCSV () {
+      ApiService.query('aquifers/csv', this.query)
+        .then((response) => {
+          const url = window.URL.createObjectURL(new Blob([response.data], {type: 'text/csv'}));
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', 'aquifers.csv'); //or any other extension
+          document.body.appendChild(link);
+          link.click();
         })
     },
     fetchResourceSections () {

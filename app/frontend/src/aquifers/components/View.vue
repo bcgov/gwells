@@ -167,7 +167,7 @@
                 <dd v-if="obs_wells.length > 0">
                   <p v-for="owell in obs_wells" :key="owell.observation_well_number">
                     <a :href="getObservationWellLink(owell.observation_well_number)">Observation Well {{ owell.observation_well_number }}</a>
-                    <br/>Water Level Analysis: {{ (waterLevels.find(o => o.wellNumber = owell.observation_well_number).levels )}}
+                    <br/>Water Level Analysis: <a href="http://www.env.gov.bc.ca/soe/indicators/water/groundwater-levels.html">{{ (waterLevels.find(o => o.wellNumber = owell.observation_well_number).levels )}}</a>
                   </p>
                 </dd> 
                 <dd v-else>
