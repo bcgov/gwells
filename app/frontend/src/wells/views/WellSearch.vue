@@ -14,7 +14,7 @@
     <b-row class="mt-4">
       <b-col cols="12" lg="6" xl="5">
         <b-form @submit.prevent="handleSearchSubmit({ trigger: 'search' })" @reset.prevent="handleReset()">
-          <b-card no-body border-variant="dark">
+          <b-card no-body border-variant="dark" class="mb-1">
             <b-tabs card v-model="tabIndex">
               <b-tab title="Basic Search">
                 <div class="card-text">
@@ -210,7 +210,7 @@
                     </b-col>
                   </b-form-row>
                   <b-row>
-                    <b-col cols="9">
+                    <b-col sm="9" class="mb-1">
                       <b-form-select id="additionalFilterInput" v-model="selectedFilter">
                         <option :value="null">Select a field to search on</option>
                         <template v-for="section in additionalFilters">
@@ -222,7 +222,7 @@
                         </template>
                       </b-form-select>
                     </b-col>
-                    <b-col>
+                    <b-col sm="3" class="mb-1">
                       <b-button block variant="primary" @click="selectFilter" :disabled="selectedFilter === null">Add Field</b-button>
                     </b-col>
                   </b-row>

@@ -7,7 +7,7 @@
       <b-form-row>
         <b-col class="mb-1">
           <b-form-row>
-            <label :id="`${id}StartLabel`" :label-for="`${id}StartInput`" class="col-sm-4 col-form-label text-right">From</label>
+            <label :id="`${id}StartLabel`" :label-for="`${id}StartInput`" class="col-sm-4 col-form-label text-sm-right">From</label>
             <b-col sm="8">
               <b-form-input
                 :id="`${id}StartInput`"
@@ -32,7 +32,7 @@
         </b-col>
         <b-col class="mb-1">
           <b-form-row>
-            <label :id="`${id}EndLabel`" :label-for="`${id}EndInput`" class="col-sm-4 col-form-label text-right">To</label>
+            <label :id="`${id}EndLabel`" :label-for="`${id}EndInput`" class="col-sm-4 col-form-label text-sm-right">To</label>
             <b-col sm="8">
               <b-form-input
                 :id="`${id}EndInput`"
