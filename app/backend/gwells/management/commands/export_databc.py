@@ -24,6 +24,7 @@ from minio import Minio
 
 from gwells.settings.base import get_env_variable
 from wells.models import Well
+from gwells.management.commands import ResultIter
 
 """
 Run from command line :
@@ -79,13 +80,12 @@ from well
             select casing.casing_guid from casing
             where casing.well_tag_number = well.well_tag_number
             order by casing.diameter asc limit 1)
-    where well.well_tag_number >= %s and well.well_tag_number < %s
-        and (well.well_publication_status_code = 'Published' or well.well_publication_status_code = null)
+    where
+        (well.well_publication_status_code = 'Published' or well.well_publication_status_code = null)
         and well.geom is not null
         {bounds}
     order by well.well_tag_number
 """)
-MAX_WELLS_SQL = 'select max(well_tag_number) from well'
 WELL_CHUNK_SIZE = 10000
 
 
@@ -145,13 +145,12 @@ from well
             select casing.casing_guid from casing
             where casing.well_tag_number = well.well_tag_number
             order by casing.diameter asc limit 1)
-    where well.well_tag_number >= %s and well.well_tag_number < %s
-        and (well.well_publication_status_code = 'Published' or well.well_publication_status_code = null)
+    where
+        (well.well_publication_status_code = 'Published' or well.well_publication_status_code = null)
         and well.geom is not null
         {bounds}
     order by well.well_tag_number, lithology_description.lithology_from
 """)
-MAX_LITHOLOGY_SQL = MAX_WELLS_SQL
 LITHOLOGY_CHUNK_SIZE = 10000
 
 # IMPORTANT: If the underlying data structure changes (e.g. column name changes etc.), the
@@ -188,12 +187,11 @@ from aquifer
         water_use_code.water_use_code = aquifer.water_use_code
     left join quality_concern_code on
         quality_concern_code.quality_concern_code = aquifer.quality_concern_code
-    where aquifer.aquifer_id >= %s and aquifer.aquifer_id < %s
-        and aquifer.geom is not null
+    where
+        aquifer.geom is not null
         {bounds}
     order by aquifer.aquifer_id
 """)
-MAX_AQUIFERS_SQL = 'select max(aquifer_id) from aquifer'
 AQUIFER_CHUNK_SIZE = 100
 
 
@@ -207,36 +205,16 @@ class LazyEncoder(json.JSONEncoder):
 
 class GeoJSONIterator():
 
-    def __init__(self, sql, chunk_size, cursor, max_query, bounds=None):
-        # Keep track of the start time (purely for logging).
+    def __init__(self, sql, chunk_size, cursor, bounds=None):
         self.send_header = True
         self.done = False
-        self.current_index = 0
         self.first_record = True
-        self.current_index = 0
-        self.chunk_size = chunk_size
-        self.bounds = bounds
-        self.sql = sql
-        self.cursor = cursor
-        self.max_index = self.get_max_index(max_query)
-        self.get_chunk()
-        self.fields = self.get_fields()
-
-    def get_max_index(self, query):
-        self.cursor.execute(query)
-        row = self.cursor.fetchone()
-        if row[0] is None:
-            return 0
-        return row[0]
-
-    def get_chunk(self):
-        logger.info('fetching {current_index}...{next_index}'.format(
-            current_index=self.current_index,
-            next_index=self.current_index+self.chunk_size))
-        params = (self.current_index, self.current_index+self.chunk_size)
-        if self.bounds:
-            params = params + self.bounds
-        self.cursor.execute(self.sql, params)
+        params = ()
+        if bounds:
+            params = bounds
+        cursor.execute(sql, params)
+        self.iterator = ResultIter(cursor, chunk_size)
+        self.fields = self.get_fields(cursor)
 
     def get_header(self):
         return """{"type": "FeatureCollection","features": ["""
@@ -256,46 +234,38 @@ class GeoJSONIterator():
                 feature['properties'][self.fields[col]] = value
         return json.dumps(feature, cls=LazyEncoder)
 
-    def get_fields(self):
+    def get_fields(self, cursor):
         fields = []
-        for index, field in enumerate(self.cursor.description):
+        for index, field in enumerate(cursor.description):
             fieldName = field[0]
             fields.append(fieldName)
         return fields
-
-    def get_record(self):
-        record = self.cursor.fetchone()
-        while not record and self.current_index + self.chunk_size < self.max_index:
-            # Move the cursor along..
-            self.current_index += self.chunk_size
-            self.get_chunk()
-            record = self.cursor.fetchone()
-        if record:
-            return self.format_record(record)
-        return None
 
     def __iter__(self):
         return self
 
     def __next__(self):
-        # If we're right at the start, send the header.
         if self.send_header:
+            # If we're right at the start, send the header.
             self.send_header = False
             return self.get_header()
-        # If we're chugging along, send a record.
-        record = self.get_record()
-        if record:
-            if self.first_record:
-                self.first_record = False
-            else:
-                record = ',{}'.format(record)
-            return record
-        if self.done:
+        elif self.done:
             # If we're done, be done!
             raise StopIteration
-        # This means we sent our last record
-        self.done = True
-        return self.get_footer()
+        else:
+            # If we're chugging along, send a record.
+            try:
+                record = next(self.iterator)
+                record = self.format_record(record)
+                if self.first_record:
+                    self.first_record = False
+                else:
+                    record = ',{}'.format(record)
+                return '\n{}'.format(record)
+            except StopIteration:
+                # No more records? Send the footer.
+                self.done = True
+                return self.get_footer()
 
 
 class Command(BaseCommand):
@@ -350,12 +320,12 @@ class Command(BaseCommand):
                                        file_data,
                                        file_stat.st_size)
 
-    def generate_geojson_chunks(self, sql, target, chunk_size, max_query):
+    def generate_geojson_chunks(self, sql, target, chunk_size):
         logger.info('Generating GeoJSON for {}'.format(target))
         # Open JSON file to write to.
         with connection.cursor() as cursor:
             with open(target, 'w') as f:
-                reader = GeoJSONIterator(sql, chunk_size, cursor, max_query)
+                reader = GeoJSONIterator(sql, chunk_size, cursor)
                 count = 0
                 for item in reader:
                     f.write('{}\n'.format(item))
@@ -363,11 +333,11 @@ class Command(BaseCommand):
 
     def generate_lithology(self, target):
         self.generate_geojson_chunks(
-            LITHOLOGY_SQL.format(bounds=''), target, LITHOLOGY_CHUNK_SIZE, MAX_LITHOLOGY_SQL)
+            LITHOLOGY_SQL.format(bounds=''), target, LITHOLOGY_CHUNK_SIZE)
 
     def generate_aquifers(self, filename):
         self.generate_geojson_chunks(
-            AQUIFERS_SQL.format(bounds=''), filename, AQUIFER_CHUNK_SIZE, MAX_AQUIFERS_SQL)
+            AQUIFERS_SQL.format(bounds=''), filename, AQUIFER_CHUNK_SIZE)
 
     def generate_wells(self, filename):
-        self.generate_geojson_chunks(WELLS_SQL.format(bounds=''), filename, WELL_CHUNK_SIZE, MAX_WELLS_SQL)
+        self.generate_geojson_chunks(WELLS_SQL.format(bounds=''), filename, WELL_CHUNK_SIZE)
