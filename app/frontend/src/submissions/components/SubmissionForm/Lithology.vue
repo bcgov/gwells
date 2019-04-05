@@ -41,6 +41,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
               Materials
             </th>
             <th class="font-weight-normal">
+              Descriptor
+            </th>
+            <th class="font-weight-normal">
               Moisture
             </th>
             <th class="font-weight-normal">
@@ -49,14 +52,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
             <th class="font-weight-normal">
               Hardness
             </th>
-            <th class="font-weight-normal">
-              Descriptor
+            <th class="font-weight-normal input-width-medium">
+              Water Bearing Flow Estimate (USGPM)
             </th>
             <th class="font-weight-normal">
               Observations
-            </th>
-            <th class="font-weight-normal input-width-medium">
-              Water Bearing Flow Estimate (USGPM)
             </th>
             <th></th>
           </tr>
@@ -85,6 +85,19 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     {{ soil }}
                   </b-badge>
                 </div>
+              </td>
+              <td class="input-width-medium">
+                <form-input
+                    :id="`lithologyDescriptor${index}`"
+                    aria-label="Descriptor"
+                    select
+                    :options="codes.lithology_descriptors"
+                    text-field="description"
+                    value-field="lithology_description_code"
+                    placeholder="Select descriptor"
+                    v-model="lithology[index].lithology_description"
+                    group-class="mt-1 mb-0"
+                />
               </td>
               <td class="input-width-medium">
                 <form-input
@@ -123,17 +136,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     group-class="mt-1 mb-0"></form-input>
               </td>
               <td class="input-width-medium">
-                <form-input
-                    :id="`lithologyDescriptor${index}`"
-                    aria-label="Descriptor"
-                    select
-                    :options="codes.lithology_descriptors"
-                    text-field="description"
-                    value-field="lithology_description_code"
-                    placeholder="Select descriptor"
-                    v-model="lithology[index].lithology_description"
-                    group-class="mt-1 mb-0"
-                />
+                <form-input :id="`lithologyFlowEstimate${index}`" aria-label="Water bearing flow" v-model="lithology[index].water_bearing_estimated_flow" group-class="mt-1 mb-0"></form-input>
               </td>
               <td class="input-width-medium">
                 <form-input
@@ -141,9 +144,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     aria-label="Observations"
                     v-model="lithology[index].lithology_observation"
                     group-class="mt-1 mb-0"></form-input>
-              </td>
-              <td class="input-width-medium">
-                <form-input :id="`lithologyFlowEstimate${index}`" aria-label="Water bearing flow" v-model="lithology[index].water_bearing_estimated_flow" group-class="mt-1 mb-0"></form-input>
               </td>
               <td class="pt-1">
                 <b-btn size="sm" variant="primary" @click="removeRowIfOk(index)" :id="`removeRowButton${index}`" class="mt-2 float-right"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
