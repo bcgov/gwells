@@ -80,7 +80,6 @@ export default {
       })
     },
     initMap () {
-      console.log("Refs", this)
       // Create map, with default centered and zoomed to show entire BC.
       this.map = L.map('map', {
         preferCanvas: true,
@@ -108,9 +107,6 @@ export default {
       this.map.on('lasso.finished', (event) => {
         this.map.fitBounds(event.latLngs)
       })
-
-
-
       const locateButton = L.control.locate({ position: 'topleft' })
       locateButton.onClick = (ev) => {
         this.map.locate({setView: true})

@@ -16,53 +16,52 @@
 </style>
 
 <script>
-import { Pie, mixins } from 'vue-chartjs'
-import { groupBy, map, sum, sumBy } from 'lodash'
+import { Pie } from 'vue-chartjs'
+import { groupBy, map, sumBy } from 'lodash'
 
 export default {
   extends: Pie,
   props: ['chartData'],
   watch: {
-      chartData(newChartData) {
-          this.renderPieChart(newChartData)
-      }
+    chartData (newChartData) {
+      this.renderPieChart(newChartData)
+    }
   },
   mounted () {
-        this.renderPieChart(this.chartData)
+    this.renderPieChart(this.chartData)
   },
 
   methods: {
-      renderPieChart (newChartData) {
-        if ( Object.keys(newChartData).length ) {
-            const groupedLabels = groupBy(newChartData.usage, (o) => o.purpose__description)
-            const groupedSum = map(groupedLabels, (val, key) => {
-                let sum = {};
-                sum[key] = sumBy(val, o => o.total_qty)
-                return sum
-            })
-            const chartLabel = groupedSum.map(o => Object.keys(o)[0])
-            const chartData = groupedSum.map(o => Object.values(o)[0])
-            this.renderChart({
-                labels: chartLabel,
-                datasets: [
-                    {
-                        label: 'GitHub Commits',
-                        backgroundColor: '#f87979',
-                        data: chartData
-                    }
-                ],
-            }, {
-                legend: {
-                    display: false
-                },
-                tooltips: {
-                    enabled: true
-                },
-                responsive: true, 
-                maintainAspectRatio: true
-            })
-        }
-
+    renderPieChart (newChartData) {
+      if (Object.keys(newChartData).length) {
+        const groupedLabels = groupBy(newChartData.usage, (o) => o.purpose__description)
+        const groupedSum = map(groupedLabels, (val, key) => {
+          let sum = {}
+          sum[key] = sumBy(val, o => o.total_qty)
+          return sum
+        })
+        const chartLabel = groupedSum.map(o => Object.keys(o)[0])
+        const chartData = groupedSum.map(o => Object.values(o)[0])
+        this.renderChart({
+          labels: chartLabel,
+          datasets: [
+            {
+              label: 'GitHub Commits',
+              backgroundColor: '#f87979',
+              data: chartData
+            }
+          ]
+        }, {
+          legend: {
+            display: false
+          },
+          tooltips: {
+            enabled: true
+          },
+          responsive: true,
+          maintainAspectRatio: true
+        })
+      }
     }
   }
 }
