@@ -151,6 +151,11 @@
               <dt>Number of groundwater licenses</dt>
               <dd>{{ licence_details.licence_count }}</dd>
             </li>
+            <li>
+              <dt>Water withdrawal volume (annual)</dt>
+              <dd v-if="waterWithdrawlVolume">{{ waterWithdrawlVolume | unitWaterVolume}}</dd>
+              <dd v-else>No information available.</dd>
+            </li>
           </ul>
         </b-col>
         <b-col cols="4">
@@ -167,7 +172,11 @@
                 <dd v-if="obs_wells.length > 0">
                   <p v-for="owell in obs_wells" :key="owell.observation_well_number">
                     <a :href="getObservationWellLink(owell.observation_well_number)">Observation Well {{ owell.observation_well_number }}</a>
-                    <br/>Water Level Analysis: <a href="http://www.env.gov.bc.ca/soe/indicators/water/groundwater-levels.html">{{ (waterLevels.find(o => o.wellNumber = owell.observation_well_number).levels )}}</a>
+                    <br/>Water Level Analysis: 
+                    <a v-if="waterLevels.find(o => o.wellNumber === owell.observation_well_number)" href="http://www.env.gov.bc.ca/soe/indicators/water/groundwater-levels.html">
+                    {{ (waterLevels.find(o => o.wellNumber === owell.observation_well_number).levels )}}
+                    </a>
+                    <span v-else>No information available.</span>
                   </p>
                 </dd> 
                 <dd v-else>
@@ -271,6 +280,7 @@ import Documents from './Documents.vue'
 import SingleAquiferMap from './SingleAquiferMap.vue'
 import ChangeHistory from '@/common/components/ChangeHistory.vue'
 import { mapActions, mapGetters, mapState } from 'vuex'
+import { sumBy } from 'lodash'
 export default {
   components: {
     'api-error': APIErrorMessage,
@@ -300,7 +310,8 @@ export default {
       aquifer_resource_sections: [],
       wells: [],
       obs_wells: [],
-      waterLevels: []
+      waterLevels: [],
+      waterWithdrawlVolume: ''
     }
   },
   computed: {
@@ -322,6 +333,14 @@ export default {
     },
     obs_wells (newObsWells, oldObsWells) {
       this.getWaterLevels(newObsWells)
+    },
+    licence_details(newLDetails, oldLDetails) {
+      this.setWaterVolume(newLDetails)
+    }
+  },
+  filters: {
+    unitWaterVolume (volume) {
+      return volume + ' cubic metres'
     }
   },
   methods: {
@@ -455,23 +474,20 @@ export default {
       return `https://governmentofbc.maps.arcgis.com/apps/webappviewer/index.html?id=b53cb0bf3f6848e79d66ffd09b74f00d&find=OBS%20WELL%${wellNumber}`
     },
     getWaterLevels (obsWells) {
-
-
       obsWells.map((owell) => {
         function getRequestUrl (wellNumber) {
           return `https://catalogue.data.gov.bc.ca/api/3/action/datastore_search?resource_id=a8933793-eadb-4a9c-992c-da4f6ac8ca51&fields=EMS_ID,Well_Num,trend_line_slope,category&filters=%7b%22Well_Num%22:%22${wellNumber}%22%7d`
         }
         let wellNumber = owell.observation_well_number;
         ApiService.query(getRequestUrl(wellNumber)).then((response) => {
-          console.log("Water Level Response", response)
           this.waterLevels.push({ wellNumber, levels: response.data.result.records[0].category })
-          console.log("Water Levels", this.waterLevels)
         })
       })
-      
-
-
-      
+    },
+    setWaterVolume (details) {
+      if ( details.usage && details.usage.constructor === Array && details.usage.length > 0) {
+        this.waterWithdrawlVolume = sumBy(details.usage, 'total_qty')
+      }
     }
   }}
 </script>
