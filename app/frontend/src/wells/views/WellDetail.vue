@@ -53,7 +53,7 @@
         <b-row>
           <b-col cols="12" md="4"></b-col>
           <b-col cols="12" md="4"></b-col>
-          <b-col cols="12" md="4"><span class="font-weight-bold">Alternative specs submitted (if required):</span> {{ well.alternative_specs_submitted }}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Alternative specs submitted:</span> {{ well.alternative_specs_submitted }}</b-col>
         </b-row>
       </fieldset>
 

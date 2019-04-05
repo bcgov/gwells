@@ -418,10 +418,10 @@ export default {
         artesian_flow: '',
         artesian_pressure: '',
         well_cap_type: '',
-        well_disinfected: 'False',
+        well_disinfected: false,
         comments: '',
         internal_comments: '',
-        alternative_specs_submitted: 'False',
+        alternative_specs_submitted: false,
         decommission_description_set: [],
         decommission_reason: '',
         decommission_method: '',
@@ -716,7 +716,7 @@ function initialState () {
     }
   }
   .input-width-small {
-    max-width: 3rem;
+    max-width: 4rem;
   }
   .input-width-medium {
     max-width: 6rem;
