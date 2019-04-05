@@ -124,7 +124,7 @@ exports[`Search Component Matches the snapshot 1`] = `
                   <a
                     href="#"
                   >
-                    Aquifer extract (ZIP)
+                    Aquifer extract (CSV)
                   </a>
                 </li>
               </ul>

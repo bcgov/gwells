@@ -176,13 +176,13 @@
                 <dd v-if="obs_wells.length > 0">
                   <p v-for="owell in obs_wells" :key="owell.observation_well_number">
                     <a :href="getObservationWellLink(owell.observation_well_number)">Observation Well {{ owell.observation_well_number }}</a>
-                    <br/>Water Level Analysis: 
+                    <br/>Water Level Analysis:
                     <a v-if="waterLevels.find(o => o.wellNumber === owell.observation_well_number)" href="http://www.env.gov.bc.ca/soe/indicators/water/groundwater-levels.html">
                     {{ (waterLevels.find(o => o.wellNumber === owell.observation_well_number).levels )}}
                     </a>
                     <span v-else>No information available.</span>
                   </p>
-                </dd> 
+                </dd>
                 <dd v-else>
                   No information available.
                 </dd>
@@ -195,7 +195,6 @@
                 <p v-if="!bySection(record.resources, section).length">No information available.</p>
               </dd>
           </li>
-            
           </ul>
         </b-col>
         <b-col cols="12" sm="6">
@@ -312,7 +311,6 @@ export default {
     this.fetch()
     this.fetchFiles()
     this.fetchResourceSections()
-    
   },
   data () {
     return {
@@ -350,7 +348,7 @@ export default {
     obs_wells (newObsWells, oldObsWells) {
       this.getWaterLevels(newObsWells)
     },
-    licence_details(newLDetails, oldLDetails) {
+    licence_details (newLDetails, oldLDetails) {
       this.setWaterVolume(newLDetails)
     }
   },
@@ -401,15 +399,10 @@ export default {
       }
 
       if (this.shapeFile) {
-        console.log('Shape File Exists')
-        console.log(this.shapeFile)
         this.uploadShapeFile({
           documentType: 'aquifers',
           recordId: this.id
         })
-      } else {
-        console.log('Shape file does not exist')
-        console.log(this.shapeFile)
       }
     },
     handlePatchError (error) {
@@ -442,10 +435,8 @@ export default {
     },
     fetch (id = this.id) {
       ApiService.query(`aquifers/${id}`)
-        .then((response) => { 
-          
+        .then((response) => {
           this.record = response.data
-          console.log(this.record)
           this.licence_details = response.data.licence_details
           this.obs_wells = response.data.licence_details.obs_wells
         }).catch((error) => {
@@ -494,14 +485,14 @@ export default {
         function getRequestUrl (wellNumber) {
           return `https://catalogue.data.gov.bc.ca/api/3/action/datastore_search?resource_id=a8933793-eadb-4a9c-992c-da4f6ac8ca51&fields=EMS_ID,Well_Num,trend_line_slope,category&filters=%7b%22Well_Num%22:%22${wellNumber}%22%7d`
         }
-        let wellNumber = owell.observation_well_number;
+        let wellNumber = owell.observation_well_number
         ApiService.query(getRequestUrl(wellNumber)).then((response) => {
           this.waterLevels.push({ wellNumber, levels: response.data.result.records[0].category })
         })
       })
     },
     setWaterVolume (details) {
-      if ( details.usage && details.usage.constructor === Array && details.usage.length > 0) {
+      if (details.usage && details.usage.constructor === Array && details.usage.length > 0) {
         this.waterWithdrawlVolume = sumBy(details.usage, 'total_qty')
       }
     }

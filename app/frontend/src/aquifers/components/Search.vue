@@ -71,13 +71,11 @@
                       <b-button class="aquifer-buttons" variant="default" type="reset">Reset</b-button>
                     </b-form-group>
                 </b-form-row>
-                
                 <h6 class="mt-3">Download all aquifers</h6>
                 <ul class="aquifer-download-list">
                   <li>- <a href="#">Aquifer extract (XLSX)</a></li>
                   <li>- <a href="#" @click.prevent="downloadCSV()">Aquifer extract (CSV)</a></li>
                 </ul>
-                
               </b-col>
               <b-col cols="12" md="6" class="pt-3 pl-4 pr-4 mt-3">
                 <div v-if="layers.length > 0">
@@ -316,12 +314,12 @@ export default {
     downloadCSV () {
       ApiService.query('aquifers/csv', this.query)
         .then((response) => {
-          const url = window.URL.createObjectURL(new Blob([response.data], {type: 'text/csv'}));
-          const link = document.createElement('a');
-          link.href = url;
-          link.setAttribute('download', 'aquifers.csv'); //or any other extension
-          document.body.appendChild(link);
-          link.click();
+          const url = window.URL.createObjectURL(new Blob([response.data], {type: 'text/csv'}))
+          const link = document.createElement('a')
+          link.href = url
+          link.setAttribute('download', 'aquifers.csv')
+          document.body.appendChild(link)
+          link.click()
         })
     },
     fetchResourceSections () {

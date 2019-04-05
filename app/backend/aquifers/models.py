@@ -104,7 +104,7 @@ class AquiferMaterial(CodeTableModel):
 
     class Meta:
         db_table = 'aquifer_material_code'
-        ordering = ['display_order', 'code']
+        ordering = ['code']
         verbose_name_plural = 'Aquifer Material Codes'
 
     db_table_comment = ('Describes the broad grouping of geological material found in the aquifer, i.e., '
