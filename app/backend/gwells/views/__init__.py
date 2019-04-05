@@ -14,8 +14,7 @@
 
 from ..forms import *
 from gwells.views.health_view import HealthView
-from gwells.views.search_view import SearchView
 from gwells.views.survey_list_view import SurveyListView
 
 
-__all__ = ['HealthView', 'SearchView']
+__all__ = ['HealthView']

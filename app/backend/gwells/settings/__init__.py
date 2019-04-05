@@ -20,6 +20,8 @@ from gwells import database
 from gwells.settings.base import get_env_variable
 
 BASE_DIR = str(Path(__file__).parents[2])
+print('BASE_DIR = {}'.format(BASE_DIR))
+WHITENOISE_INDEX_FILE = True
 
 
 # Quick-start development settings - unsuitable for production
@@ -89,6 +91,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = (
+    'whitenoise.runserver_nostatic',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -108,7 +111,6 @@ INSTALLED_APPS = (
     'submissions',
     'aquifers',
     'django_nose',
-    'webpack_loader',
     'django_filters',
     'django_extensions',
     'drf_multiple_model',
@@ -186,9 +188,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 if APP_CONTEXT_ROOT:
-    STATIC_URL = '/' + APP_CONTEXT_ROOT + '/static/'
+    STATIC_URL = '/' + APP_CONTEXT_ROOT + '/'
 else:
-    STATIC_URL = '/static/'
+    STATIC_URL = '/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
@@ -272,13 +274,6 @@ REST_FRAMEWORK = {
     }
 }
 
-WEBPACK_LOADER = {
-    'DEFAULT': {
-        'CACHE': not DEBUG,
-        'BUNDLE_DIR_NAME': 'bundles/',  # must end with slash
-        'STATS_FILE': os.path.join(BASE_DIR, '../frontend/webpack-stats.json')
-    }
-}
 LOGIN_URL = '/gwells/accounts/login/'
 LOGIN_REDIRECT_URL = '/gwells/search'
 

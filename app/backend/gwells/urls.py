@@ -19,7 +19,6 @@ from django.contrib import admin
 from django.views.generic import TemplateView
 
 from gwells.views import SurveyListView, HealthView
-from gwells.views.home_view import HomeView
 from gwells.views.admin import *
 from gwells.views import api
 from gwells.settings.base import get_env_variable
@@ -75,7 +74,7 @@ urlpatterns = [
     url(r'^' + app_root_slash, include('aquifers.urls')),
 
     # main web application page
-    url(r'^' + app_root_slash, HomeView.as_view(), name='home'),
+    # url(r'^' + app_root_slash, HomeView.as_view(), name='home'),
 
 
 ]
