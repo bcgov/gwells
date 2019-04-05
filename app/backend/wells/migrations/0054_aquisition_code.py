@@ -3,21 +3,7 @@
 from django.db import migrations
 from django.utils import timezone
 
-
-def forwards(apps, schema):
-    CoordinateAcquisitionCode = apps.get_model('wells', 'CoordinateAcquisitionCode')
-    CoordinateAcquisitionCode.objects.create(
-        code='0',
-        description='Not Specified',
-        effective_date=timezone.now(),
-        create_user='Django Migration')
-
-
-def backwards(apps, schema):
-    CoordinateAcquisitionCode = apps.get_model('wells', 'CoordinateAcquisitionCode')
-    codes = CoordinateAcquisitionCode.objects.filter(code='0')
-    for code in codes:
-        code.delete()
+from wells import data_migrations
 
 
 class Migration(migrations.Migration):
@@ -27,5 +13,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(forwards, reverse_code=backwards)
+        migrations.RunPython(data_migrations.load_unspecified_coordinate_aquisition_code, reverse_code=data_migrations.unload_unspecified_coordinate_aquisition_code)
     ]

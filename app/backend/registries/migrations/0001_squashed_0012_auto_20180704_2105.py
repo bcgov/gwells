@@ -109,8 +109,6 @@ def revert_application_approved_status(apps, schema_editor):
 
 class Migration(migrations.Migration):
 
-    replaces = [('registries', '0001_initial'), ('registries', '0002_auto_20180517_0017'), ('registries', '0003_auto_20180517_1711'), ('registries', '0004_auto_20180524_2247'), ('registries', '0005_auto_20180608_1930'), ('registries', '0006_auto_20180608_1934'), ('registries', '0007_auto_20180611_1755'), ('registries', '0008_auto_20180613_2304'), ('registries', '0009_auto_20180616_0022'), ('registries', '0010_auto_20180618_2119'), ('registries', '0011_auto_20180619_2315'), ('registries', '0012_auto_20180704_2105')]
-
     initial = True
 
     dependencies = [

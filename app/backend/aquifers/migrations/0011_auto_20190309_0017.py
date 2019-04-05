@@ -3,24 +3,10 @@ import logging
 from django.db import migrations, models
 from django.db.models import F
 
+from aquifers import data_migrations
+
 
 logger = logging.getLogger(__name__)
-
-
-def update_fields(apps, schema_editor):
-    app_config = apps.get_app_config('aquifers')
-    app_models = app_config.get_models()
-    for model in app_models:
-        if hasattr(model, 'update_user'):
-            try:
-                model.objects.filter(update_user__isnull=True).update(
-                    update_user=F('create_user'))
-            except AttributeError:
-                logger.error("skipping")
-
-
-def reverse_update_fields(apps, schema_editor):
-    pass
 
 
 class Migration(migrations.Migration):
@@ -31,8 +17,8 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunPython(
-            update_fields,
-            reverse_code=reverse_update_fields
+            data_migrations.update_user_fields,
+            reverse_code=data_migrations.reverse_update_user_fields
         ),
         migrations.AlterField(
             model_name='aquifer',

@@ -1,14 +1,8 @@
 from __future__ import unicode_literals
 from django.db import migrations
 import os
-from gwells.codes import CodeFixture
 
-
-def code_fixture():
-    fixture = '0059_other_code_values.json'
-    fixture_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), fixture)
-
-    return CodeFixture(fixture_path)
+from wells import data_migrations
 
 
 class Migration(migrations.Migration):
@@ -18,5 +12,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(code_fixture().load_fixture, reverse_code=code_fixture().unload_fixture),
+        migrations.RunPython(
+            data_migrations.load_other_code_values,
+            reverse_code=data_migrations.unload_other_code_values),
     ]
