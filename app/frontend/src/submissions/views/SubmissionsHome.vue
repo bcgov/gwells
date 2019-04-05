@@ -84,7 +84,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 import { mapActions, mapGetters, mapState } from 'vuex'
 import 'vuejs-noty/dist/vuejs-noty.css'
 import ApiService from '@/common/services/ApiService.js'
-import { FETCH_CODES, FETCH_WELLS } from '../store/actions.types.js'
+import { FETCH_CODES, FETCH_WELL_TAGS } from '../store/actions.types.js'
 import inputFormatMixin from '@/common/inputFormatMixin.js'
 import SubmissionPreview from '@/submissions/components/SubmissionPreview/SubmissionPreview.vue'
 import filterBlankRows from '@/common/filterBlankRows.js'
@@ -223,6 +223,7 @@ export default {
 
         if (this.isStaffEdit) {
           this.$noty.success('<div class="notifyText">Changes Saved!</div>', { killer: true })
+          this.fetchWellDataForStaffEdit()
         } else {
           this.$noty.success('<div aria-label="Close" class="closeBtn">x</div><div class="notifyText">Well Report Submitted.</div>', { killer: true })
           this.$nextTick(function () {
@@ -518,46 +519,46 @@ export default {
       if (this.$route.name === 'SubmissionsEdit') {
         this.activityType = 'STAFF_EDIT'
         this.formIsFlat = true
-
         this.loading = true
-
-        ApiService.query(`wells/${this.$route.params.id}/edit`).then((res) => {
-          Object.keys(res.data).forEach((key) => {
-            if (key in this.form) {
-              this.form[key] = res.data[key]
-            }
-          })
-          if (this.form.person_responsible && this.form.person_responsible.name === this.form.driller_name) {
-            this.form.meta.drillerSameAsPersonResponsible = true
-          }
-
-          // store the number of submissions already associated with this well
-          this.submissionsHistory = res.data.submission_reports || []
-
-          // Wait for the form update we just did to fire off change events.
-          this.$nextTick(() => {
-            this.form.meta.valueChanged = {}
-            this.loading = false
-            this.$nextTick(() => {
-              // We have to allow the UI to render all the components after the 'loading = false' setting,
-              // so we only start tracking changes after that.
-              this.trackValueChanges = true
-            })
-          })
-          // Set initial form fields for comparison with user input changes
-          Object.assign(this.compareForm, this.form)
-        }).catch((e) => {
-          console.error(e)
-        })
+        this.fetchWellDataForStaffEdit()
       } else {
-        // Some of our child components need the well data, we dispatch the request here, in hopes
+        // Some of our child components need the well tags, we dispatch the request here, in hopes
         // that the data will be available by the time those components render.
-        this.$store.dispatch(FETCH_WELLS)
+        this.$store.dispatch(FETCH_WELL_TAGS)
         this.activityType = 'CON'
         this.formIsFlat = false
       }
-
       this.fetchFiles()
+    },
+    fetchWellDataForStaffEdit () {
+      ApiService.query(`wells/${this.$route.params.id}/edit`).then((res) => {
+        Object.keys(res.data).forEach((key) => {
+          if (key in this.form) {
+            this.form[key] = res.data[key]
+          }
+        })
+        if (this.form.person_responsible && this.form.person_responsible.name === this.form.driller_name) {
+          this.form.meta.drillerSameAsPersonResponsible = true
+        }
+
+        // store the number of submissions already associated with this well
+        this.submissionsHistory = res.data.submission_reports || []
+
+        // Wait for the form update we just did to fire off change events.
+        this.$nextTick(() => {
+          this.form.meta.valueChanged = {}
+          this.loading = false
+          this.$nextTick(() => {
+            // We have to allow the UI to render all the components after the 'loading = false' setting,
+            // so we only start tracking changes after that.
+            this.trackValueChanges = true
+          })
+        })
+        // Set initial form fields for comparison with user input changes
+        Object.assign(this.compareForm, this.form)
+      }).catch((e) => {
+        console.error(e)
+      })
     }
   },
   watch: {
