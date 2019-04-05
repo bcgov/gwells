@@ -519,7 +519,6 @@ export default {
       if (this.$route.name === 'SubmissionsEdit') {
         this.activityType = 'STAFF_EDIT'
         this.formIsFlat = true
-        this.loading = true
         this.fetchWellDataForStaffEdit()
       } else {
         // Some of our child components need the well tags, we dispatch the request here, in hopes
@@ -531,6 +530,7 @@ export default {
       this.fetchFiles()
     },
     fetchWellDataForStaffEdit () {
+      this.loading = true
       ApiService.query(`wells/${this.$route.params.id}/edit`).then((res) => {
         Object.keys(res.data).forEach((key) => {
           if (key in this.form) {
@@ -547,7 +547,6 @@ export default {
         // Wait for the form update we just did to fire off change events.
         this.$nextTick(() => {
           this.form.meta.valueChanged = {}
-          this.loading = false
           this.$nextTick(() => {
             // We have to allow the UI to render all the components after the 'loading = false' setting,
             // so we only start tracking changes after that.
@@ -558,6 +557,8 @@ export default {
         Object.assign(this.compareForm, this.form)
       }).catch((e) => {
         console.error(e)
+      }).finally(() => {
+        this.loading = false
       })
     }
   },
