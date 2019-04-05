@@ -17,6 +17,27 @@ const searchControl = new GeoSearchControl({
   provider: provider
 })
 
+// Extend control, making a locate
+L.Control.Locate = L.Control.extend({
+  onAdd: function (map) {
+    let container = L.DomUtil.create('div', 'geolocate')
+    L.DomEvent.addListener(container, 'click', this.click, this)
+    return container
+  },
+  onRemove: function (map) {
+
+  },
+  click: function (ev) {
+    // Use callback to handle clicks
+    if (this.onClick) {
+      this.onClick(ev)
+    }
+  }
+})
+L.control.locate = function (opts) {
+  return new L.Control.Locate(opts)
+}
+
 export default {
   name: 'AquiferMap',
   props: ['aquifers', 'searchAddress'],
@@ -60,7 +81,11 @@ export default {
     initMap () {
       console.log("Refs", this)
       // Create map, with default centered and zoomed to show entire BC.
-      this.map = L.map('map').setView([54.5, -126.5], 5)
+      this.map = L.map('map', {
+        preferCanvas: true,
+        minZoom: 4,
+        maxZoom: 17
+      }).setView([54.5, -126.5], 5)
       L.control.scale().addTo(this.map)
       // Add geo search
       this.map.addControl(searchControl)
@@ -82,6 +107,14 @@ export default {
       this.map.on('lasso.finished', (event) => {
         this.map.fitBounds(event.latLngs)
       })
+
+
+
+      const locateButton = L.control.locate({ position: 'topleft' })
+      locateButton.onClick = (ev) => {
+        this.map.locate({setView: true})
+      }
+      locateButton.addTo(this.map)
       // Add map layers.
       tiledMapLayer({url: 'https://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer'}).addTo(this.map)
       L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW/ows?', {
@@ -219,5 +252,17 @@ export default {
     width: 14px;
     height: 14px;
     cursor: move;
+}
+.geolocate {
+    background-image: url('../../common/assets/images/geolocate.png');
+    width: 30px;
+    height: 30px;
+    left: 2px;
+    box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+}
+
+.geolocate:hover {
+    opacity: 0.8;
 }
 </style>
