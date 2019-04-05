@@ -21,7 +21,15 @@
         <b-row>
           <b-col cols="12" md="4"><span class="font-weight-bold">Well Tag Number:</span> {{ well.well_tag_number }}</b-col>
           <b-col cols="12" md="4"><span class="font-weight-bold">Well Status:</span> {{ well.well_status }}</b-col>
-          <b-col cols="12" md="4"><span class="font-weight-bold">Observation Well Number:</span> {{ well.observation_well_number }}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Observation Well Number:</span>
+            <a
+              v-if="well.observation_well_number"
+              id="obs_well_number"
+              :href="`https://governmentofbc.maps.arcgis.com/apps/webappviewer/index.html?id=b53cb0bf3f6848e79d66ffd09b74f00d&find=OBS%20WELL%20${well.observation_well_number}`"
+            >
+              {{ well.observation_well_number }}
+            </a>
+          </b-col>
         </b-row>
         <b-row>
           <b-col cols="12" md="4"><span class="font-weight-bold">Well Identification Plate Number:</span> {{ well.identification_plate_number }}</b-col>
@@ -36,7 +44,11 @@
         <b-row>
           <b-col cols="12" md="4"><span class="font-weight-bold">Licensed Status:</span> {{ well.licenced_status }}</b-col>
           <b-col cols="12" md="4"><span class="font-weight-bold">Intended Water Use:</span> {{ well.intended_water_use }}</b-col>
-          <b-col cols="12" md="4"><span class="font-weight-bold">Aquifer Number:</span> {{ well.aquifer }}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Aquifer Number:</span>
+            <router-link :to="{ name: 'aquifers-view', params: { id: well.aquifer } }">
+              {{ well.aquifer }}
+            </router-link>
+          </b-col>
         </b-row>
         <b-row>
           <b-col cols="12" md="4"></b-col>
@@ -458,7 +470,7 @@ export default {
     },
     show () {
       return {
-        edit: (!!this.config && this.config.enable_data_entry === true) && this.userRoles.submissions.edit === true
+        edit: (!!this.config && this.config.enable_data_entry === true) && this.userRoles.wells.edit === true
       }
     },
     UTM () {

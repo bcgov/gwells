@@ -238,7 +238,7 @@
       "create_user": "DATALOAD_USER",
       "update_user": "DATALOAD_USER",
       "name": "Numerical groundwater modeling in the Deep Creek watershed. Earth and Enviromental Sciences.",
-      "aquifer_id": 1900,
+      "aquifer_id": 1901,
       "url": "http://a100.gov.bc.ca/pub/acat/public/viewReport.do?reportId=24667",
       "section_id": "N"
     }
@@ -249,7 +249,7 @@
       "create_user": "DATALOAD_USER",
       "update_user": "DATALOAD_USER",
       "name": "Groundwater Protection Plan District of Chilliwack",
-      "aquifer_id": 1900,
+      "aquifer_id": 1901,
       "url": "http://chilliwack.ca/main/attachments/Files/2400/Goundwater%20Protection%20Plan%20District%20of%20Chilliwack.pdf",
       "section_id": "N"
     }

@@ -62,8 +62,7 @@ from gwells.change_history import generate_history_diff
 from registries.views import AuditCreateMixin, AuditUpdateMixin
 from gwells.open_api import (
     get_geojson_schema, get_model_feature_schema, GEO_JSON_302_MESSAGE, GEO_JSON_PARAMS)
-from gwells.management.commands.export_databc import AQUIFERS_SQL, GeoJSONIterator, AQUIFER_CHUNK_SIZE, \
-    MAX_AQUIFERS_SQL
+from gwells.management.commands.export_databc import AQUIFERS_SQL, GeoJSONIterator, AQUIFER_CHUNK_SIZE
 
 
 logger = logging.getLogger(__name__)
@@ -253,11 +252,12 @@ class AquiferNameList(ListAPIView):
 
     def get(self, request):
         search = self.request.query_params.get('search', None)
-        if not search or len(search) < 3:
+        if not search:
             # avoiding responding with excess results
             return Response([])
-        else:
-            return super().get(request)
+        results = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer_class()
+        return Response(serializer(results[:20], many=True).data)
 
 
 class AquiferHistory(APIView):
@@ -404,7 +404,7 @@ AQUIFER_PROPERTIES = openapi.Schema(
     operation_description=(
         'Get GeoJSON (see https://tools.ietf.org/html/rfc7946) dump of aquifers.'),
     method='get',
-    manual_parameters=[GEO_JSON_PARAMS],
+    manual_parameters=GEO_JSON_PARAMS,
     responses={
         302: openapi.Response(GEO_JSON_302_MESSAGE),
         200: openapi.Response(
@@ -415,8 +415,22 @@ AQUIFER_PROPERTIES = openapi.Schema(
 def aquifer_geojson(request):
     realtime = request.GET.get('realtime') in ('True', 'true')
     if realtime:
-        iterator = GeoJSONIterator(
-            AQUIFERS_SQL, AQUIFER_CHUNK_SIZE, connection.cursor(), MAX_AQUIFERS_SQL)
+
+        sw_long = request.query_params.get('sw_long')
+        sw_lat = request.query_params.get('sw_lat')
+        ne_long = request.query_params.get('ne_long')
+        ne_lat = request.query_params.get('ne_lat')
+
+        if sw_long and sw_lat and ne_long and ne_lat:
+            bounds_sql = 'and geom @ ST_Transform(ST_MakeEnvelope(%s, %s, %s, %s, 4326), 3005)'
+            bounds = (sw_long, sw_lat, ne_long, ne_lat)
+        else:
+            bounds_sql = ''
+
+        iterator = GeoJSONIterator(AQUIFERS_SQL.format(bounds=bounds_sql),
+                                   AQUIFER_CHUNK_SIZE,
+                                   connection.cursor(),
+                                   bounds)
         response = StreamingHttpResponse((item for item in iterator),
                                          content_type='application/json')
         response['Content-Disposition'] = 'attachment; filename="aquifers.json"'

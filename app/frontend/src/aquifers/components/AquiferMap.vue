@@ -52,7 +52,8 @@ export default {
 
   data () {
     return {
-      activeLayers: []
+      activeLayers: [],
+      map: null
     }
   },
 

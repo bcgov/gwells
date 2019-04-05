@@ -100,11 +100,6 @@ class AquiferMaterial(AuditModel):
         max_length=100,
         db_comment=('Describes the broad grouping of geological material found in the aquifer, i.e.,'
                     ' Sand and Gravel, Sand, Gravel, Bedrock'))
-    display_order = models.PositiveIntegerField()
-
-    effective_date = models.DateTimeField(default=timezone.now, null=False)
-    expiry_date = models.DateTimeField(default=timezone.make_aware(
-        timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'aquifer_material_code'
@@ -122,11 +117,6 @@ class AquiferSubtype(CodeTableModel):
     """
     Subtypes of Aquifer
     """
-    display_order = models.PositiveIntegerField()
-
-    effective_date = models.DateTimeField(default=timezone.now, null=False)
-    expiry_date = models.DateTimeField(default=timezone.make_aware(
-        timezone.datetime.max, timezone.get_default_timezone()), null=False)
     code = models.CharField(
         primary_key=True, max_length=3, db_column='aquifer_subtype_code',
         db_comment=('Valid codes to define how the aquifer was formed geologically (depositional'
@@ -177,11 +167,6 @@ class AquiferProductivity(CodeTableModel):
         db_comment=('Description of the standard terms that define the aquifer\'s productivity which'
                     ' represent an aquifers ability to transmit and yield groundwater; i.e., Low,'
                     ' Moderate, High'))
-    display_order = models.PositiveIntegerField()
-
-    effective_date = models.DateTimeField(default=timezone.now, null=False)
-    expiry_date = models.DateTimeField(default=timezone.make_aware(
-        timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'aquifer_productivity_code'
@@ -207,11 +192,6 @@ class AquiferDemand(CodeTableModel):
         max_length=100,
         db_comment=('Description of the standard terms that define the level of groundwater use at the'
                     ' time aquifer was mapped; i.e., High, Moderate, Low.'))
-    display_order = models.PositiveIntegerField()
-
-    effective_date = models.DateTimeField(default=timezone.now, null=False)
-    expiry_date = models.DateTimeField(default=timezone.make_aware(
-        timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'aquifer_demand_code'
@@ -241,11 +221,6 @@ class WaterUse(CodeTableModel):
                     ' aquifer at the time of mapping. It indicates the variability or diversity of uses'
                     ' of the aquifer water as a supply source. I.e. Domestic, Multiple, Potential'
                     ' Domestic'))
-    display_order = models.PositiveIntegerField()
-
-    effective_date = models.DateTimeField(default=timezone.now, null=False)
-    expiry_date = models.DateTimeField(default=timezone.make_aware(
-        timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'water_use_code'
@@ -270,11 +245,6 @@ class QualityConcern(CodeTableModel):
         db_comment=('Description of the standard terms used to represent the extent of documented'
                     ' concerns of contaminants in the aquifer at the time of mapping. i.e. isloated,'
                     ' local, regional, none.'))
-    display_order = models.PositiveIntegerField()
-
-    effective_date = models.DateTimeField(default=timezone.now, null=False)
-    expiry_date = models.DateTimeField(default=timezone.make_aware(
-        timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'quality_concern_code'
@@ -306,11 +276,6 @@ class AquiferVulnerabilityCode(CodeTableModel):
                     ' is based on: the type, thickness, and extent of geologic materials above the'
                     ' aquifer, depth to water table (or to top of confined aquifer), and type of aquifer'
                     ' materials, i.e., Low, Moderate, High.'))
-    display_order = models.PositiveIntegerField()
-
-    effective_date = models.DateTimeField(default=timezone.now, null=False)
-    expiry_date = models.DateTimeField(default=timezone.make_aware(
-        timezone.datetime.max, timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'aquifer_vulnerability_code'

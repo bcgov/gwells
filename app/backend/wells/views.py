@@ -55,8 +55,7 @@ from gwells.db_comments import get_column_description
 from gwells.open_api import (
     get_geojson_schema, get_model_feature_schema, GEO_JSON_302_MESSAGE, GEO_JSON_PARAMS)
 from gwells.management.commands.export_databc import (WELLS_SQL, LITHOLOGY_SQL, GeoJSONIterator,
-                                                      LITHOLOGY_CHUNK_SIZE, WELL_CHUNK_SIZE,
-                                                      MAX_LITHOLOGY_SQL, MAX_WELLS_SQL)
+                                                      LITHOLOGY_CHUNK_SIZE, WELL_CHUNK_SIZE)
 
 from submissions.serializers import WellSubmissionListSerializer
 from submissions.models import WellActivityCode
@@ -143,15 +142,15 @@ class WellDetail(RetrieveAPIView):
 
         return qs
 
-    def get_serializer(self, *args, **kwargs):
-        """ returns a different serializer for admin users """
 
-        serializer = self.serializer_class
-
-        if (self.request.user and self.request.user.is_authenticated and
-                self.request.user.groups.filter(name=WELLS_VIEWER_ROLE).exists()):
-            serializer = WellDetailAdminSerializer
-        return serializer(*args, **kwargs)
+class WellStaffEditDetail(RetrieveAPIView):
+    """
+    Return well detail for use in a staff edit
+    """
+    serializer_class = WellDetailAdminSerializer
+    queryset = Well.objects.all()
+    lookup_field = 'well_tag_number'
+    permission_classes = (WellsEditPermissions,)
 
 
 class ListExtracts(APIView):
@@ -519,7 +518,7 @@ WELL_PROPERTIES = openapi.Schema(
 @swagger_auto_schema(
     operation_description=('Get GeoJSON (see https://tools.ietf.org/html/rfc7946) dump of wells.'),
     method='get',
-    manual_parameters=[GEO_JSON_PARAMS],
+    manual_parameters=GEO_JSON_PARAMS,
     responses={
         302: openapi.Response(GEO_JSON_302_MESSAGE),
         200: openapi.Response(
@@ -531,7 +530,19 @@ WELL_PROPERTIES = openapi.Schema(
 def well_geojson(request):
     realtime = request.GET.get('realtime') in ('True', 'true')
     if realtime:
-        iterator = GeoJSONIterator(WELLS_SQL, WELL_CHUNK_SIZE, connection.cursor(), MAX_WELLS_SQL)
+        sw_long = request.query_params.get('sw_long')
+        sw_lat = request.query_params.get('sw_lat')
+        ne_long = request.query_params.get('ne_long')
+        ne_lat = request.query_params.get('ne_lat')
+        bounds = None
+        bounds_sql = ''
+
+        if sw_long and sw_lat and ne_long and ne_lat:
+            bounds_sql = 'and geom @ ST_MakeEnvelope(%s, %s, %s, %s, 4326)'
+            bounds = (sw_long, sw_lat, ne_long, ne_lat)
+
+        iterator = GeoJSONIterator(
+            WELLS_SQL.format(bounds=bounds_sql), WELL_CHUNK_SIZE, connection.cursor(), bounds)
         response = StreamingHttpResponse((item for item in iterator),
                                          content_type='application/json')
         response['Content-Disposition'] = 'attachment; filename="well.json"'
@@ -584,7 +595,7 @@ LITHOLOGY_PROPERTIES = openapi.Schema(
     operation_description=('Get GeoJSON (see https://tools.ietf.org/html/rfc7946) dump of well '
                            'lithology.'),
     method='get',
-    manual_parameters=[GEO_JSON_PARAMS],
+    manual_parameters=GEO_JSON_PARAMS,
     responses={
         302: openapi.Response(GEO_JSON_302_MESSAGE),
         200: openapi.Response(
@@ -596,8 +607,19 @@ LITHOLOGY_PROPERTIES = openapi.Schema(
 def lithology_geojson(request):
     realtime = request.GET.get('realtime') in ('True', 'true')
     if realtime:
-        iterator = GeoJSONIterator(LITHOLOGY_SQL, LITHOLOGY_CHUNK_SIZE, connection.cursor(),
-                                   MAX_LITHOLOGY_SQL)
+        sw_long = request.query_params.get('sw_long')
+        sw_lat = request.query_params.get('sw_lat')
+        ne_long = request.query_params.get('ne_long')
+        ne_lat = request.query_params.get('ne_lat')
+        bounds = None
+        bounds_sql = ''
+
+        if sw_long and sw_lat and ne_long and ne_lat:
+            bounds_sql = 'and geom @ ST_MakeEnvelope(%s, %s, %s, %s, 4326)'
+            bounds = (sw_long, sw_lat, ne_long, ne_lat)
+
+        iterator = GeoJSONIterator(
+            LITHOLOGY_SQL.format(bounds=bounds_sql), LITHOLOGY_CHUNK_SIZE, connection.cursor(), bounds)
         response = StreamingHttpResponse((item for item in iterator),
                                          content_type='application/json')
         response['Content-Disposition'] = 'attachment; filename="lithology.json"'

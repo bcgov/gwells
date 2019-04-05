@@ -384,33 +384,51 @@ def dbBackup (String envProject, String envSuffix) {
     def dumpDir = "/var/lib/pgsql/data/deployment-backups"
     def dumpName = "${envSuffix}-\$( date +%Y-%m-%d-%H%M ).dump"
     def dumpOpts = "--no-privileges --no-tablespaces --schema=public --exclude-table=spatial_ref_sys"
-    return sh (
-        script: """
-            oc rsh -n ${envProject} dc/${dcName} bash -c ' \
-                set -e; \
-                mkdir -p ${dumpDir}; \
-                cd ${dumpDir}; \
-                pg_dump -U \${POSTGRESQL_USER} -d \${POSTGRESQL_DATABASE} -Fc -f ./${dumpName} ${dumpOpts}; \
-                ls -lh \
-            '
-        """
-    )
-}
+    def dumpTemp = "/tmp/unverified.dump"
+    int maxBackups = 10
 
+    // Dump to temporary file
+    sh "oc rsh -n ${envProject} dc/${dcName} bash -c ' \
+        pg_dump -U \${POSTGRESQL_USER} -d \${POSTGRESQL_DATABASE} -Fc -f ${dumpTemp} ${dumpOpts} \
+    '"
 
-// Database purge
-def dbKeepOnly (String envProject, String envSuffix, int maxBackups = 10) {
-    def dcName = envSuffix == "dev" ? "${appName}-pgsql-${envSuffix}-${prNumber}" : "${appName}-pgsql-${envSuffix}"
-    def dumpDir = "/var/lib/pgsql/data/deployment-backups"
-    return sh (
-        script: """
-            oc rsh -n ${envProject} dc/${dcName} bash -c " \
-                find ${dumpDir} -name *.dump -printf '%Ts\t%p\n' \
-                    | sort -nr | cut -f2 | tail -n +${maxBackups} | xargs rm 2>/dev/null\
-                    || echo 'No extra backups to remove'
-            "
-        """
+    // Verify dump size is at least 1M
+    int sizeAtLeast1M = sh (
+        script: "oc rsh -n ${envProject} dc/${dcName} bash -c ' \
+            du --threshold=1M ${dumpTemp} | wc -l \
+        '",
+        returnStdout: true
     )
+    assert sizeAtLeast1M == 1
+
+    // Restore (schema only, w/ extensions) to temporary db
+    sh """
+        oc rsh -n ${envProject} dc/${dcName} bash -c ' \
+            set -e; \
+            psql -c "DROP DATABASE IF EXISTS db_verify"; \
+            createdb db_verify; \
+            psql -d db_verify -c "CREATE EXTENSION IF NOT EXISTS oracle_fdw;"; \
+            psql -d db_verify -c "CREATE EXTENSION IF NOT EXISTS postgis;"; \
+            psql -d db_verify -c "CREATE EXTENSION IF NOT EXISTS pgcrypto;"; \
+            psql -d db_verify -c "COMMIT;"; \
+            pg_restore -d db_verify --schema-only --create ${dumpTemp}; \
+            psql -c "DROP DATABASE IF EXISTS db_verify"
+        '
+    """
+
+    // Store verified dump
+    sh "oc rsh -n ${envProject} dc/${dcName} bash -c ' \
+        mkdir -p ${dumpDir}; \
+        mv ${dumpTemp} ${dumpDir}/${dumpName}; \
+        ls -lh ${dumpDir} \
+    '"
+
+    // Database purge
+    sh "oc rsh -n ${envProject} dc/${dcName} bash -c \" \
+            find ${dumpDir} -name *.dump -printf '%Ts\t%p\n' \
+                | sort -nr | cut -f2 | tail -n +${maxBackups} | xargs rm 2>/dev/null \
+                || echo 'No extra backups to remove' \
+    \""
 }
 
 
@@ -798,7 +816,7 @@ pipeline {
                             "TAG=${stagingSuffix}",
                             "NAME=export",
                             "COMMAND=export",
-                            "SCHEDULE='0 12 * * *'"
+                            "SCHEDULE='30 11 * * *'"
                         )
                         openshift.apply(exportWellCronTemplate).label(
                             [
@@ -1017,7 +1035,7 @@ pipeline {
                             "TAG=${demoSuffix}",
                             "NAME=export",
                             "COMMAND=export",
-                            "SCHEDULE='0 12 * * *'"
+                            "SCHEDULE='30 11 * * *'"
                         )
                         openshift.apply(exportWellCronTemplate).label(
                             [
@@ -1088,6 +1106,18 @@ pipeline {
             steps {
                 script {
                     def result = functionalTest ('DEMO - Smoke Tests', demoHost, demoSuffix, 'SearchSpecs')
+                }
+            }
+        }
+
+
+        stage('PROD - Backup') {
+            when {
+                expression { env.CHANGE_TARGET == 'master' }
+            }
+            steps {
+                script {
+                    dbBackup (prodProject, prodSuffix)
                 }
             }
         }
@@ -1213,7 +1243,7 @@ pipeline {
                             "TAG=${prodSuffix}",
                             "NAME=export",
                             "COMMAND=export",
-                            "SCHEDULE='0 12 * * *'"
+                            "SCHEDULE='30 11 * * *'"
                         )
                         openshift.apply(exportWellCronTemplate).label(
                             [
@@ -1272,22 +1302,6 @@ pipeline {
             steps {
                 script {
                     def result = functionalTest ('PROD - Smoke Tests', prodHost, prodSuffix, 'SearchSpecs')
-                }
-            }
-        }
-
-
-        stage('PROD - Post-Deploy Cleanup') {
-            when {
-                expression { env.CHANGE_TARGET == 'master' }
-            }
-            steps {
-                script {
-                    // Backup
-                    dbBackup (prodProject, prodSuffix)
-
-                    // Clean backupsq
-                    dbKeepOnly (prodProject, prodSuffix, 10)
                 }
             }
         }

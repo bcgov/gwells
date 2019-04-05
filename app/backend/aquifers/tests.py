@@ -69,3 +69,13 @@ class TestAquifersSpatial(APITestCase):
         url = reverse('aquifer-geojson')
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_302_FOUND)
+
+    def test_geodjango_bounds(self):
+        # Currently we're re-directing to a static file.
+        url = reverse('aquifer-geojson')
+        response = self.client.get(
+            url,
+            {
+                'realtime': 'true', 'sw_lat': 49, 'sw_long': -125, 'ne_lat': 49, 'ne_long': -124
+            })
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
