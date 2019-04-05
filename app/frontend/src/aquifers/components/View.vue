@@ -157,6 +157,7 @@
               <dd v-else>No information available.</dd>
             </li>
           </ul>
+          <PieChart :chartData="licence_details" class="mt-5"></PieChart>
         </b-col>
         <b-col cols="4">
           <h5 class="mt-3 border-bottom pb-4 main-title">Knowledge Indicators</h5>
@@ -281,13 +282,16 @@ import SingleAquiferMap from './SingleAquiferMap.vue'
 import ChangeHistory from '@/common/components/ChangeHistory.vue'
 import { mapActions, mapGetters, mapState } from 'vuex'
 import { sumBy } from 'lodash'
+import PieChart from './PieChart.vue'
 export default {
+
   components: {
     'api-error': APIErrorMessage,
     'aquifer-form': AquiferForm,
     'aquifer-documents': Documents,
     'single-aquifer-map': SingleAquiferMap,
-    ChangeHistory
+    ChangeHistory,
+    PieChart
   },
   props: {
     'edit': Boolean
