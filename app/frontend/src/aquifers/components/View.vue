@@ -13,7 +13,7 @@
 */
 
 <template>
-  <b-card class="container container-wide p-0 card-container pb-3" :class="{ 'p-4': editMode }">
+  <b-card class="container container-wide p-0 card-container pb-5" :class="{ 'p-4': editMode }">
     <api-error v-if="error" :error="error"/>
     <b-alert show v-if="files_uploading">File Upload In Progress...</b-alert>
     <b-alert show v-if="!files_uploading && file_upload_error" variant="warning" >
@@ -157,7 +157,10 @@
               <dd v-else>No information available.</dd>
             </li>
           </ul>
-          <PieChart :chartData="licence_details" class="mt-5"></PieChart>
+          <h5 class="mt-5 pie-chart-title">License Use:</h5>
+          <div class="pie-chart-container">
+            <PieChart :chartData="licence_details" class="mt-5"></PieChart>
+          </div>
         </b-col>
         <b-col cols="4">
           <h5 class="mt-3 border-bottom pb-4 main-title">Knowledge Indicators</h5>
@@ -270,6 +273,15 @@ a {
   height: 100%;
   background-color: rgba(0,0,0,0.1);
   left: calc(50% - 0.5px);
+}
+
+.pie-chart-title {
+  font-weight: bold !important;
+  font-size: 1rem !important;
+}
+.pie-chart-container {
+  width: 60%;
+  margin: 0 auto;
 }
 </style>
 

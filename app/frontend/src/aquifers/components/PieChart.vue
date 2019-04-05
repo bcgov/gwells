@@ -57,7 +57,9 @@ export default {
                 },
                 tooltips: {
                     enabled: true
-                }
+                },
+                responsive: true, 
+                maintainAspectRatio: true
             })
         }
 
