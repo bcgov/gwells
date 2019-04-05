@@ -20,12 +20,6 @@ const searchControl = new GeoSearchControl({
 export default {
   name: 'AquiferMap',
   props: ['aquifers', 'searchAddress'],
-  created () {
-  data () {
-    return {
-      map: null
-    }
-  },
   mounted () {
     // There seems to be an issue loading leaflet immediately on mount, we use nextTick to ensure
     // that the view has been rendered at least once before injecting the map.
@@ -37,7 +31,8 @@ export default {
 
   data () {
     return {
-      activeLayers: []
+      activeLayers: [],
+      map: null
     }
   },
 
