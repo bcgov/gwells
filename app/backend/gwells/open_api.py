@@ -24,14 +24,53 @@ GEO_JSON_302_MESSAGE = ('All requests to this endpoint result by default in a re
                         'GeoJSON file (as documented in 200 OK Response) hosted on a seperate server.')
 
 
-GEO_JSON_PARAMS = openapi.Parameter(
-    'realtime',
-    openapi.IN_QUERY,
-    description=('If set to true, GWELLS will attempt to generate GeoJSON in realtime. By default GWELLS '
-                 'will redirect to a location with a pre-generated GeoJSON file.'),
-    type=openapi.TYPE_BOOLEAN,
-    required=False,
-    default=False)
+GEO_JSON_PARAMS = [
+    openapi.Parameter(
+        'realtime',
+        openapi.IN_QUERY,
+        title="Experimental!",
+        description=('If set to true, GWELLS will attempt to generate GeoJSON in realtime. By default GWELLS '
+                     'will redirect to a location with a pre-generated GeoJSON file.'),
+        type=openapi.TYPE_BOOLEAN,
+        required=False,
+        default=False),
+    openapi.Parameter(
+        'sw_long',
+        openapi.IN_QUERY,
+        title="Experimental!",
+        description='South West extent (longitude component) of bounding box to limit results to.',
+        type=openapi.TYPE_STRING,
+        required=False,
+        default=None
+    ),
+    openapi.Parameter(
+        'sw_lat',
+        openapi.IN_QUERY,
+        title="Experimental!",
+        description='South West extent (latitude component) of bounding box to limit results to.',
+        type=openapi.TYPE_STRING,
+        required=False,
+        default=None
+    ),
+    openapi.Parameter(
+        'ne_long',
+        openapi.IN_QUERY,
+        title="Experimental!",
+        description='North East extent (longitude component) of bounding box to limit results to.',
+        type=openapi.TYPE_STRING,
+        required=False,
+        default=None
+    ),
+    openapi.Parameter(
+        'ne_lat',
+        openapi.IN_QUERY,
+        title="Experimental!",
+        description='North East extent (latitude component) of bounding box to limit results to.',
+        type=openapi.TYPE_STRING,
+        required=False,
+        default=None
+    )
+]
 
 
 def get_field_type(field):

@@ -4,7 +4,7 @@
       <legend tabindex="-1" :id="`${id}Label`" class="col-form-label">{{ label }}</legend>
     </b-col>
     <b-col sm="3">
-      <b-form-row class="pt-2 d-flex justify-content-end">
+      <b-form-row class="pt-2 d-flex justify-content-sm-end">
         <b-form-checkbox
           :id="`${id}AnyValue`"
           :checked="booleanChecked"
@@ -22,7 +22,7 @@
       <b-form-row>
         <b-col>
           <b-form-row>
-            <label :id="`${id}StartLabel`" :label-for="`${id}StartInput`" class="col-sm-4 col-form-label text-right">From</label>
+            <label :id="`${id}StartLabel`" :label-for="`${id}StartInput`" class="col-sm-4 col-form-label text-sm-right">From</label>
             <b-col sm="8">
               <b-form-input
                 :id="`${id}StartInput`"
@@ -47,7 +47,7 @@
         </b-col>
         <b-col>
           <b-form-row>
-            <label :id="`${id}EndLabel`" :label-for="`${id}EndInput`" class="col-sm-4 col-form-label text-right">To</label>
+            <label :id="`${id}EndLabel`" :label-for="`${id}EndInput`" class="col-sm-4 col-form-label text-sm-right">To</label>
             <b-col sm="8">
               <b-form-input
                 :id="`${id}EndInput`"

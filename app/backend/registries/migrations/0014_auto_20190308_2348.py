@@ -1,8 +1,13 @@
 import datetime
+import logging
+
 from django.db import migrations, models
 from django.utils.timezone import utc
 from django.db.models import F
 import django.utils.timezone
+
+
+logger = logging.getLogger(__name__)
 
 
 def update_fields(apps, schema_editor):
@@ -14,25 +19,25 @@ def update_fields(apps, schema_editor):
                 model.objects.filter(create_date__isnull=True)\
                     .update(create_date=datetime.datetime(2018, 1, 1, 8, 0, 0, 0, tzinfo=utc))
             except AttributeError:
-                print("skipping")
+                logger.error("skipping")
         if hasattr(model, 'expired_date'):
             try:
                 model.objects.filter(expired_date__isnull=True)\
                     .update(expired_date=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc))
             except AttributeError:
-                print("skipping")
+                logger.error("skipping")
         if hasattr(model, 'effective_date'):
             try:
                 model.objects.filter(effective_date__isnull=True)\
                     .update(effective_date=F('create_date'))
             except AttributeError:
-                print("skipping")
+                logger.error("skipping")
         if hasattr(model, 'update_date'):
             try:
                 model.objects.filter(update_date__isnull=True)\
                     .update(update_date=F('create_date'))
             except AttributeError:
-                print("skipping")
+                logger.error("skipping")
 
 
 class Migration(migrations.Migration):

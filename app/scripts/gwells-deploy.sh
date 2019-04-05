@@ -52,8 +52,6 @@ EOF
 cd $APP_ROOT/src/database/scripts/wellsearch/
 psql -X --set ON_ERROR_STOP=on -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -f \
 	post-deploy.sql
-psql -X --set ON_ERROR_STOP=on -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -f \
-	wells_replication_stored_functions.sql
 
 
 # Python related portion of post-deploy

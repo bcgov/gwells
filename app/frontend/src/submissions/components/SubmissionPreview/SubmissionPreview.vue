@@ -185,6 +185,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             'moisture',
             'descriptor',
             'water_bearing_estimated_flow',
+            'observations'
           ]">
           <template slot="description" slot-scope="data">{{data.item.lithology_raw_data}}</template>
           <template slot="from" slot-scope="data">{{data.item.lithology_from}}</template>
@@ -193,6 +194,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <template slot="hardness" slot-scope="data">{{codeToDescription('lithology_hardness_codes', data.item.lithology_hardness) }}</template>
           <template slot="moisture" slot-scope="data">{{codeToDescription('lithology_moisture_codes', data.item.lithology_moisture) }}</template>
           <template slot="descriptor" slot-scope="data">{{codeToDescription('lithology_descriptors', data.item.lithology_description) }}</template>
+          <template slot="observations" slot-scope="data">{{ data.item.lithology_observation }}</template>
         </b-table>
       </div>
     </fieldset>
