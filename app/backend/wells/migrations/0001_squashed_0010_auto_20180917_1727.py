@@ -36,15 +36,12 @@ def unload_casing_codes_fixture(apps, schema_editor):
 
 class Migration(migrations.Migration):
 
-    replaces = [('wells', '0001_initial'), ('wells', '0002_auto_20180713_1641'), ('wells', '0003_auto_20180724_0007'), ('wells', '0004_auto_20180724_2026'), ('wells', '0005_auto_20180814_1718'), ('wells', '0006_load_casing_code'), ('wells', '0007_auto_20180816_0030'), ('wells', '0008_waterqualitycolour'), ('wells', '0009_auto_20180911_2330'), ('wells', '0010_auto_20180917_1727')]
-
     initial = True
 
     dependencies = [
         ('submissions', '0001_initial'),
-        ('gwells', '0005_auto_20180629_0024'),
-        ('gwells', '0006_auto_20180724_2026'),
-        ('registries', '0011_auto_20180619_2315'),
+        ('gwells', '0001_squashed_0009_auto_20181116_2316'),
+        ('registries', '0001_squashed_0012_auto_20180704_2105'),
     ]
 
     operations = [

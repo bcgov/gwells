@@ -457,10 +457,6 @@ class WellStatusCode(CodeTableModel):
                         ' of the Water Act. i.e. New, Abandoned (exists in Wells but will not be used for'
                         ' E-Wells), Alteration, Closure, Other.')
 
-    def save(self, *args, **kwargs):
-        self.validate()
-        super(WellStatusCode, self).save(*args, **kwargs)
-
 
 class WellPublicationStatusCode(CodeTableModel):
     """

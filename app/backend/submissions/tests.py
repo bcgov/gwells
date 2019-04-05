@@ -1,3 +1,5 @@
+import logging
+
 from django.urls import reverse
 from django.test import TestCase
 from django.contrib.auth.models import User, Group
@@ -8,6 +10,10 @@ from rest_framework import status
 from gwells.roles import roles_to_groups, WELLS_SUBMISSION_ROLE, WELLS_SUBMISSION_VIEWER_ROLE
 from submissions.serializers import (WellSubmissionListSerializer, WellConstructionSubmissionSerializer,
                                      WellAlterationSubmissionSerializer, WellDecommissionSubmissionSerializer)
+from wells.models import ActivitySubmission, Well, WellStatusCode
+
+
+logger = logging.getLogger(__name__)
 
 
 class TestPermissionsNotAuthenticated(APITestCase):
@@ -128,3 +134,63 @@ class TestPermissionsSubmissionRights(APITestCase):
         }
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+
+class TestAuditInformation(APITestCase):
+
+    def setUp(self):
+        roles = [WELLS_SUBMISSION_ROLE]
+        for role in roles:
+            group = Group(name=role)
+            group.save()
+
+        self.user, created = User.objects.get_or_create(username='testuser')
+        self.user.profile.username = self.user.username
+        self.user.save()
+        roles_to_groups(self.user, roles)
+        self.client.force_authenticate(self.user)
+
+        for index, code in enumerate(('NEW', 'ALTERATION', 'CLOSURE', 'OTHER')):
+            WellStatusCode.objects.create(well_status_code=code, display_order=index)
+
+    def test_create_user_populated_on_well(self):
+        # When a well is created as a result of a construction submission, the create_user on the
+        # well must match that of the submission.
+        url = reverse('CON')
+        data = {
+        }
+        response = self.client.post(url, data, format='json')
+        well = Well.objects.get(well_tag_number=response.data['well'])
+        self.assertEqual(well.create_user, self.user.username)
+
+    def test_update_user_populated_on_submission(self):
+        # Upon creation of a submission, the update user must be the same as the created_by user.        
+        url = reverse('CON')
+        data = {
+        }
+        response = self.client.post(url, data, format='json')
+        submission = ActivitySubmission.objects.get(filing_number=response.data['filing_number'])
+        self.assertEqual(submission.update_user, self.user.username)
+
+    def test_create_user_populated_on_legacy_submission(self):
+        # The original well was created by user A, and at some point update by user B.
+        # The activity submission, was then created by user C.
+        # The resultant legacy record, should persist the fact that A created it, and B updated it.
+        # The resultant well record, should reprensent the fact that A created it, and C updated it.
+        # Original well.
+        well = Well.objects.create(create_user='A', update_user='B')
+        # Alteration submission.
+        url = reverse('ALT')
+        data = {
+        }
+        response = self.client.post(url, data, format='json')
+
+        # Test the result.
+        well = Well.objects.get(well_tag_number=response.data['well'])
+        self.assertEqual(well.create_user, 'A')
+        self.assserEqual(well.update_user, sel.user.username)
+        submission = ActivitySubmission.objects.get(
+            well_tag_number=well.well_tag_number,
+            well_activity_type=WellActivityCode.types.legacy())
+        self.assertEqual(submission.create_user, 'A')
+        self.assertEqual(submission.update_user, 'B')
