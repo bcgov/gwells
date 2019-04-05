@@ -29,6 +29,7 @@ from gwells.db_comments.patch_fields import patch_fields
 
 patch_fields()
 
+
 class WaterRightsPurpose(AuditModel):
     """
     Material choices for describing Aquifer Material
@@ -88,7 +89,7 @@ class WaterRightsLicence(AuditModel):
         return '{} - {}'.format(self.well, self.licence_number)
 
 
-class AquiferMaterial(AuditModel):
+class AquiferMaterial(CodeTableModel):
     """
     Material choices for describing Aquifer Material
     """

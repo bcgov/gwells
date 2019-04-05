@@ -15,6 +15,8 @@ from datetime import datetime
 import logging
 import os
 import csv
+import openpyxl
+from openpyxl.writer.excel import save_virtual_workbook
 
 from django_filters import rest_framework as djfilters
 from django.http import Http404, HttpResponse, JsonResponse, HttpResponseRedirect, StreamingHttpResponse
@@ -445,41 +447,55 @@ def aquifer_geojson(request):
         return HttpResponseRedirect(url)
 
 
+_export_fields = [
+    'aquifer_id',
+    'aquifer_name',
+    'area',
+    'demand',
+    'known_water_use',
+    'litho_stratographic_unit',
+    'mapping_year',
+    'material',
+    'notes',
+    'productivity',
+    'quality_concern',
+    'subtype',
+    'vulnerability',
+]
+
+
 def csv_export(request):
     """
     Export aquifers as CSV. This is done in a vanilla functional Django view instead of DRF,
     because DRF doesn't have native CSV support.
     """
 
-    _fields = [
-        'aquifer_id',
-        'aquifer_name',
-        'area',
-        'demand',
-        'known_water_use',
-        'litho_stratographic_unit',
-        'mapping_year',
-        'material',
-        'notes',
-        'productivity',
-        'quality_concern',
-        'subtype',
-        'vulnerability',
-    ]
-
     # Create the HttpResponse object with the appropriate CSV header.
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="aquifers.csv"'
     writer = csv.writer(response)
-    writer.writerow(_fields)
+    writer.writerow(_export_fields)
 
     queryset = _aquifer_qs(request.GET)
     for aquifer in queryset:
-        writer.writerow([getattr(aquifer, f) for f in _fields])
+        writer.writerow([getattr(aquifer, f) for f in _export_fields])
 
     return response
 
 
-def shp_export(request):
+def xlsx_export(request):
+    """
+    Export aquifers as XLSX.
+    """
 
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.append(_export_fields)
+
+    for aquifer in queryset:
+        ws.append([getattr(aquifer, f) for f in _export_fields])
+
+    response = HttpResponse(content=save_virtual_workbook(
+        wb), mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=aquifers.xlsx'
     return response
