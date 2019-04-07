@@ -120,6 +120,7 @@
             no-local-sorting
             striped
             outlined
+            @row-clicked="rowClicked"
             v-if="aquiferList">
             <template slot="aquifer_id" slot-scope="data">
               <p class="aquifer-id" v-on:click.prevent="onAquiferIdClick(data)">{{data.value}}</p>
@@ -280,7 +281,8 @@ export default {
       surveys: [],
       noSearchCriteriaError: false,
       aquifer_resource_sections: [],
-      sections: query.resources__section__code ? query.resources__section__code.split(',') : []
+      sections: query.resources__section__code ? query.resources__section__code.split(',') : [],
+      selectMode: 'single'
     }
   },
   computed: {
@@ -390,7 +392,13 @@ export default {
       }
     },
     onAquiferIdClick (data) {
-      this.$refs.aquiferMap.zoomToSelectedAquifer(data.item)
+      this.$router.push({
+        name: 'aquifers-view',
+        params: { id: data.item.aquifer_id }
+      })
+    },
+    rowClicked(data) {
+      this.$refs.aquiferMap.zoomToSelectedAquifer(data)
     }
   },
   created () {
