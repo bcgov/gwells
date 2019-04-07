@@ -193,6 +193,30 @@ export default {
       })
     },
     addAquifersToMap (aquifers) {
+      const self = this
+      function popUpLinkHandler(e) {
+        self.$router.push({
+          name: 'aquifers-view',
+          params: {
+            id: this.aquifer_id
+          }
+        })
+      }
+
+      function getPopUp(aquifer) {
+        const container = L.DomUtil.create('div', 'leaflet-popup-aquifer')
+        /*
+        const content = `
+          
+          <p>Aquifer Name: ${aquifer.aquifer_name}</p>
+          <p>Subtype: ${aquifer.subtype}</p>`
+        */
+        const popUpLink = L.DomUtil.create('div', 'leaflet-popup-link')
+        popUpLink.innerHTML = `<p>Aquifer: ${aquifer.aquifer_id}</p>`
+        L.DomEvent.on(popUpLink, 'click', popUpLinkHandler.bind(aquifer))
+        container.appendChild(popUpLink)
+        return container
+      }
       if (aquifers !== undefined && aquifers.constructor === Array && aquifers.length > 0) {
         var myStyle = {
           'color': 'purple'
@@ -204,10 +228,7 @@ export default {
             style: myStyle,
             type: 'geojsonfeature',
             onEachFeature: function (feature, layer) {
-              layer.bindPopup(`
-                <p>Aquifer: <a href="/gwells/aquifers/${aquifer.aquifer_id}">${aquifer.aquifer_id}</a></p>
-                <p>Aquifer Name: ${aquifer.aquifer_name}</p>
-                <p>Subtype: ${aquifer.subtype}</p>`)
+              layer.bindPopup(getPopUp(aquifer))
             }
           }).addTo(this.map)
         })
