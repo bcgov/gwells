@@ -51,14 +51,15 @@ export default {
   },
   watch: {
     geom: function (newGeom, oldGeom) {
-      var aquiferGeom = L.geoJSON(newGeom, {
-        style: {
-          'color': 'red'
-        }
-      }).addTo(this.map)
-
-      // Set map view to aquifer
-      this.map.fitBounds(aquiferGeom.getBounds())
+      if ( oldGeom || newGeom ) {
+        var aquiferGeom = L.geoJSON(newGeom, {
+          style: {
+            'color': 'red'
+          }
+        }).addTo(this.map)
+        // Set map view to aquifer
+        this.map.fitBounds(aquiferGeom.getBounds())
+      }
     }
   }
 }

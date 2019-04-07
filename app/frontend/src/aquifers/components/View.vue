@@ -158,9 +158,10 @@
             </li>
           </ul>
           <h5 class="mt-5 pie-chart-title">License Use:</h5>
-          <div class="pie-chart-container">
+          <div v-if="usage.length > 0"class="pie-chart-container">
             <PieChart :chartData="usage" class="mt-5"></PieChart>
           </div>
+          <div v-else>No information available.</div>
         </b-col>
         <b-col cols="4">
           <h5 class="mt-3 border-bottom pb-4 main-title">Knowledge Indicators</h5>
