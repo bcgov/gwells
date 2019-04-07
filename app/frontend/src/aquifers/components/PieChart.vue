@@ -34,7 +34,7 @@ export default {
   methods: {
     renderPieChart (newChartData) {
       if (Object.keys(newChartData).length) {
-        const groupedLabels = groupBy(newChartData.usage, (o) => o.purpose__description)
+        const groupedLabels = groupBy(newChartData, (o) => o.purpose__description)
         const groupedSum = map(groupedLabels, (val, key) => {
           let sum = {}
           sum[key] = sumBy(val, o => o.total_qty)

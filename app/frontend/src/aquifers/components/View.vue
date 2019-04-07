@@ -159,7 +159,7 @@
           </ul>
           <h5 class="mt-5 pie-chart-title">License Use:</h5>
           <div class="pie-chart-container">
-            <PieChart :chartData="licence_details" class="mt-5"></PieChart>
+            <PieChart :chartData="usage" class="mt-5"></PieChart>
           </div>
         </b-col>
         <b-col cols="4">
@@ -325,7 +325,8 @@ export default {
       wells: [],
       obs_wells: [],
       waterLevels: [],
-      waterWithdrawlVolume: ''
+      waterWithdrawlVolume: '',
+      usage: []
     }
   },
   computed: {
@@ -438,6 +439,7 @@ export default {
         .then((response) => {
           this.record = response.data
           this.licence_details = response.data.licence_details
+          this.usage = response.data.licence_details.usage
           this.obs_wells = response.data.licence_details.obs_wells
         }).catch((error) => {
           console.error(error)

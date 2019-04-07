@@ -35,7 +35,8 @@ export default {
     },
     initMap () {
       // Create map, with default centered and zoomed to show entire BC.
-      this.map = L.map(this.$el)
+      
+      this.map = L.map(this.$el).setView([54.5, -126.5], 5)
       L.control.scale().addTo(this.map)
 
       // Add map layers.
