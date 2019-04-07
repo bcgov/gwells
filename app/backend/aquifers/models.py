@@ -15,16 +15,20 @@ import reversion
 import zipfile
 import tempfile
 import os
+import copy
 
 from django.utils import timezone
+from django.contrib.contenttypes.fields import GenericRelation
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.gis.db import models
 from django.contrib.gis.gdal import DataSource
 from django.contrib.gis.geos import GEOSGeometry
+from django.contrib.gis.geos.prototypes.io import wkt_w
+from django.contrib.gis import geos
+
+from reversion.models import Version
 
 from gwells.models import AuditModel, CodeTableModel
-from django.contrib.contenttypes.fields import GenericRelation
-from django.core.validators import MinValueValidator, MaxValueValidator
-from reversion.models import Version
 from gwells.db_comments.patch_fields import patch_fields
 
 patch_fields()
@@ -419,7 +423,10 @@ class Aquifer(AuditModel):
     history = GenericRelation(Version)
 
     def load_shapefile(self, f):
-
+        """
+        Given a shapefile with a single feature, update spatial fields of the aquifer.
+        You must still call aquifer.save() afterwards.
+        """
         zip_ref = zipfile.ZipFile(f)
 
         output_dir = tempfile.mkdtemp()
@@ -433,18 +440,44 @@ class Aquifer(AuditModel):
         zip_ref.close()
 
         ds = DataSource(the_shapefile)
-        for layer in ds:
-            for feat in layer:
-                geom = feat.geom
-                # Make a GEOSGeometry object using the string representation.
-                wkt = geom.wkt
-                if not geom.srid == 3005:
-                    raise Exception("Only BC Albers data is accepted.")
-                geos_geom = GEOSGeometry(wkt, srid=3005)
+        self.update_geom_from_feature(ds[0][0])
 
-                self.geom = geos_geom
-                return geos_geom
-        raise Exception('no feature found.')
+    def update_geom_from_feature(self, feat):
+        """
+        Given a spatial feature with Geometry, update spatial fields of the aquifer.
+        You must still call aquifer.save() afterwards.
+        """
+
+        geom = feat.geom
+
+        # Make a GEOSGeometry object using the string representation.
+        if not geom.srid == 3005:
+            logging.info("Non BC-albers feature, skipping.")
+            return
+        # Eliminate any 3d geometry so it fits in PostGIS' 2d geometry schema.
+        wkt = wkt_w(dim=2).write(GEOSGeometry(geom.wkt, srid=3005)).decode()
+        geos_geom = GEOSGeometry(wkt, srid=3005)
+        # Convert MultiPolygons to plain Polygons,
+        # We assume the largest one is the one we want to keep, and the rest are artifacts/junk.
+        if isinstance(geos_geom, geos.MultiPolygon):
+            geos_geom_out = geos_geom[0]
+            for g in geos_geom:
+                if len(g.wkt) > len(geos_geom_out.wkt):
+                    geos_geom_out = g
+        elif isinstance(geos_geom, geos.Polygon):
+            geos_geom_out = geos_geom
+        else:
+            logging.info("Bad geometry type: {}, skipping.".format(
+                geos_geom.__class__))
+            return
+
+        geos_geom_simplified = copy.deepcopy(geos_geom_out)
+        geos_geom_simplified.transform(4326)
+        geos_geom_simplified = geos_geom_simplified.simplify(
+            .001, preserve_topology=True)
+
+        self.geom = geos_geom_out
+        self.geom_simplified = geos_geom_simplified
 
     class Meta:
         db_table = 'aquifer'

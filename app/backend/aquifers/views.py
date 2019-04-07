@@ -95,11 +95,18 @@ def _aquifer_qs(query):
     qs = Aquifer.objects.all()
     resources__section__code = query.get(
         "resources__section__code")
+    hydraulic = query.get('hydraulically_connected')
     search = query.get('search')
+
+    if hydraulic:
+        qs = qs.filter(subtype__code__in=[
+                       '1a', '1b', '1c', '2', '3', '4a', '5'])
+
     # truthy check - ignore missing and emptystring.
     if resources__section__code:
         qs = qs.filter(
             resources__section__code__in=resources__section__code.split(','))
+
     if search:  # truthy check - ignore missing and emptystring.
         disjunction = Q(aquifer_name__icontains=search)
         # if a number is searched, assume it could be an Aquifer ID.

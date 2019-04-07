@@ -61,10 +61,6 @@ class AquiferSerializer(serializers.ModelSerializer):
         source='subtype', read_only=True)
     vulnerability_description = serializers.SlugRelatedField(
         source='vulnerability', read_only=True, slug_field='description')
-    # quality_concern_description = serializers.SlugRelatedField(
-    #     source='quality_concern', read_only=True, slug_field='description')
-    # known_water_use_description = serializers.SlugRelatedField(
-    #     source='known_water_use', read_only=True, slug_field='description')
 
     def to_representation(self, instance):
         """Convert `username` to lowercase."""
@@ -81,18 +77,13 @@ class AquiferSerializer(serializers.ModelSerializer):
             'area',
             'demand_description',
             'demand',
-            # 'known_water_use_description',
-            # 'known_water_use',
             'litho_stratographic_unit',
             'location_description',
             'mapping_year',
             'material_description',
             'material',
-            # 'notes',
             'productivity_description',
             'productivity',
-            # 'quality_concern_description',
-            # 'quality_concern',
             'subtype_description',
             'subtype',
             'vulnerability_description',
@@ -199,17 +190,17 @@ class AquiferDetailSerializer(AquiferSerializer):
             artesian_flow__isnull=False).count()
 
         # Wells associated to an aquifer
-        details['num_wells'] = instance.well_set.all().aggregate(
+        details['wells_updated'] = instance.well_set.all().aggregate(
             Max('update_date')
         )
-        details['wells_updated'] = instance.well_set.all().count()
+        details['num_wells'] = instance.well_set.all().count()
         details['obs_wells'] = instance.well_set.filter(
             observation_well_number__isnull=False
         ).values('well_tag_number', 'observation_well_number')
 
         details['wells_by_licence'] = {}
         for licence in licences:
-            details['wells_by_licence'][licence.well.well_tag_number] = licence.wells.all(
+            details['wells_by_licence'][licence.licence_number] = licence.wells.all(
             ).values("well_tag_number")
 
         details = ret['licence_details'] = details

@@ -49,6 +49,7 @@ class Command(BaseCommand):
                 if not row['SOURCE_NM'].isdigit():
                     # Licence must be for an aquifer
                     continue
+
                 if not row['WLL_TG_NMR'].isdigit():
                     # Licence must be for a well
                     continue
@@ -76,7 +77,7 @@ class Command(BaseCommand):
                     purpose = WaterRightsPurpose.objects.get(
                         code=row['PRPS_S_CD'])
                 except WaterRightsPurpose.DoesNotExist:
-                    purpose = WaterRightsLicence.objects.create(
+                    purpose = WaterRightsPurpose.objects.create(
                         code=row['PRPS_S_CD'],
                         description=row['PRPS_SE'])
 
@@ -90,6 +91,7 @@ class Command(BaseCommand):
                     )
                 licence.purpose = purpose
                 licence.quantity = row['QUANTITY']
+                licence.save()
+
                 well.licence = licence
                 well.save()
-                licence.save()
