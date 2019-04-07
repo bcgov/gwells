@@ -98,7 +98,6 @@ class AquiferSerializer(serializers.ModelSerializer):
             'subtype',
             'vulnerability_description',
             'vulnerability',
-            # 'shapefile',
             'geom',
         )
 
@@ -169,34 +168,50 @@ class AquiferDetailSerializer(AquiferSerializer):
         return instance
 
     def to_representation(self, instance):
-        """Convert `username` to lowercase."""
+        """
+        Fetch many details related to a aquifer, used to generate its' summary page.
+        """
         ret = super().to_representation(instance)
         if instance.geom:
             instance.geom.transform(4326)
             ret['geom'] = json.loads(instance.geom.json)
         ret['licence_details'] = {}
-        ret['licence_details']['licence_count'] = models.WaterRightsLicence.objects.filter(
+
+        licences = models.WaterRightsLicence.objects.filter(
             well__aquifer=instance
-        ).count()
-        ret['licence_details']['usage'] = models.WaterRightsLicence.objects.values(
+        )
+
+        ret['licence_details']['licence_count'] = licences.count()
+        ret['licence_details']['usage'] = licences.values(
             'purpose__description').annotate(
                 total_qty=Sum('quantity')
         )
-        ret['licence_details']['last_updated'] = models.WaterRightsLicence.objects.all().aggregate(
-            Max('updated_date')
+        ret['licence_details']['last_updated'] = licences.aggregate(
+            Max('update_date')
         )
+
         # Water quality info
         ret['licence_details']['num_wells_with_ems'] = instance.well_set.filter(
             ems__isnull=False).count()
+
         # Artesian conditions
         ret['licence_details']['num_artesian_wells'] = instance.well_set.filter(
             artesian_pressure__isnull=False,
             artesian_flow__isnull=False).count()
+
         # Wells associated to an aquifer
-        ret['licence_details']['num_wells'] = instance.well_set.all().count()
+        ret['licence_details']['num_wells'] = instance.well_set.all().aggregate(
+            Max('update_date')
+        )
+        ret['licence_details']['wells_updated'] = instance.well_set.all().count()
         ret['licence_details']['obs_wells'] = instance.well_set.filter(
             observation_well_number__isnull=False
         ).values('well_tag_number', 'observation_well_number')
+
+        ret['wells_by_licence'] = {}
+        for licence in licences:
+            ret['wells_by_licence'][licence.well.well_tag_number]
+
         return ret
 
     class Meta:

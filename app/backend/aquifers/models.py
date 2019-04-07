@@ -58,7 +58,7 @@ class WaterRightsLicence(AuditModel):
     """
 
     aquifer_licence_id = models.AutoField(
-        primary_key=True, verbose_name="Aquifer ID Number")
+        primary_key=True, verbose_name="Aquifer Licence ID Number")
 
     purpose = models.ForeignKey(
         WaterRightsPurpose,
@@ -80,7 +80,6 @@ class WaterRightsLicence(AuditModel):
     )
 
     effective_date = models.DateTimeField(default=timezone.now, null=False)
-    updated_date = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name_plural = 'Aquifer Licences'

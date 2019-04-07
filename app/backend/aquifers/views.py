@@ -480,6 +480,15 @@ def csv_export(request):
     return response
 
 
-def shp_export(request):
+def xlsx_export(request):
 
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.append(_export_fields)
+    queryset = _aquifer_qs(request.GET)
+    for aquifer in queryset:
+        ws.append([str(getattr(aquifer, f)) for f in _export_fields])
+    response = HttpResponse(content=save_virtual_workbook(
+        wb), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=aquifers.xlsx'
     return response
