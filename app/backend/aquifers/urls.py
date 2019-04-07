@@ -30,6 +30,11 @@ urlpatterns = [
         name='aquifers-list-csv'
         ),
 
+    url(r'^api/v1/aquifers/xlsx$',
+        never_cache(views.xlsx_export),
+        name='aquifers-list-xlsx'
+        ),
+
     url(r'^api/v1/aquifers/names$',
         never_cache(views.AquiferNameList.as_view()),
         name='aquifer-name-list'

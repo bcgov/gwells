@@ -73,7 +73,7 @@
                 </b-form-row>
                 <h6 class="mt-3">Download all aquifers</h6>
                 <ul class="aquifer-download-list">
-                  <li>- <a href="#">Aquifer extract (XLSX)</a></li>
+                  <li>- <a href="#" @click.prevent="downloadXLSX()">Aquifer extract (XLSX)</a></li>
                   <li>- <a href="#" @click.prevent="downloadCSV()">Aquifer extract (CSV)</a></li>
                 </ul>
               </b-col>
@@ -314,15 +314,12 @@ export default {
         })
     },
     downloadCSV () {
-      ApiService.query('aquifers/csv', this.query)
-        .then((response) => {
-          const url = window.URL.createObjectURL(new Blob([response.data], {type: 'text/csv'}))
-          const link = document.createElement('a')
-          link.href = url
-          link.setAttribute('download', 'aquifers.csv')
-          document.body.appendChild(link)
-          link.click()
-        })
+      window.open(ApiService.baseURL + "aquifers/csv?" + querystring.stringify(this.query))
+
+    },
+    downloadXLSX () {
+      window.open(ApiService.baseURL + "aquifers/xlsx?" + querystring.stringify(this.query))
+
     },
     fetchResourceSections () {
       ApiService.query('aquifers/sections').then((response) => {

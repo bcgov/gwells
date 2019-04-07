@@ -1,3 +1,4 @@
+from django.views.static import serve
 """
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -15,6 +16,8 @@ from datetime import datetime
 import logging
 import os
 import csv
+import openpyxl
+from openpyxl.writer.excel import save_virtual_workbook
 
 from django_filters import rest_framework as djfilters
 from django.http import Http404, HttpResponse, JsonResponse, HttpResponseRedirect, StreamingHttpResponse
@@ -73,7 +76,6 @@ class AquiferRetrieveUpdateAPIView(RevisionMixin, AuditUpdateMixin, RetrieveUpda
     get: return details of aquifers
     patch: update aquifer
     """
-    print("it went here")
     permission_classes = (HasAquiferEditRoleOrReadOnly,)
     queryset = Aquifer.objects.all()
     lookup_field = 'aquifer_id'
@@ -369,7 +371,7 @@ class SaveAquiferGeometry(APIView):
         aquifer = Aquifer.objects.get(pk=aquifer_id)
         aquifer.load_shapefile(f)
         aquifer.save()
-        #aquifer.shapefile.save(f.name, f, save=True)
+        # aquifer.shapefile.save(f.name, f, save=True)
         return Response(status=status.HTTP_200_OK)
 
     def delete(self, request, aquifer_id):
@@ -445,42 +447,46 @@ def aquifer_geojson(request):
         return HttpResponseRedirect(url)
 
 
+_export_fields = [
+    'aquifer_id',
+    'aquifer_name',
+    'area',
+    'demand',
+    'known_water_use',
+    'litho_stratographic_unit',
+    'mapping_year',
+    'material',
+    'notes',
+    'productivity',
+    'quality_concern',
+    'subtype',
+    'vulnerability',
+]
+
+
 def csv_export(request):
     """
     Export aquifers as CSV. This is done in a vanilla functional Django view instead of DRF,
     because DRF doesn't have native CSV support.
     """
 
-    _fields = [
-        'aquifer_id',
-        'aquifer_name',
-        'area',
-        'demand',
-        'known_water_use',
-        'litho_stratographic_unit',
-        'mapping_year',
-        'material',
-        'notes',
-        'productivity',
-        'quality_concern',
-        'subtype',
-        'vulnerability',
-    ]
-
     # Create the HttpResponse object with the appropriate CSV header.
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="aquifers.csv"'
     writer = csv.writer(response)
-    writer.writerow(_fields)
+    writer.writerow(_export_fields)
 
     queryset = _aquifer_qs(request.GET)
     for aquifer in queryset:
-        writer.writerow([getattr(aquifer, f) for f in _fields])
+        writer.writerow([getattr(aquifer, f) for f in _export_fields])
 
     return response
 
 
 def xlsx_export(request):
+    """
+    Export aquifers as XLSX.
+    """
 
     wb = openpyxl.Workbook()
     ws = wb.active
