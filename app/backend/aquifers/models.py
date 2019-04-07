@@ -73,19 +73,13 @@ class WaterRightsLicence(AuditModel):
     quantity = models.DecimalField(
         max_digits=12, decimal_places=3, blank=True, null=True, verbose_name='Quanitity')
 
-    well = models.ForeignKey(
-        'wells.Well',
-        related_name='licences',
-        on_delete=models.CASCADE
-    )
-
     effective_date = models.DateTimeField(default=timezone.now, null=False)
 
     class Meta:
         verbose_name_plural = 'Aquifer Licences'
 
     def __str__(self):
-        return '{} - {}'.format(self.well, self.licence_number)
+        return '{}'.format(self.licence_number)
 
 
 class AquiferMaterial(CodeTableModel):
@@ -419,6 +413,8 @@ class Aquifer(AuditModel):
                     'knowledge about the aquifer, and decisions for changes.'))
 
     geom = models.PolygonField(srid=3005, null=True)
+    # This version is pre-rendered in WGS 84 for display on web-maps.
+    geom_simplified = models.PolygonField(srid=4326, null=True)
 
     history = GenericRelation(Version)
 

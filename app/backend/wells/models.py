@@ -633,7 +633,9 @@ class Well(AuditModel):
     licenced_status = models.ForeignKey(LicencedStatusCode, db_column='licenced_status_code',
                                         on_delete=models.CASCADE, blank=True, null=True,
                                         verbose_name='Licenced Status')
-
+    licence = models.ForeignKey('aquifers.WaterRightsLicence',
+        on_delete=models.CASCADE, null=True, blank=True,
+        related_name='wells')
     street_address = models.CharField(
         max_length=100, blank=True, null=True, verbose_name='Street Address',
         db_comment='Street address for where the property that the well is physically located on.')

@@ -34,7 +34,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         with open(options['filename'], newline='') as csvfile:
             reader = csv.DictReader(csvfile)
-            
+
             # used in DEBUG mode only.
             counter = 0
             num_wells = Well.objects.count()
@@ -46,27 +46,39 @@ class Command(BaseCommand):
                     # rows with POD. POD refers to surface water which is out of scope for GWELLS)
                     continue
 
+                if not row['SOURCE_NM'].isdigit():
+                    # Licence must be for an aquifer
+                    continue
+                if not row['WLL_TG_NMR'].isdigit():
+                    # Licence must be for a well
+                    continue
+
                 logging.info("importing: {}".format(row))
 
                 # In dev envs, desecrate the data so it fits our fake fixtures.
                 if settings.DEBUG:
                     counter += 1
+                    if counter > 10:
+                        continue
                     well = Well.objects.all()[counter % num_wells:][0]
+
                     # we need our wells to actually have an aquifir for nontrivial testing.
                     if not well.aquifer:
                         well.aquifer = Aquifer.objects.first()
                         well.save()
                 else:
                     # Check the Licence is for a valid Aquifer
-                    if not row['SOURCE_NM'].isdigit():
-                        continue
                     Aquifer.objects.get(pk=row['SOURCE_NM'])
                     well = Well.objects.get(pk=row['WLL_TG_NMR'])
 
-                # Maintaina code table with water rights purpose.
-                purpose, is_new = WaterRightsPurpose.objects.get_or_create(
-                    code=row['PRPS_S_CD'],
-                    description=row['PRPS_SE'])
+                try:
+                    # Maintaina code table with water rights purpose.
+                    purpose = WaterRightsPurpose.objects.get(
+                        code=row['PRPS_S_CD'])
+                except WaterRightsPurpose.DoesNotExist:
+                    purpose = WaterRightsLicence.objects.create(
+                        code=row['PRPS_S_CD'],
+                        description=row['PRPS_SE'])
 
                 try:
                     # Update existing licences with changes.
@@ -78,6 +90,6 @@ class Command(BaseCommand):
                     )
                 licence.purpose = purpose
                 licence.quantity = row['QUANTITY']
-                licence.well = well
-                print(licence.well)
+                well.licence = licence
+                well.save()
                 licence.save()

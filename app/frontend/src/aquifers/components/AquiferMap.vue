@@ -207,7 +207,7 @@ export default {
         const container = L.DomUtil.create('div', 'leaflet-popup-aquifer')
         /*
         const content = `
-          
+
           <p>Aquifer Name: ${aquifer.aquifer_name}</p>
           <p>Subtype: ${aquifer.subtype}</p>`
         */
@@ -221,9 +221,9 @@ export default {
         var myStyle = {
           'color': 'purple'
         }
-        aquifers = aquifers.filter((a) => a.geom !== null)
+        aquifers = aquifers.filter((a) => a.geom_simplified !== null)
         aquifers.forEach(aquifer => {
-          L.geoJSON(aquifer.geom, {
+          L.geoJSON(aquifer.geom_simplified, {
             aquifer_id: aquifer['aquifer_id'],
             style: myStyle,
             type: 'geojsonfeature',
@@ -235,6 +235,7 @@ export default {
       }
     },
     zoomToSelectedAquifer (data) {
+      console.log(data)
       this.map.eachLayer((layer) => {
         if ((layer.options.aquifer_id === data.aquifer_id) && layer.feature) {
           this.$nextTick(function () {
@@ -242,7 +243,7 @@ export default {
           })
         }
       })
-      var aquiferGeom = L.geoJSON(data.geom)
+      var aquiferGeom = L.geoJSON(data.geom_simplified)
       this.map.fitBounds(aquiferGeom.getBounds())
       this.$SmoothScroll(document.getElementById('map'))
     }

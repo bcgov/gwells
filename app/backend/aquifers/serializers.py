@@ -61,17 +61,16 @@ class AquiferSerializer(serializers.ModelSerializer):
         source='subtype', read_only=True)
     vulnerability_description = serializers.SlugRelatedField(
         source='vulnerability', read_only=True, slug_field='description')
-    quality_concern_description = serializers.SlugRelatedField(
-        source='quality_concern', read_only=True, slug_field='description')
-    known_water_use_description = serializers.SlugRelatedField(
-        source='known_water_use', read_only=True, slug_field='description')
+    # quality_concern_description = serializers.SlugRelatedField(
+    #     source='quality_concern', read_only=True, slug_field='description')
+    # known_water_use_description = serializers.SlugRelatedField(
+    #     source='known_water_use', read_only=True, slug_field='description')
 
     def to_representation(self, instance):
         """Convert `username` to lowercase."""
         ret = super().to_representation(instance)
-        if instance.geom:
-            instance.geom.transform(4326)
-            ret['geom'] = json.loads(instance.geom.json)
+        if instance.geom_simplified:
+            ret['geom_simplified'] = json.loads(instance.geom_simplified.json)
         return ret
 
     class Meta:
@@ -82,23 +81,22 @@ class AquiferSerializer(serializers.ModelSerializer):
             'area',
             'demand_description',
             'demand',
-            'known_water_use_description',
-            'known_water_use',
+            # 'known_water_use_description',
+            # 'known_water_use',
             'litho_stratographic_unit',
             'location_description',
             'mapping_year',
             'material_description',
             'material',
-            'notes',
+            # 'notes',
             'productivity_description',
             'productivity',
-            'quality_concern_description',
-            'quality_concern',
+            # 'quality_concern_description',
+            # 'quality_concern',
             'subtype_description',
             'subtype',
             'vulnerability_description',
             'vulnerability',
-            'geom',
         )
 
 
@@ -175,42 +173,46 @@ class AquiferDetailSerializer(AquiferSerializer):
         if instance.geom:
             instance.geom.transform(4326)
             ret['geom'] = json.loads(instance.geom.json)
-        ret['licence_details'] = {}
+
+        details = {}
 
         licences = models.WaterRightsLicence.objects.filter(
-            well__aquifer=instance
+            wells__aquifer=instance
         )
 
-        ret['licence_details']['licence_count'] = licences.count()
-        ret['licence_details']['usage'] = licences.values(
+        details['licence_count'] = licences.count()
+        details['usage'] = licences.values(
             'purpose__description').annotate(
                 total_qty=Sum('quantity')
         )
-        ret['licence_details']['last_updated'] = licences.aggregate(
+        details['last_updated'] = licences.aggregate(
             Max('update_date')
         )
 
         # Water quality info
-        ret['licence_details']['num_wells_with_ems'] = instance.well_set.filter(
+        details['num_wells_with_ems'] = instance.well_set.filter(
             ems__isnull=False).count()
 
         # Artesian conditions
-        ret['licence_details']['num_artesian_wells'] = instance.well_set.filter(
+        details['num_artesian_wells'] = instance.well_set.filter(
             artesian_pressure__isnull=False,
             artesian_flow__isnull=False).count()
 
         # Wells associated to an aquifer
-        ret['licence_details']['num_wells'] = instance.well_set.all().aggregate(
+        details['num_wells'] = instance.well_set.all().aggregate(
             Max('update_date')
         )
-        ret['licence_details']['wells_updated'] = instance.well_set.all().count()
-        ret['licence_details']['obs_wells'] = instance.well_set.filter(
+        details['wells_updated'] = instance.well_set.all().count()
+        details['obs_wells'] = instance.well_set.filter(
             observation_well_number__isnull=False
         ).values('well_tag_number', 'observation_well_number')
 
-        ret['wells_by_licence'] = {}
+        details['wells_by_licence'] = {}
         for licence in licences:
-            ret['wells_by_licence'][licence.well.well_tag_number]
+            details['wells_by_licence'][licence.well.well_tag_number] = licence.wells.all(
+            ).values("well_tag_number")
+
+        details = ret['licence_details'] = details
 
         return ret
 

@@ -163,6 +163,7 @@ sonar-runner/.classpath
 *.dmp
 *.dump
 .tmp/
+app/backend/tmp
 
 # Exceptions
 !app/*/fixtures/*.gz
