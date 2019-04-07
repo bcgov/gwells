@@ -30,7 +30,7 @@ urlpatterns = [
         name='aquifers-list-csv'
         ),
 
-    url(r'^api/v1/aquifers/csv$',
+    url(r'^api/v1/aquifers/xlsx$',
         never_cache(views.xlsx_export),
         name='aquifers-list-xlsx'
         ),

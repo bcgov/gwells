@@ -1,3 +1,4 @@
+from django.views.static import serve
 """
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -75,7 +76,6 @@ class AquiferRetrieveUpdateAPIView(RevisionMixin, AuditUpdateMixin, RetrieveUpda
     get: return details of aquifers
     patch: update aquifer
     """
-    print("it went here")
     permission_classes = (HasAquiferEditRoleOrReadOnly,)
     queryset = Aquifer.objects.all()
     lookup_field = 'aquifer_id'
@@ -371,7 +371,7 @@ class SaveAquiferGeometry(APIView):
         aquifer = Aquifer.objects.get(pk=aquifer_id)
         aquifer.load_shapefile(f)
         aquifer.save()
-        #aquifer.shapefile.save(f.name, f, save=True)
+        # aquifer.shapefile.save(f.name, f, save=True)
         return Response(status=status.HTTP_200_OK)
 
     def delete(self, request, aquifer_id):
@@ -491,11 +491,12 @@ def xlsx_export(request):
     wb = openpyxl.Workbook()
     ws = wb.active
     ws.append(_export_fields)
-
+    queryset = _aquifer_qs(request.GET)
     for aquifer in queryset:
-        ws.append([getattr(aquifer, f) for f in _export_fields])
-
+        ws.append([str(getattr(aquifer, f)) for f in _export_fields])
+    # wb.save("/tmp/web.xlsx")
+    # return serve(request, "web.xlsx", "/tmp/")
     response = HttpResponse(content=save_virtual_workbook(
-        wb), mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        wb), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     response['Content-Disposition'] = 'attachment; filename=aquifers.xlsx'
     return response
