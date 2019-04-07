@@ -158,7 +158,7 @@
             </li>
           </ul>
           <h5 class="mt-5 pie-chart-title">License Use:</h5>
-          <div v-if="usage.length > 0"class="pie-chart-container">
+          <div v-if="usage.length > 0" class="pie-chart-container">
             <PieChart :chartData="usage" class="mt-5"></PieChart>
           </div>
           <div v-else>No information available.</div>
@@ -175,14 +175,16 @@
               <div class="observational-wells" v-if="index === 2">
                 <dt>Observational Wells</dt>
                 <dd v-if="obs_wells.length > 0">
-                  <p v-for="owell in obs_wells" :key="owell.observation_well_number">
-                    <a :href="getObservationWellLink(owell.observation_well_number)">Observation Well {{ owell.observation_well_number }}</a>
-                    <br/>Water Level Analysis:
-                    <a v-if="waterLevels.find(o => o.wellNumber === owell.observation_well_number)" href="http://www.env.gov.bc.ca/soe/indicators/water/groundwater-levels.html">
-                    {{ (waterLevels.find(o => o.wellNumber === owell.observation_well_number).levels )}}
-                    </a>
-                    <span v-else>No information available.</span>
-                  </p>
+                  <ul class="p-0 m-0">
+                    <li v-for="owell in obs_wells" :key="owell.observation_well_number">
+                      <a :href="getObservationWellLink(owell.observation_well_number)">Observation Well {{ owell.observation_well_number }}</a>
+                      <br/>Water Level Analysis:
+                      <a v-if="waterLevels.find(o => o.wellNumber === owell.observation_well_number)" href="http://www.env.gov.bc.ca/soe/indicators/water/groundwater-levels.html">
+                      {{ (waterLevels.find(o => o.wellNumber === owell.observation_well_number).levels )}}
+                      </a>
+                      <span v-else>No information available.</span>
+                    </li>
+                  </ul>
                 </dd>
                 <dd v-else>
                   No information available.
@@ -481,7 +483,7 @@ export default {
       })
     },
     getObservationWellLink (wellNumber) {
-      return `https://governmentofbc.maps.arcgis.com/apps/webappviewer/index.html?id=b53cb0bf3f6848e79d66ffd09b74f00d&find=OBS%20WELL%${wellNumber}`
+      return `https://governmentofbc.maps.arcgis.com/apps/webappviewer/index.html?id=b53cb0bf3f6848e79d66ffd09b74f00d&find=OBS WELL ${wellNumber}`
     },
     getWaterLevels (obsWells) {
       obsWells.map((owell) => {
