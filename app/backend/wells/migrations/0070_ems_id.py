@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.RunSQL("""
         UPDATE well
         SET ems = ems_id
-        WHERE ems IS NULL AND ems_id IS NOT NULL; 
+        WHERE ems IS NULL AND ems_id IS NOT NULL;
         """)
     ]
