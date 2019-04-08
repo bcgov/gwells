@@ -13,9 +13,7 @@
             <router-link v-if="show.edit" :to="{ name: 'SubmissionsEdit', params: { id: $route.params.id } }" class="mr-3">
               <button class="btn btn-primary mb-1">Edit</button>
             </router-link>
-            <b-btn variant="light" v-if="analytics" aria-label="Print" @click="ga('send', 'event', 'Button', 'print', 'Wells Summary Print'); handlePrint;"><i class="fa fa-print"></i></b-btn>
-            <b-btn variant="light" v-else aria-label="Print" @click="handlePrint"><i class="fa fa-lg fa-print"></i></b-btn>
-
+            <b-btn variant="light" aria-label="Print" @click="handlePrint"><i class="fa fa-lg fa-print"></i></b-btn>
           </div>
         </legend>
         <b-row>
@@ -484,6 +482,9 @@ export default {
   },
   methods: {
     handlePrint () {
+      if (window.ga) {
+        window.ga('send', 'event', 'Button', 'print', 'Wells Summary Print')
+      }
       window.print()
     },
     fetchWellData () {
