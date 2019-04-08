@@ -457,6 +457,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <edit-history class="my-5"
         v-if="showSection('editHistory')"
         id="editHistory"
+        :events="events"
       ></edit-history>
 
       <!-- Back / Next / Submit controls -->
@@ -494,6 +495,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 
 <script>
+import Vue from 'vue'
+
 import ActivityType from './ActivityType.vue'
 import AquiferData from './AquiferData.vue'
 import WellType from './WellType.vue'
@@ -529,6 +532,9 @@ export default {
     form: {
       type: Object,
       isInput: false
+    },
+    events: {
+      type: Vue
     },
     sections: {
       type: Object,

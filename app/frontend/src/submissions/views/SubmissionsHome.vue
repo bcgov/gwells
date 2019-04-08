@@ -38,6 +38,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <activity-submission-form
             v-else
             :form="form"
+            :events="events"
             :submissionsHistory="submissionsHistory"
             :activityType.sync="activityType"
             :sections="displayFormSection"
@@ -81,6 +82,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 
 <script>
+import Vue from 'vue'
 import { mapActions, mapGetters, mapState } from 'vuex'
 import 'vuejs-noty/dist/vuejs-noty.css'
 import ApiService from '@/common/services/ApiService.js'
@@ -101,6 +103,8 @@ export default {
   },
   data () {
     return {
+      // event bus; use by emitting events on the events instance eg. this.events.$emit('updated')
+      events: new Vue(),
       ...initialState()
     }
   },
@@ -223,7 +227,8 @@ export default {
 
         if (this.isStaffEdit) {
           this.$noty.success('<div class="notifyText">Changes Saved!</div>', { killer: true })
-          this.fetchWellDataForStaffEdit()
+          this.events.$emit('well-edited', true)
+          this.fetchWellDataForStaffEdit({reloadPage: false})
         } else {
           this.$noty.success('<div aria-label="Close" class="closeBtn">x</div><div class="notifyText">Well Report Submitted.</div>', { killer: true })
           this.$nextTick(function () {
@@ -529,8 +534,11 @@ export default {
       }
       this.fetchFiles()
     },
-    fetchWellDataForStaffEdit () {
-      this.loading = true
+    fetchWellDataForStaffEdit (options = {}) {
+      const { reloadPage = true } = options
+      if (reloadPage) {
+        this.loading = true
+      }
       ApiService.query(`wells/${this.$route.params.id}/edit`).then((res) => {
         Object.keys(res.data).forEach((key) => {
           if (key in this.form) {
@@ -543,6 +551,11 @@ export default {
 
         // store the number of submissions already associated with this well
         this.submissionsHistory = res.data.submission_reports || []
+
+        console.log(this.$refs)
+        if (!reloadPage && this.$refs.wellHistory) {
+          this.$refs.wellHistory.update()
+        }
 
         // Wait for the form update we just did to fire off change events.
         this.$nextTick(() => {
