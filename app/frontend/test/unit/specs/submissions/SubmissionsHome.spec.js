@@ -4,7 +4,7 @@ import VueRouter from 'vue-router'
 import documentState from '@/common/store/documents.js'
 import SubmissionsHome from '@/submissions/views/SubmissionsHome.vue'
 
-import { FETCH_CODES, FETCH_WELLS } from '@/submissions/store/actions.types.js'
+import { FETCH_CODES, FETCH_WELL_TAGS } from '@/submissions/store/actions.types.js'
 
 const localVue = createLocalVue()
 localVue.use(Vuex)
@@ -23,7 +23,7 @@ describe('SubmissionsHome.vue', () => {
     }
     actions = {
       [FETCH_CODES]: jest.fn(),
-      [FETCH_WELLS]: jest.fn()
+      [FETCH_WELL_TAGS]: jest.fn()
     }
     store = new Vuex.Store({
       state: {},
