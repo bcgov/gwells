@@ -196,7 +196,10 @@
         <b-row>
           <b-col cols="12" md="4"><span class="font-weight-bold">Final Casing Stick Up:</span> {{ well.final_casing_stick_up }} {{ well.final_casing_stick_up ? 'inches':''}}</b-col>
           <b-col cols="12" md="4"><span class="font-weight-bold">Artesian Flow:</span> {{ well.artesian_flow }} {{ well.artesian_flow ? 'USGPM': ''}}</b-col>
-          <b-col cols="12" md="4"><span class="font-weight-bold">Drilling Method:</span> {{ well.method_of_drilling }}</b-col>
+          <b-col cols="12" md="4">
+            <span class="font-weight-bold">Drilling Method<span v-if="well.drilling_methods && well.drilling_methods.length > 1">s</span>:</span>
+            <span v-for="(method, index) in well.drilling_methods" :key="`drillingMethod${index}`"><span v-if="index > 0">,</span> {{ method.description }}</span>
+          </b-col>
         </b-row>
         <b-row>
           <b-col cols="12" md="4"><span class="font-weight-bold">Depth to Bedrock:</span> {{ well.bedrock_depth }} {{ well.bedrock_depth ? 'feet':''}}</b-col>

@@ -30,6 +30,7 @@ from wells.models import (
     Well,
     WellActivityCode,
     AquiferLithologyCode,
+    DrillingMethodCode
 )
 
 
@@ -179,6 +180,13 @@ class LithologyDescriptionSerializer(serializers.ModelSerializer):
         )
 
 
+class DrillingMethodSummarySerializer(serializers.ModelSerializer):
+    """ serializes drilling methods for well summary display """
+    class Meta:
+        model = DrillingMethodCode
+        fields = ('description',)
+
+
 class WellDetailSerializer(AuditModelSerializer):
     casing_set = CasingSummarySerializer(many=True)
     screen_set = ScreenSerializer(many=True)
@@ -187,6 +195,7 @@ class WellDetailSerializer(AuditModelSerializer):
     person_responsible = PersonNameSerializer()
     company_of_person_responsible = OrganizationNameListSerializer()
     lithologydescription_set = LithologyDescriptionSummarySerializer(many=True)
+    drilling_methods = DrillingMethodSummarySerializer(many=True)
 
     # well vs. well_tag_number ; on submissions, we refer to well
     well = serializers.IntegerField(source='well_tag_number')
