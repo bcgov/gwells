@@ -422,7 +422,10 @@ class WellStackerSerializer(AuditModelSerializer):
     linerperforation_set = LinerPerforationSerializer(many=True)
     decommission_description_set = DecommissionDescriptionSerializer(many=True)
     lithologydescription_set = LithologyDescriptionSerializer(many=True)
+    # update_user has to be added explicitly (is it because it's on the base class?)
     update_user = serializers.CharField()
+    # create_user has to be added explicitly (is it because it's on the base class?)
+    create_user = serializers.CharField()
 
     class Meta:
         model = Well
@@ -441,6 +444,7 @@ class WellStackerSerializer(AuditModelSerializer):
             'decommission_description_set': DecommissionDescription,
             'lithologydescription_set': LithologyDescription,
         }
+        logger.debug('received validated_data: {}'.format(validated_data))
 
         for key in FOREIGN_KEYS.keys():
             # Is the field one to many, or many to many?
@@ -464,6 +468,7 @@ class WellStackerSerializer(AuditModelSerializer):
                             well=instance, **record_data)
             else:
                 raise 'UNEXPECTED FIELD! {}'.format(field)
+        logger.debug('WellStackerSerializer.update final validated data: {}'.format(validated_data))
         instance = super().update(instance, validated_data)
         return instance
 

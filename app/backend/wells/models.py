@@ -26,6 +26,7 @@ import uuid
 from gwells.models import AuditModel, ProvinceStateCode, ScreenIntakeMethodCode, ScreenMaterialCode,\
     ScreenOpeningCode, ScreenBottomCode, ScreenTypeCode, ScreenAssemblyTypeCode, CodeTableModel,\
     BasicCodeTableModel
+from gwells.models.common import AuditModelStructure
 from gwells.models.lithology import (
     LithologyDescriptionCode, LithologyColourCode, LithologyHardnessCode,
     LithologyMaterialCode, BedrockMaterialCode, BedrockMaterialDescriptorCode, LithologyStructureCode,
@@ -583,7 +584,7 @@ class AquiferLithologyCode(CodeTableModel):
 # TODO: Consider having Well and Submission extend off a common base class, given that
 #   they mostly have the exact same fields!
 @reversion.register()
-class Well(AuditModel):
+class Well(AuditModelStructure):
     """
     Well information.
     """
@@ -1126,7 +1127,7 @@ class AquiferWell(AuditModel):
 
 # TODO: This class needs to be moved to submissions.models (in order to do that, the fk references for a
 # number of other models needs to be updated)
-class ActivitySubmission(AuditModel):
+class ActivitySubmission(AuditModelStructure):
     """
     Activity information on a Well submitted by a user.
     """
@@ -1515,6 +1516,16 @@ class ActivitySubmission(AuditModel):
             return self.geom.x
         else:
             return None
+
+    def save(self, *args, **kwargs):
+        if not self.update_date:
+            self.update_date = timezone.now()
+
+        if self._state.adding is True:
+            if not self.create_date:
+                self.create_date = timezone.now()
+
+        return super().save(*args, **kwargs)
 
 
 class LithologyDescription(AuditModel):

@@ -10,7 +10,6 @@ import uuid
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('aquifers', '0001_initial'),
         ('wells', '0015_auto_20180917_2143'),
     ]
 
@@ -61,7 +60,9 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='well',
             name='aquifer',
-            field=models.ForeignKey(blank=True, db_column='aquifer_id', null=True, on_delete=django.db.models.deletion.CASCADE, to='aquifers.Aquifer', verbose_name='Aquifer ID Number'),
+            # field=models.ForeignKey(blank=True, db_column='aquifer_id', null=True, on_delete=django.db.models.deletion.CASCADE, to='aquifers.Aquifer', verbose_name='Aquifer ID Number'),
+            field=models.IntegerField(blank=True, null=True),
+
         ),
         migrations.AddField(
             model_name='hydraulicproperty',

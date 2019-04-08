@@ -140,6 +140,8 @@ class WellSubmissionSerializerBase(AuditModelSerializer):
             validated_data['well_yield_unit'] = WellYieldUnitCode.objects.get(
                 well_yield_unit_code='USGPM')
 
+        logger.info('------ CREATING SUBMISSION RECORD ------')
+        logger.info('creating submission with: {}'.format(validated_data))
         instance = super().create(validated_data)
         # Create foreign key records.
         for key, value in foreign_keys_data.items():
@@ -198,6 +200,12 @@ class WellSubmissionLegacySerializer(WellSubmissionSerializerBase):
         many=True, required=False)
     lithologydescription_set = LithologyDescriptionSerializer(
         many=True, required=False)
+    # It seems that all the audit fields have to be explicitly added. Assumption is that it's because
+    # they're on a base class?
+    update_user = serializers.CharField()
+    create_user = serializers.CharField()
+    update_date = serializers.DateTimeField()
+    create_date = serializers.DateTimeField()
 
     def get_well_activity_type(self):
         return WellActivityCode.types.legacy()
@@ -249,6 +257,7 @@ class WellConstructionSubmissionSerializer(WellSubmissionSerializerBase):
         if 'coordinate_acquisition_code' not in validated_data:
             validated_data['coordinate_acquisition_code'] = CoordinateAcquisitionCode.objects.get(
                 code='H')
+        logger.info('validated_data (CONSTRUCTION): {}'.format(validated_data))
         return super().create(validated_data)
 
     def get_foreign_key_sets(self):
