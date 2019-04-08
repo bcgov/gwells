@@ -10,5 +10,9 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunSQL()
+        migrations.RunSQL("""
+        UPDATE well
+        SET ems = ems_id
+        WHERE ems IS NULL AND ems_id IS NOT NULL; 
+        """)
     ]
