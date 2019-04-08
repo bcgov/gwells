@@ -552,11 +552,6 @@ export default {
         // store the number of submissions already associated with this well
         this.submissionsHistory = res.data.submission_reports || []
 
-        console.log(this.$refs)
-        if (!reloadPage && this.$refs.wellHistory) {
-          this.$refs.wellHistory.update()
-        }
-
         // Wait for the form update we just did to fire off change events.
         this.$nextTick(() => {
           this.form.meta.valueChanged = {}
