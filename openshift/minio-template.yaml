@@ -1,0 +1,134 @@
+apiVersion: v1
+items:
+- apiVersion: apps.openshift.io/v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    generation: 97
+    labels:
+      app: gwells-minio
+    name: gwells-minio
+  spec:
+    replicas: 1
+    selector:
+      app: gwells-minio
+      deploymentconfig: gwells-minio
+    strategy:
+      activeDeadlineSeconds: 21600
+      recreateParams:
+        timeoutSeconds: 600
+      resources: {}
+      type: Recreate
+    template:
+      metadata:
+        annotations:
+          openshift.io/generated-by: OpenShiftWebConsole
+        creationTimestamp: null
+        labels:
+          app: gwells-minio
+          deploymentconfig: gwells-minio
+      spec:
+        containers:
+        - env:
+          - name: MINIO_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: gwells-minio-secrets
+                key: MINIO_ACCESS_KEY
+          - name: MINIO_SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: gwells-minio-secrets
+                key: MINIO_SECRET_KEY
+          - name: MINIO_DATA_DIR
+            value: /opt/minio/s3/data
+          - name: MINIO_CONFIG_DIR
+            value: /opt/minio/s3/config
+          image: docker-registry.default.svc:5000/moe-gwells-tools/gwells-minio@sha256:b8850540ca577214ac257d6db7378479a269d075bca26e43cbd8cb9ae4b4cf35
+          imagePullPolicy: Always
+          name: gwells-minio
+          ports:
+          - containerPort: 9000
+            protocol: TCP
+          resources:
+            limits:
+              cpu: 250m
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /opt/minio/s3/config
+            name: config-vol
+          - mountPath: /opt/minio/s3/data
+            name: data-vol
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - name: config-vol
+          persistentVolumeClaim:
+            claimName: minio-config-vol
+        - name: data-vol
+          persistentVolumeClaim:
+            claimName: minio-data-vol
+    test: false
+    triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - gwells-minio
+        from:
+          kind: ImageStreamTag
+          name: gwells-minio:latest
+          namespace: moe-gwells-tools
+      type: ImageChange
+    - type: ConfigChange
+  status:
+    availableReplicas: 0
+    latestVersion: 0
+    observedGeneration: 0
+    replicas: 0
+    unavailableReplicas: 0
+    updatedReplicas: 0
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: gwells-minio
+    name: gwells-minio
+  spec:
+    ports:
+    - name: 9000-tcp
+      port: 9000
+      protocol: TCP
+      targetPort: 9000
+    selector:
+      deploymentconfig: gwells-minio
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    labels:
+      gluster.kubernetes.io/provisioned-for-pvc: pvc-be214b71-5735-11e9-a08c-005056832285
+    name: glusterfs-dynamic-minio-config-vol
+  spec:
+    ports:
+    - port: 1
+      protocol: TCP
+      targetPort: 1
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+kind: List
+metadata: {}
