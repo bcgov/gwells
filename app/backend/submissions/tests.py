@@ -190,7 +190,6 @@ class TestAuditInformation(APITestCase):
         response = self.client.post(url, data, format='json')
 
         # Test the result.
-        logger.debug('response.data: {}'.format(response.data))
         well = Well.objects.get(well_tag_number=response.data['well'])
         self.assertEqual(well.create_user, 'A', 'Original well user should remain the same')
         self.assertEqual(well.update_user, self.user.username)
@@ -205,7 +204,9 @@ class TestAuditInformation(APITestCase):
         url = reverse('CON')
         data = {
             'create_user': 'BAD CREATE USER',
-            'update_user': 'BAD UPDATE USER'
+            'update_user': 'BAD UPDATE USER',
+            'update_date': '1999-05-05',
+            'create_date': '1999-05-05'
         }
         response = self.client.post(url, data, format='json')
         submission = ActivitySubmission.objects.get(filing_number=response.data['filing_number'])
@@ -213,15 +214,24 @@ class TestAuditInformation(APITestCase):
         self.assertNotEqual(submission.update_user, data['update_user'])
         self.assertNotEqual(submission.well.create_user, data['create_user'])
         self.assertNotEqual(submission.well.update_user, data['update_user'])
-
-    def test_well_create_and_update_date_matches_legacy(self):
-        # We don't want to lose a wells original create and update date when creating a legacy record,
-        # so make sure that the original audit information lives on in the legacy submission.
-        self.fail('not implemented')
+        self.assertNotEqual(submission.create_date.year, 1999)
+        self.assertNotEqual(submission.update_date.year, 1999)
 
     def test_well_create_date_matches_construction(self):
         # Make sure that the well create_date matches up with the construction date on a new well.
-        self.fail('not implemented')
+        url = reverse('CON')
+        data = {
+        }
+        response = self.client.post(url, data, format='json')
+        submission = ActivitySubmission.objects.get(filing_number=response.data['filing_number'])
+        self.assertEqual(
+            submission.create_date,
+            submission.well.create_date,
+            'Create date for well and construction matches')
+        self.assertEqual(
+            submission.update_date,
+            submission.well.update_date,
+            'Update date for well and construction matches')
 
     def test_legacy_submission_create_and_update_date_matches_old_well(self):
         # Make sure that a legacy record, contains the original well audit information.
@@ -237,6 +247,7 @@ class TestAuditInformation(APITestCase):
             'well': well.well_tag_number
         }
         response = self.client.post(url, data, format='json')
+        alteration = ActivitySubmission.objects.get(filing_number=response.data['filing_number'])
 
         # Check that well create_date remains the same
         well = Well.objects.get(well_tag_number=well.well_tag_number)
@@ -245,5 +256,11 @@ class TestAuditInformation(APITestCase):
         submission = ActivitySubmission.objects.get(
             well=well,
             well_activity_type=WellActivityCode.types.legacy())
-        self.assertEqual(submission.create_date, original_create_date)
-        self.assertEqual(submission.update_date, original_update_date)
+        self.assertEqual(
+            submission.create_date, original_create_date, 'Legacy create date should matche well')
+        self.assertEqual(
+            submission.update_date, original_update_date, 'Legacy update date should match well')
+        self.assertEqual(
+            well.create_date, original_create_date, 'Well create date should be unchanged')
+        self.assertEqual(
+            well.update_date, alteration.update_date, 'Well update date should match alteration')

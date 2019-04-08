@@ -22,7 +22,13 @@ patch_fields()
 
 class AuditModelStructure(models.Model, DBComments):
     """
-    An abstract base class model that provides audit fields, but does not auto-populate values
+    An abstract base class model that provides audit fields, but does not auto-populate values.
+
+    There are some exceptional cases where models do not extend off this class.
+    Notably:
+        - Wells : well create/update dates should reflect the dates in the submissions that make them up.
+        - Submissions: Legacy submissions must retain the update and create dates of the wells on which
+            they are based.
     """
     create_user = models.CharField(
         max_length=60, null=False,
@@ -52,7 +58,9 @@ class AuditModelStructure(models.Model, DBComments):
 
 class AuditModel(AuditModelStructure):
     """
-    An abstract base class model that provides audit fields and automatically populates them
+    An abstract base class model that provides audit fields and automatically populates them.
+
+    Only in exceptional cases should any model deviate from extending this model.
     """
 
     def save(self, *args, **kwargs):

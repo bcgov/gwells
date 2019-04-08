@@ -53,10 +53,8 @@ class StackWells():
             filing_number=filing_number)
         if submission.well is not None:
             # If there's already a well, we update it
-            logger.info('There is already a well - updating...')
             return self._update_well_record(submission)
         # If there is as yet no well, we create one (basing audit information on submission)
-        logger.info('There is no well - creating...')
         well = Well.objects.create(
             update_user=submission.update_user,
             create_user=submission.create_user,
@@ -85,15 +83,11 @@ class StackWells():
         data['update_user'] = well.update_user
         data['create_date'] = well.create_date
         data['update_data'] = well.update_date
-        logger.info('---------WHEN CREATING LEGACY----------')
-        logger.info('create_date: {}'.format(well.create_date))
-        logger.info('update_date: {}'.format(well.update_date))
         # Filter out None and '' values, they can interfere with validation.
         data = {k: v for (k, v) in data.items() if v is not None and v != ''}
         # Retain the well reference.
         data['well'] = well.well_tag_number
         # De-serialize the well into a submission.
-        logger.info('passing data to WellSubmissionLegacySerializer: {}'.format(data))
         submission_serializer = submissions.serializers.WellSubmissionLegacySerializer(data=data)
 
         # Validate the data, throwing an exception on error.
@@ -182,9 +176,11 @@ class StackWells():
 
         for index, submission in enumerate(records):
             if index == 0:
-                logger.info('very 1st record, create_user: {}'.format(submission.create_user))
+                # The create user & date of the very 1st submission record, is taken to be the
+                # create user and date of the well.
                 create_user = submission.create_user
                 create_date = submission.create_date
+            update_date = submission.update_date
             # add a well_status based on the current activity submission
             # a staff edit could still override this with a different value.
             composite['well_status'] = well_status_map.get(
@@ -221,20 +217,19 @@ class StackWells():
                         else:
                             composite[target_key] = value
 
-            logger.info('composite: {}'.format(composite))
             composite['update_user'] = submission.create_user or composite['update_user']
 
-        # The create user of the well, has to be the same as the wells legacy record, or construction record.
+        # The create user & date of the well, has to be the same as the wells legacy record,
+        # or construction record.
         composite['create_user'] = create_user
         composite['create_date'] = create_date
-        logger.info('------ COMPOSITE DATA: ------')
-        logger.info('composite data: {}'.format(composite))
+        # The update date, has to match whatever the late update_date was
+        composite['update_Date'] = update_date
 
         # Update the well view
         well_serializer = WellStackerSerializer(well, data=composite, partial=True)
         if well_serializer.is_valid(raise_exception=True):
             with reversion.create_revision():
-                logger.info('----- SAVING WELL ------')
                 well = well_serializer.save()
 
         return well
@@ -248,7 +243,6 @@ class StackWells():
         if records.count() > 1:
             # If there's more than one submission we don't need to create a legacy well, we can safely
             # assume that the 1st submission is either a legacy or construction report submission.
-            logger.info('Identified that no legacy record is required.')
             return self._stack(records, submission.well)
         else:
             # If there aren't prior submissions, we may create a legacy record using the current well
@@ -258,7 +252,6 @@ class StackWells():
             # pre-existing well, and a construct report is submitted. In this instance, we may end up with a
             # LEGACY record and a CONSTRUCTION record. This is odd, but we don't want to lose the information
             # stored in the existing well record. It is imerative that we always create a legacy record.
-            logger.info('Identified that a legacy record is required.')
             self._create_legacy_submission(submission.well)
             # We should now have multiple records
             records = ActivitySubmission.objects.filter(well=submission.well)
