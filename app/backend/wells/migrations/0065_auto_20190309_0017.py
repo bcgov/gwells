@@ -1,21 +1,6 @@
-import logging
-
 from django.db import migrations, models
-from django.db.models import F
 
-
-logger = logging.getLogger(__name__)
-
-
-def update_fields(apps, schema_editor):
-    app_config = apps.get_app_config('wells')
-    app_models = app_config.get_models()
-    for model in app_models:
-        if hasattr(model, 'update_user'):
-            try:
-                model.objects.filter(update_user__isnull=True).update(update_user=F('create_user'))
-            except AttributeError:
-                logger.error("skipping")
+from wells import data_migrations
 
 
 class Migration(migrations.Migration):
@@ -25,7 +10,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(update_fields),
+        migrations.RunPython(data_migrations.update_update_user_fields),
         migrations.AlterField(
             model_name='activitysubmission',
             name='update_user',
