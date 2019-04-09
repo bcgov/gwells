@@ -202,7 +202,7 @@ export default {
         const bounds = map.getBounds()
         
         map.eachLayer((layer) => {
-          if ( layer.feature && bounds.contains(layer.getBounds())) {
+          if ( layer.feature && bounds.overlaps(layer.getBounds())) {
             layersInBound.push(layer)
           }
         })
@@ -224,7 +224,7 @@ export default {
       function getPopUp(aquifer) {
         const container = L.DomUtil.create('div', 'leaflet-popup-aquifer')
         const popUpLink = L.DomUtil.create('div', 'leaflet-popup-link')
-        popUpLink.innerHTML = `<p>Aquifer: ${aquifer.aquifer_id}</p>`
+        popUpLink.innerHTML = `<p>Aquifer ID: <span class="popup-link">${aquifer.aquifer_id}</span></p><p>Aqufier Name: <span class="popup-link">${aquifer.aquifer_name || ''}</span></p>`
         L.DomEvent.on(popUpLink, 'click', popUpLinkHandler.bind(aquifer))
         container.appendChild(popUpLink)
         return container
@@ -294,5 +294,11 @@ export default {
 
 .geolocate:hover {
     opacity: 0.8;
+}
+
+.leaflet-popup-link .popup-link {
+  text-decoration: underline !important;
+  color: #37598A !important;
+  cursor: pointer;
 }
 </style>

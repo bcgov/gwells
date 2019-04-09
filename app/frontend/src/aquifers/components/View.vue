@@ -240,6 +240,10 @@ a {
   color: #494949;
 }
 
+.sub-title {
+
+}
+
 .aquifer-information-list {
   list-style-type: none;
   box-sizing: border-box;

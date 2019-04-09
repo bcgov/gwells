@@ -67,7 +67,8 @@
                 />
                 <b-form-row>
                     <b-form-group class="aquifer-search-actions">
-                      <b-button class="aquifer-buttons" variant="primary" type="submit" id="aquifers-search">Search</b-button>
+                      <b-button class="aquifer-buttons" variant="primary" type="submit" id="aquifers-search">Search
+                      </b-button>
                       <b-button class="aquifer-buttons" variant="default" type="reset">Reset</b-button>
                     </b-form-group>
                 </b-form-row>
@@ -146,7 +147,8 @@
               {{row.item.demand_description}}
             </template>
           </b-table>
-          <b-pagination 
+          <b-pagination
+            v-if="response.count > 30" 
             class="pull-right"
             :total-rows="response.count" 
             :per-page="limit" 
@@ -170,6 +172,10 @@ table.b-table > tfoot > tr > th.sorting::after {
   opacity: 1 !important;
 }
 
+table.b-table tr {
+  cursor: pointer;
+}
+
 table.b-table td {
   padding: .5rem;
   vertical-align: middle;
@@ -191,7 +197,7 @@ ul.pagination {
   margin-top: 1em
 }
 
-.main-title {
+.main-search-card .main-title {
   border-bottom: 1px solid rgba(0,0,0,0.1);
   padding-bottom: 1rem;
   font-size: 1.8em;
@@ -246,6 +252,7 @@ ul.pagination {
 import querystring from 'querystring'
 import ApiService from '@/common/services/ApiService.js'
 import AquiferMap from './AquiferMap.vue'
+
 import { mapGetters } from 'vuex'
 const LIMIT = 30
 const DEFAULT_ORDERING_STRING = 'aquifer_id'
@@ -258,7 +265,7 @@ function orderingQueryStringToData (str) {
 }
 export default {
   components: {
-    'aquifer-map': AquiferMap
+    'aquifer-map': AquiferMap,
   },
   data () {
     let query = this.$route.query || {}
@@ -299,7 +306,14 @@ export default {
       return (this.currentPage * this.limit) - this.limit + 1
     },
     displayPageLength () {
-      return this.currentPage * this.limit
+      if ( this.response.count > 30 ) {
+        if ( (this.currentPage * this.limit) > this.response.count ) {
+          return this.response.count
+        }
+        return this.currentPage * this.limit
+      } else {
+        return this.response.count
+      }
     },
     aquiferList () { return this.response && this.response.results },
     emptyResults () { return this.response && this.response.count === 0 },
@@ -345,6 +359,7 @@ export default {
     },
     triggerReset () {
       this.response = {}
+      this.aquifers_search_results = {}
       this.filterParams = {}
       this.search = ''
       this.aquifer_id = ''
