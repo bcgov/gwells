@@ -49,7 +49,6 @@ class AuditUpdateMixin(UpdateModelMixin):
         if self.request.user.profile.username is None:
             raise exceptions.ValidationError(('Username must be set.'))
 
-        logger.info('Setting update_user to {}'.format(self.request.user.profile_username))
         serializer.validated_data['update_user'] = self.request.user.profile.username
         return super().perform_update(serializer)
 
