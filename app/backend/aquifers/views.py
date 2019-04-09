@@ -40,6 +40,8 @@ from rest_framework.permissions import AllowAny
 from rest_framework.exceptions import ParseError
 from rest_framework.parsers import FileUploadParser
 from rest_framework import status
+from rest_framework.pagination import PageNumberPagination
+
 from reversion.views import RevisionMixin
 
 from gwells.documents import MinioClient
@@ -113,7 +115,21 @@ def _aquifer_qs(query):
         if search.isdigit():
             disjunction = disjunction | Q(pk=int(search))
         qs = qs.filter(disjunction)
+
+    qs = qs.select_related(
+        'demand',
+        'material',
+        'productivity',
+        'subtype',
+        'vulnerability')
+
     return qs
+
+
+class LargeResultsSetPagination(PageNumberPagination):
+    page_size = 10000
+    page_size_query_param = 'page_size'
+    max_page_size = 10000
 
 
 class AquiferListCreateAPIView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
@@ -121,7 +137,7 @@ class AquiferListCreateAPIView(RevisionMixin, AuditCreateMixin, ListCreateAPIVie
     get: return a list of aquifers
     post: create an aquifer
     """
-
+    pagination_class = LargeResultsSetPagination
     permission_classes = (HasAquiferEditRoleOrReadOnly,)
     serializer_class = serializers.AquiferSerializer
     filter_backends = (djfilters.DjangoFilterBackend,

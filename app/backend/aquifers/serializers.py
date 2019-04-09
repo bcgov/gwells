@@ -66,7 +66,7 @@ class AquiferSerializer(serializers.ModelSerializer):
         """Convert `username` to lowercase."""
         ret = super().to_representation(instance)
         if instance.geom_simplified:
-            ret['geom_simplified'] = json.loads(instance.geom_simplified.json)
+            ret['geom_simplified'] = instance.geom_simplified.json
         return ret
 
     class Meta:
@@ -74,19 +74,19 @@ class AquiferSerializer(serializers.ModelSerializer):
         fields = (
             'aquifer_id',
             'aquifer_name',
+            'location_description',
             'area',
             'demand_description',
+            'material_description',
+            'productivity_description',
+            'subtype_description',
+            'vulnerability_description',
             'demand',
             'litho_stratographic_unit',
-            'location_description',
             'mapping_year',
-            'material_description',
             'material',
-            'productivity_description',
             'productivity',
-            'subtype_description',
             'subtype',
-            'vulnerability_description',
             'vulnerability',
         )
 
