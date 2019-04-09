@@ -93,7 +93,7 @@
           </b-col>
 
           <b-col cols="12" md="7" class="map-column">
-            <aquifer-map ref="aquiferMap" v-bind:aquifers="response.results"/>
+            <aquifer-map ref="aquiferMap" v-bind:aquifers="aquifers_search_results"/>
           </b-col>
         </b-form-row>
 
@@ -111,6 +111,8 @@
 
           <b-table
             id="aquifers-results"
+            :current-page="currentPage"
+            :per-page="limit"
             :fields="aquiferListFields"
             :items="aquiferList"
             :show-empty="emptyResults"
@@ -144,7 +146,12 @@
               {{row.item.demand_description}}
             </template>
           </b-table>
-          <b-pagination class="pull-right" v-if="displayPagination" :total-rows="response.count" :per-page="limit" v-model="currentPage" />
+          <b-pagination 
+            class="pull-right"
+            :total-rows="response.count" 
+            :per-page="limit" 
+            v-model="currentPage" 
+          />
         </b-col>
       </b-row>
     </b-card>
@@ -260,8 +267,9 @@ export default {
       search: query.search,
       aquifer_search: query.aquifer_search,
       limit: LIMIT,
-      currentPage: query.offset && (query.offset / LIMIT + 1),
+      currentPage: 1,
       filterParams: Object.assign({}, query),
+      aquifers_search_results: {},
       response: {},
       aquiferListFields: [
         { key: 'aquifer_id', label: 'Aquifer number', sortable: true },
@@ -287,15 +295,13 @@ export default {
   },
   computed: {
     offset () { return parseInt(this.$route.query.offset, 10) || 0 },
-    displayOffset () { return this.offset + 1 },
+    displayOffset () { 
+      return (this.currentPage * this.limit) - this.limit + 1
+    },
     displayPageLength () {
-      if (!this.response) {
-        return undefined
-      }
-      return this.offset + this.response.results.length
+      return this.currentPage * this.limit
     },
     aquiferList () { return this.response && this.response.results },
-    displayPagination () { return this.aquiferList && (this.response.next || this.response.previous) },
     emptyResults () { return this.response && this.response.count === 0 },
     query () { return this.$route.query },
     ...mapGetters(['userRoles'])
@@ -307,8 +313,11 @@ export default {
     fetchResults () {
       // trigger the Google Analytics search event
       this.triggerAnalyticsSearchEvent(this.query)
+      delete this.query.offset
+      delete this.query.limit
       ApiService.query('aquifers', this.query)
         .then((response) => {
+          this.aquifers_search_results = response.data.results
           this.response = response.data
           this.scrollToTableTop()
         })
@@ -334,16 +343,6 @@ export default {
     scrollToTableTop () {
       this.$SmoothScroll(this.$el, 100)
     },
-    triggerPagination () {
-      const i = (this.currentPage || 1) - 1
-      delete this.filterParams.limit
-      delete this.filterParams.offset
-      if (i > 0) {
-        this.filterParams.limit = LIMIT
-        this.filterParams.offset = i * LIMIT
-      }
-      this.updateQueryParams()
-    },
     triggerReset () {
       this.response = {}
       this.filterParams = {}
@@ -364,6 +363,7 @@ export default {
       if (this.sections) {
         this.filterParams.resources__section__code = this.sections.join(',')
       }
+      
       this.updateQueryParams()
     },
     triggerSort () {
@@ -417,10 +417,16 @@ export default {
     this.$on('activeLayers', (data) => {
       this.layers = data.filter(o => o.layerName).map(o => o.layerName)
     })
+
+    this.$on('featuresOnMap', (data) => {
+      const aquifer_ids_map = new Map()
+      data.map(o => aquifer_ids_map.set(o.defaultOptions.aquifer_id, true))
+      this.response.count = aquifer_ids_map.size
+      this.response.results = this.aquifers_search_results.filter(o => aquifer_ids_map.get(o.aquifer_id))
+    })
   },
   watch: {
     query () { this.fetchResults() },
-    currentPage () { this.triggerPagination() },
     sortDesc () { this.triggerSort() },
     sortBy () { this.triggerSort() }
   }

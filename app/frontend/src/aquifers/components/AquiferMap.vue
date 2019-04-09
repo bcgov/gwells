@@ -48,6 +48,7 @@ export default {
       this.initLeaflet()
       this.initMap()
     })
+
   },
 
   data () {
@@ -191,6 +192,23 @@ export default {
         this.activeLayers = filter(this.activeLayers, o => o.layerId !== layerId)
         this.$parent.$emit('activeLayers', this.activeLayers)
       })
+
+      this.handleEvents()
+    },
+    handleEvents () {
+      this.map.on('zoomend', (e) => {
+        const map = e.target
+        const layersInBound = []
+        const bounds = map.getBounds()
+        
+        map.eachLayer((layer) => {
+          if ( layer.feature && bounds.contains(layer.getBounds())) {
+            layersInBound.push(layer)
+          }
+        })
+        this.$parent.$emit('featuresOnMap', layersInBound)
+        
+      })
     },
     addAquifersToMap (aquifers) {
       const self = this
@@ -205,12 +223,6 @@ export default {
 
       function getPopUp(aquifer) {
         const container = L.DomUtil.create('div', 'leaflet-popup-aquifer')
-        /*
-        const content = `
-
-          <p>Aquifer Name: ${aquifer.aquifer_name}</p>
-          <p>Subtype: ${aquifer.subtype}</p>`
-        */
         const popUpLink = L.DomUtil.create('div', 'leaflet-popup-link')
         popUpLink.innerHTML = `<p>Aquifer: ${aquifer.aquifer_id}</p>`
         L.DomEvent.on(popUpLink, 'click', popUpLinkHandler.bind(aquifer))
@@ -235,7 +247,6 @@ export default {
       }
     },
     zoomToSelectedAquifer (data) {
-      console.log(data)
       this.map.eachLayer((layer) => {
         if ((layer.options.aquifer_id === data.aquifer_id) && layer.feature) {
           this.$nextTick(function () {
