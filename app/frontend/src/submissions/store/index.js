@@ -13,7 +13,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import ApiService from '@/common/services/ApiService.js'
 
-import { FETCH_CODES, FETCH_WELLS } from './actions.types.js'
+import { FETCH_CODES, FETCH_WELL_TAGS } from './actions.types.js'
 import { SET_CODES, SET_ERROR, SET_WELLS } from './mutations.types.js'
 
 Vue.use(Vuex)
@@ -46,7 +46,7 @@ const submissionStore = {
         })
       }
     },
-    [FETCH_WELLS] ({ commit }) {
+    [FETCH_WELL_TAGS] ({ commit }) {
       if (!this.state.wells) {
         // fetch the wells once
         ApiService.query('wells/tags?ordering=well_tag_number').then((res) => {

@@ -49,7 +49,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     </b-row>
     <b-row class="mt-3">
       <b-col cols="12" sm="6">
-        <b-form-group label="Alternative specs submitted (if required)">
+        <b-form-group label="Alternative specs submitted">
         <b-form-radio-group
           id="alternativeSpecsCheckbox"
           class="mt-1"

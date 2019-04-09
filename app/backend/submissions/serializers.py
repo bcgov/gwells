@@ -198,6 +198,12 @@ class WellSubmissionLegacySerializer(WellSubmissionSerializerBase):
         many=True, required=False)
     lithologydescription_set = LithologyDescriptionSerializer(
         many=True, required=False)
+    # It seems that all the audit fields have to be explicitly added. Assumption is that it's because
+    # they're on a base class?
+    update_user = serializers.CharField()
+    create_user = serializers.CharField()
+    update_date = serializers.DateTimeField()
+    create_date = serializers.DateTimeField()
 
     def get_well_activity_type(self):
         return WellActivityCode.types.legacy()

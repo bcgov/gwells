@@ -75,14 +75,14 @@
           <b-row>
             <b-col md="4">
               <b-form-group horizontal :label-cols="4" description="format: yyy-mm-dd" label="Date application received" class="font-weight-bold" invalid-feedback="Invalid date format">
-                <b-form-input type="date" v-model="qualificationForm.application_recieved_date" :state="pendingDateState"/>
+                <b-form-input type="date" class="fixed-width-date-input" v-model="qualificationForm.application_recieved_date" :state="pendingDateState"/>
               </b-form-group>
             </b-col>
           </b-row>
           <b-row v-if="isEditMode">
             <b-col md="4" v-if="qualificationForm.application_recieved_date">
               <b-form-group horizontal :label-cols="4" description="format: yyyy-mm-dd" label="Approval date outcome" class="font-weight-bold" invalid-feedback="Invalid date format">
-                <b-form-input type="date" v-model="qualificationForm.application_outcome_date" :state="approvalDateState"/>
+                <b-form-input type="date" class="fixed-width-date-input" v-model="qualificationForm.application_outcome_date" :state="approvalDateState"/>
               </b-form-group>
             </b-col>
             <b-col md="4" v-if="showApprovalOutcome">
@@ -99,7 +99,7 @@
           <b-row v-if="isEditMode">
             <b-col md="4" v-if="showNotificationDate">
               <b-form-group horizontal :label-cols="4" description="format: yyyy-mm-dd" label="Notification date" class="font-weight-bold">
-                <b-form-input type="date" v-model="qualificationForm.application_outcome_notification_date" :state="notificationDateState"/>
+                <b-form-input type="date" class="fixed-width-date-input" v-model="qualificationForm.application_outcome_notification_date" :state="notificationDateState"/>
               </b-form-group>
             </b-col>
           </b-row>
@@ -111,7 +111,7 @@
           <b-row v-if="showRemoval && isEditMode">
             <b-col md="4">
               <b-form-group horizontal :label-cols="4" label="Removal date" class="font-weight-bold">
-                <b-form-input type="date" v-model="qualificationForm.removal_date" :state="removalDateState"/>
+                <b-form-input type="date" class="fixed-width-date-input" v-model="qualificationForm.removal_date" :state="removalDateState"/>
               </b-form-group>
             </b-col>
             <b-col md="4" v-if="showRemovalReason">
@@ -303,7 +303,7 @@ export default {
 </script>
 
 <style>
-input[type='date'] {
+.fixed-width-date-input {
   width: 150px;
   padding-right: 0px;
   margin-right: 0px;

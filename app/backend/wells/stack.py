@@ -54,8 +54,12 @@ class StackWells():
         if submission.well is not None:
             # If there's already a well, we update it
             return self._update_well_record(submission)
-        # If there is as yet no well, we create one
-        well = Well.objects.create()
+        # If there is as yet no well, we create one (basing audit information on submission)
+        well = Well.objects.create(
+            update_user=submission.update_user,
+            create_user=submission.create_user,
+            create_date=submission.create_date,
+            update_date=submission.update_date)
         well = self._stack(ActivitySubmission.objects.filter(filing_number=filing_number), well)
         submission.well = well
         submission.save()
@@ -74,6 +78,11 @@ class StackWells():
         # Retain the construction date.
         data['work_start_date'] = data.pop('construction_start_date', None)
         data['work_end_date'] = data.pop('construction_end_date', None)
+        # Retain the create and update user.
+        data['create_user'] = well.create_user
+        data['update_user'] = well.update_user
+        data['create_date'] = well.create_date
+        data['update_data'] = well.update_date
         # Filter out None and '' values, they can interfere with validation.
         data = {k: v for (k, v) in data.items() if v is not None and v != ''}
         # Retain the well reference.
@@ -165,7 +174,13 @@ class StackWells():
             WellActivityCode.types.decommission().code: WellStatusCode.types.decommission().well_status_code,
         }
 
-        for submission in records:
+        for index, submission in enumerate(records):
+            if index == 0:
+                # The create user & date of the very 1st submission record, is taken to be the
+                # create user and date of the well.
+                create_user = submission.create_user
+                create_date = submission.create_date
+            update_date = submission.update_date
             # add a well_status based on the current activity submission
             # a staff edit could still override this with a different value.
             composite['well_status'] = well_status_map.get(
@@ -203,6 +218,13 @@ class StackWells():
                             composite[target_key] = value
 
             composite['update_user'] = submission.create_user or composite['update_user']
+
+        # The create user & date of the well, has to be the same as the wells legacy record,
+        # or construction record.
+        composite['create_user'] = create_user
+        composite['create_date'] = create_date
+        # The update date, has to match whatever the late update_date was
+        composite['update_Date'] = update_date
 
         # Update the well view
         well_serializer = WellStackerSerializer(well, data=composite, partial=True)

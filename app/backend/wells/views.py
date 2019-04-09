@@ -55,8 +55,7 @@ from gwells.db_comments import get_column_description
 from gwells.open_api import (
     get_geojson_schema, get_model_feature_schema, GEO_JSON_302_MESSAGE, GEO_JSON_PARAMS)
 from gwells.management.commands.export_databc import (WELLS_SQL, LITHOLOGY_SQL, GeoJSONIterator,
-                                                      LITHOLOGY_CHUNK_SIZE, WELL_CHUNK_SIZE,
-                                                      MAX_LITHOLOGY_SQL, MAX_WELLS_SQL)
+                                                      LITHOLOGY_CHUNK_SIZE, WELL_CHUNK_SIZE)
 
 from submissions.serializers import WellSubmissionListSerializer
 from submissions.models import WellActivityCode
@@ -543,7 +542,7 @@ def well_geojson(request):
             bounds = (sw_long, sw_lat, ne_long, ne_lat)
 
         iterator = GeoJSONIterator(
-            WELLS_SQL.format(bounds=bounds_sql), WELL_CHUNK_SIZE, connection.cursor(), MAX_WELLS_SQL, bounds)
+            WELLS_SQL.format(bounds=bounds_sql), WELL_CHUNK_SIZE, connection.cursor(), bounds)
         response = StreamingHttpResponse((item for item in iterator),
                                          content_type='application/json')
         response['Content-Disposition'] = 'attachment; filename="well.json"'
@@ -620,8 +619,7 @@ def lithology_geojson(request):
             bounds = (sw_long, sw_lat, ne_long, ne_lat)
 
         iterator = GeoJSONIterator(
-            LITHOLOGY_SQL.format(bounds=bounds_sql), LITHOLOGY_CHUNK_SIZE, connection.cursor(),
-            MAX_LITHOLOGY_SQL, bounds)
+            LITHOLOGY_SQL.format(bounds=bounds_sql), LITHOLOGY_CHUNK_SIZE, connection.cursor(), bounds)
         response = StreamingHttpResponse((item for item in iterator),
                                          content_type='application/json')
         response['Content-Disposition'] = 'attachment; filename="lithology.json"'
