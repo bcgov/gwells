@@ -3447,6 +3447,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='well',
             name='aquifer',
-            field=models.ForeignKey(blank=True, db_column='aquifer_id', null=True, on_delete=django.db.models.deletion.CASCADE, to='aquifers.Aquifer', verbose_name='Aquifer ID Number'),
+            field=models.ForeignKey(blank=True, db_column='aquifer_id', null=True, on_delete=django.db.models.deletion.PROTECT, to='aquifers.Aquifer', verbose_name='Aquifer ID Number'),
         ),
     ]
