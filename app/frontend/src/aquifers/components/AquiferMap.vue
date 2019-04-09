@@ -233,7 +233,7 @@ export default {
         var myStyle = {
           'color': 'purple'
         }
-        aquifers = aquifers.filter((a) => a.geom_simplified !== null)
+        aquifers = aquifers.filter((a) => a.geom_simplified)
         aquifers.forEach(aquifer => {
           L.geoJSON(JSON.parse(aquifer.geom_simplified), {
             aquifer_id: aquifer['aquifer_id'],
