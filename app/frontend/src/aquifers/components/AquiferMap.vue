@@ -208,10 +208,13 @@ export default {
         return layersInBound
     },
     handleEvents () {
-      this.map.on('zoomend', (e) => {
-        const map = e.target
-        const layersInBound = this.getFeaturesOnMap(map)
-        this.$parent.$emit('featuresOnMap', layersInBound)
+      const events = ['zoomend', 'moveend']
+      events.map(eventName => {
+        this.map.on(eventName, (e) => {
+          const map = e.target
+          const layersInBound = this.getFeaturesOnMap(map)
+          this.$parent.$emit('featuresOnMap', layersInBound)
+        })
       })
     },
     addAquifersToMap (aquifers) {
