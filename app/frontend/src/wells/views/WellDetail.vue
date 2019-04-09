@@ -365,15 +365,14 @@
       <fieldset id="well_decommissioning_fieldset" class="my-3 detail-section">
         <legend>Well Decommission Information</legend>
         <b-row>
-          <b-col cols="12" md="4"><span class="font-weight-bold">Finished Well Depth:</span> {{ well.finished_well_depth }} {{ well.finished_well_depth ? 'feet':''}}</b-col>
-          <b-col cols="12" md="4"><span class="font-weight-bold">Sealant Material:</span> {{ well.sealant_material }}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Reason for Decommission:</span> {{ well.decommission_reason }}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Method of Decommission:</span> {{ well.decommission_method }}</b-col>
         </b-row>
         <b-row>
-          <b-col cols="12" md="4"><span class="font-weight-bold">Reason for Decommission:</span> {{ well.decommission_reason }}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Sealant Material:</span> {{ well.sealant_material }}</b-col>
           <b-col cols="12" md="4"><span class="font-weight-bold">Backfill Material:</span> {{ well.backfill_material }}</b-col>
         </b-row>
         <b-row>
-          <b-col cols="12" md="4"><span class="font-weight-bold">Method of Decommission:</span> {{ well.decommission_method }}</b-col>
           <b-col cols="12" md="4"><span class="font-weight-bold">Decommission Details:</span> {{ well.decommission_details }}</b-col>
         </b-row>
       </fieldset>
