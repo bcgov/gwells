@@ -18,8 +18,9 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.views.generic import TemplateView
 
-from gwells.views import SurveyListView, HealthView
-from gwells.views.home_view import HomeView
+from gwells.views import SurveyListView
+from gwells.views import HealthView
+from gwells.views import HomeView
 from gwells.views.admin import *
 from gwells.views import api
 from gwells.settings.base import get_env_variable

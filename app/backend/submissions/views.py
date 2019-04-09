@@ -24,14 +24,15 @@ from rest_framework.views import APIView
 from gwells.documents import MinioClient
 from gwells.urls import app_root
 from gwells.pagination import APILimitOffsetPagination
-from wells.permissions import WellsEditPermissions, WellsSubmissionPermissions, WellsSubmissionViewerPermissions
+from wells.permissions import (
+    WellsEditPermissions, WellsSubmissionPermissions, WellsSubmissionViewerPermissions)
 from gwells.models import ProvinceStateCode
 from gwells.models.lithology import (
     LithologyColourCode, LithologyHardnessCode,
     LithologyMaterialCode, LithologyMoistureCode, LithologyDescriptionCode)
 from gwells.serializers import ProvinceStateCodeSerializer
 from gwells.settings.base import get_env_variable
-from registries.views import AuditCreateMixin
+from gwells.views import AuditCreateMixin
 from wells.models import (
     ActivitySubmission,
     CasingCode,
@@ -331,10 +332,13 @@ class SubmissionsOptions(APIView):
         )
         aquifer_lithology = AquiferLithologySerializer(instance=AquiferLithologyCode.objects.all(), many=True)
 
-        lithology_hardness = LithologyHardnessSerializer(instance=LithologyHardnessCode.objects.all(), many=True)
+        lithology_hardness = LithologyHardnessSerializer(
+            instance=LithologyHardnessCode.objects.all(), many=True)
         lithology_colours = LithologyColourSerializer(instance=LithologyColourCode.objects.all(), many=True)
-        lithology_materials = LithologyMaterialSerializer(instance=LithologyMaterialCode.objects.all(), many=True)
-        lithology_moisture = LithologyMoistureSerializer(instance=LithologyMoistureCode.objects.all(), many=True)
+        lithology_materials = LithologyMaterialSerializer(
+            instance=LithologyMaterialCode.objects.all(), many=True)
+        lithology_moisture = LithologyMoistureSerializer(
+            instance=LithologyMoistureCode.objects.all(), many=True)
         lithology_descriptors = LithologyDescriptionCodeSerializer(
             instance=LithologyDescriptionCode.objects.all(), many=True)
         licenced_status_codes = LicencedStatusCodeSerializer(

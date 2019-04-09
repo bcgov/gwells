@@ -422,7 +422,10 @@ class WellStackerSerializer(AuditModelSerializer):
     linerperforation_set = LinerPerforationSerializer(many=True)
     decommission_description_set = DecommissionDescriptionSerializer(many=True)
     lithologydescription_set = LithologyDescriptionSerializer(many=True)
+    # Audit fields have to be added explicitly, because they are on a base class
     update_user = serializers.CharField()
+    create_user = serializers.CharField()
+    update_date = serializers.DateTimeField()
 
     class Meta:
         model = Well
