@@ -200,14 +200,14 @@ export default {
         const map = e.target
         const layersInBound = []
         const bounds = map.getBounds()
-        
+
         map.eachLayer((layer) => {
           if ( layer.feature && bounds.overlaps(layer.getBounds())) {
             layersInBound.push(layer)
           }
         })
         this.$parent.$emit('featuresOnMap', layersInBound)
-        
+
       })
     },
     addAquifersToMap (aquifers) {
@@ -235,7 +235,7 @@ export default {
         }
         aquifers = aquifers.filter((a) => a.geom_simplified !== null)
         aquifers.forEach(aquifer => {
-          L.geoJSON(aquifer.geom_simplified, {
+          L.geoJSON(JSON.parse(aquifer.geom_simplified), {
             aquifer_id: aquifer['aquifer_id'],
             style: myStyle,
             type: 'geojsonfeature',
@@ -254,7 +254,7 @@ export default {
           })
         }
       })
-      var aquiferGeom = L.geoJSON(data.geom_simplified)
+      var aquiferGeom = L.geoJSON(JSON.parse(data.geom_simplified))
       this.map.fitBounds(aquiferGeom.getBounds())
       this.$SmoothScroll(document.getElementById('map'))
     }
