@@ -14,11 +14,13 @@
 import logging
 
 from django.views.generic import TemplateView
+from django.http import HttpResponse
 from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
 from rest_framework.generics import ListAPIView
 
 from gwells.serializers import SurveySerializer
 from gwells.models import Survey
+from wells.models import WellActivityCode
 
 
 logger = logging.getLogger(__name__)
