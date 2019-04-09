@@ -17,8 +17,7 @@
               v-if="
                 value !== null &&
                 (Array.isArray(value) && value.length > 0 || !Array.isArray(value)) &&
-                key !== 'create_user' && // we will display these fields separately
-                key !== 'create_date'
+                !(value in excluded_fields)
             ">
               <dt class="col-12 col-md-6 col-xl-2">{{key | readable}}</dt><dd class="col-12 col-md-6 col-xl-10">{{value}}</dd>
             </div>
@@ -61,7 +60,15 @@ export default {
           active: true
         }
       ],
-      submission: {}
+      submission: {},
+
+      // we don't need to display audit fields (we display them elsewhere on the page) or
+      // the submission's id.
+      excluded_fields: [
+        'create_user',
+        'update_user',
+        'filing_number'
+      ]
     }
   },
   computed: {
