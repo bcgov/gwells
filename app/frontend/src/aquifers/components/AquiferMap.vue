@@ -195,9 +195,7 @@ export default {
 
       this.handleEvents()
     },
-    handleEvents () {
-      this.map.on('zoomend', (e) => {
-        const map = e.target
+    getFeaturesOnMap(map) {
         const layersInBound = []
         const bounds = map.getBounds()
         
@@ -206,8 +204,14 @@ export default {
             layersInBound.push(layer)
           }
         })
+
+        return layersInBound
+    },
+    handleEvents () {
+      this.map.on('zoomend', (e) => {
+        const map = e.target
+        const layersInBound = this.getFeaturesOnMap(map)
         this.$parent.$emit('featuresOnMap', layersInBound)
-        
       })
     },
     addAquifersToMap (aquifers) {
