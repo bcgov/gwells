@@ -181,7 +181,6 @@ class TestAuditInformation(APITestCase):
         # The resultant well record, should reprensent the fact that A created it, and C updated it.
         # Original well.
         well = Well.objects.create(create_user='A', update_user='B')
-        logger.info('created well: {}'.format(well.well_tag_number))
         # Alteration submission.
         url = reverse('ALT')
         data = {
