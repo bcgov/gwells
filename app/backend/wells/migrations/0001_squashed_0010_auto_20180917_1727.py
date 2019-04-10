@@ -7,44 +7,17 @@ import django.core.validators
 from django.db import migrations, models
 import django.db.models.deletion
 import uuid
-
-
-def casing_codes():
-    """
-    Generator that deserializes and provides casing objects.
-    Doing it this way, instead of using fixtures, means we don't have to maintain the json, it will
-    always work as it has access to the historic model.
-    """
-    path = os.path.dirname(os.path.realpath(__file__))
-    with open(os.path.join(path, 'casing_codes.json'), 'r') as json_data:
-        data = json.load(json_data)
-        for item in data:
-            yield item
-
-
-def load_casing_codes_fixture(apps, schema_editor):
-    CasingCode = apps.get_model('wells', 'CasingCode')
-    for item in casing_codes():
-        CasingCode.objects.create(**item)
-
-
-def unload_casing_codes_fixture(apps, schema_editor):
-    CasingCode = apps.get_model('wells', 'CasingCode')
-    for item in casing_codes():
-        CasingCode.objects.get(code=item.get('code')).delete()
+from wells import data_migrations
 
 
 class Migration(migrations.Migration):
-
-    replaces = [('wells', '0001_initial'), ('wells', '0002_auto_20180713_1641'), ('wells', '0003_auto_20180724_0007'), ('wells', '0004_auto_20180724_2026'), ('wells', '0005_auto_20180814_1718'), ('wells', '0006_load_casing_code'), ('wells', '0007_auto_20180816_0030'), ('wells', '0008_waterqualitycolour'), ('wells', '0009_auto_20180911_2330'), ('wells', '0010_auto_20180917_1727')]
 
     initial = True
 
     dependencies = [
         ('submissions', '0001_initial'),
-        ('gwells', '0005_auto_20180629_0024'),
-        ('gwells', '0006_auto_20180724_2026'),
-        ('registries', '0011_auto_20180619_2315'),
+        ('gwells', '0001_squashed_0009_auto_20181116_2316'),
+        ('registries', '0001_squashed_0012_auto_20180704_2105'),
     ]
 
     operations = [
@@ -1247,5 +1220,5 @@ class Migration(migrations.Migration):
             name='code',
             field=models.CharField(db_column='water_quality_characteristic_code', max_length=10, primary_key=True, serialize=False),
         ),
-        migrations.RunPython(load_casing_codes_fixture, reverse_code=unload_casing_codes_fixture),
+        migrations.RunPython(data_migrations.load_casing_codes_fixture, reverse_code=data_migrations.unload_casing_codes_fixture),
     ]

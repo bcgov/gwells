@@ -64,7 +64,7 @@ from aquifers.models import (
 )
 from aquifers.permissions import HasAquiferEditRoleOrReadOnly, HasAquiferEditRole
 from gwells.change_history import generate_history_diff
-from registries.views import AuditCreateMixin, AuditUpdateMixin
+from gwells.views import AuditCreateMixin, AuditUpdateMixin
 from gwells.open_api import (
     get_geojson_schema, get_model_feature_schema, GEO_JSON_302_MESSAGE, GEO_JSON_PARAMS)
 from gwells.management.commands.export_databc import AQUIFERS_SQL, GeoJSONIterator, AQUIFER_CHUNK_SIZE

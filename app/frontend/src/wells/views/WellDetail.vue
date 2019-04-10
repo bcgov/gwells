@@ -13,9 +13,7 @@
             <router-link v-if="show.edit" :to="{ name: 'SubmissionsEdit', params: { id: $route.params.id } }" class="mr-3">
               <button class="btn btn-primary mb-1">Edit</button>
             </router-link>
-            <b-btn variant="light" v-if="analytics" aria-label="Print" @click="ga('send', 'event', 'Button', 'print', 'Wells Summary Print'); handlePrint;"><i class="fa fa-print"></i></b-btn>
-            <b-btn variant="light" v-else aria-label="Print" @click="handlePrint"><i class="fa fa-lg fa-print"></i></b-btn>
-
+            <b-btn variant="light" aria-label="Print" @click="handlePrint"><i class="fa fa-lg fa-print"></i></b-btn>
           </div>
         </legend>
         <b-row>
@@ -53,7 +51,7 @@
         <b-row>
           <b-col cols="12" md="4"></b-col>
           <b-col cols="12" md="4"></b-col>
-          <b-col cols="12" md="4"><span class="font-weight-bold">Alternative specs submitted (if required):</span> {{ well.alternative_specs_submitted }}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Alternative specs submitted:</span> {{ well.alternative_specs_submitted }}</b-col>
         </b-row>
       </fieldset>
 
@@ -196,7 +194,10 @@
         <b-row>
           <b-col cols="12" md="4"><span class="font-weight-bold">Final Casing Stick Up:</span> {{ well.final_casing_stick_up }} {{ well.final_casing_stick_up ? 'inches':''}}</b-col>
           <b-col cols="12" md="4"><span class="font-weight-bold">Artesian Flow:</span> {{ well.artesian_flow }} {{ well.artesian_flow ? 'USGPM': ''}}</b-col>
-          <b-col cols="12" md="4"><span class="font-weight-bold">Drilling Method:</span> {{ well.method_of_drilling }}</b-col>
+          <b-col cols="12" md="4">
+            <span class="font-weight-bold">Drilling Method<span v-if="well.drilling_methods && well.drilling_methods.length > 1">s</span>:</span>
+            <span v-for="(method, index) in well.drilling_methods" :key="`drillingMethod${index}`"><span v-if="index > 0">,</span> {{ method.description }}</span>
+          </b-col>
         </b-row>
         <b-row>
           <b-col cols="12" md="4"><span class="font-weight-bold">Depth to Bedrock:</span> {{ well.bedrock_depth }} {{ well.bedrock_depth ? 'feet':''}}</b-col>
@@ -364,15 +365,14 @@
       <fieldset id="well_decommissioning_fieldset" class="my-3 detail-section">
         <legend>Well Decommission Information</legend>
         <b-row>
-          <b-col cols="12" md="4"><span class="font-weight-bold">Finished Well Depth:</span> {{ well.finished_well_depth }} {{ well.finished_well_depth ? 'feet':''}}</b-col>
-          <b-col cols="12" md="4"><span class="font-weight-bold">Sealant Material:</span> {{ well.sealant_material }}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Reason for Decommission:</span> {{ well.decommission_reason }}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Method of Decommission:</span> {{ well.decommission_method }}</b-col>
         </b-row>
         <b-row>
-          <b-col cols="12" md="4"><span class="font-weight-bold">Reason for Decommission:</span> {{ well.decommission_reason }}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Sealant Material:</span> {{ well.sealant_material }}</b-col>
           <b-col cols="12" md="4"><span class="font-weight-bold">Backfill Material:</span> {{ well.backfill_material }}</b-col>
         </b-row>
         <b-row>
-          <b-col cols="12" md="4"><span class="font-weight-bold">Method of Decommission:</span> {{ well.decommission_method }}</b-col>
           <b-col cols="12" md="4"><span class="font-weight-bold">Decommission Details:</span> {{ well.decommission_details }}</b-col>
         </b-row>
       </fieldset>
@@ -484,6 +484,9 @@ export default {
   },
   methods: {
     handlePrint () {
+      if (window.ga) {
+        window.ga('send', 'event', 'Button', 'print', 'Wells Summary Print')
+      }
       window.print()
     },
     fetchWellData () {

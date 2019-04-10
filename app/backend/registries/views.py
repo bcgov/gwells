@@ -14,6 +14,7 @@
 
 import reversion
 from collections import OrderedDict
+
 from django.db.models import Q, Prefetch
 from django.http import HttpResponse, Http404, JsonResponse
 from django.shortcuts import get_object_or_404
@@ -26,9 +27,9 @@ from reversion.views import RevisionMixin
 from rest_framework import filters, status, exceptions
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView
 from rest_framework.response import Response
-from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
 from rest_framework.views import APIView
 from drf_multiple_model.views import ObjectMultipleModelAPIView
+
 from gwells.documents import MinioClient
 from gwells.roles import REGISTRIES_VIEWER_ROLE
 from gwells.models import ProvinceStateCode
@@ -72,34 +73,7 @@ from registries.serializers import (
     OrganizationNoteSerializer,
     PersonNameSerializer)
 from gwells.change_history import generate_history_diff
-
-
-class AuditCreateMixin(CreateModelMixin):
-    """
-    Adds create_user when instances are created.
-    Create date is inserted in the model, and not required here.
-    """
-
-    def perform_create(self, serializer):
-        if self.request.user.profile.username is None:
-            raise exceptions.ValidationError(('Username must be set.'))
-
-        serializer.validated_data['create_user'] = self.request.user.profile.username
-        return super().perform_create(serializer)
-
-
-class AuditUpdateMixin(UpdateModelMixin):
-    """
-    Adds update_user when instances are updated
-    Update date is inserted in the model, and not required here.
-    """
-
-    def perform_update(self, serializer):
-        if self.request.user.profile.username is None:
-            raise exceptions.ValidationError(('Username must be set.'))
-
-        serializer.validated_data['update_user'] = self.request.user.profile.username
-        return super().perform_update(serializer)
+from gwells.views import AuditCreateMixin, AuditUpdateMixin
 
 
 class OrganizationListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):

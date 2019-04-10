@@ -6,32 +6,7 @@ from django.db import migrations, models
 import django.db.models.deletion
 from django.conf import settings
 
-from gwells.codes import CodeFixture
-
-
-def aquifer_resource_sections():
-    fixture = '0010_aquifer_resource_sections.json'
-    fixture_path = os.path.join(os.path.dirname(
-        os.path.realpath(__file__)), fixture)
-    return CodeFixture(fixture_path)
-
-
-def generate_aquifer_resource_reverse(apps, schema_editor):
-    AquiferResource = apps.get_model('aquifers', 'AquiferResource')
-    AquiferResource.objects.filter(
-        url='https://onlinelibrary.wiley.com/doi/abs/10.1002/hyp.7724').delete()
-
-
-def generate_aquifer_resource(apps, schema_editor):
-    AquiferResource = apps.get_model('aquifers', 'AquiferResource')
-    Aquifer = apps.get_model('aquifers', 'Aquifer')
-    for aquifer in Aquifer.objects.all():
-        AquiferResource.objects.create(
-            aquifer=aquifer,
-            section_id='I',
-            url='https://onlinelibrary.wiley.com/doi/abs/10.1002/hyp.7724',
-            name='Evaluating the use of a gridded climate surface for modelling groundwater recharge in a semi-arid region',
-        )
+from aquifers import data_migrations
 
 
 class Migration(migrations.Migration):
@@ -87,11 +62,11 @@ class Migration(migrations.Migration):
                                     on_delete=django.db.models.deletion.CASCADE, to='aquifers.AquiferResourceSection', verbose_name='Aquifer Resource Section'),
         ),
         migrations.RunPython(
-            aquifer_resource_sections().load_fixture,
-            reverse_code=aquifer_resource_sections().unload_fixture
+            data_migrations.load_aquifer_resource_sections,
+            reverse_code=data_migrations.unload_aquifer_resource_sections
         ),
         migrations.RunPython(
-            generate_aquifer_resource,
-            reverse_code=generate_aquifer_resource_reverse
+            data_migrations.generate_aquifer_resource,
+            reverse_code=data_migrations.generate_aquifer_resource_reverse
         )
     ]

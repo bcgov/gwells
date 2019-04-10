@@ -21,13 +21,14 @@ Licensed under the Apache License, Version 2.0 (the "License");
     </b-row>
     <b-row>
       <b-col cols="12">
-        <change-history :id="$route.params.id" resource="wells" ref="wellHistory"/>
+        <change-history :id="$route.params.id" resource="wells" :events="events" ref="wellHistory"/>
       </b-col>
     </b-row>
   </fieldset>
 </template>
 
 <script>
+import Vue from 'vue'
 import { mapGetters } from 'vuex'
 import ChangeHistory from '@/common/components/ChangeHistory.vue'
 
@@ -37,6 +38,9 @@ export default {
     id: {
       type: String,
       isInput: false
+    },
+    events: {
+      type: Vue
     }
   },
   components: {
@@ -47,6 +51,13 @@ export default {
   },
   computed: {
     ...mapGetters(['codes'])
+  },
+  created () {
+    if (this.events) {
+      this.events.$on('well-edited', () => {
+        this.$refs.wellHistory.update()
+      })
+    }
   }
 }
 </script>
