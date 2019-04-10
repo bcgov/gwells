@@ -250,9 +250,7 @@ class SubmissionDecommissionAPIView(AuditCreateMixin, ListCreateAPIView):
 
 
 class SubmissionStaffEditAPIView(AuditCreateMixin, ListCreateAPIView):
-    """ Create a staff edit submission
-    TODO: Implement this class fully
-    """
+    """ Create a staff edit submission"""
     model = ActivitySubmission
     serializer_class = WellStaffEditSubmissionSerializer
     permission_classes = (WellsEditPermissions,)

@@ -21,6 +21,7 @@ from django.db.models import F
 from django.db.models import Q
 
 from gwells.codes import CodeFixture
+from gwells.models import DATALOAD_USER
 
 logger = logging.getLogger(__name__)
 
@@ -119,6 +120,6 @@ def update_aquifer_resource_fields(apps, schema_editor):
     AquiferResource.objects.filter(create_date__isnull=True).update(create_date=datetime.datetime.now(utc))
     AquiferResource.objects.filter(update_date__isnull=True).update(update_date=F('create_date'))
     AquiferResource.objects.filter(
-        Q(create_user__isnull=True) | Q(create_user='')).update(create_user='DATALOAD_USER')
+        Q(create_user__isnull=True) | Q(create_user='')).update(create_user=DATALOAD_USER)
     AquiferResource.objects.filter(
         Q(update_user__isnull=True) | Q(update_user='')).update(update_user=F('create_user'))
