@@ -70,10 +70,7 @@
         :class="{'apply-filter': !isActive, 'clear-filter': isActive}"
         :disabled="!hasLocalValue"
         @click.prevent="isActive ? clearFilter() : applyFilter()">
-        <span
-          class="fa fa-lg"
-          :class="{'fa-check': !isActive, 'fa-times': isActive}"
-          :aria-label="isActive ? 'Clear' : 'Apply'" />
+          <span class="fa fa-lg" :class="{'fa-check': !isActive, 'fa-times': isActive}" :aria-label="isActive ? 'Clear' : 'Apply'" />
       </b-button>
     </b-col>
   </b-form-row>
@@ -174,15 +171,13 @@ export default {
 
 .search-result-filter {
   min-width: 8rem;
-}
 
-.search-result-filter .apply-filter,
-.search-result-filter .clear-filter {
-  &:hover,
-  &:active,
-  &:visited,
-  &:focus {
-    text-decoration: none;
+  .btn-link:focus,
+  .btn-link:active:focus
+  {
+    .fa {
+      text-decoration: underline;
+    }
   }
 }
 
