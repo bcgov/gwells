@@ -30,7 +30,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
             :items="filteredSubmissions"
             :fields="tableHeaders"
             responsive
-            empty-text="There are no electronic submissions for this well."
+            show-empty
+            empty-text="No submission report history for this well. Not all activity reports submitted prior to 2019 are digitized. Scanned copies of paper reports may be available as an attachment in the well summary."
             :per-page="submissionsPerPage"
             :current-page="submissionsPage"
           >
