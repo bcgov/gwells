@@ -16,7 +16,8 @@ import 'leaflet-fullscreen/dist/leaflet.fullscreen.css'
 
 const provider = new OpenStreetMapProvider()
 const searchControl = new GeoSearchControl({
-  provider: provider
+  provider: provider,
+  autoClose: true
 })
 
 // Extend control, making a locate
@@ -278,6 +279,10 @@ export default {
 .map {
   width: 100%;
   height: 500px;
+}
+
+.leaflet-control-geosearch a.reset {
+  display: none;
 }
 
 .leaflet-areaselect-shade {

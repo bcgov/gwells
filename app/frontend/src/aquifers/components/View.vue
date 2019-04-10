@@ -41,9 +41,10 @@
         showId
         v-if="editMode"
         />
+      <change-history v-if="userRoles.aquifers.edit && editMode" class="mt-5" :id="id" resource="aquifers" ref="aquiferHistory"/>
 
       <b-row v-if="viewMode">
-        <b-col class="aquifer-detail" cols="12" md="5">
+        <b-col class="aquifer-detail" cols="12" md="12" lg="5">
           <b-row>
             <b-col class="p-4">
               <div class="d-flex justify-content-between align-items-center">
@@ -67,7 +68,7 @@
           </b-row>
           <b-row>
             <b-col cols="12" sm="12" class="pl-4 pr-4">
-              <ul class="m-0 p-0 aquifer-information-list">
+              <ul class="m-0 p-0 aquifer-information-list aquifer-main-information-list">
               <div class="aquifer-information-list-divider"></div>
               <li>
                 <dt>Aquifer number</dt>
@@ -121,13 +122,13 @@
             </b-col>
           </b-row>
         </b-col>
-        <b-col cols="12" md="7" class="p-0">
+        <b-col cols="12" md="12" lg="7" class="p-0">
           <single-aquifer-map v-bind:geom="record.geom"/>
         </b-col>
       </b-row>
 
       <b-row v-if="viewMode" class="mt-5">
-        <b-col cols="4" >
+        <b-col cols="12" xl="4" lg="6">
           <h5 class="mt-3 border-bottom pb-4 main-title">Well Information</h5>
           <ul class="ml-0 mr-0 mt-4 mb-0 p-0 aquifer-information-list">
             <div class="aquifer-information-list-divider"></div>
@@ -143,7 +144,7 @@
             v-on:fetchFiles="fetchFiles">
           </aquifer-documents>
         </b-col>
-        <b-col cols="4">
+        <b-col cols="12" xl="4" lg="6">
           <h5 class="mt-3 border-bottom pb-4 main-title">Licensing Information</h5>
           <ul class="ml-0 mr-0 mt-4 mb-0 p-0 aquifer-information-list">
             <div class="aquifer-information-list-divider"></div>
@@ -163,7 +164,7 @@
           </div>
           <div v-else>No information available.</div>
         </b-col>
-        <b-col cols="4">
+        <b-col cols="12" xl="4" lg="6">
           <h5 class="mt-3 border-bottom pb-4 main-title">Knowledge Indicators</h5>
           <ul class="ml-0 mr-0 mb-0 mt-4 p-0 aquifer-information-list">
             <div class="aquifer-information-list-divider"></div>
@@ -199,9 +200,6 @@
               </dd>
           </li>
           </ul>
-        </b-col>
-        <b-col cols="12" sm="6">
-          <change-history v-if="userRoles.aquifers.edit" class="mt-5" :id="id" resource="aquifers" ref="aquiferHistory"/>
         </b-col>
       </b-row>
     </b-container>
@@ -264,6 +262,14 @@ a {
   font-size: 1rem;
 }
 
+.aquifer-main-information-list dt {
+  width: 35%;
+}
+
+.aquifer-main-information-list dd {
+  width: 65%;
+}
+
 .aquifer-information-list dt {
   padding-right: 2rem;
 }
@@ -279,6 +285,10 @@ a {
   height: 100%;
   background-color: rgba(0,0,0,0.1);
   left: calc(50% - 0.5px);
+}
+
+.aquifer-main-information-list .aquifer-information-list-divider {
+  left: calc(35% - 0.5px);
 }
 
 .pie-chart-title {

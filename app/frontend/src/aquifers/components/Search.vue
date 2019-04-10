@@ -38,7 +38,7 @@
         v-on:submit.prevent="triggerSearch"
         v-on:reset="triggerReset">
         <b-form-row>
-          <b-col cols="12" md="5" class="p-4">
+          <b-col cols="12" md="12" lg="12" xl="5" class="p-4">
             <h1 class="main-title ml-4 mt-2">Aquifer Search
               <div v-if='userRoles.aquifers.edit' class="pb-2 pull-right">
               <b-button
@@ -94,7 +94,7 @@
             </b-form-row>
           </b-col>
 
-          <b-col cols="12" md="7" class="map-column">
+          <b-col cols="12" md="12" lg="12" xl="7" class="map-column">
             <aquifer-map ref="aquiferMap" v-bind:aquifers="aquifers_search_results"/>
           </b-col>
         </b-form-row>
@@ -125,7 +125,8 @@
             striped
             outlined
             @row-clicked="rowClicked"
-            v-if="aquiferList">
+            v-if="aquiferList"
+            responsive>
             <template slot="aquifer_id" slot-scope="data">
               <p class="aquifer-id" v-on:click.prevent="onAquiferIdClick(data)">{{data.value}}</p>
             </template>
