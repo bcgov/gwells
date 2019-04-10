@@ -37,7 +37,7 @@ class AuditModelStructure(models.Model, DBComments):
         default=timezone.now, null=False,
         db_comment=('Date and time (UTC) when the physical record was created in the database.'))
     # We don't set a default for the update_user, the update user must always be explicitly stated.
-    # If it's the backend bootstrapping something, the correct value to use is: 'DATALOAD_USER'.
+    # If it's the backend bootstrapping something, the correct value to use is: gwells.models.DATALOAD_USER
     update_user = models.CharField(
         max_length=60, null=False,
         db_comment=('The user who last updated this record in the database.'))

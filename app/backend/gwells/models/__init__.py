@@ -27,6 +27,10 @@ from .screen import ScreenIntakeMethodCode, ScreenMaterialCode, ScreenOpeningCod
     ScreenTypeCode, ScreenAssemblyTypeCode
 from .survey import Survey, OnlineSurvey
 
+# Often time, a record is not created by a user. For example, loading up status codes, or fixing up
+# records without audit information.
+DATALOAD_USER = 'DATALOAD_USER'
+
 
 class Profile(models.Model):
     """
