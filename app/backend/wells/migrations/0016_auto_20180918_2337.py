@@ -10,30 +10,10 @@ import uuid
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('aquifers', '0001_initial'),
         ('wells', '0015_auto_20180917_2143'),
     ]
 
     operations = [
-        migrations.CreateModel(
-            name='AquiferVulnerabilityCode',
-            fields=[
-                ('create_user', models.CharField(max_length=60)),
-                ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=60, null=True)),
-                ('update_date', models.DateTimeField(blank=True, null=True)),
-                ('code', models.CharField(db_column='aquifer_vulnerability_code', max_length=1, primary_key=True, serialize=False)),
-                ('description', models.CharField(max_length=100)),
-                ('display_order', models.PositiveIntegerField()),
-                ('effective_date', models.DateTimeField(blank=True, null=True)),
-                ('expiry_date', models.DateTimeField(blank=True, null=True)),
-            ],
-            options={
-                'verbose_name_plural': 'Aquifer Vulnerability Codes',
-                'db_table': 'aquifer_vulnerability_code',
-                'ordering': ['display_order', 'code'],
-            },
-        ),
         migrations.CreateModel(
             name='HydraulicProperty',
             fields=[
@@ -51,7 +31,9 @@ class Migration(migrations.Migration):
                 ('testing_duration', models.PositiveIntegerField()),
                 ('analytic_solution_type', models.DecimalField(blank=True, decimal_places=2, max_digits=5, null=True, verbose_name='Analytic Solution Type')),
                 ('boundary_effect', models.DecimalField(blank=True, decimal_places=2, max_digits=5, null=True, verbose_name='Boundary Effect')),
-                ('avi', models.ForeignKey(blank=True, db_column='aquifer_vulnerablity_code', null=True, on_delete=django.db.models.deletion.PROTECT, to='wells.AquiferVulnerabilityCode', verbose_name='AVI Reference')),
+                # This is a redundant foreign key reference! We never used this link!
+                # ('avi', models.ForeignKey(blank=True, db_column='aquifer_vulnerablity_code', null=True, on_delete=django.db.models.deletion.PROTECT, to='wells.AquiferVulnerabilityCode', verbose_name='AVI Reference')),
+                ('avi', models.DecimalField(max_digits=10, decimal_places=0, blank=True, null=True, verbose_name='AVI')),
             ],
             options={
                 'verbose_name_plural': 'Hydraulic Properties',
@@ -61,7 +43,9 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='well',
             name='aquifer',
-            field=models.ForeignKey(blank=True, db_column='aquifer_id', null=True, on_delete=django.db.models.deletion.CASCADE, to='aquifers.Aquifer', verbose_name='Aquifer ID Number'),
+            # field=models.ForeignKey(blank=True, db_column='aquifer_id', null=True, on_delete=django.db.models.deletion.CASCADE, to='aquifers.Aquifer', verbose_name='Aquifer ID Number'),
+            field=models.IntegerField(blank=True, null=True),
+
         ),
         migrations.AddField(
             model_name='hydraulicproperty',

@@ -188,6 +188,8 @@ class StackTest(TestCase):
     def test_new_submission_gets_well_tag_number(self):
         # Test that when a constrction submission is processed, it is asigned a well_tag_number
         submission = ActivitySubmission.objects.create(
+            create_user='Something',
+            update_user='Something',
             owner_full_name='Bob',
             work_start_date=date(2018, 1, 1),
             work_end_date=date(2018, 2, 1),
@@ -204,6 +206,8 @@ class StackTest(TestCase):
         # Creating a brand new well that we only have a construction submission for.
         owner_full_name = 'Bob'
         submission = ActivitySubmission.objects.create(
+            create_user='Something',
+            update_user='Something',
             owner_full_name=owner_full_name,
             work_start_date=date(2018, 1, 1),
             work_end_date=date(2018, 2, 1),
@@ -221,6 +225,8 @@ class StackTest(TestCase):
         owner_full_name = 'Bob'
         new_owner_full_name = 'Joe'
         construction = ActivitySubmission.objects.create(
+            create_user='Something',
+            update_user='Something',
             owner_full_name=owner_full_name,
             work_start_date=date(2018, 1, 1),
             work_end_date=date(2018, 2, 1),
@@ -232,6 +238,8 @@ class StackTest(TestCase):
         well = stacker.process(construction.filing_number)
         # Update the well with an alteration
         alteration = ActivitySubmission.objects.create(
+            create_user='Something',
+            update_user='Something',
             owner_full_name=new_owner_full_name,
             work_start_date=date(2018, 2, 1),
             work_end_date=date(2018, 3, 1),
@@ -249,6 +257,8 @@ class StackTest(TestCase):
         new_full_name = 'Jimbo'
         # This is the original well record
         well = Well.objects.create(
+            create_user='Something',
+            update_user='Something',
             owner_full_name=original_full_name,
             owner_province_state=self.province,
             construction_start_date=date(2017, 1, 1),
@@ -261,6 +271,8 @@ class StackTest(TestCase):
         LinerPerforation.objects.create(start=10, end=10, well=well)
         # Create a submission
         submission = ActivitySubmission.objects.create(
+            create_user='Something',
+            update_user='Something',
             owner_full_name=new_full_name,
             work_start_date=date(2018, 1, 1),
             work_end_date=date(2018, 2, 1),
@@ -307,10 +319,14 @@ class StackTest(TestCase):
         new_full_name = 'Jimbo'
         # This is the original well record.
         well = Well.objects.create(
+            create_user='Something',
+            update_user='Something',
             owner_full_name=original_full_name,
             owner_province_state=self.province)
         # Create a submission.
         submission = ActivitySubmission.objects.create(
+            create_user='Something',
+            update_user='Something',
             owner_full_name=new_full_name,
             work_start_date=date(2018, 1, 1),
             work_end_date=date(2018, 2, 1),
@@ -336,10 +352,14 @@ class StackTest(TestCase):
         new_full_name = 'Jimbo'
         # This is the original well record.
         well = Well.objects.create(
+            create_user='Something',
+            update_user='Something',
             owner_full_name=original_full_name,
             owner_province_state=self.province)
         # Create a submission.
         submission = ActivitySubmission.objects.create(
+            create_user='Something',
+            update_user='Something',
             owner_full_name=new_full_name,
             work_start_date=date(2018, 1, 1),
             work_end_date=date(2018, 2, 1),
@@ -365,6 +385,8 @@ class StackTest(TestCase):
         start_date = date(2018, 1, 1)
         end_date = date(2018, 1, 2)
         submission = ActivitySubmission.objects.create(
+            create_user='Something',
+            update_user='Something',
             work_start_date=start_date,
             work_end_date=end_date,
             well_activity_type=WellActivityCode.types.construction(),
@@ -381,6 +403,8 @@ class StackTest(TestCase):
         start_date = date(2018, 1, 1)
         end_date = date(2018, 1, 2)
         submission = ActivitySubmission.objects.create(
+            create_user='Something',
+            update_user='Something',
             work_start_date=start_date,
             work_end_date=end_date,
             well_activity_type=WellActivityCode.types.alteration(),
@@ -397,6 +421,8 @@ class StackTest(TestCase):
         start_date = date(2018, 1, 1)
         end_date = date(2018, 1, 2)
         submission = ActivitySubmission.objects.create(
+            create_user='Something',
+            update_user='Something',
             work_start_date=start_date,
             work_end_date=end_date,
             well_activity_type=WellActivityCode.types.decommission(),
@@ -416,6 +442,8 @@ class StackTest(TestCase):
         new_full_name = 'Jimbo'
         # Create a construction submission.
         submission = ActivitySubmission.objects.create(
+            create_user='Something',
+            update_user='Something',
             owner_full_name=original_full_name,
             work_start_date=date(2018, 1, 1),
             work_end_date=date(2018, 2, 1),
@@ -428,6 +456,8 @@ class StackTest(TestCase):
 
         # Create an edit submission.
         submission = ActivitySubmission.objects.create(
+            create_user='Something',
+            update_user='Something',
             owner_full_name=new_full_name,
             well=well,
             well_activity_type=WellActivityCode.types.staff_edit()

@@ -7,13 +7,7 @@ import json
 from io import open
 import os
 from gwells.codes import CodeFixture
-
-
-def code_fixture():
-    fixture = '0026_decom_mat_codes.json'
-    fixture_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), fixture)
-
-    return CodeFixture(fixture_path)
+from wells import data_migrations
 
 
 class Migration(migrations.Migration):
@@ -23,5 +17,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(code_fixture().load_fixture, reverse_code=code_fixture().unload_fixture),
+        migrations.RunPython(data_migrations.load_decomission_material_codes, reverse_code=data_migrations.unload_decomission_material_codes),
     ]
