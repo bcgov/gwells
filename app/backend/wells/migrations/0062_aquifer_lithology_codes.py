@@ -1,14 +1,8 @@
 from django.db import migrations, models
 import django.db.models.deletion
-from gwells.codes import CodeFixture
 import os
 
-
-def code_fixture():
-    fixture = '0062_aquifer_lithology_codes.json'
-    fixture_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), fixture)
-
-    return CodeFixture(fixture_path)
+from wells import data_migrations
 
 
 class Migration(migrations.Migration):
@@ -38,7 +32,9 @@ class Migration(migrations.Migration):
                 'ordering': ['display_order', 'aquifer_lithology_code'],
             },
         ),
-        migrations.RunPython(code_fixture().load_fixture, reverse_code=code_fixture().unload_fixture),
+        migrations.RunPython(
+            data_migrations.load_aquifer_lithology_code_values,
+            reverse_code=data_migrations.unload_aquifer_lithology_code_values),
         migrations.AddField(
             model_name='activitysubmission',
             name='aquifer_lithology',

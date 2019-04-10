@@ -8,13 +8,7 @@ from io import open
 import os
 from gwells.codes import CodeFixture
 from wells.models import WaterQualityCharacteristic, WaterQualityColour
-
-
-def water_quality_codes():
-    fixture = '0012_water_quality_codes.json'
-    fixture_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), fixture)
-
-    return CodeFixture(fixture_path)
+from wells import data_migrations
 
 
 class Migration(migrations.Migration):
@@ -24,5 +18,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(water_quality_codes().load_fixture, reverse_code=water_quality_codes().unload_fixture),
+        migrations.RunPython(data_migrations.load_water_quality_codes, reverse_code=data_migrations.unload_water_quality_codes),
     ]

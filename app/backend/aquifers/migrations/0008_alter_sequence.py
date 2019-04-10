@@ -4,12 +4,8 @@ from __future__ import unicode_literals
 
 from django.db import migrations
 
-def forwards(apps, schema):
-    schema.execute("alter sequence aquifer_aquifer_id_seq restart with 2000")
+from aquifers import data_migrations
 
-def backwards(apps, schema):
-    # It's no big deal if we don't go back
-    pass
 
 class Migration(migrations.Migration):
 
@@ -18,5 +14,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(forwards, reverse_code=backwards)
+        migrations.RunPython(
+            data_migrations.alter_aquifer_sequence, reverse_code=data_migrations.revert_aquifer_sequence)
     ]
