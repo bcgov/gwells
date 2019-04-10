@@ -19,7 +19,7 @@ from django.forms.models import model_to_dict
 from django.db import transaction
 from django.db.models import F
 
-from gwells.models import ProvinceStateCode
+from gwells.models import ProvinceStateCode, DATALOAD_USER
 from submissions.models import WellActivityCode
 import submissions.serializers
 from wells.models import Well, ActivitySubmission, WellStatusCode
@@ -79,8 +79,20 @@ class StackWells():
         data['work_start_date'] = data.pop('construction_start_date', None)
         data['work_end_date'] = data.pop('construction_end_date', None)
         # Retain the create and update user.
-        data['create_user'] = well.create_user
-        data['update_user'] = well.update_user
+        if well.create_user:
+            data['create_user'] = well.create_user
+        else:
+            # If for whatever reason, the original well record doesn't have a create_user, we assigned
+            # DATALOAD_USER to the legacy record.
+            logger.warning('Well {} does not have a create_user!'.format(well.well_tag_number))
+            data['create_user'] = DATALOAD_USER
+        if well.update_user:
+            data['update_user'] = well.update_user
+        else:
+            # If for whatever reason, the original well record doesn't have an update_user, we assigned
+            # DATALOAD_USER to the legacy record.
+            logger.warning('Well {} does not have an update_user!'.format(well.well_tag_number))
+            data['update_user'] = DATALOAD_USER
         data['create_date'] = well.create_date
         data['update_data'] = well.update_date
         # Filter out None and '' values, they can interfere with validation.
