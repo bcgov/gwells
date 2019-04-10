@@ -11,7 +11,8 @@ describe('Header.vue', () => {
 
   it('the show computed property allows disabling links', () => {
     getters = {
-      config: () => ({ enable_aquifers_search: false })
+      config: () => ({ enable_aquifers_search: false }),
+      userRoles: () => ({submissions: { edit: true }})
     }
     store = new Vuex.Store({ getters })
 
@@ -23,7 +24,8 @@ describe('Header.vue', () => {
   })
   it('the show computed property allows enabling links', () => {
     getters = {
-      config: () => ({ enable_aquifers_search: true })
+      config: () => ({ enable_aquifers_search: true }),
+      userRoles: () => ({submissions: { edit: true }})
     }
     store = new Vuex.Store({ getters })
 
