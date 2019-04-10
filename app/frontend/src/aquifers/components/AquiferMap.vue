@@ -11,6 +11,8 @@ import { filter } from 'lodash'
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch'
 import 'leaflet-geosearch/assets/css/leaflet.css'
 import 'leaflet-lasso'
+import 'leaflet-fullscreen/dist/Leaflet.fullscreen.min.js'
+import 'leaflet-fullscreen/dist/leaflet.fullscreen.css'
 
 const provider = new OpenStreetMapProvider()
 const searchControl = new GeoSearchControl({
@@ -89,6 +91,9 @@ export default {
       }).setView([54.5, -126.5], 5)
       L.control.scale().addTo(this.map)
       // Add geo search
+      this.map.addControl(new L.Control.Fullscreen({
+        position: 'topright'
+      }))
       this.map.addControl(searchControl)
       const lasso = L.lasso(this.map)
       const AreaSelect = L.Control.extend({

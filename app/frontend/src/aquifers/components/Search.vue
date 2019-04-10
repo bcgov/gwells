@@ -68,6 +68,7 @@
                 <b-form-row>
                     <b-form-group class="aquifer-search-actions">
                       <b-button class="aquifer-buttons" variant="primary" type="submit" id="aquifers-search">Search
+                        <i v-if="loading" class="fa fa-circle-o-notch fa-spin ml-1"></i>                      
                       </b-button>
                       <b-button class="aquifer-buttons" variant="default" type="reset">Reset</b-button>
                     </b-form-group>
@@ -252,6 +253,7 @@ ul.pagination {
 import querystring from 'querystring'
 import ApiService from '@/common/services/ApiService.js'
 import AquiferMap from './AquiferMap.vue'
+import { filter } from 'lodash'
 
 import { mapGetters } from 'vuex'
 const LIMIT = 30
@@ -297,7 +299,8 @@ export default {
       noSearchCriteriaError: false,
       aquifer_resource_sections: [],
       sections: query.resources__section__code ? query.resources__section__code.split(',') : [],
-      selectMode: 'single'
+      selectMode: 'single',
+      loading: false
     }
   },
   computed: {
@@ -325,6 +328,7 @@ export default {
       this.$router.push({ name: 'new' })
     },
     fetchResults () {
+      this.loading = true
       // trigger the Google Analytics search event
       this.triggerAnalyticsSearchEvent(this.query)
       delete this.query.offset
@@ -334,6 +338,7 @@ export default {
           this.aquifers_search_results = response.data.results
           this.response = response.data
           this.scrollToTableTop()
+          this.loading = false
         })
     },
     downloadCSV () {
@@ -437,7 +442,7 @@ export default {
       const aquifer_ids_map = new Map()
       data.map(o => aquifer_ids_map.set(o.defaultOptions.aquifer_id, true))
       this.response.count = aquifer_ids_map.size
-      this.response.results = this.aquifers_search_results.filter(o => aquifer_ids_map.get(o.aquifer_id))
+      this.response.results = filter(this.aquifers_search_results, o => aquifer_ids_map.get(o.aquifer_id))
     })
   },
   watch: {
