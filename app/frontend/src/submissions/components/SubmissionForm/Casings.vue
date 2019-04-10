@@ -39,7 +39,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(casing, index) in casingsInput" :key="casing.id">
+          <tr v-for="(casing, index) in casingsData" :key="casing.id">
             <td class="pb-0">
               <form-input
                 group-class="my-0"
@@ -186,25 +186,30 @@ export default {
   data () {
     return {
       confirmRemoveModal: false,
-      rowIndexToRemove: null
+      rowIndexToRemove: null,
+      casingsData: [],
+      pageLoaded: false
     }
   },
   methods: {
     addRow () {
-      this.casingsInput.push({
+      this.casingsData.push(this.emptyObject())
+    },
+    emptyObject () {
+      return {
         start: '',
         end: '',
         casing_code: '',
         casing_material: ''
-      })
+      }
     },
     removeRowByIndex (index) {
-      this.casingsInput.splice(index, 1)
+      this.casingsData.splice(index, 1)
       this.rowIndexToRemove = null
     },
     removeRowIfOk (instance) {
-      const index = this.casingsInput.findIndex(item => item === instance)
-      if (this.rowHasValues(this.casingsInput[index])) {
+      const index = this.casingsData.findIndex(item => item === instance)
+      if (this.rowHasValues(this.casingsData[index])) {
         this.rowIndexToRemove = index
         this.confirmRemoveModal = true
       } else {
@@ -235,15 +240,41 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['codes'])
+    ...mapGetters(['codes']),
+    computedCasings: function () {
+      return Object.assign({}, this.casingsData)
+    }
+  },
+  watch: {
+    computedCasings: {
+      deep: true,
+      handler: function (n, o) {
+        let casings = []
+        this.casingsData.forEach((d) => {
+          if (!Object.values(d).every(x => (x === ''))) {
+            casings.push(d)
+          }
+        })
+        if (this.pageLoaded && this.saveDisabled) {
+          casings.push(this.emptyObject())
+        }
+        this.$emit('update:casings', casings)
+      }
+    }
   },
   created () {
     // When component created, add an initial row of casings.
-    if (!this.casingsInput.length) {
-      this.addRow()
-      this.addRow()
+    if (!this.casings.length) {
+      for (let i = 0; i < 3; i++) {
+        this.addRow()
+      }
+    } else {
+      Object.assign(this.casingsData, this.casings)
       this.addRow()
     }
+  },
+  updated () {
+    this.pageLoaded = true
   }
 }
 </script>
