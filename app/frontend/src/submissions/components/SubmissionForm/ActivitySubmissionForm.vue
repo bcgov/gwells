@@ -337,7 +337,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         :waterQualityCharacteristics.sync="form.water_quality_characteristics"
         :waterQualityColour.sync="form.water_quality_colour"
         :waterQualityOdour.sync="form.water_quality_odour"
-        :emsID.sync="form.ems_id"
+        :emsID.sync="form.ems"
         :errors="errors"
         :isStaffEdit="isStaffEdit"
         :saveDisabled="editSaveDisabled"
