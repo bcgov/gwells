@@ -1,4 +1,5 @@
 import logging
+from http import HTTPStatus
 
 from django.utils import timezone
 from django.urls import reverse
@@ -13,6 +14,7 @@ from gwells.roles import roles_to_groups, WELLS_SUBMISSION_ROLE, WELLS_SUBMISSIO
 from submissions.serializers import (WellSubmissionListSerializer, WellConstructionSubmissionSerializer,
                                      WellAlterationSubmissionSerializer, WellDecommissionSubmissionSerializer)
 from wells.models import ActivitySubmission, Well, WellStatusCode, WellActivityCode
+from gwells.models import DATALOAD_USER
 
 
 logger = logging.getLogger(__name__)
@@ -263,3 +265,36 @@ class TestAuditInformation(APITestCase):
             well.create_date, original_create_date, 'Well create date should be unchanged')
         self.assertEqual(
             well.update_date, alteration.update_date, 'Well update date should match alteration')
+
+    def test_bad_audit_info_on_well_no_failure(self):
+        # If the original well doesn't have audit info, we don't want that to cause a failure.
+        well = Well.objects.create()
+
+        # Alteration submission.
+        url = reverse('ALT')
+        data = {
+            'well': well.well_tag_number
+        }
+        response = self.client.post(url, data, format='json')
+        # If we don't get aa 200 OK here, just go ahead and fail right now!
+        self.assertEqual(response.status_code, HTTPStatus.CREATED)
+        # Load resultant well.
+        well = Well.objects.get(well_tag_number=well.well_tag_number)
+        # Load resultant legacy submission.
+        legacy = ActivitySubmission.objects.get(
+            well=well,
+            well_activity_type=WellActivityCode.types.legacy())
+        # Load resultant alteration.
+        alteration = ActivitySubmission.objects.get(
+            well=well,
+            well_activity_type=WellActivityCode.types.alteration())        
+        # The well should now show the logged in user as having updated.
+        self.assertEqual(well.update_user, self.user.username)
+        # The well should now show dataload user as the create_user.
+        self.assertEquals(well.create_user, DATALOAD_USER)
+        # The legacy submission should show dataload user as the create_user and update_user.
+        self.assertEquals(legacy.create_user, DATALOAD_USER)
+        self.assertEquals(legacy.update_user, DATALOAD_USER)
+        # The alteration should show the current user as the create_user and update_user.
+        self.assertEquals(alteration.create_user, self.user.username)
+        self.assertEquals(alteration.update_user, self.user.username)
