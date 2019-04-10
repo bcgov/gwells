@@ -12,7 +12,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-  <fieldset class="mt-5" v-if="filteredSubmissions && filteredSubmissions.length > 0">
+  <fieldset class="mt-5">
     <b-row>
       <b-col cols="12" lg="6">
         <legend :id="id">Activity Reports</legend>
