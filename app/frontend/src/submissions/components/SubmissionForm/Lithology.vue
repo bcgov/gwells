@@ -231,7 +231,8 @@ export default {
             lithology.push(d)
           }
         })
-        if (this.pageLoaded && this.saveDisabled) {
+        if (this.pageLoaded) {
+          // HACK to trick Vue into detecting a change in the array
           lithology.push(this.emptyObject())
         }
         this.$emit('update:lithology', lithology)
