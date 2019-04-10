@@ -78,13 +78,9 @@ urlpatterns = [
     # main web application page
     url(r'^' + app_root_slash, HomeView.as_view(), name='home'),
 
-
+    url(r'^' + app_root_slash, include('submissions.urls')),
 ]
 
-if settings.ENABLE_DATA_ENTRY:
-    urlpatterns = [
-        url(r'^' + app_root_slash, include('submissions.urls')),
-    ] + urlpatterns
 
 if settings.DEBUG:
     import debug_toolbar
