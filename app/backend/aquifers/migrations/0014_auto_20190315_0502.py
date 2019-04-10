@@ -4,16 +4,8 @@ import datetime
 from django.db import migrations, models
 import django.utils.timezone
 from django.utils.timezone import utc
-from django.db.models import F
-from django.db.models import Q
 
-
-def update_fields(apps, schema_editor):
-    AquiferResource = apps.get_model('aquifers', 'AquiferResource')
-    AquiferResource.objects.filter(create_date__isnull=True).update(create_date=datetime.datetime.now(utc))
-    AquiferResource.objects.filter(update_date__isnull=True).update(update_date=F('create_date'))
-    AquiferResource.objects.filter(Q(create_user__isnull=True) | Q(create_user='')).update(create_user='DATALOAD_USER')
-    AquiferResource.objects.filter(Q(update_user__isnull=True) | Q(update_user='')).update(update_user=F('create_user'))
+from aquifers import data_migrations
 
 
 class Migration(migrations.Migration):
@@ -23,5 +15,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(update_fields),
+        migrations.RunPython(data_migrations.update_aquifer_resource_fields),
     ]

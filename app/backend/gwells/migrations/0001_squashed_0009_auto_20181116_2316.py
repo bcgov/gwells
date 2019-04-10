@@ -11,12 +11,10 @@ import uuid
 
 class Migration(migrations.Migration):
 
-    replaces = [('gwells', '0001_initial'), ('gwells', '0002_profile_name'), ('gwells', '0003_auto_20180530_2330'), ('gwells', '0004_auto_20180628_2350'), ('gwells', '0005_auto_20180629_0024'), ('gwells', '0006_auto_20180724_2026'), ('gwells', '0007_auto_20180726_1909'), ('gwells', '0008_auto_20180807_1758'), ('gwells', '0009_auto_20181116_2316')]
-
     initial = True
 
     dependencies = [
-        ('registries', '0011_auto_20180619_2315'),
+        ('registries', '0001_squashed_0012_auto_20180704_2105'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 

@@ -6,14 +6,8 @@ from django.db import migrations
 import json
 from io import open
 import os
-from gwells.codes import CodeFixture
 
-
-def aquifers_codes():
-    fixture = '0002_aquifers_codes.json'
-    fixture_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), fixture)
-
-    return CodeFixture(fixture_path)
+from aquifers import data_migrations
 
 
 class Migration(migrations.Migration):
@@ -23,5 +17,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(aquifers_codes().load_fixture, reverse_code=aquifers_codes().unload_fixture),
+        migrations.RunPython(
+            data_migrations.load_aquifer_codes, reverse_code=data_migrations.unload_aquifer_codes),
     ]
