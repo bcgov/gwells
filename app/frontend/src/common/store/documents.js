@@ -111,7 +111,13 @@ export default {
       state.file_upload_success = payload
     },
     setFiles (state, payload) {
-      state.upload_files = payload
+      let files = payload
+      if (state.upload_files.length > 0) {
+        state.upload_files.forEach((file) => {
+          files.push(file)
+        })
+      }
+      state.upload_files = files
     },
     setPrivate (state, payload) {
       state.isPrivate = payload
