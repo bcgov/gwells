@@ -35,10 +35,8 @@ export default {
     },
     initMap () {
       // Create map, with default centered and zoomed to show entire BC.
-      
       this.map = L.map(this.$el).setView([54.5, -126.5], 5)
       L.control.scale().addTo(this.map)
-
       // Add map layers.
       tiledMapLayer({url: 'https://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer'}).addTo(this.map)
       L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW/ows?', {
@@ -51,7 +49,7 @@ export default {
   },
   watch: {
     geom: function (newGeom, oldGeom) {
-      if ( oldGeom || newGeom ) {
+      if (oldGeom || newGeom) {
         var aquiferGeom = L.geoJSON(newGeom, {
           style: {
             'color': 'red'

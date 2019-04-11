@@ -3,7 +3,6 @@ import qs from 'querystring'
 
 const ApiService = {
   init () {
-
     axios.defaults.baseURL = process.env.AXIOS_BASE_URL
     this.baseURL = axios.defaults.baseURL
 

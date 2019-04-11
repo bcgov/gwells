@@ -68,7 +68,8 @@
                 <b-form-row>
                     <b-form-group class="aquifer-search-actions">
                       <b-button class="aquifer-buttons" variant="primary" type="submit" id="aquifers-search">Search
-                        <i v-if="loading" class="fa fa-circle-o-notch fa-spin ml-1"></i>                      
+                        <i v-if="loading" class="fa fa-circle-o-notch fa-spin ml-1">
+                        </i>
                       </b-button>
                       <b-button class="aquifer-buttons" variant="default" type="reset">Reset</b-button>
                     </b-form-group>
@@ -150,12 +151,11 @@
             </template>
           </b-table>
           <b-pagination
-            v-if="response.count > 30" 
+            v-if="response.count > 30"
             class="pull-right"
-            :total-rows="response.count" 
-            :per-page="limit" 
-            v-model="currentPage" 
-          />
+            :total-rows="response.count"
+            :per-page="limit"
+            v-model="currentPage"/>
         </b-col>
       </b-row>
     </b-card>
@@ -268,7 +268,7 @@ function orderingQueryStringToData (str) {
 }
 export default {
   components: {
-    'aquifer-map': AquiferMap,
+    'aquifer-map': AquiferMap
   },
   data () {
     let query = this.$route.query || {}
@@ -306,12 +306,12 @@ export default {
   },
   computed: {
     offset () { return parseInt(this.$route.query.offset, 10) || 0 },
-    displayOffset () { 
+    displayOffset () {
       return (this.currentPage * this.limit) - this.limit + 1
     },
     displayPageLength () {
-      if ( this.response.count > 30 ) {
-        if ( (this.currentPage * this.limit) > this.response.count ) {
+      if (this.response.count > 30) {
+        if ((this.currentPage * this.limit) > this.response.count) {
           return this.response.count
         }
         return this.currentPage * this.limit
@@ -343,12 +343,10 @@ export default {
         })
     },
     downloadCSV () {
-      window.open(ApiService.baseURL + "aquifers/csv?" + querystring.stringify(this.query))
-
+      window.open(ApiService.baseURL + 'aquifers/csv?' + querystring.stringify(this.query))
     },
     downloadXLSX () {
-      window.open(ApiService.baseURL + "aquifers/xlsx?" + querystring.stringify(this.query))
-
+      window.open(ApiService.baseURL + 'aquifers/xlsx?' + querystring.stringify(this.query))
     },
     fetchResourceSections () {
       ApiService.query('aquifers/sections').then((response) => {
@@ -384,7 +382,6 @@ export default {
       if (this.sections) {
         this.filterParams.resources__section__code = this.sections.join(',')
       }
-      
       this.updateQueryParams()
     },
     triggerSort () {
@@ -415,7 +412,7 @@ export default {
         params: { id: data.item.aquifer_id }
       })
     },
-    rowClicked(data) {
+    rowClicked (data) {
       this.$refs.aquiferMap.zoomToSelectedAquifer(data)
     }
   },
@@ -440,10 +437,10 @@ export default {
     })
 
     this.$on('featuresOnMap', (data) => {
-      const aquifer_ids_map = new Map()
-      data.map(o => aquifer_ids_map.set(o.defaultOptions.aquifer_id, true))
-      this.response.count = aquifer_ids_map.size
-      this.response.results = filter(this.aquifers_search_results, o => aquifer_ids_map.get(o.aquifer_id))
+      const aquiferIdsMap = new Map()
+      data.map(o => aquiferIdsMap.set(o.defaultOptions.aquifer_id, true))
+      this.response.count = aquiferIdsMap.size
+      this.response.results = filter(this.aquifers_search_results, o => aquiferIdsMap.get(o.aquifer_id))
     })
   },
   watch: {

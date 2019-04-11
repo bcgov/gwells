@@ -51,7 +51,6 @@ export default {
       this.initLeaflet()
       this.initMap()
     })
-
   },
 
   data () {
@@ -201,17 +200,15 @@ export default {
 
       this.handleEvents()
     },
-    getFeaturesOnMap(map) {
-        const layersInBound = []
-        const bounds = map.getBounds()
-
-        map.eachLayer((layer) => {
-          if ( layer.feature && bounds.overlaps(layer.getBounds())) {
-            layersInBound.push(layer)
-          }
-        })
-
-        return layersInBound
+    getFeaturesOnMap (map) {
+      const layersInBound = []
+      const bounds = map.getBounds()
+      map.eachLayer((layer) => {
+        if (layer.feature && bounds.overlaps(layer.getBounds())) {
+          layersInBound.push(layer)
+        }
+      })
+      return layersInBound
     },
     handleEvents () {
       const events = ['zoomend', 'moveend']
@@ -225,7 +222,7 @@ export default {
     },
     addAquifersToMap (aquifers) {
       const self = this
-      function popUpLinkHandler(e) {
+      function popUpLinkHandler (e) {
         self.$router.push({
           name: 'aquifers-view',
           params: {
@@ -233,8 +230,7 @@ export default {
           }
         })
       }
-
-      function getPopUp(aquifer) {
+      function getPopUp (aquifer) {
         const container = L.DomUtil.create('div', 'leaflet-popup-aquifer')
         const popUpLink = L.DomUtil.create('div', 'leaflet-popup-link')
         popUpLink.innerHTML = `<p>Aquifer ID: <span class="popup-link">${aquifer.aquifer_id}</span></p><p>Aqufier Name: <span class="popup-link">${aquifer.aquifer_name || ''}</span></p>`

@@ -43,6 +43,8 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
       <!---->
        
       <!---->
+       
+      <!---->
     </div>
   </div>
 </div>
@@ -87,6 +89,8 @@ exports[`View Component View mode matches the snapshot 1`] = `
         record="[object Object]"
         showid=""
       />
+       
+      <!---->
        
       <!---->
        
