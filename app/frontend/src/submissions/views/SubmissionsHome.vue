@@ -157,7 +157,8 @@ export default {
     ...mapActions('documentState', [
       'uploadFiles',
       'fileUploadSuccess',
-      'fileUploadFail'
+      'fileUploadFail',
+      'resetUploadFiles'
     ]),
     formSubmit () {
       if (!this.formChanges()) {
@@ -517,7 +518,7 @@ export default {
       Object.assign(this.$data, initialState())
       this.resetForm()
       this.$store.dispatch(FETCH_CODES)
-
+      this.resetUploadFiles()
       if (this.$route.params.id) {
         this.setWellTagNumber(this.$route.params.id)
       }
