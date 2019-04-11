@@ -104,7 +104,6 @@
                 "DB_REPLICATE": null,
                 "DJANGO_DEBUG":  null,
                 "ENABLE_ADDITIONAL_DOCUMENTS":  null,
-                "ENABLE_DATA_ENTRY":  null,
                 "ENABLE_GOOGLE_ANALYTICS": null,
                 "S3_PRIVATE_BUCKET": null,
                 "S3_PRIVATE_HOST": null,
@@ -423,7 +422,7 @@
                                                 "name": "gwells-global-config${NAME_SUFFIX}"
                                             }
                                         }
-                                    },                         
+                                    },
                                     {
                                         "name": "ENABLE_GOOGLE_ANALYTICS",
                                         "valueFrom": {
@@ -537,15 +536,6 @@
                                         "valueFrom": {
                                             "configMapKeyRef": {
                                                 "key": "SSO_PORT",
-                                                "name": "gwells-global-config${NAME_SUFFIX}"
-                                            }
-                                        }
-                                    },
-                                    {
-                                        "name": "ENABLE_DATA_ENTRY",
-                                        "valueFrom": {
-                                            "configMapKeyRef": {
-                                                "key": "ENABLE_DATA_ENTRY",
                                                 "name": "gwells-global-config${NAME_SUFFIX}"
                                             }
                                         }

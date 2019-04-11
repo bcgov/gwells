@@ -380,7 +380,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <b-col cols="12" lg="6"><span class="font-weight-bold">Water Quality Odour:</span> {{ form.water_quality_odour }}</b-col>
       </b-row>
       <b-row>
-        <b-col cols="12" lg="6"><span class="font-weight-bold">EMS ID:</span> {{ form.ems_id }}</b-col>
+        <b-col cols="12" lg="6"><span class="font-weight-bold">EMS ID:</span> {{ form.ems }}</b-col>
       </b-row>
     </fieldset>
 

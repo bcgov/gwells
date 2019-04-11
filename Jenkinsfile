@@ -517,10 +517,9 @@ pipeline {
 
                         // Select appropriate buildconfig
                         def appBuild = openshift.selector("bc", "${devAppName}")
-                        // temporarily set ENABLE_DATA_ENTRY=True during testing because False currently leads to a failing unit test
                         echo "Building"
-                        echo " \$ oc start-build -n moe-gwells-tools ${devAppName} --wait --env=ENABLE_DATA_ENTRY=true --follow=true"
-                        appBuild.startBuild("--wait", "--env=ENABLE_DATA_ENTRY=True").logs("-f")
+                        echo " \$ oc start-build -n moe-gwells-tools ${devAppName} --wait --follow=true"
+                        appBuild.startBuild("--wait").logs("-f")
                     }
                 }
             }
@@ -668,7 +667,7 @@ pipeline {
             }
         }
 
-        
+
         // Functional tests temporarily limited to smoke tests
         // See https://github.com/BCDevOps/BDDStack
         stage('DEV - Smoke Tests') {

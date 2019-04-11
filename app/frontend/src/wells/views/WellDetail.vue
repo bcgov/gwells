@@ -37,7 +37,7 @@
         <b-row>
           <b-col cols="12" md="4"><span class="font-weight-bold">Owner Name:</span> {{ well.owner_full_name }}</b-col>
           <b-col cols="12" md="4"><span class="font-weight-bold">Well Subclass:</span> {{ well.subclass }}</b-col>
-          <b-col cols="12" md="4"><span class="font-weight-bold">Environmental Monitoring System (EMS) ID:</span> {{ well.ems_id }}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Environmental Monitoring System (EMS) ID:</span> {{ well.ems || well.ems_id }}</b-col>
         </b-row>
         <b-row>
           <b-col cols="12" md="4"><span class="font-weight-bold">Licensed Status:</span> {{ well.licenced_status }}</b-col>
@@ -470,7 +470,7 @@ export default {
     },
     show () {
       return {
-        edit: (!!this.config && this.config.enable_data_entry === true) && this.userRoles.wells.edit === true
+        edit: !!this.config && this.userRoles.wells.edit === true
       }
     },
     UTM () {

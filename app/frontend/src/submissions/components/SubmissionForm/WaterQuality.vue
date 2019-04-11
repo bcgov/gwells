@@ -71,8 +71,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
             id="emsID"
             label="Environmental Monitoring System (EMS) ID"
             v-model="emsIDInput"
-            :errors="errors['ems_id']"
-            :loaded="fieldsLoaded['ems_id']"></form-input>
+            :errors="errors['ems']"
+            :loaded="fieldsLoaded['ems']"></form-input>
       </b-col>
     </b-row>
   </fieldset>
