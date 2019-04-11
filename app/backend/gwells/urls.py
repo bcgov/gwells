@@ -42,6 +42,8 @@ DJANGO_ADMIN_URL = get_env_variable(
 
 
 urlpatterns = [
+    url(r'^' + app_root_slash, include('submissions.urls')),
+
     url(r'^' + app_root_slash + 'robots\.txt$',
         TemplateView.as_view(template_name='robots.txt',
                              content_type='text/plain'),
@@ -78,13 +80,8 @@ urlpatterns = [
     # main web application page
     url(r'^' + app_root_slash, HomeView.as_view(), name='home'),
 
-
 ]
 
-if settings.ENABLE_DATA_ENTRY:
-    urlpatterns = [
-        url(r'^' + app_root_slash, include('submissions.urls')),
-    ] + urlpatterns
 
 if settings.DEBUG:
     import debug_toolbar

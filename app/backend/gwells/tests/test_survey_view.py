@@ -97,48 +97,44 @@ class SurveyViewPutTestCase(SurveyViewTestCase):
         pass
 
     def test_put(self):
-        if settings.ENABLE_DATA_ENTRY:
+        fixture_file = '/'.join([settings.FIXTURES_DIRS[0],
+                                 'survey_get_fixture.json'])
 
-            fixture_file = '/'.join([settings.FIXTURES_DIRS[0],
-                                     'survey_get_fixture.json'])
+        # setup
+        group_name = 'admin'
+        username = 'admin'
+        password = 'admin'
+        email = 'admin@admin.com'
+        self.user = User.objects.create_user(
+            username=username, password=password, email=email)
+        admin_group = Group.objects.get(name=group_name)
+        admin_group.user_set.add(self.user)
+        self.client.login(username=username, password=password)
 
-            # setup
-            group_name = 'admin'
-            username = 'admin'
-            password = 'admin'
-            email = 'admin@admin.com'
-            self.user = User.objects.create_user(
-                username=username, password=password, email=email)
-            admin_group = Group.objects.get(name=group_name)
-            admin_group.user_set.add(self.user)
-            self.client.login(username=username, password=password)
+        # test
+        with open(fixture_file) as fixture:
+            fixture = list(serializers.deserialize('json', fixture))
+            # make sure the fixture hasn't changed
+            self.assertEqual(1, len(fixture))
+            survey = fixture[0]
 
-            # test
-            with open(fixture_file) as fixture:
-                fixture = list(serializers.deserialize('json', fixture))
-                # make sure the fixture hasn't changed
-                self.assertEqual(1, len(fixture))
-                survey = fixture[0]
+            data = {'survey_introduction_text': survey.object.survey_introduction_text,
+                    'survey_page': survey.object.survey_page,
+                    '_method': 'put'}
 
-                data = {'survey_introduction_text': survey.object.survey_introduction_text,
-                        'survey_page': survey.object.survey_page,
-                        '_method': 'put'}
+            response = self.client.post(reverse('survey'), data)
 
-                response = self.client.post(reverse('survey'), data)
+            # 302 from redirect
+            self.assertEqual(response.status_code, HTTPStatus.FOUND)
+            self.assertEqual(response.url, reverse('site_admin'))
 
-                # 302 from redirect
-                self.assertEqual(response.status_code, HTTPStatus.FOUND)
-                self.assertEqual(response.url, reverse('site_admin'))
+            self.assertEqual(1, Survey.objects.all().count())
+            self.assertEqual(survey.object.survey_introduction_text, Survey.objects.all()[
+                             0].survey_introduction_text)
 
-                self.assertEqual(1, Survey.objects.all().count())
-                self.assertEqual(survey.object.survey_introduction_text, Survey.objects.all()[
-                                 0].survey_introduction_text)
-
-            self.client.logout()
-            self.user.delete()
-            admin_group.user_set.remove(self.user)
-        else:
-            pass
+        self.client.logout()
+        self.user.delete()
+        admin_group.user_set.remove(self.user)
 
 
 class SurveyViewPostTestCase(SurveyViewTestCase):
@@ -161,51 +157,47 @@ class SurveyViewPostTestCase(SurveyViewTestCase):
         admin_group.permissions.add(permission_d)
 
     def test_post(self):
-        if settings.ENABLE_DATA_ENTRY:
+        # setup
+        group_name = 'admin'
+        username = 'admin'
+        password = 'admin'
+        email = 'admin@admin.com'
+        self.user = User.objects.create_user(
+            username=username, password=password, email=email)
+        admin_group = Group.objects.get(name=group_name)
+        admin_group.user_set.add(self.user)
+        self.client.login(username=username, password=password)
 
-            # setup
-            group_name = 'admin'
-            username = 'admin'
-            password = 'admin'
-            email = 'admin@admin.com'
-            self.user = User.objects.create_user(
-                username=username, password=password, email=email)
-            admin_group = Group.objects.get(name=group_name)
-            admin_group.user_set.add(self.user)
-            self.client.login(username=username, password=password)
+        # test
+        new_survey_introduction_text = 'new survey introduction text'
+        new_survey_page = 'r'
+        new_survey_link = 'newlink.ca'
 
-            # test
-            new_survey_introduction_text = 'new survey introduction text'
-            new_survey_page = 'r'
-            new_survey_link = 'newlink.ca'
+        data = {'form-number': 0,
+                'form-0-survey_guid': '495a9927-5a13-490e-bf1d-08bf2048b098',
+                'form-0-survey_introduction_text': new_survey_introduction_text,
+                'form-0-survey_page': new_survey_page,
+                'form-0-survey_link': new_survey_link,
+                '_method': 'post'}
 
-            data = {'form-number': 0,
-                    'form-0-survey_guid': '495a9927-5a13-490e-bf1d-08bf2048b098',
-                    'form-0-survey_introduction_text': new_survey_introduction_text,
-                    'form-0-survey_page': new_survey_page,
-                    'form-0-survey_link': new_survey_link,
-                    '_method': 'post'}
+        response = self.client.post(reverse('survey'), data)
 
-            response = self.client.post(reverse('survey'), data)
+        # 302 from redirect
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)
+        self.assertEqual(1, Survey.objects.all().count())
 
-            # 302 from redirect
-            self.assertEqual(response.status_code, HTTPStatus.FOUND)
-            self.assertEqual(1, Survey.objects.all().count())
+        survey = Survey.objects.all()[0]
+        self.assertEqual(str(survey.survey_guid),
+                         '495a9927-5a13-490e-bf1d-08bf2048b098')
+        self.assertEqual(survey.survey_introduction_text,
+                         new_survey_introduction_text)
+        self.assertEqual(survey.survey_page, new_survey_page)
+        self.assertEqual(survey.survey_link, new_survey_link)
 
-            survey = Survey.objects.all()[0]
-            self.assertEqual(str(survey.survey_guid),
-                             '495a9927-5a13-490e-bf1d-08bf2048b098')
-            self.assertEqual(survey.survey_introduction_text,
-                             new_survey_introduction_text)
-            self.assertEqual(survey.survey_page, new_survey_page)
-            self.assertEqual(survey.survey_link, new_survey_link)
-
-            # teardown
-            self.client.logout()
-            self.user.delete()
-            admin_group.user_set.remove(self.user)
-        else:
-            pass
+        # teardown
+        self.client.logout()
+        self.user.delete()
+        admin_group.user_set.remove(self.user)
 
 
 class SurveyViewDeleteTestCase(SurveyViewTestCase):
@@ -228,39 +220,36 @@ class SurveyViewDeleteTestCase(SurveyViewTestCase):
         admin_group.permissions.add(permission_d)
 
     def test_delete(self):
-        if settings.ENABLE_DATA_ENTRY:
-            # setup
-            group_name = 'admin'
-            username = 'admin'
-            password = 'admin'
-            email = 'admin@admin.com'
-            self.user = User.objects.create_user(
-                username=username, password=password, email=email)
-            admin_group = Group.objects.get(name=group_name)
-            admin_group.user_set.add(self.user)
-            self.client.login(username=username, password=password)
+        # setup
+        group_name = 'admin'
+        username = 'admin'
+        password = 'admin'
+        email = 'admin@admin.com'
+        self.user = User.objects.create_user(
+            username=username, password=password, email=email)
+        admin_group = Group.objects.get(name=group_name)
+        admin_group.user_set.add(self.user)
+        self.client.login(username=username, password=password)
 
-            # test
-            # validate that setup complete correctly --fixture
-            self.assertEqual(1, Survey.objects.all().count())
-            data = {'form-number': 0,
-                    'form-0-survey_guid': '495a9927-5a13-490e-bf1d-08bf2048b098',
-                    '_method': 'delete'}
+        # test
+        # validate that setup complete correctly --fixture
+        self.assertEqual(1, Survey.objects.all().count())
+        data = {'form-number': 0,
+                'form-0-survey_guid': '495a9927-5a13-490e-bf1d-08bf2048b098',
+                '_method': 'delete'}
 
-            response = self.client.post(reverse('survey'), data)
+        response = self.client.post(reverse('survey'), data)
 
-            # 302 from redirect
-            self.assertEqual(response.status_code, HTTPStatus.FOUND)
-            self.assertEqual(response.url, reverse('site_admin'))
+        # 302 from redirect
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)
+        self.assertEqual(response.url, reverse('site_admin'))
 
-            self.assertEqual(0, Survey.objects.all().count())
+        self.assertEqual(0, Survey.objects.all().count())
 
-            # teardown
-            self.client.logout()
-            self.user.delete()
-            admin_group.user_set.remove(self.user)
-        else:
-            pass
+        # teardown
+        self.client.logout()
+        self.user.delete()
+        admin_group.user_set.remove(self.user)
 
 
 class SurveyViewNoMethodTestCase(SurveyViewTestCase):
@@ -282,37 +271,33 @@ class SurveyViewNoMethodTestCase(SurveyViewTestCase):
         admin_group.permissions.add(permission_d)
 
     def test_nomethod(self):
-        if settings.ENABLE_DATA_ENTRY:
-            # setup
-            group_name = 'admin'
-            username = 'admin'
-            password = 'admin'
-            email = 'admin@admin.com'
-            self.user = User.objects.create_user(
-                username=username, password=password, email=email)
-            admin_group = Group.objects.get(name=group_name)
-            admin_group.user_set.add(self.user)
-            self.client.login(username=username, password=password)
+        # setup
+        group_name = 'admin'
+        username = 'admin'
+        password = 'admin'
+        email = 'admin@admin.com'
+        self.user = User.objects.create_user(
+            username=username, password=password, email=email)
+        admin_group = Group.objects.get(name=group_name)
+        admin_group.user_set.add(self.user)
+        self.client.login(username=username, password=password)
 
-            logger = logging.getLogger('django.request')
-            previous_level = logger.getEffectiveLevel()
-            logger.setLevel(logging.ERROR)
+        logger = logging.getLogger('django.request')
+        previous_level = logger.getEffectiveLevel()
+        logger.setLevel(logging.ERROR)
 
-            # test
-            data = {}
+        # test
+        data = {}
 
-            response = self.client.post(reverse('survey'), data)
+        response = self.client.post(reverse('survey'), data)
 
-            self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
 
-            # teardown
-            self.client.logout()
-            self.user.delete()
-            admin_group.user_set.remove(self.user)
-            logger.setLevel(previous_level)
-
-        else:
-            pass
+        # teardown
+        self.client.logout()
+        self.user.delete()
+        admin_group.user_set.remove(self.user)
+        logger.setLevel(previous_level)
 
 
 class SurveyViewInvalidMethodTestCase(SurveyViewTestCase):
@@ -336,26 +321,23 @@ class SurveyViewInvalidMethodTestCase(SurveyViewTestCase):
         admin_group.permissions.add(permission_d)
 
     def test_invalid_method(self):
-        if settings.ENABLE_DATA_ENTRY:
-            # validate that setup complete correctly --fixture
-            self.assertEqual(1, Survey.objects.all().count())
+        # validate that setup complete correctly --fixture
+        self.assertEqual(1, Survey.objects.all().count())
 
-            data = {'form-number': 0,
-                    'form-0-survey_guid': '495a9927-5a13-490e-bf1d-08bf2048b098',
-                    '_method': 'foo'}
+        data = {'form-number': 0,
+                'form-0-survey_guid': '495a9927-5a13-490e-bf1d-08bf2048b098',
+                '_method': 'foo'}
 
-            # setup
-            logger = logging.getLogger('django.request')
-            previous_level = logger.getEffectiveLevel()
-            logger.setLevel(logging.ERROR)
+        # setup
+        logger = logging.getLogger('django.request')
+        previous_level = logger.getEffectiveLevel()
+        logger.setLevel(logging.ERROR)
 
-            # defaults to get
-            response = self.client.post(reverse('survey'), data)
+        # defaults to get
+        response = self.client.post(reverse('survey'), data)
 
-            self.assertEqual(response.status_code,
-                             HTTPStatus.INTERNAL_SERVER_ERROR)
+        self.assertEqual(response.status_code,
+                         HTTPStatus.INTERNAL_SERVER_ERROR)
 
-            # teardown
-            logger.setLevel(previous_level)
-        else:
-            pass
+        # teardown
+        logger.setLevel(previous_level)
