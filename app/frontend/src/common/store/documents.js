@@ -119,6 +119,16 @@ export default {
       }
       state.upload_files = files
     },
+    removeFile (state, file) {
+      let l = state.upload_files.length
+      if (l > 0) {
+        for (let i = l - 1; i >= 0; i--) {
+          if (state.upload_files[i].name === file) {
+            state.upload_files.splice(i, 1)
+          }
+        }
+      }
+    },
     setPrivate (state, payload) {
       state.isPrivate = payload
     }
