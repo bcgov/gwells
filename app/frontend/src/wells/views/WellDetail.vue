@@ -496,7 +496,7 @@ export default {
 
       if (this.errorNotFound) {
         links.push({
-          text: 'Well not found',
+          text: 'Not found',
           active: true
         })
         return links
