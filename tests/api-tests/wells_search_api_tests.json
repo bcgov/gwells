@@ -3446,6 +3446,208 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "ordering param (on drilling_methods ascending)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+								"exec": [
+									"const ascResultSort = (a, b) => {",
+									"  if (a === null){",
+									"    return 1;",
+									"  }",
+									"  else if (b === null) {",
+									"    return -1;",
+									"  }",
+									"  else if (a < b) {",
+									"    return -1;",
+									"  }",
+									"  else if (b < a) {",
+									"    return 1;",
+									"  }",
+									"  else {",
+									"    return 0;",
+									"  }",
+									"};",
+									"",
+									"pm.test(\"Result ordered by drilling methods ascending\", function () {",
+									"  const ascDrillingMethods = pm.response.json().results.map(result => result.drilling_methods[0]).sort(ascResultSort);",
+									"  pm.response.json().results.forEach((result, index) => {",
+									"    const expectedDrillingMethod = ascDrillingMethods[index];",
+									"    pm.expect(result.drilling_methods[0]).to.equal(expectedDrillingMethod);",
+									"  });",
+									"});",
+									"",
+									"pm.test(\"Result count matches number of results\", function () {",
+									"    pm.expect(pm.response.json().count).to.equal(pm.response.json().results.length)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/wells?ordering=drilling_methods",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"wells"
+							],
+							"query": [
+								{
+									"key": "ordering",
+									"value": "drilling_methods"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ordering param (on surface_seal_method ascending)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+								"exec": [
+									"const ascResultSort = (a, b) => {",
+									"  if (a === null){",
+									"    return 1;",
+									"  }",
+									"  else if (b === null) {",
+									"    return -1;",
+									"  }",
+									"  else if (a < b) {",
+									"    return -1;",
+									"  }",
+									"  else if (b < a) {",
+									"    return 1;",
+									"  }",
+									"  else {",
+									"    return 0;",
+									"  }",
+									"};",
+									"",
+									"pm.test(\"Result ordered by surface_seal_method ascending\", function () {",
+									"  const ascSurfaceSealMethods = pm.response.json().results.map(result => result.surface_seal_method).sort(ascResultSort);",
+									"  pm.response.json().results.forEach((result, index) => {",
+									"    const expectedSealMethod = ascSurfaceSealMethods[index];",
+									"    pm.expect(result.surface_seal_method).to.equal(expectedSealMethod);",
+									"  });",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/wells?ordering=surface_seal_method",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"wells"
+							],
+							"query": [
+								{
+									"key": "ordering",
+									"value": "surface_seal_method"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ordering param (on well_class descending)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+								"exec": [
+									"const descResultSort = (a, b) => {",
+									"",
+									"  if (a === null){",
+									"    return -1;",
+									"  }",
+									"  else if (b === null) {",
+									"    return 1;",
+									"  }",
+									"  else if (a < b) {",
+									"    return 1;",
+									"  }",
+									"  else if (b < a) {",
+									"    return -1;",
+									"  }",
+									"  else {",
+									"    return 0;",
+									"  }",
+									"};",
+									"",
+									"pm.test(\"Result ordered by well class descending\", function () {",
+									"  const descWellClasses = pm.response.json().results.map(result => result.well_class).sort(descResultSort);",
+									"  pm.response.json().results.forEach((result, index) => {",
+									"    const expectedWellClass = descWellClasses[index];",
+									"    pm.expect(result.well_class).to.equal(expectedWellClass);",
+									"  });",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/wells?ordering=-well_class",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"wells"
+							],
+							"query": [
+								{
+									"key": "ordering",
+									"value": "-well_class"
+								}
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"event": [

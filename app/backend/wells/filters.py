@@ -15,6 +15,7 @@ import json
 from collections import OrderedDict
 
 from django import forms
+from django.core.exceptions import FieldDoesNotExist
 from django.http import QueryDict
 from django.contrib.gis.geos import GEOSException, Polygon
 from django.db.models import Max, Min, Q, QuerySet
@@ -542,32 +543,84 @@ class WellListFilterBackend(filters.DjangoFilterBackend):
 
 class WellListOrderingFilter(OrderingFilter):
     """
-    Custom ordering filter to avoid duplicate results when ordering by
-    a ManyToManyField. We can just use the highest/lowest display order
-    here.
-    """
+    Custom ordering filter to ignore model ordering, and use the description field.
 
-    m2m_fields = (
-        'development_methods',
-        'drilling_methods',
-        'water_quality_characteristics',
-    )
+    We also avoid duplicate results when ordering by a ManyToManyField, by
+    annotating and sorting on the annotated field.
+    """
+    relations = {
+        field.name: field
+        for field in Well._meta.get_fields()
+        if field.is_relation and not field.auto_created
+    }
+    m2m_relations = {
+        field.name
+        for field in Well._meta.get_fields()
+        if field.many_to_many and not field.auto_created
+    }
+
+    def get_ordering(self, request, queryset, view):
+        ordering = super().get_ordering(request, queryset, view)
+        updated_ordering = []
+
+        for order in ordering:
+            is_desc = order.startswith('-')
+            field_name = order.lstrip('-')
+            if field_name in self.relations:
+                field = self.relations[field_name]
+                related_ordering = self.get_related_field_ordering(field)
+                for related_order in related_ordering:
+                    if is_desc:
+                        related_order = '-{}'.format(related_order)
+                    updated_ordering.append(related_order)
+            else:
+                updated_ordering.append(order)
+
+        return updated_ordering
+    
+    def get_related_field_ordering(self, related_field):
+        if related_field.name == 'land_district_code':
+            return ['land_district__land_district_code', 'land_district__name']
+        elif related_field.name == 'well_subclass':
+            return ['well_class__description', 'well_subclass__description']
+        elif related_field.name == 'person_responsible':
+            return ['person_responsible__name']
+        elif related_field.name == 'company_of_person_responsible':
+            return ['company_of_person_responsible__name']
+
+        # Check if the description column actually exists
+        try:
+            related_field.related_model._meta.get_field('description')
+        except (FieldDoesNotExist):
+            # Fallback to the 'id' column
+            return ['{}_id'.format(related_field.name)]
+        else:
+            return ['{}__description'.format(related_field.name)]
 
     def filter_queryset(self, request, queryset, view):
+        """
+        If we get an m2m field, annotate with max or min to avoid
+        duplicate results.
+        """
         ordering = self.get_ordering(request, queryset, view)
 
         for index, order in enumerate(ordering):
-            field = order.lstrip('-')
-            if field in self.m2m_fields:
-                if order.startswith('-'):
-                    annotation = Max('{}__display_order'.format(field))
+            field, *_ = order.lstrip('-').split('__')
+            if field in self.m2m_relations:
+                is_desc = order.startswith('-')
+                if is_desc:
+                    aggregate_class = Max
                 else:
-                    annotation = Min('{}__display_order'.format(field))
+                    aggregate_class = Min
+                aggregate = aggregate_class(order.lstrip('-'))
                 annotation_kwargs = {
-                    '{}_display_order'.format(field): annotation
+                    '{}_order_annotation'.format(field): aggregate
                 }
                 queryset = queryset.annotate(**annotation_kwargs)
-                ordering[index] = '{}_display_order'.format(order)
+                order = '{}_order_annotation'.format(field)
+                if is_desc:
+                    order = '-{}'.format(order)
+                ordering[index] = order
 
         if ordering:
             return queryset.order_by(*ordering)
