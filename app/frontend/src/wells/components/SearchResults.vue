@@ -261,7 +261,7 @@ export default {
       }
     },
     selectOptionFormat (value, column, options = null) {
-      if (value === null || value === '') {
+      if (value === undefined || value === null || value === '') {
         return ''
       }
 
