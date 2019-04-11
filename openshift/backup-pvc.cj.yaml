@@ -71,12 +71,12 @@ parameters:
     displayName: "Job Backoff Limit"
     description: "The number of attempts to try for a successful job outcome."
     value: "0"
-    required: false
+    required: true
   - name: "JOB_DEADLINE_SECONDS"
     displayName: "Job deadline (seconds)"
     description: "The maximum amount of time to let this job run."
     value: "600"
-    required: false
+    required: true
 objects:
   - apiVersion: v1
     kind: PersistentVolumeClaim
@@ -104,7 +104,6 @@ objects:
       failedJobsHistoryLimit: ${{FAILED_JOBS_HISTORY_LIMIT}}
       jobTemplate:
         metadata:
-          creationTimestamp: null
           labels:
             app: ${SOURCE_PVC}-backup
             cronjob: ${SOURCE_PVC}-backup
@@ -112,22 +111,16 @@ objects:
         spec:
           backoffLimit: ${{JOB_BACKOFF_LIMIT}}
           template:
-            metadata:
-              creationTimestamp: null
             spec:
               activeDeadlineSeconds: ${{JOB_DEADLINE_SECONDS}}
               containers:
               - command:
                 - /bin/bash
                 - -c
-                - cd /mnt; ls -lh; sleep 5; ls -lh; sleep 5; du -h --max-depth=1; cp -r ./source ./destination; sleep 5; du -h --max-depth=1; sleep 300
-                env:
-                - name: BACKUP_DIR
-                  value: /backups/
+                - cd /mnt; cp -r ./source ./destination; du -h --max-depth=1
                 image: docker-registry.default.svc:5000/${IMAGE_NAMESPACE}/${SOURCE_IMAGE_NAME}:${SOURCE_IMAGE_TAG}
                 imagePullPolicy: Always
                 name: backup-cronjob
-                resources: {}
                 terminationMessagePath: /dev/termination-log
                 terminationMessagePolicy: File
                 volumeMounts:
@@ -135,12 +128,10 @@ objects:
                   name: ${JOB_NAME}
                 - mountPath: /mnt/source/
                   name: ${SOURCE_PVC}
+                  readOnly: true
               dnsPolicy: ClusterFirst
               restartPolicy: Never
               schedulerName: default-scheduler
-              securityContext: {}
-              serviceAccount: default
-              serviceAccountName: default
               terminationGracePeriodSeconds: 30
               volumes:
               - name: ${JOB_NAME}
@@ -151,4 +142,3 @@ objects:
                   claimName: ${SOURCE_PVC}
       schedule: ${SCHEDULE}
       successfulJobsHistoryLimit: ${{SUCCESS_JOBS_HISTORY_LIMIT}}
-      suspend: false
