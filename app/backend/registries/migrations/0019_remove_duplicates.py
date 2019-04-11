@@ -5,7 +5,7 @@ from django.utils import timezone
 from django.db import transaction
 from django.db import migrations
 
-from gwells.models import DATALOAD_USER
+from gwells.models import DE_DUPLICATE_USER
 
 
 logger = logging.getLogger(__name__)
@@ -101,7 +101,7 @@ def expire_duplicates(Organization, exact=True, trial_run=True):
                                                                 target=org))
                                 registration.organization = org
                                 registration.update_date = timezone.now()
-                                registration.update_user = DATALOAD_USER
+                                registration.update_user = DE_DUPLICATE_USER
                                 if not trial_run:
                                     registration.save()
                             # Get the notes associated with this org, and attach it to our new master.
@@ -110,7 +110,7 @@ def expire_duplicates(Organization, exact=True, trial_run=True):
                                     note=note, target=org))
                                 note.organization = org
                                 note.update_date = timezone.now()
-                                note.update_user = DATALOAD_USER
+                                note.update_user = DE_DUPLICATE_USER
                                 if not trial_run:
                                     note.save()
                             logger.info('Expiring {organization.name} ({organization.org_guid})'.format(
@@ -118,7 +118,7 @@ def expire_duplicates(Organization, exact=True, trial_run=True):
                             ))
                             duplicate.expiry_date = timezone.now()
                             duplicate.update_date = timezone.now()
-                            duplicate.update_user = DATALOAD_USER
+                            duplicate.update_user = DE_DUPLICATE_USER
                             if not trial_run:
                                 duplicate.save()
                         # Exclude this duplicate from future consideration.
