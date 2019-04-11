@@ -71,7 +71,7 @@ export default {
     show () {
       const adminMeta = document.head.querySelector('meta[name="show.admin"]')
       return {
-        dataEntry: (!!this.config && this.config.enable_data_entry === true) && this.userRoles.submissions.edit === true,
+        dataEntry: !!this.config && this.userRoles.submissions.edit === true,
         admin: adminMeta ? adminMeta.content === 'true' : false,
         aquifers: !!this.config && this.config.enable_aquifers_search === true
       }
