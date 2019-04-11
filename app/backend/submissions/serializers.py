@@ -33,6 +33,7 @@ from wells.serializers import (
     CasingSerializer,
     DecommissionDescriptionSerializer,
     ScreenSerializer,
+    LegacyCasingSerializer,
     LinerPerforationSerializer,
     LithologyDescriptionSerializer,
 )
@@ -190,7 +191,7 @@ class WellSubmissionStackerSerializer(WellSubmissionSerializerBase):
 class WellSubmissionLegacySerializer(WellSubmissionSerializerBase):
     """ Class with no validation, and all possible fields, used by stacker to create legacy records """
 
-    casing_set = CasingSerializer(many=True, required=False)
+    casing_set = LegacyCasingSerializer(many=True, required=False)
     screen_set = ScreenSerializer(many=True, required=False)
     linerperforation_set = LinerPerforationSerializer(
         many=True, required=False)
@@ -450,7 +451,8 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
     def to_representation(self, instance):
         response = super().to_representation(instance)
         response['person_responsible'] = PersonNameSerializer(instance.person_responsible).data
-        response['company_of_person_responsible'] = OrganizationNameListSerializer(instance.company_of_person_responsible).data
+        response['company_of_person_responsible'] = OrganizationNameListSerializer(
+            instance.company_of_person_responsible).data
         return response
 
     def get_well_activity_type(self):
