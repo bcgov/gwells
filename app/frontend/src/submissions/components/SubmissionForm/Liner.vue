@@ -98,7 +98,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 <th class="font-weight-normal">Perforated To ft (bgl)</th>
                 <th></th>
               </tr>
-              <tr v-for="(liner, index) in linerPerforationsInput" :key="index">
+              <tr v-for="(liner, index) in linerPerforationsData" :key="index">
                 <td class="pb-0 pt-1">
                   <form-input
                     :id="`liner_perforated_from_${index}`"
@@ -186,7 +186,9 @@ export default {
   data () {
     return {
       confirmRemoveModal: false,
-      rowIndexToRemove: null
+      rowIndexToRemove: null,
+      linerPerforationsData: [],
+      pageLoaded: false
     }
   },
   methods: {
@@ -203,14 +205,14 @@ export default {
       return {}
     },
     addRow () {
-      this.linerPerforations.push({})
+      this.linerPerforationsData.push({start: '', end: ''})
     },
     removeRowByIndex (index) {
-      this.linerPerforations.splice(index, 1)
+      this.linerPerforationsData.splice(index, 1)
       this.rowIndexToRemove = null
     },
     removeRowIfOk (rowNumber) {
-      if (this.rowHasValues(this.linerPerforations[rowNumber])) {
+      if (this.rowHasValues(this.linerPerforationsData[rowNumber])) {
         this.rowIndexToRemove = rowNumber
         this.confirmRemoveModal = true
       } else {
@@ -229,13 +231,41 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['codes'])
+    ...mapGetters(['codes']),
+    computedLinerPerforations: function () {
+      return Object.assign({}, this.screensData)
+    }
+  },
+  watch: {
+    computedLinerPerforations: {
+      deep: true,
+      handler: function (n, o) {
+        let perforations = []
+        this.linerPerforationsData.forEach((d) => {
+          if (!Object.values(d).every(x => (x === ''))) {
+            perforations.push(d)
+          }
+        })
+        if (this.pageLoaded && this.saveDisabled) {
+          perforations.push({start: '', end: ''})
+        }
+        this.$emit('update:linerPerforations', perforations)
+      }
+    }
   },
   created () {
     // When component created, add an initial row of lithology.
-    if (!this.linerPerforationsInput.length) {
-      this.linerPerforationsInput.push({}, {}, {})
+    if (!this.linerPerforations.length) {
+      for (let i = 0; i < 3; i++) {
+        this.addRow()
+      }
+    } else {
+      Object.assign(this.linerPerforationsData, this.linerPerforations)
+      this.addRow()
     }
+  },
+  updated () {
+    this.pageLoaded = true
   }
 }
 </script>
