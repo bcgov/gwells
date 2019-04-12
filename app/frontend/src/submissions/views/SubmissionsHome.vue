@@ -103,6 +103,7 @@ export default {
   },
   data () {
     return {
+      compareForm: {},
       // event bus; use by emitting events on the events instance eg. this.events.$emit('updated')
       events: new Vue(),
       ...initialState()
@@ -534,6 +535,8 @@ export default {
         this.formIsFlat = false
       }
       this.fetchFiles()
+      // Set initial form fields for comparison with user input changes
+      Object.assign(this.compareForm, this.form)
     },
     fetchWellDataForStaffEdit (options = {}) {
       const { reloadPage = true } = options
@@ -600,7 +603,6 @@ function initialState () {
     trackValueChanges: false,
     errors: {},
     form: {},
-    compareForm: {},
     submissionsHistory: [], // historical submissions for each well (comes into play for staff edits)
     formOptions: {},
     uploadedFiles: {},
