@@ -5,31 +5,31 @@ metadata:
   name: gwells-backend-bc
   creationTimestamp: 
 parameters:
-- name: NAME_SUFFIX
+- name: NAME
   displayName: Name Suffix
   description: A suffix appended to all objects
   required: true
   value: backup-pvc
-- name: SOURCE_REPOSITORY_URL
+- name: SRC_REPO_URL
   required: true
   value: https://github.com/bcgov/gwells
-- name: SOURCE_REPOSITORY_REF
+- name: SRC_REPO_BRANCH
   required: true
-  value: task/1716_minioBk
+  value: master
 objects:
 - kind: ImageStream
   apiVersion: v1
   metadata:
-    name: backup-pvc
+    name: ${NAME}
 - kind: BuildConfig
   apiVersion: v1
   metadata:
-    name: backup-pvc
+    name: ${NAME}
     creationTimestamp: 
     labels:
-      appver: gwells${NAME_SUFFIX}
+      appver: ${NAME}
     annotations:
-      description: Defines how to build the application
+      description: Backup one PVC to another with rsync
   spec:
     successfulBuildsHistoryLimit: 3
     failedBuildsHistoryLimit: 3
@@ -40,12 +40,12 @@ objects:
     source:
       type: Git
       git:
-        uri: "${SOURCE_REPOSITORY_URL}"
-        ref: "${SOURCE_REPOSITORY_REF}"
+        uri: "${SRC_REPO_URL}"
+        ref: "${SRC_REPO_BRANCH}"
       contextDir: openshift/docker/backup-pvc
     strategy:
       type: Docker
     output:
       to:
         kind: ImageStreamTag
-        name: backup-pvc:latest
+        name: ${NAME}:latest
