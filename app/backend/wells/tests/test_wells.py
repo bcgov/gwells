@@ -14,12 +14,13 @@
 
 from django.urls import reverse
 from django.contrib.gis.geos import Point
+from django.contrib.auth.models import Group, User
 from rest_framework.test import APITestCase
 from rest_framework import status
 import reversion
 
 from wells.models import Well
-from gwells.roles import WELLS_VIEWER_ROLE, WELLS_EDIT_ROLE
+from gwells.roles import roles_to_groups, WELLS_VIEWER_ROLE, WELLS_EDIT_ROLE
 
 
 class TestWellLocationsSearch(APITestCase):
@@ -38,8 +39,7 @@ class TestWellHistory(APITestCase):
     def setUp(self):
         roles = [WELLS_VIEWER_ROLE, WELLS_EDIT_ROLE]
         for role in roles:
-            group = Group(name=role)
-            group.save()
+            Group.objects.get_or_create(name=role)
         user, _created = User.objects.get_or_create(username='test')
         user.profile.username = user.username
         user.save()
