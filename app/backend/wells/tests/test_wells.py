@@ -13,9 +13,13 @@
 """
 
 from django.urls import reverse
-
+from django.contrib.gis.geos import Point
 from rest_framework.test import APITestCase
 from rest_framework import status
+import reversion
+
+from wells.models import Well
+from gwells.roles import WELLS_VIEWER_ROLE, WELLS_EDIT_ROLE
 
 
 class TestWellLocationsSearch(APITestCase):
@@ -24,5 +28,44 @@ class TestWellLocationsSearch(APITestCase):
     def test_well_locations(self):
         # Basic test to ensure that the well location search returns a non-error response
         url = reverse('well-locations')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+class TestWellHistory(APITestCase):
+    fixtures = ['gwells-codetables', 'wellsearch-codetables', 'wellsearch']
+
+    def setUp(self):
+        roles = [WELLS_VIEWER_ROLE, WELLS_EDIT_ROLE]
+        for role in roles:
+            group = Group(name=role)
+            group.save()
+        user, _created = User.objects.get_or_create(username='test')
+        user.profile.username = user.username
+        user.save()
+        roles_to_groups(user, roles)
+        self.client.force_authenticate(user)
+
+    def test_well_history(self):
+        url = reverse('well-history', kwargs={'well_id': 123})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_well_history_404(self):
+        """ ensure 404s are handled properly by the overridden get method on this view class"""
+        url = reverse('well-history', kwargs={'well_id': 987654321})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_well_history_after_geom_update(self):
+        """ ensure Point/GEOSGeometry fields are handled properly when getting well history"""
+
+        well = Well.objects.get(pk=123)
+
+        with reversion.create_revision():
+            well.geom = Point(123, 51)
+            well.save()
+
+        url = reverse('well-history', kwargs={'well_id': 123})
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)

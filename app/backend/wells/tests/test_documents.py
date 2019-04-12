@@ -40,3 +40,8 @@ class DocumentTests(TestCase):
 
         self.assertEqual(len(url_list), 2)
         self.assertEqual(url_list[1]['name'], 'test-object2')
+
+    def test_documents_404(self):
+        url = reverse('file-list', kwargs={'well_id': 987654321})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
