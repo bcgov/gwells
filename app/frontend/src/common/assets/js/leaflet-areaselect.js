@@ -1,3 +1,9 @@
+/** 
+ * leaflet-areaselect plugin by Jonatan Heyman
+ * https://github.com/heyman/leaflet-areaselect
+ * Source code made available under MIT license.
+ */
+
 L.AreaSelect = L.Class.extend({
     includes: L.Mixin.Events,
 
