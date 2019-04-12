@@ -1,0 +1,51 @@
+---
+kind: Template
+apiVersion: v1
+metadata:
+  name: gwells-backend-bc
+  creationTimestamp: 
+parameters:
+- name: NAME_SUFFIX
+  displayName: Name Suffix
+  description: A suffix appended to all objects
+  required: true
+  value: backup-pvc
+- name: SOURCE_REPOSITORY_URL
+  required: true
+  value: https://github.com/bcgov/gwells
+- name: SOURCE_REPOSITORY_REF
+  required: true
+  value: task/1716_minioBk
+objects:
+- kind: ImageStream
+  apiVersion: v1
+  metadata:
+    name: backup-pvc
+- kind: BuildConfig
+  apiVersion: v1
+  metadata:
+    name: backup-pvc
+    creationTimestamp: 
+    labels:
+      appver: gwells${NAME_SUFFIX}
+    annotations:
+      description: Defines how to build the application
+  spec:
+    successfulBuildsHistoryLimit: 3
+    failedBuildsHistoryLimit: 3
+    triggers:
+    - type: ImageChange
+    - type: ConfigChange
+    runPolicy: SerialLatestOnly
+    source:
+      type: Git
+      git:
+        uri: "${SOURCE_REPOSITORY_URL}"
+        ref: "${SOURCE_REPOSITORY_REF}"
+      contextDir: openshift/docker/backup-pvc
+    strategy:
+      type: Docker
+    output:
+      to:
+        kind: ImageStreamTag
+        name: backup-pvc:latest
