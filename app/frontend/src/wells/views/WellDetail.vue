@@ -40,17 +40,12 @@
           <b-col cols="12" md="4"><span class="font-weight-bold">Environmental Monitoring System (EMS) ID:</span> {{ well.ems || well.ems_id }}</b-col>
         </b-row>
         <b-row>
-          <b-col cols="12" md="4"><span class="font-weight-bold">Licensed Status:</span> {{ well.licenced_status }}</b-col>
           <b-col cols="12" md="4"><span class="font-weight-bold">Intended Water Use:</span> {{ well.intended_water_use }}</b-col>
           <b-col cols="12" md="4"><span class="font-weight-bold">Aquifer Number:</span>
             <router-link :to="{ name: 'aquifers-view', params: { id: well.aquifer } }">
               {{ well.aquifer }}
             </router-link>
           </b-col>
-        </b-row>
-        <b-row>
-          <b-col cols="12" md="4"></b-col>
-          <b-col cols="12" md="4"></b-col>
           <b-col cols="12" md="4"><span class="font-weight-bold">Alternative specs submitted:</span> {{ well.alternative_specs_submitted }}</b-col>
         </b-row>
       </fieldset>
@@ -86,8 +81,8 @@
       <fieldset id="well_licensing_fieldset" class="my-3 detail-section">
         <legend>Licensing Information</legend>
         <b-row>
-          <b-col cols="12" md="4"><span class="font-weight-bold">Licensed Status:</span> {{ licence.licenced_status }}</b-col>
-          <b-col cols="12" md="4"><span class="font-weight-bold">Licence Number:</span> {{ licence.licencing_number }}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Licensed Status:</span> {{ licence.status }}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Licence Number:</span> {{ licence.number }}</b-col>
           <b-col cols="12" md="4"></b-col>
         </b-row>
       </fieldset>
@@ -507,7 +502,10 @@ export default {
         this.loadWellError = e.response
       })
       ApiService.query(`wells/licensing?well_tag_number=${this.$route.params.id}`).then((response) => {
-        this.licence = response.data
+        let licence = response.data[response.data.length - 1]
+        this.licence.status = licence ? licence.authorization_status : 'None'
+        this.licence.number = licence ? licence.authorization_number : 'None'
+        this.licence.date = licence ? licence.authorization_status_date : 'None'
       }).catch((e) => {
         this.loadLicencingError = e.response
       })
