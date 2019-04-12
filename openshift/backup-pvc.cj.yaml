@@ -24,8 +24,7 @@ parameters:
     displayName: "Cron Schedule"
     description: "Cron Schedule to Execute the Job (in UTC)"
     # 12:00 UTC = 4:00 AM PDT
-    # value: "0 12 * * *"
-    value: "*/5 * * * *"
+    value: "0 12 * * *"
     required: true
   - name: "DEST_PVC_SIZE"
     displayName: "PVC size"
@@ -117,7 +116,7 @@ objects:
               - command:
                 - /bin/bash
                 - -c
-                - cd /mnt; cp -r ./source ./destination; du -h --max-depth=1
+                - /entrypoint.sh
                 image: docker-registry.default.svc:5000/${IMAGE_NAMESPACE}/${SOURCE_IMAGE_NAME}:${SOURCE_IMAGE_TAG}
                 imagePullPolicy: Always
                 name: backup-cronjob

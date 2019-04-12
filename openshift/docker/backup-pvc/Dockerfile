@@ -1,5 +1,5 @@
 FROM alpine
 
-RUN apt add rsync
+RUN apk add rsync
 
 COPY entrypoint.sh /
