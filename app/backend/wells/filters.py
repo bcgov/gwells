@@ -21,6 +21,7 @@ from django.contrib.gis.geos import GEOSException, Polygon
 from django.db.models import Max, Min, Q, QuerySet
 from django_filters import rest_framework as filters
 from django_filters.widgets import BooleanWidget
+from rest_framework.exceptions import ValidationError
 from rest_framework.filters import BaseFilterBackend, OrderingFilter
 from rest_framework.request import clone_request
 
@@ -524,9 +525,10 @@ class WellListFilterBackend(filters.DjangoFilterBackend):
         for group in filter_groups:
             try:
                 group_params = json.loads(group)
-            except ValueError:
-                # We ignore malformed JSON, so it doesn't break the request
-                pass
+            except ValueError as exc:
+                raise ValidationError({
+                    'filter_group': 'Error parsing JSON data: {}'.format(exc),
+                })
 
             if not group_params:
                 continue
