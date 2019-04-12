@@ -38,7 +38,7 @@ fi
 
 
 # Shuffle and show disk usage
-#
+# Either directory doesn't exist, or move it
 [ ! -d ${NEW_BK} ]|| mv ${NEW_BK} ${PRV_BK}
 mv ${TMP_BK} ${NEW_BK}
 du -hd 1 ${DEST_MNT}
