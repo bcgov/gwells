@@ -34,7 +34,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             <th class="font-weight-normal">Casing Material</th>
             <th class="font-weight-normal">Diameter (in)</th>
             <th class="font-weight-normal">Wall Thickness (in)</th>
-            <th class="font-weight-normal">Drive Shoe</th>
+            <th class="font-weight-normal">Drive Shoe*</th>
             <th></th>
           </tr>
         </thead>
@@ -123,7 +123,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
             <td class="pt-0 py-0">
               <b-form-radio-group v-model="casing.drive_shoe"
                 :name="'drive_shoe_' + index"
-                :id="'casingDriveShoe_' + index">
+                :id="'casingDriveShoe_' + index"
+                required>
                 <b-form-radio :value="false">No</b-form-radio>
                 <b-form-radio :value="true">Yes</b-form-radio>
               </b-form-radio-group>

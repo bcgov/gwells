@@ -10,10 +10,12 @@ from django.utils.dateparse import parse_datetime
 from rest_framework.test import APITestCase
 from rest_framework import status
 
-from gwells.roles import roles_to_groups, WELLS_SUBMISSION_ROLE, WELLS_SUBMISSION_VIEWER_ROLE
+from gwells.roles import roles_to_groups, WELLS_SUBMISSION_ROLE, WELLS_SUBMISSION_VIEWER_ROLE,\
+    WELLS_EDIT_ROLE, WELLS_VIEWER_ROLE
 from submissions.serializers import (WellSubmissionListSerializer, WellConstructionSubmissionSerializer,
                                      WellAlterationSubmissionSerializer, WellDecommissionSubmissionSerializer)
-from wells.models import ActivitySubmission, Well, WellStatusCode, WellActivityCode
+from wells.models import ActivitySubmission, Well, WellStatusCode, WellActivityCode, Casing, CasingCode,\
+    CasingMaterialCode
 from gwells.models import DATALOAD_USER
 
 
@@ -41,6 +43,58 @@ class TestPermissionsNoRights(APITestCase):
         url = reverse('submissions-list')
         response = self.client.get(url, {}, format='json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+class TestEdit(APITestCase):
+    def setUp(self):
+        roles = [WELLS_EDIT_ROLE, WELLS_VIEWER_ROLE,
+                 WELLS_SUBMISSION_ROLE, WELLS_SUBMISSION_VIEWER_ROLE]
+        for role in roles:
+            group = Group(name=role)
+            group.save()
+        user, created = User.objects.get_or_create(username='edit_user')
+        user.profile.username = 'edit_user'
+        user.save()
+        roles_to_groups(user, roles)
+        self.casing_code_surface, created = CasingCode.objects.get_or_create(code='SURFACE', display_order=0)
+        self.casing_material_code_other, created = CasingMaterialCode.objects.\
+            get_or_create(code='OTHER', display_order=0)
+        self.client.force_authenticate(user)
+        for index, item in enumerate(('NEW', 'ALTERATION', 'CLOSURE', 'OTHER')):
+            WellStatusCode.objects.get_or_create(well_status_code=item, display_order=index)
+
+    def test_casing_submission(self):
+        """ Test that if a legacy well does not have a casing drive shoe, it doesn't cause problems """
+        # We create a pre-existing "legacy well"
+        well = Well.objects.create(well_tag_number=77123)
+        # We attached a casing to the well, a casing the is missing a drive_shoe, which is a "required"
+        # field.
+        Casing.objects.create(
+            well=well, start=0, end=10, diameter=6.63, casing_code=self.casing_code_surface,
+            casing_material=self.casing_material_code_other, drive_shoe=None, wall_thickness=0.22)
+        # Test for bug relating to edit submission with casing set. Our new casing has a drive shoe, which
+        # is correct, so we should be able to submit this record just fine.
+        data = {
+            'well': 77123,
+            'owner_tel': '',
+            'linerperforation_set': [],
+            'latitude': 48.639643,
+            'longitude': -123.55975,
+            'casing_set': [
+                {
+                    'start': '0',
+                    'end': '10',
+                    'diameter': '6.630',
+                    'casing_code': 'SURFACE',
+                    'casing_material': 'OTHER',
+                    'drive_shoe': True,
+                    'wall_thickness': '0.220'
+                }
+            ],
+            'decommission_description_set': []
+        }
+        response = self.client.post(reverse('STAFF_EDIT'), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.data)
 
 
 class TestPermissionsViewRights(APITestCase):
@@ -88,7 +142,8 @@ class TestPermissionsSubmissionRights(APITestCase):
         for role in roles:
             group = Group(name=role)
             group.save()
-        user, created = User.objects.get_or_create(username='submission_rights')
+        user, created = User.objects.get_or_create(
+            username='submission_rights')
         user.profile.username = user.username
         user.save()
         roles_to_groups(user, roles)
@@ -155,7 +210,8 @@ class TestAuditInformation(APITestCase):
         self.client.force_authenticate(self.user)
 
         for index, code in enumerate(('NEW', 'ALTERATION', 'CLOSURE', 'OTHER', '')):
-            WellStatusCode.objects.create(well_status_code=code, display_order=index)
+            WellStatusCode.objects.create(
+                well_status_code=code, display_order=index)
 
     def test_create_user_populated_on_well(self):
         # When a well is created as a result of a construction submission, the create_user on the
@@ -173,7 +229,8 @@ class TestAuditInformation(APITestCase):
         data = {
         }
         response = self.client.post(url, data, format='json')
-        submission = ActivitySubmission.objects.get(filing_number=response.data['filing_number'])
+        submission = ActivitySubmission.objects.get(
+            filing_number=response.data['filing_number'])
         self.assertEqual(submission.update_user, self.user.username)
 
     def test_create_user_populated_on_legacy_submission(self):
@@ -192,7 +249,8 @@ class TestAuditInformation(APITestCase):
 
         # Test the result.
         well = Well.objects.get(well_tag_number=response.data['well'])
-        self.assertEqual(well.create_user, 'A', 'Original well user should remain the same')
+        self.assertEqual(well.create_user, 'A',
+                         'Original well user should remain the same')
         self.assertEqual(well.update_user, self.user.username)
         submission = ActivitySubmission.objects.get(
             well=well,
@@ -210,7 +268,8 @@ class TestAuditInformation(APITestCase):
             'create_date': '1999-05-05'
         }
         response = self.client.post(url, data, format='json')
-        submission = ActivitySubmission.objects.get(filing_number=response.data['filing_number'])
+        submission = ActivitySubmission.objects.get(
+            filing_number=response.data['filing_number'])
         self.assertNotEqual(submission.create_user, data['create_user'])
         self.assertNotEqual(submission.update_user, data['update_user'])
         self.assertNotEqual(submission.well.create_user, data['create_user'])
@@ -224,7 +283,8 @@ class TestAuditInformation(APITestCase):
         data = {
         }
         response = self.client.post(url, data, format='json')
-        submission = ActivitySubmission.objects.get(filing_number=response.data['filing_number'])
+        submission = ActivitySubmission.objects.get(
+            filing_number=response.data['filing_number'])
         self.assertEqual(
             submission.create_date,
             submission.well.create_date,
@@ -248,7 +308,8 @@ class TestAuditInformation(APITestCase):
             'well': well.well_tag_number
         }
         response = self.client.post(url, data, format='json')
-        alteration = ActivitySubmission.objects.get(filing_number=response.data['filing_number'])
+        alteration = ActivitySubmission.objects.get(
+            filing_number=response.data['filing_number'])
 
         # Check that well create_date remains the same
         well = Well.objects.get(well_tag_number=well.well_tag_number)
@@ -287,7 +348,7 @@ class TestAuditInformation(APITestCase):
         # Load resultant alteration.
         alteration = ActivitySubmission.objects.get(
             well=well,
-            well_activity_type=WellActivityCode.types.alteration())        
+            well_activity_type=WellActivityCode.types.alteration())
         # The well should now show the logged in user as having updated.
         self.assertEqual(well.update_user, self.user.username)
         # The well should now show dataload user as the create_user.
