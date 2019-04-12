@@ -47,6 +47,6 @@ class DocumentTests(TestCase):
 
 class TestDocumentsAPI(APITestCase):
     def test_documents_404(self):
-        url = reverse('file-list', kwargs={'well_id': 987654321})
+        url = reverse('file-list', kwargs={'tag': 987654321})
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
