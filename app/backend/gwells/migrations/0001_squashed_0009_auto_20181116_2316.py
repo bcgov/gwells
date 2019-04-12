@@ -15,6 +15,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('registries', '0001_squashed_0012_auto_20180704_2105'),
+        ('submissions', '0001_squashed_0006_auto_20190409_1634'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
@@ -1002,24 +1003,6 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='WellActivityCode',
-            fields=[
-                ('create_user', models.CharField(max_length=60)),
-                ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('update_user', models.CharField(max_length=60, null=True)),
-                ('update_date', models.DateTimeField(blank=True, null=True)),
-                ('well_activity_type_code', models.CharField(editable=False, max_length=10, primary_key=True, serialize=False)),
-                ('description', models.CharField(max_length=100)),
-                ('display_order', models.PositiveIntegerField()),
-                ('effective_date', models.DateTimeField(blank=True, null=True)),
-                ('expiry_date', models.DateTimeField(blank=True, null=True)),
-            ],
-            options={
-                'db_table': 'well_activity_code',
-                'ordering': ['display_order', 'description'],
-            },
-        ),
-        migrations.CreateModel(
             name='WellClassCode',
             fields=[
                 ('create_user', models.CharField(max_length=60)),
@@ -1334,7 +1317,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='activitysubmission',
             name='well_activity_type',
-            field=models.ForeignKey(db_column='well_activity_code', on_delete=django.db.models.deletion.CASCADE, to='gwells.WellActivityCode', verbose_name='Type of Work'),
+            field=models.ForeignKey(db_column='well_activity_code', on_delete=django.db.models.deletion.CASCADE, to='submissions.WellActivityCode', verbose_name='Type of Work'),
         ),
         migrations.AddField(
             model_name='activitysubmission',
@@ -1434,10 +1417,6 @@ class Migration(migrations.Migration):
                 migrations.RemoveField(
                     model_name='activitysubmission',
                     name='water_quality_characteristics',
-                ),
-                migrations.RemoveField(
-                    model_name='activitysubmission',
-                    name='well_activity_type',
                 ),
                 migrations.RemoveField(
                     model_name='activitysubmission',
@@ -1726,9 +1705,6 @@ class Migration(migrations.Migration):
                 ),
                 migrations.DeleteModel(
                     name='Well',
-                ),
-                migrations.DeleteModel(
-                    name='WellActivityCode',
                 ),
                 migrations.DeleteModel(
                     name='WellClassCode',
