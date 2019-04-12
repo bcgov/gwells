@@ -13,8 +13,11 @@
 """
 from datetime import date
 import logging
+from unittest.mock import patch
 
 from django.test import TestCase
+from rest_framework.exceptions import ValidationError, APIException
+from rest_framework.status import HTTP_500_INTERNAL_SERVER_ERROR
 
 from gwells.models import ProvinceStateCode
 from wells.models import Well, ActivitySubmission, Casing, Screen, LinerPerforation
@@ -167,6 +170,14 @@ class SeriesMergeTest(TestCase):
         stacker = StackWells()
         new = stacker._merge_series(prev, incoming)
         self.assertEqual(new, expected)
+
+
+def errors_side_effect(*args, **kwargs):
+    return []
+
+
+def is_valid_side_effect(*args, **kwargs):
+    return False
 
 
 class StackTest(TestCase):
@@ -466,3 +477,32 @@ class StackTest(TestCase):
         well = stacker.process(submission.filing_number)
 
         self.assertEqual(new_full_name, well.owner_full_name)
+
+    @patch('wells.stack.submissions.serializers.WellSubmissionLegacySerializer.is_valid',
+           side_effect=is_valid_side_effect)
+    @patch('wells.stack.submissions.serializers.WellSubmissionLegacySerializer.errors',
+           side_effect=errors_side_effect)
+    def test_failure_to_generate_legacy_results_in_server_error(self, errors, is_valid):
+        # We don't want failures to generate a legacy well to bubble up to client 400 errors, so we need
+        # to make sure it's caught, and re-thrown as 500.
+        # 1) Create the legacy well:
+        well = Well.objects.create(
+            create_user='Something',
+            update_user='Something')
+        # 2) Create the alteration:
+        submission = ActivitySubmission.objects.create(
+            well=well,
+            create_user='Something',
+            update_user='Something',
+            well_activity_type=WellActivityCode.types.alteration())
+        # 3) Attempt to stack:
+        stacker = StackWells()
+        # Assert that an exception is throw
+        with self.assertRaises(APIException):
+            try:
+                stacker.process(submission.filing_number)
+            except APIException as e:
+                # Assert that it's a 500 error.
+                self.assertEqual(e.status_code, HTTP_500_INTERNAL_SERVER_ERROR)
+                # Re-raise the exception, handing it to the assertRaises above.
+                raise

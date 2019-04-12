@@ -15,7 +15,7 @@ from gwells.roles import roles_to_groups, WELLS_SUBMISSION_ROLE, WELLS_SUBMISSIO
 from submissions.serializers import (WellSubmissionListSerializer, WellConstructionSubmissionSerializer,
                                      WellAlterationSubmissionSerializer, WellDecommissionSubmissionSerializer)
 from wells.models import ActivitySubmission, Well, WellStatusCode, WellActivityCode, Casing, CasingCode,\
-    CasingMaterialCode
+    CasingMaterialCode, LithologyDescription
 from gwells.models import DATALOAD_USER
 
 
@@ -46,6 +46,8 @@ class TestPermissionsNoRights(APITestCase):
 
 
 class TestEdit(APITestCase):
+    fixtures = ['wellsearch-codetables']
+
     def setUp(self):
         roles = [WELLS_EDIT_ROLE, WELLS_VIEWER_ROLE,
                  WELLS_SUBMISSION_ROLE, WELLS_SUBMISSION_VIEWER_ROLE]
@@ -56,17 +58,14 @@ class TestEdit(APITestCase):
         user.profile.username = 'edit_user'
         user.save()
         roles_to_groups(user, roles)
-        self.casing_code_surface, created = CasingCode.objects.get_or_create(code='SURFACE', display_order=0)
-        self.casing_material_code_other, created = CasingMaterialCode.objects.\
-            get_or_create(code='OTHER', display_order=0)
+        self.casing_code_surface = CasingCode.objects.get(code='SURFACE')
+        self.casing_material_code_other = CasingMaterialCode.objects.get(code='OTHER')
         self.client.force_authenticate(user)
-        for index, item in enumerate(('NEW', 'ALTERATION', 'CLOSURE', 'OTHER')):
-            WellStatusCode.objects.get_or_create(well_status_code=item, display_order=index)
 
     def test_casing_submission(self):
         """ Test that if a legacy well does not have a casing drive shoe, it doesn't cause problems """
         # We create a pre-existing "legacy well"
-        well = Well.objects.create(well_tag_number=77123)
+        well = Well.objects.create()
         # We attached a casing to the well, a casing the is missing a drive_shoe, which is a "required"
         # field.
         Casing.objects.create(
@@ -75,7 +74,7 @@ class TestEdit(APITestCase):
         # Test for bug relating to edit submission with casing set. Our new casing has a drive shoe, which
         # is correct, so we should be able to submit this record just fine.
         data = {
-            'well': 77123,
+            'well': well.well_tag_number,
             'owner_tel': '',
             'linerperforation_set': [],
             'latitude': 48.639643,
@@ -93,6 +92,66 @@ class TestEdit(APITestCase):
             ],
             'decommission_description_set': []
         }
+        response = self.client.post(reverse('STAFF_EDIT'), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.data)
+
+    def test_lithology_to_greater_than_zero_on_legacy(self):
+        """ Test that if a legacy well does not have correct lithology info, it doesn't cause problems """
+        # We create a pre-existing "legacy well"
+        well = Well.objects.create(create_user='Blah', update_user='Blah')
+        # We attached lithology to the well, that's should fail validation.
+        lithology = LithologyDescription.objects.create(
+            lithology_from=0,
+            lithology_to=0,
+            well=well)
+        # Doing a valid edit, updating the lithology information, should be fine.
+        data = {
+            'well': well.well_tag_number,
+            'latitude': 48.639643,
+            'longitude': -123.55975,
+            'lithologydescription_set': [
+                {
+                    'lithology_from': 0,
+                    'lithology_to': 10
+                }
+            ]
+        }
+        response = self.client.post(reverse('STAFF_EDIT'), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.data)
+
+    def test_lithology_to_none_on_legacy(self):
+        """ Test that if a legacy well does not have correct lithology info, that it doesn't fail
+        on generating the legacy record, but does give us a bad request response. """
+        # We create a pre-existing "legacy well"
+        well = Well.objects.create(create_user='Blah', update_user='Blah')
+        # We attached lithology to the well, that's should fail validation.
+        LithologyDescription.objects.create(well=well, lithology_from=117, lithology_to=None)
+        # Doing a valid edit, updating the lithology information, should be fine.
+        data = {
+            'well': well.well_tag_number
+        }
+        response = self.client.post(reverse('STAFF_EDIT'), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST, response.data)
+        data['lithologydescription_set'] = [
+                {
+                    'lithology_from': 0,
+                    'lithology_to': 10
+                }
+            ]
+        response = self.client.post(reverse('STAFF_EDIT'), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.data)
+
+    def test_no_city_on_legacy(self):
+        """ Test that the legacy record creates ok, but we get a bad request response if we have bad
+        data.
+        """
+        well = Well.objects.create(create_user='Blah', update_user='Blah', owner_city=' ')
+        data = {
+            'well': well.well_tag_number
+        }
+        response = self.client.post(reverse('STAFF_EDIT'), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST, response.data)
+        data['owner_city'] = 'Somewhere'
         response = self.client.post(reverse('STAFF_EDIT'), data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.data)
 
@@ -196,6 +255,7 @@ class TestPermissionsSubmissionRights(APITestCase):
 
 
 class TestAuditInformation(APITestCase):
+    fixtures = ['wellsearch-codetables']
 
     def setUp(self):
         roles = [WELLS_SUBMISSION_ROLE]
@@ -208,10 +268,6 @@ class TestAuditInformation(APITestCase):
         self.user.save()
         roles_to_groups(self.user, roles)
         self.client.force_authenticate(self.user)
-
-        for index, code in enumerate(('NEW', 'ALTERATION', 'CLOSURE', 'OTHER', '')):
-            WellStatusCode.objects.create(
-                well_status_code=code, display_order=index)
 
     def test_create_user_populated_on_well(self):
         # When a well is created as a result of a construction submission, the create_user on the

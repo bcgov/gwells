@@ -18,6 +18,8 @@ from django.core.serializers import serialize
 from django.forms.models import model_to_dict
 from django.db import transaction
 from django.db.models import F
+from rest_framework.exceptions import ValidationError, APIException
+from rest_framework import serializers
 
 from gwells.models import ProvinceStateCode, DATALOAD_USER
 from submissions.models import WellActivityCode
@@ -28,6 +30,8 @@ from wells.serializers import WellStackerSerializer
 import reversion
 
 logger = logging.getLogger(__name__)
+
+target_keys = None
 
 
 def overlap(a, b):
@@ -42,6 +46,14 @@ def overlap(a, b):
 
 
 class StackWells():
+
+    def _get_target_keys(self):
+        # This is an expensive call, so we cache it (running normally we'll mostly have misses, but
+        # during testing, this can massively speed things up.)
+        global target_keys
+        if not target_keys:
+            target_keys = WellStackerSerializer().get_fields().keys()
+        return target_keys
 
     @transaction.atomic
     def process(self, filing_number) -> Well:
@@ -70,8 +82,6 @@ class StackWells():
         """
         Using an existing well as a reference, create a legacy well record
         """
-        # TODO: Deal with Lithology, LtsaOwner, AquiferWell etc. (This should
-        # work magically if the serializers are implemented correctly)
         # Serialize the well.
         well_serializer = WellStackerSerializer(well)
         data = well_serializer.data
@@ -99,15 +109,27 @@ class StackWells():
         data = {k: v for (k, v) in data.items() if v is not None and v != ''}
         # Retain the well reference.
         data['well'] = well.well_tag_number
+        # Clean out bad data.
+        # (There must be a way to deal with this on the serializer, but I can't figure it out!)
+        # owner_city = data.get('owner_city', None)
+        # if owner_city is not None and len(owner_city.strip()) == 0:
+        #   del data['owner_city']
         # De-serialize the well into a submission.
         submission_serializer = submissions.serializers.WellSubmissionLegacySerializer(data=data)
 
-        # Validate the data, throwing an exception on error.
-        if submission_serializer.is_valid(raise_exception=True):
+        is_valid = submission_serializer.is_valid(raise_exception=False)
+        if is_valid:
             # Save the submission.
             legacy = submission_serializer.save()
             return legacy
-        return None
+        logger.info('invalid legacy data: {}'.format(data))
+        logger.error(submission_serializer.errors)
+        # We don't bubble validation errors on the legacy submission up. It just causes confusion!
+        # If there's a validation error on this level, it has to go up as a 500 error. Validation
+        # error here, means we are unable to create a legacy record using old well data. The
+        # users can't do anything to fix this, we have to fix a bug!
+        logger.error('submission_serializer validation error')
+        raise APIException()
 
     def _series_overlaps(self, record, record_set):
         # Return True if a record overlaps with a list of records
@@ -126,12 +148,12 @@ class StackWells():
         new.sort(key=lambda record: (record.get('start'), record.get('end')))
         return new
 
-    @transaction.atomic
-    def _stack(self, records, well: Well) -> Well:
-        # TODO: Deal with Lithology, LtsaOwner, AquiferWell etc.
-        # There isn't always a like to like mapping of values, sometimes the source key will differ from
-        # the target key:
-        activity_type_map = {
+    def _get_activity_map(self):
+        """
+        There isn't always a like to like mapping of values, sometimes the source key will differ from
+        the target key:
+        """
+        return {
             WellActivityCode.types.construction().code: {
                 'work_start_date': 'construction_start_date',
                 'work_end_date': 'construction_end_date'
@@ -146,10 +168,23 @@ class StackWells():
             }
         }
 
+    def _get_well_status_map(self):
+        return {
+            WellActivityCode.types.construction().code: WellStatusCode.types.construction().well_status_code,
+            WellActivityCode.types.alteration().code: WellStatusCode.types.alteration().well_status_code,
+            WellActivityCode.types.decommission().code: WellStatusCode.types.decommission().well_status_code,
+        }
+
+    @transaction.atomic
+    def _stack(self, records, well: Well) -> Well:
+        # There isn't always a like to like mapping of values, sometimes the source key will differ from
+        # the target key:
+        activity_type_map = self._get_activity_map()
+
         # It's helpful for debugging, to limit the fields we consider only to target keys, for example
         # there are some values that don't actually map from the submission to the well (e.g. create_date,
         # filing number, well_activity_code etc.)
-        target_keys = WellStackerSerializer().get_fields().keys()
+        target_keys = self._get_target_keys()
 
         # Iterate through all the submission records
         # We can't strictly order by the create date, we need to consider that construction/legacy well
@@ -180,11 +215,7 @@ class StackWells():
         composite = {}
 
         # Well status is set based on the most recent activity submission.
-        well_status_map = {
-            WellActivityCode.types.construction().code: WellStatusCode.types.construction().well_status_code,
-            WellActivityCode.types.alteration().code: WellStatusCode.types.alteration().well_status_code,
-            WellActivityCode.types.decommission().code: WellStatusCode.types.decommission().well_status_code,
-        }
+        well_status_map = self._get_well_status_map()
 
         for index, submission in enumerate(records):
             if index == 0:
@@ -199,9 +230,11 @@ class StackWells():
                 submission.well_activity_type.code, WellStatusCode.types.other().well_status_code)
             source_target_map = activity_type_map.get(submission.well_activity_type.code, {})
             serializer = submissions.serializers.WellSubmissionStackerSerializer(submission)
+            # serializer.data.items is VERY slow - look at not using serializer when iterating through this.
             for source_key, value in serializer.data.items():
                 # We only consider items with values, and keys that are in our target
                 # an exception is STAFF_EDIT submissions (we need to be able to accept empty values)
+                # value = getattr(submission, source_key)
                 if value or value is False or value == 0 or value == '':
                     target_key = source_target_map.get(source_key, source_key)
                     if target_key in target_keys:
@@ -239,11 +272,14 @@ class StackWells():
         composite['update_Date'] = update_date
 
         # Update the well view
+        well = self._update_well_view(well, composite)
+        return well
+
+    def _update_well_view(self, well, composite):
         well_serializer = WellStackerSerializer(well, data=composite, partial=True)
         if well_serializer.is_valid(raise_exception=True):
             with reversion.create_revision():
                 well = well_serializer.save()
-
         return well
 
     @transaction.atomic
@@ -251,7 +287,18 @@ class StackWells():
         """
         Used to update an existing well record.
         """
-        records = ActivitySubmission.objects.filter(well=submission.well)
+        # .select_related(
+        #         'casing_set',
+        #         'screen_set',
+        #         'linerperforation_set',
+        #         'decommission_description_set',
+        #         'lithologydescription_set'
+        #     ) \
+        records = ActivitySubmission.objects.filter(well=submission.well) \
+            .prefetch_related(
+                'well_status',
+                'well_activity_type'
+            )
         if records.count() > 1:
             # If there's more than one submission we don't need to create a legacy well, we can safely
             # assume that the 1st submission is either a legacy or construction report submission.
