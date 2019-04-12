@@ -49,3 +49,4 @@ objects:
       to:
         kind: ImageStreamTag
         name: ${NAME}:latest
+        

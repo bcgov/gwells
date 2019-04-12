@@ -15,27 +15,30 @@ DEST_MNT=${DEST_MNT:-/mnt/dest}
 SRC_MNT=${SRC_MNT%/}
 DEST_MNT=${DEST_MNT%/}
 #
-TEMP_DIR=${DEST_DIR:-${DEST_MNT}/tmp}
-PREV_DIR=${PREV_DIR:-${DEST_MNT}/bk-prev}
-DEST_DIR=${DEST_DIR:-${DEST_MNT}/bk}
+DEST_DIR=${DEST_MNT}/$(hostname)
+TMP_BK=${NEW_BK:-${DEST_DIR}/bk-tmp}
+PRV_BK=${PRV_BK:-${DEST_DIR}/bk-prev}
+NEW_BK=${NEW_BK:-${DEST_DIR}/bk}
 
 
 # Drop to one previous backup
 #
-[ ! -d ${PREV_DIR} ]|| rm -rf ${PREV_DIR}
+[ ! -d ${PRV_BK} ]|| rm -rf ${PRV_BK}
 
 
 # Copy and verify
 #
-if ! rsync -avh ${SRC_MNT}/ ${TEMP_DIR}/
+mkdir -p ${TMP_BK}
+if ! rsync -avh ${SRC_MNT}/ ${TMP_BK}/
 then
 	echo "Copy failed!  Previous backups retained."
+	rm -rf ${TMP_BK}
 	exit 1
 fi
 
 
 # Shuffle and show disk usage
 #
-[ ! -d ${DEST_DIR} ]|| mv ${DEST_DIR} ${PREV_DIR}
-mv ${TEMP_DIR} ${DEST_DIR}
+[ ! -d ${NEW_BK} ]|| mv ${NEW_BK} ${PRV_BK}
+mv ${TMP_BK} ${NEW_BK}
 du -hd 1 ${DEST_MNT}
