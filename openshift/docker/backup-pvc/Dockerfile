@@ -1,3 +1,3 @@
-FROM docker-registry.default.svc:5000/base-centos7:latest
+FROM centos
 
 COPY entrypoint.sh /
