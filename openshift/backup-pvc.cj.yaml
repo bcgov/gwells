@@ -114,7 +114,7 @@ objects:
               activeDeadlineSeconds: ${{JOB_DEADLINE_SECONDS}}
               containers:
               - command:
-                - /bin/bash
+                - /bin/sh
                 - -c
                 - /entrypoint.sh
                 image: docker-registry.default.svc:5000/${IMAGE_NAMESPACE}/${SOURCE_IMAGE_NAME}:${SOURCE_IMAGE_TAG}

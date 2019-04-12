@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 
 # Halt on errors/unsets, change fail returns, change field separator, verbose mode
