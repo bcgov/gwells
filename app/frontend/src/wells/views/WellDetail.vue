@@ -86,8 +86,8 @@
       <fieldset id="well_licensing_fieldset" class="my-3 detail-section">
         <legend>Licensing Information</legend>
         <b-row>
-          <b-col cols="12" md="4"><span class="font-weight-bold">Licensed Status:</span> {{ well.licenced_status }}</b-col>
-          <b-col cols="12" md="4"><span class="font-weight-bold">Licence Number:</span> {{ well.licencing_number }}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Licensed Status:</span> {{ licence.licenced_status }}</b-col>
+          <b-col cols="12" md="4"><span class="font-weight-bold">Licence Number:</span> {{ licence.licencing_number }}</b-col>
           <b-col cols="12" md="4"></b-col>
         </b-row>
       </fieldset>
@@ -443,6 +443,7 @@ export default {
         }
       ],
       well: {},
+      licence: {},
       lithology_fields: {
         lithology_from: {
           label: 'From (ft bgl)'
@@ -504,6 +505,11 @@ export default {
         this.well = response.data
       }).catch((e) => {
         this.loadWellError = e.response
+      })
+      ApiService.query(`wells/licensing?well_tag_number=${this.$route.params.id}`).then((response) => {
+        this.licence = response.data
+      }).catch((e) => {
+        this.loadLicencingError = e.response
       })
     }
   },

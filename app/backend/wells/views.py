@@ -25,6 +25,7 @@ from django_filters import rest_framework as restfilters
 from django.db.models import Q
 from django_filters import rest_framework as restfilters
 from django.db import connection
+import requests
 
 from functools import reduce
 import operator
@@ -632,3 +633,15 @@ def lithology_geojson(request):
             get_env_variable('S3_WELL_EXPORT_BUCKET'),
             'api/v1/gis/lithology.json')
         return HttpResponseRedirect(url)
+
+
+@api_view(['GET'])
+def well_licensing(request):
+    url = 'https://test.j200.gov.bc.ca/ws/' \
+          'RestGWellsInterface/wells/{}'.format(request.GET.get('well_tag_number'))
+    headers = {
+        'content_type': 'application/json',
+        'AuthUsername': get_env_variable('E_LICENSING_AUTH_USERNAME'),
+        'AuthPass': get_env_variable('E_LICENSING_AUTH_PASSWORD')
+    }
+    return HttpResponse(requests.get(url, headers=headers))
