@@ -3481,8 +3481,10 @@
 									"  });",
 									"});",
 									"",
-									"pm.test(\"Result count matches number of results\", function () {",
-									"    pm.expect(pm.response.json().count).to.equal(pm.response.json().results.length)",
+									"pm.test(\"Result count matches limit or number of results\", function () {",
+									"    const limit = parseInt(pm.request.url.query.get(\"limit\"));",
+									"    const resultCount = pm.response.json().count;",
+									"    pm.expect(pm.response.json().results.length).to.be.oneOf([limit, resultCount])",
 									"})"
 								],
 								"type": "text/javascript"
@@ -3497,7 +3499,7 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{base_url}}/api/v1/wells?ordering=drilling_methods",
+							"raw": "{{base_url}}/api/v1/wells?ordering=drilling_methods&limit=10",
 							"host": [
 								"{{base_url}}"
 							],
@@ -3510,6 +3512,10 @@
 								{
 									"key": "ordering",
 									"value": "drilling_methods"
+								},
+								{
+									"key": "limit",
+									"value": "10"
 								}
 							]
 						}
