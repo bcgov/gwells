@@ -26,6 +26,7 @@ from django.db.models import Q
 from django_filters import rest_framework as restfilters
 from django.db import connection
 import requests
+import json
 
 from functools import reduce
 import operator
@@ -644,4 +645,24 @@ def well_licensing(request):
         'AuthUsername': get_env_variable('E_LICENSING_AUTH_USERNAME'),
         'AuthPass': get_env_variable('E_LICENSING_AUTH_PASSWORD')
     }
-    return HttpResponse(requests.get(url, headers=headers))
+    response = requests.get(url, headers=headers)
+    try:
+        licence = response.json()[-1]  # Use the latest licensing value
+    except:
+        licence = None
+
+    if licence:
+        licence_status = 'Licensed' if licence.get('authorization_status') == 'ACTIVE' else 'Unlicensed'
+        data = {
+            'status': licence_status,
+            'number': licence.get('authorization_number'),
+            'date': licence.get('authorization_status_date')
+        }
+    else:
+        data = {
+            'status': 'Unlicensed',
+            'number': 'None',
+            'date': 'None'
+        }
+
+    return HttpResponse(json.dumps(data), content_type="application/json")

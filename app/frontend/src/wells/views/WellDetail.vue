@@ -502,10 +502,7 @@ export default {
         this.loadWellError = e.response
       })
       ApiService.query(`wells/licensing?well_tag_number=${this.$route.params.id}`).then((response) => {
-        let licence = response.data[response.data.length - 1]
-        this.licence.status = licence ? licence.authorization_status : 'None'
-        this.licence.number = licence ? licence.authorization_number : 'None'
-        this.licence.date = licence ? licence.authorization_status_date : 'None'
+        this.licence = response.data
       }).catch((e) => {
         this.loadLicencingError = e.response
       })
