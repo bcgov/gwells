@@ -22,7 +22,7 @@ NEW_BK=${NEW_BK:-${DEST_DIR}/bk}
 
 
 # Drop to one previous backup
-#
+# Either directory does not exist, or remove directory.
 [ ! -d ${PRV_BK} ]|| rm -rf ${PRV_BK}
 
 
