@@ -46,7 +46,7 @@ parameters:
     displayName: "Source image Name"
     description: "The name of the image to use for this resource."
     required: true
-    value: "base-centos7"
+    value: "backup-pvc"
   - name: "SOURCE_IMAGE_TAG"
     displayName: "Source image tag"
     description: "The name of the image tag to use for this resource."
@@ -56,7 +56,7 @@ parameters:
     displayName: "Image Namespace"
     description: "The namespace of the OpenShift project containing the imagestream for the application."
     required: true
-    value: "openshift"
+    value: "moe-gwells-tools"
   - name: "SUCCESS_JOBS_HISTORY_LIMIT"
     displayName: "Successful Job History Limit"
     description: "The number of successful jobs that will be retained."
