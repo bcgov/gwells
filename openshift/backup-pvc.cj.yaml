@@ -123,9 +123,9 @@ objects:
                 terminationMessagePath: /dev/termination-log
                 terminationMessagePolicy: File
                 volumeMounts:
-                - mountPath: /mnt/destination/
+                - mountPath: /mnt/dest/
                   name: ${JOB_NAME}
-                - mountPath: /mnt/source/
+                - mountPath: /mnt/src/
                   name: ${SOURCE_PVC}
                   readOnly: true
               dnsPolicy: ClusterFirst
