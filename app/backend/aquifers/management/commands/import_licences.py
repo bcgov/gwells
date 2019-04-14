@@ -12,16 +12,16 @@
     limitations under the License.
 """
 import csv
+import logging
+import requests
+from tempfile import NamedTemporaryFile
+
+from django.core.management.base import BaseCommand
 from django.conf import settings
 
 from aquifers.models import WaterRightsLicence, WaterRightsPurpose, Aquifer
 from wells.models import Well
 
-# Run from command line :
-# python manage.py load_shapefile <filename>
-from django.core.management.base import BaseCommand
-
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -29,10 +29,21 @@ logger = logging.getLogger(__name__)
 class Command(BaseCommand):
 
     def add_arguments(self, parser):
-        parser.add_argument('filename', type=str)
+        parser.add_argument('filename', type=str, nargs="?", default=None)
 
     def handle(self, *args, **options):
-        with open(options['filename'], newline='') as csvfile:
+        if options['filename']:
+            filename = options['filename']
+        else:
+            logging.info("Downloading licences from DataBC")
+            input_file = NamedTemporaryFile(delete=False)
+            url = "https://openmaps.gov.bc.ca/geo/pub/wfs?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&outputFormat=csv&typeNames=WHSE_WATER_MANAGEMENT.WLS_WATER_RIGHTS_LICENCES_SV&count=10000&cql_filter=POD_SUBTYPE NOT LIKE 'POD'"
+            r = requests.get(url, allow_redirects=True)
+            input_file.write(r.content)
+            filename = input_file.name
+            input_file.close()
+
+        with open(filename, newline='') as csvfile:
             reader = csv.DictReader(csvfile)
 
             # used in DEBUG mode only.
@@ -41,20 +52,21 @@ class Command(BaseCommand):
 
             for row in reader:
 
-                if row['PD_SBTYPE'] not in ['PWD', 'PG']:
+                if row['POD_SUBTYPE'] not in ['PWD', 'PG']:
                     # [Nicole]: (we are only concerned with PWD and PG data – exclude any
                     # rows with POD. POD refers to surface water which is out of scope for GWELLS)
                     continue
 
-                if not row['SOURCE_NM'].isdigit():
+                if not row['SOURCE_NAME'].isdigit():
                     # Licence must be for an aquifer
                     continue
 
-                if not row['WLL_TG_NMR'].isdigit():
+                if not row['WELL_TAG_NUMBER'].isdigit():
                     # Licence must be for a well
                     continue
 
-                logging.info("importing: {}".format(row))
+                logging.info("importing licence #{}".format(
+                    row['LICENCE_NUMBER']))
 
                 # In dev envs, desecrate the data so it fits our fake fixtures.
                 if settings.DEBUG:
@@ -69,28 +81,40 @@ class Command(BaseCommand):
                         well.save()
                 else:
                     # Check the Licence is for a valid Aquifer
-                    Aquifer.objects.get(pk=row['SOURCE_NM'])
-                    well = Well.objects.get(pk=row['WLL_TG_NMR'])
+                    Aquifer.objects.get(pk=row['SOURCE_NAME'])
+                    well = Well.objects.get(pk=row['WELL_TAG_NUMBER'])
 
                 try:
                     # Maintaina code table with water rights purpose.
                     purpose = WaterRightsPurpose.objects.get(
-                        code=row['PRPS_S_CD'])
+                        code=row['PURPOSE_USE_CODE'])
                 except WaterRightsPurpose.DoesNotExist:
                     purpose = WaterRightsPurpose.objects.create(
-                        code=row['PRPS_S_CD'],
-                        description=row['PRPS_SE'])
+                        code=row['PURPOSE_USE_CODE'],
+                        description=row['PURPOSE_USE'])
 
                 try:
                     # Update existing licences with changes.
                     licence = WaterRightsLicence.objects.get(
-                        licence_number=row['LCNC_NMBR'])
+                        licence_number=row['LICENCE_NUMBER'])
                 except WaterRightsLicence.DoesNotExist:
                     licence = WaterRightsLicence(
-                        licence_number=row['LCNC_NMBR']
+                        licence_number=row['LICENCE_NUMBER']
                     )
                 licence.purpose = purpose
-                licence.quantity = row['QUANTITY']
+
+                quantity = float(row['QUANTITY'])
+                if row['QUANTITY_UNITS'].strip() == "m3/sec":
+                    quantity = quantity * 60*60*24*365
+                elif row['QUANTITY_UNITS'].strip() == "m3/day":
+                    quantity = quantity * 365
+                elif row['QUANTITY_UNITS'].strip() == "m3/year":
+                    quantity = quantity
+                else:
+                    raise Exception(
+                        'unknown quantity unit: `{}`'.format(row['QUANTITY_UNITS']))
+
+                licence.quantity = quantity
                 licence.save()
 
                 well.licence = licence
