@@ -27,6 +27,9 @@ logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
+    """
+    Downloads licences from DataBC and stores them locally.
+    """
 
     def add_arguments(self, parser):
         parser.add_argument('filename', type=str, nargs="?", default=None)

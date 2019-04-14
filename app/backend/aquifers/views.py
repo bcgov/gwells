@@ -123,6 +123,8 @@ def _aquifer_qs(query):
         'subtype',
         'vulnerability')
 
+    qs = qs.distinct()
+
     return qs
 
 
