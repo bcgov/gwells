@@ -352,6 +352,11 @@ export default {
             value: section.code
           }
         })
+        console.log("Aquifer Resource", this.aquifer_resource_sections)
+        this.aquifer_resource_sections.splice(2, 0, {
+          text: "Hydraulically Connected",
+          value: "Hydra"
+        });
       })
     },
     scrollToTableTop () {
@@ -375,9 +380,14 @@ export default {
       if (this.search) {
         this.filterParams.search = this.search
       }
+      
       if (this.sections) {
-        this.filterParams.resources__section__code = this.sections.join(',')
+        this.filterParams.resources__section__code = this.sections.filter(o => o !== "Hydra").join(',')
+        if ( this.sections.find(o => o === 'Hydra') ) {
+          this.filterParams.hydraulically_connected = 'yes'
+        }
       }
+
       this.updateQueryParams()
     },
     updateQueryParams () {
