@@ -248,11 +248,8 @@ const wellsStore = {
       }
 
       ApiService.query('wells/locations', params, { cancelToken: state.locationPendingSearch.token }).then((response) => {
-        const locations = response.data.map((well) => {
-          return [well.latitude, well.longitude, well.well_tag_number, well.identification_plate_number]
-        })
         commit(SET_LOCATION_ERRORS, {})
-        commit(SET_LOCATION_SEARCH_RESULTS, locations)
+        commit(SET_LOCATION_SEARCH_RESULTS, response.data)
         commit(SET_LOCATION_SEARCH_RESULT_COUNT, response.data.count)
       }).catch((err) => {
         if (err.response && err.response.data) {

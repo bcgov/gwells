@@ -29,14 +29,7 @@
         </b-card>
       </b-col>
       <b-col>
-        <search-map
-          :latitude="latitude"
-          :longitude="longitude"
-          :zoomToMarker="zoomToResults"
-          v-on:coordinate="handleMapCoordinate"
-          ref="searchMap"
-          @moved="handleMapMoveEnd"
-          />
+        <search-map ref="searchMap" @moved="handleMapMoveEnd" />
         <b-alert variant="info" class="mt-2" :show="locationErrorMessage !== ''">{{ locationErrorMessage }}</b-alert>
       </b-col>
     </b-row>
@@ -62,7 +55,6 @@
 
 <script>
 import querystring from 'querystring'
-import debounce from 'lodash.debounce'
 
 import { mapGetters } from 'vuex'
 import {
@@ -137,9 +129,6 @@ export default {
       'searchResultColumns',
       'searchResultFilters'
     ]),
-    zoomToResults () {
-      return this.lastSearchTrigger !== triggers.MAP
-    },
     hasResultErrors () {
       return (this.searchErrors.filter_group !== undefined && Object.entries(this.searchErrors.filter_group).length > 0)
     }
@@ -150,12 +139,8 @@ export default {
       this.scrolled = window.scrollY > 0.9 * pos
     },
     handleMapMoveEnd () {
-      debounce(() => {
-        this.lastSearchTrigger = triggers.MAP
-        this.$store.dispatch(SEARCH_WELLS, { bounded: true })
-        this.$store.dispatch(SEARCH_WELL_LOCATIONS, { bounded: true })
-        this.updateQueryParams()
-      }, 500)()
+      this.lastSearchTrigger = triggers.MAP
+      this.updateQueryParams()
     },
     handleSearchSubmit () {
       // Triggered on basic or advanced search via search button
@@ -226,14 +211,6 @@ export default {
       }
 
       this.$store.commit(SET_SEARCH_PARAMS, {...query})
-    },
-    handleMapCoordinate (latln) {
-      this.latitude = null
-      this.longitude = null
-      setTimeout(() => {
-        this.latitude = latln.lat
-        this.longitude = latln.lng
-      }, 0)
     },
     handleOutboundLinkClicks (link) {
       if (window.ga) {
