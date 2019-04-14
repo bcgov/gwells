@@ -139,11 +139,16 @@ class AquiferListCreateAPIView(RevisionMixin, AuditCreateMixin, ListCreateAPIVie
     """
     pagination_class = LargeResultsSetPagination
     permission_classes = (HasAquiferEditRoleOrReadOnly,)
-    serializer_class = serializers.AquiferSerializer
     filter_backends = (djfilters.DjangoFilterBackend,
                        OrderingFilter, SearchFilter)
     ordering_fields = '__all__'
     ordering = ('aquifer_id',)
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return serializers.AquiferSerializer
+        else:
+            return serializers.AquiferDetailSerializer
 
     def get_queryset(self):
         return _aquifer_qs(self.request.GET)

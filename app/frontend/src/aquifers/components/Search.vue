@@ -112,6 +112,10 @@
             </b-row>
           </b-container>
 
+    <div>
+      Sorting By: <b>{{ sortBy }}</b>, Sort Direction:
+      <b>{{ sortDesc ? 'Descending' : 'Ascending' }}</b>
+    </div>
           <b-table
             id="aquifers-results"
             :current-page="currentPage"
@@ -122,7 +126,6 @@
             :sort-by.sync="sortBy"
             :sort-desc.sync="sortDesc"
             empty-text="No aquifers could be found"
-            no-local-sorting
             striped
             outlined
             @row-clicked="rowClicked"
@@ -258,14 +261,6 @@ import { filter } from 'lodash'
 
 import { mapGetters } from 'vuex'
 const LIMIT = 30
-const DEFAULT_ORDERING_STRING = 'aquifer_id'
-function orderingQueryStringToData (str) {
-  str = str || DEFAULT_ORDERING_STRING
-  return {
-    sortDesc: str.charAt(0) === '-',
-    sortBy: str.replace(/^-/, '')
-  }
-}
 export default {
   components: {
     'aquifer-map': AquiferMap
@@ -273,7 +268,8 @@ export default {
   data () {
     let query = this.$route.query || {}
     return {
-      ...orderingQueryStringToData(query.ordering),
+      sortBy: 'aquifer_id',
+      sortDesc: false,
       search: query.search,
       aquifer_search: query.aquifer_search,
       limit: LIMIT,
@@ -356,6 +352,11 @@ export default {
             value: section.code
           }
         })
+        console.log("Aquifer Resource", this.aquifer_resource_sections)
+        this.aquifer_resource_sections.splice(2, 0, {
+          text: "Hydraulically Connected",
+          value: "Hydra"
+        });
       })
     },
     scrollToTableTop () {
@@ -379,17 +380,14 @@ export default {
       if (this.search) {
         this.filterParams.search = this.search
       }
+      
       if (this.sections) {
-        this.filterParams.resources__section__code = this.sections.join(',')
+        this.filterParams.resources__section__code = this.sections.filter(o => o !== "Hydra").join(',')
+        if ( this.sections.find(o => o === 'Hydra') ) {
+          this.filterParams.hydraulically_connected = 'yes'
+        }
       }
-      this.updateQueryParams()
-    },
-    triggerSort () {
-      delete this.filterParams.ordering
-      let ordering = `${this.sortDesc ? '-' : ''}${this.sortBy}`
-      if (ordering !== DEFAULT_ORDERING_STRING) {
-        this.filterParams.ordering = ordering
-      }
+
       this.updateQueryParams()
     },
     updateQueryParams () {
@@ -444,9 +442,7 @@ export default {
     })
   },
   watch: {
-    query () { this.fetchResults() },
-    sortDesc () { this.triggerSort() },
-    sortBy () { this.triggerSort() }
+    query () { this.fetchResults() }
   }
 }
 </script>

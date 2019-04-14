@@ -134,7 +134,7 @@
             <div class="aquifer-information-list-divider"></div>
             <li>
               <dt>Number of wells associated to the aquifer</dt>
-              <dd><a @click="handleWellSearch()">{{ licence_details.num_wells }}</a></dd>
+              <dd><a href="" @click.prevent="handleWellSearch()">{{ licence_details.num_wells }}</a></dd>
             </li>
           </ul>
           <h5 class="mt-5 border-bottom pb-4 main-title">Documentation</h5>
@@ -190,6 +190,10 @@
                 <dd v-else>
                   No information available.
                 </dd>
+              </div>
+              <div class="water-quality-information" v-if="index === 5">
+                <dt>Water Quality Information</dt>
+                <dd><a :href="getEMSLink()">{{ licence_details['num_wells_with_ems'] }} wells with an EMS ID</a></dd>
               </div>
               <dt>{{ section.name }}</dt>
               <dd>
@@ -454,6 +458,7 @@ export default {
     fetch (id = this.id) {
       ApiService.query(`aquifers/${id}`)
         .then((response) => {
+          console.log(response.data)
           this.record = response.data
           this.licence_details = response.data.licence_details
           this.usage = response.data.licence_details.usage
@@ -514,6 +519,9 @@ export default {
       if (details.usage && details.usage.constructor === Array && details.usage.length > 0) {
         this.waterWithdrawlVolume = sumBy(details.usage, 'total_qty')
       }
+    },
+    getEMSLink () {
+      return `https://apps.nrs.gov.bc.ca/gwells/?match_any=false&ems_has_value=true&aquifer=${this.record['aquifer_id']}#advanced`
     }
   }}
 </script>
