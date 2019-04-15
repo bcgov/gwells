@@ -13,6 +13,10 @@
 """
 import collections
 from django.test import TestCase
+from django.urls import reverse
+from rest_framework import status
+from rest_framework.test import APITestCase
+
 from gwells.documents import MinioClient
 
 
@@ -40,3 +44,10 @@ class DocumentTests(TestCase):
 
         self.assertEqual(len(url_list), 2)
         self.assertEqual(url_list[1]['name'], 'test-object2')
+
+
+class TestDocumentsAPI(APITestCase):
+    def test_documents_404(self):
+        url = reverse('file-list', kwargs={'tag': 987654321})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
