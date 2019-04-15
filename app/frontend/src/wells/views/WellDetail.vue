@@ -11,7 +11,7 @@
       </b-card>
       <b-card v-if="errorNotFound" class="container p-1">
         <h1>Not Found</h1>
-        <p>The well you are looking for was not found.</p>
+        <p>The page you are looking for was not found.</p>
       </b-card>
       <b-card v-else class="container p-1">
 
