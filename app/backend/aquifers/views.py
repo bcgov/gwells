@@ -72,7 +72,6 @@ from gwells.management.commands.export_databc import AQUIFERS_SQL, GeoJSONIterat
 
 logger = logging.getLogger(__name__)
 
-
 class AquiferRetrieveUpdateAPIView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateAPIView):
     """List aquifers
     get: return details of aquifers
@@ -101,8 +100,7 @@ def _aquifer_qs(query):
     search = query.get('search')
 
     if hydraulic:
-        qs = qs.filter(subtype__code__in=[
-                       '1a', '1b', '1c', '2', '3', '4a', '5'])
+        qs = qs.filter(subtype__code__in=serializers.HYDRAULIC_SUBTYPES)
 
     # truthy check - ignore missing and emptystring.
     if resources__section__code:

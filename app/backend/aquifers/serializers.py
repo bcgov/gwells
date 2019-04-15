@@ -19,6 +19,7 @@ from django.db.models import Sum, Max
 
 from aquifers import models
 
+HYDRAULIC_SUBTYPES = ['1a', '1b', '1c', '2', '3', '4a', '5']
 
 class AquiferResourceSerializer(serializers.ModelSerializer):
     """Serialize aquifer resourcelist"""
@@ -211,9 +212,10 @@ class AquiferDetailSerializer(AquiferSerializer):
         for licence in licences:
             details['wells_by_licence'][licence.licence_number] = licence.wells.all(
             ).values("well_tag_number")
+        details['hydraulically_connected'] = instance.subtype.code in HYDRAULIC_SUBTYPES
 
-        details = ret['licence_details'] = details
-
+        ret['licence_details'] = details
+        
         return ret
 
     class Meta:
