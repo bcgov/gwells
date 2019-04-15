@@ -112,10 +112,6 @@
             </b-row>
           </b-container>
 
-    <div>
-      Sorting By: <b>{{ sortBy }}</b>, Sort Direction:
-      <b>{{ sortDesc ? 'Descending' : 'Ascending' }}</b>
-    </div>
           <b-table
             id="aquifers-results"
             :current-page="currentPage"
