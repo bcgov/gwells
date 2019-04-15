@@ -31,7 +31,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             :fields="tableHeaders"
             responsive
             show-empty
-            empty-text="No submission report history for this well. Not all activity reports submitted prior to 2019 are digitized. Scanned copies of paper reports may be available as an attachment in the well summary."
+            empty-text="There is currently no submission report history for this well. Scanned copies of paper reports may be available as an attachment."
             :per-page="submissionsPerPage"
             :current-page="submissionsPage"
           >
