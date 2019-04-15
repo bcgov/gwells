@@ -55,6 +55,8 @@ objects:
       finalizers:
       - kubernetes.io/pvc-protection
       name: "${NAME}-data-vol"
+      labels:
+        app: "${NAME}"
     spec:
       accessModes:
       - ${DEST_PVC_ACCESS}
