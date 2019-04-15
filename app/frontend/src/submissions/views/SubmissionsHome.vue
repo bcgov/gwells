@@ -506,6 +506,11 @@ export default {
       })
     },
     handlePreviewButton () {
+      if (!this.formChanges()) {
+        this.$noty.info('<div class="errorTitle">Please add some data to your submission.</div>', { killer: true })
+        return
+      }
+
       this.preview = true
 
       // clear the error alert (otherwise it looks like there are new errors after clicking preview)
