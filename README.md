@@ -61,6 +61,12 @@ mv DATABC_EXPORT_FILE.zip app/backend/bulk/
 docker-compose exec backend python manage.py import_bulk_shapefile bulk
 ```
 
+### Importing Licences
+
+To download new licence data from DataBC and merge it into your DB, do ```
+docker-compose exec backend python manage.py import_licences
+```
+
 ## Contributing
 
 Please see [CONTRIBUTING.md](https://github.com/bcgov/gwells/blob/master/CONTRIBUTING.md)
