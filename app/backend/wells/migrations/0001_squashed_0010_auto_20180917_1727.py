@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('submissions', '0001_initial'),
+        ('submissions', '0001_squashed_0006_auto_20190409_1634'),
         ('gwells', '0001_squashed_0009_auto_20181116_2316'),
         ('registries', '0001_squashed_0012_auto_20180704_2105'),
     ]
@@ -647,25 +647,7 @@ class Migration(migrations.Migration):
                     options={
                         'db_table': 'well',
                     },
-                ),
-                migrations.CreateModel(
-                    name='WellActivityCode',
-                    fields=[
-                        ('create_user', models.CharField(max_length=60)),
-                        ('create_date', models.DateTimeField(blank=True, null=True)),
-                        ('update_user', models.CharField(max_length=60, null=True)),
-                        ('update_date', models.DateTimeField(blank=True, null=True)),
-                        ('well_activity_type_code', models.CharField(editable=False, max_length=10, primary_key=True, serialize=False)),
-                        ('description', models.CharField(max_length=100)),
-                        ('display_order', models.PositiveIntegerField()),
-                        ('effective_date', models.DateTimeField(blank=True, null=True)),
-                        ('expiry_date', models.DateTimeField(blank=True, null=True)),
-                    ],
-                    options={
-                        'db_table': 'well_activity_code',
-                        'ordering': ['display_order', 'description'],
-                    },
-                ),
+                ),                
                 migrations.CreateModel(
                     name='WellClassCode',
                     fields=[
@@ -926,7 +908,7 @@ class Migration(migrations.Migration):
                 migrations.AddField(
                     model_name='activitysubmission',
                     name='well_activity_type',
-                    field=models.ForeignKey(db_column='well_activity_code', on_delete=django.db.models.deletion.CASCADE, to='wells.WellActivityCode', verbose_name='Type of Work'),
+                    field=models.ForeignKey(db_column='well_activity_code', on_delete=django.db.models.deletion.CASCADE, to='submissions.WellActivityCode', verbose_name='Type of Work'),
                 ),
                 migrations.AddField(
                     model_name='activitysubmission',
@@ -1010,9 +992,6 @@ class Migration(migrations.Migration):
                     model_name='activitysubmission',
                     name='well_activity_type',
                     field=models.ForeignKey(db_column='well_activity_code', on_delete=django.db.models.deletion.CASCADE, to='submissions.WellActivityCode', verbose_name='Type of Work'),
-                ),
-                migrations.DeleteModel(
-                    name='WellActivityCode',
                 ),
                 migrations.AddField(
                     model_name='lithologydescription',

@@ -228,7 +228,9 @@ class ListFiles(APIView):
     @swagger_auto_schema(responses={200: openapi.Response('OK', LIST_FILES_OK)})
     def get(self, request, tag):
 
-        if Well.objects.get(pk=tag).well_publication_status\
+        well = get_object_or_404(Well, pk=tag)
+
+        if well.well_publication_status\
                 .well_publication_status_code == 'Unpublished':
             if not self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
                 return HttpResponseNotFound()
