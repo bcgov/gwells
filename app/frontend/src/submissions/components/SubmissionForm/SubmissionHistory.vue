@@ -12,7 +12,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-  <fieldset class="mt-5" v-if="filteredSubmissions && filteredSubmissions.length > 0">
+  <fieldset class="mt-5">
     <b-row>
       <b-col cols="12" lg="6">
         <legend :id="id">Activity Reports</legend>
@@ -30,7 +30,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
             :items="filteredSubmissions"
             :fields="tableHeaders"
             responsive
-            empty-text="There are no electronic submissions for this well."
+            show-empty
+            empty-text="There is currently no submission report history for this well. Scanned copies of paper reports may be available as an attachment."
             :per-page="submissionsPerPage"
             :current-page="submissionsPage"
           >
