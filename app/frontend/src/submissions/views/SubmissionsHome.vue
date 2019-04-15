@@ -13,69 +13,82 @@ Licensed under the Apache License, Version 2.0 (the "License");
 */
 <template>
   <div class="container p-1">
-    <b-card v-if="breadcrumbs && breadcrumbs.length" no-body class="mb-3 d-print-none">
-      <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"></b-breadcrumb>
-    </b-card>
-    <div class="card" v-if="userRoles.wells.edit || userRoles.submissions.edit">
-      <div class="card-body">
+    <div v-if="loading" class="mt-3">
+      <div class="fa-2x text-center">
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+      </div>
+    </div>
+    <div v-else>
+      <b-card v-if="breadcrumbs && breadcrumbs.length" no-body class="mb-3 d-print-none">
+        <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"></b-breadcrumb>
+      </b-card>
+      <div class="card" v-if="userRoles.wells.edit || userRoles.submissions.edit">
+        <div class="card-body">
 
-        <b-form @submit.prevent="confirmSubmit">
-          <!-- if preview === true : Preview -->
-          <submission-preview
-            v-if="preview"
-            :form="form"
-            :activity="activityType"
-            :sections="displayFormSection"
-            :errors="errors"
-            :reportSubmitted="formSubmitSuccess"
-            :formSubmitLoading="formSubmitLoading"
-            :uploadedFiles="uploadedFiles"
-            v-on:back="handlePreviewBackButton"
-            v-on:startNewReport="handleExitPreviewAfterSubmit"
-            v-on:fetchFiles="fetchFiles"
-            />
-          <!-- if preview === false : Activity submission form -->
-          <activity-submission-form
-            v-else
-            :form="form"
-            :events="events"
-            :submissionsHistory="submissionsHistory"
-            :activityType.sync="activityType"
-            :sections="displayFormSection"
-            :formSteps="formSteps"
-            :errors="errors"
-            :formIsFlat.sync="formIsFlat"
-            :trackValueChanges="trackValueChanges"
-            :formSubmitLoading="formSubmitLoading"
-            :isStaffEdit="isStaffEdit"
-            :loading="loading"
-            :uploadedFiles="uploadedFiles"
-            :formChanges="formChanges"
-            v-on:preview="handlePreviewButton"
-            v-on:submit_edit="formSubmit"
-            v-on:resetForm="resetForm"
-            v-on:fetchFiles="fetchFiles"
-            />
-
-          <!-- Form submission confirmation -->
-          <b-modal
-              v-model="confirmSubmitModal"
-              id="confirmSubmitModal"
-              centered
-              title="Confirm submission"
-              @shown="$refs.confirmSubmitConfirmBtn.focus()"
-              :return-focus="$refs.activitySubmitBtn">
-            Are you sure you want to submit this activity report?
-            <div slot="modal-footer">
-              <b-btn variant="primary" @click="confirmSubmitModal=false;formSubmit()" ref="confirmSubmitConfirmBtn">
-                Save
-              </b-btn>
-              <b-btn variant="light" @click="confirmSubmitModal=false">
-                Cancel
-              </b-btn>
+          <b-form @submit.prevent="confirmSubmit">
+            <!-- if preview === true : Preview -->
+            <submission-preview
+              v-if="preview"
+              :form="form"
+              :activity="activityType"
+              :sections="displayFormSection"
+              :errors="errors"
+              :reportSubmitted="formSubmitSuccess"
+              :formSubmitLoading="formSubmitLoading"
+              :uploadedFiles="uploadedFiles"
+              v-on:back="handlePreviewBackButton"
+              v-on:startNewReport="handleExitPreviewAfterSubmit"
+              v-on:fetchFiles="fetchFiles"
+              />
+            <!-- if preview === false : Activity submission form -->
+            <div v-else>
+              <div v-if="isStaffEdit && errorWellNotFound">
+                <h1>Not Found</h1>
+                <p>The page you are looking for was not found.</p>
+              </div>
+              <activity-submission-form
+                v-else
+                :form="form"
+                :events="events"
+                :submissionsHistory="submissionsHistory"
+                :activityType.sync="activityType"
+                :sections="displayFormSection"
+                :formSteps="formSteps"
+                :errors="errors"
+                :formIsFlat.sync="formIsFlat"
+                :trackValueChanges="trackValueChanges"
+                :formSubmitLoading="formSubmitLoading"
+                :isStaffEdit="isStaffEdit"
+                :loading="loading"
+                :uploadedFiles="uploadedFiles"
+                :formChanges="formChanges"
+                v-on:preview="handlePreviewButton"
+                v-on:submit_edit="formSubmit"
+                v-on:resetForm="resetForm"
+                v-on:fetchFiles="fetchFiles"
+                />
             </div>
-          </b-modal>
-        </b-form>
+
+            <!-- Form submission confirmation -->
+            <b-modal
+                v-model="confirmSubmitModal"
+                id="confirmSubmitModal"
+                centered
+                title="Confirm submission"
+                @shown="$refs.confirmSubmitConfirmBtn.focus()"
+                :return-focus="$refs.activitySubmitBtn">
+              Are you sure you want to submit this activity report?
+              <div slot="modal-footer">
+                <b-btn variant="primary" @click="confirmSubmitModal=false;formSubmit()" ref="confirmSubmitConfirmBtn">
+                  Save
+                </b-btn>
+                <b-btn variant="light" @click="confirmSubmitModal=false">
+                  Cancel
+                </b-btn>
+              </div>
+            </b-modal>
+          </b-form>
+        </div>
       </div>
     </div>
   </div>
@@ -103,6 +116,7 @@ export default {
   },
   data () {
     return {
+      compareForm: {},
       // event bus; use by emitting events on the events instance eg. this.events.$emit('updated')
       events: new Vue(),
       ...initialState()
@@ -122,10 +136,22 @@ export default {
       return components
     },
     isStaffEdit () {
-      return this.activityType === 'STAFF_EDIT'
+      return this.activityType === 'STAFF_EDIT' && this.userRoles.wells.edit
     },
     breadcrumbs () {
       const breadcrumbs = []
+
+      if (this.errorWellNotFound) {
+        breadcrumbs.push({
+          text: `Well Search`,
+          to: { name: 'wells-home' }
+        },
+        {
+          text: `Not found`,
+          active: true
+        })
+        return breadcrumbs
+      }
 
       if (this.isStaffEdit) {
         breadcrumbs.push(
@@ -145,6 +171,9 @@ export default {
       }
       return breadcrumbs
     },
+    errorWellNotFound () {
+      return this.wellFetchError && this.wellFetchError.status === 404
+    },
     ...mapGetters(['codes', 'userRoles', 'well', 'keycloak']),
     ...mapState('documentState', [
       'files_uploading',
@@ -157,7 +186,8 @@ export default {
     ...mapActions('documentState', [
       'uploadFiles',
       'fileUploadSuccess',
-      'fileUploadFail'
+      'fileUploadFail',
+      'resetUploadFiles'
     ]),
     formSubmit () {
       if (!this.formChanges()) {
@@ -413,7 +443,7 @@ export default {
         water_quality_characteristics: [],
         water_quality_colour: '',
         water_quality_odour: '',
-        ems_id: '',
+        ems: '',
         aquifer: '',
         total_depth_drilled: '',
         finished_well_depth: '',
@@ -517,7 +547,7 @@ export default {
       Object.assign(this.$data, initialState())
       this.resetForm()
       this.$store.dispatch(FETCH_CODES)
-
+      this.resetUploadFiles()
       if (this.$route.params.id) {
         this.setWellTagNumber(this.$route.params.id)
       }
@@ -533,6 +563,8 @@ export default {
         this.formIsFlat = false
       }
       this.fetchFiles()
+      // Set initial form fields for comparison with user input changes
+      Object.assign(this.compareForm, this.form)
     },
     fetchWellDataForStaffEdit (options = {}) {
       const { reloadPage = true } = options
@@ -564,6 +596,7 @@ export default {
         // Set initial form fields for comparison with user input changes
         Object.assign(this.compareForm, this.form)
       }).catch((e) => {
+        this.wellFetchError = e.response
         console.error(e)
       }).finally(() => {
         this.loading = false
@@ -590,6 +623,7 @@ function initialState () {
     formIsFlat: false,
     preview: false,
     loading: false,
+    wellFetchError: null,
     confirmSubmitModal: false,
     formSubmitSuccess: false,
     formSubmitSuccessWellTag: null,
@@ -599,7 +633,6 @@ function initialState () {
     trackValueChanges: false,
     errors: {},
     form: {},
-    compareForm: {},
     submissionsHistory: [], // historical submissions for each well (comes into play for staff edits)
     formOptions: {},
     uploadedFiles: {},

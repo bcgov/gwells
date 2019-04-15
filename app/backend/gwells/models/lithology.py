@@ -116,7 +116,7 @@ class LithologyDescriptionCode(CodeTableModel):
                         'materials. E.g. dry, loose, weathered, soft.')
 
     def __str__(self):
-        return 'lithology_description_code {} {}'.format(self.code, self.description)
+        return 'lithology_description_code {} {}'.format(self.lithology_description_code, self.description)
 
 
 class LithologyHardnessCode(CodeTableModel):

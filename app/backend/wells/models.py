@@ -1398,7 +1398,7 @@ class ActivitySubmission(AuditModelStructure):
         WellYieldUnitCode, db_column='well_yield_unit_code', on_delete=models.CASCADE, blank=True, null=True)
     # want to be integer in future
     diameter = models.CharField(max_length=9, blank=True, null=True)
-    ems_id = models.CharField(max_length=30, blank=True, null=True)
+    ems = models.CharField(max_length=30, blank=True, null=True)
 
     # Observation well details
     observation_well_number = models.CharField(

@@ -15,6 +15,7 @@ import logging
 
 from rest_framework import serializers
 from django.db import transaction
+
 from gwells.models import ProvinceStateCode
 from gwells.serializers import AuditModelSerializer
 from registries.serializers import PersonNameSerializer, OrganizationNameListSerializer
@@ -90,6 +91,29 @@ class CasingSerializer(serializers.ModelSerializer):
             'start': {'required': True},
             'end': {'required': True},
             'diameter': {'required': True}
+        }
+
+
+class LegacyCasingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Casing
+        fields = (
+            'start',
+            'end',
+            'diameter',
+            'casing_code',
+            'casing_material',
+            'drive_shoe',
+            'wall_thickness'
+        )
+        extra_kwargs = {
+            'start': {'required': False},
+            'end': {'required': False},
+            'diameter': {'required': False},
+            'casing_code': {'required': False},
+            'casing_material': {'required': False},
+            'drive_shoe': {'required': False, 'allow_null': True},
+            'wall_thickness': {'required': False}
         }
 
 
@@ -324,6 +348,7 @@ class WellDetailSerializer(AuditModelSerializer):
             "observation_well_number",
             "observation_well_status",
             "ems",
+            "ems_id",  # kept for backwards compatibility, use ems
             "aquifer",
             "utm_zone_code",
             "utm_northing",

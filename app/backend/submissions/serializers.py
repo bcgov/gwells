@@ -33,6 +33,7 @@ from wells.serializers import (
     CasingSerializer,
     DecommissionDescriptionSerializer,
     ScreenSerializer,
+    LegacyCasingSerializer,
     LinerPerforationSerializer,
     LithologyDescriptionSerializer,
 )
@@ -190,7 +191,7 @@ class WellSubmissionStackerSerializer(WellSubmissionSerializerBase):
 class WellSubmissionLegacySerializer(WellSubmissionSerializerBase):
     """ Class with no validation, and all possible fields, used by stacker to create legacy records """
 
-    casing_set = CasingSerializer(many=True, required=False)
+    casing_set = LegacyCasingSerializer(many=True, required=False)
     screen_set = ScreenSerializer(many=True, required=False)
     linerperforation_set = LinerPerforationSerializer(
         many=True, required=False)
@@ -291,7 +292,7 @@ class WellConstructionSubmissionSerializer(WellSubmissionSerializerBase):
                   'drawdown', 'hydro_fracturing_performed', 'hydro_fracturing_yield_increase',
                   'recommended_pump_depth', 'recommended_pump_rate', 'development_notes',
                   'water_quality_characteristics',
-                  'water_quality_colour', 'water_quality_odour', 'ems_id', 'total_depth_drilled',
+                  'water_quality_colour', 'water_quality_odour', 'ems', 'total_depth_drilled',
                   'finished_well_depth', 'final_casing_stick_up', 'bedrock_depth', 'static_water_level',
                   'well_yield', 'artesian_flow', 'artesian_pressure', 'well_cap_type', 'well_disinfected',
                   'comments', 'alternative_specs_submitted', 'consultant_company', 'consultant_name',
@@ -413,7 +414,7 @@ class WellAlterationSubmissionSerializer(WellSubmissionSerializerBase):
             'water_quality_characteristics',
             'water_quality_colour',
             'water_quality_odour',
-            'ems_id',
+            'ems',
             'total_depth_drilled',
             'finished_well_depth',
             'final_casing_stick_up',
@@ -450,7 +451,8 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
     def to_representation(self, instance):
         response = super().to_representation(instance)
         response['person_responsible'] = PersonNameSerializer(instance.person_responsible).data
-        response['company_of_person_responsible'] = OrganizationNameListSerializer(instance.company_of_person_responsible).data
+        response['company_of_person_responsible'] = OrganizationNameListSerializer(
+            instance.company_of_person_responsible).data
         return response
 
     def get_well_activity_type(self):
@@ -556,7 +558,7 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
             'water_quality_characteristics',
             'water_quality_colour',
             'water_quality_odour',
-            'ems_id',
+            'ems',
             'aquifer',
             'total_depth_drilled',
             'finished_well_depth',
@@ -1032,7 +1034,7 @@ class ConstructionSubmissionDisplaySerializer(serializers.ModelSerializer):
             'drawdown', 'hydro_fracturing_performed', 'hydro_fracturing_yield_increase',
             'recommended_pump_depth', 'recommended_pump_rate', 'development_notes',
             'water_quality_characteristics',
-            'water_quality_colour', 'water_quality_odour', 'ems_id', 'total_depth_drilled',
+            'water_quality_colour', 'water_quality_odour', 'ems', 'total_depth_drilled',
             'finished_well_depth', 'final_casing_stick_up', 'bedrock_depth', 'static_water_level',
             'well_yield', 'artesian_flow', 'artesian_pressure', 'well_cap_type', 'well_disinfected',
             'comments', 'alternative_specs_submitted', 'consultant_company', 'consultant_name',
@@ -1186,7 +1188,7 @@ class AlterationSubmissionDisplaySerializer(serializers.ModelSerializer):
             'water_quality_characteristics',
             'water_quality_colour',
             'water_quality_odour',
-            'ems_id',
+            'ems',
             'total_depth_drilled',
             'finished_well_depth',
             'final_casing_stick_up',
@@ -1451,7 +1453,7 @@ class StaffEditDisplaySerializer(serializers.ModelSerializer):
             'water_quality_characteristics',
             'water_quality_colour',
             'water_quality_odour',
-            'ems_id',
+            'ems',
             'aquifer',
             'total_depth_drilled',
             'finished_well_depth',
@@ -1661,7 +1663,7 @@ class LegacyWellDisplaySerializer(serializers.ModelSerializer):
             'water_quality_characteristics',
             'water_quality_colour',
             'water_quality_odour',
-            'ems_id',
+            'ems',
             'aquifer',
             'total_depth_drilled',
             'finished_well_depth',

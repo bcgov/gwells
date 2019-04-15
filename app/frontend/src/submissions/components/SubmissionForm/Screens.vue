@@ -124,14 +124,14 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </th>
         </thead>
         <tbody>
-          <template v-for="(row, index) in screens.length">
+          <template v-for="(row, index) in screensData.length">
             <tr :key="`screen row ${index}`" :id="`screenRow${index}`">
               <td class="input-width-small py-0">
                 <form-input
                   group-class="my-1"
                   :id="`screenDepthFrom_${index}`"
                   aria-label="Depth from (feet)"
-                  v-model="screens[index].start"
+                  v-model="screensData[index].start"
                   :errors="getScreenError(index).start"
                   :loaded="getScreenLoaded(index).start"
                   />
@@ -141,7 +141,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   group-class="my-1"
                   :id="`screenDepthTo_${index}`"
                   aria-label="Depth to (feet)"
-                  v-model="screens[index].end"
+                  v-model="screensData[index].end"
                   :errors="getScreenError(index).end"
                   :loaded="getScreenLoaded(index).end"
                   />
@@ -151,7 +151,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   group-class="my-1"
                   :id="`screenDiameter_${index}`"
                   aria-label="Diameter (inches)"
-                  v-model="screens[index].internal_diameter"
+                  v-model="screensData[index].internal_diameter"
                   :errors="getScreenError(index).internal_diameter"
                   :loaded="getScreenLoaded(index).internal_diameter"
                   />
@@ -161,7 +161,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     group-class="my-1"
                     :id="`screenAssemblyType_${index}`"
                     aria-label="Screen Assembly Type"
-                    v-model="screens[index].assembly_type"
+                    v-model="screensData[index].assembly_type"
                     select
                     :options="codes.screen_assemblies"
                     text-field="description"
@@ -177,7 +177,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   group-class="my-1"
                   :id="`screenSlotSize_${index}`"
                   aria-label="Screen Slot Size"
-                  v-model="screens[index].slot_size"
+                  v-model="screensData[index].slot_size"
                   :errors="getScreenError(index).slot_size"
                   :loaded="getScreenLoaded(index).slot_size"
                   />
@@ -254,22 +254,53 @@ export default {
     return {
       screenSlotSizeSuggestions: ['10', '20', '40', '80'],
       confirmRemoveModal: false,
-      rowIndexToRemove: null
+      rowIndexToRemove: null,
+      screensData: [],
+      pageLoaded: false
     }
   },
   computed: {
-    ...mapGetters(['codes'])
+    ...mapGetters(['codes']),
+    computedScreens: function () {
+      return Object.assign({}, this.screensData)
+    }
+  },
+  watch: {
+    computedScreens: {
+      deep: true,
+      handler: function (n, o) {
+        let screens = []
+        this.screensData.forEach((d) => {
+          if (!Object.values(d).every(x => (x === ''))) {
+            screens.push(d)
+          }
+        })
+        if (this.pageLoaded && this.saveDisabled) {
+          screens.push(this.emptyObject())
+        }
+        this.$emit('update:screens', screens)
+      }
+    }
   },
   methods: {
     addScreenRow () {
-      this.screensInput.push({})
+      this.screensData.push(this.emptyObject())
+    },
+    emptyObject () {
+      return {
+        start: '',
+        end: '',
+        internal_diameter: '',
+        assembly_type: '',
+        slot_size: ''
+      }
     },
     removeRowByIndex (index) {
-      this.screensInput.splice(index, 1)
+      this.screensData.splice(index, 1)
       this.rowIndexToRemove = null
     },
     removeRowIfOk (rowNumber) {
-      if (this.rowHasValues(this.screensInput[rowNumber])) {
+      if (this.rowHasValues(this.screensData[rowNumber])) {
         this.rowIndexToRemove = rowNumber
         this.confirmRemoveModal = true
       } else {
@@ -301,9 +332,17 @@ export default {
   },
   created () {
     // when component created, add an initial row of screens
-    if (!this.screensInput.length) {
-      this.screensInput.push({}, {}, {})
+    if (!this.screens.length) {
+      for (let i = 0; i < 3; i++) {
+        this.addScreenRow()
+      }
+    } else {
+      Object.assign(this.screensData, this.screens)
+      this.addScreenRow()
     }
+  },
+  updated () {
+    this.pageLoaded = true
   }
 }
 </script>

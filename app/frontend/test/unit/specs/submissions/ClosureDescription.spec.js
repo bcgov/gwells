@@ -26,7 +26,7 @@ describe('ClosureDescription.vue', () => {
       sync: false
     })
 
-    expect(wrapper.vm.closureDescriptionSet.length).toBe(defaultRows)
+    expect(wrapper.vm.closureDescriptionSetData.length).toBe(defaultRows)
   })
   it('adds a new ClosureDescription row when clicking Add Row', () => {
     const wrapper = shallowMount(ClosureDescription, {
@@ -36,7 +36,7 @@ describe('ClosureDescription.vue', () => {
     })
 
     wrapper.find('#addClosureRowButton').trigger('click')
-    expect(wrapper.vm.closureDescriptionSet.length).toBe(defaultRows + 1) // default + 1 extra
+    expect(wrapper.vm.closureDescriptionSetData.length).toBe(defaultRows + 1) // default + 1 extra
   })
   it('when clicking the remove button on a row, removes that row', () => {
     const wrapper = shallowMount(ClosureDescription, {
@@ -46,7 +46,7 @@ describe('ClosureDescription.vue', () => {
     })
 
     wrapper.find('#removeClosureRowButton0').trigger('click')
-    expect(wrapper.vm.closureDescriptionSet.length).toBe(defaultRows - 1)
+    expect(wrapper.vm.closureDescriptionSetData.length).toBe(defaultRows - 1)
   })
   it('Passes errors into the input components', () => {
     const wrapper = shallowMount(ClosureDescription, {
