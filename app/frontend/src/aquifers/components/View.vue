@@ -191,10 +191,6 @@
                   No information available.
                 </dd>
               </div>
-              <div class="water-quality-information" v-if="index === 5">
-                <dt>Water Quality Information</dt>
-                <dd><a :href="getEMSLink()">{{ licence_details['num_wells_with_ems'] }} wells with an EMS ID</a></dd>
-              </div>
               <dt>{{ section.name }}</dt>
               <dd>
                 <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
@@ -202,6 +198,12 @@
                 </ul>
                 <p v-if="!bySection(record.resources, section).length">No information available.</p>
               </dd>
+              <div class="water-quality-information" v-if="index === 5">
+                <dt>Water Quality Information</dt>
+                <dd><a :href="getEMSLink()">{{ licence_details['num_wells_with_ems'] }} wells with an EMS ID</a></dd>
+                <dt>Hydraulically Connected</dt>
+                <dd>{{ licence_details['hydraulically_connected'] ? "Yes" : "No"}}</dd>
+              </div>
           </li>
           </ul>
         </b-col>
