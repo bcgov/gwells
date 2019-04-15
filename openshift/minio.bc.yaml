@@ -19,6 +19,8 @@ objects:
   apiVersion: v1
   metadata:
     name: "${DEST_IMG_NAME}"
+    labels:
+      app: "${NAME}"
 - apiVersion: v1
   kind: BuildConfig
   metadata:
