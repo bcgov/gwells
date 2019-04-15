@@ -640,8 +640,7 @@ def lithology_geojson(request):
 
 @api_view(['GET'])
 def well_licensing(request):
-    url = 'https://test.j200.gov.bc.ca/ws/' \
-          'RestGWellsInterface/wells/{}'.format(request.GET.get('well_tag_number'))
+    url = settings.E_LICENSING_WELL_LICENCE_URL + '{}'.format(request.GET.get('well_tag_number'))
     headers = {
         'content_type': 'application/json',
         'AuthUsername': get_env_variable('E_LICENSING_AUTH_USERNAME'),
