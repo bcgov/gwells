@@ -365,10 +365,9 @@ export default {
       this.search = ''
       this.aquifer_id = ''
       this.sections = []
-      this.currentPage = 0
+      this.currentPage = 1
       this.noSearchCriteriaError = false
-      this.updateQueryParams()
-    },
+      this.updateQueryParams()    },
     triggerSearch () {
       delete this.filterParams.aquifer_id
       delete this.filterParams.search
@@ -385,6 +384,7 @@ export default {
       }
 
       this.updateQueryParams()
+      this.fetchResults()      
     },
     updateQueryParams () {
       this.$router.replace({query: this.filterParams})
@@ -437,8 +437,6 @@ export default {
       this.response.results = filter(this.aquifers_search_results, o => aquiferIdsMap.get(o.aquifer_id))
     })
   },
-  watch: {
-    query () { this.fetchResults() }
-  }
+
 }
 </script>

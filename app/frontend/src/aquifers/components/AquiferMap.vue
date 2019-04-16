@@ -8,13 +8,14 @@
 import L from 'leaflet'
 import { tiledMapLayer } from 'esri-leaflet'
 import { filter } from 'lodash'
-import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch'
+import { GeoSearchControl } from 'leaflet-geosearch'
 import 'leaflet-geosearch/assets/css/leaflet.css'
 import 'leaflet-lasso'
 import 'leaflet-fullscreen/dist/Leaflet.fullscreen.min.js'
 import 'leaflet-fullscreen/dist/leaflet.fullscreen.css'
+import { EsriProvider } from 'leaflet-geosearch';
 
-const provider = new OpenStreetMapProvider()
+const provider = new EsriProvider();
 const searchControl = new GeoSearchControl({
   provider: provider,
   autoClose: true
@@ -336,6 +337,7 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
 }
 
 
