@@ -183,6 +183,27 @@ export default {
         })
       }
 
+      var addresSearchControl =  L.Control.extend({
+
+        options: {
+          position: 'topleft'
+        },
+
+        onAdd: function (map) {
+          var container = L.DomUtil.create('div', 'leaflet-control-address')
+          var content = L.DomUtil.create('div')
+          content.innerHTML = `<i class="fa fa-search" aria-hidden="true"></i>`
+          container.appendChild(content)
+          container.onclick = function(){
+            console.log('buttonClicked')
+          }
+
+          return container;
+        }
+      });
+
+      this.map.addControl(new addresSearchControl())
+
       // Add checkboxes for layers
       L.control.layers(null, mapLayers, {collapsed: true}).addTo(this.map)
       this.map.on('layeradd', (e) => {
@@ -304,6 +325,19 @@ export default {
     box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.4);
     cursor: pointer;
 }
+
+.leaflet-control-address {
+    width: 30px;
+    height: 30px;
+    left: 2px;
+    box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 
 .geolocate:hover {
     opacity: 0.8;
