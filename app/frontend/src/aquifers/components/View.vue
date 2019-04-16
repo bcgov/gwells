@@ -395,7 +395,6 @@ export default {
         }).catch((error) => {
           console.error(error)
         })
-      this.wells = [{id: 20402}]
     },
     bySection (resources, section) {
       return (resources || []).filter(function (resource) {
