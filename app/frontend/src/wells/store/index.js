@@ -54,6 +54,22 @@ const cleanParams = (payload) => {
   }, {})
 }
 
+const DEFAULT_COLUMNS = [
+  'wellTagNumber',
+  'identificationPlateNumber',
+  'ownerName',
+  'streetAddress',
+  'legalLot',
+  'legalPlan',
+  'legalDistrictLot',
+  'landDistrict',
+  'legalPid',
+  'diameter',
+  'finishedWellDepth'
+]
+const DEFAULT_ORDERING = '-well_tag_number'
+const DEFAULT_LIMIT = 10
+
 const wellsStore = {
   state: {
     error: null,
@@ -66,23 +82,11 @@ const wellsStore = {
     pendingSearch: null,
     searchBounds: {},
     searchErrors: {},
-    searchLimit: 10,
+    searchLimit: DEFAULT_LIMIT,
     searchOffset: 0,
-    searchOrdering: '-well_tag_number',
+    searchOrdering: DEFAULT_ORDERING,
     searchParams: {},
-    searchResultColumns: [
-      'wellTagNumber',
-      'identificationPlateNumber',
-      'ownerName',
-      'streetAddress',
-      'legalLot',
-      'legalPlan',
-      'legalDistrictLot',
-      'landDistrict',
-      'legalPid',
-      'diameter',
-      'finishedWellDepth'
-    ],
+    searchResultColumns: [...DEFAULT_COLUMNS],
     // searchResultFilters provides a second level of filtering.
     searchResultFilters: {},
     searchResults: null,
@@ -177,12 +181,18 @@ const wellsStore = {
         state.locationPendingSearch.cancel()
         commit(SET_LOCATION_PENDING_SEARCH, null)
       }
+      commit(SET_SEARCH_BOUNDS, {})
+      commit(SET_SEARCH_ORDERING, DEFAULT_ORDERING)
+      commit(SET_SEARCH_LIMIT, DEFAULT_LIMIT)
+      commit(SET_SEARCH_OFFSET, 0)
       commit(SET_SEARCH_PARAMS, {})
       commit(SET_SEARCH_ERRORS, {})
       commit(SET_SEARCH_RESULTS, null)
       commit(SET_SEARCH_RESULT_COUNT, 0)
       commit(SET_LOCATION_SEARCH_RESULTS, [])
       commit(SET_LOCATION_SEARCH_RESULT_COUNT, 0)
+      commit(SET_SEARCH_RESULT_COLUMNS, [...DEFAULT_COLUMNS])
+      commit(SET_SEARCH_RESULT_FILTERS, {})
     },
     [SEARCH_WELLS] ({ commit, state }, { bounded = false }) {
       return new Promise((resolve, reject) => {

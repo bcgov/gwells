@@ -763,6 +763,14 @@ export default {
       }, {})
 
       return searchQueryParams
+    },
+    emptyFilterParams () {
+      const filterParams = {}
+      Object.keys(this.searchFields).forEach(id => {
+        filterParams[id] = {}
+      })
+
+      return filterParams
     }
   },
   methods: {
@@ -788,6 +796,9 @@ export default {
         const params = this.getParamNames(field)
         return { ...field, params: params, id: id }
       })
+    },
+    clearFilterParams () {
+      this.filterParams = {...this.emptyFilterParams}
     }
   }
 }

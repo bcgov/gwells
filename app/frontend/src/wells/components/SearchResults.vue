@@ -236,10 +236,7 @@ export default {
       this.$store.dispatch(SEARCH_WELL_LOCATIONS, {})
     },
     initFilterParams () {
-      const filterParams = {}
-      Object.keys(this.searchFields).forEach(id => {
-        filterParams[id] = {}
-      })
+      const filterParams = {...this.emptyFilterParams}
 
       Object.entries(this.resultFilters).forEach(([param, value]) => {
         this.columns.forEach(column => {
@@ -297,6 +294,12 @@ export default {
         const lastFilterRemoved = removedWithFilters.slice(-1)[0]
         // Call applyFilter to trigger reload
         this.applyFilter({ id: lastFilterRemoved }, {})
+      }
+    },
+    resultFilters (newFilters) {
+      // on reset (empty filters), clear state
+      if (Object.entries(newFilters).length === 0 && newFilters.constructor === Object) {
+        this.clearFilterParams()
       }
     }
   },

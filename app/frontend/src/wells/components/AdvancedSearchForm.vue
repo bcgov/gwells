@@ -281,17 +281,11 @@ export default {
       this.$emit('search', this.searchQueryParams)
     },
     handleReset () {
-      this.filterParamsReset()
-      this.selectedFilterIds = []
       this.$store.dispatch(RESET_WELLS_SEARCH)
-
       this.$emit('reset')
     },
     filterParamsReset () {
-      const filterParams = {}
-      Object.keys(this.searchFields).forEach(id => {
-        filterParams[id] = {}
-      })
+      const filterParams = {...this.emptyFilterParams}
       filterParams.matchAny = { match_any: true }
       this.filterParams = filterParams
     },
@@ -315,10 +309,7 @@ export default {
       delete this.filterParams[filterId]
     },
     initFilterParams () {
-      const filterParams = {}
-      Object.keys(this.searchFields).forEach(id => {
-        filterParams[id] = {}
-      })
+      const filterParams = {...this.emptyFilterParams}
 
       Object.entries(this.searchParams).forEach(([param, value]) => {
         [...this.defaultFilterFields, ...this.additionalFilterFields].forEach(field => {
@@ -342,6 +333,15 @@ export default {
 
     this.initFilterParams()
     this.initSelectedFilterIds()
+
+    // On reset or basic search, clear local params
+    this.$store.subscribeAction((action, state) => {
+      if (action.type === RESET_WELLS_SEARCH ||
+          (action.type === SEARCH_WELLS && state.wellsStore.searchParams.search !== undefined && state.wellsStore.searchParams.search !== null)) {
+        this.filterParamsReset()
+        this.selectedFilterIds = []
+      }
+    })
   }
 }
 </script>

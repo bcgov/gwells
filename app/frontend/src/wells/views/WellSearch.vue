@@ -65,7 +65,11 @@ import querystring from 'querystring'
 import debounce from 'lodash.debounce'
 
 import { mapGetters } from 'vuex'
-import { SEARCH_WELLS, SEARCH_WELL_LOCATIONS } from '@/wells/store/actions.types.js'
+import {
+  RESET_WELLS_SEARCH,
+  SEARCH_WELLS,
+  SEARCH_WELL_LOCATIONS
+} from '@/wells/store/actions.types.js'
 import {
   SET_SEARCH_LIMIT,
   SET_SEARCH_OFFSET,
@@ -278,23 +282,8 @@ export default {
     }
   },
   watch: {
-    searchLimit (limit) {
-      this.updateQueryParams()
-    },
-    searchOffset (offset) {
-      this.updateQueryParams()
-    },
-    searchOrdering (ordering) {
-      this.updateQueryParams()
-    },
-    searchParams (params) {
-      this.updateQueryParams()
-    },
     searchResults (results) {
       this.handleResultsUpdate()
-    },
-    searchResultColumns (columns) {
-      this.updateQueryParams()
     }
   },
   created () {
@@ -309,6 +298,16 @@ export default {
       this.$store.dispatch(SEARCH_WELLS, {})
       this.$store.dispatch(SEARCH_WELL_LOCATIONS, {})
     }
+
+    this.$store.subscribeAction((action, state) => {
+      if (action.type === RESET_WELLS_SEARCH) {
+        this.$nextTick(() => {
+          this.$router.push({ query: null })
+        })
+      } else if (action.type === SEARCH_WELLS) {
+        this.updateQueryParams()
+      }
+    })
   },
   beforeMount () {
     this.scrolled = window.scrollY > 100

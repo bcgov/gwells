@@ -116,7 +116,7 @@ export default {
   },
   data () {
     return {
-      localValue: this.initLocalValue()
+      localValue: this.getLocalValue()
     }
   },
   computed: {
@@ -137,7 +137,7 @@ export default {
     }
   },
   methods: {
-    initLocalValue () {
+    getLocalValue () {
       const localValue = {}
       this.paramNames.forEach(paramName => {
         if (this.value && this.value[paramName]) {
@@ -162,6 +162,11 @@ export default {
       this.localValue = localValue
 
       this.$emit('input', {})
+    }
+  },
+  watch: {
+    value (newValue, oldValue) {
+      this.localValue = this.getLocalValue()
     }
   }
 }

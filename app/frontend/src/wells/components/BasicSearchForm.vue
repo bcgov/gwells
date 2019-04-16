@@ -77,9 +77,7 @@ export default {
       this.$emit('search', params)
     },
     handleReset () {
-      this.searchString = null
       this.$store.dispatch(RESET_WELLS_SEARCH)
-
       this.$emit('reset')
     },
     initSearchString () {
@@ -87,10 +85,22 @@ export default {
       if (searchString !== undefined && searchString !== '' && searchString !== null) {
         this.searchString = searchString
       }
+    },
+    clearSearchString () {
+      this.searchString = null
     }
   },
   created () {
     this.initSearchString()
+
+    // On reset or advanced search, clear local params
+    this.$store.subscribeAction((action, state) => {
+      console.log(action, state)
+      if (action.type === RESET_WELLS_SEARCH ||
+          (action.type === SEARCH_WELLS && (state.wellsStore.searchParams.search === undefined || state.wellsStore.searchParams.search === null))) {
+        this.clearSearchString()
+      }
+    })
   }
 }
 </script>
