@@ -213,7 +213,8 @@ class AquiferDetailSerializer(AquiferSerializer):
         for licence in licences:
             details['wells_by_licence'][licence.licence_number] = licence.wells.all(
             ).values("well_tag_number")
-        details['hydraulically_connected'] = instance.subtype.code in HYDRAULIC_SUBTYPES
+        if instance.subtype:
+            details['hydraulically_connected'] = instance.subtype.code in HYDRAULIC_SUBTYPES
 
         ret['licence_details'] = details
 
@@ -224,6 +225,7 @@ class AquiferDetailSerializer(AquiferSerializer):
         fields = AquiferSerializer.Meta.fields + (
             'licence_details',
             'resources',
+            'subtype',
         )
 
 
