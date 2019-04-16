@@ -72,6 +72,7 @@ from gwells.management.commands.export_databc import AQUIFERS_SQL, GeoJSONIterat
 
 logger = logging.getLogger(__name__)
 
+
 class AquiferRetrieveUpdateAPIView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateAPIView):
     """List aquifers
     get: return details of aquifers
