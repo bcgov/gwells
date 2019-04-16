@@ -391,7 +391,7 @@ class SaveAquiferGeometry(APIView):
 
     @swagger_auto_schema(auto_schema=None)
     def post(self, request, aquifer_id):
-        print("Request Data")
+        logger.info("Request Data")
         logger.info(request.data)
         if 'geometry' not in request.data:
             raise ParseError("Empty content")
