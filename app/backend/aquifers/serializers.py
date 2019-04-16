@@ -21,6 +21,7 @@ from aquifers import models
 
 HYDRAULIC_SUBTYPES = ['1a', '1b', '1c', '2', '3', '4a', '5']
 
+
 class AquiferResourceSerializer(serializers.ModelSerializer):
     """Serialize aquifer resourcelist"""
     section_code = serializers.PrimaryKeyRelatedField(
@@ -62,10 +63,10 @@ class AquiferSerializer(serializers.ModelSerializer):
         source='subtype', read_only=True)
     vulnerability_description = serializers.SlugRelatedField(
         source='vulnerability', read_only=True, slug_field='description')
-    quality_concern_description = serializers.SlugRelatedField(	
-         source='quality_concern', read_only=True, slug_field='description')
-    known_water_use_description = serializers.SlugRelatedField(
-        source='known_water_use', read_only=True, slug_field='description')
+    # quality_concern_description = serializers.SlugRelatedField(
+    #     source='quality_concern', read_only=True, slug_field='description')
+    # known_water_use_description = serializers.SlugRelatedField(
+    #     source='known_water_use', read_only=True, slug_field='description')
 
     def to_representation(self, instance):
         """Convert `username` to lowercase."""
@@ -86,18 +87,18 @@ class AquiferSerializer(serializers.ModelSerializer):
             'productivity_description',
             'subtype_description',
             'vulnerability_description',
-            'quality_concern_description',
-            'known_water_use_description',
-            'demand',
-            'notes',
-            'quality_concern',
-            'known_water_use',
+            # 'quality_concern_description',
+            # 'known_water_use_description',
+            # 'demand',
+            # 'material',
+            # 'productivity',
+            # 'vulnerability',
+            # 'quality_concern',
+            # 'subtype',
+            # 'known_water_use',
             'litho_stratographic_unit',
+            'notes',
             'mapping_year',
-            'material',
-            'productivity',
-            'subtype',
-            'vulnerability',
         )
 
 
@@ -215,7 +216,7 @@ class AquiferDetailSerializer(AquiferSerializer):
         details['hydraulically_connected'] = instance.subtype.code in HYDRAULIC_SUBTYPES
 
         ret['licence_details'] = details
-        
+
         return ret
 
     class Meta:

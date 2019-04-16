@@ -46,8 +46,19 @@ class TestAquifersEditRole(APITestCase):
 
     def test_patch(self):
         url = reverse('aquifer-retrieve-update', kwargs={'aquifer_id': 1})
+        response = self.client.patch(url, {'resources': [{
+            'url': '',
+        }]}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        url = reverse('aquifer-retrieve-update', kwargs={'aquifer_id': 1})
         response = self.client.patch(url, {}, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        url = reverse('aquifer-retrieve-update', kwargs={'aquifer_id': 1})
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        print(response.json())
 
     def test_upload_shapefile(self):
 

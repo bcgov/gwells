@@ -72,7 +72,12 @@ class Command(BaseCommand):
                     row['LICENCE_NUMBER']))
 
                 # In dev envs, desecrate the data so it fits our fake fixtures.
-                if settings.DEBUG:
+                # We use ENABLE_GOOGLE_ANALYTICS to detect any non-prod ENV here.
+                if settings.ENABLE_GOOGLE_ANALYTICS:
+                    # Check the Licence is for a valid Aquifer
+                    Aquifer.objects.get(pk=row['SOURCE_NAME'])
+                    well = Well.objects.get(pk=row['WELL_TAG_NUMBER'])
+                else:
                     counter += 1
                     if counter > 10:
                         continue
@@ -82,10 +87,9 @@ class Command(BaseCommand):
                     if not well.aquifer:
                         well.aquifer = Aquifer.objects.first()
                         well.save()
-                else:
-                    # Check the Licence is for a valid Aquifer
-                    Aquifer.objects.get(pk=row['SOURCE_NAME'])
-                    well = Well.objects.get(pk=row['WELL_TAG_NUMBER'])
+                    # in dev envs, only import 100 licences.
+                    if counter > 100:
+                        break
 
                 try:
                     # Maintaina code table with water rights purpose.
