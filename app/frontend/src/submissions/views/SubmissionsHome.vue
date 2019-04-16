@@ -44,7 +44,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             <div v-else>
               <div v-if="isStaffEdit && errorWellNotFound">
                 <h1>Not Found</h1>
-                <p>The well you are looking for was not found.</p>
+                <p>The page you are looking for was not found.</p>
               </div>
               <activity-submission-form
                 v-else

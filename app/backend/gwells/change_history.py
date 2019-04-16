@@ -95,10 +95,10 @@ def generate_history_diff(collection, identifier=None):
                         key != "expiry_date"):
 
                     if isinstance(value, GEOSGeometry):
-                        value = value.coords
+                        value = ', '.join(map(str, value.coords))
 
                     if isinstance(cur[key], GEOSGeometry):
-                        cur[key] = cur[key].coords
+                        cur[key] = ', '.join(map(str, cur[key].coords))
 
                     if re.match('[\w]+_id$', key):
                         # key looks like a foreign key field
