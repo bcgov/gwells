@@ -459,7 +459,6 @@ export default {
     fetch (id = this.id) {
       ApiService.query(`aquifers/${id}`)
         .then((response) => {
-          console.log(response.data)
           this.record = response.data
           this.licence_details = response.data.licence_details
           this.usage = response.data.licence_details.usage
