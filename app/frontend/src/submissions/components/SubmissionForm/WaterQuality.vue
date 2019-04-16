@@ -33,7 +33,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           :options="codes.water_quality_characteristics"
           value-field="code"
           text-field="description"
-          hint="Select one or more characteristics"
+          hint="Select one or more characteristics. Hold the Ctrl (PC) or Command (Mac) key to select more than one option."
           v-model="waterQualityCharacteristicsInput"
           :multiple="true"
           :errors="errors['water_quality_characteristics']"
