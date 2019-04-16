@@ -46,7 +46,6 @@ export default {
           labels: chartLabel,
           datasets: [
             {
-              label: 'GitHub Commits',
               backgroundColor: '#f87979',
               data: chartData
             }
