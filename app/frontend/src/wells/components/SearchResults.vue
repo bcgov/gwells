@@ -61,7 +61,7 @@
         <tbody role="rowgroup" v-if="(isBusy || isEmpty || isReset)">
           <tr :class="{loading: isBusy}">
             <td :colspan="columnCount">
-              <div class="d-flex justify-content-center my-2">
+              <div class="d-flex justify-content-left my-1 mx-1">
                 <div v-if="isBusy" class="spinner-border m-3" role="status" aria-hidden="true"></div>
                 <strong v-if="isBusy" class="align-middle my-3 pt-1">
                   Loading...
