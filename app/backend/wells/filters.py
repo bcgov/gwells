@@ -537,7 +537,11 @@ class WellListFilterBackend(filters.DjangoFilterBackend):
             request_querydict.update(group_params)
             request_clone = clone_request(request, 'GET')
             request_clone._request.GET = request_querydict
+
             group_filterset = self.get_filterset(request_clone, filtered_queryset, view)
+            if not group_filterset.is_valid():
+                raise ValidationError({"filter_group": group_filterset.errors})
+
             filtered_queryset = group_filterset.qs
 
         return filtered_queryset
