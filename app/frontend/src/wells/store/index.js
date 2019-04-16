@@ -168,11 +168,21 @@ const wellsStore = {
         })
       }
     },
-    [RESET_WELLS_SEARCH] ({ commit }) {
+    [RESET_WELLS_SEARCH] ({ commit, state }) {
+      if (state.pendingSearch !== null) {
+        state.pendingSearch.cancel()
+        commit(SET_PENDING_SEARCH, null)
+      }
+      if (state.locationPendingSearch !== null) {
+        state.locationPendingSearch.cancel()
+        commit(SET_LOCATION_PENDING_SEARCH, null)
+      }
       commit(SET_SEARCH_PARAMS, {})
       commit(SET_SEARCH_ERRORS, {})
       commit(SET_SEARCH_RESULTS, null)
       commit(SET_SEARCH_RESULT_COUNT, 0)
+      commit(SET_LOCATION_SEARCH_RESULTS, [])
+      commit(SET_LOCATION_SEARCH_RESULT_COUNT, 0)
     },
     [SEARCH_WELLS] ({ commit, state }, { bounded = false }) {
       return new Promise((resolve, reject) => {
