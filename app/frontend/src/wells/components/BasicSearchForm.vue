@@ -69,9 +69,6 @@ export default {
   },
   methods: {
     handleSubmit () {
-      if (this.searchString === null || this.searchString === '') {
-        return
-      }
       const params = { search: this.searchString }
       this.$store.commit(SET_SEARCH_PARAMS, params)
       this.$store.dispatch(SEARCH_WELLS, {})
