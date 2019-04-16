@@ -348,11 +348,11 @@ export default {
             value: section.code
           }
         })
-        console.log("Aquifer Resource", this.aquifer_resource_sections)
+        console.log('Aquifer Resource', this.aquifer_resource_sections)
         this.aquifer_resource_sections.splice(2, 0, {
-          text: "Hydraulically Connected",
-          value: "Hydra"
-        });
+          text: 'Hydraulically Connected',
+          value: 'Hydra'
+        })
       })
     },
     scrollToTableTop () {
@@ -367,7 +367,8 @@ export default {
       this.sections = []
       this.currentPage = 1
       this.noSearchCriteriaError = false
-      this.updateQueryParams()    },
+      this.updateQueryParams()
+    },
     triggerSearch () {
       delete this.filterParams.aquifer_id
       delete this.filterParams.search
@@ -375,16 +376,15 @@ export default {
       if (this.search) {
         this.filterParams.search = this.search
       }
-      
       if (this.sections) {
-        this.filterParams.resources__section__code = this.sections.filter(o => o !== "Hydra").join(',')
-        if ( this.sections.find(o => o === 'Hydra') ) {
+        this.filterParams.resources__section__code = this.sections.filter(o => o !== 'Hydra').join(',')
+        if (this.sections.find(o => o === 'Hydra')) {
           this.filterParams.hydraulically_connected = 'yes'
         }
       }
 
       this.updateQueryParams()
-      this.fetchResults()      
+      this.fetchResults()
     },
     updateQueryParams () {
       this.$router.replace({query: this.filterParams})
@@ -429,14 +429,12 @@ export default {
     this.$on('activeLayers', (data) => {
       this.layers = data.filter(o => o.layerName).map(o => o.layerName)
     })
-
     this.$on('featuresOnMap', (data) => {
       const aquiferIdsMap = new Map()
       data.map(o => aquiferIdsMap.set(o.defaultOptions.aquifer_id, true))
       this.response.count = aquiferIdsMap.size
       this.response.results = filter(this.aquifers_search_results, o => aquiferIdsMap.get(o.aquifer_id))
     })
-  },
-
+  }
 }
 </script>

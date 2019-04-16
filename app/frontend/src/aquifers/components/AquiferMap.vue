@@ -8,14 +8,13 @@
 import L from 'leaflet'
 import { tiledMapLayer } from 'esri-leaflet'
 import { filter } from 'lodash'
-import { GeoSearchControl } from 'leaflet-geosearch'
+import { GeoSearchControl, EsriProvider } from 'leaflet-geosearch'
 import 'leaflet-geosearch/assets/css/leaflet.css'
 import 'leaflet-lasso'
 import 'leaflet-fullscreen/dist/Leaflet.fullscreen.min.js'
 import 'leaflet-fullscreen/dist/leaflet.fullscreen.css'
-import { EsriProvider } from 'leaflet-geosearch';
 
-const provider = new EsriProvider();
+const provider = new EsriProvider()
 const searchControl = new GeoSearchControl({
   provider: provider,
   autoClose: true
@@ -183,8 +182,8 @@ export default {
           name: 'Wells - All'
         })
       }
-
-      var addresSearchControl =  L.Control.extend({
+      /*
+      var AddresSearchControl =  L.Control.extend({
 
         options: {
           position: 'topleft'
@@ -203,8 +202,8 @@ export default {
         }
       });
 
-      this.map.addControl(new addresSearchControl())
-
+      this.map.addControl(new AddresSearchControl())
+      */
       // Add checkboxes for layers
       L.control.layers(null, mapLayers, {collapsed: true}).addTo(this.map)
       this.map.on('layeradd', (e) => {
@@ -339,8 +338,6 @@ export default {
     align-items: center;
     position: relative;
 }
-
-
 .geolocate:hover {
     opacity: 0.8;
 }
