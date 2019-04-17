@@ -355,9 +355,8 @@ class WellLocationListAPIView(ListAPIView):
 
     # Allow searching on name fields, names of related companies, etc.
     filter_backends = (WellListFilterBackend, BoundingBoxFilterBackend,
-                       filters.SearchFilter, filters.OrderingFilter)
+                       filters.SearchFilter, WellListOrderingFilter)
     ordering = ('well_tag_number',)
-    filterset_class = WellLocationFilter
     pagination_class = None
 
     search_fields = ('well_tag_number', 'identification_plate_number',
@@ -383,7 +382,7 @@ class WellLocationListAPIView(ListAPIView):
             raise PermissionDenied('Too many wells to display on map. '
                                    'Please zoom in or change your search criteria.')
 
-        if count is 0:
+        if count == 0:
             raise NotFound("No well records could be found.")
 
         return super().get(request)
