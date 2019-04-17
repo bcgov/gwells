@@ -287,8 +287,6 @@ SWAGGER_SETTINGS = {
     }
 }
 
-E_LICENSING_WELL_LICENCE_URL = 'https://test.j200.gov.bc.ca/ws/RestGWellsInterface/wells/'
-
 # matches subdomains of gov.bc.ca
 CORS_ORIGIN_REGEX_WHITELIST = (r'^(?:https?:\/\/)?(?:\w+\.)*gov\.bc\.ca$',)
 if DEBUG:
