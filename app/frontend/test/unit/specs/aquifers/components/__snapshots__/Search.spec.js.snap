@@ -17,7 +17,7 @@ exports[`Search Component Matches the snapshot 1`] = `
         class="form-row"
       >
         <div
-          class="p-4 col-md-12 col-lg-12 col-xl-5 col-12"
+          class="p-4 col-md-12 col-lg-12 col-xl-4 col-12"
         >
           <h1
             class="main-title ml-4 mt-2"
@@ -31,7 +31,7 @@ exports[`Search Component Matches the snapshot 1`] = `
             class="form-row"
           >
             <div
-              class="pt-3 pl-4 pr-4 aquifer-search-column mt-3 col-md-6 col-12"
+              class="pt-3 pl-4 pr-4 aquifer-search-column mt-3 col-md-12 col-12"
             >
               <h5
                 class="search-title"
@@ -131,17 +131,11 @@ exports[`Search Component Matches the snapshot 1`] = `
                 </li>
               </ul>
             </div>
-             
-            <div
-              class="pt-3 pl-4 pr-4 mt-3 col-md-6 col-12"
-            >
-              <!---->
-            </div>
           </div>
         </div>
          
         <div
-          class="map-column col-md-12 col-lg-12 col-xl-7 col-12"
+          class="map-column col-md-12 col-lg-12 col-xl-8 col-12"
         >
           <aquifermap-stub />
         </div>
