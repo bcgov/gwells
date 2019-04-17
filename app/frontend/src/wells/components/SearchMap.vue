@@ -20,7 +20,7 @@
       :max-zoom="17"
       :zoom="zoom"
       :center="center"
-      :options="{ preferCanvas: true }"
+      :options="{ attributionControl: false, preferCanvas: true }"
       @update:zoom="zoomUpdated"
       @update:bounds="boundsUpdated"
       @update:center="centerUpdated"
@@ -87,6 +87,9 @@
         </l-circle-marker>
       </l-feature-group>
     </l-map>
+    <div class="attribution">
+      <a href="http://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> | Powered by <a href="https://www.esri.com">Esri</a>
+    </div>
   </div>
 </template>
 
@@ -95,7 +98,16 @@ import debounce from 'lodash.debounce'
 
 import L from 'leaflet'
 import { tiledMapLayer } from 'esri-leaflet'
-import { LMap, LTileLayer, LCircleMarker, LPopup, LControl, LControlScale, LWMSTileLayer, LFeatureGroup } from 'vue2-leaflet'
+import {
+  LCircleMarker,
+  LControl,
+  LControlScale,
+  LFeatureGroup,
+  LMap,
+  LPopup,
+  LTileLayer,
+  LWMSTileLayer
+} from 'vue2-leaflet'
 import { mapGetters } from 'vuex'
 import { SEARCH_WELLS, SEARCH_WELL_LOCATIONS } from '@/wells/store/actions.types.js'
 import { SET_SEARCH_BOUNDS } from '@/wells/store/mutations.types.js'
@@ -113,14 +125,14 @@ L.Icon.Default.mergeOptions({
 export default {
   name: 'SearchMap',
   components: {
-    'l-map': LMap,
+    'l-circle-marker': LCircleMarker,
     'l-control': LControl,
     'l-control-scale': LControlScale,
-    'l-tile-layer': LTileLayer,
     'l-feature-group': LFeatureGroup,
-    'l-wms-tile-layer': LWMSTileLayer,
-    'l-circle-marker': LCircleMarker,
-    'l-popup': LPopup
+    'l-map': LMap,
+    'l-popup': LPopup,
+    'l-tile-layer': LTileLayer,
+    'l-wms-tile-layer': LWMSTileLayer
   },
   props: {},
   data () {
@@ -204,6 +216,20 @@ export default {
     },
     userLocationFound (location) {
       this.center = location.latlng
+    },
+    initEsriLayer () {
+      this.esriLayer = tiledMapLayer({url: 'https://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer'})
+      this.$refs.map.mapObject.addLayer(this.esriLayer)
+      // Should be behind the WMS layer
+      this.esriLayer.bringToBack()
+    },
+    removeEsriLayer () {
+      this.$refs.map.mapObject.removeLayer(this.esriLayer)
+    },
+    initMaxBounds () {
+      // Set max bounds dynamically on load
+      const initialBounds = this.$refs.map.mapObject.getBounds()
+      this.$refs.map.mapObject.setMaxBounds(initialBounds)
     }
   },
   watch: {
@@ -217,18 +243,12 @@ export default {
   },
   mounted () {
     this.$nextTick(() => {
-      this.esriLayer = tiledMapLayer({url: 'https://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer'})
-      this.$refs.map.mapObject.addLayer(this.esriLayer)
-      // Should be behind the WMS layer
-      this.esriLayer.bringToBack()
-
-      // Set max bounds dynamically
-      const initialBounds = this.$refs.map.mapObject.getBounds()
-      this.$refs.map.mapObject.setMaxBounds(initialBounds)
+      this.initEsriLayer()
+      this.initMaxBounds()
     })
   },
   beforeDestroy () {
-    this.$refs.map.mapObject.removeLayer(this.esriLayer)
+    this.removeEsriLayer()
   }
 }
 </script>
