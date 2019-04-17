@@ -38,7 +38,7 @@
         v-on:submit.prevent="triggerSearch"
         v-on:reset="triggerReset">
         <b-form-row>
-          <b-col cols="12" md="12" lg="12" xl="5" class="p-4">
+          <b-col cols="12" md="12" lg="12" xl="4" class="p-4">
             <h1 class="main-title ml-4 mt-2">Aquifer Search
               <div v-if='userRoles.aquifers.edit' class="pb-2 pull-right">
               <b-button
@@ -50,7 +50,7 @@
             </h1>
 
             <b-form-row>
-              <b-col cols="12" md="6" class="pt-3 pl-4 pr-4 aquifer-search-column mt-3">
+              <b-col cols="12" md="12" class="pt-3 pl-4 pr-4 aquifer-search-column mt-3">
                 <h5 class="search-title">Search by aquifer name or number (leave blank to see all aquifers)</h5>
                 <b-form-group class="search-title mt-3 mb-3">
                   <b-form-input
@@ -80,12 +80,10 @@
                   <li>- <a href="#" @click.prevent="downloadCSV()">Aquifer extract (CSV)</a></li>
                 </ul>
               </b-col>
-              <b-col cols="12" md="6" class="pt-3 pl-4 pr-4 mt-3">
-              </b-col>
             </b-form-row>
           </b-col>
 
-          <b-col cols="12" md="12" lg="12" xl="7" class="map-column">
+          <b-col cols="12" md="12" lg="12" xl="8" class="map-column">
             <aquifer-map ref="aquiferMap" v-bind:aquifers="aquifers_search_results"/>
           </b-col>
         </b-form-row>
@@ -196,10 +194,6 @@ ul.pagination {
 
 .map-column {
   margin-right: -2rem;
-}
-
-.aquifer-search-column {
-  border-right: 1px solid rgba(0,0,0,0.1);
 }
 
 .search-title {
