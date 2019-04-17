@@ -1182,6 +1182,25 @@ class ActivitySubmission(AuditModelStructure):
         db_comment=('The date when an activity such as well construction, well alteration, or well '
                     'decommission was ended.'))
 
+    construction_start_date = models.DateField(
+        null=True, verbose_name="Construction Start Date",
+        db_comment='The date when well construction started.')
+    construction_end_date = models.DateField(
+        null=True, verbose_name="Construction Date",
+        db_comment='The date when well construction ended.')
+
+    alteration_start_date = models.DateField(
+        null=True, verbose_name="Alteration Start Date",
+        db_comment='The date when alteration on a well started.')
+    alteration_end_date = models.DateField(
+        null=True, verbose_name="Alteration Date")
+
+    decommission_start_date = models.DateField(
+        null=True, verbose_name="Decommission Start Date",
+        db_comment='The start date of when the well was decommissioned.')
+    decommission_end_date = models.DateField(
+        null=True, verbose_name="Decommission Date")
+
     owner_full_name = models.CharField(
         max_length=200, verbose_name='Owner Name', blank=True, null=True)
     owner_mailing_address = models.CharField(
