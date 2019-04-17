@@ -213,6 +213,7 @@ export default {
           const container = L.DomUtil.create('div', 'leaflet-control-legend')
           const content = L.DomUtil.create('div', 'leaflet-control-legend-content')
           self.legendControlContent = content
+          content.innerHTML = `<div class="m-1">Legend</div>`
           container.appendChild(content)
           return container
         }
@@ -220,9 +221,10 @@ export default {
       this.legendControl = new LegendControl()
       this.map.addControl(this.legendControl)
       this.$on('activeLayers', (data) => {
-        let innerContent = `<ul class="p-2 m-0" style="list-style-type: none;">`
+        let innerContent = `<ul class="p-0 m-0" style="list-style-type: none;">`
+        innerContent += `<li class="m-1 text-center">Legend</li>`
         data.map(l => {
-          innerContent += `<li><img src="${l.legend}"> ${l.layerName}</li>`
+          innerContent += `<li class="m-1"><img src="${l.legend}"> ${l.layerName}</li>`
         })
         innerContent += `</ul>`
         this.legendControlContent.innerHTML = innerContent
