@@ -48,7 +48,7 @@
               <search-result-filter
                 :type="column.type"
                 :id="`${column.id}ResultFilter`"
-                :errors="errors[column.param]"
+                :errors="resultErrors[column.param]"
                 :param-names="column.params"
                 :options="column.options || filterSelectOptions[column.id]"
                 :value-field="column.valueField"
@@ -65,6 +65,9 @@
                 <div v-if="isBusy" class="spinner-border m-3" role="status" aria-hidden="true"></div>
                 <strong v-if="isBusy" class="align-middle my-3 pt-1">
                   Loading...
+                </strong>
+                <strong v-else-if="hasResultErrors" class="text-danger align-middle my-3 pt-1">
+                  An error occurred processing the search.
                 </strong>
                 <strong v-else-if="isReset" class="align-middle my-3 pt-1">
                   Enter some criteria in the form above to search.
@@ -191,6 +194,12 @@ export default {
     },
     columnCount () {
       return this.resultColumns.length
+    },
+    resultErrors () {
+      return this.errors.filter_group || {}
+    },
+    hasResultErrors () {
+      return Object.entries(this.resultErrors).length > 0
     },
     isBusy () {
       return (this.pending !== null)

@@ -40,7 +40,7 @@
         <b-alert variant="info" class="mt-2" :show="locationErrorMessage !== ''">{{ locationErrorMessage }}</b-alert>
       </b-col>
     </b-row>
-    <b-row class="my-5" v-show="!isInitialSearch">
+    <b-row class="my-5" v-show="!isInitialSearch || hasResultErrors">
       <b-col>
         <search-results />
       </b-col>
@@ -139,6 +139,9 @@ export default {
     ]),
     zoomToResults () {
       return this.lastSearchTrigger !== triggers.MAP
+    },
+    hasResultErrors () {
+      return (this.searchErrors.filter_group !== undefined && Object.entries(this.searchErrors.filter_group).length > 0)
     }
   },
   methods: {

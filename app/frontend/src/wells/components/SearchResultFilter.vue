@@ -127,7 +127,7 @@ export default {
       return this.paramNames.some(param => this.localValue[param])
     },
     validation () {
-      return (this.errors && this.errors.length)
+      return (Object.entries(this.value).length > 0 && this.errors && this.errors.length) ? false : null
     },
     selectOptions () {
       if (this.options === undefined) {

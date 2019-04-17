@@ -195,77 +195,72 @@ const wellsStore = {
       commit(SET_SEARCH_RESULT_FILTERS, {})
     },
     [SEARCH_WELLS] ({ commit, state }, { bounded = false }) {
-      return new Promise((resolve, reject) => {
-        if (state.pendingSearch !== null) {
-          state.pendingSearch.cancel()
+      if (state.pendingSearch !== null) {
+        state.pendingSearch.cancel()
+      }
+      commit(SET_PENDING_SEARCH, axios.CancelToken.source())
+
+      const params = { ...state.searchParams }
+
+      if (Object.entries(state.searchResultFilters).length > 0) {
+        params['filter_group'] = JSON.stringify(state.searchResultFilters)
+      }
+      // if triggering the search using the map, the search will be restricted to
+      // the visible map bounds
+      if (bounded) {
+        Object.assign(params, state.searchBounds)
+      }
+
+      params['limit'] = state.searchLimit
+      params['offset'] = state.searchOffset
+      params['ordering'] = state.searchOrdering
+
+      ApiService.query('wells', params, { cancelToken: state.pendingSearch.token }).then((response) => {
+        commit(SET_SEARCH_ERRORS, {})
+        commit(SET_SEARCH_RESULTS, response.data.results)
+        commit(SET_SEARCH_RESULT_COUNT, response.data.count)
+      }).catch((err) => {
+        if (err.response && err.response.data) {
+          commit(SET_SEARCH_ERRORS, err.response.data)
         }
-        commit(SET_PENDING_SEARCH, axios.CancelToken.source())
-
-        const params = { ...state.searchParams }
-
-        if (Object.entries(state.searchResultFilters).length > 0) {
-          params['filter_group'] = JSON.stringify(state.searchResultFilters)
-        }
-        // if triggering the search using the map, the search will be restricted to
-        // the visible map bounds
-        if (bounded) {
-          Object.assign(params, state.searchBounds)
-        }
-
-        params['limit'] = state.searchLimit
-        params['offset'] = state.searchOffset
-        params['ordering'] = state.searchOrdering
-
-        ApiService.query('wells', params, { cancelToken: state.pendingSearch.token }).then((response) => {
-          commit(SET_SEARCH_ERRORS, {})
-          commit(SET_SEARCH_RESULTS, response.data.results)
-          commit(SET_SEARCH_RESULT_COUNT, response.data.count)
-          resolve(response.data)
-        }).catch((err) => {
-          if (err.response && err.response.data) {
-            commit(SET_SEARCH_ERRORS, err.response.data)
-          }
-          reject(err)
-        }).finally(() => {
-          commit(SET_PENDING_SEARCH, null)
-        })
+        commit(SET_SEARCH_RESULTS, null)
+        commit(SET_SEARCH_RESULT_COUNT, 0)
+      }).finally(() => {
+        commit(SET_PENDING_SEARCH, null)
       })
     },
     [SEARCH_WELL_LOCATIONS] ({ commit, state }, { bounded = false }) {
-      return new Promise((resolve, reject) => {
-        if (state.locationPendingSearch) {
-          state.locationPendingSearch.cancel()
-        }
-        commit(SET_LOCATION_PENDING_SEARCH, axios.CancelToken.source())
+      if (state.locationPendingSearch) {
+        state.locationPendingSearch.cancel()
+      }
+      commit(SET_LOCATION_PENDING_SEARCH, axios.CancelToken.source())
 
-        const params = { ...state.searchParams }
+      const params = { ...state.searchParams }
 
-        if (Object.entries(state.searchResultFilters).length > 0) {
-          params['filter_group'] = JSON.stringify(state.searchResultFilters)
-        }
+      if (Object.entries(state.searchResultFilters).length > 0) {
+        params['filter_group'] = JSON.stringify(state.searchResultFilters)
+      }
 
-        // if triggering the search using the map, the search will be restricted to
-        // the visible map bounds
-        if (bounded) {
-          Object.assign(params, state.searchBounds)
-        }
+      // if triggering the search using the map, the search will be restricted to
+      // the visible map bounds
+      if (bounded) {
+        Object.assign(params, state.searchBounds)
+      }
 
-        ApiService.query('wells/locations', params, { cancelToken: state.locationPendingSearch.token }).then((response) => {
-          const locations = response.data.map((well) => {
-            return [well.latitude, well.longitude, well.well_tag_number, well.identification_plate_number]
-          })
-          commit(SET_LOCATION_ERRORS, {})
-          commit(SET_LOCATION_SEARCH_RESULTS, locations)
-          commit(SET_LOCATION_SEARCH_RESULT_COUNT, response.data.count)
-          resolve(locations)
-        }).catch((err) => {
-          if (err.response && err.response.data) {
-            commit(SET_LOCATION_ERRORS, err.response.data)
-          }
-          commit(SET_LOCATION_SEARCH_RESULTS, [])
-        }).finally(() => {
-          commit(SET_LOCATION_PENDING_SEARCH, null)
+      ApiService.query('wells/locations', params, { cancelToken: state.locationPendingSearch.token }).then((response) => {
+        const locations = response.data.map((well) => {
+          return [well.latitude, well.longitude, well.well_tag_number, well.identification_plate_number]
         })
+        commit(SET_LOCATION_ERRORS, {})
+        commit(SET_LOCATION_SEARCH_RESULTS, locations)
+        commit(SET_LOCATION_SEARCH_RESULT_COUNT, response.data.count)
+      }).catch((err) => {
+        if (err.response && err.response.data) {
+          commit(SET_LOCATION_ERRORS, err.response.data)
+        }
+        commit(SET_LOCATION_SEARCH_RESULTS, [])
+      }).finally(() => {
+        commit(SET_LOCATION_PENDING_SEARCH, null)
       })
     }
   },
