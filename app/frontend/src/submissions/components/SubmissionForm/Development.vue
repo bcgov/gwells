@@ -31,6 +31,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             label="Development Method"
             select
             :options="codes.development_methods"
+            hint="Select one or more methods. Hold the Ctrl (PC) or Command (Mac) key to select more than one option."
             text-field="description"
             value-field="development_method_code"
             v-model="developmentMethodInput"
