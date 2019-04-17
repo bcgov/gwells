@@ -195,8 +195,10 @@ class StackWells():
             update_date = submission.update_date
             # add a well_status based on the current activity submission
             # a staff edit could still override this with a different value.
-            composite['well_status'] = well_status_map.get(
-                submission.well_activity_type.code, WellStatusCode.types.other().well_status_code)
+            if submission.well_activity_type.code != 'STAFF_EDIT':
+                composite['well_status'] = well_status_map.get(
+                    submission.well_activity_type.code, WellStatusCode.types.other().well_status_code)
+
             source_target_map = activity_type_map.get(submission.well_activity_type.code, {})
             serializer = submissions.serializers.WellSubmissionStackerSerializer(submission)
             for source_key, value in serializer.data.items():
