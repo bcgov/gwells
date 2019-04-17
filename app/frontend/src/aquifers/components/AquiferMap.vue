@@ -13,6 +13,16 @@ import 'leaflet-geosearch/assets/css/leaflet.css'
 import 'leaflet-lasso'
 import 'leaflet-fullscreen/dist/Leaflet.fullscreen.min.js'
 import 'leaflet-fullscreen/dist/leaflet.fullscreen.css'
+import ApiService from '@/common/services/ApiService.js'
+import ArtesianLegend from '../../common/assets/images/artesian.png'
+import CadastralLegend from '../../common/assets/images/cadastral.png'
+import EcocatWaterLegend from '../../common/assets/images/ecocat-water.png'
+import GWaterLicenceLegend from '../../common/assets/images/gwater-licence.png'
+import OWellsInactiveLegend from '../../common/assets/images/owells-inactive.png'
+import OWellsActiveLegend from '../../common/assets/images/owells-active.png'
+import WellsAllLegend from '../../common/assets/images/wells-all.png'
+
+
 
 const provider = new EsriProvider()
 const searchControl = new GeoSearchControl({
@@ -56,7 +66,9 @@ export default {
   data () {
     return {
       activeLayers: [],
-      map: null
+      map: null,
+      legendControl: null,
+      legendControlContent: null
     }
   },
 
@@ -83,6 +95,7 @@ export default {
       })
     },
     initMap () {
+      const self = this
       // Create map, with default centered and zoomed to show entire BC.
       this.map = L.map('map', {
         preferCanvas: true,
@@ -141,82 +154,93 @@ export default {
           layers: 'pub:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
           styles: 'Water_Wells_Artesian',
           transparent: true,
-          name: 'Artesian wells'
+          name: 'Artesian wells',
+          legend: ArtesianLegend
         }),
         'Cadastral': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW/ows?', {
           format: 'image/png',
           layers: 'pub:WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW',
           transparent: true,
-          name: 'Cadastral'
+          name: 'Cadastral',
+          legend: CadastralLegend
         }),
         'Ecocat - Water related reports': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_FISH.ACAT_REPORT_POINT_PUB_SVW/ows?', {
           format: 'image/png',
           layers: 'pub:WHSE_FISH.ACAT_REPORT_POINT_PUB_SVW',
           transparent: true,
-          name: 'Ecocat - Water related reports'
+          name: 'Ecocat - Water related reports',
+          legend: EcocatWaterLegend
         }),
         'Groundwater licenses': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.WLS_PWD_LICENCES_SVW/ows?', {
           format: 'image/png',
           layers: 'pub:WHSE_WATER_MANAGEMENT.WLS_PWD_LICENCES_SVW',
           transparent: true,
-          name: 'Groundwater licenses'
+          name: 'Groundwater licenses',
+          legend: GWaterLicenceLegend
         }),
         'Observation wells - active': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW/ows?', {
           format: 'image/png',
           layers: 'pub:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
           styles: 'Provincial_Groundwater_Observation_Wells_Active',
           transparent: true,
-          name: 'Observation wells - active'
+          name: 'Observation wells - active',
+          legend: OWellsActiveLegend
         }),
         'Observation wells - inactive': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW/ows?', {
           format: 'image/png',
           layers: 'pub:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
           styles: 'Provincial_Groundwater_Observation_Wells_Inactive',
           transparent: true,
-          name: 'Observation wells - inactive'
+          name: 'Observation wells - inactive',
+          legend: OWellsInactiveLegend
         }),
         'Wells - All': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW/ows?', {
           format: 'image/png',
           layers: 'pub:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
           transparent: true,
-          name: 'Wells - All'
+          name: 'Wells - All',
+          legend: WellsAllLegend
         })
       }
-      /*
-      var AddresSearchControl =  L.Control.extend({
+
+      const LegendControl = L.Control.extend({
 
         options: {
-          position: 'topleft'
+          position: 'bottomright'
         },
 
-        onAdd: function (map) {
-          var container = L.DomUtil.create('div', 'leaflet-control-address')
-          var content = L.DomUtil.create('div')
-          content.innerHTML = `<i class="fa fa-search" aria-hidden="true"></i>`
+        onAdd (map) {
+          const container = L.DomUtil.create('div', 'leaflet-control-legend')
+          const content = L.DomUtil.create('div', 'leaflet-control-legend-content')
+          self.legendControlContent = content
           container.appendChild(content)
-          container.onclick = function(){
-            console.log('buttonClicked')
-          }
-
-          return container;
+          return container
         }
-      });
-
-      this.map.addControl(new AddresSearchControl())
-      */
+      })
+      this.legendControl = new LegendControl()
+      this.map.addControl(this.legendControl)
+      this.$on('activeLayers', (data) => {
+        let innerContent = `<ul class="p-2 m-0" style="list-style-type: none;">`
+        data.map(l => {
+          innerContent += `<li><img src="${l.legend}"> ${l.layerName}</li>`
+        })
+        innerContent += `</ul>`
+        this.legendControlContent.innerHTML = innerContent
+      })
       // Add checkboxes for layers
       L.control.layers(null, mapLayers, {collapsed: true}).addTo(this.map)
       this.map.on('layeradd', (e) => {
         const layerId = e.layer._leaflet_id
         const layerName = e.layer.options.name
-        this.activeLayers.push({layerId, layerName})
-        this.$parent.$emit('activeLayers', this.activeLayers)
-      })
+        const legend = e.layer.options.legend
 
+        this.activeLayers.push({layerId, layerName, legend})
+        this.$emit('activeLayers', this.activeLayers)
+      })
       this.map.on('layerremove', (e) => {
         const layerId = e.layer._leaflet_id
         this.activeLayers = filter(this.activeLayers, o => o.layerId !== layerId)
-        this.$parent.$emit('activeLayers', this.activeLayers)
+        this.$emit('activeLayers', this.activeLayers)
       })
 
       this.handleEvents()
@@ -346,5 +370,11 @@ export default {
   text-decoration: underline !important;
   color: #37598A !important;
   cursor: pointer;
+}
+
+.leaflet-control-legend {
+  background-color: white;
+  box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.4);
+  border-radius: 0.1em;
 }
 </style>

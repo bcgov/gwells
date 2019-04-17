@@ -81,16 +81,6 @@
                 </ul>
               </b-col>
               <b-col cols="12" md="6" class="pt-3 pl-4 pr-4 mt-3">
-                <div v-if="layers.length > 0">
-                  <h6>Map Layers:</h6>
-                  <b-form-checkbox-group class="aquifer-checkbox-group"
-                    stacked
-                    v-model="activeLayers"
-                    :options='layers'
-                    disabled
-                    checked="activeLayers"
-                  />
-                </div>
               </b-col>
             </b-form-row>
           </b-col>
@@ -286,7 +276,6 @@ export default {
         { key: 'demand', label: 'Demand', sortable: true },
         { key: 'mapping_year', label: 'Year of mapping', sortable: true }
       ],
-      activeLayers: [],
       layers: [],
       surveys: [],
       noSearchCriteriaError: false,
@@ -426,9 +415,6 @@ export default {
     this.fetchResourceSections()
   },
   mounted () {
-    this.$on('activeLayers', (data) => {
-      this.layers = data.filter(o => o.layerName).map(o => o.layerName)
-    })
     this.$on('featuresOnMap', (data) => {
       const aquiferIdsMap = new Map()
       data.map(o => aquiferIdsMap.set(o.defaultOptions.aquifer_id, true))

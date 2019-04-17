@@ -46,7 +46,7 @@
       <b-row v-if="viewMode">
         <b-col class="aquifer-detail" cols="12" md="12" lg="5">
           <b-row>
-            <b-col class="p-4">
+            <b-col class="pt-0 pl-4 pb-4 pr-4">
               <div class="d-flex justify-content-between align-items-center">
               <h4 class="color-grey main-title mt-4">Aquifer {{ id }} Summary</h4>
                 <div>
