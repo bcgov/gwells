@@ -95,7 +95,6 @@ export default {
 
     // On reset or advanced search, clear local params
     this.$store.subscribeAction((action, state) => {
-      console.log(action, state)
       if (action.type === RESET_WELLS_SEARCH ||
           (action.type === SEARCH_WELLS && (state.wellsStore.searchParams.search === undefined || state.wellsStore.searchParams.search === null))) {
         this.clearSearchString()
