@@ -33,7 +33,7 @@ limitations under the License.
           type="date"
           label="Start Date of Construction"
           placeholder="YYYY-MM-DD"
-          v-model="constructionStartDate"
+          v-model="constructionStartDateInput"
           :errors="errors.construction_start_date"
           :loaded="fieldsLoaded['construction_start_date']">
         </form-input>
@@ -44,18 +44,20 @@ limitations under the License.
           type="date"
           label="End Date of Construction"
           placeholder="YYYY-MM-DD"
-          v-model="constructionEndDate"
+          v-model="constructionEndDateInput"
           :errors="errors.construction_end_date"
           :loaded="fieldsLoaded['construction_end_date']">
         </form-input>
       </b-col>
+    </b-row>
+    <b-row v-if="isStaffEdit">
       <b-col cols="6" md="6">
         <form-input
           id="alterationStartDateInput"
           type="date"
           label="Start Date of Alteration"
           placeholder="YYYY-MM-DD"
-          v-model="alterationStartDate"
+          v-model="alterationStartDateInput"
           :errors="errors.alteration_start_date"
           :loaded="fieldsLoaded['alteration_start_date']">
         </form-input>
@@ -66,18 +68,20 @@ limitations under the License.
           type="date"
           label="End Date of Alteration"
           placeholder="YYYY-MM-DD"
-          v-model="alterationEndDate"
+          v-model="alterationEndDateInput"
           :errors="errors.alteration_end_date"
           :loaded="fieldsLoaded['alteration_end_date']">
         </form-input>
       </b-col>
+    </b-row>
+    <b-row v-if="isStaffEdit">
       <b-col cols="6" md="6">
         <form-input
           id="decommissionStartDateInput"
           type="date"
           label="Start Date of Decommission"
           placeholder="YYYY-MM-DD"
-          v-model="decommissionStartDate"
+          v-model="decommissionStartDateInput"
           :errors="errors.decommission_start_date"
           :loaded="fieldsLoaded['decommission_start_date']">
         </form-input>
@@ -88,7 +92,7 @@ limitations under the License.
           type="date"
           label="End Date of Well Decommission"
           placeholder="YYYY-MM-DD"
-          v-model="decommissionEndDate"
+          v-model="decommissionEndDateInput"
           :errors="errors.decommission_end_date"
           :loaded="fieldsLoaded['decommission_end_date']">
         </form-input>
@@ -98,7 +102,10 @@ limitations under the License.
 </template>
 
 <script>
+import inputBindingsMixin from '@/common/inputBindingsMixin.js'
+
 export default {
+  mixins: [inputBindingsMixin],
   props: {
     constructionStartDate: String,
     constructionEndDate: String,
@@ -132,6 +139,10 @@ export default {
   methods: {
   },
   watch: {
+  },
+  data () {
+    return {
+    }
   }
 }
 </script>
