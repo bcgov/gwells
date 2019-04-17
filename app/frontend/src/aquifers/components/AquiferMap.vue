@@ -105,7 +105,7 @@ export default {
       L.control.scale().addTo(this.map)
       // Add geo search
       this.map.addControl(new L.Control.Fullscreen({
-        position: 'topright'
+        position: 'topleft'
       }))
       this.map.addControl(searchControl)
       const lasso = L.lasso(this.map)
@@ -230,7 +230,7 @@ export default {
         this.legendControlContent.innerHTML = innerContent
       })
       // Add checkboxes for layers
-      L.control.layers(null, mapLayers, {collapsed: true}).addTo(this.map)
+      L.control.layers(null, mapLayers, {collapsed: false}).addTo(this.map)
       this.map.on('layeradd', (e) => {
         const layerId = e.layer._leaflet_id
         const layerName = e.layer.options.name
