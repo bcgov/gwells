@@ -28,6 +28,33 @@
       <l-control position="topleft" >
         <div class="geolocate" @click="$refs.map.mapObject.locate()" />
       </l-control>
+      <l-control position="topright" >
+        <div class="search-as-i-move-control form-inline p-2">
+          <div v-if="pendingSearch">
+            <div class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></div>
+            <strong class="pl-1">Loading...</strong>
+          </div>
+          <div v-else-if="showSearchThisAreaButton">
+            <b-button
+              id="search-this-area-btn"
+              variant="light"
+              size="sm"
+              @click="triggerSearch">
+              Search this area <span class="pl-1 fa fa-refresh" />
+            </b-button>
+          </div>
+          <div class="ml-1" v-else>
+            <b-form-checkbox
+              id="search-as-i-move-checkbox"
+              :checked="searchOnMapMove"
+              @input="searchOnMapMove = $event"
+              @click.stop="null">
+              Search as I move the map
+            </b-form-checkbox>
+          </div>
+        </div>
+      </l-control>
+      <l-control-scale position="bottomleft" metric />
       <!-- esri layer is added on mount -->
       <l-wms-tile-layer
         base-url="https://openmaps.gov.bc.ca/geo/pub/WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW/ows?"
@@ -68,7 +95,7 @@ import debounce from 'lodash.debounce'
 
 import L from 'leaflet'
 import { tiledMapLayer } from 'esri-leaflet'
-import { LMap, LTileLayer, LCircleMarker, LPopup, LControl, LWMSTileLayer, LFeatureGroup } from 'vue2-leaflet'
+import { LMap, LTileLayer, LCircleMarker, LPopup, LControl, LControlScale, LWMSTileLayer, LFeatureGroup } from 'vue2-leaflet'
 import { mapGetters } from 'vuex'
 import { SEARCH_WELLS, SEARCH_WELL_LOCATIONS } from '@/wells/store/actions.types.js'
 import { SET_SEARCH_BOUNDS } from '@/wells/store/mutations.types.js'
@@ -88,6 +115,7 @@ export default {
   components: {
     'l-map': LMap,
     'l-control': LControl,
+    'l-control-scale': LControlScale,
     'l-tile-layer': LTileLayer,
     'l-feature-group': LFeatureGroup,
     'l-wms-tile-layer': LWMSTileLayer,
@@ -100,12 +128,18 @@ export default {
       zoom: 5,
       center: [54.5, -126.5],
       bounds: null,
+      // Track if we triggered a search, or if it came from another component
       searchTriggered: false,
+      searchOnMapMove: false,
+      movedSinceLastSearch: false,
       esriLayer: null
     }
   },
   computed: {
-    ...mapGetters({ locations: 'locationSearchResults' }),
+    ...mapGetters({
+      locations: 'locationSearchResults',
+      pendingSearch: 'locationPendingSearch'
+    }),
     searchBoundBox () {
       const sw = this.bounds.getSouthWest()
       const ne = this.bounds.getNorthEast()
@@ -117,13 +151,16 @@ export default {
       }
     },
     markers () {
-      return this.locations.map(location => {
+      return this.locations.filter(location => location.latitude !== null && location.longitude !== null).map(location => {
         return {
           wellTagNumber: location.well_tag_number,
           latLng: L.latLng(location.latitude, location.longitude),
           idPlateNumber: location.identification_plate_number || ''
         }
       })
+    },
+    showSearchThisAreaButton () {
+      return (!this.searchOnMapMove && this.movedSinceLastSearch && this.zoom >= 9)
     }
   },
   methods: {
@@ -139,25 +176,31 @@ export default {
         }
       })
     },
-    updateSearchResults: debounce(function () {
-      this.searchTriggered = true
-      this.$store.dispatch(SEARCH_WELLS, { bounded: true })
-      this.$store.dispatch(SEARCH_WELL_LOCATIONS, { bounded: true })
-    }, 500),
     zoomUpdated (zoom) {
       this.zoom = zoom
-      this.updateSearchResults()
+      this.mapMoved()
     },
     centerUpdated (center) {
       this.center = center
-
       this.$emit('moved', center)
-      this.updateSearchResults()
+      this.mapMoved()
     },
     boundsUpdated (bounds) {
       this.bounds = bounds
-
       this.$store.commit(SET_SEARCH_BOUNDS, this.searchBoundBox)
+    },
+    triggerSearch: debounce(function () {
+      this.searchTriggered = true
+
+      this.$store.dispatch(SEARCH_WELLS, { bounded: true })
+      this.$store.dispatch(SEARCH_WELL_LOCATIONS, { bounded: true })
+    }, 500),
+    mapMoved () {
+      if (this.searchOnMapMove) {
+        this.triggerSearch()
+      } else {
+        this.movedSinceLastSearch = true
+      }
     },
     userLocationFound (location) {
       this.center = location.latlng
@@ -169,6 +212,7 @@ export default {
         this.zoomToMarkers()
       }
       this.searchTriggered = false
+      this.movedSinceLastSearch = false
     }
   },
   mounted () {
@@ -188,7 +232,7 @@ export default {
   }
 }
 </script>
-<style>
+<style lang="scss">
 @import "leaflet/dist/leaflet.css";
 
 .search-map {
@@ -205,5 +249,57 @@ export default {
 
 .geolocate:hover {
     opacity: 0.8;
+}
+
+.search-as-i-move-control {
+  background-clip: padding-box;
+  background-color: #fff;
+  border: 2px solid rgba(0,0,0,0.2);
+  border-radius: 4px;
+}
+
+/* Spinner styles — these can be removed when moving to bootstrap 4.3 */
+
+$spinner-width:         2rem !default;
+$spinner-height:        $spinner-width !default;
+$spinner-border-width:  .25em !default;
+
+$spinner-width-sm:        1rem !default;
+$spinner-height-sm:       $spinner-width-sm !default;
+$spinner-border-width-sm: .2em !default;
+
+@keyframes spinner-border {
+  to { transform: rotate(360deg); }
+}
+
+.spinner-border {
+  display: inline-block;
+  width: $spinner-width;
+  height: $spinner-height;
+  vertical-align: text-bottom;
+  border: $spinner-border-width solid currentColor;
+  border-right-color: transparent;
+  // stylelint-disable-next-line property-blacklist
+  border-radius: 50%;
+  animation: spinner-border .75s linear infinite;
+}
+
+.spinner-border-sm {
+  width: $spinner-width-sm;
+  height: $spinner-height-sm;
+  border-width: $spinner-border-width-sm;
+}
+
+//
+// Growing circle
+//
+
+@keyframes spinner-grow {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    opacity: 1;
+  }
 }
 </style>
