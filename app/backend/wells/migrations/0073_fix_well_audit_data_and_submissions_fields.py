@@ -19,14 +19,17 @@ def fix_bad_wells(apps, schema_editor):
             activity_submission = ActivitySubmission.objects.get(
                 well=well,
                 well_activity_type=WellActivityCode.objects.get(code='LEGACY'))
-            raise "We are only dealing with legacy records!"
+            logger.error('Legacy record for bad well exists')
         except ActivitySubmission.DoesNotExist:
-            # Try to get a construction record, then update the well to match the submission.
-            activity_submission = ActivitySubmission.objects.get(
-                well=well,
-                well_activity_type=WellActivityCode.objects.get(code='CON'))
-            well.create_user = activity_submission.create_user
-            well.save()
+            try:
+                # Try to get a construction record, then update the well to match the submission.
+                activity_submission = ActivitySubmission.objects.get(
+                    well=well,
+                    well_activity_type=WellActivityCode.objects.get(code='CON'))
+                well.create_user = activity_submission.create_user
+                well.save()
+            except ActivitySubmission.DoesNotExist as e:
+                logger.error(e)
 
 
 def revert_bad_wells(apps, schema_editor):
