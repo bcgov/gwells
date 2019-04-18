@@ -19,30 +19,29 @@ from django.contrib.gis.db import models
 from django.core.validators import MinValueValidator
 from gwells.models import AuditModel, CodeTableModel
 
-staff_edit = None
+WELL_ACTIVITY_CODE_CONSTRUCTION = 'CON'
+WELL_ACTIVITY_CODE_LEGACY = 'LEGACY'
+WELL_ACTIVITY_CODE_DECOMMISSION = 'DEC'
+WELL_ACTIVITY_CODE_ALTERATION = 'ALT'
+WELL_ACTIVITY_CODE_STAFF_EDIT = 'STAFF_EDIT'
 
 
 class WellActivityCodeTypeManager(models.Manager):
 
     def construction(self):
-        return self.get_queryset().get(code='CON')
+        return self.get_queryset().get(code=WELL_ACTIVITY_CODE_CONSTRUCTION)
 
     def legacy(self):
-        return self.get_queryset().get(code='LEGACY')
+        return self.get_queryset().get(code=WELL_ACTIVITY_CODE_LEGACY)
 
     def decommission(self):
-        return self.get_queryset().get(code='DEC')
+        return self.get_queryset().get(code=WELL_ACTIVITY_CODE_DECOMMISSION)
 
     def alteration(self):
-        return self.get_queryset().get(code='ALT')
+        return self.get_queryset().get(code=WELL_ACTIVITY_CODE_ALTERATION)
 
     def staff_edit(self):
-        # This is an expensive call, so we cache it (running normally we'll mostly have misses, but
-        # during testing, this can massively speed things up.)
-        global staff_edit
-        if not staff_edit:
-            staff_edit = self.get_queryset().get(code='STAFF_EDIT')
-        return staff_edit
+        return self.get_queryset().get(code=WELL_ACTIVITY_CODE_STAFF_EDIT)
 
 
 class WellActivityCode(CodeTableModel):

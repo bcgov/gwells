@@ -62,6 +62,17 @@ class TestEdit(APITestCase):
         self.casing_material_code_other = CasingMaterialCode.objects.get(code='OTHER')
         self.client.force_authenticate(user)
 
+    def test_water_quality_submission(self):
+        """ Check that water quality on a staff edit is reflected on the well """
+        well = Well.objects.create()
+        data = {
+            'well': well.well_tag_number,
+            'water_quality_characteristics': ['CLOUDY', 'FRESH', 'GAS']
+        }
+        self.client.post(reverse('STAFF_EDIT'), data, format='json')
+        well = Well.objects.get(well_tag_number=well.well_tag_number)
+        self.assertEqual(well.water_quality_characteristics.count(), 3)
+
     def test_casing_submission(self):
         """ Test that if a legacy well does not have a casing drive shoe, it doesn't cause problems """
         # We create a pre-existing "legacy well"
@@ -119,27 +130,62 @@ class TestEdit(APITestCase):
         response = self.client.post(reverse('STAFF_EDIT'), data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.data)
 
-    def test_lithology_to_none_on_legacy(self):
+    def test_staff_edit_with_bad_lithology_in_old_well_returns_bad_request(self):
         """ Test that if a legacy well does not have correct lithology info, that it doesn't fail
         on generating the legacy record, but does give us a bad request response. """
         # We create a pre-existing "legacy well"
         well = Well.objects.create(create_user='Blah', update_user='Blah')
-        # We attached lithology to the well, that's should fail validation.
+        # We attached lithology to the well, that should fail validation.
         LithologyDescription.objects.create(well=well, lithology_from=117, lithology_to=None)
-        # Doing a valid edit, updating the lithology information, should be fine.
+        # Doing an edit, without passing in the correct validation, should fail!
         data = {
             'well': well.well_tag_number
         }
         response = self.client.post(reverse('STAFF_EDIT'), data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST, response.data)
-        data['lithologydescription_set'] = [
+
+    def test_staff_edit_with_bad_lithology_in_old_well_but_edit_good_returns_ok(self):
+        """ Test that if a legacy well does not have correct lithology info, but we submit
+        good data on an edit, that everything works fine."""
+        # We create a pre-existing "legacy well"
+        well = Well.objects.create(create_user='Blah', update_user='Blah')
+        # We attached lithology to the well, that should fail validation.
+        LithologyDescription.objects.create(well=well, lithology_from=117, lithology_to=None)
+        # Doing a valid edit, updating the lithology information, should be fine.
+        data = {
+            'well': well.well_tag_number,
+            'lithologydescription_set': [
                 {
                     'lithology_from': 0,
                     'lithology_to': 10
                 }
             ]
+        }
         response = self.client.post(reverse('STAFF_EDIT'), data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.data)
+
+    def test_staff_edit_with_bad_lithology_in_old_well_but_edit_saves_new_data(self):
+        """ Test that if a legacy well does not have correct lithology info, but we submit
+        good data on an edit, that everything works fine."""
+        # We create a pre-existing "legacy well"
+        well = Well.objects.create(create_user='Blah', update_user='Blah')
+        # We attached lithology to the well, that should fail validation.
+        LithologyDescription.objects.create(well=well, lithology_from=117, lithology_to=None)
+        # Doing a valid edit, updating the lithology information, should be fine.
+        data = {
+            'well': well.well_tag_number,
+            'lithologydescription_set': [
+                {
+                    'lithology_from': 0,
+                    'lithology_to': 10
+                }
+            ]
+        }
+        self.client.post(reverse('STAFF_EDIT'), data, format='json')
+        well = Well.objects.get(well_tag_number=well.well_tag_number)
+        lithology = well.lithologydescription_set.all()
+        self.assertAlmostEqual(lithology[0].lithology_from, 0)
+        self.assertAlmostEqual(lithology[0].lithology_to, 10)
 
     def test_no_city_on_legacy(self):
         """ Test that the legacy record creates ok, but we get a bad request response if we have bad
