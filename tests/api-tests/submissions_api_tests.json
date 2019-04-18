@@ -1253,8 +1253,8 @@
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
-											"pm.test(\"Status code is 201\", function () {",
-											"   pm.expect(pm.response.code).to.equal(201);",
+											"pm.test(\"Status code is 400\", function () {",
+											"   pm.expect(pm.response.code).to.equal(400);",
 											"})",
 											""
 										],
