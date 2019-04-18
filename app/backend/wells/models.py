@@ -1255,12 +1255,12 @@ class ActivitySubmission(AuditModelStructure):
     well_orientation = models.BooleanField(default=True, verbose_name='Orientation of Well', choices=(
         (True, 'vertical'), (False, 'horizontal')))
     water_supply_system_name = models.CharField(
-        max_length=50, blank=True, null=True, verbose_name='Water Supply System Name',
+        max_length=80, blank=True, null=True, verbose_name='Water Supply System Name',
         db_comment=('Name or identifier given to a well that serves as a water supply system. Often, the '
                     'name is a reflection of the community or system it serves, e.g. Town of Osoyoos or '
                     'Keremeos Irrigation District.'))
     water_supply_system_well_name = models.CharField(
-        max_length=50, blank=True, null=True, verbose_name='Water Supply System Well Name',
+        max_length=80, blank=True, null=True, verbose_name='Water Supply System Well Name',
         db_comment=('The specific name given to a water supply system well. Often, the name reflects which '
                     'well it is within the system, e.g. Well 1 or South Well'))
 
@@ -1363,7 +1363,7 @@ class ActivitySubmission(AuditModelStructure):
                     'depth which is the total depth at which the well was drilled. The finished depth is '
                     'represented in units of feet bgl (below ground level).'))
     final_casing_stick_up = models.DecimalField(
-        max_digits=5, decimal_places=3, blank=True, null=True, verbose_name='Final Casing Stick Up')
+        max_digits=6, decimal_places=3, blank=True, null=True, verbose_name='Final Casing Stick Up')
     bedrock_depth = models.DecimalField(
         max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Depth to Bedrock')
     static_water_level = models.DecimalField(

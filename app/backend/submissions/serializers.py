@@ -17,6 +17,7 @@ from django.db import transaction
 from django.db.models import OneToOneField
 from rest_framework import serializers
 from django.contrib.gis.geos import Point
+from rest_framework import exceptions
 
 from gwells.models import ProvinceStateCode
 from gwells.serializers import AuditModelSerializer
@@ -34,6 +35,10 @@ from wells.serializers import (
     DecommissionDescriptionSerializer,
     ScreenSerializer,
     LegacyCasingSerializer,
+    LegacyDecommissionDescriptionSerializer,
+    LegacyLinerPerforationSerializer,
+    LegacyLithologyDescriptionSerializer,
+    LegacyScreenSerializer,
     LinerPerforationSerializer,
     LithologyDescriptionSerializer,
 )
@@ -116,44 +121,55 @@ class WellSubmissionSerializerBase(AuditModelSerializer):
 
     @transaction.atomic
     def create(self, validated_data):
-        # Pop foreign key records from validated data (we need to create them ourselves).
-        foreign_keys = self.get_foreign_key_sets()
-        foreign_keys_data = {}
-        for key in foreign_keys.keys():
-            foreign_keys_data[key] = validated_data.pop(key, None)
-        # Create submission.
-        validated_data['well_activity_type'] = self.get_well_activity_type()
+        try:
+            # Pop foreign key records from validated data (we need to create them ourselves).
+            foreign_keys = self.get_foreign_key_sets()
+            foreign_keys_data = {}
+            for key in foreign_keys.keys():
+                foreign_keys_data[key] = validated_data.pop(key, None)
+            # Create submission.
+            validated_data['well_activity_type'] = self.get_well_activity_type()
 
-        if self.context.get('request', None):
-            data = self.context['request'].data
-            # Convert lat long values into geom object stored on model
-            # Values are BC Albers. but we are using WGS84 Lat Lon to avoid rounding errors
-            if data.get('latitude', None) and data.get('longitude', None):
-                validated_data['geom'] = Point(data['longitude'], data['latitude'], srid=4326)
+            if self.context.get('request', None):
+                data = self.context['request'].data
+                # Convert lat long values into geom object stored on model
+                # Values are BC Albers. but we are using WGS84 Lat Lon to avoid rounding errors
+                if data.get('latitude', None) and data.get('longitude', None):
+                    validated_data['geom'] = Point(data['longitude'], data['latitude'], srid=4326)
 
-        # Remove the latitude and longitude fields if they exist
-        validated_data.pop('latitude', None)
-        validated_data.pop('longitude', None)
+            # Remove the latitude and longitude fields if they exist
+            validated_data.pop('latitude', None)
+            validated_data.pop('longitude', None)
 
-        # If the yield_estimation_rate is specified, we default to USGPM
-        if validated_data.get('yield_estimation_rate', None) and \
-                not validated_data.get('well_yield_unit', None):
-            validated_data['well_yield_unit'] = WellYieldUnitCode.objects.get(
-                well_yield_unit_code='USGPM')
+            # If the yield_estimation_rate is specified, we default to USGPM
+            if validated_data.get('yield_estimation_rate', None) and \
+                    not validated_data.get('well_yield_unit', None):
+                validated_data['well_yield_unit'] = WellYieldUnitCode.objects.get(
+                    well_yield_unit_code='USGPM')
 
-        instance = super().create(validated_data)
-        # Create foreign key records.
-        for key, value in foreign_keys_data.items():
-            if value:
-                model = type(self).Meta.model
-                field = model._meta.get_field(key)
-                foreign_class = foreign_keys[key]
-                if field.one_to_many:
-                    for data in value:
-                        foreign_class.objects.create(
-                            activity_submission=instance, **data)
-                else:
-                    raise 'UNEXPECTED FIELD! {}'.format(field)
+            instance = super().create(validated_data)
+            # Create foreign key records.
+            for key, value in foreign_keys_data.items():
+                if value:
+                    model = type(self).Meta.model
+                    field = model._meta.get_field(key)
+                    foreign_class = foreign_keys[key]
+                    if field.one_to_many:
+                        for data in value:
+                            foreign_class.objects.create(
+                                activity_submission=instance, **data)
+                    else:
+                        raise 'UNEXPECTED FIELD! {}'.format(field)
+        except exceptions.ValidationError as e:
+            # We don't bubble validation errors on the legacy submission up. It just causes confusion!
+            # If there's a validation error on this level, it has to go up as a 500 error. Validation
+            # error here, means we are unable to create a legacy record using old well data. The
+            # users can't do anything to fix this, we have to fix a bug!
+            if isinstance(self, WellSubmissionLegacySerializer):
+                logger.error(e, exc_info=True)
+                raise APIException()
+            else:
+                raise
         # Update the well record.
         stacker = wells.stack.StackWells()
         stacker.process(instance.filing_number)
@@ -192,12 +208,12 @@ class WellSubmissionLegacySerializer(WellSubmissionSerializerBase):
     """ Class with no validation, and all possible fields, used by stacker to create legacy records """
 
     casing_set = LegacyCasingSerializer(many=True, required=False)
-    screen_set = ScreenSerializer(many=True, required=False)
-    linerperforation_set = LinerPerforationSerializer(
+    screen_set = LegacyScreenSerializer(many=True, required=False)
+    linerperforation_set = LegacyLinerPerforationSerializer(
         many=True, required=False)
-    decommission_description_set = DecommissionDescriptionSerializer(
+    decommission_description_set = LegacyDecommissionDescriptionSerializer(
         many=True, required=False)
-    lithologydescription_set = LithologyDescriptionSerializer(
+    lithologydescription_set = LegacyLithologyDescriptionSerializer(
         many=True, required=False)
     # It seems that all the audit fields have to be explicitly added. Assumption is that it's because
     # they're on a base class?
@@ -205,6 +221,13 @@ class WellSubmissionLegacySerializer(WellSubmissionSerializerBase):
     create_user = serializers.CharField()
     update_date = serializers.DateTimeField()
     create_date = serializers.DateTimeField()
+
+    # Use decimal fields without any validators.
+    yield_estimation_duration = serializers.DecimalField(max_digits=9, decimal_places=2, required=False)
+    surface_seal_thickness = serializers.DecimalField(max_digits=7, decimal_places=2, required=False)
+    static_level_before_test = serializers.DecimalField(max_digits=7, decimal_places=2, required=False)
+    # Use CharField, to switch off validation.
+    owner_email = serializers.CharField(allow_null=True, allow_blank=True, required=False)
 
     def get_well_activity_type(self):
         return WellActivityCode.types.legacy()
@@ -225,6 +248,9 @@ class WellSubmissionLegacySerializer(WellSubmissionSerializerBase):
             'create_user': {'required': False},
             # This is autopopulated during create
             'well_activity_type': {'required': False},
+            'owner_city': {'required': False, 'allow_blank': True},
+            'yield_estimation_duration': {'required': False},
+            'owner_email': {'required': False}
         }
         fields = '__all__'
 
