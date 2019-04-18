@@ -650,6 +650,7 @@ export default {
         'wellType': 'Well class',
         'wellPublicationStatus': 'Well publication status',
         'wellOwner': 'Well owner',
+        'workDates': 'Well work dates',
         'wellLocation': 'Well location',
         'wellCoords': 'Geographic coordinates',
         'method': 'Method of drilling',

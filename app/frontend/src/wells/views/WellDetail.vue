@@ -72,18 +72,19 @@
               <b-col cols="12" md="4">
                 <div><a class="jump_link" href="#location_information_fieldset">Location Information</a></div>
                 <div><a class="jump_link" href="#well_activity_fieldset">Well Activity</a></div>
+                <div><a class="jump_link" href="#well_work_dates_fieldset">Well Work Dates</a></div>
                 <div><a class="jump_link" href="#well_completion_data_fieldset">Well Completion Data and Artesian Flow</a></div>
                 <div><a class="jump_link" href="#lithology_fieldset">Lithology</a></div>
-                <div><a class="jump_link" href="#casing_fieldset">Casing Details</a></div>
               </b-col>
               <b-col cols="12" md="4">
+                <div><a class="jump_link" href="#casing_fieldset">Casing Details</a></div>
                 <div><a class="jump_link" href="#surface_seal_fieldset">Surface Seal and Backfill Details</a></div>
                 <div><a class="jump_link" href="#perforations_fieldset">Liner Details</a></div>
                 <div><a class="jump_link" href="#screen_details_fieldset">Screen Details</a></div>
                 <div><a class="jump_link" href="#well_development_fieldset">Well Development</a></div>
-                <div><a class="jump_link" href="#well_yield_fieldset">Well Yield</a></div>
               </b-col>
               <b-col cols="12" md="4">
+                <div><a class="jump_link" href="#well_yield_fieldset">Well Yield</a></div>
                 <div><a class="jump_link" href="#well_decommissioning_fieldset">Well Decommissioning</a></div>
                 <div><a class="jump_link" href="#well_comments_fieldset">Comments</a></div>
                 <div v-if="config && config.enable_documents"><a class="jump_link" href="#documents_fieldset">Documentation</a></div>
@@ -179,13 +180,38 @@
         <fieldset id="well_activity_fieldset" class="my-3 detail-section">
           <legend>Well Activity</legend>
           <b-table
+            id="submissionActivityTable"
+            ref="submissionActivityTable"
             striped
             small
             bordered
+            :items="well.submission_work_dates"
+            responsive
             show-empty
-            :fields="['activity_type', 'work_start_date', 'work_end_date', 'drilling_company']"
+            empty-text="There has been no activity related to this well."
+            :per-page="submissionsPerPage"
+            :current-page="submissionsPage"
+            :fields="activity_fields"
           >
+            <template slot="create_date" slot-scope="data">
+              <div>
+                {{ data.item.create_date | moment("MMMM Do YYYY [at] LT") }}
+              </div>
+            </template>
+          </b-table>
+          <b-pagination v-if="!!well.submission_work_dates.length && well.submission_work_dates.length > submissionsPerPage" size="md" :total-rows="well.submission_work_dates.length" v-model="submissionsPage" :per-page="submissionsPerPage" />
+        </fieldset>
 
+        <fieldset id="well_work_dates_fieldset" class="my-3 detail-section">
+          <legend>Well Work Dates</legend>
+          <b-table
+            id="wellWorkDatesTable"
+            ref="wellWorkDatesTable"
+            striped
+            bordered
+            :items=well_dates
+            :fields="work_date_fields"
+          >
           </b-table>
         </fieldset>
 
@@ -435,39 +461,48 @@ export default {
     return {
       well: {},
       lithology_fields: {
-        lithology_from: {
-          label: 'From (ft bgl)'
-        },
-        lithology_to: {
-          label: 'To (ft bgl)'
-        },
-        lithology_raw_data: {
-          label: 'Raw Data'
-        },
-        lithology_description: {
-          label: 'Description'
-        },
-        lithology_moisture: {
-          label: 'Moisture'
-        },
-        lithology_colour: {
-          label: 'Colour'
-        },
-        lithology_hardness: {
-          label: 'Hardness'
-        },
-        lithology_observation: {
-          label: 'Observations'
-        },
-        water_bearing_estimated_flow: {
-          label: 'Water Bearing Flow Estimate (USGPM)'
-        }
+        lithology_from: { label: 'From (ft bgl)' },
+        lithology_to: { label: 'To (ft bgl)' },
+        lithology_raw_data: { label: 'Raw Data' },
+        lithology_description: { label: 'Description' },
+        lithology_moisture: { label: 'Moisture' },
+        lithology_colour: { label: 'Colour' },
+        lithology_hardness: { label: 'Hardness' },
+        lithology_observation: { label: 'Observations' },
+        water_bearing_estimated_flow: { label: 'Water Bearing Flow Estimate (USGPM)' }
       },
+      activity_fields: {
+        well_activity_description: { label: 'Activity', sortable: true },
+        work_start_date: { label: 'Work Start Date', sortable: true },
+        work_end_date: { label: 'Work End Date', sortable: true },
+        drilling_company: { label: 'Drilling Company', sortable: true },
+        create_date: { label: 'Date Entered', sortable: true }
+      },
+      work_date_fields: {
+        construction_start_date: { label: 'Start Date of Construction', class: 'text-center' },
+        construction_end_date: { label: 'End Date of Construction', class: 'text-center' },
+        alteration_start_date: { label: 'Start Date of Alteration', class: 'text-center' },
+        alteration_end_date: { label: 'End Date of Alteration', class: 'text-center' },
+        decommission_start_date: { label: 'Start Date of Decommission', class: 'text-center' },
+        decommission_end_date: { label: 'End Date of Decommission', class: 'text-center' }
+      },
+      submissionsPerPage: 5,
+      submissionsPage: 1,
       loading: false,
       error: null
     }
   },
   computed: {
+    well_dates () {
+      return [{
+        construction_start_date: this.well.construction_start_date,
+        construction_end_date: this.well.construction_end_date,
+        alteration_start_date: this.well.alteration_start_date,
+        alteration_end_date: this.well.alteration_end_date,
+        decommission_start_date: this.well.decommission_start_date,
+        decommission_end_date: this.well.decommission_end_date
+      }]
+    },
     errorNotFound () {
       return this.error && this.error.status === 404
     },

@@ -90,7 +90,7 @@ limitations under the License.
         <form-input
           id="decommissionEndDateInput"
           type="date"
-          label="End Date of Well Decommission"
+          label="End Date of Decommission"
           placeholder="YYYY-MM-DD"
           v-model="decommissionEndDateInput"
           :errors="errors.decommission_end_date"
