@@ -18,6 +18,7 @@
       id="map"
       :min-zoom="4"
       :max-zoom="17"
+      :max-bounds="maxBounds"
       :zoom="zoom"
       :center="center"
       :options="{ attributionControl: false, preferCanvas: true }"
@@ -153,6 +154,10 @@ export default {
     return {
       zoom: 5,
       center: [54.5, -126.5],
+      maxBounds: [
+        [46.07323062540835, -140.27343750000003],
+        [61.438767493682825, -112.71972656250001]
+      ],
       bounds: null,
       // Track if we triggered a search, or if it came from another component
       searchTriggered: false,
@@ -248,11 +253,6 @@ export default {
     },
     removeEsriLayer () {
       this.$refs.map.mapObject.removeLayer(this.esriLayer)
-    },
-    initMaxBounds () {
-      // Set max bounds dynamically on load
-      const initialBounds = this.$refs.map.mapObject.getBounds()
-      this.$refs.map.mapObject.setMaxBounds(initialBounds)
     }
   },
   watch: {
@@ -267,7 +267,6 @@ export default {
   mounted () {
     this.$nextTick(() => {
       this.initEsriLayer()
-      this.initMaxBounds()
     })
   },
   beforeDestroy () {
