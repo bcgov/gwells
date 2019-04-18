@@ -16,7 +16,7 @@ from collections import OrderedDict
 
 from django import forms
 from django.core.exceptions import FieldDoesNotExist
-from django.http import QueryDict
+from django.http import HttpRequest, QueryDict
 from django.contrib.gis.geos import GEOSException, Polygon
 from django.db.models import Max, Min, Q, QuerySet
 from django_filters import rest_framework as filters
@@ -32,6 +32,31 @@ from wells.models import (
     WaterQualityCharacteristic,
     Well,
 )
+
+
+def copy_request(request):
+    """
+    Given a rest_framework.request.Request object, create a copy
+    we can mutate without side effects.
+
+    Unfortunately, the built in clone_request method doens't quite get us
+    all the way there (it shares the Django HttpRequest object with the original),
+    and copy.deepcopy doesn't work on WSGIRequests.
+    """
+    clone = clone_request(request, request.method)
+    clone._request = HttpRequest()
+
+    for attr in ('GET', 'POST', 'COOKIES', 'META', 'FILES'):
+        value = getattr(request._request, attr)
+        if value:
+            setattr(clone._request, attr, value.copy())
+
+    for attr in ('path', 'path_info', 'method', 'resolver_match', 'content_type',
+                 'content_params', 'user', 'auth'):
+        if hasattr(request._request, attr):
+            setattr(clone._request, attr, getattr(request._request, attr))
+
+    return clone
 
 
 class BoundingBoxFilterBackend(BaseFilterBackend):
@@ -535,7 +560,7 @@ class WellListFilterBackend(filters.DjangoFilterBackend):
 
             request_querydict = QueryDict(mutable=True)
             request_querydict.update(group_params)
-            request_clone = clone_request(request, 'GET')
+            request_clone = copy_request(request)
             request_clone._request.GET = request_querydict
 
             group_filterset = self.get_filterset(request_clone, filtered_queryset, view)

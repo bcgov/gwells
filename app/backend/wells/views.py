@@ -264,6 +264,7 @@ class WellListAPIView(ListAPIView):
     ordering = ('well_tag_number',)
     search_fields = ('well_tag_number', 'identification_plate_number',
                      'street_address', 'city', 'owner_full_name')
+    default_limit = 10
 
     def get_serializer_class(self):
         """Returns a different serializer class for admin users."""
