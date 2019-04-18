@@ -12,9 +12,11 @@
     limitations under the License.
 """
 import logging
+from decimal import Decimal
 
 from rest_framework import serializers
 from django.db import transaction
+from django.core.validators import MinValueValidator
 
 from gwells.models import ProvinceStateCode
 from gwells.serializers import AuditModelSerializer
@@ -95,6 +97,13 @@ class CasingSerializer(serializers.ModelSerializer):
 
 
 class LegacyCasingSerializer(serializers.ModelSerializer):
+
+    # Serializers without validators:
+    start = serializers.DecimalField(max_digits=7, decimal_places=2, allow_null=True)
+    end = serializers.DecimalField(max_digits=7, decimal_places=2, allow_null=True)
+    diameter = serializers.DecimalField(max_digits=8, decimal_places=3, allow_null=True)
+    wall_thickness = serializers.DecimalField(max_digits=6, decimal_places=3, allow_null=True)
+
     class Meta:
         model = Casing
         fields = (
@@ -134,6 +143,23 @@ class DecommissionDescriptionSerializer(serializers.ModelSerializer):
         }
 
 
+class LegacyDecommissionDescriptionSerializer(serializers.ModelSerializer):
+    """Serializes Decommission Descriptions"""
+
+    class Meta:
+        model = DecommissionDescription
+        fields = (
+            'start',
+            'end',
+            'material',
+            'observations'
+        )
+        extra_kwargs = {
+            'start': {'required': False},
+            'end': {'required': False},
+        }
+
+
 class ScreenSerializer(serializers.ModelSerializer):
     class Meta:
         model = Screen
@@ -151,6 +177,29 @@ class ScreenSerializer(serializers.ModelSerializer):
         }
 
 
+class LegacyScreenSerializer(serializers.ModelSerializer):
+
+    start = serializers.DecimalField(max_digits=7, decimal_places=2, allow_null=True)
+    end = serializers.DecimalField(max_digits=7, decimal_places=2, allow_null=True)
+    internal_diameter = serializers.DecimalField(max_digits=7, decimal_places=2, allow_null=True)
+    slot_size = serializers.DecimalField(max_digits=7, decimal_places=2, allow_null=True)
+
+    class Meta:
+        model = Screen
+        fields = (
+            'start',
+            'end',
+            'internal_diameter',
+            'assembly_type',
+            'slot_size',
+        )
+        extra_kwargs = {
+            'start': {'required': False},
+            'end': {'required': False},
+            'assembly_type': {'required': False}
+        }
+
+
 class LinerPerforationSerializer(serializers.ModelSerializer):
     class Meta:
         model = LinerPerforation
@@ -162,6 +211,24 @@ class LinerPerforationSerializer(serializers.ModelSerializer):
             'start',
             'end',
         )
+
+
+class LegacyLinerPerforationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LinerPerforation
+        fields = (
+            # SUPER IMPORTANT: Don't include ID (liner_perforation_guid, well, or submission) as part of this
+            # serializer, as it will break the stacking code. If you include the guid, then it will remain
+            # stuck on a particular well/submission (unless I gues you pop it during serializing/
+            # deserializing) when creating legacy submissions or re-creating well records etc.
+            'start',
+            'end',
+        )
+
+        extra_kwargs = {
+            'start': {'required': False},
+            'end': {'required': False},
+        }
 
 
 class LithologyDescriptionSummarySerializer(serializers.ModelSerializer):
@@ -188,6 +255,14 @@ class LithologyDescriptionSummarySerializer(serializers.ModelSerializer):
 
 
 class LithologyDescriptionSerializer(serializers.ModelSerializer):
+
+    lithology_from = serializers.DecimalField(
+        max_digits=7, decimal_places=2,
+        validators=[MinValueValidator(Decimal('0.00'))])
+    lithology_to = serializers.DecimalField(
+        max_digits=7, decimal_places=2,
+        validators=[MinValueValidator(Decimal('0.01'))])
+
     """Serializes lithology description records"""
     class Meta:
         model = LithologyDescription
@@ -202,6 +277,29 @@ class LithologyDescriptionSerializer(serializers.ModelSerializer):
             'lithology_observation',
             'water_bearing_estimated_flow',
         )
+
+
+class LegacyLithologyDescriptionSerializer(serializers.ModelSerializer):
+
+    lithology_to = serializers.DecimalField(max_digits=7, decimal_places=2, allow_null=True)
+
+    """Serializes lithology description records"""
+    class Meta:
+        model = LithologyDescription
+        fields = (
+            'lithology_from',
+            'lithology_to',
+            'lithology_raw_data',
+            'lithology_colour',
+            'lithology_hardness',
+            'lithology_moisture',
+            'lithology_description',
+            'lithology_observation',
+            'water_bearing_estimated_flow',
+        )
+        extra_kwargs = {
+            'lithology_to': {'required': False, 'allow_null': True},
+        }
 
 
 class DrillingMethodSummarySerializer(serializers.ModelSerializer):

@@ -19,6 +19,8 @@ from django.contrib.gis.db import models
 from django.core.validators import MinValueValidator
 from gwells.models import AuditModel, CodeTableModel
 
+staff_edit = None
+
 
 class WellActivityCodeTypeManager(models.Manager):
 
@@ -35,7 +37,12 @@ class WellActivityCodeTypeManager(models.Manager):
         return self.get_queryset().get(code='ALT')
 
     def staff_edit(self):
-        return self.get_queryset().get(code='STAFF_EDIT')
+        # This is an expensive call, so we cache it (running normally we'll mostly have misses, but
+        # during testing, this can massively speed things up.)
+        global staff_edit
+        if not staff_edit:
+            staff_edit = self.get_queryset().get(code='STAFF_EDIT')
+        return staff_edit
 
 
 class WellActivityCode(CodeTableModel):
