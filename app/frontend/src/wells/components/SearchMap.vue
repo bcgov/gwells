@@ -25,10 +25,10 @@
       @update:bounds="boundsUpdated"
       @update:center="centerUpdated"
       @locationfound="userLocationFound($event)">
-      <l-control position="topleft" >
+      <l-control position="topleft">
         <div class="geolocate" @click="$refs.map.mapObject.locate()" />
       </l-control>
-      <l-control position="topright" >
+      <l-control position="topright">
         <div class="search-as-i-move-control form-inline p-2">
           <div v-if="pendingSearch">
             <div class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></div>
@@ -55,6 +55,20 @@
         </div>
       </l-control>
       <l-control-scale position="bottomleft" metric />
+      <l-control position="bottomright">
+        <div class="active-search-info d-inline-flex flex-wrap justify-content-end ml-5" v-if="activeSearch">
+          <div class="active-search-text py-1 px-3 mb-1">
+            <strong>Wells that match active search criteria are displayed.</strong>
+          </div>
+          <b-button
+            class="ml-md-4 mb-1"
+            variant="primary"
+            size="sm"
+            @click="clearSearch()">
+            Clear search criteria
+          </b-button>
+        </div>
+      </l-control>
       <!-- esri layer is added on mount -->
       <l-wms-tile-layer
         base-url="https://openmaps.gov.bc.ca/geo/pub/WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW/ows?"
@@ -110,7 +124,7 @@ import {
 } from 'vue2-leaflet'
 import { mapGetters } from 'vuex'
 import { SEARCH_WELLS, SEARCH_WELL_LOCATIONS } from '@/wells/store/actions.types.js'
-import { SET_SEARCH_BOUNDS } from '@/wells/store/mutations.types.js'
+import { SET_SEARCH_BOUNDS, SET_SEARCH_PARAMS } from '@/wells/store/mutations.types.js'
 
 // There is a known issue using leaflet with webpack, this is a workaround
 // Fix courtesy of: https://github.com/PaulLeCam/react-leaflet/issues/255
@@ -150,7 +164,8 @@ export default {
   computed: {
     ...mapGetters({
       locations: 'locationSearchResults',
-      pendingSearch: 'locationPendingSearch'
+      pendingSearch: 'locationPendingSearch',
+      searchParams: 'searchParams'
     }),
     searchBoundBox () {
       const sw = this.bounds.getSouthWest()
@@ -170,6 +185,9 @@ export default {
           idPlateNumber: location.identification_plate_number || ''
         }
       })
+    },
+    activeSearch () {
+      return Object.entries(this.searchParams).length > 0
     },
     showSearchThisAreaButton () {
       return (!this.searchOnMapMove && this.movedSinceLastSearch && this.zoom >= 9)
@@ -207,6 +225,11 @@ export default {
       this.$store.dispatch(SEARCH_WELLS, { bounded: true })
       this.$store.dispatch(SEARCH_WELL_LOCATIONS, { bounded: true })
     }, 500),
+    clearSearch () {
+      this.$store.commit(SET_SEARCH_PARAMS, {})
+      this.$store.dispatch(SEARCH_WELLS, { bounded: true })
+      this.$store.dispatch(SEARCH_WELL_LOCATIONS, { bounded: true })
+    },
     mapMoved () {
       if (this.searchOnMapMove) {
         this.triggerSearch()
@@ -257,69 +280,75 @@ export default {
 
 .search-map {
   height: 600px;
-}
-.geolocate {
-    background-image: url('../../common/assets/images/geolocate.png');
-    width: 30px;
-    height: 30px;
-    left: 2px;
-    box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.4);
-    cursor: pointer;
-}
 
-.geolocate:hover {
-    opacity: 0.8;
-}
-
-.search-as-i-move-control {
-  background-clip: padding-box;
-  background-color: #fff;
-  border: 2px solid rgba(0,0,0,0.2);
-  border-radius: 4px;
-}
-
-/* Spinner styles — these can be removed when moving to bootstrap 4.3 */
-
-$spinner-width:         2rem !default;
-$spinner-height:        $spinner-width !default;
-$spinner-border-width:  .25em !default;
-
-$spinner-width-sm:        1rem !default;
-$spinner-height-sm:       $spinner-width-sm !default;
-$spinner-border-width-sm: .2em !default;
-
-@keyframes spinner-border {
-  to { transform: rotate(360deg); }
-}
-
-.spinner-border {
-  display: inline-block;
-  width: $spinner-width;
-  height: $spinner-height;
-  vertical-align: text-bottom;
-  border: $spinner-border-width solid currentColor;
-  border-right-color: transparent;
-  // stylelint-disable-next-line property-blacklist
-  border-radius: 50%;
-  animation: spinner-border .75s linear infinite;
-}
-
-.spinner-border-sm {
-  width: $spinner-width-sm;
-  height: $spinner-height-sm;
-  border-width: $spinner-border-width-sm;
-}
-
-//
-// Growing circle
-//
-
-@keyframes spinner-grow {
-  0% {
-    transform: scale(0);
+  .geolocate {
+      background-image: url('../../common/assets/images/geolocate.png');
+      width: 30px;
+      height: 30px;
+      left: 2px;
+      box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.4);
+      cursor: pointer;
   }
-  50% {
-    opacity: 1;
+
+  .geolocate:hover {
+      opacity: 0.8;
   }
+
+  .search-as-i-move-control {
+    background-clip: padding-box;
+    background-color: #fff;
+    border: 2px solid rgba(0,0,0,0.2);
+    border-radius: 4px;
+  }
+
+  .active-search-text {
+    background-color: rgba(0,0,0,0.3);
+    border-radius: 4px;
+  }
+
+  /* Spinner styles — these can be removed when moving to bootstrap 4.3 */
+
+  $spinner-width:         2rem !default;
+  $spinner-height:        $spinner-width !default;
+  $spinner-border-width:  .25em !default;
+
+  $spinner-width-sm:        1rem !default;
+  $spinner-height-sm:       $spinner-width-sm !default;
+  $spinner-border-width-sm: .2em !default;
+
+  @keyframes spinner-border {
+    to { transform: rotate(360deg); }
+  }
+
+  .spinner-border {
+    display: inline-block;
+    width: $spinner-width;
+    height: $spinner-height;
+    vertical-align: text-bottom;
+    border: $spinner-border-width solid currentColor;
+    border-right-color: transparent;
+    // stylelint-disable-next-line property-blacklist
+    border-radius: 50%;
+    animation: spinner-border .75s linear infinite;
+  }
+
+  .spinner-border-sm {
+    width: $spinner-width-sm;
+    height: $spinner-height-sm;
+    border-width: $spinner-border-width-sm;
+  }
+
+  //
+  // Growing circle
+  //
+
+  @keyframes spinner-grow {
+    0% {
+      transform: scale(0);
+    }
+    50% {
+      opacity: 1;
+    }
+}
 }
 </style>
