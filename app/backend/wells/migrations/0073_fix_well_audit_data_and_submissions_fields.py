@@ -3,6 +3,12 @@
 from django.db import migrations, models
 
 
+import logging
+
+
+logger = logging.getLogger(__name__)
+
+
 def fix_bad_wells(apps, schema_editor):
     """ We had a bug in production code, resulting in wells without any audit information. Once this has
     run in production, this migration can be safely removed.
