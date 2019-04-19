@@ -439,7 +439,10 @@ export default {
   data () {
     return {
       well: {},
-      license: {},
+      license: {
+        status: '',
+        number: ''
+      },
       lithology_fields: {
         lithology_from: {
           label: 'From (ft bgl)'
