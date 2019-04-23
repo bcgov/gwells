@@ -46,7 +46,7 @@ objects:
       resources: {}
       source:
         git:
-          uri: https://github.com/bcgov/gwells
+          uri: https://github.com/bcgov/gwells#steve/backups
         contextDir: openshift/jobs/minio-backup
         dockerfile: |
           FROM alpine:latest
