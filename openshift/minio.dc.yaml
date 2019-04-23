@@ -32,7 +32,7 @@ parameters:
     value: "gluster-file"
   - name: "DEST_PVC_ACCESS"
     displayName: "PVC access mode"
-    value: "ReadWriteMany"
+    value: "ReadWriteOnce"
 objects:
   - apiVersion: v1
     kind: PersistentVolumeClaim
