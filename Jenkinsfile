@@ -470,6 +470,7 @@ pipeline {
         // this will not be created during the pipeline; it must be created
         // before running the production pipeline.
         nfsProdBackupPVC = "bk-moe-gwells-prod-0z6f0qq0k2fz"
+        nfsStagingBackupPVC = "bk-moe-gwells-test-fr44d02v8o4u"
     }
     agent any
     stages {
@@ -849,6 +850,19 @@ pipeline {
                             ],
                             "--overwrite"
                         )
+
+                        // oc process -f minio-backup.cj.yaml -p NAME_SUFFIX=staging -p NAMESPACE=moe-gwells-test -p VERSION=v1.0.0 -p S3_SERVICE=gwells-minio:9000 -p SCHEDULE='*/5 * * * *' -p DEST_PVC=bk-moe-gwells-test-fr44d02v8o4u -p SECRETS=minio-access-parameters-staging -p PVC_SIZE=1Gi                        def docBackupCronjob = openshift.process("-f",
+                            "openshift/jobs/minio-backup.cj.yaml",
+                            "NAME_SUFFIX=${testSuffix}",
+                            "NAMESPACE=${testProject}",
+                            "VERSION=v1.0.0",
+                            "S3_SERVICE=gwells-minio:9000"
+                            "SCHEDULE='15 12 * * *'",
+                            "DEST_PVC=${nfsStagingBackupPVC}",
+                            "SECRETS=minio-access-parameters-staging",
+                        )
+
+                        openshift.apply(docBackupBuildConfig)
 
                         // monitor the deployment status and wait until deployment is successful
                         echo "Waiting for deployment to STAGING..."
@@ -1277,15 +1291,6 @@ pipeline {
                             "--overwrite"
                         )
 
-                        // document backup cronjob
-                        // uses restic (github.com/restic/restic) to copy new/changed
-                        // files to NFS storage.
-                        def docBackupBuildConfig = openshift.process("-f",
-                            "openshift/jobs/minio-backup.bc.yaml",
-                            "VERSION=v1.0.0",
-                            "NAMESPACE=${toolsProject}"
-                        )
-
                         def docBackupCronjob = openshift.process("-f",
                             "openshift/jobs/minio-backup.cj.yaml",
                             "NAME_SUFFIX=${prodSuffix}",
@@ -1295,7 +1300,6 @@ pipeline {
                             "SCHEDULE='15 12 * * *'",
                             "DEST_PVC=${nfsProdBackupPVC}",
                             "SECRETS=minio-access-parameters-prod",
-
                         )
 
                         openshift.apply(docBackupBuildConfig)

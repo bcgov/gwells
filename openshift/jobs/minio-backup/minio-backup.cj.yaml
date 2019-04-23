@@ -16,6 +16,8 @@ parameters:
   - name: SECRETS
     displayName: "Secret object to reference"
     value: "gwells-minio-secrets"
+  - name: VERSION
+    value: v1.0.0
   - name: SCHEDULE
     value: "15 3 * * *"
     required: false
@@ -25,7 +27,7 @@ objects:
     metadata:
       finalizers:
       - kubernetes.io/pvc-protection
-      name: "gwells-documents-${NAME}-backup-vol"
+      name: "gwells-documents-${NAME_SUFFIX}-backup-vol"
       labels:
         app: "gwells-${NAME_SUFFIX}"
         name: "gwells-${NAME_SUFFIX}-documents-backup"
@@ -41,7 +43,7 @@ objects:
   - apiVersion: batch/v1beta1
     kind: CronJob
     metadata:
-      name: ${SOURCE_PVC}-backup
+      name: gwells-documents-${NAME_SUFFIX}-backup
       namespace: "${NAMESPACE}"
     spec:
       concurrencyPolicy: Forbid
@@ -89,6 +91,6 @@ objects:
                   claimName: "${DEST_PVC}"
               - name: source
                 persistentVolumeClaim:
-                  claimName: "${SOURCE_PVC}"
+                  claimName: "gwells-documents-${NAME_SUFFIX}-backup-vol"
       schedule: ${SCHEDULE}
       successfulJobsHistoryLimit: 3
