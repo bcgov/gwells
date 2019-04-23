@@ -1,13 +1,23 @@
 #!/bin/sh
 set -e
 
-# Check if repository is initialized.  If not, initialize it.
+# clone Minio data using rclone
+# https://docs.min.io/docs/rclone-with-minio-server.html
+# must set environment variables for remote named "minio" per https://rclone.org/docs/#config-file
+rclone --size-only sync minio:aquifer-docs /backup/gwells-documents/aquifer-docs
+rclone --size-only sync minio:gwells-private /backup/gwells-documents/gwells-private
+rclone --size-only sync minio:gwells-private-aquifers /backup/gwells-documents/gwells-private-aquifers
+rclone --size-only sync minio:gwells-private-docs /backup/gwells-documents/gwells-private-docs
+rclone --size-only sync minio:gwells-private-registries /backup/gwells-documents/gwells-private-registries
+rclone --size-only sync minio:submissions /backup/gwells-documents/submissions
+
+# Check if NFS repository is initialized.  If not, initialize it.
 # RESTIC_PASSWORD is required.
 if ! restic -r /mnt/dest/gwells-documents snapshots > /dev/null 2>&1; then
     restic -r /mnt/dest/gwells-documents init ; fi
 
 # Backup files using delta (de-duplicate) and encryption
-restic -r /mnt/dest/gwells-documents backup /mnt/src/data
+restic -r /mnt/dest/gwells-documents backup /backup/gwells-documents
 
 # Clean up old snapshots.
 # As an example, the following arguments:
