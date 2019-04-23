@@ -46,7 +46,8 @@ objects:
       resources: {}
       source:
         git:
-          uri: https://github.com/bcgov/gwells#steve/backups
+          uri: https://github.com/bcgov/gwells.git
+          ref: steve/backups
         contextDir: openshift/jobs/minio-backup
         dockerfile: |
           FROM alpine:latest
@@ -63,7 +64,7 @@ objects:
               && cd rclone-*-linux-amd64 \
               && cp rclone /usr/bin/ \
               && chown root:root /usr/bin/rclone \
-              && chmod 755 /usr/bin/rclone \
+              && chmod 755 /usr/bin/rclone
           COPY ./rclone.conf /.rclone.conf
           COPY ./entrypoint.sh /
           ENTRYPOINT ["/entrypoint.sh"]
