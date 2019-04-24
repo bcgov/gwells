@@ -12,12 +12,12 @@
     limitations under the License.
 */
 <template>
-  <div class="search-map">
+  <div class="search-map" :class="{ 'zoom-box-crosshair': zoomBoxActive }">
     <l-map
       ref="map"
       id="map"
-      :min-zoom="4"
-      :max-zoom="17"
+      :min-zoom="minZoom"
+      :max-zoom="maxZoom"
       :max-bounds="maxBounds"
       :zoom="zoom"
       :center="center"
@@ -25,7 +25,15 @@
       @update:zoom="zoomUpdated"
       @update:bounds="boundsUpdated"
       @update:center="centerUpdated"
-      @locationfound="userLocationFound($event)">
+      @locationfound="userLocationFound($event)"
+      @boxzoomend="deactivateZoomBox()">
+      <l-control position="topleft" class="leaflet-control leaflet-bar zoom-box-control">
+        <a
+          class="zoom-box-icon"
+          :class="{ active: zoomBoxActive, disabled: atMaxZoom }"
+          title="Zoom to specific area"
+          @click.stop="toggleZoomBox()"></a>
+      </l-control>
       <l-control position="topleft">
         <div class="geolocate" @click="$refs.map.mapObject.locate()" />
       </l-control>
@@ -158,11 +166,14 @@ export default {
         [46.07323062540835, -140.27343750000003],
         [61.438767493682825, -112.71972656250001]
       ],
+      maxZoom: 17,
+      minZoom: 4,
       bounds: null,
       // Track if we triggered a search, or if it came from another component
       searchTriggered: false,
       searchOnMapMove: false,
       movedSinceLastSearch: false,
+      zoomBoxActive: false,
       esriLayer: null
     }
   },
@@ -190,6 +201,9 @@ export default {
           idPlateNumber: location.identification_plate_number || ''
         }
       })
+    },
+    atMaxZoom () {
+      return this.zoom === this.maxZoom
     },
     activeSearch () {
       return Object.entries(this.searchParams).length > 0
@@ -245,6 +259,27 @@ export default {
     userLocationFound (location) {
       this.center = location.latlng
     },
+    toggleZoomBox () {
+      if (this.atMaxZoom) {
+        return
+      }
+
+      if (!this.zoomBoxActive) {
+        this.activateZoomBox()
+      } else {
+        this.deactivateZoomBox()
+      }
+    },
+    activateZoomBox () {
+      this.zoomBoxActive = true
+      this.$refs.map.mapObject.dragging.disable()
+      this.$refs.map.mapObject.boxZoom.addHooks()
+    },
+    deactivateZoomBox () {
+      this.$refs.map.mapObject.boxZoom.removeHooks()
+      this.$refs.map.mapObject.dragging.enable()
+      this.zoomBoxActive = false
+    },
     initEsriLayer () {
       this.esriLayer = tiledMapLayer({url: 'https://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer'})
       this.$refs.map.mapObject.addLayer(this.esriLayer)
@@ -253,6 +288,20 @@ export default {
     },
     removeEsriLayer () {
       this.$refs.map.mapObject.removeLayer(this.esriLayer)
+    },
+    initZoomBox () {
+      // Bind to the map's boxZoom handler
+      const mapObject = this.$refs.map.mapObject
+      const originalMouseDown = mapObject.boxZoom._onMouseDown
+      mapObject.boxZoom._onMouseDown = (event) => {
+        const newEvent = {
+          clientX: event.clientX,
+          clientY: event.clientY,
+          which: 1,
+          shiftKey: true
+        }
+        originalMouseDown.call(mapObject.boxZoom, newEvent)
+      }
     }
   },
   watch: {
@@ -267,6 +316,7 @@ export default {
   mounted () {
     this.$nextTick(() => {
       this.initEsriLayer()
+      this.initZoomBox()
     })
   },
   beforeDestroy () {
@@ -279,6 +329,27 @@ export default {
 
 .search-map {
   height: 600px;
+
+  &.zoom-box-crosshair {
+      cursor: crosshair !important;
+  }
+  .zoom-box-control {
+      font-size: 18px;
+  }
+  .zoom-box-icon {
+    /*src: https://design.google.com/icons/#ic_crop_free*/
+    background-image: url(data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjMDAwMDAwIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4gICAgPHBhdGggZD0iTTAgMGgyNHYyNEgweiIgZmlsbD0ibm9uZSIvPiAgICA8cGF0aCBkPSJNMyA1djRoMlY1aDRWM0g1Yy0xLjEgMC0yIC45LTIgMnptMiAxMEgzdjRjMCAxLjEuOSAyIDIgMmg0di0ySDV2LTR6bTE0IDRoLTR2Mmg0YzEuMSAwIDItLjkgMi0ydi00aC0ydjR6bTAtMTZoLTR2Mmg0djRoMlY1YzAtMS4xLS45LTItMi0yeiIvPjwvc3ZnPg==);
+
+    &.active {
+      color: #FFF;
+      background-color: #CCC;
+      /*src: https://design.google.com/icons/#ic_center_focus_strong*/
+      background-image: url(data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjMDAwMDAwIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4gICAgPHBhdGggZD0iTTAgMGgyNHYyNEgweiIgZmlsbD0ibm9uZSIvPiAgICA8cGF0aCBkPSJNMTIgOGMtMi4yMSAwLTQgMS43OS00IDRzMS43OSA0IDQgNCA0LTEuNzkgNC00LTEuNzktNC00LTR6bS03IDdIM3Y0YzAgMS4xLjkgMiAyIDJoNHYtMkg1di00ek01IDVoNFYzSDVjLTEuMSAwLTIgLjktMiAydjRoMlY1em0xNC0yaC00djJoNHY0aDJWNWMwLTEuMS0uOS0yLTItMnptMCAxNmgtNHYyaDRjMS4xIDAgMi0uOSAyLTJ2LTRoLTJ2NHoiLz48L3N2Zz4=);
+    }
+    &.disabled{
+      background-image: url(data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjQkJCQkJCIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4gICAgPHBhdGggZD0iTTAgMGgyNHYyNEgweiIgZmlsbD0ibm9uZSIvPiAgICA8cGF0aCBkPSJNMyA1djRoMlY1aDRWM0g1Yy0xLjEgMC0yIC45LTIgMnptMiAxMEgzdjRjMCAxLjEuOSAyIDIgMmg0di0ySDV2LTR6bTE0IDRoLTR2Mmg0YzEuMSAwIDItLjkgMi0ydi00aC0ydjR6bTAtMTZoLTR2Mmg0djRoMlY1YzAtMS4xLS45LTItMi0yeiIvPjwvc3ZnPg==);
+    }
+  }
 
   .geolocate {
       background-image: url('../../common/assets/images/geolocate.png');
@@ -348,6 +419,6 @@ export default {
     50% {
       opacity: 1;
     }
-}
+  }
 }
 </style>
