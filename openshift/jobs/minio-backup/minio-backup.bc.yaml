@@ -60,7 +60,6 @@ objects:
               && bzip2 -d restic.bz2 \
               && mv restic /usr/bin/restic \
               && chmod +x /usr/bin/restic
-          COPY ./rclone.conf /.rclone.conf
           COPY ./entrypoint.sh /
           ENTRYPOINT ["/entrypoint.sh"]
           USER 1001
