@@ -1328,7 +1328,7 @@ pipeline {
                             "NAMESPACE=${prodProject}",
                             "TARGET=gwells-pgsql-production",
                             "PVC_NAME=${nfsProdBackupPVC}",
-                            "SCHEDULE='27 9 * * *'",
+                            "SCHEDULE='30 9 * * *'",
                             "JOB_NAME=postgres-nfs-backup"
                         )
                         openshift.apply(dbNFSBackup)
