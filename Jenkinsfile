@@ -470,7 +470,7 @@ pipeline {
         // this will not be created during the pipeline; it must be created
         // before running the production pipeline.
         nfsProdBackupPVC = "bk-moe-gwells-prod-0z6f0qq0k2fz"
-        nfsStagingBackupPVC = "bk-moe-gwells-test-fr44d02v8o4u"
+        nfsStagingBackupPVC = "bk-moe-gwells-test-dcog9cfksxat"
 
         // name of the PVC where documents are stored (e.g. Minio PVC)
         // this should be the same across all environments.
@@ -855,17 +855,32 @@ pipeline {
                             "--overwrite"
                         )
 
+                        // automated minio backup to NFS
                         def docBackupCronjob = openshift.process("-f",
                             "openshift/jobs/minio-backup.cj.yaml",
                             "NAME_SUFFIX=${testSuffix}",
                             "NAMESPACE=${testProject}",
                             "VERSION=v1.0.0",
-                            "SCHEDULE='15 12 * * *'",
+                            "SCHEDULE='15 11 * * *'",
                             "DEST_PVC=${nfsStagingBackupPVC}",
                             "SOURCE_PVC=${minioDataPVC}"
                         )
 
                         openshift.apply(docBackupCronjob)
+
+                        // automated database backup to NFS volume
+                        def dbNFSBackup = openshift.process("-f",
+                            "openshift/jobs/postgres-backup-nfs/postgres-backup.cj.yaml",
+                            "NAMESPACE=${testProject}",
+                            "TARGET=gwells-pgsql-staging",
+                            "PVC_NAME=${nfsStagingBackupPVC}",
+                            "SCHEDULE='27 10 * * *'",
+                            "JOB_NAME=postgres-nfs-backup",
+                            "DAILY_BACKUPS=2",
+                            "WEEKLY_BACKUPS=1",
+                            "MONTHLY_BACKUPS=1"
+                        )
+                        openshift.apply(dbNFSBackup)
 
                         // monitor the deployment status and wait until deployment is successful
                         echo "Waiting for deployment to STAGING..."
@@ -1307,6 +1322,16 @@ pipeline {
 
                         openshift.apply(docBackupCronJob)
 
+
+                        def dbNFSBackup = openshift.process("-f",
+                            "openshift/jobs/postgres-backup.cj.yaml",
+                            "NAMESPACE=${prodProject}",
+                            "TARGET=gwells-pgsql-production",
+                            "PVC_NAME=${nfsProdBackupPVC}",
+                            "SCHEDULE='27 9 * * *'",
+                            "JOB_NAME=postgres-nfs-backup"
+                        )
+                        openshift.apply(dbNFSBackup)
 
                         // monitor the deployment status and wait until deployment is successful
                         echo "Waiting for deployment to production..."
