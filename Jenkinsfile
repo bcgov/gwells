@@ -471,6 +471,10 @@ pipeline {
         // before running the production pipeline.
         nfsProdBackupPVC = "bk-moe-gwells-prod-0z6f0qq0k2fz"
         nfsStagingBackupPVC = "bk-moe-gwells-test-fr44d02v8o4u"
+
+        // name of the PVC where documents are stored (e.g. Minio PVC)
+        // this should be the same across all environments.
+        minioDataPVC = "minio-data-vol"
     }
     agent any
     stages {
@@ -851,7 +855,6 @@ pipeline {
                             "--overwrite"
                         )
 
-// oc process -f minio-backup.cj.yaml -p NAME_SUFFIX=staging -p NAMESPACE=moe-gwells-test -p VERSION=v1.0.0 -p SCHEDULE='*/1 * * * *' -p DEST_PVC=bk-moe-gwells-test-fr44d02v8o4u -p SOURCE_PVC=minio-data-vol
                         def docBackupCronjob = openshift.process("-f",
                             "openshift/jobs/minio-backup.cj.yaml",
                             "NAME_SUFFIX=${testSuffix}",
@@ -859,10 +862,10 @@ pipeline {
                             "VERSION=v1.0.0",
                             "SCHEDULE='15 12 * * *'",
                             "DEST_PVC=${nfsStagingBackupPVC}",
-                            "SOURCE_PVC=minio-data-vol"
+                            "SOURCE_PVC=${minioDataPVC}"
                         )
 
-                        openshift.apply(docBackupBuildConfig)
+                        openshift.apply(docBackupCronjob)
 
                         // monitor the deployment status and wait until deployment is successful
                         echo "Waiting for deployment to STAGING..."
@@ -1296,14 +1299,13 @@ pipeline {
                             "NAME_SUFFIX=${prodSuffix}",
                             "NAMESPACE=${prodProject}",
                             "VERSION=v1.0.0",
-                            "S3_SERVICE=gwells-minio:9000"
                             "SCHEDULE='15 12 * * *'",
                             "DEST_PVC=${nfsProdBackupPVC}",
-                            "SECRETS=minio-access-parameters-prod",
-                            "BUCKETS='gwells-private-aquifers gwells-private-registries gwells-private'"
+                            "SOURCE_PVC=${minioDataPVC}",
+                            "PVC_SIZE=40Gi"
                         )
 
-                        openshift.apply(docBackupBuildConfig)
+                        openshift.apply(docBackupCronJob)
 
 
                         // monitor the deployment status and wait until deployment is successful
