@@ -10,7 +10,7 @@ DEST_MNT=${DEST_MNT:-/backup}
 SRC_MNT=${SRC_MNT%/}
 DEST_MNT=${DEST_MNT%/}
 #
-DEST_DIR=${DEST_MNT}/$(hostname)
+DEST_DIR=${DEST_MNT}/documents
 TMP_BK=${NEW_BK:-${DEST_DIR}/bk-tmp}
 PRV_BK=${PRV_BK:-${DEST_DIR}/bk-prev}
 NEW_BK=${NEW_BK:-${DEST_DIR}/bk}
