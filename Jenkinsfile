@@ -851,7 +851,7 @@ pipeline {
                             "--overwrite"
                         )
 
-                        // oc process -f minio-backup.cj.yaml -p NAME_SUFFIX=staging -p NAMESPACE=moe-gwells-test -p VERSION=v1.0.0 -p S3_SERVICE=gwells-minio:9000 -p SCHEDULE='*/5 * * * *' -p DEST_PVC=bk-moe-gwells-test-fr44d02v8o4u -p SECRETS=minio-access-parameters-staging -p PVC_SIZE=1Gi -p BUCKETS='["gwells-private-aquifers", "gwells-private-registries", "gwells-private"]'
+// oc process -f minio-backup.cj.yaml -p NAME_SUFFIX=staging -p NAMESPACE=moe-gwells-test -p VERSION=v1.0.0 -p SCHEDULE='*/1 * * * *' -p DEST_PVC=bk-moe-gwells-test-fr44d02v8o4u -p SOURCE_PVC=minio-data-vol
                         def docBackupCronjob = openshift.process("-f",
                             "openshift/jobs/minio-backup.cj.yaml",
                             "NAME_SUFFIX=${testSuffix}",

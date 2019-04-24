@@ -6,16 +6,10 @@ parameters:
     required: true
   - name: NAMESPACE
     required: true
-  - name: S3_SERVICE
-    displayName: the name of the OpenShift service in front of the s3/minio storage provider
-    required: true
   - name: PVC_SIZE
     value: "15Gi"
   - name: DEST_PVC
     required: true
-  - name: SECRETS
-    displayName: "Secret object to reference"
-    value: "gwells-minio-secrets"
   - name: VERSION
     value: v1.0.0
   - name: SCHEDULE
@@ -66,6 +60,12 @@ objects:
               - image: docker-registry.default.svc:5000/${NAMESPACE}/gwells-documents-backup:${VERSION}
                 imagePullPolicy: Always
                 name: minio-backup
+                env:
+                  - name: RESTIC_PASSWORD
+                    valueFrom:
+                      secretKeyRef:
+                        key: RESTIC_PASSWORD
+                        name: minio-access-parameters-${NAME_SUFFIX}
                 volumeMounts:
                 - mountPath: /mnt/dest/
                   name: dest
