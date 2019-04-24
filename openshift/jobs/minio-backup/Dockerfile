@@ -1,7 +1,7 @@
 FROM alpine:latest
 USER root
 RUN apk add --update \
-    curl \
+    curl rsync \
     && rm -rf /var/cache/apk/*
 
 # install restic and rclone tools.

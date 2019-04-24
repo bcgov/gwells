@@ -21,9 +21,8 @@ parameters:
   - name: SCHEDULE
     value: "15 3 * * *"
     required: false
-  - name: BUCKETS
-    value: ""
-    displayName: a space separated list of buckets to backup from the remote s3 service
+  - name: SOURCE_PVC
+    required: true
 objects:
   - apiVersion: v1
     kind: PersistentVolumeClaim
@@ -65,31 +64,22 @@ objects:
               activeDeadlineSeconds: 3600
               containers:
               - image: docker-registry.default.svc:5000/${NAMESPACE}/gwells-documents-backup:${VERSION}
-                args: "${{BUCKETS}}"
                 imagePullPolicy: Always
                 name: minio-backup
-                env:
-                - name: RCLONE_CONFIG_MINIO_ACCESS_KEY_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${SECRETS}
-                      key: MINIO_ACCESS_KEY
-                - name: RCLONE_CONFIG_MINIO_SECRET_ACCESS_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${SECRETS}
-                      key: MINIO_SECRET_KEY
-                - name: RCLONE_CONFIG_MINIO_ENDPOINT
-                  value: "${S3_SERVICE}"
                 volumeMounts:
                 - mountPath: /mnt/dest/
                   name: dest
                 - mountPath: /backup
-                  name: backup
-                  readOnly: false
+                  name: backup          
+                - mountPath: /mnt/source/
+                  name: source
+                  readOnly: true
               restartPolicy: OnFailure
               terminationGracePeriodSeconds: 30
               volumes:
+              - name: source
+                persistentVolumeClaim:
+                  claimName: "${SOURCE_PVC}"
               - name: dest
                 persistentVolumeClaim:
                   claimName: "${DEST_PVC}"

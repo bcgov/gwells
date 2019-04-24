@@ -857,11 +857,9 @@ pipeline {
                             "NAME_SUFFIX=${testSuffix}",
                             "NAMESPACE=${testProject}",
                             "VERSION=v1.0.0",
-                            "S3_SERVICE=gwells-minio:9000"
                             "SCHEDULE='15 12 * * *'",
                             "DEST_PVC=${nfsStagingBackupPVC}",
-                            "SECRETS=minio-access-parameters-staging",
-                            'BUCKETS=["gwells-private-aquifers", "gwells-private-registries", "gwells-private"]'
+                            "SOURCE_PVC=minio-data-vol"
                         )
 
                         openshift.apply(docBackupBuildConfig)
