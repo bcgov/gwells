@@ -3,9 +3,9 @@ kind: Template
 metadata: {}
 parameters:
   - name: VERSION
-    required: true
+    value: v1.0.0
   - name: NAMESPACE
-    required: true
+    value: moe-gwells-tools
 objects:
   - apiVersion: image.openshift.io/v1
     kind: ImageStream
@@ -36,6 +36,7 @@ objects:
         version: ${VERSION}
         part-of: gwells
       name: "gwells-documents-backup-${VERSION}"
+      namespace: "${NAMESPACE}"
     spec:
       nodeSelector: null
       output:

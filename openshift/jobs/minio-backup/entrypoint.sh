@@ -45,7 +45,7 @@ if ! restic -r /mnt/dest/gwells-documents snapshots > /dev/null 2>&1; then
     restic -r /mnt/dest/gwells-documents init ; fi
 
 # Backup files using delta (de-duplicate) and encryption
-restic -r /mnt/dest/gwells-documents backup ${NEW_BK}
+restic --cache-dir ${DEST_DIR}/.cache -r /mnt/dest/gwells-documents backup ${NEW_BK}
 
 # Clean up old snapshots.
 # As an example, the following arguments:
