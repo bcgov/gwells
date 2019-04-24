@@ -8,6 +8,7 @@ mkdir -p /backup/gwells-documents
 # must set environment variables for remote named "minio" per https://rclone.org/docs/#config-file
 for bucket in "$@"
 do
+    echo "rclone --size-only copy minio:$bucket /backup/gwells-documents/$bucket"
     rclone --size-only copy minio:$bucket /backup/gwells-documents/$bucket
 done
 
