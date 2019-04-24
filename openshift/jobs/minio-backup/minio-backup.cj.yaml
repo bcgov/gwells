@@ -21,6 +21,9 @@ parameters:
   - name: SCHEDULE
     value: "15 3 * * *"
     required: false
+  - name: BUCKETS
+    value: ""
+    displayName: a space separated list of buckets to backup from the remote s3 service
 objects:
   - apiVersion: v1
     kind: PersistentVolumeClaim
@@ -62,6 +65,7 @@ objects:
               activeDeadlineSeconds: 3600
               containers:
               - image: docker-registry.default.svc:5000/${NAMESPACE}/gwells-documents-backup:${VERSION}
+                args: "${BUCKETS}"
                 imagePullPolicy: Always
                 name: minio-backup
                 env:

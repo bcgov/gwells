@@ -1301,6 +1301,7 @@ pipeline {
                             "SCHEDULE='15 12 * * *'",
                             "DEST_PVC=${nfsProdBackupPVC}",
                             "SECRETS=minio-access-parameters-prod",
+                            "BUCKETS='gwells-private-aquifers gwells-private-registries gwells-private'"
                         )
 
                         openshift.apply(docBackupBuildConfig)
