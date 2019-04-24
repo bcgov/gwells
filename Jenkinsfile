@@ -874,7 +874,7 @@ pipeline {
                             "NAMESPACE=${testProject}",
                             "TARGET=gwells-pgsql-staging",
                             "PVC_NAME=${nfsStagingBackupPVC}",
-                            "SCHEDULE='27 10 * * *'",
+                            "SCHEDULE='30 10 * * *'",
                             "JOB_NAME=postgres-nfs-backup",
                             "DAILY_BACKUPS=2",
                             "WEEKLY_BACKUPS=1",
