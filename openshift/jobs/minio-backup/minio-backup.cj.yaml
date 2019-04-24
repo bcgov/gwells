@@ -85,7 +85,7 @@ objects:
                 - mountPath: /mnt/dest/
                   name: dest
                 - mountPath: /backup
-                  name: pvcBackup
+                  name: backup
                   readOnly: false
               restartPolicy: OnFailure
               terminationGracePeriodSeconds: 30
@@ -93,7 +93,7 @@ objects:
               - name: dest
                 persistentVolumeClaim:
                   claimName: "${DEST_PVC}"
-              - name: pvcBackup
+              - name: backup
                 persistentVolumeClaim:
                   claimName: "gwells-documents-${NAME_SUFFIX}-backup-vol"
       schedule: ${SCHEDULE}
