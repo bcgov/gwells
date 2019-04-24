@@ -32,35 +32,42 @@
           class="zoom-box-icon"
           :class="{ active: zoomBoxActive, disabled: atMaxZoom }"
           title="Zoom to specific area"
-          @click.stop="toggleZoomBox()"></a>
+          aria-label="Zoom to specific area"
+          role="button"
+          href="#"
+          @click.stop.prevent="toggleZoomBox()" />
       </l-control>
-      <l-control position="topleft">
-        <div class="geolocate" @click="$refs.map.mapObject.locate()" />
+      <l-control position="topleft" class="leaflet-control leaflet-bar">
+        <a
+          class="geolocate-icon"
+          title="Zoom to your location"
+          aria-label="Zoom to your location"
+          role="button"
+          href="#"
+          @click.stop.prevent="geolocate()" />
       </l-control>
-      <l-control position="topright">
-        <div class="search-as-i-move-control form-inline p-2">
-          <div v-if="pendingSearch">
-            <div class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></div>
-            <strong class="pl-1">Loading...</strong>
-          </div>
-          <div v-else-if="showSearchThisAreaButton">
-            <b-button
-              id="search-this-area-btn"
-              variant="light"
-              size="sm"
-              @click="triggerSearch">
-              Search this area <span class="pl-1 fa fa-refresh" />
-            </b-button>
-          </div>
-          <div class="ml-1" v-else>
-            <b-form-checkbox
-              id="search-as-i-move-checkbox"
-              :checked="searchOnMapMove"
-              @input="searchOnMapMove = $event"
-              @click.stop="null">
-              Search as I move the map
-            </b-form-checkbox>
-          </div>
+      <l-control position="topright" class="leaflet-control leaflet-bar search-as-i-move-control form-inline p-2">
+        <div v-if="pendingSearch">
+          <div class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></div>
+          <strong class="pl-1">Loading...</strong>
+        </div>
+        <div v-else-if="showSearchThisAreaButton">
+          <b-button
+            id="search-this-area-btn"
+            variant="light"
+            size="sm"
+            @click.stop="triggerSearch">
+            Search this area <span class="pl-1 fa fa-refresh" />
+          </b-button>
+        </div>
+        <div class="ml-1" v-else>
+          <b-form-checkbox
+            id="search-as-i-move-checkbox"
+            :checked="searchOnMapMove"
+            @input="searchOnMapMove = $event"
+            @click.stop="null">
+            Search as I move the map
+          </b-form-checkbox>
         </div>
       </l-control>
       <l-control-scale position="bottomleft" metric />
@@ -73,7 +80,7 @@
             class="ml-md-4 mb-1"
             variant="primary"
             size="sm"
-            @click="clearSearch()">
+            @click.stop="clearSearch()">
             Clear search criteria
           </b-button>
         </div>
@@ -256,6 +263,9 @@ export default {
         this.movedSinceLastSearch = true
       }
     },
+    geolocate () {
+      this.$refs.map.mapObject.locate()
+    },
     userLocationFound (location) {
       this.center = location.latlng
     },
@@ -327,8 +337,10 @@ export default {
 <style lang="scss">
 @import "leaflet/dist/leaflet.css";
 
-.search-map {
+#map {
   height: 600px;
+}
+.search-map {
 
   &.zoom-box-crosshair {
       cursor: crosshair !important;
@@ -351,24 +363,16 @@ export default {
     }
   }
 
-  .geolocate {
-      background-image: url('../../common/assets/images/geolocate.png');
-      width: 30px;
-      height: 30px;
-      left: 2px;
-      box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.4);
-      cursor: pointer;
+  .geolocate-icon {
+    background-image: url('../../common/assets/images/geolocate.png');
   }
 
-  .geolocate:hover {
+  .geolocate-icon:hover {
       opacity: 0.8;
   }
 
   .search-as-i-move-control {
-    background-clip: padding-box;
     background-color: #fff;
-    border: 2px solid rgba(0,0,0,0.2);
-    border-radius: 4px;
   }
 
   .active-search-text {
