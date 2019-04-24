@@ -149,7 +149,7 @@
           <ul class="ml-0 mr-0 mt-4 mb-0 p-0 aquifer-information-list">
             <div class="aquifer-information-list-divider"></div>
             <li>
-              <dt>Number of groundwater licenses</dt>
+              <dt>Number of groundwater licences</dt>
               <dd>{{ licence_details.licence_count }}</dd>
             </li>
             <li>
@@ -158,10 +158,16 @@
               <dd v-else>No information available.</dd>
             </li>
           </ul>
-          <h5 class="mt-5 pie-chart-title">License Use:</h5>
-          <div v-if="usage.length > 0" class="pie-chart-container">
-            <PieChart :chartData="usage" class="mt-5"></PieChart>
-          </div>
+          <b-row class="mt-4 pt-4 border-top" v-if="lic_qty.length > 0">
+            <b-col xl=6 cols=12>
+              <h5 class="pie-chart-title">Volume (m<sup>3</sup>) by Type</h5>
+              <PieChart :chartData="usage" class="mt-3"></PieChart>
+            </b-col>
+            <b-col xl=6 cols=12>
+              <h5 class="pie-chart-title">Licences by Type</h5>
+              <PieChart :chartData="lic_qty" class="mt-3"></PieChart>
+            </b-col>
+          </b-row>
           <div v-else>No information available.</div>
         </b-col>
         <b-col cols="12" xl="4" lg="6">
@@ -302,7 +308,6 @@ a {
   font-size: 1rem !important;
 }
 .pie-chart-container {
-  width: 60%;
   margin: 0 auto;
 }
 </style>
@@ -349,7 +354,8 @@ export default {
       obs_wells: [],
       waterLevels: [],
       waterWithdrawlVolume: '',
-      usage: []
+      usage: [],
+      lic_qty: []
     }
   },
   computed: {
@@ -462,6 +468,7 @@ export default {
           this.record = response.data
           this.licence_details = response.data.licence_details
           this.usage = response.data.licence_details.usage
+          this.lic_qty = response.data.licence_details.lic_qty
           this.obs_wells = response.data.licence_details.obs_wells
         }).catch((error) => {
           console.error(error)

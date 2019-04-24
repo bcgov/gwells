@@ -390,9 +390,12 @@ export default {
       }
     },
     onAquiferIdClick (data) {
+      if (!data.item) {
+        return
+      }
       this.$router.push({
         name: 'aquifers-view',
-        params: { id: data.item.aquifer_id }
+        params: { id: data.item.id }
       })
     },
     rowClicked (data) {
@@ -419,7 +422,7 @@ export default {
       const aquiferIdsMap = new Map()
       data.map(o => aquiferIdsMap.set(o.defaultOptions.aquifer_id, true))
       this.response.count = aquiferIdsMap.size
-      this.response.results = filter(this.aquifers_search_results, o => aquiferIdsMap.get(o.aquifer_id))
+      this.response.results = filter(this.aquifers_search_results, o => aquiferIdsMap.get(o.id))
     })
   }
 }

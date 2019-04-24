@@ -15,7 +15,7 @@
 import json
 
 from rest_framework import serializers
-from django.db.models import Sum, Max
+from django.db.models import Sum, Max, Count
 
 from aquifers import models
 
@@ -178,6 +178,10 @@ class AquiferDetailSerializer(AquiferSerializer):
         details['usage'] = licences.values(
             'purpose__description').annotate(
                 total_qty=Sum('quantity')
+        )
+        details['lic_qty'] = licences.values(
+            'purpose__description').annotate(
+                total_qty=Count('quantity')
         )
         details['last_updated'] = licences.aggregate(
             Max('update_date')

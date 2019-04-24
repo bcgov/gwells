@@ -233,8 +233,8 @@ export default {
         const layerName = e.layer.options.name
         const legend = e.layer.options.legend
 
-        this.activeLayers.push({layerId, layerName, legend})
         if (legend) {
+          this.activeLayers.push({layerId, layerName, legend})
           this.$emit('activeLayers', this.activeLayers)
         }
       })
@@ -272,14 +272,14 @@ export default {
         self.$router.push({
           name: 'aquifers-view',
           params: {
-            id: this.aquifer_id
+            id: this.id
           }
         })
       }
       function getPopUp (aquifer) {
         const container = L.DomUtil.create('div', 'leaflet-popup-aquifer')
         const popUpLink = L.DomUtil.create('div', 'leaflet-popup-link')
-        popUpLink.innerHTML = `<p>Aquifer ID: <span class="popup-link">${aquifer.aquifer_id}</span></p><p>Aqufier Name: <span class="popup-link">${aquifer.aquifer_name || ''}</span></p>`
+        popUpLink.innerHTML = `<p>Aquifer ID: <span class="popup-link">${aquifer.id}</span></p><p>Aqufier Name: <span class="popup-link">${aquifer.aquifer_name || ''}</span></p>`
         L.DomEvent.on(popUpLink, 'click', popUpLinkHandler.bind(aquifer))
         container.appendChild(popUpLink)
         return container
@@ -291,7 +291,7 @@ export default {
         aquifers = aquifers.filter((a) => a.gs)
         aquifers.forEach(aquifer => {
           L.geoJSON(JSON.parse(aquifer.gs), {
-            aquifer_id: aquifer['aquifer_id'],
+            aquifer_id: aquifer['id'],
             style: myStyle,
             type: 'geojsonfeature',
             onEachFeature: function (feature, layer) {
@@ -303,7 +303,7 @@ export default {
     },
     zoomToSelectedAquifer (data) {
       this.map.eachLayer((layer) => {
-        if ((layer.options.aquifer_id === data.aquifer_id) && layer.feature) {
+        if ((layer.options.aquifer_id === data.id) && layer.feature) {
           this.$nextTick(function () {
             layer.openPopup()
           })
