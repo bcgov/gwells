@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-mkdir -p /Users/stephhil/gwells-documents
+mkdir -p /backup/gwells-documents
 
 # clone Minio data using rclone
 # https://docs.min.io/docs/rclone-with-minio-server.html

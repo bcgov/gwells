@@ -65,7 +65,7 @@ objects:
               activeDeadlineSeconds: 3600
               containers:
               - image: docker-registry.default.svc:5000/${NAMESPACE}/gwells-documents-backup:${VERSION}
-                args: "${BUCKETS}"
+                args: "${{BUCKETS}}"
                 imagePullPolicy: Always
                 name: minio-backup
                 env:
