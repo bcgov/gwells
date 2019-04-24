@@ -115,26 +115,32 @@
             @row-clicked="rowClicked"
             v-if="aquiferList"
             responsive>
-            <template slot="aquifer_id" slot-scope="data">
-              <p class="aquifer-id" v-on:click.prevent="onAquiferIdClick(data)">{{data.value}}</p>
+            <template slot="aquifer_id" slot-scope="row">
+              <p class="aquifer-id" v-on:click.prevent="onAquiferIdClick(row.item)">{{row.item.id}}</p>
+            </template>
+            <template slot="aquifer_name" slot-scope="row">
+              {{row.item.n}}
+            </template>
+            <template slot="location_description" slot-scope="row">
+              {{row.item.ld}}
             </template>
             <template slot="material" slot-scope="row">
-              {{row.item.material_description}}
+              {{row.item.md}}
             </template>
             <template slot="subtype" slot-scope="row">
-              {{row.item.subtype_description}}
+              {{row.item.sd}}
             </template>
             <template slot="vulnerability" slot-scope="row">
-              {{row.item.vulnerability_description}}
-            </template>
-            <template slot="vulnerability" slot-scope="row">
-              {{row.item.vulnerability_description}}
+              {{row.item.vd}}
             </template>
             <template slot="productivity" slot-scope="row">
-              {{row.item.productivity_description}}
+              {{row.item.pd}}
             </template>
             <template slot="demand" slot-scope="row">
-              {{row.item.demand_description}}
+              {{row.item.dd}}
+            </template>
+            <template slot="mapping_year" slot-scope="row">
+              {{row.item.my}}
             </template>
           </b-table>
           <b-pagination

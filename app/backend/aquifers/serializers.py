@@ -53,52 +53,44 @@ class AquiferResourceSerializer(serializers.ModelSerializer):
 
 class AquiferSerializer(serializers.ModelSerializer):
     """Serialize a aquifer list"""
-    demand_description = serializers.SlugRelatedField(
+    dd = serializers.SlugRelatedField(
         source='demand', read_only=True, slug_field='description')
-    material_description = serializers.SlugRelatedField(
+    md = serializers.SlugRelatedField(
         source='material', read_only=True, slug_field='description')
-    productivity_description = serializers.SlugRelatedField(
+    pd = serializers.SlugRelatedField(
         source='productivity', read_only=True, slug_field='description')
-    subtype_description = serializers.StringRelatedField(
+    sd = serializers.StringRelatedField(
         source='subtype', read_only=True)
-    vulnerability_description = serializers.SlugRelatedField(
+    vd = serializers.SlugRelatedField(
         source='vulnerability', read_only=True, slug_field='description')
-    # quality_concern_description = serializers.SlugRelatedField(
-    #     source='quality_concern', read_only=True, slug_field='description')
-    # known_water_use_description = serializers.SlugRelatedField(
-    #     source='known_water_use', read_only=True, slug_field='description')
+
+    id = serializers.IntegerField(source="aquifer_id")
+    n = serializers.CharField(source="aquifer_name")
+    ld = serializers.CharField(source="location_description")
+    lsu = serializers.CharField(source="litho_stratographic_unit")
+    my = serializers.CharField(source="mapping_year")
 
     def to_representation(self, instance):
         """Convert `username` to lowercase."""
         ret = super().to_representation(instance)
         if instance.geom_simplified:
-            ret['geom_simplified'] = instance.geom_simplified.json
+            ret['gs'] = instance.geom_simplified.json  # [38:-5]
         return ret
 
     class Meta:
         model = models.Aquifer
         fields = (
-            'aquifer_id',
-            'aquifer_name',
-            'location_description',
+            'id',
+            'n',
+            'ld',
+            'md',
+            'lsu',
+            'sd',
+            'vd',
             'area',
-            'demand_description',
-            'material_description',
-            'productivity_description',
-            'subtype_description',
-            'vulnerability_description',
-            # 'quality_concern_description',
-            # 'known_water_use_description',
-            # 'demand',
-            # 'material',
-            # 'productivity',
-            # 'vulnerability',
-            # 'quality_concern',
-            # 'subtype',
-            # 'known_water_use',
-            'litho_stratographic_unit',
-            'notes',
-            'mapping_year',
+            'pd',
+            'dd',
+            'my',
         )
 
 

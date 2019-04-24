@@ -13,7 +13,6 @@ import 'leaflet-geosearch/assets/css/leaflet.css'
 import 'leaflet-lasso'
 import 'leaflet-fullscreen/dist/Leaflet.fullscreen.min.js'
 import 'leaflet-fullscreen/dist/leaflet.fullscreen.css'
-import ApiService from '@/common/services/ApiService.js'
 import ArtesianLegend from '../../common/assets/images/artesian.png'
 import CadastralLegend from '../../common/assets/images/cadastral.png'
 import EcocatWaterLegend from '../../common/assets/images/ecocat-water.png'
@@ -21,8 +20,6 @@ import GWaterLicenceLegend from '../../common/assets/images/gwater-licence.png'
 import OWellsInactiveLegend from '../../common/assets/images/owells-inactive.png'
 import OWellsActiveLegend from '../../common/assets/images/owells-active.png'
 import WellsAllLegend from '../../common/assets/images/wells-all.png'
-
-
 
 const provider = new EsriProvider()
 const searchControl = new GeoSearchControl({
@@ -237,7 +234,9 @@ export default {
         const legend = e.layer.options.legend
 
         this.activeLayers.push({layerId, layerName, legend})
-        this.$emit('activeLayers', this.activeLayers)
+        if (legend) {
+          this.$emit('activeLayers', this.activeLayers)
+        }
       })
       this.map.on('layerremove', (e) => {
         const layerId = e.layer._leaflet_id
@@ -289,9 +288,9 @@ export default {
         var myStyle = {
           'color': 'purple'
         }
-        aquifers = aquifers.filter((a) => a.geom_simplified)
+        aquifers = aquifers.filter((a) => a.gs)
         aquifers.forEach(aquifer => {
-          L.geoJSON(JSON.parse(aquifer.geom_simplified), {
+          L.geoJSON(JSON.parse(aquifer.gs), {
             aquifer_id: aquifer['aquifer_id'],
             style: myStyle,
             type: 'geojsonfeature',
@@ -310,7 +309,7 @@ export default {
           })
         }
       })
-      var aquiferGeom = L.geoJSON(JSON.parse(data.geom_simplified))
+      var aquiferGeom = L.geoJSON(JSON.parse(data.gs))
       this.map.fitBounds(aquiferGeom.getBounds())
       this.$SmoothScroll(document.getElementById('map'))
     }
