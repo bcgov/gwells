@@ -1309,7 +1309,7 @@ pipeline {
                             "--overwrite"
                         )
 
-                        def docBackupCronjob = openshift.process("-f",
+                        def docBackupCronJob = openshift.process("-f",
                             "openshift/jobs/minio-backup/minio-backup.cj.yaml",
                             "NAME_SUFFIX=${prodSuffix}",
                             "NAMESPACE=${prodProject}",
@@ -1324,7 +1324,7 @@ pipeline {
 
 
                         def dbNFSBackup = openshift.process("-f",
-                            "openshift/jobs/postgres-backup.cj.yaml",
+                            "openshift/jobs/postgres-backup-nfs/postgres-backup.cj.yaml",
                             "NAMESPACE=${prodProject}",
                             "TARGET=gwells-pgsql-production",
                             "PVC_NAME=${nfsProdBackupPVC}",
