@@ -501,7 +501,9 @@ WELL_PROPERTIES = openapi.Schema(
             type=openapi.TYPE_STRING,
             max_length=255,
             title='Detail',
-            description='Well summary.'),
+            description=('Link to well summary report within the Groundwater Wells and Aquifer (GWELLS)'
+                         ' application. The well summary provides the overall desription and history of the'
+                         ' well.')),
         'artesian_flow': get_model_feature_schema(Well, 'artesian_flow'),
         'artesian_flow_units': openapi.Schema(
             type=openapi.TYPE_STRING,
@@ -577,7 +579,9 @@ LITHOLOGY_PROPERTIES = openapi.Schema(
             type=openapi.TYPE_STRING,
             max_length=255,
             title='Detail',
-            description='Well summary.'),
+            description=('Link to well summary report within the Groundwater Wells and Aquifer (GWELLS)'
+                         ' application. The well summary provides the overall desription and history of the'
+                         ' well.')),
         'from': get_model_feature_schema(LithologyDescription, 'lithology_from'),
         'to': get_model_feature_schema(LithologyDescription, 'lithology_to'),
         'colour': get_model_feature_schema(LithologyColourCode, 'description'),
@@ -594,7 +598,7 @@ LITHOLOGY_PROPERTIES = openapi.Schema(
         'bedrock_depth': get_model_feature_schema(Well, 'bedrock_depth'),
         'yield': get_model_feature_schema(Well, 'well_yield'),
         'yield_unit': get_model_feature_schema(WellYieldUnitCode, 'description'),
-        'aquifer': get_model_feature_schema(Well, 'aquifer')
+        'aquifer_id': get_model_feature_schema(Well, 'aquifer')
     })
 
 

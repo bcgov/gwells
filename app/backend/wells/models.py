@@ -62,7 +62,8 @@ class DecommissionMethodCode(CodeTableModel):
 
 class BCGS_Numbers(AuditModel):
     bcgs_id = models.BigIntegerField(primary_key=True, editable=False)
-    bcgs_number = models.CharField(max_length=20, verbose_name="BCGS Mapsheet Number")
+    bcgs_number = models.CharField(
+        max_length=20, verbose_name="BCGS Mapsheet Number")
 
     class Meta:
         db_table = 'bcgs_number'
@@ -99,7 +100,8 @@ class YieldEstimationMethodCode(CodeTableModel):
     """
      The method used to estimate the yield of a well, e.g. Air Lifting, Bailing, Pumping.
     """
-    yield_estimation_method_code = models.CharField(primary_key=True, max_length=10, editable=False)
+    yield_estimation_method_code = models.CharField(
+        primary_key=True, max_length=10, editable=False)
     description = models.CharField(max_length=100)
 
     class Meta:
@@ -118,7 +120,8 @@ class WaterQualityCharacteristic(AuditModel):
      The characteristic of the well water, e.g. Fresh, Salty, Clear.
     """
 
-    code = models.CharField(primary_key=True, max_length=10, db_column='water_quality_characteristic_code')
+    code = models.CharField(primary_key=True, max_length=10,
+                            db_column='water_quality_characteristic_code')
     description = models.CharField(max_length=100)
     display_order = models.PositiveIntegerField(
         db_comment='The order in which the codes may display on screen.'
@@ -141,7 +144,8 @@ class DevelopmentMethodCode(CodeTableModel):
      that immediately surrounds the well screen, the drill hole or the intake area at the bottom of the well,
      e.g. air lifting, pumping, bailing.
     """
-    development_method_code = models.CharField(primary_key=True, max_length=10, editable=False)
+    development_method_code = models.CharField(
+        primary_key=True, max_length=10, editable=False)
     description = models.CharField(max_length=100)
 
     class Meta:
@@ -161,7 +165,8 @@ class FilterPackMaterialSizeCode(CodeTableModel):
     """
      The size of material used to pack a well filter, e.g. 1.0 - 2.0 mm, 2.0 - 4.0 mm, 4.0 - 8.0 mm.
     """
-    filter_pack_material_size_code = models.CharField(primary_key=True, max_length=10, editable=False)
+    filter_pack_material_size_code = models.CharField(
+        primary_key=True, max_length=10, editable=False)
     description = models.CharField(max_length=100)
 
     class Meta:
@@ -179,7 +184,8 @@ class FilterPackMaterialCode(CodeTableModel):
     """
      The material used to pack a well filter, e.g. Very coarse sand, Very fine gravel, Fine gravel.
     """
-    filter_pack_material_code = models.CharField(primary_key=True, max_length=10, editable=False)
+    filter_pack_material_code = models.CharField(
+        primary_key=True, max_length=10, editable=False)
     description = models.CharField(max_length=100)
 
     class Meta:
@@ -219,7 +225,8 @@ class SurfaceSealMethodCode(CodeTableModel):
      Method used to install the surface seal in the annular space around the outside of the outermost casing
      and between mulitple casings of a well.
     """
-    surface_seal_method_code = models.CharField(primary_key=True, max_length=10, editable=False)
+    surface_seal_method_code = models.CharField(
+        primary_key=True, max_length=10, editable=False)
     description = models.CharField(max_length=100)
 
     class Meta:
@@ -238,7 +245,8 @@ class SurfaceSealMaterialCode(CodeTableModel):
      Sealant material used that is installed in the annular space around the outside of the outermost casing
      and between multiple casings of a well.
     """
-    surface_seal_material_code = models.CharField(primary_key=True, max_length=10, editable=False)
+    surface_seal_material_code = models.CharField(
+        primary_key=True, max_length=10, editable=False)
     description = models.CharField(max_length=100)
 
     class Meta:
@@ -258,7 +266,8 @@ class DrillingMethodCode(CodeTableModel):
     """
     The method used to drill a well. For example, air rotary, dual rotary, cable tool, excavating, other.
     """
-    drilling_method_code = models.CharField(primary_key=True, max_length=10, editable=False)
+    drilling_method_code = models.CharField(
+        primary_key=True, max_length=10, editable=False)
     description = models.CharField(max_length=100)
 
     class Meta:
@@ -352,9 +361,9 @@ class IntendedWaterUseCode(CodeTableModel):
     description = models.CharField(
         max_length=100,
         verbose_name='Intented Water Use',
-        db_comment=('Descriptions of the intended use codes of the water in a water supply well as reported '
-                    'by the driller at time of work completion on the well. E.g Private domestic, '
-                    'irrigation, water supply system, Commdercial and Industrial, and unknown.'))
+        db_comment=('The intended use of the water in a water supply well as reported by the driller at time'
+                    ' of work completion on the well. E.g Private domestic, irrigation, water supply system,'
+                    ' industrial commercial, unknown.'))
 
     class Meta:
         db_table = 'intended_water_use_code'
@@ -374,7 +383,8 @@ class GroundElevationMethodCode(CodeTableModel):
     Some examples of methods to determine ground elevation include:
     GPS, Altimeter, Differential GPS, Level, 1:50,000 map, 1:20,000 map, 1:10,000 map, 1:5,000 map.
     """
-    ground_elevation_method_code = models.CharField(primary_key=True, max_length=10, editable=False)
+    ground_elevation_method_code = models.CharField(
+        primary_key=True, max_length=10, editable=False)
     description = models.CharField(max_length=100)
 
     class Meta:
@@ -399,9 +409,9 @@ class WellClassCode(CodeTableModel):
                     'Remediation, Geotechnical.'))
     description = models.CharField(
         max_length=100, verbose_name='Well Class',
-        db_comment=('Descriptions of valid classifications as defined in the Groundwater Protection '
-                    'Regulation of the Water Act. E.g. Water Supply, Monitoring, Recharge / Injection, '
-                    'Dewatering / Drainage, Remediation, Geotechnical.'))
+        db_comment=('Valid classifications as defined in the Groundwater Protection Regulation of the Water'
+                    ' Sustainability Act. i.e., Water Supply, Monitoring, Recharge, Injection, Dewatering,'
+                    ' Drainage, Remediation, Geotechnical, Closed-loop geoexchange.'))
 
     class Meta:
         db_table = 'well_class_code'
@@ -449,9 +459,9 @@ class WellStatusCode(CodeTableModel):
     description = models.CharField(
         max_length=255,
         verbose_name='Well Status',
-        db_comment=('Description of the status of a well as defined in the Groundwater Protection '
-                    'Regulation of the Water Act. i.e. New, Abandoned (exists in Wells but will not be used '
-                    'for E-Wells), Alteration, Closure, Other.'))
+        db_comment=('Status of a well indicates whether the report relates to the construction, alteration, '
+                    'or decommission of the well; e.g., Construction, Alteration, Abandoned, '
+                    'Deccommission.'))
 
     objects = models.Manager()
     types = WellStatusCodeTypeManager()
@@ -460,9 +470,9 @@ class WellStatusCode(CodeTableModel):
         db_table = 'well_status_code'
         ordering = ['display_order', 'well_status_code']
 
-    db_table_comment = ('Represents the status of a well as defined in the Groundwater Protection Regulation'
-                        ' of the Water Act. i.e. New, Abandoned (exists in Wells but will not be used for'
-                        ' E-Wells), Alteration, Closure, Other.')
+    db_table_comment = ('Status of a well indicates whether the report relates to the construction, '
+                        'alteration, or decommission of the well; e.g., Construction, alteration, Abandoned, '
+                        'Deccommission.')
 
 
 class WellPublicationStatusCode(CodeTableModel):
@@ -523,10 +533,10 @@ class WellYieldUnitCode(CodeTableModel):
                     'in USGPM. E.g of other codes that have been used in the past are GPM, DRY, UNK.'))
     description = models.CharField(
         max_length=100, verbose_name='Well Yield Unit',
-        db_comment=('Describes the unit of measure that was used for the well yield. All codes except the '
-                    'U.S. Gallons per Minute has been retired as all data from April 2019 will be reported '
-                    'in U.S. Gallons per Minute. E.g of other codes that have been used in the past are '
-                    'Gallons per Minute (U.S./Imperial), Dry Hole, Unknown Yield.'))
+        db_comment=('Describes the unit of measure that was used for the well yield. All codes except the'
+                    ' U.S. Gallons per Minute have been retired as all data from April 2019 will be reported'
+                    ' in U.S. Gallons per Minute. E.g of other codes that have been used in the past are'
+                    ' Gallons per Minute (U.S./Imperial), Dry Hole, Unknown Yield.'))
 
     class Meta:
         db_table = 'well_yield_unit_code'
@@ -561,8 +571,9 @@ class CoordinateAcquisitionCode(AuditModel):
     description = models.CharField(max_length=250)
 
     effective_date = models.DateTimeField(default=timezone.now, null=False)
-    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max,
-                                       timezone.get_default_timezone()), null=False)
+    expiry_date = models.DateTimeField(
+        default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()),
+        null=False)
 
     class Meta:
         db_table = 'coordinate_acquisition_code'
@@ -617,7 +628,8 @@ class Well(AuditModelStructure):
         verbose_name='Province', null=True)
     owner_postal_code = models.CharField(
         max_length=10, blank=True, null=True, verbose_name='Postal Code')
-    owner_email = models.EmailField(null=True, blank=True, verbose_name='Email address')
+    owner_email = models.EmailField(
+        null=True, blank=True, verbose_name='Email address')
     owner_tel = models.CharField(
         null=True, blank=True, max_length=25, verbose_name='Telephone number')
 
@@ -646,7 +658,8 @@ class Well(AuditModelStructure):
         db_comment='Street address for where the property that the well is physically located on.')
     city = models.CharField(max_length=50, blank=True, null=True,
                             verbose_name='Town/City')
-    legal_lot = models.CharField(max_length=10, blank=True, null=True, verbose_name='Lot')
+    legal_lot = models.CharField(
+        max_length=10, blank=True, null=True, verbose_name='Lot')
     legal_plan = models.CharField(
         max_length=20, blank=True, null=True, verbose_name='Plan')
     legal_district_lot = models.CharField(
@@ -701,8 +714,8 @@ class Well(AuditModelStructure):
 
     # Contains Well Longitude and Latitude in that order,
     # Values are BC Albers. but we are using WGS84 Lat Lon to avoid rounding errors
-    geom = models.PointField(blank=True, null=True, verbose_name='Geo-referenced Location of the Well',
-                             srid=4326)
+    geom = models.PointField(
+        blank=True, null=True, verbose_name='Geo-referenced Location of the Well', srid=4326)
 
     ground_elevation = models.DecimalField(
         max_digits=10, decimal_places=2, blank=True, null=True, verbose_name='Ground Elevation')
@@ -831,21 +844,25 @@ class Well(AuditModelStructure):
                     'Gallons/minute.'))
     artesian_flow = models.DecimalField(
         max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Artesian Flow',
-        db_comment=('Measurement of the artesian well\'s water flow that occurs naturally due to inherent '
-                    'water pressure in the well. Pressure within the aquifer forces the groundwater to rise '
-                    'above the land surface naturally without using a pump. Flowing artesian wells can flow '
-                    'on an intermittent or continuous basis. Measured in US Gallons/minute.'))
+        db_comment=('Measurement of the artesian well\'s water flow that occurs naturally due to inherent'
+                    ' water pressure in the well. Pressure within the aquifer forces the groundwater to rise'
+                    ' above the land surface naturally without using a pump. Flowing artesian wells can flow'
+                    ' on an intermittent or continuous basis. Measured in US Gallons/minute.'))
     artesian_pressure = models.DecimalField(
         max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Artesian Pressure',
         db_comment=('Pressure of the water coming out of an artesian well as measured at the time of '
-                    'construction. Measured in PSI (parts per square inch).'))
+                    'construction. Measured in PSI (pounds per square inch).'))
     well_cap_type = models.CharField(
         max_length=40, blank=True, null=True, verbose_name='Well Cap')
     well_disinfected = models.BooleanField(
         default=False, verbose_name='Well Disinfected', choices=((False, 'No'), (True, 'Yes')))
 
-    comments = models.CharField(max_length=3000, blank=True, null=True)
-    internal_comments = models.CharField(max_length=3000, blank=True, null=True)
+    comments = models.CharField(
+        max_length=3000, blank=True, null=True,
+        db_comment=('Free form text used by the user (driller or staff) to include comments for the well.'
+                    ' Investiate how staff/developer comments are put in here from activity submission.'))
+    internal_comments = models.CharField(
+        max_length=3000, blank=True, null=True)
 
     alternative_specs_submitted = \
         models.BooleanField(default=False,
@@ -894,9 +911,9 @@ class Well(AuditModelStructure):
     aquifer = models.ForeignKey(
         Aquifer, db_column='aquifer_id', on_delete=models.PROTECT, blank=True,
         null=True, verbose_name='Aquifer ID Number',
-        db_comment=('System generated sequential number assigned to each aquifer. It is widely used by '
-                    'ground water administration staff as it is the only consistent unique identifier for a '
-                    'mapped aquifer. It is also commonly referred to as Aquifer Number.'))
+        db_comment=('System generated unique sequential number assigned to each mapped aquifer. An aquifer'
+                    ' that a well is in is identified by the aquifer_id. An aquifer can have multiple wells,'
+                    ' while a single well can only be mapped to one aquifer.'))
 
     person_responsible = models.ForeignKey(Person, db_column='person_responsible_guid',
                                            on_delete=models.PROTECT,
@@ -944,7 +961,9 @@ class Well(AuditModelStructure):
     aquifer_lithology = models.ForeignKey(
         AquiferLithologyCode, db_column='aquifer_lithology_code', blank=True, null=True,
         on_delete=models.CASCADE,
-        verbose_name="Aquifer Lithology")
+        verbose_name='Aquifer Lithology',
+        db_comment=('Valid codes for the type of material an aquifer consists of. i.e., Unconsolidated, '
+                    'Bedrock, Unknown.'))
 
     # Production data related data
     yield_estimation_method = models.ForeignKey(
@@ -1078,7 +1097,8 @@ class CasingMaterialCode(CodeTableModel):
     """
      The material used for casing a well, e.g., Cement, Plastic, Steel.
     """
-    code = models.CharField(primary_key=True, max_length=10, editable=False, db_column='casing_material_code')
+    code = models.CharField(primary_key=True, max_length=10,
+                            editable=False, db_column='casing_material_code')
     description = models.CharField(max_length=100)
 
     class Meta:
@@ -1095,7 +1115,8 @@ class CasingCode(CodeTableModel):
     """
     Type of Casing used on a well
     """
-    code = models.CharField(primary_key=True, max_length=10, editable=False, db_column='casing_code')
+    code = models.CharField(primary_key=True, max_length=10,
+                            editable=False, db_column='casing_code')
     description = models.CharField(max_length=100)
 
     class Meta:
@@ -1170,13 +1191,15 @@ class ActivitySubmission(AuditModelStructure):
         max_length=200, verbose_name='Owner Name', blank=True, null=True)
     owner_mailing_address = models.CharField(
         max_length=100, verbose_name='Mailing Address', blank=True, null=True)
-    owner_city = models.CharField(max_length=100, verbose_name='Town/City', blank=True, null=True)
+    owner_city = models.CharField(
+        max_length=100, verbose_name='Town/City', blank=True, null=True)
     owner_province_state = models.ForeignKey(
         ProvinceStateCode, db_column='province_state_code', on_delete=models.CASCADE, verbose_name='Province',
         blank=True, null=True)
     owner_postal_code = models.CharField(
         max_length=10, blank=True, null=True, verbose_name='Postal Code')
-    owner_email = models.EmailField(null=True, blank=True, verbose_name='Email address')
+    owner_email = models.EmailField(
+        null=True, blank=True, verbose_name='Email address')
     owner_tel = models.CharField(
         null=True, blank=True, max_length=25, verbose_name='Telephone number')
 
@@ -1184,7 +1207,8 @@ class ActivitySubmission(AuditModelStructure):
         max_length=100, blank=True, null=True, verbose_name='Street Address')
     city = models.CharField(max_length=50, blank=True, null=True,
                             verbose_name='Town/City')
-    legal_lot = models.CharField(max_length=10, blank=True, null=True, verbose_name='Lot')
+    legal_lot = models.CharField(
+        max_length=10, blank=True, null=True, verbose_name='Lot')
     legal_plan = models.CharField(
         max_length=20, blank=True, null=True, verbose_name='Plan')
     legal_district_lot = models.CharField(
@@ -1372,7 +1396,8 @@ class ActivitySubmission(AuditModelStructure):
         default=False, verbose_name='Well Disinfected?', choices=((False, 'No'), (True, 'Yes')))
 
     comments = models.CharField(max_length=3000, blank=True, null=True)
-    internal_comments = models.CharField(max_length=3000, blank=True, null=True)
+    internal_comments = models.CharField(
+        max_length=3000, blank=True, null=True)
 
     alternative_specs_submitted = models.BooleanField(
         default=False,
@@ -1660,7 +1685,8 @@ class Casing(AuditModel):
 
     A casing may be associated to a particular submission, or to a well.
     """
-    casing_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    casing_guid = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False)
     activity_submission = models.ForeignKey(ActivitySubmission, db_column='filing_number',
                                             on_delete=models.CASCADE, blank=True, null=True,
                                             related_name='casing_set')
@@ -1767,7 +1793,8 @@ class WaterQualityColour(CodeTableModel):
     """
     Colour choices for describing water quality
     """
-    code = models.CharField(primary_key=True, max_length=32, db_column='water_quality_colour_code')
+    code = models.CharField(primary_key=True, max_length=32,
+                            db_column='water_quality_colour_code')
     description = models.CharField(max_length=100)
 
     class Meta:
@@ -1784,7 +1811,8 @@ class HydraulicProperty(AuditModel):
     """
     Hydraulic properties of the well, usually determined via tests.
     """
-    hydraulic_property_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    hydraulic_property_guid = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False)
     well = models.ForeignKey(
         Well, db_column='well_tag_number', to_field='well_tag_number',
         on_delete=models.CASCADE, blank=False, null=False,
@@ -1829,7 +1857,8 @@ class HydraulicProperty(AuditModel):
 
 class DecommissionMaterialCode(BasicCodeTableModel):
     """Codes for decommission materials"""
-    code = models.CharField(primary_key=True, max_length=30, db_column='decommission_material_code')
+    code = models.CharField(primary_key=True, max_length=30,
+                            db_column='decommission_material_code')
     description = models.CharField(max_length=100)
 
     db_table_comment = ('Describes the material used to fill a well when decomissioned. E.g. Bentonite'
@@ -1843,7 +1872,8 @@ class DecommissionDescription(AuditModel):
     """Provides a description of the ground conditions (between specified start and end depth) for
         decommissioning"""
 
-    decommission_description_guid = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    decommission_description_guid = models.UUIDField(
+        primary_key=True, default=uuid.uuid4)
     activity_submission = models.ForeignKey(ActivitySubmission, db_column='filing_number',
                                             on_delete=models.CASCADE, blank=True, null=True,
                                             related_name='decommission_description_set')

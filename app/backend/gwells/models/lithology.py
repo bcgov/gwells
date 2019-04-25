@@ -129,8 +129,8 @@ class LithologyHardnessCode(CodeTableModel):
                     ' lithology). E.g. Very hard, Hard, Dense, Stiff, Medium, Loose, Soft, Very soft.'))
     description = models.CharField(
         max_length=100, verbose_name='Hardness',
-        db_comment=('Describes the hardness of the material that a well is drilled into (the lithology).'
-                    ' E.g. Very hard, Hard, Dense, Stiff, Medium, Loose, Soft, Very soft.'))
+        db_comment=('The hardness of the material that a well is drilled into (the lithology), e.g. Very'
+                    ' hard, Medium, Very Soft.'))
 
     class Meta:
         db_table = 'lithology_hardness_code'

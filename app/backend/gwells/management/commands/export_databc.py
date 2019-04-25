@@ -116,7 +116,7 @@ select
     well.bedrock_depth,
     well.well_yield as yield,
     SUBSTRING(well_yield_unit_code.description for 100) as yield_unit,
-    well.aquifer_id as aquifer
+    well.aquifer_id as aquifer_id
 from well
     inner join lithology_description on
         lithology_description.well_tag_number = well.well_tag_number

@@ -67,14 +67,9 @@ class AquiferSubtype(CodeTableModel):
                     ' volcanic) rock aquifers. Code values range from 1a to 6b.'))
     description = models.CharField(
         max_length=100,
-        db_comment=('Descriptions of codes that define how the aquifer was formed geologically'
-                    ' (depositional description). The code value is a combination of an aquifer type'
-                    ' represented by a number and an optional letter representing a more specific'
-                    ' aquifer sub-type. E.g. aquifer sub-type code 6b is comprised of the aquifer type'
-                    ' number (6: Crystalline bedrock aquifers) and subtype letter (b) specifically'
-                    ' described as: Fractured crystalline (igneous intrusive or metamorphic,'
-                    ' meta-sedimentary, meta-volcanic, volcanic) rock aquifers. Code values range from'
-                    ' 1a to 6b.'))
+        db_comment=('Descriptions that define how the aquifer was formed geologically'
+                    ' (depositional description). E.g. Unconfined sand and gravel - large river system,'
+                    ' Confined sand and gravel - glacial, Flat-lying to gently-dipping volcanic bedrock.'))
 
     class Meta:
         db_table = 'aquifer_subtype_code'
@@ -184,6 +179,7 @@ class QualityConcern(CodeTableModel):
         db_comment=('Description of the standard terms used to represent the extent of documented'
                     ' concerns of contaminants in the aquifer at the time of mapping. i.e. isloated,'
                     ' local, regional, none.'))
+
     class Meta:
         db_table = 'quality_concern_code'
         ordering = ['display_order', 'code']
@@ -353,8 +349,9 @@ class Aquifer(AuditModel):
         blank=True,
         null=True,
         verbose_name='Notes on Aquifer, for internal use only.',
-        db_comment=('Details about the aquifer that the province deems important to maintain e.g. local '
-                    'knowledge about the aquifer, and decisions for changes.'))
+        db_comment=('Details about the mapped aquifer that the province deems important to maintain such as'
+                    ' local knowledge about the aquifer or decisions for changes related to attributes of'
+                    ' the mapped aquifer.'))
     geom = models.PolygonField(srid=3005, null=True)
 
     history = GenericRelation(Version)
