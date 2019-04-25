@@ -1309,7 +1309,7 @@ pipeline {
                             "--overwrite"
                         )
 
-                        def docBackupCronjob = openshift.process("-f",
+                        def docBackupCronJob = openshift.process("-f",
                             "openshift/jobs/minio-backup/minio-backup.cj.yaml",
                             "NAME_SUFFIX=${prodSuffix}",
                             "NAMESPACE=${prodProject}",
