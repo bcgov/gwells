@@ -15,7 +15,7 @@ from gwells.roles import roles_to_groups, WELLS_SUBMISSION_ROLE, WELLS_SUBMISSIO
 from submissions.serializers import (WellSubmissionListSerializer, WellConstructionSubmissionSerializer,
                                      WellAlterationSubmissionSerializer, WellDecommissionSubmissionSerializer)
 from wells.models import ActivitySubmission, Well, WellStatusCode, WellActivityCode, Casing, CasingCode,\
-    CasingMaterialCode, LithologyDescription
+    CasingMaterialCode, LithologyDescription, DevelopmentMethodCode, DrillingMethodCode, Screen
 from gwells.models import DATALOAD_USER
 
 
@@ -59,8 +59,130 @@ class TestEdit(APITestCase):
         user.save()
         roles_to_groups(user, roles)
         self.casing_code_surface = CasingCode.objects.get(code='SURFACE')
-        self.casing_material_code_other = CasingMaterialCode.objects.get(code='OTHER')
+        self.casing_material_code_other = CasingMaterialCode.objects.get(
+            code='OTHER')
         self.client.force_authenticate(user)
+
+    def test_drilling_methods_persist_on_well(self):
+        # Create a well with some codes.
+        codes = sorted(('AUGER', 'AIR_ROTARY'))
+        well = Well.objects.create(create_user='A', update_user='B')
+        for code in codes:
+            well.drilling_methods.add(
+                DrillingMethodCode.objects.get(drilling_method_code=code))
+        # Data for the edit - NO drilling method specified.
+        data = {
+            'well': well.well_tag_number,
+        }
+        # Post an edit.
+        self.client.post(reverse('STAFF_EDIT'), data, format='json')
+        # We expect the rendered well to contain the drilling methods.
+        well = Well.objects.get(well_tag_number=well.well_tag_number)
+        saved_well_codes = sorted(
+            [item.drilling_method_code for item in well.drilling_methods.all()])
+        self.assertListEqual(codes, saved_well_codes)
+
+    def test_drilling_methods_persist_on_legacy(self):
+        # Create a well with some codes.
+        codes = sorted(('AUGER', 'AIR_ROTARY'))
+        well = Well.objects.create(create_user='A', update_user='B')
+        for code in codes:
+            well.drilling_methods.add(
+                DrillingMethodCode.objects.get(drilling_method_code=code))
+        data = {
+            'well': well.well_tag_number
+        }
+        # Post an edit
+        self.client.post(reverse('STAFF_EDIT'), data, format='json')
+        # We expect the legacy record to contain the drilling methods.
+        legacy_submission = ActivitySubmission.objects.get(
+            well=well,
+            well_activity_type=WellActivityCode.types.legacy())
+        saved_well_codes = [
+            item.drilling_method_code for item in legacy_submission.drilling_methods.all()]
+        saved_well_codes = sorted(saved_well_codes)
+        self.assertListEqual(codes, saved_well_codes)
+
+    def test_development_methods_persist_on_well(self):
+        # Create a well with some codes.
+        codes = sorted(('AIR_LIFT', 'BAIL'))
+        well = Well.objects.create(create_user='A', update_user='B')
+        for code in codes:
+            well.development_methods.add(
+                DevelopmentMethodCode.objects.get(development_method_code=code))
+        data = {
+            'well': well.well_tag_number
+        }
+        # Post an edit
+        self.client.post(reverse('STAFF_EDIT'), data, format='json')
+        # We expect the well record to contain the development methods.
+        well = Well.objects.get(well_tag_number=well.well_tag_number)
+        saved_well_codes = [
+            item.development_method_code for item in well.development_methods.all()]
+        saved_well_codes = sorted(saved_well_codes)
+        self.assertListEqual(codes, saved_well_codes)
+
+    def test_development_methods_persist_on_legacy(self):
+        # Create a well with some codes.
+        codes = sorted(('AIR_LIFT', 'BAIL'))
+        well = Well.objects.create(create_user='A', update_user='B')
+        for code in codes:
+            well.development_methods.add(
+                DevelopmentMethodCode.objects.get(development_method_code=code))
+        data = {
+            'well': well.well_tag_number
+        }
+        # Post an edit
+        self.client.post(reverse('STAFF_EDIT'), data, format='json')
+        # We expect the legacy record to contain the development methods.
+        legacy_submission = ActivitySubmission.objects.get(
+            well=well,
+            well_activity_type=WellActivityCode.types.legacy())
+        saved_well_codes = [
+            item.development_method_code for item in legacy_submission.development_methods.all()]
+        saved_well_codes = sorted(saved_well_codes)
+        self.assertListEqual(codes, saved_well_codes)
+
+    def test_screen_details_persist_on_well(self):
+        well = Well.objects.create(create_user='A', update_user='B')
+        screen = Screen.objects.create(well=well, start=0, end=10)
+        screen = Screen.objects.create(well=well, start=10, end=20)
+        # Screen HAS to be sent!
+        data = {
+            'well': well.well_tag_number,
+            'screen_set': [
+                {'start': item.start, 'end': item.end} for item in well.screen_set.all()
+            ]
+        }
+        # Post an edit
+        self.client.post(reverse('STAFF_EDIT'), data, format='json')
+        well = Well.objects.get(well_tag_number=well.well_tag_number)
+        self.assertEqual(well.screen_set.all().count(), 2)
+
+    def test_casings_persist_on_legacy(self):
+        well = Well.objects.create(create_user='A', update_user='B')
+        screen = Screen.objects.create(well=well, start=0, end=10)
+        screen = Screen.objects.create(well=well, start=10, end=20)
+        data = {
+            'well': well.well_tag_number
+        }
+        # Post an edit
+        self.client.post(reverse('STAFF_EDIT'), data, format='json')
+        legacy_submission = ActivitySubmission.objects.get(
+            well=well,
+            well_activity_type=WellActivityCode.types.legacy())
+        self.assertEqual(legacy_submission.screen_set.all().count(), 2)
+
+    def test_water_quality_submission(self):
+        """ Check that water quality on a staff edit is reflected on the well """
+        well = Well.objects.create()
+        data = {
+            'well': well.well_tag_number,
+            'water_quality_characteristics': ['CLOUDY', 'FRESH', 'GAS']
+        }
+        self.client.post(reverse('STAFF_EDIT'), data, format='json')
+        well = Well.objects.get(well_tag_number=well.well_tag_number)
+        self.assertEqual(well.water_quality_characteristics.count(), 3)
 
     def test_casing_submission(self):
         """ Test that if a legacy well does not have a casing drive shoe, it doesn't cause problems """
@@ -93,7 +215,8 @@ class TestEdit(APITestCase):
             'decommission_description_set': []
         }
         response = self.client.post(reverse('STAFF_EDIT'), data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.data)
+        self.assertEqual(response.status_code,
+                         status.HTTP_201_CREATED, response.data)
 
     def test_lithology_to_greater_than_zero_on_legacy(self):
         """ Test that if a legacy well does not have correct lithology info, it doesn't cause problems """
@@ -117,43 +240,87 @@ class TestEdit(APITestCase):
             ]
         }
         response = self.client.post(reverse('STAFF_EDIT'), data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.data)
+        self.assertEqual(response.status_code,
+                         status.HTTP_201_CREATED, response.data)
 
-    def test_lithology_to_none_on_legacy(self):
+    def test_staff_edit_with_bad_lithology_in_old_well_returns_bad_request(self):
         """ Test that if a legacy well does not have correct lithology info, that it doesn't fail
         on generating the legacy record, but does give us a bad request response. """
         # We create a pre-existing "legacy well"
         well = Well.objects.create(create_user='Blah', update_user='Blah')
-        # We attached lithology to the well, that's should fail validation.
-        LithologyDescription.objects.create(well=well, lithology_from=117, lithology_to=None)
-        # Doing a valid edit, updating the lithology information, should be fine.
+        # We attached lithology to the well, that should fail validation.
+        LithologyDescription.objects.create(
+            well=well, lithology_from=117, lithology_to=None)
+        # Doing an edit, without passing in the correct validation, should fail!
         data = {
             'well': well.well_tag_number
         }
         response = self.client.post(reverse('STAFF_EDIT'), data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST, response.data)
-        data['lithologydescription_set'] = [
+        self.assertEqual(response.status_code,
+                         status.HTTP_400_BAD_REQUEST, response.data)
+
+    def test_staff_edit_with_bad_lithology_in_old_well_but_edit_good_returns_ok(self):
+        """ Test that if a legacy well does not have correct lithology info, but we submit
+        good data on an edit, that everything works fine."""
+        # We create a pre-existing "legacy well"
+        well = Well.objects.create(create_user='Blah', update_user='Blah')
+        # We attached lithology to the well, that should fail validation.
+        LithologyDescription.objects.create(
+            well=well, lithology_from=117, lithology_to=None)
+        # Doing a valid edit, updating the lithology information, should be fine.
+        data = {
+            'well': well.well_tag_number,
+            'lithologydescription_set': [
                 {
                     'lithology_from': 0,
                     'lithology_to': 10
                 }
             ]
+        }
         response = self.client.post(reverse('STAFF_EDIT'), data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.data)
+        self.assertEqual(response.status_code,
+                         status.HTTP_201_CREATED, response.data)
+
+    def test_staff_edit_with_bad_lithology_in_old_well_but_edit_saves_new_data(self):
+        """ Test that if a legacy well does not have correct lithology info, but we submit
+        good data on an edit, that everything works fine."""
+        # We create a pre-existing "legacy well"
+        well = Well.objects.create(create_user='Blah', update_user='Blah')
+        # We attached lithology to the well, that should fail validation.
+        LithologyDescription.objects.create(
+            well=well, lithology_from=117, lithology_to=None)
+        # Doing a valid edit, updating the lithology information, should be fine.
+        data = {
+            'well': well.well_tag_number,
+            'lithologydescription_set': [
+                {
+                    'lithology_from': 0,
+                    'lithology_to': 10
+                }
+            ]
+        }
+        self.client.post(reverse('STAFF_EDIT'), data, format='json')
+        well = Well.objects.get(well_tag_number=well.well_tag_number)
+        lithology = well.lithologydescription_set.all()
+        self.assertAlmostEqual(lithology[0].lithology_from, 0)
+        self.assertAlmostEqual(lithology[0].lithology_to, 10)
 
     def test_no_city_on_legacy(self):
         """ Test that the legacy record creates ok, but we get a bad request response if we have bad
         data.
         """
-        well = Well.objects.create(create_user='Blah', update_user='Blah', owner_city=' ')
+        well = Well.objects.create(
+            create_user='Blah', update_user='Blah', owner_city=' ')
         data = {
             'well': well.well_tag_number
         }
         response = self.client.post(reverse('STAFF_EDIT'), data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST, response.data)
+        self.assertEqual(response.status_code,
+                         status.HTTP_400_BAD_REQUEST, response.data)
         data['owner_city'] = 'Somewhere'
         response = self.client.post(reverse('STAFF_EDIT'), data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.data)
+        self.assertEqual(response.status_code,
+                         status.HTTP_201_CREATED, response.data)
 
 
 class TestPermissionsViewRights(APITestCase):
