@@ -857,7 +857,7 @@ pipeline {
 
                         // automated minio backup to NFS
                         def docBackupCronjob = openshift.process("-f",
-                            "openshift/jobs/minio-backup.cj.yaml",
+                            "openshift/jobs/minio-backup/minio-backup.cj.yaml",
                             "NAME_SUFFIX=${stagingSuffix}",
                             "NAMESPACE=${stagingProject}",
                             "VERSION=v1.0.0",
