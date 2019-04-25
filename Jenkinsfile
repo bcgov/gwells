@@ -1310,7 +1310,7 @@ pipeline {
                         )
 
                         def docBackupCronjob = openshift.process("-f",
-                            "openshift/jobs/minio-backup.cj.yaml",
+                            "openshift/jobs/minio-backup/minio-backup.cj.yaml",
                             "NAME_SUFFIX=${prodSuffix}",
                             "NAMESPACE=${prodProject}",
                             "VERSION=v1.0.0",
