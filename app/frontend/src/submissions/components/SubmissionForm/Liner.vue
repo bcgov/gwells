@@ -233,7 +233,7 @@ export default {
   computed: {
     ...mapGetters(['codes']),
     computedLinerPerforations: function () {
-      return Object.assign({}, this.screensData)
+      return Object.assign({}, this.linerPerforationsData)
     }
   },
   watch: {
