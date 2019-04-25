@@ -57,6 +57,8 @@ from gwells.open_api import (
 from gwells.management.commands.export_databc import (WELLS_SQL, LITHOLOGY_SQL, GeoJSONIterator,
                                                       LITHOLOGY_CHUNK_SIZE, WELL_CHUNK_SIZE)
 
+from deepdiff import DeepDiff
+
 from submissions.serializers import WellSubmissionListSerializer
 from submissions.models import WellActivityCode
 
@@ -459,6 +461,7 @@ class WellHistory(APIView):
     queryset = Well.objects.all()
     swagger_schema = None
 
+
     def get(self, request, well_id):
         """
         Retrieves version history for the specified Well record and creates a list of diffs
@@ -471,16 +474,96 @@ class WellHistory(APIView):
             raise Http404("Well not found")
 
         # query records in history for this model.
-        well_history = [obj for obj in well.history.all().order_by(
+        all_history = [obj for obj in well.history.all().order_by(
             '-revision__date_created')]
 
-        well_history_diff = generate_history_diff(
-            well_history, 'well ' + well_id)
+        revisions = [r.revision for r in all_history]
+
+        history = {
+            'well': [],
+            'liner': [],
+            'casing': [],
+            'screen': [],
+            'lithology description': [],
+            'decommission description': []
+        }
+
+        for revision in revisions:
+            time = revision.date_created.timestamp().__int__()
+            temp_history = {
+                'well': [],
+                'liner': [],
+                'casing': [],
+                'screen': [],
+                'lithology description': [],
+                'decommission description': []
+            }
+            for version in revision.version_set.all():
+                content_name = version.content_type.name
+                temp_history[content_name].append(version.field_dict)
+            for temp_key, temp_val in temp_history.items():
+                history[temp_key].append({'time': time, 'data': temp_val})
+
+        history_diff = []
+
+        for key, value in history.items():
+            for i in range(len(value) - 1):
+                diff = DeepDiff(value[i+1]['data'], value[i]['data'], verbose_level=1, view='tree')
+                if diff != {}:
+                    user = ''
+                    try:
+                        user = value[i]['data'][0]['update_user'] or value[i]['data'][0]['create_user']
+                    except:
+                        pass
+
+                    item = {
+                        "diff": {},
+                        "prev": {},
+                        "type": key,
+                        "user": user,
+                        "date": value[i]['time']
+                    }
+
+                    for dk, dv in diff.items():
+                        if dk == 'values_changed':
+                            for dkv, dvv in dv.items():
+                                if keep_key(dkv):
+                                    item['diff'][dkv] = dvv['new_value']
+                                    item['prev'][dkv] = dvv['old_value']
+                        elif dk == 'dictionary_item_added':
+                            pass
+                        elif dk == 'dictionary_item_removed':
+                            pass
+                        elif dk == 'iterable_item_added':
+                            item['diff'][key] = dv
+                            item['prev'][key] = None
+                        elif dk == 'iterable_item_removed':
+                            item['diff'][key] = dv
+                            item['prev'][key] = None
+                        else:
+                            pass
+
+                    if item['diff'] != {}:
+                        history_diff.append(item)
 
         history_diff = sorted(
-            well_history_diff, key=lambda x: x['date'], reverse=True)
+            history_diff, key=lambda x: x['date'], reverse=True)
 
         return Response(history_diff)
+
+
+staticmethod
+def keep_key(key):
+    return key != "root[0]['update_date']" and key != "root[0]['update_user']" \
+        and key != "root[0]['create_user']" and key != "root[0]['expiry_date']" \
+        and key != "root[0]['create_date']" and key != "root[0]['liner_perforation_guid'].int"  \
+        and key != "root[0]['lithology_description_guid'].int" and key != "root[0]['casing_guid'].int" \
+        and key != "root[0]['decommission_description_guid'].int" and key != "root[0]['screen_guid'].int" \
+        and key != "root[1]['update_date']" and key != "root[1]['update_user']" \
+        and key != "root[1]['create_user']" and key != "root[1]['expiry_date']" \
+        and key != "root[1]['create_date']" and key != "root[1]['liner_perforation_guid'].int" \
+        and key != "root[1]['lithology_description_guid'].int" and key != "root[1]['casing_guid'].int" \
+        and key != "root[1]['decommission_description_guid'].int" and key != "root[1]['screen_guid'].int"
 
 
 WELL_PROPERTIES = openapi.Schema(
