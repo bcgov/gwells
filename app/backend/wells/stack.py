@@ -342,6 +342,11 @@ class StackWells():
                             # foreign key sets are based on depth and need special merge handling.
                             value = self.transform_value(value, source_key)
                             composite[target_key] = self._merge_series(composite[source_key], value)
+                        elif target_key in composite and target_key in MANY_TO_MANY_LOOKUP:
+                            # Only update if there's a new value.
+                            value = self.transform_value(value, source_key)
+                            if len(value) > 0:
+                                composite[target_key] = value
                         else:
                             value = self.transform_value(value, source_key)
                             composite[target_key] = value
@@ -355,7 +360,7 @@ class StackWells():
         # The update date, has to match whatever the late update_date was
         composite['update_Date'] = update_date
 
-        # Update the well view
+        # Update the well view.
         well = self._update_well_view(well, composite)
         return well
 
