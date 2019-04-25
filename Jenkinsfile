@@ -1324,7 +1324,7 @@ pipeline {
 
 
                         def dbNFSBackup = openshift.process("-f",
-                            "openshift/jobs/postgres-backup.cj.yaml",
+                            "openshift/jobs/postgres-backup-nfs/postgres-backup.cj.yaml",
                             "NAMESPACE=${prodProject}",
                             "TARGET=gwells-pgsql-production",
                             "PVC_NAME=${nfsProdBackupPVC}",
