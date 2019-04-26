@@ -467,7 +467,6 @@ class WellHistory(APIView):
         Retrieves version history for the specified Well record and creates a list of diffs
         for each revision.
         """
-
         try:
             well = Well.objects.get(well_tag_number=well_id)
         except Well.DoesNotExist:
@@ -526,7 +525,7 @@ class WellHistory(APIView):
 
                     for dk, dv in diff.items():
                         if dk == 'values_changed':
-                            for dkv, dvv in dv.items():
+                            for dkv, dvv in dv.items: # change to array
                                 if keep_key(dkv):
                                     item['diff'][dkv] = dvv['new_value']
                                     item['prev'][dkv] = dvv['old_value']
