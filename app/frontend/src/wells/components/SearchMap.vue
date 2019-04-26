@@ -257,9 +257,6 @@ export default {
       this.searchTriggered = true
 
       this.$store.dispatch(SEARCH_WELLS, { constrain: true })
-
-      // Turn search on move on again
-      this.searchOnMapMove = true
     },
     clearSearch () {
       this.$store.commit(SET_SEARCH_PARAMS, {})
@@ -328,6 +325,7 @@ export default {
       }
       this.searchTriggered = false
       this.movedSinceLastSearch = false
+      this.searchOnMapMove = true
     }
   },
   mounted () {
