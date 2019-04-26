@@ -26,6 +26,7 @@ import {
   SET_LOCATION_ERRORS,
   SET_LOCATION_SEARCH_RESULTS,
   SET_ORGANIZATION_NAMES,
+  SET_CONSTRAIN_SEARCH,
   SET_PENDING_SEARCH,
   SET_SEARCH_BOUNDS,
   SET_SEARCH_LIMIT,
@@ -75,6 +76,7 @@ const wellsStore = {
     locationSearchResults: [],
     organizationNames: [],
     pendingSearch: null,
+    constrainSearch: false,
     searchBounds: {},
     searchErrors: {},
     searchLimit: DEFAULT_LIMIT,
@@ -105,6 +107,9 @@ const wellsStore = {
     },
     [SET_PENDING_SEARCH] (state, payload) {
       state.pendingSearch = payload
+    },
+    [SET_CONSTRAIN_SEARCH] (state, payload) {
+      state.constrainSearch = payload
     },
     [SET_SEARCH_BOUNDS] (state, payload) {
       state.searchBounds = payload
@@ -178,12 +183,16 @@ const wellsStore = {
       commit(SET_SEARCH_RESULT_COLUMNS, [...DEFAULT_COLUMNS])
       commit(SET_SEARCH_RESULT_FILTERS, {})
     },
-    [SEARCH_WELLS] ({ commit, state }, { bounded = false }) {
+    [SEARCH_WELLS] ({ commit, state }, { constrain = null }) {
       if (state.pendingSearch !== null) {
         state.pendingSearch.cancel()
       }
       const cancelSource = axios.CancelToken.source()
       commit(SET_PENDING_SEARCH, cancelSource)
+
+      if (constrain !== null) {
+        commit(SET_CONSTRAIN_SEARCH, constrain)
+      }
 
       const params = { ...state.searchParams }
 
@@ -192,7 +201,7 @@ const wellsStore = {
       }
       // if triggering the search using the map, the search will be restricted to
       // the visible map bounds
-      if (bounded) {
+      if (state.constrainSearch) {
         Object.assign(params, state.searchBounds)
       }
       params['ordering'] = state.searchOrdering
@@ -250,6 +259,9 @@ const wellsStore = {
     },
     organizationNames (state) {
       return state.organizationNames
+    },
+    constrainSearch (state) {
+      return state.constrainSearch
     },
     pendingSearch (state) {
       return state.pendingSearch

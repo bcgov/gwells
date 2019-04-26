@@ -274,7 +274,7 @@ export default {
   methods: {
     handleSubmit () {
       this.$store.commit(SET_SEARCH_PARAMS, { ...this.searchQueryParams })
-      this.$store.dispatch(SEARCH_WELLS, {})
+      this.$store.dispatch(SEARCH_WELLS, { constrain: false })
 
       this.$emit('search', this.searchQueryParams)
     },

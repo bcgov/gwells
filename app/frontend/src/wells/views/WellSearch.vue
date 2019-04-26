@@ -274,7 +274,7 @@ export default {
     const query = this.$route.query
     if (Object.entries(query).length !== 0 && query.constructor === Object) {
       this.lastSearchTrigger = triggers.QUERY
-      this.$store.dispatch(SEARCH_WELLS, {})
+      this.$store.dispatch(SEARCH_WELLS, { constrain: false })
     }
 
     this.$store.subscribeAction((action, state) => {

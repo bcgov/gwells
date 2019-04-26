@@ -248,11 +248,11 @@ export default {
     triggerSearch: debounce(function () {
       this.searchTriggered = true
 
-      this.$store.dispatch(SEARCH_WELLS, { bounded: true })
+      this.$store.dispatch(SEARCH_WELLS, { constrain: true })
     }, 500),
     clearSearch () {
       this.$store.commit(SET_SEARCH_PARAMS, {})
-      this.$store.dispatch(SEARCH_WELLS, { bounded: true })
+      this.$store.dispatch(SEARCH_WELLS, { constrain: true })
     },
     mapMoved () {
       if (this.searchOnMapMove) {

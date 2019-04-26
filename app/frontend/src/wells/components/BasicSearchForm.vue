@@ -71,7 +71,7 @@ export default {
     handleSubmit () {
       const params = { search: this.searchString }
       this.$store.commit(SET_SEARCH_PARAMS, params)
-      this.$store.dispatch(SEARCH_WELLS, {})
+      this.$store.dispatch(SEARCH_WELLS, { constrain: false })
 
       this.$emit('search', params)
     },
