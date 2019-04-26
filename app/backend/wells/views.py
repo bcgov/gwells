@@ -348,7 +348,7 @@ class WellLocationListAPIView(ListAPIView):
 
         get: returns a list of wells with locations only
     """
-
+    MAX_LOCATION_COUNT = 5000
     permission_classes = (WellsEditOrReadOnly,)
     model = Well
     serializer_class = WellLocationSerializer
@@ -378,7 +378,7 @@ class WellLocationListAPIView(ListAPIView):
         locations = self.filter_queryset(qs)
         count = locations.count()
         # return an empty response if there are too many wells to display
-        if count > 2000:
+        if count > self.MAX_LOCATION_COUNT:
             raise PermissionDenied('Too many wells to display on map. '
                                    'Please zoom in or change your search criteria.')
 
