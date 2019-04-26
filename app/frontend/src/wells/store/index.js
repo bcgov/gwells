@@ -25,7 +25,6 @@ import {
   SET_ERROR,
   SET_LOCATION_ERRORS,
   SET_LOCATION_SEARCH_RESULTS,
-  SET_LOCATION_SEARCH_RESULT_COUNT,
   SET_ORGANIZATION_NAMES,
   SET_PENDING_SEARCH,
   SET_SEARCH_BOUNDS,
@@ -74,7 +73,6 @@ const wellsStore = {
     drillerNames: [],
     locationErrors: {},
     locationSearchResults: [],
-    locationSearchResultCount: 0,
     organizationNames: [],
     pendingSearch: null,
     searchBounds: {},
@@ -101,9 +99,6 @@ const wellsStore = {
     },
     [SET_LOCATION_SEARCH_RESULTS] (state, payload) {
       state.locationSearchResults = payload
-    },
-    [SET_LOCATION_SEARCH_RESULT_COUNT] (state, payload) {
-      state.locationSearchResultCount = payload
     },
     [SET_ORGANIZATION_NAMES] (state, payload) {
       state.organizationNames = payload
@@ -180,7 +175,6 @@ const wellsStore = {
       commit(SET_SEARCH_RESULTS, null)
       commit(SET_SEARCH_RESULT_COUNT, 0)
       commit(SET_LOCATION_SEARCH_RESULTS, [])
-      commit(SET_LOCATION_SEARCH_RESULT_COUNT, 0)
       commit(SET_SEARCH_RESULT_COLUMNS, [...DEFAULT_COLUMNS])
       commit(SET_SEARCH_RESULT_FILTERS, {})
     },
@@ -224,13 +218,11 @@ const wellsStore = {
       const locationApiQuery = ApiService.query('wells/locations', locationParams, { cancelToken: cancelSource.token }).then((response) => {
         commit(SET_LOCATION_ERRORS, {})
         commit(SET_LOCATION_SEARCH_RESULTS, response.data)
-        commit(SET_LOCATION_SEARCH_RESULT_COUNT, response.data.count)
       }).catch((err) => {
         if (err.response && err.response.data) {
           commit(SET_LOCATION_ERRORS, err.response.data)
         }
         commit(SET_LOCATION_SEARCH_RESULTS, [])
-        commit(SET_LOCATION_SEARCH_RESULT_COUNT, 0)
       })
 
       // Clear pending after everything completes.
@@ -255,9 +247,6 @@ const wellsStore = {
     },
     locationSearchResults (state) {
       return state.locationSearchResults
-    },
-    locationSearchResultCount (state) {
-      return state.locationSearchResultCount
     },
     organizationNames (state) {
       return state.organizationNames
