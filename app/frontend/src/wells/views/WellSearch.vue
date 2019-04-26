@@ -59,8 +59,7 @@ import querystring from 'querystring'
 import { mapGetters } from 'vuex'
 import {
   RESET_WELLS_SEARCH,
-  SEARCH_WELLS,
-  SEARCH_WELL_LOCATIONS
+  SEARCH_WELLS
 } from '@/wells/store/actions.types.js'
 import {
   SET_SEARCH_LIMIT,
@@ -276,7 +275,6 @@ export default {
     if (Object.entries(query).length !== 0 && query.constructor === Object) {
       this.lastSearchTrigger = triggers.QUERY
       this.$store.dispatch(SEARCH_WELLS, {})
-      this.$store.dispatch(SEARCH_WELL_LOCATIONS, {})
     }
 
     this.$store.subscribeAction((action, state) => {

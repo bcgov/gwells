@@ -139,7 +139,7 @@ import {
   LWMSTileLayer
 } from 'vue2-leaflet'
 import { mapGetters } from 'vuex'
-import { SEARCH_WELLS, SEARCH_WELL_LOCATIONS } from '@/wells/store/actions.types.js'
+import { SEARCH_WELLS } from '@/wells/store/actions.types.js'
 import { SET_SEARCH_BOUNDS, SET_SEARCH_PARAMS } from '@/wells/store/mutations.types.js'
 
 // There is a known issue using leaflet with webpack, this is a workaround
@@ -187,7 +187,7 @@ export default {
   computed: {
     ...mapGetters({
       locations: 'locationSearchResults',
-      pendingSearch: 'locationPendingSearch',
+      pendingSearch: 'pendingSearch',
       searchParams: 'searchParams'
     }),
     searchBoundBox () {
@@ -249,12 +249,10 @@ export default {
       this.searchTriggered = true
 
       this.$store.dispatch(SEARCH_WELLS, { bounded: true })
-      this.$store.dispatch(SEARCH_WELL_LOCATIONS, { bounded: true })
     }, 500),
     clearSearch () {
       this.$store.commit(SET_SEARCH_PARAMS, {})
       this.$store.dispatch(SEARCH_WELLS, { bounded: true })
-      this.$store.dispatch(SEARCH_WELL_LOCATIONS, { bounded: true })
     },
     mapMoved () {
       if (this.searchOnMapMove) {
