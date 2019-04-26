@@ -302,6 +302,11 @@ export default {
       const mapObject = this.$refs.map.mapObject
       const originalMouseDown = mapObject.boxZoom._onMouseDown
       mapObject.boxZoom._onMouseDown = (event) => {
+        // prevent right-click from triggering zoom tool
+        if (event.button === 2) {
+          return
+        }
+
         const newEvent = {
           clientX: event.clientX,
           clientY: event.clientY,
