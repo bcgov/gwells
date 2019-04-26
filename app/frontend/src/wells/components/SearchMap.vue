@@ -77,7 +77,7 @@
             <strong>Wells that match active search criteria are displayed.</strong>
           </div>
           <b-button
-            class="ml-md-4 mb-1"
+            class="ml-md-1 mb-1"
             variant="primary"
             size="sm"
             @click.stop="clearSearch()">
@@ -253,7 +253,7 @@ export default {
         this.triggerSearch()
       }
     }, 500),
-    triggerSearch() {
+    triggerSearch () {
       this.searchTriggered = true
 
       this.$store.dispatch(SEARCH_WELLS, { constrain: true })
@@ -378,6 +378,7 @@ export default {
   }
 
   .active-search-text {
+    color: #000;
     background-color: rgba(0,0,0,0.3);
     border-radius: 4px;
   }
