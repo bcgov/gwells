@@ -178,7 +178,7 @@ export default {
       bounds: null,
       // Track if we triggered a search, or if it came from another component
       searchTriggered: false,
-      searchOnMapMove: false,
+      searchOnMapMove: true,
       movedSinceLastSearch: false,
       zoomBoxActive: false,
       esriLayer: null
@@ -249,6 +249,9 @@ export default {
       this.searchTriggered = true
 
       this.$store.dispatch(SEARCH_WELLS, { constrain: true })
+
+      // Turn search on move on again
+      this.searchOnMapMove = true
     }, 500),
     clearSearch () {
       this.$store.commit(SET_SEARCH_PARAMS, {})
