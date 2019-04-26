@@ -234,35 +234,36 @@ export default {
     },
     zoomUpdated (zoom) {
       this.zoom = zoom
+
       this.mapMoved()
     },
     centerUpdated (center) {
       this.center = center
       this.$emit('moved', center)
+
       this.mapMoved()
     },
     boundsUpdated (bounds) {
       this.bounds = bounds
       this.$store.commit(SET_SEARCH_BOUNDS, this.searchBoundBox)
     },
-    triggerSearch: debounce(function () {
+    mapMoved: debounce(function () {
+      this.movedSinceLastSearch = true
+      if (this.searchOnMapMove) {
+        this.triggerSearch()
+      }
+    }, 500),
+    triggerSearch() {
       this.searchTriggered = true
 
       this.$store.dispatch(SEARCH_WELLS, { constrain: true })
 
       // Turn search on move on again
       this.searchOnMapMove = true
-    }, 500),
+    },
     clearSearch () {
       this.$store.commit(SET_SEARCH_PARAMS, {})
       this.$store.dispatch(SEARCH_WELLS, { constrain: true })
-    },
-    mapMoved () {
-      if (this.searchOnMapMove) {
-        this.triggerSearch()
-      } else {
-        this.movedSinceLastSearch = true
-      }
     },
     geolocate () {
       this.$refs.map.mapObject.locate()
