@@ -43,6 +43,12 @@ from gwells.db_comments.patch_fields import patch_fields
 patch_fields()
 
 
+WELL_STATUS_CODE_CONSTRUCTION = 'NEW'
+WELL_STATUS_CODE_DECOMMISSION = 'CLOSURE'
+WELL_STATUS_CODE_ALTERATION = 'ALTERATION'
+WELL_STATUS_CODE_OTHER = 'OTHER'
+
+
 class DecommissionMethodCode(CodeTableModel):
     decommission_method_code = models.CharField(primary_key=True, max_length=10, editable=False,
                                                 verbose_name="Code")
@@ -421,18 +427,18 @@ class WellStatusCodeTypeManager(models.Manager):
 
     # Construction reports correspond to "NEW" status
     def construction(self):
-        return self.get_queryset().get(well_status_code='NEW')
+        return self.get_queryset().get(well_status_code=WELL_STATUS_CODE_CONSTRUCTION)
 
     # Decommission reports trigger a "CLOSURE" status
     def decommission(self):
-        return self.get_queryset().get(well_status_code='CLOSURE')
+        return self.get_queryset().get(well_status_code=WELL_STATUS_CODE_DECOMMISSION)
 
     # Alteration reports trigger an "ALTERATION" status
     def alteration(self):
-        return self.get_queryset().get(well_status_code='ALTERATION')
+        return self.get_queryset().get(well_status_code=WELL_STATUS_CODE_ALTERATION)
 
     def other(self):
-        return self.get_queryset().get(well_status_code='OTHER')
+        return self.get_queryset().get(well_status_code=WELL_STATUS_CODE_OTHER)
 
 
 class WellStatusCode(CodeTableModel):
@@ -559,7 +565,8 @@ class CoordinateAcquisitionCode(AuditModel):
     description = models.CharField(max_length=250)
 
     effective_date = models.DateTimeField(default=timezone.now, null=False)
-    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(timezone.datetime.max,
+                                       timezone.get_default_timezone()), null=False)
 
     class Meta:
         db_table = 'coordinate_acquisition_code'
@@ -573,7 +580,8 @@ class AquiferLithologyCode(CodeTableModel):
     """
     Choices for describing Completed Aquifer Lithology
     """
-    aquifer_lithology_code = models.CharField(primary_key=True, max_length=100, db_column='aquifer_lithology_code')
+    aquifer_lithology_code = models.CharField(primary_key=True, max_length=100,
+                                              db_column='aquifer_lithology_code')
     description = models.CharField(max_length=100)
 
     class Meta:
@@ -628,8 +636,10 @@ class Well(AuditModelStructure):
     well_status = models.ForeignKey(WellStatusCode, db_column='well_status_code',
                                     on_delete=models.CASCADE, blank=True, null=True,
                                     verbose_name='Well Status')
-    well_publication_status = models.ForeignKey(WellPublicationStatusCode, db_column='well_publication_status_code',
-                                                on_delete=models.CASCADE, verbose_name='Well Publication Status',
+    well_publication_status = models.ForeignKey(WellPublicationStatusCode,
+                                                db_column='well_publication_status_code',
+                                                on_delete=models.CASCADE,
+                                                verbose_name='Well Publication Status',
                                                 default='Published')
     licenced_status = models.ForeignKey(LicencedStatusCode, db_column='licenced_status_code',
                                         on_delete=models.CASCADE, blank=True, null=True,
@@ -695,7 +705,8 @@ class Well(AuditModelStructure):
 
     # Contains Well Longitude and Latitude in that order,
     # Values are BC Albers. but we are using WGS84 Lat Lon to avoid rounding errors
-    geom = models.PointField(blank=True, null=True, verbose_name='Geo-referenced Location of the Well', srid=4326)
+    geom = models.PointField(blank=True, null=True, verbose_name='Geo-referenced Location of the Well',
+                             srid=4326)
 
     ground_elevation = models.DecimalField(
         max_digits=10, decimal_places=2, blank=True, null=True, verbose_name='Ground Elevation')
@@ -935,7 +946,8 @@ class Well(AuditModelStructure):
     boundary_effect = models.DecimalField(
         max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Boundary Effect')
     aquifer_lithology = models.ForeignKey(
-        AquiferLithologyCode, db_column='aquifer_lithology_code', blank=True, null=True, on_delete=models.CASCADE,
+        AquiferLithologyCode, db_column='aquifer_lithology_code', blank=True, null=True,
+        on_delete=models.CASCADE,
         verbose_name="Aquifer Lithology")
 
     # Production data related data
@@ -1469,7 +1481,8 @@ class ActivitySubmission(AuditModelStructure):
     boundary_effect = models.DecimalField(
         max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Boundary Effect')
     aquifer_lithology = models.ForeignKey(
-        AquiferLithologyCode, db_column='aquifer_lithology_code', blank=True, null=True, on_delete=models.CASCADE,
+        AquiferLithologyCode, db_column='aquifer_lithology_code', blank=True, null=True,
+        on_delete=models.CASCADE,
         verbose_name="Aquifer Lithology")
 
     # Production data related data
