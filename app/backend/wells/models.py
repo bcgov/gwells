@@ -587,8 +587,7 @@ class AquiferLithologyCode(CodeTableModel):
 
 # TODO: Consider having Well and Submission extend off a common base class, given that
 #   they mostly have the exact same fields!
-@reversion.register(follow=['lithologydescription_set', 'casing_set', 'screen_set',
-                            'decommission_description_set', 'linerperforation_set'])
+@reversion.register()
 class Well(AuditModelStructure):
     """
     Well information.
@@ -1540,7 +1539,11 @@ class ActivitySubmission(AuditModelStructure):
         return super().save(*args, **kwargs)
 
 
-@reversion.register()
+@reversion.register(fields=['lithology_from', 'lithology_to', 'lithology_raw_data', 'lithology_description',
+                            'lithology_colour', 'lithology_hardness', 'lithology_material', 'lithology_observation',
+                            'water_bearing_estimated_flow', 'water_bearing_estimated_flow_units',  'lithology_moisture',
+                            'bedrock_material', 'bedrock_material_descriptor', 'lithology_structure',
+                            'surficial_material', 'secondary_surficial_material', 'lithology_sequence_number'])
 class LithologyDescription(AuditModel):
     """
     Lithology information details
@@ -1629,8 +1632,6 @@ class LithologyDescription(AuditModel):
 
     lithology_sequence_number = models.BigIntegerField(blank=True, null=True)
 
-    history = GenericRelation(Version)
-
     class Meta:
         db_table = 'lithology_description'
         ordering = ["lithology_sequence_number"]
@@ -1646,7 +1647,7 @@ class LithologyDescription(AuditModel):
             return 'well {} {} {}'.format(self.well, self.lithology_from, self.lithology_to)
 
 
-@reversion.register()
+@reversion.register(fields=['start', 'end'])
 class LinerPerforation(AuditModel):
     """
     Perforation in a well liner
@@ -1668,8 +1669,6 @@ class LinerPerforation(AuditModel):
                               verbose_name='Perforated To', blank=False,
                               validators=[MinValueValidator(Decimal('0.01'))])
 
-    history = GenericRelation(Version)
-
     class Meta:
         ordering = ["start", "end"]
         db_table = 'liner_perforation'
@@ -1687,7 +1686,8 @@ class LinerPerforation(AuditModel):
             return 'well {} {} {}'.format(self.well, self.start, self.end)
 
 
-@reversion.register()
+@reversion.register(fields=['start', 'end', 'diameter', 'casing_code',
+                            'casing_material', 'wall_thickness', 'drive_shoe'])
 class Casing(AuditModel):
     """
     Casing information
@@ -1728,8 +1728,6 @@ class Casing(AuditModel):
     drive_shoe = models.NullBooleanField(default=False, null=True, verbose_name='Drive Shoe',
                                          choices=((False, 'No'), (True, 'Yes')))
 
-    history = GenericRelation(Version)
-
     class Meta:
         ordering = ["start", "end"]
         db_table = 'casing'
@@ -1757,7 +1755,7 @@ class Casing(AuditModel):
         }
 
 
-@reversion.register()
+@reversion.register(fields=['start', 'end', 'internal_diameter', 'assembly_type', 'slot_size'])
 class Screen(AuditModel):
     """
     Screen in a well
@@ -1784,8 +1782,6 @@ class Screen(AuditModel):
         null=True)
     slot_size = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='Slot Size',
                                     blank=True, null=True, validators=[MinValueValidator(Decimal('0.00'))])
-
-    history = GenericRelation(Version)
 
     class Meta:
         db_table = 'screen'
@@ -1878,7 +1874,7 @@ class DecommissionMaterialCode(BasicCodeTableModel):
         return '{} - {}'.format(self.code, self.description)
 
 
-@reversion.register()
+@reversion.register(fields=['start', 'end', 'material', 'observations'])
 class DecommissionDescription(AuditModel):
     """Provides a description of the ground conditions (between specified start and end depth) for
         decommissioning"""
@@ -1905,6 +1901,3 @@ class DecommissionDescription(AuditModel):
     db_table_comment = ('A cross refernce table maintaining the list of wells that have been decomissioned'
                         ' and the materials used to fill the well when decomissioned. E.g. Bentonite chips,'
                         ' Native sand or gravel, Commercial gravel/pea gravel.')
-
-    history = GenericRelation(Version)
-

@@ -11,19 +11,44 @@
         </div>
         <div class="mt-2" v-if="history && history.length && showHistory">
           <div class="mt-3" v-for="(version, index) in history" :key="`history-version ${index}`" :id="`history-version-${index}`">
-              <span class="font-weight-bold">{{ version.user }}</span>
-                {{ version.created ? "created" : "edited" }}
-                {{ version.name ? version.name : 'record' }}
-                ({{ version.date | moment("MMMM Do YYYY [at] LT") }}){{ version.created ? "." : ":" }}
-              <div class="ml-4">
-                <!-- compare current value to prev value, ignoring insignificant type changes (null to empty string) -->
+<!--              <span class="font-weight-bold">{{ version.user }}</span>-->
+<!--                {{ version.created ? "created" : "edited" }}-->
+<!--                {{ version.name ? version.name : 'record' }}-->
+<!--                ({{ version.date | moment("MMMM Do YYYY [at] LT") }}){{ version.created ? "." : ":" }}-->
+<!--              <div class="ml-4">-->
+<!--                &lt;!&ndash; compare current value to prev value, ignoring insignificant type changes (null to empty string) &ndash;&gt;-->
+
+<!--              </div>-->
+            <div class="font-weight-bold">
+              {{version.user}}
+              {{version.action}}
+              {{version.type}}
+              on
+              {{version.date | moment("MMMM Do YYYY [at] LT")}}
+              <div
+                style="margin-left:30px;"
+                class="font-weight-light"
+                v-for="(value, key) in version.diff"
+                v-if="!(value === '' && version.prev[key] === null)"
+                :key="`history-item-${key}-in-version ${index}`">
                 <div
-                    v-for="(value, key) in version.diff"
-                    v-if="!(value === '' && version.prev[key] === null)"
-                    :key="`history-item-${key}-in-version ${index}`">
-                  {{ key | readable }} changed from {{ version.prev[key] | formatValue }} to {{ value | formatValue }}
+                  v-if="version.action != 'Changed'"
+                  >
+                  <b-table
+                    striped
+                    small
+                    bordered
+                    :items="Object.values(version.action != 'Removed' ? version.diff[key] : version.prev[key])"
+                    show-empty
+                  ></b-table>
+
+                </div>
+                <div v-else>
+                  {{ key }} changed from {{ version.prev[key] | formatValue }} to {{ value | formatValue }}
                 </div>
               </div>
+            </div>
+
           </div>
         </div>
         <div v-if="loading">
