@@ -40,19 +40,19 @@ export default {
           sum[key] = sumBy(val, o => o.total_qty)
           return sum
         })
-        const chartLabel = groupedSum.map(o => Object.keys(o)[0])
+        const chartLabel = groupedSum.map(o => Object.keys(o)[0].split(' - ')[1])
         const chartData = groupedSum.map(o => Object.values(o)[0])
         this.renderChart({
           labels: chartLabel,
           datasets: [
             {
-              backgroundColor: '#f87979',
+              backgroundColor: ['#d11141', '#00b159', '#00aedb', '#f37735', '#ffc425'],
               data: chartData
             }
           ]
         }, {
           legend: {
-            display: false
+            display: true
           },
           tooltips: {
             enabled: true

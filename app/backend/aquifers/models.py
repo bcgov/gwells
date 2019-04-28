@@ -474,7 +474,7 @@ class Aquifer(AuditModel):
         geos_geom_simplified = copy.deepcopy(geos_geom_out)
         geos_geom_simplified.transform(4326)
         geos_geom_simplified = geos_geom_simplified.simplify(
-            .002, preserve_topology=True)
+            .0005, preserve_topology=True)
 
         self.geom = geos_geom_out
         self.geom_simplified = geos_geom_simplified

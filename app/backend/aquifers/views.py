@@ -26,6 +26,7 @@ from django.db.models import Q
 from django.db import connection
 from django.http import HttpResponse
 from django.contrib.gis.gdal import DataSource
+from django.views.decorators.cache import cache_page
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -123,6 +124,8 @@ def _aquifer_qs(query):
         'vulnerability')
 
     qs = qs.distinct()
+
+    print(qs.query)
 
     return qs
 
@@ -476,7 +479,71 @@ def aquifer_geojson(request):
         return HttpResponseRedirect(url)
 
 
-_export_fields = [
+@api_view(['GET'])
+@cache_page(60*15)
+def aquifer_geojson_simplified(request):
+    """
+    Sadly, GeoDjango's ORM doesn't seem to directly support a call to
+    ST_AsGEOJSON, but the latter performs much better than processing WKT
+    in Python, so we must generate SQL here.
+
+    If we want to query by the usual fields available to the aquifer API we'd do:
+
+    >>>
+    resources__section__code = request.GET.get(
+        "resources__section__code")
+    hydraulic = request.GET.get('hydraulically_connected')
+    search = request.GET.get('search')
+    where_clause_parts = []
+
+    if hydraulic:
+        part = "aquifer.aquifer_subtype_code IN ({})".format(
+            ",".join(["'{}'".format(c)
+                      for c in serializers.HYDRAULIC_SUBTYPES])
+        )
+        where_clause_parts.append(part)
+
+    # truthy check - ignore missing and emptystring.
+    if resources__section__code:
+        part = "aquifers_aquiferresource.aquifer_resource_section_code IN ({})".format(
+            ",".join(["'{}'".format(c)
+                      for c in resources__section__code.split(',')])
+        )
+        where_clause_parts.append(part)
+
+    if search:  # truthy check - ignore missing and emptystring.
+        part = "(UPPER(aquifer.aquifer_name:: text) LIKE UPPER('%%{}%%')".format(
+            search)
+        # if a number is searched, assume it could be an Aquifer ID.
+        if search.isdigit():
+            part += " OR aquifer.aquifer_id = {}".format(search)
+        part += ")"
+        where_clause_parts.append(part)
+
+    if where_clause_parts:
+        where_clause = " AND ".join(where_clause_parts)
+    else:
+        where_clause = ""
+    """
+
+    SQL = """
+    SELECT
+           ST_AsGeoJSON(geom_simplified, 8) :: json AS "geometry",
+           aquifer.aquifer_id                       AS id
+    FROM aquifer;
+    """
+
+    iterator = GeoJSONIterator(
+        SQL,
+        AQUIFER_CHUNK_SIZE,
+        connection.cursor())
+    response = StreamingHttpResponse(
+        (item for item in iterator),
+        content_type='application/json')
+    return response
+
+
+AQUIFER_EXPORT_FIELDS = [
     'aquifer_id',
     'aquifer_name',
     'area',
@@ -503,7 +570,7 @@ def csv_export(request):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="aquifers.csv"'
     writer = csv.writer(response)
-    writer.writerow(_export_fields)
+    writer.writerow(AQUIFER_EXPORT_FIELDS)
 
     queryset = _aquifer_qs(request.GET)
     for aquifer in queryset:
@@ -519,7 +586,7 @@ def xlsx_export(request):
 
     wb = openpyxl.Workbook()
     ws = wb.active
-    ws.append(_export_fields)
+    ws.append(AQUIFER_EXPORT_FIELDS)
     queryset = _aquifer_qs(request.GET)
     for aquifer in queryset:
         ws.append([str(getattr(aquifer, f)) for f in _export_fields])

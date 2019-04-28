@@ -105,6 +105,9 @@ urlpatterns = [
         cache_page(CACHE_TTL)(views.WaterUseListAPIView.as_view()),
         name='aquifer-water-use-code-list'
         ),
+    url(r'^api/v1/gis/aquifers-simplified$',
+        views.aquifer_geojson_simplified, name='aquifer-geojson-simplified'),
+
     # GeoJSON aquifers endpoint for DataBC.
     url(r'^api/v1/gis/aquifers$',
         views.aquifer_geojson, name='aquifer-geojson')

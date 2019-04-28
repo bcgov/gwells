@@ -125,7 +125,8 @@ export default {
       })
       const locateButton = L.control.locate({ position: 'topleft' })
       locateButton.onClick = (ev) => {
-        this.map.locate({setView: true})
+        this.map.locate({setView: true, maxZoom: 12})
+        this.$parent.fetchResults()
       }
       locateButton.addTo(this.map)
       // Add map layers.
@@ -168,11 +169,11 @@ export default {
           name: 'Ecocat - Water related reports',
           legend: EcocatWaterLegend
         }),
-        'Groundwater licenses': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.WLS_PWD_LICENCES_SVW/ows?', {
+        'Groundwater licences': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.WLS_PWD_LICENCES_SVW/ows?', {
           format: 'image/png',
           layers: 'pub:WHSE_WATER_MANAGEMENT.WLS_PWD_LICENCES_SVW',
           transparent: true,
-          name: 'Groundwater licenses',
+          name: 'Groundwater licences',
           legend: GWaterLicenceLegend
         }),
         'Observation wells - active': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW/ows?', {
@@ -269,17 +270,21 @@ export default {
     addAquifersToMap (aquifers) {
       const self = this
       function popUpLinkHandler (e) {
-        self.$router.push({
+        let routeData = self.$router.resolve({
           name: 'aquifers-view',
           params: {
             id: this.id
           }
         })
+        window.open(routeData.href, '_blank')
       }
       function getPopUp (aquifer) {
         const container = L.DomUtil.create('div', 'leaflet-popup-aquifer')
         const popUpLink = L.DomUtil.create('div', 'leaflet-popup-link')
-        popUpLink.innerHTML = `<p>Aquifer ID: <span class="popup-link">${aquifer.id}</span></p><p>Aqufier Name: <span class="popup-link">${aquifer.aquifer_name || ''}</span></p>`
+        popUpLink.innerHTML = `<p>Aquifer ID: <span class="popup-link">${aquifer.id}</span></p>
+          <p>Aquifer name: <span class="popup-link">${aquifer.n || ''}</span></p>
+          <p>Aquifer subtype: <span class="popup-link">${aquifer.sd || ''}</span></p>`
+
         L.DomEvent.on(popUpLink, 'click', popUpLinkHandler.bind(aquifer))
         container.appendChild(popUpLink)
         return container
@@ -290,7 +295,7 @@ export default {
         }
         aquifers = aquifers.filter((a) => a.gs)
         aquifers.forEach(aquifer => {
-          L.geoJSON(JSON.parse(aquifer.gs), {
+          L.geoJSON(aquifer.gs, {
             aquifer_id: aquifer['id'],
             style: myStyle,
             type: 'geojsonfeature',
@@ -309,7 +314,7 @@ export default {
           })
         }
       })
-      var aquiferGeom = L.geoJSON(JSON.parse(data.gs))
+      var aquiferGeom = L.geoJSON(data.gs)
       this.map.fitBounds(aquiferGeom.getBounds())
       this.$SmoothScroll(document.getElementById('map'))
     }

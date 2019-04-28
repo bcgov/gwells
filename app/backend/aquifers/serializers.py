@@ -1,3 +1,5 @@
+from collections import OrderedDict
+from rest_framework.fields import SkipField
 """
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -70,13 +72,6 @@ class AquiferSerializer(serializers.ModelSerializer):
     lsu = serializers.CharField(source="litho_stratographic_unit")
     my = serializers.CharField(source="mapping_year")
 
-    def to_representation(self, instance):
-        """Convert `username` to lowercase."""
-        ret = super().to_representation(instance)
-        if instance.geom_simplified:
-            ret['gs'] = instance.geom_simplified.json  # [38:-5]
-        return ret
-
     class Meta:
         model = models.Aquifer
         fields = (
@@ -84,12 +79,12 @@ class AquiferSerializer(serializers.ModelSerializer):
             'n',
             'ld',
             'md',
-            'lsu',
             'sd',
             'vd',
-            'area',
             'pd',
             'dd',
+            'lsu',
+            'area',
             'my',
         )
 
@@ -183,7 +178,7 @@ class AquiferDetailSerializer(AquiferSerializer):
             'purpose__description').annotate(
                 total_qty=Count('quantity')
         )
-        details['last_updated'] = licences.aggregate(
+        details['licences_updated'] = licences.aggregate(
             Max('update_date')
         )
 
@@ -205,10 +200,12 @@ class AquiferDetailSerializer(AquiferSerializer):
             observation_well_number__isnull=False
         ).values('well_tag_number', 'observation_well_number')
 
-        details['wells_by_licence'] = {}
+        details['wells_by_licence'] = []
         for licence in licences:
-            details['wells_by_licence'][licence.licence_number] = licence.wells.all(
-            ).values("well_tag_number")
+            details['wells_by_licence'].append({
+                'licence_number': licence.licence_number,
+                'wells_in_licence': ', '.join([str(l['well_tag_number']) for l in licence.wells.all().values("well_tag_number")])
+            })
         if instance.subtype:
             details['hydraulically_connected'] = instance.subtype.code in HYDRAULIC_SUBTYPES
 

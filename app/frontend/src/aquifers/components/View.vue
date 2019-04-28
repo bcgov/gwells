@@ -137,6 +137,7 @@
               <dd><a href="" @click.prevent="handleWellSearch()">{{ licence_details.num_wells }}</a></dd>
             </li>
           </ul>
+          <p><i v-if="licence_details.wells_updated">Well info last updated {{ licence_details.wells_updated.update_date__max|formatDate }}</i></p>
           <h5 class="mt-5 border-bottom pb-4 main-title">Documentation</h5>
           <aquifer-documents :files="aquiferFiles"
             :editMode="editMode"
@@ -160,15 +161,18 @@
           </ul>
           <b-row class="mt-4 pt-4 border-top" v-if="lic_qty.length > 0">
             <b-col xl=6 cols=12>
-              <h5 class="pie-chart-title">Volume (m<sup>3</sup>) by Type</h5>
+              <h5 class="pie-chart-title">Licenced use by purpose</h5>
               <PieChart :chartData="usage" class="mt-3"></PieChart>
             </b-col>
             <b-col xl=6 cols=12>
-              <h5 class="pie-chart-title">Licences by Type</h5>
+              <h5 class="pie-chart-title">Licenced quanity by use</h5>
               <PieChart :chartData="lic_qty" class="mt-3"></PieChart>
             </b-col>
           </b-row>
           <div v-else>No information available.</div>
+          <b-table striped hover :items="licence_details.wells_by_licence"></b-table>
+          <p><i v-if="licence_details.licences_updated">Licence info last updated {{ licence_details.licences_updated.update_date__max|formatDate }}</i></p>
+
         </b-col>
         <b-col cols="12" xl="4" lg="6">
           <h5 class="mt-3 border-bottom pb-4 main-title">Knowledge Indicators</h5>
@@ -176,11 +180,11 @@
             <div class="aquifer-information-list-divider"></div>
           <li :key="section.id" v-for="(section, index) in aquifer_resource_sections">
               <div class="artesian-conditions" v-if="index === 1">
-                <dt>Artesian Conditions</dt>
-                <dd @click="handleArtesianSearch()">{{ licence_details.num_artesian_wells }} artesian wells in aquifer</dd>
+                <dt>Artesian conditions</dt>
+                <dd><a href="#" @click="handleArtesianSearch()">{{ licence_details.num_artesian_wells }} artesian wells in aquifer</a></dd>
               </div>
               <div class="observational-wells" v-if="index === 2">
-                <dt>Observational Wells</dt>
+                <dt>Observational wells</dt>
                 <dd v-if="obs_wells.length > 0">
                   <ul class="p-0 m-0">
                     <li v-for="owell in obs_wells" :key="owell.observation_well_number">
@@ -205,9 +209,9 @@
                 <p v-if="!bySection(record.resources, section).length">No information available.</p>
               </dd>
               <div class="water-quality-information" v-if="index === 5">
-                <dt>Water Quality Information</dt>
+                <dt>Water quality information</dt>
                 <dd><a :href="getEMSLink()">{{ licence_details['num_wells_with_ems'] }} wells with an EMS ID</a></dd>
-                <dt>Hydraulically Connected</dt>
+                <dt>Hydraulically connected <a href='#' style='font-size:140%' title="Inferred based on aquifer subtype - not field verified">*</a></dt>
                 <dd>{{ licence_details['hydraulically_connected'] ? "Yes" : "No"}}</dd>
               </div>
           </li>
@@ -384,7 +388,12 @@ export default {
   },
   filters: {
     unitWaterVolume (volume) {
-      return volume + ' cubic metres'
+      return Math.round(volume) + ' cubic metres'
+    },
+    formatDate: function (value) {
+      if (!value) return ''
+      value = new Date(value)
+      return value.getMonth() + '/' + value.getDate() + '/' + value.getFullYear()
     }
   },
   methods: {
@@ -467,6 +476,7 @@ export default {
         .then((response) => {
           this.record = response.data
           this.licence_details = response.data.licence_details
+          console.log(this.licence_details)
           this.usage = response.data.licence_details.usage
           this.lic_qty = response.data.licence_details.lic_qty
           this.obs_wells = response.data.licence_details.obs_wells

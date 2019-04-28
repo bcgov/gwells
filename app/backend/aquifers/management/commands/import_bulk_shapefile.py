@@ -83,14 +83,7 @@ class Command(BaseCommand):
                     "Aquifer {} not found in database, skipping import.".format(aquifer_id))
                 return
 
-        # try:
         logging.info('importing {}'.format(aquifer_id))
         aquifer.update_geom_from_feature(feat)
-        # except Exception as e:
-        #     logging.info(
-        #         "import failed. {}, droppin into shell for inspection".format(e))
-        #     import code
-        #     code.interact(local=locals())
-        #     sys.exit(1)
 
         aquifer.save()

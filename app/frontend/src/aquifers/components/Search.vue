@@ -247,6 +247,9 @@ import { filter } from 'lodash'
 
 import { mapGetters } from 'vuex'
 const LIMIT = 30
+
+let geomCache = {}
+
 export default {
   components: {
     'aquifer-map': AquiferMap
@@ -280,7 +283,13 @@ export default {
       surveys: [],
       noSearchCriteriaError: false,
       aquifer_resource_sections: [],
-      sections: query.resources__section__code ? query.resources__section__code.split(',') : [],
+      sections: (function () {
+        let sections = (query.resources__section__code || '').split(',')
+        if (query.hydraulically_connected) {
+          sections.push('Hydra')
+        }
+        return sections
+      })(),
       selectMode: 'single',
       loading: false
     }
@@ -318,6 +327,9 @@ export default {
       ApiService.query('aquifers', this.query)
         .then((response) => {
           this.aquifers_search_results = response.data.results
+          this.aquifers_search_results.forEach(function (aquifer) {
+            aquifer.gs = geomCache[aquifer.id]
+          })
           this.response = response.data
           this.scrollToTableTop()
           this.loading = false
@@ -337,10 +349,16 @@ export default {
             value: section.code
           }
         })
-        console.log('Aquifer Resource', this.aquifer_resource_sections)
         this.aquifer_resource_sections.splice(2, 0, {
           text: 'Hydraulically Connected',
           value: 'Hydra'
+        })
+      })
+    },
+    preFetchGeometry () {
+      ApiService.query('gis/aquifers-simplified').then((response) => {
+        response.data.features.forEach(function (feat) {
+          geomCache[feat.properties.id] = feat
         })
       })
     },
@@ -362,6 +380,7 @@ export default {
       delete this.filterParams.aquifer_id
       delete this.filterParams.search
       delete this.filterParams.resources__section__code
+      delete this.filterParams.hydraulically_connected
       if (this.search) {
         this.filterParams.search = this.search
       }
@@ -416,6 +435,7 @@ export default {
       console.error(e)
     })
     this.fetchResourceSections()
+    this.preFetchGeometry()
   },
   mounted () {
     this.$on('featuresOnMap', (data) => {
