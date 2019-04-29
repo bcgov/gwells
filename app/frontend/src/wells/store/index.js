@@ -235,7 +235,9 @@ const wellsStore = {
       })
 
       // Clear pending after everything completes.
-      Promise.all([wellApiQuery, locationApiQuery]).then(() => {
+      // Since errors are caught in our queries above, Promise.all
+      // waits for both to return.
+      Promise.all([wellApiQuery, locationApiQuery]).finally(() => {
         commit(SET_PENDING_SEARCH, null)
       })
     }
