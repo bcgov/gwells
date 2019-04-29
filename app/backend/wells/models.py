@@ -1644,6 +1644,59 @@ class LithologyDescription(AuditModel):
             return 'well {} {} {}'.format(self.well, self.lithology_from, self.lithology_to)
 
 
+class LithologySignificanceCode(AuditModel):
+    """
+    A code table that contains levels of significance for materials in a single lithology record.
+    E.g. SAND, gravelly, trace clay
+    """
+
+    code = models.CharField(max_length=20, primary_key=True, db_column='lithology_significance_code')
+    description = models.CharField(max_length=200)
+
+
+class LithologyMaterial(AuditModel):
+    """
+    Materials that comprise a lithology record.
+    E.g. there may be several materials (sand, gravel, clay etc.) associated with
+    a single lithology row.
+    """
+
+    lithology_description_guid = models.ForeignKey(LithologyDescription, on_delete=models.CASCADE)
+    lithology_material_code = models.ForeignKey(
+        LithologyMaterialCode,
+        on_delete=models.CASCADE,
+        verbose_name="Material",
+        db_comment=('Standard terms used for defining the material noted for lithology. E.g. Rock, Clay,'
+                    ' Sand, Unspecified.'))
+    
+    # ordering denotes the order of precedence when there are multiple types of soil in one
+    # lithology record. A value of 1 corresponds to the "primary" soil type.
+    ordering = models.IntegerField()
+
+    # This is the significance of a given soil type in a lithology record. 
+    # The basic LithologySignificanceCodes are PRIMARY, SECONDARY, OTHER.
+    # 
+    # Burmister classification system:
+    # Primary soils appear first (often uppercase) and with no modifier (e.g. 'GRAVEL',
+    # but not 'gravelly' or 'some gravel', both of which would be classed as secondary).
+    # Any soils denoted as 'trace' (like 'trace clay') should be put into the 'OTHER' category.
+    #
+    # Unified Soil Classification System (USCS):
+    # Using USCS, the first letter in a soil group is the primary type (e.g. the G in GW-GM).
+    # If the second letter is a soil (the 'C' in 'GC'), then class that as a secondary type.
+    #
+    # In the example 'SAND, gravelly, trace clay', sand is grouped as a 'primary' soil,
+    # gravel as a secondary soil, and clay is 'other'.
+    #
+    # There should be at least one soil with a 'primary' significance, but there may be
+    # two if a soil is described as "SAND and GRAVEL".
+    significance = models.ForeignKey(LithologySignificanceCode, on_delete=models.PROTECT)
+
+    class Meta:
+        ordering = ["ordering"]
+        db_table = 'lithology_material_xref'
+
+
 class LinerPerforation(AuditModel):
     """
     Perforation in a well liner
