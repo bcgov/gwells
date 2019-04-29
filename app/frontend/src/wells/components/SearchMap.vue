@@ -181,11 +181,13 @@ export default {
       minZoom: 4,
       bounds: null,
       selectedMarker: null,
+
       // Track if we triggered a search, or if it came from another component
       searchTriggered: false,
       searchOnMapMove: true,
       movedSinceLastSearch: false,
       zoomBoxActive: false,
+      zoomToMarkersActive: false,
       esriLayer: null
     }
   },
@@ -240,11 +242,10 @@ export default {
       this.$refs.wellMarkers.mapObject.openPopup(marker.latLng)
     },
     zoomToMarkers () {
+      this.zoomToMarkersActive = true
       this.$nextTick(() => {
-        if (this.$refs.wellMarkers && this.$refs.wellMarkers.getBounds) {
-          const markerBounds = this.$refs.wellMarkers.getBounds().pad(0.5)
-          this.$refs.map.mapObject.fitBounds(markerBounds)
-        }
+        const markerBounds = this.$refs.wellMarkers.mapObject.getBounds().pad(0.5)
+        this.$refs.map.mapObject.fitBounds(markerBounds)
       })
     },
     zoomUpdated (zoom) {
@@ -263,6 +264,11 @@ export default {
       this.$store.commit(SET_SEARCH_BOUNDS, this.searchBoundBox)
     },
     mapMoved: debounce(function () {
+      if (this.zoomToMarkersActive) {
+        this.zoomToMarkersActive = false
+        return
+      }
+
       this.movedSinceLastSearch = true
       if (this.searchOnMapMove) {
         this.triggerSearch()
