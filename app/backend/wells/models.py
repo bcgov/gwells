@@ -1597,6 +1597,9 @@ class LithologyDescription(AuditModel):
         db_comment=('Standard terms used for defining the material noted for lithology. E.g. Rock, Clay,'
                     ' Sand, Unspecified.'))
 
+
+    lithology_materials = models.ManyToManyField(LithologyMaterialCode, through='LithologyMaterial', related_name='materials')
+
     water_bearing_estimated_flow = models.DecimalField(
         max_digits=10, decimal_places=4, blank=True, null=True, verbose_name='Water Bearing Estimated Flow')
     water_bearing_estimated_flow_units = models.ForeignKey(

@@ -29,6 +29,7 @@ from wells.models import (
     DecommissionDescription,
     LinerPerforation,
     LithologyDescription,
+    LithologyMaterial,
     Screen,
     Well,
     WellActivityCode,
@@ -254,6 +255,21 @@ class LithologyDescriptionSummarySerializer(serializers.ModelSerializer):
         )
 
 
+class LithologyMaterialSerializer(serializers.ModelSerializer):
+    """ serializer for LithologyMaterial records """
+
+    description = serializers.ReadOnlyField(source='lithology_material_code.description')
+
+    class Meta:
+        model = LithologyMaterial
+        fields = (
+            'lithology_material_code',
+            'description',
+            'significance',
+            'ordering'
+        )
+
+
 class LithologyDescriptionSerializer(serializers.ModelSerializer):
 
     lithology_from = serializers.DecimalField(
@@ -262,6 +278,8 @@ class LithologyDescriptionSerializer(serializers.ModelSerializer):
     lithology_to = serializers.DecimalField(
         max_digits=7, decimal_places=2,
         validators=[MinValueValidator(Decimal('0.01'))])
+
+    materials = LithologyMaterialSerializer(many=True, read_only=True)
 
     """Serializes lithology description records"""
     class Meta:
@@ -276,6 +294,7 @@ class LithologyDescriptionSerializer(serializers.ModelSerializer):
             'lithology_description',
             'lithology_observation',
             'water_bearing_estimated_flow',
+            'materials'
         )
 
 

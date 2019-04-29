@@ -77,7 +77,7 @@ def change_code_description(apps, schema_editor):
 
     if casing_material:
         for casing in Casing.objects.filter(casing_material=casing_material):
-            # Any case where we are overwriting a different casing_code can be ignored, as casing material 
+            # Any case where we are overwriting a different casing_code can be ignored, as casing material
             # is an entirely new field, and this migration should thus only find records in test/dev.
             casing.casing_code = casing_code
             casing.casing_material = None
@@ -309,3 +309,18 @@ def update_geom_fields(apps, schema_editor):
 
 def reverse_update_geom_fields(apps, schema_editor):
     pass
+
+
+def lithology_significance_code_fixture():
+    fixture = 'migrations/lithology_significance_codes.json'
+    fixture_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), fixture)
+
+    return CodeFixture(fixture_path)
+
+
+def load_lithology_significance_codes(apps, schema):
+    return lithology_significance_code_fixture().load_fixture(apps, schema)
+
+
+def unload_lithology_significance_codes(apps, schema):
+    return lithology_significance_code_fixture().unload_fixture(apps, schema)
