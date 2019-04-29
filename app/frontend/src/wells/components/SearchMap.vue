@@ -105,16 +105,20 @@
           :weight="1"
           :fill-opacity="1.0"
           color="#000"
-          fill-color="#0162fe">
-          <l-popup>
-            <div>
-              Well Tag Number: <router-link :to="{ name: 'wells-detail', params: {id: marker.wellTagNumber} }">{{ marker.wellTagNumber }}</router-link>
-            </div>
-            <div>
-              Identification Plate Number: {{ marker.idPlateNumber }}
-            </div>
-          </l-popup>
+          fill-color="#0162fe"
+          @click="openPopup(marker)">
         </l-circle-marker>
+        <l-popup>
+          <div>
+            Well Tag Number: <router-link v-if="selectedMarker" :to="{ name: 'wells-detail', params: {id: selectedMarker.wellTagNumber} }">{{ selectedMarker.wellTagNumber }}</router-link>
+          </div>
+          <div>
+            Identification Plate Number: <span v-if="selectedMarker">{{ selectedMarker.idPlateNumber }}</span>
+          </div>
+          <div>
+            Address: <span v-if="selectedMarker">{{ selectedMarker.address }}</span>
+          </div>
+        </l-popup>
       </l-feature-group>
     </l-map>
     <div class="attribution">
@@ -176,6 +180,7 @@ export default {
       maxZoom: 17,
       minZoom: 4,
       bounds: null,
+      selectedMarker: null,
       // Track if we triggered a search, or if it came from another component
       searchTriggered: false,
       searchOnMapMove: true,
@@ -202,10 +207,16 @@ export default {
     },
     markers () {
       return this.locations.filter(location => location.latitude !== null && location.longitude !== null).map(location => {
+        let address = location.street_address
+        if (location.city !== undefined && location.city !== null && location.city.toString().trim() !== '') {
+          address = `${address}, ${location.city}`
+        }
+
         return {
           wellTagNumber: location.well_tag_number,
           latLng: L.latLng(location.latitude, location.longitude),
-          idPlateNumber: location.identification_plate_number || ''
+          idPlateNumber: location.identification_plate_number || '',
+          address: address
         }
       })
     },
@@ -223,6 +234,10 @@ export default {
     resetView () {
       this.center = [54.5, -126.5]
       this.zoom = 5
+    },
+    openPopup (marker) {
+      this.selectedMarker = marker
+      this.$refs.wellMarkers.mapObject.openPopup(marker.latLng)
     },
     zoomToMarkers () {
       this.$nextTick(() => {
