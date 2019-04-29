@@ -55,43 +55,44 @@ class AquiferResourceSerializer(serializers.ModelSerializer):
 
 class AquiferSerializer(serializers.ModelSerializer):
     """Serialize a aquifer list"""
-    dd = serializers.SlugRelatedField(
-        source='demand', read_only=True, slug_field='description')
-    md = serializers.SlugRelatedField(
-        source='material', read_only=True, slug_field='description')
-    pd = serializers.SlugRelatedField(
-        source='productivity', read_only=True, slug_field='description')
-    sd = serializers.StringRelatedField(
-        source='subtype', read_only=True)
-    vd = serializers.SlugRelatedField(
-        source='vulnerability', read_only=True, slug_field='description')
+    demand = serializers.SlugRelatedField(
+        read_only=True, slug_field='description')
+    material = serializers.SlugRelatedField(
+        read_only=True, slug_field='description')
+    productivity = serializers.SlugRelatedField(
+        read_only=True, slug_field='description')
+    subtype = serializers.StringRelatedField(
+        read_only=True)
+    vulnerability = serializers.SlugRelatedField(
+        read_only=True, slug_field='description')
 
     id = serializers.IntegerField(source="aquifer_id")
-    n = serializers.CharField(source="aquifer_name")
-    ld = serializers.CharField(source="location_description")
+    name = serializers.CharField(source="aquifer_name")
+    location = serializers.CharField(source="location_description")
     lsu = serializers.CharField(source="litho_stratographic_unit")
-    my = serializers.CharField(source="mapping_year")
 
     class Meta:
         model = models.Aquifer
         fields = (
             'id',
-            'n',
-            'ld',
-            'md',
-            'sd',
-            'vd',
-            'pd',
-            'dd',
+            'name',
+            'location',
+            'material',
+            'subtype',
+            'vulnerability',
+            'productivity',
+            'demand',
             'lsu',
             'area',
-            'my',
+            'mapping_year',
         )
 
 
 class AquiferDetailSerializer(AquiferSerializer):
     resources = AquiferResourceSerializer(many=True, required=False)
     licence_details = serializers.JSONField(read_only=True)
+    quality_concern = serializers.SlugRelatedField(
+        read_only=True, slug_field='description')
 
     def create(self, validated_data):
         """
@@ -218,7 +219,7 @@ class AquiferDetailSerializer(AquiferSerializer):
         fields = AquiferSerializer.Meta.fields + (
             'licence_details',
             'resources',
-            'subtype',
+            'quality_concern',
         )
 
 

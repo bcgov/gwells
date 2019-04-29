@@ -119,28 +119,7 @@
               <p class="aquifer-id" v-on:click.prevent="onAquiferIdClick(row.item)">{{row.item.id}}</p>
             </template>
             <template slot="aquifer_name" slot-scope="row">
-              {{row.item.n}}
-            </template>
-            <template slot="location_description" slot-scope="row">
-              {{row.item.ld}}
-            </template>
-            <template slot="material" slot-scope="row">
-              {{row.item.md}}
-            </template>
-            <template slot="subtype" slot-scope="row">
-              {{row.item.sd}}
-            </template>
-            <template slot="vulnerability" slot-scope="row">
-              {{row.item.vd}}
-            </template>
-            <template slot="productivity" slot-scope="row">
-              {{row.item.pd}}
-            </template>
-            <template slot="demand" slot-scope="row">
-              {{row.item.dd}}
-            </template>
-            <template slot="mapping_year" slot-scope="row">
-              {{row.item.my}}
+              {{row.item.name}}
             </template>
           </b-table>
           <b-pagination

@@ -80,35 +80,35 @@
               </li>
               <li>
                 <dt>Aquifer name</dt>
-                <dd id="aquifer-view-name">{{record.aquifer_name}}</dd>
+                <dd id="aquifer-view-name">{{record.name}}</dd>
               </li>
               <li>
                 <dt>Litho stratigraphic unit</dt>
-                <dd>{{record.litho_stratographic_unit}}</dd>
+                <dd>{{record.lsu}}</dd>
               </li>
               <li>
                 <dt>Descriptive location</dt>
-                <dd>{{record.location_description}}</dd>
+                <dd>{{record.location}}</dd>
               </li>
               <li>
                 <dt>Vulnerability</dt>
-                <dd>{{record.vulnerability_description}}</dd>
+                <dd>{{record.vulnerability}}</dd>
               </li>
               <li>
                 <dt>Material type</dt>
-                <dd>{{record.material_description}}</dd>
+                <dd>{{record.material}}</dd>
               </li>
               <li>
                 <dt>Subtype</dt>
-                <dd>{{record.subtype_description}}</dd>
+                <dd>{{record.subtype}}</dd>
               </li>
               <li>
                 <dt>Quality concerns</dt>
-                <dd>{{record.quality_concern_description}}</dd>
+                <dd>{{record.quality_concern}}</dd>
               </li>
               <li>
                 <dt>Productivity</dt>
-                <dd>{{record.productivity_description}}</dd>
+                <dd>{{record.productivity}}</dd>
               </li>
               <li>
                 <dt>Size (km²)</dt>
@@ -116,7 +116,7 @@
               </li>
               <li>
                 <dt>Demand</dt>
-                <dd>{{record.demand_description}}</dd>
+                <dd>{{record.demand}}</dd>
               </li>
               </ul>
             </b-col>
@@ -159,14 +159,14 @@
               <dd v-else>No information available.</dd>
             </li>
           </ul>
-          <b-row class="mt-4 pt-4 border-top" v-if="lic_qty.length > 0">
+          <b-row class="mt-4 pt-4 border-top" v-if="licence_details.lic_qty.length > 0">
             <b-col xl=6 cols=12>
               <h5 class="pie-chart-title">Licenced use by purpose</h5>
-              <PieChart :chartData="usage" class="mt-3"></PieChart>
+              <PieChart :chartData="licence_details.usage" class="mt-3"></PieChart>
             </b-col>
             <b-col xl=6 cols=12>
               <h5 class="pie-chart-title">Licenced quanity by use</h5>
-              <PieChart :chartData="lic_qty" class="mt-3"></PieChart>
+              <PieChart :chartData="licence_details.lic_qty" class="mt-3"></PieChart>
             </b-col>
           </b-row>
           <div v-else>No information available.</div>
@@ -350,16 +350,17 @@ export default {
       fieldErrors: {},
       loading: false,
       record: {},
-      licence_details: {},
+      licence_details: {
+        usage: [],
+        lic_qty: []
+      },
       showSaveSuccess: false,
       aquiferFiles: {},
       aquifer_resource_sections: [],
       wells: [],
       obs_wells: [],
       waterLevels: [],
-      waterWithdrawlVolume: '',
-      usage: [],
-      lic_qty: []
+      waterWithdrawlVolume: ''
     }
   },
   computed: {
@@ -475,9 +476,8 @@ export default {
       ApiService.query(`aquifers/${id}`)
         .then((response) => {
           this.record = response.data
+          console.log(this.record)
           this.licence_details = response.data.licence_details
-          console.log(this.licence_details)
-          this.usage = response.data.licence_details.usage
           this.lic_qty = response.data.licence_details.lic_qty
           this.obs_wells = response.data.licence_details.obs_wells
         }).catch((error) => {
