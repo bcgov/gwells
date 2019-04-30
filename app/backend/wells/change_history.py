@@ -7,8 +7,10 @@ def get_well_history(well):
     all_history = [obj for obj in well.history.all().order_by(
         '-revision__date_created')]
 
+    # get all revisions associated with the well
     revisions = [r.revision for r in all_history]
 
+    # create our containers for sorted well edits
     history = {
         'well': [],
         'liner': [],
@@ -18,8 +20,10 @@ def get_well_history(well):
         'decommission description': []
     }
 
+    # loop through each revision associated with the well and insert the field dictionaries into the containers
     for revision in revisions:
         time = revision.date_created.timestamp().__int__()
+        edit_user = ''
         temp_history = {
             'well': [],
             'liner': [],
@@ -30,13 +34,19 @@ def get_well_history(well):
         }
         for version in revision.version_set.all():
             content_name = version.content_type.name
+            if content_name == 'well':
+                try:
+                    edit_user = version.field_dict['update_user'] or version.field_dict['create_user']
+                except:
+                    pass
             temp_history[content_name].append(version.field_dict)
         for temp_key, temp_val in temp_history.items():
             if temp_val:
-                history[temp_key].append({'time': time, 'data': temp_val})
+                history[temp_key].append({'time': time, 'data': temp_val, 'user': edit_user})
 
     history_diff = []
 
+    # loop through our grouped field dictionary objects and deep diff them to create our diffed history
     for key, value in history.items():
         for i in range(len(value)):
             if key == 'well':
@@ -54,21 +64,17 @@ def get_well_history(well):
                                         view='tree', ignore_order=True, report_repetition=True)
 
             if diff != {}:
-                user = ''
-                try:
-                    user = value[i]['data'][0]['update_user'] or value[i]['data'][0]['create_user']
-                except:
-                    pass
-
+                # create our item object which will contain the formatted data sent back to the client
                 item = {
                     "diff": {},
                     "prev": {},
                     "type": key.title(),
                     "action": '',
-                    "user": user,
+                    "user": value[i]['user'],
                     "date": value[i]['time']
                 }
 
+                # loop through version edit history and add changes/values to the item object
                 for tk, tree in diff.items():
                     item['action'] = action_map(tk)  # values_changed, iterable_item_added, iterable_item_removed
                     for limb in tree.items:
@@ -88,11 +94,13 @@ def get_well_history(well):
                 if item['diff'] != {}:
                     history_diff.append(item)
 
+    # sort our diffed edit objects by timestamp
     history_diff = sorted(history_diff, key=lambda x: x['date'], reverse=True)
 
     return history_diff
 
 
+# Removes the deep diff root/node nomenclature from our key names
 def format_path(path):
     path = re.sub(r"^root.[0-9]].'", '', path)
     path = re.sub(r"']", '', path)
@@ -100,6 +108,7 @@ def format_path(path):
     return path.title()
 
 
+# Changed deep diff change statuses into human readable values
 def action_map(action):
 
     if action == 'iterable_item_added':
@@ -114,6 +123,7 @@ def action_map(action):
         return action
 
 
+# Ignores keys which we do not want to be flagged as diffable
 def keep_key(key):
 
     return key != "root[0]['update_date']" and key != "root[0]['update_user']" \

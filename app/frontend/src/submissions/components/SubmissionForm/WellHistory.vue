@@ -26,7 +26,7 @@
               on
               {{version.date | moment("MMMM Do YYYY [at] LT")}}
               <div
-                style="margin-left:30px;"
+                style="margin-left:20px;"
                 class="font-weight-light"
                 v-for="(value, key) in version.diff"
                 v-if="!(value === '' && version.prev[key] === null)"
@@ -35,6 +35,7 @@
                   v-if="version.action != 'Changed'"
                 >
                   <b-table
+                    responsive
                     striped
                     small
                     bordered

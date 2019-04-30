@@ -21,7 +21,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     </b-row>
     <b-row>
       <b-col cols="12">
-        <change-history :id="$route.params.id" resource="wells" :events="events" ref="wellHistory"/>
+        <well-history :id="$route.params.id" resource="wells" :events="events" ref="wellHistory"/>
       </b-col>
     </b-row>
   </fieldset>
@@ -30,7 +30,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 <script>
 import Vue from 'vue'
 import { mapGetters } from 'vuex'
-import ChangeHistory from '@/common/components/ChangeHistory.vue'
+import WellHistory from './WellHistory'
 
 export default {
   name: 'StaffEditHistory',
@@ -44,7 +44,7 @@ export default {
     }
   },
   components: {
-    ChangeHistory
+    WellHistory
   },
   data () {
     return {}
