@@ -1382,7 +1382,7 @@ class ActivitySubmission(AuditModelStructure):
                     'depth which is the total depth at which the well was drilled. The finished depth is '
                     'represented in units of feet bgl (below ground level).'))
     final_casing_stick_up = models.DecimalField(
-        max_digits=5, decimal_places=3, blank=True, null=True, verbose_name='Final Casing Stick Up')
+        max_digits=6, decimal_places=3, blank=True, null=True, verbose_name='Final Casing Stick Up')
     bedrock_depth = models.DecimalField(
         max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Depth to Bedrock')
     static_water_level = models.DecimalField(
