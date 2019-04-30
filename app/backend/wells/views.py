@@ -58,8 +58,6 @@ from gwells.open_api import (
 from gwells.management.commands.export_databc import (WELLS_SQL, LITHOLOGY_SQL, GeoJSONIterator,
                                                       LITHOLOGY_CHUNK_SIZE, WELL_CHUNK_SIZE)
 
-from deepdiff import DeepDiff
-
 from submissions.serializers import WellSubmissionListSerializer
 from submissions.models import WellActivityCode
 

@@ -13,8 +13,7 @@
 """
 import re
 from django.contrib.gis.geos import GEOSGeometry
-import reversion
-from reversion.models import Version
+
 
 def get_fk_description(obj, field, value):
     """
@@ -59,8 +58,6 @@ def generate_history_diff(collection, identifier=None):
     """
     history_diff = []
 
-    # get_history_groups(collection)
-
     for i in range(len(collection)):
         changed = False
         cur_ver = collection[i]
@@ -95,8 +92,7 @@ def generate_history_diff(collection, identifier=None):
                         key != "update_user" and
                         key != "create_date" and
                         key != "create_user" and
-                        key != "expiry_date" and
-                        key != "lithology_description_guid"):
+                        key != "expiry_date"):
 
                     if isinstance(value, GEOSGeometry):
                         value = ', '.join(map(str, value.coords))

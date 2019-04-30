@@ -18,11 +18,7 @@ from django.contrib.contenttypes.fields import GenericRelation
 
 from decimal import Decimal
 import reversion
-from reversion.signals import pre_revision_commit
 from reversion.models import Version
-
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 
 from django.utils import timezone
 import uuid
@@ -1019,13 +1015,6 @@ class Well(AuditModelStructure):
     db_table_comment = ('Describes how a well was constructed, altered, decomissioned over time. Includes '
                         'information related to who owns the well, location of well, the lithologic '
                         'description as well as other information related to the construction of the well.')
-
-
-# @receiver(pre_revision_commit)
-# def pre_revision_commit_receiver(sender, revision, versions, **kwargs):
-#      print(sender)
-#      print(revision)
-#      print(versions)
 
 
 class Perforation(AuditModel):
