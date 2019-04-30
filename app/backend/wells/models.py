@@ -1274,7 +1274,7 @@ class ActivitySubmission(AuditModelStructure):
     well_orientation = models.BooleanField(default=True, verbose_name='Orientation of Well', choices=(
         (True, 'vertical'), (False, 'horizontal')))
     water_supply_system_name = models.CharField(
-        max_length=50, blank=True, null=True, verbose_name='Water Supply System Name',
+        max_length=80, blank=True, null=True, verbose_name='Water Supply System Name',
         db_comment=('Name or identifier given to a well that serves as a water supply system. Often, the '
                     'name is a reflection of the community or system it serves, e.g. Town of Osoyoos or '
                     'Keremeos Irrigation District.'))
