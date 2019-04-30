@@ -41,44 +41,6 @@ def get_fk_description(obj, field, value):
     return related_object.field_dict.get('description') or related_object.field_dict.get('name') or value
 
 
-def get_history_groups(collection):
-    """
-       Returns an object of key:array representing grouped revisions for a model (grouped by revision_id),
-       showing all the rows that changed in each revision.
-
-       collection: a list of Version objects (django-reversion)
-
-       returns an object:
-       {
-            '1':
-            [
-                {history_item},
-                {history_item}
-            ],
-            '2':
-            [
-                {history_item},
-                ...
-            ],
-        ...
-       }
-       """
-    revisions = {}
-    for i in range(len(collection)):
-        key = str(collection[i].revision_id)
-        if key not in revisions:
-            revisions[key] = []
-        revisions[key].append(collection[i])
-
-    return revisions
-
-
-# def generate_revision_diff(revisions):
-#     for revision in revisions:
-#         for version in revision.version_set.all():
-#
-
-
 def generate_history_diff(collection, identifier=None):
     """
     Returns a list of revisions for a record, showing fields that changed in each revision.
