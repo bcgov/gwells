@@ -39,7 +39,7 @@ objects:
     metadata:
       finalizers:
       - kubernetes.io/pvc-protection
-      name: "${NAME}-config-vol"
+      name: "${NAME}-config-vol-v2"
       labels:
         app: "${NAME}"
     spec:
@@ -121,7 +121,7 @@ objects:
           volumes:
           - name: config-vol
             persistentVolumeClaim:
-              claimName: "${NAME}-config-vol"
+              claimName: "${NAME}-config-vol-v2"
           - name: data-vol
             persistentVolumeClaim:
               claimName: "${NAME}-data-vol"
