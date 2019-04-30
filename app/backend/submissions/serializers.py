@@ -517,7 +517,6 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
             'alteration_end_date',
             'decommission_start_date',
             'decommission_end_date',
-            'construction_start_date',
             'work_start_date',
             'work_end_date',
             'owner_full_name',
