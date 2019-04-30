@@ -217,6 +217,11 @@ const wellsStore = {
         commit(SET_SEARCH_RESULTS, response.data.results)
         commit(SET_SEARCH_RESULT_COUNT, response.data.count)
       }).catch((err) => {
+        // If the search was cancelled, a new one is pending, so don't bother resetting.
+        if (axios.isCancel(err)) {
+          return
+        }
+
         if (err.response && err.response.data) {
           commit(SET_SEARCH_ERRORS, err.response.data)
         }
@@ -228,6 +233,11 @@ const wellsStore = {
         commit(SET_LOCATION_ERRORS, {})
         commit(SET_LOCATION_SEARCH_RESULTS, response.data)
       }).catch((err) => {
+        // If the search was cancelled, a new one is pending, so don't bother resetting.
+        if (axios.isCancel(err)) {
+          return
+        }
+
         if (err.response && err.response.data) {
           commit(SET_LOCATION_ERRORS, err.response.data)
         }
@@ -237,7 +247,7 @@ const wellsStore = {
       // Clear pending after everything completes.
       // Since errors are caught in our queries above, Promise.all
       // waits for both to return.
-      Promise.all([wellApiQuery, locationApiQuery]).finally(() => {
+      return Promise.all([wellApiQuery, locationApiQuery]).finally(() => {
         commit(SET_PENDING_SEARCH, null)
       })
     }
