@@ -73,7 +73,8 @@ class Command(BaseCommand):
 
                 # In dev envs, desecrate the data so it fits our fake fixtures.
                 # We use ENABLE_GOOGLE_ANALYTICS to detect any non-prod ENV here.
-                if settings.ENABLE_GOOGLE_ANALYTICS:
+                # if settings.ENABLE_GOOGLE_ANALYTICS:
+                if not settings.DEBUG:
                     # Check the Licence is for a valid Aquifer
                     Aquifer.objects.get(pk=row['SOURCE_NAME'])
                     well = Well.objects.get(pk=row['WELL_TAG_NUMBER'])
