@@ -1,3 +1,16 @@
+/*
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*/
 <template>
   <div id="map" class="search-map"/>
 </template>
@@ -5,6 +18,8 @@
 <script>
 import L from 'leaflet'
 import { tiledMapLayer } from 'esri-leaflet'
+import { mapGetters } from 'vuex'
+import { SET_SEARCH_BOUNDS } from '@/wells/store/mutations.types.js'
 
 // Extend control, making a locate
 L.Control.Locate = L.Control.extend({
@@ -36,10 +51,6 @@ export default {
     longitude: {
       type: Number
     },
-    locations: {
-      type: Array,
-      default: () => ([])
-    },
     zoomToMarker: Boolean
   },
   data () {
@@ -52,6 +63,9 @@ export default {
       searchLock: false
     }
   },
+  computed: {
+    ...mapGetters(['locationSearchResults'])
+  },
   created () {
     // There seems to be an issue loading leaflet immediately on mount, we use nextTick to ensure
     // that the view has been rendered at least once before injecting the map.
@@ -62,7 +76,7 @@ export default {
     })
   },
   watch: {
-    locations () {
+    locationSearchResults () {
       this.createMarkers()
     },
     latitude () {
@@ -124,6 +138,7 @@ export default {
         }
         setTimeout(() => {
           this.setSearchLock(false)
+          this.setMapBounds()
         }, 0)
       }
 
@@ -143,7 +158,7 @@ export default {
       this.markerGroup.addTo(this.map)
 
       // filter locations for coordinates (coordinate either present or not)
-      const markers = this.locations.filter((item) => {
+      const markers = this.locationSearchResults.filter((item) => {
         return item[0] && item[1]
       })
 
@@ -193,6 +208,7 @@ export default {
         this.setSearchLock(true)
         setTimeout(() => {
           this.map.setView([this.latitude ? this.latitude : 54.5, this.getLongitude() ? this.getLongitude() : -126.5], 5)
+          this.setMapBounds()
         }, 0)
       }
     },
@@ -205,6 +221,18 @@ export default {
       } else {
         this.searchLock = false
       }
+    },
+    setMapBounds () {
+      const bounds = this.map.getBounds()
+      const sw = bounds.getSouthWest()
+      const ne = bounds.getNorthEast()
+      const boundBox = {
+        sw_lat: sw.lat,
+        sw_long: sw.lng,
+        ne_lat: ne.lat,
+        ne_long: ne.lng
+      }
+      this.$store.commit(SET_SEARCH_BOUNDS, boundBox)
     }
   }
 }

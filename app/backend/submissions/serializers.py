@@ -226,6 +226,10 @@ class WellSubmissionLegacySerializer(WellSubmissionSerializerBase):
     yield_estimation_duration = serializers.DecimalField(max_digits=9, decimal_places=2, required=False)
     surface_seal_thickness = serializers.DecimalField(max_digits=7, decimal_places=2, required=False)
     static_level_before_test = serializers.DecimalField(max_digits=7, decimal_places=2, required=False)
+    drawdown = serializers.DecimalField(max_digits=7, decimal_places=2, required=False)
+    hydro_fracturing_yield_increase = serializers.DecimalField(max_digits=7, decimal_places=2, required=False)
+    recommended_pump_depth = serializers.DecimalField(max_digits=7, decimal_places=2, required=False)
+    recommended_pump_rate = serializers.DecimalField(max_digits=7, decimal_places=2, required=False)
     # Use CharField, to switch off validation.
     owner_email = serializers.CharField(allow_null=True, allow_blank=True, required=False)
 
