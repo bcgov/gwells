@@ -47,7 +47,6 @@ from drf_yasg.utils import swagger_auto_schema
 from minio import Minio
 
 from gwells import settings
-from gwells.change_history import generate_history_diff
 from gwells.documents import MinioClient
 from gwells.models import Survey
 from gwells.roles import WELLS_VIEWER_ROLE, WELLS_EDIT_ROLE
