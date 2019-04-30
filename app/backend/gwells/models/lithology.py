@@ -155,7 +155,7 @@ class LithologyMaterialCode(CodeTableModel):
 
     class Meta:
         db_table = 'lithology_material_code'
-        ordering = ['display_order, description']
+        ordering = ['display_order', 'description']
 
     db_table_comment = 'Describes the material noted for lithology. E.g. Rock, Clay, Sand, Unspecified.'
 

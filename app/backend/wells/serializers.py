@@ -288,9 +288,9 @@ class LithologyDescriptionSerializer(serializers.ModelSerializer):
             'lithology_from',
             'lithology_to',
             'lithology_raw_data',
-            'lithology_colour',
-            'lithology_hardness',
-            'lithology_moisture',
+            # 'lithology_colour',
+            # 'lithology_hardness',
+            # 'lithology_moisture',
             'lithology_description',
             'lithology_observation',
             'water_bearing_estimated_flow',
@@ -587,6 +587,13 @@ class WellStackerSerializer(AuditModelSerializer):
             'lithologydescription_set': LithologyDescription,
         }
 
+        # If we need to perform any extra tasks, we can add them to a serializer.
+        # The serializers placed here will be used to create new objects, otherwise
+        # we default to using the Django models in FOREIGN_KEYS.
+        SERIALIZERS = {
+            'lithologydescription_set': LithologyDescriptionSerializer
+        }
+
         for key in FOREIGN_KEYS.keys():
             # Is the field one to many, or many to many?
             model = type(self).Meta.model
@@ -604,9 +611,23 @@ class WellStackerSerializer(AuditModelSerializer):
                         # in order to avoid duplications. (the well we pop, should be the same as the instance
                         # variable)
                         record_data.pop('well', None)
+
                         # Create new instance of of the casing/screen/whatever record.
-                        obj = foreign_class.objects.create(
-                            well=instance, **record_data)
+
+                        # if there's any extra work that needs to be done during object creation,
+                        # put that in a serializer method for a serializer in the SERIALIZERS dict.
+                        # If the current key is not in SERIALIZERS, we skip this and default to using
+                        # the Django model (stored in foreign_class)
+                        if key in SERIALIZERS:
+                            data = SERIALIZERS[key](data=record_data)
+                            print(data)
+                            if data.is_valid(raise_exception=True):
+                                print('creating lithology record!', data)
+                                data.create(well=instance, **record_data)
+
+                        else:
+                            obj = foreign_class.objects.create(
+                                well=instance, **record_data)
             else:
                 raise 'UNEXPECTED FIELD! {}'.format(field)
         instance = super().update(instance, validated_data)
