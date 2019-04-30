@@ -50,17 +50,12 @@
             <b-col cols="12" md="4"><span class="font-weight-bold">Environmental Monitoring System (EMS) ID:</span> {{ well.ems || well.ems_id }}</b-col>
           </b-row>
           <b-row>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Licensed Status:</span> {{ well.licenced_status }}</b-col>
             <b-col cols="12" md="4"><span class="font-weight-bold">Intended Water Use:</span> {{ well.intended_water_use }}</b-col>
             <b-col cols="12" md="4"><span class="font-weight-bold">Aquifer Number:</span>
               <router-link :to="{ name: 'aquifers-view', params: { id: well.aquifer } }">
                 {{ well.aquifer }}
               </router-link>
             </b-col>
-          </b-row>
-          <b-row>
-            <b-col cols="12" md="4"></b-col>
-            <b-col cols="12" md="4"></b-col>
             <b-col cols="12" md="4"><span class="font-weight-bold">Alternative specs submitted:</span> {{ well.alternative_specs_submitted }}</b-col>
           </b-row>
         </fieldset>
@@ -90,6 +85,16 @@
                 <div><a class="jump_link" href="#disclaimer_fieldset">Disclaimer</a></div>
               </b-col>
             </b-row>
+        </fieldset>
+
+        <!-- LICENSING -->
+        <fieldset id="well_licensing_fieldset" class="my-3 detail-section">
+          <legend>Licensing Information</legend>
+          <b-row>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Licensed Status:</span> {{ licence ? licence.status : '' }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Licence Number:</span> {{ licence ? licence.number : '' }}</b-col>
+            <b-col cols="12" md="4"></b-col>
+          </b-row>
         </fieldset>
 
         <!-- LOCATION -->
@@ -434,6 +439,10 @@ export default {
   data () {
     return {
       well: {},
+      licence: {
+        status: '',
+        number: ''
+      },
       lithology_fields: {
         lithology_from: {
           label: 'From (ft bgl)'
@@ -525,6 +534,11 @@ export default {
         this.error = e.response
       }).finally(() => {
         this.loading = false
+      })
+      ApiService.query(`wells/licensing?well_tag_number=${this.$route.params.id}`).then((response) => {
+        this.licence = response.data
+      }).catch((e) => {
+        this.loadLicencingError = e.response
       })
     }
   },
