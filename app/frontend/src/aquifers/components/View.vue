@@ -458,7 +458,10 @@ export default {
     save () {
       this.showSaveSuccess = false
       this.fieldErrors = {}
-      ApiService.patch('aquifers', this.id, this.record)
+      let writableRecord = JSON.parse(JSON.stringify(this.record))
+      delete writableRecord.licence_details
+      delete writableRecord.geom
+      ApiService.patch('aquifers', this.id, writableRecord)
         .then(this.handleSaveSuccess)
         .catch(this.handlePatchError)
     },

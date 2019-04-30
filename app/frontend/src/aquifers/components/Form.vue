@@ -258,8 +258,8 @@
         <b-form-group
           label="Section"
           label-for="section"
-          :invalid-feedback="fieldErrorMessages.section"
-          :state="fieldHasError.section">
+          :invalid-feedback="resourceErrorMessages[index].section"
+          :state="!resourceErrorMessages[index].section">
           <b-form-select
             v-model="resource.section_code"
             :options="['-- Section --'].concat(aquifer_resource_sections)"
@@ -271,8 +271,8 @@
         <b-form-group
           label="Document Name"
           label-for="name"
-          :invalid-feedback="fieldErrorMessages.name"
-          :state="fieldHasError.name">
+          :invalid-feedback="resourceErrorMessages[index].name"
+          :state="!resourceErrorMessages[index].name">
           <b-form-input
             type="text"
             v-model="resource.name"/>
@@ -282,8 +282,8 @@
         <b-form-group
           label="Document URL"
           label-for="url"
-          :invalid-feedback="fieldErrorMessages.url"
-          :state="fieldHasError.url">
+          :invalid-feedback="resourceErrorMessages[index].url"
+          :state="!resourceErrorMessages[index].url">
           <b-form-input
             type="text"
             v-model="resource.url"/>
@@ -353,8 +353,23 @@ import { mapMutations, mapState } from 'vuex'
 
 export default {
   computed: {
+    resourceErrorMessages () {
+      let messages
+      if (this.fieldErrors.resources) {
+        console.log(JSON.stringify(this.fieldErrors.resources))
+        messages = this.fieldErrors.resources.map((resource) => {
+          return mapValues(resource, (messages) => messages.join(','))
+        })
+      } else {
+        messages = this.record.resources.map(function (r) {
+          return {}
+        })
+      }
+      console.log(messages)
+      return messages
+    },
     fieldErrorMessages () {
-      return mapValues(this.fieldErrors, (messages) => messages.join(', '))
+      return mapValues(this.fieldErrors, (messages) => messages.join(','))
     },
     fieldHasError () {
       return mapValues(this.fieldErrors, (messages) => isEmpty(messages))

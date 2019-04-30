@@ -88,11 +88,9 @@ class AquiferSerializer(serializers.ModelSerializer):
         )
 
 
-class AquiferDetailSerializer(AquiferSerializer):
+class AquiferDetailSerializer(serializers.ModelSerializer):
     resources = AquiferResourceSerializer(many=True, required=False)
     licence_details = serializers.JSONField(read_only=True)
-    quality_concern = serializers.SlugRelatedField(
-        read_only=True, slug_field='description')
 
     def create(self, validated_data):
         """
@@ -216,10 +214,25 @@ class AquiferDetailSerializer(AquiferSerializer):
 
     class Meta:
         model = models.Aquifer
-        fields = AquiferSerializer.Meta.fields + (
-            'licence_details',
-            'resources',
+        fields = (
+            'aquifer_id',
+            'aquifer_name',
+            'location_description',
+
             'quality_concern',
+            'material',
+            'subtype',
+            'vulnerability',
+            'known_water_use',
+            'litho_stratographic_unit',
+            'productivity',
+
+            'demand',
+            'mapping_year',
+            'resources',
+            'area',
+            'notes',
+            'licence_details',
         )
 
 
