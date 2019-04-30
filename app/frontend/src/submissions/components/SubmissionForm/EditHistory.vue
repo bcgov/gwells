@@ -51,13 +51,6 @@ export default {
   },
   computed: {
     ...mapGetters(['codes'])
-  },
-  created () {
-    if (this.events) {
-      this.events.$on('well-edited', () => {
-        this.$refs.wellHistory.update()
-      })
-    }
   }
 }
 </script>
