@@ -11,14 +11,19 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
+import json
 from collections import OrderedDict
 
 from django import forms
+from django.core.exceptions import FieldDoesNotExist
+from django.http import HttpRequest, QueryDict
 from django.contrib.gis.geos import GEOSException, Polygon
-from django.db.models import Q, QuerySet
+from django.db.models import Max, Min, Q, QuerySet
 from django_filters import rest_framework as filters
 from django_filters.widgets import BooleanWidget
-from rest_framework.filters import BaseFilterBackend
+from rest_framework.exceptions import ValidationError
+from rest_framework.filters import BaseFilterBackend, OrderingFilter
+from rest_framework.request import clone_request
 
 from gwells.roles import WELLS_VIEWER_ROLE
 from wells.models import (
@@ -27,6 +32,31 @@ from wells.models import (
     WaterQualityCharacteristic,
     Well,
 )
+
+
+def copy_request(request):
+    """
+    Given a rest_framework.request.Request object, create a copy
+    we can mutate without side effects.
+
+    Unfortunately, the built in clone_request method doens't quite get us
+    all the way there (it shares the Django HttpRequest object with the original),
+    and copy.deepcopy doesn't work on WSGIRequests.
+    """
+    clone = clone_request(request, request.method)
+    clone._request = HttpRequest()
+
+    for attr in ('GET', 'POST', 'COOKIES', 'META', 'FILES'):
+        value = getattr(request._request, attr)
+        if value:
+            setattr(clone._request, attr, value.copy())
+
+    for attr in ('path', 'path_info', 'method', 'resolver_match', 'content_type',
+                 'content_params', 'user', 'auth'):
+        if hasattr(request._request, attr):
+            setattr(clone._request, attr, getattr(request._request, attr))
+
+    return clone
 
 
 class BoundingBoxFilterBackend(BaseFilterBackend):
@@ -128,6 +158,7 @@ class WellListFilter(AnyOrAllFilterSet):
     # Don't require a choice (i.e. select box) for aquifer
     aquifer = filters.NumberFilter()
 
+    well_tag_number = filters.CharFilter(lookup_expr='icontains')
     street_address = filters.CharFilter(lookup_expr='icontains')
     city = filters.CharFilter(lookup_expr='icontains')
     well_location_description = filters.CharFilter(lookup_expr='icontains')
@@ -212,6 +243,9 @@ class WellListFilter(AnyOrAllFilterSet):
     ems_has_value = filters.BooleanFilter(field_name='ems',
                                           method='filter_has_value',
                                           label='Any value for EMS id')
+    diameter = filters.RangeFilter()
+    finished_well_depth = filters.RangeFilter()
+    total_depth_drilled = filters.RangeFilter()
 
     class Meta:
         model = Well
@@ -492,7 +526,12 @@ class WellListAdminFilter(WellListFilter):
 
 
 class WellListFilterBackend(filters.DjangoFilterBackend):
-    """Returns a different filterset class for admin users."""
+    """
+    Custom well list filtering logic.
+    
+    Returns a different filterset class for admin users, and allows additional
+    'filter_group' params.
+    """
 
     def get_filterset(self, request, queryset, view):
         filterset_class = WellListFilter
@@ -503,3 +542,118 @@ class WellListFilterBackend(filters.DjangoFilterBackend):
             filterset_class = WellListAdminFilter
 
         return filterset_class(**filterset_kwargs)
+
+    def filter_queryset(self, request, queryset, view):
+        filtered_queryset = super().filter_queryset(request, queryset, view)
+
+        filter_groups = request.query_params.getlist('filter_group', [])
+        for group in filter_groups:
+            try:
+                group_params = json.loads(group)
+            except ValueError as exc:
+                raise ValidationError({
+                    'filter_group': 'Error parsing JSON data: {}'.format(exc),
+                })
+
+            if not group_params:
+                continue
+
+            request_querydict = QueryDict(mutable=True)
+            request_querydict.update(group_params)
+            request_clone = copy_request(request)
+            request_clone._request.GET = request_querydict
+
+            group_filterset = self.get_filterset(request_clone, filtered_queryset, view)
+            if not group_filterset.is_valid():
+                raise ValidationError({"filter_group": group_filterset.errors})
+
+            filtered_queryset = group_filterset.qs
+
+        return filtered_queryset
+
+
+class WellListOrderingFilter(OrderingFilter):
+    """
+    Custom ordering filter to ignore model ordering, and use the description field.
+
+    We also avoid duplicate results when ordering by a ManyToManyField, by
+    annotating and sorting on the annotated field.
+    """
+    relations = {
+        field.name: field
+        for field in Well._meta.get_fields()
+        if field.is_relation and not field.auto_created
+    }
+    m2m_relations = {
+        field.name
+        for field in Well._meta.get_fields()
+        if field.many_to_many and not field.auto_created
+    }
+
+    def get_ordering(self, request, queryset, view):
+        ordering = super().get_ordering(request, queryset, view)
+        updated_ordering = []
+
+        for order in ordering:
+            is_desc = order.startswith('-')
+            field_name = order.lstrip('-')
+            if field_name in self.relations:
+                field = self.relations[field_name]
+                related_ordering = self.get_related_field_ordering(field)
+                for related_order in related_ordering:
+                    if is_desc:
+                        related_order = '-{}'.format(related_order)
+                    updated_ordering.append(related_order)
+            else:
+                updated_ordering.append(order)
+
+        return updated_ordering
+    
+    def get_related_field_ordering(self, related_field):
+        if related_field.name == 'land_district_code':
+            return ['land_district__land_district_code', 'land_district__name']
+        elif related_field.name == 'well_subclass':
+            return ['well_class__description', 'well_subclass__description']
+        elif related_field.name == 'person_responsible':
+            return ['person_responsible__name']
+        elif related_field.name == 'company_of_person_responsible':
+            return ['company_of_person_responsible__name']
+
+        # Check if the description column actually exists
+        try:
+            related_field.related_model._meta.get_field('description')
+        except (FieldDoesNotExist):
+            # Fallback to the 'id' column
+            return ['{}_id'.format(related_field.name)]
+        else:
+            return ['{}__description'.format(related_field.name)]
+
+    def filter_queryset(self, request, queryset, view):
+        """
+        If we get an m2m field, annotate with max or min to avoid
+        duplicate results.
+        """
+        ordering = self.get_ordering(request, queryset, view)
+
+        for index, order in enumerate(ordering):
+            field, *_ = order.lstrip('-').split('__')
+            if field in self.m2m_relations:
+                is_desc = order.startswith('-')
+                if is_desc:
+                    aggregate_class = Max
+                else:
+                    aggregate_class = Min
+                aggregate = aggregate_class(order.lstrip('-'))
+                annotation_kwargs = {
+                    '{}_order_annotation'.format(field): aggregate
+                }
+                queryset = queryset.annotate(**annotation_kwargs)
+                order = '{}_order_annotation'.format(field)
+                if is_desc:
+                    order = '-{}'.format(order)
+                ordering[index] = order
+
+        if ordering:
+            return queryset.order_by(*ordering)
+
+        return queryset
