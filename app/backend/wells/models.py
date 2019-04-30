@@ -1279,7 +1279,7 @@ class ActivitySubmission(AuditModelStructure):
                     'name is a reflection of the community or system it serves, e.g. Town of Osoyoos or '
                     'Keremeos Irrigation District.'))
     water_supply_system_well_name = models.CharField(
-        max_length=50, blank=True, null=True, verbose_name='Water Supply System Well Name',
+        max_length=80, blank=True, null=True, verbose_name='Water Supply System Well Name',
         db_comment=('The specific name given to a water supply system well. Often, the name reflects which '
                     'well it is within the system, e.g. Well 1 or South Well'))
 
