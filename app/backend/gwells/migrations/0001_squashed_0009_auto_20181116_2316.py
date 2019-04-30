@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('registries', '0001_squashed_0012_auto_20180704_2105'),
+        # ('registries', '0001_squashed_0012_auto_20180704_2105'),
         ('submissions', '0001_squashed_0006_auto_20190409_1634'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
