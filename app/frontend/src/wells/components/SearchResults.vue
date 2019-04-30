@@ -124,7 +124,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import {SEARCH_WELLS, SEARCH_WELL_LOCATIONS} from '@/wells/store/actions.types.js'
+import { SEARCH_WELLS } from '@/wells/store/actions.types.js'
 import {
   SET_SEARCH_LIMIT,
   SET_SEARCH_OFFSET,
@@ -217,7 +217,6 @@ export default {
       this.$emit('limit-changed', limit)
 
       this.$store.dispatch(SEARCH_WELLS, {})
-      this.$store.dispatch(SEARCH_WELL_LOCATIONS, {})
     },
     changePage (page) {
       const offset = this.limit * (page - 1)
@@ -225,7 +224,6 @@ export default {
       this.$emit('page-changed', page)
 
       this.$store.dispatch(SEARCH_WELLS, {})
-      this.$store.dispatch(SEARCH_WELL_LOCATIONS, {})
     },
     sortResults ({ param, desc }) {
       const sort = `${desc ? '-' : ''}${param}`
@@ -233,7 +231,6 @@ export default {
       this.$emit('sort-changed', sort)
 
       this.$store.dispatch(SEARCH_WELLS, {})
-      this.$store.dispatch(SEARCH_WELL_LOCATIONS, {})
     },
     applyFilter ({ id }, values) {
       this.filterParams[id] = values
@@ -242,7 +239,6 @@ export default {
       this.$emit('filter-changed', filterGroup)
 
       this.$store.dispatch(SEARCH_WELLS, {})
-      this.$store.dispatch(SEARCH_WELL_LOCATIONS, {})
     },
     initFilterParams () {
       const filterParams = {...this.emptyFilterParams}
