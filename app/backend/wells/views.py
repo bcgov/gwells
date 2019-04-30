@@ -652,22 +652,25 @@ def well_licensing(request):
         'AuthPass': get_env_variable('E_LICENSING_AUTH_PASSWORD')
     }
     response = requests.get(url, headers=headers)
-    try:
-        licence = response.json()[-1]  # Use the latest licensing value
-    except:
-        licence = None
-
-    if licence:
-        licence_status = 'Licensed' if licence.get('authorization_status') == 'ACTIVE' else 'Unlicensed'
-        data = {
-            'status': licence_status,
-            'number': licence.get('authorization_number'),
-            'date': licence.get('authorization_status_date')
-        }
+    if response.ok:
+        try:
+            licence = response.json()[-1]  # Use the latest licensing value
+            licence_status = 'Licensed' if licence.get('authorization_status') == 'ACTIVE' else 'Unlicensed'
+            data = {
+                'status': licence_status,
+                'number': licence.get('authorization_number'),
+                'date': licence.get('authorization_status_date')
+            }
+        except:
+            data = {
+                'status': 'Unlicensed',
+                'number': 'N/A',
+                'date': ''
+            }
     else:
         data = {
-            'status': '',
-            'number': '',
+            'status': 'Service Unavailable',
+            'number': 'N/A',
             'date': ''
         }
 
