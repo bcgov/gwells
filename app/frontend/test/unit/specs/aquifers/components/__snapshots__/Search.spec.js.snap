@@ -286,14 +286,16 @@ exports[`Search Component Matches the snapshot 1`] = `
                   <p
                     class="aquifer-id"
                   >
-                    4
+                    
                   </p>
                 </td>
                 <td
                   aria-colindex="2"
                   class=""
                 >
-                  Aggasiz
+                  
+            
+          
                 </td>
                 <td
                   aria-colindex="3"
@@ -304,11 +306,7 @@ exports[`Search Component Matches the snapshot 1`] = `
                 <td
                   aria-colindex="4"
                   class=""
-                >
-                  
-            Sand and Gravel
-          
-                </td>
+                />
                 <td
                   aria-colindex="5"
                   class=""
@@ -318,19 +316,11 @@ exports[`Search Component Matches the snapshot 1`] = `
                 <td
                   aria-colindex="6"
                   class=""
-                >
-                  
-            Unconfined sand and gravel - large river system
-          
-                </td>
+                />
                 <td
                   aria-colindex="7"
                   class=""
-                >
-                  
-            High
-          
-                </td>
+                />
                 <td
                   aria-colindex="8"
                   class=""
@@ -340,18 +330,12 @@ exports[`Search Component Matches the snapshot 1`] = `
                 <td
                   aria-colindex="9"
                   class=""
-                >
-                  
-            High
-          
-                </td>
+                />
                 <td
                   aria-colindex="10"
                   class=""
                 >
-                  
-            
-          
+                  Low
                 </td>
                 <td
                   aria-colindex="11"

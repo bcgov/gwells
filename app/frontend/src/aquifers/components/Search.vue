@@ -263,7 +263,7 @@ export default {
       noSearchCriteriaError: false,
       aquifer_resource_sections: [],
       sections: (function () {
-        let sections = (query.resources__section__code || '').split(',')
+        let sections = query.resources__section__code ? query.resources__section__code.split(',') : []
         if (query.hydraulically_connected) {
           sections.push('Hydra')
         }
