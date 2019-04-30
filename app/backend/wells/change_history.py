@@ -1,5 +1,6 @@
 import re
 from deepdiff import DeepDiff
+from django.contrib.gis.geos import GEOSGeometry
 
 
 def get_well_history(well):
@@ -49,19 +50,14 @@ def get_well_history(well):
     # loop through our grouped field dictionary objects and deep diff them to create our diffed history
     for key, value in history.items():
         for i in range(len(value)):
-            if key == 'well':
-                if i == len(value) - 1:
-                    break
-                diff = DeepDiff(value[i + 1]['data'], value[i]['data'], verbose_level=1, view='tree')
+            if i == len(value) - 1:
+                diff = DeepDiff(None, value[i]['data'], verbose_level=1, view='tree')
             else:
-                if i == len(value) - 1:
-                    diff = DeepDiff(None, value[i]['data'], verbose_level=1, view='tree')
+                if value[i + 1]['data'].__len__() == value[i]['data'].__len__():
+                    diff = DeepDiff(value[i + 1]['data'], value[i]['data'], verbose_level=1, view='tree')
                 else:
-                    if value[i + 1]['data'].__len__() == value[i]['data'].__len__():
-                        diff = DeepDiff(value[i + 1]['data'], value[i]['data'], verbose_level=1, view='tree')
-                    else:
-                        diff = DeepDiff(value[i + 1]['data'], value[i]['data'], verbose_level=1,
-                                        view='tree', ignore_order=True, report_repetition=True)
+                    diff = DeepDiff(value[i + 1]['data'], value[i]['data'], verbose_level=1,
+                                    view='tree', ignore_order=True, report_repetition=True)
 
             if diff != {}:
                 # create our item object which will contain the formatted data sent back to the client
@@ -86,6 +82,16 @@ def get_well_history(well):
                                 t2 = [t2]
                             if type(t1) == dict:
                                 t1 = [t1]
+                            try:
+                                if isinstance(t2[0]['geom'], GEOSGeometry):
+                                    t2[0]['geom'] = ', '.join(map(str, t2[0]['geom'].coords))
+                            except:
+                                pass
+                            try:
+                                if isinstance(t1[0]['geom'], GEOSGeometry):
+                                    t1[0]['geom'] = ', '.join(map(str, t1[0]['geom'].coords))
+                            except:
+                                pass
                             item['diff'][path] = t2
                             item['prev'][path] = t1
                         else:
@@ -97,7 +103,13 @@ def get_well_history(well):
     # sort our diffed edit objects by timestamp
     history_diff = sorted(history_diff, key=lambda x: x['date'], reverse=True)
 
-    return history_diff
+    well_history = {
+        'diff': history_diff,
+        'create_user': well.create_user,
+        'create_date': well.create_date
+    }
+
+    return well_history
 
 
 # Removes the deep diff root/node nomenclature from our key names
@@ -118,7 +130,7 @@ def action_map(action):
     elif action == 'values_changed':
         return 'Changed'
     elif action == 'type_changes':
-        return 'Created'
+        return 'Altered'
     else:
         return action
 
@@ -135,4 +147,6 @@ def keep_key(key):
         and key != "root[1]['create_user']" and key != "root[1]['expiry_date']" \
         and key != "root[1]['create_date']" and key != "root[1]['liner_perforation_guid'].int" \
         and key != "root[1]['lithology_description_guid'].int" and key != "root[1]['casing_guid'].int" \
-        and key != "root[1]['decommission_description_guid'].int" and key != "root[1]['screen_guid'].int"
+        and key != "root[1]['decommission_description_guid'].int" and key != "root[1]['screen_guid'].int" \
+        and key != "root[0]['company_of_person_responsible_id'].int" and key != "root[0]['person_responsible_id'].int" \
+        and key != "root[1]['company_of_person_responsible_id'].int" and key != "root[1]['person_responsible_id'].int" \

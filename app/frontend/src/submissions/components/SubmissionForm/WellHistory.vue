@@ -26,7 +26,8 @@
                 v-for="(value, key) in version.diff"
                 v-if="!(value === '' && version.prev[key] === null)"
                 :key="`history-item-${key}-in-version ${index}`">
-                <div v-if="version.action != 'Changed'">
+                <div
+                  v-if="Array.isArray(value)">
                   <b-table
                     responsive
                     striped
@@ -37,11 +38,15 @@
                   ></b-table>
                 </div>
                 <div v-else>
-                  {{ key }} changed from {{ version.prev[key] | formatValue }} to {{ value | formatValue }}
+                  {{ key | formatKey }} changed from {{ version.prev[key] | formatValue }} to {{ value | formatValue }}
                 </div>
               </div>
             </div>
-
+          </div>
+          <div class="font-weight-bold mt-3">
+            {{create_user}}
+            Created this well on
+            {{create_date | moment("MMMM Do YYYY [at] LT")}}
           </div>
         </div>
         <div v-if="loading">
@@ -53,32 +58,26 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import ApiService from '@/common/services/ApiService.js'
-export default {
-  name: 'ChangeHistory',
 
-  /**
-   * This component accepts props 'resource' and 'id'.
-   * resource: the name of the API/DB resource that the record belongs to e.g. "organization", "person"
-   * id: the record id to request history for
-   */
-  props: ['resource', 'id'],
+export default {
+  name: 'WellHistory',
+  props: {
+    id: {
+      type: String,
+      isInput: false
+    },
+    events: {
+      type: Vue
+    }
+  },
   data () {
     return {
       history: [],
       showHistory: false,
       loading: false,
       loaded: false
-    }
-  },
-  computed: {
-    endpoint () {
-      // convert resource name into api endpoint
-      const endpointMap = {
-        organization: 'organizations',
-        person: 'drillers'
-      }
-      return endpointMap[this.resource] || this.resource
     }
   },
   watch: {
@@ -95,8 +94,10 @@ export default {
     },
     update () {
       this.loading = true
-      ApiService.history(this.endpoint, this.id).then((response) => {
-        this.history = response.data
+      ApiService.history('wells', this.id).then((response) => {
+        this.history = response.data.diff
+        this.create_user = response.data.create_user
+        this.create_date = response.data.create_date
         this.loading = false
         this.loaded = true
       }).catch(() => {
@@ -117,6 +118,15 @@ export default {
       return val.split('_').map((word) => {
         return word.charAt(0).toUpperCase() + word.substring(1)
       }).join(' ')
+    },
+    formatKey (val) {
+      if (val === 'Geom[0]') {
+        return 'Longitude'
+      } else if (val === 'Geom[1]') {
+        return 'Latitude'
+      } else {
+        return val
+      }
     },
     formatValue (val) {
       // takes a single value and returns a string in a human readable format.
