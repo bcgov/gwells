@@ -91,8 +91,8 @@
         <fieldset id="well_licensing_fieldset" class="my-3 detail-section">
           <legend>Licensing Information</legend>
           <b-row>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Licensed Status:</span> {{ licence.status }}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Licence Number:</span> {{ licence.number }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Licensed Status:</span> {{ licence ? licence.status : '' }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Licence Number:</span> {{ licence ? licence.number : '' }}</b-col>
             <b-col cols="12" md="4"></b-col>
           </b-row>
         </fieldset>
@@ -439,7 +439,7 @@ export default {
   data () {
     return {
       well: {},
-      license: {
+      licence: {
         status: '',
         number: ''
       },

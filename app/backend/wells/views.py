@@ -666,9 +666,9 @@ def well_licensing(request):
         }
     else:
         data = {
-            'status': 'Unlicensed',
-            'number': 'None',
-            'date': 'None'
+            'status': '',
+            'number': '',
+            'date': ''
         }
 
     return HttpResponse(json.dumps(data), content_type="application/json")
