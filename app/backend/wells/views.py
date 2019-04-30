@@ -64,7 +64,11 @@ from deepdiff import DeepDiff
 from submissions.serializers import WellSubmissionListSerializer
 from submissions.models import WellActivityCode
 
-from wells.filters import BoundingBoxFilterBackend, WellListFilterBackend
+from wells.filters import (
+    BoundingBoxFilterBackend,
+    WellListFilterBackend,
+    WellListOrderingFilter,
+)
 from wells.models import (
     ActivitySubmission,
     Casing,
@@ -260,10 +264,11 @@ class WellListAPIView(ListAPIView):
     pagination_class = APILimitOffsetPagination
 
     filter_backends = (WellListFilterBackend, BoundingBoxFilterBackend,
-                       filters.SearchFilter, filters.OrderingFilter)
+                       filters.SearchFilter, WellListOrderingFilter)
     ordering = ('well_tag_number',)
     search_fields = ('well_tag_number', 'identification_plate_number',
                      'street_address', 'city', 'owner_full_name')
+    default_limit = 10
 
     def get_serializer_class(self):
         """Returns a different serializer class for admin users."""
@@ -288,8 +293,7 @@ class WellListAPIView(ListAPIView):
                 "water_quality_characteristics",
                 "drilling_methods",
                 "development_methods"
-            ) \
-            .order_by("well_tag_number")
+            )
 
         return qs
 
