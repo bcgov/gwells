@@ -2,6 +2,7 @@ from django.db import migrations
 from django.db.models import F
 
 
+# This can be deleted when doing next squash of migrations because it's a one time update
 def migrate_work_dates(apps, schema_editor):
     activity_submission = apps.get_model('wells', 'ActivitySubmission')
 
