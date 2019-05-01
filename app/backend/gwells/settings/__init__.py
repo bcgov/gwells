@@ -17,7 +17,7 @@ import logging.config
 from pathlib import Path
 
 import json
-from six.moves.urllib import request
+import requests
 
 from cryptography.x509 import load_pem_x509_certificate
 from cryptography.hazmat.backends import default_backend
@@ -241,12 +241,9 @@ LOGGING = {
 
 
 try:
-    jsonurl = request.urlopen(get_env_variable('SSO_AUTH_HOST'))
-    jwks = json.loads(jsonurl.read())
-    cert = '-----BEGIN CERTIFICATE-----\n' + jwks['keys'][0]['x5c'][0] + '\n-----END CERTIFICATE-----'
-
-    certificate = load_pem_x509_certificate(str.encode(cert), default_backend())
-    public_key = certificate.public_key()
+    url = get_env_variable('SSO_AUTH_HOST') + '/realms/' + get_env_variable("SSO_REALM")
+    res = requests.get(url)
+    public_key = res.json()['public_key']
 except:
     public_key = get_env_variable('SSO_PUBKEY', "")
 
