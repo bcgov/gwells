@@ -12,8 +12,6 @@ import django.utils.timezone
 
 class Migration(migrations.Migration):
 
-    replaces = [('aquifers', '0001_initial'), ('aquifers', '0002_aquifers_codes'), ('aquifers', '0003_auto_20180924_2205'), ('aquifers', '0004_auto_20180927_1737'), ('aquifers', '0005_aquifer_vulnerability_codes'), ('aquifers', '0006_auto_20181003_1820'), ('aquifers', '0007_auto_20181031_2320'), ('aquifers', '0008_alter_sequence'), ('aquifers', '0009_auto_20190108_1925'), ('aquifers', '0010_auto_20190308_2348'), ('aquifers', '0011_auto_20190309_0017'), ('aquifers', '0010_auto_20190307_2131'), ('aquifers', '0012_merge_20190313_1742'), ('aquifers', '0012_aquifer_geom'), ('aquifers', '0013_merge_20190313_1801'), ('aquifers', '0014_auto_20190315_0502'), ('aquifers', '0015_auto_20190315_0502'), ('aquifers', '0016_auto_20190315_0508'), ('aquifers', '0017_aquiferresourcesection_description'), ('aquifers', '0018_auto_20190409_1634')]
-
     initial = True
 
     dependencies = [

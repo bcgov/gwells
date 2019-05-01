@@ -17,11 +17,10 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('aquifers', '0008_alter_sequence'),
-        ('registries', '0001_squashed_0012_auto_20180704_2105'),
+        ('aquifers', '0001_squashed_0018_auto_20190409_1634'),
+        # ('registries', '0001_squashed_0012_auto_20180704_2105'),
         ('registries', '0013_auto_20180712_2107'),
-        ('aquifers', '0018_auto_20190409_1634'),
-        ('submissions', '0001_initial'),
+        ('submissions', '0001_squashed_0006_auto_20190409_1634'),
         ('gwells', '0001_squashed_0009_auto_20181116_2316'),
     ]
 

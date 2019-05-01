@@ -10,6 +10,7 @@ import django.utils.timezone
 logger = logging.getLogger(__name__)
 
 
+# Don't bother squashing this.
 def update_fields(apps, schema_editor):
     app_config = apps.get_app_config('registries')
     app_models = app_config.get_models()
