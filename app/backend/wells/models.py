@@ -1045,9 +1045,6 @@ class Perforation(AuditModel):
         ordering = ['liner_from', 'liner_to', 'liner_perforation_from',
                     'liner_perforation_to', 'perforation_guid']
 
-    def __str__(self):
-        return self.description
-
 
 class LtsaOwner(AuditModel):
     """
