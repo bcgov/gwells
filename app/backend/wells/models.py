@@ -842,7 +842,7 @@ class Well(AuditModelStructure):
     well_cap_type = models.CharField(
         max_length=40, blank=True, null=True, verbose_name='Well Cap')
     well_disinfected = models.BooleanField(
-        default=False, verbose_name='Well Disinfected', choices=((False, 'No'), (True, 'Yes')))
+        default=False, verbose_name='Well Disinfected', choices=((False, 'Not Disinfected'), (True, 'Disinfected')))
 
     comments = models.CharField(max_length=3000, blank=True, null=True)
     internal_comments = models.CharField(max_length=3000, blank=True, null=True)
