@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 
 
 def aquifers_codes():
-    fixture = 'migrations/0002_aquifers_codes.json'
+    fixture = 'migrations/aquifers_codes.json'
     fixture_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), fixture)
 
     return CodeFixture(fixture_path)
@@ -42,7 +42,7 @@ def unload_aquifer_codes(apps, schema_editor):
 
 
 def aquifer_vulnerability_codes():
-    fixture = 'migrations/0005_aquifer_vulnerability_codes.json'
+    fixture = 'migrations/aquifer_vulnerability_codes.json'
     fixture_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), fixture)
 
     return CodeFixture(fixture_path)
@@ -66,7 +66,7 @@ def revert_aquifer_sequence(apps, schema):
 
 
 def aquifer_resource_sections():
-    fixture = 'migrations/0010_aquifer_resource_sections.json'
+    fixture = 'migrations/aquifer_resource_sections.json'
     fixture_path = os.path.join(os.path.dirname(
         os.path.realpath(__file__)), fixture)
     return CodeFixture(fixture_path)
