@@ -187,8 +187,9 @@
             striped
             small
             bordered
+            :items="activityDates"
             show-empty
-            :fields="['activity_type', 'work_start_date', 'work_end_date', 'drilling_company']"
+            :fields="['activityType', 'workStartDate', 'workEndDate']"
           >
 
           </b-table>
@@ -515,6 +516,47 @@ export default {
         active: true
       })
       return links
+    },
+    activityDates () {
+      if (!this.well) {
+        return []
+      }
+      let activityRows = []
+      const row = {
+        activityType: null,
+        start: null,
+        end: null,
+        company: null
+      }
+
+      // construction report
+      if (this.well.construction_start_date || this.well.construction_end_date) {
+        const newRow = Object.assign({}, row)
+        newRow.activityType = 'Construction'
+        newRow.workStartDate = this.well.construction_start_date
+        newRow.workEndDate = this.well.construction_end_date
+        activityRows.push(newRow)
+      }
+
+      // most recent alteration report (this data is not normalized and only captures the most recent report)
+      if (this.well.alteration_end_date || this.well.alteration_start_date) {
+        const newRow = Object.assign({}, row)
+        newRow.activityType = 'Alteration'
+        newRow.workStartDate = this.well.alteration_start_date
+        newRow.workEndDate = this.well.alteration_end_date
+        activityRows.push(newRow)
+      }
+
+      // Decommission report
+      if (this.well.decommission_end_date || this.well.decommission_start_date) {
+        const newRow = Object.assign({}, row)
+        newRow.activityType = 'Decommission'
+        newRow.workStartDate = this.well.decommission_start_date
+        newRow.workEndDate = this.well.decommission_end_date
+        activityRows.push(newRow)
+      }
+
+      return activityRows
     },
     ...mapGetters(['userRoles', 'config'])
   },
