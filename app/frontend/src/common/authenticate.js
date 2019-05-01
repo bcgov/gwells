@@ -34,7 +34,13 @@ export default {
             keyCloakScript.onload = () => {
               // Construct the Keycloak object and resolve the promise.
               Vue.prototype.$keycloak = window.Keycloak(response.data)
-
+              resolve(Vue.prototype.$keycloak)
+            }
+            keyCloakScript.onerror = (e) => {
+              // This is pretty bad - keycloak didn't load - this should never ever happen.
+              // There's not much we can do, so we set keycloak to a random empty object and resolve.
+              console.error(e)
+              Vue.prototype.$keycloak = {}
               resolve(Vue.prototype.$keycloak)
             }
             keyCloakScript.async = true
