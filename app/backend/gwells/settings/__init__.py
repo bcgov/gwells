@@ -244,6 +244,8 @@ try:
     url = get_env_variable('SSO_AUTH_HOST') + '/realms/' + get_env_variable("SSO_REALM")
     res = requests.get(url)
     public_key = res.json()['public_key']
+    if public_key.__len__() <= 0:
+        public_key = get_env_variable('SSO_PUBKEY', "")
 except:
     public_key = get_env_variable('SSO_PUBKEY', "")
 
