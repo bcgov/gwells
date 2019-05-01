@@ -16,11 +16,7 @@ import datetime
 import logging.config
 from pathlib import Path
 
-import json
 import requests
-
-from cryptography.x509 import load_pem_x509_certificate
-from cryptography.hazmat.backends import default_backend
 
 from gwells import database
 from gwells.settings.base import get_env_variable
