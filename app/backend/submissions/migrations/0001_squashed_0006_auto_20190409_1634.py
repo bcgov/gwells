@@ -11,8 +11,6 @@ import submissions.data_migrations
 
 class Migration(migrations.Migration):
 
-    replaces = [('submissions', '0001_initial'), ('submissions', '0002_auto_20180815_2216'), ('submissions', '0003_fix_spelling_20190212_0631'), ('submissions', '0004_auto_20190308_2348'), ('submissions', '0005_auto_20190309_0017'), ('submissions', '0006_auto_20190409_1634')]
-
     initial = True
 
     dependencies = [
