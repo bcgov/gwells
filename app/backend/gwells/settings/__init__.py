@@ -16,6 +16,12 @@ import datetime
 import logging.config
 from pathlib import Path
 
+import json
+from six.moves.urllib import request
+
+from cryptography.x509 import load_pem_x509_certificate
+from cryptography.hazmat.backends import default_backend
+
 from gwells import database
 from gwells.settings.base import get_env_variable
 
@@ -233,13 +239,26 @@ LOGGING = {
     }
 }
 
+
+try:
+    jsonurl = request.urlopen(get_env_variable('SSO_AUTH_HOST'))
+    jwks = json.loads(jsonurl.read())
+    cert = '-----BEGIN CERTIFICATE-----\n' + jwks['keys'][0]['x5c'][0] + '\n-----END CERTIFICATE-----'
+
+    certificate = load_pem_x509_certificate(str.encode(cert), default_backend())
+    public_key = certificate.public_key()
+except:
+    public_key = get_env_variable('SSO_PUBKEY', "")
+
+
 JWT_AUTH = {
     'JWT_PUBLIC_KEY': ("-----BEGIN PUBLIC KEY-----\n" +
-                       get_env_variable('SSO_PUBKEY', "") +
+                       public_key +
                        "\n-----END PUBLIC KEY-----"),
     'JWT_ALGORITHM': 'RS256',
     'JWT_AUDIENCE': get_env_variable('SSO_AUDIENCE')
 }
+
 
 DRF_RENDERERS = ['rest_framework.renderers.JSONRenderer', ]
 # Turn on browsable API if "DEBUG" set
