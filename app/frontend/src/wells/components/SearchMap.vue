@@ -101,7 +101,7 @@
           :lat-lng="marker.latLng"
           :visible="true"
           :draggable="false"
-          :radius="4"
+          :radius="6"
           :weight="1"
           :fill-opacity="1.0"
           color="#000"
