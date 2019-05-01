@@ -124,7 +124,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { SEARCH_WELLS } from '@/wells/store/actions.types.js'
+import { SEARCH_LOCATIONS, SEARCH_WELLS } from '@/wells/store/actions.types.js'
 import {
   SET_SEARCH_LIMIT,
   SET_SEARCH_OFFSET,
@@ -239,6 +239,7 @@ export default {
       this.$store.commit(SET_SEARCH_RESULT_FILTERS, filterGroup)
       this.$emit('filter-changed', filterGroup)
 
+      this.$store.dispatch(SEARCH_LOCATIONS)
       this.$store.dispatch(SEARCH_WELLS, { trigger: FILTER_TRIGGER })
     },
     initFilterParams () {

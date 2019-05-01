@@ -59,6 +59,7 @@ import querystring from 'querystring'
 import { mapGetters } from 'vuex'
 import {
   RESET_WELLS_SEARCH,
+  SEARCH_LOCATIONS,
   SEARCH_WELLS
 } from '@/wells/store/actions.types.js'
 import {
@@ -252,6 +253,7 @@ export default {
     // Otherwise, the search does not need to run (see #1713)
     const query = this.$route.query
     if (Object.entries(query).length !== 0 && query.constructor === Object) {
+      this.$store.dispatch(SEARCH_LOCATIONS)
       this.$store.dispatch(SEARCH_WELLS, { constrain: false, trigger: QUERY_TRIGGER })
     }
 

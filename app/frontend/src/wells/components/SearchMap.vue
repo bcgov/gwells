@@ -143,8 +143,12 @@ import {
   LWMSTileLayer
 } from 'vue2-leaflet'
 import { mapGetters } from 'vuex'
-import { SEARCH_WELLS } from '@/wells/store/actions.types.js'
-import { SET_SEARCH_BOUNDS, SET_SEARCH_PARAMS } from '@/wells/store/mutations.types.js'
+import { SEARCH_LOCATIONS, SEARCH_WELLS } from '@/wells/store/actions.types.js'
+import {
+  SET_SEARCH_BOUNDS,
+  SET_SEARCH_PARAMS,
+  SET_SEARCH_RESULT_FILTERS
+} from '@/wells/store/mutations.types.js'
 import { MAP_TRIGGER } from '@/wells/store/triggers.types.js'
 
 // There is a known issue using leaflet with webpack, this is a workaround
@@ -194,8 +198,9 @@ export default {
     ...mapGetters({
       lastSearchTrigger: 'lastSearchTrigger',
       locations: 'locationSearchResults',
-      pendingSearch: 'pendingSearch',
-      searchParams: 'searchParams'
+      pendingSearch: 'pendingLocationSearch',
+      searchParams: 'searchParams',
+      searchResultFilters: 'searchResultFilters'
     }),
     searchBoundBox () {
       const sw = this.bounds.getSouthWest()
@@ -226,7 +231,10 @@ export default {
       return this.zoom === this.maxZoom
     },
     activeSearch () {
-      return Object.entries(this.searchParams).length > 0
+      return (
+        Object.entries(this.searchParams).length > 0 ||
+        Object.entries(this.searchResultFilters).length > 0
+      )
     },
     showSearchThisAreaButton () {
       return (!this.searchOnMapMove && this.movedSinceLastSearch && this.zoom >= 9)
@@ -273,10 +281,13 @@ export default {
       }
     }, 500),
     triggerSearch () {
+      this.$store.dispatch(SEARCH_LOCATIONS)
       this.$store.dispatch(SEARCH_WELLS, { trigger: MAP_TRIGGER, constrain: true })
     },
     clearSearch () {
       this.$store.commit(SET_SEARCH_PARAMS, {})
+      this.$store.commit(SET_SEARCH_RESULT_FILTERS, {})
+
       this.triggerSearch()
     },
     geolocate () {
