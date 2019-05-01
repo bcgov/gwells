@@ -131,6 +131,7 @@ import {
   SET_SEARCH_ORDERING,
   SET_SEARCH_RESULT_FILTERS
 } from '@/wells/store/mutations.types.js'
+import { FILTER_TRIGGER } from '@/wells/store/triggers.types.js'
 import SearchResultFilter from '@/wells/components/SearchResultFilter.vue'
 import SearchColumnSelect from '@/wells/components/SearchColumnSelect.vue'
 import filterMixin from '@/wells/components/mixins/filters.js'
@@ -216,21 +217,21 @@ export default {
       this.$store.commit(SET_SEARCH_LIMIT, limit)
       this.$emit('limit-changed', limit)
 
-      this.$store.dispatch(SEARCH_WELLS, {})
+      this.$store.dispatch(SEARCH_WELLS, { trigger: FILTER_TRIGGER })
     },
     changePage (page) {
       const offset = this.limit * (page - 1)
       this.$store.commit(SET_SEARCH_OFFSET, offset)
       this.$emit('page-changed', page)
 
-      this.$store.dispatch(SEARCH_WELLS, {})
+      this.$store.dispatch(SEARCH_WELLS, { trigger: FILTER_TRIGGER })
     },
     sortResults ({ param, desc }) {
       const sort = `${desc ? '-' : ''}${param}`
       this.$store.commit(SET_SEARCH_ORDERING, sort)
       this.$emit('sort-changed', sort)
 
-      this.$store.dispatch(SEARCH_WELLS, {})
+      this.$store.dispatch(SEARCH_WELLS, { trigger: FILTER_TRIGGER })
     },
     applyFilter ({ id }, values) {
       this.filterParams[id] = values
@@ -238,7 +239,7 @@ export default {
       this.$store.commit(SET_SEARCH_RESULT_FILTERS, filterGroup)
       this.$emit('filter-changed', filterGroup)
 
-      this.$store.dispatch(SEARCH_WELLS, {})
+      this.$store.dispatch(SEARCH_WELLS, { trigger: FILTER_TRIGGER })
     },
     initFilterParams () {
       const filterParams = {...this.emptyFilterParams}

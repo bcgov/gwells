@@ -69,27 +69,11 @@ import {
   SET_SEARCH_RESULT_COLUMNS,
   SET_SEARCH_RESULT_FILTERS
 } from '@/wells/store/mutations.types.js'
+import { QUERY_TRIGGER } from '@/wells/store/triggers.types.js'
 import AdvancedSearchForm from '@/wells/components/AdvancedSearchForm.vue'
 import BasicSearchForm from '@/wells/components/BasicSearchForm.vue'
 import SearchMap from '@/wells/components/SearchMap.vue'
 import SearchResults from '@/wells/components/SearchResults.vue'
-
-const triggers = {
-  // the map trigger indicates a search was triggered by moving the map.
-  // this should update the search results table to only show visible wells
-  MAP: 'map',
-
-  // the QUERY trigger means the search was triggered by a querystring in the URL
-  // e.g. the user bookmarked a search or shared a link.
-  QUERY: 'query',
-
-  // the search trigger means the basic or advanced search form was used to search for wells.
-  SEARCH: 'search',
-
-  // the 'none' trigger indicates a search hasn't been explicitly requested by user input yet,
-  // and the search will not run.
-  NONE: null
-}
 
 export default {
   name: 'WellSearch',
@@ -103,7 +87,6 @@ export default {
     return {
       scrolled: false,
       mapError: null,
-      lastSearchTrigger: null,
 
       isBusy: false,
       isInitialSearch: true,
@@ -138,13 +121,9 @@ export default {
       this.scrolled = window.scrollY > 0.9 * pos
     },
     handleMapMoveEnd () {
-      this.lastSearchTrigger = triggers.MAP
       this.updateQueryParams()
     },
     handleSearchSubmit () {
-      // Triggered on basic or advanced search via search button
-      this.lastSearchTrigger = triggers.SEARCH
-
       this.updateQueryParams()
 
       // send the analytic event when triggering search by the search button
@@ -273,8 +252,7 @@ export default {
     // Otherwise, the search does not need to run (see #1713)
     const query = this.$route.query
     if (Object.entries(query).length !== 0 && query.constructor === Object) {
-      this.lastSearchTrigger = triggers.QUERY
-      this.$store.dispatch(SEARCH_WELLS, { constrain: false })
+      this.$store.dispatch(SEARCH_WELLS, { constrain: false, trigger: QUERY_TRIGGER })
     }
 
     this.$store.subscribeAction((action, state) => {

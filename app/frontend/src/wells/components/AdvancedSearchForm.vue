@@ -85,6 +85,7 @@ import {
   SEARCH_WELLS
 } from '@/wells/store/actions.types.js'
 import { SET_SEARCH_PARAMS } from '@/wells/store/mutations.types.js'
+import { SEARCH_TRIGGER } from '@/wells/store/triggers.types.js'
 import AdvancedSearchFilter from '@/wells/components/AdvancedSearchFilter.vue'
 import filterMixin from '@/wells/components/mixins/filters.js'
 
@@ -274,7 +275,7 @@ export default {
   methods: {
     handleSubmit () {
       this.$store.commit(SET_SEARCH_PARAMS, { ...this.searchQueryParams })
-      this.$store.dispatch(SEARCH_WELLS, { constrain: false })
+      this.$store.dispatch(SEARCH_WELLS, { trigger: SEARCH_TRIGGER, constrain: false })
 
       this.$emit('search', this.searchQueryParams)
     },

@@ -23,6 +23,7 @@ import {
 import {
   SET_DRILLER_NAMES,
   SET_ERROR,
+  SET_LAST_SEARCH_TRIGGER,
   SET_LOCATION_ERRORS,
   SET_LOCATION_SEARCH_RESULTS,
   SET_ORGANIZATION_NAMES,
@@ -72,6 +73,7 @@ const wellsStore = {
   state: {
     error: null,
     drillerNames: [],
+    lastSearchTrigger: null,
     locationErrors: {},
     locationSearchResults: [],
     organizationNames: [],
@@ -95,6 +97,9 @@ const wellsStore = {
     },
     [SET_DRILLER_NAMES] (state, payload) {
       state.drillerNames = payload
+    },
+    [SET_LAST_SEARCH_TRIGGER] (state, payload) {
+      state.lastSearchTrigger = payload
     },
     [SET_LOCATION_ERRORS] (state, payload) {
       state.locationErrors = payload
@@ -171,6 +176,7 @@ const wellsStore = {
         state.pendingSearch.cancel()
         commit(SET_PENDING_SEARCH, null)
       }
+      commit(SET_CONSTRAIN_SEARCH, false)
       commit(SET_SEARCH_BOUNDS, {})
       commit(SET_SEARCH_ORDERING, DEFAULT_ORDERING)
       commit(SET_SEARCH_LIMIT, DEFAULT_LIMIT)
@@ -183,10 +189,13 @@ const wellsStore = {
       commit(SET_SEARCH_RESULT_COLUMNS, [...DEFAULT_COLUMNS])
       commit(SET_SEARCH_RESULT_FILTERS, {})
     },
-    [SEARCH_WELLS] ({ commit, state }, { constrain = null }) {
+    [SEARCH_WELLS] ({ commit, state }, { constrain = null, trigger = null }) {
+      state.lastSearchTrigger = trigger
+
       if (state.pendingSearch !== null) {
         state.pendingSearch.cancel()
       }
+
       const cancelSource = axios.CancelToken.source()
       commit(SET_PENDING_SEARCH, cancelSource)
 
@@ -255,6 +264,9 @@ const wellsStore = {
   getters: {
     drillerNames (state) {
       return state.drillerNames
+    },
+    lastSearchTrigger (state) {
+      return state.lastSearchTrigger
     },
     locationErrors (state) {
       return state.locationErrors

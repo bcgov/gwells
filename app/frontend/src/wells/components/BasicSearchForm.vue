@@ -53,6 +53,7 @@
 import { mapGetters } from 'vuex'
 import { RESET_WELLS_SEARCH, SEARCH_WELLS } from '@/wells/store/actions.types.js'
 import { SET_SEARCH_PARAMS } from '@/wells/store/mutations.types.js'
+import { SEARCH_TRIGGER } from '@/wells/store/triggers.types.js'
 import Exports from '@/wells/components/Exports.vue'
 
 export default {
@@ -71,7 +72,7 @@ export default {
     handleSubmit () {
       const params = { search: this.searchString }
       this.$store.commit(SET_SEARCH_PARAMS, params)
-      this.$store.dispatch(SEARCH_WELLS, { constrain: false })
+      this.$store.dispatch(SEARCH_WELLS, { trigger: SEARCH_TRIGGER, constrain: false })
 
       this.$emit('search', params)
     },
