@@ -43,6 +43,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.permissions import AllowAny
+from rest_framework.settings import api_settings
 
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
@@ -83,7 +84,10 @@ from wells.models import (
     WellClassCode,
     WellYieldUnitCode,
     WellStatusCode)
+from wells.renderers import WellListCSVRenderer
 from wells.serializers import (
+    WellExportAdminSerializer,
+    WellExportSerializer,
     WellListAdminSerializer,
     WellListSerializer,
     WellTagSearchSerializer,
@@ -390,6 +394,110 @@ class WellLocationListAPIView(ListAPIView):
             raise NotFound("No well records could be found.")
 
         return super().get(request)
+
+
+class WellExportListAPIView(ListAPIView):
+    """Returns CSV or Excel data for wells.
+    """
+    permission_classes = (WellsEditOrReadOnly,)
+    model = Well
+
+    # Allow searching on name fields, names of related companies, etc.
+    filter_backends = (WellListFilterBackend, BoundingBoxFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter)
+    ordering = ('well_tag_number',)
+    pagination_class = None
+
+    search_fields = ('well_tag_number', 'identification_plate_number',
+                     'street_address', 'city', 'owner_full_name')
+    renderer_classes = tuple(api_settings.DEFAULT_RENDERER_CLASSES) + (WellListCSVRenderer,)
+    MAX_EXPORT_COUNT = 10000
+
+    def get_queryset(self):
+        """Excludes unpublished wells for users without edit permissions.
+        """
+        if self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
+            qs = Well.objects.all()
+        else:
+            qs = Well.objects.all().exclude(well_publication_status='Unpublished')
+
+        qs = qs.select_related(
+            'well_class',
+            'well_subclass',
+            'well_status',
+            'licenced_status',
+            'land_district',
+            'drilling_company',
+            'ground_elevation_method',
+            'surface_seal_material',
+            'surface_seal_method',
+            'liner_material',
+            'screen_intake_method',
+            'screen_type',
+            'screen_material',
+            'screen_opening',
+            'screen_bottom',
+            'well_yield_unit',
+            'observation_well_status',
+            'coordinate_acquisition_code',
+            'bcgs_id',
+            'decommission_method',
+            'aquifer',
+            'aquifer_lithology',
+            'yield_estimation_method'
+        )
+        qs = qs.prefetch_related(
+            'development_methods',
+            'drilling_methods',
+            'water_quality_characteristics'
+        )
+
+        return qs
+
+    def get_serializer_class(self):
+        """Returns a different serializer class for admin users."""
+        serializer_class = WellExportSerializer
+        if (self.request.user and self.request.user.is_authenticated and
+                self.request.user.groups.filter(name=WELLS_VIEWER_ROLE).exists()):
+            serializer_class = WellExportAdminSerializer
+
+        return serializer_class
+
+    def batch_queryset_iterator(self, queryset, count, batch_size=2000):
+        """Batch a queryset into chunks of batch_size.
+
+        Allows iterative processing while taking advantage of prefetching many
+        to many relations.
+        """
+        for offset in range(0, count, batch_size):
+            end = min(offset + batch_size, count)
+            batch = queryset[offset:end]
+            for item in batch:
+                yield item
+
+    def list(self, request, format=None):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        count = queryset.count()
+        # return an empty response if there are too many wells to display
+        if count > self.MAX_EXPORT_COUNT:
+            raise PermissionDenied(
+                'Too many wells to export. Please change your search criteria.'
+            )
+        elif count == 0:
+            raise NotFound('No well records could be found.')
+
+        row_generator = self.batch_queryset_iterator(queryset, count)
+        if format == 'csv':
+            data = (self.get_serializer(row).data for row in row_generator)
+            response = StreamingHttpResponse(WellListCSVRenderer().render(data),
+                                             content_type='text/csv')
+            response['Content-Disposition'] = 'attachment; filename="search-results.csv"'
+        else:
+            serializer = self.get_serializer(row_generator, many=True)
+            response = Response(serializer.data)
+
+        return response
 
 
 class PreSignedDocumentKey(APIView):
