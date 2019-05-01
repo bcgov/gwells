@@ -138,15 +138,16 @@ def action_map(action):
 # Ignores keys which we do not want to be flagged as diffable
 def keep_key(key):
 
-    return key != "root[0]['update_date']" and key != "root[0]['update_user']" \
-        and key != "root[0]['create_user']" and key != "root[0]['expiry_date']" \
-        and key != "root[0]['create_date']" and key != "root[0]['liner_perforation_guid'].int"  \
-        and key != "root[0]['lithology_description_guid'].int" and key != "root[0]['casing_guid'].int" \
-        and key != "root[0]['decommission_description_guid'].int" and key != "root[0]['screen_guid'].int" \
-        and key != "root[1]['update_date']" and key != "root[1]['update_user']" \
-        and key != "root[1]['create_user']" and key != "root[1]['expiry_date']" \
-        and key != "root[1]['create_date']" and key != "root[1]['liner_perforation_guid'].int" \
-        and key != "root[1]['lithology_description_guid'].int" and key != "root[1]['casing_guid'].int" \
-        and key != "root[1]['decommission_description_guid'].int" and key != "root[1]['screen_guid'].int" \
-        and key != "root[0]['company_of_person_responsible_id'].int" and key != "root[0]['person_responsible_id'].int" \
-        and key != "root[1]['company_of_person_responsible_id'].int" and key != "root[1]['person_responsible_id'].int" \
+    return key not in \
+       [
+            "root[0]['update_date']", "root[0]['update_user']", "root[0]['create_user']", "root[0]['expiry_date']",
+            "root[0]['create_date']", "root[0]['liner_perforation_guid'].int",
+            "root[0]['lithology_description_guid'].int", "root[0]['casing_guid'].int",
+            "root[0]['decommission_description_guid'].int", "root[0]['screen_guid'].int",
+            "root[0]['company_of_person_responsible_id'].int", "root[0]['person_responsible_id'].int",
+            "root[1]['update_date']", "root[1]['update_user']", "root[1]['create_user']", "root[1]['expiry_date']",
+            "root[1]['create_date']", "root[1]['liner_perforation_guid'].int",
+            "root[1]['lithology_description_guid'].int", "root[1]['casing_guid'].int",
+            "root[1]['decommission_description_guid'].int", "root[1]['screen_guid'].int",
+            "root[1]['company_of_person_responsible_id'].int", "root[1]['person_responsible_id'].int"
+       ]
