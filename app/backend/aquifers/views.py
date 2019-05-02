@@ -142,9 +142,9 @@ class AquiferListCreateAPIView(RevisionMixin, AuditCreateMixin, ListCreateAPIVie
     """
     pagination_class = LargeResultsSetPagination
     permission_classes = (HasAquiferEditRoleOrReadOnly,)
-    # filter_backends = (djfilters.DjangoFilterBackend,
-    #                   OrderingFilter, SearchFilter)
-    #ordering_fields = '__all__'
+    filter_backends = (djfilters.DjangoFilterBackend,
+                       OrderingFilter, SearchFilter)
+    ordering_fields = '__all__'
     ordering = ('aquifer_id',)
 
     def get_serializer_class(self):
@@ -170,7 +170,7 @@ class AquiferListCreateAPIView(RevisionMixin, AuditCreateMixin, ListCreateAPIVie
             'litho_stratographic_unit',
         )
 
-
+# TODO: delete me. This is a faster but uglier version of the view :)
 @api_view(['GET'])
 def list_view(request):
     return HttpResponse(json.dumps(list(_aquifer_qs(
