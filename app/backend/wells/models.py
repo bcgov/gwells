@@ -333,7 +333,7 @@ class LicencedStatusCode(CodeTableModel):
                     ' This information comes from eLicensing. i.e. Unlicensed, Licensed, Historical.'))
     description = models.CharField(
         max_length=255,
-        verbose_name='Licenced Status',
+        verbose_name='Licence Status',
         db_comment=('Descriptions of valid licensing options granted to a well under the Water Water'
                     ' Sustainability Act. This information comes from eLicensing. i.e. Unlicensed,'
                     ' Licensed, Historical'))

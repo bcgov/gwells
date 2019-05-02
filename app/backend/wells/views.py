@@ -496,7 +496,7 @@ WELL_PROPERTIES = openapi.Schema(
         'well_tag_number': get_model_feature_schema(Well, 'well_tag_number'),
         'identification_plate_number': get_model_feature_schema(Well, 'identification_plate_number'),
         'well_status': get_model_feature_schema(WellStatusCode, 'description'),
-        'licenced_status': get_model_feature_schema(LicencedStatusCode, 'description'),
+        'licence_status': get_model_feature_schema(LicencedStatusCode, 'description'),
         'detail': openapi.Schema(
             type=openapi.TYPE_STRING,
             max_length=255,
@@ -574,7 +574,7 @@ LITHOLOGY_PROPERTIES = openapi.Schema(
         'well_tag_number': get_model_feature_schema(Well, 'well_tag_number'),
         'identification_plate_number': get_model_feature_schema(Well, 'identification_plate_number'),
         'well_status': get_model_feature_schema(WellStatusCode, 'description'),
-        'licenced_status': get_model_feature_schema(LicencedStatusCode, 'description'),
+        'licence_status': get_model_feature_schema(LicencedStatusCode, 'description'),
         'detail': openapi.Schema(
             type=openapi.TYPE_STRING,
             max_length=255,
