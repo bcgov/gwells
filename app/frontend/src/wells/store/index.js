@@ -18,15 +18,18 @@ import {
   FETCH_DRILLER_NAMES,
   FETCH_ORGANIZATION_NAMES,
   RESET_WELLS_SEARCH,
+  SEARCH_LOCATIONS,
   SEARCH_WELLS
 } from './actions.types.js'
 import {
   SET_DRILLER_NAMES,
   SET_ERROR,
+  SET_LAST_SEARCH_TRIGGER,
   SET_LOCATION_ERRORS,
   SET_LOCATION_SEARCH_RESULTS,
   SET_ORGANIZATION_NAMES,
   SET_CONSTRAIN_SEARCH,
+  SET_PENDING_LOCATION_SEARCH,
   SET_PENDING_SEARCH,
   SET_SEARCH_BOUNDS,
   SET_SEARCH_LIMIT,
@@ -72,9 +75,11 @@ const wellsStore = {
   state: {
     error: null,
     drillerNames: [],
+    lastSearchTrigger: null,
     locationErrors: {},
     locationSearchResults: [],
     organizationNames: [],
+    pendingLocationSearch: null,
     pendingSearch: null,
     constrainSearch: false,
     searchBounds: {},
@@ -96,6 +101,9 @@ const wellsStore = {
     [SET_DRILLER_NAMES] (state, payload) {
       state.drillerNames = payload
     },
+    [SET_LAST_SEARCH_TRIGGER] (state, payload) {
+      state.lastSearchTrigger = payload
+    },
     [SET_LOCATION_ERRORS] (state, payload) {
       state.locationErrors = payload
     },
@@ -104,6 +112,9 @@ const wellsStore = {
     },
     [SET_ORGANIZATION_NAMES] (state, payload) {
       state.organizationNames = payload
+    },
+    [SET_PENDING_LOCATION_SEARCH] (state, payload) {
+      state.pendingLocationSearch = payload
     },
     [SET_PENDING_SEARCH] (state, payload) {
       state.pendingSearch = payload
@@ -167,10 +178,16 @@ const wellsStore = {
       }
     },
     [RESET_WELLS_SEARCH] ({ commit, state }) {
+      if (state.pendingLocationSearch !== null) {
+        state.pendingLocationSearch.cancel()
+      }
       if (state.pendingSearch !== null) {
         state.pendingSearch.cancel()
-        commit(SET_PENDING_SEARCH, null)
       }
+
+      commit(SET_PENDING_LOCATION_SEARCH, null)
+      commit(SET_PENDING_SEARCH, null)
+      commit(SET_CONSTRAIN_SEARCH, false)
       commit(SET_SEARCH_BOUNDS, {})
       commit(SET_SEARCH_ORDERING, DEFAULT_ORDERING)
       commit(SET_SEARCH_LIMIT, DEFAULT_LIMIT)
@@ -183,10 +200,44 @@ const wellsStore = {
       commit(SET_SEARCH_RESULT_COLUMNS, [...DEFAULT_COLUMNS])
       commit(SET_SEARCH_RESULT_FILTERS, {})
     },
-    [SEARCH_WELLS] ({ commit, state }, { constrain = null }) {
+    [SEARCH_LOCATIONS] ({ commit, state }) {
+      if (state.pendingLocationSearch !== null) {
+        state.pendingLocationSearch.cancel()
+      }
+
+      const cancelSource = axios.CancelToken.source()
+      commit(SET_PENDING_LOCATION_SEARCH, cancelSource)
+
+      const params = { ...state.searchParams, ...state.searchBounds }
+
+      if (Object.entries(state.searchResultFilters).length > 0) {
+        params['filter_group'] = JSON.stringify(state.searchResultFilters)
+      }
+
+      ApiService.query('wells/locations', params, { cancelToken: cancelSource.token }).then((response) => {
+        commit(SET_LOCATION_ERRORS, {})
+        commit(SET_LOCATION_SEARCH_RESULTS, response.data)
+      }).catch((err) => {
+        // If the search was cancelled, a new one is pending, so don't bother resetting.
+        if (axios.isCancel(err)) {
+          return
+        }
+
+        if (err.response && err.response.data) {
+          commit(SET_LOCATION_ERRORS, err.response.data)
+        }
+        commit(SET_LOCATION_SEARCH_RESULTS, [])
+      }).finally(() => {
+        commit(SET_PENDING_LOCATION_SEARCH, null)
+      })
+    },
+    [SEARCH_WELLS] ({ commit, state }, { constrain = null, trigger = null }) {
+      state.lastSearchTrigger = trigger
+
       if (state.pendingSearch !== null) {
         state.pendingSearch.cancel()
       }
+
       const cancelSource = axios.CancelToken.source()
       commit(SET_PENDING_SEARCH, cancelSource)
 
@@ -194,7 +245,12 @@ const wellsStore = {
         commit(SET_CONSTRAIN_SEARCH, constrain)
       }
 
-      const params = { ...state.searchParams }
+      const params = {
+        ...state.searchParams,
+        ordering: state.searchOrdering,
+        limit: state.searchLimit,
+        offset: state.searchOffset
+      }
 
       if (Object.entries(state.searchResultFilters).length > 0) {
         params['filter_group'] = JSON.stringify(state.searchResultFilters)
@@ -204,40 +260,23 @@ const wellsStore = {
       if (state.constrainSearch) {
         Object.assign(params, state.searchBounds)
       }
-      params['ordering'] = state.searchOrdering
 
-      // Location searches aren't limited
-      const locationParams = {...params}
-
-      params['limit'] = state.searchLimit
-      params['offset'] = state.searchOffset
-
-      const wellApiQuery = ApiService.query('wells', params, { cancelToken: cancelSource.token }).then((response) => {
+      ApiService.query('wells', params, { cancelToken: cancelSource.token }).then((response) => {
         commit(SET_SEARCH_ERRORS, {})
         commit(SET_SEARCH_RESULTS, response.data.results)
         commit(SET_SEARCH_RESULT_COUNT, response.data.count)
       }).catch((err) => {
+        // If the search was cancelled, a new one is pending, so don't bother resetting.
+        if (axios.isCancel(err)) {
+          return
+        }
+
         if (err.response && err.response.data) {
           commit(SET_SEARCH_ERRORS, err.response.data)
         }
         commit(SET_SEARCH_RESULTS, null)
         commit(SET_SEARCH_RESULT_COUNT, 0)
-      })
-
-      const locationApiQuery = ApiService.query('wells/locations', locationParams, { cancelToken: cancelSource.token }).then((response) => {
-        commit(SET_LOCATION_ERRORS, {})
-        commit(SET_LOCATION_SEARCH_RESULTS, response.data)
-      }).catch((err) => {
-        if (err.response && err.response.data) {
-          commit(SET_LOCATION_ERRORS, err.response.data)
-        }
-        commit(SET_LOCATION_SEARCH_RESULTS, [])
-      })
-
-      // Clear pending after everything completes.
-      // Since errors are caught in our queries above, Promise.all
-      // waits for both to return.
-      Promise.all([wellApiQuery, locationApiQuery]).finally(() => {
+      }).finally(() => {
         commit(SET_PENDING_SEARCH, null)
       })
     }
@@ -245,6 +284,9 @@ const wellsStore = {
   getters: {
     drillerNames (state) {
       return state.drillerNames
+    },
+    lastSearchTrigger (state) {
+      return state.lastSearchTrigger
     },
     locationErrors (state) {
       return state.locationErrors
@@ -264,6 +306,9 @@ const wellsStore = {
     },
     constrainSearch (state) {
       return state.constrainSearch
+    },
+    pendingLocationSearch (state) {
+      return state.pendingLocationSearch
     },
     pendingSearch (state) {
       return state.pendingSearch
