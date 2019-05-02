@@ -144,8 +144,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
             <b-col cols="12" lg="6"><span class="font-weight-bold">Longitude:</span> {{form.longitude}}</b-col>
           </b-row>
           <b-row>
-            <b-col cols="12" lg="4"><span class="font-weight-bold">UTM Easting:</span> {{Math.round(UTM.easting)}}</b-col>
-            <b-col cols="12" lg="6"><span class="font-weight-bold">UTM Northing:</span> {{Math.round(UTM.northing)}}</b-col>
+            <b-col cols="12" lg="4"><span class="font-weight-bold">UTM Easting:</span> {{UTM.easting}}</b-col>
+            <b-col cols="12" lg="6"><span class="font-weight-bold">UTM Northing:</span> {{UTM.northing}}</b-col>
           </b-row>
           <b-row>
             <b-col cols="12" lg="4"><span class="font-weight-bold">Zone:</span> {{UTM.zone}}</b-col>
@@ -185,6 +185,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             'moisture',
             'descriptor',
             'water_bearing_estimated_flow',
+            'observations'
           ]">
           <template slot="description" slot-scope="data">{{data.item.lithology_raw_data}}</template>
           <template slot="from" slot-scope="data">{{data.item.lithology_from}}</template>
@@ -193,6 +194,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <template slot="hardness" slot-scope="data">{{codeToDescription('lithology_hardness_codes', data.item.lithology_hardness) }}</template>
           <template slot="moisture" slot-scope="data">{{codeToDescription('lithology_moisture_codes', data.item.lithology_moisture) }}</template>
           <template slot="descriptor" slot-scope="data">{{codeToDescription('lithology_descriptors', data.item.lithology_description) }}</template>
+          <template slot="observations" slot-scope="data">{{ data.item.lithology_observation }}</template>
         </b-table>
       </div>
     </fieldset>
@@ -378,7 +380,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <b-col cols="12" lg="6"><span class="font-weight-bold">Water Quality Odour:</span> {{ form.water_quality_odour }}</b-col>
       </b-row>
       <b-row>
-        <b-col cols="12" lg="6"><span class="font-weight-bold">EMS ID:</span> {{ form.ems_id }}</b-col>
+        <b-col cols="12" lg="6"><span class="font-weight-bold">EMS ID:</span> {{ form.ems }}</b-col>
       </b-row>
     </fieldset>
 
@@ -407,15 +409,14 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <fieldset class="my-3 detail-section" v-if="sections.decommissionInformation">
       <legend>Well Decommission Information</legend>
       <b-row>
-        <b-col cols="12" lg="4"><span class="font-weight-bold">Finished Well Depth:</span> {{ form.finished_well_depth }} {{ form.finished_well_depth ? 'feet':''}}</b-col>
-        <b-col cols="12" lg="4"><span class="font-weight-bold">Sealant Material:</span> {{ form.decommission_sealant_material }}</b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Reason for Decommission:</span> {{ form.decommission_reason }}</b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Method of Decommission:</span> {{ form.decommission_method }}</b-col>
       </b-row>
       <b-row>
-        <b-col cols="12" lg="4"><span class="font-weight-bold">Reason for Decommission:</span> {{ form.decommission_reason }}</b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Sealant Material:</span> {{ form.decommission_sealant_material }}</b-col>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Backfill Material:</span> {{ form.decommission_backfill_material }}</b-col>
       </b-row>
       <b-row>
-        <b-col cols="12" lg="4"><span class="font-weight-bold">Method of Decommission:</span> {{ form.decommission_method }}</b-col>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Decommission Details:</span> {{ form.decommission_details }}</b-col>
       </b-row>
     </fieldset>
@@ -459,6 +460,24 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <b-list-group>
             <b-list-group-item v-for="(f, index) in uploadedFiles.private" :key="index">{{f.name}}</b-list-group-item>
           </b-list-group>
+        </b-col>
+      </b-row>
+    </fieldset>
+
+    <fieldset class="my-3 detail-section">
+      <legend>General Disclaimer</legend>
+      <b-row>
+        <b-col cols="12" lg="9">
+          This information is collected by the Ministry of Environment and Climate Change Strategy under section 26
+          (c) of the Freedom of Information and Protection of Privacy Act.<br><br>
+          Information, including personal information, will be used to determine well location and confirm that the
+          construction, alteration, or decommission of a well has been done in accordance with the Water Sustainability
+          Act (WSA) and Groundwater Protection Regulation (GWPR). Well reports submitted to the Comptroller, or
+          retained by the person responsible, as required under Sec 57 the WSA and Part 10 of the GWPR, shall be
+          considered part of the Provincial Government records. Documents or images uploaded as part of submission
+          and that contain personal information not covered under this legislation will be deleted.<br><br>
+          Should you have any questions about the collection or use of this information, please contact the
+          Groundwater Data Specialist: <br>phone: 778-698-4867 <br>email: groundwater@gov.bc.ca
         </b-col>
       </b-row>
     </fieldset>
@@ -531,7 +550,18 @@ export default {
     },
     UTM () {
     // converts form lat/long and returns an object containing UTM easting, northing, and zone
-      return this.convertToUTM(Number(this.form.longitude), Number(this.form.latitude))
+      if (this.form.latitude || this.form.longitude) {
+        let utm = this.convertToUTM(Number(this.form.longitude), Number(this.form.latitude))
+        utm.easting = Math.round(utm.easting)
+        utm.northing = Math.round(utm.northing)
+        return utm
+      } else {
+        return {
+          easting: null,
+          northing: null,
+          zone: null
+        }
+      }
     },
     ...mapGetters(['codes']),
     ...mapState('documentState', [

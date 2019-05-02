@@ -11,19 +11,25 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
+from datetime import datetime
+import logging
 
 from django_filters import rest_framework as djfilters
-from django.http import Http404, HttpResponse, JsonResponse
+from django.http import Http404, HttpResponse, JsonResponse, HttpResponseRedirect, StreamingHttpResponse
 from django.views.generic import TemplateView
+from django.db.models import Q
+from django.db import connection
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
 from rest_framework import filters
+from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveUpdateAPIView
+from rest_framework.permissions import AllowAny
 
 from reversion.views import RevisionMixin
 
@@ -35,15 +41,25 @@ from aquifers import models
 from aquifers import serializers
 from aquifers.models import (
     Aquifer,
+    AquiferResourceSection,
     AquiferDemand,
     AquiferMaterial,
     AquiferProductivity,
     AquiferSubtype,
     AquiferVulnerabilityCode,
+    AquiferMaterial,
+    QualityConcern,
+    WaterUse
 )
 from aquifers.permissions import HasAquiferEditRoleOrReadOnly, HasAquiferEditRole
 from gwells.change_history import generate_history_diff
-from registries.views import AuditCreateMixin, AuditUpdateMixin
+from gwells.views import AuditCreateMixin, AuditUpdateMixin
+from gwells.open_api import (
+    get_geojson_schema, get_model_feature_schema, GEO_JSON_302_MESSAGE, GEO_JSON_PARAMS)
+from gwells.management.commands.export_databc import AQUIFERS_SQL, GeoJSONIterator, AQUIFER_CHUNK_SIZE
+
+
+logger = logging.getLogger(__name__)
 
 
 class AquiferRetrieveUpdateAPIView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateAPIView):
@@ -65,14 +81,43 @@ class AquiferListCreateAPIView(RevisionMixin, AuditCreateMixin, ListCreateAPIVie
     """
 
     permission_classes = (HasAquiferEditRoleOrReadOnly,)
-    queryset = Aquifer.objects.all()
     serializer_class = serializers.AquiferSerializer
     filter_backends = (djfilters.DjangoFilterBackend,
                        OrderingFilter, SearchFilter)
-    filter_fields = ('aquifer_id',)
-    search_fields = ('aquifer_name',)
     ordering_fields = '__all__'
     ordering = ('aquifer_id',)
+
+    def get_queryset(self):
+        """
+        We have a custom search which does a case insensitive substring of aquifer_name,
+        exact match on aquifer_id, and also looks at an array of provided resources attachments
+        of which we require one to be present if any are specified. The front-end doesn't use
+        DjangoFilterBackend's querystring array syntax, preferring ?a=1,2 rather than ?a[]=1&a[]=2,
+        so again we need a custom back-end implementation.
+        """
+        qs = Aquifer.objects.all()
+        resources__section__code = self.request.GET.get(
+            "resources__section__code")
+        search = self.request.GET.get('search')
+        # truthy check - ignore missing and emptystring.
+        if resources__section__code:
+            qs = qs.filter(
+                resources__section__code__in=resources__section__code.split(','))
+        if search:  # truthy check - ignore missing and emptystring.
+            disjunction = Q(aquifer_name__icontains=search)
+            if search.isdigit():
+                disjunction = disjunction | Q(pk=int(search))
+            qs = qs.filter(disjunction)
+        return qs.distinct()
+
+
+class AquiferResourceSectionListAPIView(ListAPIView):
+    """List aquifer materials codes
+    get: return a list of aquifer material codes
+    """
+
+    queryset = AquiferResourceSection.objects.all()
+    serializer_class = serializers.AquiferResourceSectionSerializer
 
 
 class AquiferMaterialListAPIView(ListAPIView):
@@ -146,23 +191,23 @@ class ListFiles(APIView):
     """
 
     @swagger_auto_schema(responses={200: openapi.Response('OK',
-        openapi.Schema(type=openapi.TYPE_OBJECT, properties={
-            'public': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
-                type=openapi.TYPE_OBJECT,
-                properties={
-                    'url': openapi.Schema(type=openapi.TYPE_STRING),
-                    'name': openapi.Schema(type=openapi.TYPE_STRING)
-                }
-            )),
-            'private': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
-                type=openapi.TYPE_OBJECT,
-                properties={
-                    'url': openapi.Schema(type=openapi.TYPE_STRING),
-                    'name': openapi.Schema(type=openapi.TYPE_STRING)
-                }
-            ))
-        })
-    )})
+                                                          openapi.Schema(type=openapi.TYPE_OBJECT, properties={
+                                                              'public': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
+                                                                  type=openapi.TYPE_OBJECT,
+                                                                  properties={
+                                                                      'url': openapi.Schema(type=openapi.TYPE_STRING),
+                                                                      'name': openapi.Schema(type=openapi.TYPE_STRING)
+                                                                  }
+                                                              )),
+                                                              'private': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
+                                                                  type=openapi.TYPE_OBJECT,
+                                                                  properties={
+                                                                      'url': openapi.Schema(type=openapi.TYPE_STRING),
+                                                                      'name': openapi.Schema(type=openapi.TYPE_STRING)
+                                                                  }
+                                                              ))
+                                                          })
+                                                          )})
     def get(self, request, aquifer_id):
         user_is_staff = self.request.user.groups.filter(
             name=AQUIFERS_EDIT_ROLE).exists()
@@ -193,11 +238,12 @@ class AquiferNameList(ListAPIView):
 
     def get(self, request):
         search = self.request.query_params.get('search', None)
-        if not search or len(search) < 3:
+        if not search:
             # avoiding responding with excess results
             return Response([])
-        else:
-            return super().get(request)
+        results = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer_class()
+        return Response(serializer(results[:20], many=True).data)
 
 
 class AquiferHistory(APIView):
@@ -226,7 +272,8 @@ class AquiferHistory(APIView):
         aquifer_history_diff = generate_history_diff(
             aquifer_history, 'aquifer ' + aquifer_id)
 
-        history_diff = sorted(aquifer_history_diff, key=lambda x: x['date'], reverse=True)
+        history_diff = sorted(aquifer_history_diff,
+                              key=lambda x: x['date'], reverse=True)
 
         return Response(history_diff)
 
@@ -246,7 +293,8 @@ class PreSignedDocumentKey(APIView):
             request=request, disable_private=False)
 
         object_name = request.GET.get("filename")
-        filename = client.format_object_name(object_name, int(aquifer_id), "aquifer")
+        filename = client.format_object_name(
+            object_name, int(aquifer_id), "aquifer")
         bucket_name = get_env_variable("S3_AQUIFER_BUCKET")
 
         is_private = False
@@ -281,7 +329,74 @@ class DeleteAquiferDocument(APIView):
             is_private = True
             bucket_name = get_env_variable("S3_PRIVATE_AQUIFER_BUCKET")
 
-        object_name = client.get_bucket_folder(int(aquifer_id), "aquifer") + "/" + request.GET.get("filename")
-        client.delete_document(object_name, bucket_name=bucket_name, private=is_private)
+        object_name = client.get_bucket_folder(
+            int(aquifer_id), "aquifer") + "/" + request.GET.get("filename")
+        client.delete_document(
+            object_name, bucket_name=bucket_name, private=is_private)
 
         return HttpResponse(status=204)
+
+
+AQUIFER_PROPERTIES = openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    title='GeoJSON Feature properties.',
+    description='See: https://tools.ietf.org/html/rfc7946#section-3.2',
+    properties={
+        'aquifer_id': get_model_feature_schema(Aquifer, 'aquifer_id'),
+        'name': get_model_feature_schema(Aquifer, 'aquifer_name'),
+        'location': get_model_feature_schema(Aquifer, 'location_description'),
+        'material': get_model_feature_schema(AquiferMaterial, 'description'),
+        'subtype': get_model_feature_schema(AquiferSubtype, 'description'),
+        'vulnerability': get_model_feature_schema(AquiferVulnerabilityCode, 'description'),
+        'productivity': get_model_feature_schema(AquiferProductivity, 'description'),
+        'demand': get_model_feature_schema(AquiferDemand, 'description'),
+        'water_use': get_model_feature_schema(WaterUse, 'description'),
+        'quality_concern': get_model_feature_schema(QualityConcern, 'description'),
+        'litho_stratographic_unit': get_model_feature_schema(Aquifer, 'litho_stratographic_unit'),
+        'mapping_year': get_model_feature_schema(Aquifer, 'mapping_year'),
+        'notes': get_model_feature_schema(Aquifer, 'notes')
+    })
+
+
+@swagger_auto_schema(
+    operation_description=('Get GeoJSON (see https://tools.ietf.org/html/rfc7946) dump of aquifers.'),
+    method='get',
+    manual_parameters=GEO_JSON_PARAMS,
+    responses={
+        302: openapi.Response(GEO_JSON_302_MESSAGE),
+        200: openapi.Response(
+            'GeoJSON data for aquifers.',
+            get_geojson_schema(AQUIFER_PROPERTIES, 'Polygon'))
+    })
+@api_view(['GET'])
+def aquifer_geojson(request):
+    realtime = request.GET.get('realtime') in ('True', 'true')
+    if realtime:
+        sw_long = request.query_params.get('sw_long')
+        sw_lat = request.query_params.get('sw_lat')
+        ne_long = request.query_params.get('ne_long')
+        ne_lat = request.query_params.get('ne_lat')
+
+        if sw_long and sw_lat and ne_long and ne_lat:
+            bounds_sql = 'and geom @ ST_Transform(ST_MakeEnvelope(%s, %s, %s, %s, 4326), 3005)'
+            bounds = (sw_long, sw_lat, ne_long, ne_lat)
+        else:
+            bounds_sql = ''
+
+        iterator = GeoJSONIterator(AQUIFERS_SQL.format(bounds=bounds_sql),
+                                   AQUIFER_CHUNK_SIZE,
+                                   connection.cursor(),
+                                   bounds)
+        response = StreamingHttpResponse((item for item in iterator),
+                                         content_type='application/json')
+        response['Content-Disposition'] = 'attachment; filename="aquifers.json"'
+        return response
+    else:
+        # Generating spatial data realtime is much too slow,
+        # so we have to redirect to a pre-generated instance.
+        url = 'https://{}/{}/{}'.format(
+            get_env_variable('S3_HOST'),
+            get_env_variable('S3_WELL_EXPORT_BUCKET'),
+            'api/v1/gis/aquifers.json')
+        return HttpResponseRedirect(url)
+

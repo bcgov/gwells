@@ -27,7 +27,7 @@ describe('Casings.vue', () => {
       }
     })
 
-    expect(wrapper.vm.casingsInput.length).toBe(3)
+    expect(wrapper.vm.casingsData.length).toBe(3)
   })
   it('adds a new Casings row when clicking Add Row', () => {
     const wrapper = shallowMount(Casings, {
@@ -39,7 +39,7 @@ describe('Casings.vue', () => {
     })
 
     wrapper.find('#addCasingRowBtn').trigger('click')
-    expect(wrapper.vm.casingsInput.length).toBe(4)
+    expect(wrapper.vm.casingsData.length).toBe(4)
   })
   it('when clicking the remove button on a row, removes that row', () => {
     const wrapper = shallowMount(Casings, {
@@ -52,7 +52,7 @@ describe('Casings.vue', () => {
     })
 
     wrapper.find('#removeCasingRowBtn0').trigger('click')
-    expect(wrapper.vm.casingsInput.length).toBe(2)
+    expect(wrapper.vm.casingsData.length).toBe(2)
   })
   it('Passes errors into the input components', () => {
     const wrapper = shallowMount(Casings, {

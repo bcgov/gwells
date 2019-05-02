@@ -17,6 +17,7 @@ import { store } from '../store/index.js'
 import authenticate from '@/common/authenticate.js'
 
 import SubmissionsHome from '@/submissions/views/SubmissionsHome.vue'
+import SubmissionDetail from '@/submissions/views/SubmissionDetail.vue'
 
 Vue.use(Router)
 
@@ -28,6 +29,14 @@ const router = new Router({
       component: SubmissionsHome,
       meta: {
         edit: true // requires wells/edit permission. note: beforeEnter guard not implemented yet
+      }
+    },
+    {
+      path: '/:id/submissions/:submissionId',
+      name: 'SubmissionDetail',
+      component: SubmissionDetail,
+      meta: {
+        edit: true
       }
     },
     {

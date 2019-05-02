@@ -21,7 +21,7 @@
                     v-for="(value, key) in version.diff"
                     v-if="!(value === '' && version.prev[key] === null)"
                     :key="`history-item-${key}-in-version ${index}`">
-                  {{ key | readable }} changed from {{ version.prev[key] }}<span v-if="!version.prev[key]">none</span> to {{ value }}<span v-if="!value">none</span>
+                  {{ key | readable }} changed from {{ version.prev[key] | formatValue }} to {{ value | formatValue }}
                 </div>
               </div>
           </div>
@@ -80,9 +80,27 @@ export default {
   },
   filters: {
     readable (val) {
-      return val ? val.split('_').map((word) => {
+      val = val || ''
+
+      // some GIS data is returned in field 'geom' by default.
+      // for the history view, we can translate that to 'Location'
+      if (val.toLowerCase() === 'geom') {
+        return 'Location'
+      }
+
+      return val.split('_').map((word) => {
         return word.charAt(0).toUpperCase() + word.substring(1)
-      }).join(' ') : ''
+      }).join(' ')
+    },
+    formatValue (val) {
+      // takes a single value and returns a string in a human readable format.
+      // if val started as something that would be displayed as an empty space,
+      // we return 'none' instead so we can form a complete sentence.
+      // e.g. Province changed from none to British Columbia
+      if (val === undefined || val === null || val === '') {
+        return 'none'
+      }
+      return val
     }
   },
   created () {

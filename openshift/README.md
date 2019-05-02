@@ -1,33 +1,62 @@
 # Openshift Configuration and Notes
 
-## Resource Limits
+GWELLS runs on the BC Gov Pathfinder OpenShift cluster with deployments and resources spanning 4 projects.
 
-moe-gwells-dev has a resource limit of [8 cores](https://console.pathfinder.gov.bc.ca:8443/console/project/moe-gwells-dev/quota) which is enough for all pods to run, but may not be enough to deploy (both [developer](https://console.pathfinder.gov.bc.ca:8443/console/project/moe-gwells-tools/browse/pipelines/gwells-pipeline-developer?tab=history) and [master](https://console.pathfinder.gov.bc.ca:8443/console/project/moe-gwells-tools/browse/pipelines/gwells-pipeline?tab=history) pipelines.)
+## Projects/Namespaces
 
-Deployments may fail without a meaningful error message (e.g. timeout is the most common one).  If this happens then we scale down all ancillary pods in [moe-gwells-dev](https://console.pathfinder.gov.bc.ca:8443/console/project/moe-gwells-dev/overview) or [moe-gwells-test](https://console.pathfinder.gov.bc.ca:8443/console/project/moe-gwells-test/overview).  This does not seem to happon on [moe-gwells-prod](https://console.pathfinder.gov.bc.ca:8443/console/project/moe-gwells-prod/overview).
+`moe-gwells-tools` houses the Jenkins-based CI/CD system, which runs pipelines using the Jenkinsfile in the root of this repository.  Builds and images are also located in this project (when an image is ready to be deployed to an environment, it is tagged across to that environment's project).
 
-Error message examples during deployment:
-```
-[2018-04-18 21:18:34 +0000] [1] [CRITICAL] WORKER TIMEOUT (pid:47)
-[2018-04-18 21:18:34 +0000] [47] [INFO] Worker exiting (pid: 47)
-[2018-04-18 21:18:34 +0000] [1] [CRITICAL] WORKER TIMEOUT (pid:48)
-```
+`moe-gwells-dev` is where developer environments live.  There is generally one active environment/deployment in this project per pull request.  Active environments are deployed at a URL in the form of https://gwells-dev-pr-999.pathfinder.gov.bc.ca/gwells/.
 
-SonarQube also has error messages that are misleading but actually can be resolved by increasing memory or CPU Resource Limits:
-```
-ERROR: script returned exit code 137
-```
+* note: resources for each pull request environment are grouped by the "app" label. For example, you can select all resources for PR 999 using the label selector `-l app=gwells-dev-pr-999`. These resources are cleaned up by Jenkins when the pull request is merged or closed.
+
+`moe-gwells-test` is where **test** and **demo** environments are located.  Staging is automatically deployed when a pull request is made against the `master` branch (and the version deployed at staging can optionally be deployed to production).  To deploy to the *demo* environment, make a pull request against the `demo` branch.
+
+`moe-gwells-prod` is where the production environment is located.
+
+## CI/CD Pipeline
+
+The Jenkins CI/CD pipeline is designed to roll out a new version of the GWELLS application from dev to staging to production automatically. It uses the Jenkinsfile in the repo root and OpenShift tools to build the app from source and deploy the image.
+
+The CI/CD pipeline functions by having Jenkins monitor GitHub pull requests.
+
+### Deploy to a dev environment
+
+When a pull request is made against the `release` branch, a dev environment will be created for the pull request, which should mirror the production environment as closely as is practical. Closing the pull request cleans up the dev environment.
+
+### Deploy to staging
+
+When a pull request is merged into release, the release pipeline will re-build the `release` branch into a new application image and deploy it to staging. This process relies on having a `release` -> `master` pull request open.
+
+### Deploy to production
+
+Use the Jenkins pipeline to approve the deployment of an image in staging to production. The staging image will be tagged as the latest production image and production will be redeployed.
 
 
-A more detailed explanation is that each application has its own limit (e.g. [DEV gwells](https://console.pathfinder.gov.bc.ca:8443/console/project/moe-gwells-dev/set-limits?kind=DeploymentConfig&name=gwells) has CPU 700 millicores available while running) but during deployment, may require MORE than the 700 millicores during deployments.
+## Prerequisites to deploying to staging/production
 
-Until we can fine-tune each individual applications CPU limit, or are provided more resources overall, we need to be watchful for failed deployments due to running out of resources.   To fix this, we get ready to rerun the pipeline but before that, we go to the [Overview page](https://console.pathfinder.gov.bc.ca:8443/console/project/moe-gwells-dev/overview) expand the view into each of the applications in turn and scale down to 0:
-- metabase
-- schema-spy
-- sparx-ea-gwells
+The application will roll itself out to staging and production automatically using the Jenkinsfile. However, if starting from a brand new, empty environment, some resources and backing services need to be deployed first:
 
-We try the pipline again and if it still fails, we also scale down:
-- gwells-minio
-- proxy-caddy
+#### Prerequisite images
 
-IMPORTANT: Scale these applications back up to their original # of pods, so that day-to-day work (e.g. working with data architects) can still continue.
+The database image comes from bcgov/postgresql-oracle_fdw. Ensure this image is present and can be pulled into the tools project.
+
+#### ConfigMaps and Secrets
+
+ConfigMaps and Secrets must be created for each environment. The Jenkinsfile is set up to make a copy of the following "base" objects for each environment (see the file in parentheses for keys/values that are required):
+
+* ConfigMaps:
+  * `gwells-global-config` (backend.dc.json)
+
+* Secrets:
+  * `gwells-minio-secrets` (backend.dc.json)
+  * `gwells-django-secrets` (backend.dc.json)
+  * `gwells-database-secrets` (postgresql.dc.json)
+
+#### Minio object storage
+
+Private object storage is provided by a minio service, but minio is not currently deployed as part of the pipeline.  Please see `openshift/minio.dc.json` for a deployment config template.
+
+#### Minio backup 
+
+A backup cronjob is deployed by the pipeline, but the BuildConfig needs to be created once before running the pipeline.  Please see `openshift/jobs/minio-backup`. Apply the BuildConfig template and then `oc tag` the resulting image to the project where backups will run. This only needs to be done once.

@@ -11,26 +11,32 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-
-from rest_framework.response import Response
+import logging
+import sys
 from posixpath import join as urljoin
+
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView
 from django.urls import reverse
+
+import rest_framework.exceptions
+from rest_framework.response import Response
 from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveAPIView
 from rest_framework.views import APIView
 
 from gwells.documents import MinioClient
 from gwells.urls import app_root
 from gwells.pagination import APILimitOffsetPagination
-from wells.permissions import WellsEditPermissions
+from wells.permissions import (
+    WellsEditPermissions, WellsSubmissionPermissions, WellsSubmissionViewerPermissions)
 from gwells.models import ProvinceStateCode
 from gwells.models.lithology import (
     LithologyColourCode, LithologyHardnessCode,
     LithologyMaterialCode, LithologyMoistureCode, LithologyDescriptionCode)
 from gwells.serializers import ProvinceStateCodeSerializer
 from gwells.settings.base import get_env_variable
+from gwells.views import AuditCreateMixin
 from wells.models import (
     ActivitySubmission,
     CasingCode,
@@ -45,6 +51,7 @@ from wells.models import (
     GroundElevationMethodCode,
     IntendedWaterUseCode,
     LandDistrictCode,
+    LicencedStatusCode,
     LinerMaterialCode,
     ObsWellStatusCode,
     ScreenIntakeMethodCode,
@@ -72,9 +79,12 @@ from wells.serializers import (
     CasingMaterialSerializer,
 )
 from submissions.serializers import (
+    AlterationSubmissionDisplaySerializer,
     CoordinateAcquisitionCodeSerializer,
+    ConstructionSubmissionDisplaySerializer,
     DecommissionMaterialCodeSerializer,
     DecommissionMethodCodeSerializer,
+    DecommissionSubmissionDisplaySerializer,
     DevelopmentMethodCodeSerializer,
     DrillingMethodCodeSerializer,
     FilterPackMaterialCodeSerializer,
@@ -82,6 +92,7 @@ from submissions.serializers import (
     GroundElevationMethodCodeSerializer,
     IntendedWaterUseCodeSerializer,
     LandDistrictSerializer,
+    LegacyWellDisplaySerializer,
     LinerMaterialCodeSerializer,
     LithologyHardnessSerializer,
     LithologyColourSerializer,
@@ -112,7 +123,11 @@ from submissions.serializers import (
     YieldEstimationMethodCodeSerializer,
     WellStaffEditSubmissionSerializer,
     AquiferLithologySerializer,
+    LicencedStatusCodeSerializer,
 )
+
+
+logger = logging.getLogger(__name__)
 
 
 def get_submission_queryset(qs):
@@ -143,7 +158,7 @@ def get_submission_queryset(qs):
 class SubmissionGetAPIView(RetrieveAPIView):
     """Get a submission"""
 
-    permission_classes = (WellsEditPermissions,)
+    permission_classes = (WellsSubmissionViewerPermissions,)
     queryset = ActivitySubmission.objects.all()
     model = ActivitySubmission
     lookup_field = 'filing_number'
@@ -162,23 +177,24 @@ class SubmissionGetAPIView(RetrieveAPIView):
 
         # There are different serializers; which one is used depends on well_activity_type
         if activity and activity == WellActivityCode.types.construction().code:
-            serializer_class = WellConstructionSubmissionSerializer
+            serializer_class = ConstructionSubmissionDisplaySerializer
         elif activity and activity == WellActivityCode.types.alteration().code:
-            serializer_class = WellAlterationSubmissionSerializer
+            serializer_class = AlterationSubmissionDisplaySerializer
         elif activity and activity == WellActivityCode.types.decommission().code:
-            serializer_class = WellDecommissionSubmissionSerializer
+            serializer_class = DecommissionSubmissionDisplaySerializer
+        elif activity and activity == WellActivityCode.types.legacy().code:
+            serializer_class = LegacyWellDisplaySerializer
 
         return serializer_class(*args, **kwargs)
 
 
 class SubmissionListAPIView(ListAPIView):
-    """List and create submissions
+    """List submissions
 
     get: returns a list of well activity submissions
-    post: adds a new submission
     """
 
-    permission_classes = (WellsEditPermissions,)
+    permission_classes = (WellsSubmissionViewerPermissions,)
     model = ActivitySubmission
     queryset = ActivitySubmission.objects.all()
     pagination_class = APILimitOffsetPagination
@@ -201,13 +217,47 @@ class SubmissionListAPIView(ListAPIView):
         return Response(serializer.data)
 
 
-class SubmissionConstructionAPIView(ListCreateAPIView):
-    """Create a construction submission
-
+class SubmissionBase(AuditCreateMixin, ListCreateAPIView):
+    """ Base class for mutating data that has detailed error logging.
     """
+
+    def post(self, request, *args, **kwargs):
+        try:
+            return self.create(request, *args, **kwargs)
+        except rest_framework.exceptions.APIException as error:
+            try:
+                logger.warn(('Problem encountered handling POST; '
+                             'user:{request.user.profile.username}; '
+                             'user.is_authenticated:{request.user.is_authenticated}; '
+                             'path:{request.path}; method:{request.method}; status_code:{error.status_code}; '
+                             'request: {request.data}; '
+                             'response: {error.detail}').format(
+                    request=request,
+                    error=error))
+            except:
+                logger.error('Error logging error!', exc_info=sys.exc_info())
+            raise
+        except:
+            try:
+                logger.warn(('Problem encountered handling POST; '
+                             'user:{request.user.profile.username}; '
+                             'user.is_authenticated:{request.user.is_authenticated}; '
+                             'path:{request.path}; method:{request.method};'
+                             'request: {request.data}; '
+                             'detail: {detail}').format(
+                    request=request,
+                    detail=sys.exc_info()))
+            except:
+                logger.error('Error logging error!', exc_info=sys.exc_info())
+            raise
+
+
+class SubmissionConstructionAPIView(SubmissionBase):
+    """Create a construction submission"""
+
     model = ActivitySubmission
     serializer_class = WellConstructionSubmissionSerializer
-    permission_classes = (WellsEditPermissions,)
+    permission_classes = (WellsSubmissionPermissions,)
     queryset = ActivitySubmission.objects.all()
 
     def get_queryset(self):
@@ -215,13 +265,12 @@ class SubmissionConstructionAPIView(ListCreateAPIView):
             .filter(well_activity_type=WellActivityCode.types.construction())
 
 
-class SubmissionAlterationAPIView(ListCreateAPIView):
-    """Create an alteration submission
+class SubmissionAlterationAPIView(SubmissionBase):
+    """Create an alteration submission"""
 
-    """
     model = ActivitySubmission
     serializer_class = WellAlterationSubmissionSerializer
-    permission_classes = (WellsEditPermissions,)
+    permission_classes = (WellsSubmissionPermissions,)
     queryset = ActivitySubmission.objects.all()
 
     def get_queryset(self):
@@ -229,13 +278,12 @@ class SubmissionAlterationAPIView(ListCreateAPIView):
             .filter(well_activity_type=WellActivityCode.types.alteration())
 
 
-class SubmissionDecommissionAPIView(ListCreateAPIView):
-    """Create an decommission submission
+class SubmissionDecommissionAPIView(SubmissionBase):
+    """Create a decommission submission"""
 
-    """
     model = ActivitySubmission
     serializer_class = WellDecommissionSubmissionSerializer
-    permission_classes = (WellsEditPermissions,)
+    permission_classes = (WellsSubmissionPermissions,)
     queryset = ActivitySubmission.objects.all()
 
     def get_queryset(self):
@@ -243,10 +291,8 @@ class SubmissionDecommissionAPIView(ListCreateAPIView):
             .filter(well_activity_type=WellActivityCode.types.decommission())
 
 
-class SubmissionStaffEditAPIView(ListCreateAPIView):
-    """ Create a staff edit submission
-    TODO: Implement this class fully
-    """
+class SubmissionStaffEditAPIView(SubmissionBase):
+    """ Create a staff edit submission"""
     model = ActivitySubmission
     serializer_class = WellStaffEditSubmissionSerializer
     permission_classes = (WellsEditPermissions,)
@@ -326,12 +372,17 @@ class SubmissionsOptions(APIView):
         )
         aquifer_lithology = AquiferLithologySerializer(instance=AquiferLithologyCode.objects.all(), many=True)
 
-        lithology_hardness = LithologyHardnessSerializer(instance=LithologyHardnessCode.objects.all(), many=True)
+        lithology_hardness = LithologyHardnessSerializer(
+            instance=LithologyHardnessCode.objects.all(), many=True)
         lithology_colours = LithologyColourSerializer(instance=LithologyColourCode.objects.all(), many=True)
-        lithology_materials = LithologyMaterialSerializer(instance=LithologyMaterialCode.objects.all(), many=True)
-        lithology_moisture = LithologyMoistureSerializer(instance=LithologyMoistureCode.objects.all(), many=True)
+        lithology_materials = LithologyMaterialSerializer(
+            instance=LithologyMaterialCode.objects.all(), many=True)
+        lithology_moisture = LithologyMoistureSerializer(
+            instance=LithologyMoistureCode.objects.all(), many=True)
         lithology_descriptors = LithologyDescriptionCodeSerializer(
             instance=LithologyDescriptionCode.objects.all(), many=True)
+        licenced_status_codes = LicencedStatusCodeSerializer(
+            instance=LicencedStatusCode.objects.all(), many=True)
 
         root = urljoin('/', app_root, 'api/v1/')
         for item in activity_codes.data:
@@ -375,6 +426,7 @@ class SubmissionsOptions(APIView):
         options["well_status_codes"] = well_status_codes.data
         options["well_publication_status_codes"] = well_publication_status_codes.data
         options["observation_well_status"] = observation_well_status.data
+        options["licenced_status_codes"] = licenced_status_codes.data
 
         return Response(options)
 
@@ -387,7 +439,7 @@ class PreSignedDocumentKey(RetrieveAPIView):
     """
 
     queryset = ActivitySubmission.objects.all()
-    permission_classes = (WellsEditPermissions,)
+    permission_classes = (WellsSubmissionPermissions,)
 
     def get(self, request, submission_id):
         submission = get_object_or_404(self.queryset, pk=submission_id)

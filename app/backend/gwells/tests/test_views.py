@@ -47,3 +47,6 @@ class ViewsTestCase(TestCase):
 
     def test_robots_view_ok(self):
         self.ok('robots')
+
+    def test_health_check(self):
+        self.ok('health')

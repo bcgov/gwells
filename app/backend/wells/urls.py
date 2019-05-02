@@ -21,6 +21,18 @@ from . import views
 urlpatterns = [
 
     # API endpoints
+    # Submissions for a well
+    url(r'^api/v1/wells/(?P<well_tag_number>[0-9]+)/edit$',
+        never_cache(views.WellStaffEditDetail.as_view()), name='well-edit-details'),
+
+
+    url(r'^api/v1/wells/(?P<well_id>[0-9]+)/history$',
+        never_cache(views.WellHistory.as_view()), name='well-history'),
+
+    # Submissions for a well
+    url(r'^api/v1/wells/(?P<well_id>[0-9]+)/submissions$',
+        never_cache(views.WellSubmissionsListAPIView.as_view()), name='submissions-by-well'),
+
     # Well
     url(r'^api/v1/wells/(?P<well_tag_number>[0-9]+)$',
         never_cache(views.WellDetail.as_view()), name='well-detail'),
@@ -52,4 +64,15 @@ urlpatterns = [
     url(r'^api/v1/wells$',
         never_cache(views.WellListAPIView.as_view()), name='well-list'),
 
+    # GeoJSON well endpoint for DataBC.
+    url(r'^api/v1/gis/wells$',
+        views.well_geojson, name='well-geojson'),
+
+    # GeoJSON lithology endpoint for DataBC.
+    url(r'^api/v1/gis/lithology$',
+        views.lithology_geojson, name='well-lithology-geojson'),
+
+    # Well Licensing status endpoint from e-Licensing.
+    url(r'^api/v1/wells/licensing$',
+        views.well_licensing, name='well-licensing')
 ]

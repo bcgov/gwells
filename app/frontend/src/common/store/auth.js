@@ -32,8 +32,8 @@ const auth = {
             approve: state.keycloak.hasRealmRole('wells_approve')
           },
           submissions: {
-            view: state.keycloak.hasRealmRole('wells_viewer'),
-            edit: state.keycloak.hasRealmRole('wells_edit'),
+            view: state.keycloak.hasRealmRole('wells_submission_viewer'),
+            edit: state.keycloak.hasRealmRole('wells_submission'),
             approve: state.keycloak.hasRealmRole('wells_approve')
           },
           aquifers: {

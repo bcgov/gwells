@@ -13,7 +13,7 @@
 */
 
 <template>
-  <b-card class="container container-wide p-1">
+  <b-card class="container p-1">
     <api-error v-if="error" :error="error"/>
     <b-alert show v-if="files_uploading">File Upload In Progress...</b-alert>
     <b-alert show v-if="!files_uploading && file_upload_error" variant="warning" >
@@ -90,7 +90,27 @@
         <dd class="col-sm-4">{{record.area}}</dd>
         <dt class="col-sm-2">Demand</dt>
         <dd class="col-sm-4">{{record.demand_description}}</dd>
+
       </dl>
+
+      <b-row v-if="viewMode">
+        <b-col>
+          <h5 class="mt-2 border-bottom mb-4">Knowledge Indicators</h5>
+          <div :key="section.id" v-for="(section) in aquifer_resource_sections">
+
+            <h6 class="mt-2 font-weight-bold">{{ section.name }}</h6>
+            <ul :key="resource.id" v-for="resource in bySection(record.resources, section)">
+              <li><a :href="resource.url">{{ resource.name }}</a></li>
+            </ul>
+            <p v-if="!bySection(record.resources, section).length">No information available.</p>
+          </div>
+          <div>
+          </div>
+        </b-col>
+        <b-col>
+          <aquifer-map/>
+        </b-col>
+      </b-row>
       <h5 class="mt-3 border-bottom">Documentation</h5>
       <aquifer-documents :files="aquiferFiles"
         :editMode="editMode"
@@ -106,6 +126,14 @@
   color: black;
   text-decoration: none;
 }
+
+.artesian-search {
+  cursor: pointer;
+}
+
+a {
+  text-decoration-skip-ink: none;
+}
 </style>
 
 <script>
@@ -113,14 +141,15 @@ import ApiService from '@/common/services/ApiService.js'
 import APIErrorMessage from '@/common/components/APIErrorMessage'
 import AquiferForm from './Form'
 import Documents from './Documents.vue'
+import AquiferMap from './AquiferMap.vue'
 import ChangeHistory from '@/common/components/ChangeHistory.vue'
 import { mapActions, mapGetters, mapState } from 'vuex'
-
 export default {
   components: {
     'api-error': APIErrorMessage,
     'aquifer-form': AquiferForm,
     'aquifer-documents': Documents,
+    'aquifer-map': AquiferMap,
     ChangeHistory
   },
   props: {
@@ -129,6 +158,7 @@ export default {
   created () {
     this.fetch()
     this.fetchFiles()
+    this.fetchResourceSections()
   },
   data () {
     return {
@@ -137,7 +167,9 @@ export default {
       loading: false,
       record: {},
       showSaveSuccess: false,
-      aquiferFiles: {}
+      aquiferFiles: {},
+      aquifer_resource_sections: [],
+      wells: []
     }
   },
   computed: {
@@ -163,6 +195,23 @@ export default {
       'fileUploadSuccess',
       'fileUploadFail'
     ]),
+    bySection (resources, section) {
+      return (resources || []).filter(function (resource) {
+        return resource.section_code === section.code
+      })
+    },
+    handleArtesianSearch () {
+      this.$router.push({
+        name: 'wells-home',
+        query: {
+          'match_any': false,
+          'aquifer': this.id,
+          'artesian_flow_has_value': true,
+          'artesian_pressure_has_value': true
+        },
+        hash: '#advanced'
+      })
+    },
     handleSaveSuccess (response) {
       this.fetch()
       this.navigateToView()
@@ -170,7 +219,6 @@ export default {
         this.$refs.aquiferHistory.update()
       }
       this.showSaveSuccess = true
-
       if (this.upload_files.length > 0) {
         this.uploadFiles({
           documentType: 'aquifers',
@@ -198,17 +246,16 @@ export default {
     save () {
       this.showSaveSuccess = false
       this.fieldErrors = {}
-
       ApiService.patch('aquifers', this.id, this.record)
         .then(this.handleSaveSuccess)
         .catch(this.handlePatchError)
     },
     navigateToView () {
-      this.$router.push({ name: 'view', params: { id: this.id } })
+      this.$router.push({ name: 'aquifers-view', params: { id: this.id } })
     },
     navigateToEdit () {
       this.showSaveSuccess = false
-      this.$router.push({ name: 'edit', params: { id: this.id } })
+      this.$router.push({ name: 'aquifers-edit', params: { id: this.id } })
     },
     print () {
       window.print()
@@ -226,6 +273,11 @@ export default {
         .then((response) => {
           this.aquiferFiles = response.data
         })
+    },
+    fetchResourceSections () {
+      ApiService.query('aquifers/sections').then((response) => {
+        this.aquifer_resource_sections = response.data.results
+      })
     }
   }
 }

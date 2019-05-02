@@ -24,7 +24,7 @@ describe('Screens.vue', () => {
       store,
       sync: false
     })
-    expect(wrapper.vm.screens.length).toBe(3)
+    expect(wrapper.vm.screensData.length).toBe(3)
   })
   it('adds a new screen row when clicking Add Row', () => {
     const wrapper = shallowMount(Screens, {
@@ -34,7 +34,7 @@ describe('Screens.vue', () => {
     })
 
     wrapper.find('#addScreenRowButton').trigger('click')
-    expect(wrapper.vm.screens.length).toBe(4)
+    expect(wrapper.vm.screensData.length).toBe(4)
   })
   it('when clicking the remove button on a row, removes that row', () => {
     const wrapper = shallowMount(Screens, {
@@ -44,6 +44,6 @@ describe('Screens.vue', () => {
     })
 
     wrapper.find('#removeScreenRowButton0').trigger('click')
-    expect(wrapper.vm.screens.length).toBe(2)
+    expect(wrapper.vm.screensData.length).toBe(2)
   })
 })

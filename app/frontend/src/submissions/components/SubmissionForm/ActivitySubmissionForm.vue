@@ -73,6 +73,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
         :wellActivityType.sync="activityTypeInput"
       />
 
+    <submission-history
+      v-if="showSection('submissionHistory')"
+      id="submissionHistory"
+      :submissionsHistory="submissionsHistory"
+      :isStaffEdit="isStaffEdit"
+    ></submission-history>
+
     <!-- Publication Status of well -->
     <publication-status class="my-5"
       v-if="showSection('wellPublicationStatus')"
@@ -330,7 +337,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         :waterQualityCharacteristics.sync="form.water_quality_characteristics"
         :waterQualityColour.sync="form.water_quality_colour"
         :waterQualityOdour.sync="form.water_quality_odour"
-        :emsID.sync="form.ems_id"
+        :emsID.sync="form.ems"
         :errors="errors"
         :isStaffEdit="isStaffEdit"
         :saveDisabled="editSaveDisabled"
@@ -447,6 +454,12 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-on:save="$emit('submit_edit')"
       />
 
+      <edit-history class="my-5"
+        v-if="showSection('editHistory')"
+        id="editHistory"
+        :events="events"
+      ></edit-history>
+
       <!-- Back / Next / Submit controls -->
       <b-row v-else class="mt-5">
         <b-col v-if="!formIsFlat">
@@ -482,6 +495,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 
 <script>
+import Vue from 'vue'
+
 import ActivityType from './ActivityType.vue'
 import AquiferData from './AquiferData.vue'
 import WellType from './WellType.vue'
@@ -506,6 +521,8 @@ import Documents from './Documents.vue'
 import ClosureDescription from './ClosureDescription.vue'
 import DecommissionInformation from './DecommissionInformation.vue'
 import ObservationWellInfo from './ObservationWellInfo.vue'
+import SubmissionHistory from './SubmissionHistory.vue'
+import EditHistory from './EditHistory.vue'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 
 export default {
@@ -515,6 +532,9 @@ export default {
     form: {
       type: Object,
       isInput: false
+    },
+    events: {
+      type: Vue
     },
     sections: {
       type: Object,
@@ -553,6 +573,13 @@ export default {
     uploadedFiles: {
       type: Object,
       isInput: false
+    },
+    formChanges: {
+      type: Function
+    },
+    submissionsHistory: {
+      type: Array,
+      default: () => ([])
     }
   },
   components: {
@@ -579,7 +606,9 @@ export default {
     Documents,
     ClosureDescription,
     DecommissionInformation,
-    ObservationWellInfo
+    ObservationWellInfo,
+    SubmissionHistory,
+    EditHistory
   },
   data () {
     return {
@@ -618,7 +647,9 @@ export default {
         'comments': 'Comments',
         'personResponsible': 'Person responsible for work',
         'observationWellInfo': 'Observation well information',
-        'documents': 'Attachments'
+        'submissionHistory': 'Activity report history',
+        'documents': 'Attachments',
+        'editHistory': 'Edit history'
       }
     }
   },
@@ -714,9 +745,14 @@ export default {
         // We have to add the watches in beforeCreate.
         this.$options.watch[`form.${key}`] = {
           handler (newValue, oldValue) {
-            if (this.trackValueChanges && !this.loading) {
-              this.formValueChanged = true
-              this.form.meta.valueChanged[key] = true
+            if (this.trackValueChanges && !this.loading && !this.formSubmitLoading) {
+              if (this.formChanges()) {
+                this.formValueChanged = true
+                this.form.meta.valueChanged[key] = true
+              } else {
+                this.formValueChanged = false
+                this.form.meta.valueChanged = {}
+              }
             }
           },
           deep: true

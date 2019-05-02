@@ -6,8 +6,10 @@ from django.db import migrations, models
 from django.core.exceptions import ObjectDoesNotExist
 import django.db.models.deletion
 import uuid
+from registries import data_migrations
 
 
+# Don't bother squashing this! This can be removed.
 def update_registries_application_status(apps, schema_editor):
     RegistriesApplicationStatus = apps.get_model(
         'registries', 'RegistriesApplicationStatus')
@@ -45,6 +47,7 @@ def update_registries_application_status(apps, schema_editor):
         application.save()
 
 
+# Don't bother squashing this! This can be removed.
 def revert_registries_application_status(apps, schema_editor):
     RegistriesApplication = apps.get_model(
         'registries', 'RegistriesApplication')
@@ -56,32 +59,7 @@ def revert_registries_application_status(apps, schema_editor):
         application.save()
 
 
-def insert_remove_reasons(apps, schema_editor):
-    data = {
-        'FAILTM': {
-            'description': 'Fails to maintain a requirement for registration',
-            'display_order': 1
-        },
-        'NLACT': {
-            'description': 'No longer actively working in Canada',
-            'display_order': 2
-        },
-        'NMEET': {
-            'description': 'Fails to meet a requirement for registration',
-            'display_order': 3
-        }
-    }
-    RegistriesRemovalReason = apps.get_model('registries', 'RegistriesRemovalReason')
-
-    for (key, value) in data.items():
-        RegistriesRemovalReason.objects.update_or_create(code=key, defaults=value)
-
-
-def revert_remove_reasons(apps, schema_editor):
-    # We don't need to do anything on revert
-    pass
-
-
+# Don't bother squashing this! This can be removed.
 def update_application_approved_status(apps, schema_editor):
     ApplicationStatusCode = apps.get_model('registries', 'ApplicationStatusCode')
     try:
@@ -95,6 +73,7 @@ def update_application_approved_status(apps, schema_editor):
         pass
 
 
+# Don't bother squashing this! This can be removed.
 def revert_application_approved_status(apps, schema_editor):
     ApplicationStatusCode = apps.get_model('registries', 'ApplicationStatusCode')
     try:
@@ -108,8 +87,6 @@ def revert_application_approved_status(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
-    replaces = [('registries', '0001_initial'), ('registries', '0002_auto_20180517_0017'), ('registries', '0003_auto_20180517_1711'), ('registries', '0004_auto_20180524_2247'), ('registries', '0005_auto_20180608_1930'), ('registries', '0006_auto_20180608_1934'), ('registries', '0007_auto_20180611_1755'), ('registries', '0008_auto_20180613_2304'), ('registries', '0009_auto_20180616_0022'), ('registries', '0010_auto_20180618_2119'), ('registries', '0011_auto_20180619_2315'), ('registries', '0012_auto_20180704_2105')]
 
     initial = True
 
@@ -686,8 +663,8 @@ class Migration(migrations.Migration):
             name='RegistriesStatusCode',
         ),
         migrations.RunPython(
-            code=insert_remove_reasons,
-            reverse_code=revert_remove_reasons),
+            code=data_migrations.insert_remove_reasons,
+            reverse_code=data_migrations.revert_remove_reasons),
         migrations.RunPython(
             code=update_application_approved_status,
             reverse_code=revert_application_approved_status,

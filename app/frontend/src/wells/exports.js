@@ -23,10 +23,6 @@ Vue.use(Vuex)
 Vue.use(BootstrapVue)
 Vue.config.productionTip = false
 
-// We don't need anything in our store
-const store = new Vuex.Store({
-})
-
 /* eslint-disable no-new */
 new Vue({
   el: '#exports',

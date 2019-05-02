@@ -2,7 +2,7 @@
   <header id="header">
     <b-navbar type="dark" class="navbar-expand-lg d-print-block" bg-variant="primary">
       <!-- Navbar content -->
-      <b-container class="container-wide">
+      <b-container>
         <a class="navbar-brand" href="https://www2.gov.bc.ca">
           <img
               class="nav-logo img-fluid d-none d-sm-block"
@@ -37,7 +37,7 @@
     <b-navbar class="bc-nav-links py-0" toggleable="sm" type="dark">
       <b-container fluid>
         <b-collapse class="py-2" is-nav id="nav_collapse">
-          <b-container id="navContainer" class="container-wide">
+          <b-container id="navContainer">
             <b-nav-text class="d-sm-none text-light">Groundwater Wells and Aquifers</b-nav-text>
             <b-navbar-nav class="gwells-nav">
               <b-nav-item id="ribbon-search" class="navbar-link lvl2-link" :to="{ name: 'wells-home'}">Well Search</b-nav-item>
@@ -71,7 +71,7 @@ export default {
     show () {
       const adminMeta = document.head.querySelector('meta[name="show.admin"]')
       return {
-        dataEntry: (!!this.config && this.config.enable_data_entry === true) && this.userRoles.submissions.edit === true,
+        dataEntry: !!this.config && this.userRoles.submissions.edit === true,
         admin: adminMeta ? adminMeta.content === 'true' : false,
         aquifers: !!this.config && this.config.enable_aquifers_search === true
       }

@@ -59,6 +59,34 @@
             "value": "1Gi"
         },
         {
+            "description": "Request for CPU resources measured in cpu units, e.g. 200m",
+            "displayName": "CPU resource request",
+            "name": "REQUEST_CPU",
+            "required": false,
+            "value": "100m"
+        },
+        {
+            "description": "Request for memory resources measured in bytes, e.g. 512Mi, 1Gi.",
+            "displayName": "Memory resource request",
+            "name": "REQUEST_MEMORY",
+            "required": false,
+            "value": "512Mi"
+        },
+        {
+            "description": "Limit for CPU resources measured in cpu units, e.g. 200m",
+            "displayName": "CPU resource limit",
+            "name": "LIMIT_CPU",
+            "required": false,
+            "value": "200m"
+        },
+        {
+            "description": "Limit for memory resources measured in bytes, e.g. 512Mi, 1Gi.",
+            "displayName": "Memory resource limit",
+            "name": "LIMIT_MEMORY",
+            "required": false,
+            "value": "1Gi"
+        },
+        {
             "description": "Version of PostgreSQL image to be used (9.5 or 9.6).",
             "displayName": "Version of PostgreSQL Image",
             "name": "IMAGE_STREAM_VERSION",
@@ -317,12 +345,12 @@
                                 },
                                 "resources": {
                                     "requests": {
-                                        "cpu": "100m",
-                                        "memory": "512Mi"
+                                        "cpu": "${REQUEST_CPU}",
+                                        "memory": "${REQUEST_MEMORY}"
                                     },
                                     "limits": {
-                                        "cpu": "200m",
-                                        "memory": "1Gi"
+                                        "cpu": "${LIMIT_CPU}",
+                                        "memory": "${LIMIT_MEMORY}"
                                     }
                                 },
                                 "securityContext": {

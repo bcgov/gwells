@@ -378,6 +378,59 @@ def zapTests (String stageName, String envUrl, String envSuffix) {
 }
 
 
+// Database backup
+def dbBackup (String envProject, String envSuffix) {
+    def dcName = envSuffix == "dev" ? "${appName}-pgsql-${envSuffix}-${prNumber}" : "${appName}-pgsql-${envSuffix}"
+    def dumpDir = "/var/lib/pgsql/data/deployment-backups"
+    def dumpName = "${envSuffix}-\$( date +%Y-%m-%d-%H%M ).dump"
+    def dumpOpts = "--no-privileges --no-tablespaces --schema=public --exclude-table=spatial_ref_sys"
+    def dumpTemp = "/tmp/unverified.dump"
+    int maxBackups = 10
+
+    // Dump to temporary file
+    sh "oc rsh -n ${envProject} dc/${dcName} bash -c ' \
+        pg_dump -U \${POSTGRESQL_USER} -d \${POSTGRESQL_DATABASE} -Fc -f ${dumpTemp} ${dumpOpts} \
+    '"
+
+    // Verify dump size is at least 1M
+    int sizeAtLeast1M = sh (
+        script: "oc rsh -n ${envProject} dc/${dcName} bash -c ' \
+            du --threshold=1M ${dumpTemp} | wc -l \
+        '",
+        returnStdout: true
+    )
+    assert sizeAtLeast1M == 1
+
+    // Restore (schema only, w/ extensions) to temporary db
+    sh """
+        oc rsh -n ${envProject} dc/${dcName} bash -c ' \
+            set -e; \
+            psql -c "DROP DATABASE IF EXISTS db_verify"; \
+            createdb db_verify; \
+            psql -d db_verify -c "CREATE EXTENSION IF NOT EXISTS oracle_fdw;"; \
+            psql -d db_verify -c "CREATE EXTENSION IF NOT EXISTS postgis;"; \
+            psql -d db_verify -c "CREATE EXTENSION IF NOT EXISTS pgcrypto;"; \
+            psql -d db_verify -c "COMMIT;"; \
+            pg_restore -d db_verify --schema-only --create ${dumpTemp}; \
+            psql -c "DROP DATABASE IF EXISTS db_verify"
+        '
+    """
+
+    // Store verified dump
+    sh "oc rsh -n ${envProject} dc/${dcName} bash -c ' \
+        mkdir -p ${dumpDir}; \
+        mv ${dumpTemp} ${dumpDir}/${dumpName}; \
+        ls -lh ${dumpDir} \
+    '"
+
+    // Database purge
+    sh "oc rsh -n ${envProject} dc/${dcName} bash -c \" \
+            find ${dumpDir} -name *.dump -printf '%Ts\t%p\n' \
+                | sort -nr | cut -f2 | tail -n +${maxBackups} | xargs rm 2>/dev/null \
+                || echo 'No extra backups to remove' \
+    \""
+}
+
 
 pipeline {
     environment {
@@ -412,6 +465,16 @@ pipeline {
         prodProject = "moe-gwells-prod"
         prodSuffix = "production"
         prodHost = "gwells-prod.pathfinder.gov.bc.ca"
+        
+        // name of the provisioned PVC claim for NFS backup storage
+        // this will not be created during the pipeline; it must be created
+        // before running the production pipeline.
+        nfsProdBackupPVC = "bk-moe-gwells-prod-0z6f0qq0k2fz"
+        nfsStagingBackupPVC = "bk-moe-gwells-test-dcog9cfksxat"
+
+        // name of the PVC where documents are stored (e.g. Minio PVC)
+        // this should be the same across all environments.
+        minioDataPVC = "minio-data-vol"
     }
     agent any
     stages {
@@ -464,10 +527,9 @@ pipeline {
 
                         // Select appropriate buildconfig
                         def appBuild = openshift.selector("bc", "${devAppName}")
-                        // temporarily set ENABLE_DATA_ENTRY=True during testing because False currently leads to a failing unit test
                         echo "Building"
-                        echo " \$ oc start-build -n moe-gwells-tools ${devAppName} --wait --env=ENABLE_DATA_ENTRY=true --follow=true"
-                        appBuild.startBuild("--wait", "--env=ENABLE_DATA_ENTRY=True").logs("-f")
+                        echo " \$ oc start-build -n moe-gwells-tools ${devAppName} --wait --follow=true"
+                        appBuild.startBuild("--wait").logs("-f")
                     }
                 }
             }
@@ -615,7 +677,7 @@ pipeline {
             }
         }
 
-        
+
         // Functional tests temporarily limited to smoke tests
         // See https://github.com/BCDevOps/BDDStack
         stage('DEV - Smoke Tests') {
@@ -666,7 +728,11 @@ pipeline {
                             "IMAGE_STREAM_NAME=postgresql-9.6-oracle-fdw",
                             "IMAGE_STREAM_VERSION=v1-stable",
                             "POSTGRESQL_DATABASE=gwells",
-                            "VOLUME_CAPACITY=5Gi"
+                            "VOLUME_CAPACITY=5Gi",
+                            "REQUEST_CPU=400m",
+                            "REQUEST_MEMORY=2Gi",
+                            "LIMIT_CPU=400m",
+                            "LIMIT_MEMORY=2Gi"
                         )
 
                         def deployTemplate = openshift.process("-f",
@@ -752,13 +818,16 @@ pipeline {
                         createDeploymentStatus(stagingSuffix, 'PENDING', stagingHost)
 
                         // Create cronjob for well export
-                        def cronTemplate = openshift.process("-f",
-                            "openshift/export-wells.cj.json",
+                        def exportWellCronTemplate = openshift.process("-f",
+                            "openshift/export.cj.json",
                             "ENV_NAME=${stagingSuffix}",
                             "PROJECT=${stagingProject}",
-                            "TAG=${stagingSuffix}"
+                            "TAG=${stagingSuffix}",
+                            "NAME=export",
+                            "COMMAND=export",
+                            "SCHEDULE='30 11 * * *'"
                         )
-                        openshift.apply(cronTemplate).label(
+                        openshift.apply(exportWellCronTemplate).label(
                             [
                                 'app':"gwells-${stagingSuffix}",
                                 'app-name':"${appName}",
@@ -766,6 +835,52 @@ pipeline {
                             ],
                             "--overwrite"
                         )
+
+                        // Create cronjob for databc export
+                        def exportDataBCTemplate = openshift.process("-f",
+                            "openshift/export.cj.json",
+                            "ENV_NAME=${stagingSuffix}",
+                            "PROJECT=${stagingProject}",
+                            "TAG=${stagingSuffix}",
+                            "NAME=export-databc",
+                            "COMMAND=export_databc",
+                            "SCHEDULE='0 13 * * *'"
+                        )
+                        openshift.apply(exportDataBCTemplate).label(
+                            [
+                                'app':"gwells-${stagingSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${stagingSuffix}"
+                            ],
+                            "--overwrite"
+                        )
+
+                        // automated minio backup to NFS
+                        def docBackupCronjob = openshift.process("-f",
+                            "openshift/jobs/minio-backup/minio-backup.cj.yaml",
+                            "NAME_SUFFIX=${stagingSuffix}",
+                            "NAMESPACE=${stagingProject}",
+                            "VERSION=v1.0.0",
+                            "SCHEDULE='15 11 * * *'",
+                            "DEST_PVC=${nfsStagingBackupPVC}",
+                            "SOURCE_PVC=${minioDataPVC}"
+                        )
+
+                        openshift.apply(docBackupCronjob)
+
+                        // automated database backup to NFS volume
+                        def dbNFSBackup = openshift.process("-f",
+                            "openshift/jobs/postgres-backup-nfs/postgres-backup.cj.yaml",
+                            "NAMESPACE=${stagingProject}",
+                            "TARGET=gwells-pgsql-staging",
+                            "PVC_NAME=${nfsStagingBackupPVC}",
+                            "SCHEDULE='30 10 * * *'",
+                            "JOB_NAME=postgres-nfs-backup",
+                            "DAILY_BACKUPS=2",
+                            "WEEKLY_BACKUPS=1",
+                            "MONTHLY_BACKUPS=1"
+                        )
+                        openshift.apply(dbNFSBackup)
 
                         // monitor the deployment status and wait until deployment is successful
                         echo "Waiting for deployment to STAGING..."
@@ -859,7 +974,11 @@ pipeline {
                             "IMAGE_STREAM_NAME=postgresql-9.6-oracle-fdw",
                             "IMAGE_STREAM_VERSION=v1-stable",
                             "POSTGRESQL_DATABASE=gwells",
-                            "VOLUME_CAPACITY=5Gi"
+                            "VOLUME_CAPACITY=5Gi",
+                            "REQUEST_CPU=400m",
+                            "REQUEST_MEMORY=2Gi",
+                            "LIMIT_CPU=400m",
+                            "LIMIT_MEMORY=2Gi"
                         )
 
                         def deployTemplate = openshift.process("-f",
@@ -945,13 +1064,35 @@ pipeline {
                         createDeploymentStatus(demoSuffix, 'PENDING', demoHost)
 
                         // Create cronjob for well export
-                        def cronTemplate = openshift.process("-f",
-                            "openshift/export-wells.cj.json",
+                        def exportWellCronTemplate = openshift.process("-f",
+                            "openshift/export.cj.json",
                             "ENV_NAME=${demoSuffix}",
                             "PROJECT=${demoProject}",
-                            "TAG=${demoSuffix}"
+                            "TAG=${demoSuffix}",
+                            "NAME=export",
+                            "COMMAND=export",
+                            "SCHEDULE='30 11 * * *'"
                         )
-                        openshift.apply(cronTemplate).label(
+                        openshift.apply(exportWellCronTemplate).label(
+                            [
+                                'app':"gwells-${demoSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${demoSuffix}"
+                            ],
+                            "--overwrite"
+                        )
+
+                        // Create cronjob for databc export
+                        def exportDataBCCronTemplate = openshift.process("-f",
+                            "openshift/export.cj.json",
+                            "ENV_NAME=${demoSuffix}",
+                            "PROJECT=${demoProject}",
+                            "TAG=${demoSuffix}",
+                            "NAME=export-databc",
+                            "COMMAND=export_databc",
+                            "SCHEDULE='0 13 * * *'"
+                        )
+                        openshift.apply(exportDataBCCronTemplate).label(
                             [
                                 'app':"gwells-${demoSuffix}",
                                 'app-name':"${appName}",
@@ -1006,15 +1147,31 @@ pipeline {
         }
 
 
+        stage('PROD - Backup') {
+            when {
+                expression { env.CHANGE_TARGET == 'master' }
+            }
+            steps {
+                script {
+                    dbBackup (prodProject, prodSuffix)
+                }
+            }
+        }
+
+
         stage('PROD - Deploy') {
             when {
                 expression { env.CHANGE_TARGET == 'master' }
             }
             steps {
                 script {
+                    input "Deploy to production?"
+                    echo "Updating production deployment..."
+
                     _openshift(env.STAGE_NAME, prodProject) {
-                        input "Deploy to production?"
-                        echo "Updating production deployment..."
+
+                        // Pre-deployment database backup
+                        def dbBackupResult = dbBackup (prodProject, prodSuffix)
 
                         def deployDBTemplate = openshift.process("-f",
                             "openshift/postgresql.dc.json",
@@ -1024,7 +1181,11 @@ pipeline {
                             "IMAGE_STREAM_NAME=postgresql-9.6-oracle-fdw",
                             "IMAGE_STREAM_VERSION=v1-stable",
                             "POSTGRESQL_DATABASE=gwells",
-                            "VOLUME_CAPACITY=20Gi"
+                            "VOLUME_CAPACITY=20Gi",
+                            "REQUEST_CPU=800m",
+                            "REQUEST_MEMORY=4Gi",
+                            "LIMIT_CPU=800m",
+                            "LIMIT_MEMORY=4Gi"
                         )
 
                         def deployTemplate = openshift.process("-f",
@@ -1111,13 +1272,16 @@ pipeline {
                         createDeploymentStatus(prodSuffix, 'PENDING', prodHost)
 
                         // Create cronjob for well export
-                        def cronTemplate = openshift.process("-f",
-                            "openshift/export-wells.cj.json",
+                        def exportWellCronTemplate = openshift.process("-f",
+                            "openshift/export.cj.json",
                             "ENV_NAME=${prodSuffix}",
                             "PROJECT=${prodProject}",
-                            "TAG=${prodSuffix}"
+                            "TAG=${prodSuffix}",
+                            "NAME=export",
+                            "COMMAND=export",
+                            "SCHEDULE='30 11 * * *'"
                         )
-                        openshift.apply(cronTemplate).label(
+                        openshift.apply(exportWellCronTemplate).label(
                             [
                                 'app':"gwells-${prodSuffix}",
                                 'app-name':"${appName}",
@@ -1125,6 +1289,49 @@ pipeline {
                             ],
                             "--overwrite"
                         )
+
+                        // Create cronjob for databc export
+                        def exportDataBCCronTemplate = openshift.process("-f",
+                            "openshift/export.cj.json",
+                            "ENV_NAME=${prodSuffix}",
+                            "PROJECT=${prodProject}",
+                            "TAG=${prodSuffix}",
+                            "NAME=export-databc",
+                            "COMMAND=export_databc",
+                            "SCHEDULE='0 13 * * *'"
+                        )
+                        openshift.apply(exportDataBCCronTemplate).label(
+                            [
+                                'app':"gwells-${prodSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${prodSuffix}"
+                            ],
+                            "--overwrite"
+                        )
+
+                        def docBackupCronJob = openshift.process("-f",
+                            "openshift/jobs/minio-backup/minio-backup.cj.yaml",
+                            "NAME_SUFFIX=${prodSuffix}",
+                            "NAMESPACE=${prodProject}",
+                            "VERSION=v1.0.0",
+                            "SCHEDULE='15 12 * * *'",
+                            "DEST_PVC=${nfsProdBackupPVC}",
+                            "SOURCE_PVC=${minioDataPVC}",
+                            "PVC_SIZE=40Gi"
+                        )
+
+                        openshift.apply(docBackupCronJob)
+
+
+                        def dbNFSBackup = openshift.process("-f",
+                            "openshift/jobs/postgres-backup-nfs/postgres-backup.cj.yaml",
+                            "NAMESPACE=${prodProject}",
+                            "TARGET=gwells-pgsql-production",
+                            "PVC_NAME=${nfsProdBackupPVC}",
+                            "SCHEDULE='30 9 * * *'",
+                            "JOB_NAME=postgres-nfs-backup"
+                        )
+                        openshift.apply(dbNFSBackup)
 
                         // monitor the deployment status and wait until deployment is successful
                         echo "Waiting for deployment to production..."

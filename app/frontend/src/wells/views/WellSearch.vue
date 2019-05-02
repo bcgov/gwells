@@ -1,123 +1,50 @@
 <template>
-  <b-card class="container container-wide p-1">
+  <b-card class="container p-1">
     <h1 class="card-title" id="wellSearchTitle">Well Search</h1>
-
-    <b-row class="mt-3">
+    <div>
+      <div>
+        <p>
+          Not all groundwater wells are registered with the province, as registration was voluntary until February 29, 2016. Data quality issues may impact search results.
+        </p>
+        <p>
+          Search by one of the fields below, or zoom to a location on the map and select the "Search Wells in this Area" button.
+        </p>
+      </div>
+    </div>
+    <b-row class="mt-4">
       <b-col cols="12" lg="6" xl="5">
-        <b-form @submit.prevent="handleSearchSubmit()" @reset.prevent="resetButtonHandler()">
-          <b-row>
-            <b-col>
-              <p>
-                Not all groundwater wells are registered with the province, as registration was voluntary until February 29, 2016. Data quality issues may impact search results.
-              </p>
-              <p>
-                Search by one of the fields below, or zoom to a location on the map and select the "Search Wells in this Area" button.
-              </p>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col cols="8">
-
-              <form-input
-                id="id_well"
-                group-class="font-weight-bold"
-                v-model="searchParams.well"
-              >
-                <label>
-                  Well Tag or Identification Plate Number
-                  <b-badge pill variant="primary" v-b-popover.hover="'Well electronic filing number or physical identification plate number'"><i class="fa fa-question fa-lg"></i></b-badge>
-                </label>
-              </form-input>
-              <b-form-group>
-
-              </b-form-group>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col>
-              <form-input
-                id="id_addr"
-                group-class="font-weight-bold"
-                label="Street Address"
-                v-model="searchParams.street_address"
-              ></form-input>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col>
-              <form-input
-                id="id_legal"
-                group-class="font-weight-bold"
-                v-model="searchParams.search"
-              >
-              <label>
-                  Legal Plan or District Lot or Parcel Identification Number (PID)
-                  <b-badge pill variant="primary"
-                    v-b-popover.hover="'Find the legal plan, district lot, or 9-digit PID \
-                      (parcel identifier) on the \
-                      property assessment, property tax notice, or real estate transaction.'"
-                  ><i class="fa fa-question fa-lg"></i></b-badge>
-              </label>
-              </form-input>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col>
-              <form-input
-                id="id_owner"
-                group-class="font-weight-bold"
-                label="Owner Name"
-                v-model="searchParams.owner_full_name"
-              ></form-input>
-            </b-col>
-          </b-row>
-          <b-row class="my-3">
-            <b-col>
-              <b-btn variant="primary" type="submit">Search</b-btn>
-              <b-btn variant="dark" type="reset" class="mx-2">Reset</b-btn>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col>
-              <well-exports/>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col>
-              <p>For additional search options, try:</p>
-              <ul>
-                  <li><a href="http://maps.gov.bc.ca/ess/hm/wrbc/" id="BCWRAtlas">B.C. Water Resource Atlas</a></li>
-                  <li><a href="http://maps.gov.bc.ca/ess/hm/imap4m/" id="iMapBC">iMapBC</a></li>
-              </ul>
-            </b-col>
-          </b-row>
-        </b-form>
+        <b-card no-body border-variant="dark" class="mb-1">
+          <b-tabs card v-model="tabIndex">
+            <b-tab title="Basic Search">
+              <div class="card-text">
+                <basic-search-form @search="handleSearchSubmit()" @reset="handleReset()" />
+              </div>
+            </b-tab>
+            <b-tab title="Advanced Search">
+              <div class="card-text">
+                <advanced-search-form @search="handleSearchSubmit()" @reset="handleReset()" />
+              </div>
+            </b-tab>
+          </b-tabs>
+        </b-card>
       </b-col>
       <b-col>
-        <search-map
-            :latitude="latitude"
-            :longitude="longitude"
-            :locations="locations"
-            v-on:coordinate="handleMapCoordinate"
-            ref="searchMap"
-            @moved="locationSearch"
-            />
+        <search-map ref="searchMap" @moved="handleMapMoveEnd" />
+        <b-alert variant="info" class="mt-2" :show="locationErrorMessage !== ''">{{ locationErrorMessage }}</b-alert>
       </b-col>
     </b-row>
-    <b-row class="my-5">
+    <b-row class="my-5" v-show="!isInitialSearch || hasResultErrors">
       <b-col>
-        <div ref="tabulator"></div>
-        <b-pagination class="mt-3" :disabled="isBusy" size="md" :total-rows="numberOfRecords" v-model="currentPage" :per-page="perPage" @input="wellSearch()">
-        </b-pagination>
+        <search-results />
       </b-col>
     </b-row>
-    <b-row>
+    <b-row v-if="!isInitialSearch">
       <b-col>
         <p>
           Can’t find the well you are looking for? Try your search again using a different set of criteria. If you still need more assistance, Contact <a href="https://portal.nrs.gov.bc.ca/web/client/contact">FrontCounterBC</a>.
         </p>
         <p>
-          <a href="http://www.frontcounterbc.gov.bc.ca/Start/surface-water/" onclick="handleOutboundLinkClicks('www.frontcounterbc.gov.bc.ca/Start/surface-water/')">
+          <a href="http://www.frontcounterbc.gov.bc.ca/Start/surface-water/" @click="handleOutboundLinkClicks('www.frontcounterbc.gov.bc.ca/Start/surface-water/')">
               Learn about and submit water license applications
           </a>  with FrontCounterBC.
         </p>
@@ -127,132 +54,142 @@
 </template>
 
 <script>
-import ApiService from '@/common/services/ApiService.js'
-import SearchMap from '@/wells/components/SearchMap.vue'
-import Exports from '@/wells/components/Exports.vue'
+import querystring from 'querystring'
 
-const Tabulator = require('tabulator-tables')
+import { mapGetters } from 'vuex'
+import {
+  RESET_WELLS_SEARCH,
+  SEARCH_LOCATIONS,
+  SEARCH_WELLS
+} from '@/wells/store/actions.types.js'
+import {
+  SET_SEARCH_LIMIT,
+  SET_SEARCH_OFFSET,
+  SET_SEARCH_ORDERING,
+  SET_SEARCH_PARAMS,
+  SET_SEARCH_RESULT_COLUMNS,
+  SET_SEARCH_RESULT_FILTERS
+} from '@/wells/store/mutations.types.js'
+import { QUERY_TRIGGER } from '@/wells/store/triggers.types.js'
+import AdvancedSearchForm from '@/wells/components/AdvancedSearchForm.vue'
+import BasicSearchForm from '@/wells/components/BasicSearchForm.vue'
+import SearchMap from '@/wells/components/SearchMap.vue'
+import SearchResults from '@/wells/components/SearchResults.vue'
 
 export default {
   name: 'WellSearch',
   components: {
+    'advanced-search-form': AdvancedSearchForm,
+    'basic-search-form': BasicSearchForm,
     'search-map': SearchMap,
-    'well-exports': Exports
+    'search-results': SearchResults
   },
   data () {
     return {
+      scrolled: false,
+      mapError: null,
+
       isBusy: false,
       isInitialSearch: true,
-      currentPage: 1,
-      perPage: 10,
-      numberOfRecords: 0,
+      tabIndex: 0,
       latitude: null,
       longitude: null,
-      locations: [],
+      mapBounds: {},
 
-      // testing tabulator
-      tabulator: null,
-      tableData: [],
-
-      // searchParams will be set by searchParamsReset()
-      searchParams: {},
-
-      // additional location search params
-      mapSearchParams: {}
+      // flag to indicate that the search should reset without a further API request
+      searchShouldReset: false
+    }
+  },
+  computed: {
+    ...mapGetters([
+      'locationErrorMessage',
+      'searchErrors',
+      'searchLimit',
+      'searchOffset',
+      'searchOrdering',
+      'searchParams',
+      'searchResults',
+      'searchResultColumns',
+      'searchResultFilters'
+    ]),
+    hasResultErrors () {
+      return (this.searchErrors.filter_group !== undefined && Object.entries(this.searchErrors.filter_group).length > 0)
     }
   },
   methods: {
-    /**
-    * wellSearch searches for wells based on parameters in the querystring
-    */
-    wellSearch (ctx = { perPage: this.perPage, currentPage: this.currentPage }) {
-      const params = {
-        limit: ctx.perPage,
-        offset: ctx.perPage * (ctx.currentPage - 1)
-      }
-
-      // add other search parameters into the params object.
-      // these will be urlencoded and the API will filter on these values.
-      Object.assign(params, this.searchParams)
-      return ApiService.query('wells', params).then((response) => {
-        this.numberOfRecords = response.data.count
-        this.tableData = response.data.results
-        this.tabulator.clearData()
-        this.tabulator.replaceData(this.tableData)
-
-        // the first search that happens when page loads doesn't need
-        // to automatically scroll the page.  Only scroll when updating
-        // the search results.
-        if (!this.isInitialSearch) {
-          this.$SmoothScroll(this.$el.querySelector('#map'))
-        }
-        // flag that the initial search that happens on page load
-        // has already occurred.
-        this.isInitialSearch = false
-
-        return response.data.results || []
-      }).catch((e) => {
-        return []
-      })
+    handleScroll () {
+      const pos = this.$el.querySelector('#map').scrollTop | 100
+      this.scrolled = window.scrollY > 0.9 * pos
     },
-    locationSearch () {
-      let params = Object.assign({}, this.searchParams)
-      if (this.$refs.searchMap && this.$refs.searchMap.map) {
-        const bounds = this.$refs.searchMap.map.getBounds()
-        const sw = bounds.getSouthWest()
-        const ne = bounds.getNorthEast()
-        const boundBox = {
-
-          sw_lat: sw.lat,
-          sw_long: sw.lng,
-          ne_lat: ne.lat,
-          ne_long: ne.lng
-
-        }
-        params = Object.assign(params, boundBox)
-      }
-      ApiService.query('wells/locations', params).then((response) => {
-        this.locations = response.data.map((well) => {
-          return [well.latitude, well.longitude, well.well_tag_number, well.identification_plate_number]
-        })
-      })
+    handleMapMoveEnd () {
+      this.updateQueryParams()
     },
     handleSearchSubmit () {
       this.updateQueryParams()
-      this.wellSearch()
-      this.locationSearch()
+
+      // send the analytic event when triggering search by the search button
+      this.triggerAnalyticsSearchEvent(this.searchParams)
     },
-    resetButtonHandler () {
-      this.searchParamsReset()
-      this.wellSearch()
-      this.locationSearch()
+    handleReset () {
+      this.resetMapBounds()
+      this.$nextTick(() => {
+        this.$router.push({ query: null })
+      })
     },
-    searchParamsReset () {
-      this.searchParams = {
-        well: '',
-        street_address: '',
-        lot_search: '',
-        owner_full_name: ''
+    handleResultsUpdate () {
+      // the first search that happens when page loads doesn't need
+      // to automatically scroll the page.  Only scroll when updating
+      // the search results.
+      if (!this.isInitialSearch && !this.scrolled) {
+        this.$SmoothScroll(this.$el.querySelector('#map'))
       }
-      this.$router.push({ query: null })
+      // flag that the initial search that happens on page load
+      // has already occurred.
+      this.isInitialSearch = false
     },
-    initSearchParams () {
+    initTabIndex () {
+      const hash = this.$route.hash
+      if (hash === '#advanced') {
+        this.tabIndex = 1
+      } else {
+        this.tabIndex = 0
+      }
+    },
+    initQueryParams () {
       const query = this.$route.query
       // check if the page loads with a query (e.g. user bookmarked a search)
       // if so, set the search boxes to the query params
-      if (Object.entries(query).length !== 0 && query.constructor === Object) {
-        this.searchParams = Object.assign({}, query)
-      } else {
-        this.searchParamsReset()
+      if (!(Object.entries(query).length !== 0 && query.constructor === Object)) {
+        return
       }
-    },
-    handleMapCoordinate (latln) {
-      this.latitude = null
-      this.longitude = null
-      setTimeout(() => {
-        this.latitude = latln.lat
-        this.longitude = latln.lng
-      }, 0)
+
+      // Update the store with any result params in the query string
+      if (query.filter_group !== undefined) {
+        try {
+          const resultFilters = JSON.parse(query.filter_group)
+          this.$store.commit(SET_SEARCH_RESULT_FILTERS, resultFilters)
+        } catch (SyntaxError) {} finally {
+          delete query.filter_group
+        }
+      }
+      if (query.limit !== undefined) {
+        this.$store.commit(SET_SEARCH_LIMIT, query.limit)
+        delete query.limit
+      }
+      if (query.offset !== undefined) {
+        this.$store.commit(SET_SEARCH_OFFSET, query.offset)
+        delete query.offset
+      }
+      if (query.ordering !== undefined) {
+        this.$store.commit(SET_SEARCH_ORDERING, query.ordering)
+        delete query.ordering
+      }
+      if (query.result_columns !== undefined) {
+        this.$store.commit(SET_SEARCH_RESULT_COLUMNS, query.result_columns.split(','))
+        delete query.result_columns
+      }
+
+      this.$store.commit(SET_SEARCH_PARAMS, {...query})
     },
     handleOutboundLinkClicks (link) {
       if (window.ga) {
@@ -263,54 +200,88 @@ export default {
         })
       }
     },
-    tableLinkParams (cell) {
-      return {
-        url: `/gwells/well/${cell.getValue()}/`
+    triggerAnalyticsSearchEvent (params) {
+      // trigger the search event, sending along the search params as a string
+      if (window.ga) {
+        window.ga('send', {
+          hitType: 'event',
+          eventCategory: 'Button',
+          eventAction: 'WellSearch',
+          eventLabel: querystring.stringify(params)
+        })
       }
     },
     updateQueryParams () {
-      const params = Object.assign({}, this.searchParams)
-
-      // check if every key on the params object is empty.
-      // evaluations to boolean
-      const paramsEmpty = Object.keys(params).every((x) => {
-        return params[x] === '' || params[x] === null
-      })
+      const params = {...this.searchParams}
+      const paramsEmpty = Object.entries(params).length === 0 && params.constructor === Object
 
       // if params are completely empty, clear the query string,
       // otherwise add the params to the query string.  this allows
-      // users to bookmark searches.
-      this.$router.push({ query: paramsEmpty ? null : this.searchParams })
+      // users to bookmark searches. Only add result params to the
+      // query string if we have a search.
+      const query = paramsEmpty ? null : params
+      if (query !== null) {
+        if (Object.entries(this.searchResultFilters).length > 0) {
+          query.filter_group = JSON.stringify(this.searchResultFilters)
+        }
+        query.result_columns = this.searchResultColumns.join(',')
+        query.limit = this.searchLimit
+        query.offset = this.searchOffset
+        query.ordering = this.searchOrdering
+      }
+
+      const tabHash = (this.tabIndex === 1) ? 'advanced' : null
+
+      this.$router.push({ query: query, hash: tabHash })
+    },
+    resetMapBounds () {
+      if (this.$refs.searchMap && this.$refs.searchMap.resetView) {
+        this.$refs.searchMap.resetView()
+      }
+    }
+  },
+  watch: {
+    searchResults (results) {
+      this.handleResultsUpdate()
     }
   },
   created () {
-    this.initSearchParams()
-    setTimeout(() => {
-      this.locationSearch()
-    }, 0)
-    this.wellSearch()
-  },
-  mounted () {
-    this.tabulator = new Tabulator(this.$refs.tabulator, {
-      data: this.tableData,
-      height: '36rem',
-      columns: [
-        { title: 'Well Tag', field: 'well_tag_number', formatter: 'link', formatterParams: (cell) => ({ url: `/gwells/well/${cell.getValue()}` }) },
-        { title: 'ID Plate', field: 'identification_plate_number' },
-        { title: 'Owner Name', field: 'owner_full_name' },
-        { title: 'Street Address', field: 'street_address' },
-        { title: 'Legal Lot', field: 'legal_lot' },
-        { title: 'Legal Plan', field: 'legal_plan' },
-        { title: 'Legal District Lot', field: 'legal_district_lot' },
-        { title: 'Land District', field: 'land_district' },
-        { title: 'Legal PID', field: 'legal_pid' },
-        { title: 'Diameter', field: 'diameter' },
-        { title: 'Finished Well Depth', field: 'finished_well_depth' }
-      ]
+    this.initQueryParams()
+    this.initTabIndex()
+
+    // if the page loaded with a query, start a search.
+    // Otherwise, the search does not need to run (see #1713)
+    const query = this.$route.query
+    if (Object.entries(query).length !== 0 && query.constructor === Object) {
+      this.$store.dispatch(SEARCH_LOCATIONS)
+      this.$store.dispatch(SEARCH_WELLS, { constrain: false, trigger: QUERY_TRIGGER })
+    }
+
+    this.$store.subscribeAction((action, state) => {
+      if (action.type === RESET_WELLS_SEARCH) {
+        this.$nextTick(() => {
+          this.$router.push({ query: null })
+        })
+      } else if (action.type === SEARCH_WELLS) {
+        this.updateQueryParams()
+      }
     })
+  },
+  beforeMount () {
+    this.scrolled = window.scrollY > 100
+    window.addEventListener('scroll', this.handleScroll)
+  },
+  beforeDestroy () {
+    window.removeEventListener('scroll', this.handleScroll)
   }
 }
 </script>
 
 <style>
+.wellTable[aria-busy='false'] {
+  opacity: 1;
+}
+.wellTable[aria-busy='true'] {
+  opacity: 0.6;
+}
 </style>

@@ -13,11 +13,14 @@
 """
 from datetime import date
 import logging
+from unittest.mock import patch
 
 from django.test import TestCase
+from rest_framework.exceptions import ValidationError, APIException
+from rest_framework.status import HTTP_500_INTERNAL_SERVER_ERROR, HTTP_400_BAD_REQUEST
 
 from gwells.models import ProvinceStateCode
-from wells.models import Well, ActivitySubmission, Casing, Screen, LinerPerforation
+from wells.models import Well, ActivitySubmission, Casing, Screen, LinerPerforation, LithologyDescription
 from submissions.models import WellActivityCode
 from wells.stack import StackWells, overlap
 from registries.models import Person
@@ -169,6 +172,14 @@ class SeriesMergeTest(TestCase):
         self.assertEqual(new, expected)
 
 
+def errors_side_effect(*args, **kwargs):
+    return []
+
+
+def is_valid_side_effect(*args, **kwargs):
+    return False
+
+
 class StackTest(TestCase):
 
     fixtures = ['wellsearch-codetables.json', ]
@@ -188,6 +199,8 @@ class StackTest(TestCase):
     def test_new_submission_gets_well_tag_number(self):
         # Test that when a constrction submission is processed, it is asigned a well_tag_number
         submission = ActivitySubmission.objects.create(
+            create_user='Something',
+            update_user='Something',
             owner_full_name='Bob',
             work_start_date=date(2018, 1, 1),
             work_end_date=date(2018, 2, 1),
@@ -200,10 +213,31 @@ class StackTest(TestCase):
         submission = ActivitySubmission.objects.get(filing_number=submission.filing_number)
         self.assertEqual(well.well_tag_number, submission.well.well_tag_number)
 
+    def test_bad_request_on_edit_with_bad_well_data(self):
+        """ Test that when a legacy well is created, the lithology is created as well!
+        """
+        # We create a pre-existing "legacy well".
+        well = Well.objects.create(create_user='Blah', update_user='Blah')
+        # We attached lithology to the well.
+        LithologyDescription.objects.create(well=well, lithology_from=117, lithology_to=None)
+        stacker = StackWells()
+        with self.assertRaises(ValidationError):
+            try:
+                stacker._create_legacy_submission(Well.objects.get(well_tag_number=well.well_tag_number))
+            except ValidationError as e:
+                # Assert that it's a 400 error.
+                # The data for the legacy well is fine, but not so the data for
+                # the resultant stacked well.
+                self.assertEqual(e.status_code, HTTP_400_BAD_REQUEST)
+                # Re-raise the exception, handing it to the assertRaises above.
+                raise
+
     def test_construction_submission_no_current_well(self):
         # Creating a brand new well that we only have a construction submission for.
         owner_full_name = 'Bob'
         submission = ActivitySubmission.objects.create(
+            create_user='Something',
+            update_user='Something',
             owner_full_name=owner_full_name,
             work_start_date=date(2018, 1, 1),
             work_end_date=date(2018, 2, 1),
@@ -221,6 +255,8 @@ class StackTest(TestCase):
         owner_full_name = 'Bob'
         new_owner_full_name = 'Joe'
         construction = ActivitySubmission.objects.create(
+            create_user='Something',
+            update_user='Something',
             owner_full_name=owner_full_name,
             work_start_date=date(2018, 1, 1),
             work_end_date=date(2018, 2, 1),
@@ -232,6 +268,8 @@ class StackTest(TestCase):
         well = stacker.process(construction.filing_number)
         # Update the well with an alteration
         alteration = ActivitySubmission.objects.create(
+            create_user='Something',
+            update_user='Something',
             owner_full_name=new_owner_full_name,
             work_start_date=date(2018, 2, 1),
             work_end_date=date(2018, 3, 1),
@@ -249,6 +287,8 @@ class StackTest(TestCase):
         new_full_name = 'Jimbo'
         # This is the original well record
         well = Well.objects.create(
+            create_user='Something',
+            update_user='Something',
             owner_full_name=original_full_name,
             owner_province_state=self.province,
             construction_start_date=date(2017, 1, 1),
@@ -261,6 +301,8 @@ class StackTest(TestCase):
         LinerPerforation.objects.create(start=10, end=10, well=well)
         # Create a submission
         submission = ActivitySubmission.objects.create(
+            create_user='Something',
+            update_user='Something',
             owner_full_name=new_full_name,
             work_start_date=date(2018, 1, 1),
             work_end_date=date(2018, 2, 1),
@@ -307,10 +349,14 @@ class StackTest(TestCase):
         new_full_name = 'Jimbo'
         # This is the original well record.
         well = Well.objects.create(
+            create_user='Something',
+            update_user='Something',
             owner_full_name=original_full_name,
             owner_province_state=self.province)
         # Create a submission.
         submission = ActivitySubmission.objects.create(
+            create_user='Something',
+            update_user='Something',
             owner_full_name=new_full_name,
             work_start_date=date(2018, 1, 1),
             work_end_date=date(2018, 2, 1),
@@ -336,10 +382,14 @@ class StackTest(TestCase):
         new_full_name = 'Jimbo'
         # This is the original well record.
         well = Well.objects.create(
+            create_user='Something',
+            update_user='Something',
             owner_full_name=original_full_name,
             owner_province_state=self.province)
         # Create a submission.
         submission = ActivitySubmission.objects.create(
+            create_user='Something',
+            update_user='Something',
             owner_full_name=new_full_name,
             work_start_date=date(2018, 1, 1),
             work_end_date=date(2018, 2, 1),
@@ -365,6 +415,8 @@ class StackTest(TestCase):
         start_date = date(2018, 1, 1)
         end_date = date(2018, 1, 2)
         submission = ActivitySubmission.objects.create(
+            create_user='Something',
+            update_user='Something',
             work_start_date=start_date,
             work_end_date=end_date,
             well_activity_type=WellActivityCode.types.construction(),
@@ -381,6 +433,8 @@ class StackTest(TestCase):
         start_date = date(2018, 1, 1)
         end_date = date(2018, 1, 2)
         submission = ActivitySubmission.objects.create(
+            create_user='Something',
+            update_user='Something',
             work_start_date=start_date,
             work_end_date=end_date,
             well_activity_type=WellActivityCode.types.alteration(),
@@ -397,6 +451,8 @@ class StackTest(TestCase):
         start_date = date(2018, 1, 1)
         end_date = date(2018, 1, 2)
         submission = ActivitySubmission.objects.create(
+            create_user='Something',
+            update_user='Something',
             work_start_date=start_date,
             work_end_date=end_date,
             well_activity_type=WellActivityCode.types.decommission(),
@@ -416,6 +472,8 @@ class StackTest(TestCase):
         new_full_name = 'Jimbo'
         # Create a construction submission.
         submission = ActivitySubmission.objects.create(
+            create_user='Something',
+            update_user='Something',
             owner_full_name=original_full_name,
             work_start_date=date(2018, 1, 1),
             work_end_date=date(2018, 2, 1),
@@ -428,6 +486,8 @@ class StackTest(TestCase):
 
         # Create an edit submission.
         submission = ActivitySubmission.objects.create(
+            create_user='Something',
+            update_user='Something',
             owner_full_name=new_full_name,
             well=well,
             well_activity_type=WellActivityCode.types.staff_edit()
@@ -436,3 +496,32 @@ class StackTest(TestCase):
         well = stacker.process(submission.filing_number)
 
         self.assertEqual(new_full_name, well.owner_full_name)
+
+    @patch('wells.stack.submissions.serializers.WellSubmissionLegacySerializer.is_valid',
+           side_effect=is_valid_side_effect)
+    @patch('wells.stack.submissions.serializers.WellSubmissionLegacySerializer.errors',
+           side_effect=errors_side_effect)
+    def test_failure_to_generate_legacy_results_in_server_error(self, errors, is_valid):
+        # We don't want failures to generate a legacy well to bubble up to client 400 errors, so we need
+        # to make sure it's caught, and re-thrown as 500.
+        # 1) Create the legacy well:
+        well = Well.objects.create(
+            create_user='Something',
+            update_user='Something')
+        # 2) Create the alteration:
+        submission = ActivitySubmission.objects.create(
+            well=well,
+            create_user='Something',
+            update_user='Something',
+            well_activity_type=WellActivityCode.types.alteration())
+        # 3) Attempt to stack:
+        stacker = StackWells()
+        # Assert that an exception is throw
+        with self.assertRaises(APIException):
+            try:
+                stacker.process(submission.filing_number)
+            except APIException as e:
+                # Assert that it's a 500 error.
+                self.assertEqual(e.status_code, HTTP_500_INTERNAL_SERVER_ERROR)
+                # Re-raise the exception, handing it to the assertRaises above.
+                raise

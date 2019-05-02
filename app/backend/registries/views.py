@@ -14,6 +14,7 @@
 
 import reversion
 from collections import OrderedDict
+
 from django.db.models import Q, Prefetch
 from django.http import HttpResponse, Http404, JsonResponse
 from django.shortcuts import get_object_or_404
@@ -26,9 +27,9 @@ from reversion.views import RevisionMixin
 from rest_framework import filters, status, exceptions
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView
 from rest_framework.response import Response
-from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
 from rest_framework.views import APIView
 from drf_multiple_model.views import ObjectMultipleModelAPIView
+
 from gwells.documents import MinioClient
 from gwells.roles import REGISTRIES_VIEWER_ROLE
 from gwells.models import ProvinceStateCode
@@ -72,30 +73,7 @@ from registries.serializers import (
     OrganizationNoteSerializer,
     PersonNameSerializer)
 from gwells.change_history import generate_history_diff
-
-
-class AuditCreateMixin(CreateModelMixin):
-    """
-    Adds create_user when instances are created.
-    Create date is inserted in the model, and not required here.
-    """
-
-    def perform_create(self, serializer):
-        serializer.validated_data['create_user'] = (self.request.user.profile.name or
-                                                    self.request.user.get_username())
-        return super().perform_create(serializer)
-
-
-class AuditUpdateMixin(UpdateModelMixin):
-    """
-    Adds update_user when instances are updated
-    Update date is inserted in the model, and not required here.
-    """
-
-    def perform_update(self, serializer):
-        serializer.validated_data['update_user'] = (self.request.user.profile.name or
-                                                    self.request.user.get_username())
-        return super().perform_update(serializer)
+from gwells.views import AuditCreateMixin, AuditUpdateMixin
 
 
 class OrganizationListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
@@ -114,8 +92,7 @@ class OrganizationListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     # prefetch related objects for the queryset to prevent duplicate database trips later
     queryset = Organization.objects.all() \
         .select_related('province_state',) \
-        .prefetch_related('registrations', 'registrations__person') \
-        .filter(expired_date__isnull=True)
+        .prefetch_related('registrations', 'registrations__person')
 
     # Allow searching against fields like organization name, address,
     # name or registration of organization contacts
@@ -128,6 +105,9 @@ class OrganizationListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
         'registrations__person__surname',
         'registrations__applications__file_no'
     )
+
+    def get_queryset(self):
+        return self.queryset.filter(expiry_date__gt=timezone.now())
 
 
 class OrganizationDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
@@ -154,21 +134,23 @@ class OrganizationDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDest
     # prefetch related province, contacts and person records to prevent future additional database trips
     queryset = Organization.objects.all() \
         .select_related('province_state',) \
-        .prefetch_related('registrations', 'registrations__person') \
-        .filter(expired_date__isnull=True)
+        .prefetch_related('registrations', 'registrations__person')
+
+    def get_queryset(self):
+        return self.queryset.filter(expiry_date__gt=timezone.now())
 
     def destroy(self, request, *args, **kwargs):
         """
-        Set expired_date to current date
+        Set expiry_date to current date
         """
 
         instance = self.get_object()
         for reg in instance.registrations.all():
-            if reg.person.expired_date is None:
+            if reg.person.expiry_date is None:
                 raise exceptions.ValidationError(
                     ('Organization has registrations associated with it. ')
                     ('Remove this organization from registration records first.'))
-        instance.expired_date = timezone.now()
+        instance.expiry_date = timezone.now()
         instance.save()
 
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -249,11 +231,11 @@ class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     )
 
     # fetch related companies and registration applications (prevent duplicate database trips)
-    queryset = Person.objects.filter(expired_date__isnull=True)
+    queryset = Person.objects.all()
 
     def get_queryset(self):
         """ Returns Person queryset, removing non-active and unregistered drillers for anonymous users """
-        qs = self.queryset
+        qs = self.queryset.filter(expiry_date__gt=timezone.now())
 
         # base registration and application querysets
         registrations_qs = Register.objects.all()
@@ -412,15 +394,13 @@ class PersonDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDestroyAPI
             'registrations__applications__subactivity',
             'registrations__applications__subactivity__qualification_set',
             'registrations__applications__subactivity__qualification_set__well_class'
-        ).filter(
-            expired_date__isnull=True
         ).distinct()
 
     def get_queryset(self):
         """
         Returns only registered people (i.e. drillers with active registration) to anonymous users
         """
-        qs = self.queryset
+        qs = self.queryset.filter(expiry_date__gt=timezone.now())
         if not self.request.user.groups.filter(name=REGISTRIES_VIEWER_ROLE).exists():
             qs = qs.filter(Q(applications__current_status__code='A'),
                            Q(applications__removal_date__isnull=True))
@@ -428,11 +408,11 @@ class PersonDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDestroyAPI
 
     def destroy(self, request, *args, **kwargs):
         """
-        Set expired_date to current date
+        Set expiry_date to current date
         """
 
         instance = self.get_object()
-        instance.expired_date = timezone.now()
+        instance.expiry_date = timezone.now()
         instance.save()
 
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -584,13 +564,15 @@ class OrganizationNameListView(ListAPIView):
     Simple list of organizations with only organization names
     """
 
-    permission_classes = (RegistriesEditPermissions,)
+    permission_classes = (RegistriesEditOrReadOnly,)
     serializer_class = OrganizationNameListSerializer
     queryset = Organization.objects \
-        .filter(expired_date__isnull=True) \
         .select_related('province_state')
     pagination_class = None
     lookup_field = 'organization_guid'
+
+    def get_queryset(self):
+        return self.queryset.filter(expiry_date__gt=timezone.now())
 
 
 class PersonNoteListView(AuditCreateMixin, ListCreateAPIView):

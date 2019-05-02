@@ -13,40 +13,44 @@
 """
 from decimal import Decimal
 import uuid
+from django.utils import timezone
 
 from django.contrib.gis.db import models
 from django.core.validators import MinValueValidator
-from gwells.models import AuditModel
+from gwells.models import AuditModel, CodeTableModel
+
+WELL_ACTIVITY_CODE_CONSTRUCTION = 'CON'
+WELL_ACTIVITY_CODE_LEGACY = 'LEGACY'
+WELL_ACTIVITY_CODE_DECOMMISSION = 'DEC'
+WELL_ACTIVITY_CODE_ALTERATION = 'ALT'
+WELL_ACTIVITY_CODE_STAFF_EDIT = 'STAFF_EDIT'
+
 
 class WellActivityCodeTypeManager(models.Manager):
 
     def construction(self):
-        return self.get_queryset().get(code='CON')
+        return self.get_queryset().get(code=WELL_ACTIVITY_CODE_CONSTRUCTION)
 
     def legacy(self):
-        return self.get_queryset().get(code='LEGACY')
+        return self.get_queryset().get(code=WELL_ACTIVITY_CODE_LEGACY)
 
     def decommission(self):
-        return self.get_queryset().get(code='DEC')
+        return self.get_queryset().get(code=WELL_ACTIVITY_CODE_DECOMMISSION)
 
     def alteration(self):
-        return self.get_queryset().get(code='ALT')
+        return self.get_queryset().get(code=WELL_ACTIVITY_CODE_ALTERATION)
 
     def staff_edit(self):
-        return self.get_queryset().get(code='STAFF_EDIT')
+        return self.get_queryset().get(code=WELL_ACTIVITY_CODE_STAFF_EDIT)
 
 
-class WellActivityCode(AuditModel):
+class WellActivityCode(CodeTableModel):
     """
     Types of Well Activity.
     """
     code = models.CharField(
         primary_key=True, max_length=10,  editable=False, db_column='well_activity_type_code')
     description = models.CharField(max_length=100)
-    display_order = models.PositiveIntegerField()
-
-    effective_date = models.DateTimeField(blank=True, null=True)
-    expiry_date = models.DateTimeField(blank=True, null=True)
 
     objects = models.Manager()
     types = WellActivityCodeTypeManager()
@@ -54,6 +58,8 @@ class WellActivityCode(AuditModel):
     class Meta:
         db_table = 'well_activity_code'
         ordering = ['display_order', 'description']
+
+    db_table_comment = 'Placeholder table comment.'
 
     def __str__(self):
         return self.description
