@@ -89,6 +89,18 @@ class AquiferSerializer(serializers.ModelSerializer):
 
 
 class AquiferDetailSerializer(serializers.ModelSerializer):
+    demand = serializers.SlugRelatedField(
+        read_only=True, slug_field='description')
+    material = serializers.SlugRelatedField(
+        read_only=True, slug_field='description')
+    productivity = serializers.SlugRelatedField(
+        read_only=True, slug_field='description')
+    subtype = serializers.StringRelatedField(
+        read_only=True)
+    vulnerability = serializers.SlugRelatedField(
+        read_only=True, slug_field='description')
+    quality_concern = serializers.SlugRelatedField(
+        read_only=True, slug_field='description')
     resources = AquiferResourceSerializer(many=True, required=False)
     licence_details = serializers.JSONField(read_only=True)
 

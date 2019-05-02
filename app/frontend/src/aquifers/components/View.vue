@@ -88,7 +88,7 @@
               </li>
               <li>
                 <dt>Descriptive location</dt>
-                <dd>{{record.location}}</dd>
+                <dd>{{record.location_description}}</dd>
               </li>
               <li>
                 <dt>Vulnerability</dt>
