@@ -342,7 +342,6 @@ export default {
         })
       }).finally((response) => {
         this.formSubmitLoading = false
-        console.log(savingNotification)
 
         // sometimes the save success notification doesn't close the "saving..." one.
         // if the in-progress status message is still shown after the request completes,
