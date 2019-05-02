@@ -21,6 +21,22 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <div v-else>
 
       <b-row>
+        <b-col class="d-none d-xl-block edit-sidebar" xl="2" v-if="isStaffEdit">
+          <b-card :class="editMenuClasses">
+            <b-card-text>
+              <h5>Well {{$route.params.id}}</h5>
+              <b-list-group flush v-b-scrollspy>
+                <b-list-group-item class="edit-sidebar-item" v-for="step in formSteps[activityType]" :key="`formLink-${step}`">
+                                <a :href="`#${step}`" @click.prevent="anchorLinkHandler(step)">
+                                  {{formStepDescriptions[step] ? formStepDescriptions[step] : step}}
+                                </a>
+                </b-list-group-item>
+              </b-list-group>
+
+              <div class="mt-5"><b-btn variant="primary" @click="formSubmit">Save</b-btn><a href="#" @click.prevent="handleBackToTop()" class="ml-3">Back to top</a></div>
+            </b-card-text>
+          </b-card>
+        </b-col>
         <b-col>
           <b-card v-if="breadcrumbs && breadcrumbs.length" no-body class="mb-3 d-print-none">
             <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"></b-breadcrumb>
@@ -96,22 +112,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <div v-else>
             Please log in to continue.
           </div>
-        </b-col>
-        <b-col class="d-none d-xl-block edit-sidebar" xl="2" v-if="isStaffEdit">
-          <b-card :class="editMenuClasses">
-            <b-card-text>
-              <h5>Well {{$route.params.id}}</h5>
-              <b-list-group flush v-b-scrollspy>
-                <b-list-group-item class="edit-sidebar-item" v-for="step in formSteps[activityType]" :key="`formLink-${step}`">
-                                <a :href="`#${step}`" @click.prevent="anchorLinkHandler(step)">
-                                  {{formStepDescriptions[step] ? formStepDescriptions[step] : step}}
-                                </a>
-                </b-list-group-item>
-              </b-list-group>
-
-              <div class="mt-5"><b-btn variant="primary" @click="formSubmit">Save</b-btn><a href="#" @click.prevent="handleBackToTop()" class="ml-3">Back to top</a></div>
-            </b-card-text>
-          </b-card>
         </b-col>
       </b-row>
     </div>
