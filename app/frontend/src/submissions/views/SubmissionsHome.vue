@@ -312,7 +312,7 @@ export default {
               this.fetchFiles()
             }).catch((error) => {
               this.fileUploadFail()
-              console.log(error)
+              console.error(error)
               this.$noty.error('<div class="notifyText">Error uploading files.</div>', { killer: true })
             })
           }
