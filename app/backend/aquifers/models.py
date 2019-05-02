@@ -78,7 +78,7 @@ class AquiferSubtype(CodeTableModel):
                         ' attributes such as their productivity, vulnerability to contamination as well as'
                         ' proximity and likelihood of hydraulic connection to streams. The code value is a'
                         ' combination of an aquifer type represented by a number and an optional letter'
-                        ' representing a more specific aquifer sub-type. E.g.  Crystalline bedrock aquifers)'
+                        ' representing a more specific aquifer sub-type. E.g. Crystalline bedrock aquifers)'
                         ' and subtype letter, Fractured crystalline (igneous intrusive or metamorphic,'
                         ' meta-sedimentary, meta-volcanic, volcanic) rock aquifers. Code values range from'
                         ' 1a to 6b.')

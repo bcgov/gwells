@@ -189,9 +189,12 @@ class Organization(AuditModel):
         db_comment='The web address associated with the company')
     effective_date = models.DateTimeField(
         default=timezone.now, null=False,
-        db_comment='The date and time that record became valid.')
+        db_comment='The date the the organization record became available for use.')
     expiry_date = models.DateTimeField(
-        default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False)
+        default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False,
+        db_comment=('The date that the organization record was soft deleted (expired) by the staff.'
+                    ' Common reasons for deleting the record would be to remove duplicates, and'
+                    ' erroneous entries there by making these organizations unavailable for use.'))
     email = models.EmailField(
         blank=True, null=True, verbose_name="Email adddress",
         db_comment=('The email address for a company, this is different from the email for the individual '
@@ -279,7 +282,7 @@ class Person(AuditModel):
 
     effective_date = models.DateTimeField(
         default=timezone.now, null=False,
-        db_comment='The date and time that the code became valid and could be used.')
+        db_comment='The date when the registries person record became available for use.')
     expiry_date = models.DateTimeField(
         default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False,
         db_comment='The date and time after which the record is no longer valid and should not be used.')

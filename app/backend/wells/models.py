@@ -329,14 +329,14 @@ class LicencedStatusCode(CodeTableModel):
     """
     licenced_status_code = models.CharField(
         primary_key=True, max_length=10, editable=False,
-        db_comment=('Valid licencing options granted to a well under the Water Water Sustainability Act. '
-                    'This information comes from eLicensing. i.e. Unlicensed, Licensed, Historical.'))
+        db_comment=('Valid licensing options granted to a well under the Water Water Sustainability Act.'
+                    ' This information comes from eLicensing. i.e. Unlicensed, Licensed, Historical.'))
     description = models.CharField(
         max_length=255,
         verbose_name='Licenced Status',
-        db_comment=('Descriptions of valid licencing options granted to a well under the Water Water '
-                    'Sustainability Act. This information comes from eLicensing. i.e. Unlicensed, '
-                    'Licensed, Historical'))
+        db_comment=('Descriptions of valid licensing options granted to a well under the Water Water'
+                    ' Sustainability Act. This information comes from eLicensing. i.e. Unlicensed,'
+                    ' Licensed, Historical'))
 
     class Meta:
         db_table = 'licenced_status_code'
@@ -472,7 +472,7 @@ class WellStatusCode(CodeTableModel):
 
     db_table_comment = ('Status of a well indicates whether the report relates to the construction,'
                         ' alteration, or decommission of the well; e.g., Construction, alteration,'
-                        ' Abandoned,  Deccommission. ')
+                        ' Abandoned, Deccommission.')
 
 
 class WellPublicationStatusCode(CodeTableModel):
@@ -532,9 +532,11 @@ class WellYieldUnitCode(CodeTableModel):
     """
     well_yield_unit_code = models.CharField(
         primary_key=True, max_length=10, editable=False,
-        db_comment=('Describes the unit of measure that was used for the well yield. All codes except the '
-                    'U.S. Gallons per Minute has been retired as all data from April 2019 will be reported '
-                    'in USGPM. E.g of other codes that have been used in the past are GPM, DRY, UNK.'))
+        db_comment=('ASK DEVELOPER S TO DELETE THIS COLUMN once the \'yield\' column has been all'
+                    ' converted to USGPM. Describes the unit of measure that was used for the well'
+                    ' yield. All Code except the U.S. Gallons per Minute has been retired as all data'
+                    ' from April 2019 will be reported in USGPM. E.g of other Code that have been used'
+                    ' in the past are GPM, DRY, UNK.'))
     description = models.CharField(
         max_length=100, verbose_name='Well Yield Unit',
         db_comment=('Describes the unit of measure that was used for the well yield. All codes except'
@@ -570,13 +572,29 @@ class CoordinateAcquisitionCode(BasicCodeTableModel):
     •	J = (unknown, accuracy based on parcel size) ICF cadastre, poor or no location sketch, arbitrarily
         located in center of parcel
     """
-    code = models.CharField(primary_key=True, max_length=1, editable=False,
-                            db_column='coordinate_acquisition_code')
-    description = models.CharField(max_length=250)
+    code = models.CharField(
+        primary_key=True, max_length=1, editable=False,
+        db_column='coordinate_acquisition_code',
+        db_comment=('Codes for the accuracy of the coordinate position, which is best estimated based on'
+                    ' the information provided by the data submitter and analysis done by staff. E.g. A,'
+                    ' B, C.'))
+    description = models.CharField(
+        max_length=250,
+        db_comment=('A description of how accurate the coordinate position is best estimated to be based'
+                    ' on the information provided by the data submitter and analysis done by staff. E.g.'
+                    ' (10 m accuracy) ICF cadastre and good location sketch, (200 m accuracy) Digitized'
+                    ' from 1:50,000 mapping, (unknown, accuracy based on parcel size) ICF cadastre, poor'
+                    ' or no location sketch, arbitraily located in center of parcel.'))
 
     class Meta:
         db_table = 'coordinate_acquisition_code'
         ordering = ['code', ]
+
+    db_table_comment = ('A description of how accurate the coordinate position is best estimated to be based'
+                        ' on the information provided by the data submitter and analysis done by staff. E.g.'
+                        ' (10 m accuracy) ICF cadastre and good location sketch, (200 m accuracy) Digitized'
+                        ' from 1:50,000 mapping, (unknown, accuracy based on parcel size) ICF cadastre, poor'
+                        ' or no location sketch, arbitraily located in center of parcel.')
 
     def __str__(self):
         return self.description
@@ -659,9 +677,12 @@ class Well(AuditModelStructure):
                                                 on_delete=models.CASCADE,
                                                 verbose_name='Well Publication Status',
                                                 default='Published')
-    licenced_status = models.ForeignKey(LicencedStatusCode, db_column='licenced_status_code',
-                                        on_delete=models.CASCADE, blank=True, null=True,
-                                        verbose_name='Licenced Status')
+    licenced_status = models.ForeignKey(
+        LicencedStatusCode, db_column='licenced_status_code',
+        on_delete=models.CASCADE, blank=True, null=True,
+        verbose_name='Licenced Status',
+        db_comment=('Valid licensing options granted to a well under the Water Water Sustainability Act.'
+                    ' This information comes from eLicensing. i.e. Unlicensed, Licensed, Historical.'))
 
     street_address = models.CharField(
         max_length=100, blank=True, null=True, verbose_name='Street Address',
@@ -911,7 +932,10 @@ class Well(AuditModelStructure):
         blank=True, null=True, verbose_name="UTM Easting")
     coordinate_acquisition_code = models.ForeignKey(
         CoordinateAcquisitionCode, null=True, blank=True, verbose_name="Location Accuracy Code",
-        db_column='coordinate_acquisition_code', on_delete=models.PROTECT)
+        db_column='coordinate_acquisition_code', on_delete=models.PROTECT,
+        db_comment=('Codes for the accuracy of the coordinate position, which is best estimated based on'
+                    ' the information provided by the data submitter and analysis done by staff. E.g. A,'
+                    ' B, C.'))
     bcgs_id = models.ForeignKey(BCGS_Numbers, db_column='bcgs_id', on_delete=models.PROTECT, blank=True,
                                 null=True, verbose_name="BCGS Mapsheet Number")
 
@@ -945,9 +969,13 @@ class Well(AuditModelStructure):
     driller_name = models.CharField(
         max_length=200, blank=True, null=True, verbose_name='Name of Person Who Did the Work')
     consultant_name = models.CharField(
-        max_length=200, blank=True, null=True, verbose_name='Consultant Name')
+        max_length=200, blank=True, null=True, verbose_name='Consultant Name',
+        db_comment=('Name of consultant (person) that was involved in the construction, alteration, or'
+                    ' decommision of a well.'))
     consultant_company = models.CharField(
-        max_length=200, blank=True, null=True, verbose_name='Consultant Company')
+        max_length=200, blank=True, null=True, verbose_name='Consultant Company',
+        db_comment=('Name of consultant company that was involved in the construction, alteration, or'
+                    ' decommision of a well.'))
 
     # Aquifer related data
     aquifer_vulnerability_index = models.DecimalField(
@@ -1260,7 +1288,10 @@ class ActivitySubmission(AuditModelStructure):
 
     coordinate_acquisition_code = models.ForeignKey(
         CoordinateAcquisitionCode, null=True, blank=True, verbose_name="Location Accuracy Code",
-        db_column='coordinate_acquisition_code', on_delete=models.PROTECT)
+        db_column='coordinate_acquisition_code', on_delete=models.PROTECT,
+        db_comment=('Codes for the accuracy of the coordinate position, which is best estimated based on'
+                    ' the information provided by the data submitter and analysis done by staff. E.g. A,'
+                    ' B, C.'))
     ground_elevation = models.DecimalField(
         max_digits=10, decimal_places=2, blank=True, null=True, verbose_name='Ground Elevation')
     ground_elevation_method = models.ForeignKey(GroundElevationMethodCode,
