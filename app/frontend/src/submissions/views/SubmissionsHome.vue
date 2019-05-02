@@ -12,84 +12,108 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-  <div class="container p-1">
+  <div class="container-fluid p-1 pl-xl-5">
     <div v-if="loading" class="mt-3">
       <div class="fa-2x text-center">
         <i class="fa fa-circle-o-notch fa-spin"></i>
       </div>
     </div>
     <div v-else>
-      <b-card v-if="breadcrumbs && breadcrumbs.length" no-body class="mb-3 d-print-none">
-        <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"></b-breadcrumb>
-      </b-card>
-      <div class="card" v-if="userRoles.wells.edit || userRoles.submissions.edit">
-        <div class="card-body">
 
-          <b-form @submit.prevent="confirmSubmit">
-            <!-- if preview === true : Preview -->
-            <submission-preview
-              v-if="preview"
-              :form="form"
-              :activity="activityType"
-              :sections="displayFormSection"
-              :errors="errors"
-              :reportSubmitted="formSubmitSuccess"
-              :formSubmitLoading="formSubmitLoading"
-              :uploadedFiles="uploadedFiles"
-              v-on:back="handlePreviewBackButton"
-              v-on:startNewReport="handleExitPreviewAfterSubmit"
-              v-on:fetchFiles="fetchFiles"
-              />
-            <!-- if preview === false : Activity submission form -->
-            <div v-else>
-              <div v-if="isStaffEdit && errorWellNotFound">
-                <h1>Not Found</h1>
-                <p>The page you are looking for was not found.</p>
-              </div>
-              <activity-submission-form
-                v-else
-                :form="form"
-                :events="events"
-                :submissionsHistory="submissionsHistory"
-                :activityType.sync="activityType"
-                :sections="displayFormSection"
-                :formSteps="formSteps"
-                :errors="errors"
-                :formIsFlat.sync="formIsFlat"
-                :trackValueChanges="trackValueChanges"
-                :formSubmitLoading="formSubmitLoading"
-                :isStaffEdit="isStaffEdit"
-                :loading="loading"
-                :uploadedFiles="uploadedFiles"
-                :formChanges="formChanges"
-                v-on:preview="handlePreviewButton"
-                v-on:submit_edit="formSubmit"
-                v-on:resetForm="resetForm"
-                v-on:fetchFiles="fetchFiles"
-                />
+      <b-row>
+        <b-col>
+          <b-card v-if="breadcrumbs && breadcrumbs.length" no-body class="mb-3 d-print-none">
+            <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"></b-breadcrumb>
+          </b-card>
+          <div class="card" v-if="userRoles.wells.edit || userRoles.submissions.edit">
+            <div class="card-body" id="formCard">
+
+              <b-form @submit.prevent="confirmSubmit">
+                <!-- if preview === true : Preview -->
+                <submission-preview
+                  v-if="preview"
+                  :form="form"
+                  :activity="activityType"
+                  :sections="displayFormSection"
+                  :errors="errors"
+                  :reportSubmitted="formSubmitSuccess"
+                  :formSubmitLoading="formSubmitLoading"
+                  :uploadedFiles="uploadedFiles"
+                  v-on:back="handlePreviewBackButton"
+                  v-on:startNewReport="handleExitPreviewAfterSubmit"
+                  v-on:fetchFiles="fetchFiles"
+                  />
+                <!-- if preview === false : Activity submission form -->
+                <div v-else>
+                  <div v-if="isStaffEdit && errorWellNotFound">
+                    <h1>Not Found</h1>
+                    <p>The page you are looking for was not found.</p>
+                  </div>
+                  <activity-submission-form
+                    v-else
+                    :form="form"
+                    :events="events"
+                    :submissionsHistory="submissionsHistory"
+                    :activityType.sync="activityType"
+                    :sections="displayFormSection"
+                    :formSteps="formSteps"
+                    :errors="errors"
+                    :formIsFlat.sync="formIsFlat"
+                    :trackValueChanges="trackValueChanges"
+                    :formSubmitLoading="formSubmitLoading"
+                    :isStaffEdit="isStaffEdit"
+                    :loading="loading"
+                    :uploadedFiles="uploadedFiles"
+                    :formChanges="formChanges"
+                    v-on:preview="handlePreviewButton"
+                    v-on:submit_edit="formSubmit"
+                    v-on:resetForm="resetForm"
+                    v-on:fetchFiles="fetchFiles"
+                    />
+                </div>
+
+                <!-- Form submission confirmation -->
+                <b-modal
+                    v-model="confirmSubmitModal"
+                    id="confirmSubmitModal"
+                    centered
+                    title="Confirm submission"
+                    @shown="$refs.confirmSubmitConfirmBtn.focus()"
+                    :return-focus="$refs.activitySubmitBtn">
+                  Are you sure you want to submit this activity report?
+                  <div slot="modal-footer">
+                    <b-btn variant="primary" @click="confirmSubmitModal=false;formSubmit()" ref="confirmSubmitConfirmBtn">
+                      Save
+                    </b-btn>
+                    <b-btn variant="light" @click="confirmSubmitModal=false">
+                      Cancel
+                    </b-btn>
+                  </div>
+                </b-modal>
+              </b-form>
             </div>
+          </div>
+          <div v-else>
+            Please log in to continue.
+          </div>
+        </b-col>
+        <b-col class="d-none d-xl-block edit-sidebar" xl="2" v-if="isStaffEdit">
+          <b-card :class="editMenuClasses">
+            <b-card-text>
+              <h5>Well {{$route.params.id}}</h5>
+              <b-list-group flush v-b-scrollspy>
+                <b-list-group-item class="edit-sidebar-item" v-for="step in formSteps[activityType]" :key="`formLink-${step}`">
+                                <a :href="`#${step}`" @click.prevent="anchorLinkHandler(step)">
+                                  {{formStepDescriptions[step] ? formStepDescriptions[step] : step}}
+                                </a>
+                </b-list-group-item>
+              </b-list-group>
 
-            <!-- Form submission confirmation -->
-            <b-modal
-                v-model="confirmSubmitModal"
-                id="confirmSubmitModal"
-                centered
-                title="Confirm submission"
-                @shown="$refs.confirmSubmitConfirmBtn.focus()"
-                :return-focus="$refs.activitySubmitBtn">
-              Are you sure you want to submit this activity report?
-              <div slot="modal-footer">
-                <b-btn variant="primary" @click="confirmSubmitModal=false;formSubmit()" ref="confirmSubmitConfirmBtn">
-                  Save
-                </b-btn>
-                <b-btn variant="light" @click="confirmSubmitModal=false">
-                  Cancel
-                </b-btn>
-              </div>
-            </b-modal>
-          </b-form>
-        </div>
-      </div>
+              <div class="mt-5"><b-btn variant="primary" @click="formSubmit">Save</b-btn><a href="#" @click.prevent="handleBackToTop()" class="ml-3">Back to top</a></div>
+            </b-card-text>
+          </b-card>
+        </b-col>
+      </b-row>
     </div>
   </div>
 </template>
@@ -116,6 +140,7 @@ export default {
   },
   data () {
     return {
+      scrolled: false,
       compareForm: {},
       // event bus; use by emitting events on the events instance eg. this.events.$emit('updated')
       events: new Vue(),
@@ -123,6 +148,15 @@ export default {
     }
   },
   computed: {
+    editMenuClasses () {
+      let classes = {
+        'd-none': true,
+        'd-xl-block': true,
+        'edit-sidebar': true,
+        'edit-sidebar-fixed': this.scrolled
+      }
+      return classes
+    },
     displayFormSection () {
       // returns an object describing which components should be displayed
       // when in "flat form" mode
@@ -181,6 +215,15 @@ export default {
       'file_upload_success',
       'upload_files'
     ])
+  },
+  watch: {
+    activityType () {
+      this.resetForm()
+    },
+    // This watches for a route change between Submission and Well Edit and resets the page data
+    '$route' (to, from) {
+      this.setupPage()
+    }
   },
   methods: {
     ...mapActions('documentState', [
@@ -618,16 +661,23 @@ export default {
       }).finally(() => {
         this.loading = false
       })
+    },
+    anchorLinkHandler (step) {
+      this.$SmoothScroll(this.$el.querySelector(`#${step}`))
+    },
+    handleBackToTop () {
+      this.$SmoothScroll(this.$el)
+    },
+    handleEditMenuScroll () {
+      this.scrolled = window.scrollY > 100
     }
   },
-  watch: {
-    activityType () {
-      this.resetForm()
-    },
-    // This watches for a route change between Submission and Well Edit and resets the page data
-    '$route' (to, from) {
-      this.setupPage()
-    }
+  beforeMount () {
+    this.scrolled = window.scrollY > 100
+    window.addEventListener('scroll', this.handleEditMenuScroll)
+  },
+  beforeDestroy () {
+    window.removeEventListener('scroll', this.handleEditMenuScroll)
   },
   created () {
     this.setupPage()
@@ -762,7 +812,9 @@ function initialState () {
       'comments': 'Comments',
       'personResponsible': 'Person responsible for work',
       'observationWellInfo': 'Observation well information',
-      'documents': 'Attachments'
+      'submissionHistory': 'Activity report history',
+      'documents': 'Attachments',
+      'editHistory': 'Edit history'
     }
   }
 }
@@ -841,5 +893,18 @@ function initialState () {
     position: absolute;
     right: 10px;
     top: 5px;
+  }
+  .edit-sidebar {
+    width: 18rem;
+  }
+  .edit-sidebar-fixed {
+    position: fixed;
+    top: 20px;
+  }
+  .edit-sidebar-item {
+    padding: 0px;
+    margin-bottom: 1px;
+    border-top: 0;
+    border-bottom: 0;
   }
 </style>

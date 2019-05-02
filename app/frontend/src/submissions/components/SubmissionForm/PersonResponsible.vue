@@ -14,16 +14,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
 <template>
     <fieldset>
       <b-row>
-        <b-col xs="12">
+        <b-col>
           <legend :id="id">
             Person Responsible for Work
           </legend>
-        </b-col>
-        <b-col xs="12">
-          <div class="float-right">
-            <b-btn v-if="isStaffEdit" variant="primary" class="ml-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
-            <a href="#top" v-if="isStaffEdit">Back to top</a>
-          </div>
         </b-col>
       </b-row>
       <b-form-checkbox id="checkbox1"
