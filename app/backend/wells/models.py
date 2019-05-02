@@ -1109,31 +1109,6 @@ class CasingCode(CodeTableModel):
         return self.description
 
 
-class AquiferWell(AuditModel):
-    """
-    AquiferWell
-    """
-
-    aquifer_well_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    aquifer_id = models.PositiveIntegerField(
-        verbose_name="Aquifer Number", blank=True, null=True,
-        db_comment=('System generated sequential number assigned to each aquifer. It is widely used by '
-                    'ground water administration staff as it is the only consistent unique identifier for a '
-                    'mapped aquifer. It is also commonly referred to as Aquifer Number.'))
-    well_tag_number = models.ForeignKey(
-        Well, db_column='well_tag_number', to_field='well_tag_number',
-        on_delete=models.CASCADE, blank=False, null=False,
-        db_comment=('The file number assigned to a particular well in the in the province\'s Groundwater '
-                    'Wells and Aquifers application.'))
-
-    class Meta:
-        db_table = 'aquifer_well'
-
-    db_table_comment = ('Cross reference table that connects the well to the aquifer. It resolves the many '
-                        'to many relationship between wells and aquifers. One well can be in 1-many '
-                        'aquifers, and one aquifer can have 1-many wells in it.')
-
-
 # TODO: This class needs to be moved to submissions.models (in order to do that, the fk references for a
 # number of other models needs to be updated)
 class ActivitySubmission(AuditModelStructure):

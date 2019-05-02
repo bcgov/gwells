@@ -101,7 +101,7 @@
           :lat-lng="marker.latLng"
           :visible="true"
           :draggable="false"
-          :radius="4"
+          :radius="6"
           :weight="1"
           :fill-opacity="1.0"
           color="#000"
@@ -143,8 +143,13 @@ import {
   LWMSTileLayer
 } from 'vue2-leaflet'
 import { mapGetters } from 'vuex'
-import { SEARCH_WELLS } from '@/wells/store/actions.types.js'
-import { SET_SEARCH_BOUNDS, SET_SEARCH_PARAMS } from '@/wells/store/mutations.types.js'
+import { SEARCH_LOCATIONS, SEARCH_WELLS } from '@/wells/store/actions.types.js'
+import {
+  SET_SEARCH_BOUNDS,
+  SET_SEARCH_PARAMS,
+  SET_SEARCH_RESULT_FILTERS
+} from '@/wells/store/mutations.types.js'
+import { MAP_TRIGGER } from '@/wells/store/triggers.types.js'
 
 // There is a known issue using leaflet with webpack, this is a workaround
 // Fix courtesy of: https://github.com/PaulLeCam/react-leaflet/issues/255
@@ -182,8 +187,6 @@ export default {
       bounds: null,
       selectedMarker: null,
 
-      // Track if we triggered a search, or if it came from another component
-      searchTriggered: false,
       searchOnMapMove: true,
       movedSinceLastSearch: false,
       zoomBoxActive: false,
@@ -193,9 +196,11 @@ export default {
   },
   computed: {
     ...mapGetters({
+      lastSearchTrigger: 'lastSearchTrigger',
       locations: 'locationSearchResults',
-      pendingSearch: 'pendingSearch',
-      searchParams: 'searchParams'
+      pendingSearch: 'pendingLocationSearch',
+      searchParams: 'searchParams',
+      searchResultFilters: 'searchResultFilters'
     }),
     searchBoundBox () {
       const sw = this.bounds.getSouthWest()
@@ -226,7 +231,10 @@ export default {
       return this.zoom === this.maxZoom
     },
     activeSearch () {
-      return Object.entries(this.searchParams).length > 0
+      return (
+        Object.entries(this.searchParams).length > 0 ||
+        Object.entries(this.searchResultFilters).length > 0
+      )
     },
     showSearchThisAreaButton () {
       return (!this.searchOnMapMove && this.movedSinceLastSearch && this.zoom >= 9)
@@ -250,8 +258,6 @@ export default {
     },
     zoomUpdated (zoom) {
       this.zoom = zoom
-
-      this.mapMoved()
     },
     centerUpdated (center) {
       this.center = center
@@ -275,13 +281,14 @@ export default {
       }
     }, 500),
     triggerSearch () {
-      this.searchTriggered = true
-
-      this.$store.dispatch(SEARCH_WELLS, { constrain: true })
+      this.$store.dispatch(SEARCH_LOCATIONS)
+      this.$store.dispatch(SEARCH_WELLS, { trigger: MAP_TRIGGER, constrain: true })
     },
     clearSearch () {
       this.$store.commit(SET_SEARCH_PARAMS, {})
-      this.$store.dispatch(SEARCH_WELLS, { constrain: true })
+      this.$store.commit(SET_SEARCH_RESULT_FILTERS, {})
+
+      this.triggerSearch()
     },
     geolocate () {
       this.$refs.map.mapObject.locate()
@@ -341,10 +348,9 @@ export default {
   },
   watch: {
     locations (locations) {
-      if (!this.searchTriggered) {
+      if (!this.zoomToMarkersActive && this.lastSearchTrigger !== MAP_TRIGGER) {
         this.zoomToMarkers()
       }
-      this.searchTriggered = false
       this.movedSinceLastSearch = false
       this.searchOnMapMove = true
     }
