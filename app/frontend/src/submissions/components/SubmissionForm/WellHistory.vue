@@ -124,6 +124,8 @@ export default {
         return 'Longitude'
       } else if (val === 'Geom[1]') {
         return 'Latitude'
+      } else if (val === 'Geom') {
+        return 'Longitude, Latitude'
       } else {
         return val
       }

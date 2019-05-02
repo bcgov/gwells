@@ -40,6 +40,11 @@ def get_well_history(well):
                     edit_user = version.field_dict['update_user'] or version.field_dict['create_user']
                 except:
                     pass
+            try:
+                if isinstance(version.field_dict['geom'], GEOSGeometry):
+                    version.field_dict['geom'] = ', '.join(map(str, version.field_dict['geom'].coords))
+            except:
+                pass
             temp_history[content_name].append(version.field_dict)
         for temp_key, temp_val in temp_history.items():
             if temp_val:
