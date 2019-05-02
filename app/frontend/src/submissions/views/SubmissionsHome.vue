@@ -242,7 +242,7 @@ export default {
       this.formSubmitSuccessWellTag = null
       this.errors = {}
       // Save notification
-      this.$noty.info('<div class="loader"></div><div class="notifyText">Saving...</div>', { timeout: false })
+      const savingNotification = this.$noty.info('<div class="loader"></div><div class="notifyText">Saving...</div>', { timeout: false })
 
       // Depending on the type of submission (construction/decommission/alteration/edit) we post to
       // different endpoints.
@@ -256,11 +256,16 @@ export default {
         // Save completed notification
 
         if (this.isStaffEdit) {
-          this.$noty.success('<div class="notifyText">Changes Saved!</div>', { killer: true })
+          this.$nextTick(() => {
+            this.$noty.success('<div class="notifyText">Changes saved.</div>', { killer: true })
+          })
           this.events.$emit('well-edited', true)
           this.fetchWellDataForStaffEdit({reloadPage: false})
         } else {
-          this.$noty.success('<div aria-label="Close" class="closeBtn">x</div><div class="notifyText">Well Report Submitted.</div>', { killer: true })
+          this.$nextTick(() => {
+            this.$noty.success('<div aria-label="Close" class="closeBtn">x</div><div class="notifyText">Well report submitted.</div>', { killer: true })
+          })
+
           this.$nextTick(function () {
             window.scrollTo(0, 0)
           })
@@ -283,32 +288,32 @@ export default {
 
         if (this.upload_files.length > 0) {
           if (response.data.filing_number) {
-            this.$noty.info('<div class="loader"></div><div class="notifyText">File Upload In Progress...</div>', { timeout: false })
+            this.$noty.info('<div class="loader"></div><div class="notifyText">File upload in progress...</div>', { timeout: false })
             this.uploadFiles({
               documentType: 'submissions',
               recordId: response.data.filing_number
             }).then(() => {
               this.fileUploadSuccess()
               this.fetchFiles()
-              this.$noty.success('<div class="notifyText">Successfully Uploaded All Files</div>', { killer: true })
+              this.$noty.success('<div class="notifyText">Successfully uploaded all files.</div>', { killer: true })
             }).catch((error) => {
               this.fileUploadFail()
               console.error(error)
-              this.$noty.error('<div class="notifyText">Error Uploading Files</div>', { killer: true })
+              this.$noty.error('<div class="notifyText">Error uploading files.</div>', { killer: true })
             })
           } else {
-            this.$noty.info('<div class="loader"></div><div class="notifyText">File Upload In Progress...</div>', { timeout: false })
+            this.$noty.info('<div class="loader"></div><div class="notifyText">File upload in progress...</div>', { timeout: false })
             this.uploadFiles({
               documentType: 'wells',
               recordId: response.data.well
             }).then(() => {
-              this.$noty.success('<div class="notifyText">Successfully Uploaded All Files</div>', { killer: true })
+              this.$noty.success('<div class="notifyText">Successfully uploaded all files.</div>', { killer: true })
               this.fileUploadSuccess()
               this.fetchFiles()
             }).catch((error) => {
               this.fileUploadFail()
-              console.log(error)
-              this.$noty.error('<div class="notifyText">Error Uploading Files</div>', { killer: true })
+              console.error(error)
+              this.$noty.error('<div class="notifyText">Error uploading files.</div>', { killer: true })
             })
           }
         }
@@ -320,7 +325,7 @@ export default {
           } else {
             // Some other kind of server error. If for example, it's a 500, the response data is not of
             // much use, so we just grab the status text.
-            this.errors = { 'Server Error': error.response.statusText }
+            this.errors = { 'Server error': error.response.statusText }
           }
         } else {
           // This is a generic js error, so just log it
@@ -329,7 +334,7 @@ export default {
 
         this.formSubmitError = true
         let cleanErrors = parseErrors(this.errors)
-        let errTxt = cleanErrors.length > 1 ? 'Input Errors!' : 'Input Error!'
+        let errTxt = cleanErrors.length > 1 ? 'Input errors.' : 'Input error.'
         // Error notifications
         this.$noty.error('<div class="errorTitle">' + errTxt + '</div>', { timeout: 2000, killer: true })
         cleanErrors.forEach(e => {
@@ -337,6 +342,13 @@ export default {
         })
       }).finally((response) => {
         this.formSubmitLoading = false
+
+        // sometimes the save success notification doesn't close the "saving..." one.
+        // if the in-progress status message is still shown after the request completes,
+        // close it immediately.
+        if (savingNotification && !savingNotification.closed) {
+          savingNotification.close()
+        }
       })
     },
     formChanges () {

@@ -11,13 +11,17 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-
-from rest_framework.response import Response
+import logging
+import sys
 from posixpath import join as urljoin
+
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView
 from django.urls import reverse
+
+import rest_framework.exceptions
+from rest_framework.response import Response
 from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveAPIView
 from rest_framework.views import APIView
 
@@ -123,6 +127,9 @@ from submissions.serializers import (
 )
 
 
+logger = logging.getLogger(__name__)
+
+
 def get_submission_queryset(qs):
     return qs.select_related(
                 "well_class",
@@ -210,7 +217,42 @@ class SubmissionListAPIView(ListAPIView):
         return Response(serializer.data)
 
 
-class SubmissionConstructionAPIView(AuditCreateMixin, ListCreateAPIView):
+class SubmissionBase(AuditCreateMixin, ListCreateAPIView):
+    """ Base class for mutating data that has detailed error logging.
+    """
+
+    def post(self, request, *args, **kwargs):
+        try:
+            return self.create(request, *args, **kwargs)
+        except rest_framework.exceptions.APIException as error:
+            try:
+                logger.warn(('Problem encountered handling POST; '
+                             'user:{request.user.profile.username}; '
+                             'user.is_authenticated:{request.user.is_authenticated}; '
+                             'path:{request.path}; method:{request.method}; status_code:{error.status_code}; '
+                             'request: {request.data}; '
+                             'response: {error.detail}').format(
+                    request=request,
+                    error=error))
+            except:
+                logger.error('Error logging error!', exc_info=sys.exc_info())
+            raise
+        except:
+            try:
+                logger.warn(('Problem encountered handling POST; '
+                             'user:{request.user.profile.username}; '
+                             'user.is_authenticated:{request.user.is_authenticated}; '
+                             'path:{request.path}; method:{request.method};'
+                             'request: {request.data}; '
+                             'detail: {detail}').format(
+                    request=request,
+                    detail=sys.exc_info()))
+            except:
+                logger.error('Error logging error!', exc_info=sys.exc_info())
+            raise
+
+
+class SubmissionConstructionAPIView(SubmissionBase):
     """Create a construction submission"""
 
     model = ActivitySubmission
@@ -223,7 +265,7 @@ class SubmissionConstructionAPIView(AuditCreateMixin, ListCreateAPIView):
             .filter(well_activity_type=WellActivityCode.types.construction())
 
 
-class SubmissionAlterationAPIView(AuditCreateMixin, ListCreateAPIView):
+class SubmissionAlterationAPIView(SubmissionBase):
     """Create an alteration submission"""
 
     model = ActivitySubmission
@@ -236,7 +278,7 @@ class SubmissionAlterationAPIView(AuditCreateMixin, ListCreateAPIView):
             .filter(well_activity_type=WellActivityCode.types.alteration())
 
 
-class SubmissionDecommissionAPIView(AuditCreateMixin, ListCreateAPIView):
+class SubmissionDecommissionAPIView(SubmissionBase):
     """Create a decommission submission"""
 
     model = ActivitySubmission
@@ -249,7 +291,7 @@ class SubmissionDecommissionAPIView(AuditCreateMixin, ListCreateAPIView):
             .filter(well_activity_type=WellActivityCode.types.decommission())
 
 
-class SubmissionStaffEditAPIView(AuditCreateMixin, ListCreateAPIView):
+class SubmissionStaffEditAPIView(SubmissionBase):
     """ Create a staff edit submission"""
     model = ActivitySubmission
     serializer_class = WellStaffEditSubmissionSerializer
