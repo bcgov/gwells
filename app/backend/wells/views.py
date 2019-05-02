@@ -15,6 +15,7 @@ from urllib.parse import quote
 from datetime import datetime
 import logging
 import sys
+import time
 
 from django.db.models import Prefetch
 from django.http import (
@@ -650,6 +651,7 @@ def well_licensing(request):
         'AuthUsername': get_env_variable('E_LICENSING_AUTH_USERNAME'),
         'AuthPass': get_env_variable('E_LICENSING_AUTH_PASSWORD')
     }
+    time.sleep(0.01)  # hack to fix reset connection by peer error - server provider timeout issue
     response = requests.get(url, headers=headers)
     if response.ok:
         try:
