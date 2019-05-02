@@ -121,6 +121,7 @@
                 "DJANGO_DEBUG":  null,
                 "ENABLE_ADDITIONAL_DOCUMENTS":  null,
                 "ENABLE_GOOGLE_ANALYTICS": null,
+                "E_LICENSING_URL": null,
                 "S3_PRIVATE_BUCKET": null,
                 "S3_PRIVATE_HOST": null,
                 "S3_WELL_EXPORT_BUCKET": null,
@@ -428,6 +429,15 @@
                                             "secretKeyRef": {
                                                 "name": "gwells-e-licensing${NAME_SUFFIX}",
                                                 "key": "E_LICENSING_AUTH_USERNAME"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "E_LICENSING_URL",
+                                        "valueFrom": {
+                                            "configMapKeyRef": {
+                                                "key": "E_LICENSING_URL",
+                                                "name": "gwells-global-config${NAME_SUFFIX}"
                                             }
                                         }
                                     },
