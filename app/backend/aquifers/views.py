@@ -1,3 +1,4 @@
+import json
 from django.views.static import serve
 """
     Licensed under the Apache License, Version 2.0 (the "License");
@@ -125,8 +126,6 @@ def _aquifer_qs(query):
 
     qs = qs.distinct()
 
-    print(qs.query)
-
     return qs
 
 
@@ -143,9 +142,9 @@ class AquiferListCreateAPIView(RevisionMixin, AuditCreateMixin, ListCreateAPIVie
     """
     pagination_class = LargeResultsSetPagination
     permission_classes = (HasAquiferEditRoleOrReadOnly,)
-    filter_backends = (djfilters.DjangoFilterBackend,
-                       OrderingFilter, SearchFilter)
-    ordering_fields = '__all__'
+    # filter_backends = (djfilters.DjangoFilterBackend,
+    #                   OrderingFilter, SearchFilter)
+    #ordering_fields = '__all__'
     ordering = ('aquifer_id',)
 
     def get_serializer_class(self):
@@ -155,7 +154,40 @@ class AquiferListCreateAPIView(RevisionMixin, AuditCreateMixin, ListCreateAPIVie
             return serializers.AquiferDetailSerializer
 
     def get_queryset(self):
-        return _aquifer_qs(self.request.GET)
+        return _aquifer_qs(self.request.GET).values(
+            'aquifer_id',
+            'aquifer_name',
+            'location_description',
+
+            'demand__description',
+            'material__description',
+            'subtype__description',
+            'vulnerability__description',
+            'productivity__description',
+
+            'area',
+            'mapping_year',
+            'litho_stratographic_unit',
+        )
+
+
+@api_view(['GET'])
+def list_view(request):
+    return HttpResponse(json.dumps(list(_aquifer_qs(
+        request.GET).values(
+            'aquifer_id',
+            'aquifer_name',
+            'location_description',
+
+            'demand__description',
+            'material__description',
+            'subtype__description',
+            'vulnerability__description',
+            'productivity__description',
+
+            # 'area',
+            'mapping_year',
+    ))))
 
 
 class AquiferResourceSectionListAPIView(ListAPIView):

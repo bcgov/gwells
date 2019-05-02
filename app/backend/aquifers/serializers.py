@@ -55,35 +55,36 @@ class AquiferResourceSerializer(serializers.ModelSerializer):
 
 class AquiferSerializer(serializers.ModelSerializer):
     """Serialize a aquifer list"""
-    demand = serializers.SlugRelatedField(
-        read_only=True, slug_field='description')
-    material = serializers.SlugRelatedField(
-        read_only=True, slug_field='description')
-    productivity = serializers.SlugRelatedField(
-        read_only=True, slug_field='description')
-    subtype = serializers.StringRelatedField(
-        read_only=True)
-    vulnerability = serializers.SlugRelatedField(
-        read_only=True, slug_field='description')
 
-    id = serializers.IntegerField(source="aquifer_id")
-    name = serializers.CharField(source="aquifer_name")
-    location = serializers.CharField(source="location_description")
-    lsu = serializers.CharField(source="litho_stratographic_unit")
+    def to_representation(self, instance):
+        """
+        Rather the declare serializer fields, we must reference them here because
+        they are queried as a `dict`, which dramatically improves performance
+        due to the high number of joined tables needing pruned in the associated query.
+
+        Note: we also use short field names to save 100 kB over the network, since there are over 1000 records
+        routinely fetched
+        """
+        ret = super().to_representation(instance)
+        ret['id'] = instance['aquifer_id']
+        ret['name'] = instance['aquifer_id']
+        if instance['area']:
+            ret['area'] = float(instance.get('area'))
+        ret['lsu'] = instance['litho_stratographic_unit']
+
+        ret['location'] = instance['location_description']
+
+        ret['demand'] = instance['demand__description'],
+        ret['material'] = instance['material__description'],
+        ret['subtype'] = instance['subtype__description'],
+        ret['vulnerability'] = instance['vulnerability__description'],
+        ret['productivity'] = instance['productivity__description'],
+        return ret
 
     class Meta:
         model = models.Aquifer
         fields = (
-            'id',
-            'name',
-            'location',
-            'material',
-            'subtype',
-            'vulnerability',
-            'productivity',
-            'demand',
-            'lsu',
-            'area',
+            'aquifer_id',
             'mapping_year',
         )
 
