@@ -19,7 +19,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </div>
     </div>
     <div v-else>
-      <div class="h-100 submission-form-wrapper">
+      <div :class="formWrapperClasses">
         <div :class="editMenuClasses" v-if="isStaffEdit">
           <b-card class="edit-sidebar-card">
             <b-card-text>
@@ -172,6 +172,12 @@ export default {
         'submission-form-edit': this.isStaffEdit,
         'submission-form-edit-scrolled': this.isStaffEdit && this.scrolled,
         'submission-form': !this.isStaffEdit
+      }
+      return classes
+    },
+    formWrapperClasses () {
+      const classes = {
+        'edit-form-wrapper': this.isStaffEdit
       }
       return classes
     },
@@ -929,11 +935,11 @@ function initialState () {
     border-top: 0;
     border-bottom: 0;
   }
-  .submission-form-wrapper {
+  .edit-form-wrapper {
     display: flex;
   }
   .submission-form-edit {
-      padding-left: 25px
+      padding-left: 25px;
   }
   @media (min-width: 1200px) {
     .submission-form-edit-scrolled {
