@@ -6,6 +6,8 @@ from django.db import migrations
 
 logger = logging.getLogger(__name__)
 
+# NOTE: this migration only needs to run once.
+
 
 def copy_perforations_for_submissions(apps, schema_editor):
     """ copies perforations onto legacy activity submissions (if there is a legacy submission record
