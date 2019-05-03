@@ -344,6 +344,20 @@ class WellDetailSerializer(AuditModelSerializer):
     well_disinfected_status = serializers.ReadOnlyField(source='get_well_disinfected_status.description')
     alternative_specs_submitted = serializers.ReadOnlyField(source='get_alternative_specs_submitted_display')
 
+    submission_work_dates = serializers.SerializerMethodField()
+
+    def get_submission_work_dates(self, instance):
+        records = instance.activitysubmission_set \
+            .exclude(well_activity_type='STAFF_EDIT') \
+            .order_by('create_date')
+
+        records = sorted(records, key=lambda record:
+                         (record.well_activity_type.code != WellActivityCode.types.legacy().code,
+                          record.well_activity_type.code != WellActivityCode.types.construction().code,
+                          record.create_date), reverse=True)
+
+        return SubmissionWorkDatesByWellSerializer(records, many=True).data
+
     class Meta:
         model = Well
         fields = (
@@ -376,6 +390,7 @@ class WellDetailSerializer(AuditModelSerializer):
             "well_location_description",
             "construction_start_date",
             "construction_end_date",
+            "alteration_start_date",
             "alteration_end_date",
             "decommission_start_date",
             "decommission_end_date",
@@ -483,6 +498,7 @@ class WellDetailSerializer(AuditModelSerializer):
             "linerperforation_set",
             "decommission_description_set",
             "lithologydescription_set",
+            "submission_work_dates",
         )
 
 
@@ -496,6 +512,20 @@ class SubmissionReportsByWellSerializer(serializers.ModelSerializer):
         model = ActivitySubmission
         fields = ("well", "well_activity_type", "create_user",
                   "create_date", "well_activity_description", "filing_number")
+
+
+class SubmissionWorkDatesByWellSerializer(serializers.ModelSerializer):
+    """ serializes a list of submission report work done information """
+
+    well_activity_description = serializers.ReadOnlyField(
+        source='well_activity_type.description')
+    drilling_company = serializers.ReadOnlyField(
+        source='company_of_person_responsible.name')
+
+    class Meta:
+        model = ActivitySubmission
+        fields = ("well", "create_date", "well_activity_description",
+                  "work_start_date", "work_end_date", "drilling_company")
 
 
 class WellDetailAdminSerializer(AuditModelSerializer):

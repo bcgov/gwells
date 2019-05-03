@@ -44,6 +44,8 @@ class Profile(models.Model):
     username = models.CharField(max_length=100, blank=True, null=True)
     name = models.CharField(max_length=100, blank=True, null=True)
 
+    db_table_comment = ('Additional user information that cannot be stored on the django auth_user table.')
+
     class Meta:
         db_table = 'profile'
 
