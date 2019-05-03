@@ -756,7 +756,6 @@ class WellListSerializer(serializers.ModelSerializer):
             "well_class",
             "well_subclass",
             "well_status",
-            "well_publication_status",
             "licenced_status",
             "street_address",
             "city",
