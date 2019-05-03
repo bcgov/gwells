@@ -12,20 +12,19 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-  <div class="container-fluid p-1 pl-xl-5">
+  <div :class="formContainerClasses">
     <div v-if="loading" class="mt-3">
       <div class="fa-2x text-center">
         <i class="fa fa-circle-o-notch fa-spin"></i>
       </div>
     </div>
     <div v-else>
-
-      <b-row>
-        <b-col class="d-none d-xl-block edit-sidebar" xl="2" v-if="isStaffEdit">
-          <b-card :class="editMenuClasses">
+      <div class="h-100 submission-form-wrapper">
+        <div :class="editMenuClasses" v-if="isStaffEdit">
+          <b-card class="edit-sidebar-card">
             <b-card-text>
               <h5>Well {{$route.params.id}}</h5>
-              <b-list-group flush v-b-scrollspy>
+              <b-list-group flush class="edit-menu-links">
                 <b-list-group-item class="edit-sidebar-item" v-for="step in formSteps[activityType]" :key="`formLink-${step}`">
                                 <a :href="`#${step}`" @click.prevent="anchorLinkHandler(step)">
                                   {{formStepDescriptions[step] ? formStepDescriptions[step] : step}}
@@ -36,8 +35,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
               <div class="mt-5"><b-btn variant="primary" @click="formSubmit">Save</b-btn><a href="#" @click.prevent="handleBackToTop()" class="ml-3">Back to top</a></div>
             </b-card-text>
           </b-card>
-        </b-col>
-        <b-col>
+        </div>
+        <div :class="submissionFormClasses">
           <b-card v-if="breadcrumbs && breadcrumbs.length" no-body class="mb-3 d-print-none">
             <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"></b-breadcrumb>
           </b-card>
@@ -86,6 +85,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     v-on:resetForm="resetForm"
                     v-on:fetchFiles="fetchFiles"
                     />
+                    <div class="d-xl-none">
+                      <b-btn variant="primary" class="float-right" @click="formSubmit">Save</b-btn>
+                    </div>
                 </div>
 
                 <!-- Form submission confirmation -->
@@ -112,8 +114,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <div v-else>
             Please log in to continue.
           </div>
-        </b-col>
-      </b-row>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -148,12 +150,28 @@ export default {
     }
   },
   computed: {
+    formContainerClasses () {
+      const classes = {
+        'p-1': true,
+        'px-3': this.isStaffEdit,
+        'container-fluid': this.isStaffEdit,
+        'container': !this.isStaffEdit
+      }
+      return classes
+    },
     editMenuClasses () {
-      let classes = {
+      const classes = {
+        'edit-sidebar-fixed': this.scrolled,
         'd-none': true,
-        'd-xl-block': true,
-        'edit-sidebar': true,
-        'edit-sidebar-fixed': this.scrolled
+        'd-xl-block': true
+      }
+      return classes
+    },
+    submissionFormClasses () {
+      const classes = {
+        'submission-form-edit': this.isStaffEdit,
+        'submission-form-edit-scrolled': this.isStaffEdit && this.scrolled,
+        'submission-form': !this.isStaffEdit
       }
       return classes
     },
@@ -894,8 +912,12 @@ function initialState () {
     right: 10px;
     top: 5px;
   }
-  .edit-sidebar {
-    width: 18rem;
+  .edit-sidebar-card {
+    width: 250px;
+  }
+  .edit-sidebar-menu {
+    max-width: 15%;
+    padding-left: 15px;
   }
   .edit-sidebar-fixed {
     position: fixed;
@@ -906,5 +928,21 @@ function initialState () {
     margin-bottom: 1px;
     border-top: 0;
     border-bottom: 0;
+  }
+  .submission-form-wrapper {
+    display: flex;
+  }
+  .submission-form-edit {
+      padding-left: 25px
+  }
+  @media (min-width: 1200px) {
+    .submission-form-edit-scrolled {
+      padding-left: 275px!important;
+    }
+  }
+  @media (max-height: 800px) {
+    .edit-menu-links {
+      display: none;
+    }
   }
 </style>
