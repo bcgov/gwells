@@ -1,6 +1,7 @@
 import logging
 from http import HTTPStatus
 
+import datetime
 from django.utils import timezone
 from django.urls import reverse
 from django.test import TestCase
@@ -321,6 +322,45 @@ class TestEdit(APITestCase):
         response = self.client.post(reverse('STAFF_EDIT'), data, format='json')
         self.assertEqual(response.status_code,
                          status.HTTP_201_CREATED, response.data)
+
+    def test_update_construction_dates(self):
+        """ Check that altering the constructions dates on a staff edit is reflected on the well """
+        well = Well.objects.create()
+        data = {
+            'well': well.well_tag_number,
+            'construction_start_date': '1999-05-05',
+            'construction_end_date': '1999-06-06'
+        }
+        self.client.post(reverse('STAFF_EDIT'), data, format='json')
+        well = Well.objects.get(well_tag_number=well.well_tag_number)
+        self.assertEqual(well.construction_start_date, datetime.date(1999, 5, 5))
+        self.assertEqual(well.construction_end_date, datetime.date(1999, 6, 6))
+
+    def test_update_alteration_dates(self):
+        """ Check that altering the alteration dates on a staff edit is reflected on the well """
+        well = Well.objects.create()
+        data = {
+            'well': well.well_tag_number,
+            'alteration_start_date': '1999-05-05',
+            'alteration_end_date': '1999-06-06'
+        }
+        self.client.post(reverse('STAFF_EDIT'), data, format='json')
+        well = Well.objects.get(well_tag_number=well.well_tag_number)
+        self.assertEqual(well.alteration_start_date, datetime.date(1999, 5, 5))
+        self.assertEqual(well.alteration_end_date, datetime.date(1999, 6, 6))
+
+    def test_update_decommission_dates(self):
+        """ Check that altering the decommission dates on a staff edit is reflected on the well """
+        well = Well.objects.create()
+        data = {
+            'well': well.well_tag_number,
+            'decommission_start_date': '1999-05-05',
+            'decommission_end_date': '1999-06-06'
+        }
+        self.client.post(reverse('STAFF_EDIT'), data, format='json')
+        well = Well.objects.get(well_tag_number=well.well_tag_number)
+        self.assertEqual(well.decommission_start_date, datetime.date(1999, 5, 5))
+        self.assertEqual(well.decommission_end_date, datetime.date(1999, 6, 6))
 
 
 class TestPermissionsViewRights(APITestCase):
