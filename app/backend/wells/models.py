@@ -179,7 +179,7 @@ class WellDisinfectedCode(CodeTableModel):
     """
      The status on whether the well has been disinfected or not.
     """
-    well_disinfected_code = models.CharField(primary_key=True, max_length=10, editable=False)
+    well_disinfected_code = models.CharField(primary_key=True, max_length=100, editable=False)
     description = models.CharField(max_length=100)
 
     class Meta:

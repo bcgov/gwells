@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
                 ('display_order', models.PositiveIntegerField()),
                 ('effective_date', models.DateTimeField(default=django.utils.timezone.now)),
                 ('expiry_date', models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc))),
-                ('well_disinfected_code', models.CharField(editable=False, max_length=10, primary_key=True, serialize=False)),
+                ('well_disinfected_code', models.CharField(editable=False, max_length=100, primary_key=True, serialize=False)),
                 ('description', models.CharField(max_length=100)),
             ],
             options={
