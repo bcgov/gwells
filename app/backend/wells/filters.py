@@ -360,7 +360,7 @@ class WellListFilter(AnyOrAllFilterSet):
             'well_cap_type',
             'well_class',
             'well_depth',
-            'well_disinfected',
+            'well_disinfected_status',
             'well_identification_plate_attached',
             'well_location_description',
             'well_orientation',

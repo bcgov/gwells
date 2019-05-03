@@ -448,10 +448,10 @@ const SEARCH_FIELDS = {
   },
   wellCapType: { param: 'well_cap_type', label: 'Well cap type', type: 'text' },
   wellDisinfected: {
-    param: 'well_disinfected',
+    param: 'well_disinfected_status',
     label: 'Well disinfected',
-    type: 'radio',
-    options: [{ text: 'Yes', value: 'true' }, { text: 'No', value: 'false' }]
+    type: 'text',
+    anyValueBoolean: true
   },
   observationWellNumber: {
     param: 'observation_well_number',
