@@ -51,7 +51,7 @@ select
     well.well_tag_number,
     well.identification_plate_number,
     SUBSTRING(well_status_code.description for 255) as well_status,
-    SUBSTRING(licenced_status_code.description for 255) as licenced_status,
+    SUBSTRING(licenced_status_code.description for 255) as licence_status,
     SUBSTRING(CONCAT('https://apps.nrs.gov.bc.ca/gwells/well/', well.well_tag_number) for 255) as detail,
     well.artesian_flow,
     SUBSTRING('usGPM' for 255) as artesian_flow_units,
@@ -98,7 +98,7 @@ select
     well.well_tag_number,
     identification_plate_number,
     SUBSTRING(well_status_code.description for 255) as well_status,
-    SUBSTRING(licenced_status_code.description for 255) as licenced_status,
+    SUBSTRING(licenced_status_code.description for 255) as licence_status,
     SUBSTRING(CONCAT('https://apps.nrs.gov.bc.ca/gwells/well/', well.well_tag_number) for 255) as detail,
     lithology_description.lithology_from as from,
     lithology_description.lithology_to as to,
@@ -116,7 +116,7 @@ select
     well.bedrock_depth,
     well.well_yield as yield,
     SUBSTRING(well_yield_unit_code.description for 100) as yield_unit,
-    well.aquifer_id as aquifer
+    well.aquifer_id as aquifer_id
 from well
     inner join lithology_description on
         lithology_description.well_tag_number = well.well_tag_number
