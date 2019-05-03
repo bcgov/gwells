@@ -25,3 +25,4 @@ django-reversion==2.0.13
 openpyxl==2.5.11
 lxml==4.2.5
 GDAL>=2.4
+urllib3>=1.25
