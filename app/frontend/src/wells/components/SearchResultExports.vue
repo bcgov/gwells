@@ -1,0 +1,77 @@
+/*
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*/
+<template>
+  <div v-if="resultCount > 0 && resultCount < maxExportSize">
+    <h3>Export search results</h3>
+    <div>
+      <ul>
+        <li>
+          <a :href="csvExportUrl" download="search-results.csv">CSV</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</template>
+
+<script>
+import querystring from 'querystring'
+
+import { mapGetters } from 'vuex'
+
+export default {
+  data () {
+    return {
+      apiBaseUrl: process.env.AXIOS_BASE_URL,
+      maxExportSize: 10000
+    }
+  },
+  computed: {
+    ...mapGetters({
+      bounds: 'searchBounds',
+      constrain: 'constrainSearch',
+      params: 'searchParams',
+      ordering: 'searchOrdering',
+      resultFilters: 'searchResultFilters',
+      resultCount: 'searchResultCount'
+    }),
+    fullQueryString () {
+      const queryParams = {
+        ...this.params,
+        ordering: this.ordering
+      }
+      if (Object.entries(this.resultFilters).length > 0) {
+        queryParams.filter_group = JSON.stringify(this.resultFilters)
+      }
+      if (this.constrain) {
+        Object.assign(queryParams, this.bounds)
+      }
+
+      return querystring.stringify(queryParams)
+    },
+    csvExportUrl () {
+      const baseUrl = this.getBaseExportUrl('csv')
+
+      return `${baseUrl}?${this.fullQueryString}`
+    }
+  },
+  methods: {
+    getBaseExportUrl (format) {
+      return `${this.apiBaseUrl}wells/export.${format}`
+    }
+  }
+}
+</script>
+
+<style lang="scss">
+</style>
