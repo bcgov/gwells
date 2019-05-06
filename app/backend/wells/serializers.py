@@ -261,7 +261,7 @@ class LithologyDescriptionSerializer(serializers.ModelSerializer):
         validators=[MinValueValidator(Decimal('0.00'))])
     lithology_to = serializers.DecimalField(
         max_digits=7, decimal_places=2,
-        validators=[MinValueValidator(Decimal('0.01'))])
+        validators=[MinValueValidator(Decimal('0.00'))])
 
     """Serializes lithology description records"""
     class Meta:
