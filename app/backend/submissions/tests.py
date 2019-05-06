@@ -307,17 +307,25 @@ class TestEdit(APITestCase):
         self.assertAlmostEqual(lithology[0].lithology_to, 10)
 
     def test_no_city_on_legacy(self):
-        """ Test that the legacy record creates ok, but we get a bad request response if we have bad
-        data.
+        """ Test that the legacy record creates ok, even with missing legacy data.
+
+            NOTE: a missing owner_city is a common legacy data issue.
+            This test used to assert that a missing city would stop the staff edit
+            request, but requiring a valid owner_city (when it wasn't required before)
+            caused too many issues for users.  This test is kept in place to ensure
+            that legacy data won't cause validation errors, but a new test will (hopefully)
+            be written to prevent new wells from being created without required information.
         """
         well = Well.objects.create(
             create_user='Blah', update_user='Blah', owner_city=' ')
         data = {
             'well': well.well_tag_number
         }
+
+        # NOTE: this test previously asserted that a 
         response = self.client.post(reverse('STAFF_EDIT'), data, format='json')
         self.assertEqual(response.status_code,
-                         status.HTTP_400_BAD_REQUEST, response.data)
+                         status.HTTP_201_CREATED, response.data)
         data['owner_city'] = 'Somewhere'
         response = self.client.post(reverse('STAFF_EDIT'), data, format='json')
         self.assertEqual(response.status_code,
