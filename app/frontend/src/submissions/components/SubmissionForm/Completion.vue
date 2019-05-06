@@ -128,9 +128,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
           label="Well Disinfected Status"
           select
           :options="codes.well_disinfected_codes"
-          text-field="description"
-          value-field="code"
-          placeholder="Unknown"
+          text-field="well_disinfected_code"
+          value-field="well_disinfected_code"
           v-model="wellDisinfectedInput"
           :errors="errors['well_disinfected_status']"
           :loaded="fieldsLoaded['well_disinfected_status']"></form-input>
