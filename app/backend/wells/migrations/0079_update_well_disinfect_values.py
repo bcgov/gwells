@@ -1,5 +1,6 @@
 from django.db import migrations
 
+
 # This can be deleted when doing next squash of migrations because it's a one time update
 def migrate_well_disinfected(apps, schema_editor):
     well = apps.get_model('wells', 'well')
@@ -26,10 +27,9 @@ def reverse(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('wells', '0078_auto_20190503_1912'),
+        ('wells', '0078_add_well_disinfect_status'),
     ]
 
     operations = [
         migrations.RunPython(migrate_well_disinfected, reverse),
     ]
-
