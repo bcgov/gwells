@@ -16,6 +16,8 @@ import datetime
 import logging.config
 from pathlib import Path
 
+import requests
+
 from gwells import database
 from gwells.settings.base import get_env_variable
 
@@ -233,13 +235,25 @@ LOGGING = {
     }
 }
 
+
+try:
+    url = get_env_variable('SSO_AUTH_HOST') + '/realms/' + get_env_variable("SSO_REALM")
+    res = requests.get(url)
+    public_key = res.json()['public_key']
+    if len(public_key) <= 0:
+        public_key = get_env_variable('SSO_PUBKEY', "")
+except:
+    public_key = get_env_variable('SSO_PUBKEY', "")
+
+
 JWT_AUTH = {
     'JWT_PUBLIC_KEY': ("-----BEGIN PUBLIC KEY-----\n" +
-                       get_env_variable('SSO_PUBKEY', "") +
+                       public_key +
                        "\n-----END PUBLIC KEY-----"),
     'JWT_ALGORITHM': 'RS256',
     'JWT_AUDIENCE': get_env_variable('SSO_AUDIENCE')
 }
+
 
 DRF_RENDERERS = ['rest_framework.renderers.JSONRenderer', ]
 # Turn on browsable API if "DEBUG" set
