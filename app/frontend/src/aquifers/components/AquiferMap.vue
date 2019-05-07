@@ -282,9 +282,8 @@ export default {
         const container = L.DomUtil.create('div', 'leaflet-popup-aquifer')
         const popUpLink = L.DomUtil.create('div', 'leaflet-popup-link')
         popUpLink.innerHTML = `<p>Aquifer ID: <span class="popup-link">${aquifer.id}</span></p>
-          <p>Aquifer name: <span class="popup-link">${aquifer.name || ''}</span></p>
-          <p>Aquifer subtype: <span class="popup-link">${aquifer.subtype || ''}</span></p>`
-
+          <p>Aquifer name: ${aquifer.name || ''}</p>
+          <p>Aquifer subtype: ${aquifer.subtype || ''}</p>`
         L.DomEvent.on(popUpLink, 'click', popUpLinkHandler.bind(aquifer))
         container.appendChild(popUpLink)
         return container
