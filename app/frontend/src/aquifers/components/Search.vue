@@ -388,13 +388,16 @@ export default {
       }
     },
     onAquiferIdClick (data) {
-      if (!data.item) {
+      console.log("Aquifer ID Clicked")
+      console.log("Data", data)
+      if (!data.aquifer_id) {
+        console.log("It got here")
         return
       }
       this.$router.push({
         name: 'aquifers-view',
-        params: { id: data.item.id }
-      })
+        params: { id: data.aquifer_id }
+      });
     },
     rowClicked (data) {
       this.$refs.aquiferMap.zoomToSelectedAquifer(data)
