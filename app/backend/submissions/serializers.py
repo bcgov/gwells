@@ -1053,8 +1053,6 @@ class ConstructionSubmissionDisplaySerializer(serializers.ModelSerializer):
         source='filter_pack_material.description')
     filter_pack_material_size = serializers.ReadOnlyField(
         source='filter_pack_material_size.description')
-    well_disinfected_status = serializers.ReadOnlyField(
-        source='well_disinfected_status.description')
 
     class Meta:
         model = ActivitySubmission
@@ -1142,8 +1140,6 @@ class AlterationSubmissionDisplaySerializer(serializers.ModelSerializer):
         source='filter_pack_material.description')
     filter_pack_material_size = serializers.ReadOnlyField(
         source='filter_pack_material_size.description')
-    well_disinfected_status = serializers.ReadOnlyField(
-        source='well_disinfected_status.description')
 
     class Meta:
         model = ActivitySubmission
@@ -1386,8 +1382,6 @@ class StaffEditDisplaySerializer(serializers.ModelSerializer):
         source='filter_pack_material.description')
     filter_pack_material_size = serializers.ReadOnlyField(
         source='filter_pack_material_size.description')
-    well_disinfected_status = serializers.ReadOnlyField(
-        source='well_disinfected_status.description')
     decommission_method = serializers.ReadOnlyField(
         source='decommission_method.description')
     decommission_sealant_material = serializers.ReadOnlyField(
@@ -1591,8 +1585,6 @@ class LegacyWellDisplaySerializer(serializers.ModelSerializer):
         source='filter_pack_material.description')
     filter_pack_material_size = serializers.ReadOnlyField(
         source='filter_pack_material_size.description')
-    well_disinfected_status = serializers.ReadOnlyField(
-        source='well_disinfected_status.description')
     decommission_method = serializers.ReadOnlyField(
         source='decommission_method.description')
     decommission_sealant_material = serializers.ReadOnlyField(

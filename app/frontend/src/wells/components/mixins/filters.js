@@ -447,12 +447,6 @@ const SEARCH_FIELDS = {
     anyValueBoolean: true
   },
   wellCapType: { param: 'well_cap_type', label: 'Well cap type', type: 'text' },
-  wellDisinfected: {
-    param: 'well_disinfected_status',
-    label: 'Well disinfected',
-    type: 'text',
-    anyValueBoolean: true
-  },
   observationWellNumber: {
     param: 'observation_well_number',
     label: 'Observation well number',

@@ -27,7 +27,7 @@ def reverse(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('wells', '0081_add_well_disinfect_status'),
+        ('wells', '0080_add_well_disinfect_status'),
     ]
 
     operations = [

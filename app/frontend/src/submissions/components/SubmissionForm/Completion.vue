@@ -123,16 +123,20 @@ Licensed under the Apache License, Version 2.0 (the "License");
         </form-input>
       </b-col>
       <b-col cols="12" md="6" lg="4">
-        <form-input
-          id="wellDisinfectedStatus"
-          label="Well Disinfected Status"
-          select
-          :options="codes.well_disinfected_codes"
-          text-field="well_disinfected_code"
-          value-field="well_disinfected_code"
-          v-model="wellDisinfectedInput"
-          :errors="errors['well_disinfected_status']"
-          :loaded="fieldsLoaded['well_disinfected_status']"></form-input>
+        <b-form-group label="Well Disinfected Status" id="wellDisinfectedStatusInput">
+          <b-form-select
+            v-model="wellDisinfectedInput"
+            value-field="well_disinfected_code"
+            text-field="well_disinfected_code"
+            :errors="errors['well_disinfected_status']"
+            :loaded="fieldsLoaded['well_disinfected_status']">
+            <template slot="first">
+              <option value="Unknown" disabled>Unknown</option>
+              <option value="Disinfected">Disinfected</option>
+              <option value="Not Disinfected">Not Disinfected</option>
+            </template>
+          </b-form-select>
+        </b-form-group>
       </b-col>
     </b-row>
   </fieldset>

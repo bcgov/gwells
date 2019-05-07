@@ -12,7 +12,7 @@ import wells.data_migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('wells', '0080_merge_20190506_2245'),
+        ('wells', '0079_auto_20190506_1959'),
     ]
 
     operations = [
