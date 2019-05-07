@@ -388,10 +388,7 @@ export default {
       }
     },
     onAquiferIdClick (data) {
-      console.log("Aquifer ID Clicked")
-      console.log("Data", data)
       if (!data.aquifer_id) {
-        console.log("It got here")
         return
       }
       this.$router.push({

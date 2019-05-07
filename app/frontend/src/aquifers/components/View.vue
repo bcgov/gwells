@@ -515,8 +515,7 @@ export default {
         query: {
           'match_any': false,
           'aquifer': this.id,
-          'artesian_flow_has_value': true,
-          'artesian_pressure_has_value': true
+          'artesian_flow_has_value': true
         },
         hash: '#advanced'
       })
