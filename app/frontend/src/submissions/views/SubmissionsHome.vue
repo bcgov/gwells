@@ -220,6 +220,12 @@ export default {
         data.company_of_person_responsible = data.company_of_person_responsible.org_guid
       }
 
+      // if ground_elevation is empty we set it to 0,
+      // so that the decimal value will allow it to be saved
+      if (data.ground_elevation === '') {
+        data.ground_elevation = 0
+      }
+
       if (data.well && data.well.well_tag_number) {
         data.well = data.well.well_tag_number
       }

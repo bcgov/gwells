@@ -541,6 +541,12 @@ class WellDetailAdminSerializer(AuditModelSerializer):
     # well vs. well_tag_number ; on submissions, we refer to well
     well = serializers.IntegerField(source='well_tag_number')
 
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        # this allows a 0 elevation value to be viewable as '' on the client
+        response['ground_elevation'] = '' if float(response['ground_elevation']) <= 0 else response['ground_elevation']
+        return response
+
     class Meta:
         model = Well
         fields = '__all__'

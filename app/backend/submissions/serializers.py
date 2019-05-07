@@ -483,6 +483,8 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
         response['person_responsible'] = PersonNameSerializer(instance.person_responsible).data
         response['company_of_person_responsible'] = OrganizationNameListSerializer(
             instance.company_of_person_responsible).data
+        # this allows a 0 elevation value to be viewable as '' on the client
+        response['ground_elevation'] = '' if float(response['ground_elevation']) <= 0 else response['ground_elevation']
         return response
 
     def get_well_activity_type(self):
