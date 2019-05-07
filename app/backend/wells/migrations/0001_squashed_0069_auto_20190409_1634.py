@@ -3181,10 +3181,11 @@ class Migration(migrations.Migration):
             name='geom',
             field=django.contrib.gis.db.models.fields.PointField(blank=True, null=True, srid=4326, verbose_name='Geo-referenced Location of the Well'),
         ),
-        migrations.RunPython(
-            code=wells.data_migrations.update_geom_fields,
-            reverse_code=wells.data_migrations.reverse_update_geom_fields,
-        ),
+        # If this has been run once, all the way through to production, it's done!
+        # migrations.RunPython(
+        #     code=wells.data_migrations.update_geom_fields,
+        #     reverse_code=wells.data_migrations.reverse_update_geom_fields,
+        # ),
         migrations.RemoveField(
             model_name='activitysubmission',
             name='latitude',

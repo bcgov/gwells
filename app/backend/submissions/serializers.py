@@ -174,12 +174,15 @@ class WellSubmissionSerializerBase(AuditModelSerializer):
             #         foreign_class = foreign_keys[key]
             #         if field.one_to_many:
             #             for data in value:
-            #                 data['activity_submission'] = instance
-            #                 foreign_class(data=data)
-            #                 foreign_class.is_valid(self, raise_exception=True)
-            #                 foreign_class.save(self)
+            #                 # Usually audit information is injected by the view, but the view doesn't
+            #                 # know about these associated records.
+            #                 data['create_user'] = validated_data['create_user']
+            #                 data['update_user'] = validated_data['update_user']
+            #                 foreign_class.objects.create(
+            #                     activity_submission=instance, **data)
             #         else:
             #             raise 'UNEXPECTED FIELD! {}'.format(field)
+
         except exceptions.ValidationError as e:
             # We don't bubble validation errors on the legacy submission up. It just causes confusion!
             # If there's a validation error on this level, it has to go up as a 500 error. Validation
@@ -196,32 +199,6 @@ class WellSubmissionSerializerBase(AuditModelSerializer):
         # The instance may have been updated with a well tag number, so we refresh.
         instance.refresh_from_db()
         return instance
-
-
-class WellSubmissionStackerSerializer(WellSubmissionSerializerBase):
-    """ Class with no validation, and all possible fields, used by stacker to serialize. """
-
-    casing_set = CasingSerializer(many=True, required=False)
-    screen_set = ScreenSerializer(many=True, required=False)
-    linerperforation_set = LinerPerforationSerializer(
-        many=True, required=False)
-    decommission_description_set = DecommissionDescriptionSerializer(
-        many=True, required=False)
-    lithologydescription_set = LithologyDescriptionSerializer(
-        many=True, required=False)
-
-    def get_foreign_key_sets(self):
-        return {
-            'casing_set': Casing,
-            'screen_set': Screen,
-            'linerperforation_set': LinerPerforation,
-            'decommission_description_set': DecommissionDescription,
-            'lithologydescription_set': LithologyDescriptionSerializer,
-        }
-
-    class Meta:
-        model = ActivitySubmission
-        fields = '__all__'
 
 
 class WellSubmissionLegacySerializer(WellSubmissionSerializerBase):
