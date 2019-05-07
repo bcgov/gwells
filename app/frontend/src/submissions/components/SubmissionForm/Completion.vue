@@ -128,13 +128,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
             v-model="wellDisinfectedInput"
             value-field="well_disinfected_code"
             text-field="well_disinfected_code"
+            :options="disinfected_codes()"
             :errors="errors['well_disinfected_status']"
             :loaded="fieldsLoaded['well_disinfected_status']">
-            <template slot="first">
-              <option value="Unknown" disabled>Unknown</option>
-              <option value="Disinfected">Disinfected</option>
-              <option value="Not Disinfected">Not Disinfected</option>
-            </template>
           </b-form-select>
         </b-form-group>
       </b-col>
@@ -193,6 +189,16 @@ export default {
   },
   data () {
     return {}
+  },
+  methods: {
+    disinfected_codes () {
+      this.codes.well_disinfected_codes.forEach((code) => {
+        if (code.well_disinfected_code === 'Unknown') {
+          code['disabled'] = true
+        }
+      })
+      return this.codes.well_disinfected_codes
+    }
   },
   computed: {
     ...mapGetters(['codes'])
