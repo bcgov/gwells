@@ -1090,35 +1090,6 @@ class Well(AuditModelStructure):
                         'description as well as other information related to the construction of the well.')
 
 
-class Perforation(AuditModel):
-    """
-    Liner Details
-    """
-    perforation_guid = models.UUIDField(
-        primary_key=True, default=uuid.uuid4, editable=False)
-    well_tag_number = models.ForeignKey(
-        Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True, null=True,
-        db_comment=('The file number assigned to a particular well in the in the province\'s Groundwater '
-                    'Wells and Aquifers application.'))
-    liner_thickness = models.DecimalField(
-        max_digits=5, decimal_places=3, blank=True, null=True, verbose_name='Liner Thickness')
-    liner_diameter = models.DecimalField(
-        max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner Diameter')
-    liner_from = models.DecimalField(
-        max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner From')
-    liner_to = models.DecimalField(
-        max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner To')
-    liner_perforation_from = models.DecimalField(
-        max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Perforation From')
-    liner_perforation_to = models.DecimalField(
-        max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Perforation To')
-
-    class Meta:
-        db_table = 'perforation'
-        ordering = ['liner_from', 'liner_to', 'liner_perforation_from',
-                    'liner_perforation_to', 'perforation_guid']
-
-
 class CasingMaterialCode(CodeTableModel):
     """
      The material used for casing a well, e.g., Cement, Plastic, Steel.
