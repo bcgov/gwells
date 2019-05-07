@@ -247,9 +247,8 @@ class Command(BaseCommand):
         ##############
         # PERFORATIONS
         ##############
-        perforation_sql = ("""select p.well_tag_number, p.liner_from, p.liner_to, p.liner_diameter,
- liner_perforation_from, liner_perforation_to, p.liner_thickness
- from perforation as p
+        perforation_sql = ("""select p.well_tag_number, p.liner_perforation_from, p.liner_perforation_to
+ from liner_perforation as p
  inner join well on well.well_tag_number = p.well_tag_number
  where well.well_publication_status_code = 'Published' or well.well_publication_status_code = null
  order by p.well_tag_number""")
