@@ -1598,7 +1598,7 @@ class LithologyDescription(AuditModel):
                     ' Sand, Unspecified.'))
 
 
-    lithology_materials = models.ManyToManyField(LithologyMaterialCode, through='LithologyMaterial', related_name='materials')
+    lithology_materials = models.ManyToManyField(LithologyMaterialCode, through='LithologyMaterial', related_name='lithology_records')
 
     water_bearing_estimated_flow = models.DecimalField(
         max_digits=10, decimal_places=4, blank=True, null=True, verbose_name='Water Bearing Estimated Flow')

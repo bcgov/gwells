@@ -255,7 +255,7 @@ class LithologyDescriptionSummarySerializer(serializers.ModelSerializer):
         )
 
 
-class LithologyMaterialSerializer(serializers.ModelSerializer):
+class LithologySoilMaterialSerializer(serializers.ModelSerializer):
     """ serializer for LithologyMaterial records """
 
     description = serializers.ReadOnlyField(source='lithology_material_code.description')
@@ -279,7 +279,15 @@ class LithologyDescriptionSerializer(serializers.ModelSerializer):
         max_digits=7, decimal_places=2,
         validators=[MinValueValidator(Decimal('0.01'))])
 
-    materials = LithologyMaterialSerializer(many=True, read_only=True)
+    lithology_materials = LithologySoilMaterialSerializer(many=True)
+
+    def create(self, validated_data):
+        materials = validated_data.pop('lithology_materials', [])
+        instance = LithologyDescription.objects.create(**validated_data)
+        for material in materials:
+            print('single material', material)
+            material = LithologyMaterial.objects.create(lithology_description_guid=instance, **material)
+        return instance
 
     """Serializes lithology description records"""
     class Meta:
@@ -294,7 +302,7 @@ class LithologyDescriptionSerializer(serializers.ModelSerializer):
             'lithology_description',
             'lithology_observation',
             'water_bearing_estimated_flow',
-            'materials'
+            'lithology_materials'
         )
 
 
@@ -619,11 +627,11 @@ class WellStackerSerializer(AuditModelSerializer):
                         # If the current key is not in SERIALIZERS, we skip this and default to using
                         # the Django model (stored in foreign_class)
                         if key in SERIALIZERS:
+                            record_data['well'] = instance
                             data = SERIALIZERS[key](data=record_data)
-                            print(data)
                             if data.is_valid(raise_exception=True):
-                                print('creating lithology record!', data)
-                                data.create(well=instance, **record_data)
+                                print('creating lithology record!')
+                                data.create(record_data)
 
                         else:
                             obj = foreign_class.objects.create(
