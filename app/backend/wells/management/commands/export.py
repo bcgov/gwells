@@ -164,7 +164,7 @@ class Command(BaseCommand):
  bedrock_depth, ground_elevation, ground_elevation_method_code, static_water_level,
  well_yield,
  well_yield_unit_code,
- artesian_flow, artesian_pressure, well_cap_type, well_disinfected_status,
+ artesian_flow, artesian_pressure, well_cap_type, well_disinfected_code,
  well_orientation,
  alternative_specs_submitted,
  surface_seal_material_code, surface_seal_method_code, surface_seal_length,
