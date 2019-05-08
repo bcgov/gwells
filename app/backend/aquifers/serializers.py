@@ -120,7 +120,7 @@ class AquiferDetailSerializer(serializers.ModelSerializer):
             ...
         }
         """
-        resources_data = validated_data.pop('resources')
+        resources_data = validated_data.pop('resources', [])
         aquifer = models.Aquifer.objects.create(**validated_data)
         for resource_item in resources_data:
             r = models.AquiferResource(
@@ -225,28 +225,29 @@ class AquiferDetailSerializer(serializers.ModelSerializer):
 
         return ret
 
-    class Meta:
-        model = models.Aquifer
-        fields = (
-            'aquifer_id',
-            'aquifer_name',
-            'location_description',
 
-            'quality_concern',
-            'material',
-            'subtype',
-            'vulnerability',
-            'known_water_use',
-            'litho_stratographic_unit',
-            'productivity',
+class Meta:
+    model = models.Aquifer
+    fields = (
+        'aquifer_id',
+        'aquifer_name',
+        'location_description',
 
-            'demand',
-            'mapping_year',
-            'resources',
-            'area',
-            'notes',
-            'licence_details',
-        )
+        'quality_concern',
+        'material',
+        'subtype',
+        'vulnerability',
+        'known_water_use',
+        'litho_stratographic_unit',
+        'productivity',
+
+        'demand',
+        'mapping_year',
+        'resources',
+        'area',
+        'notes',
+        'licence_details',
+    )
 
 
 class AquiferResourceSectionSerializer(serializers.ModelSerializer):

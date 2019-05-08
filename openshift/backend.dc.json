@@ -84,6 +84,22 @@
         {
             "kind": "Secret",
             "apiVersion": "v1",
+            "type": "Opaque",
+            "metadata": {
+                "creationTimestamp": null,
+                "name": "gwells-e-licensing${NAME_SUFFIX}",
+                "annotations": {
+                    "as-copy-of": "gwells-e-licensing-secrets"
+                }
+            },
+            "data": {
+                "E_LICENSING_AUTH_PASSWORD": null,
+                "E_LICENSING_AUTH_USERNAME": null
+            }
+        },
+        {
+            "kind": "Secret",
+            "apiVersion": "v1",
             "type": "kubernetes.io/basic-auth",
             "metadata": {
                 "creationTimestamp": null,
@@ -104,8 +120,8 @@
                 "DB_REPLICATE": null,
                 "DJANGO_DEBUG":  null,
                 "ENABLE_ADDITIONAL_DOCUMENTS":  null,
-                "ENABLE_DATA_ENTRY":  null,
                 "ENABLE_GOOGLE_ANALYTICS": null,
+                "E_LICENSING_URL": null,
                 "S3_PRIVATE_BUCKET": null,
                 "S3_PRIVATE_HOST": null,
                 "S3_WELL_EXPORT_BUCKET": null,
@@ -399,6 +415,33 @@
                                         }
                                     },
                                     {
+                                        "name": "E_LICENSING_AUTH_PASSWORD",
+                                        "valueFrom": {
+                                            "secretKeyRef": {
+                                                "name": "gwells-e-licensing${NAME_SUFFIX}",
+                                                "key": "E_LICENSING_AUTH_PASSWORD"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "E_LICENSING_AUTH_USERNAME",
+                                        "valueFrom": {
+                                            "secretKeyRef": {
+                                                "name": "gwells-e-licensing${NAME_SUFFIX}",
+                                                "key": "E_LICENSING_AUTH_USERNAME"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "E_LICENSING_URL",
+                                        "valueFrom": {
+                                            "configMapKeyRef": {
+                                                "key": "E_LICENSING_URL",
+                                                "name": "gwells-global-config${NAME_SUFFIX}"
+                                            }
+                                        }
+                                    },
+                                    {
                                         "name": "DJANGO_DEBUG",
                                         "valueFrom": {
                                             "configMapKeyRef": {
@@ -423,7 +466,7 @@
                                                 "name": "gwells-global-config${NAME_SUFFIX}"
                                             }
                                         }
-                                    },                         
+                                    },
                                     {
                                         "name": "ENABLE_GOOGLE_ANALYTICS",
                                         "valueFrom": {
@@ -537,15 +580,6 @@
                                         "valueFrom": {
                                             "configMapKeyRef": {
                                                 "key": "SSO_PORT",
-                                                "name": "gwells-global-config${NAME_SUFFIX}"
-                                            }
-                                        }
-                                    },
-                                    {
-                                        "name": "ENABLE_DATA_ENTRY",
-                                        "valueFrom": {
-                                            "configMapKeyRef": {
-                                                "key": "ENABLE_DATA_ENTRY",
                                                 "name": "gwells-global-config${NAME_SUFFIX}"
                                             }
                                         }

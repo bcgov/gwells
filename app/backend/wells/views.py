@@ -15,6 +15,7 @@ from urllib.parse import quote
 from datetime import datetime
 import logging
 import sys
+import time
 
 from django.db.models import Prefetch
 from django.http import (
@@ -25,11 +26,15 @@ from django_filters import rest_framework as restfilters
 from django.db.models import Q
 from django_filters import rest_framework as restfilters
 from django.db import connection
+import requests
+import json
 
 from functools import reduce
 import operator
+import re
 
 from django.db.models import Q
+from wells.change_history import get_well_history
 
 from rest_framework import filters, status
 from rest_framework.decorators import api_view
@@ -45,7 +50,6 @@ from drf_yasg.utils import swagger_auto_schema
 from minio import Minio
 
 from gwells import settings
-from gwells.change_history import generate_history_diff
 from gwells.documents import MinioClient
 from gwells.models import Survey
 from gwells.roles import WELLS_VIEWER_ROLE, WELLS_EDIT_ROLE
@@ -60,7 +64,11 @@ from gwells.management.commands.export_databc import (WELLS_SQL, LITHOLOGY_SQL, 
 from submissions.serializers import WellSubmissionListSerializer
 from submissions.models import WellActivityCode
 
-from wells.filters import BoundingBoxFilterBackend, WellListFilterBackend
+from wells.filters import (
+    BoundingBoxFilterBackend,
+    WellListFilterBackend,
+    WellListOrderingFilter,
+)
 from wells.models import (
     ActivitySubmission,
     Casing,
@@ -226,7 +234,9 @@ class ListFiles(APIView):
     @swagger_auto_schema(responses={200: openapi.Response('OK', LIST_FILES_OK)})
     def get(self, request, tag):
 
-        if Well.objects.get(pk=tag).well_publication_status\
+        well = get_object_or_404(Well, pk=tag)
+
+        if well.well_publication_status\
                 .well_publication_status_code == 'Unpublished':
             if not self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
                 return HttpResponseNotFound()
@@ -254,10 +264,11 @@ class WellListAPIView(ListAPIView):
     pagination_class = APILimitOffsetPagination
 
     filter_backends = (WellListFilterBackend, BoundingBoxFilterBackend,
-                       filters.SearchFilter, filters.OrderingFilter)
+                       filters.SearchFilter, WellListOrderingFilter)
     ordering = ('well_tag_number',)
     search_fields = ('well_tag_number', 'identification_plate_number',
                      'street_address', 'city', 'owner_full_name')
+    default_limit = 10
 
     def get_serializer_class(self):
         """Returns a different serializer class for admin users."""
@@ -282,8 +293,7 @@ class WellListAPIView(ListAPIView):
                 "water_quality_characteristics",
                 "drilling_methods",
                 "development_methods"
-            ) \
-            .order_by("well_tag_number")
+            )
 
         return qs
 
@@ -342,16 +352,15 @@ class WellLocationListAPIView(ListAPIView):
 
         get: returns a list of wells with locations only
     """
-
+    MAX_LOCATION_COUNT = 5000
     permission_classes = (WellsEditOrReadOnly,)
     model = Well
     serializer_class = WellLocationSerializer
 
     # Allow searching on name fields, names of related companies, etc.
     filter_backends = (WellListFilterBackend, BoundingBoxFilterBackend,
-                       filters.SearchFilter, filters.OrderingFilter)
+                       filters.SearchFilter, WellListOrderingFilter)
     ordering = ('well_tag_number',)
-    filterset_class = WellLocationFilter
     pagination_class = None
 
     search_fields = ('well_tag_number', 'identification_plate_number',
@@ -373,11 +382,11 @@ class WellLocationListAPIView(ListAPIView):
         locations = self.filter_queryset(qs)
         count = locations.count()
         # return an empty response if there are too many wells to display
-        if count > 2000:
+        if count > self.MAX_LOCATION_COUNT:
             raise PermissionDenied('Too many wells to display on map. '
                                    'Please zoom in or change your search criteria.')
 
-        if count is 0:
+        if count == 0:
             raise NotFound("No well records could be found.")
 
         return super().get(request)
@@ -462,23 +471,12 @@ class WellHistory(APIView):
         Retrieves version history for the specified Well record and creates a list of diffs
         for each revision.
         """
-
         try:
             well = Well.objects.get(well_tag_number=well_id)
         except Well.DoesNotExist:
             raise Http404("Well not found")
 
-        # query records in history for this model.
-        well_history = [obj for obj in well.history.all().order_by(
-            '-revision__date_created')]
-
-        well_history_diff = generate_history_diff(
-            well_history, 'well ' + well_id)
-
-        history_diff = sorted(
-            well_history_diff, key=lambda x: x['date'], reverse=True)
-
-        return Response(history_diff)
+        return Response(get_well_history(well))
 
 
 WELL_PROPERTIES = openapi.Schema(
@@ -489,12 +487,14 @@ WELL_PROPERTIES = openapi.Schema(
         'well_tag_number': get_model_feature_schema(Well, 'well_tag_number'),
         'identification_plate_number': get_model_feature_schema(Well, 'identification_plate_number'),
         'well_status': get_model_feature_schema(WellStatusCode, 'description'),
-        'licenced_status': get_model_feature_schema(LicencedStatusCode, 'description'),
+        'licence_status': get_model_feature_schema(LicencedStatusCode, 'description'),
         'detail': openapi.Schema(
             type=openapi.TYPE_STRING,
             max_length=255,
             title='Detail',
-            description='Well summary.'),
+            description=('Link to well summary report within the Groundwater Wells and Aquifer (GWELLS)'
+                         ' application. The well summary provides the overall desription and history of the'
+                         ' well.')),
         'artesian_flow': get_model_feature_schema(Well, 'artesian_flow'),
         'artesian_flow_units': openapi.Schema(
             type=openapi.TYPE_STRING,
@@ -565,12 +565,14 @@ LITHOLOGY_PROPERTIES = openapi.Schema(
         'well_tag_number': get_model_feature_schema(Well, 'well_tag_number'),
         'identification_plate_number': get_model_feature_schema(Well, 'identification_plate_number'),
         'well_status': get_model_feature_schema(WellStatusCode, 'description'),
-        'licenced_status': get_model_feature_schema(LicencedStatusCode, 'description'),
+        'licence_status': get_model_feature_schema(LicencedStatusCode, 'description'),
         'detail': openapi.Schema(
             type=openapi.TYPE_STRING,
             max_length=255,
             title='Detail',
-            description='Well summary.'),
+            description=('Link to well summary report within the Groundwater Wells and Aquifer (GWELLS)'
+                         ' application. The well summary provides the overall desription and history of the'
+                         ' well.')),
         'from': get_model_feature_schema(LithologyDescription, 'lithology_from'),
         'to': get_model_feature_schema(LithologyDescription, 'lithology_to'),
         'colour': get_model_feature_schema(LithologyColourCode, 'description'),
@@ -587,7 +589,7 @@ LITHOLOGY_PROPERTIES = openapi.Schema(
         'bedrock_depth': get_model_feature_schema(Well, 'bedrock_depth'),
         'yield': get_model_feature_schema(Well, 'well_yield'),
         'yield_unit': get_model_feature_schema(WellYieldUnitCode, 'description'),
-        'aquifer': get_model_feature_schema(Well, 'aquifer')
+        'aquifer_id': get_model_feature_schema(Well, 'aquifer')
     })
 
 
@@ -632,3 +634,39 @@ def lithology_geojson(request):
             get_env_variable('S3_WELL_EXPORT_BUCKET'),
             'api/v1/gis/lithology.json')
         return HttpResponseRedirect(url)
+
+
+@api_view(['GET'])
+def well_licensing(request):
+    url = get_env_variable('E_LICENSING_URL') + '{}'.format(request.GET.get('well_tag_number'))
+
+    headers = {
+        'content_type': 'application/json',
+        'AuthUsername': get_env_variable('E_LICENSING_AUTH_USERNAME'),
+        'AuthPass': get_env_variable('E_LICENSING_AUTH_PASSWORD')
+    }
+    time.sleep(0.01)  # hack to fix reset connection by peer error - server provider timeout issue
+    response = requests.get(url, headers=headers)
+    if response.ok:
+        try:
+            licence = response.json()[-1]  # Use the latest licensing value
+            licence_status = 'Licensed' if licence.get('authorization_status') == 'ACTIVE' else 'Unlicensed'
+            data = {
+                'status': licence_status,
+                'number': licence.get('authorization_number'),
+                'date': licence.get('authorization_status_date')
+            }
+        except:
+            data = {
+                'status': 'Unlicensed',
+                'number': 'N/A',
+                'date': ''
+            }
+    else:
+        data = {
+            'status': 'Service Unavailable',
+            'number': 'N/A',
+            'date': ''
+        }
+
+    return HttpResponse(json.dumps(data), content_type="application/json")

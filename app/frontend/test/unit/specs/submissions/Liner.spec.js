@@ -27,7 +27,7 @@ describe('Liner.vue', () => {
       }
     })
 
-    expect(wrapper.vm.linerPerforationsInput.length).toBe(3)
+    expect(wrapper.vm.linerPerforationsData.length).toBe(3)
   })
   it('adds a new Liner row when clicking Add Row', () => {
     const wrapper = shallowMount(Liner, {
@@ -39,7 +39,7 @@ describe('Liner.vue', () => {
     })
 
     wrapper.find('#addlinerPerforationRowBtn').trigger('click')
-    expect(wrapper.vm.linerPerforationsInput.length).toBe(4)
+    expect(wrapper.vm.linerPerforationsData.length).toBe(4)
   })
   it('when clicking the remove button on a row, removes that row', () => {
     const wrapper = shallowMount(Liner, {
@@ -51,6 +51,6 @@ describe('Liner.vue', () => {
     })
 
     wrapper.find('#removeLinerPerfRowBtn0').trigger('click')
-    expect(wrapper.vm.linerPerforationsInput.length).toBe(2)
+    expect(wrapper.vm.linerPerforationsData.length).toBe(2)
   })
 })

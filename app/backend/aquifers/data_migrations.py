@@ -21,12 +21,13 @@ from django.db.models import F
 from django.db.models import Q
 
 from gwells.codes import CodeFixture
+from gwells.models import DATALOAD_USER
 
 logger = logging.getLogger(__name__)
 
 
 def aquifers_codes():
-    fixture = 'migrations/0002_aquifers_codes.json'
+    fixture = 'migrations/aquifers_codes.json'
     fixture_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), fixture)
 
     return CodeFixture(fixture_path)
@@ -41,7 +42,7 @@ def unload_aquifer_codes(apps, schema_editor):
 
 
 def aquifer_vulnerability_codes():
-    fixture = 'migrations/0005_aquifer_vulnerability_codes.json'
+    fixture = 'migrations/aquifer_vulnerability_codes.json'
     fixture_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), fixture)
 
     return CodeFixture(fixture_path)
@@ -65,7 +66,7 @@ def revert_aquifer_sequence(apps, schema):
 
 
 def aquifer_resource_sections():
-    fixture = 'migrations/0010_aquifer_resource_sections.json'
+    fixture = 'migrations/aquifer_resource_sections.json'
     fixture_path = os.path.join(os.path.dirname(
         os.path.realpath(__file__)), fixture)
     return CodeFixture(fixture_path)
@@ -119,6 +120,6 @@ def update_aquifer_resource_fields(apps, schema_editor):
     AquiferResource.objects.filter(create_date__isnull=True).update(create_date=datetime.datetime.now(utc))
     AquiferResource.objects.filter(update_date__isnull=True).update(update_date=F('create_date'))
     AquiferResource.objects.filter(
-        Q(create_user__isnull=True) | Q(create_user='')).update(create_user='DATALOAD_USER')
+        Q(create_user__isnull=True) | Q(create_user='')).update(create_user=DATALOAD_USER)
     AquiferResource.objects.filter(
         Q(update_user__isnull=True) | Q(update_user='')).update(update_user=F('create_user'))

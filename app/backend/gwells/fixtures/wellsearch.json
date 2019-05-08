@@ -116,18 +116,6 @@
         }
     },
     {
-        "model": "wells.aquiferwell",
-        "pk": "3f7569f9-2306-4ccb-b889-ff78239fdaee",
-        "fields": {
-            "create_user": "PROXY_WELLS",
-            "create_date": "2016-11-10T20:16:35Z",
-            "update_user": "PROXY_WELLS",
-            "update_date": "2016-11-10T20:16:35Z",
-            "aquifer_id": 25,
-            "well_tag_number": 20143
-        }
-    },
-    {
         "model": "gwells.onlinesurvey",
         "pk": "73a7b852-f472-4f97-8dba-d3415c008430",
         "fields": {

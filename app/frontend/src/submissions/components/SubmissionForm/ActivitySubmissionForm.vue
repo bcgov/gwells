@@ -117,6 +117,25 @@ Licensed under the Apache License, Version 2.0 (the "License");
       v-on:save="$emit('submit_edit')"
     />
 
+      <!-- Type of well -->
+      <work-dates class="my-5"
+       v-if="showSection('workDates')"
+       id="workDates"
+       :constructionStartDate.sync="form.construction_start_date"
+       :constructionEndDate.sync="form.construction_end_date"
+       :alterationStartDate.sync="form.alteration_start_date"
+       :alterationEndDate.sync="form.alteration_end_date"
+       :decommissionStartDate.sync="form.decommission_start_date"
+       :decommissionEndDate.sync="form.decommission_end_date"
+       :workStartDate.sync="form.work_start_date"
+       :workEndDate.sync="form.work_end_date"
+       :errors="errors"
+       :fieldsLoaded="fieldsLoaded"
+       :isStaffEdit="isStaffEdit"
+       :saveDisabled="editSaveDisabled"
+       v-on:save="$emit('submit_edit')"
+      />
+
       <!-- Person responsible for work -->
       <person-responsible class="my-5"
         v-if="showSection('personResponsible')"
@@ -337,7 +356,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         :waterQualityCharacteristics.sync="form.water_quality_characteristics"
         :waterQualityColour.sync="form.water_quality_colour"
         :waterQualityOdour.sync="form.water_quality_odour"
-        :emsID.sync="form.ems_id"
+        :emsID.sync="form.ems"
         :errors="errors"
         :isStaffEdit="isStaffEdit"
         :saveDisabled="editSaveDisabled"
@@ -523,6 +542,7 @@ import DecommissionInformation from './DecommissionInformation.vue'
 import ObservationWellInfo from './ObservationWellInfo.vue'
 import SubmissionHistory from './SubmissionHistory.vue'
 import EditHistory from './EditHistory.vue'
+import WorkDates from './WorkDates.vue'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 
 export default {
@@ -583,6 +603,7 @@ export default {
     }
   },
   components: {
+    WorkDates,
     ActivityType,
     AquiferData,
     WellType,
@@ -629,6 +650,7 @@ export default {
         'wellType': 'Well class',
         'wellPublicationStatus': 'Well publication status',
         'wellOwner': 'Well owner',
+        'workDates': 'Well work dates',
         'wellLocation': 'Well location',
         'wellCoords': 'Geographic coordinates',
         'method': 'Method of drilling',

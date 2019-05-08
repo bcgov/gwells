@@ -18,6 +18,9 @@ import os
 import copy
 
 from django.utils import timezone
+from django.contrib.gis.db import models
+
+from gwells.models import AuditModel, CodeTableModel, BasicCodeTableModel
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.gis.db import models
@@ -92,8 +95,8 @@ class AquiferMaterial(CodeTableModel):
     """
     code = models.CharField(
         primary_key=True, max_length=10, db_column='aquifer_material_code',
-        db_comment=('Standard terms used to define the broad grouping of geological material found in'
-                    ' the aquifer, i.e., Sand and Gravel, Sand, Gravel, Bedrock'))
+        db_comment=('Code for valid options for the broad grouping of geological material found in the'
+                    ' aquifer, i.e. SG, S, G, B'))
     description = models.CharField(
         max_length=100,
         db_comment=('Describes the broad grouping of geological material found in the aquifer, i.e.,'
@@ -117,34 +120,30 @@ class AquiferSubtype(CodeTableModel):
     """
     code = models.CharField(
         primary_key=True, max_length=3, db_column='aquifer_subtype_code',
-        db_comment=('Valid codes to define how the aquifer was formed geologically (depositional'
-                    ' description). The code value is a combination of an aquifer type represented by a'
-                    ' number and an optional letter representing a more specific aquifer sub-type. E.g.'
-                    ' aquifer sub-type code 6b is comprised of the aquifer type number (6: Crystalline'
-                    ' bedrock aquifers) and subtype letter (b) specifically described as: Fractured'
-                    ' crystalline (igneous intrusive or metamorphic, meta-sedimentary, meta-volcanic,'
-                    ' volcanic) rock aquifers. Code values range from 1a to 6b.'))
+        db_comment=('Categorizes an aquifer based on how it was formed geologically (depositional'
+                    ' description). Understanding of how aquifers were formed governs important'
+                    ' attributes such as their productivity, vulnerability to contamination as well as'
+                    ' proximity and likelihood of hydraulic connection to streams. The code value is a'
+                    ' combination of an aquifer type represented by a number and an optional letter'
+                    ' representing a more specific aquifer sub-type. E.g. 1a, 2, 6a.'))
     description = models.CharField(
         max_length=100,
-        db_comment=('Descriptions of codes that define how the aquifer was formed geologically'
-                    ' (depositional description). The code value is a combination of an aquifer type'
-                    ' represented by a number and an optional letter representing a more specific'
-                    ' aquifer sub-type. E.g. aquifer sub-type code 6b is comprised of the aquifer type'
-                    ' number (6: Crystalline bedrock aquifers) and subtype letter (b) specifically'
-                    ' described as: Fractured crystalline (igneous intrusive or metamorphic,'
-                    ' meta-sedimentary, meta-volcanic, volcanic) rock aquifers. Code values range from'
-                    ' 1a to 6b.'))
+        db_comment=('Descriptions that define how the aquifer was formed geologically'
+                    ' (depositional description). E.g. Unconfined sand and gravel - large river system,'
+                    ' Confined sand and gravel - glacial, Flat-lying to gently-dipping volcanic bedrock.'))
 
     class Meta:
         db_table = 'aquifer_subtype_code'
 
     db_table_comment = ('Categorizes an aquifer based on how it was formed geologically (depositional'
-                        ' description).   The code value is a combination of an aquifer type represented by'
-                        ' a number and an optional letter representing a more specific aquifer sub-type.'
-                        ' E.g. aquifer sub-type code 6b is comprised of the aquifer type number (6:'
-                        ' Crystalline bedrock aquifers) and subtype letter (b) specifically described as:'
-                        ' Fractured crystalline (igneous intrusive or metamorphic, meta-sedimentary,'
-                        ' meta-volcanic, volcanic) rock aquifers. Code values range from 1a to 6b.')
+                        ' description). Understanding of how aquifers were formed governs important'
+                        ' attributes such as their productivity, vulnerability to contamination as well as'
+                        ' proximity and likelihood of hydraulic connection to streams. The code value is a'
+                        ' combination of an aquifer type represented by a number and an optional letter'
+                        ' representing a more specific aquifer sub-type. E.g. Crystalline bedrock aquifers)'
+                        ' and subtype letter, Fractured crystalline (igneous intrusive or metamorphic,'
+                        ' meta-sedimentary, meta-volcanic, volcanic) rock aquifers. Code values range from'
+                        ' 1a to 6b.')
 
     def __str__(self):
         return '{} - {}'.format(self.code, self.description)
@@ -158,13 +157,12 @@ class AquiferProductivity(CodeTableModel):
 
     code = models.CharField(
         primary_key=True, max_length=1, db_column='aquifer_productivity_code',
-        db_comment=('Standard terms that define the aquifer\'s productivity which represent an aquifers'
-                    ' ability to transmit and yield groundwater; i.e., Low, Moderate, High'))
+        db_comment=('Valid code for the aquifer\'s productivity, which represent an aquifers ability to'
+                    ' transmit and yield groundwater; i.e., L, M, H'))
     description = models.CharField(
         max_length=100,
-        db_comment=('Description of the standard terms that define the aquifer\'s productivity which'
-                    ' represent an aquifers ability to transmit and yield groundwater; i.e., Low,'
-                    ' Moderate, High'))
+        db_comment=('Describes the aquifer\'s productivity which represent an aquifers ability to'
+                    ' transmit and yield groundwater; i.e., Low, Moderate, High'))
 
     class Meta:
         db_table = 'aquifer_productivity_code'
@@ -184,12 +182,12 @@ class AquiferDemand(CodeTableModel):
     """
     code = models.CharField(
         primary_key=True, max_length=1, db_column='aquifer_demand_code',
-        db_comment=('Standard terms that define the level of groundwater use at the time aquifer was'
-                    ' mapped; i.e., High, Moderate, Low.'))
+        db_comment=('Describes the level of groundwater use at the time aquifer was mapped; i.e., High,'
+                    ' Moderate, Low.'))
     description = models.CharField(
         max_length=100,
-        db_comment=('Description of the standard terms that define the level of groundwater use at the'
-                    ' time aquifer was mapped; i.e., High, Moderate, Low.'))
+        db_comment=('Describes the level of groundwater use at the time aquifer was mapped; i.e., High,'
+                    ' Moderate, Low.'))
 
     class Meta:
         db_table = 'aquifer_demand_code'
@@ -262,18 +260,16 @@ class AquiferVulnerabilityCode(CodeTableModel):
     """
     code = models.CharField(
         primary_key=True, max_length=1, db_column='aquifer_vulnerability_code',
-        db_comment=('Standard terms used to define an aquifer’s relative intrinsic vulnerability to'
-                    ' impacts from human activities on the land surface. Vulnerability is based on: the'
-                    ' type, thickness, and extent of geologic materials above the aquifer, depth to'
-                    ' water table (or to top of confined aquifer), and type of aquifer materials, i.e.,'
-                    ' Low, Moderate, High.'))
+        db_comment=('Code for the aquifer’s relative intrinsic vulnerability to impacts from human'
+                    ' activities on the land surface. Vulnerability is based on: the type, thickness,'
+                    ' and extent of geologic materials above the aquifer, depth to water table (or to'
+                    ' top of confined aquifer), and type of aquifer materials, i.e., L, M, H.'))
     description = models.CharField(
         max_length=100,
-        db_comment=('Description of the standard terms used to define an aquifer’s relative intrinsic'
-                    ' vulnerability to impacts from human activities on the land surface. Vulnerability'
-                    ' is based on: the type, thickness, and extent of geologic materials above the'
-                    ' aquifer, depth to water table (or to top of confined aquifer), and type of aquifer'
-                    ' materials, i.e., Low, Moderate, High.'))
+        db_comment=('Describes an aquifer’s relative intrinsic vulnerability to impacts from human'
+                    ' activities on the land surface. Vulnerability is based on: the type, thickness,'
+                    ' and extent of geologic materials above the aquifer, depth to water table (or to'
+                    ' top of confined aquifer), and type of aquifer materials, i.e., Low, Moderate, High.'))
 
     class Meta:
         db_table = 'aquifer_vulnerability_code'
@@ -300,9 +296,9 @@ class Aquifer(AuditModel):
     """
     aquifer_id = models.AutoField(
         primary_key=True, verbose_name="Aquifer ID Number",
-        db_comment=('System generated sequential number assigned to each aquifer. It is widely used by '
-                    'ground water administration staff as it is the only consistent unique identifier for a '
-                    'mapped aquifer. It is also commonly referred to as Aquifer Number.'))
+        db_comment=('System generated unique sequential number assigned to each mapped aquifer. The'
+                    ' aquifer_id identifies which aquifer a well is in. An aquifer can have multiple'
+                    ' wells, while a single well can only be in one aquifer.'))
     aquifer_name = models.CharField(
         max_length=100, blank=True, null=True,
         db_comment=('Name assigned for a specific aquifer. Typically derived from geographic names or names '
@@ -320,8 +316,8 @@ class Aquifer(AuditModel):
         on_delete=models.PROTECT,
         verbose_name="Material Reference",
         related_name='aquifers',
-        db_comment=('Standard terms used to define the broad grouping of geological material found in'
-                    ' the aquifer, i.e., Sand and Gravel, Sand, Gravel, Bedrock'))
+        db_comment=('Code for valid options for the broad grouping of geological material found in the'
+                    ' aquifer, i.e. SG, S, G, B'))
     subtype = models.ForeignKey(
         AquiferSubtype,
         db_column='aquifer_subtype_code',
@@ -330,13 +326,12 @@ class Aquifer(AuditModel):
         on_delete=models.PROTECT,
         verbose_name="Subtype Reference",
         related_name='aquifers',
-        db_comment=('Valid codes to define how the aquifer was formed geologically (depositional'
-                    ' description). The code value is a combination of an aquifer type represented by a'
-                    ' number and an optional letter representing a more specific aquifer sub-type. E.g.'
-                    ' aquifer sub-type code 6b is comprised of the aquifer type number (6: Crystalline'
-                    ' bedrock aquifers) and subtype letter (b) specifically described as: Fractured'
-                    ' crystalline (igneous intrusive or metamorphic, meta-sedimentary, meta-volcanic,'
-                    ' volcanic) rock aquifers. Code values range from 1a to 6b.'))
+        db_comment=('Categorizes an aquifer based on how it was formed geologically (depositional'
+                    ' description). Understanding of how aquifers were formed governs important'
+                    ' attributes such as their productivity, vulnerability to contamination as well as'
+                    ' proximity and likelihood of hydraulic connection to streams. The code value is a'
+                    ' combination of an aquifer type represented by a number and an optional letter'
+                    ' representing a more specific aquifer sub-type. E.g. 1a, 2, 6a.'))
     area = models.DecimalField(
         max_digits=5, decimal_places=1, blank=True, null=True, verbose_name='Size (square km)',
         db_comment='Approximate size of the aquifer in square kilometers.')
@@ -361,8 +356,8 @@ class Aquifer(AuditModel):
         on_delete=models.PROTECT,
         verbose_name="Productivity Reference",
         related_name='aquifers',
-        db_comment=('Standard terms that define the aquifer\'s productivity which represent an aquifers'
-                    ' ability to transmit and yield groundwater; i.e., Low, Moderate, High'))
+        db_comment=('Valid code for the aquifer\'s productivity, which represent an aquifers ability to'
+                    ' transmit and yield groundwater; i.e., L, M, H'))
     demand = models.ForeignKey(
         AquiferDemand,
         db_column='aquifer_demand_code',
@@ -371,8 +366,8 @@ class Aquifer(AuditModel):
         on_delete=models.PROTECT,
         verbose_name="Demand Reference",
         related_name='aquifers',
-        db_comment=('Standard terms that define the level of groundwater use at the time aquifer was '
-                    'mapped; i.e., High, Moderate, Low.'))
+        db_comment=('Describes the level of groundwater use at the time aquifer was mapped; i.e., High,'
+                    ' Moderate, Low.'))
     known_water_use = models.ForeignKey(
         WaterUse,
         db_column='water_use_code',
@@ -413,9 +408,9 @@ class Aquifer(AuditModel):
         blank=True,
         null=True,
         verbose_name='Notes on Aquifer, for internal use only.',
-        db_comment=('Details about the aquifer that the province deems important to maintain e.g. local '
-                    'knowledge about the aquifer, and decisions for changes.'))
-
+        db_comment=('Details about the mapped aquifer that the province deems important to maintain such as'
+                    ' local knowledge about the aquifer or decisions for changes related to attributes of'
+                    ' the mapped aquifer.'))
     geom = models.PolygonField(srid=3005, null=True)
     # This version is pre-rendered in WGS 84 for display on web-maps.
     geom_simplified = models.PolygonField(srid=4326, null=True)
@@ -492,16 +487,13 @@ class Aquifer(AuditModel):
         return '{} - {}'.format(self.aquifer_id, self.aquifer_name)
 
 
-class AquiferResourceSection(AuditModel):
+class AquiferResourceSection(BasicCodeTableModel):
     """
     Defines the available sections (categories) of aquifer resources.
     """
     code = models.CharField(primary_key=True, max_length=1,
                             db_column='aquifer_resource_section_code')
     name = models.CharField(max_length=100)
-    effective_date = models.DateTimeField(default=timezone.now, null=False)
-    expiry_date = models.DateTimeField(default=timezone.make_aware(
-        timezone.datetime.max, timezone.get_default_timezone()), null=False)
     description = models.CharField(max_length=100, default="")
 
     class Meta:
@@ -527,7 +519,10 @@ class AquiferResource(AuditModel):
     aquifer = models.ForeignKey(
         Aquifer,
         related_name='resources',
-        on_delete=models.CASCADE)
+        on_delete=models.CASCADE,
+        db_comment=('System generated unique sequential number assigned to each mapped aquifer. The'
+                    ' aquifer_id identifies which aquifer a well is in. An aquifer can have multiple'
+                    ' wells, while a single well can only be in one aquifer.'))
     section = models.ForeignKey(
         AquiferResourceSection,
         db_column='aquifer_resource_section_code',

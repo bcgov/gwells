@@ -70,5 +70,9 @@ urlpatterns = [
 
     # GeoJSON lithology endpoint for DataBC.
     url(r'^api/v1/gis/lithology$',
-        views.lithology_geojson, name='well-lithology-geojson')
+        views.lithology_geojson, name='well-lithology-geojson'),
+
+    # Well Licensing status endpoint from e-Licensing.
+    url(r'^api/v1/wells/licensing$',
+        views.well_licensing, name='well-licensing')
 ]

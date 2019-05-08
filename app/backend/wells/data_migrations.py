@@ -51,7 +51,7 @@ def unload_casing_codes_fixture(apps, schema_editor):
 
 
 def water_quality_codes():
-    fixture = 'migrations/0012_water_quality_codes.json'
+    fixture = 'migrations/water_quality_codes.json'
     fixture_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), fixture)
 
     return CodeFixture(fixture_path)
@@ -63,21 +63,6 @@ def load_water_quality_codes(apps, schema_editor):
 
 def unload_water_quality_codes(apps, schema_editor):
     return water_quality_codes().unload_fixture(apps, schema_editor)
-
-
-def aquifer_vulnerability_codes():
-    fixture = 'migrations/0018_well_aquifer_codes.json'
-    fixture_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), fixture)
-
-    return CodeFixture(fixture_path)
-
-
-def load_aquifer_vulnerability_codes(apps, schema_editor):
-    return aquifer_vulnerability_codes().load_fixture(apps, schema_editor)
-
-
-def unload_aquifer_vulnerability_codes(apps, schema_editor):
-    return aquifer_vulnerability_codes().unload_fixture(apps, schema_editor)
 
 
 def change_code_description(apps, schema_editor):
@@ -122,7 +107,7 @@ def restore_code_description(apps, schema_editor):
 
 
 def decomission_material_codes():
-    fixture = 'migrations/0026_decom_mat_codes.json'
+    fixture = 'migrations/decom_mat_codes.json'
     fixture_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), fixture)
 
     return CodeFixture(fixture_path)
@@ -178,7 +163,7 @@ def unload_coordinate_aquisition_data(apps, schema_editor):
 
 
 def lithology_moisture_code_fixture():
-    fixture = 'migrations/0038_lithology_moisture_codes.json'
+    fixture = 'migrations/lithology_moisture_codes.json'
     fixture_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), fixture)
 
     return CodeFixture(fixture_path)
@@ -193,7 +178,7 @@ def unload_lithology_moisture_codes(apps, schema_editor):
 
 
 def filter_pack_code_fixture():
-    fixture = 'migrations/0043_filter_pack_code_fixtures.json'
+    fixture = 'migrations/filter_pack_code_fixtures.json'
     fixture_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), fixture)
 
     return CodeFixture(fixture_path)
@@ -224,7 +209,7 @@ def unload_unspecified_coordinate_aquisition_code(apps, schema):
 
 
 def well_publication_status_code_fixture():
-    fixture = 'migrations/0054_well_publication_status_codes.json'
+    fixture = 'migrations/well_publication_status_codes.json'
     fixture_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), fixture)
 
     return CodeFixture(fixture_path)
@@ -264,7 +249,7 @@ def revert_unk_well_class_code(apps, schema_editor):
 
 
 def other_code_values_code_fixture():
-    fixture = 'migrations/0059_other_code_values.json'
+    fixture = 'migrations/other_code_values.json'
     fixture_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), fixture)
 
     return CodeFixture(fixture_path)
@@ -279,7 +264,7 @@ def unload_other_code_values(apps, schema):
 
 
 def aquifer_lithology_code_fixture():
-    fixture = 'migrations/0062_aquifer_lithology_codes.json'
+    fixture = 'migrations/aquifer_lithology_codes.json'
     fixture_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), fixture)
 
     return CodeFixture(fixture_path)
