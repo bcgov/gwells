@@ -477,6 +477,19 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
     lithologydescription_set = LithologyDescriptionSerializer(
         many=True, required=False)
 
+    def validate(self, attrs):
+        if 'ground_elevation' in attrs or 'ground_elevation_method' in attrs:
+            errors = {}
+            if attrs['ground_elevation'] is None:
+                errors['ground_elevation'] = 'Both ground elevation and method are required fields.'
+            if attrs['ground_elevation_method'] is None:
+                errors['ground_elevation_method'] = 'Both ground elevation and method are required fields.'
+            if len(errors) == 1:  # if both fields are None it means the user is clearing both fields which is allowed
+                raise serializers.ValidationError(errors)
+
+        return attrs
+
+
     # Sets person_responsible and company_of back to object, otherwise client view only gets guid
     def to_representation(self, instance):
         response = super().to_representation(instance)

@@ -200,9 +200,11 @@ export default {
       if (this.isStaffEdit) {
         // We have to include both lat and lon for geom updates so we check if one has changed here
         let skipLatLon = 'latitude' in meta.valueChanged || 'longitude' in meta.valueChanged
+        let skipGroundElevation = 'ground_elevation' in meta.valueChanged || 'ground_elevation_method' in meta.valueChanged
         Object.keys(data).forEach((key) => {
           // Skip lat lon if one of them has changed
           if ((key === 'latitude' || key === 'longitude') && skipLatLon) { return }
+          if ((key === 'ground_elevation' || key === 'ground_elevation_method') && skipGroundElevation) { return }
           // Remove any fields that aren't changed
           if (key !== 'well' && !(key in meta.valueChanged)) { delete data[key] }
         })
