@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('wells', '0065_auto_20190309_0017'),
-        ('aquifers', '0017_aquiferresourcesection_description'),
+        ('aquifers', '0001_squashed_0069_auto_20190409_1634'),
     ]
 
     operations = [
