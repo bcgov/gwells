@@ -45,6 +45,27 @@ export default {
         styles: 'PMBC_Parcel_Fabric_Cadastre_Outlined',
         transparent: true
       }).addTo(this.map)
+
+      L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.GW_AQUIFERS_CLASSIFICATION_SVW/ows?', {
+        format: 'image/png',
+        layers: 'pub:WHSE_WATER_MANAGEMENT.GW_AQUIFERS_CLASSIFICATION_SVW',
+        styles: 'Aquifers_BC_Outlined',
+        transparent: true
+      }).addTo(this.map)
+
+      L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_BASEMAPPING.FWA_STREAM_NETWORKS_SP/ows?', {
+        format: 'image/png',
+        layers: 'pub:WHSE_BASEMAPPING.FWA_STREAM_NETWORKS_SP',
+        styles: 'FWA_Stream_Network',
+        transparent: true
+      }).addTo(this.map)
+
+      L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_BASEMAPPING.DRA_DGTL_ROAD_ATLAS_MPAR_SP/ows?', {
+        format: 'image/png',
+        layers: 'pub:WHSE_BASEMAPPING.DRA_DGTL_ROAD_ATLAS_MPAR_SP',
+        styles: 'Digital_Road_Atlas',
+        transparent: true
+      }).addTo(this.map)
     }
   },
   watch: {

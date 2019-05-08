@@ -531,6 +531,8 @@ export default {
         let wellNumber = owell.observation_well_number
         ApiService.query(getRequestUrl(wellNumber)).then((response) => {
           this.waterLevels.push({ wellNumber, levels: response.data.result.records[0].category })
+        }).catch((e) => {
+          console.error(e)
         })
       })
     },
