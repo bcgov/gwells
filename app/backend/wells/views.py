@@ -640,40 +640,36 @@ def lithology_geojson(request):
 def well_licensing(request):
     tag = request.GET.get('well_tag_number')
     url = get_env_variable('E_LICENSING_URL') + '{}'.format(tag)
+    well = Well.objects.get(well_tag_number=tag)
+    api_success = False
 
     headers = {
         'content_type': 'application/json',
         'AuthUsername': get_env_variable('E_LICENSING_AUTH_USERNAME'),
         'AuthPass': get_env_variable('E_LICENSING_AUTH_PASSWORD')
     }
+
     try:
         response = requests.get(url, headers=headers)
         if response.ok:
             try:
-                licence = response.json()[-1]  # Use the latest licensing value
+                licence = response.json()[-1]  # Use the latest licensing value, fails purposely if empty array
                 licence_status = 'Licensed' if licence.get('authorization_status') == 'ACTIVE' else 'Unlicensed'
                 data = {
                     'status': licence_status,
                     'number': licence.get('authorization_number'),
                     'date': licence.get('authorization_status_date')
                 }
+                api_success = True
             except:
-                data = {
-                    'status': 'Unlicensed',
-                    'number': 'N/A',
-                    'date': ''
-                }
-        else:
-            data = {
-                'status': 'Service Unavailable',
-                'number': 'N/A',
-                'date': ''
-            }
+                pass
     except:
-        well = Well.objects.get(well_tag_number=tag)
+        pass
+
+    if not api_success:
         data = {
             'status': well.licenced_status.description,
-            'number': 'N/A',
+            'number': '',
             'date': ''
         }
 
