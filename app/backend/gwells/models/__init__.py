@@ -27,6 +27,11 @@ from .screen import ScreenIntakeMethodCode, ScreenMaterialCode, ScreenOpeningCod
     ScreenTypeCode, ScreenAssemblyTypeCode
 from .survey import Survey, OnlineSurvey
 
+# DATALOAD_USER: Use for ETL etc.
+DATALOAD_USER = 'DATALOAD_USER'
+# DE_DUPLICATE_USER: Use when running scripts that remove duplicates.
+DE_DUPLICATE_USER = 'DE_DUPLICATE_USER'
+
 
 class Profile(models.Model):
     """
@@ -38,6 +43,8 @@ class Profile(models.Model):
         primary_key=True, default=uuid.uuid4, editable=False)
     username = models.CharField(max_length=100, blank=True, null=True)
     name = models.CharField(max_length=100, blank=True, null=True)
+
+    db_table_comment = ('Additional user information that cannot be stored on the django auth_user table.')
 
     class Meta:
         db_table = 'profile'

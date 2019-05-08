@@ -35,8 +35,8 @@ const ApiService = {
       delete axios.defaults.headers.common['Authorization']
     }
   },
-  query (resource, params) {
-    return axios.get(resource, { params: params })
+  query (resource, params, options) {
+    return axios.get(resource, { ...options, params: params })
   },
   get (resource, record) {
     return axios.get(`${resource}/${record}`)

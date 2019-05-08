@@ -13,69 +13,82 @@ Licensed under the Apache License, Version 2.0 (the "License");
 */
 <template>
   <div class="container p-1">
-    <b-card v-if="breadcrumbs && breadcrumbs.length" no-body class="mb-3 d-print-none">
-      <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"></b-breadcrumb>
-    </b-card>
-    <div class="card" v-if="userRoles.wells.edit || userRoles.submissions.edit">
-      <div class="card-body">
+    <div v-if="loading" class="mt-3">
+      <div class="fa-2x text-center">
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+      </div>
+    </div>
+    <div v-else>
+      <b-card v-if="breadcrumbs && breadcrumbs.length" no-body class="mb-3 d-print-none">
+        <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"></b-breadcrumb>
+      </b-card>
+      <div class="card" v-if="userRoles.wells.edit || userRoles.submissions.edit">
+        <div class="card-body">
 
-        <b-form @submit.prevent="confirmSubmit">
-          <!-- if preview === true : Preview -->
-          <submission-preview
-            v-if="preview"
-            :form="form"
-            :activity="activityType"
-            :sections="displayFormSection"
-            :errors="errors"
-            :reportSubmitted="formSubmitSuccess"
-            :formSubmitLoading="formSubmitLoading"
-            :uploadedFiles="uploadedFiles"
-            v-on:back="handlePreviewBackButton"
-            v-on:startNewReport="handleExitPreviewAfterSubmit"
-            v-on:fetchFiles="fetchFiles"
-            />
-          <!-- if preview === false : Activity submission form -->
-          <activity-submission-form
-            v-else
-            :form="form"
-            :events="events"
-            :submissionsHistory="submissionsHistory"
-            :activityType.sync="activityType"
-            :sections="displayFormSection"
-            :formSteps="formSteps"
-            :errors="errors"
-            :formIsFlat.sync="formIsFlat"
-            :trackValueChanges="trackValueChanges"
-            :formSubmitLoading="formSubmitLoading"
-            :isStaffEdit="isStaffEdit"
-            :loading="loading"
-            :uploadedFiles="uploadedFiles"
-            :formChanges="formChanges"
-            v-on:preview="handlePreviewButton"
-            v-on:submit_edit="formSubmit"
-            v-on:resetForm="resetForm"
-            v-on:fetchFiles="fetchFiles"
-            />
-
-          <!-- Form submission confirmation -->
-          <b-modal
-              v-model="confirmSubmitModal"
-              id="confirmSubmitModal"
-              centered
-              title="Confirm submission"
-              @shown="$refs.confirmSubmitConfirmBtn.focus()"
-              :return-focus="$refs.activitySubmitBtn">
-            Are you sure you want to submit this activity report?
-            <div slot="modal-footer">
-              <b-btn variant="primary" @click="confirmSubmitModal=false;formSubmit()" ref="confirmSubmitConfirmBtn">
-                Save
-              </b-btn>
-              <b-btn variant="light" @click="confirmSubmitModal=false">
-                Cancel
-              </b-btn>
+          <b-form @submit.prevent="confirmSubmit">
+            <!-- if preview === true : Preview -->
+            <submission-preview
+              v-if="preview"
+              :form="form"
+              :activity="activityType"
+              :sections="displayFormSection"
+              :errors="errors"
+              :reportSubmitted="formSubmitSuccess"
+              :formSubmitLoading="formSubmitLoading"
+              :uploadedFiles="uploadedFiles"
+              v-on:back="handlePreviewBackButton"
+              v-on:startNewReport="handleExitPreviewAfterSubmit"
+              v-on:fetchFiles="fetchFiles"
+              />
+            <!-- if preview === false : Activity submission form -->
+            <div v-else>
+              <div v-if="isStaffEdit && errorWellNotFound">
+                <h1>Not Found</h1>
+                <p>The page you are looking for was not found.</p>
+              </div>
+              <activity-submission-form
+                v-else
+                :form="form"
+                :events="events"
+                :submissionsHistory="submissionsHistory"
+                :activityType.sync="activityType"
+                :sections="displayFormSection"
+                :formSteps="formSteps"
+                :errors="errors"
+                :formIsFlat.sync="formIsFlat"
+                :trackValueChanges="trackValueChanges"
+                :formSubmitLoading="formSubmitLoading"
+                :isStaffEdit="isStaffEdit"
+                :loading="loading"
+                :uploadedFiles="uploadedFiles"
+                :formChanges="formChanges"
+                v-on:preview="handlePreviewButton"
+                v-on:submit_edit="formSubmit"
+                v-on:resetForm="resetForm"
+                v-on:fetchFiles="fetchFiles"
+                />
             </div>
-          </b-modal>
-        </b-form>
+
+            <!-- Form submission confirmation -->
+            <b-modal
+                v-model="confirmSubmitModal"
+                id="confirmSubmitModal"
+                centered
+                title="Confirm submission"
+                @shown="$refs.confirmSubmitConfirmBtn.focus()"
+                :return-focus="$refs.activitySubmitBtn">
+              Are you sure you want to submit this activity report?
+              <div slot="modal-footer">
+                <b-btn variant="primary" @click="confirmSubmitModal=false;formSubmit()" ref="confirmSubmitConfirmBtn">
+                  Save
+                </b-btn>
+                <b-btn variant="light" @click="confirmSubmitModal=false">
+                  Cancel
+                </b-btn>
+              </div>
+            </b-modal>
+          </b-form>
+        </div>
       </div>
     </div>
   </div>
@@ -103,6 +116,7 @@ export default {
   },
   data () {
     return {
+      compareForm: {},
       // event bus; use by emitting events on the events instance eg. this.events.$emit('updated')
       events: new Vue(),
       ...initialState()
@@ -122,10 +136,22 @@ export default {
       return components
     },
     isStaffEdit () {
-      return this.activityType === 'STAFF_EDIT'
+      return this.activityType === 'STAFF_EDIT' && this.userRoles.wells.edit
     },
     breadcrumbs () {
       const breadcrumbs = []
+
+      if (this.errorWellNotFound) {
+        breadcrumbs.push({
+          text: `Well Search`,
+          to: { name: 'wells-home' }
+        },
+        {
+          text: `Not found`,
+          active: true
+        })
+        return breadcrumbs
+      }
 
       if (this.isStaffEdit) {
         breadcrumbs.push(
@@ -145,6 +171,9 @@ export default {
       }
       return breadcrumbs
     },
+    errorWellNotFound () {
+      return this.wellFetchError && this.wellFetchError.status === 404
+    },
     ...mapGetters(['codes', 'userRoles', 'well', 'keycloak']),
     ...mapState('documentState', [
       'files_uploading',
@@ -157,7 +186,8 @@ export default {
     ...mapActions('documentState', [
       'uploadFiles',
       'fileUploadSuccess',
-      'fileUploadFail'
+      'fileUploadFail',
+      'resetUploadFiles'
     ]),
     formSubmit () {
       if (!this.formChanges()) {
@@ -212,7 +242,7 @@ export default {
       this.formSubmitSuccessWellTag = null
       this.errors = {}
       // Save notification
-      this.$noty.info('<div class="loader"></div><div class="notifyText">Saving...</div>', { timeout: false })
+      const savingNotification = this.$noty.info('<div class="loader"></div><div class="notifyText">Saving...</div>', { timeout: false })
 
       // Depending on the type of submission (construction/decommission/alteration/edit) we post to
       // different endpoints.
@@ -226,11 +256,16 @@ export default {
         // Save completed notification
 
         if (this.isStaffEdit) {
-          this.$noty.success('<div class="notifyText">Changes Saved!</div>', { killer: true })
+          this.$nextTick(() => {
+            this.$noty.success('<div class="notifyText">Changes saved.</div>', { killer: true })
+          })
           this.events.$emit('well-edited', true)
           this.fetchWellDataForStaffEdit({reloadPage: false})
         } else {
-          this.$noty.success('<div aria-label="Close" class="closeBtn">x</div><div class="notifyText">Well Report Submitted.</div>', { killer: true })
+          this.$nextTick(() => {
+            this.$noty.success('<div aria-label="Close" class="closeBtn">x</div><div class="notifyText">Well report submitted.</div>', { killer: true })
+          })
+
           this.$nextTick(function () {
             window.scrollTo(0, 0)
           })
@@ -253,32 +288,32 @@ export default {
 
         if (this.upload_files.length > 0) {
           if (response.data.filing_number) {
-            this.$noty.info('<div class="loader"></div><div class="notifyText">File Upload In Progress...</div>', { timeout: false })
+            this.$noty.info('<div class="loader"></div><div class="notifyText">File upload in progress...</div>', { timeout: false })
             this.uploadFiles({
               documentType: 'submissions',
               recordId: response.data.filing_number
             }).then(() => {
               this.fileUploadSuccess()
               this.fetchFiles()
-              this.$noty.success('<div class="notifyText">Successfully Uploaded All Files</div>', { killer: true })
+              this.$noty.success('<div class="notifyText">Successfully uploaded all files.</div>', { killer: true })
             }).catch((error) => {
               this.fileUploadFail()
               console.error(error)
-              this.$noty.error('<div class="notifyText">Error Uploading Files</div>', { killer: true })
+              this.$noty.error('<div class="notifyText">Error uploading files.</div>', { killer: true })
             })
           } else {
-            this.$noty.info('<div class="loader"></div><div class="notifyText">File Upload In Progress...</div>', { timeout: false })
+            this.$noty.info('<div class="loader"></div><div class="notifyText">File upload in progress...</div>', { timeout: false })
             this.uploadFiles({
               documentType: 'wells',
               recordId: response.data.well
             }).then(() => {
-              this.$noty.success('<div class="notifyText">Successfully Uploaded All Files</div>', { killer: true })
+              this.$noty.success('<div class="notifyText">Successfully uploaded all files.</div>', { killer: true })
               this.fileUploadSuccess()
               this.fetchFiles()
             }).catch((error) => {
               this.fileUploadFail()
-              console.log(error)
-              this.$noty.error('<div class="notifyText">Error Uploading Files</div>', { killer: true })
+              console.error(error)
+              this.$noty.error('<div class="notifyText">Error uploading files.</div>', { killer: true })
             })
           }
         }
@@ -290,7 +325,7 @@ export default {
           } else {
             // Some other kind of server error. If for example, it's a 500, the response data is not of
             // much use, so we just grab the status text.
-            this.errors = { 'Server Error': error.response.statusText }
+            this.errors = { 'Server error': error.response.statusText }
           }
         } else {
           // This is a generic js error, so just log it
@@ -299,7 +334,7 @@ export default {
 
         this.formSubmitError = true
         let cleanErrors = parseErrors(this.errors)
-        let errTxt = cleanErrors.length > 1 ? 'Input Errors!' : 'Input Error!'
+        let errTxt = cleanErrors.length > 1 ? 'Input errors.' : 'Input error.'
         // Error notifications
         this.$noty.error('<div class="errorTitle">' + errTxt + '</div>', { timeout: 2000, killer: true })
         cleanErrors.forEach(e => {
@@ -307,16 +342,23 @@ export default {
         })
       }).finally((response) => {
         this.formSubmitLoading = false
+
+        // sometimes the save success notification doesn't close the "saving..." one.
+        // if the in-progress status message is still shown after the request completes,
+        // close it immediately.
+        if (savingNotification && !savingNotification.closed) {
+          savingNotification.close()
+        }
       })
     },
     formChanges () {
       let differences = diff(this.compareForm, this.form)
       if (differences) {
-        differences.forEach((d) => {
-          if (d.lhs == null && d.rhs === '') {
-            this.form[d.path[0]] = null
-          }
-        })
+        // differences.forEach((d) => {
+        //   if (d.lhs == null && d.rhs === '') {
+        //     this.form[d.path[0]] = null
+        //   }
+        // })
         return true
       }
       return false
@@ -342,6 +384,12 @@ export default {
         driller_name: '',
         consultant_name: '',
         consultant_company: '',
+        construction_start_date: '',
+        construction_end_date: '',
+        alteration_start_date: '',
+        alteration_end_date: '',
+        decommission_start_date: '',
+        decommission_end_date: '',
         work_start_date: '',
         work_end_date: '',
         owner_full_name: '',
@@ -413,7 +461,7 @@ export default {
         water_quality_characteristics: [],
         water_quality_colour: '',
         water_quality_odour: '',
-        ems_id: '',
+        ems: '',
         aquifer: '',
         total_depth_drilled: '',
         finished_well_depth: '',
@@ -476,6 +524,11 @@ export default {
       })
     },
     handlePreviewButton () {
+      if (!this.formChanges()) {
+        this.$noty.info('<div class="errorTitle">Please add some data to your submission.</div>', { killer: true })
+        return
+      }
+
       this.preview = true
 
       // clear the error alert (otherwise it looks like there are new errors after clicking preview)
@@ -517,7 +570,7 @@ export default {
       Object.assign(this.$data, initialState())
       this.resetForm()
       this.$store.dispatch(FETCH_CODES)
-
+      this.resetUploadFiles()
       if (this.$route.params.id) {
         this.setWellTagNumber(this.$route.params.id)
       }
@@ -533,6 +586,8 @@ export default {
         this.formIsFlat = false
       }
       this.fetchFiles()
+      // Set initial form fields for comparison with user input changes
+      Object.assign(this.compareForm, this.form)
     },
     fetchWellDataForStaffEdit (options = {}) {
       const { reloadPage = true } = options
@@ -564,6 +619,7 @@ export default {
         // Set initial form fields for comparison with user input changes
         Object.assign(this.compareForm, this.form)
       }).catch((e) => {
+        this.wellFetchError = e.response
         console.error(e)
       }).finally(() => {
         this.loading = false
@@ -590,6 +646,7 @@ function initialState () {
     formIsFlat: false,
     preview: false,
     loading: false,
+    wellFetchError: null,
     confirmSubmitModal: false,
     formSubmitSuccess: false,
     formSubmitSuccessWellTag: null,
@@ -599,7 +656,6 @@ function initialState () {
     trackValueChanges: false,
     errors: {},
     form: {},
-    compareForm: {},
     submissionsHistory: [], // historical submissions for each well (comes into play for staff edits)
     formOptions: {},
     uploadedFiles: {},
@@ -665,6 +721,7 @@ function initialState () {
         'wellPublicationStatus',
         'wellType',
         'wellOwner',
+        'workDates',
         'personResponsible',
         'wellLocation',
         'wellCoords',

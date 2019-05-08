@@ -35,7 +35,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     </b-row>
     <b-row>
       <b-col cols="12" md="4">
-        <form-input id="ownerCity" label="City" v-model="ownerCityInput" :errors="errors['owner_city']" :loaded="fieldsLoaded['owner_city']"></form-input>
+        <form-input id="ownerCity" label="City*" v-model="ownerCityInput" :errors="errors['owner_city']" :loaded="fieldsLoaded['owner_city']" required></form-input>
       </b-col>
       <b-col cols="6" md="4">
         <b-form-group

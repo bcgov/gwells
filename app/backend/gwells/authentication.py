@@ -44,7 +44,6 @@ class JwtOidcAuthentication(JSONWebTokenAuthentication):
         # but they are useful to put in the user table for debugging purposes.
         payload_user_mapping = {
             'email': 'email',
-            'given_name': 'first_name',
             'family_name': 'last_name'
         }
         payload_profile_mapping = {
@@ -52,7 +51,7 @@ class JwtOidcAuthentication(JSONWebTokenAuthentication):
             'name': 'name'
         }
         # We map auth_time to user.last_login ; this is true depending on your point of view. It's the
-        # last time the user logged into sso, which may not co-incide with the last time the user 
+        # last time the user logged into sso, which may not co-incide with the last time the user
         # logged into gwells.
         auth_time = payload.get('auth_time')
         if auth_time:
@@ -116,4 +115,5 @@ class JwtOidcAuthentication(JSONWebTokenAuthentication):
     @staticmethod
     def known_sso_authority(payload):
         preferred_username = payload.get('preferred_username')
-        return 'idir\\' in preferred_username or 'bceid\\' in preferred_username or preferred_username == 'testuser'
+        return 'idir\\' in preferred_username or 'bceid\\' in preferred_username\
+            or preferred_username == 'testuser'

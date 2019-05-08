@@ -13,21 +13,120 @@
 """
 import logging
 import dateutil.parser
+import threading
 
 from django.core.serializers import serialize
 from django.forms.models import model_to_dict
 from django.db import transaction
 from django.db.models import F
+from rest_framework.exceptions import ValidationError, APIException
+from rest_framework import serializers
 
-from gwells.models import ProvinceStateCode
-from submissions.models import WellActivityCode
+from gwells.models import ProvinceStateCode, DATALOAD_USER
+from submissions.models import WellActivityCode, WELL_ACTIVITY_CODE_ALTERATION,\
+    WELL_ACTIVITY_CODE_CONSTRUCTION, WELL_ACTIVITY_CODE_DECOMMISSION, WELL_ACTIVITY_CODE_LEGACY,\
+    WELL_ACTIVITY_CODE_STAFF_EDIT
 import submissions.serializers
-from wells.models import Well, ActivitySubmission, WellStatusCode
-from wells.serializers import WellStackerSerializer
+from wells.models import Well, ActivitySubmission, WellStatusCode, WELL_STATUS_CODE_CONSTRUCTION,\
+    WELL_STATUS_CODE_DECOMMISSION, WELL_STATUS_CODE_ALTERATION, WELL_STATUS_CODE_OTHER, LithologyDescription,\
+    Casing, Screen, LinerPerforation, DecommissionDescription, LithologyDescription
+
+from wells.serializers import WellStackerSerializer, CasingSerializer, ScreenSerializer,\
+    LinerPerforationSerializer, DecommissionDescriptionSerializer, LithologyDescriptionSerializer
 
 import reversion
 
 logger = logging.getLogger(__name__)
+
+# Not sure if a lock is really needed, playing safe.
+target_keys_lock = threading.Lock()
+target_keys = None
+
+# There isn't always a like to like mapping of values, sometimes the source key will differ from
+# the target key:
+ACTIVITY_TYPE_MAP = {
+    WELL_ACTIVITY_CODE_CONSTRUCTION: {
+        'work_start_date': 'construction_start_date',
+        'work_end_date': 'construction_end_date'
+    },
+    WELL_ACTIVITY_CODE_ALTERATION: {
+        'work_start_date': 'alteration_start_date',
+        'work_end_date': 'alteration_end_date'
+    },
+    WELL_ACTIVITY_CODE_DECOMMISSION: {
+        'work_start_date': 'decommission_start_date',
+        'work_end_date': 'decommission_end_date'
+    }
+}
+
+
+# Well status is set based on the most recent activity submission.
+WELL_STATUS_MAP = {
+    WELL_ACTIVITY_CODE_CONSTRUCTION: WELL_STATUS_CODE_CONSTRUCTION,
+    WELL_ACTIVITY_CODE_ALTERATION: WELL_STATUS_CODE_ALTERATION,
+    WELL_ACTIVITY_CODE_DECOMMISSION: WELL_STATUS_CODE_DECOMMISSION,
+}
+
+# Relying on django serialization/reflection is very slow, so we explicitly
+# define this relationship.
+FOREIGN_KEY_MODEL_LOOKUP = {
+    'casing_set': Casing,
+    'screen_set': Screen,
+    'linerperforation_set': LinerPerforation,
+    'decommission_description_set': DecommissionDescription,
+    'lithologydescription_set': LithologyDescription
+}
+
+# Relying on django serialization/reflection is very slow, so we explicitly
+# define this relationship.
+FOREIGN_KEY_SERIALIZER_LOOKUP = {
+    'casing_set': CasingSerializer,
+    'screen_set': ScreenSerializer,
+    'linerperforation_set': LinerPerforationSerializer,
+    'decommission_description_set': DecommissionDescriptionSerializer,
+    'lithologydescription_set': LithologyDescriptionSerializer
+}
+
+# Relying on django serialization/reflection is very slow, so we explicitly
+# define this relationship.
+MANY_TO_MANY_LOOKUP = {
+    'drilling_methods': 'drilling_method_code',
+    'development_methods': 'development_method_code',
+    'water_quality_characteristics': 'code'
+}
+
+# Relying on django serialization/reflection is very slow, so we explicitly
+# define this relationship.
+KEY_VALUE_LOOKUP = {
+    'well_publication_status': 'well_publication_status_code',
+    'owner_province_state': 'province_state_code',
+    'well_class': 'well_class_code',
+    'well_subclass': 'well_subclass_guid',
+    'intended_water_use': 'intended_water_use_code',
+    'land_district': 'land_district_code',
+    'coordinate_acquisition_code': 'code',
+    'aquifer_lithology': 'aquifer_lithology_code',
+    'well_yield_unit': 'well_yield_unit_code',
+    'surface_seal_material': 'surface_seal_material_code',
+    'surface_seal_method': 'surface_seal_method_code',
+    'liner_material': 'code',
+    'screen_intake_method': 'screen_intake_code',
+    'screen_type': 'screen_type_code',
+    'screen_material': 'screen_material_code',
+    'screen_opening': 'screen_opening_code',
+    'screen_bottom': 'screen_bottom_code',
+    'filter_pack_material': 'filter_pack_material_code',
+    'filter_pack_material_size': 'filter_pack_material_size_code',
+    'decommission_method': 'decommission_method_code',
+    'aquifer': 'aquifer_id',
+    'person_responsible': 'person_guid',
+    'company_of_person_responsible': 'org_guid',
+    'aquifer_lithology': 'aquifer_lithology_code',
+    'yield_estimation_method': 'yield_estimation_method_code',
+    'ground_elevation_method': 'ground_elevation_method_code',
+    'observation_well_status': 'obs_well_status_code',
+    'well_status': 'well_status_code'
+}
 
 
 def overlap(a, b):
@@ -42,6 +141,24 @@ def overlap(a, b):
 
 
 class StackWells():
+
+    def _get_target_keys(self):
+        # This is an expensive call, so we cache it (running normally we'll mostly have misses, but
+        # during testing, this can massively speed things up.)
+        global target_keys
+        try:
+            target_keys_lock.acquire()
+            if not target_keys:
+                target_keys = WellStackerSerializer().get_fields().keys()
+        finally:
+            target_keys_lock.release()
+        return target_keys
+
+    def _getattr(self, submission, key):
+        if key in FOREIGN_KEY_MODEL_LOOKUP:
+            model = FOREIGN_KEY_MODEL_LOOKUP[key]
+            return model.objects.filter(activity_submission=submission)
+        return getattr(submission, key)
 
     @transaction.atomic
     def process(self, filing_number) -> Well:
@@ -70,8 +187,6 @@ class StackWells():
         """
         Using an existing well as a reference, create a legacy well record
         """
-        # TODO: Deal with Lithology, LtsaOwner, AquiferWell etc. (This should
-        # work magically if the serializers are implemented correctly)
         # Serialize the well.
         well_serializer = WellStackerSerializer(well)
         data = well_serializer.data
@@ -79,23 +194,44 @@ class StackWells():
         data['work_start_date'] = data.pop('construction_start_date', None)
         data['work_end_date'] = data.pop('construction_end_date', None)
         # Retain the create and update user.
-        data['create_user'] = well.create_user
-        data['update_user'] = well.update_user
+        if well.create_user:
+            data['create_user'] = well.create_user
+        else:
+            # If for whatever reason, the original well record doesn't have a create_user, we assigned
+            # DATALOAD_USER to the legacy record.
+            logger.warning('Well {} does not have a create_user!'.format(well.well_tag_number))
+            data['create_user'] = DATALOAD_USER
+        if well.update_user:
+            data['update_user'] = well.update_user
+        else:
+            # If for whatever reason, the original well record doesn't have an update_user, we assigned
+            # DATALOAD_USER to the legacy record.
+            logger.warning('Well {} does not have an update_user!'.format(well.well_tag_number))
+            data['update_user'] = DATALOAD_USER
         data['create_date'] = well.create_date
         data['update_data'] = well.update_date
         # Filter out None and '' values, they can interfere with validation.
         data = {k: v for (k, v) in data.items() if v is not None and v != ''}
         # Retain the well reference.
         data['well'] = well.well_tag_number
-        # De-serialize the well into a submission.
         submission_serializer = submissions.serializers.WellSubmissionLegacySerializer(data=data)
 
-        # Validate the data, throwing an exception on error.
-        if submission_serializer.is_valid(raise_exception=True):
+        is_valid = submission_serializer.is_valid(raise_exception=False)
+        if is_valid:
             # Save the submission.
+            # NOTE: Validation may now fail, calling save here, will result in the well record being updated,
+            # the legacy submission may be valid, but that doesn't mean the resultant well record is going
+            # to be valid!
             legacy = submission_serializer.save()
             return legacy
-        return None
+        logger.info('invalid legacy data: {}'.format(data))
+        logger.error(submission_serializer.errors)
+        # We don't bubble validation errors on the legacy submission up. It just causes confusion!
+        # If there's a validation error on this level, it has to go up as a 500 error. Validation
+        # error here, means we are unable to create a legacy record using old well data. The
+        # users can't do anything to fix this, we have to fix a bug!
+        logger.error('submission_serializer validation error')
+        raise APIException()
 
     def _series_overlaps(self, record, record_set):
         # Return True if a record overlaps with a list of records
@@ -114,30 +250,25 @@ class StackWells():
         new.sort(key=lambda record: (record.get('start'), record.get('end')))
         return new
 
+    def transform_value(self, value, source_key):
+        if source_key in FOREIGN_KEY_SERIALIZER_LOOKUP:
+            Serializer = FOREIGN_KEY_SERIALIZER_LOOKUP[source_key]
+            value = Serializer(value, many=True).data
+        elif source_key in MANY_TO_MANY_LOOKUP:
+            new_value = []
+            for item in value.all():
+                new_value.append(getattr(item, MANY_TO_MANY_LOOKUP[source_key]))
+            value = new_value
+        elif source_key in KEY_VALUE_LOOKUP:
+            value = getattr(value, KEY_VALUE_LOOKUP[source_key])
+        return value
+
     @transaction.atomic
     def _stack(self, records, well: Well) -> Well:
-        # TODO: Deal with Lithology, LtsaOwner, AquiferWell etc.
-        # There isn't always a like to like mapping of values, sometimes the source key will differ from
-        # the target key:
-        activity_type_map = {
-            WellActivityCode.types.construction().code: {
-                'work_start_date': 'construction_start_date',
-                'work_end_date': 'construction_end_date'
-            },
-            WellActivityCode.types.alteration().code: {
-                'work_start_date': 'alteration_start_date',
-                'work_end_date': 'alteration_end_date'
-            },
-            WellActivityCode.types.decommission().code: {
-                'work_start_date': 'decommission_start_date',
-                'work_end_date': 'decommission_end_date'
-            }
-        }
-
         # It's helpful for debugging, to limit the fields we consider only to target keys, for example
         # there are some values that don't actually map from the submission to the well (e.g. create_date,
         # filing number, well_activity_code etc.)
-        target_keys = WellStackerSerializer().get_fields().keys()
+        target_keys = self._get_target_keys()
 
         # Iterate through all the submission records
         # We can't strictly order by the create date, we need to consider that construction/legacy well
@@ -167,13 +298,6 @@ class StackWells():
 
         composite = {}
 
-        # Well status is set based on the most recent activity submission.
-        well_status_map = {
-            WellActivityCode.types.construction().code: WellStatusCode.types.construction().well_status_code,
-            WellActivityCode.types.alteration().code: WellStatusCode.types.alteration().well_status_code,
-            WellActivityCode.types.decommission().code: WellStatusCode.types.decommission().well_status_code,
-        }
-
         for index, submission in enumerate(records):
             if index == 0:
                 # The create user & date of the very 1st submission record, is taken to be the
@@ -183,13 +307,15 @@ class StackWells():
             update_date = submission.update_date
             # add a well_status based on the current activity submission
             # a staff edit could still override this with a different value.
-            composite['well_status'] = well_status_map.get(
-                submission.well_activity_type.code, WellStatusCode.types.other().well_status_code)
-            source_target_map = activity_type_map.get(submission.well_activity_type.code, {})
-            serializer = submissions.serializers.WellSubmissionStackerSerializer(submission)
-            for source_key, value in serializer.data.items():
+            if submission.well_activity_type.code != 'STAFF_EDIT':
+                composite['well_status'] = WELL_STATUS_MAP.get(
+                    submission.well_activity_type.code, WellStatusCode.types.other().well_status_code)
+            source_target_map = ACTIVITY_TYPE_MAP.get(submission.well_activity_type.code, {})
+            for field in ActivitySubmission._meta.get_fields():
                 # We only consider items with values, and keys that are in our target
                 # an exception is STAFF_EDIT submissions (we need to be able to accept empty values)
+                source_key = field.name
+                value = self._getattr(submission, source_key)
                 if value or value is False or value == 0 or value == '':
                     target_key = source_target_map.get(source_key, source_key)
                     if target_key in target_keys:
@@ -205,16 +331,24 @@ class StackWells():
                         #
                         # If the target_key is not in one of the foreign key sets (i.e., it's a property/
                         # column of a well), then the value can overwrite the previous composite value.
-                        if (submission.well_activity_type.code == WellActivityCode.types.staff_edit().code and
+                        if (submission.well_activity_type.code == WELL_ACTIVITY_CODE_STAFF_EDIT and
                                 target_key in composite and
                                 (target_key in FOREIGN_KEYS)):
                             # staff edits come in with the entire set of values and thus can replace
                             # the composite value
+                            value = self.transform_value(value, source_key)
                             composite[target_key] = value
                         elif target_key in composite and target_key in FOREIGN_KEYS:
                             # foreign key sets are based on depth and need special merge handling.
+                            value = self.transform_value(value, source_key)
                             composite[target_key] = self._merge_series(composite[source_key], value)
+                        elif target_key in composite and target_key in MANY_TO_MANY_LOOKUP:
+                            # Only update if there's a new value.
+                            value = self.transform_value(value, source_key)
+                            if len(value) > 0:
+                                composite[target_key] = value
                         else:
+                            value = self.transform_value(value, source_key)
                             composite[target_key] = value
 
             composite['update_user'] = submission.create_user or composite['update_user']
@@ -226,12 +360,15 @@ class StackWells():
         # The update date, has to match whatever the late update_date was
         composite['update_Date'] = update_date
 
-        # Update the well view
+        # Update the well view.
+        well = self._update_well_view(well, composite)
+        return well
+
+    def _update_well_view(self, well, composite):
         well_serializer = WellStackerSerializer(well, data=composite, partial=True)
         if well_serializer.is_valid(raise_exception=True):
             with reversion.create_revision():
                 well = well_serializer.save()
-
         return well
 
     @transaction.atomic
@@ -239,7 +376,11 @@ class StackWells():
         """
         Used to update an existing well record.
         """
-        records = ActivitySubmission.objects.filter(well=submission.well)
+        records = ActivitySubmission.objects.filter(well=submission.well) \
+            .prefetch_related(
+                'well_status',
+                'well_activity_type'
+            )
         if records.count() > 1:
             # If there's more than one submission we don't need to create a legacy well, we can safely
             # assume that the 1st submission is either a legacy or construction report submission.
