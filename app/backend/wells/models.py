@@ -1626,6 +1626,11 @@ class ActivitySubmission(AuditModelStructure):
         return super().save(*args, **kwargs)
 
 
+@reversion.register(fields=['lithology_from', 'lithology_to', 'lithology_raw_data', 'lithology_description',
+                            'lithology_colour', 'lithology_hardness', 'lithology_material', 'lithology_observation',
+                            'water_bearing_estimated_flow', 'water_bearing_estimated_flow_units',  'lithology_moisture',
+                            'bedrock_material', 'bedrock_material_descriptor', 'lithology_structure',
+                            'surficial_material', 'secondary_surficial_material', 'lithology_sequence_number'])
 class LithologyDescription(AuditModel):
     """
     Lithology information details
@@ -1734,6 +1739,7 @@ class LithologyDescription(AuditModel):
             return 'well {} {} {}'.format(self.well, self.lithology_from, self.lithology_to)
 
 
+@reversion.register(fields=['start', 'end'])
 class LinerPerforation(AuditModel):
     """
     Perforation in a well liner
@@ -1772,6 +1778,8 @@ class LinerPerforation(AuditModel):
             return 'well {} {} {}'.format(self.well, self.start, self.end)
 
 
+@reversion.register(fields=['start', 'end', 'diameter', 'casing_code',
+                            'casing_material', 'wall_thickness', 'drive_shoe'])
 class Casing(AuditModel):
     """
     Casing information
@@ -1840,6 +1848,7 @@ class Casing(AuditModel):
         }
 
 
+@reversion.register(fields=['start', 'end', 'internal_diameter', 'assembly_type', 'slot_size'])
 class Screen(AuditModel):
     """
     Screen in a well
@@ -1963,6 +1972,7 @@ class DecommissionMaterialCode(BasicCodeTableModel):
         return '{} - {}'.format(self.code, self.description)
 
 
+@reversion.register(fields=['start', 'end', 'material', 'observations'])
 class DecommissionDescription(AuditModel):
     """Provides a description of the ground conditions (between specified start and end depth) for
         decommissioning"""
