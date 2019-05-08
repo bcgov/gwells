@@ -298,6 +298,11 @@ class SubmissionStaffEditAPIView(SubmissionBase):
     permission_classes = (WellsEditPermissions,)
     queryset = ActivitySubmission.objects.all()
 
+    def post(self, request, *args, **kwargs):
+        if request.data['ground_elevation'] == '':
+            request.data['ground_elevation'] = None
+        return self.create(request, *args, **kwargs)
+
     def get_queryset(self):
         return get_submission_queryset(self.queryset)\
             .filter(well_activity_type=WellActivityCode.types.staff_edit())
