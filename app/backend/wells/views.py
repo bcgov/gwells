@@ -31,8 +31,10 @@ import json
 
 from functools import reduce
 import operator
+import re
 
 from django.db.models import Q
+from wells.change_history import get_well_history
 
 from rest_framework import filters, status
 from rest_framework.decorators import api_view
@@ -48,7 +50,6 @@ from drf_yasg.utils import swagger_auto_schema
 from minio import Minio
 
 from gwells import settings
-from gwells.change_history import generate_history_diff
 from gwells.documents import MinioClient
 from gwells.models import Survey
 from gwells.roles import WELLS_VIEWER_ROLE, WELLS_EDIT_ROLE
@@ -470,23 +471,12 @@ class WellHistory(APIView):
         Retrieves version history for the specified Well record and creates a list of diffs
         for each revision.
         """
-
         try:
             well = Well.objects.get(well_tag_number=well_id)
         except Well.DoesNotExist:
             raise Http404("Well not found")
 
-        # query records in history for this model.
-        well_history = [obj for obj in well.history.all().order_by(
-            '-revision__date_created')]
-
-        well_history_diff = generate_history_diff(
-            well_history, 'well ' + well_id)
-
-        history_diff = sorted(
-            well_history_diff, key=lambda x: x['date'], reverse=True)
-
-        return Response(history_diff)
+        return Response(get_well_history(well))
 
 
 WELL_PROPERTIES = openapi.Schema(
