@@ -10,8 +10,8 @@ import django.utils.timezone
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('wells', '0065_auto_20190309_0017'),
-        ('aquifers', '0001_squashed_0069_auto_20190409_1634'),
+        ('wells', '0001_squashed_0069_auto_20190409_1634'),
+        ('aquifers', '0001_squashed_0018_auto_20190409_1634'),
     ]
 
     operations = [
