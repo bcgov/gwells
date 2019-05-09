@@ -482,14 +482,15 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
         if 'ground_elevation' in attrs or 'ground_elevation_method' in attrs:
             errors = {}
             if attrs['ground_elevation'] is None:
-                errors['ground_elevation'] = 'Both ground elevation and method are required fields.'
+                errors['ground_elevation'] = 'Both ground elevation and method are required.'
             if attrs['ground_elevation_method'] is None:
-                errors['ground_elevation_method'] = 'Both ground elevation and method are required fields.'
-            if len(errors) == 1:  # if both fields are None it means the user is clearing both fields which is allowed
+                errors['ground_elevation_method'] = 'Both ground elevation and method are required.'
+            # If both fields are None it means the user is clearing both fields which is allowed.
+            # If the user has selected Unknown then we skip the mutual validation
+            if len(errors) == 1 and attrs['ground_elevation_method'].description != 'Unknown':
                 raise serializers.ValidationError(errors)
 
         return attrs
-
 
     # Sets person_responsible and company_of back to object, otherwise client view only gets guid
     def to_representation(self, instance):
