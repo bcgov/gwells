@@ -1597,8 +1597,10 @@ class LithologyDescription(AuditModel):
         db_comment=('Standard terms used for defining the material noted for lithology. E.g. Rock, Clay,'
                     ' Sand, Unspecified.'))
 
-
-    lithology_materials = models.ManyToManyField(LithologyMaterialCode, through='LithologyMaterial', related_name='lithology_records')
+    lithology_materials = models.ManyToManyField(
+        LithologyMaterialCode,
+        through='LithologyMaterial',
+        related_name='lithology_records')
 
     water_bearing_estimated_flow = models.DecimalField(
         max_digits=10, decimal_places=4, blank=True, null=True, verbose_name='Water Bearing Estimated Flow')
@@ -1671,14 +1673,14 @@ class LithologyMaterial(AuditModel):
         verbose_name="Material",
         db_comment=('Standard terms used for defining the material noted for lithology. E.g. Rock, Clay,'
                     ' Sand, Unspecified.'))
-    
+
     # ordering denotes the order of precedence when there are multiple types of soil in one
     # lithology record. A value of 1 corresponds to the "primary" soil type.
     ordering = models.IntegerField()
 
     # This is the significance of a given soil type in a lithology record. 
     # The basic LithologySignificanceCodes are PRIMARY, SECONDARY, OTHER.
-    # 
+    #
     # Burmister classification system:
     # Primary soils appear first (often uppercase) and with no modifier (e.g. 'GRAVEL',
     # but not 'gravelly' or 'some gravel', both of which would be classed as secondary).

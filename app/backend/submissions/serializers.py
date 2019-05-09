@@ -29,7 +29,7 @@ from gwells.models.lithology import (
     LithologyColourCode, LithologyHardnessCode,
     LithologyMaterialCode, LithologyMoistureCode, LithologyDescriptionCode)
 
-from wells.models import Well, ActivitySubmission, WellActivityCode
+from wells.models import Well, ActivitySubmission, WellActivityCode, LithologyDescription, LithologyMaterial
 from wells.serializers import (
     CasingSerializer,
     DecommissionDescriptionSerializer,
@@ -60,6 +60,8 @@ from wells.models import (
     LinerMaterialCode,
     LinerPerforation,
     LithologyDescription,
+    LithologySignificanceCode,
+    LithologyMaterialCode,
     Screen,
     ScreenAssemblyTypeCode,
     ScreenBottomCode,
@@ -125,8 +127,8 @@ class WellSubmissionSerializerBase(AuditModelSerializer):
             # Pop foreign key records from validated data (we need to create them ourselves).
             foreign_keys = self.get_foreign_key_sets()
             foreign_keys_data = {}
-            for key in foreign_keys.keys():
-                foreign_keys_data[key] = validated_data.pop(key, None)
+            # for key in foreign_keys.keys():
+            #     foreign_keys_data[key] = validated_data.pop(key, None)
             # Create submission.
             validated_data['well_activity_type'] = self.get_well_activity_type()
 
@@ -147,19 +149,37 @@ class WellSubmissionSerializerBase(AuditModelSerializer):
                 validated_data['well_yield_unit'] = WellYieldUnitCode.objects.get(
                     well_yield_unit_code='USGPM')
 
+            lithology = validated_data.pop('lithologydescription_set', [])
             instance = super().create(validated_data)
-            # Create foreign key records.
-            for key, value in foreign_keys_data.items():
-                if value:
-                    model = type(self).Meta.model
-                    field = model._meta.get_field(key)
-                    foreign_class = foreign_keys[key]
-                    if field.one_to_many:
-                        for data in value:
-                            foreign_class.objects.create(
-                                activity_submission=instance, **data)
-                    else:
-                        raise 'UNEXPECTED FIELD! {}'.format(field)
+
+            for lith_record in lithology:
+                materials = lith_record.pop('lithology_materials', [])
+
+                print(lith_record)
+                new = LithologyDescription.objects.create(activity_submission=instance, **lith_record)
+                for material in materials:
+                    print(material)
+                    new_material = LithologyMaterial(
+                        lithology_description_guid=new,
+                        lithology_material_code=LithologyMaterialCode.objects.get(pk=material['lithology_material_code']),
+                        significance=LithologySignificanceCode.objects.get(pk=material['significance']),
+                        ordering=material['ordering'])
+                    new_material.save()
+
+            # # Create foreign key records.
+            # for key, value in foreign_keys_data.items():
+            #     if value:
+            #         model = type(self).Meta.model
+            #         field = model._meta.get_field(key)
+            #         foreign_class = foreign_keys[key]
+            #         if field.one_to_many:
+            #             for data in value:
+            #                 data['activity_submission'] = instance
+            #                 foreign_class(data=data)
+            #                 foreign_class.is_valid(self, raise_exception=True)
+            #                 foreign_class.save(self)
+            #         else:
+            #             raise 'UNEXPECTED FIELD! {}'.format(field)
         except exceptions.ValidationError as e:
             # We don't bubble validation errors on the legacy submission up. It just causes confusion!
             # If there's a validation error on this level, it has to go up as a 500 error. Validation
@@ -196,7 +216,7 @@ class WellSubmissionStackerSerializer(WellSubmissionSerializerBase):
             'screen_set': Screen,
             'linerperforation_set': LinerPerforation,
             'decommission_description_set': DecommissionDescription,
-            'lithologydescription_set': LithologyDescription,
+            'lithologydescription_set': LithologyDescriptionSerializer,
         }
 
     class Meta:
@@ -238,11 +258,11 @@ class WellSubmissionLegacySerializer(WellSubmissionSerializerBase):
 
     def get_foreign_key_sets(self):
         return {
-            'casing_set': Casing,
-            'screen_set': Screen,
-            'linerperforation_set': LinerPerforation,
-            'decommission_description_set': DecommissionDescription,
-            'lithologydescription_set': LithologyDescription,
+            # 'casing_set': Casing,
+            # 'screen_set': Screen,
+            # 'linerperforation_set': LinerPerforation,
+            # 'decommission_description_set': DecommissionDescription,
+            'lithologydescription_set': LithologyDescriptionSerializer,
         }
 
     class Meta:
@@ -290,10 +310,10 @@ class WellConstructionSubmissionSerializer(WellSubmissionSerializerBase):
 
     def get_foreign_key_sets(self):
         return {
-            'casing_set': Casing,
-            'screen_set': Screen,
-            'linerperforation_set': LinerPerforation,
-            'lithologydescription_set': LithologyDescription,
+            # 'casing_set': Casing,
+            # 'screen_set': Screen,
+            # 'linerperforation_set': LinerPerforation,
+            'lithologydescription_set': LithologyDescriptionSerializer,
         }
 
     def get_well_activity_type(self):
@@ -920,7 +940,7 @@ class LithologyColourSerializer(serializers.ModelSerializer):
         )
 
 
-class LithologyMaterialSerializer(serializers.ModelSerializer):
+class LithologyMaterialCodeSerializer(serializers.ModelSerializer):
     """Serializes lithology material options"""
 
     class Meta:

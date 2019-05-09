@@ -258,19 +258,20 @@ class LithologyDescriptionSummarySerializer(serializers.ModelSerializer):
 class LithologySoilMaterialSerializer(serializers.ModelSerializer):
     """ serializer for LithologyMaterial records """
 
-    description = serializers.ReadOnlyField(source='lithology_material_code.description')
+    # description = serializers.ReadOnlyField(source='lithology_material_code.description')
 
     class Meta:
         model = LithologyMaterial
         fields = (
             'lithology_material_code',
-            'description',
+            # 'description',
             'significance',
             'ordering'
         )
 
 
 class LithologyDescriptionSerializer(serializers.ModelSerializer):
+    """Serializes lithology description records"""
 
     lithology_from = serializers.DecimalField(
         max_digits=7, decimal_places=2,
@@ -279,27 +280,41 @@ class LithologyDescriptionSerializer(serializers.ModelSerializer):
         max_digits=7, decimal_places=2,
         validators=[MinValueValidator(Decimal('0.01'))])
 
-    lithology_materials = LithologySoilMaterialSerializer(many=True)
+    lithology_materials = serializers.ListField(write_only=True)
 
-    def create(self, validated_data):
-        materials = validated_data.pop('lithology_materials', [])
-        instance = LithologyDescription.objects.create(**validated_data)
-        for material in materials:
-            print('single material', material)
-            material = LithologyMaterial.objects.create(lithology_description_guid=instance, **material)
-        return instance
+    def to_representation(self, instance):
 
-    """Serializes lithology description records"""
+        repr = super().to_representation(instance)
+        repr['lithology_materials'] = LithologySoilMaterialSerializer(LithologyMaterial.objects.filter(
+            lithology_description_guid=instance
+        ), many=True).data
+
+    # def create(self, validated_data):
+    #     materials = validated_data.pop('lithology_materials', [])
+    #     print(materials)
+    #     instance = LithologyDescription.objects.create(**validated_data)
+    #     for material in materials:
+    #         print('single material', material)
+    #         material_data = dict(material)
+    #         print(material_data)
+    #         material = LithologyMaterial.objects.create(
+    #             lithology_description_guid=instance,
+    #             significance=material_data['significance'],
+    #             lithology_material_code=material_data['lithology_material_code'],
+    #             ordering=material_data['ordering'])
+    #     return instance
+
     class Meta:
         model = LithologyDescription
         fields = (
+            'activity_submission',
             'lithology_from',
             'lithology_to',
             'lithology_raw_data',
             # 'lithology_colour',
             # 'lithology_hardness',
             # 'lithology_moisture',
-            'lithology_description',
+            # 'lithology_description',
             'lithology_observation',
             'water_bearing_estimated_flow',
             'lithology_materials'

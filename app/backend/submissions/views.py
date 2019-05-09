@@ -93,7 +93,7 @@ from submissions.serializers import (
     LithologyHardnessSerializer,
     LithologyColourSerializer,
     LithologyDescriptionCodeSerializer,
-    LithologyMaterialSerializer,
+    LithologyMaterialCodeSerializer,
     LithologyMoistureSerializer,
     ObservationWellStatusCodeSerializer,
     ScreenIntakeMethodSerializer,
@@ -333,7 +333,7 @@ class SubmissionsOptions(APIView):
         lithology_hardness = LithologyHardnessSerializer(
             instance=LithologyHardnessCode.objects.all(), many=True)
         lithology_colours = LithologyColourSerializer(instance=LithologyColourCode.objects.all(), many=True)
-        lithology_materials = LithologyMaterialSerializer(
+        lithology_materials = LithologyMaterialCodeSerializer(
             instance=LithologyMaterialCode.objects.all(), many=True)
         lithology_moisture = LithologyMoistureSerializer(
             instance=LithologyMoistureCode.objects.all(), many=True)
