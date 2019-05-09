@@ -123,11 +123,15 @@ Licensed under the Apache License, Version 2.0 (the "License");
         </form-input>
       </b-col>
       <b-col cols="12" md="6" lg="4">
-        <b-form-group label="Well Disinfected?">
-          <b-form-radio-group id="wellDisinfectedRadio" class="mt-1" v-model="wellDisinfectedInput">
-            <b-form-radio :value="false">No</b-form-radio>
-            <b-form-radio :value="true">Yes</b-form-radio>
-          </b-form-radio-group>
+        <b-form-group label="Well Disinfected Status" id="wellDisinfectedStatusInput">
+          <b-form-select
+            v-model="wellDisinfectedInput"
+            value-field="well_disinfected_code"
+            text-field="well_disinfected_code"
+            :options="disinfected_codes()"
+            :errors="errors['well_disinfected_status']"
+            :loaded="fieldsLoaded['well_disinfected_status']">
+          </b-form-select>
         </b-form-group>
       </b-col>
     </b-row>
@@ -185,6 +189,16 @@ export default {
   },
   data () {
     return {}
+  },
+  methods: {
+    disinfected_codes () {
+      this.codes.well_disinfected_codes.forEach((code) => {
+        if (code.well_disinfected_code === 'Unknown') {
+          code['disabled'] = true
+        }
+      })
+      return this.codes.well_disinfected_codes
+    }
   },
   computed: {
     ...mapGetters(['codes'])

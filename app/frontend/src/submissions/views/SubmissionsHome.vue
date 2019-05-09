@@ -474,7 +474,7 @@ export default {
         artesian_flow: '',
         artesian_pressure: '',
         well_cap_type: '',
-        well_disinfected: false,
+        well_disinfected_status: '',
         comments: '',
         internal_comments: '',
         alternative_specs_submitted: false,

@@ -29,7 +29,6 @@
               "decommission_details": null,
               "owner_city": "",
               "well_class": "WCC",
-              "well_disinfected": false,
               "street_address": "123 Main St.",
               "liner_from": null,
               "total_depth_drilled": null,
