@@ -225,29 +225,28 @@ class AquiferDetailSerializer(serializers.ModelSerializer):
 
         return ret
 
+    class Meta:
+        model = models.Aquifer
+        fields = (
+            'aquifer_id',
+            'aquifer_name',
+            'location_description',
 
-class Meta:
-    model = models.Aquifer
-    fields = (
-        'aquifer_id',
-        'aquifer_name',
-        'location_description',
+            'quality_concern',
+            'material',
+            'subtype',
+            'vulnerability',
+            'known_water_use',
+            'litho_stratographic_unit',
+            'productivity',
 
-        'quality_concern',
-        'material',
-        'subtype',
-        'vulnerability',
-        'known_water_use',
-        'litho_stratographic_unit',
-        'productivity',
-
-        'demand',
-        'mapping_year',
-        'resources',
-        'area',
-        'notes',
-        'licence_details',
-    )
+            'demand',
+            'mapping_year',
+            'resources',
+            'area',
+            'notes',
+            'licence_details',
+        )
 
 
 class AquiferResourceSectionSerializer(serializers.ModelSerializer):

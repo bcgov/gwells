@@ -72,6 +72,19 @@ class TestAquifersEditRole(APITestCase):
             )
             self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    def test_upload_bad_shapefile(self):
+
+        filepath = 'aquifers/fixtures/shp/emptyshapefile.zip'
+        with open(filepath, 'rb') as fh:
+            url = reverse('aquifer-save-geometry', kwargs={'aquifer_id': 1})
+
+            response = self.client.post(
+                url,
+                {'geometry': fh}
+            )
+            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+            self.assertEqual(response.json().get('message') === 'Please upload a single shape for only this aquifer.')
+
 
 class TestAquifersSpatial(APITestCase):
 

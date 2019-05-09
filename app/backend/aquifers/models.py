@@ -424,6 +424,13 @@ class Aquifer(AuditModel):
         """
         zip_ref = zipfile.ZipFile(f)
 
+        class BadShapefileException(Exception):
+            pass
+
+        ret = the_zip_file.testzip()
+        if ret is not None:
+            raise BadShapefileException("Bad zipfile, info: %s" % ret)
+
         output_dir = tempfile.mkdtemp()
         for item in zip_ref.namelist():
             # Check filename endswith shp

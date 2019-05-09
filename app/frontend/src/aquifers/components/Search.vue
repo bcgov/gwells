@@ -394,7 +394,7 @@ export default {
       this.$router.push({
         name: 'aquifers-view',
         params: { id: data.aquifer_id }
-      });
+      })
     },
     rowClicked (data) {
       this.$refs.aquiferMap.zoomToSelectedAquifer(data)

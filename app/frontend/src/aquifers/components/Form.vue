@@ -245,6 +245,7 @@
         <b-form-group
           horizontal
           label-cols="4"
+          description="Please upload a shapefile containing only this aqufier in ZIP format."
           label="Shapefile">
           <b-form-file
             v-model="shapefile"/>
