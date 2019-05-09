@@ -115,6 +115,86 @@ class TestConstruction(TestSubmissionsBase):
         self.assertEqual(lithology.create_user, self.user.username)
         self.assertEqual(lithology.update_user, self.user.username)
 
+    def test_screens_well_create_user_update_user(self):
+        """
+        Test that the well created by a construction submission, has screen records with the
+        create user and update user set correctly.
+        """
+        # Data for the construction submission.
+        data = {
+            'screen_set': [
+                {
+                    'start': 0,
+                    'end': 10,
+                    'assembly_type': 'SCREEN'
+                }
+            ]
+        }
+        # Post an construction submissions.
+        response = self.client.post(reverse('CON'), data, format='json')
+        if response.status_code != status.HTTP_201_CREATED:
+            # Useful for debugging failing tests.
+            logger.warn(response)
+        # Get the well back.
+        well = Well.objects.get(well_tag_number=response.data['well'])
+        # Get the resultant lithology record
+        screen = well.screen_set.all()[0]
+        self.assertEqual(screen.create_user, self.user.username)
+        self.assertEqual(screen.update_user, self.user.username)
+
+    def test_casings_well_create_user_update_user(self):
+        """
+        Test that the well created by a construction submission, has casing records with the
+        create user and update user set correctly.
+        """
+        # Data for the construction submission.
+        data = {
+            'casing_set': [
+                {
+                    'start': 0,
+                    'end': 10,
+                    'diameter': 10
+                }
+            ]
+        }
+        # Post an construction submissions.
+        response = self.client.post(reverse('CON'), data, format='json')
+        if response.status_code != status.HTTP_201_CREATED:
+            # Useful for debugging failing tests.
+            logger.warn(response)
+        # Get the well back.
+        well = Well.objects.get(well_tag_number=response.data['well'])
+        # Get the resultant lithology record
+        casing = well.casing_set.all()[0]
+        self.assertEqual(casing.create_user, self.user.username)
+        self.assertEqual(casing.update_user, self.user.username)
+
+    def test_perforations_create_user_update_user(self):
+        """
+        Test that the well created by a construction submission, has perforation records with the
+        create user and update user set correctly.
+        """
+        # Data for the construction submission.
+        data = {
+            'linerperforation_set': [
+                {
+                    'start': 0,
+                    'end': 10
+                }
+            ]
+        }
+        # Post an construction submissions.
+        response = self.client.post(reverse('CON'), data, format='json')
+        if response.status_code != status.HTTP_201_CREATED:
+            # Useful for debugging failing tests.
+            logger.warn(response)
+        # Get the well back.
+        well = Well.objects.get(well_tag_number=response.data['well'])
+        # Get the resultant lithology record
+        perforation = well.linerperforation_set.all()[0]
+        self.assertEqual(perforation.create_user, self.user.username)
+        self.assertEqual(perforation.update_user, self.user.username)
+
 
 class TestEdit(TestSubmissionsBase):
 
@@ -230,7 +310,7 @@ class TestEdit(TestSubmissionsBase):
 
     def test_water_quality_submission(self):
         """ Check that water quality on a staff edit is reflected on the well """
-        well = Well.objects.create()
+        well = Well.objects.create(create_user=self.user.username, update_user=self.user.username)
         data = {
             'well': well.well_tag_number,
             'water_quality_characteristics': ['CLOUDY', 'FRESH', 'GAS']
@@ -242,7 +322,7 @@ class TestEdit(TestSubmissionsBase):
     def test_casing_submission(self):
         """ Test that if a legacy well does not have a casing drive shoe, it doesn't cause problems """
         # We create a pre-existing "legacy well"
-        well = Well.objects.create()
+        well = Well.objects.create(create_user=self.user.username, update_user=self.user.username)
         # We attached a casing to the well, a casing the is missing a drive_shoe, which is a "required"
         # field.
         Casing.objects.create(
@@ -389,7 +469,7 @@ class TestEdit(TestSubmissionsBase):
 
     def test_update_construction_dates(self):
         """ Check that altering the constructions dates on a staff edit is reflected on the well """
-        well = Well.objects.create()
+        well = Well.objects.create(create_user=self.user.username, update_user=self.user.username)
         data = {
             'well': well.well_tag_number,
             'construction_start_date': '1999-05-05',
@@ -402,7 +482,7 @@ class TestEdit(TestSubmissionsBase):
 
     def test_update_alteration_dates(self):
         """ Check that altering the alteration dates on a staff edit is reflected on the well """
-        well = Well.objects.create()
+        well = Well.objects.create(create_user=self.user.username, update_user=self.user.username)
         data = {
             'well': well.well_tag_number,
             'alteration_start_date': '1999-05-05',
@@ -415,7 +495,7 @@ class TestEdit(TestSubmissionsBase):
 
     def test_update_decommission_dates(self):
         """ Check that altering the decommission dates on a staff edit is reflected on the well """
-        well = Well.objects.create()
+        well = Well.objects.create(create_user=self.user.username, update_user=self.user.username)
         data = {
             'well': well.well_tag_number,
             'decommission_start_date': '1999-05-05',
@@ -432,7 +512,7 @@ class TestEdit(TestSubmissionsBase):
         Test that when creating a construction submission, the lithology records on the submissions have
         the create user and update user set correctly.
         """
-        well = Well.objects.create()
+        well = Well.objects.create(create_user=self.user.username, update_user=self.user.username)
         # Data for the edit submission.
         data = {
             'well': well.well_tag_number,
@@ -457,7 +537,7 @@ class TestEdit(TestSubmissionsBase):
     def test_lithology_well_create_user_update_user(self):
         """ Check that the lithology on the resultant well has the correct create_user and udpate_user after
         editing"""
-        well = Well.objects.create()
+        well = Well.objects.create(create_user=self.user.username, update_user=self.user.username)
         # Data for the edit submission.
         data = {
             'well': well.well_tag_number,
@@ -730,10 +810,39 @@ class TestAuditInformation(APITestCase):
         # The well should now show the logged in user as having updated.
         self.assertEqual(well.update_user, self.user.username)
         # The well should now show dataload user as the create_user.
-        self.assertEquals(well.create_user, DATALOAD_USER)
+        self.assertEqual(well.create_user, DATALOAD_USER)
         # The legacy submission should show dataload user as the create_user and update_user.
-        self.assertEquals(legacy.create_user, DATALOAD_USER)
-        self.assertEquals(legacy.update_user, DATALOAD_USER)
+        self.assertEqual(legacy.create_user, DATALOAD_USER)
+        self.assertEqual(legacy.update_user, DATALOAD_USER)
         # The alteration should show the current user as the create_user and update_user.
-        self.assertEquals(alteration.create_user, self.user.username)
-        self.assertEquals(alteration.update_user, self.user.username)
+        self.assertEqual(alteration.create_user, self.user.username)
+        self.assertEqual(alteration.update_user, self.user.username)
+
+    def test_decommission_create_user_update_user(self):
+        """
+        Test that the well created by a construction submission, has perforation records with the
+        create user and update user set correctly.
+        """
+        well = Well.objects.create(create_user=self.user.username, update_user=self.user.username)
+        # Data for the construction submission.
+        data = {
+            'well': well.well_tag_number,
+            'decommission_description_set': [
+                {
+                    'material': 'BENTONITE_CHIPS',
+                    'start': 0,
+                    'end': 10
+                }
+            ]
+        }
+        # Post an construction submissions.
+        response = self.client.post(reverse('DEC'), data, format='json')
+        if response.status_code != status.HTTP_201_CREATED:
+            # Useful for debugging failing tests.
+            logger.warn(response)
+        # Get the well back.
+        well = Well.objects.get(well_tag_number=well.well_tag_number)
+        # Get the resultant lithology record
+        decommission = well.decommission_description_set.all()[0]
+        self.assertEqual(decommission.create_user, self.user.username)
+        self.assertEqual(decommission.update_user, self.user.username)

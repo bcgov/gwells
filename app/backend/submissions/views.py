@@ -226,12 +226,12 @@ class SubmissionBase(AuditCreateMixin, ListCreateAPIView):
             return self.create(request, *args, **kwargs)
         except rest_framework.exceptions.APIException as error:
             try:
-                logger.warn(('Problem encountered handling POST; '
-                             'user:{request.user.profile.username}; '
-                             'user.is_authenticated:{request.user.is_authenticated}; '
-                             'path:{request.path}; method:{request.method}; status_code:{error.status_code}; '
-                             'request: {request.data}; '
-                             'response: {error.detail}').format(
+                logger.warning(('Problem encountered handling POST; '
+                                'user:{request.user.profile.username}; '
+                                'user.is_authenticated:{request.user.is_authenticated}; '
+                                'path:{request.path}; method:{request.method}; status_code:{error.status_code}; '
+                                'request: {request.data}; '
+                                'response: {error.detail}').format(
                     request=request,
                     error=error))
             except:
