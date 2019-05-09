@@ -376,7 +376,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         :artesianFlow.sync="form.artesian_flow"
         :artesianPressure.sync="form.artesian_pressure"
         :wellCapType.sync="form.well_cap_type"
-        :wellDisinfected.sync="form.well_disinfected"
+        :wellDisinfected.sync="form.well_disinfected_status"
         :errors="errors"
         :isStaffEdit="isStaffEdit"
         :saveDisabled="editSaveDisabled"

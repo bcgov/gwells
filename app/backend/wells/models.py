@@ -180,6 +180,24 @@ class FilterPackMaterialSizeCode(CodeTableModel):
         return self.description
 
 
+class WellDisinfectedCode(CodeTableModel):
+    """
+     The status on whether the well has been disinfected or not.
+    """
+    well_disinfected_code = models.CharField(primary_key=True, max_length=100, editable=False)
+    description = models.CharField(max_length=100)
+
+    class Meta:
+        db_table = 'well_disinfected_code'
+        ordering = ['display_order', 'description']
+
+    db_table_comment = ('Codes for the well disinfected status. If the disinfected status on a legacy well'
+                        'is unkown, then the null status is mapped to the Unkown value.')
+
+    def __str__(self):
+        return self.description
+
+
 class FilterPackMaterialCode(CodeTableModel):
     """
      The material used to pack a well filter, e.g. Very coarse sand, Very fine gravel, Fine gravel.
@@ -896,6 +914,9 @@ class Well(AuditModelStructure):
         max_length=40, blank=True, null=True, verbose_name='Well Cap')
     well_disinfected = models.BooleanField(
         default=False, verbose_name='Well Disinfected', choices=((False, 'No'), (True, 'Yes')))
+    well_disinfected_status = models.ForeignKey(WellDisinfectedCode, db_column='well_disinfected_code',
+                                                on_delete=models.CASCADE, blank=True, null=True,
+                                                verbose_name='Well Disinfected Code')
 
     comments = models.CharField(
         max_length=3000, blank=True, null=True,
@@ -1460,6 +1481,9 @@ class ActivitySubmission(AuditModelStructure):
         max_length=40, blank=True, null=True, verbose_name='Well Cap Type')
     well_disinfected = models.BooleanField(
         default=False, verbose_name='Well Disinfected?', choices=((False, 'No'), (True, 'Yes')))
+    well_disinfected_status = models.ForeignKey(WellDisinfectedCode, db_column='well_disinfected_code',
+                                                on_delete=models.CASCADE, blank=True, null=True,
+                                                verbose_name='Well Disinfected Code')
 
     comments = models.CharField(max_length=3000, blank=True, null=True)
     internal_comments = models.CharField(
