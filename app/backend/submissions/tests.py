@@ -379,7 +379,6 @@ class TestEdit(TestSubmissionsBase):
             'well': well.well_tag_number
         }
 
-        # NOTE: this test previously asserted that a
         response = self.client.post(reverse('STAFF_EDIT'), data, format='json')
         self.assertEqual(response.status_code,
                          status.HTTP_201_CREATED, response.data)
