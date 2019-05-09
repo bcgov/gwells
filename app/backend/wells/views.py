@@ -640,7 +640,6 @@ def lithology_geojson(request):
 def well_licensing(request):
     tag = request.GET.get('well_tag_number')
     url = get_env_variable('E_LICENSING_URL') + '{}'.format(tag)
-    well = Well.objects.get(well_tag_number=tag)
     api_success = False
 
     headers = {
@@ -667,6 +666,7 @@ def well_licensing(request):
         pass
 
     if not api_success:
+        well = Well.objects.get(well_tag_number=tag)
         data = {
             'status': well.licenced_status.description,
             'number': '',
