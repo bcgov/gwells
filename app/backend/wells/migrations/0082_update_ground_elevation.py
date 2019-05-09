@@ -29,7 +29,7 @@ def reverse(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('wells', '0079_auto_20190506_1959'),
+        ('wells', '0081_update_well_disinfect_values'),
     ]
 
     operations = [
