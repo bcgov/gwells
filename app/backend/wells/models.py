@@ -1359,7 +1359,7 @@ class ActivitySubmission(AuditModelStructure):
         max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Surface Seal Depth')
     surface_seal_thickness = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True,
                                                  verbose_name='Surface Seal Thickness',
-                                                 validators=[MinValueValidator(Decimal('1.00'))])
+                                                 validators=[MinValueValidator(Decimal('0.00'))])
     surface_seal_method = models.ForeignKey(SurfaceSealMethodCode, db_column='surface_seal_method_code',
                                             on_delete=models.CASCADE, blank=True, null=True,
                                             verbose_name='Surface Seal Installation Method')
