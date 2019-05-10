@@ -22,7 +22,8 @@ export default {
     files_uploading: false,
     file_upload_errors: [],
     file_upload_error: false,
-    file_upload_success: false
+    file_upload_success: false,
+    shapeFile: null
   },
   actions: {
     uploadFiles (context, payload) {
@@ -112,6 +113,9 @@ export default {
     },
     setFileUploadSuccess (state, payload) {
       state.file_upload_success = payload
+    },
+    setShapeFile (state, payload) {
+      state.shapeFile = payload
     },
     setFiles (state, payload) {
       if (payload.length > 0) {
