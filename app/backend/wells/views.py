@@ -638,34 +638,38 @@ def lithology_geojson(request):
 
 @api_view(['GET'])
 def well_licensing(request):
-    url = get_env_variable('E_LICENSING_URL') + '{}'.format(request.GET.get('well_tag_number'))
+    tag = request.GET.get('well_tag_number')
+    url = get_env_variable('E_LICENSING_URL') + '{}'.format(tag)
+    api_success = False
 
     headers = {
         'content_type': 'application/json',
         'AuthUsername': get_env_variable('E_LICENSING_AUTH_USERNAME'),
         'AuthPass': get_env_variable('E_LICENSING_AUTH_PASSWORD')
     }
-    time.sleep(0.01)  # hack to fix reset connection by peer error - server provider timeout issue
-    response = requests.get(url, headers=headers)
-    if response.ok:
-        try:
-            licence = response.json()[-1]  # Use the latest licensing value
-            licence_status = 'Licensed' if licence.get('authorization_status') == 'ACTIVE' else 'Unlicensed'
-            data = {
-                'status': licence_status,
-                'number': licence.get('authorization_number'),
-                'date': licence.get('authorization_status_date')
-            }
-        except:
-            data = {
-                'status': 'Unlicensed',
-                'number': 'N/A',
-                'date': ''
-            }
-    else:
+
+    try:
+        response = requests.get(url, headers=headers)
+        if response.ok:
+            try:
+                licence = response.json()[-1]  # Use the latest licensing value, fails purposely if empty array
+                licence_status = 'Licensed' if licence.get('authorization_status') == 'ACTIVE' else 'Unlicensed'
+                data = {
+                    'status': licence_status,
+                    'number': licence.get('authorization_number'),
+                    'date': licence.get('authorization_status_date')
+                }
+                api_success = True
+            except:
+                pass
+    except:
+        pass
+
+    if not api_success:
+        well = Well.objects.get(well_tag_number=tag)
         data = {
-            'status': 'Service Unavailable',
-            'number': 'N/A',
+            'status': well.licenced_status.description,
+            'number': '',
             'date': ''
         }
 
