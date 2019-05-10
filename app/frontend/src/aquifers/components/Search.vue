@@ -354,6 +354,7 @@ export default {
       this.currentPage = 1
       this.noSearchCriteriaError = false
       this.updateQueryParams()
+      this.$emit('resetLayers')
     },
     triggerSearch () {
       delete this.filterParams.aquifer_id
