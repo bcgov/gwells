@@ -1206,10 +1206,6 @@ class Migration(migrations.Migration):
         migrations.RunPython(
             code=wells.data_migrations.update_update_user_fields,
         ),
-        migrations.RunPython(
-            code=wells.data_migrations.update_geom_fields,
-            reverse_code=wells.data_migrations.reverse_update_geom_fields,
-        ),
         migrations.DeleteModel(
             name='LtsaOwner',
         ),

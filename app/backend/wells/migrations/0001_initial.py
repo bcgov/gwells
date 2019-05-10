@@ -1281,9 +1281,4 @@ class Migration(migrations.Migration):
         migrations.RunPython(
             code=wells.data_migrations.update_update_user_fields,
         ),
-        # If this has been run once, all the way through to production, it's done!
-        # migrations.RunPython(
-        #     code=wells.data_migrations.update_geom_fields,
-        #     reverse_code=wells.data_migrations.reverse_update_geom_fields,
-        # ),
     ]
