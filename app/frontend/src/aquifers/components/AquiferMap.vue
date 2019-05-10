@@ -153,28 +153,32 @@ export default {
           styles: 'Water_Wells_Artesian',
           transparent: true,
           name: 'Artesian wells',
-          legend: ArtesianLegend
+          legend: ArtesianLegend,
+          overlay: true
         }),
         'Cadastral': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW/ows?', {
           format: 'image/png',
           layers: 'pub:WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW',
           transparent: true,
           name: 'Cadastral',
-          legend: CadastralLegend
+          legend: CadastralLegend,
+          overlay: true
         }),
         'Ecocat - Water related reports': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_FISH.ACAT_REPORT_POINT_PUB_SVW/ows?', {
           format: 'image/png',
           layers: 'pub:WHSE_FISH.ACAT_REPORT_POINT_PUB_SVW',
           transparent: true,
           name: 'Ecocat - Water related reports',
-          legend: EcocatWaterLegend
+          legend: EcocatWaterLegend,
+          overlay: true
         }),
         'Groundwater licences': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.WLS_PWD_LICENCES_SVW/ows?', {
           format: 'image/png',
           layers: 'pub:WHSE_WATER_MANAGEMENT.WLS_PWD_LICENCES_SVW',
           transparent: true,
           name: 'Groundwater licences',
-          legend: GWaterLicenceLegend
+          legend: GWaterLicenceLegend,
+          overlay: true
         }),
         'Observation wells - active': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW/ows?', {
           format: 'image/png',
@@ -182,7 +186,8 @@ export default {
           styles: 'Provincial_Groundwater_Observation_Wells_Active',
           transparent: true,
           name: 'Observation wells - active',
-          legend: OWellsActiveLegend
+          legend: OWellsActiveLegend,
+          overlay: true
         }),
         'Observation wells - inactive': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW/ows?', {
           format: 'image/png',
@@ -190,14 +195,16 @@ export default {
           styles: 'Provincial_Groundwater_Observation_Wells_Inactive',
           transparent: true,
           name: 'Observation wells - inactive',
-          legend: OWellsInactiveLegend
+          legend: OWellsInactiveLegend,
+          overlay: true
         }),
         'Wells - All': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW/ows?', {
           format: 'image/png',
           layers: 'pub:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
           transparent: true,
           name: 'Wells - All',
-          legend: WellsAllLegend
+          legend: WellsAllLegend,
+          overlay: true
         })
       }
 
@@ -246,6 +253,14 @@ export default {
       })
 
       this.handleEvents()
+
+      this.$parent.$on('resetLayers', (data) => {
+        this.map.eachLayer((layer) => {
+          if ( layer.wmsParams && layer.wmsParams.overlay) {
+            this.map.removeLayer(layer)
+          }
+        })
+      })
     },
     getFeaturesOnMap (map) {
       const layersInBound = []
