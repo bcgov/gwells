@@ -1710,27 +1710,36 @@ class LithologyDescription(AuditModel):
             return 'well {} {} {}'.format(self.well, self.lithology_from, self.lithology_to)
 
 
-@reversion.register(fields=['start', 'end'])
-class LinerPerforation(AuditModel):
+class PerforationBase(AuditModel):
     """
     Perforation in a well liner
     """
     liner_perforation_guid = models.UUIDField(primary_key=True, default=uuid.uuid4,
                                               editable=False)
-    activity_submission = models.ForeignKey(ActivitySubmission, db_column='filing_number',
-                                            on_delete=models.CASCADE, blank=True, null=True,
-                                            related_name='linerperforation_set')
-    well = models.ForeignKey(
-        Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True,
-        null=True, related_name='linerperforation_set',
-        db_comment=('The file number assigned to a particular well in the in the province\'s Groundwater '
-                    'Wells and Aquifers application.'))
     start = models.DecimalField(db_column='liner_perforation_from', max_digits=7, decimal_places=2,
                                 verbose_name='Perforated From', blank=False,
                                 validators=[MinValueValidator(Decimal('0.00'))])
     end = models.DecimalField(db_column='liner_perforation_to', max_digits=7, decimal_places=2,
                               verbose_name='Perforated To', blank=False,
                               validators=[MinValueValidator(Decimal('0.01'))])
+
+    class Meta:
+        abstract = True
+
+
+@reversion.register(fields=['start', 'end'])
+class LinerPerforation(PerforationBase):
+    """
+    Perforation in a well liner
+    """
+    # activity_submission is deprecated - remove this field after migrating data!
+    activity_submission = models.PositiveIntegerField(db_column='filing_number', blank=True, null=True)
+
+    well = models.ForeignKey(
+        Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True,
+        null=True, related_name='linerperforation_set',
+        db_comment=('The file number assigned to a particular well in the in the province\'s Groundwater '
+                    'Wells and Aquifers application.'))
 
     class Meta:
         ordering = ["start", "end"]
@@ -1741,12 +1750,29 @@ class LinerPerforation(AuditModel):
                         'a screen installed.')
 
     def __str__(self):
-        if self.activity_submission:
-            return 'activity_submission {} {} {}'.format(self.activity_submission,
-                                                         self.start,
-                                                         self.end)
-        else:
-            return 'well {} {} {}'.format(self.well, self.start, self.end)
+        return 'well {} {} {}'.format(self.well, self.start, self.end)
+
+
+@reversion.register(fields=['start', 'end'])
+class ActivitySubmissionLinerPerforation(PerforationBase):
+    """
+    Perforation in a well liner
+    """
+    activity_submission = models.ForeignKey(ActivitySubmission, db_column='filing_number',
+                                            on_delete=models.CASCADE, blank=True, null=True,
+                                            related_name='linerperforation_set')
+
+    class Meta:
+        ordering = ["start", "end"]
+
+    db_table_comment = ('Describes the depths at which the liner is perforated in a well to help improve '
+                        'water flow at the bottom of the well. Some wells are perforated instead of having '
+                        'a screen installed.')
+
+    def __str__(self):
+        return 'activity_submission {} {} {}'.format(self.activity_submission,
+                                                     self.start,
+                                                     self.end)
 
 
 @reversion.register(fields=['start', 'end', 'diameter', 'casing_code',

@@ -34,7 +34,7 @@ Visit the following links to browse the API and frontend applications:
 Django unit tests:
 ```sh
 cd app/backend
-python manage.py test -c nose.cfg
+python manage.py test
 ```
 
 Vue unit tests:

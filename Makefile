@@ -31,7 +31,7 @@ test-node:
 	docker exec -ti gwells_frontend_1 /bin/bash -c "cd /app/frontend/; npm run unit -- --runInBand"
 
 test-django:
-	docker exec -ti gwells_backend_1 /bin/bash -c "cd /app/backend/; python manage.py test -c nose.cfg --noinput"
+	docker exec -ti gwells_backend_1 /bin/bash -c "cd /app/backend/; python manage.py test --noinput"
 
 admin-django:
 	docker exec -ti gwells_backend_1 /bin/bash -c "cd /app/backend; python manage.py createsuperuser"

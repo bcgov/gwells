@@ -29,4 +29,4 @@ def get_column_description(table, column):
             # logger.debug('{}.{} = {}'.format(table, column, result))
             return result
         # else:
-        #     logger.warn('no match for {}.{}'.format(table, column))
+        #     logger.warning('no match for {}.{}'.format(table, column))

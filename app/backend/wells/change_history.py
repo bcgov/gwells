@@ -15,6 +15,7 @@ def get_well_history(well):
     history = {
         'well': [],
         'liner': [],
+        'liner perforation': [],
         'casing': [],
         'screen': [],
         'lithology description': [],
@@ -28,6 +29,7 @@ def get_well_history(well):
         temp_history = {
             'well': [],
             'liner': [],
+            'liner perforation': [],
             'casing': [],
             'screen': [],
             'lithology description': [],
