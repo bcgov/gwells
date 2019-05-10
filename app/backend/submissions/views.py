@@ -303,7 +303,7 @@ class SubmissionStaffEditAPIView(SubmissionBase):
     def post(self, request, *args, **kwargs):
         # ground_elevation is a decimal so we swap empty string with null value
         if 'ground_elevation' in request.data:
-            if request.data['ground_elevation'] == '':
+            if request.data['ground_elevation'] === '':
                 request.data['ground_elevation'] = None
         return self.create(request, *args, **kwargs)
 
