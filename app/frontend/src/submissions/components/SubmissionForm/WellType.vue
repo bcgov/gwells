@@ -84,7 +84,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 :disabled="!subclasses.length"
                 :state="errors['well_subclass'] ? false : null">
               <template slot="first">
-                <option value="" disabled>Select subclass</option>
+                <option value="" disabled>{{this.subclassPlaceholder}}</option>
               </template>
             </b-form-select>
             <b-form-invalid-feedback id="wellSubclassInvalidFeedback">
@@ -95,17 +95,27 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </b-form-group>
         </b-col>
         <b-col cols="12" md="4">
-          <form-input
-            select
-            v-model="intendedWaterUseInput"
-            :options="codes.intended_water_uses"
-            value-field="intended_water_use_code"
-            text-field="description"
+          <b-form-group
+            id="intendedWaterUse"
             label="Intended Water Use"
-            placeholder="Select intended use"
-            :errors="errors['intended_water_use']"
-            :loaded="fieldsLoaded['intended_water_use']"
-            id="intendedWaterUse"></form-input>
+            aria-describedby="intendedWaterUseInvalidFeedback">
+            <b-form-select
+              v-model="intendedWaterUseInput"
+              :options="waterusecodes"
+              value-field="intended_water_use_code"
+              text-field="description"
+              :disabled="!waterusecodes.length"
+              :state="errors['intended_water_use'] ? false : null">
+              <template slot="first">
+                <option value=null disabled>{{this.waterUsePlaceholder}}</option>
+              </template>
+            </b-form-select>
+            <b-form-invalid-feedback id="intendedWaterUseInvalidFeedback">
+              <div v-for="(error, index) in errors['intended_water_use']" :key="`intendedWaterUse error ${index}`">
+                {{ error }}
+              </div>
+            </b-form-invalid-feedback>
+          </b-form-group>
         </b-col>
       </b-row>
       <b-row>
@@ -268,7 +278,9 @@ export default {
   data () {
     return {
       wellTagOptions: [],
-      MAX_RESULTS: 50
+      MAX_RESULTS: 50,
+      subclassPlaceholder: 'Select subclass',
+      waterUsePlaceholder: 'Select water use'
     }
   },
   computed: {
@@ -277,6 +289,15 @@ export default {
         return this.codes.well_classes.find(x => x.well_class_code === this.wellClass).wellsubclasscode_set
       } else {
         return []
+      }
+    },
+    waterusecodes () {
+      if (this.codes && this.codes.intended_water_uses && this.wellClass) {
+        if (this.wellClass !== 'WATR_SPPLY') {
+          return []
+        } else {
+          return this.codes.intended_water_uses
+        }
       }
     },
     ...mapGetters(['codes', 'userRoles', 'wells'])
@@ -318,6 +339,12 @@ export default {
     wellClass (val, prev) {
       if (prev !== '') {
         this.wellSubclassInput = ''
+      }
+      if (val !== 'WATR_SPPLY') {
+        this.intendedWaterUseInput = null
+        this.waterUsePlaceholder = 'Not Applicable'
+      } else {
+        this.waterUsePlaceholder = 'Select Water Use'
       }
     }
   }
