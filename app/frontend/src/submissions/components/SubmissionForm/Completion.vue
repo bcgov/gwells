@@ -192,12 +192,14 @@ export default {
   },
   methods: {
     disinfected_codes () {
-      this.codes.well_disinfected_codes.forEach((code) => {
-        if (code.well_disinfected_code === 'Unknown') {
-          code['disabled'] = true
-        }
-      })
-      return this.codes.well_disinfected_codes
+      if (this.codes != null && this.codes.well_disinfected_codes != null) {
+        this.codes.well_disinfected_codes.forEach((code) => {
+          if (code.well_disinfected_code === 'Unknown') {
+            code['disabled'] = true
+          }
+        })
+        return this.codes.well_disinfected_codes
+      }
     }
   },
   computed: {
