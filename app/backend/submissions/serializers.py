@@ -456,6 +456,18 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
     lithologydescription_set = LithologyDescriptionSerializer(
         many=True, required=False)
 
+    def validate(self, attrs):
+        # Check ground elevation fields for mutual requirement
+        if 'intended_water_use' in attrs or 'well_class' in attrs:
+            errors = {}
+            if attrs['well_class'] is 'WATR_SPPLY' and attrs['intended_water_use'] is None:
+                errors['intended_water_use'] = 'Intended water use is required with a well class of Water Supply.'
+
+            if len(errors) > 0:
+                raise serializers.ValidationError(errors)
+
+        return attrs
+
     # Sets person_responsible and company_of back to object, otherwise client view only gets guid
     def to_representation(self, instance):
         response = super().to_representation(instance)
