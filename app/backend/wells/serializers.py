@@ -96,6 +96,31 @@ class CasingSerializer(serializers.ModelSerializer):
         }
 
 
+class CasingStackerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Casing
+        fields = (
+            'start',
+            'end',
+            'diameter',
+            'casing_code',
+            'casing_material',
+            'drive_shoe',
+            'wall_thickness',
+            'create_user',
+            'update_user'
+        )
+        extra_kwargs = {
+            'start': {'required': True},
+            'end': {'required': True},
+            'diameter': {'required': True},
+            'start': {'required': True},
+            'end': {'required': True},
+            'create_user': {'required': True},
+            'update_user': {'required': True}
+        }
+
+
 class LegacyCasingSerializer(serializers.ModelSerializer):
 
     # Serializers without validators:
@@ -143,6 +168,27 @@ class DecommissionDescriptionSerializer(serializers.ModelSerializer):
         }
 
 
+class DecommissionDescriptionStackerSerializer(serializers.ModelSerializer):
+    """Serializes Decommission Descriptions"""
+
+    class Meta:
+        model = DecommissionDescription
+        fields = (
+            'start',
+            'end',
+            'material',
+            'observations',
+            'create_user',
+            'update_user'
+        )
+        extra_kwargs = {
+            'start': {'required': True},
+            'end': {'required': True},
+            'create_user': {'required': True},
+            'update_user': {'required': True}
+        }
+
+
 class LegacyDecommissionDescriptionSerializer(serializers.ModelSerializer):
     """Serializes Decommission Descriptions"""
 
@@ -174,6 +220,27 @@ class ScreenSerializer(serializers.ModelSerializer):
             'start': {'required': True},
             'end': {'required': True},
             'assembly_type': {'required': True}
+        }
+
+
+class ScreenStackerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Screen
+        fields = (
+            'start',
+            'end',
+            'internal_diameter',
+            'assembly_type',
+            'slot_size',
+            'create_user',
+            'update_user'
+        )
+        extra_kwargs = {
+            'start': {'required': True},
+            'end': {'required': True},
+            'assembly_type': {'required': True},
+            'create_user': {'required': True},
+            'update_user': {'required': True}
         }
 
 
@@ -211,6 +278,25 @@ class LinerPerforationSerializer(serializers.ModelSerializer):
             'start',
             'end',
         )
+
+
+class LinerPerforationStackerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LinerPerforation
+        fields = (
+            # SUPER IMPORTANT: Don't include ID (liner_perforation_guid, well, or submission) as part of this
+            # serializer, as it will break the stacking code. If you include the guid, then it will remain
+            # stuck on a particular well/submission (unless I gues you pop it during serializing/
+            # deserializing) when creating legacy submissions or re-creating well records etc.
+            'start',
+            'end',
+            'create_user',
+            'update_user'
+        )
+        extra_kwargs = {
+            'create_user': {'required': True},
+            'update_user': {'required': True}
+        }
 
 
 class LegacyLinerPerforationSerializer(serializers.ModelSerializer):
@@ -277,6 +363,39 @@ class LithologyDescriptionSerializer(serializers.ModelSerializer):
             'lithology_observation',
             'water_bearing_estimated_flow',
         )
+
+
+class LithologyDescriptionStackerSerializer(serializers.ModelSerializer):
+
+    lithology_from = serializers.DecimalField(
+        max_digits=7, decimal_places=2,
+        validators=[MinValueValidator(Decimal('0.00'))])
+    lithology_to = serializers.DecimalField(
+        max_digits=7, decimal_places=2,
+        validators=[MinValueValidator(Decimal('0.00'))])
+
+    """Serializes lithology description records"""
+    class Meta:
+        model = LithologyDescription
+        fields = (
+            'lithology_from',
+            'lithology_to',
+            'lithology_raw_data',
+            'lithology_colour',
+            'lithology_hardness',
+            'lithology_moisture',
+            'lithology_description',
+            'lithology_observation',
+            'water_bearing_estimated_flow',
+            'create_user',
+            'update_user'
+        )
+        extra_kwargs = {
+            'start': {'required': True},
+            'end': {'required': True},
+            'create_user': {'required': True},
+            'update_user': {'required': True}
+        }
 
 
 class LegacyLithologyDescriptionSerializer(serializers.ModelSerializer):
@@ -570,14 +689,14 @@ class WellDetailAdminSerializer(AuditModelSerializer):
 
 class WellStackerSerializer(AuditModelSerializer):
 
-    casing_set = CasingSerializer(many=True)
-    screen_set = ScreenSerializer(many=True)
-    linerperforation_set = LinerPerforationSerializer(many=True)
-    decommission_description_set = DecommissionDescriptionSerializer(many=True)
-    lithologydescription_set = LithologyDescriptionSerializer(many=True)
+    casing_set = CasingStackerSerializer(many=True)
+    screen_set = ScreenStackerSerializer(many=True)
+    linerperforation_set = LinerPerforationStackerSerializer(many=True)
+    decommission_description_set = DecommissionDescriptionStackerSerializer(many=True)
+    lithologydescription_set = LithologyDescriptionStackerSerializer(many=True)
     # Audit fields have to be added explicitly, because they are on a base class
-    update_user = serializers.CharField()
-    create_user = serializers.CharField()
+    update_user = serializers.CharField(required=True)
+    create_user = serializers.CharField(required=True)
     update_date = serializers.DateTimeField()
 
     class Meta:
