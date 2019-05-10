@@ -301,9 +301,10 @@ class SubmissionStaffEditAPIView(SubmissionBase):
     queryset = ActivitySubmission.objects.all()
 
     def post(self, request, *args, **kwargs):
-        # ground_elevation is a decimal so here we swamp empty string from form with null value
-        if request.data['ground_elevation'] == '':
-            request.data['ground_elevation'] = None
+        # ground_elevation is a decimal so we swap empty string with null value
+        if 'ground_elevation' in request.data:
+            if request.data['ground_elevation'] == '':
+                request.data['ground_elevation'] = None
         return self.create(request, *args, **kwargs)
 
     def get_queryset(self):
