@@ -479,7 +479,7 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
         many=True, required=False)
 
     def validate(self, attrs):
-        # Check ground_elevation fields for mutual requirement and type
+        # Check ground elevation fields for mutual requirement
         if 'ground_elevation' in attrs or 'ground_elevation_method' in attrs:
             errors = {}
             if attrs['ground_elevation'] is None and attrs['ground_elevation_method'] is not None:

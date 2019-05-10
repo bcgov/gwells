@@ -121,7 +121,7 @@ export default {
     }
   },
   methods: {
-    method_codes () {
+    method_codes () { // make the unknown selection disabled for users
       if (this.codes != null && this.codes.ground_elevation_methods != null) {
         this.codes.ground_elevation_methods.forEach((code) => {
           if (code.ground_elevation_method_code === 'UNKNOWN') {

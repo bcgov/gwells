@@ -17,7 +17,7 @@ def update_well_ground_elevation_method_codes(apps, schema_editor):
         effective_date='2018-05-25T07:00:00Z',
         expiry_date='9999-12-31T23:59:59Z'
     )
-
+    # Set all ground elevation methods that are null to UNKNOWN
     well.objects.filter(ground_elevation_method__isnull=True).update(
         ground_elevation_method_id=unknown_method[0])
 
