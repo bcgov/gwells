@@ -260,6 +260,7 @@ export default {
             this.map.removeLayer(layer)
           }
         })
+        this.map.setView([54.5, -126.5], 5)
       })
     },
     getFeaturesOnMap (map) {
