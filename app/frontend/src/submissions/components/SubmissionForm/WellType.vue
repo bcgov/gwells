@@ -84,7 +84,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 :disabled="!subclasses.length"
                 :state="errors['well_subclass'] ? false : null">
               <template slot="first">
-                <option value="" disabled>{{this.subclassPlaceholder}}</option>
+                <option value="" disabled>{{subclasses.length ? 'Select subclass' : 'Not applicable'}}</option>
               </template>
             </b-form-select>
             <b-form-invalid-feedback id="wellSubclassInvalidFeedback">
@@ -107,7 +107,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               :disabled="!waterusecodes.length"
               :state="errors['intended_water_use'] ? false : null">
               <template slot="first">
-                <option value=null disabled>{{this.waterUsePlaceholder}}</option>
+                <option value=null disabled>{{waterusecodes.length ? 'Select water use' : 'Not applicable'}}</option>
               </template>
             </b-form-select>
             <b-form-invalid-feedback id="intendedWaterUseInvalidFeedback">
@@ -278,9 +278,7 @@ export default {
   data () {
     return {
       wellTagOptions: [],
-      MAX_RESULTS: 50,
-      subclassPlaceholder: 'Select subclass',
-      waterUsePlaceholder: 'Select water use'
+      MAX_RESULTS: 50
     }
   },
   computed: {
@@ -342,9 +340,6 @@ export default {
       }
       if (val !== 'WATR_SPPLY') {
         this.intendedWaterUseInput = null
-        this.waterUsePlaceholder = 'Not Applicable'
-      } else {
-        this.waterUsePlaceholder = 'Select Water Use'
       }
     }
   }
