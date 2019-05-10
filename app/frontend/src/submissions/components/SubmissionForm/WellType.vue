@@ -104,10 +104,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
               :options="waterusecodes"
               value-field="intended_water_use_code"
               text-field="description"
-              :disabled="!waterusecodes.length"
+              :disabled="intendedWaterUseInput == 'N/A'"
               :state="errors['intended_water_use'] ? false : null">
               <template slot="first">
-                <option value=null disabled>{{waterusecodes.length ? 'Select water use' : 'Not applicable'}}</option>
+                <option value=null disabled>{{'Select water use'}}</option>
               </template>
             </b-form-select>
             <b-form-invalid-feedback id="intendedWaterUseInvalidFeedback">
@@ -292,8 +292,13 @@ export default {
     waterusecodes () {
       if (this.codes && this.codes.intended_water_uses && this.wellClass) {
         if (this.wellClass !== 'WATR_SPPLY') {
-          return []
+          return [{intended_water_use_code: 'N/A', description: 'Not Applicable', disabled: true}]
         } else {
+          this.codes.intended_water_uses.forEach((code) => {
+            if (code.intended_water_use_code === 'N/A') {
+              code['disabled'] = true
+            }
+          })
           return this.codes.intended_water_uses
         }
       }
@@ -339,6 +344,8 @@ export default {
         this.wellSubclassInput = ''
       }
       if (val !== 'WATR_SPPLY') {
+        this.intendedWaterUseInput = 'N/A'
+      } else {
         this.intendedWaterUseInput = null
       }
     }

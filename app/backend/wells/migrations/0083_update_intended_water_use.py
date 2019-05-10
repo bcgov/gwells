@@ -12,18 +12,20 @@ def update_intended_water_use_code(apps, schema_editor):
         create_date='2017-07-01T08:00:00Z',
         update_user='ETL_USER',
         update_date='2017-07-01T08:00:00Z',
-        description='Not Applicable',
+        description='Not applicable',
         display_order=110,
         effective_date='2018-05-25T07:00:00Z',
         expiry_date='9999-12-31T23:59:59Z'
     )
 
     # Set all wells intended water use to Not Applicable where well class is not equal to Water Supply System
-    well.objects.exclude(well_class='DWS').update(
+    well.objects.exclude(well_class='WATR_SPPLY').update(
         intended_water_use=not_applicable[0])
 
-    well.objects.filter(well_class='DWS').filter().update(
-        intended_water_use=not_applicable[0])
+    unknown = intended_water_use.objects.get(pk='UNK')
+    # update all water supply class wells that have null intended water use to use unknown
+    well.objects.filter(well_class='WATR_SPPLY').filter(intended_water_use__isnull=True).update(
+        intended_water_use=unknown)
 
 
 def reverse(apps, schema_editor):
@@ -33,10 +35,10 @@ def reverse(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('wells', '0081_update_well_disinfect_values'),
+        ('wells', '0082_merge_20190510_1926'),
     ]
 
     operations = [
-        migrations.RunPython(update_well_ground_elevation_method_codes, reverse),
+        migrations.RunPython(update_intended_water_use_code, reverse),
     ]
 
