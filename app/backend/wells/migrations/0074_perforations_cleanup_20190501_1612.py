@@ -52,7 +52,7 @@ def revert_casing_cleanup(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('wells', '0073_fix_well_audit_data_and_submissions_fields'),
+        ('wells', '0001_initial'),
     ]
 
     operations = [

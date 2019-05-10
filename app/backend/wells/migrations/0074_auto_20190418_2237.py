@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('wells', '0073_fix_well_audit_data_and_submissions_fields'),
+        ('wells', '0001_initial'),
     ]
 
     operations = [
