@@ -26,6 +26,18 @@ export default {
     shapeFile: null
   },
   actions: {
+    uploadShapeFile (context, payload) {
+      const file = context.state.shapeFile
+      let formData = new FormData()
+      formData.append('geometry', file)
+      const url = `${payload.documentType}/${payload.recordId}/geometry`
+      ApiService.post(url, formData).then((response) => {
+        context.commit('setShapeFile', null)
+      }).catch((e) => {
+        console.error(e)
+        context.commit('setShapeFile', null)
+      })
+    },
     uploadFiles (context, payload) {
       context.commit('setFilesUploading', true)
       let documentType = payload.documentType

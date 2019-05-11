@@ -248,15 +248,18 @@ export default {
       })
       this.map.on('layerremove', (e) => {
         const layerId = e.layer._leaflet_id
-        this.activeLayers = filter(this.activeLayers, o => o.layerId !== layerId)
-        this.$emit('activeLayers', this.activeLayers)
+        const legend = e.layer.options.legend
+        if (legend) {
+          this.activeLayers = filter(this.activeLayers, o => o.layerId !== layerId)
+          this.$emit('activeLayers', this.activeLayers)
+        }
       })
 
       this.handleEvents()
 
       this.$parent.$on('resetLayers', (data) => {
         this.map.eachLayer((layer) => {
-          if ( layer.wmsParams && layer.wmsParams.overlay) {
+          if (layer.wmsParams && layer.wmsParams.overlay) {
             this.map.removeLayer(layer)
           }
         })
