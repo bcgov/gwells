@@ -256,7 +256,7 @@ export default {
 
       this.$parent.$on('resetLayers', (data) => {
         this.map.eachLayer((layer) => {
-          if ( layer.wmsParams && layer.wmsParams.overlay) {
+          if (layer.wmsParams && layer.wmsParams.overlay) {
             this.map.removeLayer(layer)
           }
         })
