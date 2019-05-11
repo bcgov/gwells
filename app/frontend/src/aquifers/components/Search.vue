@@ -76,8 +76,8 @@
                 </b-form-row>
                 <h6 class="mt-3">Download all aquifers</h6>
                 <ul class="aquifer-download-list">
-                  <li>- <a href="#" @click.prevent="downloadXLSX()">Aquifer extract (XLSX)</a></li>
-                  <li>- <a href="#" @click.prevent="downloadCSV()">Aquifer extract (CSV)</a></li>
+                  <li>- <a href="#" @click.prevent="downloadXLSX(false)">Aquifer extract (XLSX)</a></li>
+                  <li>- <a href="#" @click.prevent="downloadCSV(false)">Aquifer extract (CSV)</a></li>
                 </ul>
               </b-col>
             </b-form-row>
@@ -99,7 +99,6 @@
               </b-col>
             </b-row>
           </b-container>
-
           <b-table
             id="aquifers-results"
             :current-page="currentPage"
@@ -130,6 +129,10 @@
             v-model="currentPage"/>
         </b-col>
       </b-row>
+      <h6 class="pl-5 pb-5 mt-3" v-if="response.count > 0">Download searched aquifers :
+        <a href="#" @click.prevent="downloadXLSX(true)">XLSX</a> |
+        <a href="#" @click.prevent="downloadCSV(true)">CSV</a>
+      </h6>
     </b-card>
   </div>
 </template>
@@ -314,11 +317,19 @@ export default {
           this.loading = false
         })
     },
-    downloadCSV () {
-      window.open(ApiService.baseURL + 'aquifers/csv?' + querystring.stringify(this.query))
+    downloadCSV (filter_only) {
+      let url = ApiService.baseURL + 'aquifers/csv?'
+      if (filter_only) {
+        url += querystring.stringify(this.query)
+      }
+      window.open(url)
     },
-    downloadXLSX () {
-      window.open(ApiService.baseURL + 'aquifers/xlsx?' + querystring.stringify(this.query))
+    downloadXLSX (filter_only) {
+      let url = ApiService.baseURL + 'aquifers/xlsx?'
+      if (filter_only) {
+        url += querystring.stringify(this.query)
+      }
+      window.open(url)
     },
     fetchResourceSections () {
       ApiService.query('aquifers/sections').then((response) => {

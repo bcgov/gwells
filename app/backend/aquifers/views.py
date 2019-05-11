@@ -610,7 +610,7 @@ def csv_export(request):
 
     queryset = _aquifer_qs(request.GET)
     for aquifer in queryset:
-        writer.writerow([getattr(aquifer, f) for f in _export_fields])
+        writer.writerow([getattr(aquifer, f) for f in AQUIFER_EXPORT_FIELDS])
 
     return response
 
@@ -625,7 +625,7 @@ def xlsx_export(request):
     ws.append(AQUIFER_EXPORT_FIELDS)
     queryset = _aquifer_qs(request.GET)
     for aquifer in queryset:
-        ws.append([str(getattr(aquifer, f)) for f in _export_fields])
+        ws.append([str(getattr(aquifer, f)) for f in AQUIFER_EXPORT_FIELDS])
     response = HttpResponse(content=save_virtual_workbook(
         wb), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     response['Content-Disposition'] = 'attachment; filename=aquifers.xlsx'

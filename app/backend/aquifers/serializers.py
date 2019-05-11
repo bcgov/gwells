@@ -74,11 +74,11 @@ class AquiferSerializer(serializers.ModelSerializer):
 
         ret['location'] = instance['location_description']
 
-        ret['demand'] = instance['demand__description'],
-        ret['material'] = instance['material__description'],
-        ret['subtype'] = instance['subtype__description'],
-        ret['vulnerability'] = instance['vulnerability__description'],
-        ret['productivity'] = instance['productivity__description'],
+        ret['demand'] = instance['demand__description']
+        ret['material'] = instance['material__description']
+        ret['subtype'] = instance['subtype__description']
+        ret['vulnerability'] = instance['vulnerability__description']
+        ret['productivity'] = instance['productivity__description']
         return ret
 
     class Meta:

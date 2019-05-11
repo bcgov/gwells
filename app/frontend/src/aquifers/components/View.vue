@@ -492,7 +492,6 @@ export default {
     fetch (id = this.id) {
       ApiService.query(`aquifers/${id}`)
         .then((response) => {
-          console.log('updated rec', response.data.geom)
           this.record = response.data
           this.licence_details = response.data.licence_details
           this.lic_qty = response.data.licence_details.lic_qty
