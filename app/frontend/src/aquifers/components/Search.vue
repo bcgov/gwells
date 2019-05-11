@@ -348,7 +348,7 @@ export default {
       this.response = {}
       this.aquifers_search_results = {}
       this.filterParams = {}
-      this.search = ''
+      this.search = undefined
       this.aquifer_id = ''
       this.sections = []
       this.currentPage = 1

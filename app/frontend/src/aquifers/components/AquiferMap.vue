@@ -248,8 +248,11 @@ export default {
       })
       this.map.on('layerremove', (e) => {
         const layerId = e.layer._leaflet_id
-        this.activeLayers = filter(this.activeLayers, o => o.layerId !== layerId)
-        this.$emit('activeLayers', this.activeLayers)
+        const legend = e.layer.options.legend
+        if (legend) {
+          this.activeLayers = filter(this.activeLayers, o => o.layerId !== layerId)
+          this.$emit('activeLayers', this.activeLayers)
+        }
       })
 
       this.handleEvents()
@@ -260,6 +263,7 @@ export default {
             this.map.removeLayer(layer)
           }
         })
+        this.map.setView([54.5, -126.5], 5)
       })
     },
     getFeaturesOnMap (map) {
