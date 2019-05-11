@@ -23,20 +23,28 @@ export default {
     file_upload_errors: [],
     file_upload_error: false,
     file_upload_success: false,
-    shapeFile: null
+    shapefile_uploading: false,
+    shapefile_upload_message: '',
+    shapefile_upload_success: false,
+    shapefile: null
   },
   actions: {
-    uploadShapeFile (context, payload) {
-      const file = context.state.shapeFile
+    uploadShapefile (context, payload) {
+      const file = context.state.shapefile
       let formData = new FormData()
       formData.append('geometry', file)
       const url = `${payload.documentType}/${payload.recordId}/geometry`
-      ApiService.post(url, formData).then((response) => {
-        context.commit('setShapeFile', null)
-      }).catch((e) => {
-        console.error(e)
-        context.commit('setShapeFile', null)
-      })
+      context.commit('setShapefileUploading', true)
+      ApiService.post(url, formData)
+        .then(response => {
+          context.commit('setShapefileUploadSuccess', true)
+          context.commit('setShapefileUploadMessage', '')
+        })
+        .catch(e => {
+          context.commit('setShapefileUploadSuccess', false)
+          console.error('failed to save shapefile', e.response)
+          context.commit('setShapefileUploadMessage', e.response.data.message)
+        })
     },
     uploadFiles (context, payload) {
       context.commit('setFilesUploading', true)
@@ -51,18 +59,27 @@ export default {
 
       let uploadPromises = []
 
-      context.state.upload_files.forEach((file) => {
+      context.state.upload_files.forEach(file => {
         uploadPromises.push(
-          ApiService.presignedPutUrl(documentType, recordId, file.name, isPrivate)
-            .then((response) => {
+          ApiService.presignedPutUrl(
+            documentType,
+            recordId,
+            file.name,
+            isPrivate
+          )
+            .then(response => {
               let url = response.data.url
               let objectName = response.data.object_name
               let filename = response.data.filename
-              let file = context.state.upload_files.filter(file => file.name === objectName)
+              let file = context.state.upload_files.filter(
+                file => file.name === objectName
+              )
 
               if (file.length !== 1) {
                 context.commit('addError', 'Error uploading file: ' + filename)
-                return Promise.reject(new Error('Error uploading file' + filename))
+                return Promise.reject(
+                  new Error('Error uploading file' + filename)
+                )
               }
 
               file = file[0]
@@ -77,13 +94,13 @@ export default {
                 .then(() => {
                   console.log('successfully added file: ' + objectName)
                 })
-                .catch((error) => {
+                .catch(error => {
                   console.log(error)
                   context.commit('addError', error)
                   return Promise.reject(error)
                 })
             })
-            .catch((error) => {
+            .catch(error => {
               console.log(error)
               context.commit('addError', error)
               return Promise.reject(error)
@@ -109,6 +126,12 @@ export default {
       context.commit('setFiles', [])
       context.commit('setPrivate', false)
     },
+    shapefileUploadSuccess (context) {
+      context.commit('setShapefileUploadSuccess')
+    },
+    shapefileUploadFail (context) {
+      context.commit('setShapefileUploadSuccess')
+    },
     resetUploadFiles (context) {
       context.commit('setFiles', [])
     }
@@ -117,8 +140,14 @@ export default {
     addError (state, payload) {
       state.file_upload_errors.push(payload)
     },
+    setShapefileUploadMessage (state, payload) {
+      state.shapefile_upload_message = payload
+    },
     setFilesUploading (state, payload) {
       state.files_uploading = payload
+    },
+    setShapefileUploading (state, payload) {
+      state.shapefile_uploading = payload
     },
     setFileUploadError (state, payload) {
       state.file_upload_error = payload
@@ -126,8 +155,9 @@ export default {
     setFileUploadSuccess (state, payload) {
       state.file_upload_success = payload
     },
-    setShapeFile (state, payload) {
-      state.shapeFile = payload
+    setShapefileUploadSuccess (state, payload) {
+      state.shapefile_uploading = false
+      state.shapefile_upload_success = payload
     },
     setFiles (state, payload) {
       if (payload.length > 0) {
@@ -136,8 +166,11 @@ export default {
         state.upload_files = payload
       }
     },
+    setShapefile (state, payload) {
+      state.shapefile = payload
+    },
     removeFile (state, file) {
-      state.upload_files = state.upload_files.filter((item) => item.name !== file)
+      state.upload_files = state.upload_files.filter(item => item.name !== file)
     },
     setPrivate (state, payload) {
       state.isPrivate = payload

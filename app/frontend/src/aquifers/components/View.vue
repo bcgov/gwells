@@ -22,6 +22,12 @@
     <b-alert show v-if="!files_uploading && file_upload_success" variant="success" >
       Successfully uploaded all files
     </b-alert>
+    <b-alert show v-if="shapefile_upload_success &! shapefile_uploading" variant="success" >
+      Shapefile uploaded.
+    </b-alert>
+    <b-alert show v-if="!shapefile_upload_success &! shapefile_uploading && shapefile_upload_message" variant="warning" >
+      There was an error uploading the shapefile: {{ shapefile_upload_message }}.
+    </b-alert>
     <b-alert variant="success" :show="showSaveSuccess" id="aquifer-success-alert">
       Record successfully updated.
     </b-alert>
@@ -123,7 +129,7 @@
           </b-row>
         </b-col>
         <b-col cols="12" md="12" lg="7" class="p-0">
-          <single-aquifer-map v-bind:geom="record.geom"/>
+          <single-aquifer-map v-bind:geom="record.geom" :key="mapKey"/>
         </b-col>
       </b-row>
 
@@ -346,6 +352,7 @@ export default {
   },
   data () {
     return {
+      mapKey: 0, // component key to force updates.
       error: undefined,
       fieldErrors: {},
       loading: false,
@@ -373,7 +380,10 @@ export default {
       'file_upload_error',
       'file_upload_success',
       'upload_files',
-      'shapeFile'
+      'shapefile',
+      'shapefile_uploading',
+      'shapefile_upload_message',
+      'shapefile_upload_success'
     ])
   },
   watch: {
@@ -400,7 +410,7 @@ export default {
   methods: {
     ...mapActions('documentState', [
       'uploadFiles',
-      'uploadShapeFile',
+      'uploadShapefile',
       'fileUploadSuccess',
       'fileUploadFail'
     ]),
@@ -418,8 +428,6 @@ export default {
       })
     },
     handleSaveSuccess (response) {
-      this.fetch()
-      this.navigateToView()
       if (this.$refs.aquiferHistory) {
         this.$refs.aquiferHistory.update()
       }
@@ -437,12 +445,18 @@ export default {
         })
       }
 
-      if (this.shapeFile) {
-        this.uploadShapeFile({
+      if (this.shapefile) {
+        this.uploadShapefile({
           documentType: 'aquifers',
           recordId: this.id
+        }).then(() => {
+          this.fetch()
+          this.mapKey ++;
         })
+      } else {
+        this.fetch()
       }
+      this.navigateToView()
     },
     handlePatchError (error) {
       if (error.response) {
@@ -478,8 +492,8 @@ export default {
     fetch (id = this.id) {
       ApiService.query(`aquifers/${id}`)
         .then((response) => {
+          console.log('updated rec', response.data.geom)
           this.record = response.data
-          console.log(this.record)
           this.licence_details = response.data.licence_details
           this.lic_qty = response.data.licence_details.lic_qty
           this.obs_wells = response.data.licence_details.obs_wells

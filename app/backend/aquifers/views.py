@@ -432,7 +432,13 @@ class SaveAquiferGeometry(APIView):
 
         f = request.data['geometry']
         aquifer = Aquifer.objects.get(pk=aquifer_id)
-        aquifer.load_shapefile(f)
+        try:
+            aquifer.load_shapefile(f)
+        except Aquifer.BadShapefileException as e:
+            return Response({
+                'message': str(e)
+            },
+                status=status.HTTP_400_BAD_REQUEST)
         aquifer.save()
         return Response(status=status.HTTP_200_OK)
 

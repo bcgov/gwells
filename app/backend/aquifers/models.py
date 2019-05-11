@@ -422,14 +422,14 @@ class Aquifer(AuditModel):
         Given a shapefile with a single feature, update spatial fields of the aquifer.
         You must still call aquifer.save() afterwards.
         """
-        zip_ref = zipfile.ZipFile(f)
+        try:
+            zip_ref = zipfile.ZipFile(f)
+        except zipfile.BadZipFile as e:
+            raise Aquifer.BadShapefileException(str(e))
 
-        class BadShapefileException(Exception):
-            pass
-
-        ret = the_zip_file.testzip()
+        ret = zip_ref.testzip()
         if ret is not None:
-            raise BadShapefileException("Bad zipfile, info: %s" % ret)
+            raise Aquifer.BadShapefileException("Bad zipfile, info: %s" % ret)
 
         output_dir = tempfile.mkdtemp()
         for item in zip_ref.namelist():
@@ -489,6 +489,9 @@ class Aquifer(AuditModel):
     db_table_comment = ('A geological formation, a group of geological formations, or a part of one or more '
                         'geological formations that is groundwater bearing and capable of storing, '
                         'transmitting and yielding groundwater.')
+
+    class BadShapefileException(Exception):
+        pass
 
     def __str__(self):
         return '{} - {}'.format(self.aquifer_id, self.aquifer_name)

@@ -248,8 +248,9 @@
           description="Please upload a shapefile containing only this aqufier in ZIP format."
           label="Shapefile">
           <b-form-file
-            v-model="shapefile"/>
+            v-model="shape"/>
         </b-form-group>
+
       </b-col>
     </b-row>
 
@@ -382,12 +383,12 @@ export default {
         this.setFiles(value)
       }
     },
-    shapefile: {
+    shape: {
       get: function () {
-        return this.shapeFile
+        return this.shapefile
       },
       set: function (value) {
-        this.setShapeFile(value)
+        this.setShapefile(value)
       }
     },
     privateDocument: {
@@ -411,7 +412,7 @@ export default {
     ...mapState('documentState', [
       'isPrivate',
       'upload_files',
-      'shapeFile'
+      'shapefile'
     ])
   },
 
@@ -425,7 +426,7 @@ export default {
     ...mapMutations('documentState', [
       'setFiles',
       'setPrivate',
-      'setShapeFile'
+      'setShapefile'
     ]),
     handleAddResource () {
       this.record.resources.push({

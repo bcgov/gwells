@@ -46,7 +46,7 @@ export default {
           labels: chartLabel,
           datasets: [
             {
-              backgroundColor: ['#d11141', '#00b159', '#00aedb', '#f37735', '#ffc425'],
+              backgroundColor: ['#E69F00', '#56B4E9', '#2B9F78', '#F0E442', '#CC79A7', '#D55E00', '#0072B2'],
               data: chartData
             }
           ]
