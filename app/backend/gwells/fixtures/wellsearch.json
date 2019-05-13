@@ -148,8 +148,8 @@
             "update_user": "",
             "update_date": "2016-12-10T23:42:51Z",
             "well": 112286,
-            "liner_perforation_from": null,
-            "liner_perforation_to": null
+            "start": 0,
+            "end": 2
         }
     },
     {
