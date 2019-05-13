@@ -920,7 +920,6 @@ class WellExportSerializer(WellListSerializer):
                                                                  slug_field='description')
 
     well_orientation = serializers.CharField(read_only=True, source='get_well_orientation_display')
-    well_disinfected = serializers.CharField(read_only=True, source='get_well_disinfected_display')
     hydro_fracturing_performed = serializers.CharField(read_only=True,
                                                        source='get_hydro_fracturing_performed_display')
 
