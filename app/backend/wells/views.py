@@ -19,7 +19,8 @@ import time
 
 from django.db.models import Prefetch
 from django.http import (
-    Http404, HttpResponse, JsonResponse, HttpResponseRedirect, HttpResponseNotFound, StreamingHttpResponse)
+    FileResponse, Http404, HttpResponse, HttpResponseNotFound,
+    HttpResponseRedirect, JsonResponse, StreamingHttpResponse)
 from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView
 from django_filters import rest_framework as restfilters
@@ -84,7 +85,7 @@ from wells.models import (
     WellClassCode,
     WellYieldUnitCode,
     WellStatusCode)
-from wells.renderers import WellListCSVRenderer
+from wells.renderers import WellListCSVRenderer, WellListExcelRenderer
 from wells.serializers import (
     WellExportAdminSerializer,
     WellExportSerializer,
@@ -410,7 +411,10 @@ class WellExportListAPIView(ListAPIView):
 
     search_fields = ('well_tag_number', 'identification_plate_number',
                      'street_address', 'city', 'owner_full_name')
-    renderer_classes = tuple(api_settings.DEFAULT_RENDERER_CLASSES) + (WellListCSVRenderer,)
+    renderer_classes = tuple(api_settings.DEFAULT_RENDERER_CLASSES) + (
+        WellListCSVRenderer,
+        WellListExcelRenderer,
+    )
     MAX_EXPORT_COUNT = 10000
 
     def get_queryset(self):
@@ -463,6 +467,13 @@ class WellExportListAPIView(ListAPIView):
 
         return serializer_class
 
+    def get_renderer_context(self):
+        context = super(WellExportListAPIView, self).get_renderer_context()
+        serializer = self.get_serializer()
+        context['header'] = serializer.fields.keys()
+
+        return context
+
     def batch_queryset_iterator(self, queryset, count, batch_size=2000):
         """Batch a queryset into chunks of batch_size.
 
@@ -475,7 +486,7 @@ class WellExportListAPIView(ListAPIView):
             for item in batch:
                 yield item
 
-    def list(self, request, format=None):
+    def list(self, request):
         queryset = self.filter_queryset(self.get_queryset())
 
         count = queryset.count()
@@ -487,12 +498,20 @@ class WellExportListAPIView(ListAPIView):
         elif count == 0:
             raise NotFound('No well records could be found.')
 
+        renderer = request.accepted_renderer
         row_generator = self.batch_queryset_iterator(queryset, count)
-        if format == 'csv':
-            data = (self.get_serializer(row).data for row in row_generator)
-            response = StreamingHttpResponse(WellListCSVRenderer().render(data),
-                                             content_type='text/csv')
-            response['Content-Disposition'] = 'attachment; filename="search-results.csv"'
+        if renderer.format in ('csv', 'xlsx'):
+            if request.accepted_renderer.format == 'xlsx':
+                response_class = FileResponse
+            else:
+                response_class = StreamingHttpResponse
+
+            context = self.get_renderer_context()
+            data_iterator = (self.get_serializer(row).data for row in row_generator)
+            render_result = renderer.render(data_iterator, renderer_context=context)
+
+            response = response_class(render_result, content_type=renderer.media_type)
+            response['Content-Disposition'] = 'attachment; filename="search-results.{ext}"'.format(ext=renderer.format)
         else:
             serializer = self.get_serializer(row_generator, many=True)
             response = Response(serializer.data)

@@ -65,7 +65,7 @@ urlpatterns = [
         never_cache(views.WellListAPIView.as_view()), name='well-list'),
 
     # Well search export
-    url(r'^api/v1/wells/export.(?P<format>[A-Za-z0-9-]+)$',
+    url(r'^api/v1/wells/export$',
         never_cache(views.WellExportListAPIView.as_view()), name='well-export'),
 
     # GeoJSON well endpoint for DataBC.
