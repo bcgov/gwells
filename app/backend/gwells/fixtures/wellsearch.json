@@ -147,7 +147,7 @@
             "create_date": "2016-12-08T14:12:27Z",
             "update_user": "",
             "update_date": "2016-12-10T23:42:51Z",
-            "well_tag_number": 112286,
+            "well": 112286,
             "liner_perforation_from": null,
             "liner_perforation_to": null
         }
