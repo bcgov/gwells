@@ -140,20 +140,16 @@
         }
     },
     {
-        "model": "wells.perforation",
+        "model": "wells.linerperforation",
         "pk": "07697639-f178-4e8a-9c6a-5e22a3dd938f",
         "fields": {
             "create_user": "PROXY_EWELLS_USER",
             "create_date": "2016-12-08T14:12:27Z",
             "update_user": "",
             "update_date": "2016-12-10T23:42:51Z",
-            "well_tag_number": 112286,
-            "liner_thickness": "0.188",
-            "liner_diameter": "4.00",
-            "liner_from": "25.00",
-            "liner_to": "182.00",
-            "liner_perforation_from": null,
-            "liner_perforation_to": null
+            "well": 112286,
+            "start": 0,
+            "end": 2
         }
     },
     {
