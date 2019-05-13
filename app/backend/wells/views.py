@@ -411,10 +411,7 @@ class WellExportListAPIView(ListAPIView):
 
     search_fields = ('well_tag_number', 'identification_plate_number',
                      'street_address', 'city', 'owner_full_name')
-    renderer_classes = tuple(api_settings.DEFAULT_RENDERER_CLASSES) + (
-        WellListCSVRenderer,
-        WellListExcelRenderer,
-    )
+    renderer_classes = (WellListCSVRenderer, WellListExcelRenderer)
     MAX_EXPORT_COUNT = 10000
 
     def get_queryset(self):
@@ -448,7 +445,8 @@ class WellExportListAPIView(ListAPIView):
             'decommission_method',
             'aquifer',
             'aquifer_lithology',
-            'yield_estimation_method'
+            'yield_estimation_method',
+            'well_disinfected_status'
         )
         qs = qs.prefetch_related(
             'development_methods',
@@ -474,8 +472,8 @@ class WellExportListAPIView(ListAPIView):
 
         return context
 
-    def batch_queryset_iterator(self, queryset, count, batch_size=2000):
-        """Batch a queryset into chunks of batch_size.
+    def batch_iterator(self, queryset, count, batch_size=200):
+        """Batch a queryset into chunks of batch_size, and serialize the results
 
         Allows iterative processing while taking advantage of prefetching many
         to many relations.
@@ -483,12 +481,13 @@ class WellExportListAPIView(ListAPIView):
         for offset in range(0, count, batch_size):
             end = min(offset + batch_size, count)
             batch = queryset[offset:end]
-            for item in batch:
+
+            serializer = self.get_serializer(batch, many=True)
+            for item in serializer.data:
                 yield item
 
     def list(self, request):
         queryset = self.filter_queryset(self.get_queryset())
-
         count = queryset.count()
         # return an empty response if there are too many wells to display
         if count > self.MAX_EXPORT_COUNT:
@@ -499,22 +498,17 @@ class WellExportListAPIView(ListAPIView):
             raise NotFound('No well records could be found.')
 
         renderer = request.accepted_renderer
-        row_generator = self.batch_queryset_iterator(queryset, count)
-        if renderer.format in ('csv', 'xlsx'):
-            if request.accepted_renderer.format == 'xlsx':
-                response_class = FileResponse
-            else:
-                response_class = StreamingHttpResponse
-
-            context = self.get_renderer_context()
-            data_iterator = (self.get_serializer(row).data for row in row_generator)
-            render_result = renderer.render(data_iterator, renderer_context=context)
-
-            response = response_class(render_result, content_type=renderer.media_type)
-            response['Content-Disposition'] = 'attachment; filename="search-results.{ext}"'.format(ext=renderer.format)
+        if renderer.format == 'xlsx':
+            response_class = FileResponse
         else:
-            serializer = self.get_serializer(row_generator, many=True)
-            response = Response(serializer.data)
+            response_class = StreamingHttpResponse
+
+        context = self.get_renderer_context()
+        data_iterator = self.batch_iterator(queryset, count)
+        render_result = renderer.render(data_iterator, renderer_context=context)
+
+        response = response_class(render_result, content_type=renderer.media_type)
+        response['Content-Disposition'] = 'attachment; filename="search-results.{ext}"'.format(ext=renderer.format)
 
         return response
 

@@ -149,13 +149,13 @@ class WellListExcelRenderer(BaseRenderer):
 
     def write_headers(self, headers):
         self.headers = headers
-        header_cells = []
 
         for index, header in enumerate(self.headers, 1):
             column = openpyxl.utils.get_column_letter(index)
             width = (len(header) + 2) * 1.2
             self.sheet.column_dimensions[column].width = width
 
+        header_cells = []
         for header_key in self.headers:
             label = COLUMN_LABELS.get(header_key)
             cell = openpyxl.cell.WriteOnlyCell(self.sheet, value=label)
@@ -165,8 +165,13 @@ class WellListExcelRenderer(BaseRenderer):
         self.sheet.append(header_cells)
 
     def write_row(self, data):
-        row_values = [data.get(key, None) for key in self.headers]
-        self.sheet.append(row_values)
+        row = []
+        for key in self.headers:
+            cell_value = data.get(key, None)
+            cell = openpyxl.cell.WriteOnlyCell(self.sheet, value=cell_value)
+            row.append(cell)
+
+        self.sheet.append(row)
 
     def render(self, data, media_type=None, renderer_context=None):
         """
