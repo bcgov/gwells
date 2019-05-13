@@ -17,6 +17,9 @@
     <div>
       <ul>
         <li>
+          <a :href="excelExportUrl" download="search-results.xlsx">Excel</a>
+        </li>
+        <li>
           <a :href="csvExportUrl" download="search-results.csv">CSV</a>
         </li>
       </ul>
@@ -32,7 +35,7 @@ import { mapGetters } from 'vuex'
 export default {
   data () {
     return {
-      apiBaseUrl: process.env.AXIOS_BASE_URL,
+      exportBaseUrl: `${process.env.AXIOS_BASE_URL}wells/export`,
       maxExportSize: 10000
     }
   },
@@ -59,15 +62,21 @@ export default {
 
       return querystring.stringify(queryParams)
     },
+    excelExportUrl () {
+      return this.getExportUrl('xlsx')
+    },
     csvExportUrl () {
-      const baseUrl = this.getBaseExportUrl('csv')
-
-      return `${baseUrl}?${this.fullQueryString}`
+      return this.getExportUrl('csv')
     }
   },
   methods: {
-    getBaseExportUrl (format) {
-      return `${this.apiBaseUrl}wells/export.${format}`
+    getExportUrl (format) {
+      let url = `${this.exportBaseUrl}?format=${format}`
+      if (this.fullQueryString) {
+        url = `${url}&${this.fullQueryString}`
+      }
+
+      return url
     }
   }
 }
