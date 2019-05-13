@@ -51,6 +51,7 @@ from wells.models import (
     DecommissionMethodCode,
     DevelopmentMethodCode,
     DrillingMethodCode,
+    WellDisinfectedCode,
     FilterPackMaterialCode,
     FilterPackMaterialSizeCode,
     GroundElevationMethodCode,
@@ -156,6 +157,10 @@ class WellSubmissionSerializerBase(AuditModelSerializer):
                     foreign_class = foreign_keys[key]
                     if field.one_to_many:
                         for data in value:
+                            # Usually audit information is injected by the view, but the view doesn't
+                            # know about these associated records.
+                            data['create_user'] = validated_data['create_user']
+                            data['update_user'] = validated_data['update_user']
                             foreign_class.objects.create(
                                 activity_submission=instance, **data)
                     else:
@@ -176,32 +181,6 @@ class WellSubmissionSerializerBase(AuditModelSerializer):
         # The instance may have been updated with a well tag number, so we refresh.
         instance.refresh_from_db()
         return instance
-
-
-class WellSubmissionStackerSerializer(WellSubmissionSerializerBase):
-    """ Class with no validation, and all possible fields, used by stacker to serialize. """
-
-    casing_set = CasingSerializer(many=True, required=False)
-    screen_set = ScreenSerializer(many=True, required=False)
-    linerperforation_set = LinerPerforationSerializer(
-        many=True, required=False)
-    decommission_description_set = DecommissionDescriptionSerializer(
-        many=True, required=False)
-    lithologydescription_set = LithologyDescriptionSerializer(
-        many=True, required=False)
-
-    def get_foreign_key_sets(self):
-        return {
-            'casing_set': Casing,
-            'screen_set': Screen,
-            'linerperforation_set': LinerPerforation,
-            'decommission_description_set': DecommissionDescription,
-            'lithologydescription_set': LithologyDescription,
-        }
-
-    class Meta:
-        model = ActivitySubmission
-        fields = '__all__'
 
 
 class WellSubmissionLegacySerializer(WellSubmissionSerializerBase):
@@ -324,7 +303,7 @@ class WellConstructionSubmissionSerializer(WellSubmissionSerializerBase):
                   'water_quality_characteristics',
                   'water_quality_colour', 'water_quality_odour', 'ems', 'total_depth_drilled',
                   'finished_well_depth', 'final_casing_stick_up', 'bedrock_depth', 'static_water_level',
-                  'well_yield', 'artesian_flow', 'artesian_pressure', 'well_cap_type', 'well_disinfected',
+                  'well_yield', 'artesian_flow', 'artesian_pressure', 'well_cap_type', 'well_disinfected_status',
                   'comments', 'alternative_specs_submitted', 'consultant_company', 'consultant_name',
                   'driller_name', 'person_responsible', 'company_of_person_responsible',
                   'coordinate_acquisition_code',
@@ -454,7 +433,7 @@ class WellAlterationSubmissionSerializer(WellSubmissionSerializerBase):
             'artesian_flow',
             'artesian_pressure',
             'well_cap_type',
-            'well_disinfected',
+            'well_disinfected_status',
             'comments',
             'alternative_specs_submitted',
             'create_user', 'create_date',
@@ -610,7 +589,7 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
             'artesian_flow',
             'artesian_pressure',
             'well_cap_type',
-            'well_disinfected',
+            'well_disinfected_status',
             'comments',
             'internal_comments',
             'alternative_specs_submitted',
@@ -726,6 +705,14 @@ class WellClassCodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = WellClassCode
         fields = ('well_class_code', 'description', 'wellsubclasscode_set')
+
+
+class WellDisinfectedCodeSerializer(serializers.ModelSerializer):
+    """Serializes Well Disinfected codes/descriptions"""
+
+    class Meta:
+        model = WellDisinfectedCode
+        fields = ('well_disinfected_code', 'description')
 
 
 class FilterPackMaterialCodeSerializer(serializers.ModelSerializer):
@@ -1044,7 +1031,6 @@ class ConstructionSubmissionDisplaySerializer(serializers.ModelSerializer):
         source='filter_pack_material.description')
     filter_pack_material_size = serializers.ReadOnlyField(
         source='filter_pack_material_size.description')
-    well_disinfected = serializers.SerializerMethodField()
 
     class Meta:
         model = ActivitySubmission
@@ -1072,7 +1058,7 @@ class ConstructionSubmissionDisplaySerializer(serializers.ModelSerializer):
             'water_quality_characteristics',
             'water_quality_colour', 'water_quality_odour', 'ems', 'total_depth_drilled',
             'finished_well_depth', 'final_casing_stick_up', 'bedrock_depth', 'static_water_level',
-            'well_yield', 'artesian_flow', 'artesian_pressure', 'well_cap_type', 'well_disinfected',
+            'well_yield', 'artesian_flow', 'artesian_pressure', 'well_cap_type', 'well_disinfected_status',
             'comments', 'alternative_specs_submitted', 'consultant_company', 'consultant_name',
             'driller_name', 'person_responsible', 'company_of_person_responsible',
             'coordinate_acquisition_code',
@@ -1084,9 +1070,6 @@ class ConstructionSubmissionDisplaySerializer(serializers.ModelSerializer):
 
     def get_alternative_specs_submitted(self, obj):
         return "Yes" if obj.alternative_specs_submitted else "No"
-
-    def get_well_disinfected(self, obj):
-        return "Yes" if obj.well_disinfected else "No"
 
 
 class AlterationSubmissionDisplaySerializer(serializers.ModelSerializer):
@@ -1135,7 +1118,6 @@ class AlterationSubmissionDisplaySerializer(serializers.ModelSerializer):
         source='filter_pack_material.description')
     filter_pack_material_size = serializers.ReadOnlyField(
         source='filter_pack_material_size.description')
-    well_disinfected = serializers.SerializerMethodField()
 
     class Meta:
         model = ActivitySubmission
@@ -1234,7 +1216,7 @@ class AlterationSubmissionDisplaySerializer(serializers.ModelSerializer):
             'artesian_flow',
             'artesian_pressure',
             'well_cap_type',
-            'well_disinfected',
+            'well_disinfected_status',
             'comments',
             'alternative_specs_submitted',
             'create_user', 'create_date',
@@ -1245,9 +1227,6 @@ class AlterationSubmissionDisplaySerializer(serializers.ModelSerializer):
 
     def get_alternative_specs_submitted(self, obj):
         return "Yes" if obj.alternative_specs_submitted else "No"
-
-    def get_well_disinfected(self, obj):
-        return "Yes" if obj.well_disinfected else "No"
 
 
 class DecommissionSubmissionDisplaySerializer(serializers.ModelSerializer):
@@ -1381,7 +1360,6 @@ class StaffEditDisplaySerializer(serializers.ModelSerializer):
         source='filter_pack_material.description')
     filter_pack_material_size = serializers.ReadOnlyField(
         source='filter_pack_material_size.description')
-    well_disinfected = serializers.SerializerMethodField()
     decommission_method = serializers.ReadOnlyField(
         source='decommission_method.description')
     decommission_sealant_material = serializers.ReadOnlyField(
@@ -1394,9 +1372,6 @@ class StaffEditDisplaySerializer(serializers.ModelSerializer):
 
     def get_alternative_specs_submitted(self, obj):
         return "Yes" if obj.alternative_specs_submitted else "No"
-
-    def get_well_disinfected(self, obj):
-        return "Yes" if obj.well_disinfected else "No"
 
     class Meta:
         model = ActivitySubmission
@@ -1505,7 +1480,7 @@ class StaffEditDisplaySerializer(serializers.ModelSerializer):
             'artesian_flow',
             'artesian_pressure',
             'well_cap_type',
-            'well_disinfected',
+            'well_disinfected_status',
             'comments',
             'internal_comments',
             'alternative_specs_submitted',
@@ -1531,9 +1506,6 @@ class StaffEditDisplaySerializer(serializers.ModelSerializer):
 
     def get_alternative_specs_submitted(self, obj):
         return "Yes" if obj.alternative_specs_submitted else "No"
-
-    def get_well_disinfected(self, obj):
-        return "Yes" if obj.well_disinfected else "No"
 
 
 class LegacyWellDisplaySerializer(serializers.ModelSerializer):
@@ -1591,7 +1563,6 @@ class LegacyWellDisplaySerializer(serializers.ModelSerializer):
         source='filter_pack_material.description')
     filter_pack_material_size = serializers.ReadOnlyField(
         source='filter_pack_material_size.description')
-    well_disinfected = serializers.SerializerMethodField()
     decommission_method = serializers.ReadOnlyField(
         source='decommission_method.description')
     decommission_sealant_material = serializers.ReadOnlyField(
@@ -1604,9 +1575,6 @@ class LegacyWellDisplaySerializer(serializers.ModelSerializer):
 
     def get_alternative_specs_submitted(self, obj):
         return "Yes" if obj.alternative_specs_submitted else "No"
-
-    def get_well_disinfected(self, obj):
-        return "Yes" if obj.well_disinfected else "No"
 
     class Meta:
         model = ActivitySubmission
@@ -1715,7 +1683,7 @@ class LegacyWellDisplaySerializer(serializers.ModelSerializer):
             'artesian_flow',
             'artesian_pressure',
             'well_cap_type',
-            'well_disinfected',
+            'well_disinfected_status',
             'comments',
             'internal_comments',
             'alternative_specs_submitted',
@@ -1741,9 +1709,6 @@ class LegacyWellDisplaySerializer(serializers.ModelSerializer):
 
     def get_alternative_specs_submitted(self, obj):
         return "Yes" if obj.alternative_specs_submitted else "No"
-
-    def get_well_disinfected(self, obj):
-        return "Yes" if obj.well_disinfected else "No"
 
 
 class LicencedStatusCodeSerializer(serializers.ModelSerializer):

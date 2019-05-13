@@ -180,6 +180,24 @@ class FilterPackMaterialSizeCode(CodeTableModel):
         return self.description
 
 
+class WellDisinfectedCode(CodeTableModel):
+    """
+     The status on whether the well has been disinfected or not.
+    """
+    well_disinfected_code = models.CharField(primary_key=True, max_length=100, editable=False)
+    description = models.CharField(max_length=100)
+
+    class Meta:
+        db_table = 'well_disinfected_code'
+        ordering = ['display_order', 'description']
+
+    db_table_comment = ('Codes for the well disinfected status. If the disinfected status on a legacy well'
+                        'is unkown, then the null status is mapped to the Unkown value.')
+
+    def __str__(self):
+        return self.description
+
+
 class FilterPackMaterialCode(CodeTableModel):
     """
      The material used to pack a well filter, e.g. Very coarse sand, Very fine gravel, Fine gravel.
@@ -893,6 +911,9 @@ class Well(AuditModelStructure):
         max_length=40, blank=True, null=True, verbose_name='Well Cap')
     well_disinfected = models.BooleanField(
         default=False, verbose_name='Well Disinfected', choices=((False, 'No'), (True, 'Yes')))
+    well_disinfected_status = models.ForeignKey(WellDisinfectedCode, db_column='well_disinfected_code',
+                                                on_delete=models.CASCADE, blank=True, null=True,
+                                                verbose_name='Well Disinfected Code')
 
     comments = models.CharField(
         max_length=3000, blank=True, null=True,
@@ -1309,7 +1330,7 @@ class ActivitySubmission(AuditModelStructure):
         max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Surface Seal Depth')
     surface_seal_thickness = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True,
                                                  verbose_name='Surface Seal Thickness',
-                                                 validators=[MinValueValidator(Decimal('1.00'))])
+                                                 validators=[MinValueValidator(Decimal('0.00'))])
     surface_seal_method = models.ForeignKey(SurfaceSealMethodCode, db_column='surface_seal_method_code',
                                             on_delete=models.CASCADE, blank=True, null=True,
                                             verbose_name='Surface Seal Installation Method')
@@ -1428,6 +1449,9 @@ class ActivitySubmission(AuditModelStructure):
         max_length=40, blank=True, null=True, verbose_name='Well Cap Type')
     well_disinfected = models.BooleanField(
         default=False, verbose_name='Well Disinfected?', choices=((False, 'No'), (True, 'Yes')))
+    well_disinfected_status = models.ForeignKey(WellDisinfectedCode, db_column='well_disinfected_code',
+                                                on_delete=models.CASCADE, blank=True, null=True,
+                                                verbose_name='Well Disinfected Code')
 
     comments = models.CharField(max_length=3000, blank=True, null=True)
     internal_comments = models.CharField(
@@ -1573,6 +1597,11 @@ class ActivitySubmission(AuditModelStructure):
         return super().save(*args, **kwargs)
 
 
+@reversion.register(fields=['lithology_from', 'lithology_to', 'lithology_raw_data', 'lithology_description',
+                            'lithology_colour', 'lithology_hardness', 'lithology_material', 'lithology_observation',
+                            'water_bearing_estimated_flow', 'water_bearing_estimated_flow_units',  'lithology_moisture',
+                            'bedrock_material', 'bedrock_material_descriptor', 'lithology_structure',
+                            'surficial_material', 'secondary_surficial_material', 'lithology_sequence_number'])
 class LithologyDescription(AuditModel):
     """
     Lithology information details
@@ -1681,6 +1710,7 @@ class LithologyDescription(AuditModel):
             return 'well {} {} {}'.format(self.well, self.lithology_from, self.lithology_to)
 
 
+@reversion.register(fields=['start', 'end'])
 class LinerPerforation(AuditModel):
     """
     Perforation in a well liner
@@ -1719,6 +1749,8 @@ class LinerPerforation(AuditModel):
             return 'well {} {} {}'.format(self.well, self.start, self.end)
 
 
+@reversion.register(fields=['start', 'end', 'diameter', 'casing_code',
+                            'casing_material', 'wall_thickness', 'drive_shoe'])
 class Casing(AuditModel):
     """
     Casing information
@@ -1787,6 +1819,7 @@ class Casing(AuditModel):
         }
 
 
+@reversion.register(fields=['start', 'end', 'internal_diameter', 'assembly_type', 'slot_size'])
 class Screen(AuditModel):
     """
     Screen in a well
@@ -1910,6 +1943,7 @@ class DecommissionMaterialCode(BasicCodeTableModel):
         return '{} - {}'.format(self.code, self.description)
 
 
+@reversion.register(fields=['start', 'end', 'material', 'observations'])
 class DecommissionDescription(AuditModel):
     """Provides a description of the ground conditions (between specified start and end depth) for
         decommissioning"""

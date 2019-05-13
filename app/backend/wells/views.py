@@ -31,8 +31,10 @@ import json
 
 from functools import reduce
 import operator
+import re
 
 from django.db.models import Q
+from wells.change_history import get_well_history
 
 from rest_framework import filters, status
 from rest_framework.decorators import api_view
@@ -48,7 +50,6 @@ from drf_yasg.utils import swagger_auto_schema
 from minio import Minio
 
 from gwells import settings
-from gwells.change_history import generate_history_diff
 from gwells.documents import MinioClient
 from gwells.models import Survey
 from gwells.roles import WELLS_VIEWER_ROLE, WELLS_EDIT_ROLE
@@ -470,23 +471,12 @@ class WellHistory(APIView):
         Retrieves version history for the specified Well record and creates a list of diffs
         for each revision.
         """
-
         try:
             well = Well.objects.get(well_tag_number=well_id)
         except Well.DoesNotExist:
             raise Http404("Well not found")
 
-        # query records in history for this model.
-        well_history = [obj for obj in well.history.all().order_by(
-            '-revision__date_created')]
-
-        well_history_diff = generate_history_diff(
-            well_history, 'well ' + well_id)
-
-        history_diff = sorted(
-            well_history_diff, key=lambda x: x['date'], reverse=True)
-
-        return Response(history_diff)
+        return Response(get_well_history(well))
 
 
 WELL_PROPERTIES = openapi.Schema(
@@ -648,34 +638,38 @@ def lithology_geojson(request):
 
 @api_view(['GET'])
 def well_licensing(request):
-    url = get_env_variable('E_LICENSING_URL') + '{}'.format(request.GET.get('well_tag_number'))
+    tag = request.GET.get('well_tag_number')
+    url = get_env_variable('E_LICENSING_URL') + '{}'.format(tag)
+    api_success = False
 
     headers = {
         'content_type': 'application/json',
         'AuthUsername': get_env_variable('E_LICENSING_AUTH_USERNAME'),
         'AuthPass': get_env_variable('E_LICENSING_AUTH_PASSWORD')
     }
-    time.sleep(0.01)  # hack to fix reset connection by peer error - server provider timeout issue
-    response = requests.get(url, headers=headers)
-    if response.ok:
-        try:
-            licence = response.json()[-1]  # Use the latest licensing value
-            licence_status = 'Licensed' if licence.get('authorization_status') == 'ACTIVE' else 'Unlicensed'
-            data = {
-                'status': licence_status,
-                'number': licence.get('authorization_number'),
-                'date': licence.get('authorization_status_date')
-            }
-        except:
-            data = {
-                'status': 'Unlicensed',
-                'number': 'N/A',
-                'date': ''
-            }
-    else:
+
+    try:
+        response = requests.get(url, headers=headers)
+        if response.ok:
+            try:
+                licence = response.json()[-1]  # Use the latest licensing value, fails purposely if empty array
+                licence_status = 'Licensed' if licence.get('authorization_status') == 'ACTIVE' else 'Unlicensed'
+                data = {
+                    'status': licence_status,
+                    'number': licence.get('authorization_number'),
+                    'date': licence.get('authorization_status_date')
+                }
+                api_success = True
+            except:
+                pass
+    except:
+        pass
+
+    if not api_success:
+        well = Well.objects.get(well_tag_number=tag)
         data = {
-            'status': 'Service Unavailable',
-            'number': 'N/A',
+            'status': well.licenced_status.description,
+            'number': '',
             'date': ''
         }
 

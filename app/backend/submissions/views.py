@@ -46,6 +46,7 @@ from wells.models import (
     DecommissionMethodCode,
     DevelopmentMethodCode,
     DrillingMethodCode,
+    WellDisinfectedCode,
     FilterPackMaterialCode,
     FilterPackMaterialSizeCode,
     GroundElevationMethodCode,
@@ -87,6 +88,7 @@ from submissions.serializers import (
     DecommissionSubmissionDisplaySerializer,
     DevelopmentMethodCodeSerializer,
     DrillingMethodCodeSerializer,
+    WellDisinfectedCodeSerializer,
     FilterPackMaterialCodeSerializer,
     FilterPackMaterialSizeCodeSerializer,
     GroundElevationMethodCodeSerializer,
@@ -226,12 +228,12 @@ class SubmissionBase(AuditCreateMixin, ListCreateAPIView):
             return self.create(request, *args, **kwargs)
         except rest_framework.exceptions.APIException as error:
             try:
-                logger.warn(('Problem encountered handling POST; '
-                             'user:{request.user.profile.username}; '
-                             'user.is_authenticated:{request.user.is_authenticated}; '
-                             'path:{request.path}; method:{request.method}; status_code:{error.status_code}; '
-                             'request: {request.data}; '
-                             'response: {error.detail}').format(
+                logger.warning(('Problem encountered handling POST; '
+                                'user:{request.user.profile.username}; '
+                                'user.is_authenticated:{request.user.is_authenticated}; '
+                                'path:{request.path}; method:{request.method}; status_code:{error.status_code}; '
+                                'request: {request.data}; '
+                                'response: {error.detail}').format(
                     request=request,
                     error=error))
             except:
@@ -325,6 +327,8 @@ class SubmissionsOptions(APIView):
             instance=DecommissionMaterialCode.objects.all(), many=True)
         decommission_methods = DecommissionMethodCodeSerializer(
             instance=DecommissionMethodCode.objects.all(), many=True)
+        well_disinfected_codes = WellDisinfectedCodeSerializer(
+            instance=WellDisinfectedCode.objects.all(), many=True)
         filter_pack_material = FilterPackMaterialCodeSerializer(
             instance=FilterPackMaterialCode.objects.all(), many=True)
         filter_pack_material_size = FilterPackMaterialSizeCodeSerializer(
@@ -398,6 +402,7 @@ class SubmissionsOptions(APIView):
         options["casing_materials"] = casing_material.data
         options["decommission_materials"] = decommission_materials.data
         options["decommission_methods"] = decommission_methods.data
+        options["well_disinfected_codes"] = well_disinfected_codes.data
         options["filter_pack_material"] = filter_pack_material.data
         options["filter_pack_material_size"] = filter_pack_material_size.data
         options["land_district_codes"] = land_district_codes.data

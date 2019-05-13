@@ -31,8 +31,9 @@ from wells.models import Well, ActivitySubmission, WellStatusCode, WELL_STATUS_C
     WELL_STATUS_CODE_DECOMMISSION, WELL_STATUS_CODE_ALTERATION, WELL_STATUS_CODE_OTHER, LithologyDescription,\
     Casing, Screen, LinerPerforation, DecommissionDescription, LithologyDescription
 
-from wells.serializers import WellStackerSerializer, CasingSerializer, ScreenSerializer,\
-    LinerPerforationSerializer, DecommissionDescriptionSerializer, LithologyDescriptionSerializer
+from wells.serializers import WellStackerSerializer, CasingStackerSerializer, ScreenStackerSerializer,\
+    LinerPerforationStackerSerializer, DecommissionDescriptionStackerSerializer,\
+    LithologyDescriptionStackerSerializer
 
 import reversion
 
@@ -80,11 +81,11 @@ FOREIGN_KEY_MODEL_LOOKUP = {
 # Relying on django serialization/reflection is very slow, so we explicitly
 # define this relationship.
 FOREIGN_KEY_SERIALIZER_LOOKUP = {
-    'casing_set': CasingSerializer,
-    'screen_set': ScreenSerializer,
-    'linerperforation_set': LinerPerforationSerializer,
-    'decommission_description_set': DecommissionDescriptionSerializer,
-    'lithologydescription_set': LithologyDescriptionSerializer
+    'casing_set': CasingStackerSerializer,
+    'screen_set': ScreenStackerSerializer,
+    'linerperforation_set': LinerPerforationStackerSerializer,
+    'decommission_description_set': DecommissionDescriptionStackerSerializer,
+    'lithologydescription_set': LithologyDescriptionStackerSerializer
 }
 
 # Relying on django serialization/reflection is very slow, so we explicitly
@@ -99,6 +100,7 @@ MANY_TO_MANY_LOOKUP = {
 # define this relationship.
 KEY_VALUE_LOOKUP = {
     'well_publication_status': 'well_publication_status_code',
+    'well_disinfected_status': 'well_disinfected_code',
     'owner_province_state': 'province_state_code',
     'well_class': 'well_class_code',
     'well_subclass': 'well_subclass_guid',
