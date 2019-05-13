@@ -465,6 +465,13 @@ class WellDetailSerializer(AuditModelSerializer):
 
     submission_work_dates = serializers.SerializerMethodField()
 
+    legal_pid = serializers.SerializerMethodField()
+
+    def get_legal_pid(self, instance):
+        if instance.legal_pid is None:
+            return instance.legal_pid
+        return "{0:0>9}".format(instance.legal_pid)
+
     def get_submission_work_dates(self, instance):
         records = instance.activitysubmission_set \
             .exclude(well_activity_type='STAFF_EDIT') \
@@ -745,6 +752,13 @@ class WellStackerSerializer(AuditModelSerializer):
 
 class WellListSerializer(serializers.ModelSerializer):
     """Serializes a well record"""
+
+    legal_pid = serializers.SerializerMethodField()
+
+    def get_legal_pid(self, instance):
+        if instance.legal_pid is None:
+            return instance.legal_pid
+        return "{0:0>9}".format(instance.legal_pid)
 
     class Meta:
         model = Well
