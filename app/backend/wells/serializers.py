@@ -459,7 +459,6 @@ class WellDetailSerializer(AuditModelSerializer):
     screen_opening = serializers.ReadOnlyField(source='screen_opening.description')
     screen_bottom = serializers.ReadOnlyField(source='screen_bottom.description')
     well_orientation = serializers.ReadOnlyField(source='get_well_orientation_display')
-    well_disinfected_status = serializers.ReadOnlyField(source='get_well_disinfected_status.description')
     alternative_specs_submitted = serializers.ReadOnlyField(source='get_alternative_specs_submitted_display')
 
     submission_work_dates = serializers.SerializerMethodField()
