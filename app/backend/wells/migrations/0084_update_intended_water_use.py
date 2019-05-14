@@ -18,14 +18,25 @@ def update_intended_water_use_code(apps, schema_editor):
         expiry_date='9999-12-31T23:59:59Z'
     )
 
+    unknown = intended_water_use.objects.get_or_create(
+        pk='UNK',
+        create_user='ETL_USER',
+        create_date='2017-07-01T08:00:00Z',
+        update_user='ETL_USER',
+        update_date='2017-07-01T08:00:00Z',
+        description='Unknown Well Use',
+        display_order=100,
+        effective_date='2018-05-25T07:00:00Z',
+        expiry_date='9999-12-31T23:59:59Z'
+    )
+
     # Set all wells intended water use to Not Applicable where well class is not equal to Water Supply System
     well.objects.exclude(well_class='WATR_SPPLY').update(
         intended_water_use=not_applicable[0])
 
-    unknown = intended_water_use.objects.get(pk='UNK')
     # update all water supply class wells that have null intended water use to use unknown
     well.objects.filter(well_class='WATR_SPPLY').filter(intended_water_use__isnull=True).update(
-        intended_water_use=unknown)
+        intended_water_use=unknown[0])
 
 
 def reverse(apps, schema_editor):
