@@ -33,6 +33,9 @@ import querystring from 'querystring'
 import { mapGetters } from 'vuex'
 
 export default {
+  props: {
+    fieldData: Object
+  },
   data () {
     return {
       exportBaseUrl: `${process.env.AXIOS_BASE_URL}wells/export`,
@@ -46,12 +49,17 @@ export default {
       params: 'searchParams',
       ordering: 'searchOrdering',
       resultFilters: 'searchResultFilters',
-      resultCount: 'searchResultCount'
+      resultCount: 'searchResultCount',
+      resultColumns: 'searchResultColumns'
     }),
+    exportFields() {
+      return this.resultColumns.filter(id => this.fieldData[id]).map(id => this.fieldData[id].param)
+    },
     fullQueryString () {
       const queryParams = {
         ...this.params,
-        ordering: this.ordering
+        ordering: this.ordering,
+        fields: this.exportFields.join(',')
       }
       if (Object.entries(this.resultFilters).length > 0) {
         queryParams.filter_group = JSON.stringify(this.resultFilters)

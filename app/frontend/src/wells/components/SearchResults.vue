@@ -108,7 +108,7 @@
     </div>
     <div class="my-3" v-if="resultCount > 0">
       <div>Showing {{ currentRecordsCountStart }} to {{ currentRecordsCountEnd }} of {{ resultCount }} {{ resultCount === 1 ? 'record' : 'records'}}.</div>
-      <search-result-exports class="my-3" />
+      <search-result-exports class="my-3" :field-data="searchFields" />
     </div>
     <b-pagination
       class="mt-3"
