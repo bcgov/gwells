@@ -150,14 +150,14 @@ class WellListExcelRenderer(BaseRenderer):
     def write_headers(self, headers):
         self.headers = headers
 
-        for index, header in enumerate(self.headers, 1):
+        header_cells = []
+        for index, header_key in enumerate(self.headers, 1):
+            label = COLUMN_LABELS.get(header_key)
+
             column = openpyxl.utils.get_column_letter(index)
-            width = (len(header) + 2) * 1.2
+            width = (len(label) + 2) * 1.2
             self.sheet.column_dimensions[column].width = width
 
-        header_cells = []
-        for header_key in self.headers:
-            label = COLUMN_LABELS.get(header_key)
             cell = openpyxl.cell.WriteOnlyCell(self.sheet, value=label)
             cell.font = openpyxl.styles.Font(bold=True)
             header_cells.append(cell)
