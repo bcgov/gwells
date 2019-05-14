@@ -183,7 +183,17 @@ class WellListExcelRenderer(BaseRenderer):
         if renderer_context is None:
             renderer_context = {}
 
-        self.write_headers(renderer_context.get('header', []))
+        # Don't allow any columns we haven't defined in COLUMN_LABELS
+        initial_headers = renderer_context.get('header', [])
+        if initial_headers:
+            headers = [
+                header for header in initial_headers
+                if header in COLUMN_LABELS.keys()
+            ]
+        else:
+            headers = COLUMN_LABELS.keys()
+
+        self.write_headers(headers)
 
         for row in data:
             self.write_row(row)
@@ -195,4 +205,23 @@ class WellListExcelRenderer(BaseRenderer):
 
 
 class WellListCSVRenderer(CSVStreamingRenderer):
+    header = COLUMN_LABELS.keys()
     labels = COLUMN_LABELS
+
+    def render(self, data, media_type=None, renderer_context=None):
+        """Sanitize any header values we get from the renderer context
+        """
+        if renderer_context is None:
+            renderer_context = {}
+
+        # Don't allow any columns we haven't defined in COLUMN_LABELS
+        initial_headers = renderer_context.get('header', [])
+        if initial_headers:
+            renderer_context['header'] = [
+                header for header in initial_headers
+                if header in COLUMN_LABELS.keys()
+            ]
+
+        return super().render(data,
+                              media_type=media_type,
+                              renderer_context=renderer_context)

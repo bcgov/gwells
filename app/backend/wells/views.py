@@ -492,14 +492,19 @@ class WellExportListAPIView(ListAPIView):
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
-        context['fields'] = self.get_fields()
+
+        fields = self.get_fields()
+        if fields:
+            context['fields'] = fields
 
         return context
 
     def get_renderer_context(self):
         context = super().get_renderer_context()
-        serializer = self.get_serializer()
-        context['header'] = serializer.fields.keys()
+
+        fields = self.get_fields()
+        if fields:
+            context['header'] = fields
 
         return context
 
