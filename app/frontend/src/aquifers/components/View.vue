@@ -167,7 +167,7 @@
           </ul>
           <b-row class="mt-4 pt-4 border-top" v-if="licence_details.lic_qty.length > 0">
             <b-col xl=6 cols=12>
-              <h5 class="pie-chart-title">Licenced use by purpose</h5>
+              <h5 class="pie-chart-title">Licenced use volume by purpose</h5>
               <PieChart :chartData="licence_details.usage" class="mt-3"></PieChart>
             </b-col>
             <b-col xl=6 cols=12>
@@ -175,7 +175,6 @@
               <PieChart :chartData="licence_details.lic_qty" class="mt-3"></PieChart>
             </b-col>
           </b-row>
-          <div v-else>No information available.</div>
           <b-table striped hover :items="licence_details.wells_by_licence"></b-table>
           <p><i v-if="licence_details.licences_updated">Licence info last updated {{ licence_details.licences_updated.update_date__max|formatDate }}</i></p>
 
@@ -190,7 +189,7 @@
                 <dd><a href="#" @click="handleArtesianSearch()">{{ licence_details.num_artesian_wells }} artesian wells in aquifer</a></dd>
               </div>
               <div class="observational-wells" v-if="index === 2">
-                <dt>Observational wells</dt>
+                <dt>Observation wells</dt>
                 <dd v-if="obs_wells.length > 0">
                   <ul class="p-0 m-0">
                     <li v-for="owell in obs_wells" :key="owell.observation_well_number">
@@ -451,7 +450,7 @@ export default {
           recordId: this.id
         }).then(() => {
           this.fetch()
-          this.mapKey ++;
+          this.mapKey++
         })
       } else {
         this.fetch()

@@ -100,6 +100,13 @@ class TestAquifersEditRole(APITestCase):
             self.assertEqual(response.json().get(
                 'message'), 'File is not a zip file')
 
+    def test_export_csv(self):
+        url = reverse('aquifers-list-csv')
+        response = self.client.get(
+            url
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
 
 class TestAquifersSpatial(APITestCase):
 

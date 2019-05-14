@@ -317,16 +317,16 @@ export default {
           this.loading = false
         })
     },
-    downloadCSV (filter_only) {
+    downloadCSV (filterOnly) {
       let url = ApiService.baseURL + 'aquifers/csv?'
-      if (filter_only) {
+      if (filterOnly) {
         url += querystring.stringify(this.query)
       }
       window.open(url)
     },
-    downloadXLSX (filter_only) {
+    downloadXLSX (filterOnly) {
       let url = ApiService.baseURL + 'aquifers/xlsx?'
-      if (filter_only) {
+      if (filterOnly) {
         url += querystring.stringify(this.query)
       }
       window.open(url)
