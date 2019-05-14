@@ -192,14 +192,14 @@ export default {
   },
   methods: {
     disinfected_codes () { // make the unknown selection disabled for users
-      if (this.codes != null && this.codes.well_disinfected_codes != null) {
-        this.codes.well_disinfected_codes.forEach((code) => {
-          if (code.well_disinfected_code === 'Unknown') {
-            code['disabled'] = true
+      this.codes.well_disinfected_codes.forEach((code, index, object) => {
+        if (code.well_disinfected_code === 'Unknown') {
+          if (!this.isStaffEdit) {
+            object.splice(index, 1)
           }
-        })
-        return this.codes.well_disinfected_codes
-      }
+        }
+      })
+      return this.codes.well_disinfected_codes
     }
   },
   computed: {
