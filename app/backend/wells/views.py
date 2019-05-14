@@ -412,7 +412,7 @@ class WellExportListAPIView(ListAPIView):
     search_fields = ('well_tag_number', 'identification_plate_number',
                      'street_address', 'city', 'owner_full_name')
     renderer_classes = (WellListCSVRenderer, WellListExcelRenderer)
-    MAX_EXPORT_COUNT = 10000
+    MAX_EXPORT_COUNT = 2000
 
     def get_queryset(self):
         """Excludes unpublished wells for users without edit permissions.

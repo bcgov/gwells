@@ -36,7 +36,7 @@ export default {
   data () {
     return {
       exportBaseUrl: `${process.env.AXIOS_BASE_URL}wells/export`,
-      maxExportSize: 10000
+      maxExportSize: 2000
     }
   },
   computed: {
