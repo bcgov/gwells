@@ -90,6 +90,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </b-form>
         </div>
       </div>
+      <div class="card" v-else-if="!$keycloak.authenticated">
+        <div class="card-body">
+          <p>Please log in to continue.</p>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -341,6 +346,7 @@ export default {
         // Error notifications
         this.$noty.error('<div class="errorTitle">' + errTxt + '</div>', { timeout: 2000, killer: true })
         cleanErrors.forEach(e => {
+          console.log(e)
           this.$noty.error('<div aria-label="Close" class="closeBtn">x</div><div class="errorText"><b>Error: </b>' + e + '</div>', { timeout: false })
         })
       }).finally((response) => {
