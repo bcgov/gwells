@@ -1732,9 +1732,6 @@ class LinerPerforation(PerforationBase):
     """
     Perforation in a well liner
     """
-    # activity_submission is deprecated - remove this field after migrating data!
-    activity_submission = models.PositiveIntegerField(db_column='filing_number', blank=True, null=True)
-
     well = models.ForeignKey(
         Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True,
         null=True, related_name='linerperforation_set',
