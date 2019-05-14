@@ -191,7 +191,7 @@ export default {
     return {}
   },
   methods: {
-    disinfected_codes () {
+    disinfected_codes () { // make the unknown selection disabled for users
       this.codes.well_disinfected_codes.forEach((code, index, object) => {
         if (code.well_disinfected_code === 'Unknown') {
           if (!this.isStaffEdit) {
