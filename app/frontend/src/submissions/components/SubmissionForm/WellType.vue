@@ -292,11 +292,11 @@ export default {
     waterusecodes () {
       if (this.codes && this.codes.intended_water_uses && this.wellClass) {
         if (this.wellClass !== 'WATR_SPPLY') {
-          return [{intended_water_use_code: 'N/A', description: 'Not Applicable', disabled: true}]
+          return [{intended_water_use_code: 'N/A', description: 'Not applicable', disabled: true}]
         } else {
-          this.codes.intended_water_uses.forEach((code) => {
+          this.codes.intended_water_uses.forEach((code, index, object) => {
             if (code.intended_water_use_code === 'N/A') {
-              code['disabled'] = true
+              object.splice(index, 1)
             }
           })
           return this.codes.intended_water_uses

@@ -449,7 +449,6 @@ class WellDetailSerializer(AuditModelSerializer):
     well_publication_status = serializers.ReadOnlyField(source='well_publication_status.description')
     licenced_status = serializers.ReadOnlyField(source='licenced_status.description')
     coordinate_acquisition_code = serializers.ReadOnlyField(source='coordinate_acquisition_code.description')
-    intended_water_use = serializers.ReadOnlyField(source='intended_water_use.description')
     ground_elevation_method = serializers.ReadOnlyField(source='ground_elevation_method.description')
     surface_seal_material = serializers.ReadOnlyField(source='surface_seal_material.description')
     surface_seal_method = serializers.ReadOnlyField(source='surface_seal_method.description')

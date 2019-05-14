@@ -12,7 +12,7 @@ def update_intended_water_use_code(apps, schema_editor):
         create_date='2017-07-01T08:00:00Z',
         update_user='ETL_USER',
         update_date='2017-07-01T08:00:00Z',
-        description='Not applicable',
+        description='Not Applicable',
         display_order=110,
         effective_date='2018-05-25T07:00:00Z',
         expiry_date='9999-12-31T23:59:59Z'
@@ -35,7 +35,7 @@ def reverse(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('wells', '0082_merge_20190510_1926'),
+        ('wells', '0083_merge_20190513_1939'),
     ]
 
     operations = [
