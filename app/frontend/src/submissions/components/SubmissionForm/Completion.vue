@@ -192,9 +192,11 @@ export default {
   },
   methods: {
     disinfected_codes () {
-      this.codes.well_disinfected_codes.forEach((code) => {
+      this.codes.well_disinfected_codes.forEach((code, index, object) => {
         if (code.well_disinfected_code === 'Unknown') {
-          code['disabled'] = true
+          if (!this.isStaffEdit) {
+            object.splice(index, 1)
+          }
         }
       })
       return this.codes.well_disinfected_codes
