@@ -460,7 +460,7 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
         # Check ground elevation fields for mutual requirement
         if 'intended_water_use' in attrs or 'well_class' in attrs:
             errors = {}
-            if attrs['well_class'].pk is 'WATR_SPPLY' and attrs['intended_water_use'] is None:
+            if attrs['well_class'].pk == 'WATR_SPPLY' and attrs['intended_water_use'] is None:
                 errors['intended_water_use'] = 'Intended Water Use is required with a "Water Supply" Class of Well.'
 
             if len(errors) > 0:
