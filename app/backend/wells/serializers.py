@@ -908,7 +908,7 @@ class WellExportSerializer(WellListSerializer):
                                                                slug_field='description')
     bcgs_id = serializers.SlugRelatedField(read_only=True, slug_field='bcgs_number')
     decommission_method = serializers.SlugRelatedField(read_only=True, slug_field='description')
-    aquifer = serializers.SlugRelatedField(read_only=True, slug_field='description')
+    aquifer = serializers.PrimaryKeyRelatedField(read_only=True)
     aquifer_lithology = serializers.SlugRelatedField(read_only=True, slug_field='description')
     yield_estimation_method = serializers.SlugRelatedField(read_only=True, slug_field='description')
 
