@@ -414,6 +414,42 @@ class WellExportListAPIView(ListAPIView):
     renderer_classes = (WellListCSVRenderer, WellListExcelRenderer)
     MAX_EXPORT_COUNT = 2000
 
+    SELECT_RELATED_OPTIONS = [
+        'well_class',
+        'well_subclass',
+        'well_status',
+        'licenced_status',
+        'land_district',
+        'drilling_company',
+        'ground_elevation_method',
+        'surface_seal_material',
+        'surface_seal_method',
+        'liner_material',
+        'screen_intake_method',
+        'screen_type',
+        'screen_material',
+        'screen_opening',
+        'screen_bottom',
+        'well_yield_unit',
+        'observation_well_status',
+        'coordinate_acquisition_code',
+        'bcgs_id',
+        'decommission_method',
+        'aquifer',
+        'aquifer_lithology',
+        'yield_estimation_method',
+        'well_disinfected_status',
+    ]
+    PREFETCH_RELATED_OPTIONS = [
+        'development_methods',
+        'drilling_methods',
+        'water_quality_characteristics',
+    ]
+
+    def get_fields(self):
+        raw_fields = self.request.query_params.get('fields')
+        return raw_fields.split(',') if raw_fields else None
+
     def get_queryset(self):
         """Excludes unpublished wells for users without edit permissions.
         """
@@ -422,37 +458,19 @@ class WellExportListAPIView(ListAPIView):
         else:
             qs = Well.objects.all().exclude(well_publication_status='Unpublished')
 
-        qs = qs.select_related(
-            'well_class',
-            'well_subclass',
-            'well_status',
-            'licenced_status',
-            'land_district',
-            'drilling_company',
-            'ground_elevation_method',
-            'surface_seal_material',
-            'surface_seal_method',
-            'liner_material',
-            'screen_intake_method',
-            'screen_type',
-            'screen_material',
-            'screen_opening',
-            'screen_bottom',
-            'well_yield_unit',
-            'observation_well_status',
-            'coordinate_acquisition_code',
-            'bcgs_id',
-            'decommission_method',
-            'aquifer',
-            'aquifer_lithology',
-            'yield_estimation_method',
-            'well_disinfected_status'
-        )
-        qs = qs.prefetch_related(
-            'development_methods',
-            'drilling_methods',
-            'water_quality_characteristics'
-        )
+        included_fields = self.get_fields()
+
+        if any(field in self.SELECT_RELATED_OPTIONS for field in included_fields):
+            qs = qs.select_related(*[
+                relation for relation in self.SELECT_RELATED_OPTIONS
+                if relation in included_fields
+            ])
+
+        if any(field in self.PREFETCH_RELATED_OPTIONS for field in included_fields):
+            qs = qs.prefetch_related(*[
+                relation for relation in self.PREFETCH_RELATED_OPTIONS
+                if relation in included_fields
+            ])
 
         return qs
 
@@ -465,8 +483,14 @@ class WellExportListAPIView(ListAPIView):
 
         return serializer_class
 
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['fields'] = self.get_fields()
+
+        return context
+
     def get_renderer_context(self):
-        context = super(WellExportListAPIView, self).get_renderer_context()
+        context = super().get_renderer_context()
         serializer = self.get_serializer()
         context['header'] = serializer.fields.keys()
 

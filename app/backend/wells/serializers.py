@@ -929,6 +929,22 @@ class WellExportSerializer(WellListSerializer):
         if field.many_to_many and not field.auto_created
     }
 
+    def __init__(self, *args, **kwargs):
+        """
+        Limit responses to requested fields
+
+        If we get a 'fields' context kwarg, then limit results to the included
+        fields.
+        """
+        super().__init__(*args, **kwargs)
+
+        context = kwargs.get('context', {})
+        fields = context.get('fields', None)
+        if fields is not None:
+            excluded_fields = set(self.fields) - set(fields)
+            for field_name in excluded_fields:
+                self.fields.pop(field_name)
+
     def to_representation(self, instance):
         """
         Instead of arrays, return comma delimited strings for export.
