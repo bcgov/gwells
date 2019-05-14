@@ -460,17 +460,24 @@ class WellExportListAPIView(ListAPIView):
 
         included_fields = self.get_fields()
 
-        if any(field in self.SELECT_RELATED_OPTIONS for field in included_fields):
-            qs = qs.select_related(*[
+        if included_fields:
+            select_relateds = [
                 relation for relation in self.SELECT_RELATED_OPTIONS
                 if relation in included_fields
-            ])
-
-        if any(field in self.PREFETCH_RELATED_OPTIONS for field in included_fields):
-            qs = qs.prefetch_related(*[
+            ]
+            prefetches = [
                 relation for relation in self.PREFETCH_RELATED_OPTIONS
                 if relation in included_fields
-            ])
+            ]
+
+            if select_relateds:
+                qs = qs.select_related(*select_relateds)
+            if prefetches:
+                qs = qs.prefetch_related(*prefetches)
+        elif included_fields is None:
+            # If no fields are passed, then include everything
+            qs = qs.select_related(*self.SELECT_RELATED_OPTIONS)
+            qs = qs.prefetch_related(*self.PREFETCH_RELATED_OPTIONS)
 
         return qs
 
