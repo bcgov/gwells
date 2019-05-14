@@ -9,7 +9,7 @@ def move_liner_perforations(apps, schema_editor):
     ActivitySubmission = apps.get_model('wells', 'ActivitySubmission')
 
     for perforation in LinerPerforation.objects.filter(activity_submission__isnull=False):
-        # Create a new perforatin object.
+        # Create a new perforation object.
         ActivitySubmissionLinerPerforation.objects.create(
             activity_submission=ActivitySubmission.objects.get(filing_number=perforation.activity_submission),
             create_user=perforation.create_user,
