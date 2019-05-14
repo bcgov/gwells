@@ -52,7 +52,7 @@ export default {
       resultCount: 'searchResultCount',
       resultColumns: 'searchResultColumns'
     }),
-    exportFields() {
+    exportFields () {
       return this.resultColumns.filter(id => this.fieldData[id]).map(id => this.fieldData[id].param)
     },
     fullQueryString () {
