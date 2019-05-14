@@ -31,21 +31,24 @@ Licensed under the Apache License, Version 2.0 (the "License");
             label="Ground Elevation"
             hint="ft (asl)"
             v-model.number="groundElevationInput"
+            type="number"
             :errors="errors['ground_elevation']"
             :loaded="fieldsLoaded['ground_elevation']"></form-input>
         </b-col>
         <b-col cols="12" md="6">
-          <form-input
-            id="groundElevationMethod"
-            label="Method for Determining Ground Elevation"
-            select
-            placeholder="Select method"
-            :options="codes.ground_elevation_methods"
-            value-field="ground_elevation_method_code"
-            text-field="description"
-            v-model="groundElevationMethodInput"
-            :errors="errors['ground_elevation_method']"
-            :loaded="fieldsLoaded['ground_elevation_method']"></form-input>
+          <b-form-group label="Method for Determining Ground Elevation" id="groundElevationMethod">
+            <b-form-select
+              v-model="groundElevationMethodInput"
+              value-field="ground_elevation_method_code"
+              text-field="description"
+              :options="method_codes()"
+              :errors="errors['ground_elevation_method']"
+              :loaded="fieldsLoaded['ground_elevation_method']">
+            </b-form-select>
+            <template slot="first">
+              <option value="" disabled>Select Method</option>
+            </template>
+          </b-form-group>
         </b-col>
       </b-row>
       <b-row>
@@ -115,6 +118,18 @@ export default {
     return {
       options: [
       ]
+    }
+  },
+  methods: {
+    method_codes () { // make the unknown selection disabled for users
+      if (this.codes != null && this.codes.ground_elevation_methods != null) {
+        this.codes.ground_elevation_methods.forEach((code) => {
+          if (code.ground_elevation_method_code === 'UNKNOWN') {
+            code['disabled'] = true
+          }
+        })
+        return this.codes.ground_elevation_methods
+      }
     }
   },
   computed: {

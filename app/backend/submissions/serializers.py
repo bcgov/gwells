@@ -457,14 +457,22 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
         many=True, required=False)
 
     def validate(self, attrs):
+        errors = {}
         # Check ground elevation fields for mutual requirement
         if 'intended_water_use' in attrs or 'well_class' in attrs:
-            errors = {}
             if attrs['well_class'].pk == 'WATR_SPPLY' and attrs['intended_water_use'] is None:
                 errors['intended_water_use'] = 'Intended Water Use is required with a "Water Supply" Class of Well.'
 
-            if len(errors) > 0:
-                raise serializers.ValidationError(errors)
+        if 'ground_elevation' in attrs or 'ground_elevation_method' in attrs:
+            errors = {}
+            if attrs['ground_elevation'] is None and attrs['ground_elevation_method'] is not None:
+                if attrs['ground_elevation_method'].description != 'Unknown':
+                    errors['ground_elevation'] = 'Both ground elevation and method are required.'
+            if attrs['ground_elevation'] is not None and attrs['ground_elevation_method'] is None:
+                errors['ground_elevation_method'] = 'Both ground elevation and method are required.'
+
+        if len(errors) > 0:
+            raise serializers.ValidationError(errors)
 
         return attrs
 
