@@ -388,9 +388,9 @@ class WellListFilter(AnyOrAllFilterSet):
 
     def filter_combined_legal(self, queryset, name, value):
         lookups = (
-            Q(legal_lot=value) |
-            Q(legal_plan=value) |
-            Q(legal_district_lot=value)
+            Q(legal_lot__iexact=value) |
+            Q(legal_plan__iexact=value) |
+            Q(legal_district_lot__iexact=value)
         )
         # Check if we have a positive integer before querying the
         # legal_pid field.
