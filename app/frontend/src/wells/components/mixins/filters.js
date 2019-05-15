@@ -263,6 +263,8 @@ const SEARCH_FIELDS = {
     label: 'Liner thickness',
     type: 'range'
   },
+  linerFrom: { param: 'liner_from', label: 'Liner from', type: 'range' },
+  linerTo: { param: 'liner_to', label: 'Liner to', type: 'range' },
   linerRange: { param: 'liner_range', label: 'Liner from/to', type: 'range' },
   screenIntakeMethod: {
     param: 'screen_intake_method',
@@ -308,6 +310,16 @@ const SEARCH_FIELDS = {
     param: 'screen_information',
     label: 'Screen information',
     type: 'text'
+  },
+  filterPackFrom: {
+    param: 'filter_pack_from',
+    label: 'Filter pack from',
+    type: 'range'
+  },
+  filterPackTo: {
+    param: 'filter_pack_to',
+    label: 'Filter pack to',
+    type: 'range'
   },
   filterPackRange: {
     param: 'filter_pack_range',
@@ -611,7 +623,7 @@ const SEARCH_FIELDS = {
     type: 'text'
   },
   legalDistrictLot: {
-    param: 'legal_district_log',
+    param: 'legal_district_lot',
     label: 'District lot',
     type: 'text'
   },

@@ -106,11 +106,10 @@
         </tbody>
       </table>
     </div>
-    <b-row>
-      <b-col>
-        <div class="my-3" v-if="resultCount > 0">Showing {{ currentRecordsCountStart }} to {{ currentRecordsCountEnd }} of {{ resultCount }} {{ resultCount === 1 ? 'record' : 'records'}}.</div>
-      </b-col>
-    </b-row>
+    <div class="my-3" v-if="resultCount > 0">
+      <div>Showing {{ currentRecordsCountStart }} to {{ currentRecordsCountEnd }} of {{ resultCount }} {{ resultCount === 1 ? 'record' : 'records'}}.</div>
+      <search-result-exports class="my-3" :field-data="searchFields" />
+    </div>
     <b-pagination
       class="mt-3"
       size="md"
@@ -132,6 +131,7 @@ import {
   SET_SEARCH_RESULT_FILTERS
 } from '@/wells/store/mutations.types.js'
 import { FILTER_TRIGGER } from '@/wells/store/triggers.types.js'
+import SearchResultExports from '@/wells/components/SearchResultExports.vue'
 import SearchResultFilter from '@/wells/components/SearchResultFilter.vue'
 import SearchColumnSelect from '@/wells/components/SearchColumnSelect.vue'
 import filterMixin from '@/wells/components/mixins/filters.js'
@@ -140,7 +140,8 @@ export default {
   mixins: [filterMixin],
   components: {
     'search-column-select': SearchColumnSelect,
-    'search-result-filter': SearchResultFilter
+    'search-result-filter': SearchResultFilter,
+    'search-result-exports': SearchResultExports
   },
   data () {
     return {

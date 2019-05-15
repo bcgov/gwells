@@ -23,17 +23,18 @@ from gwells.serializers import AuditModelSerializer
 from registries.serializers import PersonNameSerializer, OrganizationNameListSerializer
 from wells.models import (
     ActivitySubmission,
+    ActivitySubmissionLinerPerforation,
+    AquiferLithologyCode,
     Casing,
     CasingMaterialCode,
     CasingCode,
     DecommissionDescription,
+    DrillingMethodCode,
     LinerPerforation,
     LithologyDescription,
     Screen,
     Well,
-    WellActivityCode,
-    AquiferLithologyCode,
-    DrillingMethodCode
+    WellActivityCode
 )
 
 
@@ -281,6 +282,8 @@ class LinerPerforationSerializer(serializers.ModelSerializer):
 
 
 class LinerPerforationStackerSerializer(serializers.ModelSerializer):
+    """ This serializer is used for data->perforation(on well) and perforation(on well)->data.
+    """
     class Meta:
         model = LinerPerforation
         fields = (
@@ -299,9 +302,24 @@ class LinerPerforationStackerSerializer(serializers.ModelSerializer):
         }
 
 
+class ActivitySubmissionLinerPerforationSerializer(serializers.ModelSerializer):
+    """ This serializer is used for data->perforation(on submission) and perforation(on submission)->data.
+    """
+    class Meta:
+        model = ActivitySubmissionLinerPerforation
+        fields = (
+            # SUPER IMPORTANT: Don't include ID (liner_perforation_guid, well, or submission) as part of this
+            # serializer, as it will break the stacking code. If you include the guid, then it will remain
+            # stuck on a particular well/submission (unless I gues you pop it during serializing/
+            # deserializing) when creating legacy submissions or re-creating well records etc.
+            'start',
+            'end',
+        )
+
+
 class LegacyLinerPerforationSerializer(serializers.ModelSerializer):
     class Meta:
-        model = LinerPerforation
+        model = ActivitySubmissionLinerPerforation
         fields = (
             # SUPER IMPORTANT: Don't include ID (liner_perforation_guid, well, or submission) as part of this
             # serializer, as it will break the stacking code. If you include the guid, then it will remain
@@ -754,7 +772,6 @@ class WellListSerializer(serializers.ModelSerializer):
             "well_class",
             "well_subclass",
             "well_status",
-            "well_publication_status",
             "licenced_status",
             "street_address",
             "city",
@@ -881,6 +898,92 @@ class WellListAdminSerializer(WellListSerializer):
             'owner_postal_code',
             'internal_comments',
         )
+
+
+class WellExportSerializer(WellListSerializer):
+    """Serializes a well for export (using display names for codes, etc)"""
+    well_class = serializers.SlugRelatedField(read_only=True, slug_field='description')
+    well_subclass = serializers.SlugRelatedField(read_only=True, slug_field='description')
+    well_status = serializers.SlugRelatedField(read_only=True, slug_field='description')
+    licenced_status = serializers.SlugRelatedField(read_only=True, slug_field='description')
+    land_district = serializers.SlugRelatedField(read_only=True, slug_field='name')
+    drilling_company = serializers.SlugRelatedField(read_only=True, slug_field='name')
+    ground_elevation_method = serializers.SlugRelatedField(read_only=True,
+                                                           slug_field='description')
+    surface_seal_material = serializers.SlugRelatedField(read_only=True, slug_field='description')
+    surface_seal_method = serializers.SlugRelatedField(read_only=True, slug_field='description')
+    liner_material = serializers.SlugRelatedField(read_only=True, slug_field='description')
+    screen_intake_method = serializers.SlugRelatedField(read_only=True, slug_field='description')
+    screen_type = serializers.SlugRelatedField(read_only=True, slug_field='description')
+    screen_material = serializers.SlugRelatedField(read_only=True, slug_field='description')
+    screen_opening = serializers.SlugRelatedField(read_only=True, slug_field='description')
+    screen_bottom = serializers.SlugRelatedField(read_only=True, slug_field='description')
+    well_yield_unit = serializers.SlugRelatedField(read_only=True, slug_field='description')
+    observation_well_status = serializers.SlugRelatedField(read_only=True, slug_field='description')
+    coordinate_acquisition_code = serializers.SlugRelatedField(read_only=True,
+                                                               slug_field='description')
+    bcgs_id = serializers.SlugRelatedField(read_only=True, slug_field='bcgs_number')
+    decommission_method = serializers.SlugRelatedField(read_only=True, slug_field='description')
+    aquifer = serializers.PrimaryKeyRelatedField(read_only=True)
+    aquifer_lithology = serializers.SlugRelatedField(read_only=True, slug_field='description')
+    yield_estimation_method = serializers.SlugRelatedField(read_only=True, slug_field='description')
+
+    development_methods = serializers.SlugRelatedField(many=True, read_only=True,
+                                                       slug_field='description')
+    drilling_methods = serializers.SlugRelatedField(many=True, read_only=True,
+                                                    slug_field='description')
+    water_quality_characteristics = serializers.SlugRelatedField(many=True, read_only=True,
+                                                                 slug_field='description')
+
+    well_orientation = serializers.CharField(read_only=True, source='get_well_orientation_display')
+    hydro_fracturing_performed = serializers.CharField(read_only=True,
+                                                       source='get_hydro_fracturing_performed_display')
+
+    m2m_relations = {
+        field.name
+        for field in Well._meta.get_fields()
+        if field.many_to_many and not field.auto_created
+    }
+
+    def __init__(self, *args, **kwargs):
+        """
+        Limit responses to requested fields
+
+        If we get a 'fields' context kwarg, then limit results to the included
+        fields.
+        """
+        super().__init__(*args, **kwargs)
+
+        context = kwargs.get('context', {})
+        fields = context.get('fields', None)
+        if fields is not None:
+            excluded_fields = set(self.fields) - set(fields)
+            for field_name in excluded_fields:
+                self.fields.pop(field_name)
+
+    def to_representation(self, instance):
+        """
+        Instead of arrays, return comma delimited strings for export.
+        """
+        data = super().to_representation(instance)
+
+        for field_name in self.m2m_relations:
+            if field_name in data:
+                data[field_name] = ','.join(data[field_name])
+
+        return data
+
+
+class WellExportAdminSerializer(WellExportSerializer):
+    """Serializes a well for export (using display names for codes, etc)"""
+    owner_province_state = serializers.SlugRelatedField(read_only=True,
+                                                        slug_field='description')
+    well_publication_status = serializers.SlugRelatedField(read_only=True,
+                                                           slug_field='description')
+
+    class Meta:
+        model = Well
+        fields = WellListAdminSerializer.Meta.fields
 
 
 class WellTagSearchSerializer(serializers.ModelSerializer):

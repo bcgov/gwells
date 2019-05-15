@@ -15,9 +15,23 @@ from gwells.roles import roles_to_groups, WELLS_SUBMISSION_ROLE, WELLS_SUBMISSIO
     WELLS_EDIT_ROLE, WELLS_VIEWER_ROLE
 from submissions.serializers import (WellSubmissionListSerializer, WellConstructionSubmissionSerializer,
                                      WellAlterationSubmissionSerializer, WellDecommissionSubmissionSerializer)
-from wells.models import ActivitySubmission, Well, WellStatusCode, WellActivityCode, Casing, CasingCode,\
-    CasingMaterialCode, LithologyDescription, DevelopmentMethodCode, DrillingMethodCode, Screen
-from submissions.models import WELL_ACTIVITY_CODE_STAFF_EDIT
+from wells.models import (
+    ActivitySubmission,
+    ActivitySubmissionLinerPerforation,
+    Casing,
+    CasingCode,
+    CasingMaterialCode,
+    DevelopmentMethodCode,
+    DrillingMethodCode,
+    LinerPerforation,
+    LithologyDescription,
+    Screen,
+    Well,
+    WellStatusCode,
+    WellActivityCode
+    )
+from submissions.models import (
+    WELL_ACTIVITY_CODE_STAFF_EDIT, WELL_ACTIVITY_CODE_LEGACY, WELL_ACTIVITY_CODE_ALTERATION)
 from gwells.models import DATALOAD_USER
 
 
@@ -68,6 +82,48 @@ class TestSubmissionsBase(APITestCase):
 
 
 class TestConstruction(TestSubmissionsBase):
+
+    def test_submission_liner_perforation(self):
+        # Test that on construction submission, liner perforation for submission is created.
+        data = {
+            'linerperforation_set': [
+                {
+                    'start': 0,
+                    'end': 10
+                }
+            ]
+        }
+        response = self.client.post(reverse('CON'), data, format='json')
+        if response.status_code != HTTPStatus.CREATED:
+            # For this test, we're expecting it to be created, so we give
+            # some useful logging information for debugging.
+            logger.warning(response)
+        # Get the liner info on the submission
+        liner = ActivitySubmissionLinerPerforation.objects.get(
+            activity_submission__well__well_tag_number=response.data['well'])
+        # We expect a liner has been created for the submission.
+        self.assertIsNotNone(liner)
+
+    def test_well_liner_perforation(self):
+        # Test that on construction submission, liner perforation for well is created.
+        data = {
+            'linerperforation_set': [
+                {
+                    'start': 0,
+                    'end': 10
+                }
+            ]
+        }
+        response = self.client.post(reverse('CON'), data, format='json')
+        if response.status_code != HTTPStatus.CREATED:
+            # For this test, we're expecting it to be created, so we give
+            # some useful logging information for debugging.
+            logger.warning(response)
+        # Get the liner info on the submission
+        liner = LinerPerforation.objects.get(
+            well__well_tag_number=response.data['well'])
+        # We expect a liner has been created for the well.
+        self.assertIsNotNone(liner)
 
     def test_lithology_submission_create_user_update_user(self):
         """
@@ -556,6 +612,141 @@ class TestEdit(TestSubmissionsBase):
         lithology = well.lithologydescription_set.all()[0]
         self.assertEqual(lithology.create_user, self.user.username)
         self.assertEqual(lithology.update_user, self.user.username)
+
+    def test_edit_submission_liner_perforation(self):
+        well = Well.objects.create(create_user=self.user.username, update_user=self.user.username)
+        # Data for the edit submission.
+        data = {
+            'well': well.well_tag_number,
+            'linerperforation_set': [
+                {
+                    'start': 0,
+                    'end': 10
+                }
+            ]
+        }
+        # Post an edit submissions.
+        response = self.client.post(reverse('STAFF_EDIT'), data, format='json')
+        # Get the submission back.
+        liner = ActivitySubmissionLinerPerforation.objects.get(
+            activity_submission__well__well_tag_number=well.well_tag_number,
+            activity_submission__well_activity_type=WELL_ACTIVITY_CODE_STAFF_EDIT
+        )
+        # We expect a liner has been created for the submission.
+        self.assertIsNotNone(liner)
+
+    def test_edit_legacy_submission_liner_perforation(self):
+        well = Well.objects.create(create_user=self.user.username, update_user=self.user.username)
+        LinerPerforation.objects.create(well=well, start=0, end=10)
+        # Data for the edit submission.
+        data = {
+            'well': well.well_tag_number,
+            'linerperforation_set': [
+                {
+                    'start': 0,
+                    'end': 10
+                }
+            ]
+        }
+        # Post an edit submissions.
+        response = self.client.post(reverse('STAFF_EDIT'), data, format='json')
+        # Get the submission back.
+        liner = ActivitySubmissionLinerPerforation.objects.get(
+            activity_submission__well__well_tag_number=well.well_tag_number,
+            activity_submission__well_activity_type=WELL_ACTIVITY_CODE_LEGACY
+        )
+        # We expect a liner has been created for the submission.
+        self.assertIsNotNone(liner)
+
+    def test_edit_well_liner_perforation(self):
+        well = Well.objects.create(create_user=self.user.username, update_user=self.user.username)
+        # Data for the edit submission.
+        data = {
+            'well': well.well_tag_number,
+            'linerperforation_set': [
+                {
+                    'start': 0,
+                    'end': 10
+                }
+            ]
+        }
+        # Post an edit submissions.
+        response = self.client.post(reverse('STAFF_EDIT'), data, format='json')
+        # Get the submission back.
+        liner = LinerPerforation.objects.get(
+            well__well_tag_number=well.well_tag_number
+        )
+        # We expect a liner has been created for the submission.
+        self.assertIsNotNone(liner)
+
+
+class TestAlteration(TestSubmissionsBase):
+
+    def test_alteration_submission_liner_perforation(self):
+        well = Well.objects.create(create_user=self.user.username, update_user=self.user.username)
+        # Data for the edit submission.
+        data = {
+            'well': well.well_tag_number,
+            'linerperforation_set': [
+                {
+                    'start': 0,
+                    'end': 10
+                }
+            ]
+        }
+        # Post an edit submissions.
+        response = self.client.post(reverse('ALT'), data, format='json')
+        # Get the submission back.
+        liner = ActivitySubmissionLinerPerforation.objects.get(
+            activity_submission__well__well_tag_number=well.well_tag_number,
+            activity_submission__well_activity_type=WELL_ACTIVITY_CODE_ALTERATION
+        )
+        # We expect a liner has been created for the submission.
+        self.assertIsNotNone(liner)
+
+    def test_alteration_legacy_submission_liner_perforation(self):
+        well = Well.objects.create(create_user=self.user.username, update_user=self.user.username)
+        LinerPerforation.objects.create(well=well, start=0, end=10)
+        # Data for the edit submission.
+        data = {
+            'well': well.well_tag_number,
+            'linerperforation_set': [
+                {
+                    'start': 0,
+                    'end': 10
+                }
+            ]
+        }
+        # Post an edit submissions.
+        response = self.client.post(reverse('ALT'), data, format='json')
+        # Get the submission back.
+        liner = ActivitySubmissionLinerPerforation.objects.get(
+            activity_submission__well__well_tag_number=well.well_tag_number,
+            activity_submission__well_activity_type=WELL_ACTIVITY_CODE_LEGACY
+        )
+        # We expect a liner has been created for the submission.
+        self.assertIsNotNone(liner)
+
+    def test_alteration_well_liner_perforation(self):
+        well = Well.objects.create(create_user=self.user.username, update_user=self.user.username)
+        # Data for the edit submission.
+        data = {
+            'well': well.well_tag_number,
+            'linerperforation_set': [
+                {
+                    'start': 0,
+                    'end': 10
+                }
+            ]
+        }
+        # Post an edit submissions.
+        response = self.client.post(reverse('ALT'), data, format='json')
+        # Get the submission back.
+        liner = LinerPerforation.objects.get(
+            well__well_tag_number=well.well_tag_number
+        )
+        # We expect a liner has been created for the submission.
+        self.assertIsNotNone(liner)
 
 
 class TestPermissionsViewRights(APITestCase):
