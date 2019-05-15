@@ -260,7 +260,7 @@ def insert_unk_well_class_code(apps, schema_editor):
 def revert_unk_well_class_code(apps, schema_editor):
     # Deleting these could be dangerous (we don't want to cascade delete the submissions),
     # so we do nothing here.
-    logger.warn('Not deleting WellClassCode records! That would be dangerous.')
+    logger.warning('Not deleting WellClassCode records! That would be dangerous.')
 
 
 def other_code_values_code_fixture():

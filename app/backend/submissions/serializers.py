@@ -31,9 +31,9 @@ from gwells.models.lithology import (
 
 from wells.models import Well, ActivitySubmission, WellActivityCode
 from wells.serializers import (
+    ActivitySubmissionLinerPerforationSerializer,
     CasingSerializer,
     DecommissionDescriptionSerializer,
-    ScreenSerializer,
     LegacyCasingSerializer,
     LegacyDecommissionDescriptionSerializer,
     LegacyLinerPerforationSerializer,
@@ -41,9 +41,11 @@ from wells.serializers import (
     LegacyScreenSerializer,
     LinerPerforationSerializer,
     LithologyDescriptionSerializer,
+    ScreenSerializer,
 )
 from wells.models import (
     ActivitySubmission,
+    ActivitySubmissionLinerPerforation,
     Casing,
     CoordinateAcquisitionCode,
     DecommissionDescription,
@@ -59,7 +61,6 @@ from wells.models import (
     LandDistrictCode,
     LicencedStatusCode,
     LinerMaterialCode,
-    LinerPerforation,
     LithologyDescription,
     Screen,
     ScreenAssemblyTypeCode,
@@ -219,7 +220,7 @@ class WellSubmissionLegacySerializer(WellSubmissionSerializerBase):
         return {
             'casing_set': Casing,
             'screen_set': Screen,
-            'linerperforation_set': LinerPerforation,
+            'linerperforation_set': ActivitySubmissionLinerPerforation,
             'decommission_description_set': DecommissionDescription,
             'lithologydescription_set': LithologyDescription,
         }
@@ -251,7 +252,7 @@ class WellConstructionSubmissionSerializer(WellSubmissionSerializerBase):
 
     casing_set = CasingSerializer(many=True, required=False)
     screen_set = ScreenSerializer(many=True, required=False)
-    linerperforation_set = LinerPerforationSerializer(
+    linerperforation_set = ActivitySubmissionLinerPerforationSerializer(
         many=True, required=False)
     lithologydescription_set = LithologyDescriptionSerializer(
         many=True, required=False)
@@ -271,7 +272,7 @@ class WellConstructionSubmissionSerializer(WellSubmissionSerializerBase):
         return {
             'casing_set': Casing,
             'screen_set': Screen,
-            'linerperforation_set': LinerPerforation,
+            'linerperforation_set': ActivitySubmissionLinerPerforation,
             'lithologydescription_set': LithologyDescription,
         }
 
@@ -320,7 +321,7 @@ class WellAlterationSubmissionSerializer(WellSubmissionSerializerBase):
 
     casing_set = CasingSerializer(many=True, required=False)
     screen_set = ScreenSerializer(many=True, required=False)
-    linerperforation_set = LinerPerforationSerializer(
+    linerperforation_set = ActivitySubmissionLinerPerforationSerializer(
         many=True, required=False)
     lithologydescription_set = LithologyDescriptionSerializer(
         many=True, required=False)
@@ -329,7 +330,7 @@ class WellAlterationSubmissionSerializer(WellSubmissionSerializerBase):
         return {
             'casing_set': Casing,
             'screen_set': Screen,
-            'linerperforation_set': LinerPerforation,
+            'linerperforation_set': ActivitySubmissionLinerPerforation,
             'lithologydescription_set': LithologyDescription,
         }
 
@@ -447,7 +448,7 @@ class WellAlterationSubmissionSerializer(WellSubmissionSerializerBase):
 class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
 
     well = serializers.PrimaryKeyRelatedField(queryset=Well.objects.all())
-    linerperforation_set = LinerPerforationSerializer(
+    linerperforation_set = ActivitySubmissionLinerPerforationSerializer(
         many=True, required=False)
     casing_set = CasingSerializer(many=True, required=False)
     screen_set = ScreenSerializer(many=True, required=False)
@@ -486,7 +487,7 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
         return {
             'casing_set': Casing,
             'screen_set': Screen,
-            'linerperforation_set': LinerPerforation,
+            'linerperforation_set': ActivitySubmissionLinerPerforation,
             'lithologydescription_set': LithologyDescription,
             'decommission_description_set': DecommissionDescription
         }

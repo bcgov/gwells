@@ -23,17 +23,18 @@ from gwells.serializers import AuditModelSerializer
 from registries.serializers import PersonNameSerializer, OrganizationNameListSerializer
 from wells.models import (
     ActivitySubmission,
+    ActivitySubmissionLinerPerforation,
+    AquiferLithologyCode,
     Casing,
     CasingMaterialCode,
     CasingCode,
     DecommissionDescription,
+    DrillingMethodCode,
     LinerPerforation,
     LithologyDescription,
     Screen,
     Well,
-    WellActivityCode,
-    AquiferLithologyCode,
-    DrillingMethodCode
+    WellActivityCode
 )
 
 
@@ -281,6 +282,8 @@ class LinerPerforationSerializer(serializers.ModelSerializer):
 
 
 class LinerPerforationStackerSerializer(serializers.ModelSerializer):
+    """ This serializer is used for data->perforation(on well) and perforation(on well)->data.
+    """
     class Meta:
         model = LinerPerforation
         fields = (
@@ -299,9 +302,24 @@ class LinerPerforationStackerSerializer(serializers.ModelSerializer):
         }
 
 
+class ActivitySubmissionLinerPerforationSerializer(serializers.ModelSerializer):
+    """ This serializer is used for data->perforation(on submission) and perforation(on submission)->data.
+    """
+    class Meta:
+        model = ActivitySubmissionLinerPerforation
+        fields = (
+            # SUPER IMPORTANT: Don't include ID (liner_perforation_guid, well, or submission) as part of this
+            # serializer, as it will break the stacking code. If you include the guid, then it will remain
+            # stuck on a particular well/submission (unless I gues you pop it during serializing/
+            # deserializing) when creating legacy submissions or re-creating well records etc.
+            'start',
+            'end',
+        )
+
+
 class LegacyLinerPerforationSerializer(serializers.ModelSerializer):
     class Meta:
-        model = LinerPerforation
+        model = ActivitySubmissionLinerPerforation
         fields = (
             # SUPER IMPORTANT: Don't include ID (liner_perforation_guid, well, or submission) as part of this
             # serializer, as it will break the stacking code. If you include the guid, then it will remain

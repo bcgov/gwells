@@ -104,7 +104,6 @@ INSTALLED_APPS = (
     'wells',
     'submissions',
     'aquifers',
-    'django_nose',
     'webpack_loader',
     'django_filters',
     'django_extensions',
@@ -152,7 +151,6 @@ WSGI_APPLICATION = 'wsgi.application'
 # 2018/04/19: According to the documentation, bootstrap4 is still in alpha:
 # http://django-crispy-forms.readthedocs.io/en/latest/install.html?highlight=bootstrap4
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 
 # Database

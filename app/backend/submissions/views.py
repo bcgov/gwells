@@ -241,7 +241,7 @@ class SubmissionBase(AuditCreateMixin, ListCreateAPIView):
             raise
         except:
             try:
-                logger.warn(('Problem encountered handling POST; '
+                logger.warning(('Problem encountered handling POST; '
                              'user:{request.user.profile.username}; '
                              'user.is_authenticated:{request.user.is_authenticated}; '
                              'path:{request.path}; method:{request.method};'

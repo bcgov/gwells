@@ -180,7 +180,7 @@ def unitTestDjango (String stageName, String envProject, String envSuffix) {
             "--",
             "bash -c '\
                 cd /opt/app-root/src/backend; \
-                python manage.py test -c nose.cfg \
+                python manage.py test \
             '"
         )
         echo "Django test results: "+ ocoutput.actions[0].out
