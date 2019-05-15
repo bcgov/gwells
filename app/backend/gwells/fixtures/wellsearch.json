@@ -1462,7 +1462,6 @@
             "decommission_reason": null,
             "decommission_method": null,
             "decommission_details": null,
-            "ems_id": null,
             "aquifer": null,
             "person_responsible": null,
             "company_of_person_responsible": null,

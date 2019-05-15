@@ -482,6 +482,13 @@ class WellDetailSerializer(AuditModelSerializer):
 
     submission_work_dates = serializers.SerializerMethodField()
 
+    legal_pid = serializers.SerializerMethodField()
+
+    def get_legal_pid(self, instance):
+        if instance.legal_pid is None:
+            return instance.legal_pid
+        return "{0:0>9}".format(instance.legal_pid)
+
     def get_submission_work_dates(self, instance):
         records = instance.activitysubmission_set \
             .exclude(well_activity_type='STAFF_EDIT') \
@@ -597,7 +604,6 @@ class WellDetailSerializer(AuditModelSerializer):
             "observation_well_number",
             "observation_well_status",
             "ems",
-            "ems_id",  # kept for backwards compatibility, use ems
             "aquifer",
             "utm_zone_code",
             "utm_northing",
@@ -682,6 +688,11 @@ class WellDetailAdminSerializer(AuditModelSerializer):
         fields = '__all__'
         extra_fields = ['latitude', 'longitude']
 
+    def get_legal_pid(self, instance):
+        if instance.legal_pid is None:
+            return instance.legal_pid
+        return "{0:0>9}".format(instance.legal_pid)
+
     # this allows us to call model methods on top of __all__
     def get_field_names(self, declared_fields, info):
         expanded_fields = super(WellDetailAdminSerializer, self).get_field_names(declared_fields, info)
@@ -762,6 +773,13 @@ class WellStackerSerializer(AuditModelSerializer):
 
 class WellListSerializer(serializers.ModelSerializer):
     """Serializes a well record"""
+
+    legal_pid = serializers.SerializerMethodField()
+
+    def get_legal_pid(self, instance):
+        if instance.legal_pid is None:
+            return instance.legal_pid
+        return "{0:0>9}".format(instance.legal_pid)
 
     class Meta:
         model = Well
