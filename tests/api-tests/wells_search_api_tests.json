@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "4463d1cb-afac-47db-8fc6-d67d3886a4e3",
+		"_postman_id": "1a165e7e-cd7b-4619-8d6c-1b33cee3344c",
 		"name": "Well List API filters",
 		"description": "Well List API endpoint filters required for advanced search options.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -707,10 +707,10 @@
 										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
 										"exec": [
 											"pm.test(\"Legal PID matches filter\", function () {",
-											"  const legalPID = parseInt(pm.request.url.query.get(\"legal\"));",
+											"  const legalPID = pm.request.url.query.get(\"legal\");",
 											"",
 											"  pm.response.json().results.forEach(function(result) {",
-											"    pm.expect(result.legal_pid).to.equal(legalPID);",
+											"    pm.expect(result.legal_pid).to.equal(legalPID.padStart(9, \"0\"));",
 											"  });",
 											"});"
 										],
@@ -1068,10 +1068,10 @@
 										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
 										"exec": [
 											"pm.test(\"Legal PID matches filter\", function () {",
-											"  const legalPID = parseInt(pm.request.url.query.get(\"legal_pid\"));",
+											"  const legalPID = pm.request.url.query.get(\"legal_pid\");",
 											"",
 											"  pm.response.json().results.forEach(function(result) {",
-											"    pm.expect(result.legal_pid).to.equal(legalPID);",
+											"    pm.expect(result.legal_pid).to.equal(legalPID.padStart(9, \"0\"));",
 											"  });",
 											"});"
 										],
