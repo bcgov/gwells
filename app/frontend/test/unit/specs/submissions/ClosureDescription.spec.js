@@ -56,7 +56,7 @@ describe('ClosureDescription.vue', () => {
     })
     wrapper.setProps({
       errors: {
-        closure_description_set: [
+        decommission_description_set: [
           {
             start: [
               'Test error for start field'
