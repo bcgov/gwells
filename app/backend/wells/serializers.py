@@ -597,7 +597,6 @@ class WellDetailSerializer(AuditModelSerializer):
             "observation_well_number",
             "observation_well_status",
             "ems",
-            "ems_id",  # kept for backwards compatibility, use ems
             "aquifer",
             "utm_zone_code",
             "utm_northing",

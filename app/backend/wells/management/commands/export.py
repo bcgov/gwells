@@ -180,7 +180,7 @@ class Command(BaseCommand):
  filter_pack_thickness,
  filter_pack_material_size_code,
  development_hours, development_notes,
- water_quality_colour, water_quality_odour, ems_id,
+ water_quality_colour, water_quality_odour,
  yield_estimation_method_code,
  yield_estimation_rate,
  yield_estimation_duration, static_level_before_test, drawdown,
