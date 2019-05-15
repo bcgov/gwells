@@ -13,9 +13,19 @@
 */
 <template>
   <b-form-row class="search-result-filter" :class="`search-result-filter-${type}`">
-    <b-col v-if="type === 'text' || type === 'select' || type === 'radio'">
+    <b-col v-if="type === 'text' || type === 'number' || type === 'select' || type === 'radio'">
       <b-form-input
         v-if="type === 'text'"
+        type="text"
+        :id="`${id}Input`"
+        :state="validation"
+        :aria-describedby="`${id}InvalidFeedback`"
+        :placeholder="placeholder || 'Filter...'"
+        :disabled="isActive"
+        v-model="localValue[paramNames[0]]"
+        @keyup.enter.native="applyFilter()" />
+      <b-form-input
+        v-else-if="type === 'number'"
         type="text"
         :id="`${id}Input`"
         :state="validation"
