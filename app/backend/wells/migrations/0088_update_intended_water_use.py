@@ -1,5 +1,5 @@
 from django.db import migrations
-
+from django.db.models import Q
 
 # This can be deleted when doing next squash of migrations because it's a one time update
 def update_intended_water_use_code(apps, schema_editor):
@@ -30,6 +30,13 @@ def update_intended_water_use_code(apps, schema_editor):
         expiry_date='9999-12-31T23:59:59Z'
     )
 
+    # Update all wells with well class of null or unknown and intended water use of below values to water supply
+    well.objects\
+        .filter(Q(well_class__isnull=True) | Q(well_class='UNK'))\
+        .filter(Q(intended_water_use='DOM') | Q(intended_water_use='COM') |
+                Q(intended_water_use='DWS') | Q(intended_water_use='IRR'))\
+        .update(well_class='WATR_SPPLY')
+
     # Set all wells intended water use to Not Applicable where well class is not equal to Water Supply System
     well.objects.exclude(well_class='WATR_SPPLY').update(
         intended_water_use=not_applicable[0])
@@ -46,7 +53,7 @@ def reverse(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('wells', '0083_merge_20190513_1939'),
+        ('wells', '0087_merge_20190514_1806'),
     ]
 
     operations = [
