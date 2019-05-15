@@ -208,9 +208,11 @@ export default {
     },
     columns () {
       const columns = this.availableColumnIds.map((columnId) => {
+        const columnData = this.columnData[columnId]
+        const label = columnData.resultLabel ? columnData.resultLabel : columnData.label
         return {
           id: columnId,
-          label: this.columnData[columnId].label
+          label: label
         }
       })
       return Object.freeze(columns)
