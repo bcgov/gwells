@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="well-detail">
     <div v-if="loading">
       <div class="fa-2x text-center">
         <i class="fa fa-circle-o-notch fa-spin"></i>
@@ -23,7 +23,7 @@
               <router-link v-if="show.edit" :to="{ name: 'SubmissionsEdit', params: { id: $route.params.id } }" class="mr-3">
                 <button class="btn btn-primary mb-1">Edit</button>
               </router-link>
-              <b-btn variant="light" aria-label="Print" @click="handlePrint"><i class="fa fa-lg fa-print"></i></b-btn>
+              <b-btn variant="light" aria-label="Print" class="mb-1" @click="handlePrint"><i class="fa fa-lg fa-print"></i></b-btn>
             </div>
           </legend>
           <b-row>
@@ -583,5 +583,30 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
+@media print {
+
+  .well-detail {
+
+    fieldset {
+      page-break-inside: avoid;
+    }
+
+    .card {
+      border: none;
+    }
+
+    table.b-table > thead > tr > th {
+      &.sorting::before,
+      &.sorting::after,
+      &.sorting_desc::before,
+      &.sorting_desc::after,
+      &.sorting_asc::before,
+      &.sorting_desc::after {
+        content: none;
+      }
+    }
+  }
+
+}
 </style>
