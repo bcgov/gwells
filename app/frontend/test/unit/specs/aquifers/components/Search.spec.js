@@ -12,7 +12,7 @@
     limitations under the License.
 */
 
-import { shallowMount, createLocalVue } from '@vue/test-utils'
+import { mount, createLocalVue } from '@vue/test-utils'
 import SearchComponent from '@/aquifers/components/Search.vue'
 import Vuex from 'vuex'
 import axios from 'axios'
@@ -42,7 +42,7 @@ const aquiferFixture = {
 
 describe('Search Component', () => {
   const component = options =>
-    shallowMount(SearchComponent, {
+    mount(SearchComponent, {
       localVue,
       stubs: ['router-link', 'router-view'],
       router: new VueRouter(),
@@ -50,8 +50,8 @@ describe('Search Component', () => {
         modules: { auth }
       }),
       methods: {
-        scrollToTableTop() {},
-        fetchResourceSections() {
+        scrollToTableTop () {},
+        fetchResourceSections () {
           this.aquifer_resource_sections = [
             { text: 'aquifer section', value: 'a' }
           ]
@@ -70,15 +70,15 @@ describe('Search Component', () => {
     axios.get.mockResolvedValue({})
     const wrapper = component({
       computed: {
-        aquiferList() {
+        aquiferList () {
           return []
         },
-        emptyResults() {
+        emptyResults () {
           return true
         }
       },
       methods: {
-        fetchResults() {}
+        fetchResults () {}
       }
     })
 
@@ -88,18 +88,18 @@ describe('Search Component', () => {
   it('Matches the snapshot', () => {
     const wrapper = component({
       computed: {
-        aquiferList() {
+        aquiferList () {
           return [aquiferFixture]
         },
-        emptyResults() {
+        emptyResults () {
           return false
         },
-        displayPageLength() {
+        displayPageLength () {
           return 0
         }
       },
       methods: {
-        fetchResults() {}
+        fetchResults () {}
       }
     })
 

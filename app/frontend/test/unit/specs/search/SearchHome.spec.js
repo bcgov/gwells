@@ -1,4 +1,4 @@
-import { shallowMount, createLocalVue } from '@vue/test-utils'
+import { mount, shallowMount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
 import moxios from 'moxios'
 import SearchHome from '@/registry/components/search/SearchHome'
@@ -133,7 +133,7 @@ describe('SearchHome.vue', () => {
       .toEqual(0)
   })
   it('resets search params when reset button is clicked', () => {
-    const wrapper = shallowMount(SearchHome, {
+    const wrapper = mount(SearchHome, {
       store,
       localVue
     })
@@ -188,7 +188,7 @@ describe('SearchHome.vue', () => {
     expect(cityOptions.at(3).text()).toEqual('Jasper')
   })
   it('clears driller list when reset is clicked', () => {
-    const wrapper = shallowMount(SearchHome, {
+    const wrapper = mount(SearchHome, {
       store,
       localVue
     })

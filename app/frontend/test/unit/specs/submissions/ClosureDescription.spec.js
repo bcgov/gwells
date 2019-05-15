@@ -1,4 +1,4 @@
-import { shallowMount, createLocalVue } from '@vue/test-utils'
+import { mount, shallowMount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
 import ClosureDescription from '@/submissions/components/SubmissionForm/ClosureDescription.vue'
 
@@ -29,7 +29,7 @@ describe('ClosureDescription.vue', () => {
     expect(wrapper.vm.closureDescriptionSetData.length).toBe(defaultRows)
   })
   it('adds a new ClosureDescription row when clicking Add Row', () => {
-    const wrapper = shallowMount(ClosureDescription, {
+    const wrapper = mount(ClosureDescription, {
       localVue,
       store,
       sync: false
@@ -39,7 +39,7 @@ describe('ClosureDescription.vue', () => {
     expect(wrapper.vm.closureDescriptionSetData.length).toBe(defaultRows + 1) // default + 1 extra
   })
   it('when clicking the remove button on a row, removes that row', () => {
-    const wrapper = shallowMount(ClosureDescription, {
+    const wrapper = mount(ClosureDescription, {
       localVue,
       store,
       sync: false
@@ -48,8 +48,8 @@ describe('ClosureDescription.vue', () => {
     wrapper.find('#removeClosureRowButton0').trigger('click')
     expect(wrapper.vm.closureDescriptionSetData.length).toBe(defaultRows - 1)
   })
-  it('Passes errors into the input components', () => {
-    const wrapper = shallowMount(ClosureDescription, {
+  it('Passes errors into the input components', (done) => {
+    const wrapper = mount(ClosureDescription, {
       localVue,
       store,
       sync: true
@@ -65,7 +65,10 @@ describe('ClosureDescription.vue', () => {
         ]
       }
     })
-    const errMsg = wrapper.find('#closureFrom0InvalidFeedback')
-    expect(errMsg.text()).toContain('Test error for start field')
+    wrapper.vm.$nextTick(() => {
+      const errMsg = wrapper.find('#closureFrom0InvalidFeedback')
+      expect(errMsg.text()).toContain('Test error for start field')
+      done()
+    })
   })
 })

@@ -1,4 +1,4 @@
-import { shallowMount, createLocalVue } from '@vue/test-utils'
+import { mount, shallowMount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
 import Liner from '@/submissions/components/SubmissionForm/Liner.vue'
 
@@ -30,7 +30,7 @@ describe('Liner.vue', () => {
     expect(wrapper.vm.linerPerforationsData.length).toBe(3)
   })
   it('adds a new Liner row when clicking Add Row', () => {
-    const wrapper = shallowMount(Liner, {
+    const wrapper = mount(Liner, {
       localVue,
       store,
       propsData: {
@@ -42,7 +42,7 @@ describe('Liner.vue', () => {
     expect(wrapper.vm.linerPerforationsData.length).toBe(4)
   })
   it('when clicking the remove button on a row, removes that row', () => {
-    const wrapper = shallowMount(Liner, {
+    const wrapper = mount(Liner, {
       localVue,
       store,
       propsData: {

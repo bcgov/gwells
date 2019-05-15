@@ -1,4 +1,4 @@
-import { shallowMount, createLocalVue } from '@vue/test-utils'
+import { mount, shallowMount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
 import Screens from '@/submissions/components/SubmissionForm/Screens.vue'
 
@@ -27,7 +27,7 @@ describe('Screens.vue', () => {
     expect(wrapper.vm.screensData.length).toBe(3)
   })
   it('adds a new screen row when clicking Add Row', () => {
-    const wrapper = shallowMount(Screens, {
+    const wrapper = mount(Screens, {
       localVue,
       store,
       sync: false
@@ -37,7 +37,7 @@ describe('Screens.vue', () => {
     expect(wrapper.vm.screensData.length).toBe(4)
   })
   it('when clicking the remove button on a row, removes that row', () => {
-    const wrapper = shallowMount(Screens, {
+    const wrapper = mount(Screens, {
       localVue,
       store,
       sync: false

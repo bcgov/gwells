@@ -1,4 +1,4 @@
-import { shallowMount, createLocalVue } from '@vue/test-utils'
+import { mount, shallowMount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
 import VueRouter from 'vue-router'
 import documentState from '@/common/store/documents.js'
@@ -34,7 +34,7 @@ describe('SubmissionsHome.vue', () => {
   })
 
   it('triggers confirmation box when submitting the form', () => {
-    const wrapper = shallowMount(SubmissionsHome, {
+    const wrapper = mount(SubmissionsHome, {
       localVue,
       store,
       router,

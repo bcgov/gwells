@@ -1,4 +1,4 @@
-import { shallowMount, createLocalVue } from '@vue/test-utils'
+import { mount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
 import ApplicationAddEdit from '@/registry/components/people/ApplicationAddEdit'
 import { FETCH_DRILLER_OPTIONS } from '@/registry/store/actions.types'
@@ -19,7 +19,7 @@ describe('ApplicationAddEdit.vue', () => {
     const store = new Vuex.Store({ getters, actions })
     const activity = 'DRILL'
 
-    const wrapper = shallowMount(ApplicationAddEdit, {
+    const wrapper = mount(ApplicationAddEdit, {
       store,
       propsData: { activity, mode: 'add' },
       localVue

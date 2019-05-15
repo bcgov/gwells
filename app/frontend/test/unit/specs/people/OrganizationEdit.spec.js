@@ -1,4 +1,4 @@
-import { shallowMount, createLocalVue } from '@vue/test-utils'
+import { mount, shallowMount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
 import moxios from 'moxios'
 import OrganizationEdit from '@/registry/components/people/OrganizationEdit.vue'
@@ -33,7 +33,7 @@ describe('OrganizationEdit.vue', () => {
   })
 
   it('has a title', () => {
-    const wrapper = shallowMount(OrganizationEdit, {
+    const wrapper = mount(OrganizationEdit, {
       localVue,
       store,
       stubs: ['router-link', 'router-view', 'v-select']
