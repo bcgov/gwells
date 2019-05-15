@@ -247,6 +247,10 @@ class WellListFilter(AnyOrAllFilterSet):
     finished_well_depth = filters.RangeFilter()
     total_depth_drilled = filters.RangeFilter()
 
+    well_orientation = filters.BooleanFilter(widget=BooleanWidget)
+    alternative_specs_submitted = filters.BooleanFilter(widget=BooleanWidget)
+    hydro_fracturing_performed = filters.BooleanFilter(widget=BooleanWidget)
+
     class Meta:
         model = Well
         fields = [
