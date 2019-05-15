@@ -4,9 +4,17 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
 <div
   class="card container container-wide p-0 card-container pb-5 p-4"
 >
+  <!---->
+  <!---->
   <div
     class="card-body"
   >
+    <!---->
+    <!---->
+    <!---->
+     
+    <!---->
+     
     <!---->
      
     <!---->
@@ -37,7 +45,7 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
       <aquifer-form-stub
         fielderrors="[object Object]"
         record="[object Object]"
-        showid=""
+        showid="true"
       />
        
       <!---->
@@ -47,6 +55,8 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
       <!---->
     </div>
   </div>
+  <!---->
+  <!---->
 </div>
 `;
 
@@ -54,9 +64,17 @@ exports[`View Component View mode matches the snapshot 1`] = `
 <div
   class="card container container-wide p-0 card-container pb-5 p-4"
 >
+  <!---->
+  <!---->
   <div
     class="card-body"
   >
+    <!---->
+    <!---->
+    <!---->
+     
+    <!---->
+     
     <!---->
      
     <!---->
@@ -87,7 +105,7 @@ exports[`View Component View mode matches the snapshot 1`] = `
       <aquifer-form-stub
         fielderrors="[object Object]"
         record="[object Object]"
-        showid=""
+        showid="true"
       />
        
       <!---->
@@ -97,5 +115,7 @@ exports[`View Component View mode matches the snapshot 1`] = `
       <!---->
     </div>
   </div>
+  <!---->
+  <!---->
 </div>
 `;

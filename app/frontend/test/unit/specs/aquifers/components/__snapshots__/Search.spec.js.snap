@@ -9,6 +9,8 @@ exports[`Search Component Matches the snapshot 1`] = `
     class="card main-search-card mb-4"
   >
     <!---->
+    <!---->
+    <!---->
      
     <form
       class=""
@@ -40,14 +42,12 @@ exports[`Search Component Matches the snapshot 1`] = `
               </h5>
                
               <fieldset
-                class="search-title mt-3 mb-3 b-form-group form-group"
-                id="__BVID__27"
-                role="group"
+                class="form-group search-title mt-3 mb-3"
               >
                 <!---->
                 <div
-                  class=""
                   role="group"
+                  tabindex="-1"
                 >
                   <input
                     class="w-75 form-control"
@@ -61,8 +61,7 @@ exports[`Search Component Matches the snapshot 1`] = `
               </fieldset>
                
               <div
-                class="aquifer-checkbox-group custom-controls-stacked"
-                id="__BVID__29"
+                class="aquifer-checkbox-group"
                 role="group"
                 tabindex="-1"
               />
@@ -71,14 +70,12 @@ exports[`Search Component Matches the snapshot 1`] = `
                 class="form-row"
               >
                 <fieldset
-                  class="aquifer-search-actions b-form-group form-group"
-                  id="__BVID__30"
-                  role="group"
+                  class="form-group aquifer-search-actions"
                 >
                   <!---->
                   <div
-                    class=""
                     role="group"
+                    tabindex="-1"
                   >
                     <button
                       class="btn aquifer-buttons btn-primary"
@@ -137,7 +134,14 @@ exports[`Search Component Matches the snapshot 1`] = `
         <div
           class="map-column col-md-12 col-lg-12 col-xl-8 col-12"
         >
-          <aquifermap-stub />
+          <div
+            class="aquifer-map"
+          >
+            <div
+              class="map"
+              id="map"
+            />
+          </div>
         </div>
       </div>
     </form>
@@ -177,93 +181,129 @@ exports[`Search Component Matches the snapshot 1`] = `
             <!---->
             <thead
               class=""
+              role="rowgroup"
             >
-              <tr>
+              <!---->
+              <tr
+                role="row"
+              >
                 <th
                   aria-colindex="1"
                   aria-label="Click to sort Descending"
                   aria-sort="ascending"
-                  class="sorting sorting_asc"
+                  class=""
+                  role="columnheader"
+                  scope="col"
                   tabindex="0"
                 >
                   Aquifer number
                 </th>
                 <th
                   aria-colindex="2"
-                  aria-label="Click to sort Descending"
-                  class="sorting"
+                  aria-label="Click to sort Ascending"
+                  aria-sort="none"
+                  class=""
+                  role="columnheader"
+                  scope="col"
                   tabindex="0"
                 >
                   Aquifer name
                 </th>
                 <th
                   aria-colindex="3"
-                  aria-label="Click to sort Descending"
-                  class="sorting"
+                  aria-label="Click to sort Ascending"
+                  aria-sort="none"
+                  class=""
+                  role="columnheader"
+                  scope="col"
                   tabindex="0"
                 >
                   Descriptive location
                 </th>
                 <th
                   aria-colindex="4"
-                  aria-label="Click to sort Descending"
-                  class="sorting"
+                  aria-label="Click to sort Ascending"
+                  aria-sort="none"
+                  class=""
+                  role="columnheader"
+                  scope="col"
                   tabindex="0"
                 >
                   Material
                 </th>
                 <th
                   aria-colindex="5"
-                  aria-label="Click to sort Descending"
-                  class="sorting"
+                  aria-label="Click to sort Ascending"
+                  aria-sort="none"
+                  class=""
+                  role="columnheader"
+                  scope="col"
                   tabindex="0"
                 >
                   Litho stratigraphic unit
                 </th>
                 <th
                   aria-colindex="6"
-                  aria-label="Click to sort Descending"
-                  class="sorting"
+                  aria-label="Click to sort Ascending"
+                  aria-sort="none"
+                  class=""
+                  role="columnheader"
+                  scope="col"
                   tabindex="0"
                 >
                   Subtype
                 </th>
                 <th
                   aria-colindex="7"
-                  aria-label="Click to sort Descending"
-                  class="sorting"
+                  aria-label="Click to sort Ascending"
+                  aria-sort="none"
+                  class=""
+                  role="columnheader"
+                  scope="col"
                   tabindex="0"
                 >
                   Vulnerability
                 </th>
                 <th
                   aria-colindex="8"
-                  aria-label="Click to sort Descending"
-                  class="sorting"
+                  aria-label="Click to sort Ascending"
+                  aria-sort="none"
+                  class=""
+                  role="columnheader"
+                  scope="col"
                   tabindex="0"
                 >
                   Size-km²
                 </th>
                 <th
                   aria-colindex="9"
-                  aria-label="Click to sort Descending"
-                  class="sorting"
+                  aria-label="Click to sort Ascending"
+                  aria-sort="none"
+                  class=""
+                  role="columnheader"
+                  scope="col"
                   tabindex="0"
                 >
                   Productivity
                 </th>
                 <th
                   aria-colindex="10"
-                  aria-label="Click to sort Descending"
-                  class="sorting"
+                  aria-label="Click to sort Ascending"
+                  aria-sort="none"
+                  class=""
+                  role="columnheader"
+                  scope="col"
                   tabindex="0"
                 >
                   Demand
                 </th>
                 <th
                   aria-colindex="11"
-                  aria-label="Click to sort Descending"
-                  class="sorting"
+                  aria-label="Click to sort Ascending"
+                  aria-sort="none"
+                  class=""
+                  role="columnheader"
+                  scope="col"
                   tabindex="0"
                 >
                   Year of mapping
@@ -273,15 +313,19 @@ exports[`Search Component Matches the snapshot 1`] = `
             <!---->
             <tbody
               class=""
+              role="rowgroup"
             >
               <!---->
               <tr
                 aria-rowindex="1"
                 class=""
+                role="row"
+                tabindex="0"
               >
                 <td
                   aria-colindex="1"
                   class=""
+                  role="cell"
                 >
                   <p
                     class="aquifer-id"
@@ -292,6 +336,7 @@ exports[`Search Component Matches the snapshot 1`] = `
                 <td
                   aria-colindex="2"
                   class=""
+                  role="cell"
                 >
                   
             
@@ -300,46 +345,55 @@ exports[`Search Component Matches the snapshot 1`] = `
                 <td
                   aria-colindex="3"
                   class=""
+                  role="cell"
                 >
                   Aggasiz/Sea Bird Island
                 </td>
                 <td
                   aria-colindex="4"
                   class=""
+                  role="cell"
                 />
                 <td
                   aria-colindex="5"
                   class=""
+                  role="cell"
                 >
                   Fraser River Sediments
                 </td>
                 <td
                   aria-colindex="6"
                   class=""
+                  role="cell"
                 />
                 <td
                   aria-colindex="7"
                   class=""
+                  role="cell"
                 />
                 <td
                   aria-colindex="8"
                   class=""
+                  role="cell"
                 >
                   63.3
                 </td>
                 <td
                   aria-colindex="9"
                   class=""
+                  role="cell"
                 />
                 <td
                   aria-colindex="10"
                   class=""
+                  role="cell"
                 >
                   Low
                 </td>
                 <td
                   aria-colindex="11"
                   class=""
+                  role="cell"
                 >
                   1993
                 </td>
@@ -353,6 +407,10 @@ exports[`Search Component Matches the snapshot 1`] = `
         <!---->
       </div>
     </div>
+     
+    <!---->
+    <!---->
+    <!---->
   </div>
 </div>
 `;
