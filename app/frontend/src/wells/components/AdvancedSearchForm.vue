@@ -170,7 +170,7 @@ const ADDITIONAL_FILTER_SECTIONS = [
     fields:
      [ 'waterQualityCharacteristics',
        'waterQualityColour',
-       'waterQualityOdor',
+       'waterQualityOdour',
        'ems' ] },
   { header: 'Well completion data',
     fields:

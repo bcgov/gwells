@@ -251,7 +251,7 @@ const SEARCH_FIELDS = {
     label: 'Liner material',
     type: 'select',
     textField: 'description',
-    valueField: 'liner_material_code'
+    valueField: 'code'
   },
   linerDiameter: {
     param: 'liner_diameter',
@@ -415,9 +415,9 @@ const SEARCH_FIELDS = {
     textField: 'description',
     valueField: 'code'
   },
-  waterQualityOdor: {
-    param: 'water_quality_odor',
-    label: 'Water quality odor',
+  waterQualityOdour: {
+    param: 'water_quality_odour',
+    label: 'Water quality odour',
     type: 'text'
   },
   ems: {

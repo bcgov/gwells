@@ -144,7 +144,7 @@ const RESULT_COLUMNS = [
   'recommendedPumpRate',
   'waterQualityCharacteristics',
   'waterQualityColour',
-  'waterQualityOdor',
+  'waterQualityOdour',
   'ems',
   'finalCasingStickUp',
   'bedrockDepth',
