@@ -474,7 +474,7 @@ const SEARCH_FIELDS = {
   },
   finishedWellDepth: {
     param: 'finished_well_depth',
-    label: 'Finished well depth - decommission',
+    label: 'Finished well depth',
     resultLabel: 'Finished well depth (feet)',
     type: 'range'
   },
