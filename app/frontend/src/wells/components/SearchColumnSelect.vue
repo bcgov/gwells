@@ -153,7 +153,7 @@ const RESULT_COLUMNS = [
   'artesianFlow',
   'artesianPressure',
   'wellCapType',
-  'wellDisinfected',
+  'wellDisinfectedStatus',
   'observationWellNumber',
   'observationWellStatus',
   'decommissionReason',

@@ -181,7 +181,7 @@ const ADDITIONAL_FILTER_SECTIONS = [
        'artesianFlow',
        'artesianPressure',
        'wellCapType',
-       'wellDisinfected' ] },
+       'wellDisinfectedStatus' ] },
   { header: 'Observation well information',
     fields: [ 'observationWellNumber', 'observationWellStatus' ] },
   { header: 'Decommission',

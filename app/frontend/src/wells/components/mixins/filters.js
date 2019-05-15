@@ -666,6 +666,13 @@ const SEARCH_FIELDS = {
     param: 'decomission_end_date',
     label: 'Decomission end date',
     type: 'dateRange'
+  },
+  wellDisinfectedStatus: {
+    param: 'well_disinfected_status',
+    label: 'Well disinfected',
+    type: 'select',
+    textField: 'description',
+    valueField: 'well_disinfected_code'
   }
 }
 
@@ -751,6 +758,7 @@ export default {
         waterQualityCharacteristics: this.codes.water_quality_characteristics || [],
         waterQualityColour: this.codes.water_quality_colours || [],
         wellClass: this.codes.well_classes || [],
+        wellDisinfectedStatus: this.codes.well_disinfected_codes || [],
         wellStatus: this.codes.well_status_codes || [],
         wellSubclass: this.wellSubclassOptions,
         yieldEstimationMethod: this.codes.yield_estimation_methods || []
