@@ -149,7 +149,7 @@
                         </tr>
                         <tr>
                           <th class="w-50">Property Identification Description (PID)</th>
-                          <td>{{ well.legal_pid }}</td>
+                          <td>{{ ('000000000' + well.legal_pid).slice(-9) }}</td>
                         </tr>
                       </tbody>
                     </table>
