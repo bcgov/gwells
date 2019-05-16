@@ -159,6 +159,7 @@ const router = new Router({
     },
     {
       path: '/registries/',
+      alias: '/#registries/',
       name: 'SearchHome',
       component: SearchHome
     },

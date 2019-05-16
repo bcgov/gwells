@@ -38,7 +38,7 @@ export default {
   },
   data () {
     return {
-      exportBaseUrl: `${process.env.AXIOS_BASE_URL}wells/export`,
+      exportBaseUrl: `${process.env.VUE_APP_AXIOS_BASE_URL}wells/export`,
       maxExportSize: 5000
     }
   },

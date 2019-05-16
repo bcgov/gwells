@@ -1,3 +1,16 @@
+/*
+Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*/
 <template>
   <b-card class="container p-1">
     <h1 class="card-title" id="wellSearchTitle">Well Search</h1>
@@ -189,7 +202,7 @@ export default {
         delete query.result_columns
       }
 
-      this.$store.commit(SET_SEARCH_PARAMS, {...query})
+      this.$store.commit(SET_SEARCH_PARAMS, { ...query })
     },
     handleOutboundLinkClicks (link) {
       if (window.ga) {
@@ -212,7 +225,7 @@ export default {
       }
     },
     updateQueryParams () {
-      const params = {...this.searchParams}
+      const params = { ...this.searchParams }
       const paramsEmpty = Object.entries(params).length === 0 && params.constructor === Object
 
       // if params are completely empty, clear the query string,
