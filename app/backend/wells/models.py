@@ -1860,7 +1860,7 @@ class Screen(AuditModel):
                                 blank=True, null=True, validators=[MinValueValidator(Decimal('0.00'))])
     end = models.DecimalField(db_column='screen_to', max_digits=7, decimal_places=2, verbose_name='To',
                               blank=False, null=True, validators=[MinValueValidator(Decimal('0.01'))])
-    diameter = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='Diameter',
+    diameter = models.DecimalField(db_column='screen_diameter', max_digits=7, decimal_places=2, verbose_name='Diameter',
                                             blank=True, null=True,
                                             validators=[MinValueValidator(Decimal('0.0'))])
     assembly_type = models.ForeignKey(
