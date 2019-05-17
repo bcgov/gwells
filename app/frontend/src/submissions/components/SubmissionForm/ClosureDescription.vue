@@ -50,6 +50,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                       :id="`closureFrom${index}`"
                       type="number"
                       v-model="item.start"
+                      type="number"
                       :errors="getClosureError(index).start"
                       :loaded="getFieldsLoaded(index).start"
                   />
@@ -174,14 +175,14 @@ export default {
       this.closureDescriptionSetData.splice(rowNumber, 1)
     },
     getClosureError (index) {
-      if (this.errors && 'closure_description_set' in this.errors && index in this.errors['closure_description_set']) {
-        return this.errors['closure_description_set'][index]
+      if (this.errors && 'decommission_description_set' in this.errors && index in this.errors['decommission_description_set']) {
+        return this.errors['decommission_description_set'][index]
       }
       return {}
     },
     getFieldsLoaded (index) {
-      if (this.fieldsLoaded && 'closure_description_set' in this.fieldsLoaded && index in this.fieldsLoaded['closure_description_set']) {
-        return this.fieldsLoaded['closure_description_set'][index]
+      if (this.fieldsLoaded && 'decommission_description_set' in this.fieldsLoaded && index in this.fieldsLoaded['decommission_description_set']) {
+        return this.fieldsLoaded['decommission_description_set'][index]
       }
       return {}
     }

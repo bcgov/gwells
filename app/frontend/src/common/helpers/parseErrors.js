@@ -1,3 +1,5 @@
+import formatField from './formatField.js'
+
 // Returns formatted errors for notifications
 export default function (data) {
   let clean = Object.entries(JSON.parse(JSON.stringify(data)))
@@ -52,6 +54,7 @@ function flatten (arr) {
   let flt = []
   arr.forEach(r => {
     for (var i = 0; i < r.length; i++) {
+      r[i] = formatField(r[i])
       r[i] = jsUcfirst(r[i])
     }
   })
@@ -62,7 +65,9 @@ function flatten (arr) {
 }
 // Capitalizes first letter of a string
 function jsUcfirst (string) {
-  return string.charAt(0).toUpperCase() + string.slice(1)
+  let formattedString = string.charAt(0).toUpperCase() + string.slice(1)
+  formattedString = formattedString.replace(/_/g, ' ')
+  return formattedString
 }
 // Left commented out for future use
 // Flattens any dimension array into one single array of values

@@ -47,7 +47,7 @@
           <b-row>
             <b-col cols="12" md="4"><span class="font-weight-bold">Owner Name:</span> {{ well.owner_full_name }}</b-col>
             <b-col cols="12" md="4"><span class="font-weight-bold">Well Subclass:</span> {{ well.subclass }}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Environmental Monitoring System (EMS) ID:</span> {{ well.ems || well.ems_id }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Environmental Monitoring System (EMS) ID:</span> {{ well.ems }}</b-col>
           </b-row>
           <b-row>
             <b-col cols="12" md="4"><span class="font-weight-bold">Intended Water Use:</span> {{ well.intended_water_use }}</b-col>
@@ -149,7 +149,7 @@
                         </tr>
                         <tr>
                           <th class="w-50">Property Identification Description (PID)</th>
-                          <td>{{ well.legal_pid }}</td>
+                          <td>{{ ('000000000' + well.legal_pid).slice(-9) }}</td>
                         </tr>
                       </tbody>
                     </table>
@@ -230,7 +230,7 @@
           <b-row>
             <b-col cols="12" md="4"><span class="font-weight-bold">Finished Well Depth:</span> {{ well.finished_well_depth }} {{ well.finished_well_depth ? 'feet':''}}</b-col>
             <b-col cols="12" md="4"><span class="font-weight-bold">Estimated Well Yield:</span> {{ well.well_yield }} {{ well.well_yield ? 'USGPM': ''}}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Well Disinfected:</span> {{ well.well_disinfected_status }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Well Disinfected Status:</span> {{ well.well_disinfected_status }}</b-col>
           </b-row>
           <b-row>
             <b-col cols="12" md="4"><span class="font-weight-bold">Final Casing Stick Up:</span> {{ well.final_casing_stick_up }} {{ well.final_casing_stick_up ? 'inches':''}}</b-col>
