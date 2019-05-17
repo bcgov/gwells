@@ -14,7 +14,7 @@
 import logging
 import dateutil.parser
 import threading
-
+from collections import ChainMap
 from django.core.serializers import serialize
 from django.forms.models import model_to_dict
 from django.db import transaction
@@ -28,7 +28,7 @@ from submissions.models import WellActivityCode, WELL_ACTIVITY_CODE_ALTERATION,\
     WELL_ACTIVITY_CODE_CONSTRUCTION, WELL_ACTIVITY_CODE_DECOMMISSION, WELL_ACTIVITY_CODE_LEGACY,\
     WELL_ACTIVITY_CODE_STAFF_EDIT
 import submissions.serializers
-from wells.models import Well, ActivitySubmission, ActivitySubmissionLinerPerforation,\
+from wells.models import Well, ActivitySubmission, ActivitySubmissionLinerPerforation, FieldsProvided, \
     WellStatusCode, WELL_STATUS_CODE_CONSTRUCTION,\
     WELL_STATUS_CODE_DECOMMISSION, WELL_STATUS_CODE_ALTERATION, WELL_STATUS_CODE_OTHER, LithologyDescription,\
     Casing, Screen, LinerPerforation, DecommissionDescription, LithologyDescription
@@ -221,6 +221,15 @@ class StackWells():
         data = {k: v for (k, v) in data.items() if v is not None and v != ''}
         # Retain the well reference.
         data['well'] = well.well_tag_number
+
+        # keep track of which fields were originally populated on the legacy well records
+        original_data_provided = {
+            k: True for k in data.keys() if
+            k in [field.name for field in FieldsProvided._meta.get_fields()]
+        }
+        original_fields = FieldsProvided(activity_submission=instance, **original_data_provided)
+        edited_fields.save()
+
         submission_serializer = submissions.serializers.WellSubmissionLegacySerializer(data=data)
 
         is_valid = submission_serializer.is_valid(raise_exception=False)
@@ -258,6 +267,8 @@ class StackWells():
         return new
 
     def transform_value(self, value, source_key):
+        if value is None:
+            return None
         if source_key in FOREIGN_KEY_SERIALIZER_LOOKUP:
             Serializer = FOREIGN_KEY_SERIALIZER_LOOKUP[source_key]
             value = Serializer(value, many=True).data
@@ -331,22 +342,12 @@ class StackWells():
                 source_key = field.name
                 value = self._getattr(submission, source_key)
 
-                if source_key == 'storativity':
-                    print(source_key, value)
-
-                if (
-                    submission.well_activity_type.code == 'STAFF_EDIT' and
-                    getattr(submission, 'fields_provided', None) and
-                    getattr(submission.fields_provided, source_key, None)
-                ):
-                    print('provided', source_key, value)
-
                 if (
                         value or
                         value is False or
                         value == 0 or
                         value == '' or (
-                            submission.well_activity_type.code == 'STAFF_EDIT' and
+                            submission.well_activity_type.code == WELL_ACTIVITY_CODE_STAFF_EDIT and
                             getattr(submission, 'fields_provided', None) and
                             getattr(submission.fields_provided, source_key, None)
                         )):
@@ -379,8 +380,7 @@ class StackWells():
                         elif target_key in composite and target_key in MANY_TO_MANY_LOOKUP:
                             # Only update if there's a new value.
                             value = self.transform_value(value, source_key)
-                            if len(value) > 0:
-                                composite[target_key] = value
+                            composite[target_key] = value
                         else:
                             value = self.transform_value(value, source_key)
                             composite[target_key] = value

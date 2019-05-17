@@ -1730,6 +1730,11 @@ class FieldsProvided(models.Model):
     hydro_fracturing_yield_increase = models.BooleanField(default=False)
     recommended_pump_depth = models.BooleanField(default=False)
     recommended_pump_rate = models.BooleanField(default=False)
+    lithologydescription_set = models.BooleanField(default=False)
+    casing_set = models.BooleanField(default=False)
+    decommission_description_set = models.BooleanField(default=False)
+    screen_set = models.BooleanField(default=False)
+    linerperforation_set = models.BooleanField(default=False)
 
 
 @reversion.register(fields=['lithology_from', 'lithology_to', 'lithology_raw_data', 'lithology_description',
