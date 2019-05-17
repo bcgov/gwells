@@ -12,7 +12,6 @@
     limitations under the License.
 """
 
-from gwells.forms import *
 from django.test import TestCase
 from django.urls import reverse
 from http import HTTPStatus
