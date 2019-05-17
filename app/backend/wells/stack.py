@@ -342,6 +342,20 @@ class StackWells():
                 source_key = field.name
                 value = self._getattr(submission, source_key)
 
+                # ManyToMany values need to be checked using the transform_value method.
+                # if the number of values in a manytomany lookup is zero, and this field
+                # wasn't included in a staff edit, we can skip to the next field.
+                if (submission.well_activity_type.code == WELL_ACTIVITY_CODE_STAFF_EDIT and
+                    source_key in MANY_TO_MANY_LOOKUP and
+                    len(self.transform_value(value, source_key)) == 0 and
+                    getattr(submission, 'fields_provided', None) and
+                        not getattr(submission.fields_provided, source_key, None)):
+                    continue
+
+                # Evaluate if this field needs to be updated on the composite view of the well.
+                # it needs to be updated if there is a valid value in the current report, or
+                # if we are iterating through a staff edit and the value was provided by a user
+                # (tracked in the fields_provided property)
                 if (
                         value or
                         value is False or

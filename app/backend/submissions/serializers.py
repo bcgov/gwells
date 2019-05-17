@@ -154,12 +154,10 @@ class WellSubmissionSerializerBase(AuditModelSerializer):
 
             instance = super().create(validated_data)
 
-            print(data, self.get_well_activity_type())
             # keep a map of the fields that were provided in the activity report submission
             if data and self.get_well_activity_type() == WellActivityCode.types.staff_edit():
                 edited_fields_data = {k: True for k in data.keys() if k in [field.name for field in FieldsProvided._meta.get_fields()]}
                 edited_fields = FieldsProvided(activity_submission=instance, **edited_fields_data)
-                print('from GET request', edited_fields)
                 edited_fields.save()
 
             # Create foreign key records.
