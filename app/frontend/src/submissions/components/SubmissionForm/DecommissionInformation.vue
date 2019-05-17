@@ -29,6 +29,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <form-input
             id="finishedWellDepth"
             label="Finished Well Depth"
+            type="number"
             v-model="finishedWellDepthInput"
             hint="feet (below ground level)"
             :errors="errors['finished_well_depth']"

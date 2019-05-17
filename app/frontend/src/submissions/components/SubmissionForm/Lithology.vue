@@ -65,10 +65,20 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <template v-for="(row, index) in lithologyData.length">
             <tr :key="`lithology row ${index}`" :id="`lithologyRow${index}`">
               <td class="input-width-small">
-                <form-input :id="`lithologyDepthFrom${index}`" aria-label="Depth from (feet)" v-model="lithologyData[index].lithology_from" group-class="mt-1 mb-0"/>
+                <form-input
+                  :id="`lithologyDepthFrom${index}`"
+                  aria-label="Depth from (feet)"
+                  type="number"
+                  v-model="lithologyData[index].lithology_from"
+                  group-class="mt-1 mb-0"/>
               </td>
               <td class="input-width-small">
-                <form-input :id="`lithologyDepthTo${index}`" aria-label="Depth to (feet)" v-model="lithologyData[index].lithology_to" group-class="mt-1 mb-0"/>
+                <form-input
+                  :id="`lithologyDepthTo${index}`"
+                  aria-label="Depth to (feet)"
+                  type="number"
+                  v-model="lithologyData[index].lithology_to"
+                  group-class="mt-1 mb-0"/>
               </td>
               <td>
                 <form-input
@@ -136,7 +146,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     group-class="mt-1 mb-0"></form-input>
               </td>
               <td class="input-width-medium">
-                <form-input :id="`lithologyFlowEstimate${index}`" aria-label="Water bearing flow" v-model="lithologyData[index].water_bearing_estimated_flow" group-class="mt-1 mb-0"></form-input>
+                <form-input
+                  :id="`lithologyFlowEstimate${index}`"
+                  aria-label="Water bearing flow"
+                  type="number"
+                  v-model="lithologyData[index].water_bearing_estimated_flow"
+                  group-class="mt-1 mb-0"
+                ></form-input>
               </td>
               <td class="input-width-medium">
                 <form-input

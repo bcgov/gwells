@@ -48,6 +48,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   <form-input
                       group-class="mt-1 mb-0"
                       :id="`closureFrom${index}`"
+                      type="number"
                       v-model="item.start"
                       :errors="getClosureError(index).start"
                       :loaded="getFieldsLoaded(index).start"
@@ -58,6 +59,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                       group-class="mt-1 mb-0"
                       :id="`closureTo${index}`"
                       v-model="item.end"
+                      type="number"
                       :errors="getClosureError(index).end"
                       :loaded="getFieldsLoaded(index).end"
                   />
