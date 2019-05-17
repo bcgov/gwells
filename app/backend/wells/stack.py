@@ -19,6 +19,7 @@ from django.core.serializers import serialize
 from django.forms.models import model_to_dict
 from django.db import transaction
 from django.db.models import F
+from django.db.models.query import QuerySet
 from rest_framework.exceptions import ValidationError, APIException
 from rest_framework import serializers
 
@@ -318,11 +319,38 @@ class StackWells():
                     submission.well_activity_type.code, WellStatusCode.types.other().well_status_code)
             source_target_map = ACTIVITY_TYPE_MAP.get(submission.well_activity_type.code, {})
             for field in ActivitySubmission._meta.get_fields():
+
+                # fields_provided is a dict of fields that were included in the original activity submission
+                # or staff edit. We don't need to include this field in the composite, so we skip it here.
+                # we'll use it in other iterations (for other fields) to see if the user updated that field or not.
+                if field.name == 'fields_provided':
+                    continue
+
                 # We only consider items with values, and keys that are in our target
                 # an exception is STAFF_EDIT submissions (we need to be able to accept empty values)
                 source_key = field.name
                 value = self._getattr(submission, source_key)
-                if value or value is False or value == 0 or value == '':
+
+                if source_key == 'storativity':
+                    print(source_key, value)
+
+                if (
+                    submission.well_activity_type.code == 'STAFF_EDIT' and
+                    getattr(submission, 'fields_provided', None) and
+                    getattr(submission.fields_provided, source_key, None)
+                ):
+                    print('provided', source_key, value)
+
+                if (
+                        value or
+                        value is False or
+                        value == 0 or
+                        value == '' or (
+                            submission.well_activity_type.code == 'STAFF_EDIT' and
+                            getattr(submission, 'fields_provided', None) and
+                            getattr(submission.fields_provided, source_key, None)
+                        )):
+
                     target_key = source_target_map.get(source_key, source_key)
                     if target_key in target_keys:
                         # The composite dict is built up by applying the set of submissions/edits in order.
@@ -386,7 +414,7 @@ class StackWells():
             .prefetch_related(
                 'well_status',
                 'well_activity_type'
-            )
+        )
         if records.count() > 1:
             # If there's more than one submission we don't need to create a legacy well, we can safely
             # assume that the 1st submission is either a legacy or construction report submission.

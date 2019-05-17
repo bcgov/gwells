@@ -29,7 +29,7 @@ from gwells.models.lithology import (
     LithologyColourCode, LithologyHardnessCode,
     LithologyMaterialCode, LithologyMoistureCode, LithologyDescriptionCode)
 
-from wells.models import Well, ActivitySubmission, WellActivityCode
+from wells.models import Well, ActivitySubmission, WellActivityCode, FieldsProvided
 from wells.serializers import (
     ActivitySubmissionLinerPerforationSerializer,
     CasingSerializer,
@@ -132,8 +132,11 @@ class WellSubmissionSerializerBase(AuditModelSerializer):
             # Create submission.
             validated_data['well_activity_type'] = self.get_well_activity_type()
 
+            data = None
+
             if self.context.get('request', None):
                 data = self.context['request'].data
+
                 # Convert lat long values into geom object stored on model
                 # Values are BC Albers. but we are using WGS84 Lat Lon to avoid rounding errors
                 if data.get('latitude', None) and data.get('longitude', None):
@@ -150,6 +153,15 @@ class WellSubmissionSerializerBase(AuditModelSerializer):
                     well_yield_unit_code='USGPM')
 
             instance = super().create(validated_data)
+
+            print(data, self.get_well_activity_type())
+            # keep a map of the fields that were provided in the activity report submission
+            if data and self.get_well_activity_type() == WellActivityCode.types.staff_edit():
+                edited_fields_data = {k: True for k in data.keys() if k in [field.name for field in FieldsProvided._meta.get_fields()]}
+                edited_fields = FieldsProvided(activity_submission=instance, **edited_fields_data)
+                print('from GET request', edited_fields)
+                edited_fields.save()
+
             # Create foreign key records.
             for key, value in foreign_keys_data.items():
                 if value:
