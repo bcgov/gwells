@@ -50,7 +50,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
                       :id="`closureFrom${index}`"
                       type="number"
                       v-model="item.start"
-                      type="number"
                       :errors="getClosureError(index).start"
                       :loaded="getFieldsLoaded(index).start"
                   />
