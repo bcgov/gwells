@@ -14,12 +14,10 @@
 import logging
 import dateutil.parser
 import threading
-from collections import ChainMap
 from django.core.serializers import serialize
 from django.forms.models import model_to_dict
 from django.db import transaction
 from django.db.models import F
-from django.db.models.query import QuerySet
 from rest_framework.exceptions import ValidationError, APIException
 from rest_framework import serializers
 
@@ -228,7 +226,7 @@ class StackWells():
             k in [field.name for field in FieldsProvided._meta.get_fields()]
         }
         original_fields = FieldsProvided(activity_submission=instance, **original_data_provided)
-        edited_fields.save()
+        original_fields.save()
 
         submission_serializer = submissions.serializers.WellSubmissionLegacySerializer(data=data)
 
