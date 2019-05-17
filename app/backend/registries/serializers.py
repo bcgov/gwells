@@ -232,16 +232,6 @@ class RegistrationsNumberSerializer(serializers.ModelSerializer):
         fields = ('registration_no','registries_activity')
 
 
-class PersonBasicSerializer(serializers.ModelSerializer):
-    """
-    Serializes Person model with basic fields only
-    """
-
-    class Meta:
-        model = Person
-        fields = ('person_guid', 'name')
-
-
 class PersonSerializer(AuditModelSerializer):
     """
     Serializes the Person model (public/anonymous user fields)
