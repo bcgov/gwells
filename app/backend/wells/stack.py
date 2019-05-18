@@ -220,14 +220,6 @@ class StackWells():
         # Retain the well reference.
         data['well'] = well.well_tag_number
 
-        # keep track of which fields were originally populated on the legacy well records
-        original_data_provided = {
-            k: True for k in data.keys() if
-            k in [field.name for field in FieldsProvided._meta.get_fields()]
-        }
-        original_fields = FieldsProvided(activity_submission=instance, **original_data_provided)
-        original_fields.save()
-
         submission_serializer = submissions.serializers.WellSubmissionLegacySerializer(data=data)
 
         is_valid = submission_serializer.is_valid(raise_exception=False)
@@ -237,6 +229,15 @@ class StackWells():
             # the legacy submission may be valid, but that doesn't mean the resultant well record is going
             # to be valid!
             legacy = submission_serializer.save()
+
+            # keep track of which fields were originally populated on the legacy well records
+            original_data_provided = {
+                k: True for k in data.keys() if
+                k in [field.name for field in FieldsProvided._meta.get_fields()]
+            }
+            original_fields = FieldsProvided(activity_submission=legacy.data['filing_number'], **original_data_provided)
+            original_fields.save()
+
             return legacy
         logger.info('invalid legacy data: {}'.format(data))
         logger.error(submission_serializer.errors)
