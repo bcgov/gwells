@@ -81,7 +81,7 @@ export default {
           styles: 'Provincial_Groundwater_Observation_Wells_Active',
           transparent: true,
           overlay: true
-        })        
+        })
       }
       L.control.layers(null, toggleLayers, {collapsed: false}).addTo(this.map)
     }

@@ -76,7 +76,7 @@ class Command(BaseCommand):
                 # if settings.ENABLE_GOOGLE_ANALYTICS:
                 if not settings.DEBUG:
                     # Check the Licence is for a valid Aquifer
-                    Aquifer.objects.get(pk=row['SOURCE_NAME'])
+                    aquifer = Aquifer.objects.get(pk=row['SOURCE_NAME'])
                     well = Well.objects.get(pk=row['WELL_TAG_NUMBER'])
                 else:
                     counter += 1
@@ -125,5 +125,7 @@ class Command(BaseCommand):
                 licence.quantity = quantity
                 licence.save()
 
+                if not well.aquifer:
+                    well.aquifer = aquifer
                 well.licence = licence
                 well.save()
