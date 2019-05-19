@@ -66,6 +66,24 @@ export default {
         styles: 'Digital_Road_Atlas',
         transparent: true
       }).addTo(this.map)
+
+      const toggleLayers = {
+        'Observation Wells': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW/ows?', {
+          format: 'image/png',
+          layers: 'pub:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
+          styles: 'Water_Wells_All',
+          transparent: true,
+          overlay: true
+        }),
+        'Water Wells': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW/ows?', {
+          format: 'image/png',
+          layers: 'pub:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
+          styles: 'Provincial_Groundwater_Observation_Wells_Active',
+          transparent: true,
+          overlay: true
+        })        
+      }
+      L.control.layers(null, toggleLayers, {collapsed: false}).addTo(this.map)
     }
   },
   watch: {
