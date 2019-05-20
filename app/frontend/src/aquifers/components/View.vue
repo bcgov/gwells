@@ -480,6 +480,7 @@ export default {
     },
     navigateToView () {
       this.$router.push({ name: 'aquifers-view', params: { id: this.id } })
+      this.fetch()
     },
     navigateToEdit () {
       this.showSaveSuccess = false
