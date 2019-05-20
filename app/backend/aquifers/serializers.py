@@ -216,7 +216,7 @@ class AquiferDetailSerializer(serializers.ModelSerializer):
         for licence in licences:
             details['wells_by_licence'].append({
                 'licence_number': licence.licence_number,
-                'wells_in_licence': ', '.join([str(l['well_tag_number']) for l in licence.wells.all().values("well_tag_number")])
+                'well_tag_numbers_in_licence': ', '.join([str(l['well_tag_number']) for l in licence.wells.all().values("well_tag_number")])
             })
         if instance.subtype:
             details['hydraulically_connected'] = instance.subtype.code in HYDRAULIC_SUBTYPES
