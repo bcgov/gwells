@@ -200,7 +200,6 @@ class AquiferDetailSerializer(serializers.ModelSerializer):
 
         # Artesian conditions
         details['num_artesian_wells'] = instance.well_set.filter(
-            artesian_pressure__isnull=False,
             artesian_flow__isnull=False).count()
 
         # Wells associated to an aquifer
