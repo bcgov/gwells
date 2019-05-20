@@ -85,9 +85,7 @@ const toggleLayers = {
     legend: WellsAllLegend,
     overlay: true
   })
-}  
-
-
+}
 // Extend control, making a locate
 L.Control.Locate = L.Control.extend({
   onAdd: function (map) {
@@ -154,7 +152,6 @@ export default {
       })
     },
     initMap () {
-      const self = this
       this.map = L.map(this.$el, {
         preferCanvas: true,
         minZoom: 4,
@@ -183,7 +180,6 @@ export default {
         layers: 'pub:WHSE_WATER_MANAGEMENT.GW_AQUIFERS_CLASSIFICATION_SVW',
         transparent: true
       }).addTo(this.map)
-      console.log("Map", this.map)
       L.control.layers(null, toggleLayers, {collapsed: false}).addTo(this.map)
 
       this.listenForLayerToggle()
@@ -207,7 +203,7 @@ export default {
         position: 'topleft'
       })
     },
-    getAreaSelectControl() {
+    getAreaSelectControl () {
       const lasso = L.lasso(this.map)
       return new (L.Control.extend({
         options: {
@@ -221,7 +217,7 @@ export default {
           }
           return container
         }
-      }))
+      }))()
     },
     getLegendControl () {
       const self = this
@@ -237,7 +233,7 @@ export default {
           container.appendChild(content)
           return container
         }
-      }))
+      }))()
     },
     listenForLayerToggle () {
       this.$on('activeLayers', (data) => {
