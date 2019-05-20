@@ -39,6 +39,9 @@ export default {
         .then(response => {
           context.commit('setShapefileUploadSuccess', true)
           context.commit('setShapefileUploadMessage', '')
+          setTimeout(() => {
+            context.commit('setShapefileUploadSuccess', false)
+          }, 5000)
         })
         .catch(e => {
           context.commit('setShapefileUploadSuccess', false)
