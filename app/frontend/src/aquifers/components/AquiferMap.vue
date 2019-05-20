@@ -1,7 +1,5 @@
 <template>
-  <div class="aquifer-map">
-    <div id="map" class="map"/>
-  </div>
+  <div id="map" class="map"/>
 </template>
 
 <script>
@@ -26,6 +24,69 @@ const searchControl = new GeoSearchControl({
   provider: provider,
   autoClose: true
 })
+
+const toggleLayers = {
+  'Artesian wells': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW/ows?', {
+    format: 'image/png',
+    layers: 'pub:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
+    styles: 'Water_Wells_Artesian',
+    transparent: true,
+    name: 'Artesian wells',
+    legend: ArtesianLegend,
+    overlay: true
+  }),
+  'Cadastral': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW/ows?', {
+    format: 'image/png',
+    layers: 'pub:WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW',
+    transparent: true,
+    name: 'Cadastral',
+    legend: CadastralLegend,
+    overlay: true
+  }),
+  'Ecocat - Water related reports': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_FISH.ACAT_REPORT_POINT_PUB_SVW/ows?', {
+    format: 'image/png',
+    layers: 'pub:WHSE_FISH.ACAT_REPORT_POINT_PUB_SVW',
+    transparent: true,
+    name: 'Ecocat - Water related reports',
+    legend: EcocatWaterLegend,
+    overlay: true
+  }),
+  'Groundwater licences': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.WLS_PWD_LICENCES_SVW/ows?', {
+    format: 'image/png',
+    layers: 'pub:WHSE_WATER_MANAGEMENT.WLS_PWD_LICENCES_SVW',
+    transparent: true,
+    name: 'Groundwater licences',
+    legend: GWaterLicenceLegend,
+    overlay: true
+  }),
+  'Observation wells - active': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW/ows?', {
+    format: 'image/png',
+    layers: 'pub:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
+    styles: 'Provincial_Groundwater_Observation_Wells_Active',
+    transparent: true,
+    name: 'Observation wells - active',
+    legend: OWellsActiveLegend,
+    overlay: true
+  }),
+  'Observation wells - inactive': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW/ows?', {
+    format: 'image/png',
+    layers: 'pub:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
+    styles: 'Provincial_Groundwater_Observation_Wells_Inactive',
+    transparent: true,
+    name: 'Observation wells - inactive',
+    legend: OWellsInactiveLegend,
+    overlay: true
+  }),
+  'Wells - All': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW/ows?', {
+    format: 'image/png',
+    layers: 'pub:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
+    transparent: true,
+    name: 'Wells - All',
+    legend: WellsAllLegend,
+    overlay: true
+  })
+}  
+
 
 // Extend control, making a locate
 L.Control.Locate = L.Control.extend({
@@ -64,20 +125,21 @@ export default {
     return {
       activeLayers: [],
       map: null,
-      legendControl: null,
       legendControlContent: null
     }
   },
 
   watch: {
     aquifers: function (newAquifers, oldAquifers) {
-      this.map.eachLayer((layer) => {
-        if (layer.options.type === 'geojsonfeature') {
-          this.map.removeLayer(layer)
-        }
-      })
-      this.map.removeLayer(L.geoJSON)
-      this.addAquifersToMap(newAquifers)
+      if (this.map) {
+        this.map.eachLayer((layer) => {
+          if (layer.options.type === 'geojsonfeature') {
+            this.map.removeLayer(layer)
+          }
+        })
+        this.map.removeLayer(L.geoJSON)
+        this.addAquifersToMap(newAquifers)
+      }
     }
   },
   methods: {
@@ -93,42 +155,19 @@ export default {
     },
     initMap () {
       const self = this
-      // Create map, with default centered and zoomed to show entire BC.
-      this.map = L.map('map', {
+      this.map = L.map(this.$el, {
         preferCanvas: true,
         minZoom: 4,
         maxZoom: 17
       }).setView([54.5, -126.5], 5)
       L.control.scale().addTo(this.map)
-      // Add geo search
-      this.map.addControl(new L.Control.Fullscreen({
-        position: 'topleft'
-      }))
+
+      this.map.addControl(this.getFullScreenControl())
       this.map.addControl(searchControl)
-      const lasso = L.lasso(this.map)
-      const AreaSelect = L.Control.extend({
-        options: {
-          position: 'topleft'
-        },
-        onAdd: function (map) {
-          var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control')
-          container.innerHTML = '<a class="leaflet-bar-part leaflet-bar-part-single"><span class="fa fa-hand-paper-o"></span></a>'
-          container.onclick = function (map) {
-            lasso.enable()
-          }
-          return container
-        }
-      })
-      this.map.addControl(new AreaSelect())
-      this.map.on('lasso.finished', (event) => {
-        this.map.fitBounds(event.latLngs)
-      })
-      const locateButton = L.control.locate({ position: 'topleft' })
-      locateButton.onClick = (ev) => {
-        this.map.locate({setView: true, maxZoom: 12})
-        this.$parent.fetchResults()
-      }
-      locateButton.addTo(this.map)
+      this.map.addControl(this.getAreaSelectControl())
+      this.map.addControl(this.getLegendControl())
+      this.map.addControl(this.getLocateControl())
+
       // Add map layers.
       tiledMapLayer({url: 'https://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer'}).addTo(this.map)
       L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW/ows?', {
@@ -144,76 +183,52 @@ export default {
         layers: 'pub:WHSE_WATER_MANAGEMENT.GW_AQUIFERS_CLASSIFICATION_SVW',
         transparent: true
       }).addTo(this.map)
+      console.log("Map", this.map)
+      L.control.layers(null, toggleLayers, {collapsed: false}).addTo(this.map)
 
-      var mapLayers = {
+      this.listenForLayerToggle()
+      this.listenForLayerAdd()
+      this.listenForLayerRemove()
+      this.listenForMapMovement()
+      this.listenForReset()
+      this.listenForAreaSelect()
+    },
 
-        'Artesian wells': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW/ows?', {
-          format: 'image/png',
-          layers: 'pub:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
-          styles: 'Water_Wells_Artesian',
-          transparent: true,
-          name: 'Artesian wells',
-          legend: ArtesianLegend,
-          overlay: true
-        }),
-        'Cadastral': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW/ows?', {
-          format: 'image/png',
-          layers: 'pub:WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW',
-          transparent: true,
-          name: 'Cadastral',
-          legend: CadastralLegend,
-          overlay: true
-        }),
-        'Ecocat - Water related reports': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_FISH.ACAT_REPORT_POINT_PUB_SVW/ows?', {
-          format: 'image/png',
-          layers: 'pub:WHSE_FISH.ACAT_REPORT_POINT_PUB_SVW',
-          transparent: true,
-          name: 'Ecocat - Water related reports',
-          legend: EcocatWaterLegend,
-          overlay: true
-        }),
-        'Groundwater licences': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.WLS_PWD_LICENCES_SVW/ows?', {
-          format: 'image/png',
-          layers: 'pub:WHSE_WATER_MANAGEMENT.WLS_PWD_LICENCES_SVW',
-          transparent: true,
-          name: 'Groundwater licences',
-          legend: GWaterLicenceLegend,
-          overlay: true
-        }),
-        'Observation wells - active': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW/ows?', {
-          format: 'image/png',
-          layers: 'pub:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
-          styles: 'Provincial_Groundwater_Observation_Wells_Active',
-          transparent: true,
-          name: 'Observation wells - active',
-          legend: OWellsActiveLegend,
-          overlay: true
-        }),
-        'Observation wells - inactive': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW/ows?', {
-          format: 'image/png',
-          layers: 'pub:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
-          styles: 'Provincial_Groundwater_Observation_Wells_Inactive',
-          transparent: true,
-          name: 'Observation wells - inactive',
-          legend: OWellsInactiveLegend,
-          overlay: true
-        }),
-        'Wells - All': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW/ows?', {
-          format: 'image/png',
-          layers: 'pub:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
-          transparent: true,
-          name: 'Wells - All',
-          legend: WellsAllLegend,
-          overlay: true
-        })
+    getLocateControl () {
+      const locateButton = L.control.locate({ position: 'topleft' })
+      locateButton.onClick = (ev) => {
+        this.map.locate({setView: true, maxZoom: 12})
+        this.$parent.fetchResults()
       }
-
-      const LegendControl = L.Control.extend({
-
+      return locateButton
+    },
+    getFullScreenControl () {
+      return new L.Control.Fullscreen({
+        position: 'topleft'
+      })
+    },
+    getAreaSelectControl() {
+      const lasso = L.lasso(this.map)
+      return new (L.Control.extend({
+        options: {
+          position: 'topleft'
+        },
+        onAdd: function (map) {
+          var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control')
+          container.innerHTML = '<a class="leaflet-bar-part leaflet-bar-part-single"><span class="fa fa-hand-paper-o"></span></a>'
+          container.onclick = function (map) {
+            lasso.enable()
+          }
+          return container
+        }
+      }))
+    },
+    getLegendControl () {
+      const self = this
+      return new (L.Control.extend({
         options: {
           position: 'bottomright'
         },
-
         onAdd (map) {
           const container = L.DomUtil.create('div', 'leaflet-control-legend')
           const content = L.DomUtil.create('div', 'leaflet-control-legend-content')
@@ -222,9 +237,9 @@ export default {
           container.appendChild(content)
           return container
         }
-      })
-      this.legendControl = new LegendControl()
-      this.map.addControl(this.legendControl)
+      }))
+    },
+    listenForLayerToggle () {
       this.$on('activeLayers', (data) => {
         let innerContent = `<ul class="p-0 m-0" style="list-style-type: none;">`
         innerContent += `<li class="m-1 text-center">Legend</li>`
@@ -234,18 +249,13 @@ export default {
         innerContent += `</ul>`
         this.legendControlContent.innerHTML = innerContent
       })
-      // Add checkboxes for layers
-      L.control.layers(null, mapLayers, {collapsed: false}).addTo(this.map)
-      this.map.on('layeradd', (e) => {
-        const layerId = e.layer._leaflet_id
-        const layerName = e.layer.options.name
-        const legend = e.layer.options.legend
-
-        if (legend) {
-          this.activeLayers.push({layerId, layerName, legend})
-          this.$emit('activeLayers', this.activeLayers)
-        }
+    },
+    listenForAreaSelect () {
+      this.map.on('lasso.finished', (event) => {
+        this.map.fitBounds(event.latLngs)
       })
+    },
+    listenForLayerRemove () {
       this.map.on('layerremove', (e) => {
         const layerId = e.layer._leaflet_id
         const legend = e.layer.options.legend
@@ -254,16 +264,28 @@ export default {
           this.$emit('activeLayers', this.activeLayers)
         }
       })
-
-      this.handleEvents()
-
+    },
+    listenForLayerAdd () {
+      this.map.on('layeradd', (e) => {
+        const layerId = e.layer._leaflet_id
+        const layerName = e.layer.options.name
+        const legend = e.layer.options.legend
+        if (legend) {
+          this.activeLayers.push({layerId, layerName, legend})
+          this.$emit('activeLayers', this.activeLayers)
+        }
+      })
+    },
+    listenForReset () {
       this.$parent.$on('resetLayers', (data) => {
-        this.map.eachLayer((layer) => {
-          if (layer.wmsParams && layer.wmsParams.overlay) {
-            this.map.removeLayer(layer)
-          }
-        })
-        this.map.setView([54.5, -126.5], 5)
+        if (this.map) {
+          this.map.eachLayer((layer) => {
+            if (layer.wmsParams && layer.wmsParams.overlay) {
+              this.map.removeLayer(layer)
+            }
+          })
+          this.map.setView([54.5, -126.5], 5)
+        }
       })
     },
     getFeaturesOnMap (map) {
@@ -276,7 +298,7 @@ export default {
       })
       return layersInBound
     },
-    handleEvents () {
+    listenForMapMovement () {
       const events = ['zoomend', 'moveend']
       events.map(eventName => {
         this.map.on(eventName, (e) => {
@@ -325,13 +347,15 @@ export default {
       }
     },
     zoomToSelectedAquifer (data) {
-      this.map.eachLayer((layer) => {
-        if ((layer.options.aquifer_id === data.id) && layer.feature) {
-          this.$nextTick(function () {
-            layer.openPopup()
-          })
-        }
-      })
+      if (this.map) {
+        this.map.eachLayer((layer) => {
+          if ((layer.options.aquifer_id === data.id) && layer.feature) {
+            this.$nextTick(function () {
+              layer.openPopup()
+            })
+          }
+        })
+      }
       var aquiferGeom = L.geoJSON(data.gs)
       this.map.fitBounds(aquiferGeom.getBounds())
       this.$SmoothScroll(document.getElementById('map'))

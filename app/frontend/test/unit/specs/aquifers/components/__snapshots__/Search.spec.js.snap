@@ -135,13 +135,9 @@ exports[`Search Component Matches the snapshot 1`] = `
           class="map-column col-md-12 col-lg-12 col-xl-8 col-12"
         >
           <div
-            class="aquifer-map"
-          >
-            <div
-              class="map"
-              id="map"
-            />
-          </div>
+            class="map"
+            id="map"
+          />
         </div>
       </div>
     </form>
