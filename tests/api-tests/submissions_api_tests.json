@@ -1276,7 +1276,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"well_activity_type\": \"CON\",\n\t\"owner_full_name\": \"Bob\",\n\t\"owner_mailing_address\": \"123 Place\",\n\t\"owner_city\": \"Victoria\",\n\t\"owner_province_state\": \"BC\",\n\t\"lithologydescription_set\": [\n\t\t{}\n\t]\n}"
+									"raw": "{\n\t\"well_activity_type\": \"CON\",\n\t\"owner_full_name\": \"Bob\",\n\t\"owner_mailing_address\": \"123 Place\",\n\t\"owner_city\": \"Victoria\",\n\t\"owner_province_state\": \"BC\",\n\t\"lithologydescription_set\": []\n}"
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/construction?format=json",
@@ -2988,7 +2988,7 @@
 											"})",
 											"",
 											"pm.test(\"Expect storativity to be 1\", function() {",
-											"    pm.expect(jsonData.storativity).to.equal(1)",
+											"    pm.expect(Number(jsonData.storativity)).to.equal(1)",
 											"})"
 										],
 										"type": "text/javascript"
@@ -3049,7 +3049,7 @@
 											"})",
 											"",
 											"pm.test(\"Expect liner set to be deleted\", function() {",
-											"    pm.expect(jsonData.linerperforation.length).to.equal(0)",
+											"    pm.expect(jsonData.linerperforation_set.length).to.equal(0)",
 											"})",
 											"",
 											"pm.test(\"Expect storativity to be null\", function() {",
