@@ -362,7 +362,7 @@
                   small
                   bordered
                   :items="well.screen_set"
-                  :fields="['from', 'to', 'internal_diameter', 'assembly_type', 'slot_size']"
+                  :fields="['from', 'to', 'diameter', 'assembly_type', 'slot_size']"
                   show-empty
                   >
                 <template slot="from" slot-scope="data">{{data.item.start}} ft</template>

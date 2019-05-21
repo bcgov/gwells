@@ -213,7 +213,7 @@ class ScreenSerializer(serializers.ModelSerializer):
         fields = (
             'start',
             'end',
-            'internal_diameter',
+            'diameter',
             'assembly_type',
             'slot_size',
         )
@@ -230,7 +230,7 @@ class ScreenStackerSerializer(serializers.ModelSerializer):
         fields = (
             'start',
             'end',
-            'internal_diameter',
+            'diameter',
             'assembly_type',
             'slot_size',
             'create_user',
@@ -249,7 +249,7 @@ class LegacyScreenSerializer(serializers.ModelSerializer):
 
     start = serializers.DecimalField(max_digits=7, decimal_places=2, allow_null=True)
     end = serializers.DecimalField(max_digits=7, decimal_places=2, allow_null=True)
-    internal_diameter = serializers.DecimalField(max_digits=7, decimal_places=2, allow_null=True)
+    diameter = serializers.DecimalField(max_digits=7, decimal_places=2, allow_null=True)
     slot_size = serializers.DecimalField(max_digits=7, decimal_places=2, allow_null=True)
 
     class Meta:
@@ -257,7 +257,7 @@ class LegacyScreenSerializer(serializers.ModelSerializer):
         fields = (
             'start',
             'end',
-            'internal_diameter',
+            'diameter',
             'assembly_type',
             'slot_size',
         )
