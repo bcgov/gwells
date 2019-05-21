@@ -235,8 +235,7 @@ class StackWells():
                 k: True for k in data.keys() if
                 k in [field.name for field in FieldsProvided._meta.get_fields()]
             }
-            original_fields = FieldsProvided(activity_submission=legacy.data['filing_number'], **original_data_provided)
-            original_fields.save()
+            FieldsProvided.objects.create(activity_submission=legacy, **original_data_provided)
 
             return legacy
         logger.info('invalid legacy data: {}'.format(data))
