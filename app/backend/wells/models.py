@@ -1936,7 +1936,7 @@ class Casing(AuditModel):
                                 null=True, blank=True, validators=[MinValueValidator(Decimal('0.00'))])
     end = models.DecimalField(db_column='casing_to', max_digits=7, decimal_places=2, verbose_name='To',
                               null=True, blank=True, validators=[MinValueValidator(Decimal('0.01'))])
-    # NOTE: Diameter should be pulling from internal_diameter
+    # NOTE: Diameter should be pulling from screen.diameter
     diameter = models.DecimalField(
         max_digits=8, decimal_places=3, verbose_name='Diameter', null=True,
         blank=True, validators=[MinValueValidator(Decimal('0.5'))],
@@ -1981,7 +1981,7 @@ class Casing(AuditModel):
         }
 
 
-@reversion.register(fields=['start', 'end', 'internal_diameter', 'assembly_type', 'slot_size'])
+@reversion.register(fields=['start', 'end', 'diameter', 'assembly_type', 'slot_size'])
 class Screen(AuditModel):
     """
     Screen in a well
@@ -2000,7 +2000,7 @@ class Screen(AuditModel):
                                 blank=True, null=True, validators=[MinValueValidator(Decimal('0.00'))])
     end = models.DecimalField(db_column='screen_to', max_digits=7, decimal_places=2, verbose_name='To',
                               blank=False, null=True, validators=[MinValueValidator(Decimal('0.01'))])
-    internal_diameter = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='Diameter',
+    diameter = models.DecimalField(db_column='screen_diameter', max_digits=7, decimal_places=2, verbose_name='Diameter',
                                             blank=True, null=True,
                                             validators=[MinValueValidator(Decimal('0.0'))])
     assembly_type = models.ForeignKey(

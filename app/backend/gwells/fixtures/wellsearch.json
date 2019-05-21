@@ -11,7 +11,7 @@
             "well": 112316,
             "start": "192.00",
             "end": "192.00",
-            "internal_diameter": "6.00",
+            "diameter": "6.00",
             "assembly_type": "K_PACKER",
             "slot_size": null
         }
@@ -28,7 +28,7 @@
             "well": 112316,
             "start": "195.00",
             "end": "200.00",
-            "internal_diameter": "5.00",
+            "diameter": "5.00",
             "assembly_type": "SCREEN",
             "slot_size": "10.00"
         }
@@ -45,7 +45,7 @@
             "well": 112316,
             "start": "192.00",
             "end": "195.00",
-            "internal_diameter": "5.00",
+            "diameter": "5.00",
             "assembly_type": "RISER_PIPE",
             "slot_size": null
         }
@@ -62,7 +62,7 @@
             "well": 20143,
             "start": null,
             "end": null,
-            "internal_diameter": null,
+            "diameter": null,
             "assembly_type": null,
             "slot_size": null
         }

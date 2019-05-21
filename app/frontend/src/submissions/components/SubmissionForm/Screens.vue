@@ -130,8 +130,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 <form-input
                   group-class="my-1"
                   :id="`screenDepthFrom_${index}`"
-                  aria-label="Depth from (feet)"
                   type="number"
+                  aria-label="Depth from (feet)"
                   v-model="screensData[index].start"
                   :errors="getScreenError(index).start"
                   :loaded="getScreenLoaded(index).start"
@@ -141,8 +141,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 <form-input
                   group-class="my-1"
                   :id="`screenDepthTo_${index}`"
-                  aria-label="Depth to (feet)"
                   type="number"
+                  aria-label="Depth to (feet)"
                   v-model="screensData[index].end"
                   :errors="getScreenError(index).end"
                   :loaded="getScreenLoaded(index).end"
@@ -152,11 +152,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 <form-input
                   group-class="my-1"
                   :id="`screenDiameter_${index}`"
-                  aria-label="Diameter (inches)"
                   type="number"
-                  v-model="screensData[index].internal_diameter"
-                  :errors="getScreenError(index).internal_diameter"
-                  :loaded="getScreenLoaded(index).internal_diameter"
+                  aria-label="Diameter (inches)"
+                  v-model="screensData[index].diameter"
+                  :errors="getScreenError(index).diameter"
+                  :loaded="getScreenLoaded(index).diameter"
                   />
               </td>
               <td class="input-width-small py-0">
@@ -294,7 +294,7 @@ export default {
       return {
         start: '',
         end: '',
-        internal_diameter: '',
+        diameter: '',
         assembly_type: '',
         slot_size: ''
       }

@@ -316,7 +316,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               small
               bordered
               :items="filterBlankRows(form.screen_set)"
-              :fields="['from', 'to', 'internal_diameter', 'assembly_type', 'slot_size']"
+              :fields="['from', 'to', 'diameter', 'assembly_type', 'slot_size']"
               show-empty
               >
             <template slot="from" slot-scope="data">{{data.item.start}} ft</template>
