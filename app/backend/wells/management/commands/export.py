@@ -238,7 +238,7 @@ class Command(BaseCommand):
         ########
         # SCREEN
         ########
-        screen_sql = ("""select screen.well_tag_number, screen_from, screen_to, internal_diameter,
+        screen_sql = ("""select screen.well_tag_number, screen_from, screen_to, screen_diameter,
  screen_assembly_type_code, slot_size
  from screen
  inner join well on well.well_tag_number = screen.well_tag_number

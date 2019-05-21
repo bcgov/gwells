@@ -365,7 +365,7 @@
       "registries_activity": "DRILL",
       "person": "257aa7c0-6f15-47e8-8217-ae7f749b5180",
       "organization": "cc3345c1-7291-48fc-b3d2-0b97a189bf1a",
-      "registration_no": null
+      "registration_no": "WD 382934"
     }
   }, {
     "model": "registries.register",
@@ -378,7 +378,7 @@
       "registries_activity": "DRILL",
       "person": "7764a47a-020c-4c45-b729-7a2f6c0a488c",
       "organization": "94a0adca-54ca-4825-8e35-0a3a6a791ac6",
-      "registration_no": ""
+      "registration_no": "WD 0827261"
     }
   }, {
     "model": "registries.register",
@@ -417,7 +417,7 @@
       "registries_activity": "DRILL",
       "person": "d660ccb1-46d1-4e7a-93f3-0e77f71ecf24",
       "organization": "cc3345c1-7291-48fc-b3d2-0b97a189bf1a",
-      "registration_no": ""
+      "registration_no": "WD 01234567"
     }
   }, {
     "model": "registries.register",
@@ -430,7 +430,7 @@
       "registries_activity": "PUMP",
       "person": "7764a47a-020c-4c45-b729-7a2f6c0a488c",
       "organization": "ef819007-4a05-4da2-b3d6-7557ec334bb8",
-      "registration_no": ""
+      "registration_no": "WPI 0034567"
     }
   }, {
     "model": "registries.register",
@@ -443,7 +443,7 @@
       "registries_activity": "PUMP",
       "person": "d660ccb1-46d1-4e7a-93f3-0e77f71ecf24",
       "organization": "ef819007-4a05-4da2-b3d6-7557ec334bb8",
-      "registration_no": ""
+      "registration_no": "WPI 98765"
     }
   }, {
     "model": "registries.register",
