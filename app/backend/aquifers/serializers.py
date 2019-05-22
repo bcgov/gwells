@@ -212,7 +212,11 @@ class AquiferDetailSerializer(serializers.ModelSerializer):
         ).values('well_tag_number', 'observation_well_number')
 
         details['wells_by_licence'] = []
+        _map = {}
         for licence in licences:
+            if licence.licence_number in _map:  # only insert each licence once.
+                continue
+            _map[licence.licence_number] = 1
             details['wells_by_licence'].append({
                 'licence_number': licence.licence_number,
                 'well_tag_numbers_in_licence': ', '.join([str(l['well_tag_number']) for l in licence.wells.all().values("well_tag_number")])
