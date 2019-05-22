@@ -40,7 +40,10 @@ export default {
           sum[key] = sumBy(val, o => o.total_qty)
           return sum
         })
-        const chartLabel = groupedSum.map(o => Object.keys(o)[0].split(' - ')[1])
+        const chartLabel = groupedSum.map(o =>
+          Object.keys(o)[0].split(' - ')[1] + // the label, without code.
+          ' - ' +
+          Object.values(o)[0]) // the value of the pie slice.
         const chartData = groupedSum.map(o => Object.values(o)[0])
         this.renderChart({
           labels: chartLabel,

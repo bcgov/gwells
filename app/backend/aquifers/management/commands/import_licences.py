@@ -129,3 +129,9 @@ class Command(BaseCommand):
                     well.aquifer = aquifer
                 well.licence = licence
                 well.save()
+
+                logging.info('assocated well={} aqufier={} licence={}'.format(
+                    well.pk,
+                    aquifer.pk,
+                    licence.licence_number
+                ))
