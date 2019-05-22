@@ -171,7 +171,7 @@
               <PieChart :chartData="licence_details.usage" class="mt-3"></PieChart>
             </b-col>
             <b-col xl=6 cols=12>
-              <h5 class="pie-chart-title">Licenced quanity by use</h5>
+              <h5 class="pie-chart-title">Licenced quantity by use</h5>
               <PieChart :chartData="licence_details.lic_qty" class="mt-3"></PieChart>
             </b-col>
           </b-row>
