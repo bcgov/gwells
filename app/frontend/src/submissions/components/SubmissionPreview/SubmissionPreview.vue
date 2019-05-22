@@ -122,7 +122,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     </tr>
                     <tr>
                       <th class="w-50">Property Identification Description (PID)</th>
-                      <td>{{ ('000000000' + form.legal_pid).slice(-9) }}</td>
+                      <td>{{ form.legal_pid }}</td>
                     </tr>
                   </tbody>
                 </table>
