@@ -69,7 +69,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   :id="`lithologyDepthFrom${index}`"
                   aria-label="Depth from (feet)"
                   type="number"
-                  v-model="lithologyData[index].lithology_from"
+                  v-model="lithologyData[index].start"
                   group-class="mt-1 mb-0"/>
               </td>
               <td class="input-width-small">
@@ -77,7 +77,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   :id="`lithologyDepthTo${index}`"
                   aria-label="Depth to (feet)"
                   type="number"
-                  v-model="lithologyData[index].lithology_to"
+                  v-model="lithologyData[index].end"
                   group-class="mt-1 mb-0"/>
               </td>
               <td>

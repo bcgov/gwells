@@ -207,7 +207,7 @@ class StackTest(TestCase):
             person_responsible=self.driller,
             owner_province_state=self.province,
             well_activity_type=WellActivityCode.types.construction(),
-            )
+        )
         stacker = StackWells()
         well = stacker.process(submission.filing_number)
         submission = ActivitySubmission.objects.get(filing_number=submission.filing_number)
@@ -219,7 +219,7 @@ class StackTest(TestCase):
         # We create a pre-existing "legacy well".
         well = Well.objects.create(create_user='Blah', update_user='Blah')
         # We attached lithology to the well.
-        LithologyDescription.objects.create(well=well, lithology_from=117, lithology_to=None)
+        LithologyDescription.objects.create(well=well, start=117, end=None)
         stacker = StackWells()
         with self.assertRaises(ValidationError):
             try:
@@ -244,7 +244,7 @@ class StackTest(TestCase):
             person_responsible=self.driller,
             owner_province_state=self.province,
             well_activity_type=WellActivityCode.types.construction(),
-            )
+        )
         stacker = StackWells()
         well = stacker.process(submission.filing_number)
         Well.objects.get(well_tag_number=well.well_tag_number)
@@ -263,7 +263,7 @@ class StackTest(TestCase):
             person_responsible=self.driller,
             owner_province_state=self.province,
             well_activity_type=WellActivityCode.types.construction(),
-            )
+        )
         stacker = StackWells()
         well = stacker.process(construction.filing_number)
         # Update the well with an alteration
@@ -277,7 +277,7 @@ class StackTest(TestCase):
             owner_province_state=self.province,
             well_activity_type=WellActivityCode.types.alteration(),
             well=well
-            )
+        )
         well = stacker.process(alteration.filing_number)
         self.assertEqual(new_owner_full_name, well.owner_full_name)
 
@@ -310,7 +310,7 @@ class StackTest(TestCase):
             owner_province_state=self.province,
             well_activity_type=WellActivityCode.types.alteration(),
             well=well
-            )
+        )
 
         stacker = StackWells()
         stacker.process(submission.filing_number)
@@ -364,7 +364,7 @@ class StackTest(TestCase):
             owner_province_state=self.province,
             well_activity_type=WellActivityCode.types.construction(),
             well=well
-            )
+        )
 
         stacker = StackWells()
         stacker.process(submission.filing_number)
@@ -397,7 +397,7 @@ class StackTest(TestCase):
             owner_province_state=self.province,
             well_activity_type=WellActivityCode.types.decommission(),
             well=well
-            )
+        )
 
         stacker = StackWells()
         stacker.process(submission.filing_number)
@@ -420,7 +420,7 @@ class StackTest(TestCase):
             work_start_date=start_date,
             work_end_date=end_date,
             well_activity_type=WellActivityCode.types.construction(),
-            )
+        )
         stacker = StackWells()
         well = stacker.process(submission.filing_number)
         Well.objects.get(well_tag_number=well.well_tag_number)
@@ -438,7 +438,7 @@ class StackTest(TestCase):
             work_start_date=start_date,
             work_end_date=end_date,
             well_activity_type=WellActivityCode.types.alteration(),
-            )
+        )
         stacker = StackWells()
         well = stacker.process(submission.filing_number)
         Well.objects.get(well_tag_number=well.well_tag_number)
@@ -456,7 +456,7 @@ class StackTest(TestCase):
             work_start_date=start_date,
             work_end_date=end_date,
             well_activity_type=WellActivityCode.types.decommission(),
-            )
+        )
         stacker = StackWells()
         well = stacker.process(submission.filing_number)
         Well.objects.get(well_tag_number=well.well_tag_number)
@@ -480,7 +480,7 @@ class StackTest(TestCase):
             person_responsible=self.driller,
             owner_province_state=self.province,
             well_activity_type=WellActivityCode.types.construction()
-            )
+        )
         stacker = StackWells()
         well = stacker.process(submission.filing_number)
 

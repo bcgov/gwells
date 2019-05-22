@@ -470,8 +470,8 @@ export default {
         number: ''
       },
       lithology_fields: {
-        lithology_from: { label: 'From (ft bgl)' },
-        lithology_to: { label: 'To (ft bgl)' },
+        start: { label: 'From (ft bgl)' },
+        end: { label: 'To (ft bgl)' },
         lithology_raw_data: { label: 'Raw Data' },
         lithology_description: { label: 'Description' },
         lithology_moisture: { label: 'Moisture' },

@@ -1736,7 +1736,7 @@ class FieldsProvided(models.Model):
     linerperforation_set = models.BooleanField(default=False)
 
 
-@reversion.register(fields=['lithology_from', 'lithology_to', 'lithology_raw_data', 'lithology_description',
+@reversion.register(fields=['start', 'end', 'lithology_raw_data', 'lithology_description',
                             'lithology_colour', 'lithology_hardness', 'lithology_material', 'lithology_observation',
                             'water_bearing_estimated_flow', 'water_bearing_estimated_flow_units',  'lithology_moisture',
                             'bedrock_material', 'bedrock_material_descriptor', 'lithology_structure',
@@ -1755,15 +1755,17 @@ class LithologyDescription(AuditModel):
         related_name='lithologydescription_set',
         db_comment=('The file number assigned to a particular well in the in the province\'s Groundwater '
                     'Wells and Aquifers application.'))
-    lithology_from = models.DecimalField(
+    start = models.DecimalField(
         max_digits=7, decimal_places=2, verbose_name='From',
         blank=True, null=True,
+        db_column='lithology_from',
         validators=[MinValueValidator(Decimal('0.00'))],
         db_comment=('Depth below ground surface of the start of the lithology material for a particular '
                     'lithology layer, as observed during the construction or alteration of a well, '
                     'measured in feet.'))
-    lithology_to = models.DecimalField(
+    end = models.DecimalField(
         max_digits=7, decimal_places=2, verbose_name='To',
+        db_column='lithology_to',
         blank=True, null=True, validators=[MinValueValidator(Decimal('0.01'))],
         db_comment=('Depth below ground surface of the end of the lithology material for a particular '
                     'lithology layer as observed during the construction or alteration of a well, measured '
@@ -1843,10 +1845,10 @@ class LithologyDescription(AuditModel):
 
     def __str__(self):
         if self.activity_submission:
-            return 'activity_submission {} {} {}'.format(self.activity_submission, self.lithology_from,
-                                                         self.lithology_to)
+            return 'activity_submission {} {} {}'.format(self.activity_submission, self.start,
+                                                         self.end)
         else:
-            return 'well {} {} {}'.format(self.well, self.lithology_from, self.lithology_to)
+            return 'well {} {} {}'.format(self.well, self.start, self.end)
 
 
 class PerforationBase(AuditModel):

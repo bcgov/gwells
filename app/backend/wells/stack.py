@@ -131,6 +131,10 @@ KEY_VALUE_LOOKUP = {
 }
 
 
+def is_staff_edit(submission):
+    return submission.well_activity_type.code == WELL_ACTIVITY_CODE_STAFF_EDIT
+
+
 def overlap(a, b):
     """
     Checks to see if two casings intersect, or have identical start/end positions.
@@ -310,7 +314,12 @@ class StackWells():
                           record.create_date))
 
         # these are depth-specific sets that have a "start" and "end" value
-        FOREIGN_KEYS = ('casing_set', 'screen_set', 'linerperforation_set', 'decommission_description_set',)
+        FOREIGN_KEYS = (
+            'casing_set',
+            'screen_set',
+            'linerperforation_set',
+            'decommission_description_set',
+            'lithologydescription_set')
 
         composite = {}
 
@@ -343,7 +352,7 @@ class StackWells():
                 # ManyToMany values need to be checked using the transform_value method.
                 # if the number of values in a manytomany lookup is zero, and this field
                 # wasn't included in a staff edit, we can skip to the next field.
-                if (submission.well_activity_type.code == WELL_ACTIVITY_CODE_STAFF_EDIT and
+                if (is_staff_edit(submission) and
                     source_key in MANY_TO_MANY_LOOKUP and
                     len(self.transform_value(value, source_key)) == 0 and
                     getattr(submission, 'fields_provided', None) and
@@ -359,7 +368,7 @@ class StackWells():
                         value is False or
                         value == 0 or
                         value == '' or (
-                            submission.well_activity_type.code == WELL_ACTIVITY_CODE_STAFF_EDIT and
+                            is_staff_edit(submission) and
                             getattr(submission, 'fields_provided', None) and
                             getattr(submission.fields_provided, source_key, None)
                         )):
@@ -378,7 +387,7 @@ class StackWells():
                         #
                         # If the target_key is not in one of the foreign key sets (i.e., it's a property/
                         # column of a well), then the value can overwrite the previous composite value.
-                        if (submission.well_activity_type.code == WELL_ACTIVITY_CODE_STAFF_EDIT and
+                        if (is_staff_edit(submission) and
                                 target_key in composite and
                                 (target_key in FOREIGN_KEYS)):
                             # staff edits come in with the entire set of values and thus can replace
@@ -390,9 +399,14 @@ class StackWells():
                             value = self.transform_value(value, source_key)
                             composite[target_key] = self._merge_series(composite[source_key], value)
                         elif target_key in composite and target_key in MANY_TO_MANY_LOOKUP:
-                            # Only update if there's a new value.
                             value = self.transform_value(value, source_key)
-                            composite[target_key] = value
+
+                            # Only update if there's a new value (except if a staff edit that
+                            # included this field in the edit
+                            if (len(value) > 0 or
+                                    (is_staff_edit(submission) and
+                                        getattr(submission.fields_provided, source_key, None))):
+                                composite[target_key] = value
                         else:
                             value = self.transform_value(value, source_key)
                             composite[target_key] = value

@@ -134,8 +134,8 @@ class TestConstruction(TestSubmissionsBase):
         data = {
             'lithologydescription_set': [
                 {
-                    'lithology_from': 0,
-                    'lithology_to': 10
+                    'start': 0,
+                    'end': 10
                 }
             ]
         }
@@ -157,8 +157,8 @@ class TestConstruction(TestSubmissionsBase):
         data = {
             'lithologydescription_set': [
                 {
-                    'lithology_from': 0,
-                    'lithology_to': 10
+                    'start': 0,
+                    'end': 10
                 }
             ]
         }
@@ -410,14 +410,14 @@ class TestEdit(TestSubmissionsBase):
         self.assertEqual(response.status_code,
                          status.HTTP_201_CREATED, response.data)
 
-    def test_lithology_to_greater_than_zero_on_legacy(self):
+    def test_end_greater_than_zero_on_legacy(self):
         """ Test that if a legacy well does not have correct lithology info, it doesn't cause problems """
         # We create a pre-existing "legacy well"
         well = Well.objects.create(create_user='Blah', update_user='Blah')
         # We attached lithology to the well, that's should fail validation.
         lithology = LithologyDescription.objects.create(
-            lithology_from=0,
-            lithology_to=0,
+            start=0,
+            end=0,
             well=well,
             create_user='Blah',
             update_user='Blah')
@@ -428,8 +428,8 @@ class TestEdit(TestSubmissionsBase):
             'longitude': -123.55975,
             'lithologydescription_set': [
                 {
-                    'lithology_from': 0,
-                    'lithology_to': 10
+                    'start': 0,
+                    'end': 10
                 }
             ]
         }
@@ -444,7 +444,7 @@ class TestEdit(TestSubmissionsBase):
         well = Well.objects.create(create_user='Blah', update_user='Blah')
         # We attached lithology to the well, that should fail validation.
         LithologyDescription.objects.create(
-            well=well, lithology_from=117, lithology_to=None, create_user='Blah', update_user='Blah')
+            well=well, start=117, end=None, create_user='Blah', update_user='Blah')
         # Doing an edit, without passing in the correct validation, should fail!
         data = {
             'well': well.well_tag_number
@@ -460,14 +460,14 @@ class TestEdit(TestSubmissionsBase):
         well = Well.objects.create(create_user='Blah', update_user='Blah')
         # We attached lithology to the well, that should fail validation.
         LithologyDescription.objects.create(
-            well=well, lithology_from=117, lithology_to=None, create_user='Blah', update_user='Blah')
+            well=well, start=117, end=None, create_user='Blah', update_user='Blah')
         # Doing a valid edit, updating the lithology information, should be fine.
         data = {
             'well': well.well_tag_number,
             'lithologydescription_set': [
                 {
-                    'lithology_from': 0,
-                    'lithology_to': 10
+                    'start': 0,
+                    'end': 10
                 }
             ]
         }
@@ -482,22 +482,22 @@ class TestEdit(TestSubmissionsBase):
         well = Well.objects.create(create_user='Blah', update_user='Blah')
         # We attached lithology to the well, that should fail validation.
         LithologyDescription.objects.create(
-            well=well, lithology_from=117, lithology_to=None, update_user='Blah', create_user='Blah')
+            well=well, start=117, end=None, update_user='Blah', create_user='Blah')
         # Doing a valid edit, updating the lithology information, should be fine.
         data = {
             'well': well.well_tag_number,
             'lithologydescription_set': [
                 {
-                    'lithology_from': 0,
-                    'lithology_to': 10
+                    'start': 0,
+                    'end': 10
                 }
             ]
         }
         self.client.post(reverse('STAFF_EDIT'), data, format='json')
         well = Well.objects.get(well_tag_number=well.well_tag_number)
         lithology = well.lithologydescription_set.all()
-        self.assertAlmostEqual(lithology[0].lithology_from, 0)
-        self.assertAlmostEqual(lithology[0].lithology_to, 10)
+        self.assertAlmostEqual(lithology[0].start, 0)
+        self.assertAlmostEqual(lithology[0].end, 10)
 
     def test_no_city_on_legacy(self):
         """ Test that the legacy record creates ok, even with missing legacy data.
@@ -574,8 +574,8 @@ class TestEdit(TestSubmissionsBase):
             'well': well.well_tag_number,
             'lithologydescription_set': [
                 {
-                    'lithology_from': 0,
-                    'lithology_to': 10
+                    'start': 0,
+                    'end': 10
                 }
             ]
         }
@@ -599,8 +599,8 @@ class TestEdit(TestSubmissionsBase):
             'well': well.well_tag_number,
             'lithologydescription_set': [
                 {
-                    'lithology_from': 0,
-                    'lithology_to': 10
+                    'start': 0,
+                    'end': 10
                 }
             ]
         }

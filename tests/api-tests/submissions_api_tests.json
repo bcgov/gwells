@@ -1219,7 +1219,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"well_activity_type\": \"CON\",\n\t\"owner_full_name\": \"Bob\",\n\t\"owner_mailing_address\": \"123 Place\",\n\t\"owner_city\": \"Victoria\",\n\t\"owner_province_state\": \"BC\",\n\t\"lithologydescription_set\": [\n\t\t{\n\t\t\t\"lithology_from\": 0,\n\t\t\t\"lithology_to\": 10,\n\t\t\t\"lithology_raw_data\": \"SAND, silty, some gravel\",\n\t\t\t\"lithology_hardness\": \"DENSE\",\n\t\t\t\"lithology_colour\": 13,\n\t\t\t\"lithology_moisture\": \"WET\",\n\t\t\t\"water_bearing_estimated_flow\": 2.1,\n\t\t\t\"lithology_observation\": \"hard to drill through\"\n\t\t}\n\t]\n}"
+									"raw": "{\n\t\"well_activity_type\": \"CON\",\n\t\"owner_full_name\": \"Bob\",\n\t\"owner_mailing_address\": \"123 Place\",\n\t\"owner_city\": \"Victoria\",\n\t\"owner_province_state\": \"BC\",\n\t\"lithologydescription_set\": [\n\t\t{\n\t\t\t\"start\": 0,\n\t\t\t\"end\": 10,\n\t\t\t\"lithology_raw_data\": \"SAND, silty, some gravel\",\n\t\t\t\"lithology_hardness\": \"DENSE\",\n\t\t\t\"lithology_colour\": 13,\n\t\t\t\"lithology_moisture\": \"WET\",\n\t\t\t\"water_bearing_estimated_flow\": 2.1,\n\t\t\t\"lithology_observation\": \"hard to drill through\"\n\t\t}\n\t]\n}"
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/construction?format=json",
@@ -1318,11 +1318,11 @@
 											"pm.test(\"Expect lithology to have one value\", function() {",
 											"    pm.expect(jsonData.lithologydescription_set.length).to.equal(1);",
 											"})",
-											"pm.test(\"Lithology entry: expect lithology_from to be 0.00\", function() {",
-											"    pm.expect(jsonData.lithologydescription_set[0].lithology_from).to.equal('0.00');",
+											"pm.test(\"Lithology entry: expect start to be 0.00\", function() {",
+											"    pm.expect(jsonData.lithologydescription_set[0].start).to.equal('0.00');",
 											"})",
-											"pm.test(\"Lithology entry: expect lithology_to to be 10.00\", function() {",
-											"    pm.expect(jsonData.lithologydescription_set[0].lithology_to).to.equal('10.00');",
+											"pm.test(\"Lithology entry: expect end to be 10.00\", function() {",
+											"    pm.expect(jsonData.lithologydescription_set[0].end).to.equal('10.00');",
 											"})",
 											"",
 											"pm.test(\"Lithology entry: expect lithology_raw_data to be equal to first submission\", function() {",
