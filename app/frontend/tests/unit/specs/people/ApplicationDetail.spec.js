@@ -37,31 +37,33 @@ describe('ApplicationDetail.vue', () => {
 
     ApiService.__setMockResponse(fakeRegistration)
   })
-  it('loads the currentDriller and renders the person name as the page title', () => {
+  it('loads the currentDriller and renders the person name as the page title', (done) => {
     const wrapper = shallowMount(ApplicationDetail, {
       localVue,
       store,
       stubs: ['router-link', 'router-view'],
       mocks: {
-        $route: {params: {person_guid: fakePerson.person_guid, application_guid: fakeRegistration.applications[0].application_guid}}
+        $route: { params: { person_guid: fakePerson.person_guid, application_guid: fakeRegistration.applications[0].application_guid } }
       }
     })
     wrapper.vm.$nextTick(() => {
       const titlePersonName = wrapper.find('#titlePersonName')
       expect(titlePersonName.text()).toBe(`${fakePerson.first_name} ${fakePerson.surname}`)
+      done()
     })
   })
-  it('gets the list of qualified well/hole types from the driller profile for this application', () => {
+  it('gets the list of qualified well/hole types from the driller profile for this application', (done) => {
     const wrapper = shallowMount(ApplicationDetail, {
       localVue,
       store,
       stubs: ['router-link', 'router-view'],
       mocks: {
-        $route: {params: {person_guid: fakePerson.person_guid, application_guid: fakeRegistration.applications[0].application_guid}}
+        $route: { params: { person_guid: fakePerson.person_guid, application_guid: fakeRegistration.applications[0].application_guid } }
       }
     })
     wrapper.vm.$nextTick(() => {
       expect(wrapper.vm.qualifications.length).toBe(7)
+      done()
     })
   })
   describe('User has edit rights', () => {
@@ -85,7 +87,7 @@ describe('ApplicationDetail.vue', () => {
       store,
       stubs: ['router-link', 'router-view'],
       mocks: {
-        $route: {params: {person_guid: fakePerson.person_guid, application_guid: fakeRegistration.applications[0].application_guid}}
+        $route: { params: { person_guid: fakePerson.person_guid, application_guid: fakeRegistration.applications[0].application_guid } }
       }
     })
     wrapper.vm.$nextTick(() => {
@@ -140,7 +142,7 @@ describe('ApplicationDetail.vue', () => {
       store,
       stubs: ['router-link', 'router-view'],
       mocks: {
-        $route: {params: {person_guid: fakePerson.person_guid, application_guid: fakeRegistration.applications[0].application_guid}}
+        $route: { params: { person_guid: fakePerson.person_guid, application_guid: fakeRegistration.applications[0].application_guid } }
       }
     })
     it('doesn\'t show edit button if user doesn\'t have appropriate rights', () => {
