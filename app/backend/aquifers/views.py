@@ -582,17 +582,15 @@ def aquifer_geojson_simplified(request):
 AQUIFER_EXPORT_FIELDS = [
     'aquifer_id',
     'aquifer_name',
-    'area',
-    'demand',
-    'known_water_use',
-    'litho_stratographic_unit',
-    'mapping_year',
+    'location_description',
     'material',
-    'notes',
-    'productivity',
-    'quality_concern',
+    'litho_stratographic_unit',
     'subtype',
     'vulnerability',
+    'area',
+    'productivity',
+    'demand',
+    'mapping_year',
 ]
 
 
