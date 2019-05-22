@@ -114,10 +114,10 @@
             @row-clicked="rowClicked"
             v-if="aquiferList"
             responsive>
-            <template slot="aquifer_id" slot-scope="row">
+            <template slot="id" slot-scope="row">
               <p class="aquifer-id" v-on:click.prevent="onAquiferIdClick(row.item)">{{row.item.id}}</p>
             </template>
-            <template slot="aquifer_name" slot-scope="row">
+            <template slot="name" slot-scope="row">
               {{row.item.name}}
             </template>
           </b-table>
@@ -239,7 +239,7 @@ export default {
   data () {
     let query = this.$route.query || {}
     return {
-      sortBy: 'aquifer_id',
+      sortBy: 'id',
       sortDesc: false,
       search: query.search,
       aquifer_search: query.aquifer_search,
@@ -249,11 +249,11 @@ export default {
       aquifers_search_results: {},
       response: {},
       aquiferListFields: [
-        { key: 'aquifer_id', label: 'Aquifer number', sortable: true },
-        { key: 'aquifer_name', label: 'Aquifer name', sortable: true },
-        { key: 'location_description', label: 'Descriptive location', sortable: true },
+        { key: 'id', label: 'Aquifer number', sortable: true },
+        { key: 'name', label: 'Aquifer name', sortable: true },
+        { key: 'location', label: 'Descriptive location', sortable: true },
         { key: 'material', label: 'Material', sortable: true },
-        { key: 'litho_stratographic_unit', label: 'Litho stratigraphic unit', sortable: true },
+        { key: 'lsu', label: 'Litho stratigraphic unit', sortable: true },
         { key: 'subtype', label: 'Subtype', sortable: true },
         { key: 'vulnerability', label: 'Vulnerability', sortable: true },
         { key: 'area', label: 'Size-km²', sortable: true },
@@ -400,7 +400,7 @@ export default {
       }
     },
     onAquiferIdClick (data) {
-      if (!data.aquifer_id) {
+      if (!data.id) {
         return
       }
       this.$router.push({

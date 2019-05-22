@@ -86,11 +86,11 @@
               </li>
               <li>
                 <dt>Aquifer name</dt>
-                <dd id="aquifer-view-name">{{record.name}}</dd>
+                <dd id="aquifer-view-name">{{record.aquifer_name}}</dd>
               </li>
               <li>
                 <dt>Litho stratigraphic unit</dt>
-                <dd>{{record.lsu}}</dd>
+                <dd>{{record.litho_stratographic_unit}}</dd>
               </li>
               <li>
                 <dt>Descriptive location</dt>

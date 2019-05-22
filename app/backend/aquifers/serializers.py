@@ -54,7 +54,7 @@ class AquiferResourceSerializer(serializers.ModelSerializer):
 
 
 class AquiferSerializer(serializers.ModelSerializer):
-    """Serialize a aquifer list"""
+    """Serialize an aquifer list"""
 
     def to_representation(self, instance):
         """
@@ -67,7 +67,7 @@ class AquiferSerializer(serializers.ModelSerializer):
         """
         ret = super().to_representation(instance)
         ret['id'] = instance['aquifer_id']
-        ret['name'] = instance['aquifer_id']
+        ret['name'] = instance['aquifer_name']
         if instance['area']:
             ret['area'] = float(instance.get('area'))
         ret['lsu'] = instance['litho_stratographic_unit']
