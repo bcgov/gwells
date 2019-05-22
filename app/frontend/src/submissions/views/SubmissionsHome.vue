@@ -524,7 +524,6 @@ export default {
     },
     stripBlankStrings (formObject, skipKeys = []) {
       // strips blank strings from a form object
-
       Object.keys(formObject).forEach((key) => {
         if (skipKeys.includes(key)) {
           return
