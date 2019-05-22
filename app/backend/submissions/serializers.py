@@ -121,6 +121,21 @@ class WellSubmissionSerializerBase(AuditModelSerializer):
     def get_well_activity_type(self):
         raise NotImplementedError()  # Implement in base class!
 
+    def validate(self, attrs):
+        # Check ground elevation fields for mutual requirement
+        if 'ground_elevation' in attrs or 'ground_elevation_method' in attrs:
+            errors = {}
+            if attrs['ground_elevation'] is None and attrs['ground_elevation_method'] is not None:
+                if attrs['ground_elevation_method'].description != 'Unknown':
+                    errors['ground_elevation'] = 'Both ground elevation and method are required.'
+            if attrs['ground_elevation'] is not None and attrs['ground_elevation_method'] is None:
+                errors['ground_elevation_method'] = 'Both ground elevation and method are required.'
+
+            if len(errors) > 0:
+                raise serializers.ValidationError(errors)
+
+        return attrs
+
     @transaction.atomic
     def create(self, validated_data):
         try:
@@ -456,21 +471,6 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
         many=True, required=False)
     lithologydescription_set = LithologyDescriptionSerializer(
         many=True, required=False)
-
-    def validate(self, attrs):
-        # Check ground elevation fields for mutual requirement
-        if 'ground_elevation' in attrs or 'ground_elevation_method' in attrs:
-            errors = {}
-            if attrs['ground_elevation'] is None and attrs['ground_elevation_method'] is not None:
-                if attrs['ground_elevation_method'].description != 'Unknown':
-                    errors['ground_elevation'] = 'Both ground elevation and method are required.'
-            if attrs['ground_elevation'] is not None and attrs['ground_elevation_method'] is None:
-                errors['ground_elevation_method'] = 'Both ground elevation and method are required.'
-
-            if len(errors) > 0:
-                raise serializers.ValidationError(errors)
-
-        return attrs
 
     # Sets person_responsible and company_of back to object, otherwise client view only gets guid
     def to_representation(self, instance):
