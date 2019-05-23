@@ -23,6 +23,7 @@
               <router-link v-if="show.edit" :to="{ name: 'SubmissionsEdit', params: { id: $route.params.id } }" class="mr-3">
                 <button class="btn btn-primary mb-1">Edit</button>
               </router-link>
+              <span class="print-notice">For best print results, use the Chrome browser</span>
               <b-btn variant="light" aria-label="Print" class="mb-1" @click="handlePrint"><i class="fa fa-lg fa-print"></i></b-btn>
             </div>
           </legend>
@@ -584,6 +585,10 @@ export default {
 </script>
 
 <style lang="scss">
+.well-detail .print-notice {
+  font-size: 1rem;
+}
+
 @media print {
 
   .well-detail {
