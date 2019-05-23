@@ -251,7 +251,7 @@ const SEARCH_FIELDS = {
     label: 'Liner material',
     type: 'select',
     textField: 'description',
-    valueField: 'liner_material_code'
+    valueField: 'code'
   },
   linerDiameter: {
     param: 'liner_diameter',
@@ -415,9 +415,9 @@ const SEARCH_FIELDS = {
     textField: 'description',
     valueField: 'code'
   },
-  waterQualityOdor: {
-    param: 'water_quality_odor',
-    label: 'Water quality odor',
+  waterQualityOdour: {
+    param: 'water_quality_odour',
+    label: 'Water quality odour',
     type: 'text'
   },
   ems: {
@@ -474,7 +474,7 @@ const SEARCH_FIELDS = {
   },
   finishedWellDepth: {
     param: 'finished_well_depth',
-    label: 'Finished well depth - decommission',
+    label: 'Finished well depth',
     resultLabel: 'Finished well depth (feet)',
     type: 'range'
   },
@@ -666,6 +666,13 @@ const SEARCH_FIELDS = {
     param: 'decomission_end_date',
     label: 'Decomission end date',
     type: 'dateRange'
+  },
+  wellDisinfectedStatus: {
+    param: 'well_disinfected_status',
+    label: 'Well disinfected',
+    type: 'select',
+    textField: 'description',
+    valueField: 'well_disinfected_code'
   }
 }
 
@@ -740,16 +747,18 @@ export default {
         orgResponsible: this.organizationNames || [],
         ownerProvince: this.codes.province_codes || [],
         personResponsible: this.drillerNames || [],
+        publicationStatus: this.codes.well_publication_status_codes || [],
         screenIntakeMethod: this.codes.screen_intake_methods || [],
-        screenBottoms: this.codes.screen_bottoms || [],
+        screenBottom: this.codes.screen_bottoms || [],
         screenMaterial: this.codes.screen_materials || [],
-        screenOpenings: this.codes.screen_openings || [],
+        screenOpening: this.codes.screen_openings || [],
         screenType: this.codes.screen_types || [],
         surfaceSealMaterial: this.codes.surface_seal_materials || [],
         surfaceSealMethod: this.codes.surface_seal_methods || [],
         waterQualityCharacteristics: this.codes.water_quality_characteristics || [],
         waterQualityColour: this.codes.water_quality_colours || [],
         wellClass: this.codes.well_classes || [],
+        wellDisinfectedStatus: this.codes.well_disinfected_codes || [],
         wellStatus: this.codes.well_status_codes || [],
         wellSubclass: this.wellSubclassOptions,
         yieldEstimationMethod: this.codes.yield_estimation_methods || []
