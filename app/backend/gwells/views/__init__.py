@@ -66,6 +66,7 @@ class SurveyListView(ListAPIView):
     get: returns a list of active surveys
     """
 
+    swagger_schema = None
     serializer_class = SurveySerializer
     queryset = Survey.objects.filter(survey_enabled=True)
     pagination_class = None
