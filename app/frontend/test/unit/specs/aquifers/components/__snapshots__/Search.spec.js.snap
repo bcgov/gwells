@@ -342,9 +342,7 @@ exports[`Search Component Matches the snapshot 1`] = `
                   aria-colindex="3"
                   class=""
                   role="cell"
-                >
-                  Aggasiz/Sea Bird Island
-                </td>
+                />
                 <td
                   aria-colindex="4"
                   class=""
@@ -354,9 +352,7 @@ exports[`Search Component Matches the snapshot 1`] = `
                   aria-colindex="5"
                   class=""
                   role="cell"
-                >
-                  Fraser River Sediments
-                </td>
+                />
                 <td
                   aria-colindex="6"
                   class=""
