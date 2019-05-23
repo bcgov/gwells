@@ -1735,6 +1735,9 @@ class FieldsProvided(models.Model):
     screen_set = models.BooleanField(default=False)
     linerperforation_set = models.BooleanField(default=False)
 
+    class Meta:
+        db_table = 'fields_provided'
+
 
 @reversion.register(fields=['start', 'end', 'lithology_raw_data', 'lithology_description',
                             'lithology_colour', 'lithology_hardness', 'lithology_material', 'lithology_observation',
