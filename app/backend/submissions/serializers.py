@@ -121,6 +121,19 @@ class WellSubmissionSerializerBase(AuditModelSerializer):
     def get_well_activity_type(self):
         raise NotImplementedError()  # Implement in base class!
 
+    def validate(self, attrs):
+        errors = {}
+        if 'latitude' in attrs or 'longitude' in attrs:
+            if len(attrs['latitude']) <= 0:
+                errors['latitude'] = 'Latitude and Longitude are both required.'
+            if len(attrs['longitude']) <= 0:
+                errors['longitude'] = 'Latitude and Longitude are both required.'
+
+        if len(errors) > 0:
+            raise serializers.ValidationError(errors)
+
+        return attrs
+
     @transaction.atomic
     def create(self, validated_data):
         try:
@@ -139,8 +152,14 @@ class WellSubmissionSerializerBase(AuditModelSerializer):
 
                 # Convert lat long values into geom object stored on model
                 # Values are BC Albers. but we are using WGS84 Lat Lon to avoid rounding errors
-                if data.get('latitude', None) and data.get('longitude', None):
-                    validated_data['geom'] = Point(data['longitude'], data['latitude'], srid=4326)
+                if 'latitude' in data and 'longitude' in data:
+                    if data.get('latitude') == '' and data.get('longitude') == '':
+                        validated_data['geom'] = None
+                        data['geom'] = None
+                    else:
+                        point = Point(data['longitude'], data['latitude'], srid=4326)
+                        validated_data['geom'] = point
+                        data['geom'] = point
 
             # Remove the latitude and longitude fields if they exist
             validated_data.pop('latitude', None)
