@@ -46,7 +46,7 @@ Aquifers:
 https://apps.nrs.gov.bc.ca/gwells/api/v1/aquifers
 ```
 
-See the Swagger documentation for more examples.
+See the [Swagger documentation](https://apps.nrs.gov.bc.ca/gwells/api) for more examples.
 
 ## Developing GWELLS
 
