@@ -103,7 +103,7 @@ All contributors retain original copyright, but are granting a world-wide, royal
 
 ### Code With Us
 
-GWELLS has received significant contributions from the developer community through the [BC Dev Exchange](https://bcdevexchange.org/) Code With Us program, where paid opportunities to build features for GWELLS and other applications are posted regularly.
+Many of our features have been developed by members of the community. Check the [BC Developer Exchange website](https://bcdevexchange.org/), where paid opportunities to build features for GWELLS and other applications are posted.
 
 ## Issues
 Issues are tracked on the [GWELLS Trello board](https://trello.com/b/2UQZgXHR/wells-project-board).
