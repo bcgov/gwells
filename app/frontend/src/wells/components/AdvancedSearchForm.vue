@@ -170,7 +170,7 @@ const ADDITIONAL_FILTER_SECTIONS = [
     fields:
      [ 'waterQualityCharacteristics',
        'waterQualityColour',
-       'waterQualityOdor',
+       'waterQualityOdour',
        'ems' ] },
   { header: 'Well completion data',
     fields:
@@ -181,7 +181,7 @@ const ADDITIONAL_FILTER_SECTIONS = [
        'artesianFlow',
        'artesianPressure',
        'wellCapType',
-       'wellDisinfected' ] },
+       'wellDisinfectedStatus' ] },
   { header: 'Observation well information',
     fields: [ 'observationWellNumber', 'observationWellStatus' ] },
   { header: 'Decommission',
@@ -305,10 +305,10 @@ export default {
 
       this.selectedFilterId = null
     },
-    removeFilter (filterId) {
-      const index = this.selectedFilterIds.findIndex(filterId)
+    removeSelectedFilter (filterId) {
+      const index = this.selectedFilterIds.indexOf(filterId)
       this.selectedFilterIds.splice(index, 1)
-      delete this.filterParams[filterId]
+      this.filterParams[filterId] = {}
     },
     initFilterParams () {
       const filterParams = {...this.emptyFilterParams}

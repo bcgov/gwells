@@ -144,7 +144,7 @@ const RESULT_COLUMNS = [
   'recommendedPumpRate',
   'waterQualityCharacteristics',
   'waterQualityColour',
-  'waterQualityOdor',
+  'waterQualityOdour',
   'ems',
   'finalCasingStickUp',
   'bedrockDepth',
@@ -153,7 +153,7 @@ const RESULT_COLUMNS = [
   'artesianFlow',
   'artesianPressure',
   'wellCapType',
-  'wellDisinfected',
+  'wellDisinfectedStatus',
   'observationWellNumber',
   'observationWellStatus',
   'decommissionReason',
@@ -208,9 +208,11 @@ export default {
     },
     columns () {
       const columns = this.availableColumnIds.map((columnId) => {
+        const columnData = this.columnData[columnId]
+        const label = columnData.resultLabel ? columnData.resultLabel : columnData.label
         return {
           id: columnId,
-          label: this.columnData[columnId].label
+          label: label
         }
       })
       return Object.freeze(columns)
