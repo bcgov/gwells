@@ -37,7 +37,7 @@ Wells:
 https://apps.nrs.gov.bc.ca/gwells/api/v1/wells
 
 # all wells in an area bounded by sw_lat, sw_long, ne_lat, and ne_long
-https://apps.nrs.gov.bc.ca/gwells/api/v1/wells?sw_lat=51.599253751127776&sw_long=-128.2203409713128&ne_lat=52.10819209746323&ne_long=-127.15054727014092
+https://apps.nrs.gov.bc.ca/gwells/api/v1/wells?sw_lat=51.599253&sw_long=-128.220340&ne_lat=52.108192&ne_long=-127.150547
 ```
 
 Aquifers:
