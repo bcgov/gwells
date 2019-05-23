@@ -1,12 +1,16 @@
 # Groundwater Wells and Aquifers (GWELLS)
 
+https://apps.nrs.gov.bc.ca/gwells/
+
 ## Table of Contents
 
 1. [Introduction](#introduction)
+1. [Using the GWELLS API](#Using-the-gwells-api)
 1. [Developing GWELLS](#developing-gwells)
     * [Running the GWELLS application locally](#Running-the-GWELLS-application-locally)
     * [Authentication](#Authentication)
     * [Running tests](#Running-tests)
+    * [Making pull requests](#Making-pull-requests)
 1. [Architecture](#Architecture)
 1. [Contributing](#contributing)
     * [Code With Us](#code-with-us)
@@ -20,6 +24,29 @@ The Ministry of Environment receives and processes groundwater data and informat
 GWELLS, the new groundwater data repository, aims to improve the user experience when submitting and searching for well information, to improve the quality of the data being submitted, and to improve the overall functionality of the system to meet user and regulatory requirements.
 
 The application is being developed as an open source solution.
+
+## Using the GWELLS API
+
+GWELLS maintains a REST API where public data relating to wells is made available for other applications and services.
+
+Our Swagger documentation is available at https://apps.nrs.gov.bc.ca/gwells/api.  Some examples of GWELLS endpoints:
+
+Wells:
+```sh
+# all wells (paginated)
+https://apps.nrs.gov.bc.ca/gwells/api/v1/wells (all wells, paginated)
+
+# all wells in an area bounded by sw_lat, sw_long, ne_lat, and ne_long
+https://apps.nrs.gov.bc.ca/gwells/api/v1/wells?sw_lat=51.599253751127776&sw_long=-128.2203409713128&ne_lat=52.10819209746323&ne_long=-127.15054727014092
+```
+
+Aquifers:
+```sh
+# all aquifers
+https://apps.nrs.gov.bc.ca/gwells/api/v1/aquifers
+```
+
+See the Swagger documentation for more examples.
 
 ## Developing GWELLS
 
@@ -56,6 +83,10 @@ npm run unit
 
 Postman API tests:
 Import the json test collections in the `api-tests/` folder into [Postman](https://www.getpostman.com/).
+
+### Making pull requests
+
+Pull requests made from branches in the bcgov/gwells repo will kick off a dev pipeline, which runs tests and deploys a preview environment containing your changes.  The pull request page will update when the environment is deployed and mandatory checks (unit tests, etc.) pass or fail.
 
 ## Architecture
 
