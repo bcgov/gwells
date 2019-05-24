@@ -102,7 +102,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
 <script>
 import Vue from 'vue'
 import { mapActions, mapGetters, mapState } from 'vuex'
-import 'vuejs-noty/dist/vuejs-noty.css'
 import ApiService from '@/common/services/ApiService.js'
 import { FETCH_CODES, FETCH_WELL_TAGS } from '../store/actions.types.js'
 import inputFormatMixin from '@/common/inputFormatMixin.js'
@@ -273,7 +272,7 @@ export default {
             this.$noty.success('<div class="notifyText">Changes saved.</div>', { killer: true })
           })
           this.events.$emit('well-edited', true)
-          this.fetchWellDataForStaffEdit({reloadPage: false})
+          this.fetchWellDataForStaffEdit({ reloadPage: false })
         } else {
           this.$nextTick(() => {
             this.$noty.success('<div aria-label="Close" class="closeBtn">x</div><div class="notifyText">Well report submitted.</div>', { killer: true })
@@ -765,6 +764,8 @@ function initialState () {
 </script>
 
 <style lang="scss">
+@import '~vuejs-noty/dist/vuejs-noty.css';
+
   .slide-leave-active,
   .slide-enter-active {
     transition: 1s;

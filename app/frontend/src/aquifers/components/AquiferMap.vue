@@ -26,9 +26,9 @@ export default {
       // Fix courtesy of: https://github.com/PaulLeCam/react-leaflet/issues/255
       delete L.Icon.Default.prototype._getIconUrl
       L.Icon.Default.mergeOptions({
-        iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
-        iconUrl: require('leaflet/dist/images/marker-icon.png'),
-        shadowUrl: require('leaflet/dist/images/marker-shadow.png')
+        iconRetinaUrl: require('../../common/assets/images/marker-icon-2x.png'),
+        iconUrl: require('../../common/assets/images/marker-icon.png'),
+        shadowUrl: require('../../common/assets/images/marker-shadow.png')
       })
     },
     initMap () {
@@ -36,7 +36,7 @@ export default {
       this.map = L.map('map').setView([54.5, -126.5], 5)
       L.control.scale().addTo(this.map)
       // Add map layers.
-      tiledMapLayer({url: 'https://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer'}).addTo(this.map)
+      tiledMapLayer({ url: 'https://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer' }).addTo(this.map)
       L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW/ows?', {
         format: 'image/png',
         layers: 'pub:WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW',
@@ -48,7 +48,7 @@ export default {
 }
 </script>
 <style>
-@import "leaflet/dist/leaflet.css";
+@import "~leaflet/dist/leaflet.css";
 .map {
   width: 550px;
   height: 500px;
