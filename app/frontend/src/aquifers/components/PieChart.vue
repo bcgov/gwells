@@ -42,7 +42,7 @@ export default {
         })
         const chartLabel = groupedSum.map(o =>
           Object.keys(o)[0].split(' - ')[1] + // the label, without code.
-          ' - ' +
+          ': ' +
           Object.values(o)[0]) // the value of the pie slice.
         const chartData = groupedSum.map(o => Object.values(o)[0])
 
@@ -60,7 +60,7 @@ export default {
             display: true
           },
           tooltips: {
-            enabled: true
+            enabled: false
           },
           responsive: true,
           maintainAspectRatio: true,
