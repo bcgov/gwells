@@ -64,9 +64,6 @@ export default {
           },
           responsive: true,
           maintainAspectRatio: true,
-          tooltips: {
-            enabled: false
-          }
         })
       }
     }
