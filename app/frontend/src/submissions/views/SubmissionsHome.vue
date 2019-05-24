@@ -232,8 +232,13 @@ export default {
       }
 
       if (!this.isStaffEdit) {
+        let skipKeys = []
+        // we need both ground elevation and its method to be sent for validation on submission
+        if (data.ground_elevation_method || data.ground_elevation) {
+          skipKeys.push('ground_elevation_method', 'ground_elevation')
+        }
         // We don't strip blank strings on an edit, someone may be trying to replace a value with a blank value.
-        this.stripBlankStrings(data)
+        this.stripBlankStrings(data, skipKeys)
       }
 
       const sets = ['linerperforation_set', 'lithologydescription_set', 'screen_set', 'casing_set', 'decommission_description_set']
@@ -516,10 +521,12 @@ export default {
       // the dropdown menu returns an object so this method also does.
       this.form.well = { well_tag_number: well }
     },
-    stripBlankStrings (formObject) {
+    stripBlankStrings (formObject, skipKeys = []) {
       // strips blank strings from a form object
-
       Object.keys(formObject).forEach((key) => {
+        if (skipKeys.includes(key)) {
+          return
+        }
         if (typeof formObject[key] === 'object' && formObject[key] !== null) {
           // descend into nested objects
           this.stripBlankStrings(formObject[key])

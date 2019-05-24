@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "0e5385e5-42f4-46f2-b1a9-c535b6264e8e",
+		"_postman_id": "09c3bf29-21b4-4221-98e4-1cc0a1c1d9b4",
 		"name": "GWELLS Submissions API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -124,10 +124,6 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/options?format=json",
 									"host": [
@@ -177,10 +173,6 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions?format=json",
 									"host": [
@@ -442,10 +434,6 @@
 										"value": "application/x-www-form-urlencoded"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 									"host": [
@@ -505,10 +493,6 @@
 										"value": "application/x-www-form-urlencoded"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/{{filing_number}}",
 									"host": [
@@ -688,10 +672,6 @@
 										"value": "application/x-www-form-urlencoded"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 									"host": [
@@ -865,10 +845,6 @@
 										"value": "application/x-www-form-urlencoded"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 									"host": [
@@ -1044,10 +1020,6 @@
 										"value": "application/x-www-form-urlencoded"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 									"host": [
@@ -1163,10 +1135,6 @@
 										"value": "application/x-www-form-urlencoded"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 									"host": [
@@ -1359,10 +1327,6 @@
 										"value": "application/x-www-form-urlencoded"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 									"host": [
@@ -1482,10 +1446,6 @@
 										"value": "application/x-www-form-urlencoded"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 									"host": [
@@ -1538,10 +1498,6 @@
 										"value": "application/x-www-form-urlencoded"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/{{filing_number}}",
 									"host": [
@@ -1859,10 +1815,6 @@
 										"value": "application/json"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 									"host": [
@@ -1984,10 +1936,6 @@
 										"value": "application/x-www-form-urlencoded"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 									"host": [
@@ -2044,10 +1992,6 @@
 										"value": "application/x-www-form-urlencoded"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/{{filing_number}}",
 									"host": [
@@ -2294,10 +2238,6 @@
 												"value": "JWT {{token}}"
 											}
 										],
-										"body": {
-											"mode": "raw",
-											"raw": ""
-										},
 										"url": {
 											"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 											"host": [
@@ -2423,10 +2363,6 @@
 												"value": "JWT {{token}}"
 											}
 										],
-										"body": {
-											"mode": "raw",
-											"raw": ""
-										},
 										"url": {
 											"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 											"host": [
@@ -2686,10 +2622,6 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 									"host": [
@@ -3143,7 +3075,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"well_activity_type\": \"CON\",\n\t\"owner_full_name\": \"Bob\",\n\t\"owner_mailing_address\": \"123 Place\",\n\t\"owner_city\": \"Victoria\",\n\t\"owner_province_state\": \"BC\",\n\t\"casing_set\": [\n\t\t{\n\t\t\t\"casing_code\": \"SURFACE\",\n\t\t\t\"start\":\"0\",\n\t\t\t\"end\":\"10\",\n\t\t\t\"diameter\":\"1\",\n\t\t\t\"drive_shoe\":\"False\",\n\t\t\t\"id\":0,\n\t\t\t\"wall_thickness\":\"87\"\n\t\t}\n\t],\n\t\"screen_set\": [\n        {\n            \"start\": \"0.00\",\n            \"end\": \"10.00\",\n            \"internal_diameter\": null,\n            \"assembly_type\": null,\n            \"slot_size\": null\n        }\n    ],\n    \"linerperforation_set\": [\n\t\t{\n\t\t\t\"start\": 0,\n\t\t\t\"end\": 10\n\t\t}\n\t],\n\t\"well_class\": \"GEOTECH\",\n\t\"driller_name\": \"Bob\",\n\t\"consultant_name\": \"Lois\",\n\t\"consultant_company\": \"Lois Consulting\",\n\t\"work_start_date\": \"2018-01-01\",\n\t\"work_end_date\": \"2018-01-01\",\n\t\"legal_pid\": \"123132\",\n\t\"well_location_description\": \"At the top of the hill\",\n\t\"latitude\": 48.420133,\n\t\"longitude\": -123.370083,\n\t\"ground_elevation\": 1,\n\t\"drilling_method\": \"AUGER\",\n\t\"well_orientation\": \"False\",\n\t\"water_supply_system_name\": \"Pond\",\n\t\"water_supply_system_well_name\": \"1\",\n\t\"surface_seal_material\": \"BNTITE_CLY\",\n\t\"surface_seal_depth\": 1,\n\t\"surface_seal_method\": \"OTHER\",\n\t\"liner_material\": \"PVC\",\n\t\"screen_material\": \"PLASTIC\",\n\t\"development_method\": \"BAIL\",\n\t\"well_yield\": \"5.22\",\n\t\"finished_well_depth\": \"55\",\n\t\"total_depth_drilled\": \"58\",\n\t\"final_casing_stick_up\": \"3\",\n\t\"static_water_level\": \"12\",\n\t\"artesian_flow\": \"6.55\",\n\t\"well_disinfected\": \"True\",\n\t\"comments\": \"This is a well\",\n\t\"diameter\": \"3\"\n}"
+							"raw": "{\n\t\"well_activity_type\": \"CON\",\n\t\"owner_full_name\": \"Bob\",\n\t\"owner_mailing_address\": \"123 Place\",\n\t\"owner_city\": \"Victoria\",\n\t\"owner_province_state\": \"BC\",\n\t\"casing_set\": [\n\t\t{\n\t\t\t\"casing_code\": \"SURFACE\",\n\t\t\t\"start\":\"0\",\n\t\t\t\"end\":\"10\",\n\t\t\t\"diameter\":\"1\",\n\t\t\t\"drive_shoe\":\"False\",\n\t\t\t\"id\":0,\n\t\t\t\"wall_thickness\":\"87\"\n\t\t}\n\t],\n\t\"screen_set\": [\n        {\n            \"start\": \"0.00\",\n            \"end\": \"10.00\",\n            \"internal_diameter\": null,\n            \"assembly_type\": null,\n            \"slot_size\": null\n        }\n    ],\n    \"linerperforation_set\": [\n\t\t{\n\t\t\t\"start\": 0,\n\t\t\t\"end\": 10\n\t\t}\n\t],\n\t\"well_class\": \"GEOTECH\",\n\t\"driller_name\": \"Bob\",\n\t\"consultant_name\": \"Lois\",\n\t\"consultant_company\": \"Lois Consulting\",\n\t\"work_start_date\": \"2018-01-01\",\n\t\"work_end_date\": \"2018-01-01\",\n\t\"legal_pid\": \"123132\",\n\t\"well_location_description\": \"At the top of the hill\",\n\t\"latitude\": 48.420133,\n\t\"longitude\": -123.370083,\n\t\"ground_elevation\": 1,\n\t\"ground_elevation_method\":\"UNKNOWN\",\n\t\"drilling_method\": \"AUGER\",\n\t\"well_orientation\": \"False\",\n\t\"water_supply_system_name\": \"Pond\",\n\t\"water_supply_system_well_name\": \"1\",\n\t\"surface_seal_material\": \"BNTITE_CLY\",\n\t\"surface_seal_depth\": 1,\n\t\"surface_seal_method\": \"OTHER\",\n\t\"liner_material\": \"PVC\",\n\t\"screen_material\": \"PLASTIC\",\n\t\"development_method\": \"BAIL\",\n\t\"well_yield\": \"5.22\",\n\t\"finished_well_depth\": \"55\",\n\t\"total_depth_drilled\": \"58\",\n\t\"final_casing_stick_up\": \"3\",\n\t\"static_water_level\": \"12\",\n\t\"artesian_flow\": \"6.55\",\n\t\"well_disinfected\": \"True\",\n\t\"comments\": \"This is a well\",\n\t\"diameter\": \"3\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/submissions/construction?format=json",
@@ -3275,10 +3207,6 @@
 								"value": "application/x-www-form-urlencoded"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 							"host": [
@@ -3400,10 +3328,6 @@
 								"value": "application/x-www-form-urlencoded"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 							"host": [
@@ -3532,10 +3456,6 @@
 								"value": "application/x-www-form-urlencoded"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 							"host": [

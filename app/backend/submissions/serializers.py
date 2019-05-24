@@ -123,6 +123,14 @@ class WellSubmissionSerializerBase(AuditModelSerializer):
 
     def validate(self, attrs):
         errors = {}
+        # Check ground elevation fields for mutual requirement
+        if 'ground_elevation' in attrs or 'ground_elevation_method' in attrs:
+            if attrs.get('ground_elevation', None) is None and attrs.get('ground_elevation_method', None) is not None:
+                if attrs['ground_elevation_method'].description != 'Unknown':
+                    errors['ground_elevation'] = 'Both ground elevation and method are required.'
+            if attrs.get('ground_elevation', None) is not None and attrs.get('ground_elevation_method', None) is None:
+                errors['ground_elevation_method'] = 'Both ground elevation and method are required.'
+        # Check latitude longitude for mutual requirement
         if 'latitude' in attrs or 'longitude' in attrs:
             if len(attrs['latitude']) <= 0:
                 errors['latitude'] = 'Latitude and Longitude are both required.'
@@ -485,21 +493,6 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
         many=True, required=False)
     lithologydescription_set = LithologyDescriptionSerializer(
         many=True, required=False)
-
-    def validate(self, attrs):
-        # Check ground elevation fields for mutual requirement
-        if 'ground_elevation' in attrs or 'ground_elevation_method' in attrs:
-            errors = {}
-            if attrs['ground_elevation'] is None and attrs['ground_elevation_method'] is not None:
-                if attrs['ground_elevation_method'].description != 'Unknown':
-                    errors['ground_elevation'] = 'Both ground elevation and method are required.'
-            if attrs['ground_elevation'] is not None and attrs['ground_elevation_method'] is None:
-                errors['ground_elevation_method'] = 'Both ground elevation and method are required.'
-
-            if len(errors) > 0:
-                raise serializers.ValidationError(errors)
-
-        return attrs
 
     # Sets person_responsible and company_of back to object, otherwise client view only gets guid
     def to_representation(self, instance):
