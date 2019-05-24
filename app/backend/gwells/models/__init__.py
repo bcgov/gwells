@@ -26,6 +26,9 @@ from .common import AuditModel, ProvinceStateCode, CodeTableModel, BasicCodeTabl
 from .screen import ScreenIntakeMethodCode, ScreenMaterialCode, ScreenOpeningCode, ScreenBottomCode,\
     ScreenTypeCode, ScreenAssemblyTypeCode
 from .survey import Survey, OnlineSurvey
+from gwells.db_comments.patch_fields import patch_fields
+
+patch_fields()
 
 # DATALOAD_USER: Use for ETL etc.
 DATALOAD_USER = 'DATALOAD_USER'
@@ -69,6 +72,17 @@ class Border(models.Model):
     oic_year = models.CharField(max_length=4)
     afctd_area = models.CharField(max_length=120)
     geom = models.MultiPolygonField(srid=4269)
+
+
+class WaterBody(models.Model):
+    waterbody_poly_id = models.IntegerField(
+        primary_key=True,
+        db_comment=('The WATERBODY POLY ID is the unique key for the waterbody polygon spatial layer. It is'
+                    ' not applied to the warehouse model only, i.e., it originates with the source FWA'
+                    ' system.'))
+    geom = models.MultiPolygonField(srid=4269)
+    db_table_comment = ('Geometries for water bodies, used to ensure well coordinates aren\'t placed in'
+                        ' lakes')
 
 
 @receiver(post_save, sender=User)

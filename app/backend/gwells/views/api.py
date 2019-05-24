@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 
 from gwells.settings.base import get_env_variable
 from django.contrib.gis.geos import GEOSGeometry
-from gwells.models import Border
+from gwells.models import Border, WaterBody
 
 
 class KeycloakConfig(APIView):
@@ -57,6 +57,28 @@ class InsideBC(APIView):
             wgs84_srid = 4269
             pnt = GEOSGeometry('POINT({} {})'.format(longitude, latitude), srid=wgs84_srid)
             result = Border.objects.filter(geom__contains=pnt)
+            inside = result.count() > 0
+
+        return Response({
+            'inside': inside
+        })
+
+
+class InsideWaterBody(APIView):
+    """ Check if a given point, is inside a lake """
+
+    def get(self, request):
+        latitude = request.query_params.get('latitude')
+        longitude = request.query_params.get('longitude')
+
+        inside = False
+        if latitude and longitude:
+            latitude = float(latitude)
+            longitude = float(longitude)
+            wgs84_srid = 4269
+            pnt = GEOSGeometry('POINT({} {})'.format(longitude, latitude), srid=wgs84_srid)
+            result = WaterBody.objects.filter(geom__contains=pnt)
+            print('InsideWater ({},{}) : {}'.format(latitude, longitude, result.count()))
             inside = result.count() > 0
 
         return Response({

@@ -74,6 +74,8 @@ urlpatterns = [
         api.AnalyticsConfig.as_view(), name='analytics'),
     url(r'^' + app_root_slash + 'api/v1/gis/insidebc',
         api.InsideBC.as_view(), name='insidebc'),
+    url(r'^' + app_root_slash + 'api/v1/gis/inwater',
+        api.InsideWaterBody.as_view(), name='inwater'),
     url(r'^' + app_root_slash, include('registries.urls')),
     url(r'^' + app_root_slash, include('wells.urls')),
     url(r'^' + app_root_slash, include('aquifers.urls')),

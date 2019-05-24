@@ -25,3 +25,4 @@ GDAL>=2.4,<3.0
 deepdiff>=4
 urllib3>=1.25
 djangorestframework-csv==2.1.0
+ijson>=2.3

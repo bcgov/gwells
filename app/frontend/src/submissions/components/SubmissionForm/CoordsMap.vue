@@ -35,6 +35,10 @@ export default {
     insideBC: {
       type: Function,
       default: () => {}
+    },
+    insideWater: {
+      type: Function,
+      default: () => {}
     }
   },
   data () {

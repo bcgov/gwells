@@ -213,7 +213,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </b-row>
         </b-col>
         <b-col sm="12" md="6">
-          <coords-map :latitude="mapLatitude" :longitude="mapLongitude" v-on:coordinate="handleMapCoordinate" :insideBC="insideBC"/>
+          <coords-map :latitude="mapLatitude" :longitude="mapLongitude" v-on:coordinate="handleMapCoordinate" :insideBC="insideBC" :insideWater="insideWater"/>
         </b-col>
       </b-row>
 
@@ -303,7 +303,7 @@ export default {
     if (this.latitude || this.longitude) {
       // If we're loaded with a latitude and longitude, trigger an update so that degree,minute,second
       // and East/Northing get populated.
-      this.handleMapCoordinate({lng: Number(this.longitude), lat: Number(this.latitude)})
+      this.handleMapCoordinate({ lng: Number(this.longitude), lat: Number(this.latitude) })
     }
   },
   computed: {
@@ -557,6 +557,35 @@ export default {
       this.updateDMS(this.convertToDMS(latlng.lng), this.convertToDMS(latlng.lat))
       this.updateUTM(easting, northing, zone)
     },
+    insideWater (latitude, longitude) {
+      return new Promise((resolve, reject) => {
+        // Longitude may sometimes drop the minus (negative) sign, we make sure to add it back in.
+        longitude = this.roundDecimalDegrees(this.transformToNegative(longitude))
+        latitude = this.roundDecimalDegrees(latitude)
+        // We use a dictionary to reduce network traffic, by storing and checking for coordinates locally.
+        // const key = `${latitude};${longitude}`
+
+        const params = {
+          latitude: latitude,
+          longitude: longitude }
+
+        ApiService.query('gis/inwater', params).then((response) => {
+          // Store the result for future lookups.
+          // this.coordinateLookup.set(key, response.data.inside)
+          // // Remove our promise lookup
+          // this.coordinateResolveLookup.delete(key)
+          // // Call resolve for any other promises that have been made on this key
+          // const resolveList = []
+          // resolveList.forEach((item) => {
+          //   // We resolve all the other promises
+          //   item(response.data.inside)
+          // })
+          // // We resolve this promise
+          // resolve(response.data.inside)
+          console.log(response)
+        })
+      })
+    },
     insideBC (latitude, longitude) {
       return new Promise((resolve, reject) => {
         // Longitude may sometimes drop the minus (negative) sign, we make sure to add it back in.
@@ -577,7 +606,7 @@ export default {
           this.coordinateResolveLookup.set(key, resolveList)
           const params = {
             latitude: latitude,
-            longitude: longitude}
+            longitude: longitude }
           ApiService.query('gis/insidebc', params).then((response) => {
             // Store the result for future lookups.
             this.coordinateLookup.set(key, response.data.inside)
@@ -596,6 +625,9 @@ export default {
     },
     checkIfCoordinateIsValid (latitude, longitude) {
       clearTimeout(this.timeout)
+      this.insideWater(latitude, longitude).then((result) => {
+        console.log(result)
+      })
       this.timeout = setTimeout(() => {
         this.insideBC(latitude, longitude).then((result) => {
           this.validCoordinate = result
