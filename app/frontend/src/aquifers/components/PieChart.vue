@@ -45,10 +45,12 @@ export default {
           ' - ' +
           Object.values(o)[0]) // the value of the pie slice.
         const chartData = groupedSum.map(o => Object.values(o)[0])
+
         this.renderChart({
           labels: chartLabel,
           datasets: [
             {
+              // color-blindness safe colors:
               backgroundColor: ['#E69F00', '#56B4E9', '#2B9F78', '#F0E442', '#CC79A7', '#D55E00', '#0072B2'],
               data: chartData
             }
@@ -61,7 +63,10 @@ export default {
             enabled: true
           },
           responsive: true,
-          maintainAspectRatio: true
+          maintainAspectRatio: true,
+          tooltips: {
+            enabled: false
+          }
         })
       }
     }

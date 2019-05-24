@@ -83,11 +83,11 @@ class Command(BaseCommand):
                     if counter > 10:
                         continue
                     well = Well.objects.all()[counter % num_wells:][0]
-
                     # we need our wells to actually have an aquifir for nontrivial testing.
                     if not well.aquifer:
                         well.aquifer = Aquifer.objects.first()
                         well.save()
+                    aquifer = well.aquifer
                     # in dev envs, only import 100 licences.
                     if counter > 100:
                         break

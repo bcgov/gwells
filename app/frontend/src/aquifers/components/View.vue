@@ -165,16 +165,12 @@
               <dd v-else>No information available.</dd>
             </li>
           </ul>
-          <b-row class="mt-4 pt-4 border-top" v-if="licence_details.lic_qty.length > 0">
-            <b-col xl=6 cols=12>
+          <div v-if="licence_details.lic_qty.length > 0">
               <h5 class="pie-chart-title">Licenced use volume by purpose</h5>
               <PieChart :chartData="licence_details.usage" class="mt-3"></PieChart>
-            </b-col>
-            <b-col xl=6 cols=12>
-              <h5 class="pie-chart-title">Licenced quantity by use</h5>
+              <h5 class="pie-chart-title pt-4">Licenced quantity by use</h5>
               <PieChart :chartData="licence_details.lic_qty" class="mt-3"></PieChart>
-            </b-col>
-          </b-row>
+          </div>
           <b-table striped hover :items="licence_details.wells_by_licence"></b-table>
           <p><i v-if="licence_details.licences_updated">Licence info last updated {{ licence_details.licences_updated.update_date__max|formatDate }}</i></p>
 
