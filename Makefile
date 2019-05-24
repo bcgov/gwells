@@ -22,13 +22,10 @@ down:
 	docker-compose down --volumes
 
 vue: prep
-	NPM_CMD=dev docker-compose up
-
-django: prep
-	NPM_CMD=watch docker-compose up
+	docker-compose up
 
 test-node:
-	docker exec -ti gwells_frontend_1 /bin/bash -c "cd /app/frontend/; npm run unit -- --runInBand"
+	docker exec -ti gwells_frontend_1 /bin/bash -c "cd /app/frontend/; npm run test:unit -- --runInBand"
 
 test-django:
 	docker exec -ti gwells_backend_1 /bin/bash -c "cd /app/backend/; python manage.py test --noinput"

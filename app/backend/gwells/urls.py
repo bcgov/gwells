@@ -17,12 +17,11 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.views.generic import TemplateView
+from django.urls import path, re_path
+from django.shortcuts import redirect
 
-from gwells.views import SurveyListView
-from gwells.views import HealthView
-from gwells.views import HomeView
+from gwells.views import SurveyListView, HealthView, index, api
 from gwells.views.admin import *
-from gwells.views import api
 from gwells.settings.base import get_env_variable
 
 # Creating 2 versions of the app_root. One without and one with trailing slash
@@ -71,15 +70,15 @@ urlpatterns = [
         api.KeycloakConfig.as_view(), name='keycloak'),
     url(r'^' + app_root_slash + 'api/v1/config',
         api.GeneralConfig.as_view(), name='configuration'),
+    url(r'^' + app_root_slash + 'api/v1/analytics',
+        api.AnalyticsConfig.as_view(), name='analytics'),
     url(r'^' + app_root_slash + 'api/v1/gis/insidebc',
         api.InsideBC.as_view(), name='insidebc'),
     url(r'^' + app_root_slash, include('registries.urls')),
     url(r'^' + app_root_slash, include('wells.urls')),
     url(r'^' + app_root_slash, include('aquifers.urls')),
-
-    # main web application page
-    url(r'^' + app_root_slash, HomeView.as_view(), name='home'),
-
+    # Catch all other cases and push it to the SPA
+    re_path(r'' + app_root_slash + '*', index, name='spa'),
 ]
 
 
