@@ -1219,7 +1219,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"well_activity_type\": \"CON\",\n\t\"owner_full_name\": \"Bob\",\n\t\"owner_mailing_address\": \"123 Place\",\n\t\"owner_city\": \"Victoria\",\n\t\"owner_province_state\": \"BC\",\n\t\"lithologydescription_set\": [\n\t\t{\n\t\t\t\"lithology_from\": 0,\n\t\t\t\"lithology_to\": 10,\n\t\t\t\"lithology_raw_data\": \"SAND, silty, some gravel\",\n\t\t\t\"lithology_hardness\": \"DENSE\",\n\t\t\t\"lithology_colour\": 13,\n\t\t\t\"lithology_moisture\": \"WET\",\n\t\t\t\"water_bearing_estimated_flow\": 2.1,\n\t\t\t\"lithology_observation\": \"hard to drill through\"\n\t\t}\n\t]\n}"
+									"raw": "{\n\t\"well_activity_type\": \"CON\",\n\t\"owner_full_name\": \"Bob\",\n\t\"owner_mailing_address\": \"123 Place\",\n\t\"owner_city\": \"Victoria\",\n\t\"owner_province_state\": \"BC\",\n\t\"lithologydescription_set\": [\n\t\t{\n\t\t\t\"start\": 0,\n\t\t\t\"end\": 10,\n\t\t\t\"lithology_raw_data\": \"SAND, silty, some gravel\",\n\t\t\t\"lithology_hardness\": \"DENSE\",\n\t\t\t\"lithology_colour\": 13,\n\t\t\t\"lithology_moisture\": \"WET\",\n\t\t\t\"water_bearing_estimated_flow\": 2.1,\n\t\t\t\"lithology_observation\": \"hard to drill through\"\n\t\t}\n\t]\n}"
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/construction?format=json",
@@ -1253,8 +1253,8 @@
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
-											"pm.test(\"Status code is 400\", function () {",
-											"   pm.expect(pm.response.code).to.equal(400);",
+											"pm.test(\"Status code is 201\", function () {",
+											"   pm.expect(pm.response.code).to.equal(201);",
 											"})",
 											""
 										],
@@ -1276,7 +1276,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"well_activity_type\": \"CON\",\n\t\"owner_full_name\": \"Bob\",\n\t\"owner_mailing_address\": \"123 Place\",\n\t\"owner_city\": \"Victoria\",\n\t\"owner_province_state\": \"BC\",\n\t\"lithologydescription_set\": [\n\t\t{}\n\t]\n}"
+									"raw": "{\n\t\"well_activity_type\": \"CON\",\n\t\"owner_full_name\": \"Bob\",\n\t\"owner_mailing_address\": \"123 Place\",\n\t\"owner_city\": \"Victoria\",\n\t\"owner_province_state\": \"BC\",\n\t\"lithologydescription_set\": []\n}"
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/construction?format=json",
@@ -1318,11 +1318,11 @@
 											"pm.test(\"Expect lithology to have one value\", function() {",
 											"    pm.expect(jsonData.lithologydescription_set.length).to.equal(1);",
 											"})",
-											"pm.test(\"Lithology entry: expect lithology_from to be 0.00\", function() {",
-											"    pm.expect(jsonData.lithologydescription_set[0].lithology_from).to.equal('0.00');",
+											"pm.test(\"Lithology entry: expect start to be 0.00\", function() {",
+											"    pm.expect(jsonData.lithologydescription_set[0].start).to.equal('0.00');",
 											"})",
-											"pm.test(\"Lithology entry: expect lithology_to to be 10.00\", function() {",
-											"    pm.expect(jsonData.lithologydescription_set[0].lithology_to).to.equal('10.00');",
+											"pm.test(\"Lithology entry: expect end to be 10.00\", function() {",
+											"    pm.expect(jsonData.lithologydescription_set[0].end).to.equal('10.00');",
 											"})",
 											"",
 											"pm.test(\"Lithology entry: expect lithology_raw_data to be equal to first submission\", function() {",
@@ -2986,7 +2986,10 @@
 											"pm.test(\"Expect aquifer id to match created aquifer\", function() {",
 											"    pm.expect(jsonData.aquifer).to.equal(pm.environment.get(\"created_aquifer_for_well\"))",
 											"})",
-											""
+											"",
+											"pm.test(\"Expect storativity to be 1\", function() {",
+											"    pm.expect(Number(jsonData.storativity)).to.equal(1)",
+											"})"
 										],
 										"type": "text/javascript"
 									}
@@ -3006,7 +3009,72 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"well\": {{well_tag_number}},\n\t\"aquifer\": {{created_aquifer_for_well}}\n}"
+									"raw": "{\n\t\"well\": {{well_tag_number}},\n\t\"aquifer\": {{created_aquifer_for_well}},\n\t\"storativity\": 1\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/submissions/staff_edit?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"submissions",
+										"staff_edit"
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json"
+										}
+									]
+								},
+								"description": "Submit a submission"
+							},
+							"response": []
+						},
+						{
+							"name": "Staff Edit - remove foreign key set data",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "d810c676-8904-437e-8c93-3ea1d36e1bd1",
+										"exec": [
+											"var jsonData = pm.response.json();",
+											"",
+											"",
+											"pm.test(\"Status code is 201\", function () {",
+											"   pm.expect(pm.response.code).to.equal(201);",
+											"})",
+											"",
+											"pm.test(\"Expect liner set to be deleted\", function() {",
+											"    pm.expect(jsonData.linerperforation_set.length).to.equal(0)",
+											"})",
+											"",
+											"pm.test(\"Expect storativity to be null\", function() {",
+											"    pm.expect(jsonData.storativity).to.equal(null)",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"well\": {{well_tag_number}},\n\t\"linerperforation_set\": [],\n\t\"storativity\": null\n}"
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/staff_edit?format=json",
