@@ -16,7 +16,7 @@ import logging
 from django.core.management.base import BaseCommand
 
 from django.contrib.gis import geos
-from django.contrib.gis.geos import GEOSGeometry, MultiPolygon
+from django.contrib.gis.geos import GEOSGeometry, MultiPolygon, Polygon
 from django.contrib.gis.geos.prototypes.io import wkt_w
 from django.contrib.gis.gdal import DataSource
 
@@ -51,11 +51,19 @@ class Command(BaseCommand):
                 # wkt = wkt_w(dim=2).write(GEOSGeometry(geom.wkt, srid=4326)).decode()
                 # geos_geom = GEOSGeometry(wkt, srid=4326)
 
-                geom = GEOSGeometry(feat.geom.wkt, srid=4326)
-                if isinstance(geom, geos.Polygon):
-                    geom = MultiPolygon(geom)
-                else:
-                    geom = GEOSGeometry(feat.geom.wkt, srid=4326)
+                geom_geos = feat.geom.geos
+                if isinstance(geom_geos, Polygon):
+
+                    logger.info('polygon found :( {}'.format(geom_geos))
+                    break
+                elif isinstance(geom_geos, GeometryCollection):
+                    geom = MultiPolygon(geom_geos)
+
+                # geom = GEOSGeometry(feat.geom.wkt, srid=4326)
+                # if isinstance(geom, geos.Polygon):
+                #     geom = MultiPolygon(geom)
+                # else:
+                #     geom = GEOSGeometry(feat.geom.wkt, srid=4326)
                 logger.info('id: {}'.format(waterbody_poly_id))
 
                 WaterBody.objects.create(waterbody_poly_id=waterbody_poly_id, geom=geom)
