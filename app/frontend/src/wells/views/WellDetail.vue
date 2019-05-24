@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="well-detail">
     <div v-if="loading">
       <div class="fa-2x text-center">
         <i class="fa fa-circle-o-notch fa-spin"></i>
@@ -23,7 +23,8 @@
               <router-link v-if="show.edit" :to="{ name: 'SubmissionsEdit', params: { id: $route.params.id } }" class="mr-3">
                 <button class="btn btn-primary mb-1">Edit</button>
               </router-link>
-              <b-btn variant="light" aria-label="Print" @click="handlePrint"><i class="fa fa-lg fa-print"></i></b-btn>
+              <span class="print-notice">For best print results, use the Chrome browser</span>
+              <b-btn variant="light" aria-label="Print" class="mb-1" @click="handlePrint"><i class="fa fa-lg fa-print"></i></b-btn>
             </div>
           </legend>
           <b-row>
@@ -470,8 +471,8 @@ export default {
         number: ''
       },
       lithology_fields: {
-        lithology_from: { label: 'From (ft bgl)' },
-        lithology_to: { label: 'To (ft bgl)' },
+        start: { label: 'From (ft bgl)' },
+        end: { label: 'To (ft bgl)' },
         lithology_raw_data: { label: 'Raw Data' },
         lithology_description: { label: 'Description' },
         lithology_moisture: { label: 'Moisture' },
@@ -583,5 +584,34 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
+.well-detail .print-notice {
+  font-size: 1rem;
+}
+
+@media print {
+
+  .well-detail {
+
+    fieldset {
+      page-break-inside: avoid;
+    }
+
+    .card {
+      border: none;
+    }
+
+    table.b-table > thead > tr > th {
+      &.sorting::before,
+      &.sorting::after,
+      &.sorting_desc::before,
+      &.sorting_desc::after,
+      &.sorting_asc::before,
+      &.sorting_desc::after {
+        content: none;
+      }
+    }
+  }
+
+}
 </style>

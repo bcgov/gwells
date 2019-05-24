@@ -44,7 +44,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               <form-input
                 group-class="my-0"
                 :id="'casingFrom_' + index"
-                type="text"
+                type="number"
                 v-model="casing.start"
                 :errors="getCasingError(index).start"
                 :loaded="getFieldsLoaded(index).start"/>
@@ -53,7 +53,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               <form-input
                 group-class="my-0"
                 :id="'casingTo_' + index"
-                type="text"
+                type="number"
                 v-model="casing.end"
                 :errors="getCasingError(index).end"
                 :loaded="getFieldsLoaded(index).end"/>
@@ -106,7 +106,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               <form-input
                 group-class="my-0"
                 :id="'casingDiameter_' + index"
-                type="text"
+                type="number"
                 v-model="casing.diameter"
                 :errors="getCasingError(index).diameter"
                 :loaded="getFieldsLoaded(index).diameter"/>
@@ -115,7 +115,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               <form-input
                 group-class="my-0"
                 :id="'casingWallThickness_' + index"
-                type="text"
+                type="number"
                 v-model="casing.wall_thickness"
                 :errors="getCasingError(index).wall_thickness"
                 :loaded="getFieldsLoaded(index).wall_thickness"/>

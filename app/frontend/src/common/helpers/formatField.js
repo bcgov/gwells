@@ -15,8 +15,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
 // a map of difficult-to-read API field names to friendly descriptions
 const fieldMap = {
   'lithologydescription_set': 'Lithology',
-  'lithology_from': 'depth from',
-  'lithology_to': 'depth to',
+  'start': 'depth from',
+  'end': 'depth to',
   'lithology_raw_data': 'raw_data',
   'lithology_colour': 'colour',
   'lithology_hardness': 'hardness',
