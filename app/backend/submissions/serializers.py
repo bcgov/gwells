@@ -125,10 +125,10 @@ class WellSubmissionSerializerBase(AuditModelSerializer):
         errors = {}
         # Check ground elevation fields for mutual requirement
         if 'ground_elevation' in attrs or 'ground_elevation_method' in attrs:
-            if attrs['ground_elevation'] is None and attrs['ground_elevation_method'] is not None:
+            if attrs.get('ground_elevation', None) is None and attrs.get('ground_elevation_method', None) is not None:
                 if attrs['ground_elevation_method'].description != 'Unknown':
                     errors['ground_elevation'] = 'Both ground elevation and method are required.'
-            if attrs['ground_elevation'] is not None and attrs['ground_elevation_method'] is None:
+            if attrs.get('ground_elevation', None) is not None and attrs.get('ground_elevation_method', None) is None:
                 errors['ground_elevation_method'] = 'Both ground elevation and method are required.'
         # Check latitude longitude for mutual requirement
         if 'latitude' in attrs or 'longitude' in attrs:
