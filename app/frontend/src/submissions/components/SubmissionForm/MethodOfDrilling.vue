@@ -48,7 +48,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               :loaded="fieldsLoaded['ground_elevation_method']">
             </form-input>
             <template slot="first">
-              <option value="" disabled>Select Method</option>
+              <option value="">Select Method</option>
             </template>
           </b-form-group>
         </b-col>
