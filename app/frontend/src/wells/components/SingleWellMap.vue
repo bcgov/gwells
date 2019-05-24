@@ -126,8 +126,13 @@ export default {
 @import "~leaflet/dist/leaflet.css";
 
 .single-well-map {
-  width: 550px;
+  width: 100%;
   height: 500px;
 }
 
+@media print {
+  .leaflet-control-zoom {
+    visibility: hidden;
+  }
+}
 </style>
