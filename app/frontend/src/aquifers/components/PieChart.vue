@@ -63,7 +63,7 @@ export default {
             enabled: false
           },
           responsive: true,
-          maintainAspectRatio: true,
+          maintainAspectRatio: true
         })
       }
     }

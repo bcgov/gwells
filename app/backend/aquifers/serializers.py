@@ -178,18 +178,21 @@ class AquiferDetailSerializer(serializers.ModelSerializer):
         details = {}
 
         licences = models.WaterRightsLicence.objects.filter(
-            wells__aquifer=instance
-        )
+            well__aquifer=instance
+        ).select_related('purpose')
 
-        details['licence_count'] = licences.count()
-        details['usage'] = licences.values(
-            'purpose__description').annotate(
-                total_qty=Sum('quantity')
-        )
-        details['lic_qty'] = licences.values(
-            'purpose__description').annotate(
-                total_qty=Count('quantity')
-        )
+        # distinct licence numbers.
+        details['licence_count'] = len(
+            licences.values('licence_number').distinct())
+
+        # details['usage'] = licences.values(
+        #     'purpose__description').annotate(
+        #         total_qty=Sum('quantity')
+        # )
+        # details['lic_qty'] = licences.values(
+        #     'purpose__description').annotate(
+        #         total_qty=Count('quantity')
+        # )
         details['licences_updated'] = licences.aggregate(
             Max('update_date')
         )
@@ -211,22 +214,78 @@ class AquiferDetailSerializer(serializers.ModelSerializer):
             observation_well_number__isnull=False
         ).values('well_tag_number', 'observation_well_number')
 
-        details['wells_by_licence'] = []
-        _map = {}
-        for licence in licences:
-            if licence.licence_number in _map:  # only insert each licence once.
-                continue
-            _map[licence.licence_number] = 1
-            details['wells_by_licence'].append({
-                'licence_number': licence.licence_number,
-                'well_tag_numbers_in_licence': ', '.join([str(l['well_tag_number']) for l in licence.wells.all().values("well_tag_number")])
-            })
+        details.update(self._tally_licence_data(licences))
+
         if instance.subtype:
             details['hydraulically_connected'] = instance.subtype.code in HYDRAULIC_SUBTYPES
 
         ret['licence_details'] = details
 
         return ret
+
+    def _tally_licence_data(self, licences):
+        # Collect licences by number, for tallying.
+        _licence_map = {}
+        for licence in licences:
+
+            if licence.licence_number not in _licence_map:  # only insert each licence once.
+
+                _licence_map[licence.licence_number] = {
+                    'wells': [],
+                    'usage_by_purpose': {}
+                }
+
+            _licence_dict = _licence_map[licence.licence_number]
+            _licence_dict['wells'] = set(
+                [l['well_tag_number']
+                    for l in licence.well_set.all().values('well_tag_number')]
+            ) | set(_licence_dict['wells'])
+
+            if licence.purpose.description not in _licence_dict['usage_by_purpose']:
+                _licence_dict['usage_by_purpose'][licence.purpose.description] = 0
+                # for 'M' licences, only add the quantity once for the entire purpose.
+                if licence.quantity_flag == 'M':
+                    _licence_dict['usage_by_purpose'][licence.purpose.description] += licence.quantity
+
+            # For any flag other than 'M' total all usage values.
+            if licence.quantity_flag != 'M':
+                _licence_dict['usage_by_purpose'][licence.purpose.description] += licence.quantity
+
+        details = {
+            'wells_by_licence': [],
+            'usage': [],
+            'lic_qty': []
+        }
+
+        # Again, generate some maps. Group by purpose this time.
+        _lic_qty_map = {}
+        _usage_map = {}
+
+        # re-format well by licence output.
+        for licence_number, licence_dict in _licence_map.items():
+            details['wells_by_licence'].append({
+                'licence_number': licence_number,
+                'well_tag_numbers_in_licence': ', '.join(map(str, licence_dict['wells']))
+            })
+            for purpose, usage in licence_dict['usage_by_purpose'].items():
+                if purpose not in _lic_qty_map:
+                    _lic_qty_map[purpose] = 0
+                    _usage_map[purpose] = 0
+                _lic_qty_map[purpose] += 1
+                _usage_map[purpose] += usage
+
+        # re-format for final output.
+        for purpose, qty in _lic_qty_map.items():
+            details['lic_qty'].append({
+                'purpose__description': purpose,
+                'total_qty': qty
+            })
+            details['usage'].append({
+                'purpose__description': purpose,
+                'total_qty': _usage_map[purpose]
+            })
+
+        return details
 
     class Meta:
         model = models.Aquifer

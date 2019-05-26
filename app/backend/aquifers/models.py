@@ -64,8 +64,10 @@ class WaterRightsLicence(AuditModel):
     Material choices for describing Aquifer Material
     """
 
-    aquifer_licence_id = models.AutoField(
-        primary_key=True, verbose_name="Aquifer Licence ID Number")
+    # Unique in the water rights database we import from.
+    wrl_sysid = models.IntegerField(
+        primary_key=True,
+        verbose_name="Water Rights Licence System ID")
 
     purpose = models.ForeignKey(
         WaterRightsPurpose,
@@ -76,7 +78,19 @@ class WaterRightsLicence(AuditModel):
         verbose_name="Water Rights Purpose Reference",
         related_name='licences')
 
+    # A non-unique licence number, used to calculate allocations along with
+    # the quantity flag, below.
     licence_number = models.BigIntegerField(db_index=True)
+
+    # QUANTITY FLAG is the code used to identify how the total quantity is assigned
+    # across multiple Points of Well Diversion (PWD) for a particular licence and purpose use,
+    # i.e., T, M, D, or P.
+    # Only in the case of 'M', the quantity is shared across wells in the licence.
+    quantity_flag = models.CharField(
+        max_length=1,
+        default='T',
+        choices=(('T', 'T'), ('M', 'M'), ('D', 'D'), ('P', 'P')))
+
     quantity = models.DecimalField(
         max_digits=12, decimal_places=3, blank=True, null=True, verbose_name='Quanitity')
 

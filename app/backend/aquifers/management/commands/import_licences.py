@@ -71,26 +71,22 @@ class Command(BaseCommand):
                 logging.info("importing licence #{}".format(
                     row['LICENCE_NUMBER']))
 
-                # In dev envs, desecrate the data so it fits our fake fixtures.
-                # We may use DEBUG to targte only dev environments, or use ENABLE_GOOGLE_ANALYTICS to detect any non-prod ENV here.
-                # if settings.ENABLE_GOOGLE_ANALYTICS:
-                if not settings.DEBUG:
-                    # Check the Licence is for a valid Aquifer
-                    aquifer = Aquifer.objects.get(pk=row['SOURCE_NAME'])
-                    well = Well.objects.get(pk=row['WELL_TAG_NUMBER'])
-                else:
-                    counter += 1
-                    if counter > 10:
-                        continue
-                    well = Well.objects.all()[counter % num_wells:][0]
-                    # we need our wells to actually have an aquifir for nontrivial testing.
-                    if not well.aquifer:
-                        well.aquifer = Aquifer.objects.first()
-                        well.save()
-                    aquifer = well.aquifer
-                    # in dev envs, only import 100 licences.
-                    if counter > 100:
-                        break
+                # Check the Licence is for a valid Aquifer
+                aquifer = Aquifer.objects.get(pk=row['SOURCE_NAME'])
+                well = Well.objects.get(pk=row['WELL_TAG_NUMBER'])
+                # NOTE: If you want to limit the data for the standard dev environment bootstrap for testng, use this instead of the above 2 lines.
+                # counter += 1
+                # if counter > 10:
+                #     continue
+                # well = Well.objects.all()[counter % num_wells:][0]
+                # # we need our wells to actually have an aquifir for nontrivial testing.
+                # if not well.aquifer:
+                #     well.aquifer = Aquifer.objects.first()
+                #     well.save()
+                # aquifer = well.aquifer
+                # # in dev envs, only import 100 licences.
+                # if counter > 100:
+                #     break
 
                 try:
                     # Maintaina code table with water rights purpose.
@@ -104,13 +100,17 @@ class Command(BaseCommand):
                 try:
                     # Update existing licences with changes.
                     licence = WaterRightsLicence.objects.get(
-                        licence_number=row['LICENCE_NUMBER'])
+                        wrl_sysid=row['WLS_WRL_SYSID'])
                 except WaterRightsLicence.DoesNotExist:
                     licence = WaterRightsLicence(
-                        licence_number=row['LICENCE_NUMBER']
-                    )
+                        wrl_sysid=row['WLS_WRL_SYSID'])
+
+                licence.licence_number = row['LICENCE_NUMBER']
+                licence.quantity_flag = row['QUANTITY_FLAG']
+
                 licence.purpose = purpose
 
+                # Convert quantity to m3/year
                 quantity = float(row['QUANTITY'])
                 if row['QUANTITY_UNITS'].strip() == "m3/sec":
                     quantity = quantity * 60*60*24*365
@@ -127,11 +127,12 @@ class Command(BaseCommand):
 
                 if not well.aquifer:
                     well.aquifer = aquifer
-                well.licence = licence
+                if licence not in well.licences.all():
+                    well.licences.add(licence)
                 well.save()
 
-                logging.info('assocated well={} aqufier={} licence={}'.format(
+                logging.info('assocated well={} aqufier={} licence_sysid={}'.format(
                     well.pk,
                     aquifer.pk,
-                    licence.licence_number
+                    licence.pk
                 ))
