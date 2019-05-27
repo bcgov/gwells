@@ -162,7 +162,7 @@ export default {
 }
 </script>
 <style>
-/*@import "leaflet/dist/leaflet.css";*/
+@import "leaflet/dist/leaflet.css";
 
 .map {
   height: 500px;

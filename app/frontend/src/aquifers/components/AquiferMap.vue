@@ -7,10 +7,8 @@ import L from 'leaflet'
 import { tiledMapLayer } from 'esri-leaflet'
 import { filter } from 'lodash'
 import { GeoSearchControl, EsriProvider } from 'leaflet-geosearch'
-/*import 'leaflet-geosearch/assets/css/leaflet.css'*/
 import 'leaflet-lasso'
 import 'leaflet-fullscreen/dist/Leaflet.fullscreen.min.js'
-/*import 'leaflet-fullscreen/dist/leaflet.fullscreen.css'*/
 import ArtesianLegend from '../../common/assets/images/artesian.png'
 import CadastralLegend from '../../common/assets/images/cadastral.png'
 import EcocatWaterLegend from '../../common/assets/images/ecocat-water.png'
@@ -360,6 +358,8 @@ export default {
 }
 </script>
 <style>
+@import '~leaflet-geosearch/assets/css/leaflet.css';
+@import '~leaflet-fullscreen/dist/leaflet.fullscreen.css';
 @import "~leaflet/dist/leaflet.css";
 .map {
   width: 100%;
