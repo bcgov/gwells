@@ -973,7 +973,6 @@ class Well(AuditModelStructure):
         max_length=100, blank=True, null=True, verbose_name="Decommission Backfill Material")
     decommission_details = models.CharField(
         max_length=250, blank=True, null=True, verbose_name="Decommission Details")
-    ems_id = models.CharField(max_length=30, blank=True, null=True)
     aquifer = models.ForeignKey(
         Aquifer, db_column='aquifer_id', on_delete=models.PROTECT, blank=True,
         null=True, verbose_name='Aquifer ID Number',
@@ -1110,35 +1109,6 @@ class Well(AuditModelStructure):
     db_table_comment = ('Describes how a well was constructed, altered, decomissioned over time. Includes '
                         'information related to who owns the well, location of well, the lithologic '
                         'description as well as other information related to the construction of the well.')
-
-
-class Perforation(AuditModel):
-    """
-    Liner Details
-    """
-    perforation_guid = models.UUIDField(
-        primary_key=True, default=uuid.uuid4, editable=False)
-    well_tag_number = models.ForeignKey(
-        Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True, null=True,
-        db_comment=('The file number assigned to a particular well in the in the province\'s Groundwater '
-                    'Wells and Aquifers application.'))
-    liner_thickness = models.DecimalField(
-        max_digits=5, decimal_places=3, blank=True, null=True, verbose_name='Liner Thickness')
-    liner_diameter = models.DecimalField(
-        max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner Diameter')
-    liner_from = models.DecimalField(
-        max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner From')
-    liner_to = models.DecimalField(
-        max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Liner To')
-    liner_perforation_from = models.DecimalField(
-        max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Perforation From')
-    liner_perforation_to = models.DecimalField(
-        max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Perforation To')
-
-    class Meta:
-        db_table = 'perforation'
-        ordering = ['liner_from', 'liner_to', 'liner_perforation_from',
-                    'liner_perforation_to', 'perforation_guid']
 
 
 class CasingMaterialCode(CodeTableModel):
@@ -1360,7 +1330,7 @@ class ActivitySubmission(AuditModelStructure):
         max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Surface Seal Depth')
     surface_seal_thickness = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True,
                                                  verbose_name='Surface Seal Thickness',
-                                                 validators=[MinValueValidator(Decimal('1.00'))])
+                                                 validators=[MinValueValidator(Decimal('0.00'))])
     surface_seal_method = models.ForeignKey(SurfaceSealMethodCode, db_column='surface_seal_method_code',
                                             on_delete=models.CASCADE, blank=True, null=True,
                                             verbose_name='Surface Seal Installation Method')
@@ -1627,7 +1597,150 @@ class ActivitySubmission(AuditModelStructure):
         return super().save(*args, **kwargs)
 
 
-@reversion.register(fields=['lithology_from', 'lithology_to', 'lithology_raw_data', 'lithology_description',
+class FieldsProvided(models.Model):
+    """ Fields that were filled out in a submission report or staff edit.
+        Not all fields are provided in every report or edit, and this model
+        helps track which fields the user intended to update.
+    """
+    activity_submission = models.OneToOneField(ActivitySubmission, on_delete=models.CASCADE, primary_key=True, db_column="filing_number", related_name="fields_provided")
+
+    well_activity_type = models.BooleanField(default=False)
+    well_status = models.BooleanField(default=False)
+    well_publication_status = models.BooleanField(default=False)
+    well_class = models.BooleanField(default=False)
+    well_subclass = models.BooleanField(default=False)
+    intended_water_use = models.BooleanField(default=False)
+    person_responsible = models.BooleanField(default=False)
+    company_of_person_responsible = models.BooleanField(default=False)
+    driller_name = models.BooleanField(default=False)
+    consultant_name = models.BooleanField(default=False)
+    consultant_company = models.BooleanField(default=False)
+    work_start_date = models.BooleanField(default=False)
+    work_end_date = models.BooleanField(default=False)
+    construction_start_date = models.BooleanField(default=False)
+    construction_end_date = models.BooleanField(default=False)
+    alteration_start_date = models.BooleanField(default=False)
+    alteration_end_date = models.BooleanField(default=False)
+    decommission_start_date = models.BooleanField(default=False)
+    decommission_end_date = models.BooleanField(default=False)
+    owner_full_name = models.BooleanField(default=False)
+    owner_mailing_address = models.BooleanField(default=False)
+    owner_city = models.BooleanField(default=False)
+    owner_province_state = models.BooleanField(default=False)
+    owner_postal_code = models.BooleanField(default=False)
+    owner_email = models.BooleanField(default=False)
+    owner_tel = models.BooleanField(default=False)
+    street_address = models.BooleanField(default=False)
+    city = models.BooleanField(default=False)
+    legal_lot = models.BooleanField(default=False)
+    legal_plan = models.BooleanField(default=False)
+    legal_district_lot = models.BooleanField(default=False)
+    legal_block = models.BooleanField(default=False)
+    legal_section = models.BooleanField(default=False)
+    legal_township = models.BooleanField(default=False)
+    legal_range = models.BooleanField(default=False)
+    land_district = models.BooleanField(default=False)
+    legal_pid = models.BooleanField(default=False)
+    well_location_description = models.BooleanField(default=False)
+    identification_plate_number = models.BooleanField(default=False)
+    well_identification_plate_attached = models.BooleanField(default=False)
+    id_plate_attached_by = models.BooleanField(default=False)
+    geom = models.BooleanField(default=False)
+    coordinate_acquisition_code = models.BooleanField(default=False)
+    ground_elevation = models.BooleanField(default=False)
+    ground_elevation_method = models.BooleanField(default=False)
+    drilling_methods = models.BooleanField(default=False)
+    well_orientation = models.BooleanField(default=False)
+    water_supply_system_name = models.BooleanField(default=False)
+    water_supply_system_well_name = models.BooleanField(default=False)
+    surface_seal_material = models.BooleanField(default=False)
+    surface_seal_depth = models.BooleanField(default=False)
+    surface_seal_thickness = models.BooleanField(default=False)
+    surface_seal_method = models.BooleanField(default=False)
+    backfill_above_surface_seal = models.BooleanField(default=False)
+    backfill_above_surface_seal_depth = models.BooleanField(default=False)
+    backfill_depth = models.BooleanField(default=False)
+    backfill_type = models.BooleanField(default=False)
+    liner_material = models.BooleanField(default=False)
+    liner_diameter = models.BooleanField(default=False)
+    liner_thickness = models.BooleanField(default=False)
+    liner_from = models.BooleanField(default=False)
+    liner_to = models.BooleanField(default=False)
+    screen_intake_method = models.BooleanField(default=False)
+    screen_type = models.BooleanField(default=False)
+    screen_material = models.BooleanField(default=False)
+    other_screen_material = models.BooleanField(default=False)
+    screen_opening = models.BooleanField(default=False)
+    screen_bottom = models.BooleanField(default=False)
+    other_screen_bottom = models.BooleanField(default=False)
+    screen_information = models.BooleanField(default=False)
+    filter_pack_from = models.BooleanField(default=False)
+    filter_pack_to = models.BooleanField(default=False)
+    filter_pack_thickness = models.BooleanField(default=False)
+    filter_pack_material = models.BooleanField(default=False)
+    filter_pack_material_size = models.BooleanField(default=False)
+    development_methods = models.BooleanField(default=False)
+    development_hours = models.BooleanField(default=False)
+    development_notes = models.BooleanField(default=False)
+    water_quality_characteristics = models.BooleanField(default=False)
+    water_quality_colour = models.BooleanField(default=False)
+    water_quality_odour = models.BooleanField(default=False)
+    total_depth_drilled = models.BooleanField(default=False)
+    finished_well_depth = models.BooleanField(default=False)
+    final_casing_stick_up = models.BooleanField(default=False)
+    bedrock_depth = models.BooleanField(default=False)
+    static_water_level = models.BooleanField(default=False)
+    well_yield = models.BooleanField(default=False)
+    artesian_flow = models.BooleanField(default=False)
+    artesian_pressure = models.BooleanField(default=False)
+    well_cap_type = models.BooleanField(default=False)
+    well_disinfected = models.BooleanField(default=False)
+    well_disinfected_status = models.BooleanField(default=False)
+    comments = models.BooleanField(default=False)
+    internal_comments = models.BooleanField(default=False)
+    alternative_specs_submitted = models.BooleanField(default=False)
+    well_yield_unit = models.BooleanField(default=False)
+    diameter = models.BooleanField(default=False)
+    ems = models.BooleanField(default=False)
+    observation_well_number = models.BooleanField(default=False)
+    observation_well_status = models.BooleanField(default=False)
+    aquifer = models.BooleanField(default=False)
+    decommission_reason = models.BooleanField(default=False)
+    decommission_method = models.BooleanField(default=False)
+    decommission_sealant_material = models.BooleanField(default=False)
+    decommission_backfill_material = models.BooleanField(default=False)
+    decommission_details = models.BooleanField(default=False)
+    aquifer_vulnerability_index = models.BooleanField(default=False)
+    storativity = models.BooleanField(default=False)
+    transmissivity = models.BooleanField(default=False)
+    hydraulic_conductivity = models.BooleanField(default=False)
+    specific_storage = models.BooleanField(default=False)
+    specific_yield = models.BooleanField(default=False)
+    testing_method = models.BooleanField(default=False)
+    testing_duration = models.BooleanField(default=False)
+    analytic_solution_type = models.BooleanField(default=False)
+    boundary_effect = models.BooleanField(default=False)
+    aquifer_lithology = models.BooleanField(default=False)
+    yield_estimation_method = models.BooleanField(default=False)
+    yield_estimation_rate = models.BooleanField(default=False)
+    yield_estimation_duration = models.BooleanField(default=False)
+    static_level_before_test = models.BooleanField(default=False)
+    drawdown = models.BooleanField(default=False)
+    hydro_fracturing_performed = models.BooleanField(default=False)
+    hydro_fracturing_yield_increase = models.BooleanField(default=False)
+    recommended_pump_depth = models.BooleanField(default=False)
+    recommended_pump_rate = models.BooleanField(default=False)
+    lithologydescription_set = models.BooleanField(default=False)
+    casing_set = models.BooleanField(default=False)
+    decommission_description_set = models.BooleanField(default=False)
+    screen_set = models.BooleanField(default=False)
+    linerperforation_set = models.BooleanField(default=False)
+
+    class Meta:
+        db_table = 'fields_provided'
+
+
+@reversion.register(fields=['start', 'end', 'lithology_raw_data', 'lithology_description',
                             'lithology_colour', 'lithology_hardness', 'lithology_material', 'lithology_observation',
                             'water_bearing_estimated_flow', 'water_bearing_estimated_flow_units',  'lithology_moisture',
                             'bedrock_material', 'bedrock_material_descriptor', 'lithology_structure',
@@ -1646,15 +1759,17 @@ class LithologyDescription(AuditModel):
         related_name='lithologydescription_set',
         db_comment=('The file number assigned to a particular well in the in the province\'s Groundwater '
                     'Wells and Aquifers application.'))
-    lithology_from = models.DecimalField(
+    start = models.DecimalField(
         max_digits=7, decimal_places=2, verbose_name='From',
         blank=True, null=True,
+        db_column='lithology_from',
         validators=[MinValueValidator(Decimal('0.00'))],
         db_comment=('Depth below ground surface of the start of the lithology material for a particular '
                     'lithology layer, as observed during the construction or alteration of a well, '
                     'measured in feet.'))
-    lithology_to = models.DecimalField(
+    end = models.DecimalField(
         max_digits=7, decimal_places=2, verbose_name='To',
+        db_column='lithology_to',
         blank=True, null=True, validators=[MinValueValidator(Decimal('0.01'))],
         db_comment=('Depth below ground surface of the end of the lithology material for a particular '
                     'lithology layer as observed during the construction or alteration of a well, measured '
@@ -1734,33 +1849,39 @@ class LithologyDescription(AuditModel):
 
     def __str__(self):
         if self.activity_submission:
-            return 'activity_submission {} {} {}'.format(self.activity_submission, self.lithology_from,
-                                                         self.lithology_to)
+            return 'activity_submission {} {} {}'.format(self.activity_submission, self.start,
+                                                         self.end)
         else:
-            return 'well {} {} {}'.format(self.well, self.lithology_from, self.lithology_to)
+            return 'well {} {} {}'.format(self.well, self.start, self.end)
 
 
-@reversion.register(fields=['start', 'end'])
-class LinerPerforation(AuditModel):
+class PerforationBase(AuditModel):
     """
     Perforation in a well liner
     """
     liner_perforation_guid = models.UUIDField(primary_key=True, default=uuid.uuid4,
                                               editable=False)
-    activity_submission = models.ForeignKey(ActivitySubmission, db_column='filing_number',
-                                            on_delete=models.CASCADE, blank=True, null=True,
-                                            related_name='linerperforation_set')
-    well = models.ForeignKey(
-        Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True,
-        null=True, related_name='linerperforation_set',
-        db_comment=('The file number assigned to a particular well in the in the province\'s Groundwater '
-                    'Wells and Aquifers application.'))
     start = models.DecimalField(db_column='liner_perforation_from', max_digits=7, decimal_places=2,
                                 verbose_name='Perforated From', blank=False,
                                 validators=[MinValueValidator(Decimal('0.00'))])
     end = models.DecimalField(db_column='liner_perforation_to', max_digits=7, decimal_places=2,
                               verbose_name='Perforated To', blank=False,
                               validators=[MinValueValidator(Decimal('0.01'))])
+
+    class Meta:
+        abstract = True
+
+
+@reversion.register(fields=['start', 'end'])
+class LinerPerforation(PerforationBase):
+    """
+    Perforation in a well liner
+    """
+    well = models.ForeignKey(
+        Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True,
+        null=True, related_name='linerperforation_set',
+        db_comment=('The file number assigned to a particular well in the in the province\'s Groundwater '
+                    'Wells and Aquifers application.'))
 
     class Meta:
         ordering = ["start", "end"]
@@ -1771,12 +1892,29 @@ class LinerPerforation(AuditModel):
                         'a screen installed.')
 
     def __str__(self):
-        if self.activity_submission:
-            return 'activity_submission {} {} {}'.format(self.activity_submission,
-                                                         self.start,
-                                                         self.end)
-        else:
-            return 'well {} {} {}'.format(self.well, self.start, self.end)
+        return 'well {} {} {}'.format(self.well, self.start, self.end)
+
+
+@reversion.register(fields=['start', 'end'])
+class ActivitySubmissionLinerPerforation(PerforationBase):
+    """
+    Perforation in a well liner
+    """
+    activity_submission = models.ForeignKey(ActivitySubmission, db_column='filing_number',
+                                            on_delete=models.CASCADE, blank=True, null=True,
+                                            related_name='linerperforation_set')
+
+    class Meta:
+        ordering = ["start", "end"]
+
+    db_table_comment = ('Describes the depths at which the liner is perforated in a well to help improve '
+                        'water flow at the bottom of the well. Some wells are perforated instead of having '
+                        'a screen installed.')
+
+    def __str__(self):
+        return 'activity_submission {} {} {}'.format(self.activity_submission,
+                                                     self.start,
+                                                     self.end)
 
 
 @reversion.register(fields=['start', 'end', 'diameter', 'casing_code',
@@ -1804,7 +1942,7 @@ class Casing(AuditModel):
                                 null=True, blank=True, validators=[MinValueValidator(Decimal('0.00'))])
     end = models.DecimalField(db_column='casing_to', max_digits=7, decimal_places=2, verbose_name='To',
                               null=True, blank=True, validators=[MinValueValidator(Decimal('0.01'))])
-    # NOTE: Diameter should be pulling from internal_diameter
+    # NOTE: Diameter should be pulling from screen.diameter
     diameter = models.DecimalField(
         max_digits=8, decimal_places=3, verbose_name='Diameter', null=True,
         blank=True, validators=[MinValueValidator(Decimal('0.5'))],
@@ -1849,7 +1987,7 @@ class Casing(AuditModel):
         }
 
 
-@reversion.register(fields=['start', 'end', 'internal_diameter', 'assembly_type', 'slot_size'])
+@reversion.register(fields=['start', 'end', 'diameter', 'assembly_type', 'slot_size'])
 class Screen(AuditModel):
     """
     Screen in a well
@@ -1868,7 +2006,7 @@ class Screen(AuditModel):
                                 blank=True, null=True, validators=[MinValueValidator(Decimal('0.00'))])
     end = models.DecimalField(db_column='screen_to', max_digits=7, decimal_places=2, verbose_name='To',
                               blank=False, null=True, validators=[MinValueValidator(Decimal('0.01'))])
-    internal_diameter = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='Diameter',
+    diameter = models.DecimalField(db_column='screen_diameter', max_digits=7, decimal_places=2, verbose_name='Diameter',
                                             blank=True, null=True,
                                             validators=[MinValueValidator(Decimal('0.0'))])
     assembly_type = models.ForeignKey(

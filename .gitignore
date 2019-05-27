@@ -51,6 +51,11 @@ Thumbs.db
 # Django
 staticfiles/
 
+# All static files (Vue app) are placed in the static folder during build
+app/backend/gwells/static/*
+# index.html places in the template folder during build.
+app/backend/gwells/templates/index.html
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -75,7 +80,6 @@ var/
 *.egg-info/
 .installed.cfg
 *.egg
-webpack-stats.json
 app/backend/*.sh
 app/backend/.env
 *.secret_env
@@ -95,8 +99,6 @@ htmlcov/
 .coverage
 .coverage.*
 .cache
-nosetests.xml
-coverage.xml
 *,cover
 
 # Test outputs
@@ -143,7 +145,6 @@ app/backend/.env
 *.secret_env
 
 # Frontend files
-frontend/webpack-stats.json
 app/backend/gwells/static/vue
 **/node_modules/
 

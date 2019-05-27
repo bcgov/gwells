@@ -4,7 +4,8 @@ node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-/test/unit/coverage/
+/tests/unit/coverage/
+.env.*.local
 
 # Editor directories and files
 .idea
@@ -13,7 +14,5 @@ yarn-error.log*
 *.ntvs*
 *.njsproj
 *.sln
-
-webpack-stats.json
 
 junit.xml

@@ -180,7 +180,7 @@ class Command(BaseCommand):
  filter_pack_thickness,
  filter_pack_material_size_code,
  development_hours, development_notes,
- water_quality_colour, water_quality_odour, ems_id,
+ water_quality_colour, water_quality_odour,
  yield_estimation_method_code,
  yield_estimation_rate,
  yield_estimation_duration, static_level_before_test, drawdown,
@@ -238,7 +238,7 @@ class Command(BaseCommand):
         ########
         # SCREEN
         ########
-        screen_sql = ("""select screen.well_tag_number, screen_from, screen_to, internal_diameter,
+        screen_sql = ("""select screen.well_tag_number, screen_from, screen_to, screen_diameter,
  screen_assembly_type_code, slot_size
  from screen
  inner join well on well.well_tag_number = screen.well_tag_number
@@ -247,9 +247,8 @@ class Command(BaseCommand):
         ##############
         # PERFORATIONS
         ##############
-        perforation_sql = ("""select p.well_tag_number, p.liner_from, p.liner_to, p.liner_diameter,
- liner_perforation_from, liner_perforation_to, p.liner_thickness
- from perforation as p
+        perforation_sql = ("""select p.well_tag_number, p.liner_perforation_from, p.liner_perforation_to
+ from liner_perforation as p
  inner join well on well.well_tag_number = p.well_tag_number
  where well.well_publication_status_code = 'Published' or well.well_publication_status_code = null
  order by p.well_tag_number""")

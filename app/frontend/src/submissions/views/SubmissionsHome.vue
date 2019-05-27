@@ -90,6 +90,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </b-form>
         </div>
       </div>
+      <div class="card" v-else-if="!$keycloak.authenticated">
+        <div class="card-body">
+          <p>Please log in to continue.</p>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -97,7 +102,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
 <script>
 import Vue from 'vue'
 import { mapActions, mapGetters, mapState } from 'vuex'
-import 'vuejs-noty/dist/vuejs-noty.css'
 import ApiService from '@/common/services/ApiService.js'
 import { FETCH_CODES, FETCH_WELL_TAGS } from '../store/actions.types.js'
 import inputFormatMixin from '@/common/inputFormatMixin.js'
@@ -198,11 +202,14 @@ export default {
       const meta = data.meta
 
       if (this.isStaffEdit) {
-        // We have to include both lat and lon for geom updates so we check if one has changed here
+        // These skip variables will include both mutually required fields if one of them changes
+        // We have to include both lat and lon for geom updates and ground_elevation and method together
         let skipLatLon = 'latitude' in meta.valueChanged || 'longitude' in meta.valueChanged
+        let skipGroundElevation = 'ground_elevation' in meta.valueChanged || 'ground_elevation_method' in meta.valueChanged
         Object.keys(data).forEach((key) => {
           // Skip lat lon if one of them has changed
           if ((key === 'latitude' || key === 'longitude') && skipLatLon) { return }
+          if ((key === 'ground_elevation' || key === 'ground_elevation_method') && skipGroundElevation) { return }
           // Remove any fields that aren't changed
           if (key !== 'well' && !(key in meta.valueChanged)) { delete data[key] }
         })
@@ -225,8 +232,13 @@ export default {
       }
 
       if (!this.isStaffEdit) {
+        let skipKeys = []
+        // we need both ground elevation and its method to be sent for validation on submission
+        if (data.ground_elevation_method || data.ground_elevation) {
+          skipKeys.push('ground_elevation_method', 'ground_elevation')
+        }
         // We don't strip blank strings on an edit, someone may be trying to replace a value with a blank value.
-        this.stripBlankStrings(data)
+        this.stripBlankStrings(data, skipKeys)
       }
 
       const sets = ['linerperforation_set', 'lithologydescription_set', 'screen_set', 'casing_set', 'decommission_description_set']
@@ -260,7 +272,7 @@ export default {
             this.$noty.success('<div class="notifyText">Changes saved.</div>', { killer: true })
           })
           this.events.$emit('well-edited', true)
-          this.fetchWellDataForStaffEdit({reloadPage: false})
+          this.fetchWellDataForStaffEdit({ reloadPage: false })
         } else {
           this.$nextTick(() => {
             this.$noty.success('<div aria-label="Close" class="closeBtn">x</div><div class="notifyText">Well report submitted.</div>', { killer: true })
@@ -509,10 +521,12 @@ export default {
       // the dropdown menu returns an object so this method also does.
       this.form.well = { well_tag_number: well }
     },
-    stripBlankStrings (formObject) {
+    stripBlankStrings (formObject, skipKeys = []) {
       // strips blank strings from a form object
-
       Object.keys(formObject).forEach((key) => {
+        if (skipKeys.includes(key)) {
+          return
+        }
         if (typeof formObject[key] === 'object' && formObject[key] !== null) {
           // descend into nested objects
           this.stripBlankStrings(formObject[key])
@@ -750,6 +764,8 @@ function initialState () {
 </script>
 
 <style lang="scss">
+@import '~vuejs-noty/dist/vuejs-noty.css';
+
   .slide-leave-active,
   .slide-enter-active {
     transition: 1s;

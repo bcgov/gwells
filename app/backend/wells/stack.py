@@ -14,7 +14,6 @@
 import logging
 import dateutil.parser
 import threading
-
 from django.core.serializers import serialize
 from django.forms.models import model_to_dict
 from django.db import transaction
@@ -27,12 +26,14 @@ from submissions.models import WellActivityCode, WELL_ACTIVITY_CODE_ALTERATION,\
     WELL_ACTIVITY_CODE_CONSTRUCTION, WELL_ACTIVITY_CODE_DECOMMISSION, WELL_ACTIVITY_CODE_LEGACY,\
     WELL_ACTIVITY_CODE_STAFF_EDIT
 import submissions.serializers
-from wells.models import Well, ActivitySubmission, WellStatusCode, WELL_STATUS_CODE_CONSTRUCTION,\
+from wells.models import Well, ActivitySubmission, ActivitySubmissionLinerPerforation, FieldsProvided, \
+    WellStatusCode, WELL_STATUS_CODE_CONSTRUCTION,\
     WELL_STATUS_CODE_DECOMMISSION, WELL_STATUS_CODE_ALTERATION, WELL_STATUS_CODE_OTHER, LithologyDescription,\
     Casing, Screen, LinerPerforation, DecommissionDescription, LithologyDescription
 
-from wells.serializers import WellStackerSerializer, CasingSerializer, ScreenSerializer,\
-    LinerPerforationSerializer, DecommissionDescriptionSerializer, LithologyDescriptionSerializer
+from wells.serializers import WellStackerSerializer, CasingStackerSerializer, ScreenStackerSerializer,\
+    LinerPerforationStackerSerializer, DecommissionDescriptionStackerSerializer,\
+    LithologyDescriptionStackerSerializer
 
 import reversion
 
@@ -72,7 +73,7 @@ WELL_STATUS_MAP = {
 FOREIGN_KEY_MODEL_LOOKUP = {
     'casing_set': Casing,
     'screen_set': Screen,
-    'linerperforation_set': LinerPerforation,
+    'linerperforation_set': ActivitySubmissionLinerPerforation,
     'decommission_description_set': DecommissionDescription,
     'lithologydescription_set': LithologyDescription
 }
@@ -80,11 +81,11 @@ FOREIGN_KEY_MODEL_LOOKUP = {
 # Relying on django serialization/reflection is very slow, so we explicitly
 # define this relationship.
 FOREIGN_KEY_SERIALIZER_LOOKUP = {
-    'casing_set': CasingSerializer,
-    'screen_set': ScreenSerializer,
-    'linerperforation_set': LinerPerforationSerializer,
-    'decommission_description_set': DecommissionDescriptionSerializer,
-    'lithologydescription_set': LithologyDescriptionSerializer
+    'casing_set': CasingStackerSerializer,
+    'screen_set': ScreenStackerSerializer,
+    'linerperforation_set': LinerPerforationStackerSerializer,
+    'decommission_description_set': DecommissionDescriptionStackerSerializer,
+    'lithologydescription_set': LithologyDescriptionStackerSerializer
 }
 
 # Relying on django serialization/reflection is very slow, so we explicitly
@@ -128,6 +129,10 @@ KEY_VALUE_LOOKUP = {
     'observation_well_status': 'obs_well_status_code',
     'well_status': 'well_status_code'
 }
+
+
+def is_staff_edit(submission):
+    return submission.well_activity_type.code == WELL_ACTIVITY_CODE_STAFF_EDIT
 
 
 def overlap(a, b):
@@ -178,7 +183,10 @@ class StackWells():
             create_user=submission.create_user,
             create_date=submission.create_date,
             update_date=submission.update_date)
-        well = self._stack(ActivitySubmission.objects.filter(filing_number=filing_number), well)
+        # If there's no well as yet - then this necessarily has to be the 1st submission, so we just
+        # re-query it as a collection, and call stack.
+        submissions = ActivitySubmission.objects.filter(filing_number=filing_number)
+        well = self._stack(submissions, well)
         submission.well = well
         submission.save()
         return well
@@ -215,6 +223,7 @@ class StackWells():
         data = {k: v for (k, v) in data.items() if v is not None and v != ''}
         # Retain the well reference.
         data['well'] = well.well_tag_number
+
         submission_serializer = submissions.serializers.WellSubmissionLegacySerializer(data=data)
 
         is_valid = submission_serializer.is_valid(raise_exception=False)
@@ -224,6 +233,14 @@ class StackWells():
             # the legacy submission may be valid, but that doesn't mean the resultant well record is going
             # to be valid!
             legacy = submission_serializer.save()
+
+            # keep track of which fields were originally populated on the legacy well records
+            original_data_provided = {
+                k: True for k in data.keys() if
+                k in [field.name for field in FieldsProvided._meta.get_fields()]
+            }
+            FieldsProvided.objects.create(activity_submission=legacy, **original_data_provided)
+
             return legacy
         logger.info('invalid legacy data: {}'.format(data))
         logger.error(submission_serializer.errors)
@@ -252,6 +269,8 @@ class StackWells():
         return new
 
     def transform_value(self, value, source_key):
+        if value is None:
+            return None
         if source_key in FOREIGN_KEY_SERIALIZER_LOOKUP:
             Serializer = FOREIGN_KEY_SERIALIZER_LOOKUP[source_key]
             value = Serializer(value, many=True).data
@@ -295,7 +314,12 @@ class StackWells():
                           record.create_date))
 
         # these are depth-specific sets that have a "start" and "end" value
-        FOREIGN_KEYS = ('casing_set', 'screen_set', 'linerperforation_set', 'decommission_description_set',)
+        FOREIGN_KEYS = (
+            'casing_set',
+            'screen_set',
+            'linerperforation_set',
+            'decommission_description_set',
+            'lithologydescription_set')
 
         composite = {}
 
@@ -313,11 +337,42 @@ class StackWells():
                     submission.well_activity_type.code, WellStatusCode.types.other().well_status_code)
             source_target_map = ACTIVITY_TYPE_MAP.get(submission.well_activity_type.code, {})
             for field in ActivitySubmission._meta.get_fields():
+
+                # fields_provided is a dict of fields that were included in the original activity submission
+                # or staff edit. We don't need to include this field in the composite, so we skip it here.
+                # we'll use it in other iterations (for other fields) to see if the user updated that field or not.
+                if field.name == 'fields_provided':
+                    continue
+
                 # We only consider items with values, and keys that are in our target
                 # an exception is STAFF_EDIT submissions (we need to be able to accept empty values)
                 source_key = field.name
                 value = self._getattr(submission, source_key)
-                if value or value is False or value == 0 or value == '':
+
+                # ManyToMany values need to be checked using the transform_value method.
+                # if the number of values in a manytomany lookup is zero, and this field
+                # wasn't included in a staff edit, we can skip to the next field.
+                if (is_staff_edit(submission) and
+                    source_key in MANY_TO_MANY_LOOKUP and
+                    len(self.transform_value(value, source_key)) == 0 and
+                    getattr(submission, 'fields_provided', None) and
+                        not getattr(submission.fields_provided, source_key, None)):
+                    continue
+
+                # Evaluate if this field needs to be updated on the composite view of the well.
+                # it needs to be updated if there is a valid value in the current report, or
+                # if we are iterating through a staff edit and the value was provided by a user
+                # (tracked in the fields_provided property)
+                if (
+                        value or
+                        value is False or
+                        value == 0 or
+                        value == '' or (
+                            is_staff_edit(submission) and
+                            getattr(submission, 'fields_provided', None) and
+                            getattr(submission.fields_provided, source_key, None)
+                        )):
+
                     target_key = source_target_map.get(source_key, source_key)
                     if target_key in target_keys:
                         # The composite dict is built up by applying the set of submissions/edits in order.
@@ -332,7 +387,7 @@ class StackWells():
                         #
                         # If the target_key is not in one of the foreign key sets (i.e., it's a property/
                         # column of a well), then the value can overwrite the previous composite value.
-                        if (submission.well_activity_type.code == WELL_ACTIVITY_CODE_STAFF_EDIT and
+                        if (is_staff_edit(submission) and
                                 target_key in composite and
                                 (target_key in FOREIGN_KEYS)):
                             # staff edits come in with the entire set of values and thus can replace
@@ -344,9 +399,13 @@ class StackWells():
                             value = self.transform_value(value, source_key)
                             composite[target_key] = self._merge_series(composite[source_key], value)
                         elif target_key in composite and target_key in MANY_TO_MANY_LOOKUP:
-                            # Only update if there's a new value.
                             value = self.transform_value(value, source_key)
-                            if len(value) > 0:
+
+                            # Only update if there's a new value (except if a staff edit that
+                            # included this field in the edit
+                            if (len(value) > 0 or
+                                    (is_staff_edit(submission) and
+                                        getattr(submission.fields_provided, source_key, None))):
                                 composite[target_key] = value
                         else:
                             value = self.transform_value(value, source_key)
@@ -381,7 +440,7 @@ class StackWells():
             .prefetch_related(
                 'well_status',
                 'well_activity_type'
-            )
+        )
         if records.count() > 1:
             # If there's more than one submission we don't need to create a legacy well, we can safely
             # assume that the 1st submission is either a legacy or construction report submission.

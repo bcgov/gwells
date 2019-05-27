@@ -30,6 +30,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             id="totalDepthDrilled"
             label="Total Depth Drilled"
             v-model="totalDepthDrilledInput"
+            type="number"
             hint="ft"
             :errors="errors['total_depth_drilled']"
             :loaded="fieldsLoaded['total_depth_drilled']">
@@ -40,6 +41,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             id="finishedWellDepth"
             label="Finished Well Depth"
             v-model="finishedWellDepthInput"
+            type="number"
             hint="ft (bgl)"
             :errors="errors['finished_well_depth']"
             :loaded="fieldsLoaded['finished_well_depth']">
@@ -51,6 +53,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <form-input
             id="finalCasingStickUp"
             label="Final Casing Stick Up"
+            type="number"
             v-model="finalCasingStickUpInput"
             hint="in"
             :errors="errors['final_casing_stick_up']"
@@ -61,6 +64,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <form-input
             id="bedrockDepth"
             label="Depth to Bedrock"
+            type="number"
             v-model="bedrockDepthInput"
             hint="ft (bgl)"
             :errors="errors['depth_to_bedrock']"
@@ -74,6 +78,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             id="staticWaterLevel"
             label="Static Water Level"
             v-model="staticWaterLevelInput"
+            type="number"
             hint="ft (btoc)"
             :errors="errors['static_water_level']"
             :loaded="fieldsLoaded['static_water_level']">
@@ -83,6 +88,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <form-input
             id="wellYield"
             label="Estimated Well Yield"
+            type="number"
             v-model="wellYieldInput"
             hint="USgpm"
             :errors="errors['well_yield']"
@@ -97,6 +103,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             label="Artesian Flow"
             v-model="artesianFlowInput"
             hint="USgpm"
+            type="number"
             :errors="errors['artesian_flow']"
             :loaded="fieldsLoaded['artesian_flow']">
         </form-input>
@@ -107,6 +114,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             label="Artesian Pressure"
             v-model="artesianPressureInput"
             hint="ft"
+            type="number"
             :errors="errors['artesian_pressure']"
             :loaded="fieldsLoaded['artesian_pressure']">
         </form-input>
@@ -191,10 +199,12 @@ export default {
     return {}
   },
   methods: {
-    disinfected_codes () {
-      this.codes.well_disinfected_codes.forEach((code) => {
+    disinfected_codes () { // make the unknown selection disabled for users
+      this.codes.well_disinfected_codes.forEach((code, index, object) => {
         if (code.well_disinfected_code === 'Unknown') {
-          code['disabled'] = true
+          if (!this.isStaffEdit) {
+            object.splice(index, 1)
+          }
         }
       })
       return this.codes.well_disinfected_codes

@@ -87,8 +87,8 @@
             </div>
             <div class="row no-gutters print-compressed">
                 <div class="col-md-12 col-print-12 print-compressed">
-                    <label for="ems_id">{% verbose_name well "ems" %}:</label>
-                    <span id="ems_id">{{well.ems|default_if_none:'&nbsp;' }}</span>
+                    <label for="ems">{% verbose_name well "ems" %}:</label>
+                    <span id="ems">{{well.ems|default_if_none:'&nbsp;' }}</span>
                 </div>
             </div>
             <div class="row no-gutters print-compressed">
@@ -789,7 +789,7 @@
                     <tr>
                         <td><span class="pull-right">{{screen.start|exclude_zero_decimals|default_if_none:'&nbsp;' }}</span></td>
                         <td><span class="pull-right">{{screen.end|exclude_zero_decimals|default_if_none:'&nbsp;' }}</span></td>
-                        <td><span class="pull-right">{{screen.internal_diameter|exclude_zero_decimals|default_if_none:'&nbsp;' }}</span></td>
+                        <td><span class="pull-right">{{screen.diameter|exclude_zero_decimals|default_if_none:'&nbsp;' }}</span></td>
                         <td><span>{{screen.assembly_type|default_if_none:'&nbsp;' }}</span></td>
                         <td><span class="pull-right">{{screen.slot_size|exclude_zero_decimals|default_if_none:'&nbsp;' }}</span></td>
                     </tr>

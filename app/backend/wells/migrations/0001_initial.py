@@ -15,14 +15,6 @@ import wells.data_migrations
 
 
 class Migration(migrations.Migration):
-    replaces = [
-        ('wells', '0001_squashed_0069_auto_20190409_1634'),
-        ('wells', '0002_auto_20190410_1850'),
-        ('wells', '0069_auto_20190405_2220'),
-        ('wells', '0070_ems_id'),
-        ('wells', '0071_merge_20190409_2102'),
-        ('wells', '0072_merge_20190410_2303'),
-        ('wells', '0073_fix_well_audit_data_and_submissions_fields')]
 
     initial = True
 
@@ -1288,9 +1280,5 @@ class Migration(migrations.Migration):
         ),
         migrations.RunPython(
             code=wells.data_migrations.update_update_user_fields,
-        ),
-        migrations.RunPython(
-            code=wells.data_migrations.update_geom_fields,
-            reverse_code=wells.data_migrations.reverse_update_geom_fields,
         ),
     ]

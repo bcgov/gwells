@@ -228,12 +228,12 @@ class SubmissionBase(AuditCreateMixin, ListCreateAPIView):
             return self.create(request, *args, **kwargs)
         except rest_framework.exceptions.APIException as error:
             try:
-                logger.warn(('Problem encountered handling POST; '
-                             'user:{request.user.profile.username}; '
-                             'user.is_authenticated:{request.user.is_authenticated}; '
-                             'path:{request.path}; method:{request.method}; status_code:{error.status_code}; '
-                             'request: {request.data}; '
-                             'response: {error.detail}').format(
+                logger.warning(('Problem encountered handling POST; '
+                                'user:{request.user.profile.username}; '
+                                'user.is_authenticated:{request.user.is_authenticated}; '
+                                'path:{request.path}; method:{request.method}; status_code:{error.status_code}; '
+                                'request: {request.data}; '
+                                'response: {error.detail}').format(
                     request=request,
                     error=error))
             except:
@@ -241,7 +241,7 @@ class SubmissionBase(AuditCreateMixin, ListCreateAPIView):
             raise
         except:
             try:
-                logger.warn(('Problem encountered handling POST; '
+                logger.warning(('Problem encountered handling POST; '
                              'user:{request.user.profile.username}; '
                              'user.is_authenticated:{request.user.is_authenticated}; '
                              'path:{request.path}; method:{request.method};'
@@ -299,6 +299,13 @@ class SubmissionStaffEditAPIView(SubmissionBase):
     serializer_class = WellStaffEditSubmissionSerializer
     permission_classes = (WellsEditPermissions,)
     queryset = ActivitySubmission.objects.all()
+
+    def post(self, request, *args, **kwargs):
+        # ground_elevation is a decimal so we swap empty string with null value
+        if 'ground_elevation' in request.data:
+            if request.data['ground_elevation'] == '':
+                request.data['ground_elevation'] = None
+        return self.create(request, *args, **kwargs)
 
     def get_queryset(self):
         return get_submission_queryset(self.queryset)\

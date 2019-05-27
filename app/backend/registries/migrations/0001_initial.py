@@ -13,15 +13,6 @@ from registries import data_migrations
 
 
 class Migration(migrations.Migration):
-    replaces = [
-        ('registries', '0001_squashed_0012_auto_20180704_2105'),
-        ('registries', '0013_auto_20180712_2107'),
-        ('registries', '0014_auto_20190308_2348'),
-        ('registries', '0015_auto_20190309_0017'),
-        ('registries', '0016_auto_20190326_1926'),
-        ('registries', '0017_auto_20190326_1935'),
-        ('registries', '0018_auto_20190409_1634'),
-        ('registries', '0019_remove_duplicates')]
 
     initial = True
 

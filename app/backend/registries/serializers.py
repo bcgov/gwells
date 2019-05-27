@@ -232,16 +232,6 @@ class RegistrationsNumberSerializer(serializers.ModelSerializer):
         fields = ('registration_no','registries_activity')
 
 
-class PersonBasicSerializer(serializers.ModelSerializer):
-    """
-    Serializes Person model with basic fields only
-    """
-
-    class Meta:
-        model = Person
-        fields = ('person_guid', 'name')
-
-
 class PersonSerializer(AuditModelSerializer):
     """
     Serializes the Person model (public/anonymous user fields)
@@ -327,20 +317,6 @@ class OrganizationAdminSerializer(AuditModelSerializer):
     def get_registrations_count(self, obj):
         """ count registration records """
         return obj.registrations.count()
-
-
-class ActivitySerializer(serializers.ModelSerializer):
-    """
-    Serializes ActivityCode model
-    A Register record has a foreign key relationship to an ActivityCode object
-    """
-
-    class Meta:
-        model = ActivityCode
-        fields = (
-            'registries_activity_code',
-            'description',
-        )
 
 
 class RegistriesRemovalReasonSerializer(serializers.ModelSerializer):

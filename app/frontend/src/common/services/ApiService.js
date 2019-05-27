@@ -3,7 +3,7 @@ import qs from 'querystring'
 
 const ApiService = {
   init () {
-    axios.defaults.baseURL = process.env.AXIOS_BASE_URL
+    axios.defaults.baseURL = process.env.VUE_APP_AXIOS_BASE_URL
     this.baseURL = axios.defaults.baseURL
 
     axios.interceptors.request.use(function (request) {

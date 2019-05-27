@@ -76,7 +76,7 @@ export default {
       L.control.scale().addTo(this.map)
 
       // Add map layers.
-      tiledMapLayer({url: 'https://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer'}).addTo(this.map)
+      tiledMapLayer({ url: 'https://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer' }).addTo(this.map)
       L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW/ows?', {
         format: 'image/png',
         layers: 'pub:WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW',
@@ -88,7 +88,7 @@ export default {
     createMarker () {
       if (this.map && this.latitude !== null && this.getLongitude() !== null) {
         const latlng = L.latLng(this.latitude, this.getLongitude())
-        this.marker = L.marker(latlng, {draggable: this.draggable, autoPan: true})
+        this.marker = L.marker(latlng, { draggable: this.draggable, autoPan: true })
         if (this.draggable) {
           this.marker.on('dragend', (ev) => {
             this.handleDrag(ev)
@@ -165,7 +165,7 @@ export default {
 }
 </script>
 <style>
-@import "leaflet/dist/leaflet.css";
+@import "~leaflet/dist/leaflet.css";
 
 .coords-map {
   width: 550px;

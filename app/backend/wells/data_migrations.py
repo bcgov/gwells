@@ -77,7 +77,7 @@ def change_code_description(apps, schema_editor):
 
     if casing_material:
         for casing in Casing.objects.filter(casing_material=casing_material):
-            # Any case where we are overwriting a different casing_code can be ignored, as casing material 
+            # Any case where we are overwriting a different casing_code can be ignored, as casing material
             # is an entirely new field, and this migration should thus only find records in test/dev.
             casing.casing_code = casing_code
             casing.casing_material = None
@@ -260,7 +260,7 @@ def insert_unk_well_class_code(apps, schema_editor):
 def revert_unk_well_class_code(apps, schema_editor):
     # Deleting these could be dangerous (we don't want to cascade delete the submissions),
     # so we do nothing here.
-    logger.warn('Not deleting WellClassCode records! That would be dangerous.')
+    logger.warning('Not deleting WellClassCode records! That would be dangerous.')
 
 
 def other_code_values_code_fixture():
@@ -302,25 +302,3 @@ def update_update_user_fields(apps, schema_editor):
                 model.objects.filter(update_user__isnull=True).update(update_user=F('create_user'))
             except AttributeError:
                 logger.error("skipping")
-
-
-def update_geom_fields(apps, schema_editor):
-    activitySubmission = apps.get_model('wells', 'activitysubmission')
-    try:
-        activitySubmission._meta.get_field('longitude')
-        activitySubmission._meta.get_field('latitude')
-        schema_editor.execute("update activity_submission set geom = ST_SetSrid(ST_MakePoint(longitude, latitude), 4326);")
-    except:
-        logger.error('Latitude or Longitude does not exist.')
-
-    well = apps.get_model('wells', 'well')
-    try:
-        well._meta.get_field('longitude')
-        well._meta.get_field('latitude')
-        schema_editor.execute("update well set geom = ST_SetSrid(ST_MakePoint(longitude, latitude), 4326);")
-    except:
-        logger.error('Latitude or Longitude does not exist.')
-
-
-def reverse_update_geom_fields(apps, schema_editor):
-    pass

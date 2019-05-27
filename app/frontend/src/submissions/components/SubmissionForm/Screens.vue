@@ -130,6 +130,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 <form-input
                   group-class="my-1"
                   :id="`screenDepthFrom_${index}`"
+                  type="number"
                   aria-label="Depth from (feet)"
                   v-model="screensData[index].start"
                   :errors="getScreenError(index).start"
@@ -140,6 +141,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 <form-input
                   group-class="my-1"
                   :id="`screenDepthTo_${index}`"
+                  type="number"
                   aria-label="Depth to (feet)"
                   v-model="screensData[index].end"
                   :errors="getScreenError(index).end"
@@ -150,10 +152,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 <form-input
                   group-class="my-1"
                   :id="`screenDiameter_${index}`"
+                  type="number"
                   aria-label="Diameter (inches)"
-                  v-model="screensData[index].internal_diameter"
-                  :errors="getScreenError(index).internal_diameter"
-                  :loaded="getScreenLoaded(index).internal_diameter"
+                  v-model="screensData[index].diameter"
+                  :errors="getScreenError(index).diameter"
+                  :loaded="getScreenLoaded(index).diameter"
                   />
               </td>
               <td class="input-width-small py-0">
@@ -177,6 +180,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   group-class="my-1"
                   :id="`screenSlotSize_${index}`"
                   aria-label="Screen Slot Size"
+                  type="number"
                   v-model="screensData[index].slot_size"
                   :errors="getScreenError(index).slot_size"
                   :loaded="getScreenLoaded(index).slot_size"
@@ -290,7 +294,7 @@ export default {
       return {
         start: '',
         end: '',
-        internal_diameter: '',
+        diameter: '',
         assembly_type: '',
         slot_size: ''
       }

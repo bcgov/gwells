@@ -14,16 +14,6 @@ from gwells import data_migrations
 
 
 class Migration(migrations.Migration):
-    replaces = [
-        ('gwells', '0001_squashed_0009_auto_20181116_2316'),
-        ('gwells', '0002_auto_20190301_2303'),
-        ('gwells', '0003_border'),
-        ('gwells', '0004_auto_20190308_2348'),
-        ('gwells', '0005_auto_20190309_0017'),
-        ('gwells', '0006_auto_20190326_1914'),
-        ('gwells', '0007_drop_replications'),
-        ('gwells', '0008_auto_20190409_1634')]
-
     initial = True
 
     dependencies = [

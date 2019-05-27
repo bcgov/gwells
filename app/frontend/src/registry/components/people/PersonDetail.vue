@@ -362,7 +362,6 @@
             <b-row class="mt-3">
               <b-col>
                 <b-form-group
-                  horizontal
                   label-cols="4"
                   label="Upload Documents">
                   <b-form-file

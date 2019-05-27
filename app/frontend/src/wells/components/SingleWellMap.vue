@@ -75,7 +75,7 @@ export default {
       L.control.scale().addTo(this.map)
 
       // Add map layers.
-      tiledMapLayer({url: 'https://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer'}).addTo(this.map)
+      tiledMapLayer({ url: 'https://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer' }).addTo(this.map)
       L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW/ows?', {
         format: 'image/png',
         layers: 'pub:WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW',
@@ -87,7 +87,7 @@ export default {
     createMarker () {
       if (this.map && this.latitude !== null && this.getLongitude() !== null && !isNaN(this.latitude) && !isNaN(this.getLongitude())) {
         const latlng = L.latLng(this.latitude, this.getLongitude())
-        this.marker = L.marker(latlng, {draggable: this.draggable, autoPan: true})
+        this.marker = L.marker(latlng, { draggable: this.draggable, autoPan: true })
         this.marker.addTo(this.map)
         this.setMarkerPopup(this.latitude, this.longitude)
         // The 1st time we create a marker, we jump to a different zoom level.
@@ -123,11 +123,16 @@ export default {
 }
 </script>
 <style>
-@import "leaflet/dist/leaflet.css";
+@import "~leaflet/dist/leaflet.css";
 
 .single-well-map {
-  width: 550px;
+  width: 100%;
   height: 500px;
 }
 
+@media print {
+  .leaflet-control-zoom {
+    visibility: hidden;
+  }
+}
 </style>

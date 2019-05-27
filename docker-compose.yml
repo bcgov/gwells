@@ -49,13 +49,13 @@ services:
     working_dir: /app/frontend
     environment:
       DEBUG: "True"
-      AXIOS_BASE_URL: http://127.0.0.1:8000/gwells/api/v1/
+      VUE_APP_AXIOS_BASE_URL: http://127.0.0.1:8000/gwells/api/v1/
       CHOKIDAR_USEPOLLING: "True"
     command: /bin/bash -c "
         set -x &&
         cd /app/frontend &&
         npm install &&
-        npm run ${NPM_CMD:-dev}"
+        npm run serve"
     ports:
       - "8080:8080"
     volumes:

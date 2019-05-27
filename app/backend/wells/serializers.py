@@ -23,17 +23,18 @@ from gwells.serializers import AuditModelSerializer
 from registries.serializers import PersonNameSerializer, OrganizationNameListSerializer
 from wells.models import (
     ActivitySubmission,
+    ActivitySubmissionLinerPerforation,
+    AquiferLithologyCode,
     Casing,
     CasingMaterialCode,
     CasingCode,
     DecommissionDescription,
+    DrillingMethodCode,
     LinerPerforation,
     LithologyDescription,
     Screen,
     Well,
-    WellActivityCode,
-    AquiferLithologyCode,
-    DrillingMethodCode
+    WellActivityCode
 )
 
 
@@ -96,6 +97,31 @@ class CasingSerializer(serializers.ModelSerializer):
         }
 
 
+class CasingStackerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Casing
+        fields = (
+            'start',
+            'end',
+            'diameter',
+            'casing_code',
+            'casing_material',
+            'drive_shoe',
+            'wall_thickness',
+            'create_user',
+            'update_user'
+        )
+        extra_kwargs = {
+            'start': {'required': True},
+            'end': {'required': True},
+            'diameter': {'required': True},
+            'start': {'required': True},
+            'end': {'required': True},
+            'create_user': {'required': True},
+            'update_user': {'required': True}
+        }
+
+
 class LegacyCasingSerializer(serializers.ModelSerializer):
 
     # Serializers without validators:
@@ -143,6 +169,27 @@ class DecommissionDescriptionSerializer(serializers.ModelSerializer):
         }
 
 
+class DecommissionDescriptionStackerSerializer(serializers.ModelSerializer):
+    """Serializes Decommission Descriptions"""
+
+    class Meta:
+        model = DecommissionDescription
+        fields = (
+            'start',
+            'end',
+            'material',
+            'observations',
+            'create_user',
+            'update_user'
+        )
+        extra_kwargs = {
+            'start': {'required': True},
+            'end': {'required': True},
+            'create_user': {'required': True},
+            'update_user': {'required': True}
+        }
+
+
 class LegacyDecommissionDescriptionSerializer(serializers.ModelSerializer):
     """Serializes Decommission Descriptions"""
 
@@ -166,7 +213,7 @@ class ScreenSerializer(serializers.ModelSerializer):
         fields = (
             'start',
             'end',
-            'internal_diameter',
+            'diameter',
             'assembly_type',
             'slot_size',
         )
@@ -177,11 +224,32 @@ class ScreenSerializer(serializers.ModelSerializer):
         }
 
 
+class ScreenStackerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Screen
+        fields = (
+            'start',
+            'end',
+            'diameter',
+            'assembly_type',
+            'slot_size',
+            'create_user',
+            'update_user'
+        )
+        extra_kwargs = {
+            'start': {'required': True},
+            'end': {'required': True},
+            'assembly_type': {'required': True},
+            'create_user': {'required': True},
+            'update_user': {'required': True}
+        }
+
+
 class LegacyScreenSerializer(serializers.ModelSerializer):
 
     start = serializers.DecimalField(max_digits=7, decimal_places=2, allow_null=True)
     end = serializers.DecimalField(max_digits=7, decimal_places=2, allow_null=True)
-    internal_diameter = serializers.DecimalField(max_digits=7, decimal_places=2, allow_null=True)
+    diameter = serializers.DecimalField(max_digits=7, decimal_places=2, allow_null=True)
     slot_size = serializers.DecimalField(max_digits=7, decimal_places=2, allow_null=True)
 
     class Meta:
@@ -189,7 +257,7 @@ class LegacyScreenSerializer(serializers.ModelSerializer):
         fields = (
             'start',
             'end',
-            'internal_diameter',
+            'diameter',
             'assembly_type',
             'slot_size',
         )
@@ -213,9 +281,45 @@ class LinerPerforationSerializer(serializers.ModelSerializer):
         )
 
 
-class LegacyLinerPerforationSerializer(serializers.ModelSerializer):
+class LinerPerforationStackerSerializer(serializers.ModelSerializer):
+    """ This serializer is used for data->perforation(on well) and perforation(on well)->data.
+    """
     class Meta:
         model = LinerPerforation
+        fields = (
+            # SUPER IMPORTANT: Don't include ID (liner_perforation_guid, well, or submission) as part of this
+            # serializer, as it will break the stacking code. If you include the guid, then it will remain
+            # stuck on a particular well/submission (unless I gues you pop it during serializing/
+            # deserializing) when creating legacy submissions or re-creating well records etc.
+            'start',
+            'end',
+            'create_user',
+            'update_user'
+        )
+        extra_kwargs = {
+            'create_user': {'required': True},
+            'update_user': {'required': True}
+        }
+
+
+class ActivitySubmissionLinerPerforationSerializer(serializers.ModelSerializer):
+    """ This serializer is used for data->perforation(on submission) and perforation(on submission)->data.
+    """
+    class Meta:
+        model = ActivitySubmissionLinerPerforation
+        fields = (
+            # SUPER IMPORTANT: Don't include ID (liner_perforation_guid, well, or submission) as part of this
+            # serializer, as it will break the stacking code. If you include the guid, then it will remain
+            # stuck on a particular well/submission (unless I gues you pop it during serializing/
+            # deserializing) when creating legacy submissions or re-creating well records etc.
+            'start',
+            'end',
+        )
+
+
+class LegacyLinerPerforationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ActivitySubmissionLinerPerforation
         fields = (
             # SUPER IMPORTANT: Don't include ID (liner_perforation_guid, well, or submission) as part of this
             # serializer, as it will break the stacking code. If you include the guid, then it will remain
@@ -242,8 +346,8 @@ class LithologyDescriptionSummarySerializer(serializers.ModelSerializer):
     class Meta:
         model = LithologyDescription
         fields = (
-            'lithology_from',
-            'lithology_to',
+            'start',
+            'end',
             'lithology_raw_data',
             'lithology_colour',
             'lithology_hardness',
@@ -256,10 +360,10 @@ class LithologyDescriptionSummarySerializer(serializers.ModelSerializer):
 
 class LithologyDescriptionSerializer(serializers.ModelSerializer):
 
-    lithology_from = serializers.DecimalField(
+    start = serializers.DecimalField(
         max_digits=7, decimal_places=2,
         validators=[MinValueValidator(Decimal('0.00'))])
-    lithology_to = serializers.DecimalField(
+    end = serializers.DecimalField(
         max_digits=7, decimal_places=2,
         validators=[MinValueValidator(Decimal('0.00'))])
 
@@ -267,8 +371,8 @@ class LithologyDescriptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = LithologyDescription
         fields = (
-            'lithology_from',
-            'lithology_to',
+            'start',
+            'end',
             'lithology_raw_data',
             'lithology_colour',
             'lithology_hardness',
@@ -279,16 +383,49 @@ class LithologyDescriptionSerializer(serializers.ModelSerializer):
         )
 
 
-class LegacyLithologyDescriptionSerializer(serializers.ModelSerializer):
+class LithologyDescriptionStackerSerializer(serializers.ModelSerializer):
 
-    lithology_to = serializers.DecimalField(max_digits=7, decimal_places=2, allow_null=True)
+    start = serializers.DecimalField(
+        max_digits=7, decimal_places=2,
+        validators=[MinValueValidator(Decimal('0.00'))])
+    end = serializers.DecimalField(
+        max_digits=7, decimal_places=2,
+        validators=[MinValueValidator(Decimal('0.00'))])
 
     """Serializes lithology description records"""
     class Meta:
         model = LithologyDescription
         fields = (
-            'lithology_from',
-            'lithology_to',
+            'start',
+            'end',
+            'lithology_raw_data',
+            'lithology_colour',
+            'lithology_hardness',
+            'lithology_moisture',
+            'lithology_description',
+            'lithology_observation',
+            'water_bearing_estimated_flow',
+            'create_user',
+            'update_user'
+        )
+        extra_kwargs = {
+            'start': {'required': True},
+            'end': {'required': True},
+            'create_user': {'required': True},
+            'update_user': {'required': True}
+        }
+
+
+class LegacyLithologyDescriptionSerializer(serializers.ModelSerializer):
+
+    end = serializers.DecimalField(max_digits=7, decimal_places=2, allow_null=True)
+
+    """Serializes lithology description records"""
+    class Meta:
+        model = LithologyDescription
+        fields = (
+            'start',
+            'end',
             'lithology_raw_data',
             'lithology_colour',
             'lithology_hardness',
@@ -298,7 +435,7 @@ class LegacyLithologyDescriptionSerializer(serializers.ModelSerializer):
             'water_bearing_estimated_flow',
         )
         extra_kwargs = {
-            'lithology_to': {'required': False, 'allow_null': True},
+            'end': {'required': False, 'allow_null': True},
         }
 
 
@@ -341,10 +478,16 @@ class WellDetailSerializer(AuditModelSerializer):
     screen_opening = serializers.ReadOnlyField(source='screen_opening.description')
     screen_bottom = serializers.ReadOnlyField(source='screen_bottom.description')
     well_orientation = serializers.ReadOnlyField(source='get_well_orientation_display')
-    well_disinfected_status = serializers.ReadOnlyField(source='get_well_disinfected_status.description')
     alternative_specs_submitted = serializers.ReadOnlyField(source='get_alternative_specs_submitted_display')
 
     submission_work_dates = serializers.SerializerMethodField()
+
+    legal_pid = serializers.SerializerMethodField()
+
+    def get_legal_pid(self, instance):
+        if instance.legal_pid is None:
+            return instance.legal_pid
+        return "{0:0>9}".format(instance.legal_pid)
 
     def get_submission_work_dates(self, instance):
         records = instance.activitysubmission_set \
@@ -461,7 +604,6 @@ class WellDetailSerializer(AuditModelSerializer):
             "observation_well_number",
             "observation_well_status",
             "ems",
-            "ems_id",  # kept for backwards compatibility, use ems
             "aquifer",
             "utm_zone_code",
             "utm_northing",
@@ -546,6 +688,11 @@ class WellDetailAdminSerializer(AuditModelSerializer):
         fields = '__all__'
         extra_fields = ['latitude', 'longitude']
 
+    def get_legal_pid(self, instance):
+        if instance.legal_pid is None:
+            return instance.legal_pid
+        return "{0:0>9}".format(instance.legal_pid)
+
     # this allows us to call model methods on top of __all__
     def get_field_names(self, declared_fields, info):
         expanded_fields = super(WellDetailAdminSerializer, self).get_field_names(declared_fields, info)
@@ -570,14 +717,14 @@ class WellDetailAdminSerializer(AuditModelSerializer):
 
 class WellStackerSerializer(AuditModelSerializer):
 
-    casing_set = CasingSerializer(many=True)
-    screen_set = ScreenSerializer(many=True)
-    linerperforation_set = LinerPerforationSerializer(many=True)
-    decommission_description_set = DecommissionDescriptionSerializer(many=True)
-    lithologydescription_set = LithologyDescriptionSerializer(many=True)
+    casing_set = CasingStackerSerializer(many=True)
+    screen_set = ScreenStackerSerializer(many=True)
+    linerperforation_set = LinerPerforationStackerSerializer(many=True)
+    decommission_description_set = DecommissionDescriptionStackerSerializer(many=True)
+    lithologydescription_set = LithologyDescriptionStackerSerializer(many=True)
     # Audit fields have to be added explicitly, because they are on a base class
-    update_user = serializers.CharField()
-    create_user = serializers.CharField()
+    update_user = serializers.CharField(required=True)
+    create_user = serializers.CharField(required=True)
     update_date = serializers.DateTimeField()
 
     class Meta:
@@ -627,6 +774,13 @@ class WellStackerSerializer(AuditModelSerializer):
 class WellListSerializer(serializers.ModelSerializer):
     """Serializes a well record"""
 
+    legal_pid = serializers.SerializerMethodField()
+
+    def get_legal_pid(self, instance):
+        if instance.legal_pid is None:
+            return instance.legal_pid
+        return "{0:0>9}".format(instance.legal_pid)
+
     class Meta:
         model = Well
         fields = (
@@ -637,7 +791,6 @@ class WellListSerializer(serializers.ModelSerializer):
             "well_class",
             "well_subclass",
             "well_status",
-            "well_publication_status",
             "licenced_status",
             "street_address",
             "city",
@@ -764,6 +917,92 @@ class WellListAdminSerializer(WellListSerializer):
             'owner_postal_code',
             'internal_comments',
         )
+
+
+class WellExportSerializer(WellListSerializer):
+    """Serializes a well for export (using display names for codes, etc)"""
+    well_class = serializers.SlugRelatedField(read_only=True, slug_field='description')
+    well_subclass = serializers.SlugRelatedField(read_only=True, slug_field='description')
+    well_status = serializers.SlugRelatedField(read_only=True, slug_field='description')
+    licenced_status = serializers.SlugRelatedField(read_only=True, slug_field='description')
+    land_district = serializers.SlugRelatedField(read_only=True, slug_field='name')
+    drilling_company = serializers.SlugRelatedField(read_only=True, slug_field='name')
+    ground_elevation_method = serializers.SlugRelatedField(read_only=True,
+                                                           slug_field='description')
+    surface_seal_material = serializers.SlugRelatedField(read_only=True, slug_field='description')
+    surface_seal_method = serializers.SlugRelatedField(read_only=True, slug_field='description')
+    liner_material = serializers.SlugRelatedField(read_only=True, slug_field='description')
+    screen_intake_method = serializers.SlugRelatedField(read_only=True, slug_field='description')
+    screen_type = serializers.SlugRelatedField(read_only=True, slug_field='description')
+    screen_material = serializers.SlugRelatedField(read_only=True, slug_field='description')
+    screen_opening = serializers.SlugRelatedField(read_only=True, slug_field='description')
+    screen_bottom = serializers.SlugRelatedField(read_only=True, slug_field='description')
+    well_yield_unit = serializers.SlugRelatedField(read_only=True, slug_field='description')
+    observation_well_status = serializers.SlugRelatedField(read_only=True, slug_field='description')
+    coordinate_acquisition_code = serializers.SlugRelatedField(read_only=True,
+                                                               slug_field='description')
+    bcgs_id = serializers.SlugRelatedField(read_only=True, slug_field='bcgs_number')
+    decommission_method = serializers.SlugRelatedField(read_only=True, slug_field='description')
+    aquifer = serializers.PrimaryKeyRelatedField(read_only=True)
+    aquifer_lithology = serializers.SlugRelatedField(read_only=True, slug_field='description')
+    yield_estimation_method = serializers.SlugRelatedField(read_only=True, slug_field='description')
+
+    development_methods = serializers.SlugRelatedField(many=True, read_only=True,
+                                                       slug_field='description')
+    drilling_methods = serializers.SlugRelatedField(many=True, read_only=True,
+                                                    slug_field='description')
+    water_quality_characteristics = serializers.SlugRelatedField(many=True, read_only=True,
+                                                                 slug_field='description')
+
+    well_orientation = serializers.CharField(read_only=True, source='get_well_orientation_display')
+    hydro_fracturing_performed = serializers.CharField(read_only=True,
+                                                       source='get_hydro_fracturing_performed_display')
+
+    m2m_relations = {
+        field.name
+        for field in Well._meta.get_fields()
+        if field.many_to_many and not field.auto_created
+    }
+
+    def __init__(self, *args, **kwargs):
+        """
+        Limit responses to requested fields
+
+        If we get a 'fields' context kwarg, then limit results to the included
+        fields.
+        """
+        super().__init__(*args, **kwargs)
+
+        context = kwargs.get('context', {})
+        fields = context.get('fields', None)
+        if fields is not None:
+            excluded_fields = set(self.fields) - set(fields)
+            for field_name in excluded_fields:
+                self.fields.pop(field_name)
+
+    def to_representation(self, instance):
+        """
+        Instead of arrays, return comma delimited strings for export.
+        """
+        data = super().to_representation(instance)
+
+        for field_name in self.m2m_relations:
+            if field_name in data:
+                data[field_name] = ','.join(data[field_name])
+
+        return data
+
+
+class WellExportAdminSerializer(WellExportSerializer):
+    """Serializes a well for export (using display names for codes, etc)"""
+    owner_province_state = serializers.SlugRelatedField(read_only=True,
+                                                        slug_field='description')
+    well_publication_status = serializers.SlugRelatedField(read_only=True,
+                                                           slug_field='description')
+
+    class Meta:
+        model = Well
+        fields = WellListAdminSerializer.Meta.fields
 
 
 class WellTagSearchSerializer(serializers.ModelSerializer):

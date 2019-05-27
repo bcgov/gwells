@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="well-detail">
     <div v-if="loading">
       <div class="fa-2x text-center">
         <i class="fa fa-circle-o-notch fa-spin"></i>
@@ -23,7 +23,8 @@
               <router-link v-if="show.edit" :to="{ name: 'SubmissionsEdit', params: { id: $route.params.id } }" class="mr-3">
                 <button class="btn btn-primary mb-1">Edit</button>
               </router-link>
-              <b-btn variant="light" aria-label="Print" @click="handlePrint"><i class="fa fa-lg fa-print"></i></b-btn>
+              <span class="print-notice">For best print results, use the Chrome browser</span>
+              <b-btn variant="light" aria-label="Print" class="mb-1" @click="handlePrint"><i class="fa fa-lg fa-print"></i></b-btn>
             </div>
           </legend>
           <b-row>
@@ -47,7 +48,7 @@
           <b-row>
             <b-col cols="12" md="4"><span class="font-weight-bold">Owner Name:</span> {{ well.owner_full_name }}</b-col>
             <b-col cols="12" md="4"><span class="font-weight-bold">Well Subclass:</span> {{ well.subclass }}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Environmental Monitoring System (EMS) ID:</span> {{ well.ems || well.ems_id }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Environmental Monitoring System (EMS) ID:</span> {{ well.ems }}</b-col>
           </b-row>
           <b-row>
             <b-col cols="12" md="4"><span class="font-weight-bold">Intended Water Use:</span> {{ well.intended_water_use }}</b-col>
@@ -230,7 +231,7 @@
           <b-row>
             <b-col cols="12" md="4"><span class="font-weight-bold">Finished Well Depth:</span> {{ well.finished_well_depth }} {{ well.finished_well_depth ? 'feet':''}}</b-col>
             <b-col cols="12" md="4"><span class="font-weight-bold">Estimated Well Yield:</span> {{ well.well_yield }} {{ well.well_yield ? 'USGPM': ''}}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Well Disinfected:</span> {{ well.well_disinfected_status }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Well Disinfected Status:</span> {{ well.well_disinfected_status }}</b-col>
           </b-row>
           <b-row>
             <b-col cols="12" md="4"><span class="font-weight-bold">Final Casing Stick Up:</span> {{ well.final_casing_stick_up }} {{ well.final_casing_stick_up ? 'inches':''}}</b-col>
@@ -362,7 +363,7 @@
                   small
                   bordered
                   :items="well.screen_set"
-                  :fields="['from', 'to', 'internal_diameter', 'assembly_type', 'slot_size']"
+                  :fields="['from', 'to', 'diameter', 'assembly_type', 'slot_size']"
                   show-empty
                   >
                 <template slot="from" slot-scope="data">{{data.item.start}} ft</template>
@@ -470,8 +471,8 @@ export default {
         number: ''
       },
       lithology_fields: {
-        lithology_from: { label: 'From (ft bgl)' },
-        lithology_to: { label: 'To (ft bgl)' },
+        start: { label: 'From (ft bgl)' },
+        end: { label: 'To (ft bgl)' },
         lithology_raw_data: { label: 'Raw Data' },
         lithology_description: { label: 'Description' },
         lithology_moisture: { label: 'Moisture' },
@@ -583,5 +584,34 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
+.well-detail .print-notice {
+  font-size: 1rem;
+}
+
+@media print {
+
+  .well-detail {
+
+    fieldset {
+      page-break-inside: avoid;
+    }
+
+    .card {
+      border: none;
+    }
+
+    table.b-table > thead > tr > th {
+      &.sorting::before,
+      &.sorting::after,
+      &.sorting_desc::before,
+      &.sorting_desc::after,
+      &.sorting_asc::before,
+      &.sorting_desc::after {
+        content: none;
+      }
+    }
+  }
+
+}
 </style>

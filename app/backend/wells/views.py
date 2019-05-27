@@ -19,7 +19,8 @@ import time
 
 from django.db.models import Prefetch
 from django.http import (
-    Http404, HttpResponse, JsonResponse, HttpResponseRedirect, HttpResponseNotFound, StreamingHttpResponse)
+    FileResponse, Http404, HttpResponse, HttpResponseNotFound,
+    HttpResponseRedirect, JsonResponse, StreamingHttpResponse)
 from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView
 from django_filters import rest_framework as restfilters
@@ -43,6 +44,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.permissions import AllowAny
+from rest_framework.settings import api_settings
 
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
@@ -83,7 +85,10 @@ from wells.models import (
     WellClassCode,
     WellYieldUnitCode,
     WellStatusCode)
+from wells.renderers import WellListCSVRenderer, WellListExcelRenderer
 from wells.serializers import (
+    WellExportAdminSerializer,
+    WellExportSerializer,
     WellListAdminSerializer,
     WellListSerializer,
     WellTagSearchSerializer,
@@ -94,42 +99,6 @@ from wells.permissions import WellsEditPermissions, WellsEditOrReadOnly
 
 
 logger = logging.getLogger(__name__)
-
-
-class WellSearchFilter(restfilters.FilterSet):
-    well_tag_number = restfilters.CharFilter()
-    identification_plate_number = restfilters.CharFilter()
-    owner_full_name = restfilters.CharFilter(lookup_expr='icontains')
-    street_address = restfilters.CharFilter(lookup_expr='icontains')
-    legal_plan = restfilters.CharFilter()
-    legal_lot = restfilters.CharFilter()
-
-
-class WellLocationFilter(WellSearchFilter, restfilters.FilterSet):
-    ne_lat = restfilters.NumberFilter(field_name='latitude', lookup_expr='lte')
-    ne_long = restfilters.NumberFilter(
-        field_name='longitude', lookup_expr='lte')
-    sw_lat = restfilters.NumberFilter(field_name='latitude', lookup_expr='gte')
-    sw_long = restfilters.NumberFilter(
-        field_name='longitude', lookup_expr='gte')
-
-
-class WellDetailView(DetailView):
-    model = Well
-    context_object_name = 'well'
-    template_name = 'wells/well_detail.html'
-
-    def get_context_data(self, **kwargs):
-        """
-        Return the context for the well details page.
-        """
-
-        context = super(WellDetailView, self).get_context_data(**kwargs)
-        surveys = Survey.objects.order_by('create_date')
-        context['surveys'] = surveys
-        context['page'] = 'w'
-
-        return context
 
 
 class WellDetail(RetrieveAPIView):
@@ -392,6 +361,158 @@ class WellLocationListAPIView(ListAPIView):
         return super().get(request)
 
 
+class WellExportListAPIView(ListAPIView):
+    """Returns CSV or Excel data for wells.
+    """
+    permission_classes = (WellsEditOrReadOnly,)
+    model = Well
+
+    # Allow searching on name fields, names of related companies, etc.
+    filter_backends = (WellListFilterBackend, BoundingBoxFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter)
+    ordering = ('well_tag_number',)
+    pagination_class = None
+
+    search_fields = ('well_tag_number', 'identification_plate_number',
+                     'street_address', 'city', 'owner_full_name')
+    renderer_classes = (WellListCSVRenderer, WellListExcelRenderer)
+    MAX_EXPORT_COUNT = 5000
+
+    SELECT_RELATED_OPTIONS = [
+        'well_class',
+        'well_subclass',
+        'well_status',
+        'licenced_status',
+        'land_district',
+        'drilling_company',
+        'ground_elevation_method',
+        'surface_seal_material',
+        'surface_seal_method',
+        'liner_material',
+        'screen_intake_method',
+        'screen_type',
+        'screen_material',
+        'screen_opening',
+        'screen_bottom',
+        'well_yield_unit',
+        'observation_well_status',
+        'coordinate_acquisition_code',
+        'bcgs_id',
+        'decommission_method',
+        'aquifer',
+        'aquifer_lithology',
+        'yield_estimation_method',
+        'well_disinfected_status',
+    ]
+    PREFETCH_RELATED_OPTIONS = [
+        'development_methods',
+        'drilling_methods',
+        'water_quality_characteristics',
+    ]
+
+    def get_fields(self):
+        raw_fields = self.request.query_params.get('fields')
+        return raw_fields.split(',') if raw_fields else None
+
+    def get_queryset(self):
+        """Excludes unpublished wells for users without edit permissions.
+        """
+        if self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
+            qs = Well.objects.all()
+        else:
+            qs = Well.objects.all().exclude(well_publication_status='Unpublished')
+
+        included_fields = self.get_fields()
+
+        if included_fields:
+            select_relateds = [
+                relation for relation in self.SELECT_RELATED_OPTIONS
+                if relation in included_fields
+            ]
+            prefetches = [
+                relation for relation in self.PREFETCH_RELATED_OPTIONS
+                if relation in included_fields
+            ]
+
+            if select_relateds:
+                qs = qs.select_related(*select_relateds)
+            if prefetches:
+                qs = qs.prefetch_related(*prefetches)
+        elif included_fields is None:
+            # If no fields are passed, then include everything
+            qs = qs.select_related(*self.SELECT_RELATED_OPTIONS)
+            qs = qs.prefetch_related(*self.PREFETCH_RELATED_OPTIONS)
+
+        return qs
+
+    def get_serializer_class(self):
+        """Returns a different serializer class for admin users."""
+        serializer_class = WellExportSerializer
+        if (self.request.user and self.request.user.is_authenticated and
+                self.request.user.groups.filter(name=WELLS_VIEWER_ROLE).exists()):
+            serializer_class = WellExportAdminSerializer
+
+        return serializer_class
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+
+        fields = self.get_fields()
+        if fields:
+            context['fields'] = fields
+
+        return context
+
+    def get_renderer_context(self):
+        context = super().get_renderer_context()
+
+        fields = self.get_fields()
+        if fields:
+            context['header'] = fields
+
+        return context
+
+    def batch_iterator(self, queryset, count, batch_size=200):
+        """Batch a queryset into chunks of batch_size, and serialize the results
+
+        Allows iterative processing while taking advantage of prefetching many
+        to many relations.
+        """
+        for offset in range(0, count, batch_size):
+            end = min(offset + batch_size, count)
+            batch = queryset[offset:end]
+
+            serializer = self.get_serializer(batch, many=True)
+            for item in serializer.data:
+                yield item
+
+    def list(self, request):
+        queryset = self.filter_queryset(self.get_queryset())
+        count = queryset.count()
+        # return an empty response if there are too many wells to display
+        if count > self.MAX_EXPORT_COUNT:
+            raise PermissionDenied(
+                'Too many wells to export. Please change your search criteria.'
+            )
+        elif count == 0:
+            raise NotFound('No well records could be found.')
+
+        renderer = request.accepted_renderer
+        if renderer.format == 'xlsx':
+            response_class = FileResponse
+        else:
+            response_class = StreamingHttpResponse
+
+        context = self.get_renderer_context()
+        data_iterator = self.batch_iterator(queryset, count)
+        render_result = renderer.render(data_iterator, renderer_context=context)
+
+        response = response_class(render_result, content_type=renderer.media_type)
+        response['Content-Disposition'] = 'attachment; filename="search-results.{ext}"'.format(ext=renderer.format)
+
+        return response
+
+
 class PreSignedDocumentKey(APIView):
     """
     Get a pre-signed document key to upload into an S3 compatible document store
@@ -573,8 +694,8 @@ LITHOLOGY_PROPERTIES = openapi.Schema(
             description=('Link to well summary report within the Groundwater Wells and Aquifer (GWELLS)'
                          ' application. The well summary provides the overall desription and history of the'
                          ' well.')),
-        'from': get_model_feature_schema(LithologyDescription, 'lithology_from'),
-        'to': get_model_feature_schema(LithologyDescription, 'lithology_to'),
+        'from': get_model_feature_schema(LithologyDescription, 'start'),
+        'to': get_model_feature_schema(LithologyDescription, 'end'),
         'colour': get_model_feature_schema(LithologyColourCode, 'description'),
         'description': get_model_feature_schema(LithologyDescriptionCode, 'description'),
         'material': get_model_feature_schema(LithologyMaterialCode, 'description'),
@@ -638,34 +759,38 @@ def lithology_geojson(request):
 
 @api_view(['GET'])
 def well_licensing(request):
-    url = get_env_variable('E_LICENSING_URL') + '{}'.format(request.GET.get('well_tag_number'))
+    tag = request.GET.get('well_tag_number')
+    url = get_env_variable('E_LICENSING_URL') + '{}'.format(tag)
+    api_success = False
 
     headers = {
         'content_type': 'application/json',
         'AuthUsername': get_env_variable('E_LICENSING_AUTH_USERNAME'),
         'AuthPass': get_env_variable('E_LICENSING_AUTH_PASSWORD')
     }
-    time.sleep(0.01)  # hack to fix reset connection by peer error - server provider timeout issue
-    response = requests.get(url, headers=headers)
-    if response.ok:
-        try:
-            licence = response.json()[-1]  # Use the latest licensing value
-            licence_status = 'Licensed' if licence.get('authorization_status') == 'ACTIVE' else 'Unlicensed'
-            data = {
-                'status': licence_status,
-                'number': licence.get('authorization_number'),
-                'date': licence.get('authorization_status_date')
-            }
-        except:
-            data = {
-                'status': 'Unlicensed',
-                'number': 'N/A',
-                'date': ''
-            }
-    else:
+
+    try:
+        response = requests.get(url, headers=headers)
+        if response.ok:
+            try:
+                licence = response.json()[-1]  # Use the latest licensing value, fails purposely if empty array
+                licence_status = 'Licensed' if licence.get('authorization_status') == 'ACTIVE' else 'Unlicensed'
+                data = {
+                    'status': licence_status,
+                    'number': licence.get('authorization_number'),
+                    'date': licence.get('authorization_status_date')
+                }
+                api_success = True
+            except:
+                pass
+    except:
+        pass
+
+    if not api_success:
+        well = Well.objects.get(well_tag_number=tag)
         data = {
-            'status': 'Service Unavailable',
-            'number': 'N/A',
+            'status': well.licenced_status.description,
+            'number': '',
             'date': ''
         }
 
