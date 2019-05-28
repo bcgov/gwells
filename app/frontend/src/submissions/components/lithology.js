@@ -10,6 +10,23 @@ Licensed under the Apache License, Version 2.0 (the "License");
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
+
+    USAGE:
+
+    import Lithology from './lithology.js'
+
+    const description = new Lithology("gravelly SAND, some clay, wet, compact, grey")
+
+    // .parseSoilTerms() returns ordered soil terms.  a default soil/rock list is included.
+    const soils = description.parseSoilTerms()  // == ['sand', 'gravel', 'clay']
+
+    // the following methods are available but they don't include default terminology lists:
+
+    description.moisture(['dry', 'damp', 'moist', 'wet'])  // provide own moisture terms, no defaults are included
+    // outputs 'wet'
+
+    description.hardness(['loose', 'medium', 'compact', 'dense'])  // must provide own hardness terms
+    // outputs 'compact'
 */
 
 // default valid soil types
@@ -46,7 +63,7 @@ const VALID_BEDROCK = [
   'quartz',
   'quartzite',
   'limestone',
-  'volcanics',
+  'volcanic',
   'feldspar'
 ]
 

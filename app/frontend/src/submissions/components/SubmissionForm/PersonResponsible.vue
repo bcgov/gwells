@@ -239,7 +239,7 @@ export default {
     personNameReg (option) {
       if (option && option.registrations) {
         const drillReg = option.registrations.find((item) => {
-          return item.registries_activity === 'DRILL'
+          return item.registries_activity === 'DRILL' || item.registries_activity === 'PUMP'
         })
         const drillNo = (drillReg && drillReg.registration_no) ? drillReg.registration_no : 'Registration Number Unavailable'
         return option.name + ' (' + drillNo + ')'

@@ -41,6 +41,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
               Materials
             </th>
             <th class="font-weight-normal">
+              Descriptor
+            </th>
+            <th class="font-weight-normal">
               Moisture
             </th>
             <th class="font-weight-normal">
@@ -49,32 +52,39 @@ Licensed under the Apache License, Version 2.0 (the "License");
             <th class="font-weight-normal">
               Hardness
             </th>
-            <th class="font-weight-normal">
-              Descriptor
+            <th class="font-weight-normal input-width-medium">
+              Water Bearing Flow Estimate (USGPM)
             </th>
             <th class="font-weight-normal">
               Observations
-            </th>
-            <th class="font-weight-normal input-width-medium">
-              Water Bearing Flow Estimate (USGPM)
             </th>
             <th></th>
           </tr>
         </thead>
         <tbody>
-          <template v-for="(row, index) in lithology.length">
+          <template v-for="(row, index) in lithologyData.length">
             <tr :key="`lithology row ${index}`" :id="`lithologyRow${index}`">
               <td class="input-width-small">
-                <form-input :id="`lithologyDepthFrom${index}`" aria-label="Depth from (feet)" v-model="lithology[index].lithology_from" group-class="mt-1 mb-0"/>
+                <form-input
+                  :id="`lithologyDepthFrom${index}`"
+                  aria-label="Depth from (feet)"
+                  type="number"
+                  v-model="lithologyData[index].start"
+                  group-class="mt-1 mb-0"/>
               </td>
               <td class="input-width-small">
-                <form-input :id="`lithologyDepthTo${index}`" aria-label="Depth to (feet)" v-model="lithology[index].lithology_to" group-class="mt-1 mb-0"/>
+                <form-input
+                  :id="`lithologyDepthTo${index}`"
+                  aria-label="Depth to (feet)"
+                  type="number"
+                  v-model="lithologyData[index].end"
+                  group-class="mt-1 mb-0"/>
               </td>
               <td>
                 <form-input
                     :id="`lithologyDescription${index}`"
                     aria-label="Soil or Bedrock Description"
-                    v-model="lithology[index].lithology_raw_data"
+                    v-model="lithologyData[index].lithology_raw_data"
                     group-class="mt-1 mb-0"
                     @input="parseDescription(index, $event)"
                 ></form-input>
@@ -88,6 +98,19 @@ Licensed under the Apache License, Version 2.0 (the "License");
               </td>
               <td class="input-width-medium">
                 <form-input
+                    :id="`lithologyDescriptor${index}`"
+                    aria-label="Descriptor"
+                    select
+                    :options="codes.lithology_descriptors"
+                    text-field="description"
+                    value-field="lithology_description_code"
+                    placeholder="Select descriptor"
+                    v-model="lithologyData[index].lithology_description"
+                    group-class="mt-1 mb-0"
+                />
+              </td>
+              <td class="input-width-medium">
+                <form-input
                     :id="`lithologyMoisture${index}`"
                     aria-label="Moisture"
                     select
@@ -95,7 +118,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     text-field="description"
                     value-field="lithology_moisture_code"
                     placeholder="Select moisture"
-                    v-model="lithology[index].lithology_moisture"
+                    v-model="lithologyData[index].lithology_moisture"
                     group-class="mt-1 mb-0"></form-input>
               </td>
               <td class="input-width-medium">
@@ -107,7 +130,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     text-field="description"
                     placeholder="Select colour"
                     value-field="lithology_colour_code"
-                    v-model="lithology[index].lithology_colour"
+                    v-model="lithologyData[index].lithology_colour"
                     group-class="mt-1 mb-0"></form-input>
               </td>
               <td class="input-width-medium">
@@ -119,31 +142,24 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     text-field="description"
                     placeholder="Select hardness"
                     value-field="lithology_hardness_code"
-                    v-model="lithology[index].lithology_hardness"
+                    v-model="lithologyData[index].lithology_hardness"
                     group-class="mt-1 mb-0"></form-input>
               </td>
               <td class="input-width-medium">
                 <form-input
-                    :id="`lithologyDescriptor${index}`"
-                    aria-label="Descriptor"
-                    select
-                    :options="codes.lithology_descriptors"
-                    text-field="description"
-                    value-field="lithology_description_code"
-                    placeholder="Select descriptor"
-                    v-model="lithology[index].lithology_description"
-                    group-class="mt-1 mb-0"
-                />
+                  :id="`lithologyFlowEstimate${index}`"
+                  aria-label="Water bearing flow"
+                  type="number"
+                  v-model="lithologyData[index].water_bearing_estimated_flow"
+                  group-class="mt-1 mb-0"
+                ></form-input>
               </td>
               <td class="input-width-medium">
                 <form-input
                     :id="`lithologyObservations${index}`"
                     aria-label="Observations"
-                    v-model="lithology[index].lithology_observation"
+                    v-model="lithologyData[index].lithology_observation"
                     group-class="mt-1 mb-0"></form-input>
-              </td>
-              <td class="input-width-medium">
-                <form-input :id="`lithologyFlowEstimate${index}`" aria-label="Water bearing flow" v-model="lithology[index].water_bearing_estimated_flow" group-class="mt-1 mb-0"></form-input>
               </td>
               <td class="pt-1">
                 <b-btn size="sm" variant="primary" @click="removeRowIfOk(index)" :id="`removeRowButton${index}`" class="mt-2 float-right"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
@@ -210,15 +226,41 @@ export default {
     return {
       confirmRemoveModal: false,
       rowIndexToRemove: null,
-      lithSoils: []
+      lithSoils: [],
+      lithologyData: [],
+      pageLoaded: false
     }
   },
   computed: {
-    ...mapGetters(['codes'])
+    ...mapGetters(['codes']),
+    computedLithology: function () {
+      return Object.assign({}, this.lithologyData)
+    }
+  },
+  watch: {
+    computedLithology: {
+      deep: true,
+      handler: function (n, o) {
+        let lithology = []
+        this.lithologyData.forEach((d) => {
+          if (!Object.values(d).every(x => (x === ''))) {
+            lithology.push(d)
+          }
+        })
+        if (this.pageLoaded) {
+          // HACK to trick Vue into detecting a change in the array
+          lithology.push(this.emptyObject())
+        }
+        this.$emit('update:lithology', lithology)
+      }
+    }
   },
   methods: {
     addLithologyRow () {
-      this.lithologyInput.push({
+      this.lithologyData.push(this.emptyObject())
+    },
+    emptyObject () {
+      return {
         lithology_raw_data: '',
         lithology_colour: '',
         lithology_hardness: '',
@@ -226,15 +268,15 @@ export default {
         lithology_observation: '',
         // lithology_description is a "descriptor" (containing an additional descriptive term like 'weathered', 'competent')
         lithology_description: ''
-      })
+      }
     },
     removeRowByIndex (index) {
-      this.lithologyInput.splice(index, 1)
+      this.lithologyData.splice(index, 1)
       this.lithSoils.splice(index, 1)
       this.rowIndexToRemove = null
     },
     removeRowIfOk (rowNumber) {
-      if (this.rowHasValues(this.lithologyInput[rowNumber])) {
+      if (this.rowHasValues(this.lithologyData[rowNumber])) {
         this.rowIndexToRemove = rowNumber
         this.confirmRemoveModal = true
       } else {
@@ -258,11 +300,17 @@ export default {
   },
   created () {
     // When component created, add an initial row of lithology.
-    if (!this.lithologyInput.length) {
+    if (!this.lithology.length) {
       for (let i = 0; i < 10; i++) {
         this.addLithologyRow()
       }
+    } else {
+      Object.assign(this.lithologyData, this.lithology)
+      this.addLithologyRow()
     }
+  },
+  updated () {
+    this.pageLoaded = true
   }
 }
 </script>

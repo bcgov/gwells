@@ -1,0 +1,72 @@
+[
+    {
+        "model": "submissions.wellactivitycode",
+        "pk": "CON",
+        "fields": {
+            "create_user": "",
+            "create_date": "2019-04-01T22:22:35.479Z",
+            "update_user": "",
+            "update_date": "2019-04-01T22:22:35.784Z",
+            "display_order": 1,
+            "effective_date": "2019-04-01T22:22:35.658Z",
+            "expiry_date": "9999-12-31T23:59:59.999Z",
+            "description": "Construction report"
+        }
+    },
+    {
+        "model": "submissions.wellactivitycode",
+        "pk": "DEC",
+        "fields": {
+            "create_user": "",
+            "create_date": "2019-04-01T22:22:35.479Z",
+            "update_user": "",
+            "update_date": "2019-04-01T22:22:35.784Z",
+            "display_order": 3,
+            "effective_date": "2019-04-01T22:22:35.658Z",
+            "expiry_date": "9999-12-31T23:59:59.999Z",
+            "description": "Decommission report"
+        }
+    },
+    {
+        "model": "submissions.wellactivitycode",
+        "pk": "LEGACY",
+        "fields": {
+            "create_user": "",
+            "create_date": "2019-04-01T22:22:35.479Z",
+            "update_user": "",
+            "update_date": "2019-04-01T22:22:35.784Z",
+            "display_order": 5,
+            "effective_date": "2019-04-01T22:22:35.658Z",
+            "expiry_date": "9999-12-31T23:59:59.999Z",
+            "description": "Legacy record"
+        }
+    },
+    {
+        "model": "submissions.wellactivitycode",
+        "pk": "STAFF_EDIT",
+        "fields": {
+            "create_user": "",
+            "create_date": "2019-04-01T22:22:35.479Z",
+            "update_user": "",
+            "update_date": "2019-04-01T22:22:35.784Z",
+            "display_order": 4,
+            "effective_date": "2019-04-01T22:22:35.658Z",
+            "expiry_date": "9999-12-31T23:59:59.999Z",
+            "description": "Staff edit"
+        }
+    },
+    {
+        "model": "submissions.wellactivitycode",
+        "pk": "ALT",
+        "fields": {
+            "create_user": "",
+            "create_date": "2019-04-01T22:22:35.479Z",
+            "update_user": "",
+            "update_date": "2019-04-01T22:22:35.784Z",
+            "display_order": 2,
+            "effective_date": "2019-04-01T22:22:35.658Z",
+            "expiry_date": "9999-12-31T23:59:59.999Z",
+            "description": "Alteration report"
+        }
+    }
+]

@@ -42,7 +42,14 @@ Licensed under the Apache License, Version 2.0 (the "License");
             </div>
             <div class="mt-3" v-if="upload_files.length > 0">
               <b-list-group>
-                <b-list-group-item v-for="(f, index) in upload_files" :key="index">{{f.name}}</b-list-group-item>
+                <b-list-group-item v-for="(f, index) in upload_files" :key="index">
+                  {{f.name}}
+                  <a class="fa fa-times fa-lg"
+                     variant="primary"
+                     style="margin-left: .5em"
+                     href="#"
+                     v-on:click="removeUploadFile(f.name, $event)" />
+                </b-list-group-item>
               </b-list-group>
             </div>
           </b-form-group>
@@ -175,13 +182,18 @@ export default {
   methods: {
     ...mapMutations('documentState', [
       'setFiles',
-      'setPrivate'
+      'setPrivate',
+      'removeFile'
     ]),
     showModal () {
       this.$refs.deleteModal.show()
     },
     hideModal () {
       this.$refs.deleteModal.hide()
+    },
+    removeUploadFile (file, e) {
+      e.preventDefault()
+      this.removeFile(file)
     },
     confirmDeleteFile (file, fileType, e) {
       e.preventDefault()

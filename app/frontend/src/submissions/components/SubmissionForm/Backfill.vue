@@ -43,6 +43,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <form-input
               label="Surface Seal Depth (ft)"
               id="surfaceSealDepth"
+              type="number"
               v-model="surfaceSealDepthInput"
               :errors="errors['surface_seal_depth']"
               :loaded="fieldsLoaded['surface_seal_depth']"></form-input>
@@ -51,6 +52,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <form-input
               label="Surface Seal Thickness (in)"
               id="surfaceSealThickness"
+              type="number"
               v-model="surfaceSealThicknessInput"
               :errors="errors['surface_seal_thickness']"
               :loaded="fieldsLoaded['surface_seal_thickness']"></form-input>
@@ -87,6 +89,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <form-input
               label="Backfill Depth (ft)"
               id="backfillDepth"
+              type="number"
               v-model="backfillDepthInput"
               :errors="errors['backfill_depth']"
               :loaded="fieldsLoaded['backfill_depth']"></form-input>

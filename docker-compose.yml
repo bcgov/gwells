@@ -1,6 +1,6 @@
 version: '3'
 # NOTE For Red Hat or other images on the internal registry please login as follows:
-#     1. Be logged into the BC Gov OpenShift Console 
+#     1. Be logged into the BC Gov OpenShift Console
 #          https://console.pathfinder.gov.bc.ca:8443/console/catalog)
 #     2. Be logged into the BC Gov OpenShift Image Registry via
 #          docker login -u <github> -p `oc whoami -t` docker-registry.pathfinder.gov.bc.ca
@@ -49,13 +49,13 @@ services:
     working_dir: /app/frontend
     environment:
       DEBUG: "True"
-      AXIOS_BASE_URL: http://127.0.0.1:8000/gwells/api/v1/
+      VUE_APP_AXIOS_BASE_URL: http://127.0.0.1:8000/gwells/api/v1/
       CHOKIDAR_USEPOLLING: "True"
     command: /bin/bash -c "
         set -x &&
         cd /app/frontend &&
         npm install &&
-        npm run ${NPM_CMD:-dev}"
+        npm run serve"
     ports:
       - "8080:8080"
     volumes:
@@ -77,7 +77,6 @@ services:
       DJANGO_SECRET_KEY: secret
       ENABLE_ADDITIONAL_DOCUMENTS: "True"
       ENABLE_AQUIFERS_SEARCH: "True"
-      ENABLE_DATA_ENTRY: "True"
       ENABLE_GOOGLE_ANALYTICS: "False"
       GWELLS_SERVICE_HOST: db
       GWELLS_SERVICE_PORT: 5432

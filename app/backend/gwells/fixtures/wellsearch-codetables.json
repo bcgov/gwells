@@ -1810,6 +1810,20 @@
         }
     },
     {
+        "model": "wells.groundelevationmethodcode",
+        "pk": "UNKNOWN",
+        "fields": {
+            "create_user": "ETL_USER",
+            "create_date": "2017-07-01T08:00:00Z",
+            "update_user": "ETL_USER",
+            "update_date": "2017-07-01T08:00:00Z",
+            "description": "Unknown",
+            "display_order": 90,
+            "effective_date": "2018-05-25T07:00:00Z",
+            "expiry_date": "9999-12-31T23:59:59Z"
+        }
+    },
+    {
         "model": "wells.surfacesealmaterialcode",
         "pk": "BNTITE_CLY",
         "fields": {

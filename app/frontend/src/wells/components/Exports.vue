@@ -42,7 +42,7 @@ export default {
   methods: {
     format_date (dateString) {
       const theDate = new Date(dateString)
-      return theDate.toLocaleString('en-CA', {year: 'numeric', month: 'long', day: 'numeric'})
+      return theDate.toLocaleString('en-CA', { year: 'numeric', month: 'long', day: 'numeric' })
     },
     format_size (size) {
       // If the size is really small, this would go to zero if rounded down - so we rather round up.

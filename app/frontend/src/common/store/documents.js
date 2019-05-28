@@ -95,6 +95,9 @@ export default {
       context.commit('setFileUploadSuccess', false)
       context.commit('setFiles', [])
       context.commit('setPrivate', false)
+    },
+    resetUploadFiles (context) {
+      context.commit('setFiles', [])
     }
   },
   mutations: {
@@ -111,7 +114,14 @@ export default {
       state.file_upload_success = payload
     },
     setFiles (state, payload) {
-      state.upload_files = payload
+      if (payload.length > 0) {
+        state.upload_files.push(...payload)
+      } else {
+        state.upload_files = payload
+      }
+    },
+    removeFile (state, file) {
+      state.upload_files = state.upload_files.filter((item) => item.name !== file)
     },
     setPrivate (state, payload) {
       state.isPrivate = payload

@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 # REQUIRE_ENV_VARIABLES = getenv('REQUIRE_ENV_VARIABLES', 'True') == 'True'
 REQUIRE_ENV_VARIABLES = getenv('REQUIRE_ENV_VARIABLES', 'False') == 'True'
 if not REQUIRE_ENV_VARIABLES:
-    logger.warn('REQUIRE_ENV_VARIABLES is set to False')
+    logger.warning('REQUIRE_ENV_VARIABLES is set to False')
 
 
 def get_env_variable(var_name, default_value=None, strict=False, warn=True):
@@ -49,5 +49,5 @@ def get_env_variable(var_name, default_value=None, strict=False, warn=True):
             raise ImproperlyConfigured(msg)
         elif warn:
             # Default values may be used, but will result in a warning message.
-            logger.warn(msg)
+            logger.warning(msg)
     return result

@@ -64,11 +64,19 @@ urlpatterns = [
     url(r'^api/v1/wells$',
         never_cache(views.WellListAPIView.as_view()), name='well-list'),
 
+    # Well search export
+    url(r'^api/v1/wells/export$',
+        never_cache(views.WellExportListAPIView.as_view()), name='well-export'),
+
     # GeoJSON well endpoint for DataBC.
     url(r'^api/v1/gis/wells$',
         views.well_geojson, name='well-geojson'),
 
     # GeoJSON lithology endpoint for DataBC.
     url(r'^api/v1/gis/lithology$',
-        views.lithology_geojson, name='well-lithology-geojson')
+        views.lithology_geojson, name='well-lithology-geojson'),
+
+    # Well Licensing status endpoint from e-Licensing.
+    url(r'^api/v1/wells/licensing$',
+        views.well_licensing, name='well-licensing')
 ]
