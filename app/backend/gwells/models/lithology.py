@@ -24,8 +24,14 @@ class BedrockMaterialDescriptorCode(CodeTableModel):
     """
     Further descriptor of the bedrock material encountered in lithology
     """
-    bedrock_material_descriptor_code = models.CharField(primary_key=True, max_length=10, editable=False)
-    description = models.CharField(max_length=100)
+    bedrock_material_descriptor_code = models.CharField(
+        primary_key=True, max_length=10, editable=False,
+        db_comment=('Code for adjective that describes the characteristics of the bedrock material in'
+                    ' more detail.'))
+    description = models.CharField(
+        max_length=100,
+        db_comment=('An adjective that describes the characteristics of the bedrock material in more'
+                    ' detail.'))
 
     class Meta:
         db_table = 'bedrock_material_descriptor_code'
@@ -43,8 +49,12 @@ class BedrockMaterialCode(CodeTableModel):
     The bedrock material encountered in lithology
     """
     bedrock_material_code = models.CharField(
-        primary_key=True, max_length=10, editable=False,)
-    description = models.CharField(max_length=100)
+        primary_key=True, max_length=10, editable=False,
+        db_comment=('Code for the bedrock material encountered during drilling and reported in'
+                    ' lithologic description.'))
+    description = models.CharField(
+        max_length=100,
+        db_comment='Bedrock material encountered during drilling and reported in lithologic description.')
 
     class Meta:
         db_table = 'bedrock_material_code'
@@ -78,8 +88,8 @@ class LithologyColourCode(CodeTableModel):
     """
     lithology_colour_code = models.CharField(
         primary_key=True, max_length=10, editable=False,
-        db_comment=('Valid options for the colour of the lithologic material identified at time of'
-                    ' drilling. E.g. Black, dark, tan, rust-coloured'))
+        db_comment=('Numeric code used for choosing the colour of the lithologic material identified at'
+                    ' time of drilling. E.g. 01, 02, 03, 04'))
     description = models.CharField(
         max_length=100,
         verbose_name='Colour Description',
@@ -100,13 +110,13 @@ class LithologyColourCode(CodeTableModel):
 class LithologyDescriptionCode(CodeTableModel):
     lithology_description_code = models.CharField(
         primary_key=True, max_length=10, editable=False, verbose_name='Code',
-        db_comment=('Standard terms used to characterize the different qualities of lithologic'
-                    ' materials. E.g. dry, loose, weathered, soft.'))
+        db_comment=('Numeric code used to characterize the different qualities of lithologic materials.'
+                    ' E.g. 01, 02, 03.'))
     description = models.CharField(
         max_length=255,
         verbose_name='Description',
-        db_comment=('Describes the standard terms used to characterize the different qualities of'
-                    ' lithologic materials. E.g. dry, loose, weathered, soft.'))
+        db_comment=('Describes the different qualities of lithologic materials. E.g. dry, loose,'
+                    ' weathered, soft.'))
 
     class Meta:
         db_table = 'lithology_description_code'
@@ -116,7 +126,7 @@ class LithologyDescriptionCode(CodeTableModel):
                         'materials. E.g. dry, loose, weathered, soft.')
 
     def __str__(self):
-        return 'lithology_description_code {} {}'.format(self.code, self.description)
+        return 'lithology_description_code {} {}'.format(self.lithology_description_code, self.description)
 
 
 class LithologyHardnessCode(CodeTableModel):
@@ -125,19 +135,19 @@ class LithologyHardnessCode(CodeTableModel):
     """
     lithology_hardness_code = models.CharField(
         primary_key=True, max_length=10, editable=False,
-        db_comment=('Code that represents the hardness of the material that a well is drilled into (the'
-                    ' lithology). E.g. Very hard, Hard, Dense, Stiff, Medium, Loose, Soft, Very soft.'))
+        db_comment=('The hardness of the material that a well is drilled into (the lithology), e.g. Very'
+                    ' hard, Medium, Very Soft.'))
     description = models.CharField(
         max_length=100, verbose_name='Hardness',
-        db_comment=('Describes the hardness of the material that a well is drilled into (the lithology).'
-                    ' E.g. Very hard, Hard, Dense, Stiff, Medium, Loose, Soft, Very soft.'))
+        db_comment=('The hardness of the material that a well is drilled into (the lithology), e.g. Very'
+                    ' hard, Medium, Very Soft.'))
 
     class Meta:
         db_table = 'lithology_hardness_code'
         ordering = ['display_order', 'description']
 
-    db_table_comment = ('Describes the hardness of the material that a well is drilled into (the lithology).'
-                        ' E.g. Very hard, Hard, Dense, Stiff, Medium, Loose, Soft, Very soft.')
+    db_table_comment = ('Code that represents the hardness of the material that a well is drilled into (the'
+                        ' lithology). E.g. Very hard, Hard, Dense, Stiff, Medium, Loose, Soft, Very soft.')
 
     def __str__(self):
         return self.description
@@ -146,18 +156,17 @@ class LithologyHardnessCode(CodeTableModel):
 class LithologyMaterialCode(CodeTableModel):
     lithology_material_code = models.CharField(
         primary_key=True, max_length=10, editable=False, verbose_name='Code',
-        db_comment=('Standard terms used for defining the material noted for lithology. E.g. Rock, Clay,'
-                    ' Sand, Unspecified.'))
+        db_comment='Numerical code for the materials noted for the lithology. E.g. 01, 02, 03.')
     description = models.CharField(
         max_length=255, verbose_name='Material Description',
-        db_comment=('Description of terms used for defining the material noted for lithology. E.g. Rock,'
-                    ' Clay, Sand, Unspecified.'))
+        db_comment='Description of the material noted for lithology. E.g. Rock, Clay, Sand, Unspecified,')
 
     class Meta:
         db_table = 'lithology_material_code'
         ordering = ['display_order']
 
-    db_table_comment = 'Describes the material noted for lithology. E.g. Rock, Clay, Sand, Unspecified.'
+    db_table_comment = ('Code that describes the material noted for lithology. E.g. Rock, Clay, Sand,'
+                        ' Unspecified,')
 
     def __str__(self):
         return 'lithology_material {} {}'.format(self.lithology_material_code, self.description)

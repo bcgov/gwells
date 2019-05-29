@@ -58,7 +58,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <form-input
             id="aquiferVulnerabilityIndexInput"
             label="AVI"
-            type="text"
+            type="number"
             v-model="aquiferVulnerabilityIndexInput"
             :errors="errors['aquifer_vulnerability_index']"
             :loaded="fieldsLoaded['aquifer_vulnerability_index']"
@@ -68,7 +68,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <form-input
             id="storativityInput"
             label="Storativity"
-            type="text"
+            type="number"
             v-model="storativityInput"
             :errors="errors['storativity']"
             :loaded="fieldsLoaded['storativity']"
@@ -78,7 +78,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <form-input
             id="transmissivityInput"
             label="Transmissivity"
-            type="text"
+            type="number"
             v-model="transmissivityInput"
             :errors="errors['transmissivity']"
             :loaded="fieldsLoaded['transmissivity']"
@@ -110,7 +110,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <form-input
             id="specificYieldInput"
             label="Specific yield"
-            type="text"
+            type="number"
             v-model="specificYieldInput"
             :errors="errors['specific_yield']"
             :loaded="fieldsLoaded['specific_yield']"
@@ -132,7 +132,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <form-input
             id="testingDuration"
             label="Testing duration"
-            type="text"
+            type="number"
             v-model="testingDurationInput"
             :errors="errors['testing_duration']"
             :loaded="fieldsLoaded['testing_duration']"
@@ -142,7 +142,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <form-input
             id="analyticSolution"
             label="Analytic solution"
-            type="text"
+            type="number"
             v-model="analyticSolutionInput"
             :errors="errors['analytic_solution_type']"
             :loaded="fieldsLoaded['analytic_solution_type']"
@@ -154,7 +154,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <form-input
             id="boundaryEffectInput"
             label="Boundary effect"
-            type="text"
+            type="number"
             v-model="boundaryEffectInput"
             :errors="errors['boundary_effect']"
             :loaded="fieldsLoaded['boundary_effect']"
@@ -248,7 +248,7 @@ export default {
   },
   methods: {
     aquiferSearch: debounce((loading, search, vm) => {
-      ApiService.query(`aquifers/names/?search=${escape(search)}`).then((response) => {
+      ApiService.query(`aquifers/names?search=${escape(search)}`).then((response) => {
         vm.aquiferList = response.data
         loading(false)
       }).catch(() => {

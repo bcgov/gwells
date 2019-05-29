@@ -28,25 +28,37 @@ from openpyxl.styles import Font
 from openpyxl.worksheet.write_only import WriteOnlyCell
 
 from gwells.settings.base import get_env_variable
+from gwells.management.commands import ResultIter
 
 # Run from command line :
 # python manage.py export
+#
+# For development/debugging, it's useful to skip upload and cleanup
+# python manage.py export --cleanup=0 --upload=0
 
 logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
 
+    def add_arguments(self, parser):
+        # Arguments added for debugging purposes.
+        # e.g. don't cleanup, don't upload: python manage.py export_databc --cleanup=0 --upload=0
+        parser.add_argument('--cleanup', type=int, nargs='?', help='If 1, remove file when done', default=1)
+        parser.add_argument('--upload', type=int, nargs='?', help='If 1, upload the file', default=1)
+
     def handle(self, *args, **options):
         logger.info('starting export')
         zip_filename = 'gwells.zip'
         spreadsheet_filename = 'gwells.xlsx'
         self.generate_files(zip_filename, spreadsheet_filename)
-        self.upload_files(zip_filename, spreadsheet_filename)
-        logger.info('cleaning up')
-        for filename in (zip_filename, spreadsheet_filename):
-            if os.path.exists(filename):
-                os.remove(filename)
+        if options['upload'] == 1:
+            self.upload_files(zip_filename, spreadsheet_filename)
+        if options['cleanup'] == 1:
+            logger.info('cleaning up')
+            for filename in (zip_filename, spreadsheet_filename):
+                if os.path.exists(filename):
+                    os.remove(filename)
         logger.info('export complete')
         self.stdout.write(self.style.SUCCESS('export complete'))
 
@@ -81,10 +93,7 @@ class Command(BaseCommand):
             cells = []
             # Write the headings
             for index, field in enumerate(cursor.description):
-                if isinstance(field, tuple):
-                    fieldName = field[0]
-                else:
-                    fieldName = field.name
+                fieldName = field[0]
                 values.append(fieldName)
                 cell = WriteOnlyCell(worksheet, value=fieldName)
                 cell.font = Font(bold=True)
@@ -99,7 +108,7 @@ class Command(BaseCommand):
 
             # Write the values
             row_index = 0
-            for row, record in enumerate(cursor.fetchall()):
+            for row, record in enumerate(ResultIter(cursor)):
                 values = []
                 num_values = 0
                 for col, value in enumerate(record):
@@ -155,7 +164,7 @@ class Command(BaseCommand):
  bedrock_depth, ground_elevation, ground_elevation_method_code, static_water_level,
  well_yield,
  well_yield_unit_code,
- artesian_flow, artesian_pressure, well_cap_type, well_disinfected,
+ artesian_flow, artesian_pressure, well_cap_type, well_disinfected_code,
  well_orientation,
  alternative_specs_submitted,
  surface_seal_material_code, surface_seal_method_code, surface_seal_length,
@@ -171,7 +180,7 @@ class Command(BaseCommand):
  filter_pack_thickness,
  filter_pack_material_size_code,
  development_hours, development_notes,
- water_quality_colour, water_quality_odour, ems_id,
+ water_quality_colour, water_quality_odour,
  yield_estimation_method_code,
  yield_estimation_rate,
  yield_estimation_duration, static_level_before_test, drawdown,
@@ -197,7 +206,8 @@ class Command(BaseCommand):
         ###########
         # LITHOLOGY
         ###########
-        lithology_sql = ("""select lithology_description.well_tag_number, lithology_from, lithology_to, lithology_raw_data,
+        lithology_sql = ("""select lithology_description.well_tag_number, lithology_from, lithology_to,
+ lithology_raw_data,
  ldc.description as lithology_description_code,
  lmc.description as lithology_material_code,
  lhc.description as lithology_hardness_code,
@@ -220,23 +230,25 @@ class Command(BaseCommand):
         # CASING
         ########
         casing_sql = ("""select casing.well_tag_number, casing_from, casing_to, casing.diameter, casing_code,
- casing_material_code, wall_thickness, drive_shoe from casing
+ casing_material_code, wall_thickness, drive_shoe
+ from casing
  inner join well on well.well_tag_number = casing.well_tag_number
  where well.well_publication_status_code = 'Published' or well.well_publication_status_code = null
  order by casing.well_tag_number""")
         ########
         # SCREEN
         ########
-        screen_sql = ("""select screen.well_tag_number, screen_from, screen_to, internal_diameter,
- screen_assembly_type_code, slot_size from screen
+        screen_sql = ("""select screen.well_tag_number, screen_from, screen_to, screen_diameter,
+ screen_assembly_type_code, slot_size
+ from screen
  inner join well on well.well_tag_number = screen.well_tag_number
  where well.well_publication_status_code = 'Published' or well.well_publication_status_code = null
  order by screen.well_tag_number""")
         ##############
         # PERFORATIONS
         ##############
-        perforation_sql = ("""select p.well_tag_number, p.liner_from, p.liner_to, p.liner_diameter,
- liner_perforation_from, liner_perforation_to, p.liner_thickness from perforation as p
+        perforation_sql = ("""select p.well_tag_number, p.liner_perforation_from, p.liner_perforation_to
+ from liner_perforation as p
  inner join well on well.well_tag_number = p.well_tag_number
  where well.well_publication_status_code = 'Published' or well.well_publication_status_code = null
  order by p.well_tag_number""")
@@ -284,3 +296,7 @@ order by well_tag_number""")
                     cursor.execute(sql)
                     self.export(workbook, gwells_zip, sheet, cursor)
             workbook.save(filename=spreadsheet_filename)
+            # Add a readme to the zipfile.
+            arcname = 'README.md'
+            readme = os.path.join(os.path.dirname(__file__), arcname)
+            gwells_zip.write(readme, arcname)

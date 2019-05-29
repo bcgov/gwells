@@ -16,6 +16,8 @@ import datetime
 import logging.config
 from pathlib import Path
 
+import requests
+
 from gwells import database
 from gwells.settings.base import get_env_variable
 
@@ -45,10 +47,6 @@ SESSION_COOKIE_HTTPONLY = True
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = get_env_variable('DJANGO_DEBUG', 'False') == 'True'
 
-# Controls availability of the data entry functionality
-ENABLE_DATA_ENTRY = get_env_variable(
-    'ENABLE_DATA_ENTRY', 'False', strict=True) == 'True'
-
 # Controls availability of Google Analytics
 ENABLE_GOOGLE_ANALYTICS = get_env_variable(
     'ENABLE_GOOGLE_ANALYTICS', 'False', strict=True) == 'True'
@@ -75,7 +73,6 @@ if get_env_variable('CUSTOM_GDAL_GEOS', 'True', strict=False, warn=False) == 'Tr
 # django-settings-export lets us make these variables available in the templates.
 # This eleminate the need for setting the context for each and every view.
 SETTINGS_EXPORT = [
-    'ENABLE_DATA_ENTRY',            # To temporarily disable report submissions
     'ENABLE_GOOGLE_ANALYTICS',      # This is only enabled for production
     # To temporarily disable additional documents feature
     'ENABLE_ADDITIONAL_DOCUMENTS',
@@ -89,6 +86,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = (
+    'whitenoise.runserver_nostatic',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -107,8 +105,6 @@ INSTALLED_APPS = (
     'wells',
     'submissions',
     'aquifers',
-    'django_nose',
-    'webpack_loader',
     'django_filters',
     'django_extensions',
     'drf_multiple_model',
@@ -128,7 +124,7 @@ MIDDLEWARE = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'gwells.middleware.GWellsRequestParsingMiddleware',
+    'gwells.middleware.GWellsRequestParsingMiddleware'
 )
 
 ROOT_URLCONF = 'gwells.urls'
@@ -155,7 +151,6 @@ WSGI_APPLICATION = 'wsgi.application'
 # 2018/04/19: According to the documentation, bootstrap4 is still in alpha:
 # http://django-crispy-forms.readthedocs.io/en/latest/install.html?highlight=bootstrap4
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 
 # Database
@@ -186,9 +181,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 if APP_CONTEXT_ROOT:
-    STATIC_URL = '/' + APP_CONTEXT_ROOT + '/static/'
+    STATIC_URL = '/' + APP_CONTEXT_ROOT + '/'
 else:
-    STATIC_URL = '/static/'
+    STATIC_URL = '/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
@@ -238,13 +233,25 @@ LOGGING = {
     }
 }
 
+
+try:
+    url = get_env_variable('SSO_AUTH_HOST') + '/realms/' + get_env_variable("SSO_REALM")
+    res = requests.get(url)
+    public_key = res.json()['public_key']
+    if len(public_key) <= 0:
+        public_key = get_env_variable('SSO_PUBKEY', "")
+except:
+    public_key = get_env_variable('SSO_PUBKEY', "")
+
+
 JWT_AUTH = {
     'JWT_PUBLIC_KEY': ("-----BEGIN PUBLIC KEY-----\n" +
-                       get_env_variable('SSO_PUBKEY', "") +
+                       public_key +
                        "\n-----END PUBLIC KEY-----"),
     'JWT_ALGORITHM': 'RS256',
     'JWT_AUDIENCE': get_env_variable('SSO_AUDIENCE')
 }
+
 
 DRF_RENDERERS = ['rest_framework.renderers.JSONRenderer', ]
 # Turn on browsable API if "DEBUG" set
@@ -272,13 +279,6 @@ REST_FRAMEWORK = {
     }
 }
 
-WEBPACK_LOADER = {
-    'DEFAULT': {
-        'CACHE': not DEBUG,
-        'BUNDLE_DIR_NAME': 'bundles/',  # must end with slash
-        'STATS_FILE': os.path.join(BASE_DIR, '../frontend/webpack-stats.json')
-    }
-}
 LOGIN_URL = '/gwells/accounts/login/'
 LOGIN_REDIRECT_URL = '/gwells/search'
 
@@ -292,11 +292,10 @@ SWAGGER_SETTINGS = {
     }
 }
 
-
 # matches subdomains of gov.bc.ca
 CORS_ORIGIN_REGEX_WHITELIST = (r'^(?:https?:\/\/)?(?:\w+\.)*gov\.bc\.ca$',)
 if DEBUG:
-    CORS_ORIGIN_WHITELIST = ('localhost:8080', '127.0.0.1:8080')
+    CORS_ORIGIN_WHITELIST = ('localhost:8080', '127.0.0.1:8080', 'localhost:8000', '127.0.0.1:8000')
     CORS_ALLOW_HEADERS = (
         'accept',
         'accept-encoding',
@@ -327,3 +326,6 @@ class DisableMigrations(object):
         return None
 if get_env_variable('DISABLE_MIGRATIONS', None, strict=False, warn=False) == 'DISABLE_MIGRATIONS':
     MIGRATION_MODULES = DisableMigrations()
+
+WHITENOISE_INDEX_FILE = True
+APPEND_SLASH = True

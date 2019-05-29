@@ -11,27 +11,32 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-
-from rest_framework.response import Response
+import logging
+import sys
 from posixpath import join as urljoin
+
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView
 from django.urls import reverse
+
+import rest_framework.exceptions
+from rest_framework.response import Response
 from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveAPIView
 from rest_framework.views import APIView
 
 from gwells.documents import MinioClient
 from gwells.urls import app_root
 from gwells.pagination import APILimitOffsetPagination
-from wells.permissions import WellsEditPermissions
+from wells.permissions import (
+    WellsEditPermissions, WellsSubmissionPermissions, WellsSubmissionViewerPermissions)
 from gwells.models import ProvinceStateCode
 from gwells.models.lithology import (
     LithologyColourCode, LithologyHardnessCode,
     LithologyMaterialCode, LithologyMoistureCode, LithologyDescriptionCode)
 from gwells.serializers import ProvinceStateCodeSerializer
 from gwells.settings.base import get_env_variable
-from registries.views import AuditCreateMixin
+from gwells.views import AuditCreateMixin
 from wells.models import (
     ActivitySubmission,
     CasingCode,
@@ -41,6 +46,7 @@ from wells.models import (
     DecommissionMethodCode,
     DevelopmentMethodCode,
     DrillingMethodCode,
+    WellDisinfectedCode,
     FilterPackMaterialCode,
     FilterPackMaterialSizeCode,
     GroundElevationMethodCode,
@@ -82,6 +88,7 @@ from submissions.serializers import (
     DecommissionSubmissionDisplaySerializer,
     DevelopmentMethodCodeSerializer,
     DrillingMethodCodeSerializer,
+    WellDisinfectedCodeSerializer,
     FilterPackMaterialCodeSerializer,
     FilterPackMaterialSizeCodeSerializer,
     GroundElevationMethodCodeSerializer,
@@ -122,6 +129,9 @@ from submissions.serializers import (
 )
 
 
+logger = logging.getLogger(__name__)
+
+
 def get_submission_queryset(qs):
     return qs.select_related(
                 "well_class",
@@ -150,7 +160,7 @@ def get_submission_queryset(qs):
 class SubmissionGetAPIView(RetrieveAPIView):
     """Get a submission"""
 
-    permission_classes = (WellsEditPermissions,)
+    permission_classes = (WellsSubmissionViewerPermissions,)
     queryset = ActivitySubmission.objects.all()
     model = ActivitySubmission
     lookup_field = 'filing_number'
@@ -186,7 +196,7 @@ class SubmissionListAPIView(ListAPIView):
     get: returns a list of well activity submissions
     """
 
-    permission_classes = (WellsEditPermissions,)
+    permission_classes = (WellsSubmissionViewerPermissions,)
     model = ActivitySubmission
     queryset = ActivitySubmission.objects.all()
     pagination_class = APILimitOffsetPagination
@@ -209,12 +219,47 @@ class SubmissionListAPIView(ListAPIView):
         return Response(serializer.data)
 
 
-class SubmissionConstructionAPIView(AuditCreateMixin, ListCreateAPIView):
+class SubmissionBase(AuditCreateMixin, ListCreateAPIView):
+    """ Base class for mutating data that has detailed error logging.
+    """
+
+    def post(self, request, *args, **kwargs):
+        try:
+            return self.create(request, *args, **kwargs)
+        except rest_framework.exceptions.APIException as error:
+            try:
+                logger.warning(('Problem encountered handling POST; '
+                                'user:{request.user.profile.username}; '
+                                'user.is_authenticated:{request.user.is_authenticated}; '
+                                'path:{request.path}; method:{request.method}; status_code:{error.status_code}; '
+                                'request: {request.data}; '
+                                'response: {error.detail}').format(
+                    request=request,
+                    error=error))
+            except:
+                logger.error('Error logging error!', exc_info=sys.exc_info())
+            raise
+        except:
+            try:
+                logger.warning(('Problem encountered handling POST; '
+                             'user:{request.user.profile.username}; '
+                             'user.is_authenticated:{request.user.is_authenticated}; '
+                             'path:{request.path}; method:{request.method};'
+                             'request: {request.data}; '
+                             'detail: {detail}').format(
+                    request=request,
+                    detail=sys.exc_info()))
+            except:
+                logger.error('Error logging error!', exc_info=sys.exc_info())
+            raise
+
+
+class SubmissionConstructionAPIView(SubmissionBase):
     """Create a construction submission"""
 
     model = ActivitySubmission
     serializer_class = WellConstructionSubmissionSerializer
-    permission_classes = (WellsEditPermissions,)
+    permission_classes = (WellsSubmissionPermissions,)
     queryset = ActivitySubmission.objects.all()
 
     def get_queryset(self):
@@ -222,12 +267,12 @@ class SubmissionConstructionAPIView(AuditCreateMixin, ListCreateAPIView):
             .filter(well_activity_type=WellActivityCode.types.construction())
 
 
-class SubmissionAlterationAPIView(AuditCreateMixin, ListCreateAPIView):
+class SubmissionAlterationAPIView(SubmissionBase):
     """Create an alteration submission"""
 
     model = ActivitySubmission
     serializer_class = WellAlterationSubmissionSerializer
-    permission_classes = (WellsEditPermissions,)
+    permission_classes = (WellsSubmissionPermissions,)
     queryset = ActivitySubmission.objects.all()
 
     def get_queryset(self):
@@ -235,12 +280,12 @@ class SubmissionAlterationAPIView(AuditCreateMixin, ListCreateAPIView):
             .filter(well_activity_type=WellActivityCode.types.alteration())
 
 
-class SubmissionDecommissionAPIView(AuditCreateMixin, ListCreateAPIView):
+class SubmissionDecommissionAPIView(SubmissionBase):
     """Create a decommission submission"""
 
     model = ActivitySubmission
     serializer_class = WellDecommissionSubmissionSerializer
-    permission_classes = (WellsEditPermissions,)
+    permission_classes = (WellsSubmissionPermissions,)
     queryset = ActivitySubmission.objects.all()
 
     def get_queryset(self):
@@ -248,14 +293,19 @@ class SubmissionDecommissionAPIView(AuditCreateMixin, ListCreateAPIView):
             .filter(well_activity_type=WellActivityCode.types.decommission())
 
 
-class SubmissionStaffEditAPIView(AuditCreateMixin, ListCreateAPIView):
-    """ Create a staff edit submission
-    TODO: Implement this class fully
-    """
+class SubmissionStaffEditAPIView(SubmissionBase):
+    """ Create a staff edit submission"""
     model = ActivitySubmission
     serializer_class = WellStaffEditSubmissionSerializer
     permission_classes = (WellsEditPermissions,)
     queryset = ActivitySubmission.objects.all()
+
+    def post(self, request, *args, **kwargs):
+        # ground_elevation is a decimal so we swap empty string with null value
+        if 'ground_elevation' in request.data:
+            if request.data['ground_elevation'] == '':
+                request.data['ground_elevation'] = None
+        return self.create(request, *args, **kwargs)
 
     def get_queryset(self):
         return get_submission_queryset(self.queryset)\
@@ -284,6 +334,8 @@ class SubmissionsOptions(APIView):
             instance=DecommissionMaterialCode.objects.all(), many=True)
         decommission_methods = DecommissionMethodCodeSerializer(
             instance=DecommissionMethodCode.objects.all(), many=True)
+        well_disinfected_codes = WellDisinfectedCodeSerializer(
+            instance=WellDisinfectedCode.objects.all(), many=True)
         filter_pack_material = FilterPackMaterialCodeSerializer(
             instance=FilterPackMaterialCode.objects.all(), many=True)
         filter_pack_material_size = FilterPackMaterialSizeCodeSerializer(
@@ -331,10 +383,13 @@ class SubmissionsOptions(APIView):
         )
         aquifer_lithology = AquiferLithologySerializer(instance=AquiferLithologyCode.objects.all(), many=True)
 
-        lithology_hardness = LithologyHardnessSerializer(instance=LithologyHardnessCode.objects.all(), many=True)
+        lithology_hardness = LithologyHardnessSerializer(
+            instance=LithologyHardnessCode.objects.all(), many=True)
         lithology_colours = LithologyColourSerializer(instance=LithologyColourCode.objects.all(), many=True)
-        lithology_materials = LithologyMaterialSerializer(instance=LithologyMaterialCode.objects.all(), many=True)
-        lithology_moisture = LithologyMoistureSerializer(instance=LithologyMoistureCode.objects.all(), many=True)
+        lithology_materials = LithologyMaterialSerializer(
+            instance=LithologyMaterialCode.objects.all(), many=True)
+        lithology_moisture = LithologyMoistureSerializer(
+            instance=LithologyMoistureCode.objects.all(), many=True)
         lithology_descriptors = LithologyDescriptionCodeSerializer(
             instance=LithologyDescriptionCode.objects.all(), many=True)
         licenced_status_codes = LicencedStatusCodeSerializer(
@@ -354,6 +409,7 @@ class SubmissionsOptions(APIView):
         options["casing_materials"] = casing_material.data
         options["decommission_materials"] = decommission_materials.data
         options["decommission_methods"] = decommission_methods.data
+        options["well_disinfected_codes"] = well_disinfected_codes.data
         options["filter_pack_material"] = filter_pack_material.data
         options["filter_pack_material_size"] = filter_pack_material_size.data
         options["land_district_codes"] = land_district_codes.data
@@ -395,7 +451,7 @@ class PreSignedDocumentKey(RetrieveAPIView):
     """
 
     queryset = ActivitySubmission.objects.all()
-    permission_classes = (WellsEditPermissions,)
+    permission_classes = (WellsSubmissionPermissions,)
 
     def get(self, request, submission_id):
         submission = get_object_or_404(self.queryset, pk=submission_id)

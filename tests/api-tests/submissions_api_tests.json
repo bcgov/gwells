@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "e1d351d3-d80f-4e57-bb70-fcf2a1d38c3a",
+		"_postman_id": "09c3bf29-21b4-4221-98e4-1cc0a1c1d9b4",
 		"name": "GWELLS Submissions API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -124,10 +124,6 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/options?format=json",
 									"host": [
@@ -177,10 +173,6 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions?format=json",
 									"host": [
@@ -442,12 +434,8 @@
 										"value": "application/x-www-form-urlencoded"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
+									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 									"host": [
 										"{{base_url}}"
 									],
@@ -455,7 +443,8 @@
 										"api",
 										"v1",
 										"wells",
-										"{{well_tag_number}}"
+										"{{well_tag_number}}",
+										"edit"
 									]
 								},
 								"description": "Check if the created well matched submission"
@@ -504,10 +493,6 @@
 										"value": "application/x-www-form-urlencoded"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/{{filing_number}}",
 									"host": [
@@ -521,75 +506,6 @@
 									]
 								},
 								"description": "Check if the submission was created correctly."
-							},
-							"response": []
-						},
-						{
-							"name": "Submissions Get PUT_URL",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"id": "768133b0-7dd6-4197-97ca-ddca5cb1743f",
-										"exec": [
-											"var jsonData = pm.response.json()",
-											"",
-											"pm.test(\"Status code is 200\", function () {",
-											"    pm.expect(pm.response.code).to.equal(200);",
-											"})",
-											"",
-											"pm.test(\"Response contains URL with signature\", function() {",
-											"    var jsonData = pm.response.json()",
-											"    pm.expect(jsonData.url).to.not.eql(null)",
-											"    pm.expect(jsonData.url).to.include(\"X-Amz-Signature\")",
-											"})",
-											""
-										],
-										"type": "text/javascript"
-									}
-								},
-								{
-									"listen": "prerequest",
-									"script": {
-										"id": "4d7ea87d-32ab-4696-9176-b041b6673698",
-										"exec": [
-											""
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "JWT {{token}}"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
-								"url": {
-									"raw": "{{base_url}}/api/v1/submissions/{{filing_number}}/presigned_put_url?filename=file.pdf",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"api",
-										"v1",
-										"submissions",
-										"{{filing_number}}",
-										"presigned_put_url"
-									],
-									"query": [
-										{
-											"key": "filename",
-											"value": "file.pdf"
-										}
-									]
-								}
 							},
 							"response": []
 						},
@@ -721,7 +637,6 @@
 									"listen": "test",
 									"script": {
 										"id": "31a610c9-915e-4873-931a-613c8b1cfde4",
-										"type": "text/javascript",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
@@ -740,7 +655,8 @@
 											"pm.test(\"Expect linerperforation to be empty\", function() {",
 											"    pm.expect(jsonData.linerperforation_set.length).to.equal(0);",
 											"})"
-										]
+										],
+										"type": "text/javascript"
 									}
 								}
 							],
@@ -756,12 +672,8 @@
 										"value": "application/x-www-form-urlencoded"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
+									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 									"host": [
 										"{{base_url}}"
 									],
@@ -769,7 +681,8 @@
 										"api",
 										"v1",
 										"wells",
-										"{{well_tag_number}}"
+										"{{well_tag_number}}",
+										"edit"
 									]
 								},
 								"description": "Check if the created well matched submission"
@@ -897,7 +810,6 @@
 									"listen": "test",
 									"script": {
 										"id": "8d6d5f99-b61a-48a5-b3e3-c793a81a5622",
-										"type": "text/javascript",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
@@ -916,7 +828,8 @@
 											"pm.test(\"Expect linerperforation to be empty\", function() {",
 											"    pm.expect(jsonData.linerperforation_set.length).to.equal(0);",
 											"})"
-										]
+										],
+										"type": "text/javascript"
 									}
 								}
 							],
@@ -932,12 +845,8 @@
 										"value": "application/x-www-form-urlencoded"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
+									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 									"host": [
 										"{{base_url}}"
 									],
@@ -945,7 +854,8 @@
 										"api",
 										"v1",
 										"wells",
-										"{{well_tag_number}}"
+										"{{well_tag_number}}",
+										"edit"
 									]
 								},
 								"description": "Check if the created well matched submission"
@@ -1110,12 +1020,8 @@
 										"value": "application/x-www-form-urlencoded"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
+									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 									"host": [
 										"{{base_url}}"
 									],
@@ -1123,7 +1029,8 @@
 										"api",
 										"v1",
 										"wells",
-										"{{well_tag_number}}"
+										"{{well_tag_number}}",
+										"edit"
 									]
 								},
 								"description": "Check if the created well matched submission"
@@ -1228,12 +1135,8 @@
 										"value": "application/x-www-form-urlencoded"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
+									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 									"host": [
 										"{{base_url}}"
 									],
@@ -1241,7 +1144,8 @@
 										"api",
 										"v1",
 										"wells",
-										"{{well_tag_number}}"
+										"{{well_tag_number}}",
+										"edit"
 									]
 								},
 								"description": "Check if the created well matched submission"
@@ -1283,7 +1187,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"well_activity_type\": \"CON\",\n\t\"owner_full_name\": \"Bob\",\n\t\"owner_mailing_address\": \"123 Place\",\n\t\"owner_city\": \"Victoria\",\n\t\"owner_province_state\": \"BC\",\n\t\"lithologydescription_set\": [\n\t\t{\n\t\t\t\"lithology_from\": 0,\n\t\t\t\"lithology_to\": 10,\n\t\t\t\"lithology_raw_data\": \"SAND, silty, some gravel\",\n\t\t\t\"lithology_hardness\": \"DENSE\",\n\t\t\t\"lithology_colour\": 13,\n\t\t\t\"lithology_moisture\": \"WET\",\n\t\t\t\"water_bearing_estimated_flow\": 2.1,\n\t\t\t\"lithology_observation\": \"hard to drill through\"\n\t\t}\n\t]\n}"
+									"raw": "{\n\t\"well_activity_type\": \"CON\",\n\t\"owner_full_name\": \"Bob\",\n\t\"owner_mailing_address\": \"123 Place\",\n\t\"owner_city\": \"Victoria\",\n\t\"owner_province_state\": \"BC\",\n\t\"lithologydescription_set\": [\n\t\t{\n\t\t\t\"start\": 0,\n\t\t\t\"end\": 10,\n\t\t\t\"lithology_raw_data\": \"SAND, silty, some gravel\",\n\t\t\t\"lithology_hardness\": \"DENSE\",\n\t\t\t\"lithology_colour\": 13,\n\t\t\t\"lithology_moisture\": \"WET\",\n\t\t\t\"water_bearing_estimated_flow\": 2.1,\n\t\t\t\"lithology_observation\": \"hard to drill through\"\n\t\t}\n\t]\n}"
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/construction?format=json",
@@ -1340,7 +1244,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"well_activity_type\": \"CON\",\n\t\"owner_full_name\": \"Bob\",\n\t\"owner_mailing_address\": \"123 Place\",\n\t\"owner_city\": \"Victoria\",\n\t\"owner_province_state\": \"BC\",\n\t\"lithologydescription_set\": [\n\t\t{}\n\t]\n}"
+									"raw": "{\n\t\"well_activity_type\": \"CON\",\n\t\"owner_full_name\": \"Bob\",\n\t\"owner_mailing_address\": \"123 Place\",\n\t\"owner_city\": \"Victoria\",\n\t\"owner_province_state\": \"BC\",\n\t\"lithologydescription_set\": []\n}"
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/construction?format=json",
@@ -1382,11 +1286,11 @@
 											"pm.test(\"Expect lithology to have one value\", function() {",
 											"    pm.expect(jsonData.lithologydescription_set.length).to.equal(1);",
 											"})",
-											"pm.test(\"Lithology entry: expect lithology_from to be 0.00\", function() {",
-											"    pm.expect(jsonData.lithologydescription_set[0].lithology_from).to.equal('0.00');",
+											"pm.test(\"Lithology entry: expect start to be 0.00\", function() {",
+											"    pm.expect(jsonData.lithologydescription_set[0].start).to.equal('0.00');",
 											"})",
-											"pm.test(\"Lithology entry: expect lithology_to to be 10.00\", function() {",
-											"    pm.expect(jsonData.lithologydescription_set[0].lithology_to).to.equal('10.00');",
+											"pm.test(\"Lithology entry: expect end to be 10.00\", function() {",
+											"    pm.expect(jsonData.lithologydescription_set[0].end).to.equal('10.00');",
 											"})",
 											"",
 											"pm.test(\"Lithology entry: expect lithology_raw_data to be equal to first submission\", function() {",
@@ -1423,12 +1327,8 @@
 										"value": "application/x-www-form-urlencoded"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
+									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 									"host": [
 										"{{base_url}}"
 									],
@@ -1436,7 +1336,8 @@
 										"api",
 										"v1",
 										"wells",
-										"{{well_tag_number}}"
+										"{{well_tag_number}}",
+										"edit"
 									]
 								},
 								"description": "Check if the created well matched submission"
@@ -1517,7 +1418,6 @@
 									"listen": "test",
 									"script": {
 										"id": "758668aa-93ed-4341-9c01-1eb1c25985dd",
-										"type": "text/javascript",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
@@ -1529,7 +1429,8 @@
 											"    pm.expect(jsonData.owner_city).to.equal(\"ALT_WELL_TEST_CITY\");",
 											"})",
 											""
-										]
+										],
+										"type": "text/javascript"
 									}
 								}
 							],
@@ -1545,12 +1446,8 @@
 										"value": "application/x-www-form-urlencoded"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
+									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 									"host": [
 										"{{base_url}}"
 									],
@@ -1558,7 +1455,8 @@
 										"api",
 										"v1",
 										"wells",
-										"{{well_tag_number}}"
+										"{{well_tag_number}}",
+										"edit"
 									]
 								},
 								"description": "Check if the created well matched submission"
@@ -1572,7 +1470,6 @@
 									"listen": "test",
 									"script": {
 										"id": "758668aa-93ed-4341-9c01-1eb1c25985dd",
-										"type": "text/javascript",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
@@ -1584,7 +1481,8 @@
 											"    pm.expect(jsonData.owner_city).to.equal(\"ALT_WELL_TEST_CITY\");",
 											"})",
 											""
-										]
+										],
+										"type": "text/javascript"
 									}
 								}
 							],
@@ -1600,10 +1498,6 @@
 										"value": "application/x-www-form-urlencoded"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/{{filing_number}}",
 									"host": [
@@ -1921,12 +1815,8 @@
 										"value": "application/json"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
+									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 									"host": [
 										"{{base_url}}"
 									],
@@ -1934,7 +1824,8 @@
 										"api",
 										"v1",
 										"wells",
-										"{{well_tag_number}}"
+										"{{well_tag_number}}",
+										"edit"
 									]
 								},
 								"description": "Request a list of wells"
@@ -2014,7 +1905,6 @@
 									"listen": "test",
 									"script": {
 										"id": "6071dbc1-9a9a-4806-b276-9ea94186a23c",
-										"type": "text/javascript",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
@@ -2029,7 +1919,8 @@
 											"pm.test(\"Well status is 'closure'\", function() {",
 											"    pm.expect(jsonData.well_status).to.equal(\"CLOSURE\");",
 											"})"
-										]
+										],
+										"type": "text/javascript"
 									}
 								}
 							],
@@ -2045,12 +1936,8 @@
 										"value": "application/x-www-form-urlencoded"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
+									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 									"host": [
 										"{{base_url}}"
 									],
@@ -2058,7 +1945,8 @@
 										"api",
 										"v1",
 										"wells",
-										"{{well_tag_number}}"
+										"{{well_tag_number}}",
+										"edit"
 									]
 								},
 								"description": "Check if the created well matched submission"
@@ -2104,10 +1992,6 @@
 										"value": "application/x-www-form-urlencoded"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/{{filing_number}}",
 									"host": [
@@ -2354,12 +2238,8 @@
 												"value": "JWT {{token}}"
 											}
 										],
-										"body": {
-											"mode": "raw",
-											"raw": ""
-										},
 										"url": {
-											"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
+											"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 											"host": [
 												"{{base_url}}"
 											],
@@ -2367,7 +2247,8 @@
 												"api",
 												"v1",
 												"wells",
-												"{{well_tag_number}}"
+												"{{well_tag_number}}",
+												"edit"
 											]
 										},
 										"description": "Get a well"
@@ -2454,8 +2335,8 @@
 													"var jsonData = pm.response.json()",
 													"",
 													"var expected = {",
-													"\t\"latitude\": 1.000000,",
-													"\t\"longitude\": 1.000000,",
+													"\t\"latitude\": 1,",
+													"\t\"longitude\": 1,",
 													"\t\"coordinate_acquisition_code\": \"B\"",
 													"};",
 													"",
@@ -2482,12 +2363,8 @@
 												"value": "JWT {{token}}"
 											}
 										],
-										"body": {
-											"mode": "raw",
-											"raw": ""
-										},
 										"url": {
-											"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
+											"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 											"host": [
 												"{{base_url}}"
 											],
@@ -2495,7 +2372,8 @@
 												"api",
 												"v1",
 												"wells",
-												"{{well_tag_number}}"
+												"{{well_tag_number}}",
+												"edit"
 											]
 										},
 										"description": "Get a well"
@@ -2744,12 +2622,8 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
+									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 									"host": [
 										"{{base_url}}"
 									],
@@ -2757,7 +2631,8 @@
 										"api",
 										"v1",
 										"wells",
-										"{{well_tag_number}}"
+										"{{well_tag_number}}",
+										"edit"
 									]
 								},
 								"description": "Request a list of wells"
@@ -3043,7 +2918,10 @@
 											"pm.test(\"Expect aquifer id to match created aquifer\", function() {",
 											"    pm.expect(jsonData.aquifer).to.equal(pm.environment.get(\"created_aquifer_for_well\"))",
 											"})",
-											""
+											"",
+											"pm.test(\"Expect storativity to be 1\", function() {",
+											"    pm.expect(Number(jsonData.storativity)).to.equal(1)",
+											"})"
 										],
 										"type": "text/javascript"
 									}
@@ -3063,7 +2941,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"well\": {{well_tag_number}},\n\t\"aquifer\": {{created_aquifer_for_well}}\n}"
+									"raw": "{\n\t\"well\": {{well_tag_number}},\n\t\"aquifer\": {{created_aquifer_for_well}},\n\t\"storativity\": 1\n}"
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/staff_edit?format=json",
@@ -3088,12 +2966,12 @@
 							"response": []
 						},
 						{
-							"name": "Staff Edit - Publication Status",
+							"name": "Staff Edit - remove foreign key set data",
 							"event": [
 								{
 									"listen": "test",
 									"script": {
-										"id": "4611a207-a917-45e9-9ad8-d111e41d4c32",
+										"id": "d810c676-8904-437e-8c93-3ea1d36e1bd1",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
@@ -3102,10 +2980,13 @@
 											"   pm.expect(pm.response.code).to.equal(201);",
 											"})",
 											"",
-											"pm.test(\"Expect publication status to be updated\", function() {",
-											"    pm.expect(jsonData['well_publication_status']).to.equal('Unpublished')",
+											"pm.test(\"Expect liner set to be deleted\", function() {",
+											"    pm.expect(jsonData.linerperforation_set.length).to.equal(0)",
 											"})",
-											""
+											"",
+											"pm.test(\"Expect storativity to be null\", function() {",
+											"    pm.expect(jsonData.storativity).to.equal(null)",
+											"})"
 										],
 										"type": "text/javascript"
 									}
@@ -3116,18 +2997,16 @@
 								"header": [
 									{
 										"key": "Authorization",
-										"value": "JWT {{token}}",
-										"type": "text"
+										"value": "JWT {{token}}"
 									},
 									{
 										"key": "Content-Type",
-										"value": "application/json",
-										"type": "text"
+										"value": "application/json"
 									}
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"well\": {{well_tag_number}},\n\t\"well_publication_status\": \"Unpublished\"\n}"
+									"raw": "{\n\t\"well\": {{well_tag_number}},\n\t\"linerperforation_set\": [],\n\t\"storativity\": null\n}"
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/staff_edit?format=json",
@@ -3147,7 +3026,7 @@
 										}
 									]
 								},
-								"description": "publishing and unpublishing a well"
+								"description": "Submit a submission"
 							},
 							"response": []
 						}
@@ -3196,7 +3075,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"well_activity_type\": \"CON\",\n\t\"owner_full_name\": \"Bob\",\n\t\"owner_mailing_address\": \"123 Place\",\n\t\"owner_city\": \"Victoria\",\n\t\"owner_province_state\": \"BC\",\n\t\"casing_set\": [\n\t\t{\n\t\t\t\"casing_code\": \"SURFACE\",\n\t\t\t\"start\":\"0\",\n\t\t\t\"end\":\"10\",\n\t\t\t\"diameter\":\"1\",\n\t\t\t\"drive_shoe\":\"False\",\n\t\t\t\"id\":0,\n\t\t\t\"wall_thickness\":\"87\"\n\t\t}\n\t],\n\t\"screen_set\": [\n        {\n            \"start\": \"0.00\",\n            \"end\": \"10.00\",\n            \"internal_diameter\": null,\n            \"assembly_type\": null,\n            \"slot_size\": null\n        }\n    ],\n    \"linerperforation_set\": [\n\t\t{\n\t\t\t\"start\": 0,\n\t\t\t\"end\": 10\n\t\t}\n\t],\n\t\"well_class\": \"GEOTECH\",\n\t\"driller_name\": \"Bob\",\n\t\"consultant_name\": \"Lois\",\n\t\"consultant_company\": \"Lois Consulting\",\n\t\"work_start_date\": \"2018-01-01\",\n\t\"work_end_date\": \"2018-01-01\",\n\t\"legal_pid\": \"123132\",\n\t\"well_location_description\": \"At the top of the hill\",\n\t\"latitude\": 48.420133,\n\t\"longitude\": -123.370083,\n\t\"ground_elevation\": 1,\n\t\"drilling_method\": \"AUGER\",\n\t\"well_orientation\": \"False\",\n\t\"water_supply_system_name\": \"Pond\",\n\t\"water_supply_system_well_name\": \"1\",\n\t\"surface_seal_material\": \"BNTITE_CLY\",\n\t\"surface_seal_depth\": 1,\n\t\"surface_seal_method\": \"OTHER\",\n\t\"liner_material\": \"PVC\",\n\t\"screen_material\": \"PLASTIC\",\n\t\"development_method\": \"BAIL\",\n\t\"well_yield\": \"5.22\",\n\t\"finished_well_depth\": \"55\",\n\t\"total_depth_drilled\": \"58\",\n\t\"final_casing_stick_up\": \"3\",\n\t\"static_water_level\": \"12\",\n\t\"artesian_flow\": \"6.55\",\n\t\"well_disinfected\": \"True\",\n\t\"comments\": \"This is a well\",\n\t\"diameter\": \"3\"\n}"
+							"raw": "{\n\t\"well_activity_type\": \"CON\",\n\t\"owner_full_name\": \"Bob\",\n\t\"owner_mailing_address\": \"123 Place\",\n\t\"owner_city\": \"Victoria\",\n\t\"owner_province_state\": \"BC\",\n\t\"casing_set\": [\n\t\t{\n\t\t\t\"casing_code\": \"SURFACE\",\n\t\t\t\"start\":\"0\",\n\t\t\t\"end\":\"10\",\n\t\t\t\"diameter\":\"1\",\n\t\t\t\"drive_shoe\":\"False\",\n\t\t\t\"id\":0,\n\t\t\t\"wall_thickness\":\"87\"\n\t\t}\n\t],\n\t\"screen_set\": [\n        {\n            \"start\": \"0.00\",\n            \"end\": \"10.00\",\n            \"internal_diameter\": null,\n            \"assembly_type\": null,\n            \"slot_size\": null\n        }\n    ],\n    \"linerperforation_set\": [\n\t\t{\n\t\t\t\"start\": 0,\n\t\t\t\"end\": 10\n\t\t}\n\t],\n\t\"well_class\": \"GEOTECH\",\n\t\"driller_name\": \"Bob\",\n\t\"consultant_name\": \"Lois\",\n\t\"consultant_company\": \"Lois Consulting\",\n\t\"work_start_date\": \"2018-01-01\",\n\t\"work_end_date\": \"2018-01-01\",\n\t\"legal_pid\": \"123132\",\n\t\"well_location_description\": \"At the top of the hill\",\n\t\"latitude\": 48.420133,\n\t\"longitude\": -123.370083,\n\t\"ground_elevation\": 1,\n\t\"ground_elevation_method\":\"UNKNOWN\",\n\t\"drilling_method\": \"AUGER\",\n\t\"well_orientation\": \"False\",\n\t\"water_supply_system_name\": \"Pond\",\n\t\"water_supply_system_well_name\": \"1\",\n\t\"surface_seal_material\": \"BNTITE_CLY\",\n\t\"surface_seal_depth\": 1,\n\t\"surface_seal_method\": \"OTHER\",\n\t\"liner_material\": \"PVC\",\n\t\"screen_material\": \"PLASTIC\",\n\t\"development_method\": \"BAIL\",\n\t\"well_yield\": \"5.22\",\n\t\"finished_well_depth\": \"55\",\n\t\"total_depth_drilled\": \"58\",\n\t\"final_casing_stick_up\": \"3\",\n\t\"static_water_level\": \"12\",\n\t\"artesian_flow\": \"6.55\",\n\t\"well_disinfected\": \"True\",\n\t\"comments\": \"This is a well\",\n\t\"diameter\": \"3\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/submissions/construction?format=json",
@@ -3289,7 +3168,6 @@
 							"listen": "test",
 							"script": {
 								"id": "2f7c420c-60ea-4dc8-bb99-4fa4bd6b59b1",
-								"type": "text/javascript",
 								"exec": [
 									"var jsonData = pm.response.json();",
 									"",
@@ -3312,7 +3190,8 @@
 									"pm.test(\"Well status is 'NEW'\", function() {",
 									"    pm.expect(jsonData.well_status).to.equal(\"ALTERATION\");",
 									"})"
-								]
+								],
+								"type": "text/javascript"
 							}
 						}
 					],
@@ -3328,12 +3207,8 @@
 								"value": "application/x-www-form-urlencoded"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
-							"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
+							"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 							"host": [
 								"{{base_url}}"
 							],
@@ -3341,7 +3216,8 @@
 								"api",
 								"v1",
 								"wells",
-								"{{well_tag_number}}"
+								"{{well_tag_number}}",
+								"edit"
 							]
 						},
 						"description": "Check if the created well matched submission"
@@ -3417,7 +3293,6 @@
 							"listen": "test",
 							"script": {
 								"id": "f7640140-774f-4486-ac95-94a38719dd4d",
-								"type": "text/javascript",
 								"exec": [
 									"var jsonData = pm.response.json();",
 									"",
@@ -3436,7 +3311,8 @@
 									"pm.test(\"Expect linerperforation to be empty\", function() {",
 									"    pm.expect(jsonData.linerperforation_set.length).to.equal(3);",
 									"})"
-								]
+								],
+								"type": "text/javascript"
 							}
 						}
 					],
@@ -3452,12 +3328,8 @@
 								"value": "application/x-www-form-urlencoded"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
-							"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
+							"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 							"host": [
 								"{{base_url}}"
 							],
@@ -3465,7 +3337,8 @@
 								"api",
 								"v1",
 								"wells",
-								"{{well_tag_number}}"
+								"{{well_tag_number}}",
+								"edit"
 							]
 						},
 						"description": "Check if the created well has stacked data"
@@ -3583,12 +3456,8 @@
 								"value": "application/x-www-form-urlencoded"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
-							"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
+							"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 							"host": [
 								"{{base_url}}"
 							],
@@ -3596,7 +3465,8 @@
 								"api",
 								"v1",
 								"wells",
-								"{{well_tag_number}}"
+								"{{well_tag_number}}",
+								"edit"
 							]
 						},
 						"description": "Check if the created well has stacked data"

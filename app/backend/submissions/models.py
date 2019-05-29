@@ -19,23 +19,29 @@ from django.contrib.gis.db import models
 from django.core.validators import MinValueValidator
 from gwells.models import AuditModel, CodeTableModel
 
+WELL_ACTIVITY_CODE_CONSTRUCTION = 'CON'
+WELL_ACTIVITY_CODE_LEGACY = 'LEGACY'
+WELL_ACTIVITY_CODE_DECOMMISSION = 'DEC'
+WELL_ACTIVITY_CODE_ALTERATION = 'ALT'
+WELL_ACTIVITY_CODE_STAFF_EDIT = 'STAFF_EDIT'
+
 
 class WellActivityCodeTypeManager(models.Manager):
 
     def construction(self):
-        return self.get_queryset().get(code='CON')
+        return self.get_queryset().get(code=WELL_ACTIVITY_CODE_CONSTRUCTION)
 
     def legacy(self):
-        return self.get_queryset().get(code='LEGACY')
+        return self.get_queryset().get(code=WELL_ACTIVITY_CODE_LEGACY)
 
     def decommission(self):
-        return self.get_queryset().get(code='DEC')
+        return self.get_queryset().get(code=WELL_ACTIVITY_CODE_DECOMMISSION)
 
     def alteration(self):
-        return self.get_queryset().get(code='ALT')
+        return self.get_queryset().get(code=WELL_ACTIVITY_CODE_ALTERATION)
 
     def staff_edit(self):
-        return self.get_queryset().get(code='STAFF_EDIT')
+        return self.get_queryset().get(code=WELL_ACTIVITY_CODE_STAFF_EDIT)
 
 
 class WellActivityCode(CodeTableModel):

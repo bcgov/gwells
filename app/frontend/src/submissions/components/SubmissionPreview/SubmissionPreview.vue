@@ -185,14 +185,16 @@ Licensed under the Apache License, Version 2.0 (the "License");
             'moisture',
             'descriptor',
             'water_bearing_estimated_flow',
+            'observations'
           ]">
           <template slot="description" slot-scope="data">{{data.item.lithology_raw_data}}</template>
-          <template slot="from" slot-scope="data">{{data.item.lithology_from}}</template>
-          <template slot="to" slot-scope="data">{{data.item.lithology_to}}</template>
+          <template slot="from" slot-scope="data">{{data.item.start}}</template>
+          <template slot="to" slot-scope="data">{{data.item.end}}</template>
           <template slot="colour" slot-scope="data">{{codeToDescription('lithology_colours', data.item.lithology_colour) }}</template>
           <template slot="hardness" slot-scope="data">{{codeToDescription('lithology_hardness_codes', data.item.lithology_hardness) }}</template>
           <template slot="moisture" slot-scope="data">{{codeToDescription('lithology_moisture_codes', data.item.lithology_moisture) }}</template>
           <template slot="descriptor" slot-scope="data">{{codeToDescription('lithology_descriptors', data.item.lithology_description) }}</template>
+          <template slot="observations" slot-scope="data">{{ data.item.lithology_observation }}</template>
         </b-table>
       </div>
     </fieldset>
@@ -314,7 +316,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               small
               bordered
               :items="filterBlankRows(form.screen_set)"
-              :fields="['from', 'to', 'internal_diameter', 'assembly_type', 'slot_size']"
+              :fields="['from', 'to', 'diameter', 'assembly_type', 'slot_size']"
               show-empty
               >
             <template slot="from" slot-scope="data">{{data.item.start}} ft</template>
@@ -378,7 +380,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <b-col cols="12" lg="6"><span class="font-weight-bold">Water Quality Odour:</span> {{ form.water_quality_odour }}</b-col>
       </b-row>
       <b-row>
-        <b-col cols="12" lg="6"><span class="font-weight-bold">EMS ID:</span> {{ form.ems_id }}</b-col>
+        <b-col cols="12" lg="6"><span class="font-weight-bold">EMS ID:</span> {{ form.ems }}</b-col>
       </b-row>
     </fieldset>
 
@@ -392,7 +394,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <b-row>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Finished Well Depth:</span> {{ form.finished_well_depth }} {{ form.finished_well_depth ? 'feet':''}}</b-col>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Estimated Well Yield:</span> {{ form.well_yield }} {{ form.well_yield ? 'USGPM': ''}}</b-col>
-        <b-col cols="12" lg="4"><span class="font-weight-bold">Well Disinfected:</span> {{ form.well_disinfected }}</b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Well Disinfected:</span> {{ form.well_disinfected_status }}</b-col>
       </b-row>
       <b-row>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Final Casing Stick Up:</span> {{ form.final_casing_stick_up }} {{ form.final_casing_stick_up ? 'inches':''}}</b-col>
@@ -407,15 +409,14 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <fieldset class="my-3 detail-section" v-if="sections.decommissionInformation">
       <legend>Well Decommission Information</legend>
       <b-row>
-        <b-col cols="12" lg="4"><span class="font-weight-bold">Finished Well Depth:</span> {{ form.finished_well_depth }} {{ form.finished_well_depth ? 'feet':''}}</b-col>
-        <b-col cols="12" lg="4"><span class="font-weight-bold">Sealant Material:</span> {{ form.decommission_sealant_material }}</b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Reason for Decommission:</span> {{ form.decommission_reason }}</b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Method of Decommission:</span> {{ form.decommission_method }}</b-col>
       </b-row>
       <b-row>
-        <b-col cols="12" lg="4"><span class="font-weight-bold">Reason for Decommission:</span> {{ form.decommission_reason }}</b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Sealant Material:</span> {{ form.decommission_sealant_material }}</b-col>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Backfill Material:</span> {{ form.decommission_backfill_material }}</b-col>
       </b-row>
       <b-row>
-        <b-col cols="12" lg="4"><span class="font-weight-bold">Method of Decommission:</span> {{ form.decommission_method }}</b-col>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Decommission Details:</span> {{ form.decommission_details }}</b-col>
       </b-row>
     </fieldset>

@@ -34,13 +34,13 @@ Visit the following links to browse the API and frontend applications:
 Django unit tests:
 ```sh
 cd app/backend
-python manage.py test -c nose.cfg
+python manage.py test
 ```
 
 Vue unit tests:
 ```sh
 cd app/frontend
-npm run unit
+npm run test:unit
 ```
 
 Postman API tests:

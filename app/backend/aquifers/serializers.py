@@ -17,6 +17,34 @@ from rest_framework import serializers
 from aquifers import models
 
 
+class AquiferResourceSerializer(serializers.ModelSerializer):
+    """Serialize aquifer resourcelist"""
+    section_code = serializers.PrimaryKeyRelatedField(
+        queryset=models.AquiferResourceSection.objects.all(),
+        source='section.code')
+
+    def to_internal_value(self, data):
+        """
+        Dict of native values <- Dict of primitive datatypes.
+        Add instance key to values if `id` present in primitive dict
+        :param data:
+        """
+        obj = super(AquiferResourceSerializer, self).to_internal_value(data)
+        instance_id = data.get('id', None)
+        if instance_id:
+            obj['instance'] = models.AquiferResource.objects.get(id=instance_id)
+        return obj
+
+    class Meta:
+        model = models.AquiferResource
+        fields = (
+            'id',
+            'name',
+            'url',
+            'section_code'
+        )
+
+
 class AquiferSerializer(serializers.ModelSerializer):
     """Serialize a aquifer list"""
     demand_description = serializers.SlugRelatedField(
@@ -33,6 +61,68 @@ class AquiferSerializer(serializers.ModelSerializer):
         source='quality_concern', read_only=True, slug_field='description')
     known_water_use_description = serializers.SlugRelatedField(
         source='known_water_use', read_only=True, slug_field='description')
+    resources = AquiferResourceSerializer(many=True, required=False)
+
+    def create(self, validated_data):
+        """
+        Allow creating resources inline of the aquifer API. ie)
+
+        {
+            resources: [{
+                url: 'http://...',
+                name: 'A resource',
+                section_id: 1
+            }, {
+                ...
+            }, ...]
+            ...
+        }
+        """
+        resources_data = validated_data.pop('resources', [])
+        aquifer = models.Aquifer.objects.create(**validated_data)
+        for resource_item in resources_data:
+            r = models.AquiferResource(
+                url=resource_item['url'],
+                name=resource_item['name'],
+                aquifer=aquifer,
+                section_id=resource_item['section']['code'].code)
+            r.save()
+        return aquifer
+
+    def update(self, instance, validated_data):
+        """
+        Update the resources associated with an aquifer, inline of the aquifer API.
+        """
+        resources_data = validated_data.pop('resources', [])
+        for k, v in validated_data.items():
+            setattr(instance, k, v)
+        instance.save()
+
+        # Any items removed from the inline collection are deleted.
+        to_delete = models.AquiferResource.objects.filter(
+            aquifer=instance
+        ).exclude(
+            id__in=[r['id'] for r in resources_data if 'id' in r]
+        )
+
+        to_delete.delete()
+
+        for resource_item in resources_data:
+            if 'instance' in resource_item:
+                resource = resource_item['instance']
+                resource.section = resource_item['section']['code']
+                resource.name = resource_item['name']
+                resource.url = resource_item['url']
+                resource.save()
+            else:
+                r = models.AquiferResource(
+                    url=resource_item['url'],
+                    name=resource_item['name'],
+                    aquifer=instance,
+                    section_id=resource_item['section']['code'].code)
+                r.save()
+
+        return instance
 
     class Meta:
         model = models.Aquifer
@@ -57,7 +147,18 @@ class AquiferSerializer(serializers.ModelSerializer):
             'subtype_description',
             'subtype',
             'vulnerability_description',
-            'vulnerability'
+            'vulnerability',
+            'resources',
+        )
+
+
+class AquiferResourceSectionSerializer(serializers.ModelSerializer):
+    """Serialize aquifer section list"""
+    class Meta:
+        model = models.AquiferResourceSection
+        fields = (
+            'code',
+            'name'
         )
 
 

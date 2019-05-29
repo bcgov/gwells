@@ -10,4 +10,4 @@
   limitations under the License.
  */
 export const FETCH_CODES = 'FETCH_SUBMISSION_CODES'
-export const FETCH_WELLS = 'WELLS'
+export const FETCH_WELL_TAGS = 'WELL_TAGS'

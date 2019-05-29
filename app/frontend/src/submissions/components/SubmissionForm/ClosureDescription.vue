@@ -40,7 +40,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             </thead>
             <tbody>
               <tr
-                  v-for="(item, index) in closureDescriptionSet"
+                  v-for="(item, index) in closureDescriptionSetData"
                   :key="`closureDescription${index}`"
                   :id="`closureDescription${index}`">
 
@@ -48,6 +48,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   <form-input
                       group-class="mt-1 mb-0"
                       :id="`closureFrom${index}`"
+                      type="number"
                       v-model="item.start"
                       :errors="getClosureError(index).start"
                       :loaded="getFieldsLoaded(index).start"
@@ -58,6 +59,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                       group-class="mt-1 mb-0"
                       :id="`closureTo${index}`"
                       v-model="item.end"
+                      type="number"
                       :errors="getClosureError(index).end"
                       :loaded="getFieldsLoaded(index).end"
                   />
@@ -128,27 +130,58 @@ export default {
     }
   },
   data () {
-    return {}
+    return {
+      closureDescriptionSetData: [],
+      pageLoaded: false
+    }
   },
   computed: {
-    ...mapGetters(['codes'])
+    ...mapGetters(['codes']),
+    computedClosureDescriptionSet: function () {
+      return Object.assign({}, this.closureDescriptionSetData)
+    }
+  },
+  watch: {
+    computedClosureDescriptionSet: {
+      deep: true,
+      handler: function (n, o) {
+        let closures = []
+        this.closureDescriptionSetData.forEach((d) => {
+          if (!Object.values(d).every(x => (x === ''))) {
+            closures.push(d)
+          }
+        })
+        if (this.pageLoaded && this.saveDisabled) {
+          closures.push(this.emptyObject())
+        }
+        this.$emit('update:closureDescriptionSet', closures)
+      }
+    }
   },
   methods: {
     addClosureRow () {
-      this.closureDescriptionSetInput.push({start: '', end: '', material: '', observations: ''})
+      this.closureDescriptionSetData.push(this.emptyObject())
+    },
+    emptyObject () {
+      return {
+        start: '',
+        end: '',
+        material: '',
+        observations: ''
+      }
     },
     removeClosureRow (rowNumber) {
-      this.closureDescriptionSetInput.splice(rowNumber, 1)
+      this.closureDescriptionSetData.splice(rowNumber, 1)
     },
     getClosureError (index) {
-      if (this.errors && 'closure_description_set' in this.errors && index in this.errors['closure_description_set']) {
-        return this.errors['closure_description_set'][index]
+      if (this.errors && 'decommission_description_set' in this.errors && index in this.errors['decommission_description_set']) {
+        return this.errors['decommission_description_set'][index]
       }
       return {}
     },
     getFieldsLoaded (index) {
-      if (this.fieldsLoaded && 'closure_description_set' in this.fieldsLoaded && index in this.fieldsLoaded['closure_description_set']) {
-        return this.fieldsLoaded['closure_description_set'][index]
+      if (this.fieldsLoaded && 'decommission_description_set' in this.fieldsLoaded && index in this.fieldsLoaded['decommission_description_set']) {
+        return this.fieldsLoaded['decommission_description_set'][index]
       }
       return {}
     }
@@ -158,7 +191,13 @@ export default {
       for (let i = 0; i < 10; i++) {
         this.addClosureRow()
       }
+    } else {
+      Object.assign(this.closureDescriptionSetData, this.closureDescriptionSet)
+      this.addClosureRow()
     }
+  },
+  updated () {
+    this.pageLoaded = true
   }
 }
 </script>

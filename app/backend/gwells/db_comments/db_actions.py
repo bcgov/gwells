@@ -55,6 +55,12 @@ def create_db_comments_from_models(models):
 
     with connection.cursor() as cursor:
         for model_class in models:
+            # Doing the check for abstract is a bit weird, we have to create an instance of the class, we
+            # can't check it on the class definition.
+            if model_class()._meta.abstract:
+                # If it's an abstract class, don't proceed.
+                continue
+
             table = model_class.db_table_name() \
                 if hasattr(model_class, 'db_table_name') else None
             table_comment = model_class.db_table_comment \
