@@ -131,11 +131,11 @@ def format_path(path):
 def action_map(action):
 
     if action == 'iterable_item_added':
-        return 'Added'
+        return 'Added to'
     elif action == 'iterable_item_removed':
-        return 'Removed'
+        return 'Edited'
     elif action == 'values_changed':
-        return 'Changed'
+        return 'Edited'
     elif action == 'type_changes':
         return 'Altered'
     else:

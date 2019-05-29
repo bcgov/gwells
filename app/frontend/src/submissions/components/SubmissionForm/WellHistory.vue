@@ -27,7 +27,7 @@
                 v-if="!(value === '' && version.prev[key] === null)"
                 :key="`history-item-${key}-in-version ${index}`">
                 <div
-                  v-if="Array.isArray(value)">
+                  v-if="Array.isArray(value) && value.length > 0">
                   <b-table
                     responsive
                     striped
