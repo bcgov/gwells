@@ -116,6 +116,7 @@ class AquiferResourceSectionListAPIView(ListAPIView):
     get: return a list of aquifer material codes
     """
 
+    swagger_schema = None
     queryset = AquiferResourceSection.objects.all()
     serializer_class = serializers.AquiferResourceSectionSerializer
 
@@ -124,7 +125,7 @@ class AquiferMaterialListAPIView(ListAPIView):
     """List aquifer materials codes
     get: return a list of aquifer material codes
     """
-
+    swagger_schema = None
     queryset = AquiferMaterial.objects.all()
     serializer_class = serializers.AquiferMaterialSerializer
 
@@ -134,6 +135,7 @@ class QualityConcernListAPIView(ListAPIView):
     get: return a list of quality concern codes
     """
 
+    swagger_schema = None
     queryset = models.QualityConcern.objects.all()
     serializer_class = serializers.QualityConcernSerializer
 
@@ -143,6 +145,7 @@ class AquiferVulnerabilityListAPIView(ListAPIView):
     get: return a list of aquifer vulnerability codes
     """
 
+    swagger_schema = None
     queryset = AquiferVulnerabilityCode.objects.all()
     serializer_class = serializers.AquiferVulnerabilitySerializer
 
@@ -152,6 +155,7 @@ class AquiferSubtypeListAPIView(ListAPIView):
     get: return a list of aquifer subtype codes
     """
 
+    swagger_schema = None
     queryset = AquiferSubtype.objects.all()
     serializer_class = serializers.AquiferSubtypeSerializer
 
@@ -161,6 +165,7 @@ class AquiferProductivityListAPIView(ListAPIView):
     get: return a list of aquifer productivity codes
     """
 
+    swagger_schema = None
     queryset = AquiferProductivity.objects.all()
     serializer_class = serializers.AquiferProductivitySerializer
 
@@ -170,6 +175,7 @@ class AquiferDemandListAPIView(ListAPIView):
     get: return a list of aquifer demand codes
     """
 
+    swagger_schema = None
     queryset = AquiferDemand.objects.all()
     serializer_class = serializers.AquiferDemandSerializer
 
@@ -179,6 +185,7 @@ class WaterUseListAPIView(ListAPIView):
     get: return a list of water use codes
     """
 
+    swagger_schema = None
     queryset = models.WaterUse.objects.all()
     serializer_class = serializers.WaterUseSerializer
 
@@ -399,4 +406,3 @@ def aquifer_geojson(request):
             get_env_variable('S3_WELL_EXPORT_BUCKET'),
             'api/v1/gis/aquifers.json')
         return HttpResponseRedirect(url)
-
