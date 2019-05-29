@@ -315,6 +315,8 @@ class SubmissionStaffEditAPIView(SubmissionBase):
 class SubmissionsOptions(APIView):
     """Options required for submitting activity report forms"""
 
+    swagger_schema = None
+    
     def get(self, request):
         options = {}
 
