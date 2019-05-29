@@ -522,44 +522,6 @@ def aquifer_geojson_simplified(request):
     Sadly, GeoDjango's ORM doesn't seem to directly support a call to
     ST_AsGEOJSON, but the latter performs much better than processing WKT
     in Python, so we must generate SQL here.
-
-    If we want to query by the usual fields available to the aquifer API we'd do:
-
-    >>>
-    resources__section__code = request.GET.get(
-        "resources__section__code")
-    hydraulic = request.GET.get('hydraulically_connected')
-    search = request.GET.get('search')
-    where_clause_parts = []
-
-    if hydraulic:
-        part = "aquifer.aquifer_subtype_code IN ({})".format(
-            ",".join(["'{}'".format(c)
-                      for c in serializers.HYDRAULIC_SUBTYPES])
-        )
-        where_clause_parts.append(part)
-
-    # truthy check - ignore missing and emptystring.
-    if resources__section__code:
-        part = "aquifers_aquiferresource.aquifer_resource_section_code IN ({})".format(
-            ",".join(["'{}'".format(c)
-                      for c in resources__section__code.split(',')])
-        )
-        where_clause_parts.append(part)
-
-    if search:  # truthy check - ignore missing and emptystring.
-        part = "(UPPER(aquifer.aquifer_name:: text) LIKE UPPER('%%{}%%')".format(
-            search)
-        # if a number is searched, assume it could be an Aquifer ID.
-        if search.isdigit():
-            part += " OR aquifer.aquifer_id = {}".format(search)
-        part += ")"
-        where_clause_parts.append(part)
-
-    if where_clause_parts:
-        where_clause = " AND ".join(where_clause_parts)
-    else:
-        where_clause = ""
     """
 
     SQL = """

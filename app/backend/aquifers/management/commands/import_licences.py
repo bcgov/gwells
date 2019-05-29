@@ -32,7 +32,10 @@ class Command(BaseCommand):
     """
 
     def add_arguments(self, parser):
-        parser.add_argument('filename', type=str, nargs="?", default=None)
+        parser.add_argument('filename', type=str, nargs="?", default=None,
+                            help='The file to import. If not specified, download latest')
+        parser.add_argument('-d', '--dev-fixtures', action='store_const', const=1,
+                            help='Set this if you do not have a full production database, and only have dev fixtures.')
 
     def handle(self, *args, **options):
         if options['filename']:
@@ -71,22 +74,24 @@ class Command(BaseCommand):
                 logging.info("importing licence #{}".format(
                     row['LICENCE_NUMBER']))
 
-                # Check the Licence is for a valid Aquifer
-                aquifer = Aquifer.objects.get(pk=row['SOURCE_NAME'])
-                well = Well.objects.get(pk=row['WELL_TAG_NUMBER'])
-                # NOTE: If you want to limit the data for the standard dev environment bootstrap for testng, use this instead of the above 2 lines.
-                # counter += 1
-                # if counter > 10:
-                #     continue
-                # well = Well.objects.all()[counter % num_wells:][0]
-                # # we need our wells to actually have an aquifir for nontrivial testing.
-                # if not well.aquifer:
-                #     well.aquifer = Aquifer.objects.first()
-                #     well.save()
-                # aquifer = well.aquifer
-                # # in dev envs, only import 100 licences.
-                # if counter > 100:
-                #     break
+                if options.get('dev_fixtures'):
+                    # NOTE: If you want to limit the data for the standard dev environment bootstrap for testng.
+                    counter += 1
+                    if counter > 10:
+                        continue
+                    well = Well.objects.all()[counter % num_wells:][0]
+                    # we need our wells to actually have an aquifir for nontrivial testing.
+                    if not well.aquifer:
+                        well.aquifer = Aquifer.objects.first()
+                        well.save()
+                    aquifer = well.aquifer
+                    # in dev envs, only import 100 licences.
+                    if counter > 100:
+                        break
+                else:
+                    # Check the Licence is for a valid Aquifer
+                    aquifer = Aquifer.objects.get(pk=row['SOURCE_NAME'])
+                    well = Well.objects.get(pk=row['WELL_TAG_NUMBER'])
 
                 try:
                     # Maintaina code table with water rights purpose.

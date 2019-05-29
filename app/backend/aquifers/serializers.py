@@ -185,14 +185,7 @@ class AquiferDetailSerializer(serializers.ModelSerializer):
         details['licence_count'] = len(
             licences.values('licence_number').distinct())
 
-        # details['usage'] = licences.values(
-        #     'purpose__description').annotate(
-        #         total_qty=Sum('quantity')
-        # )
-        # details['lic_qty'] = licences.values(
-        #     'purpose__description').annotate(
-        #         total_qty=Count('quantity')
-        # )
+        # latest date when licence data were updated.
         details['licences_updated'] = licences.aggregate(
             Max('update_date')
         )
@@ -224,7 +217,9 @@ class AquiferDetailSerializer(serializers.ModelSerializer):
         return ret
 
     def _tally_licence_data(self, licences):
-        # Collect licences by number, for tallying.
+        # Collect licences by number, for tallying according to logic in business area.
+        # Some types of licences must be merged when calculating totals depending on
+        # "quantity flags". See inline for details.
         _licence_map = {}
         for licence in licences:
 
