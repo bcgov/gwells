@@ -1,11 +1,8 @@
 /***
- * Author
- * AreaSelect is developed by Jonatan Heyman.
+ * 
+ * AreaSelect is developed by Jonatan Heyman and is released under the MIT license.
+ * https://github.com/heyman/leaflet-areaselect
  *
- * This script was not packages in npm for leaflet/vue so we fork it direclty in our project here.
- *
- * License
- * MIT License
  **/
 
 L.AreaSelect = L.Class.extend({
