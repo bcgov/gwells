@@ -72,34 +72,6 @@ class TestAquifersEditRole(APITestCase):
             )
             self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_upload_shapefile_2(self):
-        """
-        Try another shapefile example
-        """
-        filepath = 'aquifers/fixtures/shp/TK_0570.zip'
-        with open(filepath, 'rb') as fh:
-            url = reverse('aquifer-save-geometry', kwargs={'aquifer_id': 1})
-
-            response = self.client.post(
-                url,
-                {'geometry': fh}
-            )
-            self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_upload_bad_shapefile(self):
-
-        filepath = 'aquifers/fixtures/shp/emptyshapefile.zip'
-        with open(filepath, 'rb') as fh:
-            url = reverse('aquifer-save-geometry', kwargs={'aquifer_id': 1})
-
-            response = self.client.post(
-                url,
-                {'geometry': fh}
-            )
-            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-            self.assertEqual(response.json().get(
-                'message'), 'File is not a zip file')
-
     def test_export_csv(self):
         url = reverse('aquifers-list-csv')
         response = self.client.get(

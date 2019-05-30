@@ -90,18 +90,7 @@ class AquiferSerializer(serializers.ModelSerializer):
 
 
 class AquiferDetailSerializer(serializers.ModelSerializer):
-    demand = serializers.SlugRelatedField(
-        read_only=True, slug_field='description')
-    material = serializers.SlugRelatedField(
-        read_only=True, slug_field='description')
-    productivity = serializers.SlugRelatedField(
-        read_only=True, slug_field='description')
-    subtype = serializers.StringRelatedField(
-        read_only=True)
-    vulnerability = serializers.SlugRelatedField(
-        read_only=True, slug_field='description')
-    quality_concern = serializers.SlugRelatedField(
-        read_only=True, slug_field='description')
+
     resources = AquiferResourceSerializer(many=True, required=False)
     licence_details = serializers.JSONField(read_only=True)
 
@@ -170,10 +159,18 @@ class AquiferDetailSerializer(serializers.ModelSerializer):
         """
         Fetch many details related to a aquifer, used to generate its' summary page.
         """
+
         ret = super().to_representation(instance)
         if instance.geom:
             instance.geom.transform(4326)
             ret['geom'] = json.loads(instance.geom.json)
+
+        ret['demand'] = instance.demand.description
+        ret['material'] = instance.material.description
+        ret['productivity'] = instance.productivity.description
+        ret['subtype'] = instance.subtype.description
+        ret['vulnerability'] = instance.vulnerability.description
+        ret['quality_concern'] = instance.quality_concern.description
 
         details = {}
 

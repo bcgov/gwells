@@ -49,6 +49,7 @@
     "babel-jest": "^23.6.0",
     "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.0.0",
+    "jest-transform-stub": "^2.0.0",
     "jquery": "^3.4.1",
     "moxios": "^0.4.0",
     "node-sass": "^4.9.0",
