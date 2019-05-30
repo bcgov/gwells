@@ -48,8 +48,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   <form-input
                       group-class="mt-1 mb-0"
                       :id="`closureFrom${index}`"
-                      v-model="item.start"
                       type="number"
+                      v-model="item.start"
                       :errors="getClosureError(index).start"
                       :loaded="getFieldsLoaded(index).start"
                   />

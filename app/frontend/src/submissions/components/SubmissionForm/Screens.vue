@@ -180,6 +180,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   group-class="my-1"
                   :id="`screenSlotSize_${index}`"
                   aria-label="Screen Slot Size"
+                  type="number"
                   v-model="screensData[index].slot_size"
                   :errors="getScreenError(index).slot_size"
                   :loaded="getScreenLoaded(index).slot_size"

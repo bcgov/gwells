@@ -694,8 +694,8 @@ LITHOLOGY_PROPERTIES = openapi.Schema(
             description=('Link to well summary report within the Groundwater Wells and Aquifer (GWELLS)'
                          ' application. The well summary provides the overall desription and history of the'
                          ' well.')),
-        'from': get_model_feature_schema(LithologyDescription, 'lithology_from'),
-        'to': get_model_feature_schema(LithologyDescription, 'lithology_to'),
+        'from': get_model_feature_schema(LithologyDescription, 'start'),
+        'to': get_model_feature_schema(LithologyDescription, 'end'),
         'colour': get_model_feature_schema(LithologyColourCode, 'description'),
         'description': get_model_feature_schema(LithologyDescriptionCode, 'description'),
         'material': get_model_feature_schema(LithologyMaterialCode, 'description'),

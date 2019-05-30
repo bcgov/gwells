@@ -346,8 +346,8 @@ class LithologyDescriptionSummarySerializer(serializers.ModelSerializer):
     class Meta:
         model = LithologyDescription
         fields = (
-            'lithology_from',
-            'lithology_to',
+            'start',
+            'end',
             'lithology_raw_data',
             'lithology_colour',
             'lithology_hardness',
@@ -360,10 +360,10 @@ class LithologyDescriptionSummarySerializer(serializers.ModelSerializer):
 
 class LithologyDescriptionSerializer(serializers.ModelSerializer):
 
-    lithology_from = serializers.DecimalField(
+    start = serializers.DecimalField(
         max_digits=7, decimal_places=2,
         validators=[MinValueValidator(Decimal('0.00'))])
-    lithology_to = serializers.DecimalField(
+    end = serializers.DecimalField(
         max_digits=7, decimal_places=2,
         validators=[MinValueValidator(Decimal('0.00'))])
 
@@ -371,8 +371,8 @@ class LithologyDescriptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = LithologyDescription
         fields = (
-            'lithology_from',
-            'lithology_to',
+            'start',
+            'end',
             'lithology_raw_data',
             'lithology_colour',
             'lithology_hardness',
@@ -385,10 +385,10 @@ class LithologyDescriptionSerializer(serializers.ModelSerializer):
 
 class LithologyDescriptionStackerSerializer(serializers.ModelSerializer):
 
-    lithology_from = serializers.DecimalField(
+    start = serializers.DecimalField(
         max_digits=7, decimal_places=2,
         validators=[MinValueValidator(Decimal('0.00'))])
-    lithology_to = serializers.DecimalField(
+    end = serializers.DecimalField(
         max_digits=7, decimal_places=2,
         validators=[MinValueValidator(Decimal('0.00'))])
 
@@ -396,8 +396,8 @@ class LithologyDescriptionStackerSerializer(serializers.ModelSerializer):
     class Meta:
         model = LithologyDescription
         fields = (
-            'lithology_from',
-            'lithology_to',
+            'start',
+            'end',
             'lithology_raw_data',
             'lithology_colour',
             'lithology_hardness',
@@ -418,14 +418,14 @@ class LithologyDescriptionStackerSerializer(serializers.ModelSerializer):
 
 class LegacyLithologyDescriptionSerializer(serializers.ModelSerializer):
 
-    lithology_to = serializers.DecimalField(max_digits=7, decimal_places=2, allow_null=True)
+    end = serializers.DecimalField(max_digits=7, decimal_places=2, allow_null=True)
 
     """Serializes lithology description records"""
     class Meta:
         model = LithologyDescription
         fields = (
-            'lithology_from',
-            'lithology_to',
+            'start',
+            'end',
             'lithology_raw_data',
             'lithology_colour',
             'lithology_hardness',
@@ -435,7 +435,7 @@ class LegacyLithologyDescriptionSerializer(serializers.ModelSerializer):
             'water_bearing_estimated_flow',
         )
         extra_kwargs = {
-            'lithology_to': {'required': False, 'allow_null': True},
+            'end': {'required': False, 'allow_null': True},
         }
 
 
@@ -682,6 +682,8 @@ class WellDetailAdminSerializer(AuditModelSerializer):
 
     # well vs. well_tag_number ; on submissions, we refer to well
     well = serializers.IntegerField(source='well_tag_number')
+
+    legal_pid = serializers.SerializerMethodField()
 
     class Meta:
         model = Well
