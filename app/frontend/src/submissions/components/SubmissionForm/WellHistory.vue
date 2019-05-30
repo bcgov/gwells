@@ -24,21 +24,21 @@
                 style="margin-left:20px;"
                 class="font-weight-light"
                 v-for="(value, key) in version.diff"
-                v-if="!(value === '' && version.prev[key] === null)"
                 :key="`history-item-${key}-in-version ${index}`">
-                <div
-                  v-if="Array.isArray(value) && value.length > 0">
-                  <b-table
-                    responsive
-                    striped
-                    small
-                    bordered
-                    :items="Object.values(version.action != 'Removed' ? version.diff[key] : version.prev[key])"
-                    show-empty
-                  ></b-table>
-                </div>
-                <div v-else>
-                  {{ key | formatKey }} changed from {{ version.prev[key] | formatValue }} to {{ value | formatValue }}
+                <div v-if="!(value === '' && version.prev[key] === null)">
+                  <div v-if="Array.isArray(value) && value.length > 0">
+                    <b-table
+                      responsive
+                      striped
+                      small
+                      bordered
+                      :items="Object.values(version.action != 'Removed' ? version.diff[key] : version.prev[key])"
+                      show-empty
+                    ></b-table>
+                  </div>
+                  <div v-else>
+                    {{ key | formatKey }} changed from {{ version.prev[key] | formatValue }} to {{ value | formatValue }}
+                  </div>
                 </div>
               </div>
             </div>

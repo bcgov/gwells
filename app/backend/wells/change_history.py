@@ -79,7 +79,7 @@ def get_well_history(well):
 
                 # loop through version edit history and add changes/values to the item object
                 for tk, tree in diff.items():
-                    item['action'] = action_map(tk)  # values_changed, iterable_item_added, iterable_item_removed
+                    item['action'] = 'Edited'
                     for limb in tree.items:
                         if keep_key(limb.path()):
                             path = format_path(limb.path())
@@ -125,21 +125,6 @@ def format_path(path):
     path = re.sub(r"']", '', path)
     path = re.sub(r"_", ' ', path)
     return path.title()
-
-
-# Changed deep diff change statuses into human readable values
-def action_map(action):
-
-    if action == 'iterable_item_added':
-        return 'Added to'
-    elif action == 'iterable_item_removed':
-        return 'Edited'
-    elif action == 'values_changed':
-        return 'Edited'
-    elif action == 'type_changes':
-        return 'Altered'
-    else:
-        return action
 
 
 # Ignores keys which we do not want to be flagged as diffable
