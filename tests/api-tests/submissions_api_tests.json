@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "09c3bf29-21b4-4221-98e4-1cc0a1c1d9b4",
+		"_postman_id": "e351c8f7-da59-4649-ae63-48faf79a83a6",
 		"name": "GWELLS Submissions API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -2211,7 +2211,7 @@
 													"\t\"legal_township\":\"3\",",
 													"\t\"legal_range\":\"3\",",
 													"\t\"land_district\":\"03\",",
-													"\t\"legal_pid\":3,",
+													"\t\"legal_pid\":\"000000003\",",
 													"\t\"well_location_description\":\"Description of well location\"",
 													"};",
 													"",

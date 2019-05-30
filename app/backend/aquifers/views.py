@@ -1,3 +1,5 @@
+import json
+from django.views.static import serve
 """
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -13,12 +15,19 @@
 """
 from datetime import datetime
 import logging
+import os
+import csv
+import openpyxl
+from openpyxl.writer.excel import save_virtual_workbook
 
 from django_filters import rest_framework as djfilters
 from django.http import Http404, HttpResponse, JsonResponse, HttpResponseRedirect, StreamingHttpResponse
 from django.views.generic import TemplateView
 from django.db.models import Q
 from django.db import connection
+from django.http import HttpResponse
+from django.contrib.gis.gdal import DataSource
+from django.views.decorators.cache import cache_page
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -30,6 +39,10 @@ from rest_framework.response import Response
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveUpdateAPIView
 from rest_framework.permissions import AllowAny
+from rest_framework.exceptions import ParseError
+from rest_framework.parsers import FileUploadParser
+from rest_framework import status
+from rest_framework.pagination import PageNumberPagination
 
 from reversion.views import RevisionMixin
 
@@ -67,11 +80,59 @@ class AquiferRetrieveUpdateAPIView(RevisionMixin, AuditUpdateMixin, RetrieveUpda
     get: return details of aquifers
     patch: update aquifer
     """
-
     permission_classes = (HasAquiferEditRoleOrReadOnly,)
     queryset = Aquifer.objects.all()
     lookup_field = 'aquifer_id'
-    serializer_class = serializers.AquiferSerializer
+    serializer_class = serializers.AquiferDetailSerializer
+
+
+def _aquifer_qs(query):
+    """
+    We have a custom search which does a case insensitive substring of aquifer_name,
+    exact match on aquifer_id, and also looks at an array of provided resources attachments
+    of which we require one to be present if any are specified. The front-end doesn't use
+    DjangoFilterBackend's querystring array syntax, preferring ?a=1,2 rather than ?a[]=1&a[]=2,
+    so again we need a custom back-end implementation.
+
+    @param query - the dict containing querystring arguments.
+    """
+    qs = Aquifer.objects.all()
+    resources__section__code = query.get(
+        "resources__section__code")
+    hydraulic = query.get('hydraulically_connected')
+    search = query.get('search')
+
+    if hydraulic:
+        qs = qs.filter(subtype__code__in=serializers.HYDRAULIC_SUBTYPES)
+
+    # truthy check - ignore missing and emptystring.
+    if resources__section__code:
+        qs = qs.filter(
+            resources__section__code__in=resources__section__code.split(','))
+
+    if search:  # truthy check - ignore missing and emptystring.
+        disjunction = Q(aquifer_name__icontains=search)
+        # if a number is searched, assume it could be an Aquifer ID.
+        if search.isdigit():
+            disjunction = disjunction | Q(pk=int(search))
+        qs = qs.filter(disjunction)
+
+    qs = qs.select_related(
+        'demand',
+        'material',
+        'productivity',
+        'subtype',
+        'vulnerability')
+
+    qs = qs.distinct()
+
+    return qs
+
+
+class LargeResultsSetPagination(PageNumberPagination):
+    page_size = 10000
+    page_size_query_param = 'page_size'
+    max_page_size = 10000
 
 
 class AquiferListCreateAPIView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
@@ -79,36 +140,54 @@ class AquiferListCreateAPIView(RevisionMixin, AuditCreateMixin, ListCreateAPIVie
     get: return a list of aquifers
     post: create an aquifer
     """
-
+    pagination_class = LargeResultsSetPagination
     permission_classes = (HasAquiferEditRoleOrReadOnly,)
-    serializer_class = serializers.AquiferSerializer
     filter_backends = (djfilters.DjangoFilterBackend,
                        OrderingFilter, SearchFilter)
     ordering_fields = '__all__'
     ordering = ('aquifer_id',)
 
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return serializers.AquiferSerializer
+        else:
+            return serializers.AquiferDetailSerializer
+
     def get_queryset(self):
-        """
-        We have a custom search which does a case insensitive substring of aquifer_name,
-        exact match on aquifer_id, and also looks at an array of provided resources attachments
-        of which we require one to be present if any are specified. The front-end doesn't use
-        DjangoFilterBackend's querystring array syntax, preferring ?a=1,2 rather than ?a[]=1&a[]=2,
-        so again we need a custom back-end implementation.
-        """
-        qs = Aquifer.objects.all()
-        resources__section__code = self.request.GET.get(
-            "resources__section__code")
-        search = self.request.GET.get('search')
-        # truthy check - ignore missing and emptystring.
-        if resources__section__code:
-            qs = qs.filter(
-                resources__section__code__in=resources__section__code.split(','))
-        if search:  # truthy check - ignore missing and emptystring.
-            disjunction = Q(aquifer_name__icontains=search)
-            if search.isdigit():
-                disjunction = disjunction | Q(pk=int(search))
-            qs = qs.filter(disjunction)
-        return qs.distinct()
+        return _aquifer_qs(self.request.GET).values(
+            'aquifer_id',
+            'aquifer_name',
+            'location_description',
+
+            'demand__description',
+            'material__description',
+            'subtype__description',
+            'vulnerability__description',
+            'productivity__description',
+
+            'area',
+            'mapping_year',
+            'litho_stratographic_unit',
+        )
+
+# TODO: delete me. This is a faster but uglier version of the view :)
+@api_view(['GET'])
+def list_view(request):
+    return HttpResponse(json.dumps(list(_aquifer_qs(
+        request.GET).values(
+            'aquifer_id',
+            'aquifer_name',
+            'location_description',
+
+            'demand__description',
+            'material__description',
+            'subtype__description',
+            'vulnerability__description',
+            'productivity__description',
+
+            # 'area',
+            'mapping_year',
+    ))))
 
 
 class AquiferResourceSectionListAPIView(ListAPIView):
@@ -197,24 +276,25 @@ class ListFiles(APIView):
     get: list files found for the aquifer identified in the uri
     """
 
-    @swagger_auto_schema(responses={200: openapi.Response('OK',
-                                                          openapi.Schema(type=openapi.TYPE_OBJECT, properties={
-                                                              'public': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
-                                                                  type=openapi.TYPE_OBJECT,
-                                                                  properties={
-                                                                      'url': openapi.Schema(type=openapi.TYPE_STRING),
-                                                                      'name': openapi.Schema(type=openapi.TYPE_STRING)
-                                                                  }
-                                                              )),
-                                                              'private': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
-                                                                  type=openapi.TYPE_OBJECT,
-                                                                  properties={
-                                                                      'url': openapi.Schema(type=openapi.TYPE_STRING),
-                                                                      'name': openapi.Schema(type=openapi.TYPE_STRING)
-                                                                  }
-                                                              ))
-                                                          })
-                                                          )})
+    @swagger_auto_schema(responses={200: openapi.Response(
+        'OK',
+        openapi.Schema(type=openapi.TYPE_OBJECT, properties={
+            'public': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'url': openapi.Schema(type=openapi.TYPE_STRING),
+                    'name': openapi.Schema(type=openapi.TYPE_STRING)
+                }
+            )),
+            'private': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'url': openapi.Schema(type=openapi.TYPE_STRING),
+                    'name': openapi.Schema(type=openapi.TYPE_STRING)
+                }
+            ))
+        })
+    )})
     def get(self, request, aquifer_id):
         user_is_staff = self.request.user.groups.filter(
             name=AQUIFERS_EDIT_ROLE).exists()
@@ -344,6 +424,38 @@ class DeleteAquiferDocument(APIView):
         return HttpResponse(status=204)
 
 
+class SaveAquiferGeometry(APIView):
+    """
+
+    """
+    permission_classes = (HasAquiferEditRole,)
+    parser_class = (FileUploadParser,)
+
+    @swagger_auto_schema(auto_schema=None)
+    def post(self, request, aquifer_id):
+        logger.info(request.data)
+        if 'geometry' not in request.data:
+            raise ParseError("Empty content")
+
+        f = request.data['geometry']
+        aquifer = Aquifer.objects.get(pk=aquifer_id)
+        try:
+            aquifer.load_shapefile(f)
+        except Aquifer.BadShapefileException as e:
+            return Response({
+                'message': str(e)
+            },
+                status=status.HTTP_400_BAD_REQUEST)
+        aquifer.save()
+        return Response(status=status.HTTP_200_OK)
+
+    def delete(self, request, aquifer_id):
+        aquifer = Aquifer.objects.get(pk=aquifer_id)
+        del aquifer.geom
+        aquifer.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 AQUIFER_PROPERTIES = openapi.Schema(
     type=openapi.TYPE_OBJECT,
     title='GeoJSON Feature properties.',
@@ -366,7 +478,8 @@ AQUIFER_PROPERTIES = openapi.Schema(
 
 
 @swagger_auto_schema(
-    operation_description=('Get GeoJSON (see https://tools.ietf.org/html/rfc7946) dump of aquifers.'),
+    operation_description=(
+        'Get GeoJSON (see https://tools.ietf.org/html/rfc7946) dump of aquifers.'),
     method='get',
     manual_parameters=GEO_JSON_PARAMS,
     responses={
@@ -379,6 +492,7 @@ AQUIFER_PROPERTIES = openapi.Schema(
 def aquifer_geojson(request):
     realtime = request.GET.get('realtime') in ('True', 'true')
     if realtime:
+
         sw_long = request.query_params.get('sw_long')
         sw_lat = request.query_params.get('sw_lat')
         ne_long = request.query_params.get('ne_long')
@@ -406,3 +520,80 @@ def aquifer_geojson(request):
             get_env_variable('S3_WELL_EXPORT_BUCKET'),
             'api/v1/gis/aquifers.json')
         return HttpResponseRedirect(url)
+
+
+@api_view(['GET'])
+@cache_page(60*15)
+def aquifer_geojson_simplified(request):
+    """
+    Sadly, GeoDjango's ORM doesn't seem to directly support a call to
+    ST_AsGEOJSON, but the latter performs much better than processing WKT
+    in Python, so we must generate SQL here.
+    """
+
+    SQL = """
+    SELECT
+           ST_AsGeoJSON(geom_simplified, 8) :: json AS "geometry",
+           aquifer.aquifer_id                       AS id
+    FROM aquifer;
+    """
+
+    iterator = GeoJSONIterator(
+        SQL,
+        AQUIFER_CHUNK_SIZE,
+        connection.cursor())
+    response = StreamingHttpResponse(
+        (item for item in iterator),
+        content_type='application/json')
+    return response
+
+
+AQUIFER_EXPORT_FIELDS = [
+    'aquifer_id',
+    'aquifer_name',
+    'location_description',
+    'material',
+    'litho_stratographic_unit',
+    'subtype',
+    'vulnerability',
+    'area',
+    'productivity',
+    'demand',
+    'mapping_year',
+]
+
+
+def csv_export(request):
+    """
+    Export aquifers as CSV. This is done in a vanilla functional Django view instead of DRF,
+    because DRF doesn't have native CSV support.
+    """
+
+    # Create the HttpResponse object with the appropriate CSV header.
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="aquifers.csv"'
+    writer = csv.writer(response)
+    writer.writerow(AQUIFER_EXPORT_FIELDS)
+
+    queryset = _aquifer_qs(request.GET)
+    for aquifer in queryset:
+        writer.writerow([getattr(aquifer, f) for f in AQUIFER_EXPORT_FIELDS])
+
+    return response
+
+
+def xlsx_export(request):
+    """
+    Export aquifers as XLSX.
+    """
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.append(AQUIFER_EXPORT_FIELDS)
+    queryset = _aquifer_qs(request.GET)
+    for aquifer in queryset:
+        ws.append([str(getattr(aquifer, f)) for f in AQUIFER_EXPORT_FIELDS])
+    response = HttpResponse(content=save_virtual_workbook(
+        wb), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=aquifers.xlsx'
+    return response

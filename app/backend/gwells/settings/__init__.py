@@ -67,8 +67,10 @@ FIXTURES_DIRS = [FIXTURES_DIR]
 # When running containerised, GDAL_LIBRARY_PATH and GEOS_LIBRARY_PATH -**MUST**- be specified.
 # For running locally, if you've configured you local system correctly, CUSTOM_GDAL_GEOS may be set to False.
 if get_env_variable('CUSTOM_GDAL_GEOS', 'True', strict=False, warn=False) == 'True':
-    GDAL_LIBRARY_PATH = get_env_variable('GDAL_LIBRARY_PATH', '/usr/local/lib/libgdal.so')
-    GEOS_LIBRARY_PATH = get_env_variable('GEOS_LIBRARY_PATH', '/usr/local/lib/libgeos_c.so')
+    GDAL_LIBRARY_PATH = get_env_variable(
+        'GDAL_LIBRARY_PATH', '/usr/local/lib/libgdal.so')
+    GEOS_LIBRARY_PATH = get_env_variable(
+        'GEOS_LIBRARY_PATH', '/usr/local/lib/libgeos_c.so')
 
 # django-settings-export lets us make these variables available in the templates.
 # This eleminate the need for setting the context for each and every view.
@@ -324,6 +326,8 @@ class DisableMigrations(object):
 
     def __getitem__(self, item):
         return None
+
+
 if get_env_variable('DISABLE_MIGRATIONS', None, strict=False, warn=False) == 'DISABLE_MIGRATIONS':
     MIGRATION_MODULES = DisableMigrations()
 

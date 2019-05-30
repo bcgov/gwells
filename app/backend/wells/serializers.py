@@ -683,6 +683,8 @@ class WellDetailAdminSerializer(AuditModelSerializer):
     # well vs. well_tag_number ; on submissions, we refer to well
     well = serializers.IntegerField(source='well_tag_number')
 
+    legal_pid = serializers.SerializerMethodField()
+
     class Meta:
         model = Well
         fields = '__all__'

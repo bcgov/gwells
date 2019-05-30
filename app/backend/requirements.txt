@@ -10,7 +10,7 @@ django-settings-export>=1.2.1
 djangorestframework>=3.9,<3.10
 djangorestframework-jwt==1.11.0
 django-rest-multiple-models==2.1.0
-requests>=2.21
+requests==2.21.0
 minio>=4.0.16
 coverage>=4.4.2
 django-filter>=2.0.0,<2.1

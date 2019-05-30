@@ -17,18 +17,17 @@ import zipfile
 import os
 
 from django.conf import settings
-from django.contrib.gis.geos.prototypes.io import wkt_w
 
-# Run from command line :
-# python manage.py load_shapefile <folder containing shapefiles>
 from django.core.management.base import BaseCommand
 from django.contrib.gis.gdal import DataSource
-from django.contrib.gis.geos import GEOSGeometry
-from django.contrib.gis import geos
+
 
 import logging
 
 logger = logging.getLogger(__name__)
+
+# Run from command line :
+# python manage.py import_bulk_shapefile <folder containing shapefiles>
 
 
 class Command(BaseCommand):
@@ -44,7 +43,7 @@ class Command(BaseCommand):
         while found_zip:
             found_zip = False
             for root, directories, filenames in os.walk(options['path']):
-                for filename in filenames: 
+                for filename in filenames:
                     if filename.lower().endswith(".zip"):
                         logging.info("unzipping {}".format(filename))
                         zip_ref = zipfile.ZipFile(os.path.join(root, filename))
@@ -52,58 +51,39 @@ class Command(BaseCommand):
                         zip_ref.close()
                         os.remove(os.path.join(root, filename))
                         found_zip = True
-        
+
         # Recursively search for shapefiles and import them.
-        shp_idx = 0
+        self.shp_idx = 0
         for root, directories, filenames in os.walk(options['path']):
-            for filename in filenames: 
+            for filename in filenames:
                 if filename.lower().endswith(".shp"):
                     logging.info("processing shapefile".format(filename))
                     ds = DataSource(os.path.join(root, filename))
                     for layer in ds:
                         for feat in layer:
-                            geom = feat.geom
-                            #logging.debug(' '.join(['{}:{}'.format(f, feat.get(f)) for f in feat.fields]))
-                            if "AQ_NUMBER" not in feat.fields:
-                                logging.info("Feature with no AQ_NUMBER attribute found skipping import.")
-                                continue
+                            self.add_aquifer(feat)
 
-                            # Make a GEOSGeometry object using the string representation.
-                            if not geom.srid == 3005:
-                                logging.info("Non BC-albers feature, skipping.")
-                                continue
+    def add_aquifer(self, feat):
+        if "AQ_NUMBER" not in feat.fields:
+            logging.info(
+                "Feature with no AQ_NUMBER attribute found skipping import.")
+            return
 
-                            aquifer_id = feat.get("AQ_NUMBER")
-                            # In dev environments, just assign these geometries to random aquifers.
-                            if settings.DEBUG:
-                                ct = Aquifer.objects.count() - 1
-                                aquifer = Aquifer.objects.all()[shp_idx % ct:][0]
-                                shp_idx += 1
-                            else:
-                                try:
-                                    aquifer = Aquifer.objects.get(pk=int(aquifer_id))
-                                except Aquifer.DoesNotExist:
-                                    logging.info("Aquifer {} not found in database, skipping import.".format(aquifer_id))
-                                    continue
+        aquifer_id = feat.get("AQ_NUMBER")
+        # In dev environments, just assign these geometries to random aquifers.
+        if settings.DEBUG:
+            ct = Aquifer.objects.count() - 1
+            aquifer = Aquifer.objects.all()[self.shp_idx % ct:][0]
+            self.shp_idx += 1
+        else:
+            try:
+                aquifer = Aquifer.objects.get(pk=int(aquifer_id))
+            except Aquifer.DoesNotExist:
+                logging.info(
+                    "Aquifer {} not found in database, skipping import.".format(aquifer_id))
+                return
 
-                            wkt = wkt_w(dim=2).write( GEOSGeometry(geom.wkt, srid=3005)).decode()
-                            geos_geom = GEOSGeometry(wkt, srid=3005)
-                            if isinstance(geos_geom, geos.MultiPolygon):
-                                geos_geom_out = geos_geom[0]
-                                for g in geos_geom:
-                                    if len(g.wkt) > len(geos_geom_out.wkt):
-                                        geos_geom_out = g
-                            elif isinstance(geos_geom, geos.Polygon):
-                                geos_geom_out = geos_geom
-                            else:
-                                logging.info("Bad geometry type: {}, skipping.".format(geos_geom.__class__))
-                                continue
-                            
-                            try:
-                                aquifer.geom = geos_geom_out
-                            except Exception as e:
-                                logging.info("import failed. {}, droppin into shell for inspection".format(e))
-                                import code; code.interact(local = locals())
-                                sys.exit(1)
+        logging.info('importing {}'.format(aquifer_id))
+        aquifer.update_geom_from_feature(feat)
 
-                            aquifer.save()
+        aquifer.save()
