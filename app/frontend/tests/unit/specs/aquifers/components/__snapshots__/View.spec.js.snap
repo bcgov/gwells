@@ -2,7 +2,7 @@
 
 exports[`View Component Edit mode matches the snapshot 1`] = `
 <div
-  class="card container p-1"
+  class="card container container-wide p-0 card-container pb-5 p-4"
 >
   <!---->
   <!---->
@@ -21,8 +21,12 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
      
     <!---->
      
+    <!---->
+     
+    <!---->
+     
     <div
-      class="container"
+      class="container-fluid"
     >
       <!---->
        
@@ -38,8 +42,6 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
         </div>
       </div>
        
-      <!---->
-       
       <aquifer-form-stub
         fielderrors="[object Object]"
         record="[object Object]"
@@ -49,17 +51,6 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
       <!---->
        
       <!---->
-       
-      <h5
-        class="mt-3 border-bottom"
-      >
-        Documentation
-      </h5>
-       
-      <aquifer-documents-stub
-        editmode="true"
-        files="[object Object]"
-      />
        
       <!---->
     </div>
@@ -71,7 +62,7 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
 
 exports[`View Component View mode matches the snapshot 1`] = `
 <div
-  class="card container p-1"
+  class="card container container-wide p-0 card-container pb-5 p-4"
 >
   <!---->
   <!---->
@@ -90,8 +81,12 @@ exports[`View Component View mode matches the snapshot 1`] = `
      
     <!---->
      
+    <!---->
+     
+    <!---->
+     
     <div
-      class="container"
+      class="container-fluid"
     >
       <!---->
        
@@ -107,8 +102,6 @@ exports[`View Component View mode matches the snapshot 1`] = `
         </div>
       </div>
        
-      <!---->
-       
       <aquifer-form-stub
         fielderrors="[object Object]"
         record="[object Object]"
@@ -118,17 +111,6 @@ exports[`View Component View mode matches the snapshot 1`] = `
       <!---->
        
       <!---->
-       
-      <h5
-        class="mt-3 border-bottom"
-      >
-        Documentation
-      </h5>
-       
-      <aquifer-documents-stub
-        editmode="true"
-        files="[object Object]"
-      />
        
       <!---->
     </div>

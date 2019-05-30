@@ -695,6 +695,7 @@ class Well(AuditModelStructure):
                                                 on_delete=models.CASCADE,
                                                 verbose_name='Well Publication Status',
                                                 default='Published')
+    licences = models.ManyToManyField('aquifers.WaterRightsLicence')
     licenced_status = models.ForeignKey(
         LicencedStatusCode, db_column='licenced_status_code',
         on_delete=models.CASCADE, blank=True, null=True,

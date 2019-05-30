@@ -242,6 +242,15 @@
             value-field="code"
             text-field="description"/>
         </b-form-group>
+        <b-form-group
+          horizontal
+          label-cols="4"
+          description="Please upload a shapefile containing only this aqufier in ZIP format."
+          label="Shapefile">
+          <b-form-file
+            v-model="shape"/>
+        </b-form-group>
+
       </b-col>
     </b-row>
 
@@ -251,8 +260,8 @@
         <b-form-group
           label="Section"
           label-for="section"
-          :invalid-feedback="fieldErrorMessages.section"
-          :state="fieldHasError.section">
+          :invalid-feedback="resourceErrorMessages[index].section"
+          :state="!resourceErrorMessages[index].section">
           <b-form-select
             v-model="resource.section_code"
             :options="['-- Section --'].concat(aquifer_resource_sections)"
@@ -264,8 +273,8 @@
         <b-form-group
           label="Document Name"
           label-for="name"
-          :invalid-feedback="fieldErrorMessages.name"
-          :state="fieldHasError.name">
+          :invalid-feedback="resourceErrorMessages[index].name"
+          :state="!resourceErrorMessages[index].name">
           <b-form-input
             type="text"
             v-model="resource.name"/>
@@ -275,8 +284,8 @@
         <b-form-group
           label="Document URL"
           label-for="url"
-          :invalid-feedback="fieldErrorMessages.url"
-          :state="fieldHasError.url">
+          :invalid-feedback="resourceErrorMessages[index].url"
+          :state="!resourceErrorMessages[index].url">
           <b-form-input
             type="text"
             v-model="resource.url"/>
@@ -346,8 +355,22 @@ import { mapMutations, mapState } from 'vuex'
 
 export default {
   computed: {
+    resourceErrorMessages () {
+      let messages
+      if (this.fieldErrors.resources) {
+        console.log(JSON.stringify(this.fieldErrors.resources))
+        messages = this.fieldErrors.resources.map((resource) => {
+          return mapValues(resource, (messages) => messages.join(','))
+        })
+      } else {
+        messages = this.record.resources.map(function (r) {
+          return {}
+        })
+      }
+      return messages
+    },
     fieldErrorMessages () {
-      return mapValues(this.fieldErrors, (messages) => messages.join(', '))
+      return mapValues(this.fieldErrors, (messages) => messages.join(','))
     },
     fieldHasError () {
       return mapValues(this.fieldErrors, (messages) => isEmpty(messages))
@@ -358,6 +381,14 @@ export default {
       },
       set: function (value) {
         this.setFiles(value)
+      }
+    },
+    shape: {
+      get: function () {
+        return this.shapefile
+      },
+      set: function (value) {
+        this.setShapefile(value)
       }
     },
     privateDocument: {
@@ -380,7 +411,8 @@ export default {
     ]),
     ...mapState('documentState', [
       'isPrivate',
-      'upload_files'
+      'upload_files',
+      'shapefile'
     ])
   },
 
@@ -393,7 +425,8 @@ export default {
     ...mapMutations('aquiferCodes', ['addCodes']),
     ...mapMutations('documentState', [
       'setFiles',
-      'setPrivate'
+      'setPrivate',
+      'setShapefile'
     ]),
     handleAddResource () {
       this.record.resources.push({

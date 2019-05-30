@@ -25,6 +25,16 @@ urlpatterns = [
         name='aquifers-list-create'
         ),
 
+    url(r'^api/v1/aquifers/csv$',
+        never_cache(views.csv_export),
+        name='aquifers-list-csv'
+        ),
+
+    url(r'^api/v1/aquifers/xlsx$',
+        never_cache(views.xlsx_export),
+        name='aquifers-list-xlsx'
+        ),
+
     url(r'^api/v1/aquifers/names$',
         never_cache(views.AquiferNameList.as_view()),
         name='aquifer-name-list'
@@ -51,8 +61,13 @@ urlpatterns = [
     url(r'^api/v1/aquifers/(?P<aquifer_id>[0-9]+)/delete_document$',
         never_cache(views.DeleteAquiferDocument.as_view()), name='aquifer-delete-document'),
 
+    # Shapefile (aquifer geometry)
+    url(r'^api/v1/aquifers/(?P<aquifer_id>[0-9]+)/geometry$',
+        never_cache(views.SaveAquiferGeometry.as_view()), name='aquifer-save-geometry'),
+
     url(r'^api/v1/aquifers/sections$',
-        cache_page(CACHE_TTL)(views.AquiferResourceSectionListAPIView.as_view()),
+        cache_page(CACHE_TTL)(
+            views.AquiferResourceSectionListAPIView.as_view()),
         name='aquifer-section-list'
         ),
 
@@ -90,6 +105,8 @@ urlpatterns = [
         cache_page(CACHE_TTL)(views.WaterUseListAPIView.as_view()),
         name='aquifer-water-use-code-list'
         ),
+    url(r'^api/v1/gis/aquifers-simplified$',
+        views.aquifer_geojson_simplified, name='aquifer-geojson-simplified'),
 
     # GeoJSON aquifers endpoint for DataBC.
     url(r'^api/v1/gis/aquifers$',

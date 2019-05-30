@@ -83,6 +83,34 @@ npm run test:unit
 Postman API tests:
 Import the json test collections in the `api-tests/` folder into [Postman](https://www.getpostman.com/).
 
+### Import a Shapefile
+
+Single shapefile, with aquifer ID specified in CLI.
+
+```
+docker-compose exec backend python manage.py import_shapefile 2 aquifers/fixtures/shp/shapefile.zip
+```
+
+Bulk import, requires the AQ_NUMBER attribute on each polygon. Requires a folder with shapefiles to be prepared and passed in (zipped or not). Note: if DEBUG=True, all geometries will be uploaded to a random aquifer instead of the one matching its' number, so we can test locally with a development database.
+
+```
+mkdir app/backend/bulk
+mv DATABC_EXPORT_FILE.zip app/backend/bulk/
+
+docker-compose exec backend python manage.py import_bulk_shapefile bulk
+```
+
+### Importing Licences
+
+To download new licence data from DataBC and merge it into your DB, do 
+
+```
+docker-compose exec backend python manage.py import_licences
+```
+
+## Contributing
+
+Please see [CONTRIBUTING.md](https://github.com/bcgov/gwells/blob/master/CONTRIBUTING.md)
 ### Making pull requests
 
 Pull requests made from branches in the bcgov/gwells repo will kick off a dev pipeline, which runs tests and deploys a preview environment containing your changes.  The pull request page will update when the environment is deployed and mandatory checks (unit tests, etc.) pass or fail.

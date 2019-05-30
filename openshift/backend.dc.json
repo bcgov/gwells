@@ -165,7 +165,7 @@
                 "strategy": {
                     "type": "Recreate",
                     "recreateParams": {
-                        "timeoutSeconds": 180,
+                        "timeoutSeconds": 900,
                         "pre": {
                             "failurePolicy": "Retry",
                             "execNewPod": {
