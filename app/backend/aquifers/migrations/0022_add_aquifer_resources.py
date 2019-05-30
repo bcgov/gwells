@@ -41,15 +41,5 @@ class Migration(migrations.Migration):
         ('aquifers', '0021_auto_20190502_0551'),
     ]
 
+    # removing operations from this migration...TODO: squash this migration.
     operations = []
-
-    # TODO: we have a large set of production aquifer resources we're attempting to import mid-migrations.
-    # This methodology presents a dilemma because these resources only work if the entire production aquifer dataset is present,
-    # not the case on dev or test. What should we do?
-    if not settings.DEBUG and not TESTING:
-        operations.append(
-            migrations.RunPython(
-                aquifer_resources().load_fixture,
-                reverse_code=aquifer_resources().unload_fixture
-            )
-        )
