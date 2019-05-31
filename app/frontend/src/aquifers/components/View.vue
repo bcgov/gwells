@@ -98,23 +98,23 @@
               </li>
               <li>
                 <dt>Vulnerability</dt>
-                <dd>{{record.vulnerability}}</dd>
+                <dd>{{getCodeDescription('vulnerability_codes', record.vulnerability)}}</dd>
               </li>
               <li>
                 <dt>Material type</dt>
-                <dd>{{record.material}}</dd>
+                <dd>{{getCodeDescription('material_codes', record.material)}}</dd>
               </li>
               <li>
                 <dt>Subtype</dt>
-                <dd>{{record.subtype}}</dd>
+                <dd>{{getCodeDescription('subtype_codes', record.subtype)}}</dd>
               </li>
               <li>
                 <dt>Quality concerns</dt>
-                <dd>{{record.quality_concern}}</dd>
+                <dd>{{getCodeDescription('quality_concern_codes', record.quality_concern)}}</dd>
               </li>
               <li>
                 <dt>Productivity</dt>
-                <dd>{{record.productivity}}</dd>
+                <dd>{{getCodeDescription('productivity_codes', record.productivity)}}</dd>
               </li>
               <li>
                 <dt>Size (km²)</dt>
@@ -122,7 +122,7 @@
               </li>
               <li>
                 <dt>Demand</dt>
-                <dd>{{record.demand}}</dd>
+                <dd>{{getCodeDescription('demand_codes', record.demand)}}</dd>
               </li>
               </ul>
             </b-col>
@@ -324,7 +324,7 @@ import AquiferForm from './Form'
 import Documents from './Documents.vue'
 import SingleAquiferMap from './SingleAquiferMap.vue'
 import ChangeHistory from '@/common/components/ChangeHistory.vue'
-import { mapActions, mapGetters, mapState } from 'vuex'
+import { mapActions, mapMutations, mapGetters, mapState } from 'vuex'
 import { sumBy } from 'lodash'
 import PieChart from './PieChart.vue'
 export default {
@@ -344,6 +344,7 @@ export default {
     this.fetch()
     this.fetchFiles()
     this.fetchResourceSections()
+    this.fetchCodes()
   },
   data () {
     return {
@@ -379,6 +380,15 @@ export default {
       'shapefile_uploading',
       'shapefile_upload_message',
       'shapefile_upload_success'
+    ]),
+    ...mapState('aquiferCodes', [
+      'demand_codes',
+      'known_water_use_codes',
+      'material_codes',
+      'productivity_codes',
+      'quality_concern_codes',
+      'subtype_codes',
+      'vulnerability_codes'
     ])
   },
   watch: {
@@ -403,12 +413,14 @@ export default {
     }
   },
   methods: {
+    ...mapMutations('aquiferCodes', ['addCodes']),
     ...mapActions('documentState', [
       'uploadFiles',
       'uploadShapefile',
       'fileUploadSuccess',
       'fileUploadFail'
     ]),
+
     fetchWells (id = this.id) {
       ApiService.query(`aquifers/${id}/details`)
         .then((response) => {
@@ -553,6 +565,32 @@ export default {
     },
     getEMSLink () {
       return `https://apps.nrs.gov.bc.ca/gwells/?match_any=false&ems_has_value=true&aquifer=${this.record['aquifer_id']}#advanced`
+    },
+    getCodeDescription (attr, pk) {
+      if (!pk) {return ''}
+      var code = this[attr].filter(function(item){
+        return item.code === pk
+      })[0];
+      if (code) {
+        return code.description
+      } else {
+        console.error('no code for', attr, pk)
+      }
+    },
+    fetchCode (codePath, key) {
+      ApiService.query(codePath).then((response) => {
+        this.addCodes({key, codeTable: response.data.results})
+      })
+    },
+    fetchCodes () {
+      this.fetchCode('aquifers/sections', 'aquifer_resource_sections')
+      this.fetchCode('aquifer-codes/materials', 'material_codes')
+      this.fetchCode('aquifer-codes/quality-concerns', 'quality_concern_codes')
+      this.fetchCode('aquifer-codes/vulnerability', 'vulnerability_codes')
+      this.fetchCode('aquifer-codes/subtypes', 'subtype_codes')
+      this.fetchCode('aquifer-codes/productivity', 'productivity_codes')
+      this.fetchCode('aquifer-codes/demand', 'demand_codes')
+      this.fetchCode('aquifer-codes/water-use', 'known_water_use_codes')
     }
   }}
 </script>

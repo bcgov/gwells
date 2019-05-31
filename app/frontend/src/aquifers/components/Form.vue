@@ -437,25 +437,8 @@ export default {
     },
     handleDeleteResource (i) {
       this.record.resources.splice(i, 1)
-    },
-    fetchCode (codePath, key) {
-      ApiService.query(codePath).then((response) => {
-        this.addCodes({key, codeTable: response.data.results})
-      })
-    },
-    fetchCodes () {
-      this.fetchCode('aquifers/sections', 'aquifer_resource_sections')
-      this.fetchCode('aquifer-codes/materials', 'material_codes')
-      this.fetchCode('aquifer-codes/quality-concerns', 'quality_concern_codes')
-      this.fetchCode('aquifer-codes/vulnerability', 'vulnerability_codes')
-      this.fetchCode('aquifer-codes/subtypes', 'subtype_codes')
-      this.fetchCode('aquifer-codes/productivity', 'productivity_codes')
-      this.fetchCode('aquifer-codes/demand', 'demand_codes')
-      this.fetchCode('aquifer-codes/water-use', 'known_water_use_codes')
     }
-  },
-  created () {
-    this.fetchCodes()
+
   }
 }
 </script>

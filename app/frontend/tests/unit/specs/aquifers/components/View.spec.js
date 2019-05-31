@@ -68,7 +68,8 @@ describe('View Component', () => {
         },
         fetchResourceSections () {
           this.aquifer_resource_sections = []
-        }
+        },
+        fetchCodes () { }
       }
     })
 
@@ -87,7 +88,7 @@ describe('View Component', () => {
           }
         },
         methods: {
-          fetch () {},
+          fetch () { },
           fetchFiles () {
             return {
               public: [],
@@ -96,7 +97,8 @@ describe('View Component', () => {
           },
           fetchResourceSections () {
             this.aquifer_resource_sections = []
-          }
+          },
+          fetchCodes () { }
         },
         propsData: { edit: true }
       })
@@ -114,7 +116,7 @@ describe('View Component', () => {
           }
         },
         methods: {
-          fetch () {},
+          fetch () { },
           fetchFiles () {
             return {
               public: [],
@@ -123,7 +125,8 @@ describe('View Component', () => {
           },
           fetchResourceSections () {
             this.aquifer_resource_sections = []
-          }
+          },
+          fetchCodes () { }
         },
         propsData: { edit: true }
       })
@@ -141,7 +144,7 @@ describe('View Component', () => {
             }
           },
           methods: {
-            fetch () {},
+            fetch () { },
             fetchFiles () {
               return {
                 public: [],
@@ -151,7 +154,8 @@ describe('View Component', () => {
             fetchResourceSections () {
               this.aquifer_resource_sections = []
             },
-            navigateToView () {}
+            navigateToView () { },
+            fetchCodes () { }
           }
         })
 
@@ -171,7 +175,7 @@ describe('View Component', () => {
             }
           },
           methods: {
-            fetch () {},
+            fetch () { },
             fetchFiles () {
               return {
                 public: [],
@@ -181,7 +185,8 @@ describe('View Component', () => {
             fetchResourceSections () {
               this.aquifer_resource_sections = []
             },
-            navigateToView () {}
+            navigateToView () { },
+            fetchCodes () { }
           },
           propsData: { edit: true }
         })
@@ -194,7 +199,7 @@ describe('View Component', () => {
       it('sends a patch with the contents of record on save', () => {
         const wrapper = component({
           methods: {
-            fetch () {},
+            fetch () { },
             fetchFiles () {
               return {
                 public: [],
@@ -204,7 +209,8 @@ describe('View Component', () => {
             fetchResourceSections () {
               this.aquifer_resource_sections = []
             },
-            navigateToView () {}
+            navigateToView () { },
+            fetchCodes () { }
           },
           computed: {
             id () {
