@@ -137,6 +137,18 @@ class WellSubmissionSerializerBase(AuditModelSerializer):
             if len(attrs['longitude']) <= 0:
                 errors['longitude'] = 'Latitude and Longitude are both required.'
 
+        if 'construction_start_date' in attrs and 'construction_end_date' in attrs:
+            if attrs.get('construction_start_date') > attrs.get('construction_end_date'):
+                errors['construction_start_date'] = 'Construction start date must be before end date'
+
+        if attrs.get('alteration_start_date', None) and attrs.get('alteration_end_date', None):
+            if attrs.get('alteration_start_date') > attrs.get('alteration_end_date'):
+                errors['alteration_start_date'] = 'Alteration start date must be before end date'
+
+        if 'decommission_start_date' in attrs and 'decommission_end_date' in attrs:
+            if attrs.get('decommission_start_date') > attrs.get('decommission_end_date'):
+                errors['decommission_start_date'] = 'Decommission start date must be before end date'
+
         if len(errors) > 0:
             raise serializers.ValidationError(errors)
 
