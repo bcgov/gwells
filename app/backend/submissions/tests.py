@@ -383,7 +383,7 @@ class TestEdit(TestSubmissionsBase):
         # field.
         Casing.objects.create(
             well=well, start=0, end=10, diameter=6.63, casing_code=self.casing_code_surface,
-            casing_material=self.casing_material_code_other, drive_shoe=None, wall_thickness=0.22,
+            casing_material=self.casing_material_code_other, drive_shoe_status=None, wall_thickness=0.22,
             create_user='Blah', update_user='Blah')
         # Test for bug relating to edit submission with casing set. Our new casing has a drive shoe, which
         # is correct, so we should be able to submit this record just fine.
@@ -400,7 +400,7 @@ class TestEdit(TestSubmissionsBase):
                     'diameter': '6.630',
                     'casing_code': 'SURFACE',
                     'casing_material': 'OTHER',
-                    'drive_shoe': True,
+                    'drive_shoe_status': 'Installed',
                     'wall_thickness': '0.220'
                 }
             ],

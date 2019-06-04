@@ -63,7 +63,6 @@ class CasingSummarySerializer(serializers.ModelSerializer):
     """Serializes casings for well summary (using descriptions instead of codes)"""
     casing_material = serializers.ReadOnlyField(source='casing_material.description')
     casing_code = serializers.ReadOnlyField(source='casing_code.description')
-    drive_shoe = serializers.ReadOnlyField(source='get_drive_shoe_display')
 
     class Meta:
         model = Casing
@@ -73,7 +72,7 @@ class CasingSummarySerializer(serializers.ModelSerializer):
             'diameter',
             'casing_code',
             'casing_material',
-            'drive_shoe',
+            'drive_shoe_status',
             'wall_thickness'
         )
 
@@ -87,7 +86,7 @@ class CasingSerializer(serializers.ModelSerializer):
             'diameter',
             'casing_code',
             'casing_material',
-            'drive_shoe',
+            'drive_shoe_status',
             'wall_thickness'
         )
         extra_kwargs = {
@@ -106,7 +105,7 @@ class CasingStackerSerializer(serializers.ModelSerializer):
             'diameter',
             'casing_code',
             'casing_material',
-            'drive_shoe',
+            'drive_shoe_status',
             'wall_thickness',
             'create_user',
             'update_user'
@@ -138,7 +137,7 @@ class LegacyCasingSerializer(serializers.ModelSerializer):
             'diameter',
             'casing_code',
             'casing_material',
-            'drive_shoe',
+            'drive_shoe_status',
             'wall_thickness'
         )
         extra_kwargs = {
@@ -147,7 +146,7 @@ class LegacyCasingSerializer(serializers.ModelSerializer):
             'diameter': {'required': False},
             'casing_code': {'required': False},
             'casing_material': {'required': False},
-            'drive_shoe': {'required': False, 'allow_null': True},
+            'drive_shoe_status': {'required': False, 'allow_null': True},
             'wall_thickness': {'required': False}
         }
 

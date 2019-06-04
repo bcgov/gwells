@@ -198,6 +198,23 @@ class WellDisinfectedCode(CodeTableModel):
         return self.description
 
 
+class DriveShoeCode(CodeTableModel):
+    """
+     The status on whether a casing has a drive shoe installed.
+    """
+    drive_shoe_code = models.CharField(primary_key=True, max_length=100, editable=False)
+    description = models.CharField(max_length=100)
+
+    class Meta:
+        db_table = 'drive_shoe_code'
+        ordering = ['display_order', 'description']
+
+    db_table_comment = ('Codes for drive shoe installation on a casing.')
+
+    def __str__(self):
+        return self.description
+
+
 class FilterPackMaterialCode(CodeTableModel):
     """
      The material used to pack a well filter, e.g. Very coarse sand, Very fine gravel, Fine gravel.
@@ -1918,7 +1935,7 @@ class ActivitySubmissionLinerPerforation(PerforationBase):
 
 
 @reversion.register(fields=['start', 'end', 'diameter', 'casing_code',
-                            'casing_material', 'wall_thickness', 'drive_shoe'])
+                            'casing_material', 'wall_thickness', 'drive_shoe_status'])
 class Casing(AuditModel):
     """
     Casing information
@@ -1959,6 +1976,9 @@ class Casing(AuditModel):
                                          validators=[MinValueValidator(Decimal('0.01'))])
     drive_shoe = models.NullBooleanField(default=False, null=True, verbose_name='Drive Shoe',
                                          choices=((False, 'No'), (True, 'Yes')))
+    drive_shoe_status = models.ForeignKey(DriveShoeCode, db_column='drive_shoe_code',
+                                                on_delete=models.CASCADE, blank=True, null=True,
+                                                verbose_name='Drive Shoe Code')
 
     class Meta:
         ordering = ["start", "end"]
@@ -1983,7 +2003,7 @@ class Casing(AuditModel):
             "diameter": self.diameter,
             "wall_thickness": self.wall_thickness,
             "casing_material": self.casing_material,
-            "drive_shoe": self.drive_shoe
+            "drive_shoe_status": self.drive_shoe_status
         }
 
 

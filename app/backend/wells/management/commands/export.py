@@ -230,7 +230,7 @@ class Command(BaseCommand):
         # CASING
         ########
         casing_sql = ("""select casing.well_tag_number, casing_from, casing_to, casing.diameter, casing_code,
- casing_material_code, wall_thickness, drive_shoe
+ casing_material_code, wall_thickness, drive_shoe_code
  from casing
  inner join well on well.well_tag_number = casing.well_tag_number
  where well.well_publication_status_code = 'Published' or well.well_publication_status_code = null
