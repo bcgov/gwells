@@ -87,7 +87,7 @@ class CasingSerializer(serializers.ModelSerializer):
             'diameter',
             'casing_code',
             'casing_material',
-            'drive_shoe',
+            'drive_shoe_status',
             'wall_thickness'
         )
         extra_kwargs = {
@@ -106,7 +106,7 @@ class CasingStackerSerializer(serializers.ModelSerializer):
             'diameter',
             'casing_code',
             'casing_material',
-            'drive_shoe',
+            'drive_shoe_status',
             'wall_thickness',
             'create_user',
             'update_user'
@@ -138,7 +138,7 @@ class LegacyCasingSerializer(serializers.ModelSerializer):
             'diameter',
             'casing_code',
             'casing_material',
-            'drive_shoe',
+            'drive_shoe_status',
             'wall_thickness'
         )
         extra_kwargs = {
@@ -147,7 +147,7 @@ class LegacyCasingSerializer(serializers.ModelSerializer):
             'diameter': {'required': False},
             'casing_code': {'required': False},
             'casing_material': {'required': False},
-            'drive_shoe': {'required': False, 'allow_null': True},
+            'drive_shoe_status': {'required': False, 'allow_null': True},
             'wall_thickness': {'required': False}
         }
 
