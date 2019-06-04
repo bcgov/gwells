@@ -8,7 +8,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('aquifers', '0021_auto_20190502_0551'),
-        ('wells', '0079_auto_20190506_1959'),
+        ('wells', '0001_squashed_0079_auto_20190506_1959'),
     ]
 
     operations = [
