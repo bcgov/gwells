@@ -1935,7 +1935,7 @@ class ActivitySubmissionLinerPerforation(PerforationBase):
 
 
 @reversion.register(fields=['start', 'end', 'diameter', 'casing_code',
-                            'casing_material', 'wall_thickness', 'drive_shoe'])
+                            'casing_material', 'wall_thickness', 'drive_shoe_status'])
 class Casing(AuditModel):
     """
     Casing information
@@ -2003,7 +2003,7 @@ class Casing(AuditModel):
             "diameter": self.diameter,
             "wall_thickness": self.wall_thickness,
             "casing_material": self.casing_material,
-            "drive_shoe": self.drive_shoe
+            "drive_shoe_status": self.drive_shoe_status
         }
 
 

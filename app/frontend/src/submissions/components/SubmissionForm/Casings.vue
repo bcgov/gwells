@@ -121,12 +121,14 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 :loaded="getFieldsLoaded(index).wall_thickness"/>
             </td>
             <td class="pt-0 py-0">
-              <b-form-group
-                :id="'casingDriveShoe_' + index">
+              <b-form-group :id="'casingDriveShoe_' + index">
                 <b-form-select
-                  v-model="casing.drive_shoe"
-                  :options="[true, false]"
-                  :description="['True', 'False']">
+                  v-model="casing.drive_shoe_status"
+                  value-field="drive_shoe_code"
+                  text-field="drive_shoe_code"
+                  :options="codes.drive_shoe_codes"
+                  :errors="errors['drive_shoe_status']"
+                  :loaded="fieldsLoaded['drive_shoe_status']">
                 </b-form-select>
               </b-form-group>
             </td>

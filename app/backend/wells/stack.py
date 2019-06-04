@@ -101,6 +101,7 @@ MANY_TO_MANY_LOOKUP = {
 KEY_VALUE_LOOKUP = {
     'well_publication_status': 'well_publication_status_code',
     'well_disinfected_status': 'well_disinfected_code',
+    'drive_shoe_status': 'drive_shoe_code',
     'owner_province_state': 'province_state_code',
     'well_class': 'well_class_code',
     'well_subclass': 'well_subclass_guid',

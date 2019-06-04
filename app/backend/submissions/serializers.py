@@ -54,6 +54,7 @@ from wells.models import (
     DevelopmentMethodCode,
     DrillingMethodCode,
     WellDisinfectedCode,
+    DriveShoeCode,
     FilterPackMaterialCode,
     FilterPackMaterialSizeCode,
     GroundElevationMethodCode,
@@ -751,6 +752,14 @@ class WellDisinfectedCodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = WellDisinfectedCode
         fields = ('well_disinfected_code', 'description')
+
+
+class DriveShoeCodeSerializer(serializers.ModelSerializer):
+    """Serializes Drive Shoe codes/descriptions"""
+
+    class Meta:
+        model = DriveShoeCode
+        fields = ('drive_shoe_code', 'description')
 
 
 class FilterPackMaterialCodeSerializer(serializers.ModelSerializer):

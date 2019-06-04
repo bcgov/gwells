@@ -63,7 +63,6 @@ class CasingSummarySerializer(serializers.ModelSerializer):
     """Serializes casings for well summary (using descriptions instead of codes)"""
     casing_material = serializers.ReadOnlyField(source='casing_material.description')
     casing_code = serializers.ReadOnlyField(source='casing_code.description')
-    drive_shoe = serializers.ReadOnlyField(source='get_drive_shoe_display')
 
     class Meta:
         model = Casing
@@ -73,7 +72,7 @@ class CasingSummarySerializer(serializers.ModelSerializer):
             'diameter',
             'casing_code',
             'casing_material',
-            'drive_shoe',
+            'drive_shoe_status',
             'wall_thickness'
         )
 
