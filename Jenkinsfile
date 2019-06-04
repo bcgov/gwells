@@ -96,58 +96,9 @@ def _openshift(String name, String project, Closure body) {
 // Can be limited by assinging toTest var
 def functionalTest (String stageName, String stageUrl, String envSuffix, String toTest='all') {
     _openshift(env.STAGE_NAME, toolsProject) {
-        echo "Testing"
-        // these functional tests are commented out on this branch
-        // because we are not loading the page that the tests run against.
-
-        // podTemplate(
-        //     label: "bddstack-${ENV_SUFFIX}-${PR_NUM}",
-        //     name: "bddstack-${ENV_SUFFIX}-${PR_NUM}",
-        //     serviceAccount: 'jenkins',
-        //     cloud: 'openshift',
-        //     containers: [
-        //         containerTemplate(
-        //             name: 'jnlp',
-        //             image: 'docker-registry.default.svc:5000/bcgov/jenkins-slave-bddstack:v1-stable',
-        //             resourceRequestCpu: '800m',
-        //             resourceLimitCpu: '800m',
-        //             resourceRequestMemory: '4Gi',
-        //             resourceLimitMemory: '4Gi',
-        //             workingDir: '/home/jenkins',
-        //             command: '',
-        //             args: '${computer.jnlpmac} ${computer.name}',
-        //             envVars: [
-        //                 envVar(key:'BASE_URL', value: BASE_URL),
-        //                 envVar(key:'OPENSHIFT_JENKINS_JVM_ARCH', value: 'x86_64')
-        //             ]
-        //         )
-        //     ],
-        //     volumes: [
-        //         persistentVolumeClaim(
-        //             mountPath: '/var/cache/artifacts',
-        //             claimName: 'cache',
-        //             readOnly: false
-        //         )
-        //     ]
-        // ) {
-        //     node("bddstack-${ENV_SUFFIX}-${PR_NUM}") {
-        //         //the checkout is mandatory, otherwise functional tests would fail
-        //         echo "checking out source"
-        //         checkout scm
-        //         dir('tests/functional-tests') {
-        //             try {
-        //                 echo "BASE_URL = ${BASE_URL}"
-        //                 if ('all'.equalsIgnoreCase(toTest)) {
-        //                     sh './gradlew chromeHeadlessTest'
-        //                 } else {
-        //                     sh "./gradlew -DchromeHeadlessTest.single=${toTest} chromeHeadlessTest"
-        //                 }
-        //             } catch (error) {
-        //                 echo error
-        //             }
-        //         }
-        //     }
-        // }
+        // These functional tests are removed because we are no longer loading the page(s)
+        // that the previous tests ran against.
+        // This is a placeholder for a new task, starting with a basic smoke test.
     }
     return true
 }
