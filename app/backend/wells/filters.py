@@ -226,7 +226,6 @@ class WellListFilter(AnyOrAllFilterSet):
     testing_method = filters.CharFilter(lookup_expr='icontains')
     testing_duration = filters.RangeFilter()
     analytic_solution_type = filters.RangeFilter()
-    boundary_effect = filters.RangeFilter()
     final_casing_stick_up = filters.RangeFilter()
     bedrock_depth = filters.RangeFilter()
     static_water_level = filters.RangeFilter()

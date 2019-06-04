@@ -192,7 +192,7 @@ class Command(BaseCommand):
  ems,
  registries_person.surname as person_responsible,
  registries_organization.name as company_of_person_responsible,
- aquifer_id
+ aquifer_id, boundary_effect_code
  from well
  left join well_subclass_code as wsc on wsc.well_subclass_guid = well.well_subclass_guid
  left join drilling_company on
