@@ -29,7 +29,7 @@ from gwells.models.lithology import (
     LithologyColourCode, LithologyHardnessCode,
     LithologyMaterialCode, LithologyMoistureCode, LithologyDescriptionCode)
 
-from wells.models import Well, ActivitySubmission, WellActivityCode
+from wells.models import Well, ActivitySubmission, WellActivityCode, FieldsProvided
 from wells.serializers import (
     ActivitySubmissionLinerPerforationSerializer,
     CasingSerializer,
@@ -54,6 +54,7 @@ from wells.models import (
     DevelopmentMethodCode,
     DrillingMethodCode,
     WellDisinfectedCode,
+    DriveShoeCode,
     FilterPackMaterialCode,
     FilterPackMaterialSizeCode,
     GroundElevationMethodCode,
@@ -121,6 +122,48 @@ class WellSubmissionSerializerBase(AuditModelSerializer):
     def get_well_activity_type(self):
         raise NotImplementedError()  # Implement in base class!
 
+    def validate(self, attrs):
+        errors = {}
+        # Check ground elevation fields for mutual requirement
+        if 'ground_elevation' in attrs or 'ground_elevation_method' in attrs:
+            if attrs.get('ground_elevation', None) is None and attrs.get('ground_elevation_method', None) is not None:
+                if attrs['ground_elevation_method'].description != 'Unknown':
+                    errors['ground_elevation'] = 'Both ground elevation and method are required.'
+            if attrs.get('ground_elevation', None) is not None and attrs.get('ground_elevation_method', None) is None:
+                errors['ground_elevation_method'] = 'Both ground elevation and method are required.'
+        # Check latitude longitude for mutual requirement
+        if 'latitude' in attrs or 'longitude' in attrs:
+            if len(attrs['latitude']) <= 0:
+                errors['latitude'] = 'Latitude and Longitude are both required.'
+            if len(attrs['longitude']) <= 0:
+                errors['longitude'] = 'Latitude and Longitude are both required.'
+
+        if 'construction_start_date' in attrs or 'construction_end_date' in attrs:
+            if attrs.get('construction_start_date', None) is None or attrs.get('construction_end_date', None) is None:
+                errors['construction_start_date'] = 'Both construction start date and end date are required.'
+            else:
+                if attrs.get('construction_start_date') > attrs.get('construction_end_date'):
+                    errors['construction_start_date'] = 'Construction start date must be before end date'
+
+        if 'alteration_start_date' in attrs or 'alteration_end_date' in attrs:
+            if attrs.get('alteration_start_date', None) is None or attrs.get('alteration_end_date', None) is None:
+                errors['alteration_start_date'] = 'Both alteration start date and end date are required.'
+            else:
+                if attrs.get('alteration_start_date') > attrs.get('alteration_end_date'):
+                    errors['alteration_start_date'] = 'Alteration start date must be before end date'
+
+        if 'decommission_start_date' in attrs and 'decommission_end_date' in attrs:
+            if attrs.get('decommission_start_date', None) is None or attrs.get('decommission_end_date', None) is None:
+                errors['decommission_start_date'] = 'Both decommission start date and end date are required.'
+            else:
+                if attrs.get('decommission_start_date') > attrs.get('decommission_end_date'):
+                    errors['decommission_start_date'] = 'Decommission start date must be before end date'
+
+        if len(errors) > 0:
+            raise serializers.ValidationError(errors)
+
+        return attrs
+
     @transaction.atomic
     def create(self, validated_data):
         try:
@@ -132,12 +175,21 @@ class WellSubmissionSerializerBase(AuditModelSerializer):
             # Create submission.
             validated_data['well_activity_type'] = self.get_well_activity_type()
 
+            data = None
+
             if self.context.get('request', None):
                 data = self.context['request'].data
+
                 # Convert lat long values into geom object stored on model
                 # Values are BC Albers. but we are using WGS84 Lat Lon to avoid rounding errors
-                if data.get('latitude', None) and data.get('longitude', None):
-                    validated_data['geom'] = Point(data['longitude'], data['latitude'], srid=4326)
+                if 'latitude' in data and 'longitude' in data:
+                    if data.get('latitude') == '' and data.get('longitude') == '':
+                        validated_data['geom'] = None
+                        data['geom'] = None
+                    else:
+                        point = Point(data['longitude'], data['latitude'], srid=4326)
+                        validated_data['geom'] = point
+                        data['geom'] = point
 
             # Remove the latitude and longitude fields if they exist
             validated_data.pop('latitude', None)
@@ -150,6 +202,13 @@ class WellSubmissionSerializerBase(AuditModelSerializer):
                     well_yield_unit_code='USGPM')
 
             instance = super().create(validated_data)
+
+            # keep a map of the fields that were provided in the activity report submission
+            if data and self.get_well_activity_type() == WellActivityCode.types.staff_edit():
+                edited_fields_data = {k: True for k in data.keys() if k in [field.name for field in FieldsProvided._meta.get_fields()]}
+                edited_fields = FieldsProvided(activity_submission=instance, **edited_fields_data)
+                edited_fields.save()
+
             # Create foreign key records.
             for key, value in foreign_keys_data.items():
                 if value:
@@ -457,21 +516,6 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
     lithologydescription_set = LithologyDescriptionSerializer(
         many=True, required=False)
 
-    def validate(self, attrs):
-        # Check ground elevation fields for mutual requirement
-        if 'ground_elevation' in attrs or 'ground_elevation_method' in attrs:
-            errors = {}
-            if attrs['ground_elevation'] is None and attrs['ground_elevation_method'] is not None:
-                if attrs['ground_elevation_method'].description != 'Unknown':
-                    errors['ground_elevation'] = 'Both ground elevation and method are required.'
-            if attrs['ground_elevation'] is not None and attrs['ground_elevation_method'] is None:
-                errors['ground_elevation_method'] = 'Both ground elevation and method are required.'
-
-            if len(errors) > 0:
-                raise serializers.ValidationError(errors)
-
-        return attrs
-
     # Sets person_responsible and company_of back to object, otherwise client view only gets guid
     def to_representation(self, instance):
         response = super().to_representation(instance)
@@ -729,6 +773,14 @@ class WellDisinfectedCodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = WellDisinfectedCode
         fields = ('well_disinfected_code', 'description')
+
+
+class DriveShoeCodeSerializer(serializers.ModelSerializer):
+    """Serializes Drive Shoe codes/descriptions"""
+
+    class Meta:
+        model = DriveShoeCode
+        fields = ('drive_shoe_code', 'description')
 
 
 class FilterPackMaterialCodeSerializer(serializers.ModelSerializer):

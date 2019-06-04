@@ -40,6 +40,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <form-input
             id="yieldEstimationRate"
             label="Yield Estimation Rate"
+            type="number"
             hint="USgpm"
             v-model="yieldEstimationRateInput"></form-input>
       </b-col>
@@ -47,6 +48,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <form-input
             id="yieldEstimationDuration"
             label="Yield Estimation Duration"
+            type="number"
             hint="Hours"
             v-model="yieldEstimationDurationInput"></form-input>
       </b-col>
@@ -56,6 +58,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <form-input
             id="staticWaterLevelTest"
             label="SWL Before Test"
+            type="number"
             v-model="staticLevelInput"
             hint="ft (btoc)"></form-input>
       </b-col>
@@ -74,6 +77,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <form-input
           id="hydroFracturingYieldIncrease"
           label="Increase in Well Yield Due to Hydro-fracturing"
+          type="number"
           v-model="hydroFracturingYieldIncreaseInput"
           hint="USgpm"
         ></form-input>
@@ -84,6 +88,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <form-input
             id="drawdown"
             label="Drawdown"
+            type="number"
             v-model="drawdownInput"
             hint="ft (btoc)"
             ></form-input>
@@ -92,6 +97,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <form-input
           id="recommendedPumpDepth"
           label="Recommended Pump Depth"
+          type="number"
           v-model="recommendedPumpDepthInput"
           hint="ft (btoc)"
         />
@@ -100,6 +106,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <form-input
           id="recommendedPumpRate"
           label="Recommended Pump Rate"
+          type="number"
           v-model="recommendedPumpRateInput"
           hint="USgpm"
         />

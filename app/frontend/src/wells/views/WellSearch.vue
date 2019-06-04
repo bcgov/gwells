@@ -20,7 +20,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           Not all groundwater wells are registered with the province, as registration was voluntary until February 29, 2016. Data quality issues may impact search results.
         </p>
         <p>
-          Search by one of the fields below, or zoom to a location on the map and select the "Search Wells in this Area" button.
+          Search by one of the fields below, or zoom to a location on the map.
         </p>
       </div>
     </div>
@@ -43,7 +43,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </b-col>
       <b-col>
         <search-map ref="searchMap" @moved="handleMapMoveEnd" />
-        <b-alert variant="info" class="mt-2" :show="locationErrorMessage !== ''">{{ locationErrorMessage }}</b-alert>
+        <b-alert variant="danger" class="mt-2" :show="locationErrorMessage !== ''">{{ locationErrorMessage }}</b-alert>
       </b-col>
     </b-row>
     <b-row class="my-5" v-show="!isInitialSearch || hasResultErrors">

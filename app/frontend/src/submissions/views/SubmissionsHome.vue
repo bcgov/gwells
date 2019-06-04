@@ -205,11 +205,17 @@ export default {
         // These skip variables will include both mutually required fields if one of them changes
         // We have to include both lat and lon for geom updates and ground_elevation and method together
         let skipLatLon = 'latitude' in meta.valueChanged || 'longitude' in meta.valueChanged
+        let skipConDates = 'construction_start_date' in meta.valueChanged || 'construction_end_date' in meta.valueChanged
+        let skipAltDates = 'alteration_start_date' in meta.valueChanged || 'alteration_end_date' in meta.valueChanged
+        let skipDecDates = 'decommission_start_date' in meta.valueChanged || 'decommission_end_date' in meta.valueChanged
         let skipGroundElevation = 'ground_elevation' in meta.valueChanged || 'ground_elevation_method' in meta.valueChanged
         Object.keys(data).forEach((key) => {
           // Skip lat lon if one of them has changed
           if ((key === 'latitude' || key === 'longitude') && skipLatLon) { return }
           if ((key === 'ground_elevation' || key === 'ground_elevation_method') && skipGroundElevation) { return }
+          if ((key === 'construction_start_date' || key === 'construction_end_date') && skipConDates) { return }
+          if ((key === 'alteration_start_date' || key === 'alteration_end_date') && skipAltDates) { return }
+          if ((key === 'decommission_start_date' || key === 'decommission_end_date') && skipDecDates) { return }
           // Remove any fields that aren't changed
           if (key !== 'well' && !(key in meta.valueChanged)) { delete data[key] }
         })
@@ -232,8 +238,13 @@ export default {
       }
 
       if (!this.isStaffEdit) {
+        let skipKeys = []
+        // we need both ground elevation and its method to be sent for validation on submission
+        if (data.ground_elevation_method || data.ground_elevation) {
+          skipKeys.push('ground_elevation_method', 'ground_elevation')
+        }
         // We don't strip blank strings on an edit, someone may be trying to replace a value with a blank value.
-        this.stripBlankStrings(data)
+        this.stripBlankStrings(data, skipKeys)
       }
 
       const sets = ['linerperforation_set', 'lithologydescription_set', 'screen_set', 'casing_set', 'decommission_description_set']
@@ -516,10 +527,12 @@ export default {
       // the dropdown menu returns an object so this method also does.
       this.form.well = { well_tag_number: well }
     },
-    stripBlankStrings (formObject) {
+    stripBlankStrings (formObject, skipKeys = []) {
       // strips blank strings from a form object
-
       Object.keys(formObject).forEach((key) => {
+        if (skipKeys.includes(key)) {
+          return
+        }
         if (typeof formObject[key] === 'object' && formObject[key] !== null) {
           // descend into nested objects
           this.stripBlankStrings(formObject[key])
