@@ -48,6 +48,7 @@ from wells.models import (
     DrillingMethodCode,
     WellDisinfectedCode,
     BoundaryEffectCode,
+    DriveShoeCode,
     FilterPackMaterialCode,
     FilterPackMaterialSizeCode,
     GroundElevationMethodCode,
@@ -91,6 +92,7 @@ from submissions.serializers import (
     DrillingMethodCodeSerializer,
     WellDisinfectedCodeSerializer,
     BoundaryEffectCodeSerializer,
+    DriveShoeCodeSerializer,
     FilterPackMaterialCodeSerializer,
     FilterPackMaterialSizeCodeSerializer,
     GroundElevationMethodCodeSerializer,
@@ -342,6 +344,8 @@ class SubmissionsOptions(APIView):
             instance=WellDisinfectedCode.objects.all(), many=True)
         boundary_effect_codes = BoundaryEffectCodeSerializer(
             instance=BoundaryEffectCode.objects.all(), many=True)
+        drive_shoe_codes = DriveShoeCodeSerializer(
+            instance=DriveShoeCode.objects.all(), many=True)
         filter_pack_material = FilterPackMaterialCodeSerializer(
             instance=FilterPackMaterialCode.objects.all(), many=True)
         filter_pack_material_size = FilterPackMaterialSizeCodeSerializer(
@@ -417,6 +421,7 @@ class SubmissionsOptions(APIView):
         options["decommission_methods"] = decommission_methods.data
         options["well_disinfected_codes"] = well_disinfected_codes.data
         options["boundary_effect_codes"] = boundary_effect_codes.data
+        options["drive_shoe_codes"] = drive_shoe_codes.data
         options["filter_pack_material"] = filter_pack_material.data
         options["filter_pack_material_size"] = filter_pack_material_size.data
         options["land_district_codes"] = land_district_codes.data

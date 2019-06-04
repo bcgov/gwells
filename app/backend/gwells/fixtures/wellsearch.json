@@ -212,7 +212,7 @@
             "casing_code": null,
             "casing_material": "STEEL",
             "wall_thickness": "0.220",
-            "drive_shoe": true
+            "drive_shoe_status": "Not Installed"
         }
     },
     {
@@ -231,7 +231,7 @@
             "casing_code": null,
             "casing_material": "STEEL",
             "wall_thickness": "219.000",
-            "drive_shoe": true
+            "drive_shoe_status": "Installed"
         }
     },
     {
@@ -250,7 +250,7 @@
             "casing_code": null,
             "casing_material": "STEEL",
             "wall_thickness": "219.000",
-            "drive_shoe": true
+            "drive_shoe_status": "Not Installed"
         }
     },
     {
@@ -269,7 +269,7 @@
             "casing_code": null,
             "casing_material": null,
             "wall_thickness": "0.157",
-            "drive_shoe": true
+            "drive_shoe_status": "Installed"
         }
     },
     {
