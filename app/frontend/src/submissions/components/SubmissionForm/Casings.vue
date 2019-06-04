@@ -120,7 +120,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 :errors="getCasingError(index).wall_thickness"
                 :loaded="getFieldsLoaded(index).wall_thickness"/>
             </td>
-            <td class="pt-0 py-0">
+            <td class="my-0">
               <b-form-group :id="'casingDriveShoe_' + index">
                 <b-form-select
                   v-model="casing.drive_shoe_status"
@@ -129,6 +129,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   :options="codes.drive_shoe_codes"
                   :errors="errors['drive_shoe_status']"
                   :loaded="fieldsLoaded['drive_shoe_status']">
+                  <template slot="first">
+                    <option value="" disabled>Select drive shoe</option>
+                  </template>
                 </b-form-select>
               </b-form-group>
             </td>
