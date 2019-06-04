@@ -1,5 +1,5 @@
 [{
-    "model": "casing.driveshoecode",
+    "model": "wells.driveshoecode",
     "pk": "Installed",
     "fields": {
         "create_user": "DATALOAD_USER",
@@ -13,7 +13,7 @@
     }
 },
 {
-  "model": "wells.welldisinfectedcode",
+  "model": "wells.driveshoecode",
   "pk": "Not Installed",
   "fields": {
       "create_user": "DATALOAD_USER",

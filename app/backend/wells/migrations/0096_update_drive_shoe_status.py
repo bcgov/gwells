@@ -7,7 +7,7 @@ def migrate_drive_shoe(apps, schema_editor):
     code = apps.get_model('wells', 'driveshoecode')
 
     installed = code.objects.filter(drive_shoe_code='Installed').first()
-    not_installed = code.objects.filter(well_disinfected_code='Not Installed').first()
+    not_installed = code.objects.filter(drive_shoe_code='Not Installed').first()
 
     casing.objects.filter(drive_shoe=True).update(
         drive_shoe_status=installed)
