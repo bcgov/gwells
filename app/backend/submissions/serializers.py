@@ -54,6 +54,7 @@ from wells.models import (
     DevelopmentMethodCode,
     DrillingMethodCode,
     WellDisinfectedCode,
+    BoundaryEffectCode,
     DriveShoeCode,
     FilterPackMaterialCode,
     FilterPackMaterialSizeCode,
@@ -773,6 +774,14 @@ class WellDisinfectedCodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = WellDisinfectedCode
         fields = ('well_disinfected_code', 'description')
+
+
+class BoundaryEffectCodeSerializer(serializers.ModelSerializer):
+    """Serializes Boundary Effect codes/descriptions"""
+
+    class Meta:
+        model = BoundaryEffectCode
+        fields = ('boundary_effect_code', 'description')
 
 
 class DriveShoeCodeSerializer(serializers.ModelSerializer):

@@ -152,13 +152,16 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <b-row>
       <b-col cols="12" md="4">
         <form-input
-            id="boundaryEffectInput"
-            label="Boundary effect"
-            type="number"
-            v-model="boundaryEffectInput"
-            :errors="errors['boundary_effect']"
-            :loaded="fieldsLoaded['boundary_effect']"
-        ></form-input>
+          label="Boundary effect"
+          id="boundaryEffect"
+          select
+          v-model="boundaryEffectInput"
+          :options="codes.boundary_effect_codes"
+          placeholder="Select Boundary effect"
+          text-field="description"
+          value-field="boundary_effect_code"
+          :errors="errors['boundary_effect']"
+          :loaded="fieldsLoaded['boundary_effect']"/>
       </b-col>
       <b-col cols="12" md="4">
         <b-form-group
