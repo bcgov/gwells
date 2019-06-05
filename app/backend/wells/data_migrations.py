@@ -184,19 +184,34 @@ def well_disinfected_code_fixture():
     return CodeFixture(fixture_path)
 
 
-def drive_shoe_code_fixture():
-    fixture = 'migrations/drive_shoe_codes.json'
-    fixture_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), fixture)
-
-    return CodeFixture(fixture_path)
-
-
 def load_well_disinfected_codes(apps, schema_editor):
     return well_disinfected_code_fixture().load_fixture(apps, schema_editor)
 
 
 def unload_well_disinfected_codes(apps, schema_editor):
     return well_disinfected_code_fixture().unload_fixture(apps, schema_editor)
+
+
+def boundary_effect_code_fixture():
+    fixture = 'migrations/boundary_effect_codes.json'
+    fixture_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), fixture)
+
+    return CodeFixture(fixture_path)
+
+
+def load_boundary_effect_codes(apps, schema_editor):
+    return boundary_effect_code_fixture().load_fixture(apps, schema_editor)
+
+
+def unload_boundary_effect_codes(apps, schema_editor):
+    return boundary_effect_code_fixture().unload_fixture(apps, schema_editor)
+
+
+def drive_shoe_code_fixture():
+    fixture = 'migrations/drive_shoe_codes.json'
+    fixture_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), fixture)
+
+    return CodeFixture(fixture_path)
 
 
 def load_drive_shoe_codes(apps, schema_editor):
