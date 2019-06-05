@@ -43,13 +43,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
               v-model="groundElevationMethodInput"
               value-field="ground_elevation_method_code"
               text-field="description"
+              placeholder="Select Method"
               :options="method_codes()"
               :errors="errors['ground_elevation_method']"
               :loaded="fieldsLoaded['ground_elevation_method']">
             </form-input>
-            <template slot="first">
-              <option value="">Select Method</option>
-            </template>
           </b-form-group>
         </b-col>
       </b-row>

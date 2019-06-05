@@ -108,9 +108,6 @@ To download new licence data from DataBC and merge it into your DB, do
 docker-compose exec backend python manage.py import_licences
 ```
 
-## Contributing
-
-Please see [CONTRIBUTING.md](https://github.com/bcgov/gwells/blob/master/CONTRIBUTING.md)
 ### Making pull requests
 
 Pull requests made from branches in the bcgov/gwells repo will kick off a dev pipeline, which runs tests and deploys a preview environment containing your changes.  The pull request page will update when the environment is deployed and mandatory checks (unit tests, etc.) pass or fail.
