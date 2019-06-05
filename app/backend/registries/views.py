@@ -427,6 +427,7 @@ class CitiesListView(ListAPIView):
     serializer_class = CityListSerializer
     lookup_field = 'register_guid'
     pagination_class = None
+    swagger_schema = None
     permission_classes = (RegistriesEditOrReadOnly,)
     queryset = Register.objects \
         .exclude(organization__city__isnull=True) \
@@ -561,9 +562,8 @@ class ApplicationDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDestr
 
 class OrganizationNameListView(ListAPIView):
     """
-    Simple list of organizations with only organization names
+    A list of organizations with only organization names
     """
-
     permission_classes = (RegistriesEditOrReadOnly,)
     serializer_class = OrganizationNameListSerializer
     queryset = Organization.objects \

@@ -122,7 +122,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     </tr>
                     <tr>
                       <th class="w-50">Property Identification Description (PID)</th>
-                      <td>{{ ('000000000' + form.legal_pid).slice(-9) }}</td>
+                      <td>{{ form.legal_pid }}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -188,8 +188,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
             'observations'
           ]">
           <template slot="description" slot-scope="data">{{data.item.lithology_raw_data}}</template>
-          <template slot="from" slot-scope="data">{{data.item.lithology_from}}</template>
-          <template slot="to" slot-scope="data">{{data.item.lithology_to}}</template>
+          <template slot="from" slot-scope="data">{{data.item.start}}</template>
+          <template slot="to" slot-scope="data">{{data.item.end}}</template>
           <template slot="colour" slot-scope="data">{{codeToDescription('lithology_colours', data.item.lithology_colour) }}</template>
           <template slot="hardness" slot-scope="data">{{codeToDescription('lithology_hardness_codes', data.item.lithology_hardness) }}</template>
           <template slot="moisture" slot-scope="data">{{codeToDescription('lithology_moisture_codes', data.item.lithology_moisture) }}</template>

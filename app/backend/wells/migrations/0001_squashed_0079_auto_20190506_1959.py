@@ -15,14 +15,12 @@ import wells.data_migrations
 
 class Migration(migrations.Migration):
 
-    replaces = [('wells', '0001_initial'), ('wells', '0074_perforations_cleanup_20190501_1612'), ('wells', '0075_auto_20190501_2344'), ('wells', '0075_auto_20190501_2158'), ('wells', '0076_merge_20190502_2358'), ('wells', '0074_auto_20190418_2237'), ('wells', '0075_update_work_dates'), ('wells', '0077_merge_20190506_1715'), ('wells', '0077_auto_20190503_1917'), ('wells', '0078_merge_20190506_1922'), ('wells', '0079_auto_20190506_1959')]
-
     initial = True
 
     dependencies = [
         ('gwells', '0001_initial'),
         ('registries', '0001_initial'),
-        ('submissions', '0001_squashed_0006_auto_20190409_1634'),
+        ('submissions', '0001_initial'),
         ('aquifers', '0001_squashed_0018_auto_20190409_1634'),
     ]
 

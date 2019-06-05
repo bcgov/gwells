@@ -96,10 +96,7 @@ const ADDITIONAL_FILTER_SECTIONS = [
      [ 'wellClass',
        'wellSubclass',
        'intendedWaterUse',
-       'wellIdPlateAttached',
-       'idPlateAttachedBy',
-       'waterSupplySystemName',
-       'waterSupplyWellName' ] },
+       'wellIdPlateAttached' ] },
   { header: 'Person responsible for work',
     fields: [ 'drillerName', 'consultantName', 'consultantCompany' ] },
   { header: 'Well owner',
@@ -154,7 +151,7 @@ const ADDITIONAL_FILTER_SECTIONS = [
        'filterPackMaterialSize' ] },
   { header: 'Well development',
     fields:
-     [ 'developmentMethods', 'developmentHours', 'developmentNotes' ] },
+     [ 'developmentMethods', 'developmentHours' ] },
   { header: 'Yield',
     fields:
      [ 'yieldEstimationMethod',
@@ -170,7 +167,7 @@ const ADDITIONAL_FILTER_SECTIONS = [
     fields:
      [ 'waterQualityCharacteristics',
        'waterQualityColour',
-       'waterQualityOdor',
+       'waterQualityOdour',
        'ems' ] },
   { header: 'Well completion data',
     fields:
@@ -181,7 +178,7 @@ const ADDITIONAL_FILTER_SECTIONS = [
        'artesianFlow',
        'artesianPressure',
        'wellCapType',
-       'wellDisinfected' ] },
+       'wellDisinfectedStatus' ] },
   { header: 'Observation well information',
     fields: [ 'observationWellNumber', 'observationWellStatus' ] },
   { header: 'Decommission',
@@ -305,10 +302,10 @@ export default {
 
       this.selectedFilterId = null
     },
-    removeFilter (filterId) {
-      const index = this.selectedFilterIds.findIndex(filterId)
+    removeSelectedFilter (filterId) {
+      const index = this.selectedFilterIds.indexOf(filterId)
       this.selectedFilterIds.splice(index, 1)
-      delete this.filterParams[filterId]
+      this.filterParams[filterId] = {}
     },
     initFilterParams () {
       const filterParams = {...this.emptyFilterParams}

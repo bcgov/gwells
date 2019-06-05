@@ -36,18 +36,18 @@ Licensed under the Apache License, Version 2.0 (the "License");
             :loaded="fieldsLoaded['ground_elevation']"></form-input>
         </b-col>
         <b-col cols="12" md="6">
-          <b-form-group label="Method for Determining Ground Elevation" id="groundElevationMethod">
-            <b-form-select
+          <b-form-group label="Method for Determining Ground Elevation">
+            <form-input
+              select
+              id="groundElevationMethod"
               v-model="groundElevationMethodInput"
               value-field="ground_elevation_method_code"
               text-field="description"
+              placeholder="Select Method"
               :options="method_codes()"
               :errors="errors['ground_elevation_method']"
               :loaded="fieldsLoaded['ground_elevation_method']">
-            </b-form-select>
-            <template slot="first">
-              <option value="" disabled>Select Method</option>
-            </template>
+            </form-input>
           </b-form-group>
         </b-col>
       </b-row>

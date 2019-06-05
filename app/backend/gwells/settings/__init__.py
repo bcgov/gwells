@@ -67,8 +67,10 @@ FIXTURES_DIRS = [FIXTURES_DIR]
 # When running containerised, GDAL_LIBRARY_PATH and GEOS_LIBRARY_PATH -**MUST**- be specified.
 # For running locally, if you've configured you local system correctly, CUSTOM_GDAL_GEOS may be set to False.
 if get_env_variable('CUSTOM_GDAL_GEOS', 'True', strict=False, warn=False) == 'True':
-    GDAL_LIBRARY_PATH = get_env_variable('GDAL_LIBRARY_PATH', '/usr/local/lib/libgdal.so')
-    GEOS_LIBRARY_PATH = get_env_variable('GEOS_LIBRARY_PATH', '/usr/local/lib/libgeos_c.so')
+    GDAL_LIBRARY_PATH = get_env_variable(
+        'GDAL_LIBRARY_PATH', '/usr/local/lib/libgdal.so')
+    GEOS_LIBRARY_PATH = get_env_variable(
+        'GEOS_LIBRARY_PATH', '/usr/local/lib/libgeos_c.so')
 
 # django-settings-export lets us make these variables available in the templates.
 # This eleminate the need for setting the context for each and every view.
@@ -86,6 +88,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = (
+    'whitenoise.runserver_nostatic',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -104,7 +107,6 @@ INSTALLED_APPS = (
     'wells',
     'submissions',
     'aquifers',
-    'webpack_loader',
     'django_filters',
     'django_extensions',
     'drf_multiple_model',
@@ -124,7 +126,7 @@ MIDDLEWARE = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'gwells.middleware.GWellsRequestParsingMiddleware',
+    'gwells.middleware.GWellsRequestParsingMiddleware'
 )
 
 ROOT_URLCONF = 'gwells.urls'
@@ -181,9 +183,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 if APP_CONTEXT_ROOT:
-    STATIC_URL = '/' + APP_CONTEXT_ROOT + '/static/'
+    STATIC_URL = '/' + APP_CONTEXT_ROOT + '/'
 else:
-    STATIC_URL = '/static/'
+    STATIC_URL = '/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
@@ -279,13 +281,6 @@ REST_FRAMEWORK = {
     }
 }
 
-WEBPACK_LOADER = {
-    'DEFAULT': {
-        'CACHE': not DEBUG,
-        'BUNDLE_DIR_NAME': 'bundles/',  # must end with slash
-        'STATS_FILE': os.path.join(BASE_DIR, '../frontend/webpack-stats.json')
-    }
-}
 LOGIN_URL = '/gwells/accounts/login/'
 LOGIN_REDIRECT_URL = '/gwells/search'
 
@@ -302,7 +297,7 @@ SWAGGER_SETTINGS = {
 # matches subdomains of gov.bc.ca
 CORS_ORIGIN_REGEX_WHITELIST = (r'^(?:https?:\/\/)?(?:\w+\.)*gov\.bc\.ca$',)
 if DEBUG:
-    CORS_ORIGIN_WHITELIST = ('localhost:8080', '127.0.0.1:8080')
+    CORS_ORIGIN_WHITELIST = ('localhost:8080', '127.0.0.1:8080', 'localhost:8000', '127.0.0.1:8000')
     CORS_ALLOW_HEADERS = (
         'accept',
         'accept-encoding',
@@ -331,5 +326,10 @@ class DisableMigrations(object):
 
     def __getitem__(self, item):
         return None
+
+
 if get_env_variable('DISABLE_MIGRATIONS', None, strict=False, warn=False) == 'DISABLE_MIGRATIONS':
     MIGRATION_MODULES = DisableMigrations()
+
+WHITENOISE_INDEX_FILE = True
+APPEND_SLASH = True

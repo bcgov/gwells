@@ -45,6 +45,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <form-input
             id="developmentHours"
             label="Development Hours"
+            type="number"
             v-model="developmentHoursInput"
             :errors="errors['development_hours']"
             :loaded="fieldsLoaded['development_hours']"></form-input>

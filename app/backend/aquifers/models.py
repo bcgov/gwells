@@ -12,6 +12,10 @@
     limitations under the License.
 """
 import reversion
+import zipfile
+import tempfile
+import os
+import copy
 
 from django.utils import timezone
 from django.contrib.gis.db import models
@@ -19,17 +23,90 @@ from django.contrib.gis.db import models
 from gwells.models import AuditModel, CodeTableModel, BasicCodeTableModel
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.contrib.gis.db import models
+from django.contrib.gis.gdal import DataSource
+from django.contrib.gis.geos import GEOSGeometry
+from django.contrib.gis.geos.prototypes.io import wkt_w
+from django.contrib.gis import geos
+
 from reversion.models import Version
+
+from gwells.models import AuditModel, CodeTableModel
 from gwells.db_comments.patch_fields import patch_fields
 
 patch_fields()
+
+
+class WaterRightsPurpose(AuditModel):
+    """
+    Material choices for describing Aquifer Material
+    """
+    code = models.CharField(primary_key=True, max_length=10,
+                            db_column='water_rights_purpose_code')
+    description = models.CharField(max_length=100)
+    display_order = models.PositiveIntegerField(default=0)
+
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+    expiry_date = models.DateTimeField(default=timezone.make_aware(
+        timezone.datetime.max, timezone.get_default_timezone()), null=False)
+
+    class Meta:
+        db_table = 'water_rights_purpose_code'
+        ordering = ['display_order', 'code']
+        verbose_name_plural = 'Water Rights Purpose Codes'
+
+    def __str__(self):
+        return '{} - {}'.format(self.code, self.description)
+
+
+class WaterRightsLicence(AuditModel):
+    """
+    Material choices for describing Aquifer Material
+    """
+
+    # Unique in the water rights database we import from.
+    wrl_sysid = models.IntegerField(
+        primary_key=True,
+        verbose_name="Water Rights Licence System ID")
+
+    purpose = models.ForeignKey(
+        WaterRightsPurpose,
+        db_column='water_rights_purpose_code',
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE,
+        verbose_name="Water Rights Purpose Reference",
+        related_name='licences')
+
+    # A non-unique licence number, used to calculate allocations along with
+    # the quantity flag, below.
+    licence_number = models.BigIntegerField(db_index=True)
+
+    # QUANTITY FLAG is the code used to identify how the total quantity is assigned
+    # across multiple Points of Well Diversion (PWD) for a particular licence and purpose use,
+    # i.e., T, M, D, or P.
+    # Only in the case of 'M', the quantity is shared across wells in the licence.
+    quantity_flag = models.CharField(
+        max_length=1,
+        default='T',
+        choices=(('T', 'T'), ('M', 'M'), ('D', 'D'), ('P', 'P')))
+
+    quantity = models.DecimalField(
+        max_digits=12, decimal_places=3, blank=True, null=True, verbose_name='Quanitity')
+
+    effective_date = models.DateTimeField(default=timezone.now, null=False)
+
+    class Meta:
+        verbose_name_plural = 'Aquifer Licences'
+
+    def __str__(self):
+        return '{}'.format(self.licence_number)
 
 
 class AquiferMaterial(CodeTableModel):
     """
     Material choices for describing Aquifer Material
     """
-
     code = models.CharField(
         primary_key=True, max_length=10, db_column='aquifer_material_code',
         db_comment=('Code for valid options for the broad grouping of geological material found in the'
@@ -41,7 +118,7 @@ class AquiferMaterial(CodeTableModel):
 
     class Meta:
         db_table = 'aquifer_material_code'
-        ordering = ['display_order', 'code']
+        ordering = ['code']
         verbose_name_plural = 'Aquifer Material Codes'
 
     db_table_comment = ('Describes the broad grouping of geological material found in the aquifer, i.e., '
@@ -55,7 +132,6 @@ class AquiferSubtype(CodeTableModel):
     """
     Subtypes of Aquifer
     """
-
     code = models.CharField(
         primary_key=True, max_length=3, db_column='aquifer_subtype_code',
         db_comment=('Categorizes an aquifer based on how it was formed geologically (depositional'
@@ -350,8 +426,74 @@ class Aquifer(AuditModel):
                     ' local knowledge about the aquifer or decisions for changes related to attributes of'
                     ' the mapped aquifer.'))
     geom = models.PolygonField(srid=3005, null=True)
+    # This version is pre-rendered in WGS 84 for display on web-maps.
+    geom_simplified = models.PolygonField(srid=4326, null=True)
 
     history = GenericRelation(Version)
+
+    def load_shapefile(self, f):
+        """
+        Given a shapefile with a single feature, update spatial fields of the aquifer.
+        You must still call aquifer.save() afterwards.
+        """
+        try:
+            zip_ref = zipfile.ZipFile(f)
+        except zipfile.BadZipFile as e:
+            raise Aquifer.BadShapefileException(str(e))
+
+        ret = zip_ref.testzip()
+        if ret is not None:
+            raise Aquifer.BadShapefileException("Bad zipfile, info: %s" % ret)
+
+        output_dir = tempfile.mkdtemp()
+        for item in zip_ref.namelist():
+            # Check filename endswith shp
+            zip_ref.extract(item, output_dir)
+            if item.endswith('.shp'):
+                # Extract a single file from zip
+                the_shapefile = os.path.join(output_dir, item)
+                # break
+        zip_ref.close()
+
+        ds = DataSource(the_shapefile)
+        self.update_geom_from_feature(ds[0][0])
+
+    def update_geom_from_feature(self, feat):
+        """
+        Given a spatial feature with Geometry, update spatial fields of the aquifer.
+        You must still call aquifer.save() afterwards.
+        """
+
+        geom = feat.geom
+
+        # Make a GEOSGeometry object using the string representation.
+        if not geom.srid == 3005:
+            logging.info("Non BC-albers feature, skipping.")
+            return
+        # Eliminate any 3d geometry so it fits in PostGIS' 2d geometry schema.
+        wkt = wkt_w(dim=2).write(GEOSGeometry(geom.wkt, srid=3005)).decode()
+        geos_geom = GEOSGeometry(wkt, srid=3005)
+        # Convert MultiPolygons to plain Polygons,
+        # We assume the largest one is the one we want to keep, and the rest are artifacts/junk.
+        if isinstance(geos_geom, geos.MultiPolygon):
+            geos_geom_out = geos_geom[0]
+            for g in geos_geom:
+                if len(g.wkt) > len(geos_geom_out.wkt):
+                    geos_geom_out = g
+        elif isinstance(geos_geom, geos.Polygon):
+            geos_geom_out = geos_geom
+        else:
+            logging.info("Bad geometry type: {}, skipping.".format(
+                geos_geom.__class__))
+            return
+
+        geos_geom_simplified = copy.deepcopy(geos_geom_out)
+        geos_geom_simplified.transform(4326)
+        geos_geom_simplified = geos_geom_simplified.simplify(
+            .0005, preserve_topology=True)
+
+        self.geom = geos_geom_out
+        self.geom_simplified = geos_geom_simplified
 
     class Meta:
         db_table = 'aquifer'
@@ -361,6 +503,9 @@ class Aquifer(AuditModel):
     db_table_comment = ('A geological formation, a group of geological formations, or a part of one or more '
                         'geological formations that is groundwater bearing and capable of storing, '
                         'transmitting and yielding groundwater.')
+
+    class BadShapefileException(Exception):
+        pass
 
     def __str__(self):
         return '{} - {}'.format(self.aquifer_id, self.aquifer_name)

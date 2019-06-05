@@ -121,6 +121,11 @@ export default {
   },
   methods: {
     updateValue (value) {
+      if (this.type.toLowerCase() === 'number' && value === '') {
+        this.$emit('input', null)
+        return
+      }
+
       this.$emit('input', value)
     }
   },

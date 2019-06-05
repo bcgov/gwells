@@ -18,7 +18,7 @@ const config = {
     }
   },
   actions: {
-    [FETCH_CONFIG] ({commit}, params) {
+    [FETCH_CONFIG] ({ commit }, params) {
       // We only fetch config if we don't have a copy cached
       if (this.getters.config === null) {
         return new Promise((resolve, reject) => {
