@@ -180,6 +180,24 @@ class FilterPackMaterialSizeCode(CodeTableModel):
         return self.description
 
 
+class BoundaryEffectCode(CodeTableModel):
+    """
+     The observed boundary effect in the pumping test analysis.
+    """
+    boundary_effect_code = models.CharField(primary_key=True, max_length=10, editable=False)
+    description = models.CharField(max_length=100)
+
+    class Meta:
+        db_table = 'boundary_effect_code'
+        ordering = ['display_order', 'description']
+
+    db_table_comment = ('The observed boundary effect in the pumping test analysis. Constant head or '
+                        'no flow boundaries are two possible observations.')
+
+    def __str__(self):
+        return self.description
+
+
 class WellDisinfectedCode(CodeTableModel):
     """
      The status on whether the well has been disinfected or not.
@@ -1047,16 +1065,17 @@ class Well(AuditModelStructure):
     analytic_solution_type = models.DecimalField(
         max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Analytic Solution Type',
         db_comment='Mathematical formulation used to estimate hydraulic parameters.')
-    boundary_effect = models.DecimalField(
-        max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Boundary Effect',
-        db_comment='Valid codes for the boundaries observed in pumping test analysis. i.e. CH, NF.')
+    boundary_effect = models.ForeignKey(BoundaryEffectCode, db_column='boundary_effect_code',
+                                        on_delete=models.CASCADE, blank=True, null=True,
+                                        verbose_name='Boundary Effect',
+                                        db_comment='Valid codes for the boundaries observed in '
+                                                   'pumping test analysis. i.e. CH, NF.')
     aquifer_lithology = models.ForeignKey(
         AquiferLithologyCode, db_column='aquifer_lithology_code', blank=True, null=True,
         on_delete=models.CASCADE,
         verbose_name='Aquifer Lithology',
         db_comment=('Valid codes for the type of material an aquifer consists of. i.e., Unconsolidated, '
                     'Bedrock, Unknown.'))
-
     # Production data related data
     yield_estimation_method = models.ForeignKey(
         YieldEstimationMethodCode, db_column='yield_estimation_method_code',
@@ -1539,9 +1558,11 @@ class ActivitySubmission(AuditModelStructure):
     testing_duration = models.PositiveIntegerField(blank=True, null=True)
     analytic_solution_type = models.DecimalField(
         max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Analytic Solution Type')
-    boundary_effect = models.DecimalField(
-        max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Boundary Effect',
-        db_comment='Valid codes for the boundaries observed in pumping test analysis. i.e. CH, NF.')
+    boundary_effect = models.ForeignKey(BoundaryEffectCode, db_column='boundary_effect_code',
+                                        on_delete=models.CASCADE, blank=True, null=True,
+                                        verbose_name='Boundary Effect',
+                                        db_comment='Valid codes for the boundaries observed in '
+                                                   'pumping test analysis. i.e. CH, NF.')
     aquifer_lithology = models.ForeignKey(
         AquiferLithologyCode, db_column='aquifer_lithology_code', blank=True, null=True,
         on_delete=models.CASCADE,
