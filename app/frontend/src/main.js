@@ -11,11 +11,11 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-import 'babel-polyfill'
 import Vue from 'vue'
-import Vuex, {mapActions} from 'vuex'
+import Vuex, { mapActions } from 'vuex'
 import VueNoty from 'vuejs-noty'
 import BootstrapVue from 'bootstrap-vue'
+import VueAnalytics from 'vue-analytics'
 import App from './App'
 import router from './router.js'
 import { store } from './store'
@@ -25,7 +25,7 @@ import vueSmoothScroll from 'vue-smoothscroll'
 import vSelect from 'vue-select'
 import VueMoment from 'vue-moment'
 import FormInput from '@/common/components/FormInput.vue'
-import {FETCH_CONFIG} from '@/common/store/config.js'
+import { FETCH_CONFIG } from '@/common/store/config.js'
 
 // GWELLS js API library (helper methods for working with API)
 import ApiService from '@/common/services/ApiService.js'
@@ -45,6 +45,16 @@ Vue.component('form-input', FormInput)
 // set baseURL and default headers
 ApiService.init()
 
+Vue.use(VueAnalytics, {
+  id: 'UA-106174915-1',
+  set: [
+    { field: 'anonymizeIp', value: true }
+  ],
+  disabled: ApiService.query('analytics', {}).then((response) => {
+    return response.data.enable_google_analytics !== true
+  })
+})
+
 Vue.config.productionTip = false
 Vue.config.devtools = process.env.NODE_ENV !== 'production'
 Vue.config.performance = process.env.NODE_ENV !== 'production'
@@ -63,5 +73,6 @@ new Vue({
   },
   created () {
     this.FETCH_CONFIG()
+    this.$ga.page()
   }
 })

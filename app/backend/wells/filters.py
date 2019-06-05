@@ -247,6 +247,10 @@ class WellListFilter(AnyOrAllFilterSet):
     finished_well_depth = filters.RangeFilter()
     total_depth_drilled = filters.RangeFilter()
 
+    well_orientation = filters.BooleanFilter(widget=BooleanWidget)
+    alternative_specs_submitted = filters.BooleanFilter(widget=BooleanWidget)
+    hydro_fracturing_performed = filters.BooleanFilter(widget=BooleanWidget)
+
     class Meta:
         model = Well
         fields = [
@@ -384,9 +388,9 @@ class WellListFilter(AnyOrAllFilterSet):
 
     def filter_combined_legal(self, queryset, name, value):
         lookups = (
-            Q(legal_lot=value) |
-            Q(legal_plan=value) |
-            Q(legal_district_lot=value)
+            Q(legal_lot__iexact=value) |
+            Q(legal_plan__iexact=value) |
+            Q(legal_district_lot__iexact=value)
         )
         # Check if we have a positive integer before querying the
         # legal_pid field.

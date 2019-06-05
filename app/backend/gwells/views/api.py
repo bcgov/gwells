@@ -9,6 +9,8 @@ from gwells.models import Border
 class KeycloakConfig(APIView):
     """ serves keycloak config """
 
+    swagger_schema = None
+
     def get(self, request):
         config = {
             "realm": get_env_variable("SSO_REALM"),
@@ -25,17 +27,28 @@ class KeycloakConfig(APIView):
 class GeneralConfig(APIView):
     """ serves general configuration """
 
+    swagger_schema = None
+
     def get(self, request):
         config = {
-            "enable_google_analytics": get_env_variable("ENABLE_GOOGLE_ANALYTICS") == "True",
             "enable_aquifers_search": get_env_variable("ENABLE_AQUIFERS_SEARCH") == "True",
             "sso_idp_hint": get_env_variable("SSO_IDP_HINT", "idir")
         }
         return Response(config)
 
 
+class AnalyticsConfig(APIView):
+    """ serves analytics config """
+
+    def get(self, request):
+        config = {
+            "enable_google_analytics": get_env_variable("ENABLE_GOOGLE_ANALYTICS") == "True"
+        }
+        return Response(config)
+
+
 class InsideBC(APIView):
-    """ Check if a given point, is inside BC """
+    """ Check if a given point is inside BC """
 
     def get(self, request):
         latitude = request.query_params.get('latitude')

@@ -155,7 +155,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <form-input
               id="idPlateNumber"
               label="Well Identification Plate Number"
-              type="text"
+              type="number"
               v-model="idPlateNumberInput"
               :errors="errors['identification_plate_number']"
               :loaded="fieldsLoaded['identification_plate_number']"

@@ -1,0 +1,121 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`View Component Edit mode matches the snapshot 1`] = `
+<div
+  class="card container container-wide p-0 card-container pb-5 p-4"
+>
+  <!---->
+  <!---->
+  <div
+    class="card-body"
+  >
+    <!---->
+    <!---->
+    <!---->
+     
+    <!---->
+     
+    <!---->
+     
+    <!---->
+     
+    <!---->
+     
+    <!---->
+     
+    <!---->
+     
+    <div
+      class="container-fluid"
+    >
+      <!---->
+       
+      <div
+        class="row border-bottom mb-3 pb-2"
+      >
+        <div
+          class="col"
+        >
+          <h4>
+            Aquifer 4 Summary - Edit
+          </h4>
+        </div>
+      </div>
+       
+      <aquifer-form-stub
+        fielderrors="[object Object]"
+        record="[object Object]"
+        showid="true"
+      />
+       
+      <!---->
+       
+      <!---->
+       
+      <!---->
+    </div>
+  </div>
+  <!---->
+  <!---->
+</div>
+`;
+
+exports[`View Component View mode matches the snapshot 1`] = `
+<div
+  class="card container container-wide p-0 card-container pb-5 p-4"
+>
+  <!---->
+  <!---->
+  <div
+    class="card-body"
+  >
+    <!---->
+    <!---->
+    <!---->
+     
+    <!---->
+     
+    <!---->
+     
+    <!---->
+     
+    <!---->
+     
+    <!---->
+     
+    <!---->
+     
+    <div
+      class="container-fluid"
+    >
+      <!---->
+       
+      <div
+        class="row border-bottom mb-3 pb-2"
+      >
+        <div
+          class="col"
+        >
+          <h4>
+            Aquifer 4 Summary - Edit
+          </h4>
+        </div>
+      </div>
+       
+      <aquifer-form-stub
+        fielderrors="[object Object]"
+        record="[object Object]"
+        showid="true"
+      />
+       
+      <!---->
+       
+      <!---->
+       
+      <!---->
+    </div>
+  </div>
+  <!---->
+  <!---->
+</div>
+`;

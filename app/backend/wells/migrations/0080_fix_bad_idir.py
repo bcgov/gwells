@@ -48,7 +48,7 @@ def reverse(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('wells', '0079_auto_20190506_1959'),
+        ('wells', '0001_squashed_0079_auto_20190506_1959'),
     ]
 
     operations = [

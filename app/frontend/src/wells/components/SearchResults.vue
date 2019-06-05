@@ -98,6 +98,9 @@
               <template v-else-if="column.type === 'select' || column.type === 'radio'">
                 {{ row[column.param] | selectOptionFormat(column, filterSelectOptions[column.id]) }}
               </template>
+              <template v-else-if="column.param === 'legal_pid'">
+                {{ row[column.param] }}
+              </template>
               <template v-else>
                 {{ row[column.param] | defaultFormat }}
               </template>

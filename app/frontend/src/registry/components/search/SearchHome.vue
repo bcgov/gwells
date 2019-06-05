@@ -33,7 +33,7 @@
         <b-collapse visible id="adminPanel">
           <b-card-body class="pb-1">
             <b-button
-              class="mb-2"
+              class="mb-2 mr-1"
               variant="primary"
               id="addNewEntryButton"
               :to="{ name: 'PersonAdd' }"
@@ -212,9 +212,9 @@ export default {
         { value: '', text: 'All' }
       ]
       if (this.drillerOptions && this.drillerOptions.approval_outcome_codes) {
-        result = result.concat(this.drillerOptions.approval_outcome_codes.map((item) => { return {'text': item.description, 'value': item.code} }))
+        result = result.concat(this.drillerOptions.approval_outcome_codes.map((item) => { return { 'text': item.description, 'value': item.code } }))
       }
-      result = result.concat({'text': 'Removed', 'value': 'Removed'})
+      result = result.concat({ 'text': 'Removed', 'value': 'Removed' })
       return result
     },
     formatActivityForCityList () {
@@ -291,7 +291,7 @@ export default {
       }
       this.$store.dispatch(FETCH_DRILLER_LIST, params).then(() => {
         this.$SmoothScroll(table, 100)
-        this.drillerSearchReset({keepActivity: true, keepLimit: true})
+        this.drillerSearchReset({ keepActivity: true, keepLimit: true })
         this.searchLoading = false
         this.lastSearchedParams = Object.assign({}, params)
       }).catch(() => {

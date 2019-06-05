@@ -30,7 +30,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           id="filterPackFrom"
           label="Filter Pack From"
           hint="ft"
-          type="text"
+          type="number"
           v-model="filterPackFromInput"
         ></form-input>
       </b-col>
@@ -39,7 +39,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           id="filterPackTo"
           label="Filter Pack To"
           hint="ft"
-          type="text"
+          type="number"
           v-model="filterPackToInput"
         ></form-input>
       </b-col>
@@ -48,7 +48,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           id="filterPackThickness"
           label="Filter Pack Thickness"
           hint="inches"
-          type="text"
+          type="number"
           v-model="filterPackThicknessInput"
         ></form-input>
       </b-col>

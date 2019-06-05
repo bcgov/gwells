@@ -139,7 +139,6 @@ import {
   LFeatureGroup,
   LMap,
   LPopup,
-  LTileLayer,
   LWMSTileLayer
 } from 'vue2-leaflet'
 import { mapGetters } from 'vuex'
@@ -154,11 +153,12 @@ import { MAP_TRIGGER } from '@/wells/store/triggers.types.js'
 // There is a known issue using leaflet with webpack, this is a workaround
 // Fix courtesy of: https://github.com/PaulLeCam/react-leaflet/issues/255
 delete L.Icon.Default.prototype._getIconUrl
-
+// Can't figure out how to reference images inside node_modules, so have
+// copied it into project.
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
-  iconUrl: require('leaflet/dist/images/marker-icon.png'),
-  shadowUrl: require('leaflet/dist/images/marker-shadow.png')
+  iconRetinaUrl: require('../../common/assets/images/marker-icon-2x.png'),
+  iconUrl: require('../../common/assets/images/marker-icon.png'),
+  shadowUrl: require('../../common/assets/images/marker-shadow.png')
 })
 
 export default {
@@ -170,7 +170,6 @@ export default {
     'l-feature-group': LFeatureGroup,
     'l-map': LMap,
     'l-popup': LPopup,
-    'l-tile-layer': LTileLayer,
     'l-wms-tile-layer': LWMSTileLayer
   },
   props: {},
@@ -318,7 +317,7 @@ export default {
       this.zoomBoxActive = false
     },
     initEsriLayer () {
-      this.esriLayer = tiledMapLayer({url: 'https://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer'})
+      this.esriLayer = tiledMapLayer({ url: 'https://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer' })
       this.$refs.map.mapObject.addLayer(this.esriLayer)
       // Should be behind the WMS layer
       this.esriLayer.bringToBack()
@@ -367,7 +366,7 @@ export default {
 }
 </script>
 <style lang="scss">
-@import "leaflet/dist/leaflet.css";
+@import "~leaflet/dist/leaflet.css";
 
 #map {
   height: 600px;

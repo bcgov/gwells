@@ -63,7 +63,6 @@ class CasingSummarySerializer(serializers.ModelSerializer):
     """Serializes casings for well summary (using descriptions instead of codes)"""
     casing_material = serializers.ReadOnlyField(source='casing_material.description')
     casing_code = serializers.ReadOnlyField(source='casing_code.description')
-    drive_shoe = serializers.ReadOnlyField(source='get_drive_shoe_display')
 
     class Meta:
         model = Casing
@@ -73,7 +72,7 @@ class CasingSummarySerializer(serializers.ModelSerializer):
             'diameter',
             'casing_code',
             'casing_material',
-            'drive_shoe',
+            'drive_shoe_status',
             'wall_thickness'
         )
 
@@ -87,7 +86,7 @@ class CasingSerializer(serializers.ModelSerializer):
             'diameter',
             'casing_code',
             'casing_material',
-            'drive_shoe',
+            'drive_shoe_status',
             'wall_thickness'
         )
         extra_kwargs = {
@@ -106,7 +105,7 @@ class CasingStackerSerializer(serializers.ModelSerializer):
             'diameter',
             'casing_code',
             'casing_material',
-            'drive_shoe',
+            'drive_shoe_status',
             'wall_thickness',
             'create_user',
             'update_user'
@@ -138,7 +137,7 @@ class LegacyCasingSerializer(serializers.ModelSerializer):
             'diameter',
             'casing_code',
             'casing_material',
-            'drive_shoe',
+            'drive_shoe_status',
             'wall_thickness'
         )
         extra_kwargs = {
@@ -147,7 +146,7 @@ class LegacyCasingSerializer(serializers.ModelSerializer):
             'diameter': {'required': False},
             'casing_code': {'required': False},
             'casing_material': {'required': False},
-            'drive_shoe': {'required': False, 'allow_null': True},
+            'drive_shoe_status': {'required': False, 'allow_null': True},
             'wall_thickness': {'required': False}
         }
 
@@ -213,7 +212,7 @@ class ScreenSerializer(serializers.ModelSerializer):
         fields = (
             'start',
             'end',
-            'internal_diameter',
+            'diameter',
             'assembly_type',
             'slot_size',
         )
@@ -230,7 +229,7 @@ class ScreenStackerSerializer(serializers.ModelSerializer):
         fields = (
             'start',
             'end',
-            'internal_diameter',
+            'diameter',
             'assembly_type',
             'slot_size',
             'create_user',
@@ -249,7 +248,7 @@ class LegacyScreenSerializer(serializers.ModelSerializer):
 
     start = serializers.DecimalField(max_digits=7, decimal_places=2, allow_null=True)
     end = serializers.DecimalField(max_digits=7, decimal_places=2, allow_null=True)
-    internal_diameter = serializers.DecimalField(max_digits=7, decimal_places=2, allow_null=True)
+    diameter = serializers.DecimalField(max_digits=7, decimal_places=2, allow_null=True)
     slot_size = serializers.DecimalField(max_digits=7, decimal_places=2, allow_null=True)
 
     class Meta:
@@ -257,7 +256,7 @@ class LegacyScreenSerializer(serializers.ModelSerializer):
         fields = (
             'start',
             'end',
-            'internal_diameter',
+            'diameter',
             'assembly_type',
             'slot_size',
         )
@@ -346,8 +345,8 @@ class LithologyDescriptionSummarySerializer(serializers.ModelSerializer):
     class Meta:
         model = LithologyDescription
         fields = (
-            'lithology_from',
-            'lithology_to',
+            'start',
+            'end',
             'lithology_raw_data',
             'lithology_colour',
             'lithology_hardness',
@@ -360,10 +359,10 @@ class LithologyDescriptionSummarySerializer(serializers.ModelSerializer):
 
 class LithologyDescriptionSerializer(serializers.ModelSerializer):
 
-    lithology_from = serializers.DecimalField(
+    start = serializers.DecimalField(
         max_digits=7, decimal_places=2,
         validators=[MinValueValidator(Decimal('0.00'))])
-    lithology_to = serializers.DecimalField(
+    end = serializers.DecimalField(
         max_digits=7, decimal_places=2,
         validators=[MinValueValidator(Decimal('0.00'))])
 
@@ -371,8 +370,8 @@ class LithologyDescriptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = LithologyDescription
         fields = (
-            'lithology_from',
-            'lithology_to',
+            'start',
+            'end',
             'lithology_raw_data',
             'lithology_colour',
             'lithology_hardness',
@@ -385,10 +384,10 @@ class LithologyDescriptionSerializer(serializers.ModelSerializer):
 
 class LithologyDescriptionStackerSerializer(serializers.ModelSerializer):
 
-    lithology_from = serializers.DecimalField(
+    start = serializers.DecimalField(
         max_digits=7, decimal_places=2,
         validators=[MinValueValidator(Decimal('0.00'))])
-    lithology_to = serializers.DecimalField(
+    end = serializers.DecimalField(
         max_digits=7, decimal_places=2,
         validators=[MinValueValidator(Decimal('0.00'))])
 
@@ -396,8 +395,8 @@ class LithologyDescriptionStackerSerializer(serializers.ModelSerializer):
     class Meta:
         model = LithologyDescription
         fields = (
-            'lithology_from',
-            'lithology_to',
+            'start',
+            'end',
             'lithology_raw_data',
             'lithology_colour',
             'lithology_hardness',
@@ -418,14 +417,14 @@ class LithologyDescriptionStackerSerializer(serializers.ModelSerializer):
 
 class LegacyLithologyDescriptionSerializer(serializers.ModelSerializer):
 
-    lithology_to = serializers.DecimalField(max_digits=7, decimal_places=2, allow_null=True)
+    end = serializers.DecimalField(max_digits=7, decimal_places=2, allow_null=True)
 
     """Serializes lithology description records"""
     class Meta:
         model = LithologyDescription
         fields = (
-            'lithology_from',
-            'lithology_to',
+            'start',
+            'end',
             'lithology_raw_data',
             'lithology_colour',
             'lithology_hardness',
@@ -435,7 +434,7 @@ class LegacyLithologyDescriptionSerializer(serializers.ModelSerializer):
             'water_bearing_estimated_flow',
         )
         extra_kwargs = {
-            'lithology_to': {'required': False, 'allow_null': True},
+            'end': {'required': False, 'allow_null': True},
         }
 
 
@@ -480,6 +479,13 @@ class WellDetailSerializer(AuditModelSerializer):
     alternative_specs_submitted = serializers.ReadOnlyField(source='get_alternative_specs_submitted_display')
 
     submission_work_dates = serializers.SerializerMethodField()
+
+    legal_pid = serializers.SerializerMethodField()
+
+    def get_legal_pid(self, instance):
+        if instance.legal_pid is None:
+            return instance.legal_pid
+        return "{0:0>9}".format(instance.legal_pid)
 
     def get_submission_work_dates(self, instance):
         records = instance.activitysubmission_set \
@@ -596,7 +602,6 @@ class WellDetailSerializer(AuditModelSerializer):
             "observation_well_number",
             "observation_well_status",
             "ems",
-            "ems_id",  # kept for backwards compatibility, use ems
             "aquifer",
             "utm_zone_code",
             "utm_northing",
@@ -676,10 +681,17 @@ class WellDetailAdminSerializer(AuditModelSerializer):
     # well vs. well_tag_number ; on submissions, we refer to well
     well = serializers.IntegerField(source='well_tag_number')
 
+    legal_pid = serializers.SerializerMethodField()
+
     class Meta:
         model = Well
         fields = '__all__'
         extra_fields = ['latitude', 'longitude']
+
+    def get_legal_pid(self, instance):
+        if instance.legal_pid is None:
+            return instance.legal_pid
+        return "{0:0>9}".format(instance.legal_pid)
 
     # this allows us to call model methods on top of __all__
     def get_field_names(self, declared_fields, info):
@@ -761,6 +773,13 @@ class WellStackerSerializer(AuditModelSerializer):
 
 class WellListSerializer(serializers.ModelSerializer):
     """Serializes a well record"""
+
+    legal_pid = serializers.SerializerMethodField()
+
+    def get_legal_pid(self, instance):
+        if instance.legal_pid is None:
+            return instance.legal_pid
+        return "{0:0>9}".format(instance.legal_pid)
 
     class Meta:
         model = Well

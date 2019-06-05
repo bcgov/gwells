@@ -29,7 +29,7 @@ from gwells.models.lithology import (
     LithologyColourCode, LithologyHardnessCode,
     LithologyMaterialCode, LithologyMoistureCode, LithologyDescriptionCode)
 
-from wells.models import Well, ActivitySubmission, WellActivityCode
+from wells.models import Well, ActivitySubmission, WellActivityCode, FieldsProvided
 from wells.serializers import (
     ActivitySubmissionLinerPerforationSerializer,
     CasingSerializer,
@@ -54,6 +54,7 @@ from wells.models import (
     DevelopmentMethodCode,
     DrillingMethodCode,
     WellDisinfectedCode,
+    DriveShoeCode,
     FilterPackMaterialCode,
     FilterPackMaterialSizeCode,
     GroundElevationMethodCode,
@@ -121,6 +122,48 @@ class WellSubmissionSerializerBase(AuditModelSerializer):
     def get_well_activity_type(self):
         raise NotImplementedError()  # Implement in base class!
 
+    def validate(self, attrs):
+        errors = {}
+        # Check ground elevation fields for mutual requirement
+        if 'ground_elevation' in attrs or 'ground_elevation_method' in attrs:
+            if attrs.get('ground_elevation', None) is None and attrs.get('ground_elevation_method', None) is not None:
+                if attrs['ground_elevation_method'].description != 'Unknown':
+                    errors['ground_elevation'] = 'Both ground elevation and method are required.'
+            if attrs.get('ground_elevation', None) is not None and attrs.get('ground_elevation_method', None) is None:
+                errors['ground_elevation_method'] = 'Both ground elevation and method are required.'
+        # Check latitude longitude for mutual requirement
+        if 'latitude' in attrs or 'longitude' in attrs:
+            if len(attrs['latitude']) <= 0:
+                errors['latitude'] = 'Latitude and Longitude are both required.'
+            if len(attrs['longitude']) <= 0:
+                errors['longitude'] = 'Latitude and Longitude are both required.'
+
+        if 'construction_start_date' in attrs or 'construction_end_date' in attrs:
+            if attrs.get('construction_start_date', None) is None or attrs.get('construction_end_date', None) is None:
+                errors['construction_start_date'] = 'Both construction start date and end date are required.'
+            else:
+                if attrs.get('construction_start_date') > attrs.get('construction_end_date'):
+                    errors['construction_start_date'] = 'Construction start date must be before end date'
+
+        if 'alteration_start_date' in attrs or 'alteration_end_date' in attrs:
+            if attrs.get('alteration_start_date', None) is None or attrs.get('alteration_end_date', None) is None:
+                errors['alteration_start_date'] = 'Both alteration start date and end date are required.'
+            else:
+                if attrs.get('alteration_start_date') > attrs.get('alteration_end_date'):
+                    errors['alteration_start_date'] = 'Alteration start date must be before end date'
+
+        if 'decommission_start_date' in attrs and 'decommission_end_date' in attrs:
+            if attrs.get('decommission_start_date', None) is None or attrs.get('decommission_end_date', None) is None:
+                errors['decommission_start_date'] = 'Both decommission start date and end date are required.'
+            else:
+                if attrs.get('decommission_start_date') > attrs.get('decommission_end_date'):
+                    errors['decommission_start_date'] = 'Decommission start date must be before end date'
+
+        if len(errors) > 0:
+            raise serializers.ValidationError(errors)
+
+        return attrs
+
     @transaction.atomic
     def create(self, validated_data):
         try:
@@ -132,12 +175,21 @@ class WellSubmissionSerializerBase(AuditModelSerializer):
             # Create submission.
             validated_data['well_activity_type'] = self.get_well_activity_type()
 
+            data = None
+
             if self.context.get('request', None):
                 data = self.context['request'].data
+
                 # Convert lat long values into geom object stored on model
                 # Values are BC Albers. but we are using WGS84 Lat Lon to avoid rounding errors
-                if data.get('latitude', None) and data.get('longitude', None):
-                    validated_data['geom'] = Point(data['longitude'], data['latitude'], srid=4326)
+                if 'latitude' in data and 'longitude' in data:
+                    if data.get('latitude') == '' and data.get('longitude') == '':
+                        validated_data['geom'] = None
+                        data['geom'] = None
+                    else:
+                        point = Point(data['longitude'], data['latitude'], srid=4326)
+                        validated_data['geom'] = point
+                        data['geom'] = point
 
             # Remove the latitude and longitude fields if they exist
             validated_data.pop('latitude', None)
@@ -150,6 +202,13 @@ class WellSubmissionSerializerBase(AuditModelSerializer):
                     well_yield_unit_code='USGPM')
 
             instance = super().create(validated_data)
+
+            # keep a map of the fields that were provided in the activity report submission
+            if data and self.get_well_activity_type() == WellActivityCode.types.staff_edit():
+                edited_fields_data = {k: True for k in data.keys() if k in [field.name for field in FieldsProvided._meta.get_fields()]}
+                edited_fields = FieldsProvided(activity_submission=instance, **edited_fields_data)
+                edited_fields.save()
+
             # Create foreign key records.
             for key, value in foreign_keys_data.items():
                 if value:
@@ -736,6 +795,14 @@ class WellDisinfectedCodeSerializer(serializers.ModelSerializer):
         fields = ('well_disinfected_code', 'description')
 
 
+class DriveShoeCodeSerializer(serializers.ModelSerializer):
+    """Serializes Drive Shoe codes/descriptions"""
+
+    class Meta:
+        model = DriveShoeCode
+        fields = ('drive_shoe_code', 'description')
+
+
 class FilterPackMaterialCodeSerializer(serializers.ModelSerializer):
     """Serializes Filter Pack codes/descriptions"""
 
@@ -1319,211 +1386,6 @@ class DecommissionSubmissionDisplaySerializer(serializers.ModelSerializer):
             'alternative_specs_submitted',
             'create_user', 'create_date',
         )
-
-    def get_alternative_specs_submitted(self, obj):
-        return "Yes" if obj.alternative_specs_submitted else "No"
-
-
-class StaffEditDisplaySerializer(serializers.ModelSerializer):
-    """ serializes staff edit submissions for display to users"""
-    well = serializers.PrimaryKeyRelatedField(queryset=Well.objects.all())
-    linerperforation_set = LinerPerforationSerializer(
-        many=True, required=False)
-    casing_set = CasingSerializer(many=True, required=False)
-    screen_set = ScreenSerializer(many=True, required=False)
-    decommission_description_set = DecommissionDescriptionSerializer(
-        many=True, required=False)
-    lithologydescription_set = LithologyDescriptionSerializer(
-        many=True, required=False)
-
-    # related objects:  use human readable fields for display (e.g. well_class.description
-    # instead of the well_class id)
-    well_activity_type = serializers.ReadOnlyField(
-        source='well_activity_type.description')
-    well_class = serializers.ReadOnlyField(source='well_class.description')
-    well_subclass = serializers.ReadOnlyField(
-        source='well_subclass.description')
-    intended_water_use = serializers.ReadOnlyField(
-        source='intended_water_use.description')
-    ground_elevation_method = serializers.ReadOnlyField(
-        source='ground_elevation_method.description')
-    well_orientation = serializers.ReadOnlyField(
-        source='well_orientation.description')
-    surface_seal_material = serializers.ReadOnlyField(
-        source='surface_seal_material.description')
-    person_responsible = serializers.ReadOnlyField(
-        source='person_responsible.name')
-    company_of_person_responsible = serializers.ReadOnlyField(
-        source='company_of_person_responsible.name')
-    yield_estimation_method = serializers.ReadOnlyField(
-        source='yield_estimation_method.description')
-    hydro_fracturing_performed = serializers.SerializerMethodField()
-    water_quality_colour = serializers.ReadOnlyField(
-        source='water_quality_colour.description')
-    well_cap_type = serializers.ReadOnlyField(
-        source='well_cap_type.description')
-    alternative_specs_submitted = serializers.SerializerMethodField()
-    surface_seal_method = serializers.ReadOnlyField(
-        source='surface_seal_method.description')
-    liner_material = serializers.ReadOnlyField(
-        source='liner_material.description')
-    screen_material = serializers.ReadOnlyField(
-        source='screen_material.description')
-    screen_type = serializers.ReadOnlyField(
-        source='screen_type.description')
-    screen_bottom = serializers.ReadOnlyField(
-        source='screen_bottom.description')
-    screen_intake_method = serializers.ReadOnlyField(
-        source='screen_intake_method.description')
-    screen_opening = serializers.ReadOnlyField(
-        source='screen_opening.description')
-    filter_pack_material = serializers.ReadOnlyField(
-        source='filter_pack_material.description')
-    filter_pack_material_size = serializers.ReadOnlyField(
-        source='filter_pack_material_size.description')
-    decommission_method = serializers.ReadOnlyField(
-        source='decommission_method.description')
-    decommission_sealant_material = serializers.ReadOnlyField(
-        source='decommission_sealant_material.description')
-    decommission_backfill_material = serializers.ReadOnlyField(
-        source='decommission_backfill_material.description')
-
-    def get_hydro_fracturing_performed(self, obj):
-        return "Yes" if obj.hydro_fracturing_performed else "No"
-
-    def get_alternative_specs_submitted(self, obj):
-        return "Yes" if obj.alternative_specs_submitted else "No"
-
-    class Meta:
-        model = ActivitySubmission
-        fields = (
-            'well',
-            'well_class',
-            'well_subclass',
-            'well_status',
-            'well_publication_status',
-            'intended_water_use',
-            'identification_plate_number',
-            'well_identification_plate_attached',
-            'id_plate_attached_by',
-            'water_supply_system_name',
-            'water_supply_system_well_name',
-            'work_start_date',
-            'work_end_date',
-            'owner_full_name',
-            'owner_mailing_address',
-            'owner_province_state',
-            'owner_city',
-            'owner_postal_code',
-            'owner_email',
-            'owner_tel',
-            'street_address',
-            'city',
-            'consultant_company',
-            'consultant_name',
-            'driller_name',
-            'person_responsible',
-            'company_of_person_responsible',
-            'legal_lot',
-            'legal_plan',
-            'legal_district_lot',
-            'legal_block',
-            'legal_section',
-            'legal_township',
-            'legal_range',
-            'land_district',
-            'legal_pid',
-            'well_location_description',
-            'latitude',
-            'longitude',
-            'coordinate_acquisition_code',
-            'ground_elevation',
-            'ground_elevation_method',
-            'drilling_methods',
-            'well_orientation',
-            'lithologydescription_set',
-            'casing_set',
-            'surface_seal_material',
-            'surface_seal_depth',
-            'surface_seal_thickness',
-            'surface_seal_method',
-            'backfill_type',
-            'backfill_depth',
-            'liner_material',
-            'liner_diameter',
-            'liner_thickness',
-            'liner_from',
-            'liner_to',
-            'linerperforation_set',
-            'screen_intake_method',
-            'screen_type',
-            'screen_material',
-            'other_screen_material',
-            'screen_opening',
-            'screen_bottom',
-            'other_screen_bottom',
-            'screen_set',
-            'screen_information',
-            'filter_pack_from',
-            'filter_pack_to',
-            'filter_pack_thickness',
-            'filter_pack_material',
-            'filter_pack_material_size',
-            'development_methods',
-            'development_hours',
-            'development_notes',
-            'yield_estimation_method',
-            'yield_estimation_rate',
-            'yield_estimation_duration',
-            'well_yield_unit',
-            'static_level_before_test',
-            'drawdown',
-            'hydro_fracturing_performed',
-            'hydro_fracturing_yield_increase',
-            'recommended_pump_depth',
-            'recommended_pump_rate',
-            'water_quality_characteristics',
-            'water_quality_colour',
-            'water_quality_odour',
-            'ems',
-            'aquifer',
-            'total_depth_drilled',
-            'finished_well_depth',
-            'decommission_reason',
-            'decommission_method',
-            'decommission_sealant_material',
-            'decommission_backfill_material',
-            'decommission_details',
-            'final_casing_stick_up',
-            'bedrock_depth',
-            'static_water_level',
-            'well_yield',
-            'artesian_flow',
-            'artesian_pressure',
-            'well_cap_type',
-            'well_disinfected_status',
-            'comments',
-            'internal_comments',
-            'alternative_specs_submitted',
-            'decommission_description_set',
-            'observation_well_number',
-            'observation_well_status',
-            'aquifer_vulnerability_index',
-            'aquifer_lithology',
-            'storativity',
-            'transmissivity',
-            'hydraulic_conductivity',
-            'specific_storage',
-            'specific_yield',
-            'testing_method',
-            'testing_duration',
-            'analytic_solution_type',
-            'boundary_effect',
-            'create_user', 'create_date',
-        )
-
-    def get_hydro_fracturing_performed(self, obj):
-        return "Yes" if obj.hydro_fracturing_performed else "No"
 
     def get_alternative_specs_submitted(self, obj):
         return "Yes" if obj.alternative_specs_submitted else "No"

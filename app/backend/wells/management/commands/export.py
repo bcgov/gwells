@@ -167,20 +167,20 @@ class Command(BaseCommand):
  artesian_flow, artesian_pressure, well_cap_type, well_disinfected_code,
  well_orientation,
  alternative_specs_submitted,
- surface_seal_material_code, surface_seal_method_code, surface_seal_length,
+ surface_seal_material_code, surface_seal_method_code, surface_seal_length, surface_seal_depth,
  backfill_type,
  backfill_depth,
  liner_material_code, liner_diameter, liner_thickness, surface_seal_thickness,
  liner_from, liner_to,
  screen_intake_method_code, screen_type_code, screen_material_code,
- other_screen_material,
+ other_screen_material, screen_information,
  screen_opening_code, screen_bottom_code, other_screen_bottom,
  filter_pack_from,
  filter_pack_to, filter_pack_material_code,
  filter_pack_thickness,
  filter_pack_material_size_code,
  development_hours, development_notes,
- water_quality_colour, water_quality_odour, ems_id,
+ water_quality_colour, water_quality_odour,
  yield_estimation_method_code,
  yield_estimation_rate,
  yield_estimation_duration, static_level_before_test, drawdown,
@@ -230,7 +230,7 @@ class Command(BaseCommand):
         # CASING
         ########
         casing_sql = ("""select casing.well_tag_number, casing_from, casing_to, casing.diameter, casing_code,
- casing_material_code, wall_thickness, drive_shoe
+ casing_material_code, wall_thickness, drive_shoe_code
  from casing
  inner join well on well.well_tag_number = casing.well_tag_number
  where well.well_publication_status_code = 'Published' or well.well_publication_status_code = null
@@ -238,7 +238,7 @@ class Command(BaseCommand):
         ########
         # SCREEN
         ########
-        screen_sql = ("""select screen.well_tag_number, screen_from, screen_to, internal_diameter,
+        screen_sql = ("""select screen.well_tag_number, screen_from, screen_to, screen_diameter,
  screen_assembly_type_code, slot_size
  from screen
  inner join well on well.well_tag_number = screen.well_tag_number

@@ -101,42 +101,6 @@ from wells.permissions import WellsEditPermissions, WellsEditOrReadOnly
 logger = logging.getLogger(__name__)
 
 
-class WellSearchFilter(restfilters.FilterSet):
-    well_tag_number = restfilters.CharFilter()
-    identification_plate_number = restfilters.CharFilter()
-    owner_full_name = restfilters.CharFilter(lookup_expr='icontains')
-    street_address = restfilters.CharFilter(lookup_expr='icontains')
-    legal_plan = restfilters.CharFilter()
-    legal_lot = restfilters.CharFilter()
-
-
-class WellLocationFilter(WellSearchFilter, restfilters.FilterSet):
-    ne_lat = restfilters.NumberFilter(field_name='latitude', lookup_expr='lte')
-    ne_long = restfilters.NumberFilter(
-        field_name='longitude', lookup_expr='lte')
-    sw_lat = restfilters.NumberFilter(field_name='latitude', lookup_expr='gte')
-    sw_long = restfilters.NumberFilter(
-        field_name='longitude', lookup_expr='gte')
-
-
-class WellDetailView(DetailView):
-    model = Well
-    context_object_name = 'well'
-    template_name = 'wells/well_detail.html'
-
-    def get_context_data(self, **kwargs):
-        """
-        Return the context for the well details page.
-        """
-
-        context = super(WellDetailView, self).get_context_data(**kwargs)
-        surveys = Survey.objects.order_by('create_date')
-        context['surveys'] = surveys
-        context['page'] = 'w'
-
-        return context
-
-
 class WellDetail(RetrieveAPIView):
     """
     Return well detail.
@@ -730,8 +694,8 @@ LITHOLOGY_PROPERTIES = openapi.Schema(
             description=('Link to well summary report within the Groundwater Wells and Aquifer (GWELLS)'
                          ' application. The well summary provides the overall desription and history of the'
                          ' well.')),
-        'from': get_model_feature_schema(LithologyDescription, 'lithology_from'),
-        'to': get_model_feature_schema(LithologyDescription, 'lithology_to'),
+        'from': get_model_feature_schema(LithologyDescription, 'start'),
+        'to': get_model_feature_schema(LithologyDescription, 'end'),
         'colour': get_model_feature_schema(LithologyColourCode, 'description'),
         'description': get_model_feature_schema(LithologyDescriptionCode, 'description'),
         'material': get_model_feature_schema(LithologyMaterialCode, 'description'),
