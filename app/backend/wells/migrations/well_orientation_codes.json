@@ -1,6 +1,6 @@
 [{
     "model": "wells.wellorientationcode",
-    "pk": "horizontal",
+    "pk": "HORIZONTAL",
     "fields": {
         "create_user": "DATALOAD_USER",
         "create_date": "2018-08-14T17:42:52.421Z",
@@ -14,7 +14,7 @@
 },
 {
   "model": "wells.wellorientationcode",
-  "pk": "vertical",
+  "pk": "VERTICAL",
   "fields": {
       "create_user": "DATALOAD_USER",
       "create_date": "2018-08-14T17:42:52.421Z",
