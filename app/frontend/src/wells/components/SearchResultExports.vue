@@ -17,10 +17,10 @@
     <div>
       <ul>
         <li>
-          <a :href="excelExportUrl" download="search-results.xlsx">Excel</a>
+          <a :href="excelExportUrl" download="search-results.xlsx" @click="handleExportClickEvent('Excel')">Excel</a>
         </li>
         <li>
-          <a :href="csvExportUrl" download="search-results.csv">CSV</a>
+          <a :href="csvExportUrl" download="search-results.csv" @click="handleExportClickEvent('CSV')">CSV</a>
         </li>
       </ul>
     </div>
@@ -85,6 +85,16 @@ export default {
       }
 
       return url
+    },
+    handleExportClickEvent (format) {
+      if (window.ga) {
+        window.ga('send', {
+          hitType: 'event',
+          eventCategory: 'Button',
+          eventAction: 'WellSearchResultsExtract',
+          eventLabel: format
+        })
+      }
     }
   }
 }
