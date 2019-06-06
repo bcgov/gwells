@@ -836,7 +836,7 @@
             "well_identification_plate_attached": null,
             "ground_elevation": null,
             "ground_elevation_method": null,
-            "well_orientation": true,
+            "well_orientation": "horizontal",
             "surface_seal_material": null,
             "surface_seal_length": null,
             "surface_seal_thickness": null,
@@ -941,7 +941,7 @@
             "drilling_methods": [
                 "AIR_ROTARY"
             ],
-            "well_orientation": true,
+            "well_orientation": "vertical",
             "surface_seal_material": "BNTITE_CLY",
             "surface_seal_length": "20.00",
             "surface_seal_thickness": "2.00",
@@ -1055,7 +1055,7 @@
             "drilling_methods": [
                 "AIR_ROTARY"
             ],
-            "well_orientation": true,
+            "well_orientation": "vertical",
             "surface_seal_material": "BNTITE_CLY",
             "surface_seal_length": "16.00",
             "surface_seal_thickness": "1.00",
@@ -1169,7 +1169,7 @@
             "drilling_methods": [
                 "AIR_ROTARY"
             ],
-            "well_orientation": true,
+            "well_orientation": "vertical",
             "surface_seal_material": "BNTITE_CLY",
             "surface_seal_length": "18.00",
             "surface_seal_thickness": "1.50",
@@ -1283,7 +1283,7 @@
             "drilling_methods": [
                 "AIR_ROTARY"
             ],
-            "well_orientation": true,
+            "well_orientation": "horizontal",
             "surface_seal_material": "BNTITE_CLY",
             "surface_seal_length": "15.00",
             "surface_seal_thickness": "1.50",
@@ -1403,7 +1403,7 @@
                 "DUGOUT",
                 "EXCAVATING"
             ],
-            "well_orientation": false,
+            "well_orientation": "vertical",
             "surface_seal_material": "SND_CMT_GT",
             "surface_seal_length": "11.00",
             "surface_seal_depth": "3.00",

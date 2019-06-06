@@ -210,14 +210,12 @@ const SEARCH_FIELDS = {
     textField: 'description',
     valueField: 'drilling_method_code'
   },
-  wellOrientation: {
-    param: 'well_orientation',
+  wellOrientationStatus: {
+    param: 'well_orientation_status',
     label: 'Orientation of well',
-    type: 'radio',
-    options: [
-      { text: 'Vertical', value: 'true' },
-      { text: 'Horizontal', value: 'false' }
-    ]
+    type: 'select',
+    textField: 'description',
+    valueField: 'well_orientation_code'
   },
   surfaceSealMaterial: {
     param: 'surface_seal_material',
