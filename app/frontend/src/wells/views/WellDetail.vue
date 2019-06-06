@@ -15,6 +15,19 @@
       </b-card>
       <b-card v-else class="container p-1">
 
+        <b-alert
+            show
+            variant="info"
+            class="mb-3"
+            v-for="(survey, index) in surveys"
+            :key="`survey ${index}`">
+          <p class="m-0">
+            <a :href="survey.survey_link">
+              {{ survey.survey_introduction_text }}
+            </a>
+          </p>
+        </b-alert>
+
         <!-- SUMMARY -->
         <fieldset id="summary_fieldset" class="detail-section mb-3">
           <legend>
@@ -465,6 +478,7 @@ export default {
   ],
   data () {
     return {
+      surveys: [],
       well: {},
       licence: {
         status: '',
@@ -576,10 +590,24 @@ export default {
       }).catch((e) => {
         this.loadLicencingError = e.response
       })
+    },
+    fetchSurveys () {
+      ApiService.query('surveys').then((response) => {
+        if (response.data) {
+          response.data.forEach((survey) => {
+            if (survey.survey_page === 'w' && survey.survey_enabled) {
+              this.surveys.push(survey)
+            }
+          })
+        }
+      }).catch((e) => {
+        console.error(e)
+      })
     }
   },
   created () {
     this.fetchWellData()
+    this.fetchSurveys()
   }
 }
 </script>

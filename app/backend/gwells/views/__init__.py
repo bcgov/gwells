@@ -17,11 +17,14 @@ from django.shortcuts import render
 from django.views.generic import TemplateView
 from django.http import HttpResponse
 from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import RetrieveUpdateDestroyAPIView, ListCreateAPIView
 from rest_framework import exceptions
 
 from gwells.serializers import SurveySerializer
 from gwells.models import Survey
+from gwells.permissions import SurveysEditOrReadOnly
+from gwells.roles import SURVEYS_EDIT_ROLE
+
 from wells.models import WellActivityCode
 
 
@@ -62,15 +65,42 @@ class HealthView(TemplateView):
         return HttpResponse(WellActivityCode.objects.count())
 
 
-class SurveyListView(ListAPIView):
+class SurveyListCreateView(ListCreateAPIView):
     """
     get: returns a list of active surveys
     """
 
     swagger_schema = None
     serializer_class = SurveySerializer
-    queryset = Survey.objects.filter(survey_enabled=True)
+    queryset = Survey.objects.all()
     pagination_class = None
+    permission_classes = (SurveysEditOrReadOnly,)
+
+    def get_queryset(self):
+        user_is_staff = self.request.user.groups.filter(name=SURVEYS_EDIT_ROLE).exists()
+
+        if not user_is_staff:
+            return self.queryset.filter(survey_enabled=True)
+
+        return super().get_queryset()
+
+
+class SurveyUpdateDeleteView(RetrieveUpdateDestroyAPIView):
+    """ handles updating and deleting of surveys """
+    swagger_schema = None
+    serializer_class = SurveySerializer
+    queryset = Survey.objects.all()
+    pagination_class = None
+    permission_classes = (SurveysEditOrReadOnly,)
+    lookup_field = "survey_guid"
+
+    def get_queryset(self):
+        user_is_staff = self.request.user.groups.filter(name=SURVEYS_EDIT_ROLE).exists()
+
+        if not user_is_staff:
+            return self.queryset.filter(survey_enabled=True)
+
+        return super().get_queryset()
 
 
 def index(request):
