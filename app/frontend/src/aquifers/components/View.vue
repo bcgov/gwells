@@ -173,7 +173,15 @@
           </div>
           <b-table striped hover :items="licence_details.wells_by_licence"></b-table>
           <p><i v-if="licence_details.licences_updated">Licence info last updated {{ licence_details.licences_updated.update_date__max|formatDate }}</i></p>
-
+          <p>
+            Licensing information is obtained from the <a href="https://catalogue.data.gov.bc.ca/dataset/water-rights-licences-public" @click="handleOutboundLinkClicks('https://catalogue.data.gov.bc.ca/dataset/water-rights-licences-public')">Water Rights Licence - Public data layer</a>.
+          </p>
+          <p>
+            Unique licenses are counted once for each aquifer that they are associated with.
+          </p>
+          <p>
+            The total licensed volume is counted once for each licence (the total volume my be shared between wells if there are multiple wells in a licence). In cases where specific volumes are licensed for multiple purposed  individual volumes are summed)"
+          </p>
         </b-col>
         <b-col cols="12" xl="4" lg="6">
           <h5 class="mt-3 border-bottom pb-4 main-title">Knowledge Indicators</h5>
@@ -553,6 +561,16 @@ export default {
     },
     getEMSLink () {
       return `https://apps.nrs.gov.bc.ca/gwells/?match_any=false&ems_has_value=true&aquifer=${this.record['aquifer_id']}#advanced`
+    },
+    handleOutboundLinkClicks (link) {
+      if (window.ga) {
+        window.ga('send', 'event', {
+          eventCategory: 'Outbound Link',
+          eventAction: 'click',
+          eventLabel: link
+        })
+      }
     }
-  }}
+  }
+}
 </script>
