@@ -141,7 +141,18 @@ export default {
       this.updateQueryParams()
 
       // send the analytic event when triggering search by the search button
-      this.triggerAnalyticsSearchEvent(this.searchParams)
+
+      const columnsRequested = {
+        'search_columns': this.searchResultColumns.join(',')
+      }
+
+      this.triggerAnalyticsSearchEvent(
+        Object.assign(
+          {},
+          this.searchParams,
+          columnsRequested
+        )
+      )
     },
     handleReset () {
       this.resetMapBounds()
@@ -215,6 +226,7 @@ export default {
     },
     triggerAnalyticsSearchEvent (params) {
       // trigger the search event, sending along the search params as a string
+
       if (window.ga) {
         window.ga('send', {
           hitType: 'event',
