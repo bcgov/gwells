@@ -180,7 +180,7 @@
             Unique licenses are counted once for each aquifer that they are associated with.
           </p>
           <p>
-            The total licensed volume is counted once for each licence (the total volume my be shared between wells if there are multiple wells in a licence). In cases where specific volumes are licensed for multiple purposed  individual volumes are summed)"
+            The total licensed volume is counted once for each licence (the total volume may be shared between wells if there are multiple wells in a licence). In cases where specific volumes are licensed for multiple purposed  individual volumes are summed)"
           </p>
         </b-col>
         <b-col cols="12" xl="4" lg="6">
