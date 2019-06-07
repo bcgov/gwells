@@ -1,4 +1,5 @@
 import re
+import operator
 from deepdiff import DeepDiff
 from django.contrib.gis.geos import GEOSGeometry
 
@@ -108,7 +109,13 @@ def get_well_history(well):
                     history_diff.append(item)
 
     # sort our diffed edit objects by timestamp
-    history_diff = sorted(history_diff, key=lambda x: x['date'], reverse=True)
+    # history_diff = sorted(history_diff, key=lambda x: (x['type']), reverse=False)
+    # history_diff = sorted(history_diff, key=lambda x: (x['date']), reverse=True)
+    history_diff.sort(key=operator.itemgetter('type'))
+    history_diff.sort(key=operator.itemgetter('date'), reverse=True)
+
+    if len(history_diff) > 0 and history_diff[-1]['type'] == 'Well':
+        del history_diff[-1]
 
     well_history = {
         'diff': history_diff,
