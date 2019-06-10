@@ -23,5 +23,5 @@ openpyxl==2.5.11
 lxml==4.2.5
 GDAL>=2.4,<3.0
 deepdiff>=4
-urllib3==1.25.3
+urllib3>=1.24,<1.25
 djangorestframework-csv==2.1.0
