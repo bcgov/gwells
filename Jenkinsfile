@@ -431,6 +431,10 @@ def dbBackup (String envProject, String envSuffix) {
     \""
 }
 
+// migrated flag - use for checking to see if database has already been migrated.
+// e.g.:  On initial pipeline run, database should be migrated after deployment,
+// but needs to be migrated beforehand on subsequent runs. This variable helps track this.
+def migrated = false
 
 pipeline {
     environment {
@@ -599,6 +603,27 @@ pipeline {
                         openshift.apply(newObjectCopies).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
                         echo "Successfully applied deployment configs for ${prNumber}"
 
+
+                        def runningVersion = openshift.selector("dc", "${devAppName}").object().status.latestVersion
+                        def runningPods = openshift.selector('pod', [deployment: "${devAppName}-${runningVersion}"])
+
+                        if (runningVersion.exists() && runningPods.exists()) {
+
+                            echo "App is running - migrating database pre-deployment"
+                            def ocoutput = openshift.exec(
+                                runningPods.objects()[0].metadata.name,
+                                "--",
+                                "bash -c '\
+                                    cd /opt/app-root/src/backend; \
+                                    ./manage.py migrate \
+                                '"
+                            )
+                            migrated = true
+                        }
+
+                        
+
+
                         // promote the newly built image to DEV
                         echo "Tagging new image to DEV imagestream."
                         openshift.tag("${toolsProject}/gwells-application:${prNumber}", "${devProject}/${devAppName}:dev")  // todo: clean up labels/tags
@@ -620,6 +645,21 @@ pipeline {
                                 }
                             }
                         }
+
+                        if (!migrated) {
+                            echo "Running post-deployment migration"
+                            def ocoutput = openshift.exec(
+                                pods.objects()[0].metadata.name,
+                                "--",
+                                "bash -c '\
+                                    cd /opt/app-root/src/backend; \
+                                    ./manage.py migrate \
+                                '"
+                            )
+                            migrated = true
+                        }
+
+                        
 
                         // Report a pass to GitHub
                         createDeploymentStatus(devSuffix, 'SUCCESS', devHost)

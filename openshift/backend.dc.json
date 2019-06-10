@@ -163,8 +163,8 @@
             },
             "spec": {
                 "strategy": {
-                    "type": "Recreate",
-                    "recreateParams": {
+                    "type": "Rolling",
+                    "rollingParams": {
                         "timeoutSeconds": 900,
                         "pre": {
                             "failurePolicy": "Retry",
@@ -208,16 +208,6 @@
                                         "value": "gwells-pgsql${NAME_SUFFIX}"
                                     }
                                 ]
-                            }
-                        },
-                        "mid": {
-                            "failurePolicy": "Abort",
-                            "execNewPod": {
-                                "command": [
-                                    "/usr/bin/container-entrypoint",
-                                    "/opt/app-root/src/scripts/gwells-deploy.sh"
-                                ],
-                                "containerName": "gwells-app${NAME_SUFFIX}"
                             }
                         }
                     },
