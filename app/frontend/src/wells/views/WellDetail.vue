@@ -281,6 +281,7 @@
               <template slot="HEAD_to" slot-scope="data">{{ data.label }} (ft)</template>
               <template slot="casing_type" slot-scope="data">{{codeToDescription('casing_codes', data.item.casing_code)}}</template>
               <template slot="casing_material" slot-scope="data">{{codeToDescription('casing_materials', data.item.casing_material)}}</template>
+              <template slot="drive_shoe" slot-scope="data">{{codeToDescription('drive_shoe', data.item.drive_shoe_status)}}</template>
             </b-table>
           </div>
         </fieldset>
