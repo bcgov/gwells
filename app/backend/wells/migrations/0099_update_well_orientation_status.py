@@ -6,8 +6,8 @@ def migrate_well_orientation_status(apps, schema_editor):
     well = apps.get_model('wells', 'well')
     code = apps.get_model('wells', 'wellorientationcode')
 
-    vertical = code.objects.filter(well_orientation_code='vertical').first()
-    horizontal = code.objects.filter(well_orientation_code='horizontal').first()
+    vertical = code.objects.filter(well_orientation_code='VERTICAL').first()
+    horizontal = code.objects.filter(well_orientation_code='HORIZONTAL').first()
 
     well.objects.filter(well_orientation=True).update(
         well_orientation_status=vertical)
