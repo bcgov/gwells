@@ -1,0 +1,13 @@
+#!/bin/sh
+# pre-deploy hook that runs migrations for GWELLS app.
+
+set -xeuo pipefail
+
+while true
+do 
+        # wait here for database to be available
+        psql -qtAX -c 'select 1' && break
+done
+
+cd $APP_ROOT/src/backend/
+python manage.py migrate

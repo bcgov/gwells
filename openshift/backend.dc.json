@@ -170,9 +170,8 @@
                             "failurePolicy": "Retry",
                             "execNewPod": {
                                 "command": [
-                                    "/bin/bash",
-                                    "-c",
-                                    "psql -qtAX -c 'select 1'"
+                                    "/usr/bin/container-entrypoint",
+                                    "/opt/app-root/src/scripts/pre-deploy.sh"
                                 ],
                                 "containerName": "gwells-app${NAME_SUFFIX}",
                                 "env": [

@@ -174,6 +174,17 @@ def unitTestDjango (String stageName, String envProject, String envSuffix) {
         def newVersion = openshift.selector("dc", "${target}").object().status.latestVersion
         def pods = openshift.selector('pod', [deployment: "${target}-${newVersion}"])
 
+        // Wait here and make sure the app pods are ready before running unit tests.
+        // We wait for both pods to be ready so that we can execute the test command
+        // on either one, without having to check which one was ready first.
+        timeout(15) {
+            pods.untilEach(2) {
+                return it.object().status.containerStatuses.every {
+                    it.ready
+                }
+            }
+        }
+
         echo "Running Django unit tests"
         def ocoutput = openshift.exec(
             pods.objects()[0].metadata.name,
@@ -607,19 +618,19 @@ pipeline {
                         def runningVersion = openshift.selector("dc", "${devAppName}").object().status.latestVersion
                         def runningPods = openshift.selector('pod', [deployment: "${devAppName}-${runningVersion}"])
 
-                        if (runningPods.exists()) {
+                        // if (runningPods.exists() && runningPods.objects()[0].status.phase == 'Running') {
 
-                            echo "App is running - migrating database pre-deployment"
-                            def ocoutput = openshift.exec(
-                                runningPods.objects()[0].metadata.name,
-                                "--",
-                                "bash -c '\
-                                    cd /opt/app-root/src/backend; \
-                                    ./manage.py migrate \
-                                '"
-                            )
-                            migrated = true
-                        }
+                        //     echo "App is running - migrating database pre-deployment"
+                        //     def ocoutput = openshift.exec(
+                        //         runningPods.objects()[0].metadata.name,
+                        //         "--",
+                        //         "bash -c '\
+                        //             cd /opt/app-root/src/backend; \
+                        //             ./manage.py migrate \
+                        //         '"
+                        //     )
+                        //     migrated = true
+                        // }
 
                         
 
@@ -641,26 +652,26 @@ pipeline {
 
                         // if the migration did not occur before deploying the new version,
                         // wait until one of the new pods is running then run migrations here.
-                        if (!migrated) {
+                        // if (!migrated) {
 
-                            // wait until pods are running before trying to migrate
-                            timeout(15) {
-                                pods.untilEach(2) {
-                                    return it.object().status.phase == 'Running'
-                                }
-                            }
+                        //     // wait until pods are running before trying to migrate
+                        //     timeout(15) {
+                        //         pods.untilEach(2) {
+                        //             return it.object().status.phase == 'Running'
+                        //         }
+                        //     }
 
-                            echo "Running post-deployment migration"
-                            def ocoutput = openshift.exec(
-                                pods.objects()[0].metadata.name,
-                                "--",
-                                "bash -c '\
-                                    cd /opt/app-root/src/backend; \
-                                    ./manage.py migrate \
-                                '"
-                            )
-                            migrated = true
-                        }
+                        //     echo "Running post-deployment migration"
+                        //     def ocoutput = openshift.exec(
+                        //         pods.objects()[0].metadata.name,
+                        //         "--",
+                        //         "bash -c '\
+                        //             cd /opt/app-root/src/backend; \
+                        //             ./manage.py migrate \
+                        //         '"
+                        //     )
+                        //     migrated = true
+                        // }
 
                         // wait until each container in this deployment's pod reports as ready
                         timeout(15) {
