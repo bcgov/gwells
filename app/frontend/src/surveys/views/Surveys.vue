@@ -204,7 +204,7 @@ export default {
     removeSurvey (id) {
       ApiService.delete('surveys', id).then(() => {
         this.getSurveys()
-        this.$noty.success('Survey removed')
+        this.$noty.success('Survey removed.')
       }).catch((e) => {
         this.$noty.error('Error deleting survey. Please try again later.')
       })
@@ -214,12 +214,11 @@ export default {
       this.$refs.cancelRemoveBtn.focus()
     },
     toggleSurveyEnabled (id, currentVal) {
-      console.log(currentVal)
       ApiService.patch('surveys', id, {
         survey_enabled: currentVal
       }).then((r) => {
         this.getSurveys()
-        this.$noty.success(`Survey ${r.data.survey_enabled ? 'enabled' : 'disabled'}`)
+        this.$noty.success(`Survey ${r.data.survey_enabled ? 'enabled' : 'disabled'}.`)
       })
     }
   },
