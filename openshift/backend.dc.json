@@ -732,7 +732,7 @@
                                         "memory": "768Mi"
                                     },
                                     "requests": {
-                                        "cpu": "300m",
+                                        "cpu": "100m",
                                         "memory": "768Mi"
                                     }
                                 },
