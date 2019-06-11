@@ -637,16 +637,19 @@ pipeline {
                         def newVersion = openshift.selector("dc", "${devAppName}").object().status.latestVersion
                         def pods = openshift.selector('pod', [deployment: "${devAppName}-${newVersion}"])
 
-                        // wait until each container in this deployment's pod reports as ready
-                        timeout(15) {
-                            pods.untilEach(2) {
-                                return it.object().status.containerStatuses.every {
-                                    it.ready
+
+
+                        // if the migration did not occur before deploying the new version,
+                        // wait until one of the new pods is running then run migrations here.
+                        if (!migrated) {
+
+                            // wait until pods are running before trying to migrate
+                            timeout(15) {
+                                pods.untilEach(2) {
+                                    return it.object().status.phase == 'Running'
                                 }
                             }
-                        }
 
-                        if (!migrated) {
                             echo "Running post-deployment migration"
                             def ocoutput = openshift.exec(
                                 pods.objects()[0].metadata.name,
@@ -659,7 +662,14 @@ pipeline {
                             migrated = true
                         }
 
-                        
+                        // wait until each container in this deployment's pod reports as ready
+                        timeout(15) {
+                            pods.untilEach(2) {
+                                return it.object().status.containerStatuses.every {
+                                    it.ready
+                                }
+                            }
+                        }
 
                         // Report a pass to GitHub
                         createDeploymentStatus(devSuffix, 'SUCCESS', devHost)
