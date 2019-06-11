@@ -607,7 +607,7 @@ pipeline {
                         def runningVersion = openshift.selector("dc", "${devAppName}").object().status.latestVersion
                         def runningPods = openshift.selector('pod', [deployment: "${devAppName}-${runningVersion}"])
 
-                        if (runningVersion.exists() && runningPods.exists()) {
+                        if (runningPods.exists()) {
 
                             echo "App is running - migrating database pre-deployment"
                             def ocoutput = openshift.exec(
