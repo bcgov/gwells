@@ -38,6 +38,9 @@ const auth = {
           },
           aquifers: {
             edit: state.keycloak.hasRealmRole('aquifers_edit')
+          },
+          surveys: {
+            edit: state.keycloak.hasRealmRole('surveys_edit')
           }
         }
       } else {
@@ -45,7 +48,8 @@ const auth = {
           registry: {},
           wells: {},
           submissions: {},
-          aquifers: {}
+          aquifers: {},
+          surveys: {}
         }
       }
     }

@@ -15,6 +15,19 @@
       </b-card>
       <b-card v-else class="container p-1">
 
+        <b-alert
+            show
+            variant="info"
+            class="mb-3"
+            v-for="(survey, index) in surveys"
+            :key="`survey ${index}`">
+          <p class="m-0">
+            <a :href="survey.survey_link">
+              {{ survey.survey_introduction_text }}
+            </a>
+          </p>
+        </b-alert>
+
         <!-- SUMMARY -->
         <fieldset id="summary_fieldset" class="detail-section mb-3">
           <legend>
@@ -281,6 +294,7 @@
               <template slot="HEAD_to" slot-scope="data">{{ data.label }} (ft)</template>
               <template slot="casing_type" slot-scope="data">{{codeToDescription('casing_codes', data.item.casing_code)}}</template>
               <template slot="casing_material" slot-scope="data">{{codeToDescription('casing_materials', data.item.casing_material)}}</template>
+              <template slot="drive_shoe" slot-scope="data">{{codeToDescription('drive_shoe', data.item.drive_shoe_status)}}</template>
             </b-table>
           </div>
         </fieldset>
@@ -465,6 +479,7 @@ export default {
   ],
   data () {
     return {
+      surveys: [],
       well: {},
       licence: {
         status: '',
@@ -576,10 +591,24 @@ export default {
       }).catch((e) => {
         this.loadLicencingError = e.response
       })
+    },
+    fetchSurveys () {
+      ApiService.query('surveys').then((response) => {
+        if (response.data) {
+          response.data.forEach((survey) => {
+            if (survey.survey_page === 'w' && survey.survey_enabled) {
+              this.surveys.push(survey)
+            }
+          })
+        }
+      }).catch((e) => {
+        console.error(e)
+      })
     }
   },
   created () {
     this.fetchWellData()
+    this.fetchSurveys()
   }
 }
 </script>

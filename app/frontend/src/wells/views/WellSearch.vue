@@ -13,61 +13,76 @@ Licensed under the Apache License, Version 2.0 (the "License");
 */
 <template>
   <b-card class="container p-1">
-    <h1 class="card-title" id="wellSearchTitle">Well Search</h1>
-    <div>
+
+      <b-alert
+          show
+          variant="info"
+          class="mb-3"
+          v-for="(survey, index) in surveys"
+          :key="`survey ${index}`">
+        <p class="m-0">
+          <a :href="survey.survey_link">
+            {{ survey.survey_introduction_text }}
+          </a>
+        </p>
+      </b-alert>
+
+      <h1 class="card-title" id="wellSearchTitle">Well Search</h1>
       <div>
-        <p>
-          Not all groundwater wells are registered with the province, as registration was voluntary until February 29, 2016. Data quality issues may impact search results.
-        </p>
-        <p>
-          Search by one of the fields below, or zoom to a location on the map.
-        </p>
+        <div>
+          <p>
+            Not all groundwater wells are registered with the province, as registration was voluntary until February 29, 2016. Data quality issues may impact search results.
+          </p>
+          <p>
+            Search by one of the fields below, or zoom to a location on the map.
+          </p>
+        </div>
       </div>
-    </div>
-    <b-row class="mt-4">
-      <b-col cols="12" lg="6" xl="5">
-        <b-card no-body border-variant="dark" class="mb-1">
-          <b-tabs card v-model="tabIndex">
-            <b-tab title="Basic Search">
-              <div class="card-text">
-                <basic-search-form @search="handleSearchSubmit()" @reset="handleReset()" />
-              </div>
-            </b-tab>
-            <b-tab title="Advanced Search">
-              <div class="card-text">
-                <advanced-search-form @search="handleSearchSubmit()" @reset="handleReset()" />
-              </div>
-            </b-tab>
-          </b-tabs>
-        </b-card>
-      </b-col>
-      <b-col>
-        <search-map ref="searchMap" @moved="handleMapMoveEnd" />
-        <b-alert variant="danger" class="mt-2" :show="locationErrorMessage !== ''">{{ locationErrorMessage }}</b-alert>
-      </b-col>
-    </b-row>
-    <b-row class="my-5" v-show="!isInitialSearch || hasResultErrors">
-      <b-col>
-        <search-results />
-      </b-col>
-    </b-row>
-    <b-row v-if="!isInitialSearch">
-      <b-col>
-        <p>
-          Can’t find the well you are looking for? Try your search again using a different set of criteria. If you still need more assistance, Contact <a href="https://portal.nrs.gov.bc.ca/web/client/contact">FrontCounterBC</a>.
-        </p>
-        <p>
-          <a href="http://www.frontcounterbc.gov.bc.ca/Start/surface-water/" @click="handleOutboundLinkClicks('www.frontcounterbc.gov.bc.ca/Start/surface-water/')">
-              Learn about and submit water license applications
-          </a>  with FrontCounterBC.
-        </p>
-      </b-col>
-    </b-row>
-  </b-card>
+      <b-row class="mt-4">
+        <b-col cols="12" lg="6" xl="5">
+          <b-card no-body border-variant="dark" class="mb-1">
+            <b-tabs card v-model="tabIndex">
+              <b-tab title="Basic Search">
+                <div class="card-text">
+                  <basic-search-form @search="handleSearchSubmit()" @reset="handleReset()" />
+                </div>
+              </b-tab>
+              <b-tab title="Advanced Search">
+                <div class="card-text">
+                  <advanced-search-form @search="handleSearchSubmit()" @reset="handleReset()" />
+                </div>
+              </b-tab>
+            </b-tabs>
+          </b-card>
+        </b-col>
+        <b-col>
+          <search-map ref="searchMap" @moved="handleMapMoveEnd" />
+          <b-alert variant="danger" class="mt-2" :show="locationErrorMessage !== ''">{{ locationErrorMessage }}</b-alert>
+        </b-col>
+      </b-row>
+      <b-row class="my-5" v-show="!isInitialSearch || hasResultErrors">
+        <b-col>
+          <search-results />
+        </b-col>
+      </b-row>
+      <b-row v-if="!isInitialSearch">
+        <b-col>
+          <p>
+            Can’t find the well you are looking for? Try your search again using a different set of criteria. If you still need more assistance, Contact <a href="https://portal.nrs.gov.bc.ca/web/client/contact">FrontCounterBC</a>.
+          </p>
+          <p>
+            <a href="http://www.frontcounterbc.gov.bc.ca/Start/surface-water/" @click="handleOutboundLinkClicks('www.frontcounterbc.gov.bc.ca/Start/surface-water/')">
+                Learn about and submit water license applications
+            </a>  with FrontCounterBC.
+          </p>
+        </b-col>
+      </b-row>
+    </b-card>
 </template>
 
 <script>
 import querystring from 'querystring'
+import ApiService from '@/common/services/ApiService.js'
 
 import { mapGetters } from 'vuex'
 import {
@@ -99,6 +114,7 @@ export default {
   },
   data () {
     return {
+      surveys: [],
       scrolled: false,
       mapError: null,
 
@@ -263,6 +279,19 @@ export default {
       if (this.$refs.searchMap && this.$refs.searchMap.resetView) {
         this.$refs.searchMap.resetView()
       }
+    },
+    fetchSurveys () {
+      ApiService.query('surveys').then((response) => {
+        if (response.data) {
+          response.data.forEach((survey) => {
+            if (survey.survey_page === 's' && survey.survey_enabled) {
+              this.surveys.push(survey)
+            }
+          })
+        }
+      }).catch((e) => {
+        console.error(e)
+      })
     }
   },
   watch: {
@@ -273,6 +302,7 @@ export default {
   created () {
     this.initQueryParams()
     this.initTabIndex()
+    this.fetchSurveys()
 
     // if the page loaded with a query, start a search.
     // Otherwise, the search does not need to run (see #1713)
