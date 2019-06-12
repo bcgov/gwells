@@ -167,7 +167,7 @@
                     "rollingParams": {
                         "timeoutSeconds": 900,
                         "pre": {
-                            "failurePolicy": "Retry",
+                            "failurePolicy": "Abort",
                             "execNewPod": {
                                 "command": [
                                     "/usr/bin/container-entrypoint",
