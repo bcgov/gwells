@@ -153,6 +153,11 @@
         </b-col>
         <b-col cols="12" xl="4" lg="6">
           <h5 class="mt-3 border-bottom pb-4 main-title">Licensing Information</h5>
+          <div>
+            <p>
+              The licensing summaries should be considered estimates. Due to complexities in the structure of the licensing data, reported values should be confirmed through the e-licensing portal.
+            </p>
+          </div>
           <ul class="ml-0 mr-0 mt-4 mb-0 p-0 aquifer-information-list">
             <div class="aquifer-information-list-divider"></div>
             <li>
@@ -172,7 +177,7 @@
               <PieChart :chartData="licence_details.lic_qty" class="mt-3"></PieChart>
           </div>
           <b-table striped hover :items="licence_details.wells_by_licence"></b-table>
-          <p><i v-if="licence_details.licences_updated">Licence info last updated {{ licence_details.licences_updated.update_date__max|formatDate }}</i></p>
+          <p><i v-if="licence_details.licences_updated && licence_details.licences_updated.update_date__max">Licence info last updated {{ licence_details.licences_updated.update_date__max|formatDate }}</i></p>
           <p>
             Licensing information is obtained from the <a href="https://catalogue.data.gov.bc.ca/dataset/water-rights-licences-public" @click="handleOutboundLinkClicks('https://catalogue.data.gov.bc.ca/dataset/water-rights-licences-public')">Water Rights Licence - Public data layer</a>.
           </p>
