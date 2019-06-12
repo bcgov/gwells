@@ -139,26 +139,21 @@ class WellSubmissionSerializerBase(AuditModelSerializer):
             if len(attrs['longitude']) <= 0:
                 errors['longitude'] = 'Latitude and Longitude are both required.'
 
-        if 'construction_start_date' in attrs or 'construction_end_date' in attrs:
-            if attrs.get('construction_start_date', None) is None or attrs.get('construction_end_date', None) is None:
-                errors['construction_start_date'] = 'Both construction start date and end date are required.'
-            else:
-                if attrs.get('construction_start_date') > attrs.get('construction_end_date'):
-                    errors['construction_start_date'] = 'Construction start date must be before end date'
-
-        if 'alteration_start_date' in attrs or 'alteration_end_date' in attrs:
-            if attrs.get('alteration_start_date', None) is None or attrs.get('alteration_end_date', None) is None:
-                errors['alteration_start_date'] = 'Both alteration start date and end date are required.'
-            else:
-                if attrs.get('alteration_start_date') > attrs.get('alteration_end_date'):
-                    errors['alteration_start_date'] = 'Alteration start date must be before end date'
-
-        if 'decommission_start_date' in attrs and 'decommission_end_date' in attrs:
-            if attrs.get('decommission_start_date', None) is None or attrs.get('decommission_end_date', None) is None:
-                errors['decommission_start_date'] = 'Both decommission start date and end date are required.'
-            else:
-                if attrs.get('decommission_start_date') > attrs.get('decommission_end_date'):
-                    errors['decommission_start_date'] = 'Decommission start date must be before end date'
+        # date validation checks mutual requirement and start date less than end date
+        dates = ['work', 'construction', 'alteration', 'decommission']
+        for i in range(len(dates)):
+            start_date = dates[i] + '_start_date'
+            end_date = dates[i] + '_end_date'
+            if start_date in attrs or end_date in attrs:
+                s = attrs.get(start_date, None)
+                e = attrs.get(end_date, None)
+                if s is None and e is None:
+                    continue
+                if s is None or e is None:
+                    errors[start_date] = 'Both ' + dates[i] + ' start date and end date are required.'
+                else:
+                    if s > e:
+                        errors[start_date] = dates[i] + ' start date must be before end date'
 
         if len(errors) > 0:
             raise serializers.ValidationError(errors)
