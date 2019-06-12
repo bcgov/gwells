@@ -561,10 +561,6 @@ pipeline {
                         openshift.apply(newObjectCopies).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
                         echo "Successfully applied deployment configs for ${prNumber}"
 
-
-                        def runningVersion = openshift.selector("dc", "${devAppName}").object().status.latestVersion
-                        def runningPods = openshift.selector('pod', [deployment: "${devAppName}-${runningVersion}"])
-
                         // promote the newly built image to DEV
                         echo "Tagging new image to DEV imagestream."
                         openshift.tag("${toolsProject}/gwells-application:${prNumber}", "${devProject}/${devAppName}:dev")  // todo: clean up labels/tags
