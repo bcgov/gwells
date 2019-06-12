@@ -97,57 +97,9 @@ def _openshift(String name, String project, Closure body) {
 def functionalTest (String stageName, String stageUrl, String envSuffix, String toTest='all') {
     _openshift(env.STAGE_NAME, toolsProject) {
         echo "Testing"
-        // these functional tests are commented out on this branch
-        // because we are not loading the page that the tests run against.
+        // this set of tests is commented out, because we no longer use the page they were
+        // written for. 
 
-        // podTemplate(
-        //     label: "bddstack-${ENV_SUFFIX}-${PR_NUM}",
-        //     name: "bddstack-${ENV_SUFFIX}-${PR_NUM}",
-        //     serviceAccount: 'jenkins',
-        //     cloud: 'openshift',
-        //     containers: [
-        //         containerTemplate(
-        //             name: 'jnlp',
-        //             image: 'docker-registry.default.svc:5000/bcgov/jenkins-slave-bddstack:v1-stable',
-        //             resourceRequestCpu: '800m',
-        //             resourceLimitCpu: '800m',
-        //             resourceRequestMemory: '4Gi',
-        //             resourceLimitMemory: '4Gi',
-        //             workingDir: '/home/jenkins',
-        //             command: '',
-        //             args: '${computer.jnlpmac} ${computer.name}',
-        //             envVars: [
-        //                 envVar(key:'BASE_URL', value: BASE_URL),
-        //                 envVar(key:'OPENSHIFT_JENKINS_JVM_ARCH', value: 'x86_64')
-        //             ]
-        //         )
-        //     ],
-        //     volumes: [
-        //         persistentVolumeClaim(
-        //             mountPath: '/var/cache/artifacts',
-        //             claimName: 'cache',
-        //             readOnly: false
-        //         )
-        //     ]
-        // ) {
-        //     node("bddstack-${ENV_SUFFIX}-${PR_NUM}") {
-        //         //the checkout is mandatory, otherwise functional tests would fail
-        //         echo "checking out source"
-        //         checkout scm
-        //         dir('tests/functional-tests') {
-        //             try {
-        //                 echo "BASE_URL = ${BASE_URL}"
-        //                 if ('all'.equalsIgnoreCase(toTest)) {
-        //                     sh './gradlew chromeHeadlessTest'
-        //                 } else {
-        //                     sh "./gradlew -DchromeHeadlessTest.single=${toTest} chromeHeadlessTest"
-        //                 }
-        //             } catch (error) {
-        //                 echo error
-        //             }
-        //         }
-        //     }
-        // }
     }
     return true
 }
@@ -442,11 +394,6 @@ def dbBackup (String envProject, String envSuffix) {
     \""
 }
 
-// migrated flag - use for checking to see if database has already been migrated.
-// e.g.:  On initial pipeline run, database should be migrated after deployment,
-// but needs to be migrated beforehand on subsequent runs. This variable helps track this.
-def migrated = false
-
 pipeline {
     environment {
         // Project-wide settings - app name, repo
@@ -618,23 +565,6 @@ pipeline {
                         def runningVersion = openshift.selector("dc", "${devAppName}").object().status.latestVersion
                         def runningPods = openshift.selector('pod', [deployment: "${devAppName}-${runningVersion}"])
 
-                        // if (runningPods.exists() && runningPods.objects()[0].status.phase == 'Running') {
-
-                        //     echo "App is running - migrating database pre-deployment"
-                        //     def ocoutput = openshift.exec(
-                        //         runningPods.objects()[0].metadata.name,
-                        //         "--",
-                        //         "bash -c '\
-                        //             cd /opt/app-root/src/backend; \
-                        //             ./manage.py migrate \
-                        //         '"
-                        //     )
-                        //     migrated = true
-                        // }
-
-                        
-
-
                         // promote the newly built image to DEV
                         echo "Tagging new image to DEV imagestream."
                         openshift.tag("${toolsProject}/gwells-application:${prNumber}", "${devProject}/${devAppName}:dev")  // todo: clean up labels/tags
@@ -647,31 +577,6 @@ pipeline {
                         echo "Waiting for deployment to dev..."
                         def newVersion = openshift.selector("dc", "${devAppName}").object().status.latestVersion
                         def pods = openshift.selector('pod', [deployment: "${devAppName}-${newVersion}"])
-
-
-
-                        // if the migration did not occur before deploying the new version,
-                        // wait until one of the new pods is running then run migrations here.
-                        // if (!migrated) {
-
-                        //     // wait until pods are running before trying to migrate
-                        //     timeout(15) {
-                        //         pods.untilEach(2) {
-                        //             return it.object().status.phase == 'Running'
-                        //         }
-                        //     }
-
-                        //     echo "Running post-deployment migration"
-                        //     def ocoutput = openshift.exec(
-                        //         pods.objects()[0].metadata.name,
-                        //         "--",
-                        //         "bash -c '\
-                        //             cd /opt/app-root/src/backend; \
-                        //             ./manage.py migrate \
-                        //         '"
-                        //     )
-                        //     migrated = true
-                        // }
 
                         // wait until each container in this deployment's pod reports as ready
                         timeout(15) {
