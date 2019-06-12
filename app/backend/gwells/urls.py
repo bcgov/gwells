@@ -20,7 +20,7 @@ from django.views.generic import TemplateView
 from django.urls import path, re_path
 from django.shortcuts import redirect
 
-from gwells.views import SurveyListView, HealthView, index, api
+from gwells.views import SurveyListCreateView, SurveyUpdateDeleteView, HealthView, index, api
 from gwells.views.admin import *
 from gwells.settings.base import get_env_variable
 
@@ -61,8 +61,11 @@ urlpatterns = [
         name='site_admin'),  # editable list view of surveys and other site admin features
 
     # API routes
+    url(r'^' + app_root_slash + 'api/v1/surveys/(?P<survey_guid>[-\w]+)$',
+        SurveyUpdateDeleteView.as_view(), name='survey-detail'),
     url(r'^' + app_root_slash + 'api/v1/surveys$',
-        SurveyListView.as_view(), name='survey-list'),
+        SurveyListCreateView.as_view(), name='survey-list'),
+
     url(r'^' + app_root_slash + DJANGO_ADMIN_URL + '/', admin.site.urls),
     url(r'^' + app_root_slash + 'accounts/',
         include('django.contrib.auth.urls')),

@@ -333,7 +333,7 @@ export default {
     // Fetch current surveys and add 'registries' surveys (if any) to this.surveys to be displayed
     ApiService.query('surveys').then((response) => {
       response.data.forEach((survey) => {
-        if (survey.survey_page === 'r') {
+        if (survey.survey_page === 'r' && survey.survey_enabled) {
           this.surveys.push(survey)
         }
       })

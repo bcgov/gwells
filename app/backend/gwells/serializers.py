@@ -11,7 +11,8 @@ class SurveySerializer(serializers.ModelSerializer):
             'survey_guid',
             'survey_introduction_text',
             'survey_link',
-            'survey_page'
+            'survey_page',
+            'survey_enabled',
         )
 
 
