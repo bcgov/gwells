@@ -3,22 +3,10 @@ from deepdiff import DeepDiff
 from django.contrib.gis.geos import GEOSGeometry
 from django.forms.models import model_to_dict
 from django.db.models.fields.reverse_related import ManyToOneRel, ManyToManyRel
+from wells.stack import MANY_TO_MANY_LOOKUP, KEY_VALUE_LOOKUP
 from wells.models import (
     ActivitySubmission,
-    FieldsProvided,
-    Casing,
-    IntendedWaterUseCode,
-    LicencedStatusCode,
-    LithologyColourCode,
-    LithologyDescription,
-    LithologyDescriptionCode,
-    LithologyHardnessCode,
-    LithologyMaterialCode,
-    Well,
-    WellClassCode,
-    WellYieldUnitCode,
-    WellStatusCode
-)
+    FieldsProvided)
 
 def get_well_history_old(well):
     # query records in history for this model.
@@ -137,35 +125,48 @@ def get_well_history_old(well):
 
 
 def get_well_history(well):
-    submissions = ActivitySubmission.objects.filter(well=well.well_tag_number)
-    history_diff = []
+    submissions = ActivitySubmission.objects.filter(well=well.well_tag_number).order_by('-create_date')
+    legacy_record = submissions.filter(well_activity_type='LEGACY').first()
+    history = []
 
     for submission in submissions:
+        history_item = []
         if submission.well_activity_type.code == 'LEGACY':
             continue
         fields_provided = FieldsProvided.objects.filter(activity_submission=submission.filing_number).first()
-        legacy_record = submissions.filter(well_activity_type='LEGACY').first()
         fields_provided_dict = model_to_dict(fields_provided)
         for key, value in fields_provided_dict.items():
             if value and key != 'activity_submission':
+                submission_value = getattr(submission, key)
+                legacy_value = getattr(legacy_record, key)
+
+                if submission_value is None and legacy_value is None:
+                    continue
+
                 item = {
-                    "diff": clean_attrs(getattr(submission, key), key),
-                    "prev": clean_attrs(getattr(legacy_record, key), key),
+                    "diff": clean_attrs(submission_value, key),
+                    "prev": clean_attrs(legacy_value, key),
                     "type": key,
                     "action": '',
                     "user": submission.update_user,
                     "date": submission.update_date
                 }
                 if item['diff'] != item['prev']:
-                    history_diff.append(item)
+                    history_item.append(item)
 
-                # update stacked legacy_record for next comparison loop , FIX SET ON QUERYSETS
-                setattr(legacy_record, key, getattr(submission, key))
+                # update stacked legacy_record for next comparison loop
+                if hasattr(legacy_value, 'instance'):
+                    legacy_value.set(submission_value.all())
+                else:
+                    setattr(legacy_record, key, submission_value)
 
-    history_diff = sorted(history_diff, key=lambda x: x['date'], reverse=True)
+        if history_item:
+            history.append(history_item)
+
+    # history_diff = sorted(history_diff, key=lambda x: x['date'], reverse=True)
 
     well_history = {
-        'diff': history_diff,
+        'diff': history,
         'create_user': well.create_user,
         'create_date': well.create_date
     }
@@ -174,9 +175,16 @@ def get_well_history(well):
 
 
 def clean_attrs(obj, key):
+    if obj is None:
+        return None
+
     # convert geo point type to string
     if isinstance(obj, GEOSGeometry):
-        return ', '.join(map(str, obj.coords))
+        round5 = (round(obj[0], 5), round(obj[1], 5))
+        return ', '.join(map(str, round5))
+
+    if key in KEY_VALUE_LOOKUP:
+        return getattr(obj, KEY_VALUE_LOOKUP[key])
 
     # convert querysets to raw array objects
     if hasattr(obj, 'instance'):

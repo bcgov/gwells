@@ -13,33 +13,47 @@
           <b-row><b-col>No history for this record.</b-col></b-row>
         </div>
         <div class="mt-2" v-if="history && history.length && showHistory">
-          <div class="mt-3" v-for="(version, index) in history" :key="`history-version ${index}`" :id="`history-version-${index}`">
+          <div class="mt-3" v-for="(history_item, index) in history" :key="`history-version ${index}`" :id="`history-version-${index}`">
             <div class="font-weight-bold">
-              {{version.user}}
-              {{version.action}}
-              {{version.type}}
+<!--              {{history_item[0].user}}-->
+              edited well
+<!--              {{history_item[0].action}}-->
+<!--              {{history_item[0].type}}-->
               on
-              {{version.date | moment("MMMM Do YYYY [at] LT")}}
+<!--              {{history_item[0].date | moment("MMMM Do YYYY [at] LT")}}-->
               <div
                 style="margin-left:20px;"
                 class="font-weight-light"
-                v-for="(value, key) in version.diff"
+                v-for="(item, key) in history_item"
                 :key="`history-item-${key}-in-version ${index}`">
-                <div v-if="!(value === '' && version.prev[key] === null)">
-                  <div v-if="Array.isArray(value) && value.length > 0">
-                    <b-table
-                      responsive
-                      striped
-                      small
-                      bordered
-                      :items="Object.values(version.action != 'Removed' ? version.diff[key] : version.prev[key])"
-                      show-empty
-                    ></b-table>
+
+                  <div v-if="Array.isArray(item.diff) && item.diff.length > 0">
+                    <div v-for="(dv, d) in item.diff"
+                         :key="`history-dv-${d}-in-version ${index}`">
+                      <b-table
+                        responsive
+                        striped
+                        small
+                        bordered
+                        :items="Object.values(dv)"
+                        show-empty/>
+                    </div>
+                    to
+                    <div v-for="(pv, p) in item.diff"
+                         :key="`history-pv-${p}-in-version ${index}`">
+                      <b-table
+                        responsive
+                        striped
+                        small
+                        bordered
+                        :items="Object.values(pv)"
+                        show-empty/>
+                    </div>
                   </div>
                   <div v-else>
-                    {{ key | formatKey }} changed from {{ version.prev[key] | formatValue }} to {{ value | formatValue }}
+                    {{ item.type | formatKey }} changed from {{ item.prev | formatValue }} to {{ item.diff | formatValue }}
                   </div>
-                </div>
+
               </div>
             </div>
           </div>
@@ -87,12 +101,13 @@ export default {
   },
   methods: {
     toggleShow () {
-      this.showHistory = !this.showHistory
-      if (this.showHistory && !this.loading && !this.loaded) {
+      this.showHistory = true
+      // if (this.showHistory && !this.loading && !this.loaded) {
         this.update()
-      }
+      // }
     },
     update () {
+      return
       this.loading = true
       ApiService.history('wells', this.id).then((response) => {
         this.history = response.data.diff
