@@ -2,18 +2,26 @@ from django.contrib.gis.geos import GEOSGeometry
 from django.forms.models import model_to_dict
 from django.db.models.fields.reverse_related import ManyToOneRel, ManyToManyRel
 from django.db.models.fields.related import ManyToManyField
-from wells.models import (
-    ActivitySubmission,
-    FieldsProvided)
+from wells.models import (ActivitySubmission, FieldsProvided)
 
 
 def get_well_history(well):
-    submissions = ActivitySubmission.objects.filter(well=well.well_tag_number).order_by('-create_date')
+
+    well_history = {
+        'history': None,
+        'create_user': well.create_user,
+        'create_date': well.create_date
+    }
+
+    submissions = ActivitySubmission.objects.filter(well=well.well_tag_number).order_by('filing_number')
+    legacy_record = submissions.earliest('filing_number')  # filter(well_activity_type='LEGACY').first()
+
+    if legacy_record:
+        legacy_copy = model_to_dict(legacy_record)  # We use a copy of the legacy record as our composite stacker
+    else:
+        return well_history  # Return empty history if a legacy record hasn't been created yet
+
     history = []
-
-    # We use a copy of the legacy record as our composite stacker
-    legacy_copy = model_to_dict(submissions.filter(well_activity_type='LEGACY').first())
-
     for submission in submissions:
         history_item = []
         if submission.well_activity_type.code == 'LEGACY':
@@ -44,11 +52,7 @@ def get_well_history(well):
         if history_item:
             history.append(history_item)
 
-    well_history = {
-        'diff': history,
-        'create_user': well.create_user,
-        'create_date': well.create_date
-    }
+    well_history['history'] = history.sort()
 
     return well_history
 
@@ -88,7 +92,6 @@ KEY_VALUE_LOOKUP = {
     'intended_water_use': 'intended_water_use_code',
     'land_district': 'land_district_code',
     'coordinate_acquisition_code': 'code',
-    'aquifer_lithology': 'aquifer_lithology_code',
     'well_yield_unit': 'well_yield_unit_code',
     'surface_seal_material': 'surface_seal_material_code',
     'surface_seal_method': 'surface_seal_method_code',

@@ -112,7 +112,7 @@ export default {
     update () {
       this.loading = true
       ApiService.history('wells', this.id).then((response) => {
-        this.history = response.data.diff
+        this.history = response.data.history
         this.create_user = response.data.create_user
         this.create_date = response.data.create_date
         this.loading = false
