@@ -16,10 +16,9 @@
           <div class="mt-3" v-for="(history_item, index) in history" :key="`history-version ${index}`" :id="`history-version-${index}`">
             <div class="font-weight-bold">
               {{history_item[0].user}}
-              updated
 <!--              {{history_item[0].action}}-->
-              {{history_item[0].type}}
-              on
+<!--              {{history_item[0].type}}-->
+              Edited this Well on
               {{history_item[0].date | moment("MMMM Do YYYY [at] LT")}}
               <div
                 style="margin-left:20px;"
@@ -38,9 +37,9 @@
                         :items="item.diff"/>
                     </div>
                     <div v-else>
-                      none
+                      None
                     </div>
-                    <div>FROM</div>
+                    <div style="margin-bottom:10px;">FROM</div>
                     <div v-if="item.prev != null">
                       <b-table
                         responsive
@@ -50,7 +49,7 @@
                         :items="item.prev"/>
                     </div>
                     <div v-else>
-                     none
+                     None
                     </div>
                   </div>
                   <div v-else>

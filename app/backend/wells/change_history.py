@@ -40,7 +40,7 @@ def get_well_history(well):
                     "diff": submission_value,
                     "prev": legacy_value,
                     "type": key,
-                    "action": '',
+                    "action": action_type(submission_value, legacy_value),
                     "user": submission.update_user,
                     "date": submission.update_date
                 }
@@ -52,7 +52,7 @@ def get_well_history(well):
         if history_item:
             history.append(history_item)
 
-    well_history['history'] = history.sort()
+    well_history['history'] = history[::-1]
 
     return well_history
 
@@ -67,7 +67,10 @@ def clean_attrs(obj, key):
         return ', '.join(map(str, round5))
 
     if key in KEY_VALUE_LOOKUP:
-        return getattr(obj, KEY_VALUE_LOOKUP[key])
+        if type(obj) == str:
+            return obj
+        else:
+            return getattr(obj, KEY_VALUE_LOOKUP[key])
 
     # convert querysets to raw array objects
     if hasattr(obj, 'instance'):
@@ -79,6 +82,20 @@ def clean_attrs(obj, key):
 
     # return original object if no type checks caught
     return obj
+
+
+def action_type(diff, prev):
+    empty_diff = diff is None or diff is [] or diff is ''
+    empty_prev = prev is None or prev is [] or prev is ''
+    if empty_diff:
+        return 'Removed'
+    elif not empty_diff and empty_prev:
+        return 'Added'
+    elif not empty_diff and not empty_prev:
+        return 'Updated'
+    else:
+        return 'Edited'
+
 
 
 KEY_VALUE_LOOKUP = {
