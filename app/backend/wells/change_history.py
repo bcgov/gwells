@@ -3,6 +3,7 @@ from django.forms.models import model_to_dict
 from wells.models import (ActivitySubmission, FieldsProvided)
 from wells.serializers import CasingSummarySerializer, ScreenSerializer, LinerPerforationSerializer, \
     DecommissionDescriptionSerializer, LithologyDescriptionSummarySerializer
+from submissions.serializers import WellStaffEditSubmissionSerializer
 from wells.stack import KEY_VALUE_LOOKUP, MANY_TO_MANY_LOOKUP
 
 
@@ -17,13 +18,14 @@ def get_well_history(well):
     submissions = ActivitySubmission.objects.filter(well=well.well_tag_number).order_by('filing_number')
     legacy_record = submissions.filter(well_activity_type='LEGACY').first()
 
+    # We use a copy of the legacy record as our composite stacker
     if legacy_record:
-        legacy_copy = model_to_dict(legacy_record)  # We use a copy of the legacy record as our composite stacker
+        legacy_copy = WellStaffEditSubmissionSerializer(legacy_record).data
     else:
         return well_history  # Return empty history if a legacy record hasn't been created yet
 
     history = []
-    for submission in submissions:
+    for submission in submissions: # Loop through all submission for a well to build the history
         history_item = []
         if submission.well_activity_type.code == 'LEGACY':
             continue
@@ -31,6 +33,7 @@ def get_well_history(well):
         fields_provided_dict = model_to_dict(fields_provided)
         for key, value in fields_provided_dict.items():
             if value and key != 'activity_submission':
+                # clean and transform our history values
                 submission_value = clean_attrs(getattr(submission, key), key)
                 legacy_value = clean_attrs(legacy_copy.get(key, None), key)
 
@@ -45,19 +48,21 @@ def get_well_history(well):
                     "user": submission.update_user,
                     "date": submission.update_date
                 }
+                
                 if item['diff'] != item['prev']:
                     history_item.append(item)
 
-                legacy_copy[key] = item['diff']
+                legacy_copy[key] = item['diff']  # update the composite each loop
 
         if history_item:
             history.append(history_item)
 
-    well_history['history'] = history[::-1]
+    well_history['history'] = history[::-1]  # we reverse the list to put newest edits at the top
 
     return well_history
 
 
+# transforms data between different relatioship types
 def clean_attrs(obj, key):
     if obj is None or obj is [] or obj is '':
         return None
@@ -85,11 +90,12 @@ def clean_attrs(obj, key):
     # Many To Many lookup
     elif key in MANY_TO_MANY_LOOKUP:
         converted = []
-        many = obj
         if hasattr(obj, 'instance'):
-            many = obj.all()
-        for item in many:
-            converted.append({'code': getattr(item, MANY_TO_MANY_LOOKUP[key])})
+            for item in obj.all():
+                converted.append({'code': getattr(item, MANY_TO_MANY_LOOKUP[key])})
+        else:
+            for item in obj:
+                converted.append({'code': item})
         return converted if len(converted) > 0 else None
 
     # return original object if no type checks caught

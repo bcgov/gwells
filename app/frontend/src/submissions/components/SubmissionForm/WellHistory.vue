@@ -110,10 +110,11 @@ export default {
   },
   methods: {
     toggleShow () {
-      this.showHistory = !this.showHistory
-      if (this.showHistory && !this.loading && !this.loaded) {
+      this.showHistory = true
+      // this.showHistory = !this.showHistory
+      // if (this.showHistory && !this.loading && !this.loaded) {
         this.update()
-      }
+      // }
     },
     update () {
       this.loading = true
