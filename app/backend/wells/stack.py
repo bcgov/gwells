@@ -125,7 +125,6 @@ KEY_VALUE_LOOKUP = {
     'aquifer': 'aquifer_id',
     'person_responsible': 'person_guid',
     'company_of_person_responsible': 'org_guid',
-    'aquifer_lithology': 'aquifer_lithology_code',
     'yield_estimation_method': 'yield_estimation_method_code',
     'ground_elevation_method': 'ground_elevation_method_code',
     'observation_well_status': 'obs_well_status_code',

@@ -21,7 +21,7 @@
               Edited this Well on
               {{history_item[0].date | moment("MMMM Do YYYY [at] LT")}}
               <div
-                style="margin-left:20px;"
+                style="margin-left:20px; width: 75%;"
                 class="font-weight-light"
                 v-for="(item, key) in history_item"
                 :key="`history-item-${key}-in-version ${index}`">
@@ -30,11 +30,12 @@
                               Array.isArray(item.prev) && item.prev.length > 0"
                        class="mt-2">
                     {{ item.type | formatKey | readable }} changed to:
-                    <div v-if="item.diff != null">
+                    <div v-if="item.diff != null && item.diff.length > 0">
                       <b-table
                         responsive
                         striped
                         small
+                        fixed
                         bordered
                         :items="item.diff"/>
                     </div>
@@ -43,18 +44,20 @@
                     </div>
                     <div style="margin-bottom:10px;">
                       From:
+                      <div v-if="item.prev != null && item.prev.length > 0">
+                        <b-table
+                          responsive
+                          striped
+                          small
+                          fixed
+                          bordered
+                          :items="item.prev"/>
+                      </div>
+                      <div v-else>
+                       None
+                      </div>
                     </div>
-                    <div v-if="item.prev != null">
-                      <b-table
-                        responsive
-                        striped
-                        small
-                        bordered
-                        :items="item.prev"/>
-                    </div>
-                    <div v-else>
-                     None
-                    </div>
+
                   </div>
                   <div class="mt-2" v-else>
                     {{ item.type | formatKey | readable }} changed to {{ item.diff | formatValue }} from {{ item.prev | formatValue }}
@@ -107,10 +110,10 @@ export default {
   },
   methods: {
     toggleShow () {
-      this.showHistory = true
-      // if (this.showHistory && !this.loading && !this.loaded) {
+      this.showHistory = !this.showHistory
+      if (this.showHistory && !this.loading && !this.loaded) {
         this.update()
-      // }
+      }
     },
     update () {
       this.loading = true
@@ -162,11 +165,13 @@ export default {
     }
   },
   created () {
-    // if (this.events) {
-    //   this.events.$on('well-edited', () => {
-    //     this.update()
-    //   })
-    // }
+    if (this.events) {
+      this.events.$on('well-edited', () => {
+        if (this.showHistory) {
+          this.update()
+        }
+      })
+    }
   }
 }
 </script>

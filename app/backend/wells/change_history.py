@@ -1,8 +1,9 @@
 from django.contrib.gis.geos import GEOSGeometry
 from django.forms.models import model_to_dict
-from django.db.models.fields.reverse_related import ManyToOneRel, ManyToManyRel
-from django.db.models.fields.related import ManyToManyField
 from wells.models import (ActivitySubmission, FieldsProvided)
+from wells.serializers import CasingSummarySerializer, ScreenSerializer, LinerPerforationSerializer, \
+    DecommissionDescriptionSerializer, LithologyDescriptionSummarySerializer
+from wells.stack import KEY_VALUE_LOOKUP, MANY_TO_MANY_LOOKUP
 
 
 def get_well_history(well):
@@ -14,7 +15,7 @@ def get_well_history(well):
     }
 
     submissions = ActivitySubmission.objects.filter(well=well.well_tag_number).order_by('filing_number')
-    legacy_record = submissions.earliest('filing_number')  # filter(well_activity_type='LEGACY').first()
+    legacy_record = submissions.filter(well_activity_type='LEGACY').first()
 
     if legacy_record:
         legacy_copy = model_to_dict(legacy_record)  # We use a copy of the legacy record as our composite stacker
@@ -58,27 +59,38 @@ def get_well_history(well):
 
 
 def clean_attrs(obj, key):
-    if obj is None:
+    if obj is None or obj is [] or obj is '':
         return None
 
-    # convert geo point type to string
-    if isinstance(obj, GEOSGeometry):
+    # Geo Point lookup
+    elif isinstance(obj, GEOSGeometry):  # convert geo point type to string
         round5 = (round(obj[0], 5), round(obj[1], 5))
         return ', '.join(map(str, round5))
 
-    if key in KEY_VALUE_LOOKUP:
+    # Key Value lookup
+    elif key in KEY_VALUE_LOOKUP:
         if type(obj) == str:
             return obj
         else:
             return getattr(obj, KEY_VALUE_LOOKUP[key])
 
-    # convert querysets to raw array objects
-    if hasattr(obj, 'instance'):
-        if isinstance(obj.instance._meta.get_field(key), (ManyToOneRel, ManyToManyRel, ManyToManyField)):
-            converted = []
-            for q in obj.all().values():
-                converted.append(q)
-            return converted if len(converted) > 0 else None
+    # Foreign Key lookup
+    elif key in FOREIGN_KEY_SERIALIZER_LOOKUP:
+        if hasattr(obj, 'instance'):
+            Serializer = FOREIGN_KEY_SERIALIZER_LOOKUP[key]
+            return Serializer(obj, many=True).data
+        else:
+            return obj
+
+    # Many To Many lookup
+    elif key in MANY_TO_MANY_LOOKUP:
+        converted = []
+        many = obj
+        if hasattr(obj, 'instance'):
+            many = obj.all()
+        for item in many:
+            converted.append({'code': getattr(item, MANY_TO_MANY_LOOKUP[key])})
+        return converted if len(converted) > 0 else None
 
     # return original object if no type checks caught
     return obj
@@ -97,36 +109,10 @@ def action_type(diff, prev):
         return 'Edited'
 
 
-
-KEY_VALUE_LOOKUP = {
-    'well_publication_status': 'well_publication_status_code',
-    'boundary_effect': 'boundary_effect_code',
-    'well_disinfected_status': 'well_disinfected_code',
-    'drive_shoe_status': 'drive_shoe_code',
-    'owner_province_state': 'province_state_code',
-    'well_class': 'well_class_code',
-    'well_subclass': 'well_subclass_guid',
-    'intended_water_use': 'intended_water_use_code',
-    'land_district': 'land_district_code',
-    'coordinate_acquisition_code': 'code',
-    'well_yield_unit': 'well_yield_unit_code',
-    'surface_seal_material': 'surface_seal_material_code',
-    'surface_seal_method': 'surface_seal_method_code',
-    'liner_material': 'code',
-    'screen_intake_method': 'screen_intake_code',
-    'screen_type': 'screen_type_code',
-    'screen_material': 'screen_material_code',
-    'screen_opening': 'screen_opening_code',
-    'screen_bottom': 'screen_bottom_code',
-    'filter_pack_material': 'filter_pack_material_code',
-    'filter_pack_material_size': 'filter_pack_material_size_code',
-    'decommission_method': 'decommission_method_code',
-    'aquifer': 'aquifer_id',
-    'person_responsible': 'person_guid',
-    'company_of_person_responsible': 'org_guid',
-    'aquifer_lithology': 'aquifer_lithology_code',
-    'yield_estimation_method': 'yield_estimation_method_code',
-    'ground_elevation_method': 'ground_elevation_method_code',
-    'observation_well_status': 'obs_well_status_code',
-    'well_status': 'well_status_code'
+FOREIGN_KEY_SERIALIZER_LOOKUP = {
+    'casing_set': CasingSummarySerializer,
+    'screen_set': ScreenSerializer,
+    'linerperforation_set': LinerPerforationSerializer,
+    'decommission_description_set': DecommissionDescriptionSerializer,
+    'lithologydescription_set': LithologyDescriptionSummarySerializer
 }
