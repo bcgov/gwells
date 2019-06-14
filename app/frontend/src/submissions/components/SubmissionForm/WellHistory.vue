@@ -27,7 +27,9 @@
                 :key="`history-item-${key}-in-version ${index}`">
 
                   <div v-if="Array.isArray(item.diff) && item.diff.length > 0 ||
-                              Array.isArray(item.prev) && item.prev.length > 0">
+                              Array.isArray(item.prev) && item.prev.length > 0"
+                       class="mt-2">
+                    {{ item.type | formatKey | readable }} changed to:
                     <div v-if="item.diff != null">
                       <b-table
                         responsive
@@ -39,7 +41,9 @@
                     <div v-else>
                       None
                     </div>
-                    <div style="margin-bottom:10px;">FROM</div>
+                    <div style="margin-bottom:10px;">
+                      From:
+                    </div>
                     <div v-if="item.prev != null">
                       <b-table
                         responsive
@@ -52,8 +56,8 @@
                      None
                     </div>
                   </div>
-                  <div v-else>
-                    {{ item.type | formatKey }} changed from {{ item.prev | formatValue }} to {{ item.diff | formatValue }}
+                  <div class="mt-2" v-else>
+                    {{ item.type | formatKey | readable }} changed to {{ item.diff | formatValue }} from {{ item.prev | formatValue }}
                   </div>
 
               </div>
