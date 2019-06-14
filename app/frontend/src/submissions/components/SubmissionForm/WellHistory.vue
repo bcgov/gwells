@@ -15,12 +15,12 @@
         <div class="mt-2" v-if="history && history.length && showHistory">
           <div class="mt-3" v-for="(history_item, index) in history" :key="`history-version ${index}`" :id="`history-version-${index}`">
             <div class="font-weight-bold">
-<!--              {{history_item[0].user}}-->
-              edited well
+              {{history_item[0].user}}
+              updated
 <!--              {{history_item[0].action}}-->
-<!--              {{history_item[0].type}}-->
+              {{history_item[0].type}}
               on
-<!--              {{history_item[0].date | moment("MMMM Do YYYY [at] LT")}}-->
+              {{history_item[0].date | moment("MMMM Do YYYY [at] LT")}}
               <div
                 style="margin-left:20px;"
                 class="font-weight-light"
@@ -29,26 +29,28 @@
 
                   <div v-if="Array.isArray(item.diff) && item.diff.length > 0 ||
                               Array.isArray(item.prev) && item.prev.length > 0">
-                    <div v-for="(dv, d) in item.diff"
-                         :key="`history-dv-${d}-in-version ${index}`">
+                    <div v-if="item.diff != null">
                       <b-table
                         responsive
                         striped
                         small
                         bordered
-                        :items="Object.values(dv)"
-                        show-empty/>
+                        :items="item.diff"/>
                     </div>
-                    to
-                    <div v-for="(pv, p) in item.diff"
-                         :key="`history-pv-${p}-in-version ${index}`">
+                    <div v-else>
+                      none
+                    </div>
+                    <div>FROM</div>
+                    <div v-if="item.prev != null">
                       <b-table
                         responsive
                         striped
                         small
                         bordered
-                        :items="Object.values(pv)"
-                        show-empty/>
+                        :items="item.prev"/>
+                    </div>
+                    <div v-else>
+                     none
                     </div>
                   </div>
                   <div v-else>
@@ -96,9 +98,9 @@ export default {
     }
   },
   watch: {
-    id: function () {
-      this.update()
-    }
+    // id: function () {
+    //   this.update()
+    // }
   },
   methods: {
     toggleShow () {
@@ -108,7 +110,6 @@ export default {
       // }
     },
     update () {
-      return
       this.loading = true
       ApiService.history('wells', this.id).then((response) => {
         this.history = response.data.diff
@@ -158,11 +159,11 @@ export default {
     }
   },
   created () {
-    if (this.events) {
-      this.events.$on('well-edited', () => {
-        this.update()
-      })
-    }
+    // if (this.events) {
+    //   this.events.$on('well-edited', () => {
+    //     this.update()
+    //   })
+    // }
   }
 }
 </script>
