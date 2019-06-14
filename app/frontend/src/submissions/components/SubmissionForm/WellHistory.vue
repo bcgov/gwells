@@ -103,18 +103,12 @@ export default {
       loaded: false
     }
   },
-  watch: {
-    // id: function () {
-    //   this.update()
-    // }
-  },
   methods: {
     toggleShow () {
-      this.showHistory = true
-      // this.showHistory = !this.showHistory
-      // if (this.showHistory && !this.loading && !this.loaded) {
+      this.showHistory = !this.showHistory
+      if (this.showHistory && !this.loading && !this.loaded) {
         this.update()
-      // }
+      }
     },
     update () {
       this.loading = true
