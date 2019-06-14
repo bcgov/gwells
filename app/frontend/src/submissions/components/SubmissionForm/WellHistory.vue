@@ -27,7 +27,8 @@
                 v-for="(item, key) in history_item"
                 :key="`history-item-${key}-in-version ${index}`">
 
-                  <div v-if="Array.isArray(item.diff) && item.diff.length > 0">
+                  <div v-if="Array.isArray(item.diff) && item.diff.length > 0 ||
+                              Array.isArray(item.prev) && item.prev.length > 0">
                     <div v-for="(dv, d) in item.diff"
                          :key="`history-dv-${d}-in-version ${index}`">
                       <b-table

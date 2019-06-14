@@ -3,7 +3,6 @@ from deepdiff import DeepDiff
 from django.contrib.gis.geos import GEOSGeometry
 from django.forms.models import model_to_dict
 from django.db.models.fields.reverse_related import ManyToOneRel, ManyToManyRel
-from wells.stack import MANY_TO_MANY_LOOKUP, KEY_VALUE_LOOKUP
 from wells.models import (
     ActivitySubmission,
     FieldsProvided)
@@ -222,3 +221,37 @@ def keep_key(key):
             "root[1]['decommission_description_guid'].int", "root[1]['screen_guid'].int",
             "root[1]['company_of_person_responsible_id'].int", "root[1]['person_responsible_id'].int"
        ]
+
+KEY_VALUE_LOOKUP = {
+    'well_publication_status': 'well_publication_status_code',
+    'boundary_effect': 'boundary_effect_code',
+    'well_disinfected_status': 'well_disinfected_code',
+    'drive_shoe_status': 'drive_shoe_code',
+    'owner_province_state': 'province_state_code',
+    'well_class': 'well_class_code',
+    'well_subclass': 'well_subclass_guid',
+    'intended_water_use': 'intended_water_use_code',
+    'land_district': 'land_district_code',
+    'coordinate_acquisition_code': 'code',
+    'aquifer_lithology': 'aquifer_lithology_code',
+    'well_yield_unit': 'well_yield_unit_code',
+    'surface_seal_material': 'surface_seal_material_code',
+    'surface_seal_method': 'surface_seal_method_code',
+    'liner_material': 'code',
+    'screen_intake_method': 'screen_intake_code',
+    'screen_type': 'screen_type_code',
+    'screen_material': 'screen_material_code',
+    'screen_opening': 'screen_opening_code',
+    'screen_bottom': 'screen_bottom_code',
+    'filter_pack_material': 'filter_pack_material_code',
+    'filter_pack_material_size': 'filter_pack_material_size_code',
+    'decommission_method': 'decommission_method_code',
+    'aquifer': 'aquifer_id',
+    'person_responsible': 'person_guid',
+    'company_of_person_responsible': 'org_guid',
+    'aquifer_lithology': 'aquifer_lithology_code',
+    'yield_estimation_method': 'yield_estimation_method_code',
+    'ground_elevation_method': 'ground_elevation_method_code',
+    'observation_well_status': 'obs_well_status_code',
+    'well_status': 'well_status_code'
+}
