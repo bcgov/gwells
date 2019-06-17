@@ -217,7 +217,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         :groundElevation.sync="form.ground_elevation"
         :groundElevationMethod.sync="form.ground_elevation_method"
         :drillingMethod.sync="form.drilling_methods"
-        :wellOrientation.sync="form.well_orientation"
+        :wellOrientationStatus.sync="form.well_orientation_status"
         :errors="errors"
         :isStaffEdit="isStaffEdit"
         :saveDisabled="editSaveDisabled"

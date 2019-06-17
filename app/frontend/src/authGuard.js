@@ -13,7 +13,7 @@ export default (to, from, next) => {
       next({ name: 'SearchHome' })
     }
   } else if (to.matched.some(record => record.meta.view)) {
-    if (auth && auth.authenticated && store.getters.userRoless[app].view) {
+    if (auth && auth.authenticated && store.getters.userRoles[app].view) {
       // if token is expired, send user back to home
       // otherwise, continue to next route
       auth.isTokenExpired() ? next({ name: 'SearchHome' }) : next()
