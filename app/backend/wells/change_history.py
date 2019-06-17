@@ -95,7 +95,7 @@ def clean_attrs(obj, key):
                 converted.append({'code': getattr(item, MANY_TO_MANY_LOOKUP[key])})
         else:
             for item in obj:
-                converted.append({'code': item})
+                converted.append(item)
         return converted if len(converted) > 0 else None
 
     # return original object if no type checks caught
