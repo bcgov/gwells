@@ -213,6 +213,23 @@ class WellDisinfectedCode(CodeTableModel):
         return self.description
 
 
+class WellOrientationCode(CodeTableModel):
+    """
+     Codes describing the orientation of the well
+    """
+    well_orientation_code = models.CharField(primary_key=True, max_length=100, editable=False)
+    description = models.CharField(max_length=100)
+
+    class Meta:
+        db_table = 'well_orientation_code'
+        ordering = ['display_order', 'description']
+
+    db_table_comment = ('Codes for the well orienation. Horizontal and Vertical are the only codes at this point')
+
+    def __str__(self):
+        return self.description
+
+
 class DriveShoeCode(CodeTableModel):
     """
      The status on whether a casing has a drive shoe installed.
@@ -811,6 +828,9 @@ class Well(AuditModelStructure):
                                               blank=True)
     well_orientation = models.BooleanField(default=True, verbose_name='Orientation of Well', choices=(
         (True, 'vertical'), (False, 'horizontal')))
+    well_orientation_status = models.ForeignKey(WellOrientationCode, db_column='well_orientation_code',
+                                                on_delete=models.CASCADE, blank=True, null=True,
+                                                verbose_name='Well Orientation Code')
 
     surface_seal_material = models.ForeignKey(SurfaceSealMaterialCode, db_column='surface_seal_material_code',
                                               on_delete=models.CASCADE, blank=True, null=True,
@@ -1343,6 +1363,10 @@ class ActivitySubmission(AuditModelStructure):
                                               blank=True)
     well_orientation = models.BooleanField(default=True, verbose_name='Orientation of Well', choices=(
         (True, 'vertical'), (False, 'horizontal')))
+    well_orientation_status = models.ForeignKey(WellOrientationCode, db_column='well_orientation_code',
+                                                on_delete=models.CASCADE, blank=True, null=True,
+                                                verbose_name='Well Orientation Code')
+
     water_supply_system_name = models.CharField(
         max_length=80, blank=True, null=True, verbose_name='Water Supply System Name',
         db_comment=('Name or identifier given to a well that serves as a water supply system. Often, the '
@@ -1683,6 +1707,7 @@ class FieldsProvided(models.Model):
     ground_elevation_method = models.BooleanField(default=False)
     drilling_methods = models.BooleanField(default=False)
     well_orientation = models.BooleanField(default=False)
+    well_orientation_status = models.BooleanField(default=False)
     water_supply_system_name = models.BooleanField(default=False)
     water_supply_system_well_name = models.BooleanField(default=False)
     surface_seal_material = models.BooleanField(default=False)

@@ -46,7 +46,7 @@
               "alternative_specs_submitted": false,
               "screen_type": null,
               "well_subclass": null,
-              "well_orientation": true,
+              "well_orientation_status": "horizontal",
               "owner_postal_code": "",
               "other_screen_material": "",
               "legal_township": "",

@@ -257,7 +257,7 @@
           <b-row>
             <b-col cols="12" md="4"><span class="font-weight-bold">Depth to Bedrock:</span> {{ well.bedrock_depth }} {{ well.bedrock_depth ? 'feet':''}}</b-col>
             <b-col cols="12" md="4"><span class="font-weight-bold">Artesian Pressure:</span> {{ well.artesian_pressure }} {{ well.artesian_pressure ? 'feet': ''}}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Orientation of Well:</span> {{ well.well_orientation }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Orientation of Well:</span> {{ well.well_orientation_status }}</b-col>
           </b-row>
           <b-row>
             <b-col cols="12" md="4"><span class="font-weight-bold">Ground elevation:</span> {{ well.ground_elevation }}</b-col>
