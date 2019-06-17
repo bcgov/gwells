@@ -107,7 +107,7 @@ const RESULT_COLUMNS = [
   'groundElevation',
   'groundElevationMethod',
   'drillingMethods',
-  'wellOrientation',
+  'wellOrientationStatus',
   'surfaceSealMaterial',
   'surfaceSealDepth',
   'surfaceSealThickness',

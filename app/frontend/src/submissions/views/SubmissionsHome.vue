@@ -451,7 +451,7 @@ export default {
         coordinate_acquisition_code: null,
         ground_elevation: null,
         ground_elevation_method: '',
-        well_orientation: true,
+        well_orientation_status: '',
         drilling_methods: [],
         lithologydescription_set: [],
         surface_seal_material: '',
