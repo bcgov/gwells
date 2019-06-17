@@ -14,11 +14,8 @@
 
 from django.contrib.gis.db import models
 from django.core.validators import MinValueValidator
-from django.contrib.contenttypes.fields import GenericRelation
 
 from decimal import Decimal
-import reversion
-from reversion.models import Version
 
 from django.utils import timezone
 import uuid
@@ -689,7 +686,6 @@ class AquiferLithologyCode(CodeTableModel):
 
 # TODO: Consider having Well and Submission extend off a common base class, given that
 #   they mostly have the exact same fields!
-@reversion.register()
 class Well(AuditModelStructure):
     """
     Well information.
@@ -1127,8 +1123,6 @@ class Well(AuditModelStructure):
     recommended_pump_rate = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True,
                                                 verbose_name='Recommended pump rate',
                                                 validators=[MinValueValidator(Decimal('0.00'))])
-
-    history = GenericRelation(Version)
 
     class Meta:
         db_table = 'well'
@@ -1803,11 +1797,6 @@ class FieldsProvided(models.Model):
         db_table = 'fields_provided'
 
 
-@reversion.register(fields=['start', 'end', 'lithology_raw_data', 'lithology_description',
-                            'lithology_colour', 'lithology_hardness', 'lithology_material', 'lithology_observation',
-                            'water_bearing_estimated_flow', 'water_bearing_estimated_flow_units',  'lithology_moisture',
-                            'bedrock_material', 'bedrock_material_descriptor', 'lithology_structure',
-                            'surficial_material', 'secondary_surficial_material', 'lithology_sequence_number'])
 class LithologyDescription(AuditModel):
     """
     Lithology information details
@@ -1935,7 +1924,6 @@ class PerforationBase(AuditModel):
         abstract = True
 
 
-@reversion.register(fields=['start', 'end'])
 class LinerPerforation(PerforationBase):
     """
     Perforation in a well liner
@@ -1958,7 +1946,6 @@ class LinerPerforation(PerforationBase):
         return 'well {} {} {}'.format(self.well, self.start, self.end)
 
 
-@reversion.register(fields=['start', 'end'])
 class ActivitySubmissionLinerPerforation(PerforationBase):
     """
     Perforation in a well liner
@@ -1980,8 +1967,6 @@ class ActivitySubmissionLinerPerforation(PerforationBase):
                                                      self.end)
 
 
-@reversion.register(fields=['start', 'end', 'diameter', 'casing_code',
-                            'casing_material', 'wall_thickness', 'drive_shoe_status'])
 class Casing(AuditModel):
     """
     Casing information
@@ -2053,7 +2038,6 @@ class Casing(AuditModel):
         }
 
 
-@reversion.register(fields=['start', 'end', 'diameter', 'assembly_type', 'slot_size'])
 class Screen(AuditModel):
     """
     Screen in a well
@@ -2177,7 +2161,6 @@ class DecommissionMaterialCode(BasicCodeTableModel):
         return '{} - {}'.format(self.code, self.description)
 
 
-@reversion.register(fields=['start', 'end', 'material', 'observations'])
 class DecommissionDescription(AuditModel):
     """Provides a description of the ground conditions (between specified start and end depth) for
         decommissioning"""
