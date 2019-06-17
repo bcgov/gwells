@@ -838,7 +838,7 @@ pipeline {
 
                         // Create cronjob for licence import
                         def importLicencesCronjob = openshift.process("-f",
-                            "openshift/jobs/import-licences.cj.json",
+                            "openshift/jobs/import-licences/import-licences.cj.json",
                             "ENV_NAME=${stagingSuffix}",
                             "PROJECT=${stagingProject}",
                             "TAG=${stagingSuffix}",
@@ -1122,7 +1122,7 @@ pipeline {
 
                         // Create cronjob for licence import
                         def importLicencesCronjob = openshift.process("-f",
-                            "openshift/jobs/import-licences.cj.json",
+                            "openshift/jobs/import-licences/import-licences.cj.json",
                             "ENV_NAME=${demoSuffix}",
                             "PROJECT=${demoProject}",
                             "TAG=${demoSuffix}",
@@ -1374,7 +1374,7 @@ pipeline {
 
                         // Create cronjob for licence import
                         def importLicencesCronjob = openshift.process("-f",
-                            "openshift/jobs/import-licences.cj.json",
+                            "openshift/jobs/import-licences/import-licences.cj.json",
                             "ENV_NAME=${prodSuffix}",
                             "PROJECT=${prodProject}",
                             "TAG=${prodSuffix}",
