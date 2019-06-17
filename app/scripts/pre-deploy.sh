@@ -7,6 +7,7 @@ while true
 do 
         # wait here for database to be available
         psql -qtAX -c 'select 1' && break
+        sleep 10
 done
 
 cd $APP_ROOT/src/backend/
