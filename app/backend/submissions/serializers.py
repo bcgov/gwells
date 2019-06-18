@@ -125,6 +125,12 @@ class WellSubmissionSerializerBase(AuditModelSerializer):
         raise NotImplementedError()  # Implement in base class!
 
     def validate(self, attrs):
+        # Legacy records have inconsistent data, but we can't stop new submissions
+        # or edits based on past data issues.  Stricter validation will be applied to
+        # records submitted through GWELLS.
+        if attrs.get('well_activity_type', None) == 'LEGACY':
+            return attrs
+
         errors = {}
         # Check ground elevation fields for mutual requirement
         if 'ground_elevation' in attrs or 'ground_elevation_method' in attrs:
