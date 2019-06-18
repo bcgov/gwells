@@ -128,7 +128,7 @@ class WellSubmissionSerializerBase(AuditModelSerializer):
         # Legacy records have inconsistent data, but we can't stop new submissions
         # or edits based on past data issues.  Stricter validation will be applied to
         # records submitted through GWELLS.
-        if attrs.get('well_activity_type', None) == 'LEGACY':
+        if isinstance(self, WellSubmissionLegacySerializer):
             return attrs
 
         errors = {}
