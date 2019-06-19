@@ -234,13 +234,9 @@ class MinioClient():
             if bucket_name is None:
                 bucket_name = self.private_bucket
 
-            print(bucket_name)
-
             self.private_client.remove_object(bucket_name, object_name)
         else:
             if bucket_name is None:
                 bucket_name = self.public_bucket
-
-            print(bucket_name)
 
             self.public_client.remove_object(bucket_name, object_name)

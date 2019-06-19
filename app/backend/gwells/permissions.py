@@ -35,5 +35,4 @@ class SurveysEditOrReadOnly(BasePermission):
         has_edit = request.user and request.user.is_authenticated and request.user.groups.filter(
             name=SURVEYS_EDIT_ROLE).exists()
         result = has_edit or request.method in SAFE_METHODS
-        print(has_edit)
         return result

@@ -194,10 +194,6 @@ export default {
       'resetUploadFiles'
     ]),
     formSubmit () {
-      if (!this.formChanges()) {
-        return
-      }
-
       const data = Object.assign({}, this.form)
       const meta = data.meta
 
@@ -382,15 +378,7 @@ export default {
     },
     formChanges () {
       let differences = diff(this.compareForm, this.form)
-      if (differences) {
-        // differences.forEach((d) => {
-        //   if (d.lhs == null && d.rhs === '') {
-        //     this.form[d.path[0]] = null
-        //   }
-        // })
-        return true
-      }
-      return false
+      return !!differences
     },
     confirmSubmit () {
       this.confirmSubmitModal = true
