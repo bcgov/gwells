@@ -319,9 +319,8 @@ class WellConstructionSubmissionSerializer(WellSubmissionSerializerBase):
 
     def create(self, validated_data):
         # Whenever we create a Construction record, we default to H (gps) for the source.
-        if 'coordinate_acquisition_code' not in validated_data:
-            validated_data['coordinate_acquisition_code'] = CoordinateAcquisitionCode.objects.get(
-                code='H')
+        validated_data['coordinate_acquisition_code'] = CoordinateAcquisitionCode.objects.get(
+            code='H')
         return super().create(validated_data)
 
     def get_foreign_key_sets(self):

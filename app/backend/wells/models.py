@@ -1004,7 +1004,7 @@ class Well(AuditModelStructure):
     utm_easting = models.IntegerField(
         blank=True, null=True, verbose_name="UTM Easting")
     coordinate_acquisition_code = models.ForeignKey(
-        CoordinateAcquisitionCode, null=True, blank=True, verbose_name="Location Accuracy Code",
+        CoordinateAcquisitionCode, default='H', verbose_name="Location Accuracy Code",
         db_column='coordinate_acquisition_code', on_delete=models.PROTECT,
         db_comment=('Codes for the accuracy of the coordinate position, which is best estimated based on'
                     ' the information provided by the data submitter and analysis done by staff. E.g. A,'
@@ -1348,7 +1348,7 @@ class ActivitySubmission(AuditModelStructure):
         blank=True, null=True, verbose_name='Geo-referenced Location of the Well', srid=4326)
 
     coordinate_acquisition_code = models.ForeignKey(
-        CoordinateAcquisitionCode, null=True, blank=True, verbose_name="Location Accuracy Code",
+        CoordinateAcquisitionCode, default='H', verbose_name="Location Accuracy Code",
         db_column='coordinate_acquisition_code', on_delete=models.PROTECT,
         db_comment=('Codes for the accuracy of the coordinate position, which is best estimated based on'
                     ' the information provided by the data submitter and analysis done by staff. E.g. A,'
