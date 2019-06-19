@@ -14,11 +14,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='activitysubmission',
             name='coordinate_acquisition_code',
-            field=models.ForeignKey(db_column='coordinate_acquisition_code', default='H', on_delete=django.db.models.deletion.PROTECT, to='wells.CoordinateAcquisitionCode', verbose_name='Location Accuracy Code'),
+            field=models.ForeignKey(blank=True, null=True, db_column='coordinate_acquisition_code', default='H', on_delete=django.db.models.deletion.PROTECT, to='wells.CoordinateAcquisitionCode', verbose_name='Location Accuracy Code'),
         ),
         migrations.AlterField(
             model_name='well',
             name='coordinate_acquisition_code',
-            field=models.ForeignKey(db_column='coordinate_acquisition_code', default='H', on_delete=django.db.models.deletion.PROTECT, to='wells.CoordinateAcquisitionCode', verbose_name='Location Accuracy Code'),
+            field=models.ForeignKey(blank=True, null=True, db_column='coordinate_acquisition_code', default='H', on_delete=django.db.models.deletion.PROTECT, to='wells.CoordinateAcquisitionCode', verbose_name='Location Accuracy Code'),
         ),
     ]
