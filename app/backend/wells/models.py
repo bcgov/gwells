@@ -2005,8 +2005,6 @@ class Casing(AuditModel):
     wall_thickness = models.DecimalField(max_digits=6, decimal_places=3, verbose_name='Wall Thickness',
                                          blank=True, null=True,
                                          validators=[MinValueValidator(Decimal('0.01'))])
-    drive_shoe = models.NullBooleanField(default=False, null=True, verbose_name='Drive Shoe',
-                                         choices=((False, 'No'), (True, 'Yes')))
     drive_shoe_status = models.ForeignKey(DriveShoeCode, db_column='drive_shoe_code',
                                                 on_delete=models.CASCADE, blank=True, null=True,
                                                 verbose_name='Drive Shoe Code')
