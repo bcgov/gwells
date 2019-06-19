@@ -163,16 +163,15 @@
             },
             "spec": {
                 "strategy": {
-                    "type": "Recreate",
-                    "recreateParams": {
+                    "type": "Rolling",
+                    "rollingParams": {
                         "timeoutSeconds": 900,
                         "pre": {
-                            "failurePolicy": "Retry",
+                            "failurePolicy": "Abort",
                             "execNewPod": {
                                 "command": [
-                                    "/bin/bash",
-                                    "-c",
-                                    "psql -qtAX -c 'select 1'"
+                                    "/usr/bin/container-entrypoint",
+                                    "/opt/app-root/src/scripts/pre-deploy.sh"
                                 ],
                                 "containerName": "gwells-app${NAME_SUFFIX}",
                                 "env": [
@@ -208,16 +207,6 @@
                                         "value": "gwells-pgsql${NAME_SUFFIX}"
                                     }
                                 ]
-                            }
-                        },
-                        "mid": {
-                            "failurePolicy": "Abort",
-                            "execNewPod": {
-                                "command": [
-                                    "/usr/bin/container-entrypoint",
-                                    "/opt/app-root/src/scripts/gwells-deploy.sh"
-                                ],
-                                "containerName": "gwells-app${NAME_SUFFIX}"
                             }
                         }
                     },
@@ -732,7 +721,7 @@
                                         "memory": "768Mi"
                                     },
                                     "requests": {
-                                        "cpu": "300m",
+                                        "cpu": "100m",
                                         "memory": "768Mi"
                                     }
                                 },

@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "e351c8f7-da59-4649-ae63-48faf79a83a6",
+		"_postman_id": "19bcf251-75a9-4024-99a7-5f0152366fa5",
 		"name": "GWELLS Submissions API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -124,6 +124,10 @@
 										"value": "JWT {{token}}"
 									}
 								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/options?format=json",
 									"host": [
@@ -173,6 +177,10 @@
 										"value": "JWT {{token}}"
 									}
 								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions?format=json",
 									"host": [
@@ -350,7 +358,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"person_responsible\": \"{{created_driller_guid}}\",\n\t\"driller_name\": \"Jimithy\",\n\t\"consultant_name\": \"Bobothy\",\n\t\"consultant_company\": \"Inc & Inc\",\n\t\"work_end_date\": \"2018-07-10\",\n\t\"owner_full_name\": \"Holly Homeowner\",\n\t\"work_start_date\": \"2018-07-01\",\n\t\"owner_province_state\": \"BC\",\n\t\"owner_mailing_address\": \"321 Main Street\",\n\t\"owner_city\": \"Anytown\",\n\t\"well_orientation\": false,\n\t\"drilling_method\": [\"AUGER\", \"CABLE_TOOL\"]\n}"
+									"raw": "{\n\t\"person_responsible\": \"{{created_driller_guid}}\",\n\t\"driller_name\": \"Jimithy\",\n\t\"consultant_name\": \"Bobothy\",\n\t\"consultant_company\": \"Inc & Inc\",\n\t\"work_end_date\": \"2018-07-10\",\n\t\"owner_full_name\": \"Holly Homeowner\",\n\t\"work_start_date\": \"2018-07-01\",\n\t\"owner_province_state\": \"BC\",\n\t\"owner_mailing_address\": \"321 Main Street\",\n\t\"owner_city\": \"Anytown\",\n\t\"well_orientation_status\": \"VERTICAL\",\n\t\"drilling_method\": [\"AUGER\", \"CABLE_TOOL\"]\n}"
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/construction?format=json",
@@ -397,8 +405,8 @@
 											"    pm.expect(jsonData.screen_set.length).to.equal(0);",
 											"})",
 											"",
-											"pm.test(\"Expect well orientation false\", function() {",
-											"    pm.expect(jsonData.well_orientation).to.equal(false);",
+											"pm.test(\"Expect well orientation status to be VERTICAL\", function() {",
+											"    pm.expect(jsonData.well_orientation_status).to.equal('VERTICAL');",
 											"})",
 											"",
 											"pm.test(\"Expect linerperforation to be empty\", function() {",
@@ -434,6 +442,10 @@
 										"value": "application/x-www-form-urlencoded"
 									}
 								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 									"host": [
@@ -493,6 +505,10 @@
 										"value": "application/x-www-form-urlencoded"
 									}
 								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/{{filing_number}}",
 									"host": [
@@ -672,6 +688,10 @@
 										"value": "application/x-www-form-urlencoded"
 									}
 								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 									"host": [
@@ -845,6 +865,10 @@
 										"value": "application/x-www-form-urlencoded"
 									}
 								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 									"host": [
@@ -1020,6 +1044,10 @@
 										"value": "application/x-www-form-urlencoded"
 									}
 								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 									"host": [
@@ -1135,6 +1163,10 @@
 										"value": "application/x-www-form-urlencoded"
 									}
 								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 									"host": [
@@ -1327,6 +1359,10 @@
 										"value": "application/x-www-form-urlencoded"
 									}
 								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 									"host": [
@@ -1446,6 +1482,10 @@
 										"value": "application/x-www-form-urlencoded"
 									}
 								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 									"host": [
@@ -1498,6 +1538,10 @@
 										"value": "application/x-www-form-urlencoded"
 									}
 								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/{{filing_number}}",
 									"host": [
@@ -1815,6 +1859,10 @@
 										"value": "application/json"
 									}
 								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 									"host": [
@@ -1936,6 +1984,10 @@
 										"value": "application/x-www-form-urlencoded"
 									}
 								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 									"host": [
@@ -1992,6 +2044,10 @@
 										"value": "application/x-www-form-urlencoded"
 									}
 								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/{{filing_number}}",
 									"host": [
@@ -2238,6 +2294,10 @@
 												"value": "JWT {{token}}"
 											}
 										],
+										"body": {
+											"mode": "raw",
+											"raw": ""
+										},
 										"url": {
 											"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 											"host": [
@@ -2363,6 +2423,10 @@
 												"value": "JWT {{token}}"
 											}
 										],
+										"body": {
+											"mode": "raw",
+											"raw": ""
+										},
 										"url": {
 											"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 											"host": [
@@ -2532,7 +2596,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"well\": {{well_tag_number}},\n\t\"consultant_name\": \"John Mann\",\n\t\"owner_full_name\": \"Buddy\",\n\t\"ground_elevation_method\": \"10K_MAP\",\n\t\"ground_elevation\": 12,\n\t\"drilling_methods\": [\"AIR_ROTARY\", \"AUGER\"],\n\t\"well_orientation\": \"False\",\n\t\"observation_well_status\": \"Active\",\n\t\"observation_well_number\": 123,\n\t\"drawdown\": 11,\n\t\"yield_estimation_rate\": 11\n}"
+									"raw": "{\n\t\"well\": {{well_tag_number}},\n\t\"consultant_name\": \"John Mann\",\n\t\"owner_full_name\": \"Buddy\",\n\t\"ground_elevation_method\": \"10K_MAP\",\n\t\"ground_elevation\": 12,\n\t\"drilling_methods\": [\"AIR_ROTARY\", \"AUGER\"],\n\t\"well_orientation_status\": \"HORIZONTAL\",\n\t\"observation_well_status\": \"Active\",\n\t\"observation_well_number\": 123,\n\t\"drawdown\": 11,\n\t\"yield_estimation_rate\": 11\n}"
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/staff_edit?format=json",
@@ -2582,8 +2646,8 @@
 											"    pm.expect(jsonData['owner_city']).to.equal('Anytown')",
 											"})",
 											"",
-											"pm.test(\"Expect well orientation to be updated\", function() {",
-											"    pm.expect(jsonData['well_orientation']).to.equal(false)",
+											"pm.test(\"Expect well orientation status to be updated\", function() {",
+											"    pm.expect(jsonData['well_orientation_status']).to.equal('HORIZONTAL')",
 											"})",
 											"",
 											"pm.test(\"Expect other_drilling_method to be updated\", function() {",
@@ -2622,6 +2686,10 @@
 										"value": "JWT {{token}}"
 									}
 								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 									"host": [
@@ -3207,6 +3275,10 @@
 								"value": "application/x-www-form-urlencoded"
 							}
 						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 							"host": [
@@ -3328,6 +3400,10 @@
 								"value": "application/x-www-form-urlencoded"
 							}
 						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 							"host": [
@@ -3456,6 +3532,10 @@
 								"value": "application/x-www-form-urlencoded"
 							}
 						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 							"host": [
@@ -3470,6 +3550,62 @@
 							]
 						},
 						"description": "Check if the created well has stacked data"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Clean up",
+			"item": [
+				{
+					"name": "Driller delete",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a743a15a-6712-486a-9310-5d1261bb03c1",
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "JWT {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}?format=json",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"drillers",
+								"{{created_driller_guid}}"
+							],
+							"query": [
+								{
+									"key": "format",
+									"value": "json"
+								}
+							]
+						},
+						"description": "Delete driller specified by GUID."
 					},
 					"response": []
 				}

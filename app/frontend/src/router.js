@@ -29,6 +29,9 @@ import SubmissionDetail from '@/submissions/views/SubmissionDetail.vue'
 // Common components
 import PageNotFound from '@/common/components/PageNotFound.vue'
 
+// Surveys
+import Surveys from '@/surveys/views/Surveys.vue'
+
 Vue.use(Router)
 
 const router = new Router({
@@ -104,7 +107,7 @@ const router = new Router({
       meta: {
         // list of required permissions (e.g. "edit: true" means user needs edit permission)
         edit: true,
-        app: 'registries'
+        app: 'registry'
       }
     },
     {
@@ -114,7 +117,7 @@ const router = new Router({
       beforeEnter: AuthGuard,
       meta: {
         edit: true,
-        app: 'registries'
+        app: 'registry'
       }
     },
     {
@@ -124,7 +127,7 @@ const router = new Router({
       beforeEnter: AuthGuard,
       meta: {
         view: true,
-        app: 'registries'
+        app: 'registry'
       }
     },
     {
@@ -134,7 +137,7 @@ const router = new Router({
       beforeEnter: AuthGuard,
       meta: {
         view: true,
-        app: 'registries'
+        app: 'registry'
       }
     },
     {
@@ -144,7 +147,7 @@ const router = new Router({
       beforeEnter: AuthGuard,
       meta: {
         edit: true,
-        app: 'registries'
+        app: 'registry'
       }
     },
     {
@@ -154,7 +157,7 @@ const router = new Router({
       beforeEnter: AuthGuard,
       meta: {
         edit: true,
-        app: 'registries'
+        app: 'registry'
       }
     },
     {
@@ -172,6 +175,16 @@ const router = new Router({
       path: '/well/:id',
       name: 'wells-detail',
       component: WellDetail
+    },
+    {
+      path: '/surveys',
+      name: 'Surveys',
+      component: Surveys,
+      beforeEnter: AuthGuard,
+      meta: {
+        edit: true,
+        app: 'surveys'
+      }
     },
     { path: '/search', redirect: '/' },
     {

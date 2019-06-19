@@ -194,17 +194,15 @@ export default {
       'resetUploadFiles'
     ]),
     formSubmit () {
-      if (!this.formChanges()) {
-        return
-      }
-
       const data = Object.assign({}, this.form)
       const meta = data.meta
 
       if (this.isStaffEdit) {
         // These skip variables will include both mutually required fields if one of them changes
         // We have to include both lat and lon for geom updates and ground_elevation and method together
+        // TODO optimize the mutual requirement flow
         let skipLatLon = 'latitude' in meta.valueChanged || 'longitude' in meta.valueChanged
+        let skipWorkDates = 'work_start_date' in meta.valueChanged || 'work_end_date' in meta.valueChanged
         let skipConDates = 'construction_start_date' in meta.valueChanged || 'construction_end_date' in meta.valueChanged
         let skipAltDates = 'alteration_start_date' in meta.valueChanged || 'alteration_end_date' in meta.valueChanged
         let skipDecDates = 'decommission_start_date' in meta.valueChanged || 'decommission_end_date' in meta.valueChanged
@@ -213,9 +211,18 @@ export default {
           // Skip lat lon if one of them has changed
           if ((key === 'latitude' || key === 'longitude') && skipLatLon) { return }
           if ((key === 'ground_elevation' || key === 'ground_elevation_method') && skipGroundElevation) { return }
-          if ((key === 'construction_start_date' || key === 'construction_end_date') && skipConDates) { return }
-          if ((key === 'alteration_start_date' || key === 'alteration_end_date') && skipAltDates) { return }
-          if ((key === 'decommission_start_date' || key === 'decommission_end_date') && skipDecDates) { return }
+          if ((key === 'work_start_date' || key === 'work_end_date') && skipWorkDates) {
+            if (data[key] === '') { data[key] = null } return
+          }
+          if ((key === 'construction_start_date' || key === 'construction_end_date') && skipConDates) {
+            if (data[key] === '') { data[key] = null } return
+          }
+          if ((key === 'alteration_start_date' || key === 'alteration_end_date') && skipAltDates) {
+            if (data[key] === '') { data[key] = null } return
+          }
+          if ((key === 'decommission_start_date' || key === 'decommission_end_date') && skipDecDates) {
+            if (data[key] === '') { data[key] = null } return
+          }
           // Remove any fields that aren't changed
           if (key !== 'well' && !(key in meta.valueChanged)) { delete data[key] }
         })
@@ -371,15 +378,7 @@ export default {
     },
     formChanges () {
       let differences = diff(this.compareForm, this.form)
-      if (differences) {
-        // differences.forEach((d) => {
-        //   if (d.lhs == null && d.rhs === '') {
-        //     this.form[d.path[0]] = null
-        //   }
-        // })
-        return true
-      }
-      return false
+      return !!differences
     },
     confirmSubmit () {
       this.confirmSubmitModal = true
@@ -440,7 +439,7 @@ export default {
         coordinate_acquisition_code: null,
         ground_elevation: null,
         ground_elevation_method: '',
-        well_orientation: true,
+        well_orientation_status: '',
         drilling_methods: [],
         lithologydescription_set: [],
         surface_seal_material: '',

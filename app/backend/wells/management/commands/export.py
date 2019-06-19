@@ -165,7 +165,7 @@ class Command(BaseCommand):
  well_yield,
  well_yield_unit_code,
  artesian_flow, artesian_pressure, well_cap_type, well_disinfected_code,
- well_orientation,
+ well_orientation_code,
  alternative_specs_submitted,
  surface_seal_material_code, surface_seal_method_code, surface_seal_length, surface_seal_depth,
  backfill_type,

@@ -386,7 +386,7 @@ export default {
       this.fetchResults()
     },
     updateQueryParams () {
-      this.$router.replace({query: this.filterParams})
+      this.$router.replace({ query: this.filterParams })
     },
     triggerAnalyticsSearchEvent (params) {
       // trigger the search event, sending along the search params as a string
@@ -417,7 +417,7 @@ export default {
     ApiService.query('surveys').then((response) => {
       if (response.data) {
         response.data.forEach((survey) => {
-          if (survey.survey_page === 'a') {
+          if (survey.survey_page === 'a' && survey.survey_enabled) {
             this.surveys.push(survey)
           }
         })

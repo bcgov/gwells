@@ -56,7 +56,7 @@ COLUMN_LABELS = {
     "ground_elevation": "Ground Elevation",
     "ground_elevation_method": "Elevation Determined By",
     "drilling_methods": "Drilling Methods",
-    "well_orientation": "Orientation of Well",
+    "well_orientation_status": "Orientation of Well",
     "surface_seal_material": "Surface Seal Material",
     "surface_seal_length": "Surface Seal Length",
     "surface_seal_thickness": "Surface Seal Thickness",

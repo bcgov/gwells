@@ -29,6 +29,7 @@ from gwells.roles import WELLS_VIEWER_ROLE
 from wells.models import (
     DevelopmentMethodCode,
     DrillingMethodCode,
+    WellOrientationCode,
     WaterQualityCharacteristic,
     Well,
 )
@@ -246,7 +247,7 @@ class WellListFilter(AnyOrAllFilterSet):
     finished_well_depth = filters.RangeFilter()
     total_depth_drilled = filters.RangeFilter()
 
-    well_orientation = filters.BooleanFilter(widget=BooleanWidget)
+    well_orientation_status = filters.ModelChoiceFilter(queryset=WellOrientationCode.objects.all())
     alternative_specs_submitted = filters.BooleanFilter(widget=BooleanWidget)
     hydro_fracturing_performed = filters.BooleanFilter(widget=BooleanWidget)
 
@@ -366,7 +367,7 @@ class WellListFilter(AnyOrAllFilterSet):
             'well_disinfected_status',
             'well_identification_plate_attached',
             'well_location_description',
-            'well_orientation',
+            'well_orientation_status',
             'well_status',
             'well_subclass',
             'well_tag_number',
