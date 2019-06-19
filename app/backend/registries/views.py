@@ -760,7 +760,7 @@ class PersonNameSearch(ListAPIView):
 
     permission_classes = (RegistriesEditOrReadOnly,)
     serializer_class = PersonNameSerializer
-    queryset = Person.objects.all()
+    queryset = Person.objects.filter(expiry_date__gt=timezone.now())
     pagination_class = None
     lookup_field = 'person_guid'
 
