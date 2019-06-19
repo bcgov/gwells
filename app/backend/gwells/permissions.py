@@ -12,6 +12,7 @@
     limitations under the License.
 """
 from rest_framework.permissions import BasePermission, SAFE_METHODS
+from gwells.roles import SURVEYS_EDIT_ROLE
 
 
 class ReadOnlyPermission(BasePermission):
@@ -19,5 +20,19 @@ class ReadOnlyPermission(BasePermission):
     Allows read-only access to all users (including anonymous users) and write access to users with
     edit rights.
     """
+
     def has_permission(self, request, view):
         return request.method in SAFE_METHODS
+
+
+class SurveysEditOrReadOnly(BasePermission):
+    """
+    Allows read-only access to all users (including anonymous users) and write access to users with
+    edit rights for surveys (SSO role: surveys_edit).
+    """
+
+    def has_permission(self, request, view):
+        has_edit = request.user and request.user.is_authenticated and request.user.groups.filter(
+            name=SURVEYS_EDIT_ROLE).exists()
+        result = has_edit or request.method in SAFE_METHODS
+        return result

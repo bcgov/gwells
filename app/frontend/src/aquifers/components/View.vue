@@ -153,6 +153,11 @@
         </b-col>
         <b-col cols="12" xl="4" lg="6">
           <h5 class="mt-3 border-bottom pb-4 main-title">Licensing Information</h5>
+          <div>
+            <p>
+              The licensing summaries should be considered estimates. Due to complexities in the structure of the licensing data, reported values should be confirmed through the e-licensing portal.
+            </p>
+          </div>
           <ul class="ml-0 mr-0 mt-4 mb-0 p-0 aquifer-information-list">
             <div class="aquifer-information-list-divider"></div>
             <li>
@@ -172,8 +177,16 @@
               <PieChart :chartData="licence_details.lic_qty" class="mt-3"></PieChart>
           </div>
           <b-table striped hover :items="licence_details.wells_by_licence"></b-table>
-          <p><i v-if="licence_details.licences_updated">Licence info last updated {{ licence_details.licences_updated.update_date__max|formatDate }}</i></p>
-
+          <p><i v-if="licence_details.licences_updated && licence_details.licences_updated.update_date__max">Licence info last updated {{ licence_details.licences_updated.update_date__max|formatDate }}</i></p>
+          <p>
+            Licensing information is obtained from the <a href="https://catalogue.data.gov.bc.ca/dataset/water-rights-licences-public" @click="handleOutboundLinkClicks('https://catalogue.data.gov.bc.ca/dataset/water-rights-licences-public')">Water Rights Licence - Public data layer</a>.
+          </p>
+          <p>
+            Unique licenses are counted once for each aquifer that they are associated with.
+          </p>
+          <p>
+            The total licensed volume is counted once for each licence (the total volume may be shared between wells if there are multiple wells in a licence). In cases where specific volumes are licensed for multiple purposes, individual volumes are summed.
+          </p>
         </b-col>
         <b-col cols="12" xl="4" lg="6">
           <h5 class="mt-3 border-bottom pb-4 main-title">Knowledge Indicators</h5>
@@ -205,7 +218,7 @@
               <dt>{{ section.name }}</dt>
               <dd>
                 <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
-                  <li><a :href="resource.url">{{ resource.name }}</a></li>
+                  <li><a :href="resource.url" @click="handleExternalResourceClicks">{{ resource.name }}</a></li>
                 </ul>
                 <p v-if="!bySection(record.resources, section).length">No information available.</p>
               </dd>
@@ -553,6 +566,28 @@ export default {
     },
     getEMSLink () {
       return `https://apps.nrs.gov.bc.ca/gwells/?match_any=false&ems_has_value=true&aquifer=${this.record['aquifer_id']}#advanced`
+    },
+    // log a google analytics event when clicking on links to other sites
+    handleOutboundLinkClicks (link) {
+      if (window.ga) {
+        window.ga('send', 'event', {
+          eventCategory: 'Outbound Link',
+          eventAction: 'click',
+          eventLabel: link
+        })
+      }
+    },
+    // log a google analytics event when clicking on external aquifer resources
+    // (e.g. PDFS or other files)
+    handleExternalResourceClicks () {
+      if (window.ga) {
+        window.ga('send', 'event', {
+          eventCategory: 'Attachment',
+          eventAction: 'Accessed',
+          eventLabel: 'Aquifer Factsheet'
+        })
+      }
     }
-  }}
+  }
+}
 </script>

@@ -54,6 +54,7 @@ from wells.models import (
     DevelopmentMethodCode,
     DrillingMethodCode,
     WellDisinfectedCode,
+    WellOrientationCode,
     BoundaryEffectCode,
     DriveShoeCode,
     FilterPackMaterialCode,
@@ -124,6 +125,12 @@ class WellSubmissionSerializerBase(AuditModelSerializer):
         raise NotImplementedError()  # Implement in base class!
 
     def validate(self, attrs):
+        # Legacy records have inconsistent data, but we can't stop new submissions
+        # or edits based on past data issues.  Stricter validation will be applied to
+        # records submitted through GWELLS.
+        if isinstance(self, WellSubmissionLegacySerializer):
+            return attrs
+
         errors = {}
         # Check ground elevation fields for mutual requirement
         if 'ground_elevation' in attrs or 'ground_elevation_method' in attrs:
@@ -139,26 +146,21 @@ class WellSubmissionSerializerBase(AuditModelSerializer):
             if len(attrs['longitude']) <= 0:
                 errors['longitude'] = 'Latitude and Longitude are both required.'
 
-        if 'construction_start_date' in attrs or 'construction_end_date' in attrs:
-            if attrs.get('construction_start_date', None) is None or attrs.get('construction_end_date', None) is None:
-                errors['construction_start_date'] = 'Both construction start date and end date are required.'
-            else:
-                if attrs.get('construction_start_date') > attrs.get('construction_end_date'):
-                    errors['construction_start_date'] = 'Construction start date must be before end date'
-
-        if 'alteration_start_date' in attrs or 'alteration_end_date' in attrs:
-            if attrs.get('alteration_start_date', None) is None or attrs.get('alteration_end_date', None) is None:
-                errors['alteration_start_date'] = 'Both alteration start date and end date are required.'
-            else:
-                if attrs.get('alteration_start_date') > attrs.get('alteration_end_date'):
-                    errors['alteration_start_date'] = 'Alteration start date must be before end date'
-
-        if 'decommission_start_date' in attrs and 'decommission_end_date' in attrs:
-            if attrs.get('decommission_start_date', None) is None or attrs.get('decommission_end_date', None) is None:
-                errors['decommission_start_date'] = 'Both decommission start date and end date are required.'
-            else:
-                if attrs.get('decommission_start_date') > attrs.get('decommission_end_date'):
-                    errors['decommission_start_date'] = 'Decommission start date must be before end date'
+        # date validation checks mutual requirement and start date less than end date
+        dates = ['work', 'construction', 'alteration', 'decommission']
+        for i in range(len(dates)):
+            start_date = dates[i] + '_start_date'
+            end_date = dates[i] + '_end_date'
+            if start_date in attrs or end_date in attrs:
+                s = attrs.get(start_date, None)
+                e = attrs.get(end_date, None)
+                if s is None and e is None:
+                    continue
+                if s is None or e is None:
+                    errors[start_date] = 'Both ' + dates[i] + ' start date and end date are required.'
+                else:
+                    if s > e:
+                        errors[start_date] = dates[i] + ' start date must be before end date'
 
         if len(errors) > 0:
             raise serializers.ValidationError(errors)
@@ -349,7 +351,7 @@ class WellConstructionSubmissionSerializer(WellSubmissionSerializerBase):
                   'legal_lot', 'legal_plan', 'legal_district_lot', 'legal_block', 'legal_section',
                   'legal_township', 'legal_range', 'land_district', 'legal_pid', 'well_location_description',
                   'latitude', 'longitude', 'ground_elevation', 'ground_elevation_method', 'drilling_methods',
-                  'well_orientation', 'lithologydescription_set', 'casing_set',
+                  'well_orientation_status', 'lithologydescription_set', 'casing_set',
                   'surface_seal_material', 'surface_seal_depth', 'surface_seal_thickness',
                   'surface_seal_method', 'backfill_type', 'backfill_depth',
                   'liner_material', 'liner_diameter', 'liner_thickness', 'liner_from', 'liner_to',
@@ -439,7 +441,7 @@ class WellAlterationSubmissionSerializer(WellSubmissionSerializerBase):
             'ground_elevation',
             'ground_elevation_method',
             'drilling_methods',
-            'well_orientation',
+            'well_orientation_status',
             'lithologydescription_set',
             'casing_set',
             'surface_seal_material',
@@ -609,7 +611,7 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
             'ground_elevation',
             'ground_elevation_method',
             'drilling_methods',
-            'well_orientation',
+            'well_orientation_status',
             'lithologydescription_set',
             'casing_set',
             'surface_seal_material',
@@ -744,7 +746,7 @@ class WellDecommissionSubmissionSerializer(WellSubmissionSerializerBase):
             'ground_elevation',
             'ground_elevation_method',
             'drilling_methods',
-            'well_orientation',
+            'well_orientation_status',
             'decommission_reason',
             'decommission_method',
             'decommission_sealant_material',
@@ -794,6 +796,14 @@ class WellDisinfectedCodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = WellDisinfectedCode
         fields = ('well_disinfected_code', 'description')
+
+
+class WellOrientationCodeSerializer(serializers.ModelSerializer):
+    """Serializes Well Orientation codes/descriptions"""
+
+    class Meta:
+        model = WellOrientationCode
+        fields = ('well_orientation_code', 'description')
 
 
 class BoundaryEffectCodeSerializer(serializers.ModelSerializer):
@@ -1094,8 +1104,8 @@ class ConstructionSubmissionDisplaySerializer(serializers.ModelSerializer):
         source='intended_water_use.description')
     ground_elevation_method = serializers.ReadOnlyField(
         source='ground_elevation_method.description')
-    well_orientation = serializers.ReadOnlyField(
-        source='well_orientation.description')
+    well_orientation_status = serializers.ReadOnlyField(
+        source='well_orientation_status.description')
     surface_seal_material = serializers.ReadOnlyField(
         source='surface_seal_material.description')
     person_responsible = serializers.ReadOnlyField(
@@ -1140,7 +1150,7 @@ class ConstructionSubmissionDisplaySerializer(serializers.ModelSerializer):
             'legal_lot', 'legal_plan', 'legal_district_lot', 'legal_block', 'legal_section',
             'legal_township', 'legal_range', 'land_district', 'legal_pid', 'well_location_description',
             'latitude', 'longitude', 'ground_elevation', 'ground_elevation_method', 'drilling_methods',
-            'well_orientation', 'lithologydescription_set', 'casing_set',
+            'well_orientation_status', 'lithologydescription_set', 'casing_set',
             'surface_seal_material', 'surface_seal_depth', 'surface_seal_thickness',
             'surface_seal_method', 'backfill_type', 'backfill_depth',
             'liner_material', 'liner_diameter', 'liner_thickness', 'liner_from', 'liner_to',
@@ -1181,8 +1191,8 @@ class AlterationSubmissionDisplaySerializer(serializers.ModelSerializer):
         source='intended_water_use.description')
     ground_elevation_method = serializers.ReadOnlyField(
         source='ground_elevation_method.description')
-    well_orientation = serializers.ReadOnlyField(
-        source='well_orientation.description')
+    well_orientation_status = serializers.ReadOnlyField(
+        source='well_orientation_status.description')
     surface_seal_material = serializers.ReadOnlyField(
         source='surface_seal_material.description')
     person_responsible = serializers.ReadOnlyField(
@@ -1258,7 +1268,7 @@ class AlterationSubmissionDisplaySerializer(serializers.ModelSerializer):
             'ground_elevation',
             'ground_elevation_method',
             'drilling_methods',
-            'well_orientation',
+            'well_orientation_status',
             'lithologydescription_set',
             'casing_set',
             'surface_seal_material',
@@ -1338,8 +1348,8 @@ class DecommissionSubmissionDisplaySerializer(serializers.ModelSerializer):
         source='intended_water_use.description')
     ground_elevation_method = serializers.ReadOnlyField(
         source='ground_elevation_method.description')
-    well_orientation = serializers.ReadOnlyField(
-        source='well_orientation.description')
+    well_orientation_status = serializers.ReadOnlyField(
+        source='well_orientation_status.description')
     decommission_method = serializers.ReadOnlyField(
         source='decommission_method.description')
     decommission_sealant_material = serializers.ReadOnlyField(
@@ -1383,7 +1393,7 @@ class DecommissionSubmissionDisplaySerializer(serializers.ModelSerializer):
             'ground_elevation',
             'ground_elevation_method',
             'drilling_methods',
-            'well_orientation',
+            'well_orientation_status',
             'decommission_reason',
             'decommission_method',
             'decommission_sealant_material',
@@ -1421,8 +1431,8 @@ class LegacyWellDisplaySerializer(serializers.ModelSerializer):
         source='intended_water_use.description')
     ground_elevation_method = serializers.ReadOnlyField(
         source='ground_elevation_method.description')
-    well_orientation = serializers.ReadOnlyField(
-        source='well_orientation.description')
+    well_orientation_status = serializers.ReadOnlyField(
+        source='well_orientation_status.description')
     surface_seal_material = serializers.ReadOnlyField(
         source='surface_seal_material.description')
     person_responsible = serializers.ReadOnlyField(
@@ -1514,7 +1524,7 @@ class LegacyWellDisplaySerializer(serializers.ModelSerializer):
             'ground_elevation',
             'ground_elevation_method',
             'drilling_methods',
-            'well_orientation',
+            'well_orientation_status',
             'lithologydescription_set',
             'casing_set',
             'surface_seal_material',

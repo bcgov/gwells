@@ -192,6 +192,21 @@ def unload_well_disinfected_codes(apps, schema_editor):
     return well_disinfected_code_fixture().unload_fixture(apps, schema_editor)
 
 
+def well_orientation_code_fixture():
+    fixture = 'migrations/well_orientation_codes.json'
+    fixture_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), fixture)
+
+    return CodeFixture(fixture_path)
+
+
+def load_well_orientation_codes(apps, schema_editor):
+    return well_orientation_code_fixture().load_fixture(apps, schema_editor)
+
+
+def unload_well_orientation_codes(apps, schema_editor):
+    return well_orientation_code_fixture().unload_fixture(apps, schema_editor)
+
+
 def boundary_effect_code_fixture():
     fixture = 'migrations/boundary_effect_codes.json'
     fixture_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), fixture)

@@ -120,7 +120,7 @@ const ADDITIONAL_FILTER_SECTIONS = [
      [ 'groundElevation',
        'groundElevationMethod',
        'drillingMethods',
-       'wellOrientation' ] },
+       'wellOrientationStatus' ] },
   { header: 'Surface seal and backfill material',
     fields:
      [ 'surfaceSealMaterial',
