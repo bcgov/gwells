@@ -194,10 +194,6 @@ export default {
       'resetUploadFiles'
     ]),
     formSubmit () {
-      if (!this.formChanges()) {
-        return
-      }
-
       const data = Object.assign({}, this.form)
       const meta = data.meta
 
