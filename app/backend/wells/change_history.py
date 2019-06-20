@@ -77,7 +77,7 @@ def clean_attrs(obj, key):
         if type(obj) == str:
             return obj
         else:
-            return getattr(obj, KEY_VALUE_LOOKUP[key])
+            return getattr(obj, KEY_VALUE_LOOKUP[key], None)
 
     # Foreign Key lookup
     elif key in FOREIGN_KEY_SERIALIZER_LOOKUP:
@@ -92,7 +92,7 @@ def clean_attrs(obj, key):
         converted = []
         if hasattr(obj, 'instance'):
             for item in obj.all():
-                converted.append({'code': getattr(item, MANY_TO_MANY_LOOKUP[key])})
+                converted.append({'code': getattr(item, MANY_TO_MANY_LOOKUP[key], None)})
         else:
             for item in obj:
                 converted.append(item)
