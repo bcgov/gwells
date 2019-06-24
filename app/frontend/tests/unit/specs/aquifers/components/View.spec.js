@@ -167,7 +167,6 @@ describe('View Component', () => {
           data () {
             return {
               record: aquiferFixture,
-              form: aquiferFixture,
               fieldErrors: { a: ['1'] }
             }
           },
@@ -213,7 +212,10 @@ describe('View Component', () => {
             }
           },
           data () {
-            return { record: aquiferFixture }
+            return {
+              record: aquiferFixture,
+              form: aquiferFixture
+            }
           }
         })
 
@@ -221,7 +223,7 @@ describe('View Component', () => {
 
         wrapper.vm.save()
 
-        expect(axios.patch).toHaveBeenCalledWith('aquifers/10', aquiferFixture)
+        expect(axios.patch).toHaveBeenCalledWith('aquifers/10/edit', aquiferFixture)
       })
     })
   })
