@@ -167,6 +167,7 @@ describe('View Component', () => {
           data () {
             return {
               record: aquiferFixture,
+              form: aquiferFixture,
               fieldErrors: { a: ['1'] }
             }
           },
