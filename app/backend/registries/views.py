@@ -764,13 +764,7 @@ class PersonNameSearch(ListAPIView):
     pagination_class = None
     lookup_field = 'person_guid'
 
-    filter_backends = (restfilters.DjangoFilterBackend,
-                       filters.SearchFilter)
     ordering = ('surname',)
-    search_fields = (
-        'first_name',
-        'surname',
-    )
 
 
 class ListFiles(APIView):

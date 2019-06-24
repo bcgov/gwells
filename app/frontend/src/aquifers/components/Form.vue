@@ -452,10 +452,11 @@ export default {
       this.fetchCode('aquifer-codes/productivity', 'productivity_codes')
       this.fetchCode('aquifer-codes/demand', 'demand_codes')
       this.fetchCode('aquifer-codes/water-use', 'known_water_use_codes')
-    }
+    },
   },
   created () {
     this.fetchCodes()
+    this.$emit('load', true)
   }
 }
 </script>
