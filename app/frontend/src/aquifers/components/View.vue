@@ -40,10 +40,11 @@
         <b-col><h4>Aquifer {{record.aquifer_id}} Summary - Edit</h4></b-col>
       </b-row>
       <aquifer-form
+        v-on:load="loadForm"
         v-on:save="save"
         v-on:cancel="navigateToView"
         :fieldErrors="fieldErrors"
-        :record="record"
+        :record="form"
         showId
         v-if="editMode"
         />
@@ -268,10 +269,6 @@ a {
   color: #494949;
 }
 
-.sub-title {
-
-}
-
 .aquifer-information-list {
   list-style-type: none;
   box-sizing: border-box;
@@ -365,6 +362,7 @@ export default {
       fieldErrors: {},
       loading: false,
       record: {},
+      form: {},
       licence_details: {
         usage: [],
         lic_qty: []
@@ -422,6 +420,14 @@ export default {
       'fileUploadSuccess',
       'fileUploadFail'
     ]),
+    loadForm () {
+      ApiService.query(`aquifers/${this.id}/edit`)
+        .then((response) => {
+          this.form = response.data
+        }).catch((error) => {
+          console.error(error)
+        })
+    },
     fetchWells (id = this.id) {
       ApiService.query(`aquifers/${id}/details`)
         .then((response) => {
@@ -480,7 +486,7 @@ export default {
     save () {
       this.showSaveSuccess = false
       this.fieldErrors = {}
-      let writableRecord = JSON.parse(JSON.stringify(this.record))
+      let writableRecord = JSON.parse(JSON.stringify(this.form))
       delete writableRecord.licence_details
       delete writableRecord.geom
       ApiService.patch('aquifers', this.id, writableRecord)
