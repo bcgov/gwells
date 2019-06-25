@@ -290,7 +290,7 @@ export default {
       this.triggerSearch()
     },
     geolocate () {
-      this.$refs.map.mapObject.locate()
+      this.$refs.map.mapObject.locate({ setView: true })
     },
     userLocationFound (location) {
       this.center = location.latlng
