@@ -25,16 +25,22 @@ class Survey(AuditModel):
     Survey
     """
 
+    # TODO: if adding more survey pages in the future,
+    # refactor survey page choices to use a code table.
     WELL = 'w'
     REGISTRY = 'r'
     SEARCH = 's'
     AQUIFER = 'a'
+    SUBMISSIONS = 'u'
+    STAFF_EDIT = 'e'
 
     SURVEY_PAGE_CHOICES = (
         (WELL, "well"),
         (REGISTRY, "registry"),
         (SEARCH, "search"),
-        (AQUIFER, "aquifer")
+        (AQUIFER, "aquifer"),
+        (SUBMISSIONS, "submissions"),
+        (STAFF_EDIT, "staff_edit")
     )
 
     survey_guid = models.UUIDField(

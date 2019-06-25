@@ -138,11 +138,17 @@ export default {
         },
         { key: 'remove', label: 'Remove' }
       ],
+      // this is a list of survey pages that an admin user can create surveys for.
+      // Individual pages currently look for a survey with the corresponding letter (not great design).
+      // TODO: if adding more survey choices, refactor to use a code table on backend and
+      // populate frontend using an options endpoint.
       pageMapping: {
         r: 'Registry',
         a: 'Aquifers',
         s: 'Well Search',
-        w: 'Well Summary'
+        w: 'Well Summary',
+        u: 'Activity Submissions',
+        e: 'Staff Edit'
       },
       perPage: 5,
       currentPage: 1
