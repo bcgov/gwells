@@ -30,7 +30,10 @@ def get_well_history(well):
         if submission.well_activity_type.code == 'LEGACY':
             continue
         fields_provided = FieldsProvided.objects.filter(activity_submission=submission.filing_number).first()
-        fields_provided_dict = model_to_dict(fields_provided)
+        if fields_provided is None:
+            continue
+        else:
+            fields_provided_dict = model_to_dict(fields_provided)
         for key, value in fields_provided_dict.items():
             if value and key != 'activity_submission':
                 # clean and transform our history values
