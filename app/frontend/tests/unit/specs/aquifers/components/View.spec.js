@@ -212,7 +212,10 @@ describe('View Component', () => {
             }
           },
           data () {
-            return { record: aquiferFixture }
+            return {
+              record: aquiferFixture,
+              form: aquiferFixture
+            }
           }
         })
 

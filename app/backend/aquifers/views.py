@@ -37,7 +37,7 @@ from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.filters import SearchFilter, OrderingFilter
-from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveUpdateAPIView
+from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveUpdateAPIView, RetrieveAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.exceptions import ParseError
 from rest_framework.parsers import FileUploadParser
@@ -73,6 +73,16 @@ from gwells.management.commands.export_databc import AQUIFERS_SQL, GeoJSONIterat
 
 
 logger = logging.getLogger(__name__)
+
+class AquiferEditDetailsAPIView(RetrieveAPIView):
+    """List aquifers
+    get: return details of aquifers
+    """
+    permission_classes = (HasAquiferEditRole,)
+    queryset = Aquifer.objects.all()
+    swagger_schema = None
+    lookup_field = 'aquifer_id'
+    serializer_class = serializers.AquiferEditDetailSerializer
 
 
 class AquiferRetrieveUpdateAPIView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateAPIView):

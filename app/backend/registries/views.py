@@ -760,17 +760,11 @@ class PersonNameSearch(ListAPIView):
 
     permission_classes = (RegistriesEditOrReadOnly,)
     serializer_class = PersonNameSerializer
-    queryset = Person.objects.all()
+    queryset = Person.objects.filter(expiry_date__gt=timezone.now())
     pagination_class = None
     lookup_field = 'person_guid'
 
-    filter_backends = (restfilters.DjangoFilterBackend,
-                       filters.SearchFilter)
     ordering = ('surname',)
-    search_fields = (
-        'first_name',
-        'surname',
-    )
 
 
 class ListFiles(APIView):

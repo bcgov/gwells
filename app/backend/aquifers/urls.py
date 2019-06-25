@@ -40,6 +40,11 @@ urlpatterns = [
         name='aquifer-name-list'
         ),
 
+    url(r'^api/v1/aquifers/(?P<aquifer_id>[0-9]+)/edit$',
+        never_cache(views.AquiferEditDetailsAPIView.as_view()),
+        name='aquifer-retrieve-update'
+        ),
+
     url(r'^api/v1/aquifers/(?P<aquifer_id>[0-9]+)$',
         never_cache(views.AquiferRetrieveUpdateAPIView.as_view()),
         name='aquifer-retrieve-update'
