@@ -89,6 +89,37 @@ class AquiferSerializer(serializers.ModelSerializer):
         )
 
 
+class AquiferEditDetailSerializer(serializers.ModelSerializer):
+    """ 
+    Read serializer for aquifer details with primary key references needed for populating an edit form
+    """
+
+    resources = AquiferResourceSerializer(many=True, required=False)
+    licence_details = serializers.JSONField(read_only=True)
+
+    class Meta:
+        model = models.Aquifer
+        fields = (
+            'aquifer_id',
+            'aquifer_name',
+            'location_description',
+
+            'quality_concern',
+            'material',
+            'subtype',
+            'vulnerability',
+            'known_water_use',
+            'litho_stratographic_unit',
+            'productivity',
+
+            'demand',
+            'mapping_year',
+            'resources',
+            'area',
+            'notes',
+            'licence_details',
+        )
+
 class AquiferDetailSerializer(serializers.ModelSerializer):
 
     resources = AquiferResourceSerializer(many=True, required=False)
