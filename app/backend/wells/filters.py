@@ -159,7 +159,7 @@ class WellListFilter(AnyOrAllFilterSet):
     # Don't require a choice (i.e. select box) for aquifer
     aquifer = filters.NumberFilter()
 
-    well_tag_number = filters.CharFilter(lookup_expr='icontains')
+    well_tag_number = filters.CharFilter(lookup_expr='iexact')
     street_address = filters.CharFilter(lookup_expr='icontains')
     city = filters.CharFilter(lookup_expr='icontains')
     well_location_description = filters.CharFilter(lookup_expr='icontains')
@@ -532,7 +532,7 @@ class WellListAdminFilter(WellListFilter):
 class WellListFilterBackend(filters.DjangoFilterBackend):
     """
     Custom well list filtering logic.
-    
+
     Returns a different filterset class for admin users, and allows additional
     'filter_group' params.
     """
@@ -612,7 +612,7 @@ class WellListOrderingFilter(OrderingFilter):
                 updated_ordering.append(order)
 
         return updated_ordering
-    
+
     def get_related_field_ordering(self, related_field):
         if related_field.name == 'land_district_code':
             return ['land_district__land_district_code', 'land_district__name']
