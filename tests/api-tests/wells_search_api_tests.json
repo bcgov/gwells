@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "9e5cb6af-f77d-4fd2-9cd9-85f280c3d94a",
+		"_postman_id": "6a0a6d2b-1912-481a-b676-97fd7fdb1f3e",
 		"name": "Well List API filters",
 		"description": "Well List API endpoint filters required for advanced search options.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -63,11 +63,9 @@
 							"script": {
 								"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
 								"exec": [
-									"pm.test(\"Well tag number matches filter\", function () {",
-									"  const wellParam = parseInt(pm.request.url.query.get(\"search\"));",
-									"  pm.response.json().results.forEach(function(result) {",
-									"    pm.expect(result.well_tag_number).to.equal(wellParam);",
-									"  });",
+									"pm.test(\"Only matches one well\", function () {",
+									"    pm.expect(pm.response.json().results.length).to.equal(1);",
+									"    pm.expect(pm.response.json().results[0].well_tag_number).to.equal(123);",
 									"});"
 								],
 								"type": "text/javascript"
@@ -82,7 +80,7 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{base_url}}/api/v1/wells?search=216265",
+							"raw": "{{base_url}}/api/v1/wells?well_tag_number=123",
 							"host": [
 								"{{base_url}}"
 							],
@@ -93,8 +91,8 @@
 							],
 							"query": [
 								{
-									"key": "search",
-									"value": "216265"
+									"key": "well_tag_number",
+									"value": "123"
 								}
 							]
 						}
