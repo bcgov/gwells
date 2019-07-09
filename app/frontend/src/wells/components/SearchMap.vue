@@ -290,7 +290,7 @@ export default {
       this.triggerSearch()
     },
     geolocate () {
-      this.$refs.map.mapObject.locate({ setView: true })
+      this.$refs.map.mapObject.locate()
     },
     userLocationFound (location) {
       this.center = location.latlng
@@ -329,6 +329,12 @@ export default {
       // Bind to the map's boxZoom handler
       const mapObject = this.$refs.map.mapObject
       const originalMouseDown = mapObject.boxZoom._onMouseDown
+
+      mapObject.on('locationfound', function (e) {
+        let latlng = new L.LatLng(e.latlng.lng, e.latlng.lat)
+        mapObject.setView(latlng, 16)
+      })
+
       mapObject.boxZoom._onMouseDown = (event) => {
         // prevent right-click from triggering zoom tool
         if (event.button === 2) {
