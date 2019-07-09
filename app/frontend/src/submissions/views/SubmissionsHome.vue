@@ -25,6 +25,19 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <div class="card" v-if="userRoles.wells.edit || userRoles.submissions.edit">
         <div class="card-body">
 
+          <b-alert
+              show
+              variant="info"
+              class="mb-3"
+              v-for="(survey, index) in surveys[isStaffEdit ? 'edit' : 'submissions']"
+              :key="`survey ${index}`">
+            <p class="m-0">
+              <a :href="survey.survey_link">
+                {{ survey.survey_introduction_text }}
+              </a>
+            </p>
+          </b-alert>
+
           <b-form @submit.prevent="confirmSubmit">
             <!-- if preview === true : Preview -->
             <submission-preview
@@ -608,6 +621,24 @@ export default {
       // Set initial form fields for comparison with user input changes
       Object.assign(this.compareForm, this.form)
     },
+    fetchSurveys () {
+      // Fetch current surveys and add applicable surveys (if any) to this.surveys to be displayed
+      ApiService.query('surveys').then((response) => {
+        if (response.data) {
+          response.data.forEach((survey) => {
+            if (survey.survey_page === 'u' && survey.survey_enabled) {
+              this.surveys.submissions.push(survey)
+            }
+
+            if (survey.survey_page === 'e' && survey.survey_enabled) {
+              this.surveys.edit.push(survey)
+            }
+          })
+        }
+      }).catch((e) => {
+        console.error(e)
+      })
+    },
     fetchWellDataForStaffEdit (options = {}) {
       const { reloadPage = true } = options
       if (reloadPage) {
@@ -656,6 +687,7 @@ export default {
   },
   created () {
     this.setupPage()
+    this.fetchSurveys()
   }
 }
 
@@ -677,6 +709,10 @@ function initialState () {
     form: {},
     submissionsHistory: [], // historical submissions for each well (comes into play for staff edits)
     formOptions: {},
+    surveys: {
+      submissions: [],
+      edit: []
+    },
     uploadedFiles: {},
     formSteps: {
       CON: [

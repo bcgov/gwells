@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "37478645-c837-49f0-a8ee-76513c7a827e",
+		"_postman_id": "6a0a6d2b-1912-481a-b676-97fd7fdb1f3e",
 		"name": "Well List API filters",
 		"description": "Well List API endpoint filters required for advanced search options.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -31,6 +31,10 @@
 					"request": {
 						"method": "GET",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/wells?search=216265",
 							"host": [
@@ -45,6 +49,50 @@
 								{
 									"key": "search",
 									"value": "216265"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "search param (matching well tag exactly)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+								"exec": [
+									"pm.test(\"Only matches one well\", function () {",
+									"    pm.expect(pm.response.json().results.length).to.equal(1);",
+									"    pm.expect(pm.response.json().results[0].well_tag_number).to.equal(123);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/wells?well_tag_number=123",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"wells"
+							],
+							"query": [
+								{
+									"key": "well_tag_number",
+									"value": "123"
 								}
 							]
 						}
@@ -73,6 +121,10 @@
 					"request": {
 						"method": "GET",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/wells?search=55555",
 							"host": [
@@ -115,6 +167,10 @@
 					"request": {
 						"method": "GET",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/wells?search=1234 Main",
 							"host": [
@@ -157,6 +213,10 @@
 					"request": {
 						"method": "GET",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/wells?search=vancouver",
 							"host": [
@@ -199,6 +259,10 @@
 					"request": {
 						"method": "GET",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/wells?search=Alice S",
 							"host": [
@@ -276,6 +340,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?well=216265",
 									"host": [
@@ -318,6 +386,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?well=55555",
 									"host": [
@@ -360,6 +432,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?street_address_or_city=1234 Main",
 									"host": [
@@ -402,6 +478,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?street_address_or_city=vancouver",
 									"host": [
@@ -446,6 +526,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?date_of_work_before=1975-12-31",
 									"host": [
@@ -490,6 +574,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?date_of_work_after=2019-02-07",
 									"host": [
@@ -533,6 +621,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?well_depth_min=100&well_depth_max=185",
 									"host": [
@@ -579,6 +671,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?well_depth_max=185",
 									"host": [
@@ -622,6 +718,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?legal=1Q",
 									"host": [
@@ -665,6 +765,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?legal=555555",
 									"host": [
@@ -741,6 +845,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?well_tag_number=216265",
 									"host": [
@@ -783,6 +891,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?identification_plate_number=55555",
 									"host": [
@@ -826,6 +938,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?legal_lot=1Q",
 									"host": [
@@ -869,6 +985,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?legal_plan=555",
 									"host": [
@@ -912,6 +1032,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?legal_district_lot=20000",
 									"host": [
@@ -955,6 +1079,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?land_district=36",
 									"host": [
@@ -998,6 +1126,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?legal_pid=555555",
 									"host": [
@@ -1041,6 +1173,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?well_status=OTHER",
 									"host": [
@@ -1084,6 +1220,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?licenced_status=LICENSED",
 									"host": [
@@ -1126,6 +1266,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?well_class=WATR_SPPLY",
 									"host": [
@@ -1168,6 +1312,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?well_subclass=5a313ffe-47e7-11e7-a919-92ebcb67fe33",
 									"host": [
@@ -1210,6 +1358,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?legal_block=block",
 									"host": [
@@ -1252,6 +1404,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?legal_township=township",
 									"host": [
@@ -1294,6 +1450,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?legal_range=3",
 									"host": [
@@ -1336,6 +1496,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?drilling_company=f606669c-a60c-422d-859a-fdc54278d9b0",
 									"host": [
@@ -1378,6 +1542,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?coordinate_acquisition_code=H",
 									"host": [
@@ -1421,6 +1589,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?ground_elevation_method=GPS",
 									"host": [
@@ -1464,6 +1636,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?surface_seal_material=SND_CMT_GT",
 									"host": [
@@ -1541,6 +1717,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?construction_start_date_before=1975-12-31",
 									"host": [
@@ -1585,6 +1765,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?construction_start_date_after=1975-01-01",
 									"host": [
@@ -1629,6 +1813,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?construction_end_date_before=1976-12-31",
 									"host": [
@@ -1673,6 +1861,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?construction_end_date_after=1976-01-01",
 									"host": [
@@ -1717,6 +1909,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?alteration_start_date_before=2014-12-31",
 									"host": [
@@ -1761,6 +1957,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?alteration_start_date_after=2014-01-01",
 									"host": [
@@ -1805,6 +2005,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?alteration_end_date_before=2019-01-01",
 									"host": [
@@ -1849,6 +2053,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?alteration_end_date_after=2018-12-30",
 									"host": [
@@ -1893,6 +2101,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?decommission_start_date_before=2019-02-03",
 									"host": [
@@ -1937,6 +2149,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?decommission_start_date_after=2019-02-01",
 									"host": [
@@ -1981,6 +2197,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?decommission_end_date_before=2019-02-09",
 									"host": [
@@ -2025,6 +2245,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?decommission_end_date_after=2019-02-07",
 									"host": [
@@ -2103,6 +2327,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?liner_diameter_min=1.3",
 									"host": [
@@ -2148,6 +2376,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?liner_diameter_max=1.6",
 									"host": [
@@ -2256,6 +2488,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?street_address=Main st",
 									"host": [
@@ -2298,6 +2534,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?owner_full_name=Alice",
 									"host": [
@@ -2340,6 +2580,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?well_location_description=highway 95",
 									"host": [
@@ -2383,6 +2627,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?well_identification_plate_attached=casing",
 									"host": [
@@ -2426,6 +2674,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?water_supply_system_name=test",
 									"host": [
@@ -2469,6 +2721,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?water_supply_system_well_name=test",
 									"host": [
@@ -2547,6 +2803,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?water_quality_characteristics=SALTY&water_quality_characteristics=CLOUDY",
 									"host": [
@@ -2594,6 +2854,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?drilling_methods=DUGOUT",
 									"host": [
@@ -2669,6 +2933,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?sw_long=-122.60&sw_lat=49.24&ne_long=-122.58&ne_lat=49.26",
 									"host": [
@@ -2723,6 +2991,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?sw_long=-122.60&sw_lat=49.24&ne_long=-122.58",
 									"host": [
@@ -2773,6 +3045,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?sw_lat=bar&sw_long=foo&ne_long=test&ne_lat=avalue",
 									"host": [
@@ -2850,6 +3126,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?well_orientation=False&well_status=OTHER&match_any=false&filter_group={\"owner_full_name\": \"Smith\", \"match_any\": false}",
 									"host": [
@@ -2899,6 +3179,10 @@
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?well_orientation=True&well_status=OTHER&match_any=true&filter_group={\"surface_seal_material\": \"BNTITE_CLY\"}&filter_group={\"owner_full_name\": \"MOUNTED\", \"match_any\": true}",
 									"host": [
@@ -3006,6 +3290,10 @@
 					"request": {
 						"method": "GET",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/wells?ordering=identification_plate_number",
 							"host": [
@@ -3067,6 +3355,10 @@
 					"request": {
 						"method": "GET",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/wells?ordering=construction_start_date",
 							"host": [
@@ -3129,6 +3421,10 @@
 					"request": {
 						"method": "GET",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/wells?ordering=-owner_full_name",
 							"host": [
@@ -3196,6 +3492,10 @@
 					"request": {
 						"method": "GET",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/wells?ordering=drilling_methods&limit=10",
 							"host": [
@@ -3262,6 +3562,10 @@
 					"request": {
 						"method": "GET",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/wells?ordering=surface_seal_method",
 							"host": [
@@ -3325,6 +3629,10 @@
 					"request": {
 						"method": "GET",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/wells?ordering=-well_class",
 							"host": [
