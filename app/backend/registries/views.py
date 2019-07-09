@@ -760,12 +760,16 @@ class PersonNameSearch(ListAPIView):
 
     permission_classes = (RegistriesEditOrReadOnly,)
     serializer_class = PersonNameSerializer
-    queryset = Person.objects.filter(expiry_date__gt=timezone.now())
     pagination_class = None
     lookup_field = 'person_guid'
 
     ordering = ('surname',)
 
+    def get_queryset(self):
+        """
+        This view returns all names with expired records filtered out.
+        """
+        return Person.objects.filter(expiry_date__gt=timezone.now())
 
 class ListFiles(APIView):
     """
