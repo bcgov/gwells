@@ -192,8 +192,6 @@
                 <b-col cols="12" md="4"><span class="font-weight-bold">Zone:</span> {{UTM.zone}}</b-col>
                 <b-col cols="12" md="6"><span class="font-weight-bold">Coordinate Acquisition Code:</span> {{well.coordinate_acquisition_code}}</b-col>
               </b-row>
-              <b-row>
-              </b-row>
             </b-col>
           </b-row>
         </fieldset>
