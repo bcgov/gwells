@@ -172,9 +172,9 @@
             </li>
           </ul>
           <div v-if="licence_details.lic_qty.length > 0">
-              <h5 class="pie-chart-title">Licenced use volume by purpose</h5>
+              <h5 class="pie-chart-title">Licensed volume by purpose</h5>
               <PieChart :chartData="licence_details.usage" class="mt-3"></PieChart>
-              <h5 class="pie-chart-title pt-4">Licenced quantity by use</h5>
+              <h5 class="pie-chart-title pt-4">Number of licences by purpose</h5>
               <PieChart :chartData="licence_details.lic_qty" class="mt-3"></PieChart>
           </div>
           <b-table striped hover :items="licence_details.wells_by_licence"></b-table>
