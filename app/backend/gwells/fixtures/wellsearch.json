@@ -813,7 +813,7 @@
             "well_subclass": null,
             "intended_water_use": null,
             "well_status": null,
-            "licenced_status": null,
+            "licenced_status": "UNLICENSED",
             "street_address": "23 Forest Park 1",
             "city": "",
             "legal_lot": "1",
