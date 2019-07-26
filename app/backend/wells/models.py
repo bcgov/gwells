@@ -746,8 +746,8 @@ class Well(AuditModelStructure):
     licences = models.ManyToManyField('aquifers.WaterRightsLicence')
     licenced_status = models.ForeignKey(
         LicencedStatusCode, db_column='licenced_status_code',
-        on_delete=models.CASCADE, blank=True, null=True,
-        verbose_name='Licenced Status',
+        on_delete=models.PROTECT, default='UNLICENSED',
+        verbose_name='Licensed Status',
         db_comment=('Valid licensing options granted to a well under the Water Water Sustainability Act.'
                     ' This information comes from eLicensing. i.e. Unlicensed, Licensed, Historical.'))
 

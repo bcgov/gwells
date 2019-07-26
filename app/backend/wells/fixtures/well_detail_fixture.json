@@ -66,7 +66,7 @@
               "development_notes": "",
               "observation_well_status": null,
               "screen_material": null,
-              "licenced_status": null,
+              "licenced_status": "UNLICENSED",
               "construction_end_date": null,
               "well_guid": "28efc8dd-4f4e-4b1e-84ce-5e2e7313bdb1",
               "coordinate_acquisition_code": "H",
