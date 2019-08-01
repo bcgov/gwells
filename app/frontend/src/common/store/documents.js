@@ -67,7 +67,7 @@ export default {
           ApiService.presignedPutUrl(
             documentType,
             recordId,
-            escape(file.name),
+            encodeURI(file.name),
             isPrivate
           )
             .then(response => {
