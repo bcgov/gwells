@@ -63,11 +63,12 @@ export default {
       let uploadPromises = []
 
       context.state.upload_files.forEach(file => {
+        file.name = encodeURI(file.name)
         uploadPromises.push(
           ApiService.presignedPutUrl(
             documentType,
             recordId,
-            encodeURI(file.name),
+            file.name,
             isPrivate
           )
             .then(response => {
