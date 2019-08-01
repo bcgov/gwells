@@ -226,7 +226,14 @@
               <div class="water-quality-information" v-if="index === 5">
                 <dt>Water quality information</dt>
                 <dd><a :href="getEMSLink()">{{ licence_details['num_wells_with_ems'] }} wells with an EMS ID</a></dd>
-                <dt>Hydraulically connected <a href='#' style='font-size:140%' title="Inferred based on aquifer subtype - not field verified">*</a></dt>
+                <dt>Hydraulically connected
+                  <b-badge pill variant="primary" id="aquiferConnectedInfo" tabindex="0" class="pt-0 mt-0"><i class="fa fa-question fa-xs pt-0 mt-0"></i></b-badge>
+                  <b-popover
+                    target="aquiferConnectedInfo"
+                    triggers="hover focus"
+                    content="Inferred based on aquifer subtype - not field verified."
+                  ></b-popover>
+                </dt>
                 <dd>{{ licence_details['hydraulically_connected'] ? "Yes" : "No"}}</dd>
               </div>
           </li>
