@@ -63,7 +63,9 @@ export default {
       let uploadPromises = []
 
       context.state.upload_files.forEach(file => {
-        file = new File([file], encodeURI(file.name), { type: file.type })
+        // replace characters that can cause errors in filename
+        file = new File([file], file.name.replace(/&/gi, '-'), { type: file.type })
+
         uploadPromises.push(
           ApiService.presignedPutUrl(
             documentType,
