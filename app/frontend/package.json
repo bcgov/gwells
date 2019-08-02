@@ -30,7 +30,7 @@
     "vue-chartjs": "^3.4.2",
     "vue-moment": "^3.2.0",
     "vue-router": "^3.0.1",
-    "vue-select": "^2.5.1",
+    "vue-select": "^3.1.0",
     "vue-smoothscroll": "^0.1.1",
     "vue2-leaflet": "^2.0.0",
     "vuejs-noty": "^0.1.3",
