@@ -310,7 +310,7 @@ export default {
         }
 
         if (!this.form.well_tag_number) {
-          this.setWellTagNumber(response.data.well)
+          this.form.well = response.data.well
         }
 
         // Reloads only altered data in form for re-rendering
