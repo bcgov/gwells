@@ -309,9 +309,7 @@ export default {
           })
         }
 
-        if (!this.form.well_tag_number) {
-          this.setWellTagNumber(response.data.well)
-        }
+        this.setWellTagNumber(response.data.well)
 
         // Reloads only altered data in form for re-rendering
         Object.keys(response.data).forEach((key) => {
