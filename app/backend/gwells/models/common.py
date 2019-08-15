@@ -109,7 +109,7 @@ class CodeTableModel(AuditModel):
         abstract = True
 
 
-class ProvinceStateCode(AuditModel):
+class ProvinceStateCode(CodeTableModel):
     """
     Lookup of Provinces/States.
     Used to specify valid provinces or states for the address of the owner of a well.

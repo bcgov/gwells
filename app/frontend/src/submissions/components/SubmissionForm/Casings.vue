@@ -34,7 +34,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             <th class="font-weight-normal">Casing Material</th>
             <th class="font-weight-normal">Diameter (in)</th>
             <th class="font-weight-normal">Wall Thickness (in)</th>
-            <th class="font-weight-normal">Drive Shoe*</th>
+            <th class="font-weight-normal">Drive Shoe</th>
             <th></th>
           </tr>
         </thead>
@@ -120,14 +120,20 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 :errors="getCasingError(index).wall_thickness"
                 :loaded="getFieldsLoaded(index).wall_thickness"/>
             </td>
-            <td class="pt-0 py-0">
-              <b-form-radio-group v-model="casing.drive_shoe"
-                :name="'drive_shoe_' + index"
-                :id="'casingDriveShoe_' + index"
-                required>
-                <b-form-radio :value="false">No</b-form-radio>
-                <b-form-radio :value="true">Yes</b-form-radio>
-              </b-form-radio-group>
+            <td class="my-0">
+              <b-form-group :id="'casingDriveShoe_' + index">
+                <b-form-select
+                  v-model="casing.drive_shoe_status"
+                  value-field="drive_shoe_code"
+                  text-field="drive_shoe_code"
+                  :options="codes.drive_shoe_codes"
+                  :errors="errors['drive_shoe_status']"
+                  :loaded="fieldsLoaded['drive_shoe_status']">
+                  <template slot="first">
+                    <option value="" disabled>Select drive shoe</option>
+                  </template>
+                </b-form-select>
+              </b-form-group>
             </td>
             <td class="pt-1 py-0">
               <b-btn size="sm" variant="primary" :id="`removeCasingRowBtn${index}`" @click="removeRowIfOk(casing)" class="mt-2"><i class="fa fa-minus-square-o"></i> Remove</b-btn>

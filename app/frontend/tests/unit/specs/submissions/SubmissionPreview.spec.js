@@ -57,4 +57,16 @@ describe('filterBlankRows', () => {
 
     expect(filteredRows.length).toBe(3)
   })
+  it('Displays well tag number', () => {
+    const wrapper = shallowMount(SubmissionPreview, {
+      localVue,
+      store,
+      propsData: {
+        form: { well: 123 },
+        sections: {}
+      }
+    })
+    const wellDisplay = wrapper.find('#wellTagNumberDisplay')
+    expect(wellDisplay.text()).toContain('123')
+  })
 })

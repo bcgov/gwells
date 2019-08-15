@@ -427,6 +427,7 @@ class CitiesListView(ListAPIView):
     serializer_class = CityListSerializer
     lookup_field = 'register_guid'
     pagination_class = None
+    swagger_schema = None
     permission_classes = (RegistriesEditOrReadOnly,)
     queryset = Register.objects \
         .exclude(organization__city__isnull=True) \
@@ -561,9 +562,8 @@ class ApplicationDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDestr
 
 class OrganizationNameListView(ListAPIView):
     """
-    Simple list of organizations with only organization names
+    A list of organizations with only organization names
     """
-
     permission_classes = (RegistriesEditOrReadOnly,)
     serializer_class = OrganizationNameListSerializer
     queryset = Organization.objects \
@@ -760,18 +760,16 @@ class PersonNameSearch(ListAPIView):
 
     permission_classes = (RegistriesEditOrReadOnly,)
     serializer_class = PersonNameSerializer
-    queryset = Person.objects.all()
     pagination_class = None
     lookup_field = 'person_guid'
 
-    filter_backends = (restfilters.DjangoFilterBackend,
-                       filters.SearchFilter)
     ordering = ('surname',)
-    search_fields = (
-        'first_name',
-        'surname',
-    )
 
+    def get_queryset(self):
+        """
+        This view returns all names with expired records filtered out.
+        """
+        return Person.objects.filter(expiry_date__gt=timezone.now())
 
 class ListFiles(APIView):
     """

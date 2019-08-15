@@ -14,11 +14,8 @@
 
 from django.contrib.gis.db import models
 from django.core.validators import MinValueValidator
-from django.contrib.contenttypes.fields import GenericRelation
 
 from decimal import Decimal
-import reversion
-from reversion.models import Version
 
 from django.utils import timezone
 import uuid
@@ -180,6 +177,24 @@ class FilterPackMaterialSizeCode(CodeTableModel):
         return self.description
 
 
+class BoundaryEffectCode(CodeTableModel):
+    """
+     The observed boundary effect in the pumping test analysis.
+    """
+    boundary_effect_code = models.CharField(primary_key=True, max_length=10, editable=False)
+    description = models.CharField(max_length=100)
+
+    class Meta:
+        db_table = 'boundary_effect_code'
+        ordering = ['display_order', 'description']
+
+    db_table_comment = ('The observed boundary effect in the pumping test analysis. Constant head or '
+                        'no flow boundaries are two possible observations.')
+
+    def __str__(self):
+        return self.description
+
+
 class WellDisinfectedCode(CodeTableModel):
     """
      The status on whether the well has been disinfected or not.
@@ -193,6 +208,40 @@ class WellDisinfectedCode(CodeTableModel):
 
     db_table_comment = ('Codes for the well disinfected status. If the disinfected status on a legacy well'
                         'is unkown, then the null status is mapped to the Unkown value.')
+
+    def __str__(self):
+        return self.description
+
+
+class WellOrientationCode(CodeTableModel):
+    """
+     Codes describing the orientation of the well
+    """
+    well_orientation_code = models.CharField(primary_key=True, max_length=100, editable=False)
+    description = models.CharField(max_length=100)
+
+    class Meta:
+        db_table = 'well_orientation_code'
+        ordering = ['display_order', 'description']
+
+    db_table_comment = ('Codes for the well orienation. Horizontal and Vertical are the only codes at this point')
+
+    def __str__(self):
+        return self.description
+
+
+class DriveShoeCode(CodeTableModel):
+    """
+     The status on whether a casing has a drive shoe installed.
+    """
+    drive_shoe_code = models.CharField(primary_key=True, max_length=100, editable=False)
+    description = models.CharField(max_length=100)
+
+    class Meta:
+        db_table = 'drive_shoe_code'
+        ordering = ['display_order', 'description']
+
+    db_table_comment = ('Codes for drive shoe installation on a casing.')
 
     def __str__(self):
         return self.description
@@ -637,7 +686,6 @@ class AquiferLithologyCode(CodeTableModel):
 
 # TODO: Consider having Well and Submission extend off a common base class, given that
 #   they mostly have the exact same fields!
-@reversion.register()
 class Well(AuditModelStructure):
     """
     Well information.
@@ -695,10 +743,11 @@ class Well(AuditModelStructure):
                                                 on_delete=models.CASCADE,
                                                 verbose_name='Well Publication Status',
                                                 default='Published')
+    licences = models.ManyToManyField('aquifers.WaterRightsLicence')
     licenced_status = models.ForeignKey(
         LicencedStatusCode, db_column='licenced_status_code',
-        on_delete=models.CASCADE, blank=True, null=True,
-        verbose_name='Licenced Status',
+        on_delete=models.PROTECT, default='UNLICENSED',
+        verbose_name='Licensed Status',
         db_comment=('Valid licensing options granted to a well under the Water Water Sustainability Act.'
                     ' This information comes from eLicensing. i.e. Unlicensed, Licensed, Historical.'))
 
@@ -779,6 +828,9 @@ class Well(AuditModelStructure):
                                               blank=True)
     well_orientation = models.BooleanField(default=True, verbose_name='Orientation of Well', choices=(
         (True, 'vertical'), (False, 'horizontal')))
+    well_orientation_status = models.ForeignKey(WellOrientationCode, db_column='well_orientation_code',
+                                                on_delete=models.CASCADE, blank=True, null=True,
+                                                verbose_name='Well Orientation Code')
 
     surface_seal_material = models.ForeignKey(SurfaceSealMaterialCode, db_column='surface_seal_material_code',
                                               on_delete=models.CASCADE, blank=True, null=True,
@@ -952,7 +1004,7 @@ class Well(AuditModelStructure):
     utm_easting = models.IntegerField(
         blank=True, null=True, verbose_name="UTM Easting")
     coordinate_acquisition_code = models.ForeignKey(
-        CoordinateAcquisitionCode, null=True, blank=True, verbose_name="Location Accuracy Code",
+        CoordinateAcquisitionCode, default='H', blank=True, null=True, verbose_name="Location Accuracy Code",
         db_column='coordinate_acquisition_code', on_delete=models.PROTECT,
         db_comment=('Codes for the accuracy of the coordinate position, which is best estimated based on'
                     ' the information provided by the data submitter and analysis done by staff. E.g. A,'
@@ -1029,16 +1081,17 @@ class Well(AuditModelStructure):
     analytic_solution_type = models.DecimalField(
         max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Analytic Solution Type',
         db_comment='Mathematical formulation used to estimate hydraulic parameters.')
-    boundary_effect = models.DecimalField(
-        max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Boundary Effect',
-        db_comment='Valid codes for the boundaries observed in pumping test analysis. i.e. CH, NF.')
+    boundary_effect = models.ForeignKey(BoundaryEffectCode, db_column='boundary_effect_code',
+                                        on_delete=models.CASCADE, blank=True, null=True,
+                                        verbose_name='Boundary Effect',
+                                        db_comment='Valid codes for the boundaries observed in '
+                                                   'pumping test analysis. i.e. CH, NF.')
     aquifer_lithology = models.ForeignKey(
         AquiferLithologyCode, db_column='aquifer_lithology_code', blank=True, null=True,
         on_delete=models.CASCADE,
         verbose_name='Aquifer Lithology',
         db_comment=('Valid codes for the type of material an aquifer consists of. i.e., Unconsolidated, '
                     'Bedrock, Unknown.'))
-
     # Production data related data
     yield_estimation_method = models.ForeignKey(
         YieldEstimationMethodCode, db_column='yield_estimation_method_code',
@@ -1070,8 +1123,6 @@ class Well(AuditModelStructure):
     recommended_pump_rate = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True,
                                                 verbose_name='Recommended pump rate',
                                                 validators=[MinValueValidator(Decimal('0.00'))])
-
-    history = GenericRelation(Version)
 
     class Meta:
         db_table = 'well'
@@ -1297,7 +1348,7 @@ class ActivitySubmission(AuditModelStructure):
         blank=True, null=True, verbose_name='Geo-referenced Location of the Well', srid=4326)
 
     coordinate_acquisition_code = models.ForeignKey(
-        CoordinateAcquisitionCode, null=True, blank=True, verbose_name="Location Accuracy Code",
+        CoordinateAcquisitionCode, default='H', blank=True, null=True, verbose_name="Location Accuracy Code",
         db_column='coordinate_acquisition_code', on_delete=models.PROTECT,
         db_comment=('Codes for the accuracy of the coordinate position, which is best estimated based on'
                     ' the information provided by the data submitter and analysis done by staff. E.g. A,'
@@ -1312,6 +1363,10 @@ class ActivitySubmission(AuditModelStructure):
                                               blank=True)
     well_orientation = models.BooleanField(default=True, verbose_name='Orientation of Well', choices=(
         (True, 'vertical'), (False, 'horizontal')))
+    well_orientation_status = models.ForeignKey(WellOrientationCode, db_column='well_orientation_code',
+                                                on_delete=models.CASCADE, blank=True, null=True,
+                                                verbose_name='Well Orientation Code')
+
     water_supply_system_name = models.CharField(
         max_length=80, blank=True, null=True, verbose_name='Water Supply System Name',
         db_comment=('Name or identifier given to a well that serves as a water supply system. Often, the '
@@ -1521,9 +1576,11 @@ class ActivitySubmission(AuditModelStructure):
     testing_duration = models.PositiveIntegerField(blank=True, null=True)
     analytic_solution_type = models.DecimalField(
         max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Analytic Solution Type')
-    boundary_effect = models.DecimalField(
-        max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Boundary Effect',
-        db_comment='Valid codes for the boundaries observed in pumping test analysis. i.e. CH, NF.')
+    boundary_effect = models.ForeignKey(BoundaryEffectCode, db_column='boundary_effect_code',
+                                        on_delete=models.CASCADE, blank=True, null=True,
+                                        verbose_name='Boundary Effect',
+                                        db_comment='Valid codes for the boundaries observed in '
+                                                   'pumping test analysis. i.e. CH, NF.')
     aquifer_lithology = models.ForeignKey(
         AquiferLithologyCode, db_column='aquifer_lithology_code', blank=True, null=True,
         on_delete=models.CASCADE,
@@ -1650,6 +1707,7 @@ class FieldsProvided(models.Model):
     ground_elevation_method = models.BooleanField(default=False)
     drilling_methods = models.BooleanField(default=False)
     well_orientation = models.BooleanField(default=False)
+    well_orientation_status = models.BooleanField(default=False)
     water_supply_system_name = models.BooleanField(default=False)
     water_supply_system_well_name = models.BooleanField(default=False)
     surface_seal_material = models.BooleanField(default=False)
@@ -1739,11 +1797,6 @@ class FieldsProvided(models.Model):
         db_table = 'fields_provided'
 
 
-@reversion.register(fields=['start', 'end', 'lithology_raw_data', 'lithology_description',
-                            'lithology_colour', 'lithology_hardness', 'lithology_material', 'lithology_observation',
-                            'water_bearing_estimated_flow', 'water_bearing_estimated_flow_units',  'lithology_moisture',
-                            'bedrock_material', 'bedrock_material_descriptor', 'lithology_structure',
-                            'surficial_material', 'secondary_surficial_material', 'lithology_sequence_number'])
 class LithologyDescription(AuditModel):
     """
     Lithology information details
@@ -1871,7 +1924,6 @@ class PerforationBase(AuditModel):
         abstract = True
 
 
-@reversion.register(fields=['start', 'end'])
 class LinerPerforation(PerforationBase):
     """
     Perforation in a well liner
@@ -1894,7 +1946,6 @@ class LinerPerforation(PerforationBase):
         return 'well {} {} {}'.format(self.well, self.start, self.end)
 
 
-@reversion.register(fields=['start', 'end'])
 class ActivitySubmissionLinerPerforation(PerforationBase):
     """
     Perforation in a well liner
@@ -1916,8 +1967,6 @@ class ActivitySubmissionLinerPerforation(PerforationBase):
                                                      self.end)
 
 
-@reversion.register(fields=['start', 'end', 'diameter', 'casing_code',
-                            'casing_material', 'wall_thickness', 'drive_shoe'])
 class Casing(AuditModel):
     """
     Casing information
@@ -1956,8 +2005,9 @@ class Casing(AuditModel):
     wall_thickness = models.DecimalField(max_digits=6, decimal_places=3, verbose_name='Wall Thickness',
                                          blank=True, null=True,
                                          validators=[MinValueValidator(Decimal('0.01'))])
-    drive_shoe = models.NullBooleanField(default=False, null=True, verbose_name='Drive Shoe',
-                                         choices=((False, 'No'), (True, 'Yes')))
+    drive_shoe_status = models.ForeignKey(DriveShoeCode, db_column='drive_shoe_code',
+                                                on_delete=models.CASCADE, blank=True, null=True,
+                                                verbose_name='Drive Shoe Code')
 
     class Meta:
         ordering = ["start", "end"]
@@ -1982,11 +2032,10 @@ class Casing(AuditModel):
             "diameter": self.diameter,
             "wall_thickness": self.wall_thickness,
             "casing_material": self.casing_material,
-            "drive_shoe": self.drive_shoe
+            "drive_shoe_status": self.drive_shoe_status
         }
 
 
-@reversion.register(fields=['start', 'end', 'diameter', 'assembly_type', 'slot_size'])
 class Screen(AuditModel):
     """
     Screen in a well
@@ -2110,7 +2159,6 @@ class DecommissionMaterialCode(BasicCodeTableModel):
         return '{} - {}'.format(self.code, self.description)
 
 
-@reversion.register(fields=['start', 'end', 'material', 'observations'])
 class DecommissionDescription(AuditModel):
     """Provides a description of the ground conditions (between specified start and end depth) for
         decommissioning"""

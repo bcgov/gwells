@@ -13,10 +13,6 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    replaces = [
-        ('submissions', '0001_squashed_0006_auto_20190409_1634'),
-    ]
-
     dependencies = [
     ]
 

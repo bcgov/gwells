@@ -96,10 +96,7 @@ const ADDITIONAL_FILTER_SECTIONS = [
      [ 'wellClass',
        'wellSubclass',
        'intendedWaterUse',
-       'wellIdPlateAttached',
-       'idPlateAttachedBy',
-       'waterSupplySystemName',
-       'waterSupplyWellName' ] },
+       'wellIdPlateAttached' ] },
   { header: 'Person responsible for work',
     fields: [ 'drillerName', 'consultantName', 'consultantCompany' ] },
   { header: 'Well owner',
@@ -123,7 +120,7 @@ const ADDITIONAL_FILTER_SECTIONS = [
      [ 'groundElevation',
        'groundElevationMethod',
        'drillingMethods',
-       'wellOrientation' ] },
+       'wellOrientationStatus' ] },
   { header: 'Surface seal and backfill material',
     fields:
      [ 'surfaceSealMaterial',
@@ -154,7 +151,7 @@ const ADDITIONAL_FILTER_SECTIONS = [
        'filterPackMaterialSize' ] },
   { header: 'Well development',
     fields:
-     [ 'developmentMethods', 'developmentHours', 'developmentNotes' ] },
+     [ 'developmentMethods', 'developmentHours' ] },
   { header: 'Yield',
     fields:
      [ 'yieldEstimationMethod',

@@ -25,6 +25,19 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <div class="card" v-if="userRoles.wells.edit || userRoles.submissions.edit">
         <div class="card-body">
 
+          <b-alert
+              show
+              variant="info"
+              class="mb-3"
+              v-for="(survey, index) in surveys[isStaffEdit ? 'edit' : 'submissions']"
+              :key="`survey ${index}`">
+            <p class="m-0">
+              <a :href="survey.survey_link">
+                {{ survey.survey_introduction_text }}
+              </a>
+            </p>
+          </b-alert>
+
           <b-form @submit.prevent="confirmSubmit">
             <!-- if preview === true : Preview -->
             <submission-preview
@@ -194,22 +207,35 @@ export default {
       'resetUploadFiles'
     ]),
     formSubmit () {
-      if (!this.formChanges()) {
-        return
-      }
-
       const data = Object.assign({}, this.form)
       const meta = data.meta
 
       if (this.isStaffEdit) {
         // These skip variables will include both mutually required fields if one of them changes
         // We have to include both lat and lon for geom updates and ground_elevation and method together
+        // TODO optimize the mutual requirement flow
         let skipLatLon = 'latitude' in meta.valueChanged || 'longitude' in meta.valueChanged
+        let skipWorkDates = 'work_start_date' in meta.valueChanged || 'work_end_date' in meta.valueChanged
+        let skipConDates = 'construction_start_date' in meta.valueChanged || 'construction_end_date' in meta.valueChanged
+        let skipAltDates = 'alteration_start_date' in meta.valueChanged || 'alteration_end_date' in meta.valueChanged
+        let skipDecDates = 'decommission_start_date' in meta.valueChanged || 'decommission_end_date' in meta.valueChanged
         let skipGroundElevation = 'ground_elevation' in meta.valueChanged || 'ground_elevation_method' in meta.valueChanged
         Object.keys(data).forEach((key) => {
           // Skip lat lon if one of them has changed
           if ((key === 'latitude' || key === 'longitude') && skipLatLon) { return }
           if ((key === 'ground_elevation' || key === 'ground_elevation_method') && skipGroundElevation) { return }
+          if ((key === 'work_start_date' || key === 'work_end_date') && skipWorkDates) {
+            if (data[key] === '') { data[key] = null } return
+          }
+          if ((key === 'construction_start_date' || key === 'construction_end_date') && skipConDates) {
+            if (data[key] === '') { data[key] = null } return
+          }
+          if ((key === 'alteration_start_date' || key === 'alteration_end_date') && skipAltDates) {
+            if (data[key] === '') { data[key] = null } return
+          }
+          if ((key === 'decommission_start_date' || key === 'decommission_end_date') && skipDecDates) {
+            if (data[key] === '') { data[key] = null } return
+          }
           // Remove any fields that aren't changed
           if (key !== 'well' && !(key in meta.valueChanged)) { delete data[key] }
         })
@@ -284,7 +310,7 @@ export default {
         }
 
         if (!this.form.well_tag_number) {
-          this.setWellTagNumber(response.data.well)
+          this.form.well = response.data.well
         }
 
         // Reloads only altered data in form for re-rendering
@@ -365,15 +391,7 @@ export default {
     },
     formChanges () {
       let differences = diff(this.compareForm, this.form)
-      if (differences) {
-        // differences.forEach((d) => {
-        //   if (d.lhs == null && d.rhs === '') {
-        //     this.form[d.path[0]] = null
-        //   }
-        // })
-        return true
-      }
-      return false
+      return !!differences
     },
     confirmSubmit () {
       this.confirmSubmitModal = true
@@ -434,7 +452,7 @@ export default {
         coordinate_acquisition_code: null,
         ground_elevation: null,
         ground_elevation_method: '',
-        well_orientation: true,
+        well_orientation_status: '',
         drilling_methods: [],
         lithologydescription_set: [],
         surface_seal_material: '',
@@ -603,6 +621,24 @@ export default {
       // Set initial form fields for comparison with user input changes
       Object.assign(this.compareForm, this.form)
     },
+    fetchSurveys () {
+      // Fetch current surveys and add applicable surveys (if any) to this.surveys to be displayed
+      ApiService.query('surveys').then((response) => {
+        if (response.data) {
+          response.data.forEach((survey) => {
+            if (survey.survey_page === 'u' && survey.survey_enabled) {
+              this.surveys.submissions.push(survey)
+            }
+
+            if (survey.survey_page === 'e' && survey.survey_enabled) {
+              this.surveys.edit.push(survey)
+            }
+          })
+        }
+      }).catch((e) => {
+        console.error(e)
+      })
+    },
     fetchWellDataForStaffEdit (options = {}) {
       const { reloadPage = true } = options
       if (reloadPage) {
@@ -651,6 +687,7 @@ export default {
   },
   created () {
     this.setupPage()
+    this.fetchSurveys()
   }
 }
 
@@ -672,6 +709,10 @@ function initialState () {
     form: {},
     submissionsHistory: [], // historical submissions for each well (comes into play for staff edits)
     formOptions: {},
+    surveys: {
+      submissions: [],
+      edit: []
+    },
     uploadedFiles: {},
     formSteps: {
       CON: [

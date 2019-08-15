@@ -13,33 +13,56 @@
           <b-row><b-col>No history for this record.</b-col></b-row>
         </div>
         <div class="mt-2" v-if="history && history.length && showHistory">
-          <div class="mt-3" v-for="(version, index) in history" :key="`history-version ${index}`" :id="`history-version-${index}`">
+          <div class="mt-3" v-for="(history_item, index) in history" :key="`history-version ${index}`" :id="`history-version-${index}`">
             <div class="font-weight-bold">
-              {{version.user}}
-              {{version.action}}
-              {{version.type}}
-              on
-              {{version.date | moment("MMMM Do YYYY [at] LT")}}
+              {{history_item[0].user}}
+<!--              {{history_item[0].action}}-->
+<!--              {{history_item[0].type}}-->
+              Edited this Well on
+              {{history_item[0].date | moment("MMMM Do YYYY [at] LT")}}
               <div
-                style="margin-left:20px;"
+                style="margin-left:20px; width: 75%;"
                 class="font-weight-light"
-                v-for="(value, key) in version.diff"
-                v-if="!(value === '' && version.prev[key] === null)"
+                v-for="(item, key) in history_item"
                 :key="`history-item-${key}-in-version ${index}`">
-                <div
-                  v-if="Array.isArray(value)">
-                  <b-table
-                    responsive
-                    striped
-                    small
-                    bordered
-                    :items="Object.values(version.action != 'Removed' ? version.diff[key] : version.prev[key])"
-                    show-empty
-                  ></b-table>
-                </div>
-                <div v-else>
-                  {{ key | formatKey }} changed from {{ version.prev[key] | formatValue }} to {{ value | formatValue }}
-                </div>
+
+                  <div v-if="Array.isArray(item.diff) && item.diff.length > 0 ||
+                              Array.isArray(item.prev) && item.prev.length > 0"
+                       class="mt-2">
+                    {{ item.type | formatKey | readable }} changed to:
+                    <div v-if="item.diff != null && item.diff.length > 0">
+                      <b-table
+                        responsive
+                        striped
+                        small
+                        fixed
+                        bordered
+                        :items="item.diff"/>
+                    </div>
+                    <div v-else>
+                      None
+                    </div>
+                    <div style="margin-bottom:10px;">
+                      From:
+                      <div v-if="item.prev != null && item.prev.length > 0">
+                        <b-table
+                          responsive
+                          striped
+                          small
+                          fixed
+                          bordered
+                          :items="item.prev"/>
+                      </div>
+                      <div v-else>
+                       None
+                      </div>
+                    </div>
+
+                  </div>
+                  <div class="mt-2" v-else>
+                    {{ item.type | formatKey | readable }} changed to {{ item.diff | formatValue }} from {{ item.prev | formatValue }}
+                  </div>
+
               </div>
             </div>
           </div>
@@ -80,11 +103,6 @@ export default {
       loaded: false
     }
   },
-  watch: {
-    id: function () {
-      this.update()
-    }
-  },
   methods: {
     toggleShow () {
       this.showHistory = !this.showHistory
@@ -95,7 +113,7 @@ export default {
     update () {
       this.loading = true
       ApiService.history('wells', this.id).then((response) => {
-        this.history = response.data.diff
+        this.history = response.data.history
         this.create_user = response.data.create_user
         this.create_date = response.data.create_date
         this.loading = false
@@ -144,7 +162,9 @@ export default {
   created () {
     if (this.events) {
       this.events.$on('well-edited', () => {
-        this.update()
+        if (this.showHistory) {
+          this.update()
+        }
       })
     }
   }

@@ -15,6 +15,19 @@
       </b-card>
       <b-card v-else class="container p-1">
 
+        <b-alert
+            show
+            variant="info"
+            class="mb-3"
+            v-for="(survey, index) in surveys"
+            :key="`survey ${index}`">
+          <p class="m-0">
+            <a :href="survey.survey_link">
+              {{ survey.survey_introduction_text }}
+            </a>
+          </p>
+        </b-alert>
+
         <!-- SUMMARY -->
         <fieldset id="summary_fieldset" class="detail-section mb-3">
           <legend>
@@ -177,7 +190,7 @@
               </b-row>
               <b-row>
                 <b-col cols="12" md="4"><span class="font-weight-bold">Zone:</span> {{UTM.zone}}</b-col>
-                <b-col cols="12" md="6"><span class="font-weight-bold">Location Accuracy Code:</span> {{well.location_accuracy_code}}</b-col>
+                <b-col cols="12" md="6"><span class="font-weight-bold">Coordinate Acquisition Code:</span> {{well.coordinate_acquisition_code}}</b-col>
               </b-row>
             </b-col>
           </b-row>
@@ -244,7 +257,7 @@
           <b-row>
             <b-col cols="12" md="4"><span class="font-weight-bold">Depth to Bedrock:</span> {{ well.bedrock_depth }} {{ well.bedrock_depth ? 'feet':''}}</b-col>
             <b-col cols="12" md="4"><span class="font-weight-bold">Artesian Pressure:</span> {{ well.artesian_pressure }} {{ well.artesian_pressure ? 'feet': ''}}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Orientation of Well:</span> {{ well.well_orientation }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Orientation of Well:</span> {{ well.well_orientation_status }}</b-col>
           </b-row>
           <b-row>
             <b-col cols="12" md="4"><span class="font-weight-bold">Ground elevation:</span> {{ well.ground_elevation }}</b-col>
@@ -281,6 +294,7 @@
               <template slot="HEAD_to" slot-scope="data">{{ data.label }} (ft)</template>
               <template slot="casing_type" slot-scope="data">{{codeToDescription('casing_codes', data.item.casing_code)}}</template>
               <template slot="casing_material" slot-scope="data">{{codeToDescription('casing_materials', data.item.casing_material)}}</template>
+              <template slot="drive_shoe" slot-scope="data">{{codeToDescription('drive_shoe', data.item.drive_shoe_status)}}</template>
             </b-table>
           </div>
         </fieldset>
@@ -465,6 +479,7 @@ export default {
   ],
   data () {
     return {
+      surveys: [],
       well: {},
       licence: {
         status: '',
@@ -576,10 +591,24 @@ export default {
       }).catch((e) => {
         this.loadLicencingError = e.response
       })
+    },
+    fetchSurveys () {
+      ApiService.query('surveys').then((response) => {
+        if (response.data) {
+          response.data.forEach((survey) => {
+            if (survey.survey_page === 'w' && survey.survey_enabled) {
+              this.surveys.push(survey)
+            }
+          })
+        }
+      }).catch((e) => {
+        console.error(e)
+      })
     }
   },
   created () {
     this.fetchWellData()
+    this.fetchSurveys()
   }
 }
 </script>

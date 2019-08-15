@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "1a165e7e-cd7b-4619-8d6c-1b33cee3344c",
+		"_postman_id": "6a0a6d2b-1912-481a-b676-97fd7fdb1f3e",
 		"name": "Well List API filters",
 		"description": "Well List API endpoint filters required for advanced search options.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -49,6 +49,50 @@
 								{
 									"key": "search",
 									"value": "216265"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "search param (matching well tag exactly)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+								"exec": [
+									"pm.test(\"Only matches one well\", function () {",
+									"    pm.expect(pm.response.json().results.length).to.equal(1);",
+									"    pm.expect(pm.response.json().results[0].well_tag_number).to.equal(123);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/wells?well_tag_number=123",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"wells"
+							],
+							"query": [
+								{
+									"key": "well_tag_number",
+									"value": "123"
 								}
 							]
 						}
@@ -2388,53 +2432,7 @@
 				},
 				{
 					"name": "Boolean filters",
-					"item": [
-						{
-							"name": "well_orientation param",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
-										"exec": [
-											"pm.test(\"Well orientation matches filter\", function () {",
-											"  pm.response.json().results.forEach(function(result) {",
-											"    pm.expect(result.well_orientation).to.be.false;",
-											"  });",
-											"});"
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"method": "GET",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
-								"url": {
-									"raw": "{{base_url}}/api/v1/wells?well_orientation=False",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"api",
-										"v1",
-										"wells"
-									],
-									"query": [
-										{
-											"key": "well_orientation",
-											"value": "False"
-										}
-									]
-								}
-							},
-							"response": []
-						}
-					],
+					"item": [],
 					"event": [
 						{
 							"listen": "prerequest",

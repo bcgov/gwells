@@ -165,15 +165,15 @@ class Command(BaseCommand):
  well_yield,
  well_yield_unit_code,
  artesian_flow, artesian_pressure, well_cap_type, well_disinfected_code,
- well_orientation,
+ well_orientation_code,
  alternative_specs_submitted,
- surface_seal_material_code, surface_seal_method_code, surface_seal_length,
+ surface_seal_material_code, surface_seal_method_code, surface_seal_length, surface_seal_depth,
  backfill_type,
  backfill_depth,
  liner_material_code, liner_diameter, liner_thickness, surface_seal_thickness,
  liner_from, liner_to,
  screen_intake_method_code, screen_type_code, screen_material_code,
- other_screen_material,
+ other_screen_material, screen_information,
  screen_opening_code, screen_bottom_code, other_screen_bottom,
  filter_pack_from,
  filter_pack_to, filter_pack_material_code,
@@ -192,7 +192,7 @@ class Command(BaseCommand):
  ems,
  registries_person.surname as person_responsible,
  registries_organization.name as company_of_person_responsible,
- aquifer_id
+ aquifer_id, boundary_effect_code
  from well
  left join well_subclass_code as wsc on wsc.well_subclass_guid = well.well_subclass_guid
  left join drilling_company on
@@ -230,7 +230,7 @@ class Command(BaseCommand):
         # CASING
         ########
         casing_sql = ("""select casing.well_tag_number, casing_from, casing_to, casing.diameter, casing_code,
- casing_material_code, wall_thickness, drive_shoe
+ casing_material_code, wall_thickness, drive_shoe_code
  from casing
  inner join well on well.well_tag_number = casing.well_tag_number
  where well.well_publication_status_code = 'Published' or well.well_publication_status_code = null

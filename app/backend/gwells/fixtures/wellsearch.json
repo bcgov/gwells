@@ -212,7 +212,7 @@
             "casing_code": null,
             "casing_material": "STEEL",
             "wall_thickness": "0.220",
-            "drive_shoe": true
+            "drive_shoe_status": "Not Installed"
         }
     },
     {
@@ -231,7 +231,7 @@
             "casing_code": null,
             "casing_material": "STEEL",
             "wall_thickness": "219.000",
-            "drive_shoe": true
+            "drive_shoe_status": "Installed"
         }
     },
     {
@@ -250,7 +250,7 @@
             "casing_code": null,
             "casing_material": "STEEL",
             "wall_thickness": "219.000",
-            "drive_shoe": true
+            "drive_shoe_status": "Not Installed"
         }
     },
     {
@@ -269,7 +269,7 @@
             "casing_code": null,
             "casing_material": null,
             "wall_thickness": "0.157",
-            "drive_shoe": true
+            "drive_shoe_status": "Installed"
         }
     },
     {
@@ -813,7 +813,7 @@
             "well_subclass": null,
             "intended_water_use": null,
             "well_status": null,
-            "licenced_status": null,
+            "licenced_status": "UNLICENSED",
             "street_address": "23 Forest Park 1",
             "city": "",
             "legal_lot": "1",
@@ -836,7 +836,8 @@
             "well_identification_plate_attached": null,
             "ground_elevation": null,
             "ground_elevation_method": null,
-            "well_orientation": true,
+            "well_orientation": false,
+            "well_orientation_status": "HORIZONTAL",
             "surface_seal_material": null,
             "surface_seal_length": null,
             "surface_seal_thickness": null,
@@ -887,7 +888,7 @@
             "utm_zone_code": null,
             "utm_northing": null,
             "utm_easting": null,
-            "coordinate_acquisition_code": null,
+            "coordinate_acquisition_code": "H",
             "bcgs_id": null,
             "decommission_reason": null,
             "decommission_method": null,
@@ -942,6 +943,7 @@
                 "AIR_ROTARY"
             ],
             "well_orientation": true,
+            "well_orientation_status": "VERTICAL",
             "surface_seal_material": "BNTITE_CLY",
             "surface_seal_length": "20.00",
             "surface_seal_thickness": "2.00",
@@ -1056,6 +1058,7 @@
                 "AIR_ROTARY"
             ],
             "well_orientation": true,
+            "well_orientation_status": "VERTICAL",
             "surface_seal_material": "BNTITE_CLY",
             "surface_seal_length": "16.00",
             "surface_seal_thickness": "1.00",
@@ -1169,7 +1172,8 @@
             "drilling_methods": [
                 "AIR_ROTARY"
             ],
-            "well_orientation": true,
+            "well_orientation": false,
+            "well_orientation_status": "HORIZONTAL",
             "surface_seal_material": "BNTITE_CLY",
             "surface_seal_length": "18.00",
             "surface_seal_thickness": "1.50",
@@ -1284,6 +1288,7 @@
                 "AIR_ROTARY"
             ],
             "well_orientation": true,
+            "well_orientation_status": "VERTICAL",
             "surface_seal_material": "BNTITE_CLY",
             "surface_seal_length": "15.00",
             "surface_seal_thickness": "1.50",
@@ -1403,7 +1408,8 @@
                 "DUGOUT",
                 "EXCAVATING"
             ],
-            "well_orientation": false,
+            "well_orientation": true,
+            "well_orientation_status": "VERTICAL",
             "surface_seal_material": "SND_CMT_GT",
             "surface_seal_length": "11.00",
             "surface_seal_depth": "3.00",
@@ -1457,7 +1463,7 @@
             "utm_zone_code": null,
             "utm_northing": null,
             "utm_easting": null,
-            "coordinate_acquisition_code": null,
+            "coordinate_acquisition_code": "H",
             "bcgs_id": null,
             "decommission_reason": null,
             "decommission_method": null,

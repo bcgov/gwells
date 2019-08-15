@@ -36,6 +36,9 @@ WELLS_SUBMISSION_VIEWER_ROLE = 'wells_submission_viewer'
 AQUIFERS_VIEWER_ROLE = 'aquifers_view'
 AQUIFERS_EDIT_ROLE = 'aquifers_edit'
 
+# Surveys
+SURVEYS_EDIT_ROLE = 'surveys_edit'
+
 # These roles are excluded, as they cannot be mapped to any particular useful groups.
 EXCLUDE = ('idir', 'offline_access', 'admin', 'uma_authorization', 'gwells_admin')
 

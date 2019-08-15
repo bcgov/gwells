@@ -43,13 +43,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
               v-model="groundElevationMethodInput"
               value-field="ground_elevation_method_code"
               text-field="description"
+              placeholder="Select Method"
               :options="method_codes()"
               :errors="errors['ground_elevation_method']"
               :loaded="fieldsLoaded['ground_elevation_method']">
             </form-input>
-            <template slot="first">
-              <option value="">Select Method</option>
-            </template>
           </b-form-group>
         </b-col>
       </b-row>
@@ -71,12 +69,17 @@ Licensed under the Apache License, Version 2.0 (the "License");
         </b-col>
         <b-col>
           <b-form-group label="Orientation of Well">
-            <b-form-radio-group v-model="wellOrientationInput"
-                stacked
-                name="wellOrientationRadio">
-              <b-form-radio :value="true">Vertical</b-form-radio>
-              <b-form-radio :value="false">Horizontal</b-form-radio>
-            </b-form-radio-group>
+            <form-input
+              select
+              id="wellOrientationStatus"
+              v-model="wellOrientationStatusInput"
+              value-field="well_orientation_code"
+              text-field="description"
+              placeholder="Select Orientation"
+              :options="codes.well_orientation_codes"
+              :errors="errors['well_orientation_status']"
+              :loaded="fieldsLoaded['well_orientation_status']">
+            </form-input>
           </b-form-group>
         </b-col>
       </b-row>
@@ -94,7 +97,7 @@ export default {
     groundElevationMethod: String,
     drillingMethod: Array,
     otherDrillingMethod: String,
-    wellOrientation: null,
+    wellOrientationStatus: null,
     errors: {
       type: Object,
       default: () => ({})

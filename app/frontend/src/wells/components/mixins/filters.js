@@ -107,6 +107,13 @@ const SEARCH_FIELDS = {
     textField: 'description',
     valueField: 'intended_water_use_code'
   },
+  boundaryEffect: {
+    param: 'boundary_effect',
+    label: 'Boundary effect',
+    type: 'select',
+    textField: 'description',
+    valueField: 'code'
+  },
   wellIdPlateAttached: {
     param: 'well_identification_plate_attached',
     label: 'Where ID plate attached',
@@ -203,14 +210,12 @@ const SEARCH_FIELDS = {
     textField: 'description',
     valueField: 'drilling_method_code'
   },
-  wellOrientation: {
-    param: 'well_orientation',
+  wellOrientationStatus: {
+    param: 'well_orientation_status',
     label: 'Orientation of well',
-    type: 'radio',
-    options: [
-      { text: 'Vertical', value: 'true' },
-      { text: 'Horizontal', value: 'false' }
-    ]
+    type: 'select',
+    textField: 'description',
+    valueField: 'well_orientation_code'
   },
   surfaceSealMaterial: {
     param: 'surface_seal_material',
@@ -566,11 +571,6 @@ const SEARCH_FIELDS = {
     label: 'Analytic solution',
     type: 'range'
   },
-  boundaryEffect: {
-    param: 'boundary_effect',
-    label: 'Boundary effect',
-    type: 'range'
-  },
   createUser: {
     authenticated: true,
     param: 'create_user',
@@ -740,6 +740,7 @@ export default {
         filterPackMaterialSize: this.codes.filter_pack_material_size || [],
         groundElevationMethod: this.codes.ground_elevation_methods || [],
         intendedWaterUse: this.codes.intended_water_uses || [],
+        boundaryEffect: this.codes.boundary_effect_codes || [],
         landDistrict: this.landDistrictOptions,
         licencedStatus: this.codes.licenced_status_codes || [],
         linerMaterial: this.codes.liner_material_codes || [],

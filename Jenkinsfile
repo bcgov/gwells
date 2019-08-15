@@ -97,57 +97,9 @@ def _openshift(String name, String project, Closure body) {
 def functionalTest (String stageName, String stageUrl, String envSuffix, String toTest='all') {
     _openshift(env.STAGE_NAME, toolsProject) {
         echo "Testing"
-        // these functional tests are commented out on this branch
-        // because we are not loading the page that the tests run against.
+        // this set of tests is commented out, because we no longer use the page they were
+        // written for. 
 
-        // podTemplate(
-        //     label: "bddstack-${ENV_SUFFIX}-${PR_NUM}",
-        //     name: "bddstack-${ENV_SUFFIX}-${PR_NUM}",
-        //     serviceAccount: 'jenkins',
-        //     cloud: 'openshift',
-        //     containers: [
-        //         containerTemplate(
-        //             name: 'jnlp',
-        //             image: 'docker-registry.default.svc:5000/bcgov/jenkins-slave-bddstack:v1-stable',
-        //             resourceRequestCpu: '800m',
-        //             resourceLimitCpu: '800m',
-        //             resourceRequestMemory: '4Gi',
-        //             resourceLimitMemory: '4Gi',
-        //             workingDir: '/home/jenkins',
-        //             command: '',
-        //             args: '${computer.jnlpmac} ${computer.name}',
-        //             envVars: [
-        //                 envVar(key:'BASE_URL', value: BASE_URL),
-        //                 envVar(key:'OPENSHIFT_JENKINS_JVM_ARCH', value: 'x86_64')
-        //             ]
-        //         )
-        //     ],
-        //     volumes: [
-        //         persistentVolumeClaim(
-        //             mountPath: '/var/cache/artifacts',
-        //             claimName: 'cache',
-        //             readOnly: false
-        //         )
-        //     ]
-        // ) {
-        //     node("bddstack-${ENV_SUFFIX}-${PR_NUM}") {
-        //         //the checkout is mandatory, otherwise functional tests would fail
-        //         echo "checking out source"
-        //         checkout scm
-        //         dir('tests/functional-tests') {
-        //             try {
-        //                 echo "BASE_URL = ${BASE_URL}"
-        //                 if ('all'.equalsIgnoreCase(toTest)) {
-        //                     sh './gradlew chromeHeadlessTest'
-        //                 } else {
-        //                     sh "./gradlew -DchromeHeadlessTest.single=${toTest} chromeHeadlessTest"
-        //                 }
-        //             } catch (error) {
-        //                 echo error
-        //             }
-        //         }
-        //     }
-        // }
     }
     return true
 }
@@ -173,6 +125,17 @@ def unitTestDjango (String stageName, String envProject, String envSuffix) {
         def target = envSuffix == "staging" ? "${appName}-${envSuffix}" : "${appName}-${envSuffix}-${prNumber}"
         def newVersion = openshift.selector("dc", "${target}").object().status.latestVersion
         def pods = openshift.selector('pod', [deployment: "${target}-${newVersion}"])
+
+        // Wait here and make sure the app pods are ready before running unit tests.
+        // We wait for both pods to be ready so that we can execute the test command
+        // on either one, without having to check which one was ready first.
+        timeout(15) {
+            pods.untilEach(2) {
+                return it.object().status.containerStatuses.every {
+                    it.ready
+                }
+            }
+        }
 
         echo "Running Django unit tests"
         def ocoutput = openshift.exec(
@@ -430,7 +393,6 @@ def dbBackup (String envProject, String envSuffix) {
                 || echo 'No extra backups to remove' \
     \""
 }
-
 
 pipeline {
     environment {
@@ -836,6 +798,25 @@ pipeline {
                             "--overwrite"
                         )
 
+                        // Create cronjob for licence import
+                        def importLicencesCronjob = openshift.process("-f",
+                            "openshift/jobs/import-licences/import-licences.cj.json",
+                            "ENV_NAME=${stagingSuffix}",
+                            "PROJECT=${stagingProject}",
+                            "TAG=${stagingSuffix}",
+                            "NAME=licences",
+                            "COMMAND=import_licences",
+                            "SCHEDULE='40 11 * * *'"
+                        )
+                        openshift.apply(importLicencesCronjob).label(
+                            [
+                                'app':"gwells-${stagingSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${stagingSuffix}"
+                            ],
+                            "--overwrite"
+                        )
+
                         // Create cronjob for databc export
                         def exportDataBCTemplate = openshift.process("-f",
                             "openshift/export.cj.json",
@@ -1101,6 +1082,26 @@ pipeline {
                             "--overwrite"
                         )
 
+                        // Create cronjob for licence import
+                        def importLicencesCronjob = openshift.process("-f",
+                            "openshift/jobs/import-licences/import-licences.cj.json",
+                            "ENV_NAME=${demoSuffix}",
+                            "PROJECT=${demoProject}",
+                            "TAG=${demoSuffix}",
+                            "NAME=licences",
+                            "COMMAND=import_licences",
+                            "SCHEDULE='42 11 * * *'"
+                        )
+                        openshift.apply(importLicencesCronjob).label(
+                            [
+                                'app':"gwells-${demoSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${demoSuffix}"
+                            ],
+                            "--overwrite"
+                        )
+
+
                         // monitor the deployment status and wait until deployment is successful
                         echo "Waiting for deployment to DEMO..."
                         def newVersion = openshift.selector("dc", "gwells-${demoSuffix}").object().status.latestVersion
@@ -1332,6 +1333,25 @@ pipeline {
                             "JOB_NAME=postgres-nfs-backup"
                         )
                         openshift.apply(dbNFSBackup)
+
+                        // Create cronjob for licence import
+                        def importLicencesCronjob = openshift.process("-f",
+                            "openshift/jobs/import-licences/import-licences.cj.json",
+                            "ENV_NAME=${prodSuffix}",
+                            "PROJECT=${prodProject}",
+                            "TAG=${prodSuffix}",
+                            "NAME=licences",
+                            "COMMAND=import_licences",
+                            "SCHEDULE='45 11 * * *'"
+                        )
+                        openshift.apply(importLicencesCronjob).label(
+                            [
+                                'app':"gwells-${prodSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${prodSuffix}"
+                            ],
+                            "--overwrite"
+                        )
 
                         // monitor the deployment status and wait until deployment is successful
                         echo "Waiting for deployment to production..."

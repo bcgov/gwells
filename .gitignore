@@ -29,7 +29,8 @@
 # Logs and databases #
 ######################
 *.log
-#*.sql
+*.sql
+app/backend/aquifers/fixtures/tmp/*
 
 # OS generated files #
 ######################
@@ -83,7 +84,7 @@ app/backend/*.sh
 app/backend/.env
 *.secret_env
 app/backend/.pip
-
+app/backend/bulk
 # PyInstaller and Pip install files
 #  Usually these files are written by a python script from a template
 #  before PyInstaller builds the exe, so as to inject date/other infos into it.
@@ -163,6 +164,7 @@ sonar-runner/.classpath
 *.dmp
 *.dump
 .tmp/
+app/backend/tmp
 
 # Exceptions
 !app/*/fixtures/*.gz

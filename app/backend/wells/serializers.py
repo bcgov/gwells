@@ -63,7 +63,6 @@ class CasingSummarySerializer(serializers.ModelSerializer):
     """Serializes casings for well summary (using descriptions instead of codes)"""
     casing_material = serializers.ReadOnlyField(source='casing_material.description')
     casing_code = serializers.ReadOnlyField(source='casing_code.description')
-    drive_shoe = serializers.ReadOnlyField(source='get_drive_shoe_display')
 
     class Meta:
         model = Casing
@@ -73,7 +72,7 @@ class CasingSummarySerializer(serializers.ModelSerializer):
             'diameter',
             'casing_code',
             'casing_material',
-            'drive_shoe',
+            'drive_shoe_status',
             'wall_thickness'
         )
 
@@ -87,7 +86,7 @@ class CasingSerializer(serializers.ModelSerializer):
             'diameter',
             'casing_code',
             'casing_material',
-            'drive_shoe',
+            'drive_shoe_status',
             'wall_thickness'
         )
         extra_kwargs = {
@@ -106,7 +105,7 @@ class CasingStackerSerializer(serializers.ModelSerializer):
             'diameter',
             'casing_code',
             'casing_material',
-            'drive_shoe',
+            'drive_shoe_status',
             'wall_thickness',
             'create_user',
             'update_user'
@@ -138,7 +137,7 @@ class LegacyCasingSerializer(serializers.ModelSerializer):
             'diameter',
             'casing_code',
             'casing_material',
-            'drive_shoe',
+            'drive_shoe_status',
             'wall_thickness'
         )
         extra_kwargs = {
@@ -147,7 +146,7 @@ class LegacyCasingSerializer(serializers.ModelSerializer):
             'diameter': {'required': False},
             'casing_code': {'required': False},
             'casing_material': {'required': False},
-            'drive_shoe': {'required': False, 'allow_null': True},
+            'drive_shoe_status': {'required': False, 'allow_null': True},
             'wall_thickness': {'required': False}
         }
 
@@ -477,7 +476,6 @@ class WellDetailSerializer(AuditModelSerializer):
     screen_material = serializers.ReadOnlyField(source='screen_material.description')
     screen_opening = serializers.ReadOnlyField(source='screen_opening.description')
     screen_bottom = serializers.ReadOnlyField(source='screen_bottom.description')
-    well_orientation = serializers.ReadOnlyField(source='get_well_orientation_display')
     alternative_specs_submitted = serializers.ReadOnlyField(source='get_alternative_specs_submitted_display')
 
     submission_work_dates = serializers.SerializerMethodField()
@@ -553,7 +551,7 @@ class WellDetailSerializer(AuditModelSerializer):
             "ground_elevation",
             "ground_elevation_method",
             "drilling_methods",
-            "well_orientation",
+            "well_orientation_status",
             "surface_seal_material",
             "surface_seal_length",
             "surface_seal_thickness",
@@ -682,6 +680,8 @@ class WellDetailAdminSerializer(AuditModelSerializer):
 
     # well vs. well_tag_number ; on submissions, we refer to well
     well = serializers.IntegerField(source='well_tag_number')
+
+    legal_pid = serializers.SerializerMethodField()
 
     class Meta:
         model = Well
@@ -821,7 +821,7 @@ class WellListSerializer(serializers.ModelSerializer):
             "ground_elevation",
             "ground_elevation_method",
             "drilling_methods",
-            "well_orientation",
+            "well_orientation_status",
             "surface_seal_material",
             "surface_seal_length",
             "surface_seal_thickness",
@@ -953,8 +953,6 @@ class WellExportSerializer(WellListSerializer):
                                                     slug_field='description')
     water_quality_characteristics = serializers.SlugRelatedField(many=True, read_only=True,
                                                                  slug_field='description')
-
-    well_orientation = serializers.CharField(read_only=True, source='get_well_orientation_display')
     hydro_fracturing_performed = serializers.CharField(read_only=True,
                                                        source='get_hydro_fracturing_performed_display')
 

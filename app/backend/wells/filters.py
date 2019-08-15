@@ -29,6 +29,7 @@ from gwells.roles import WELLS_VIEWER_ROLE
 from wells.models import (
     DevelopmentMethodCode,
     DrillingMethodCode,
+    WellOrientationCode,
     WaterQualityCharacteristic,
     Well,
 )
@@ -158,7 +159,7 @@ class WellListFilter(AnyOrAllFilterSet):
     # Don't require a choice (i.e. select box) for aquifer
     aquifer = filters.NumberFilter()
 
-    well_tag_number = filters.CharFilter(lookup_expr='icontains')
+    well_tag_number = filters.CharFilter(lookup_expr='iexact')
     street_address = filters.CharFilter(lookup_expr='icontains')
     city = filters.CharFilter(lookup_expr='icontains')
     well_location_description = filters.CharFilter(lookup_expr='icontains')
@@ -226,7 +227,6 @@ class WellListFilter(AnyOrAllFilterSet):
     testing_method = filters.CharFilter(lookup_expr='icontains')
     testing_duration = filters.RangeFilter()
     analytic_solution_type = filters.RangeFilter()
-    boundary_effect = filters.RangeFilter()
     final_casing_stick_up = filters.RangeFilter()
     bedrock_depth = filters.RangeFilter()
     static_water_level = filters.RangeFilter()
@@ -247,7 +247,7 @@ class WellListFilter(AnyOrAllFilterSet):
     finished_well_depth = filters.RangeFilter()
     total_depth_drilled = filters.RangeFilter()
 
-    well_orientation = filters.BooleanFilter(widget=BooleanWidget)
+    well_orientation_status = filters.ModelChoiceFilter(queryset=WellOrientationCode.objects.all())
     alternative_specs_submitted = filters.BooleanFilter(widget=BooleanWidget)
     hydro_fracturing_performed = filters.BooleanFilter(widget=BooleanWidget)
 
@@ -367,7 +367,7 @@ class WellListFilter(AnyOrAllFilterSet):
             'well_disinfected_status',
             'well_identification_plate_attached',
             'well_location_description',
-            'well_orientation',
+            'well_orientation_status',
             'well_status',
             'well_subclass',
             'well_tag_number',
@@ -532,7 +532,7 @@ class WellListAdminFilter(WellListFilter):
 class WellListFilterBackend(filters.DjangoFilterBackend):
     """
     Custom well list filtering logic.
-    
+
     Returns a different filterset class for admin users, and allows additional
     'filter_group' params.
     """
@@ -612,7 +612,7 @@ class WellListOrderingFilter(OrderingFilter):
                 updated_ordering.append(order)
 
         return updated_ordering
-    
+
     def get_related_field_ordering(self, related_field):
         if related_field.name == 'land_district_code':
             return ['land_district__land_district_code', 'land_district__name']

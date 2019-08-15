@@ -47,6 +47,9 @@ from wells.models import (
     DevelopmentMethodCode,
     DrillingMethodCode,
     WellDisinfectedCode,
+    WellOrientationCode,
+    BoundaryEffectCode,
+    DriveShoeCode,
     FilterPackMaterialCode,
     FilterPackMaterialSizeCode,
     GroundElevationMethodCode,
@@ -89,6 +92,9 @@ from submissions.serializers import (
     DevelopmentMethodCodeSerializer,
     DrillingMethodCodeSerializer,
     WellDisinfectedCodeSerializer,
+    WellOrientationCodeSerializer,
+    BoundaryEffectCodeSerializer,
+    DriveShoeCodeSerializer,
     FilterPackMaterialCodeSerializer,
     FilterPackMaterialSizeCodeSerializer,
     GroundElevationMethodCodeSerializer,
@@ -315,6 +321,8 @@ class SubmissionStaffEditAPIView(SubmissionBase):
 class SubmissionsOptions(APIView):
     """Options required for submitting activity report forms"""
 
+    swagger_schema = None
+    
     def get(self, request):
         options = {}
 
@@ -336,6 +344,12 @@ class SubmissionsOptions(APIView):
             instance=DecommissionMethodCode.objects.all(), many=True)
         well_disinfected_codes = WellDisinfectedCodeSerializer(
             instance=WellDisinfectedCode.objects.all(), many=True)
+        well_orientation_codes = WellOrientationCodeSerializer(
+            instance=WellOrientationCode.objects.all(), many=True)
+        boundary_effect_codes = BoundaryEffectCodeSerializer(
+            instance=BoundaryEffectCode.objects.all(), many=True)
+        drive_shoe_codes = DriveShoeCodeSerializer(
+            instance=DriveShoeCode.objects.all(), many=True)
         filter_pack_material = FilterPackMaterialCodeSerializer(
             instance=FilterPackMaterialCode.objects.all(), many=True)
         filter_pack_material_size = FilterPackMaterialSizeCodeSerializer(
@@ -410,6 +424,9 @@ class SubmissionsOptions(APIView):
         options["decommission_materials"] = decommission_materials.data
         options["decommission_methods"] = decommission_methods.data
         options["well_disinfected_codes"] = well_disinfected_codes.data
+        options["well_orientation_codes"] = well_orientation_codes.data
+        options["boundary_effect_codes"] = boundary_effect_codes.data
+        options["drive_shoe_codes"] = drive_shoe_codes.data
         options["filter_pack_material"] = filter_pack_material.data
         options["filter_pack_material_size"] = filter_pack_material_size.data
         options["land_district_codes"] = land_district_codes.data
