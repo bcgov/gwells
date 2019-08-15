@@ -227,7 +227,7 @@
                 <dt>Water quality information</dt>
                 <dd><a :href="getEMSLink()">{{ licence_details['num_wells_with_ems'] }} wells with an EMS ID</a></dd>
                 <dt>Hydraulically connected
-                  <b-badge pill variant="primary" id="aquiferConnectedInfo" tabindex="0" class="pt-0 mt-0"><i class="fa fa-question fa-xs pt-0 mt-0"></i></b-badge>
+                  <i id="aquiferConnectedInfo" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0"></i>
                   <b-popover
                     target="aquiferConnectedInfo"
                     triggers="hover focus"
@@ -268,6 +268,10 @@ a {
 
 .color-grey {
   color: #494949
+}
+
+.color-info {
+  color: #38598a;
 }
 
 .main-title {
