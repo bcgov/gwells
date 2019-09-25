@@ -519,6 +519,7 @@ def aquifer_geojson(request):
             bounds_sql = 'and geom @ ST_Transform(ST_MakeEnvelope(%s, %s, %s, %s, 4326), 3005)'
             bounds = (sw_long, sw_lat, ne_long, ne_lat)
         else:
+            bounds = None
             bounds_sql = ''
 
         iterator = GeoJSONIterator(AQUIFERS_SQL.format(bounds=bounds_sql),
