@@ -474,6 +474,13 @@ AQUIFER_PROPERTIES = openapi.Schema(
         'aquifer_id': get_model_feature_schema(Aquifer, 'aquifer_id'),
         'name': get_model_feature_schema(Aquifer, 'aquifer_name'),
         'location': get_model_feature_schema(Aquifer, 'location_description'),
+        'detail': openapi.Schema(
+            type=openapi.TYPE_STRING,
+            max_length=255,
+            title='Detail',
+            description=('Link to aquifer summary report within the Groundwater Wells and Aquifer (GWELLS)'
+                         ' application. The aquifer summary provides the overall desription and history of the'
+                         ' aquifer.')),
         'material': get_model_feature_schema(AquiferMaterial, 'description'),
         'subtype': get_model_feature_schema(AquiferSubtype, 'description'),
         'vulnerability': get_model_feature_schema(AquiferVulnerabilityCode, 'description'),
