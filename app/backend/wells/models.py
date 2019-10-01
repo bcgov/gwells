@@ -1827,7 +1827,8 @@ class LithologyDescription(AuditModel):
                     'lithology layer as observed during the construction or alteration of a well, measured '
                     'in feet.'))
     lithology_raw_data = models.CharField(
-        max_length=250, blank=True, null=True, verbose_name='Raw Data')
+        max_length=250, blank=True, null=True, verbose_name='Raw Data',
+        db_comment=('Description of the lithologic material as described by the driller.'))
 
     lithology_description = models.ForeignKey(
         LithologyDescriptionCode,
