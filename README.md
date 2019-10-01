@@ -47,6 +47,14 @@ https://apps.nrs.gov.bc.ca/gwells/api/v1/aquifers
 
 See the [Swagger documentation](https://apps.nrs.gov.bc.ca/gwells/api) for more examples.
 
+## DataBC Export
+
+GWELLS Api is used by Databc to export model information and provide well information on the DataBC website.
+
+The command located in app/backend/gwells/management/commands/export_databc.py is used to pull data from the gwells database and export it for consumption in DataBC. 
+
+If a new field(s) are needed for export, this export_databc.py has raw sql queries that need to be updated with the required fields. Descriptions are also needed for the swagger documentation that are pulled from the db_comment fields in the django models. Both the raw sql queries and the db_comment field on the model need to be updated for new fields.
+
 ## Developing GWELLS
 
 ### Running the GWELLS application locally
