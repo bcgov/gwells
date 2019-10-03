@@ -33,6 +33,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             id="aquiferSelect"
             :filterable="false"
             :options="aquiferList"
+            :reduce="aquifer => aquifer.aquifer_id"
             label="description"
             index="aquifer_id"
             @search="onAquiferSearch">
