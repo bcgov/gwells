@@ -1828,7 +1828,8 @@ class LithologyDescription(AuditModel):
                     'in feet.'))
     lithology_raw_data = models.CharField(
         max_length=250, blank=True, null=True, verbose_name='Raw Data',
-        db_comment=('Description of the lithologic material as described by the driller.'))
+        db_comment=('Lithologic material as described verbatim by the driller. The material column displays '
+                    'the standardized terms as extracted from this description.'))
 
     lithology_description = models.ForeignKey(
         LithologyDescriptionCode,
@@ -1863,7 +1864,8 @@ class LithologyDescription(AuditModel):
         verbose_name='Units')
     lithology_observation = models.CharField(
         max_length=250, blank=True, null=True, verbose_name='Observations',
-        db_comment='Free form text used by the driller to describe observations made of the well lithology.')
+        db_comment=('Free form text used by the driller to describe observations of the well lithology in '
+                    'addition to the material, which is described in the raw data, material and description columns.'))
 
     bedrock_material = models.ForeignKey(
         BedrockMaterialCode, db_column='bedrock_material_code',
