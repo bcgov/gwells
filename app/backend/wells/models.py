@@ -2072,7 +2072,6 @@ class LithologyDescription(AuditModel):
     db_column_supplemental_comments = {
         "bedrock_material_code":"Code for the bedrock material encountered during drilling and reported in lithologic description. ",
         "lithology_moisture_code":"Code that describes the level of water within the lithologic layer. i.e. Dry, Damp, Moist, Wet",
-        "lithology_raw_data":"Description of the lithologic material as described by the driller.",
         "lithology_sequence_number":"Check with developers to see if this is being used, or if it can be deleted.",
         "water_bearing_estimated_flow":"Estimated flow of water within the lithologic layer, either recorded in US Gallons Per Minute or as per the well_yield_unit_code column.",
         "well_tag_number":"System generated sequential number assigned to each well. It is widely used by groundwater staff as it is the only consistent unique identifier for each well. It is different from a well ID plate number.",
