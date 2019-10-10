@@ -14,6 +14,9 @@
     This code courtesy of Transportation Fuels Reporting System (https://github.com/bcgov/tfrs),
     originally written by Robert Johnstone (https://github.com/plasticviking)
 """
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class DBComments(object):
@@ -50,9 +53,14 @@ class DBComments(object):
             visited.append(current)
 
             if issubclass(current, DBComments):
+                added_supplemental_comments = 0
                 if hasattr(current, 'db_column_supplemental_comments'):
                     for column, comment in current.db_column_supplemental_comments.items():
                         column_comments[column] = comment
+                        added_supplemental_comments += 1
+
+                if added_supplemental_comments:
+                    logger.info(f"Added {added_supplemental_comments} comments from db_column_supplemental_comments in {current}")
 
             inspection_list = inspection_list + list(current.__bases__)
 
