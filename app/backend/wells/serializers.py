@@ -20,6 +20,7 @@ from django.core.validators import MinValueValidator
 
 from gwells.models import ProvinceStateCode
 from gwells.serializers import AuditModelSerializer
+from aquifers.serializers import HYDRAULIC_SUBTYPES
 from registries.serializers import PersonNameSerializer, OrganizationNameListSerializer
 from wells.models import (
     ActivitySubmission,
@@ -1018,3 +1019,31 @@ class WellLocationSerializer(serializers.ModelSerializer):
         model = Well
         fields = ("well_tag_number", "identification_plate_number",
                   "latitude", "longitude", "street_address", "city")
+
+
+class WellDrawdownSerializer(serializers.ModelSerializer):
+    screen_set = ScreenSerializer(many=True)
+    intended_water_use = serializers.ReadOnlyField(source='intended_water_use.description')
+    aquifer_subtype = serializers.ReadOnlyField(source='aquifer.subtype.description')
+
+    class Meta:
+        model = Well
+        fields = (
+            "well_tag_number",
+            "static_water_level",
+            "screen_set",
+            "well_yield",
+            "diameter",
+            "aquifer",
+            "well_yield_unit",
+            "finished_well_depth",
+            "street_address",
+            "intended_water_use",
+            "aquifer_subtype"
+        )
+
+    def to_representation(self, instance):
+        details = super().to_representation(instance)
+        if instance.aquifer and instance.aquifer.subtype:
+            details['aquifer_hydraulically_connected'] = instance.aquifer.subtype.code in HYDRAULIC_SUBTYPES
+        return details
