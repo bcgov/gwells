@@ -156,7 +156,6 @@ class WellSubmissionSerializerBase(AuditModelSerializer):
             # this is a second sanity check to make sure the coordinates are roughly valid.
             if not 48 < lat < 60:
                 errors['latitude'] = 'Coordinates are outside British Columbia.  Please double check well location.'
-            logger.info(lng)
             if not -140 < -abs(lng) < -110:
                 errors['longitude'] = 'Coordinates are outside British Columbia.  Please double check well location.'
 
