@@ -20,7 +20,7 @@ import time
 from django.db.models import Prefetch
 from django.http import (
     FileResponse, Http404, HttpResponse, HttpResponseNotFound,
-    HttpResponseRedirect, JsonResponse, StreamingHttpResponse)
+    HttpResponseRedirect, JsonResponse, StreamingHttpResponse, HttpResponseBadRequest)
 from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView
 from django_filters import rest_framework as restfilters
@@ -39,7 +39,7 @@ from wells.change_history import get_well_history
 
 from rest_framework import filters, status
 from rest_framework.decorators import api_view
-from rest_framework.exceptions import PermissionDenied, NotFound
+from rest_framework.exceptions import PermissionDenied, NotFound, ValidationError
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.generics import ListAPIView, RetrieveAPIView
@@ -94,7 +94,8 @@ from wells.serializers import (
     WellTagSearchSerializer,
     WellDetailSerializer,
     WellDetailAdminSerializer,
-    WellLocationSerializer)
+    WellLocationSerializer,
+    WellDrawdownSerializer)
 from wells.permissions import WellsEditPermissions, WellsEditOrReadOnly
 
 
@@ -796,3 +797,26 @@ def well_licensing(request):
         }
 
     return HttpResponse(json.dumps(data), content_type="application/json")
+
+
+class WellScreens(ListAPIView):
+    """ returns well screen info for a range of wells """
+
+    model = Well
+    serializer_class = WellDrawdownSerializer
+    swagger_schema = None
+
+    def get_queryset(self):
+        wells = self.request.query_params.get('wells', None)
+        if not wells:
+            return []
+
+        wells = wells.split(',')
+
+        for w in wells:
+            if not w.isnumeric():
+                raise ValidationError(detail='Invalid well')
+
+        wells = map(int, wells)
+
+        return Well.objects.filter(well_tag_number__in=wells)
