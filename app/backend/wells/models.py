@@ -1828,8 +1828,8 @@ class LithologyDescription(AuditModel):
                     'in feet.'))
     lithology_raw_data = models.CharField(
         max_length=250, blank=True, null=True, verbose_name='Raw Data',
-        db_comment=('Lithologic material as described verbatim by the driller. The material column displays '
-                    'the standardized terms as extracted from this description.'))
+        db_comment=('Lithologic material as described verbatim by the driller (not necessarily using '
+                    'standardized terms).'))
 
     lithology_description = models.ForeignKey(
         LithologyDescriptionCode,
@@ -1854,8 +1854,8 @@ class LithologyDescription(AuditModel):
         LithologyMaterialCode, db_column='lithology_material_code',
         on_delete=models.CASCADE, blank=True, null=True,
         verbose_name="Material",
-        db_comment=('Standard terms used for defining the material noted for lithology. E.g. Rock, Clay,'
-                    ' Sand, Unspecified.'))
+        db_comment=('Description of the lithologic material using standardized terms, '
+                    'e.g. Rock, Clay, Sand, Unspecified.'))
 
     water_bearing_estimated_flow = models.DecimalField(
         max_digits=10, decimal_places=4, blank=True, null=True, verbose_name='Water Bearing Estimated Flow')
@@ -1864,8 +1864,8 @@ class LithologyDescription(AuditModel):
         verbose_name='Units')
     lithology_observation = models.CharField(
         max_length=250, blank=True, null=True, verbose_name='Observations',
-        db_comment=('Free form text used by the driller to describe observations of the well lithology in '
-                    'addition to the material, which is described in the raw data, material and description columns.'))
+        db_comment=('Free form text used by the driller to describe observations made of the well '
+                    'lithology including, but not limited to, the lithologic material.'))
 
     bedrock_material = models.ForeignKey(
         BedrockMaterialCode, db_column='bedrock_material_code',
