@@ -41,6 +41,11 @@ urlpatterns = [
     url(r'^api/v1/wells/tags$',
         never_cache(views.WellTagSearchAPIView.as_view()), name='well-tag-search'),
 
+    # Well screen search
+    # returns information about well screens for a range of wells provided in ?wells=123,124,125 etc.
+    url(r'^api/v1/wells/screens$',
+        never_cache(views.WellScreens.as_view()), name='well-screens'),
+
     # Well tag search
     url(r'^api/v1/wells/locations$',
         never_cache(views.WellLocationListAPIView.as_view()), name='well-locations'),

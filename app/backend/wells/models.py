@@ -261,7 +261,7 @@ class FilterPackMaterialCode(CodeTableModel):
 
     db_table_comment = ('Materials used in the filter pack, which are placed in the annulus of the well '
                         'between the borehole wall and the well screen, and are used to settle-out fine '
-                        'grained particles that may otherwise enter the well. I.e. Fine gravel, very course '
+                        'grained particles that may otherwise enter the well. I.e. Fine gravel, very coarse '
                         'sand, very fine gravel, other.')
 
     def __str__(self):
