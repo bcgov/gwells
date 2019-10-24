@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "19bcf251-75a9-4024-99a7-5f0152366fa5",
+		"_postman_id": "b382f40f-243b-4f4d-927b-b5e401cb824e",
 		"name": "GWELLS Submissions API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -85,11 +85,13 @@
 					},
 					"response": []
 				}
-			]
+			],
+			"protocolProfileBehavior": {}
 		},
 		{
 			"name": "Wells",
-			"item": []
+			"item": [],
+			"protocolProfileBehavior": {}
 		},
 		{
 			"name": "Activity Submissions",
@@ -124,10 +126,6 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/options?format=json",
 									"host": [
@@ -177,10 +175,6 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions?format=json",
 									"host": [
@@ -294,6 +288,7 @@
 							"response": []
 						}
 					],
+					"protocolProfileBehavior": {},
 					"_postman_isSubFolder": true
 				},
 				{
@@ -442,10 +437,6 @@
 										"value": "application/x-www-form-urlencoded"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 									"host": [
@@ -505,10 +496,6 @@
 										"value": "application/x-www-form-urlencoded"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/{{filing_number}}",
 									"host": [
@@ -688,10 +675,6 @@
 										"value": "application/x-www-form-urlencoded"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 									"host": [
@@ -865,10 +848,6 @@
 										"value": "application/x-www-form-urlencoded"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 									"host": [
@@ -1044,10 +1023,6 @@
 										"value": "application/x-www-form-urlencoded"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 									"host": [
@@ -1163,10 +1138,6 @@
 										"value": "application/x-www-form-urlencoded"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 									"host": [
@@ -1359,10 +1330,6 @@
 										"value": "application/x-www-form-urlencoded"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 									"host": [
@@ -1432,6 +1399,7 @@
 							"response": []
 						}
 					],
+					"protocolProfileBehavior": {},
 					"_postman_isSubFolder": true
 				},
 				{
@@ -1533,10 +1501,6 @@
 										"value": "application/x-www-form-urlencoded"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 									"host": [
@@ -1589,10 +1553,6 @@
 										"value": "application/x-www-form-urlencoded"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/{{filing_number}}",
 									"host": [
@@ -1910,10 +1870,6 @@
 										"value": "application/json"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 									"host": [
@@ -1932,6 +1888,7 @@
 							"response": []
 						}
 					],
+					"protocolProfileBehavior": {},
 					"_postman_isSubFolder": true
 				},
 				{
@@ -2035,10 +1992,6 @@
 										"value": "application/x-www-form-urlencoded"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 									"host": [
@@ -2095,10 +2048,6 @@
 										"value": "application/x-www-form-urlencoded"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/submissions/{{filing_number}}",
 									"host": [
@@ -2116,6 +2065,7 @@
 							"response": []
 						}
 					],
+					"protocolProfileBehavior": {},
 					"_postman_isSubFolder": true
 				},
 				{
@@ -2345,10 +2295,6 @@
 												"value": "JWT {{token}}"
 											}
 										],
-										"body": {
-											"mode": "raw",
-											"raw": ""
-										},
 										"url": {
 											"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 											"host": [
@@ -2367,6 +2313,7 @@
 									"response": []
 								}
 							],
+							"protocolProfileBehavior": {},
 							"_postman_isSubFolder": true
 						},
 						{
@@ -2411,7 +2358,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n\t\"well\": {{well_tag_number}},\n\t\"latitude\": 1,\n\t\"longitude\": 1,\n\t\"coordinate_acquisition_code\": \"B\"\n}"
+											"raw": "{\n\t\"well\": {{well_tag_number}},\n\t\"latitude\": 51,\n\t\"longitude\": -123,\n\t\"coordinate_acquisition_code\": \"B\"\n}"
 										},
 										"url": {
 											"raw": "{{base_url}}/api/v1/submissions/staff_edit?format=json",
@@ -2446,8 +2393,8 @@
 													"var jsonData = pm.response.json()",
 													"",
 													"var expected = {",
-													"\t\"latitude\": 1,",
-													"\t\"longitude\": 1,",
+													"\t\"latitude\": 51,",
+													"\t\"longitude\": -123,",
 													"\t\"coordinate_acquisition_code\": \"B\"",
 													"};",
 													"",
@@ -2474,10 +2421,6 @@
 												"value": "JWT {{token}}"
 											}
 										],
-										"body": {
-											"mode": "raw",
-											"raw": ""
-										},
 										"url": {
 											"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 											"host": [
@@ -2496,6 +2439,7 @@
 									"response": []
 								}
 							],
+							"protocolProfileBehavior": {},
 							"_postman_isSubFolder": true
 						},
 						{
@@ -2737,10 +2681,6 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 									"host": [
@@ -3150,9 +3090,11 @@
 							"response": []
 						}
 					],
+					"protocolProfileBehavior": {},
 					"_postman_isSubFolder": true
 				}
-			]
+			],
+			"protocolProfileBehavior": {}
 		},
 		{
 			"name": "Stacking",
@@ -3326,10 +3268,6 @@
 								"value": "application/x-www-form-urlencoded"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 							"host": [
@@ -3451,10 +3389,6 @@
 								"value": "application/x-www-form-urlencoded"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 							"host": [
@@ -3583,10 +3517,6 @@
 								"value": "application/x-www-form-urlencoded"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
 							"host": [
@@ -3604,7 +3534,8 @@
 					},
 					"response": []
 				}
-			]
+			],
+			"protocolProfileBehavior": {}
 		},
 		{
 			"name": "Clean up",
@@ -3660,7 +3591,9 @@
 					},
 					"response": []
 				}
-			]
+			],
+			"protocolProfileBehavior": {}
 		}
-	]
+	],
+	"protocolProfileBehavior": {}
 }
