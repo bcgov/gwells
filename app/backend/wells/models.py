@@ -395,15 +395,10 @@ class LicencedStatusCode(CodeTableModel):
     LicencedStatusCode of Well.
     """
     licenced_status_code = models.CharField(
-        primary_key=True, max_length=10, editable=False,
-        db_comment=('Valid licensing options granted to a well under the Water Water Sustainability Act.'
-                    ' This information comes from eLicensing. i.e. Unlicensed, Licensed, Historical.'))
+        primary_key=True, max_length=10, editable=False)
     description = models.CharField(
         max_length=255,
-        verbose_name='Licence Status',
-        db_comment=('Descriptions of valid licensing options granted to a well under the Water Water'
-                    ' Sustainability Act. This information comes from eLicensing. i.e. Unlicensed,'
-                    ' Licensed, Historical'))
+        verbose_name='Licence Status')
 
     class Meta:
         db_table = 'licenced_status_code'
@@ -411,6 +406,11 @@ class LicencedStatusCode(CodeTableModel):
 
     db_table_comment = ('Valid licencing options granted to a well under the Water Water Sustainability '
                         'Act. This information comes from eLicensing. i.e. Unlicensed, Licensed, Historical')
+
+    db_column_supplemental_comments = {
+        "description":"Descriptions of valid licensing options granted to a well under the Water Sustainability Act. This information comes from eLicensing. i.e. Unlicensed, Licensed, Historical",
+        "licenced_status_code":"Valid licensing options granted to a well under the Water Sustainability Act. This information comes from eLicensing. i.e. Unlicensed, Licensed, Historical.",
+    }
 
     def save(self, *args, **kwargs):
         self.validate()
@@ -422,15 +422,10 @@ class IntendedWaterUseCode(CodeTableModel):
     Usage of Wells (water supply).
     """
     intended_water_use_code = models.CharField(
-        primary_key=True, max_length=10, editable=False,
-        db_comment=('The intended use of the water in a water supply well as reported by the driller at time '
-                    'of work completion on the well. E.g DOM, IRR, DWS, COM'))
+        primary_key=True, max_length=10, editable=False)
     description = models.CharField(
         max_length=100,
-        verbose_name='Intented Water Use',
-        db_comment=('The intended use of the water in a water supply well as reported by the driller at time'
-                    ' of work completion on the well. E.g Private domestic, irrigation, water supply system,'
-                    ' industrial commercial, unknown.'))
+        verbose_name='Intented Water Use')
 
     class Meta:
         db_table = 'intended_water_use_code'
@@ -439,6 +434,11 @@ class IntendedWaterUseCode(CodeTableModel):
     db_table_comment = ('The intended use of the water in a water supply well as reported by the driller at '
                         'time of work completion on the well. E.g Private domestic, irrigation, water '
                         'supply system, Industrial commercial, and unknown.')
+
+    db_column_supplemental_comments = {
+        "description":"The intended use of the water in a water supply well as reported by the driller at time of work completion on the well. E.g Private Domestic, Irrigation, Water Supply System, Commercial and Industrial, Unknown, Other",
+        "intended_water_use_code":"The intended use of the water in a water supply well as reported by the driller at time of work completion on the well. E.g,  DOM, IRR, DWS, COM, UNK, OTHER",
+    }
 
     def __str__(self):
         return self.description
@@ -488,6 +488,11 @@ class WellClassCode(CodeTableModel):
                         ' Water Sustainability Act. E.g. Water Supply, Monitoring, Recharge / Injection,'
                         ' Dewatering / Drainage, Remediation, Geotechnical.')
 
+    db_column_supplemental_comments = {
+        "description":"Descriptions of valid classifications as defined in the Groundwater Protection Regulation of the Water Sustainability Act. E.g. Water Supply, Monitoring, Recharge / Injection, Dewatering / Drainage, Remediation, Geotechnical.",
+        "well_class_code":"Valid classifications as defined in the Groundwater Protection Regulation of the Water Sustainability Act. i.e. Unknown, Water Supply, Monitoring, Recharge, Injection, Dewatering, Drainage, Remediation, Geotechnical, Closed-loop geoexchange.",
+    }
+
     def __str__(self):
         return self.description
 
@@ -526,9 +531,7 @@ class WellStatusCode(CodeTableModel):
     description = models.CharField(
         max_length=255,
         verbose_name='Well Status',
-        db_comment=('Description of the status of a well as defined in the Groundwater Protection'
-                    ' Regulation of the Water Act. i.e. New, Abandoned (exists in Wells but will not be'
-                    ' used for E-Wells), Alteration, Closure, Other.'))
+        db_comment=('Description of the status of a well as defined in the Groundwater Protection Regulation of the Water Sustainability Act. i.e. New, Abandoned (exists in Wells but will not be used for E-Wells), Alteration, Closure, Other.'))
 
     objects = models.Manager()
     types = WellStatusCodeTypeManager()
@@ -564,9 +567,7 @@ class WellSubclassCode(CodeTableModel):
     well_class = models.ForeignKey(
         WellClassCode, null=True, db_column='well_class_code',
         on_delete=models.PROTECT, blank=True,
-        db_comment=('Valid classifications as defined in the Groundwater Protection Regulation of the'
-                    ' Water Act. i.e. Water Supply, Monitoring, Recharge, Injection, Dewatering,'
-                    ' Drainage, Remediation, Geotechnical, Closed-loop geoexchange.'))
+        db_comment=('Valid classifications as defined in the Groundwater Protection Regulation of the Water Sustainability Act. i.e. Water Supply, Monitoring, Recharge, Injection, Dewatering, Drainage, Remediation, Geotechnical, Closed-loop geoexchange.'))
     well_subclass_code = models.CharField(max_length=10)
     description = models.CharField(max_length=100)
 
@@ -647,11 +648,7 @@ class CoordinateAcquisitionCode(BasicCodeTableModel):
                     ' B, C.'))
     description = models.CharField(
         max_length=250,
-        db_comment=('A description of how accurate the coordinate position is best estimated to be based'
-                    ' on the information provided by the data submitter and analysis done by staff. E.g.'
-                    ' (10 m accuracy) ICF cadastre and good location sketch, (200 m accuracy) Digitized'
-                    ' from 1:50,000 mapping, (unknown, accuracy based on parcel size) ICF cadastre, poor'
-                    ' or no location sketch, arbitraily located in center of parcel.'))
+        db_comment=('A description of the coordinate_aquisition_code.  It describes how accurate the coordinate position is  estimated based on the information provided by the data submitter and analysis done by staff. E.g. (10 m accuracy) ICF cadastre and good location sketch, (200 m accuracy) Digitized from 1:50,000 mapping, (unknown, accuracy based on parcel size) ICF cadastre, poor or no location sketch, arbitraily located in center of parcel.'))
 
     class Meta:
         db_table = 'coordinate_acquisition_code'
@@ -1160,6 +1157,91 @@ class Well(AuditModelStructure):
                         'information related to who owns the well, location of well, the lithologic '
                         'description as well as other information related to the construction of the well.')
 
+    db_column_supplemental_comments = {
+        "alternative_specs_submitted":"Indicates if an alternative specification was used for siting of a water supply well or a permanent dewatering well, or if an alternative specification was used for decommissioning a well.",
+        "aquifer_id":"System generated sequential number assigned to each aquifer. It is widely used by groundwater staff as it is the only consistent unique identifier for a mapped aquifer. It is also commonly referred to as Aquifer Number.",
+        "artesian_flow":"Measurement of the artesian well's water flow that occurs naturally due to inherent water pressure in the well. Pressure within the aquifer forces the groundwater to rise above the land surface naturally without using a pump. Flowing artesian wells can flow on an intermittent or continuous basis. Recorded in US Gallons Per Minute.",
+        "bcgs_id":"TO BE DELETED?",
+        "boundary_effect_code":"Valid codes for the boundaries observed in pumping test analysis. i.e. CH, NF.",
+        "decommission_backfill_material":"Backfill material used to decommission a well.  ",
+        "decommission_details":"Information about the decommissioning of a well as provided by the driller.",
+        "decommission_end_date":"The end date of when the decommissioning of the well was completed.",
+        "decommission_method_code":"Valid code for the method used to fill the well to decommission it permanently.",
+        "decommission_reason":"The reason why the well was decomssioned as provided by the driller.",
+        "decommission_sealant_material":"Describes the sealing material or a mixture of the sealing material used to decommission a well.",
+        "decommission_start_date":"The start date of when the decommissioning of the well began.",
+        "development_hours":"Total hours devoted to developing as well ('develop' in relation to a well, means remove from an aquifer the fine sediment and other organic or inorganic material that immediately surrounds the well screen, the drill hole or the intake area at the bottom of the well)",
+        "development_notes":"Information about the  development of the well.",
+        "drawdown":"Drawdown is the drop in water level when water is being pumped. ",
+        "ems":"Unique ID assigned through the Environmental Monitoring System (EMS) that relates to water quality data within the EMS application.",
+        "filter_pack_from":"The starting depth in feet below ground level at which the filter pack was placed.",
+        "filter_pack_material_code":"Codes for the materials used in the filter pack, which are placed in the annulus of the well between the borehole wall and the well screen, and are used to settle-out fine grained particles that may otherwise enter the well. I.e. Fine gravel, very course sand, very fine gravel, other",
+        "filter_pack_material_size_code":"Codes for the sizes of the material used in the well filter pack. E.g. 1.0 - 2.0 mm, 2.0 - 4.0 mm, 4.0 - 8.0 mm.",
+        "filter_pack_thickness":"The thickness in inches of the filter pack material used for a well.",
+        "filter_pack_to":"The end depth in feet below ground level at which the filter pack was placed.",
+        "final_casing_stick_up":"The length in inches of the production casing in the well that is above the surface of the ground adjacent to the well, or the floor of the well sump, pump house or well pit.",
+        "finished_well_depth":"The depth at which the well was 'finished'. It can be shallower than the total well depth which is the total depth drilled. Recorded in feet below ground level.",
+        "geom":"Estimated point location of the well.  All UTM coordinates are converted to this geom column for storage and display.   The geometry of the well should be considered aong with the coordinate acquisition code to get the estimated accuracy of the location.",
+        "ground_elevation":"The elevation above sea-level of the ground surface at the well, measured in feet.",
+        "ground_elevation_method_code":"Code for method used to determine the ground elevation of a well. E.g. GPS, Altimeter, Differential GPS, Level, 1:50,000 map, 1:20,000 map.",
+        "hydraulic_conductivity":"The ability of the rock or unconsolidated material to transmit water.",
+        "hydro_fracturing_performed":"Indicates if high pressure water was injected into the well to help break apart the bedrock in order to get more water out of the well.",
+        "hydro_fracturing_yield_increase":"How much the well yeild increases once hydro fracturing was performed, recorded in US gallons per minute.",
+        "id_plate_attached_by":"The person who attached the id plate to the well.",
+        "identification_plate_number":"Steel plate with a unique number that is attached to wells as required wells under the Groundwater Protection Regulationsuch as water supply wells, recharge or injection wells made by drilling or boring, and permanent dewatering wells.",
+        "intended_water_use_code":"The intended use of the water in a water supply well as reported by the driller at time of work completion on the well. E.g,  DOM, IRR, DWS, COM, UNK, OTHER",
+        "internal_comments":"Staff only comments and information related to the well, and for internal use only, not to be made public.",
+        "land_district_code":"Codes used to identify legal land district used to help identify the property where the well is located. E.g. Alberni, Barclay, Cariboo.",
+        "legal_pid":"A Parcel Identifier or PID is a nine-digit number that uniquely identifies a parcel in the land title register of in BC. The Registrar of Land Titles assigns PID numbers to parcels for which a title is being entered in the land title register as a registered title. The Land Title Act refers to the PID as “the permanent parcel identifier”.",
+        "licenced_status_code":"Valid licensing options granted to a well under the Water Sustainability Act. This information comes from eLicensing. i.e. Unlicensed, Licensed, Historical.",
+        "liner_diameter":"Diameter of the liner placed inside the well.  Measured in inches.",
+        "liner_from":"Depth below ground level at which the liner starts inside the well. Measured in feet.",
+        "liner_material_code":"Code that describes the material noted for lithology. E.g. Rock, Clay, Sand, Unspecified,",
+        "liner_thickness":"Thickness of the liner inside the well. Measured in inches.",
+        "liner_to":"Depth below ground level at which the liner ends inside the well. Measured in feet.",
+        "obs_well_status_code":"Status of an observation well within the Provincial Groundwater Observation Well Network. I.e. Active is a well that is currently being used to collect groundwater information, and inactive is a well that is no longer being used to collect groundwater information.",
+        "observation_well_number":"A unique number assigned to a well that has been included as part of the Provincial Groundwater Observation Well Network.",
+        "other_screen_bottom":"Describes the type of bottom installed on a well screen when the bottom type is different from all the types in the screen bottom drop down list and the data submitter picks 'Other ' from the list.",
+        "other_screen_material":"Describes the material that makes up the screen on a well when the material is different from all the drop down options and the data submitter picks 'Other ' from the list.",
+        "owner_city":"City where the owner of the well resides.",
+        "owner_email":"Email address of the well owner, not to be published to the public. ",
+        "owner_full_name":"First name and last name of the well owner.  ",
+        "owner_mailing_address":"Street name and number of the well owner.",
+        "owner_postal_code":"Postal code of the well owner attached to the owner mailing address.",
+        "owner_tel":"Telephone number for the well owner, not to be published to the public.",
+        "province_state_code":"Province or state code used for the mailing address for the company",
+        "recommended_pump_depth":"Depth of the a pump placed within the well, as recommended by the well driller or well pump installer, measured in feet below depth of the top of the production casing.",
+        "recommended_pump_rate":"The rate at which to withdraw water from the well as recommended by the well driller or well pump installer, measured in US gallons per minute.",
+        "screen_bottom_code":"Valid categories used to identify the type of bottom on a well screen. It provides for a standard commonly understood code and description for screen bottoms. Some examples include: Bail, Plate, Plug. 'Other' can also be specified.",
+        "screen_information":"Information about the screen that is not captured elsewhere, as provided by the well driller.",
+        "screen_intake_method_code":"Valid categories used to identify the type of intake mechanism for a well screen. It provides for a standard commonly understood code and description for screen intake codes. Some examples include: Open bottom, Screen, Uncased hole.",
+        "screen_material_code":"Describes the different materials that makes up the screen on a well. E.g. Plastic, Stainless Steel, Other.",
+        "screen_opening_code":"Valid categories used to identify the type of opening on a well screen. It provides for a standard commonly understood code and description for screen openings. E.g. Continuous Slot, Perforated Pipe, Slotted.",
+        "screen_type_code":"Valid categories for the type of well screen installed in a well. i.e. Pipe size, Telescope, Other",
+        "specific_storage":"The volume of water that the aquifer releases from storage, per volume per aquifer of hydraulic unit head.",
+        "static_level_before_test":"Resting static water level prior to pumping, measured in feet below ground level or feet below top of the production casing.",
+        "storativity":"The storativity (or storage coefficient ) is the amount of water stored or released per unit area of aquifer given unit change in head.  ",
+        "surface_seal_depth":"The depth at the bottom of the surface seal, measured in feet.",
+        "surface_seal_length":"The length of the the surface seal, measured in feet.",
+        "surface_seal_material_code":"Valid materials used for creating the surface seal for a well. A surface seal is a plug that prevents surface runoff from getting into the aquifer or well and contaminating the water. E.g. Bentonite clay, Concrete grout, Sand cement grout, Other.",
+        "surface_seal_method_code":"Valid methods used to create the surface seal for a well. i.e. Poured, Pumped, Other.",
+        "surface_seal_thickness":"The thickness of the surface sealant placed in the annular space around the outside of the outermost well casing, measured in inches.",
+        "total_depth_drilled":"Total depth drilled when constructing or altering a well.  It may be different from the finished well depth which can be shallower than the total well depth.  Measured in feet below ground level.",
+        "transmissivity":"Transmissivity is the rate of flow under a unit hydraulic gradient through a unit width of aquifer of thickness ",
+        "water_quality_colour":"Valid codes for the colour of the water as recorded at time of work. E.g. Orange, Black, Clear, Other",
+        "water_quality_odour":"Description of the odour of the water as recorded at time of work.",
+        "well_cap_type":"Description of the type of well cap used on the well.",
+        "well_class_code":"Valid classifications as defined in the Groundwater Protection Regulation of the Water Sustainability Act. i.e. Water Supply, Monitoring, Recharge, Injection, Dewatering, Drainage, Remediation, Geotechnical, Closed-loop geoexchange.",
+        "well_disinfected":"Indicates if the well was disinfected after the well construction or alteration was completed.",
+        "well_orientation":"Describes the physical orientation of a well as being either horizontal or vertical.",
+        "well_publication_status_code":"Codes that describe if a well record is published for public consumption or unpublished and not available to the public due to data duplication and other data quality issues.",
+        "well_tag_number":"System generated sequential number assigned to each well. It is widely used by groundwater staff as it is the only consistent unique identifier for each well. It is different from a well ID plate number.",
+        "well_yield_unit_code":"Codes for the unit of measure that was used for the well yield. All codes except the U.S. Gallons per Minute has been retired as all data from April 2019 will be reported in U.S. Gallons per Minute. E.g of other codes that have been used in the past are Gallons per Minute (U.S./Imperial), Dry Hole, Unknown Yield.",
+        "yield_estimation_duration":"Total length of time that a well yield test took to complete, measured in hours.",
+        "yield_estimation_method_code":"Codes for the valid methods that can be used to estimate the well yield. E.g. Air Lifting, Bailing, Pumping, Other.",
+        "yield_estimation_rate":"Rate at which the well water was pumped during the well yield test, measured in US gallons per minute.",
+    }
+
 
 class CasingMaterialCode(CodeTableModel):
     """
@@ -1203,6 +1285,11 @@ class CasingCode(CodeTableModel):
 class ActivitySubmission(AuditModelStructure):
     """
     Activity information on a Well submitted by a user.
+
+    Note on db_comments:  db_comment properties on model columns are
+    overriden by the db_column_supplemental_comments provided below.
+    db_column_supplemental_comments provides an easier way for the DA to add/update
+    comments in bulk.
     """
     filing_number = models.AutoField(primary_key=True)
     activity_submission_guid = models.UUIDField(
@@ -1622,6 +1709,89 @@ class ActivitySubmission(AuditModelStructure):
         db_table = 'activity_submission'
 
     db_table_comment = 'Submission of data and information related to a groundwater wells.'
+    db_column_supplemental_comments = {
+        "alternative_specs_submitted":"Indicates if an alternative specification was used for siting of a water supply well, or a permanent dewatering well, or for the method used for decommissioning a well.",
+        "analytic_solution_type":"Mathematical formulation used to estimate hydraulic parameters.",
+        "aquifer_id":"System generated sequential number assigned to each aquifer. It is widely used by groundwater staff as it is the only consistent unique identifier for a mapped aquifer. It is also commonly referred to as Aquifer Number.",
+        "aquifer_lithology_code":"Valid codes for the type of material an aquifer consists of. i.e., Unconsolidated, Bedrock, Unknown.",
+        "aquifer_vulnerability_index":"Valid codes that Indicate the aquifer’s relative intrinsic vulnerability to impacts from human activities at the land surface. Vulnerability is based on: the type, thickness, and extent of geologic materials above the aquifer, depth to water table (or to top of confined aquifer), and type of aquifer materials. E.g. H, L, M",
+        "bedrock_depth":"Depth below ground level at which bedrock starts, measured in feet.",
+        "boundary_effect_code":"Valid codes for the boundaries observed in pumping test analysis. i.e. CH, NF.",
+        "city":"The city or town in which the well is located as part of the well location address.",
+        "comments":"Free form text used by the user (driller or staff) to include comments for the well. ",
+        "consultant_company":"Name of consultant company that was involved in the construction, alteration, or decommision of a well.",
+        "consultant_name":"Name of consultant (person) that was involved in the construction, alteration, or decommision of a well.",
+        "decommission_backfill_material":"Backfill material used to decommission a well.  ",
+        "decommission_details":"Information about the decommissioning of a well as provided by the driller.",
+        "decommission_method_code":"Valid code for the method used to fill the well to close it permanently.",
+        "decommission_reason":"The reason why the well was decomssioned as provided by the driller.",
+        "decommission_sealant_material":"Describes the sealing material or a mixture of the sealing material used to decommission a well.",
+        "development_hours":"Total hours devoted to developing as well ('develop' in relation to a well, means remove from an aquifer the fine sediment and other organic or inorganic material that immediately surrounds the well screen, the drill hole or the intake area at the bottom of the well)",
+        "development_notes":"Information about the  development of the well.",
+        "drawdown":"Drawdown is the drop in water level when water is being pumped. ",
+        "filter_pack_from":"The starting depth below ground level at which the filter pack was placed.",
+        "filter_pack_material_code":"Codes for the materials used in the filter pack, which are placed in the annulus of the well between the borehole wall and the well screen, and are used to settle-out fine grained particles that may otherwise enter the well. I.e. Fine gravel, very course sand, very fine gravel, other",
+        "filter_pack_material_size_code":"Codes for the sizes of the material used to pack a well filter. E.g. 1.0 - 2.0 mm, 2.0 - 4.0 mm, 4.0 - 8.0 mm.",
+        "filter_pack_thickness":"The thickness in inches of the filter pack material used for a well.",
+        "filter_pack_to":"The end depth below ground level at which the filter pack was placed.",
+        "final_casing_stick_up":"The length of the production casing in the well that is above the surface of the ground adjacent to the well, or the floor of the well sump, pump house or well pit.",
+        "geom":"Estimated point location of the well.  All UTM coordinates are converted to this geom column for storage and display.   The geometry of the well should be considered aong with the coordinate acquisition code to get the estimated accuracy of the location.",
+        "ground_elevation":"The elevation above sea-level at the ground-level of the well, measured in feet.",
+        "ground_elevation_method_code":"Code for method used to determine the ground elevation of a well. E.g. GPS, Altimeter, Differential GPS, Level, 1:50,000 map, 1:20,000 map.",
+        "hydraulic_conductivity":"The ability of the rock or unconsolidated material to transmit water.",
+        "hydro_fracturing_performed":"Indicates if high pressure water was injected into the well to help break apart the bedrock in order to get more water out of the well.",
+        "hydro_fracturing_yield_increase":"How much the well yeild increases once hydro fracturing was performed, measured in US gallons per minute.",
+        "id_plate_attached_by":"The person who attached the id plate to the well.",
+        "intended_water_use_code":"The intended use of the water in a water supply well as reported by the driller at time of work completion on the well. E.g,  DOM, IRR, DWS, COM, UNK, OTHER",
+        "internal_comments":"Staff only comments and information related to the well, and for internal use only, not to be made public.",
+        "land_district_code":"Codes used to identify legal land district used to help identify the property where the well is located. E.g. Alberni, Barclay, Cariboo.",
+        "legal_pid":"A Parcel Identifier or PID is a nine-digit number that uniquely identifies a parcel in the land title register of in BC. The Registrar of Land Titles assigns PID numbers to parcels for which a title is being entered in the land title register as a registered title. The Land Title Act refers to the PID as “the permanent parcel identifier”.",
+        "liner_diameter":"Diameter of the liner placed inside the well.  Measured in inches.",
+        "liner_from":"Depth below ground level at which the liner starts inside the well. Measured in feet.",
+        "liner_material_code":"Code that describes the material noted for lithology. E.g. Rock, Clay, Sand, Unspecified,",
+        "liner_thickness":"Thickness of the liner inside the well. Measured in inches.",
+        "liner_to":"Depth below ground level at which the liner ends inside the well. Measured in feet.",
+        "obs_well_status_code":"Status of an observation well within the Provincial Groundwater Observation Well Network. I.e. Active is a well that is currently being used to collect groundwater information, and inactive is a well that is no longer being used to collect groundwater information.",
+        "observation_well_number":"A unique number assigned to a well that has been included as part of the Provincial Groundwater Observation Well Network.",
+        "other_screen_bottom":"Describes the type of bottom installed on a well screen of when the bottom type is different from all the types in the screen bottom drop down list and the data submitter picks 'Other ' from the list.",
+        "other_screen_material":"Describes the material that makes up the screen on a well when the material is different from all the drop down options and the data submitter picks 'Other ' from the list.",
+        "owner_city":"City where the owner of the well resides.",
+        "owner_email":"Email address of the well owner, not to be published to the public. ",
+        "owner_full_name":"First name and last name of the well owner.  ",
+        "owner_mailing_address":"Street name and number of the well owner.",
+        "owner_postal_code":"Postal code of the well owner attached to the owner mailing address.",
+        "owner_tel":"Telephone number for the well owner, not to be published to the public.",
+        "province_state_code":"Province or state code used for the mailing address for the company",
+        "recommended_pump_depth":"Depth of the a pump placed within the well, as recommended by the well driller or pump installer, measured in feet below depth of the production casing.",
+        "recommended_pump_rate":"The rate at which to withdraw water from the well as recommended by the well driller or pump installer, measured in US gallons per minute.",
+        "screen_bottom_code":"Valid categories used to identify the type of bottom on a well screen. It provides for a standard commonly understood code and description for screen bottoms. Some examples include: Bail, Plate, Plug. 'Other' can also be specified.",
+        "screen_information":"Information about the screen that is not captured elsewhere, as provided by the well driller.",
+        "screen_intake_method_code":"Valid categories used to identify the type of intake mechanism for a well screen. It provides for a standard commonly understood code and description for screen intake codes. Some examples include: Open bottom, Screen, Uncased hole.",
+        "screen_material_code":"Describes the different materials that makes up the screen on a well. E.g. Plastic, Stainless Steel, Other.",
+        "screen_opening_code":"Valid categories used to identify the type of opening on a well screen. It provides for a standard commonly understood code and description for screen openings. E.g. Continuous Slot, Perforated Pipe, Slotted.",
+        "screen_type_code":"Valid categories for the type of well screen installed in a well. i.e. Pipe size, Telescope, Other",
+        "specific_storage":"The volume of water that the aquifer releases from storage, per volume per aquifer of hydraulic unit head.",
+        "static_level_before_test":"Resting static water level prior to pumping, measured in feet below ground level.",
+        "storativity":"The storativity (or storage coefficient ) is the amount of water stored or released per unit area of aquifer given unit change in head.  ",
+        "street_address":"Street address for where the property that the well is physically located on.",
+        "surface_seal_depth":"The depth at the bottom of the surface seal, measured in feet.",
+        "surface_seal_material_code":"Valid materials used for creating the surface seal for a well. A surface seal is a plug that prevents surface runoff from getting into the aquifer or well and contaminating the water. E.g. Bentonite clay, Concrete grout, Sand cement grout, Other.",
+        "surface_seal_method_code":"Valid methods used to create the surface seal for a well. i.e. Poured, Pumped, Other.",
+        "surface_seal_thickness":"The thickness of the surface sealant placed in the annular space around the outside of the outermost well casing, measured in inches.",
+        "total_depth_drilled":"Total depth of drilling done when constructing or altering a well.  It is different from the finished well depth which can be shallower than the total well depth.  Measured in feet.",
+        "transmissivity":"Transmissivity is the rate of flow under a unit hydraulic gradient through a unit width of aquifer of thickness ",
+        "water_quality_odour":"Description of the odour of the water as recorded at time of work.",
+        "well_cap_type":"Description of the type of well cap used on the well.",
+        "well_disinfected":"Indicates if the well was disinfected after the well construction or alteration was completed.",
+        "well_orientation":"Describes the physical orientation of a well as being either horizontal or vertical.",
+        "well_publication_status_code":"Codes that describe if a well record is published for public consumption or unpublished and not available to the public due to data duplication and other data quality issues.",
+        "well_tag_number":"System generated sequential number assigned to each well. It is widely used by groundwater staff as it is the only consistent unique identifier for each well. It is different from a well ID plate number.",
+        "well_yield":"An approximate estimate of the capacity of the well to produce groundwater. Estimated by the well driller during construction by conducting a well yield test. Measured in US Gallons/minute.",
+        "well_yield_unit_code":"Codes for the unit of measure that was used for the well yield. All codes except the U.S. Gallons per Minute has been retired as all data from April 2019 will be reported in U.S. Gallons per Minute. E.g of other codes that have been used in the past are Gallons per Minute (U.S./Imperial), Dry Hole, Unknown Yield.",
+        "yield_estimation_duration":"Total length of time that a well yield test took to complete, measured in hours.",
+        "yield_estimation_method_code":"Codes for the valid methods that can be used to estimate the yield of a well. E.g. Air Lifting, Bailing, Pumping, Other.",
+        "yield_estimation_rate":"Rate at which the well water was pumped during the well yield test, measured in US gallons per minute.",
+    }
 
     def __str__(self):
         if self.filing_number:
@@ -1901,6 +2071,13 @@ class LithologyDescription(AuditModel):
 
     db_table_comment = ('Describes the different lithologic qualities, characteristics, and materials found '
                         'at different depths while drilling.')
+    db_column_supplemental_comments = {
+        "bedrock_material_code":"Code for the bedrock material encountered during drilling and reported in lithologic description. ",
+        "lithology_moisture_code":"Code that describes the level of water within the lithologic layer. i.e. Dry, Damp, Moist, Wet",
+        "lithology_sequence_number":"Check with developers to see if this is being used, or if it can be deleted.",
+        "water_bearing_estimated_flow":"Estimated flow of water within the lithologic layer, either recorded in US Gallons Per Minute or as per the well_yield_unit_code column.",
+        "well_tag_number":"System generated sequential number assigned to each well. It is widely used by groundwater staff as it is the only consistent unique identifier for each well. It is different from a well ID plate number.",
+    }
 
     def __str__(self):
         if self.activity_submission:
@@ -1944,6 +2121,12 @@ class LinerPerforation(PerforationBase):
     db_table_comment = ('Describes the depths at which the liner is perforated in a well to help improve '
                         'water flow at the bottom of the well. Some wells are perforated instead of having '
                         'a screen installed.')
+    
+    db_column_supplemental_comments = {
+        "liner_perforation_from":"The depth at the top of the liner perforation, measured in feet below ground level.",
+        "liner_perforation_to":"The depth at the bottom of the liner perforation, measured in feet below ground level.",
+        "well_tag_number":"System generated sequential number assigned to each well. It is widely used by groundwater staff as it is the only consistent unique identifier for each well. It is different from a well ID plate number.",
+    }
 
     def __str__(self):
         return 'well {} {} {}'.format(self.well, self.start, self.end)
@@ -2020,6 +2203,16 @@ class Casing(AuditModel):
                         'is comprised of a production (inner tube) and surface (outer tube) and can be made '
                         'of a variety of materials.')
 
+    db_column_supplemental_comments = {
+        "casing_code":"Describes the casing component (piping or tubing installed in a well) as either production casing, surface casing (outer casing), or open hole.",
+        "casing_from":"The depth below ground level at which the casing begins.  Measured in feet below ground level.",
+        "casing_to":"The depth below ground level at which the casing ends.  Measured in feet below ground level.",
+        "diameter":"The diameter of the casing measured in inches. There can be multiple casings in a well, e.g. surface casing, and production casing. Diameter of casing made available to the public is generally the production casing.",
+        "drive_shoe_code":"Indicates Y or N if a drive shoe was used in the installation of the casing.  A drive shoe is attached to the end of a casing and it helps protect it during installation.",
+        "wall_thickness":"The thickness of the casing wall, measured in inches.",
+        "well_tag_number":"System generated sequential number assigned to each well. It is widely used by groundwater staff as it is the only consistent unique identifier for each well. It is different from a well ID plate number.",
+    }
+
     def __str__(self):
         if self.activity_submission:
             return 'activity_submission {} {} {}'.format(self.activity_submission, self.start, self.end)
@@ -2051,8 +2244,7 @@ class Screen(AuditModel):
     well = models.ForeignKey(
         Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True,
         null=True, related_name='screen_set',
-        db_comment=('The file number assigned to a particular well in the in the province\'s Groundwater '
-                    'Wells and Aquifers application.'))
+        db_comment=('System generated sequential number assigned to each well. It is widely used by groundwater staff as it is the only consistent unique identifier for each well. It is different from a well ID plate number.'))
     start = models.DecimalField(db_column='screen_from', max_digits=7, decimal_places=2, verbose_name='From',
                                 blank=True, null=True, validators=[MinValueValidator(Decimal('0.00'))])
     end = models.DecimalField(db_column='screen_to', max_digits=7, decimal_places=2, verbose_name='To',
@@ -2145,9 +2337,23 @@ class HydraulicProperty(AuditModel):
 
     db_table_comment = 'Placeholder table comment.'
 
+    db_column_supplemental_comments = {
+        "analytic_solution_type":"The mathematical solution to the groundwater flow equation used to fit the observational data and estimate hydraulic parameters e.g. Theis 1935",
+        "avi":"The Aquifer Vulnerability Index (AVI) method for calculating aquifer vulnerability to contamination based on the thickness of each sedimentary unit above the uppermost aquifer and estimated hydraulic conductivity of each of these layers.  ",
+        "boundary_effect":"Identification of any boundary effects observed during hydraulic testing (e.g. specified head to represent streams or no-flow to represent a low conductivity interface) ",
+        "hydraulic_conductivity":"Hydraulic conductivity estimated from hydraulic testing in metres per second.",
+        "specific_storage":"Specific Storage estimated from hydraulic testing in units of per metre of aquifer thickness.",
+        "specific_yield":"Specific Yield estimated from hydraulic testing (dimensionless).",
+        "storativity":"Storativity estimated from hydraulic testing (dimensionless).",
+        "testing_duration":"The duration of the hydraulic testing period.  For consistency, do not include the recovery period.",
+        "testing_method":"Identification of the testing method (e.g.basic pumping test, pumping test with monitoring wells, single-well-response/slug test, constant head).",
+        "transmissivity":"Transmissivity estimated from hydraulic testing.",
+        "well_tag_number":"System generated sequential number assigned to each well. It is widely used by groundwater staff as it is the only consistent unique identifier for each well. It is different from a well ID plate number.",
+    }
+    
     def __str__(self):
         return '{} - {}'.format(self.well, self.hydraulic_property_guid)
-
+    
 
 class DecommissionMaterialCode(BasicCodeTableModel):
     """Codes for decommission materials"""
@@ -2174,8 +2380,7 @@ class DecommissionDescription(AuditModel):
     well = models.ForeignKey(
         Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True,
         null=True, related_name='decommission_description_set',
-        db_comment=('The file number assigned to a particular well in the in the province\'s Groundwater '
-                    'Wells and Aquifers application.'))
+        db_comment=('System generated sequential number assigned to each well. It is widely used by groundwater staff as it is the only consistent unique identifier for each well. It is different from a well ID plate number.'))
     start = models.DecimalField(db_column='decommission_description_from', max_digits=7, decimal_places=2,
                                 verbose_name='Decommissioned From', blank=False,
                                 validators=[MinValueValidator(Decimal('0.00'))])
