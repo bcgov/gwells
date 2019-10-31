@@ -12,6 +12,8 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
+    "@sentry/browser": "^5.7.1",
+    "@sentry/integrations": "^5.7.1",
     "@types/leaflet": "^1.2.11",
     "axios": "^0.18.1",
     "bootstrap-vue": "^2.0.0-rc.2",

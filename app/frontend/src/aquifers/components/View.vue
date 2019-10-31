@@ -348,6 +348,8 @@ import ChangeHistory from '@/common/components/ChangeHistory.vue'
 import { mapActions, mapGetters, mapState } from 'vuex'
 import { sumBy } from 'lodash'
 import PieChart from './PieChart.vue'
+import * as Sentry from '@sentry/browser';
+
 export default {
 
   components: {
@@ -465,6 +467,7 @@ export default {
           this.fileUploadSuccess()
           this.fetchFiles()
         }).catch((error) => {
+          Sentry.captureException(error)
           this.fileUploadFail()
           console.log(error)
         })
@@ -484,6 +487,7 @@ export default {
       this.navigateToView()
     },
     handlePatchError (error) {
+      Sentry.captureException(error)
       if (error.response) {
         if (error.response.status === 400) {
           this.fieldErrors = error.response.data
