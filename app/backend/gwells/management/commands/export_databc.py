@@ -67,7 +67,7 @@ select
     SUBSTRING(well_yield_unit_code.description for 100) as yield_unit,
     well.aquifer_id as aquifer_id,
     well.observation_well_number,
-    well.observation_well_status
+    well.obs_well_status_code
 from well
     left join well_status_code on well_status_code.well_status_code = well.well_status_code
     left join licenced_status_code on
