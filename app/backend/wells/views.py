@@ -633,7 +633,9 @@ WELL_PROPERTIES = openapi.Schema(
         'bedrock_depth': get_model_feature_schema(Well, 'bedrock_depth'),
         'yield': get_model_feature_schema(Well, 'well_yield'),
         'yield_unit': get_model_feature_schema(WellYieldUnitCode, 'description'),
-        'aquifer_id': get_model_feature_schema(Well, 'aquifer')
+        'aquifer_id': get_model_feature_schema(Well, 'aquifer'),
+        'observation_well_number': get_model_feature_schema(Well, 'observation_well_number'),
+        'observation_well_status': get_model_feature_schema(Well, 'observation_well_status')
     })
 
 
