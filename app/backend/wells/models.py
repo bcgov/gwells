@@ -985,11 +985,14 @@ class Well(AuditModelStructure):
     diameter = models.CharField(max_length=9, blank=True)
 
     observation_well_number = models.CharField(
-        max_length=30, blank=True, null=True, verbose_name="Observation Well Number")
+        max_length=30, blank=True, null=True, verbose_name="Observation Well Number",
+        db_comment=('A unique number assigned to a well that has been included as part '
+                    'of the Provincial Groundwater Observation Well Network.'))
 
     observation_well_status = models.ForeignKey(
         ObsWellStatusCode, db_column='obs_well_status_code', blank=True, null=True,
-        verbose_name="Observation Well Status", on_delete=models.PROTECT)
+        verbose_name="Observation Well Status", on_delete=models.PROTECT,
+        db_comment=(''))
 
     ems = models.CharField(max_length=10, blank=True, null=True,
                            verbose_name="Environmental Monitoring System (EMS) ID")
@@ -1610,11 +1613,15 @@ class ActivitySubmission(AuditModelStructure):
 
     # Observation well details
     observation_well_number = models.CharField(
-        max_length=30, blank=True, null=True, verbose_name="Observation Well Number")
+        max_length=30, blank=True, null=True, verbose_name="Observation Well Number",
+        db_comment=('A unique number assigned to a well that has been included as part '
+                    'of the Provincial Groundwater Observation Well Network.'))
 
     observation_well_status = models.ForeignKey(
         ObsWellStatusCode, db_column='obs_well_status_code', blank=True, null=True,
-        verbose_name="Observation Well Status", on_delete=models.PROTECT)
+        verbose_name="Observation Well Status", on_delete=models.PROTECT,
+        db_comment=(''))
+        
     # aquifer association
     aquifer = models.ForeignKey(
         Aquifer, db_column='aquifer_id', on_delete=models.PROTECT, blank=True,
