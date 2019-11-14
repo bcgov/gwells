@@ -985,11 +985,17 @@ class Well(AuditModelStructure):
     diameter = models.CharField(max_length=9, blank=True)
 
     observation_well_number = models.CharField(
-        max_length=30, blank=True, null=True, verbose_name="Observation Well Number")
+        max_length=30, blank=True, null=True, verbose_name="Observation Well Number",
+        db_comment=('A unique number assigned to a well that has been included as part '
+                    'of the Provincial Groundwater Observation Well Network.'))
 
     observation_well_status = models.ForeignKey(
         ObsWellStatusCode, db_column='obs_well_status_code', blank=True, null=True,
-        verbose_name="Observation Well Status", on_delete=models.PROTECT)
+        verbose_name="Observation Well Status", on_delete=models.PROTECT,
+        db_comment=('Status of an observation well within the Provincial Groundwater Observation Well '
+                    'Network. I.e. Active is a well that is currently being used to collect groundwater '
+                    'information, and inactive is a well that is no longer being used to collect '
+                    'groundwater information.'))
 
     ems = models.CharField(max_length=10, blank=True, null=True,
                            verbose_name="Environmental Monitoring System (EMS) ID")
@@ -1199,8 +1205,6 @@ class Well(AuditModelStructure):
         "liner_material_code":"Code that describes the material noted for lithology. E.g. Rock, Clay, Sand, Unspecified,",
         "liner_thickness":"Thickness of the liner inside the well. Measured in inches.",
         "liner_to":"Depth below ground level at which the liner ends inside the well. Measured in feet.",
-        "obs_well_status_code":"Status of an observation well within the Provincial Groundwater Observation Well Network. I.e. Active is a well that is currently being used to collect groundwater information, and inactive is a well that is no longer being used to collect groundwater information.",
-        "observation_well_number":"A unique number assigned to a well that has been included as part of the Provincial Groundwater Observation Well Network.",
         "other_screen_bottom":"Describes the type of bottom installed on a well screen when the bottom type is different from all the types in the screen bottom drop down list and the data submitter picks 'Other ' from the list.",
         "other_screen_material":"Describes the material that makes up the screen on a well when the material is different from all the drop down options and the data submitter picks 'Other ' from the list.",
         "owner_city":"City where the owner of the well resides.",
@@ -1610,11 +1614,18 @@ class ActivitySubmission(AuditModelStructure):
 
     # Observation well details
     observation_well_number = models.CharField(
-        max_length=30, blank=True, null=True, verbose_name="Observation Well Number")
+        max_length=30, blank=True, null=True, verbose_name="Observation Well Number",
+        db_comment=('A unique number assigned to a well that has been included as part '
+                    'of the Provincial Groundwater Observation Well Network.'))
 
     observation_well_status = models.ForeignKey(
         ObsWellStatusCode, db_column='obs_well_status_code', blank=True, null=True,
-        verbose_name="Observation Well Status", on_delete=models.PROTECT)
+        verbose_name="Observation Well Status", on_delete=models.PROTECT,
+        db_comment=('Status of an observation well within the Provincial Groundwater Observation Well '
+                    'Network. I.e. Active is a well that is currently being used to collect groundwater '
+                    'information, and inactive is a well that is no longer being used to collect '
+                    'groundwater information.'))
+        
     # aquifer association
     aquifer = models.ForeignKey(
         Aquifer, db_column='aquifer_id', on_delete=models.PROTECT, blank=True,
@@ -1751,8 +1762,6 @@ class ActivitySubmission(AuditModelStructure):
         "liner_material_code":"Code that describes the material noted for lithology. E.g. Rock, Clay, Sand, Unspecified,",
         "liner_thickness":"Thickness of the liner inside the well. Measured in inches.",
         "liner_to":"Depth below ground level at which the liner ends inside the well. Measured in feet.",
-        "obs_well_status_code":"Status of an observation well within the Provincial Groundwater Observation Well Network. I.e. Active is a well that is currently being used to collect groundwater information, and inactive is a well that is no longer being used to collect groundwater information.",
-        "observation_well_number":"A unique number assigned to a well that has been included as part of the Provincial Groundwater Observation Well Network.",
         "other_screen_bottom":"Describes the type of bottom installed on a well screen of when the bottom type is different from all the types in the screen bottom drop down list and the data submitter picks 'Other ' from the list.",
         "other_screen_material":"Describes the material that makes up the screen on a well when the material is different from all the drop down options and the data submitter picks 'Other ' from the list.",
         "owner_city":"City where the owner of the well resides.",
