@@ -141,6 +141,7 @@ Many of our features have been developed by members of the community. Check the 
 ## Issues
 Issues are tracked on the [GWELLS Trello board](https://trello.com/b/2UQZgXHR/wells-project-board).
 
+
 ## License
 
 Code released under the [Apache License, Version 2.0](https://github.com/bcgov/gwells/blob/master/LICENSE).
