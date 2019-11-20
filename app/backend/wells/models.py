@@ -16,7 +16,7 @@ from django.contrib.gis.db import models
 from django.core.validators import MinValueValidator
 
 from decimal import Decimal
-
+import reversion
 from django.utils import timezone
 import uuid
 
@@ -683,6 +683,7 @@ class AquiferLithologyCode(CodeTableModel):
 
 # TODO: Consider having Well and Submission extend off a common base class, given that
 #   they mostly have the exact same fields!
+@reversion.register()
 class Well(AuditModelStructure):
     """
     Well information.
@@ -1286,6 +1287,7 @@ class CasingCode(CodeTableModel):
 
 # TODO: This class needs to be moved to submissions.models (in order to do that, the fk references for a
 # number of other models needs to be updated)
+@reversion.register()
 class ActivitySubmission(AuditModelStructure):
     """
     Activity information on a Well submitted by a user.
