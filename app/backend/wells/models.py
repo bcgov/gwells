@@ -987,15 +987,15 @@ class Well(AuditModelStructure):
     observation_well_number = models.CharField(
         max_length=30, blank=True, null=True, verbose_name="Observation Well Number",
         db_comment=('A unique number assigned to a well that has been included as part '
-                    'of the Provincial Groundwater Observation Well Network.'))
+                    'of the Provincial Groundwater Observation Well Network, e.g., 406.'))
 
     observation_well_status = models.ForeignKey(
         ObsWellStatusCode, db_column='obs_well_status_code', blank=True, null=True,
         verbose_name="Observation Well Status", on_delete=models.PROTECT,
         db_comment=('Status of an observation well within the Provincial Groundwater Observation Well '
-                    'Network. I.e. Active is a well that is currently being used to collect groundwater '
-                    'information, and inactive is a well that is no longer being used to collect '
-                    'groundwater information.'))
+                    'Network, i.e. Active (a well that is currently being used to collect '
+                    'groundwater information), Inactive (a well that is no longer being used to '
+                    'collect groundwater information).'))
 
     ems = models.CharField(max_length=10, blank=True, null=True,
                            verbose_name="Environmental Monitoring System (EMS) ID")
