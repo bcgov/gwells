@@ -200,15 +200,29 @@
               </div>
               <div class="observational-wells" v-if="index === 2">
                 <dt>Observation wells</dt>
-                <dd v-if="obs_wells.length > 0">
+                <dd v-if="active_obs_wells.length > 0 && inactive_obs_wells.length > 0">
+                  <h6 class="border-bottom">Active</h6>
                   <ul class="p-0 m-0">
-                    <li v-for="owell in obs_wells" :key="owell.observation_well_number">
-                      <a :href="getObservationWellLink(owell.observation_well_number)">Observation Well {{ owell.observation_well_number }}</a>
-                      <br/>Water Level Analysis:
-                      <a v-if="waterLevels.find(o => o.wellNumber === owell.observation_well_number)" href="http://www.env.gov.bc.ca/soe/indicators/water/groundwater-levels.html">
-                      {{ (waterLevels.find(o => o.wellNumber === owell.observation_well_number).levels )}}
-                      </a>
-                      <span v-else>No information available.</span>
+                    <li v-for="owell in active_obs_wells" :key="owell.observation_well_number" :data-water-level="owell.waterLevels">
+                      <a :href="getObservationWellLink(owell.observation_well_number)" target="_blank">{{ owell.observation_well_number }}</a>
+                      <span v-if="owell.waterLevels">
+                        Water Level Analysis:
+                        <a href="http://www.env.gov.bc.ca/soe/indicators/water/groundwater-levels.html" target="_blank">
+                        {{ owell.waterLevels }}
+                        </a>
+                      </span>
+                    </li>
+                  </ul>
+                  <h6 class="border-bottom mt-2">Inactive<br><small>(data may not be available)</small></h6>
+                  <ul class="p-0 m-0">
+                    <li v-for="owell in inactive_obs_wells" :key="owell.observation_well_number" :data-water-level="owell.waterLevels">
+                      <a :href="getObservationWellLink(owell.observation_well_number)" target="_blank">{{ owell.observation_well_number }}</a>
+                      <div v-if="owell.waterLevels">
+                        Water Level Analysis:
+                        <a href="http://www.env.gov.bc.ca/soe/indicators/water/groundwater-levels.html" target="_blank">
+                        {{ owell.waterLevels }}
+                        </a>
+                      </div>
                     </li>
                   </ul>
                 </dd>
@@ -329,6 +343,18 @@ a {
   left: calc(35% - 0.5px);
 }
 
+.observational-wells li:not([data-water-level]) {
+  display: inline;
+}
+
+.observational-wells li:not([data-water-level]):after {
+  content: ", ";
+}
+
+.observational-wells li:last-child:not([data-water-level]):after {
+  content: "";
+}
+
 .pie-chart-title {
   font-weight: bold !important;
   font-size: 1rem !important;
@@ -346,7 +372,7 @@ import Documents from './Documents.vue'
 import SingleAquiferMap from './SingleAquiferMap.vue'
 import ChangeHistory from '@/common/components/ChangeHistory.vue'
 import { mapActions, mapGetters, mapState } from 'vuex'
-import { sumBy } from 'lodash'
+import { sumBy, orderBy, groupBy } from 'lodash'
 import PieChart from './PieChart.vue'
 import * as Sentry from '@sentry/browser';
 
@@ -384,8 +410,8 @@ export default {
       aquiferFiles: {},
       aquifer_resource_sections: [],
       wells: [],
-      obs_wells: [],
-      waterLevels: [],
+      active_obs_wells: [],
+      inactive_obs_wells: [],
       waterWithdrawlVolume: ''
     }
   },
@@ -408,9 +434,6 @@ export default {
   watch: {
     id () {
       this.fetch()
-    },
-    obs_wells (newObsWells, oldObsWells) {
-      this.getWaterLevels(newObsWells)
     },
     licence_details (newLDetails, oldLDetails) {
       this.setWaterVolume(newLDetails)
@@ -526,7 +549,15 @@ export default {
           this.record = response.data
           this.licence_details = response.data.licence_details
           this.lic_qty = response.data.licence_details.lic_qty
-          this.obs_wells = response.data.licence_details.obs_wells
+          const obs_wells = response.data.licence_details.obs_wells
+
+          return this.getWaterLevels(obs_wells).then(() => {
+            const sortedWells = orderBy(obs_wells, ['waterLevel']) // sorts so wells with waterLevels are at the top.
+            const wellsByStatus = groupBy(sortedWells, 'observation_well_status')
+
+            this.active_obs_wells =  wellsByStatus.Active;
+            this.inactive_obs_wells = wellsByStatus.Inactive;
+          });
         }).catch((error) => {
           console.error(error)
         })
@@ -568,17 +599,19 @@ export default {
       return `https://governmentofbc.maps.arcgis.com/apps/webappviewer/index.html?id=b53cb0bf3f6848e79d66ffd09b74f00d&find=OBS WELL ${wellNumber}`
     },
     getWaterLevels (obsWells) {
-      obsWells.map((owell) => {
-        function getRequestUrl (wellNumber) {
-          return `https://catalogue.data.gov.bc.ca/api/3/action/datastore_search?resource_id=a8933793-eadb-4a9c-992c-da4f6ac8ca51&fields=EMS_ID,Well_Num,trend_line_slope,category&filters=%7b%22Well_Num%22:%22${wellNumber}%22%7d`
-        }
-        let wellNumber = owell.observation_well_number
-        ApiService.query(getRequestUrl(wellNumber)).then((response) => {
-          this.waterLevels.push({ wellNumber, levels: response.data.result.records[0].category })
-        }).catch((e) => {
-          console.error(e)
-        })
-      })
+      return Promise.all(
+        obsWells.map((owell) => {
+          let wellNumber = owell.observation_well_number
+          const url = `https://catalogue.data.gov.bc.ca/api/3/action/datastore_search?resource_id=a8933793-eadb-4a9c-992c-da4f6ac8ca51&fields=EMS_ID,Well_Num,trend_line_slope,category&filters=%7b%22Well_Num%22:%22${wellNumber}%22%7d`
+          return ApiService.query(url).then((response) => {
+            if (response.data.result.records.length > 0) {
+              owell.waterLevels = response.data.result.records[0].category;
+            }
+          }).catch((e) => {
+            console.error(e)
+          })
+        }),
+      );
     },
     setWaterVolume (details) {
       if (details.usage && details.usage.constructor === Array && details.usage.length > 0) {

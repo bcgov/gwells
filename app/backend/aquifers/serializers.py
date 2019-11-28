@@ -236,7 +236,7 @@ class AquiferDetailSerializer(serializers.ModelSerializer):
         details['num_wells'] = instance.well_set.all().count()
         details['obs_wells'] = instance.well_set.filter(
             observation_well_number__isnull=False
-        ).values('well_tag_number', 'observation_well_number')
+        ).values('well_tag_number', 'observation_well_number', 'observation_well_status')
 
         details.update(self._tally_licence_data(licences))
 
