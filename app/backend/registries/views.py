@@ -159,7 +159,7 @@ class OrganizationDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDest
 class PersonOptionsView(APIView):
 
     @swagger_auto_schema(auto_schema=None)
-    def get(self, request, format=None):
+    def get(self, request, format=None, **kwargs):
         result = {}
         for activity in ActivityCode.objects.all():
             # Well class query
@@ -684,7 +684,7 @@ class OrganizationHistory(APIView):
     queryset = Organization.objects.all()
     swagger_schema = None
 
-    def get(self, request, org_guid):
+    def get(self, request, org_guid, **kwargs):
         try:
             organization = Organization.objects.get(org_guid=org_guid)
         except Organization.DoesNotExist:
@@ -708,7 +708,7 @@ class PersonHistory(APIView):
     queryset = Person.objects.all()
     swagger_schema = None
 
-    def get(self, request, person_guid):
+    def get(self, request, person_guid, **kwargs):
         """
         Retrieves version history for the specified Person record and creates a list of diffs
         for each revision.
@@ -796,7 +796,7 @@ class ListFiles(APIView):
             ))
         })
     )})
-    def get(self, request, person_guid):
+    def get(self, request, person_guid, **kwargs):
         user_is_staff = self.request.user.groups.filter(
             Q(name=REGISTRIES_EDIT_ROLE) | Q(name=REGISTRIES_VIEWER_ROLE)).exists()
 
@@ -820,7 +820,7 @@ class PreSignedDocumentKey(APIView):
     permission_classes = (RegistriesEditPermissions,)
 
     @swagger_auto_schema(auto_schema=None)
-    def get(self, request, person_guid):
+    def get(self, request, person_guid, **kwargs):
         person = get_object_or_404(self.queryset, pk=person_guid)
         client = MinioClient(
             request=request, disable_private=False)
@@ -847,7 +847,7 @@ class DeleteDrillerDocument(APIView):
     permission_classes = (RegistriesEditPermissions,)
 
     @swagger_auto_schema(auto_schema=None)
-    def delete(self, request, person_guid):
+    def delete(self, request, person_guid, **kwargs):
         person = get_object_or_404(self.queryset, pk=person_guid)
         client = MinioClient(
             request=request, disable_private=False)

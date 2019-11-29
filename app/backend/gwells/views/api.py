@@ -11,7 +11,7 @@ class KeycloakConfig(APIView):
 
     swagger_schema = None
 
-    def get(self, request):
+    def get(self, request, **kwargs):
         config = {
             "realm": get_env_variable("SSO_REALM"),
             "auth-server-url": get_env_variable("SSO_AUTH_HOST"),
@@ -29,7 +29,7 @@ class GeneralConfig(APIView):
 
     swagger_schema = None
 
-    def get(self, request):
+    def get(self, request, **kwargs):
         config = {
             "enable_aquifers_search": get_env_variable("ENABLE_AQUIFERS_SEARCH") == "True",
             "sso_idp_hint": get_env_variable("SSO_IDP_HINT", "idir")
@@ -40,7 +40,7 @@ class GeneralConfig(APIView):
 class AnalyticsConfig(APIView):
     """ serves analytics config """
 
-    def get(self, request):
+    def get(self, request, **kwargs):
         config = {
             "enable_google_analytics": get_env_variable("ENABLE_GOOGLE_ANALYTICS") == "True"
         }
@@ -50,7 +50,7 @@ class AnalyticsConfig(APIView):
 class InsideBC(APIView):
     """ Check if a given point is inside BC """
 
-    def get(self, request):
+    def get(self, request, **kwargs):
         latitude = request.query_params.get('latitude')
         longitude = request.query_params.get('longitude')
 

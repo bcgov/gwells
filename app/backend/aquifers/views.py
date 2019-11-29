@@ -161,7 +161,7 @@ class AquiferListCreateAPIView(RevisionMixin, AuditCreateMixin, ListCreateAPIVie
         if self.request.method == 'GET':
             return serializers.AquiferSerializer
         else:
-            return serializers.AquiferDetailSerializer
+            return serializers.AquiferDetailSerializerV1
 
     def get_queryset(self):
         return _aquifer_qs(self.request.GET).values(
@@ -305,7 +305,7 @@ class ListFiles(APIView):
             ))
         })
     )})
-    def get(self, request, aquifer_id):
+    def get(self, request, aquifer_id, **kwargs):
         user_is_staff = self.request.user.groups.filter(
             name=AQUIFERS_EDIT_ROLE).exists()
 
@@ -333,7 +333,7 @@ class AquiferNameList(ListAPIView):
         'aquifer_name',
     )
 
-    def get(self, request):
+    def get(self, request, **kwargs):
         search = self.request.query_params.get('search', None)
         if not search:
             # avoiding responding with excess results
@@ -351,7 +351,7 @@ class AquiferHistory(APIView):
     queryset = Aquifer.objects.all()
     swagger_schema = None
 
-    def get(self, request, aquifer_id):
+    def get(self, request, aquifer_id, **kwargs):
         """
         Retrieves version history for the specified Aquifer record and creates a list of diffs
         for each revision.
@@ -385,7 +385,7 @@ class PreSignedDocumentKey(APIView):
     permission_classes = (HasAquiferEditRole,)
 
     @swagger_auto_schema(auto_schema=None)
-    def get(self, request, aquifer_id):
+    def get(self, request, aquifer_id, **kwargs):
         client = MinioClient(
             request=request, disable_private=False)
 
@@ -415,7 +415,7 @@ class DeleteAquiferDocument(APIView):
     permission_classes = (HasAquiferEditRole,)
 
     @swagger_auto_schema(auto_schema=None)
-    def delete(self, request, aquifer_id):
+    def delete(self, request, aquifer_id, **kwargs):
         client = MinioClient(
             request=request, disable_private=False)
 
@@ -442,7 +442,7 @@ class SaveAquiferGeometry(APIView):
     parser_class = (FileUploadParser,)
 
     @swagger_auto_schema(auto_schema=None)
-    def post(self, request, aquifer_id):
+    def post(self, request, aquifer_id, **kwargs):
         logger.info(request.data)
         if 'geometry' not in request.data:
             raise ParseError("Empty content")
@@ -459,7 +459,7 @@ class SaveAquiferGeometry(APIView):
         aquifer.save()
         return Response(status=status.HTTP_200_OK)
 
-    def delete(self, request, aquifer_id):
+    def delete(self, request, aquifer_id, **kwargs):
         aquifer = Aquifer.objects.get(pk=aquifer_id)
         del aquifer.geom
         aquifer.save()
@@ -542,7 +542,7 @@ def aquifer_geojson(request):
 
 @api_view(['GET'])
 @cache_page(60*15)
-def aquifer_geojson_simplified(request):
+def aquifer_geojson_simplified(request, **kwargs):
     """
     Sadly, GeoDjango's ORM doesn't seem to directly support a call to
     ST_AsGEOJSON, but the latter performs much better than processing WKT
