@@ -122,7 +122,7 @@
       </l-feature-group>
     </l-map>
     <div class="attribution">
-      <a href="http://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> | Powered by <a href="https://www.esri.com">Esri</a>
+      <a href="http://leafletjs.com" title="A JS library for interactive maps" target="_blank">Leaflet</a> | Powered by <a href="https://www.esri.com" target="_blank">Esri</a>
     </div>
   </div>
 </template>

@@ -46,7 +46,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             <a href="#" @click="anchorLinkHandler(step)">{{formStepDescriptions[step] ? formStepDescriptions[step] : step}}</a>
           </b-col>
         </b-row>
-      <p v-if="!isStaffEdit">Submit activity on a well. <a href="/gwells/">Try a search</a> to see if the well exists in the system before submitting a report.</p>
+      <p v-if="!isStaffEdit">Submit activity on a well. <a href="/gwells/" target="_blank">Try a search</a> to see if the well exists in the system before submitting a report.</p>
 
       <!-- Form load/save -->
       <b-row v-if="!isStaffEdit">
@@ -54,13 +54,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <b-btn size="sm" variant="outline-primary" @click="saveForm">
             Save report progress
             <transition name="bounce" mode="out-in">
-                <i v-show="saveFormSuccess" class="fa fa-check text-success"></i>
+              <i v-show="saveFormSuccess" class="fa fa-check text-success"></i>
             </transition>
           </b-btn>
           <b-btn size="sm" variant="outline-primary" @click="loadConfirmation" ref="confirmLoadBtn" :disabled="isLoadFormDisabled">
             Load saved report
             <transition name="bounce">
-                <i v-show="loadFormSuccess" class="fa fa-check text-success"></i>
+              <i v-show="loadFormSuccess" class="fa fa-check text-success"></i>
             </transition>
           </b-btn>
         </b-col>
