@@ -180,7 +180,7 @@
           <b-table striped hover :items="licence_details.wells_by_licence"></b-table>
           <p><i v-if="licence_details.licences_updated && licence_details.licences_updated.update_date__max">Licence info last updated {{ licence_details.licences_updated.update_date__max|formatDate }}</i></p>
           <p>
-            Licensing information is obtained from the <a href="https://catalogue.data.gov.bc.ca/dataset/water-rights-licences-public" @click="handleOutboundLinkClicks('https://catalogue.data.gov.bc.ca/dataset/water-rights-licences-public')">Water Rights Licence - Public data layer</a>.
+            Licensing information is obtained from the <a href="https://catalogue.data.gov.bc.ca/dataset/water-rights-licences-public" @click="handleOutboundLinkClicks('https://catalogue.data.gov.bc.ca/dataset/water-rights-licences-public')" target="_blank">Water Rights Licence - Public data layer</a>.
           </p>
           <p>
             Unique licenses are counted once for each aquifer that they are associated with.
@@ -203,10 +203,10 @@
                 <dd v-if="obs_wells.length > 0">
                   <ul class="p-0 m-0">
                     <li v-for="owell in obs_wells" :key="owell.observation_well_number">
-                      <a :href="getObservationWellLink(owell.observation_well_number)">Observation Well {{ owell.observation_well_number }}</a>
+                      <a :href="getObservationWellLink(owell.observation_well_number)" target="_blank">Observation Well {{ owell.observation_well_number }}</a>
                       <br/>Water Level Analysis:
-                      <a v-if="waterLevels.find(o => o.wellNumber === owell.observation_well_number)" href="http://www.env.gov.bc.ca/soe/indicators/water/groundwater-levels.html">
-                      {{ (waterLevels.find(o => o.wellNumber === owell.observation_well_number).levels )}}
+                      <a v-if="waterLevels.find(o => o.wellNumber === owell.observation_well_number)" href="http://www.env.gov.bc.ca/soe/indicators/water/groundwater-levels.html" target="_blank">
+                        {{ (waterLevels.find(o => o.wellNumber === owell.observation_well_number).levels )}}
                       </a>
                       <span v-else>No information available.</span>
                     </li>
@@ -219,13 +219,13 @@
               <dt>{{ section.name }}</dt>
               <dd>
                 <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
-                  <li><a :href="resource.url" @click="handleExternalResourceClicks">{{ resource.name }}</a></li>
+                  <li><a :href="resource.url" @click="handleExternalResourceClicks" target="_blank">{{ resource.name }}</a></li>
                 </ul>
                 <p v-if="!bySection(record.resources, section).length">No information available.</p>
               </dd>
               <div class="water-quality-information" v-if="index === 5">
                 <dt>Water quality information</dt>
-                <dd><a :href="getEMSLink()">{{ licence_details['num_wells_with_ems'] }} wells with an EMS ID</a></dd>
+                <dd><a :href="getEMSLink()" target="_blank">{{ licence_details['num_wells_with_ems'] }} wells with an EMS ID</a></dd>
                 <dt>Hydraulically connected (screening level)
                   <i id="aquiferConnectedInfo" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0"></i>
                   <b-popover

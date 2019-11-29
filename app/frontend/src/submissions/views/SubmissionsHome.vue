@@ -32,7 +32,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               v-for="(survey, index) in surveys[isStaffEdit ? 'edit' : 'submissions']"
               :key="`survey ${index}`">
             <p class="m-0">
-              <a :href="survey.survey_link">
+              <a :href="survey.survey_link" target="_blank">
                 {{ survey.survey_introduction_text }}
               </a>
             </p>
