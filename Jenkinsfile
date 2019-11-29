@@ -1332,6 +1332,7 @@ pipeline {
                             "NAMESPACE=${prodProject}",
                             "TARGET=gwells-pgsql-production",
                             "PVC_NAME=${nfsProdBackupPVC}",
+                            "MONTHLY_BACKUPS=12",
                             "SCHEDULE='30 9 * * *'",
                             "JOB_NAME=postgres-nfs-backup"
                         )
