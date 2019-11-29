@@ -52,6 +52,7 @@ from gwells.settings.base import get_env_variable
 
 from aquifers import models
 from aquifers import serializers
+from aquifers import serializers_v2
 from aquifers.models import (
     Aquifer,
     AquiferResourceSection,
@@ -93,7 +94,11 @@ class AquiferRetrieveUpdateAPIView(RevisionMixin, AuditUpdateMixin, RetrieveUpda
     permission_classes = (HasAquiferEditRoleOrReadOnly,)
     queryset = Aquifer.objects.all()
     lookup_field = 'aquifer_id'
-    serializer_class = serializers.AquiferDetailSerializer
+
+    def get_serializer_class(self):
+        if self.request.version == 'v1':
+            return serializers.AquiferDetailSerializerV1
+        return serializers_v2.AquiferDetailSerializerV2
 
 
 def _aquifer_qs(query):
