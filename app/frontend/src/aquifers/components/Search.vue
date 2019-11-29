@@ -313,8 +313,14 @@ export default {
             aquifer.gs = geomCache[aquifer.id]
           })
           this.response = response.data
-          this.scrollToTableTop()
           this.loading = false
+          if (response.data.results.length > 0) {
+            // Note: Aquifer <table> might not be in the DOM yet if this is a new search after a page load.
+            // Wait until next tick before searching the DOM for the #aquifers-results
+            this.$nextTick(() => {
+              this.scrollToResults()
+            })
+          }
         })
     },
     downloadCSV (filterOnly) {
@@ -352,8 +358,9 @@ export default {
         })
       })
     },
-    scrollToTableTop () {
-      this.$SmoothScroll(this.$el, 100)
+    scrollToResults () {
+      const resultsTable = this.$el.ownerDocument.getElementById('aquifers-results');
+      this.$SmoothScroll(resultsTable, 100)
     },
     triggerReset () {
       this.response = {}
