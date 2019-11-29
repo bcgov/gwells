@@ -278,7 +278,8 @@ REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_RATES': {
         'anon': '100000/hour',
         'user': '200000/hour'
-    }
+    },
+    'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.URLPathVersioning'
 }
 
 LOGIN_URL = '/gwells/accounts/login/'

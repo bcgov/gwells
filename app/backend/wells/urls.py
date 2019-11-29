@@ -17,71 +17,73 @@ from django.views.decorators.cache import never_cache
 from gwells.urls import app_root_slash
 from . import views
 
+api_version_url_re = '(?P<version>(v1|v2))'
+
 
 urlpatterns = [
 
     # API endpoints
     # Submissions for a well
-    url(r'^api/v1/wells/(?P<well_tag_number>[0-9]+)/edit$',
+    url(r'^api/' + api_version_url_re + r'/wells/(?P<well_tag_number>[0-9]+)/edit$',
         never_cache(views.WellStaffEditDetail.as_view()), name='well-edit-details'),
 
 
-    url(r'^api/v1/wells/(?P<well_id>[0-9]+)/history$',
+    url(r'^api/' + api_version_url_re + r'/wells/(?P<well_id>[0-9]+)/history$',
         never_cache(views.WellHistory.as_view()), name='well-history'),
 
     # Submissions for a well
-    url(r'^api/v1/wells/(?P<well_id>[0-9]+)/submissions$',
+    url(r'^api/' + api_version_url_re + r'/wells/(?P<well_id>[0-9]+)/submissions$',
         never_cache(views.WellSubmissionsListAPIView.as_view()), name='submissions-by-well'),
 
     # Well
-    url(r'^api/v1/wells/(?P<well_tag_number>[0-9]+)$',
+    url(r'^api/' + api_version_url_re + r'/wells/(?P<well_tag_number>[0-9]+)$',
         never_cache(views.WellDetail.as_view()), name='well-detail'),
 
     # Well tag search
-    url(r'^api/v1/wells/tags$',
+    url(r'^api/' + api_version_url_re + r'/wells/tags$',
         never_cache(views.WellTagSearchAPIView.as_view()), name='well-tag-search'),
 
     # Well screen search
     # returns information about well screens for a range of wells provided in ?wells=123,124,125 etc.
-    url(r'^api/v1/wells/screens$',
+    url(r'^api/' + api_version_url_re + r'/wells/screens$',
         never_cache(views.WellScreens.as_view()), name='well-screens'),
 
     # Well tag search
-    url(r'^api/v1/wells/locations$',
+    url(r'^api/' + api_version_url_re + r'/wells/locations$',
         never_cache(views.WellLocationListAPIView.as_view()), name='well-locations'),
 
     # Documents (well records)
-    url(r'^api/v1/wells/(?P<tag>[0-9]+)/files$',
+    url(r'^api/' + api_version_url_re + r'/wells/(?P<tag>[0-9]+)/files$',
         never_cache(views.ListFiles.as_view()), name='file-list'),
 
     # Extract files
-    url(r'^api/v1/wells/extracts$', views.ListExtracts.as_view(), name='extract-list'),
+    url(r'^api/' + api_version_url_re + r'/wells/extracts$', views.ListExtracts.as_view(), name='extract-list'),
 
     # Document Uploading (well records)
-    url(r'^api/v1/wells/(?P<tag>[0-9]+)/presigned_put_url$',
+    url(r'^api/' + api_version_url_re + r'/wells/(?P<tag>[0-9]+)/presigned_put_url$',
         never_cache(views.PreSignedDocumentKey.as_view()), name='well-pre-signed-url'),
 
     # Document Uploading (well records)
-    url(r'^api/v1/wells/(?P<tag>[0-9]+)/delete_document$',
+    url(r'^api/' + api_version_url_re + r'/wells/(?P<tag>[0-9]+)/delete_document$',
         never_cache(views.DeleteWellDocument.as_view()), name='well-delete-document'),
 
     # Well list
-    url(r'^api/v1/wells$',
+    url(r'^api/' + api_version_url_re + r'/wells$',
         never_cache(views.WellListAPIView.as_view()), name='well-list'),
 
     # Well search export
-    url(r'^api/v1/wells/export$',
+    url(r'^api/' + api_version_url_re + r'/wells/export$',
         never_cache(views.WellExportListAPIView.as_view()), name='well-export'),
 
     # GeoJSON well endpoint for DataBC.
-    url(r'^api/v1/gis/wells$',
+    url(r'^api/' + api_version_url_re + r'/gis/wells$',
         views.well_geojson, name='well-geojson'),
 
     # GeoJSON lithology endpoint for DataBC.
-    url(r'^api/v1/gis/lithology$',
+    url(r'^api/' + api_version_url_re + r'/gis/lithology$',
         views.lithology_geojson, name='well-lithology-geojson'),
 
     # Well Licensing status endpoint from e-Licensing.
-    url(r'^api/v1/wells/licensing$',
+    url(r'^api/' + api_version_url_re + r'/wells/licensing$',
         views.well_licensing, name='well-licensing')
 ]

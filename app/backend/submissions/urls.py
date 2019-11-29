@@ -19,33 +19,35 @@ from submissions.views import (SubmissionsOptions, SubmissionListAPIView, Submis
                                SubmissionGetAPIView, SubmissionStaffEditAPIView,
                                PreSignedDocumentKey,)
 
+api_version_url_re = '(?P<version>(v1|v2))'
+
 
 urlpatterns = [
 
     # Submissions form options
-    url(r'^api/v1/submissions/options$',
+    url(r'^api/' + api_version_url_re + r'/submissions/options$',
         never_cache(SubmissionsOptions.as_view()), name='submissions-options'),
 
     # Submissions list
-    url(r'^api/v1/submissions$',
+    url(r'^api/' + api_version_url_re + r'/submissions$',
         never_cache(SubmissionListAPIView.as_view()), name='submissions-list'),
     # Submission
-    url(r'^api/v1/submissions/(?P<filing_number>[0-9]+)$',
+    url(r'^api/' + api_version_url_re + r'/submissions/(?P<filing_number>[0-9]+)$',
         never_cache(SubmissionGetAPIView.as_view()), name='submissions-get'),
     # Construction submission
-    url(r'^api/v1/submissions/construction$',
+    url(r'^api/' + api_version_url_re + r'/submissions/construction$',
         never_cache(SubmissionConstructionAPIView.as_view()), name='CON'),
     # Alteration submission
-    url(r'^api/v1/submissions/alteration$',
+    url(r'^api/' + api_version_url_re + r'/submissions/alteration$',
         never_cache(SubmissionAlterationAPIView.as_view()), name='ALT'),
     # Decommission submission
-    url(r'^api/v1/submissions/decommission$',
+    url(r'^api/' + api_version_url_re + r'/submissions/decommission$',
         never_cache(SubmissionDecommissionAPIView.as_view()), name='DEC'),
     # Edit submission
-    url(r'^api/v1/submissions/staff_edit$',
+    url(r'^api/' + api_version_url_re + r'/submissions/staff_edit$',
         never_cache(SubmissionStaffEditAPIView().as_view()), name='STAFF_EDIT'),
 
     # Document Uploading (submission records)
-    url(r'^api/v1/submissions/(?P<submission_id>[0-9]+)/presigned_put_url$',
+    url(r'^api/' + api_version_url_re + r'/submissions/(?P<submission_id>[0-9]+)/presigned_put_url$',
         never_cache(PreSignedDocumentKey.as_view()), name='submissions-pre-signed-url'),
 ]

@@ -18,9 +18,9 @@ from posixpath import join as urljoin
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView
-from django.urls import reverse
 
 import rest_framework.exceptions
+from rest_framework.reverse import reverse
 from rest_framework.response import Response
 from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveAPIView
 from rest_framework.views import APIView
@@ -211,7 +211,7 @@ class SubmissionListAPIView(ListAPIView):
     def get_queryset(self):
         return get_submission_queryset(self.queryset)
 
-    def list(self, request):
+    def list(self, request, **kwargs):
         """ List activity submissions with pagination """
         queryset = self.get_queryset()
         filtered_queryset = self.filter_queryset(queryset)
@@ -322,8 +322,8 @@ class SubmissionsOptions(APIView):
     """Options required for submitting activity report forms"""
 
     swagger_schema = None
-    
-    def get(self, request):
+
+    def get(self, request, **kwargs):
         options = {}
 
         province_codes = ProvinceStateCodeSerializer(
@@ -409,10 +409,10 @@ class SubmissionsOptions(APIView):
         licenced_status_codes = LicencedStatusCodeSerializer(
             instance=LicencedStatusCode.objects.all(), many=True)
 
-        root = urljoin('/', app_root, 'api/v1/')
+        root = urljoin('/', app_root, 'api/v2/')
         for item in activity_codes.data:
             if item['code'] not in ('LEGACY'):
-                item['path'] = reverse(item['code'])[len(root):]
+                item['path'] = reverse(item['code'], request=request)[len(root):]
 
         options["province_codes"] = province_codes.data
         options["activity_types"] = activity_codes.data
@@ -470,7 +470,7 @@ class PreSignedDocumentKey(RetrieveAPIView):
     queryset = ActivitySubmission.objects.all()
     permission_classes = (WellsSubmissionPermissions,)
 
-    def get(self, request, submission_id):
+    def get(self, request, submission_id, **kwargs):
         submission = get_object_or_404(self.queryset, pk=submission_id)
 
         client = MinioClient(
