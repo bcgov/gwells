@@ -3,14 +3,15 @@ from http import HTTPStatus
 
 import datetime
 from django.utils import timezone
-from django.urls import reverse
 from django.test import TestCase
 from django.contrib.auth.models import User, Group
 from django.utils.dateparse import parse_datetime
 
+from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 from rest_framework import status
 
+from gwells.settings import REST_FRAMEWORK
 from gwells.roles import roles_to_groups, WELLS_SUBMISSION_ROLE, WELLS_SUBMISSION_VIEWER_ROLE,\
     WELLS_EDIT_ROLE, WELLS_VIEWER_ROLE
 from submissions.serializers import (WellSubmissionListSerializer, WellConstructionSubmissionSerializer,
@@ -37,12 +38,14 @@ from gwells.models import DATALOAD_USER
 
 logger = logging.getLogger(__name__)
 
+API_VERSION = REST_FRAMEWORK['DEFAULT_VERSION']
+
 
 class TestPermissionsNotAuthenticated(APITestCase):
 
     def test_not_authenticated_attemps_submit(self):
         # As an unauthenticated user, I should not be authorised to get a submission list.
-        url = reverse('submissions-list')
+        url = reverse('submissions-list', kwargs={'version': API_VERSION})
         response = self.client.get(url, {}, format='json')
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
@@ -56,7 +59,7 @@ class TestPermissionsNoRights(APITestCase):
 
     def test_no_rights_attempts_list(self):
         # As a user with no rights, I should not be able get a list of submissions.
-        url = reverse('submissions-list')
+        url = reverse('submissions-list', kwargs={'version': API_VERSION})
         response = self.client.get(url, {}, format='json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
@@ -93,7 +96,7 @@ class TestConstruction(TestSubmissionsBase):
                 }
             ]
         }
-        response = self.client.post(reverse('CON'), data, format='json')
+        response = self.client.post(reverse('CON', kwargs={'version': API_VERSION}), data, format='json')
         if response.status_code != HTTPStatus.CREATED:
             # For this test, we're expecting it to be created, so we give
             # some useful logging information for debugging.
@@ -114,7 +117,7 @@ class TestConstruction(TestSubmissionsBase):
                 }
             ]
         }
-        response = self.client.post(reverse('CON'), data, format='json')
+        response = self.client.post(reverse('CON', kwargs={'version': API_VERSION}), data, format='json')
         if response.status_code != HTTPStatus.CREATED:
             # For this test, we're expecting it to be created, so we give
             # some useful logging information for debugging.
@@ -140,7 +143,7 @@ class TestConstruction(TestSubmissionsBase):
             ]
         }
         # Post an construction submissions.
-        response = self.client.post(reverse('CON'), data, format='json')
+        response = self.client.post(reverse('CON', kwargs={'version': API_VERSION}), data, format='json')
         # Get the submission back.
         submission = ActivitySubmission.objects.get(well__well_tag_number=response.data['well'])
         # Get the resultant lithology record
@@ -163,7 +166,7 @@ class TestConstruction(TestSubmissionsBase):
             ]
         }
         # Post an construction submissions.
-        response = self.client.post(reverse('CON'), data, format='json')
+        response = self.client.post(reverse('CON', kwargs={'version': API_VERSION}), data, format='json')
         # Get the well back.
         well = Well.objects.get(well_tag_number=response.data['well'])
         # Get the resultant lithology record
@@ -187,7 +190,7 @@ class TestConstruction(TestSubmissionsBase):
             ]
         }
         # Post an construction submissions.
-        response = self.client.post(reverse('CON'), data, format='json')
+        response = self.client.post(reverse('CON', kwargs={'version': API_VERSION}), data, format='json')
         if response.status_code != status.HTTP_201_CREATED:
             # Useful for debugging failing tests.
             logger.warn(response)
@@ -214,7 +217,7 @@ class TestConstruction(TestSubmissionsBase):
             ]
         }
         # Post an construction submissions.
-        response = self.client.post(reverse('CON'), data, format='json')
+        response = self.client.post(reverse('CON', kwargs={'version': API_VERSION}), data, format='json')
         if response.status_code != status.HTTP_201_CREATED:
             # Useful for debugging failing tests.
             logger.warn(response)
@@ -240,7 +243,7 @@ class TestConstruction(TestSubmissionsBase):
             ]
         }
         # Post an construction submissions.
-        response = self.client.post(reverse('CON'), data, format='json')
+        response = self.client.post(reverse('CON', kwargs={'version': API_VERSION}), data, format='json')
         if response.status_code != status.HTTP_201_CREATED:
             # Useful for debugging failing tests.
             logger.warn(response)
@@ -266,7 +269,7 @@ class TestEdit(TestSubmissionsBase):
             'well': well.well_tag_number,
         }
         # Post an edit.
-        self.client.post(reverse('STAFF_EDIT'), data, format='json')
+        self.client.post(reverse('STAFF_EDIT', kwargs={'version': API_VERSION}), data, format='json')
         # We expect the rendered well to contain the drilling methods.
         well = Well.objects.get(well_tag_number=well.well_tag_number)
         saved_well_codes = sorted(
@@ -284,7 +287,7 @@ class TestEdit(TestSubmissionsBase):
             'well': well.well_tag_number
         }
         # Post an edit
-        self.client.post(reverse('STAFF_EDIT'), data, format='json')
+        self.client.post(reverse('STAFF_EDIT', kwargs={'version': API_VERSION}), data, format='json')
         # We expect the legacy record to contain the drilling methods.
         legacy_submission = ActivitySubmission.objects.get(
             well=well,
@@ -305,7 +308,7 @@ class TestEdit(TestSubmissionsBase):
             'well': well.well_tag_number
         }
         # Post an edit
-        self.client.post(reverse('STAFF_EDIT'), data, format='json')
+        self.client.post(reverse('STAFF_EDIT', kwargs={'version': API_VERSION}), data, format='json')
         # We expect the well record to contain the development methods.
         well = Well.objects.get(well_tag_number=well.well_tag_number)
         saved_well_codes = [
@@ -324,7 +327,7 @@ class TestEdit(TestSubmissionsBase):
             'well': well.well_tag_number
         }
         # Post an edit
-        self.client.post(reverse('STAFF_EDIT'), data, format='json')
+        self.client.post(reverse('STAFF_EDIT', kwargs={'version': API_VERSION}), data, format='json')
         # We expect the legacy record to contain the development methods.
         legacy_submission = ActivitySubmission.objects.get(
             well=well,
@@ -346,7 +349,7 @@ class TestEdit(TestSubmissionsBase):
             ]
         }
         # Post an edit
-        self.client.post(reverse('STAFF_EDIT'), data, format='json')
+        self.client.post(reverse('STAFF_EDIT', kwargs={'version': API_VERSION}), data, format='json')
         well = Well.objects.get(well_tag_number=well.well_tag_number)
         self.assertEqual(well.screen_set.all().count(), 2)
 
@@ -358,7 +361,7 @@ class TestEdit(TestSubmissionsBase):
             'well': well.well_tag_number
         }
         # Post an edit
-        self.client.post(reverse('STAFF_EDIT'), data, format='json')
+        self.client.post(reverse('STAFF_EDIT', kwargs={'version': API_VERSION}), data, format='json')
         legacy_submission = ActivitySubmission.objects.get(
             well=well,
             well_activity_type=WellActivityCode.types.legacy())
@@ -371,7 +374,7 @@ class TestEdit(TestSubmissionsBase):
             'well': well.well_tag_number,
             'water_quality_characteristics': ['CLOUDY', 'FRESH', 'GAS']
         }
-        self.client.post(reverse('STAFF_EDIT'), data, format='json')
+        self.client.post(reverse('STAFF_EDIT', kwargs={'version': API_VERSION}), data, format='json')
         well = Well.objects.get(well_tag_number=well.well_tag_number)
         self.assertEqual(well.water_quality_characteristics.count(), 3)
 
@@ -406,7 +409,7 @@ class TestEdit(TestSubmissionsBase):
             ],
             'decommission_description_set': []
         }
-        response = self.client.post(reverse('STAFF_EDIT'), data, format='json')
+        response = self.client.post(reverse('STAFF_EDIT', kwargs={'version': API_VERSION}), data, format='json')
         self.assertEqual(response.status_code,
                          status.HTTP_201_CREATED, response.data)
 
@@ -433,7 +436,7 @@ class TestEdit(TestSubmissionsBase):
                 }
             ]
         }
-        response = self.client.post(reverse('STAFF_EDIT'), data, format='json')
+        response = self.client.post(reverse('STAFF_EDIT', kwargs={'version': API_VERSION}), data, format='json')
         self.assertEqual(response.status_code,
                          status.HTTP_201_CREATED, response.data)
 
@@ -449,7 +452,7 @@ class TestEdit(TestSubmissionsBase):
         data = {
             'well': well.well_tag_number
         }
-        response = self.client.post(reverse('STAFF_EDIT'), data, format='json')
+        response = self.client.post(reverse('STAFF_EDIT', kwargs={'version': API_VERSION}), data, format='json')
         self.assertEqual(response.status_code,
                          status.HTTP_400_BAD_REQUEST, response.data)
 
@@ -471,7 +474,7 @@ class TestEdit(TestSubmissionsBase):
                 }
             ]
         }
-        response = self.client.post(reverse('STAFF_EDIT'), data, format='json')
+        response = self.client.post(reverse('STAFF_EDIT', kwargs={'version': API_VERSION}), data, format='json')
         self.assertEqual(response.status_code,
                          status.HTTP_201_CREATED, response.data)
 
@@ -493,7 +496,7 @@ class TestEdit(TestSubmissionsBase):
                 }
             ]
         }
-        self.client.post(reverse('STAFF_EDIT'), data, format='json')
+        self.client.post(reverse('STAFF_EDIT', kwargs={'version': API_VERSION}), data, format='json')
         well = Well.objects.get(well_tag_number=well.well_tag_number)
         lithology = well.lithologydescription_set.all()
         self.assertAlmostEqual(lithology[0].start, 0)
@@ -515,11 +518,11 @@ class TestEdit(TestSubmissionsBase):
             'well': well.well_tag_number
         }
 
-        response = self.client.post(reverse('STAFF_EDIT'), data, format='json')
+        response = self.client.post(reverse('STAFF_EDIT', kwargs={'version': API_VERSION}), data, format='json')
         self.assertEqual(response.status_code,
                          status.HTTP_201_CREATED, response.data)
         data['owner_city'] = 'Somewhere'
-        response = self.client.post(reverse('STAFF_EDIT'), data, format='json')
+        response = self.client.post(reverse('STAFF_EDIT', kwargs={'version': API_VERSION}), data, format='json')
         self.assertEqual(response.status_code,
                          status.HTTP_201_CREATED, response.data)
 
@@ -531,7 +534,7 @@ class TestEdit(TestSubmissionsBase):
             'construction_start_date': '1999-05-05',
             'construction_end_date': '1999-06-06'
         }
-        self.client.post(reverse('STAFF_EDIT'), data, format='json')
+        self.client.post(reverse('STAFF_EDIT', kwargs={'version': API_VERSION}), data, format='json')
         well = Well.objects.get(well_tag_number=well.well_tag_number)
         self.assertEqual(well.construction_start_date, datetime.date(1999, 5, 5))
         self.assertEqual(well.construction_end_date, datetime.date(1999, 6, 6))
@@ -544,7 +547,7 @@ class TestEdit(TestSubmissionsBase):
             'alteration_start_date': '1999-05-05',
             'alteration_end_date': '1999-06-06'
         }
-        self.client.post(reverse('STAFF_EDIT'), data, format='json')
+        self.client.post(reverse('STAFF_EDIT', kwargs={'version': API_VERSION}), data, format='json')
         well = Well.objects.get(well_tag_number=well.well_tag_number)
         self.assertEqual(well.alteration_start_date, datetime.date(1999, 5, 5))
         self.assertEqual(well.alteration_end_date, datetime.date(1999, 6, 6))
@@ -557,7 +560,7 @@ class TestEdit(TestSubmissionsBase):
             'decommission_start_date': '1999-05-05',
             'decommission_end_date': '1999-06-06'
         }
-        self.client.post(reverse('STAFF_EDIT'), data, format='json')
+        self.client.post(reverse('STAFF_EDIT', kwargs={'version': API_VERSION}), data, format='json')
         well = Well.objects.get(well_tag_number=well.well_tag_number)
         self.assertEqual(well.decommission_start_date, datetime.date(1999, 5, 5))
         self.assertEqual(well.decommission_end_date, datetime.date(1999, 6, 6))
@@ -580,7 +583,7 @@ class TestEdit(TestSubmissionsBase):
             ]
         }
         # Post an edit submissions.
-        response = self.client.post(reverse('STAFF_EDIT'), data, format='json')
+        response = self.client.post(reverse('STAFF_EDIT', kwargs={'version': API_VERSION}), data, format='json')
         # Get the submission back.
         submission = ActivitySubmission.objects.get(
             well__well_tag_number=response.data['well'],
@@ -605,7 +608,7 @@ class TestEdit(TestSubmissionsBase):
             ]
         }
         # Post an edit submissions.
-        response = self.client.post(reverse('STAFF_EDIT'), data, format='json')
+        response = self.client.post(reverse('STAFF_EDIT', kwargs={'version': API_VERSION}), data, format='json')
         # Get the well back.
         well = Well.objects.get(well_tag_number=well.well_tag_number)
         # Get the resultant lithology record
@@ -626,7 +629,7 @@ class TestEdit(TestSubmissionsBase):
             ]
         }
         # Post an edit submissions.
-        response = self.client.post(reverse('STAFF_EDIT'), data, format='json')
+        response = self.client.post(reverse('STAFF_EDIT', kwargs={'version': API_VERSION}), data, format='json')
         # Get the submission back.
         liner = ActivitySubmissionLinerPerforation.objects.get(
             activity_submission__well__well_tag_number=well.well_tag_number,
@@ -649,7 +652,7 @@ class TestEdit(TestSubmissionsBase):
             ]
         }
         # Post an edit submissions.
-        response = self.client.post(reverse('STAFF_EDIT'), data, format='json')
+        response = self.client.post(reverse('STAFF_EDIT', kwargs={'version': API_VERSION}), data, format='json')
         # Get the submission back.
         liner = ActivitySubmissionLinerPerforation.objects.get(
             activity_submission__well__well_tag_number=well.well_tag_number,
@@ -671,7 +674,7 @@ class TestEdit(TestSubmissionsBase):
             ]
         }
         # Post an edit submissions.
-        response = self.client.post(reverse('STAFF_EDIT'), data, format='json')
+        response = self.client.post(reverse('STAFF_EDIT', kwargs={'version': API_VERSION}), data, format='json')
         # Get the submission back.
         liner = LinerPerforation.objects.get(
             well__well_tag_number=well.well_tag_number
@@ -695,7 +698,7 @@ class TestAlteration(TestSubmissionsBase):
             ]
         }
         # Post an edit submissions.
-        response = self.client.post(reverse('ALT'), data, format='json')
+        response = self.client.post(reverse('ALT', kwargs={'version': API_VERSION}), data, format='json')
         # Get the submission back.
         liner = ActivitySubmissionLinerPerforation.objects.get(
             activity_submission__well__well_tag_number=well.well_tag_number,
@@ -718,7 +721,7 @@ class TestAlteration(TestSubmissionsBase):
             ]
         }
         # Post an edit submissions.
-        response = self.client.post(reverse('ALT'), data, format='json')
+        response = self.client.post(reverse('ALT', kwargs={'version': API_VERSION}), data, format='json')
         # Get the submission back.
         liner = ActivitySubmissionLinerPerforation.objects.get(
             activity_submission__well__well_tag_number=well.well_tag_number,
@@ -740,7 +743,7 @@ class TestAlteration(TestSubmissionsBase):
             ]
         }
         # Post an edit submissions.
-        response = self.client.post(reverse('ALT'), data, format='json')
+        response = self.client.post(reverse('ALT', kwargs={'version': API_VERSION}), data, format='json')
         # Get the submission back.
         liner = LinerPerforation.objects.get(
             well__well_tag_number=well.well_tag_number
@@ -762,25 +765,25 @@ class TestPermissionsViewRights(APITestCase):
 
     def test_view_rights_attempts_get_submission_list(self):
         # As a user with view rights, I should be able to get a submission list.
-        url = reverse('submissions-list')
+        url = reverse('submissions-list', kwargs={'version': API_VERSION})
         response = self.client.get(url, {}, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_view_rights_attempts_construction_submission(self):
         # As a user with view rights, I should not be able to create a construction submission.
-        url = reverse('CON')
+        url = reverse('CON', kwargs={'version': API_VERSION})
         response = self.client.post(url, {}, format='json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_view_rights_attempts_alteration_submission(self):
         # As a user with view rights, I should not be able to create an alteration submission.
-        url = reverse('ALT')
+        url = reverse('ALT', kwargs={'version': API_VERSION})
         response = self.client.post(url, {}, format='json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_view_rights_attempts_alteration_submission(self):
         # As a user with view rights, I should not be able to create a decommission submission.
-        url = reverse('DEC')
+        url = reverse('DEC', kwargs={'version': API_VERSION})
         response = self.client.post(url, {}, format='json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
@@ -803,12 +806,12 @@ class TestPermissionsSubmissionRights(APITestCase):
 
     def test_submission_rights_attempts_get_submission_list(self):
         # As a user with submission rights, I should not be able to get a submission list.
-        url = reverse('submissions-list')
+        url = reverse('submissions-list', kwargs={'version': API_VERSION})
         response = self.client.get(url, {}, format='json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_submission_rights_attempts_construction_submission(self):
-        url = reverse('CON')
+        url = reverse('CON', kwargs={'version': API_VERSION})
         # As a user with submission rights, I should be able to make a construction submission.
         data = {
             'owner_full_name': 'molly',
@@ -821,7 +824,7 @@ class TestPermissionsSubmissionRights(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_submission_rights_attempts_alteration_submission(self):
-        url = reverse('ALT')
+        url = reverse('ALT', kwargs={'version': API_VERSION})
         # As a user with submission rights, I should be able to make an alteration submission.
         data = {
             'owner_full_name': 'molly',
@@ -834,7 +837,7 @@ class TestPermissionsSubmissionRights(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_submission_rights_attempts_decommission_submission(self):
-        url = reverse('DEC')
+        url = reverse('DEC', kwargs={'version': API_VERSION})
         # As a user with submission rights, I should be able to make a decommission submission.
         data = {
             'owner_full_name': 'molly',
@@ -865,7 +868,7 @@ class TestAuditInformation(APITestCase):
     def test_create_user_populated_on_well(self):
         # When a well is created as a result of a construction submission, the create_user on the
         # well must match that of the submission.
-        url = reverse('CON')
+        url = reverse('CON', kwargs={'version': API_VERSION})
         data = {
         }
         response = self.client.post(url, data, format='json')
@@ -874,7 +877,7 @@ class TestAuditInformation(APITestCase):
 
     def test_update_user_populated_on_submission(self):
         # Upon creation of a submission, the update user must be the same as the created_by user.
-        url = reverse('CON')
+        url = reverse('CON', kwargs={'version': API_VERSION})
         data = {
         }
         response = self.client.post(url, data, format='json')
@@ -890,7 +893,7 @@ class TestAuditInformation(APITestCase):
         # Original well.
         well = Well.objects.create(create_user='A', update_user='B')
         # Alteration submission.
-        url = reverse('ALT')
+        url = reverse('ALT', kwargs={'version': API_VERSION})
         data = {
             'well': well.well_tag_number
         }
@@ -909,7 +912,7 @@ class TestAuditInformation(APITestCase):
         self.assertEqual(submission.update_user, 'B')
 
     def test_post_external_override_of_audit_information(self):
-        url = reverse('CON')
+        url = reverse('CON', kwargs={'version': API_VERSION})
         data = {
             'create_user': 'BAD CREATE USER',
             'update_user': 'BAD UPDATE USER',
@@ -928,7 +931,7 @@ class TestAuditInformation(APITestCase):
 
     def test_well_create_date_matches_construction(self):
         # Make sure that the well create_date matches up with the construction date on a new well.
-        url = reverse('CON')
+        url = reverse('CON', kwargs={'version': API_VERSION})
         data = {
         }
         response = self.client.post(url, data, format='json')
@@ -952,7 +955,7 @@ class TestAuditInformation(APITestCase):
             create_date=original_create_date, update_date=original_update_date)
 
         # Alteration submission.
-        url = reverse('ALT')
+        url = reverse('ALT', kwargs={'version': API_VERSION})
         data = {
             'well': well.well_tag_number
         }
@@ -981,7 +984,7 @@ class TestAuditInformation(APITestCase):
         well = Well.objects.create()
 
         # Alteration submission.
-        url = reverse('ALT')
+        url = reverse('ALT', kwargs={'version': API_VERSION})
         data = {
             'well': well.well_tag_number
         }
@@ -1027,7 +1030,7 @@ class TestAuditInformation(APITestCase):
             ]
         }
         # Post an construction submissions.
-        response = self.client.post(reverse('DEC'), data, format='json')
+        response = self.client.post(reverse('DEC', kwargs={'version': API_VERSION}), data, format='json')
         if response.status_code != status.HTTP_201_CREATED:
             # Useful for debugging failing tests.
             logger.warn(response)

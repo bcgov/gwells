@@ -344,7 +344,7 @@ class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
         # Returns self.list - overridden for schema documentation
         return self.list(request, *args, **kwargs)
 
-    def list(self, request):
+    def list(self, request, **kwargs):
         """ List response using serializer with reduced number of fields """
         queryset = self.get_queryset()
         filtered_queryset = self.filter_queryset(queryset)

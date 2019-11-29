@@ -279,7 +279,8 @@ REST_FRAMEWORK = {
         'anon': '100000/hour',
         'user': '200000/hour'
     },
-    'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.URLPathVersioning'
+    'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.URLPathVersioning',
+    'DEFAULT_VERSION': 'v2',
 }
 
 LOGIN_URL = '/gwells/accounts/login/'

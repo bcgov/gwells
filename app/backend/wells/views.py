@@ -651,7 +651,7 @@ WELL_PROPERTIES = openapi.Schema(
     }
 )
 @api_view(['GET'])
-def well_geojson(request):
+def well_geojson(request, **kwargs):
     realtime = request.GET.get('realtime') in ('True', 'true')
     if realtime:
         sw_long = request.query_params.get('sw_long')
@@ -731,7 +731,7 @@ LITHOLOGY_PROPERTIES = openapi.Schema(
     }
 )
 @api_view(['GET'])
-def lithology_geojson(request):
+def lithology_geojson(request, **kwargs):
     realtime = request.GET.get('realtime') in ('True', 'true')
     if realtime:
         sw_long = request.query_params.get('sw_long')
@@ -762,7 +762,7 @@ def lithology_geojson(request):
 
 
 @api_view(['GET'])
-def well_licensing(request):
+def well_licensing(request, **kwargs):
     tag = request.GET.get('well_tag_number')
     url = get_env_variable('E_LICENSING_URL') + '{}'.format(tag)
     api_success = False
