@@ -143,6 +143,10 @@
               <dt>Number of wells associated to the aquifer</dt>
               <dd><a href="" @click.prevent="handleWellSearch()">{{ licence_details.num_wells }}</a></dd>
             </li>
+            <li>
+                <dt>Artesian wells</dt>
+                <dd><a href="#" @click="handleArtesianSearch()">{{ licence_details.num_artesian_wells }} artesian wells in aquifer</a></dd>
+            </li>
           </ul>
           <p><i v-if="licence_details.wells_updated">Well info last updated {{ licence_details.wells_updated.update_date__max|formatDate }}</i></p>
           <h5 class="mt-5 border-bottom pb-4 main-title">Documentation</h5>
@@ -194,10 +198,6 @@
           <ul class="ml-0 mr-0 mb-0 mt-4 p-0 aquifer-information-list">
             <div class="aquifer-information-list-divider"></div>
           <li :key="section.id" v-for="(section, index) in aquifer_resource_sections">
-              <div class="artesian-conditions" v-if="index === 1">
-                <dt>Artesian conditions</dt>
-                <dd><a href="#" @click="handleArtesianSearch()">{{ licence_details.num_artesian_wells }} artesian wells in aquifer</a></dd>
-              </div>
               <div class="observational-wells" v-if="index === 2">
                 <dt>Observation wells</dt>
                 <dd v-if="obs_wells.length > 0">
