@@ -161,7 +161,7 @@ class AquiferListCreateAPIView(RevisionMixin, AuditCreateMixin, ListCreateAPIVie
         if self.request.method == 'GET':
             return serializers.AquiferSerializer
         else:
-            return serializers.AquiferDetailSerializerV1
+            return serializers.AquiferDetailSerializer
 
     def get_queryset(self):
         return _aquifer_qs(self.request.GET).values(
