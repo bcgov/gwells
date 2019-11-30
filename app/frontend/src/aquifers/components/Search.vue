@@ -314,7 +314,7 @@ export default {
           })
           this.response = response.data
           this.loading = false
-          if (response.data.results.length > 0) {
+          if (this.aquifers_search_results.length > 0) {
             // Note: Aquifer <table> might not be in the DOM yet if this is a new search after a page load.
             // Wait until next tick before searching the DOM for the #aquifers-results
             this.$nextTick(() => {
