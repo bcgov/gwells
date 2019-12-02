@@ -32,7 +32,6 @@ if app_root:
 else:
     app_root_slash = app_root
 
-api_version_url_re = '(?P<version>(v1|v2))'
 
 DJANGO_ADMIN_URL = get_env_variable(
     'DJANGO_ADMIN_URL',
@@ -40,6 +39,10 @@ DJANGO_ADMIN_URL = get_env_variable(
     'admin',
     strict=True
 )
+
+def api_path_prefix():
+    api_version_url_re = '(?P<version>(v1|v2))'
+    return r'api/' + api_version_url_re
 
 
 urlpatterns = [
@@ -63,21 +66,21 @@ urlpatterns = [
         name='site_admin'),  # editable list view of surveys and other site admin features
 
     # API routes
-    url(r'^' + app_root_slash + r'api/' + api_version_url_re + r'/surveys/(?P<survey_guid>[-\w]+)$',
+    url(r'^' + app_root_slash + api_path_prefix() + r'/surveys/(?P<survey_guid>[-\w]+)$',
         SurveyUpdateDeleteView.as_view(), name='survey-detail'),
-    url(r'^' + app_root_slash + r'api/' + api_version_url_re + r'/surveys$',
+    url(r'^' + app_root_slash + api_path_prefix() + r'/surveys$',
         SurveyListCreateView.as_view(), name='survey-list'),
 
     url(r'^' + app_root_slash + DJANGO_ADMIN_URL + '/', admin.site.urls),
     url(r'^' + app_root_slash + 'accounts/',
         include('django.contrib.auth.urls')),
-    url(r'^' + app_root_slash + r'api/' + api_version_url_re + r'/keycloak$',
+    url(r'^' + app_root_slash + api_path_prefix() + r'/keycloak$',
         api.KeycloakConfig.as_view(), name='keycloak'),
-    url(r'^' + app_root_slash + r'api/' + api_version_url_re + r'/config',
+    url(r'^' + app_root_slash + api_path_prefix() + r'/config',
         api.GeneralConfig.as_view(), name='configuration'),
-    url(r'^' + app_root_slash + r'api/' + api_version_url_re + r'/analytics',
+    url(r'^' + app_root_slash + api_path_prefix() + r'/analytics',
         api.AnalyticsConfig.as_view(), name='analytics'),
-    url(r'^' + app_root_slash + r'api/' + api_version_url_re + r'/gis/insidebc',
+    url(r'^' + app_root_slash + api_path_prefix() + r'/gis/insidebc',
         api.InsideBC.as_view(), name='insidebc'),
     url(r'^' + app_root_slash, include('registries.urls')),
     url(r'^' + app_root_slash, include('wells.urls')),
