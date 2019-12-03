@@ -63,7 +63,7 @@
                   v-on:click.prevent="navigateToEdit">
                   <span title="Edit" class="fa fa-edit"/> Edit
                 </b-button>
-                <a class="ml-2 print fa fa-print fa-lg d-print-none"
+                <a class="ml-2 print-button fa fa-print fa-lg d-print-none"
                   href="#"
                   title="Print"
                   v-on:click.prevent="print"
@@ -74,58 +74,43 @@
             </b-col>
           </b-row>
           <b-row>
-            <b-col cols="12" sm="12" class="pl-4 pr-4">
-              <ul class="m-0 p-0 aquifer-information-list aquifer-main-information-list">
-              <div class="aquifer-information-list-divider"></div>
-              <li>
-                <dt>Aquifer number</dt>
-                <dd id="aquifer-view-number">{{record.aquifer_id}}</dd>
-              </li>
-              <li>
-                <dt>Year of mapping</dt>
-                <dd>{{record.mapping_year}}</dd>
-              </li>
-              <li>
-                <dt>Aquifer name</dt>
-                <dd id="aquifer-view-name">{{record.aquifer_name}}</dd>
-              </li>
-              <li>
-                <dt>Litho stratigraphic unit</dt>
-                <dd>{{record.litho_stratographic_unit}}</dd>
-              </li>
-              <li>
-                <dt>Descriptive location</dt>
-                <dd>{{record.location_description}}</dd>
-              </li>
-              <li>
-                <dt>Vulnerability</dt>
-                <dd>{{record.vulnerability}}</dd>
-              </li>
-              <li>
-                <dt>Material type</dt>
-                <dd>{{record.material}}</dd>
-              </li>
-              <li>
-                <dt>Subtype</dt>
-                <dd>{{record.subtype}}</dd>
-              </li>
-              <li>
-                <dt>Quality concerns</dt>
-                <dd>{{record.quality_concern}}</dd>
-              </li>
-              <li>
-                <dt>Productivity</dt>
-                <dd>{{record.productivity}}</dd>
-              </li>
-              <li>
-                <dt>Size (km²)</dt>
-                <dd>{{record.area}}</dd>
-              </li>
-              <li>
-                <dt>Demand</dt>
-                <dd>{{record.demand}}</dd>
-              </li>
-              </ul>
+            <b-col cols="12" sm="12" class="pl-4 pr-4 aquifer-main-information-list">
+              <b-row>
+                <b-col cols="6" md="3" lg="6">Aquifer number</b-col>
+                <b-col cols="6" md="3" lg="6" id="aquifer-view-number">{{record.aquifer_id}}</b-col>
+                <b-col cols="6" md="3" lg="6">Year of mapping</b-col>
+                <b-col cols="6" md="3" lg="6">{{record.mapping_year}}</b-col>
+              </b-row>
+              <b-row>
+                <b-col cols="6" md="3" lg="6">Aquifer name</b-col>
+                <b-col cols="6" md="3" lg="6" id="aquifer-view-name">{{record.aquifer_name}}</b-col>
+                <b-col cols="6" md="3" lg="6">Litho stratigraphic unit</b-col>
+                <b-col cols="6" md="3" lg="6">{{record.litho_stratographic_unit}}</b-col>
+              </b-row>
+              <b-row>
+                <b-col cols="6" md="3" lg="6">Descriptive location</b-col>
+                <b-col cols="6" md="3" lg="6">{{record.location_description}}</b-col>
+                <b-col cols="6" md="3" lg="6">Vulnerability</b-col>
+                <b-col cols="6" md="3" lg="6">{{record.vulnerability}}</b-col>
+              </b-row>
+              <b-row>
+                <b-col cols="6" md="3" lg="6">Material type</b-col>
+                <b-col cols="6" md="3" lg="6">{{record.material}}</b-col>
+                <b-col cols="6" md="3" lg="6">Subtype</b-col>
+                <b-col cols="6" md="3" lg="6">{{record.subtype}}</b-col>
+              </b-row>
+              <b-row>
+                <b-col cols="6" md="3" lg="6">Quality concerns</b-col>
+                <b-col cols="6" md="3" lg="6">{{record.quality_concern}}</b-col>
+                <b-col cols="6" md="3" lg="6">Productivity</b-col>
+                <b-col cols="6" md="3" lg="6">{{record.productivity}}</b-col>
+              </b-row>
+              <b-row>
+                <b-col cols="6" md="3" lg="6">Size (km²)</b-col>
+                <b-col cols="6" md="3" lg="6">{{record.area}}</b-col>
+                <b-col cols="6" md="3" lg="6">Demand</b-col>
+                <b-col cols="6" md="3" lg="6">{{record.demand}}</b-col>
+              </b-row>
             </b-col>
           </b-row>
         </b-col>
@@ -134,18 +119,26 @@
         </b-col>
       </b-row>
 
-      <b-row v-if="viewMode" class="mt-5">
+      <b-row v-if="viewMode" class="mt-5 aquifer-details">
         <b-col cols="12" xl="4" lg="6">
           <h5 class="mt-3 border-bottom pb-4 main-title">Well Information</h5>
           <ul class="ml-0 mr-0 mt-4 mb-0 p-0 aquifer-information-list">
             <div class="aquifer-information-list-divider"></div>
             <li>
               <dt>Number of wells associated to the aquifer</dt>
-              <dd><a href="" @click.prevent="handleWellSearch()">{{ licence_details.num_wells }}</a></dd>
+              <dd>
+                <router-link :to="{ name: 'wells-home', query: {'match_any':false, 'aquifer': this.record.aquifer_id, 'search':'', 'well':''}}">
+                  {{ licence_details.num_wells }}
+                </router-link>
+              </dd>
             </li>
             <li>
-                <dt>Artesian wells</dt>
-                <dd><a href="#" @click="handleArtesianSearch()">{{ licence_details.num_artesian_wells }} artesian wells in aquifer</a></dd>
+              <dt>Artesian wells</dt>
+              <dd>
+                <router-link :to="{ name: 'wells-home', query: {'match_any':false, 'aquifer':this.id, 'artesian_flow_has_value':true}, hash: '#advanced'}">
+                  {{ licence_details.num_artesian_wells }} artesian wells in aquifer
+                </router-link>
+              </dd>
             </li>
           </ul>
           <p><i v-if="licence_details.wells_updated">Well info last updated {{ licence_details.wells_updated.update_date__max|formatDate }}</i></p>
@@ -176,10 +169,16 @@
             </li>
           </ul>
           <div v-if="licence_details.lic_qty.length > 0">
-              <h5 class="pie-chart-title">Licensed volume by purpose</h5>
-              <PieChart :chartData="licence_details.usage" class="mt-3"></PieChart>
-              <h5 class="pie-chart-title pt-4">Number of licences by purpose</h5>
-              <PieChart :chartData="licence_details.lic_qty" class="mt-3"></PieChart>
+            <b-row class="pt-5">
+              <b-col cols="12" md="6" lg="12" class="pb-5">
+                <h5 class="pie-chart-title">Licensed volume by purpose</h5>
+                <PieChart :chartData="licence_details.usage" class="mt-3"></PieChart>
+              </b-col>
+              <b-col cols="12" md="6" lg="12" class="pb-5">
+                <h5 class="pie-chart-title">Number of licences by purpose</h5>
+                <PieChart :chartData="licence_details.lic_qty" class="mt-3"></PieChart>
+              </b-col>
+            </b-row>
           </div>
           <b-table striped hover :items="licence_details.wells_by_licence"></b-table>
           <p><i v-if="licence_details.licences_updated && licence_details.licences_updated.update_date__max">Licence info last updated {{ licence_details.licences_updated.update_date__max|formatDate }}</i></p>
@@ -227,7 +226,7 @@
                 <dt>Water quality information</dt>
                 <dd><a :href="getEMSLink()" target="_blank">{{ licence_details['num_wells_with_ems'] }} wells with an EMS ID</a></dd>
                 <dt>Hydraulically connected (screening level)
-                  <i id="aquiferConnectedInfo" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0"></i>
+                  <i id="aquiferConnectedInfo" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
                   <b-popover
                     target="aquiferConnectedInfo"
                     triggers="hover focus"
@@ -245,7 +244,7 @@
 </template>
 
 <style>
-.print, .print:hover {
+.print-button, .print-button:hover {
   color: black;
   text-decoration: none;
 }
@@ -289,7 +288,6 @@ a {
 .aquifer-information-list > li {
   display: block;
   width: 100%;
-  font-size: 0;
   margin: 0.3rem 0;
 }
 .aquifer-information-list dt,
@@ -300,33 +298,13 @@ a {
   font-size: 1rem;
 }
 
-.aquifer-main-information-list dt {
-  width: 35%;
-}
-
-.aquifer-main-information-list dd {
-  width: 65%;
-}
-
 .aquifer-information-list dt {
   padding-right: 2rem;
 }
 
 .aquifer-information-list dd {
   padding-left: 2rem;
-}
-
-.aquifer-information-list-divider {
-  position: absolute;
-  top: 0;
-  width: 1px;
-  height: 100%;
-  background-color: rgba(0,0,0,0.1);
-  left: calc(50% - 0.5px);
-}
-
-.aquifer-main-information-list .aquifer-information-list-divider {
-  left: calc(35% - 0.5px);
+  margin-bottom: 0;
 }
 
 .pie-chart-title {
@@ -335,6 +313,45 @@ a {
 }
 .pie-chart-container {
   margin: 0 auto;
+}
+
+.aquifer-main-information-list .row > div {
+  padding-bottom: 0.7rem;
+}
+
+.aquifer-main-information-list .row > :nth-child(odd) {
+  font-weight: bold;
+  border-right: 1px solid rgba(0,0,0,0.1);
+}
+
+@media print {
+  .aquifer-details a::after{
+    content: " (" attr(href) ") ";
+  }
+
+  .aquifer-information-list dt {
+    width: 25%;
+  }
+
+  .aquifer-information-list dd {
+    width: 75%;
+  }
+
+  .aquifer-main-information-list .row > :nth-child(odd) {
+    border: none;
+  }
+
+  main {
+    margin-bottom: 0 !important;
+  }
+
+  main > .card.container {
+    padding-bottom: 0 !important;
+  }
+
+  body, main, .card, .aquifer-details {
+    display: block !important;
+  }
 }
 </style>
 
@@ -540,28 +557,6 @@ export default {
     fetchResourceSections () {
       ApiService.query('aquifers/sections').then((response) => {
         this.aquifer_resource_sections = response.data.results
-      })
-    },
-    handleWellSearch () {
-      this.$router.push({
-        path: '/',
-        query: {
-          'match_any': false,
-          'search': '',
-          'well': '',
-          'aquifer': this.record.aquifer_id
-        }
-      })
-    },
-    handleArtesianSearch () {
-      this.$router.push({
-        name: 'wells-home',
-        query: {
-          'match_any': false,
-          'aquifer': this.id,
-          'artesian_flow_has_value': true
-        },
-        hash: '#advanced'
       })
     },
     getObservationWellLink (wellNumber) {

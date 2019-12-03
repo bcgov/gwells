@@ -4,6 +4,7 @@
 
 <script>
 import L from 'leaflet'
+import 'leaflet-edgebuffer'
 import { filter } from 'lodash'
 import { tiledMapLayer } from 'esri-leaflet'
 import WellsAllLegend from '../../common/assets/images/wells-all.png'
