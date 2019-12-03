@@ -1839,7 +1839,7 @@ class FieldsProvided(models.Model):
         Not all fields are provided in every report or edit, and this model
         helps track which fields the user intended to update.
     """
-    activity_submission = models.OneToOneField(ActivitySubmission, on_delete=models.CASCADE, primary_key=True, db_column="filing_number", related_name="fields_provided")
+    activity_submission = models.OneToOneField(ActivitySubmission, on_delete=models.PROTECT, primary_key=True, db_column="filing_number", related_name="fields_provided")
 
     well_activity_type = models.BooleanField(default=False)
     well_status = models.BooleanField(default=False)
@@ -1985,10 +1985,10 @@ class LithologyDescription(AuditModel):
     lithology_description_guid = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False)
     activity_submission = models.ForeignKey(
-        ActivitySubmission, db_column='filing_number', on_delete=models.CASCADE, blank=True, null=True,
+        ActivitySubmission, db_column='filing_number', on_delete=models.PROTECT, blank=True, null=True,
         related_name='lithologydescription_set')
     well = models.ForeignKey(
-        Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True, null=True,
+        Well, db_column='well_tag_number', on_delete=models.PROTECT, blank=True, null=True,
         related_name='lithologydescription_set',
         db_comment=('The file number assigned to a particular well in the in the province\'s Groundwater '
                     'Wells and Aquifers application.'))
@@ -2120,7 +2120,7 @@ class LinerPerforation(PerforationBase):
     Perforation in a well liner
     """
     well = models.ForeignKey(
-        Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True,
+        Well, db_column='well_tag_number', on_delete=models.PROTECT, blank=True,
         null=True, related_name='linerperforation_set',
         db_comment=('The file number assigned to a particular well in the in the province\'s Groundwater '
                     'Wells and Aquifers application.'))
@@ -2148,7 +2148,7 @@ class ActivitySubmissionLinerPerforation(PerforationBase):
     Perforation in a well liner
     """
     activity_submission = models.ForeignKey(ActivitySubmission, db_column='filing_number',
-                                            on_delete=models.CASCADE, blank=True, null=True,
+                                            on_delete=models.PROTECT, blank=True, null=True,
                                             related_name='linerperforation_set')
 
     class Meta:
@@ -2173,10 +2173,10 @@ class Casing(AuditModel):
     casing_guid = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False)
     activity_submission = models.ForeignKey(ActivitySubmission, db_column='filing_number',
-                                            on_delete=models.CASCADE, blank=True, null=True,
+                                            on_delete=models.PROTECT, blank=True, null=True,
                                             related_name='casing_set')
     well = models.ForeignKey(
-        Well, db_column='well_tag_number', on_delete=models.CASCADE,
+        Well, db_column='well_tag_number', on_delete=models.PROTECT,
         blank=True, null=True,
         related_name='casing_set',
         db_comment=('The file number assigned to a particular well in the in the province\'s Groundwater '
@@ -2250,10 +2250,10 @@ class Screen(AuditModel):
     screen_guid = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False)
     activity_submission = models.ForeignKey(ActivitySubmission, db_column='filing_number',
-                                            on_delete=models.CASCADE, blank=True, null=True,
+                                            on_delete=models.PROTECT, blank=True, null=True,
                                             related_name='screen_set')
     well = models.ForeignKey(
-        Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True,
+        Well, db_column='well_tag_number', on_delete=models.PROTECT, blank=True,
         null=True, related_name='screen_set',
         db_comment=('System generated sequential number assigned to each well. It is widely used by groundwater staff as it is the only consistent unique identifier for each well. It is different from a well ID plate number.'))
     start = models.DecimalField(db_column='screen_from', max_digits=7, decimal_places=2, verbose_name='From',
@@ -2310,7 +2310,7 @@ class HydraulicProperty(AuditModel):
         primary_key=True, default=uuid.uuid4, editable=False)
     well = models.ForeignKey(
         Well, db_column='well_tag_number', to_field='well_tag_number',
-        on_delete=models.CASCADE, blank=False, null=False,
+        on_delete=models.PROTECT, blank=False, null=False,
         db_comment=('The file number assigned to a particular well in the in the province\'s Groundwater '
                     'Wells and Aquifers application.'))
     avi = models.DecimalField(
@@ -2386,10 +2386,10 @@ class DecommissionDescription(AuditModel):
     decommission_description_guid = models.UUIDField(
         primary_key=True, default=uuid.uuid4)
     activity_submission = models.ForeignKey(ActivitySubmission, db_column='filing_number',
-                                            on_delete=models.CASCADE, blank=True, null=True,
+                                            on_delete=models.PROTECT, blank=True, null=True,
                                             related_name='decommission_description_set')
     well = models.ForeignKey(
-        Well, db_column='well_tag_number', on_delete=models.CASCADE, blank=True,
+        Well, db_column='well_tag_number', on_delete=models.PROTECT, blank=True,
         null=True, related_name='decommission_description_set',
         db_comment=('System generated sequential number assigned to each well. It is widely used by groundwater staff as it is the only consistent unique identifier for each well. It is different from a well ID plate number.'))
     start = models.DecimalField(db_column='decommission_description_from', max_digits=7, decimal_places=2,
