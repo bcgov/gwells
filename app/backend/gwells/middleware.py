@@ -15,19 +15,19 @@ logger = logging.getLogger(__name__)
 
 class GWellsRequestParsingMiddleware(MiddlewareMixin):
 
-    def get(self, request):
+    def get(self, request, **kwargs):
         pass
 
-    def post(self, request):
+    def post(self, request, **kwargs):
         pass
 
-    def put(self, request):
+    def put(self, request, **kwargs):
         request.PUT = request.POST
 
-    def delete(self, request):
+    def delete(self, request, **kwargs):
         pass
 
-    def process_request(self, request):
+    def process_request(self, request, **kwargs):
         _method = request.POST.get('_method')
 
         if _method:

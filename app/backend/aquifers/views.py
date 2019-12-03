@@ -166,7 +166,7 @@ class AquiferListCreateAPIView(RevisionMixin, AuditCreateMixin, ListCreateAPIVie
         if self.request.method == 'GET':
             return serializers.AquiferSerializer
         else:
-            return serializers.AquiferDetailSerializerV1
+            return serializers.AquiferDetailSerializer
 
     def get_queryset(self):
         return _aquifer_qs(self.request.GET).values(
@@ -187,7 +187,7 @@ class AquiferListCreateAPIView(RevisionMixin, AuditCreateMixin, ListCreateAPIVie
 
 # TODO: delete me. This is a faster but uglier version of the view :)
 @api_view(['GET'])
-def list_view(request):
+def list_view(request, **kwargs):
     return HttpResponse(json.dumps(list(_aquifer_qs(
         request.GET).values(
             'aquifer_id',
@@ -511,7 +511,7 @@ AQUIFER_PROPERTIES = openapi.Schema(
             get_geojson_schema(AQUIFER_PROPERTIES, 'Polygon'))
     })
 @api_view(['GET'])
-def aquifer_geojson(request):
+def aquifer_geojson(request, **kwargs):
     realtime = request.GET.get('realtime') in ('True', 'true')
     if realtime:
 
@@ -586,7 +586,7 @@ AQUIFER_EXPORT_FIELDS = [
 ]
 
 
-def csv_export(request):
+def csv_export(request, **kwargs):
     """
     Export aquifers as CSV. This is done in a vanilla functional Django view instead of DRF,
     because DRF doesn't have native CSV support.
@@ -605,7 +605,7 @@ def csv_export(request):
     return response
 
 
-def xlsx_export(request):
+def xlsx_export(request, **kwargs):
     """
     Export aquifers as XLSX.
     """
