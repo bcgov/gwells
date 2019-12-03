@@ -22,7 +22,7 @@ from gwells.settings import REST_FRAMEWORK
 from gwells.documents import MinioClient
 
 
-API_VERSION = REST_FRAMEWORK['DEFAULT_VERSION']
+API_VERSION = 'v1'
 
 
 class DocumentTests(TestCase):

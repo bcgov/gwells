@@ -24,7 +24,7 @@ from gwells.roles import roles_to_groups, AQUIFERS_EDIT_ROLE
 
 # Create your tests here.
 
-API_VERSION = REST_FRAMEWORK['DEFAULT_VERSION']
+API_VERSION = 'v1'
 
 class TestPostNotAuthenticated(APITestCase):
     def test_not_authenticated_attempts_patch(self):

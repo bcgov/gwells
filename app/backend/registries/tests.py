@@ -38,7 +38,7 @@ from registries.views import PersonListView, PersonDetailView
 from gwells.roles import (roles_to_groups, REGISTRIES_VIEWER_ROLE, REGISTRIES_EDIT_ROLE)
 
 
-API_VERSION = REST_FRAMEWORK['DEFAULT_VERSION']
+API_VERSION = 'v1'
 
 # Note: see postman/newman for more API tests.
 # Postman API tests include making requests with incomplete data, missing required fields etc.

@@ -26,7 +26,7 @@ from wells.models import Well
 from gwells.roles import roles_to_groups, WELLS_VIEWER_ROLE, WELLS_EDIT_ROLE
 
 
-API_VERSION = REST_FRAMEWORK['DEFAULT_VERSION']
+API_VERSION = 'v1'
 
 
 class TestWellLocationsSearch(APITestCase):

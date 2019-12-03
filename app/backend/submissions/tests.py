@@ -38,7 +38,7 @@ from gwells.models import DATALOAD_USER
 
 logger = logging.getLogger(__name__)
 
-API_VERSION = REST_FRAMEWORK['DEFAULT_VERSION']
+API_VERSION = 'v1'
 
 
 class TestPermissionsNotAuthenticated(APITestCase):

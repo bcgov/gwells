@@ -19,7 +19,7 @@ from rest_framework import status
 from gwells.settings import REST_FRAMEWORK
 
 
-API_VERSION = REST_FRAMEWORK['DEFAULT_VERSION']
+API_VERSION = 'v1'
 
 
 class TestWellsSpatial(APITestCase):
