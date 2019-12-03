@@ -348,6 +348,10 @@ a {
   main > .card.container {
     padding-bottom: 0 !important;
   }
+
+  body, main, .card, .aquifer-details {
+    display: block !important;
+  }
 }
 </style>
 
