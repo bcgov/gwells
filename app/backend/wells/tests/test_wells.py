@@ -12,15 +12,21 @@
     limitations under the License.
 """
 
-from django.urls import reverse
-from django.contrib.gis.geos import Point
-from django.contrib.auth.models import Group, User
-from rest_framework.test import APITestCase
-from rest_framework import status
 import reversion
 
+from django.contrib.gis.geos import Point
+from django.contrib.auth.models import Group, User
+
+from rest_framework.test import APITestCase
+from rest_framework import status
+from rest_framework.reverse import reverse
+
+from gwells.settings import REST_FRAMEWORK
 from wells.models import Well
 from gwells.roles import roles_to_groups, WELLS_VIEWER_ROLE, WELLS_EDIT_ROLE
+
+
+API_VERSION = 'v1'
 
 
 class TestWellLocationsSearch(APITestCase):
@@ -28,7 +34,7 @@ class TestWellLocationsSearch(APITestCase):
 
     def test_well_locations(self):
         # Basic test to ensure that the well location search returns a non-error response
-        url = reverse('well-locations')
+        url = reverse('well-locations', kwargs={'version': API_VERSION})
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -47,13 +53,13 @@ class TestWellHistory(APITestCase):
         self.client.force_authenticate(user)
 
     def test_well_history(self):
-        url = reverse('well-history', kwargs={'well_id': 123})
+        url = reverse('well-history', kwargs={'well_id': 123, 'version': API_VERSION})
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_well_history_404(self):
         """ ensure 404s are handled properly by the overridden get method on this view class"""
-        url = reverse('well-history', kwargs={'well_id': 987654321})
+        url = reverse('well-history', kwargs={'well_id': 987654321, 'version': API_VERSION})
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
@@ -66,6 +72,6 @@ class TestWellHistory(APITestCase):
             well.geom = Point(123, 51)
             well.save()
 
-        url = reverse('well-history', kwargs={'well_id': 123})
+        url = reverse('well-history', kwargs={'well_id': 123, 'version': API_VERSION})
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)

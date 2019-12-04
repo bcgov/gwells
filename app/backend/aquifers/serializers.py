@@ -90,7 +90,7 @@ class AquiferSerializer(serializers.ModelSerializer):
 
 
 class AquiferEditDetailSerializer(serializers.ModelSerializer):
-    """ 
+    """
     Read serializer for aquifer details with primary key references needed for populating an edit form
     """
 
@@ -199,12 +199,12 @@ class AquiferDetailSerializer(serializers.ModelSerializer):
         # respond with the 'description' field for the following items, which are otherwise
         # references to code tables. Testing for the reference first prevents type errors,
         # since these fields are nullable.  If the field is null, we set these values to None
-        ret['demand'] = instance.demand and instance.demand.description or None 
-        ret['material'] = instance.material and instance.material.description or None 
-        ret['productivity'] = instance.productivity and instance.productivity.description or None 
-        ret['subtype'] = instance.subtype and instance.subtype.description or None 
-        ret['vulnerability'] = instance.vulnerability and instance.vulnerability.description or None 
-        ret['quality_concern'] = instance.quality_concern and instance.quality_concern.description or None 
+        ret['demand'] = instance.demand and instance.demand.description or None
+        ret['material'] = instance.material and instance.material.description or None
+        ret['productivity'] = instance.productivity and instance.productivity.description or None
+        ret['subtype'] = instance.subtype and instance.subtype.description or None
+        ret['vulnerability'] = instance.vulnerability and instance.vulnerability.description or None
+        ret['quality_concern'] = instance.quality_concern and instance.quality_concern.description or None
 
         details = {}
 

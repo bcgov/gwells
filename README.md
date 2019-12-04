@@ -140,7 +140,7 @@ Many of our features have been developed by members of the community. Check the 
 
 ## Issues
 
-Issues are tracked on the [GWELLS Trello board](https://trello.com/b/2UQZgXHR/wells-project-board).
+Issues are tracked on the [Water Jira board](https://apps.nrs.gov.bc.ca/int/jira/projects/WATER/issues). Note this is a restricted issue tracker and you will require permission to be able to view it.
 
 ## License
 
