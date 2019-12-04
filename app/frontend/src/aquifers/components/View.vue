@@ -288,7 +288,7 @@ a {
 }
 
 .aquifer-information-list {
-  list-style-type: none;
+  list-style: none;
   box-sizing: border-box;
   position: relative;
 }
@@ -303,8 +303,6 @@ a {
 }
 
 .aquifer-information-list > li {
-  display: block;
-  width: 100%;
   margin: 0.7rem 0;
 }
 .aquifer-information-list dt,
@@ -316,12 +314,12 @@ a {
 }
 
 .aquifer-information-list dt {
-  padding-right: 1rem;
+  padding-right: 2rem;
   font-weight: bold;
 }
 
 .aquifer-information-list dd {
-  padding-left: 1rem;
+  padding-left: 2rem;
   margin-bottom: 0;
 }
 
