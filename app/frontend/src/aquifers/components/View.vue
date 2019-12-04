@@ -199,13 +199,13 @@
             <li :key="section.id" v-for="section in aquifer_resource_sections">
               <div class="observational-wells" v-if="section.key === 'obs-wells'">
                 <dt>Observation wells</dt>
-                <dd v-if="obs_wells.length > 0">
+                <dd v-if="obsWells.length > 0">
                   <ul class="p-0 m-0">
-                    <li v-for="owell in obs_wells" :key="owell.observation_well_number">
+                    <li v-for="owell in obsWells" :key="owell.observation_well_number">
                       <a :href="getObservationWellLink(owell.observation_well_number)" target="_blank">Observation Well {{ owell.observation_well_number }}</a>
                       <br/>Water Level Analysis:
-                      <a v-if="waterLevels.find(o => o.wellNumber === owell.observation_well_number)" href="http://www.env.gov.bc.ca/soe/indicators/water/groundwater-levels.html" target="_blank">
-                        {{ (waterLevels.find(o => o.wellNumber === owell.observation_well_number).levels )}}
+                      <a v-if="owell.waterLevel" :href="owell.waterLevel.hasLevelAnalysis ? 'http://www.env.gov.bc.ca/soe/indicators/water/groundwater-levels.html' : false" target="_blank">
+                        {{ owell.waterLevel.levels }}
                       </a>
                       <span v-else>No information available.</span>
                     </li>
@@ -217,7 +217,11 @@
               </div>
               <div class="water-quality-information" v-else-if="section.key === 'water-quality'">
                 <dt>Water quality information</dt>
-                <dd><a :href="getEMSLink()" target="_blank">{{ licence_details['num_wells_with_ems'] }} wells with an EMS ID</a></dd>
+                <dd>
+                  <router-link :to="{ name: 'wells-home', query: {'match_any':false, 'ems_has_value':true, 'aquifer': id}, hash: '#advanced'}">
+                    {{ licence_details['num_wells_with_ems'] }} wells with an EMS ID
+                  </router-link>
+                </dd>
               </div>
               <div class="aquifer-connected" v-else-if="section.key === 'aquifer-connected'">
                 <dt>Hydraulically connected (screening level)
@@ -437,7 +441,16 @@ export default {
       'shapefile_uploading',
       'shapefile_upload_message',
       'shapefile_upload_success'
-    ])
+    ]),
+    obsWells () {
+      return this.obs_wells.map((owell) => {
+        const waterLevelForObsWells = this.waterLevels.find(o => o.wellNumber === owell.observation_well_number)
+        return {
+          ...owell,
+          waterLevel: waterLevelForObsWells,
+        }
+      })
+    }
   },
   watch: {
     id () {
@@ -448,7 +461,7 @@ export default {
     },
     licence_details (newLDetails, oldLDetails) {
       this.setWaterVolume(newLDetails)
-    }
+    },
   },
   filters: {
     unitWaterVolume (volume) {
@@ -581,7 +594,9 @@ export default {
         }
         let wellNumber = owell.observation_well_number
         ApiService.query(getRequestUrl(wellNumber)).then((response) => {
-          this.waterLevels.push({ wellNumber, levels: response.data.result.records[0].category })
+          const {category} = response.data.result.records[0];
+          const hasLevelAnalysis = category.toUpperCase() !== 'N/A';
+          this.waterLevels.push({ wellNumber, hasLevelAnalysis, levels: category })
         }).catch((e) => {
           console.error(e)
         })
@@ -591,9 +606,6 @@ export default {
       if (details.usage && details.usage.constructor === Array && details.usage.length > 0) {
         this.waterWithdrawlVolume = sumBy(details.usage, 'total_qty')
       }
-    },
-    getEMSLink () {
-      return `https://apps.nrs.gov.bc.ca/gwells/?match_any=false&ems_has_value=true&aquifer=${this.record['aquifer_id']}#advanced`
     },
     // log a google analytics event when clicking on links to other sites
     handleOutboundLinkClicks (link) {
