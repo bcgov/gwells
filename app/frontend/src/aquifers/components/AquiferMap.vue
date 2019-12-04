@@ -9,13 +9,8 @@ import { filter } from 'lodash'
 import { GeoSearchControl, EsriProvider } from 'leaflet-geosearch'
 import 'leaflet-lasso'
 import 'leaflet-fullscreen/dist/Leaflet.fullscreen.min.js'
-import ArtesianLegend from '../../common/assets/images/artesian.png'
-import CadastralLegend from '../../common/assets/images/cadastral.png'
-import EcocatWaterLegend from '../../common/assets/images/ecocat-water.png'
-import GWaterLicenceLegend from '../../common/assets/images/gwater-licence.png'
-import OWellsInactiveLegend from '../../common/assets/images/owells-inactive.png'
-import OWellsActiveLegend from '../../common/assets/images/owells-active.png'
-import WellsAllLegend from '../../common/assets/images/wells-all.png'
+
+import aquiferLayers from '../layers'
 
 const provider = new EsriProvider()
 const searchControl = new GeoSearchControl({
@@ -23,67 +18,6 @@ const searchControl = new GeoSearchControl({
   autoClose: true
 })
 
-const toggleLayers = {
-  'Artesian wells': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW/ows?', {
-    format: 'image/png',
-    layers: 'pub:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
-    styles: 'Water_Wells_Artesian',
-    transparent: true,
-    name: 'Artesian wells',
-    legend: ArtesianLegend,
-    overlay: true
-  }),
-  'Cadastral': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW/ows?', {
-    format: 'image/png',
-    layers: 'pub:WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW',
-    transparent: true,
-    name: 'Cadastral',
-    legend: CadastralLegend,
-    overlay: true
-  }),
-  'Ecocat - Water related reports': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_FISH.ACAT_REPORT_POINT_PUB_SVW/ows?', {
-    format: 'image/png',
-    layers: 'pub:WHSE_FISH.ACAT_REPORT_POINT_PUB_SVW',
-    transparent: true,
-    name: 'Ecocat - Water related reports',
-    legend: EcocatWaterLegend,
-    overlay: true
-  }),
-  'Groundwater licences': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.WLS_PWD_LICENCES_SVW/ows?', {
-    format: 'image/png',
-    layers: 'pub:WHSE_WATER_MANAGEMENT.WLS_PWD_LICENCES_SVW',
-    transparent: true,
-    name: 'Groundwater licences',
-    legend: GWaterLicenceLegend,
-    overlay: true
-  }),
-  'Observation wells - active': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW/ows?', {
-    format: 'image/png',
-    layers: 'pub:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
-    styles: 'Provincial_Groundwater_Observation_Wells_Active',
-    transparent: true,
-    name: 'Observation wells - active',
-    legend: OWellsActiveLegend,
-    overlay: true
-  }),
-  'Observation wells - inactive': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW/ows?', {
-    format: 'image/png',
-    layers: 'pub:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
-    styles: 'Provincial_Groundwater_Observation_Wells_Inactive',
-    transparent: true,
-    name: 'Observation wells - inactive',
-    legend: OWellsInactiveLegend,
-    overlay: true
-  }),
-  'Wells - All': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW/ows?', {
-    format: 'image/png',
-    layers: 'pub:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
-    transparent: true,
-    name: 'Wells - All',
-    legend: WellsAllLegend,
-    overlay: true
-  })
-}
 // Extend control, making a locate
 L.Control.Locate = L.Control.extend({
   onAdd: function (map) {
@@ -165,12 +99,6 @@ export default {
 
       // Add map layers.
       tiledMapLayer({ url: 'https://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer' }).addTo(this.map)
-      L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW/ows?', {
-        format: 'image/png',
-        layers: 'pub:WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW',
-        styles: 'PMBC_Parcel_Fabric_Cadastre_Outlined',
-        transparent: true
-      }).addTo(this.map)
 
       // Aquifer outlines
       L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.GW_AQUIFERS_CLASSIFICATION_SVW/ows?', {
@@ -178,7 +106,8 @@ export default {
         layers: 'pub:WHSE_WATER_MANAGEMENT.GW_AQUIFERS_CLASSIFICATION_SVW',
         transparent: true
       }).addTo(this.map)
-      L.control.layers(null, toggleLayers, {collapsed: false}).addTo(this.map)
+      L.control.layers(null, aquiferLayers, {collapsed: false}).addTo(this.map)
+      aquiferLayers['Cadastral'].addTo(this.map)
 
       this.listenForLayerToggle()
       this.listenForLayerAdd()
