@@ -17,7 +17,7 @@
     <p class="font-weight-bold">Download all wells</p>
     <ul>
       <li v-for="file in files" :key="file.name">
-        <a :href="file.url" v-on:click="handleDownloadClick(file)">Well extract ({{file.description}})</a> ({{format_size(file.size)}}) - {{format_date(file.last_modified)}}
+        <a :href="file.url" v-on:click="handleDownloadClick(file)" target="_blank">Well extract ({{file.description}})</a> ({{format_size(file.size)}}) - {{format_date(file.last_modified)}}
       </li>
     </ul>
   </div>

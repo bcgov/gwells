@@ -68,12 +68,12 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <b-row v-if="!isInitialSearch">
         <b-col>
           <p>
-            Can’t find the well you are looking for? Try your search again using a different set of criteria. If you still need more assistance, Contact <a href="https://portal.nrs.gov.bc.ca/web/client/contact">FrontCounterBC</a>.
+            Can’t find the well you are looking for? Try your search again using a different set of criteria. If you still need more assistance, Contact <a href="https://portal.nrs.gov.bc.ca/web/client/contact" target="_blank">FrontCounterBC</a>.
           </p>
           <p>
-            <a href="http://www.frontcounterbc.gov.bc.ca/Start/surface-water/" @click="handleOutboundLinkClicks('www.frontcounterbc.gov.bc.ca/Start/surface-water/')">
-                Learn about and submit water license applications
-            </a>  with FrontCounterBC.
+            <a href="http://www.frontcounterbc.gov.bc.ca/Start/surface-water/" @click="handleOutboundLinkClicks('www.frontcounterbc.gov.bc.ca/Start/surface-water/')" target="_blank">
+              Learn about and submit water license applications
+            </a> with FrontCounterBC.
           </p>
         </b-col>
       </b-row>

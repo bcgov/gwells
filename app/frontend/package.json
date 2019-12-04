@@ -21,6 +21,7 @@
     "deep-diff": "^1.0.2",
     "esri-leaflet": "^2.2.3",
     "leaflet": "^1.3.4",
+    "leaflet-edgebuffer": "^1.0.6",
     "leaflet-fullscreen": "^1.0.2",
     "leaflet-geosearch": "^2.7.0",
     "leaflet-lasso": "^1.1.3",

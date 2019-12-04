@@ -13,7 +13,7 @@ The application is being developed as an open source solution.
 ## Table of Contents
 
 1. [Using the GWELLS API](#Using-the-gwells-api)
-1. [Developing GWELLS](#developing-gwells)
+1. [Developing GWELLS](#Developing-gwells)
     * [Running the GWELLS application locally](#Running-the-GWELLS-application-locally)
     * [Authentication](#Authentication)
     * [Running tests](#Running-tests)
@@ -33,25 +33,25 @@ Our Swagger documentation is available at https://apps.nrs.gov.bc.ca/gwells/api/
 Wells:
 ```sh
 # all wells (paginated)
-https://apps.nrs.gov.bc.ca/gwells/api/v1/wells
+curl https://apps.nrs.gov.bc.ca/gwells/api/v1/wells
 
 # all wells in an area bounded by sw_lat, sw_long, ne_lat, and ne_long
-https://apps.nrs.gov.bc.ca/gwells/api/v1/wells?sw_lat=51.599253&sw_long=-128.220340&ne_lat=52.108192&ne_long=-127.150547
+curl https://apps.nrs.gov.bc.ca/gwells/api/v1/wells?sw_lat=51.599253&sw_long=-128.220340&ne_lat=52.108192&ne_long=-127.150547
 ```
 
 Aquifers:
 ```sh
 # all aquifers
-https://apps.nrs.gov.bc.ca/gwells/api/v1/aquifers
+curl https://apps.nrs.gov.bc.ca/gwells/api/v1/aquifers
 ```
 
-See the [Swagger documentation](https://apps.nrs.gov.bc.ca/gwells/api) for more examples.
+See the [Swagger documentation](https://apps.nrs.gov.bc.ca/gwells/api/) for more examples.
 
 ## DataBC Export
 
-GWELLS Api is used by Databc to export model information and provide well information on the DataBC website.
+GWELLS Api is used by DataBC to export model information and provide well information on the DataBC website.
 
-The command located in app/backend/gwells/management/commands/export_databc.py is used to pull data from the gwells database and export it for consumption in DataBC. 
+The command located in app/backend/gwells/management/commands/export_databc.py is used to pull data from the gwells database and export it for consumption in DataBC.
 
 If a new field(s) are needed for export, this export_databc.py has raw sql queries that need to be updated with the required fields. Descriptions are also needed for the swagger documentation that are pulled from the db_comment fields in the django models. Both the raw sql queries and the db_comment field on the model need to be updated for new fields.
 
@@ -79,13 +79,13 @@ Some GWELLS pages (submitting new well reports, adding or editing aquifers, or a
 Django unit tests:
 ```sh
 cd app/backend
-python manage.py test
+docker-compose exec backend python manage.py test
 ```
 
 Vue unit tests:
 ```sh
 cd app/frontend
-npm run test:unit
+docker-compose exec frontend npm run test:unit
 ```
 
 Postman API tests:
@@ -110,7 +110,7 @@ docker-compose exec backend python manage.py import_bulk_shapefile bulk
 
 ### Importing Licences
 
-To download new licence data from DataBC and merge it into your DB, do 
+To download new licence data from DataBC and merge it into your DB, do
 
 ```
 docker-compose exec backend python manage.py import_licences
@@ -124,22 +124,23 @@ Pull requests made from branches in the bcgov/gwells repo will kick off a dev pi
 
 GWELLS uses PostgreSQL (with PostGIS), Django REST Framework, and Vue.js. We also use both AWS S3 and a self-hosted Minio service for storing documents.
 
-Our production and staging environments run on an OpenShift container platform cluster.  OpenShift templates for services are located in the `openshift/` folder, along with more information about dev and staging environments on our cluster.
+Our production and staging environments run on an OpenShift container platform cluster. OpenShift templates for services are located in the `openshift/` folder, along with more information about dev and staging environments on our cluster.
 
 ![GWELLS container diagram](pics/container_diagram.png)
 
 ## Contributing
 
-Government employees, the public and members of the private sector are encouraged to contribute.  Please read and follow our [Code of Conduct](https://github.com/bcgov/gwells/blob/master/CODE_OF_CONDUCT.md).
+Government employees, the public and members of the private sector are encouraged to contribute. Please read and follow our [Code of Conduct](https://github.com/bcgov/gwells/blob/master/CODE_OF_CONDUCT.md).
 
-All contributors retain original copyright, but are granting a world-wide, royalty-free, perpetual, irrevocable, non-exclusive, transferable license to all users.  This project is covered by an [Apache v2.0 license](https://github.com/bcgov/gwells/blob/master/LICENSE).
+All contributors retain original copyright, but are granting a world-wide, royalty-free, perpetual, irrevocable, non-exclusive, transferable license to all users. This project is covered by an [Apache v2.0 license](https://github.com/bcgov/gwells/blob/master/LICENSE).
 
 ### Code With Us
 
 Many of our features have been developed by members of the community. Check the [BC Developer Exchange website](https://bcdevexchange.org/), where paid opportunities to build features for GWELLS and other applications are posted.
 
 ## Issues
-Issues are tracked on the [GWELLS Trello board](https://trello.com/b/2UQZgXHR/wells-project-board).
+
+Issues are tracked on the [Water Jira board](https://apps.nrs.gov.bc.ca/int/jira/projects/WATER/issues). Note this is a restricted issue tracker and you will require permission to be able to view it.
 
 ## License
 

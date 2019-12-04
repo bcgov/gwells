@@ -837,6 +837,7 @@
                     "targetPort": "web"
                 },
                 "tls": {
+                    "insecureEdgeTerminationPolicy": "Redirect",
                     "termination": "edge"
                 },
                 "wildcardPolicy": "None"
