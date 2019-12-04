@@ -192,7 +192,7 @@
             The total licensed volume is counted once for each licence (the total volume may be shared between wells if there are multiple wells in a licence). In cases where specific volumes are licensed for multiple purposes, individual volumes are summed.
           </p>
         </b-col>
-        <b-col cols="12" xl="4" lg="6">
+        <b-col cols="12" xl="4" lg="6" class="knowledge-indicators">
           <h5 class="mt-3 border-bottom pb-4 main-title">Knowledge Indicators</h5>
           <ul class="ml-0 mr-0 mb-0 mt-4 p-0 aquifer-information-list">
             <div class="aquifer-information-list-divider"></div>
@@ -289,6 +289,15 @@ a {
   position: relative;
 }
 
+.aquifer-information-list-divider {
+  position: absolute;
+  top: 0;
+  width: 1px;
+  height: 100%;
+  background-color: rgba(0,0,0,.1);
+  left: 50%;
+}
+
 .aquifer-information-list > li {
   display: block;
   width: 100%;
@@ -303,6 +312,7 @@ a {
 }
 
 .aquifer-information-list dt {
+  padding-right: 1rem;
   font-weight: bold;
 }
 
@@ -313,6 +323,10 @@ a {
 
 .aquifer-information-list dd p {
   margin-bottom: 0;
+}
+
+.knowledge-indicators .aquifer-information-list dt {
+  text-align: right;
 }
 
 .pie-chart-title {
