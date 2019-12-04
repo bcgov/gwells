@@ -95,30 +95,3 @@ class TestAquifersSpatial(APITestCase):
                 'realtime': 'true', 'sw_lat': 49, 'sw_long': -125, 'ne_lat': 49, 'ne_long': -124
             })
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-
-class TestAquiferDetails(APITestCase):
-    def setUp(self):
-        roles = [AQUIFERS_VIEWER_ROLE]
-        for role in roles:
-            group = Group(name=role)
-            group.save()
-        user, _created = User.objects.get_or_create(username='test')
-        user.profile.username = user.username
-        user.save()
-        roles_to_groups(user, roles)
-        self.client.force_authenticate(user)
-        Aquifer(aquifer_id=1).save()
-
-    def test_v1_has_no_observation_well_status(self):
-        url = reverse('aquifer-retrieve-update', kwargs={'aquifer_id': 1, 'version': 'v1'})
-        response = self.client.get(url, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertNotContains(response, 'observation_well_status')
-
-    def test_v2_has_observation_well_status(self):
-        url = reverse('aquifer-retrieve-update', kwargs={'aquifer_id': 1, 'version': 'v2'})
-        response = self.client.get(url, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        print(response.data)
-        self.assertContains(response, 'observation_well_status')

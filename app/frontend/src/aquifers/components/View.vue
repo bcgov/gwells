@@ -200,34 +200,38 @@
               </div>
               <div class="observational-wells" v-if="index === 2">
                 <dt>Observation wells</dt>
-                <dd v-if="active_obs_wells.length > 0 && inactive_obs_wells.length > 0">
-                  <h6 class="border-bottom">Active</h6>
-                  <ul class="p-0 m-0">
-                    <li v-for="owell in active_obs_wells" :key="owell.observation_well_number" :data-water-level="owell.waterLevels">
-                      <a :href="getObservationWellLink(owell.observation_well_number)" target="_blank">{{ owell.observation_well_number }}</a>
-                      <span v-if="owell.waterLevels">
-                        Water Level Analysis:
-                        <a href="http://www.env.gov.bc.ca/soe/indicators/water/groundwater-levels.html" target="_blank">
-                        {{ owell.waterLevels }}
-                        </a>
-                      </span>
-                    </li>
-                  </ul>
-                  <h6 class="border-bottom mt-2">Inactive<br><small>(data may not be available)</small></h6>
-                  <ul class="p-0 m-0">
-                    <li v-for="owell in inactive_obs_wells" :key="owell.observation_well_number" :data-water-level="owell.waterLevels">
-                      <a :href="getObservationWellLink(owell.observation_well_number)" target="_blank">{{ owell.observation_well_number }}</a>
-                      <div v-if="owell.waterLevels">
-                        Water Level Analysis:
-                        <a href="http://www.env.gov.bc.ca/soe/indicators/water/groundwater-levels.html" target="_blank">
-                        {{ owell.waterLevels }}
-                        </a>
-                      </div>
-                    </li>
-                  </ul>
-                </dd>
-                <dd v-else>
-                  No information available.
+                <dd>
+                  <div v-if="active_obs_wells.length > 0">
+                    <h6 class="border-bottom">Active</h6>
+                    <ul class="p-0 m-0">
+                      <li v-for="owell in active_obs_wells" :key="owell.observation_well_number" :data-water-level="owell.waterLevels">
+                        <a :href="getObservationWellLink(owell.observation_well_number)" target="_blank">{{ owell.observation_well_number }}</a>
+                        <span v-if="owell.waterLevels">
+                          Water Level Analysis:
+                          <a href="http://www.env.gov.bc.ca/soe/indicators/water/groundwater-levels.html" target="_blank">
+                            {{ owell.waterLevels }}
+                          </a>
+                        </span>
+                      </li>
+                    </ul>
+                  </div>
+                  <div v-else-if="inactive_obs_wells.length > 0">
+                    <h6 class="border-bottom mt-2">Inactive<br><small>(data may not be available)</small></h6>
+                    <ul class="p-0 m-0">
+                      <li v-for="owell in inactive_obs_wells" :key="owell.observation_well_number" :data-water-level="owell.waterLevels">
+                        <a :href="getObservationWellLink(owell.observation_well_number)" target="_blank">{{ owell.observation_well_number }}</a>
+                        <div v-if="owell.waterLevels">
+                          Water Level Analysis:
+                          <a href="http://www.env.gov.bc.ca/soe/indicators/water/groundwater-levels.html" target="_blank">
+                            {{ owell.waterLevels }}
+                          </a>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                  <div v-else>
+                    No information available.
+                  </div>
                 </dd>
               </div>
               <dt>{{ section.name }}</dt>
