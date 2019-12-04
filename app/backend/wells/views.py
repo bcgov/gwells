@@ -138,7 +138,7 @@ class ListExtracts(APIView):
     get: list well extracts
     """
     @swagger_auto_schema(auto_schema=None)
-    def get(self, request):
+    def get(self, request, **kwargs):
         host = get_env_variable('S3_HOST')
         use_secure = int(get_env_variable('S3_USE_SECURE', 1))
         minioClient = Minio(host,
@@ -202,7 +202,7 @@ class ListFiles(APIView):
     """
 
     @swagger_auto_schema(responses={200: openapi.Response('OK', LIST_FILES_OK)})
-    def get(self, request, tag):
+    def get(self, request, tag, **kwargs):
 
         well = get_object_or_404(Well, pk=tag)
 
@@ -293,7 +293,7 @@ class WellTagSearchAPIView(ListAPIView):
 
         return qs
 
-    def get(self, request):
+    def get(self, request, **kwargs):
         data = self.get_queryset().values('well_tag_number', 'owner_full_name').order_by('well_tag_number')
         return Response(data)
 
@@ -345,7 +345,7 @@ class WellLocationListAPIView(ListAPIView):
 
         return qs
 
-    def get(self, request):
+    def get(self, request, **kwargs):
         """ cancels request if too many wells are found"""
 
         qs = self.get_queryset()
@@ -487,7 +487,7 @@ class WellExportListAPIView(ListAPIView):
             for item in serializer.data:
                 yield item
 
-    def list(self, request):
+    def list(self, request, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
         count = queryset.count()
         # return an empty response if there are too many wells to display
@@ -525,7 +525,7 @@ class PreSignedDocumentKey(APIView):
     permission_classes = (WellsEditPermissions,)
 
     @swagger_auto_schema(auto_schema=None)
-    def get(self, request, tag):
+    def get(self, request, tag, **kwargs):
         well = get_object_or_404(self.queryset, pk=tag)
         client = MinioClient(
             request=request, disable_private=False)
@@ -558,7 +558,7 @@ class DeleteWellDocument(APIView):
     permission_classes = (WellsEditPermissions,)
 
     @swagger_auto_schema(auto_schema=None)
-    def delete(self, request, tag):
+    def delete(self, request, tag, **kwargs):
         well = get_object_or_404(self.queryset, pk=tag)
         client = MinioClient(
             request=request, disable_private=False)
@@ -588,7 +588,7 @@ class WellHistory(APIView):
     queryset = Well.objects.all()
     swagger_schema = None
 
-    def get(self, request, well_id):
+    def get(self, request, well_id, **kwargs):
         """
         Retrieves version history for the specified Well record and creates a list of diffs
         for each revision.
@@ -651,7 +651,7 @@ WELL_PROPERTIES = openapi.Schema(
     }
 )
 @api_view(['GET'])
-def well_geojson(request):
+def well_geojson(request, **kwargs):
     realtime = request.GET.get('realtime') in ('True', 'true')
     if realtime:
         sw_long = request.query_params.get('sw_long')
@@ -731,7 +731,7 @@ LITHOLOGY_PROPERTIES = openapi.Schema(
     }
 )
 @api_view(['GET'])
-def lithology_geojson(request):
+def lithology_geojson(request, **kwargs):
     realtime = request.GET.get('realtime') in ('True', 'true')
     if realtime:
         sw_long = request.query_params.get('sw_long')
@@ -762,7 +762,7 @@ def lithology_geojson(request):
 
 
 @api_view(['GET'])
-def well_licensing(request):
+def well_licensing(request, **kwargs):
     tag = request.GET.get('well_tag_number')
     url = get_env_variable('E_LICENSING_URL') + '{}'.format(tag)
     api_success = False

@@ -49,7 +49,7 @@ services:
     working_dir: /app/frontend
     environment:
       DEBUG: "True"
-      VUE_APP_AXIOS_BASE_URL: http://127.0.0.1:8000/gwells/api/v1/
+      VUE_APP_AXIOS_BASE_URL: http://127.0.0.1:8000/gwells/api/v2/
       CHOKIDAR_USEPOLLING: "True"
     command: /bin/bash -c "
         set -x &&
