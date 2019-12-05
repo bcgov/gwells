@@ -198,7 +198,7 @@
             <div class="aquifer-information-list-divider"></div>
             <li :key="section.id" v-for="section in aquifer_resource_sections">
               <div class="observational-wells" v-if="section.key === 'obs-wells'">
-                <dt>Observation wells</dt>
+                <dt class="text-right">Observation wells</dt>
                 <dd v-if="obsWells.length > 0">
                   <ul class="p-0 m-0">
                     <li v-for="owell in obsWells" :key="owell.observation_well_number">
@@ -216,7 +216,7 @@
                 </dd>
               </div>
               <div class="water-quality-information" v-else-if="section.key === 'water-quality'">
-                <dt>Water quality information</dt>
+                <dt class="text-right">Water quality information</dt>
                 <dd>
                   <router-link :to="{ name: 'wells-home', query: {'match_any':false, 'ems_has_value':true, 'aquifer': id}, hash: '#advanced'}">
                     {{ licence_details['num_wells_with_ems'] }} wells with an EMS ID
@@ -224,7 +224,7 @@
                 </dd>
               </div>
               <div class="aquifer-connected" v-else-if="section.key === 'aquifer-connected'">
-                <dt>Hydraulically connected (screening level)
+                <dt class="text-right">Hydraulically connected (screening level)
                   <i id="aquiferConnectedInfo" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
                   <b-popover
                     target="aquiferConnectedInfo"
@@ -235,7 +235,7 @@
                 <dd>{{ licence_details['hydraulically_connected'] ? "More likely" : "Less likely"}}</dd>
               </div>
               <div v-else>
-                <dt>{{ section.name }}</dt>
+                <dt class="text-right">{{ section.name }}</dt>
                 <dd>
                   <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
                     <li><a :href="resource.url" @click="handleExternalResourceClicks" target="_blank">{{ resource.name }}</a></li>
@@ -325,10 +325,6 @@ a {
 
 .aquifer-information-list dd p {
   margin-bottom: 0;
-}
-
-.knowledge-indicators .aquifer-information-list dt {
-  text-align: right;
 }
 
 .pie-chart-title {
