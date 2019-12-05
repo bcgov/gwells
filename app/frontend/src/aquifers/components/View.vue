@@ -153,7 +153,10 @@
           <h5 class="mt-3 border-bottom pb-4 main-title">Licensing Information</h5>
           <div>
             <p>
-              The licensing summaries should be considered estimates. Due to complexities in the structure of the licensing data, reported values should be confirmed through the e-licensing portal.
+              The licensing summaries should be considered estimates. Due to complexities in the structure
+              of the licensing data, reported values should be confirmed through the
+              <a href="https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&amp;PosseObjectDef=o_ATIS_DocumentSearch&amp;PosseMenuName=WS_Main" target="_blank" class="d-print-url">
+                e&#8209;licensing portal</a>.
             </p>
           </div>
           <ul class="ml-0 mr-0 mt-4 mb-0 p-0 aquifer-information-list">
@@ -180,16 +183,27 @@
               </b-col>
             </b-row>
           </div>
-          <b-table striped hover :items="licence_details.wells_by_licence"></b-table>
+          <b-table striped :items="licence_details.wells_by_licence">
+            <template slot="licence_number" slot-scope="row">
+              <a :href="`https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&amp;PosseObjectDef=o_ATIS_DocumentSearch&amp;PosseMenuName=WS_Main&Criteria_LicenceNumber=${row.item.licence_number}`" target="_blank">
+                {{ row.item.licence_number }}
+              </a>
+            </template>
+          </b-table>
           <p><i v-if="licence_details.licences_updated && licence_details.licences_updated.update_date__max">Licence info last updated {{ licence_details.licences_updated.update_date__max|formatDate }}</i></p>
           <p>
-            Licensing information is obtained from the <a href="https://catalogue.data.gov.bc.ca/dataset/water-rights-licences-public" @click="handleOutboundLinkClicks('https://catalogue.data.gov.bc.ca/dataset/water-rights-licences-public')" target="_blank">Water Rights Licence - Public data layer</a>.
+            Licensing information is obtained from
+            the <a href="https://catalogue.data.gov.bc.ca/dataset/water-rights-licences-public" @click="handleOutboundLinkClicks('https://catalogue.data.gov.bc.ca/dataset/water-rights-licences-public')" target="_blank" class="d-print-url">
+              Water Rights Licence - Public data layer
+            </a>.
           </p>
           <p>
             Unique licenses are counted once for each aquifer that they are associated with.
           </p>
           <p>
-            The total licensed volume is counted once for each licence (the total volume may be shared between wells if there are multiple wells in a licence). In cases where specific volumes are licensed for multiple purposes, individual volumes are summed.
+            The total licensed volume is counted once for each licence (the total volume may
+            be shared between wells if there are multiple wells in a licence). In cases where
+            specific volumes are licensed for multiple purposes, individual volumes are summed.
           </p>
         </b-col>
         <b-col cols="12" xl="4" lg="6">
@@ -202,9 +216,9 @@
                 <dd v-if="obsWells.length > 0">
                   <ul class="p-0 m-0">
                     <li v-for="owell in obsWells" :key="owell.observation_well_number">
-                      <a :href="getObservationWellLink(owell.observation_well_number)" target="_blank">Observation Well {{ owell.observation_well_number }}</a>
+                      <a :href="getObservationWellLink(owell.observation_well_number)" target="_blank" class="d-print-url">Observation Well {{ owell.observation_well_number }}</a>
                       <br/>Water Level Analysis:
-                      <a v-if="owell.waterLevel" :href="owell.waterLevel.hasLevelAnalysis ? 'http://www.env.gov.bc.ca/soe/indicators/water/groundwater-levels.html' : false" target="_blank">
+                      <a v-if="owell.waterLevel" :href="owell.waterLevel.hasLevelAnalysis ? 'http://www.env.gov.bc.ca/soe/indicators/water/groundwater-levels.html' : false" target="_blank" class="d-print-url">
                         {{ owell.waterLevel.levels }}
                       </a>
                       <span v-else>No information available.</span>
@@ -238,7 +252,7 @@
                 <dt>{{ section.name }}</dt>
                 <dd>
                   <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
-                    <li><a :href="resource.url" @click="handleExternalResourceClicks" target="_blank">{{ resource.name }}</a></li>
+                    <li><a :href="resource.url" @click="handleExternalResourceClicks" target="_blank" class="d-print-url">{{ resource.name }}</a></li>
                   </ul>
                   <p v-if="!bySection(record.resources, section).length">No information available.</p>
                 </dd>
@@ -337,8 +351,13 @@ a {
 }
 
 @media print {
-  .aquifer-details a::after{
+  a:not(.d-print-url) {
+    text-decoration: none !important;
+  }
+
+  a.d-print-url[href]::after {
     content: " (" attr(href) ") ";
+    word-break: break-all;
   }
 
   .aquifer-information-list dt {
@@ -572,6 +591,16 @@ export default {
           // force the map to update.
           this.record = response.data
           this.licence_details = response.data.licence_details
+
+          // REMOVE THIS
+          this.licence_details.wells_by_licence = [
+            {licence_number: 500003, well_tag_numbers_in_licence: "55889, 109507, 11895, 28360"},
+            {licence_number: 500070, well_tag_numbers_in_licence: "104603, 43284"},
+            {licence_number: 501086, well_tag_numbers_in_licence: "28360, 89594"},
+            {licence_number: 500914, well_tag_numbers_in_licence: "87864, 28360"},
+            {licence_number: 501274, well_tag_numbers_in_licence: "110988, 43284"},
+          ]
+
           this.lic_qty = response.data.licence_details.lic_qty
           this.obs_wells = response.data.licence_details.obs_wells
         }).catch((error) => {
