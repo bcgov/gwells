@@ -196,8 +196,8 @@
           <h5 class="mt-3 border-bottom pb-4 main-title">Knowledge Indicators</h5>
           <ul class="ml-0 mr-0 mb-0 mt-4 p-0 aquifer-information-list">
             <div class="aquifer-information-list-divider"></div>
-          <li :key="section.id" v-for="(section, index) in aquifer_resource_sections">
-              <div class="observational-wells" v-if="index === 2">
+            <li :key="section.id" v-for="section in aquifer_resource_sections">
+              <div class="observational-wells" v-if="section.key === 'obs-wells'">
                 <dt>Observation wells</dt>
                 <dd>
                   <div v-if="active_obs_wells.length > 0">
@@ -233,20 +233,15 @@
                   </div>
                 </dd>
               </div>
-              <dt>{{ section.name }}</dt>
-              <dd>
-                <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
-                  <li><a :href="resource.url" @click="handleExternalResourceClicks" target="_blank">{{ resource.name }}</a></li>
-                </ul>
-                <p v-if="!bySection(record.resources, section).length">No information available.</p>
-              </dd>
-              <div class="water-quality-information" v-if="index === 5">
+              <div class="water-quality-information" v-else-if="section.key === 'water-quality'">
                 <dt>Water quality information</dt>
                 <dd>
                   <router-link :to="{ name: 'wells-home', query: {'match_any':false, 'ems_has_value':true, 'aquifer': id}, hash: '#advanced'}">
                     {{ licence_details['num_wells_with_ems'] }} wells with an EMS ID
                   </router-link>
                 </dd>
+              </div>
+              <div class="aquifer-connected" v-else-if="section.key === 'aquifer-connected'">
                 <dt>Hydraulically connected (screening level)
                   <i id="aquiferConnectedInfo" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
                   <b-popover
@@ -257,7 +252,16 @@
                 </dt>
                 <dd>{{ licence_details['hydraulically_connected'] ? "More likely" : "Less likely"}}</dd>
               </div>
-          </li>
+              <div v-else>
+                <dt>{{ section.name }}</dt>
+                <dd>
+                  <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
+                    <li><a :href="resource.url" @click="handleExternalResourceClicks" target="_blank">{{ resource.name }}</a></li>
+                  </ul>
+                  <p v-if="!bySection(record.resources, section).length">No information available.</p>
+                </dd>
+              </div>
+            </li>
           </ul>
         </b-col>
       </b-row>
@@ -310,7 +314,7 @@ a {
 .aquifer-information-list > li {
   display: block;
   width: 100%;
-  margin: 0.3rem 0;
+  margin: 0.7rem 0;
 }
 .aquifer-information-list dt,
 .aquifer-information-list dd {
@@ -321,11 +325,15 @@ a {
 }
 
 .aquifer-information-list dt {
-  padding-right: 2rem;
+  font-weight: bold;
 }
 
 .aquifer-information-list dd {
-  padding-left: 2rem;
+  padding-left: 1rem;
+  margin-bottom: 0;
+}
+
+.aquifer-information-list dd p {
   margin-bottom: 0;
 }
 
@@ -417,7 +425,6 @@ export default {
   created () {
     this.fetch()
     this.fetchFiles()
-    this.fetchResourceSections()
   },
   data () {
     return {
@@ -433,7 +440,17 @@ export default {
       },
       showSaveSuccess: false,
       aquiferFiles: {},
-      aquifer_resource_sections: [],
+      aquifer_resource_sections: [
+        {code: 'M', name: 'Advanced mapping'},
+        {code: 'A', name: 'Artesian advisory'},
+        {key: 'obs-wells', name: 'Oberservation Wells'},
+        {code: 'N', name: 'Numerical model'},
+        {code: 'P', name: 'Pumping stress index'},
+        {code: 'W', name: 'Water budget'},
+        {key: 'water-quality', name: 'Water quality information'},
+        {key: 'aquifer-connected', name: 'Hydraulically connected (screening level)'},
+        {code: 'I', name: 'Other information'},
+      ],
       wells: [],
       active_obs_wells: [],
       inactive_obs_wells: [],
@@ -592,11 +609,6 @@ export default {
         .then((response) => {
           this.aquiferFiles = response.data
         })
-    },
-    fetchResourceSections () {
-      ApiService.query('aquifers/sections').then((response) => {
-        this.aquifer_resource_sections = response.data.results
-      })
     },
     getObservationWellLink (wellNumber) {
       return `https://governmentofbc.maps.arcgis.com/apps/webappviewer/index.html?id=b53cb0bf3f6848e79d66ffd09b74f00d&find=OBS WELL ${wellNumber}`
