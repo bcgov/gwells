@@ -126,7 +126,7 @@
             <div class="aquifer-information-list-divider"></div>
             <li>
               <dt>Number of wells associated to the aquifer</dt>
-              <dd>
+              <dd class="m-0">
                 <router-link :to="{ name: 'wells-home', query: {'match_any':false, 'aquifer': this.record.aquifer_id, 'search':'', 'well':''}}">
                   {{ licence_details.num_wells }}
                 </router-link>
@@ -134,7 +134,7 @@
             </li>
             <li>
               <dt>Artesian wells</dt>
-              <dd>
+              <dd class="m-0">
                 <router-link :to="{ name: 'wells-home', query: {'match_any':false, 'aquifer':this.id, 'artesian_flow_has_value':true}, hash: '#advanced'}">
                   {{ licence_details.num_artesian_wells }} artesian wells in aquifer
                 </router-link>
@@ -160,12 +160,12 @@
             <div class="aquifer-information-list-divider"></div>
             <li>
               <dt>Number of groundwater licences</dt>
-              <dd>{{ licence_details.licence_count }}</dd>
+              <dd class="m-0">{{ licence_details.licence_count }}</dd>
             </li>
             <li>
               <dt>Water withdrawal volume (annual)</dt>
-              <dd v-if="waterWithdrawlVolume">{{ waterWithdrawlVolume | unitWaterVolume}}</dd>
-              <dd v-else>No information available.</dd>
+              <dd class="m-0">v-if="waterWithdrawlVolume">{{ waterWithdrawlVolume | unitWaterVolume}}</dd>
+              <dd class="m-0">v-else>No information available.</dd>
             </li>
           </ul>
           <div v-if="licence_details.lic_qty.length > 0">
@@ -199,7 +199,7 @@
             <li :key="section.id" v-for="section in aquifer_resource_sections">
               <div class="observational-wells" v-if="section.key === 'obs-wells'">
                 <dt class="text-right">Observation wells</dt>
-                <dd v-if="obsWells.length > 0">
+                <dd class="m-0" v-if="obsWells.length > 0">
                   <ul class="p-0 m-0">
                     <li v-for="owell in obsWells" :key="owell.observation_well_number">
                       <a :href="getObservationWellLink(owell.observation_well_number)" target="_blank">Observation Well {{ owell.observation_well_number }}</a>
@@ -211,13 +211,13 @@
                     </li>
                   </ul>
                 </dd>
-                <dd v-else>
+                <dd class="m-0" v-else>
                   No information available.
                 </dd>
               </div>
               <div class="water-quality-information" v-else-if="section.key === 'water-quality'">
                 <dt class="text-right">Water quality information</dt>
-                <dd>
+                <dd class="m-0">
                   <router-link :to="{ name: 'wells-home', query: {'match_any':false, 'ems_has_value':true, 'aquifer': id}, hash: '#advanced'}">
                     {{ licence_details['num_wells_with_ems'] }} wells with an EMS ID
                   </router-link>
@@ -232,15 +232,15 @@
                     content="Inferred based on aquifer subtype - not field verified."
                   ></b-popover>
                 </dt>
-                <dd>{{ licence_details['hydraulically_connected'] ? "More likely" : "Less likely"}}</dd>
+                <dd class="m-0">{{ licence_details['hydraulically_connected'] ? "More likely" : "Less likely"}}</dd>
               </div>
               <div v-else>
                 <dt class="text-right">{{ section.name }}</dt>
-                <dd>
+                <dd class="m-0">
                   <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
                     <li><a :href="resource.url" @click="handleExternalResourceClicks" target="_blank">{{ resource.name }}</a></li>
                   </ul>
-                  <p v-if="!bySection(record.resources, section).length">No information available.</p>
+                  <p class="m-0" v-if="!bySection(record.resources, section).length">No information available.</p>
                 </dd>
               </div>
             </li>
@@ -320,11 +320,6 @@ a {
 
 .aquifer-information-list dd {
   padding-left: 2rem;
-  margin-bottom: 0;
-}
-
-.aquifer-information-list dd p {
-  margin-bottom: 0;
 }
 
 .pie-chart-title {
