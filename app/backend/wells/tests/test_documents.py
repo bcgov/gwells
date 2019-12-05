@@ -22,9 +22,6 @@ from gwells.settings import REST_FRAMEWORK
 from gwells.documents import MinioClient
 
 
-API_VERSION = 'v1'
-
-
 class DocumentTests(TestCase):
 
     def setUp(self):
@@ -53,6 +50,6 @@ class DocumentTests(TestCase):
 
 class TestDocumentsAPI(APITestCase):
     def test_documents_404(self):
-        url = reverse('file-list', kwargs={'tag': 987654321, 'version': API_VERSION})
+        url = reverse('file-list', kwargs={'tag': 987654321, 'version': 'v1'})
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

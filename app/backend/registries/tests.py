@@ -38,8 +38,6 @@ from registries.views import PersonListView, PersonDetailView
 from gwells.roles import (roles_to_groups, REGISTRIES_VIEWER_ROLE, REGISTRIES_EDIT_ROLE)
 
 
-API_VERSION = 'v1'
-
 # Note: see postman/newman for more API tests.
 # Postman API tests include making requests with incomplete data, missing required fields etc.
 # They are located at {base-dir}/api-tests/
@@ -176,7 +174,7 @@ class RegistriesApplicationNoStatusTest(RegistriesApplicationTestBase):
         }
 
         url = reverse('application-detail',
-                      kwargs={'application_guid': self.app.application_guid, 'version': API_VERSION})
+                      kwargs={'application_guid': self.app.application_guid, 'version': 'v1'})
         response = self.client.patch(url, data, format='json')
         updated_application = RegistriesApplication.objects.get(
             application_guid=self.app.application_guid)
@@ -199,7 +197,7 @@ class RegistriesApplicationWithStatusActiveTest(RegistriesApplicationTestBase):
         }
 
         url = reverse('application-detail',
-                      kwargs={'application_guid': self.app.application_guid, 'version': API_VERSION})
+                      kwargs={'application_guid': self.app.application_guid, 'version': 'v1'})
         response = self.client.patch(url, data, format='json')
         updated_application = RegistriesApplication.objects.get(
             application_guid=self.app.application_guid)
@@ -215,7 +213,7 @@ class RegistriesApplicationStatusSubactivityTest(RegistriesApplicationTestBase):
         data = {'subactivity': 'GEOTECH'}
 
         url = reverse('application-detail',
-                      kwargs={'application_guid': self.app.application_guid, 'version': API_VERSION})
+                      kwargs={'application_guid': self.app.application_guid, 'version': 'v1'})
         response = self.client.patch(url, data, format='json')
         updated_application = RegistriesApplication.objects.get(
             application_guid=self.app.application_guid)
@@ -249,7 +247,7 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
         Create a new organization object.
         """
 
-        url = reverse('organization-list', kwargs={'version': API_VERSION})
+        url = reverse('organization-list', kwargs={'version': 'v1'})
         count_before = Organization.objects.count()
 
         response = self.client.post(url, self.initial_data, format='json')
@@ -258,7 +256,7 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
         self.assertEqual(Organization.objects.count(), count_before + 1)
 
     def test_list_organization(self):
-        url = reverse('organization-list', kwargs={'version': API_VERSION})
+        url = reverse('organization-list', kwargs={'version': 'v1'})
         new_object = self.client.post(url, self.initial_data, format='json')
         created_guid = new_object.data['org_guid']
 
@@ -269,13 +267,13 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
         self.assertContains(response, created_guid)
 
     def test_retrieve_organization(self):
-        create_url = reverse('organization-list', kwargs={'version': API_VERSION})
+        create_url = reverse('organization-list', kwargs={'version': 'v1'})
         new_object = self.client.post(
             create_url, self.initial_data, format='json')
         created_guid = new_object.data['org_guid']
 
         retrieve_url = reverse('organization-detail',
-                               kwargs={'org_guid': created_guid, 'version': API_VERSION})
+                               kwargs={'org_guid': created_guid, 'version': 'v1'})
         response = self.client.get(retrieve_url, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -287,13 +285,13 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
             'city': 'Duncan'
         }
 
-        create_url = reverse('organization-list', kwargs={'version': API_VERSION})
+        create_url = reverse('organization-list', kwargs={'version': 'v1'})
         new_object = self.client.post(
             create_url, self.initial_data, format='json')
         created_guid = new_object.data['org_guid']
 
         object_url = reverse('organization-detail',
-                             kwargs={'org_guid': created_guid, 'version': API_VERSION})
+                             kwargs={'org_guid': created_guid, 'version': 'v1'})
 
         # Apply a new city name with PATCH method
         self.client.patch(object_url, new_data, format='json')
@@ -311,13 +309,13 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
             'province_state': 'BC'
         }
 
-        create_url = reverse('organization-list', kwargs={'version': API_VERSION})
+        create_url = reverse('organization-list', kwargs={'version': 'v1'})
         new_object = self.client.post(
             create_url, self.initial_data, format='json')
         created_guid = new_object.data['org_guid']
 
         object_url = reverse('organization-detail',
-                             kwargs={'org_guid': created_guid, 'version': API_VERSION})
+                             kwargs={'org_guid': created_guid, 'version': 'v1'})
 
         # Apply a new city name with PATCH method
         self.client.put(object_url, new_data, format='json')
@@ -334,13 +332,13 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
         previous_level = logger.getEffectiveLevel()
         logger.setLevel(logging.ERROR)
 
-        create_url = reverse('organization-list', kwargs={'version': API_VERSION})
+        create_url = reverse('organization-list', kwargs={'version': 'v1'})
         new_object = self.client.post(
             create_url, self.initial_data, format='json')
         created_guid = new_object.data['org_guid']
 
         retrieve_url = reverse('organization-detail',
-                               kwargs={'org_guid': created_guid, 'version': API_VERSION})
+                               kwargs={'org_guid': created_guid, 'version': 'v1'})
         retrieve_response = self.client.get(retrieve_url, format='json')
 
         self.assertEqual(retrieve_response.status_code, status.HTTP_200_OK)
@@ -367,13 +365,13 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
         are updated when Organization objects are created.
         """
 
-        create_url = reverse('organization-list', kwargs={'version': API_VERSION})
+        create_url = reverse('organization-list', kwargs={'version': 'v1'})
         new_object = self.client.post(
             create_url, self.initial_data, format='json')
         created_guid = new_object.data['org_guid']
 
         retrieve_url = reverse('organization-detail',
-                               kwargs={'org_guid': created_guid, 'version': API_VERSION})
+                               kwargs={'org_guid': created_guid, 'version': 'v1'})
         response = self.client.get(retrieve_url, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -386,7 +384,7 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
         Ensure that users who are not authenticated cannot create Organization objects
         """
         self.client.force_authenticate(user=None)
-        url = reverse('organization-list', kwargs={'version': API_VERSION})
+        url = reverse('organization-list', kwargs={'version': 'v1'})
         data = {'name': 'Big Time Drilling Co'}
 
         response = self.client.post(url, data, format='json')
@@ -402,7 +400,7 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
         org_object = Organization.objects.create(
             name='Big Time Drilling Co', province_state=self.province)
         object_url = reverse('organization-detail',
-                             kwargs={'org_guid': org_object.org_guid, 'version': API_VERSION})
+                             kwargs={'org_guid': org_object.org_guid, 'version': 'v1'})
 
         update_response = self.client.patch(
             object_url, {'name': 'Small Time Drilling Company'}, format='json')
@@ -440,7 +438,7 @@ class APIPersonTests(AuthenticatedAPITestCase):
         super().setUp()
 
     def test_create_person(self):
-        url = reverse('person-list', kwargs={'version': API_VERSION})
+        url = reverse('person-list', kwargs={'version': 'v1'})
         data = {'first_name': 'Bobby', 'surname': 'Driller'}
         count_before = Person.objects.count()
 
@@ -455,7 +453,7 @@ class APIPersonTests(AuthenticatedAPITestCase):
         self.assertEqual(Person.objects.count(), count_before + 1)
 
     def test_list_people(self):
-        url = reverse('person-list', kwargs={'version': API_VERSION})
+        url = reverse('person-list', kwargs={'version': 'v1'})
         new_object = self.client.post(url, self.initial_data, format='json')
         created_guid = new_object.data['person_guid']
 
@@ -466,13 +464,13 @@ class APIPersonTests(AuthenticatedAPITestCase):
         self.assertContains(response, created_guid)
 
     def test_retrieve_person(self):
-        create_url = reverse('person-list', kwargs={'version': API_VERSION})
+        create_url = reverse('person-list', kwargs={'version': 'v1'})
         new_object = self.client.post(
             create_url, self.initial_data, format='json')
         created_guid = new_object.data['person_guid']
 
         retrieve_url = reverse(
-            'person-detail', kwargs={'person_guid': created_guid, 'version': API_VERSION})
+            'person-detail', kwargs={'person_guid': created_guid, 'version': 'v1'})
         response = self.client.get(retrieve_url, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -486,13 +484,13 @@ class APIPersonTests(AuthenticatedAPITestCase):
             'surname': 'Wells'
         }
 
-        create_url = reverse('person-list', kwargs={'version': API_VERSION})
+        create_url = reverse('person-list', kwargs={'version': 'v1'})
         new_object = self.client.post(
             create_url, self.initial_data, format='json')
         created_guid = new_object.data['person_guid']
 
         object_url = reverse(
-            'person-detail', kwargs={'person_guid': created_guid, 'version': API_VERSION})
+            'person-detail', kwargs={'person_guid': created_guid, 'version': 'v1'})
 
         # Apply a new city name with PATCH method
         self.client.patch(object_url, new_data, format='json')
@@ -514,13 +512,13 @@ class APIPersonTests(AuthenticatedAPITestCase):
             'surname': 'Wells'
         }
 
-        create_url = reverse('person-list', kwargs={'version': API_VERSION})
+        create_url = reverse('person-list', kwargs={'version': 'v1'})
         new_object = self.client.post(
             create_url, self.initial_data, format='json')
         created_guid = new_object.data['person_guid']
 
         object_url = reverse(
-            'person-detail', kwargs={'person_guid': created_guid, 'version': API_VERSION})
+            'person-detail', kwargs={'person_guid': created_guid, 'version': 'v1'})
 
         # Apply a new name with PATCH method
         self.client.put(object_url, new_data, format='json')
@@ -542,13 +540,13 @@ class APIPersonTests(AuthenticatedAPITestCase):
             'surname': 'Driller'
         }
 
-        create_url = reverse('person-list', kwargs={'version': API_VERSION})
+        create_url = reverse('person-list', kwargs={'version': 'v1'})
         new_object = self.client.post(
             create_url, self.initial_data, format='json')
         created_guid = new_object.data['person_guid']
 
         retrieve_url = reverse(
-            'person-detail', kwargs={'person_guid': created_guid, 'version': API_VERSION})
+            'person-detail', kwargs={'person_guid': created_guid, 'version': 'v1'})
         retrieve_response = self.client.get(retrieve_url, format='json')
 
         self.assertEqual(retrieve_response.status_code, status.HTTP_200_OK)
@@ -575,7 +573,7 @@ class APIPersonTests(AuthenticatedAPITestCase):
         are updated when Person objects are created.
         """
         view = PersonListView.as_view()
-        post_url = reverse('person-list', kwargs={'version': API_VERSION})
+        post_url = reverse('person-list', kwargs={'version': 'v1'})
         request = self.factory.post(post_url, self.initial_data)
         request.user = self.user
         response = view(request)
@@ -591,7 +589,7 @@ class APIPersonTests(AuthenticatedAPITestCase):
         """
         call_command('createinitialrevisions')
         view = PersonListView.as_view()
-        post_url = reverse('person-list', kwargs={'version': API_VERSION})
+        post_url = reverse('person-list', kwargs={'version': 'v1'})
         request = self.factory.post(post_url, self.initial_data)
         request.user = self.user
         response = view(request)
@@ -606,7 +604,7 @@ class APIPersonTests(AuthenticatedAPITestCase):
         Ensure that users who are not authenticated cannot create Person objects
         """
         self.client.force_authenticate(user=None)
-        url = reverse('person-list', kwargs={'version': API_VERSION})
+        url = reverse('person-list', kwargs={'version': 'v1'})
         data = {'first_name': 'Bobby', 'surname': 'Driller'}
 
         response = self.client.post(url, data, format='json')
@@ -620,7 +618,7 @@ class APIPersonTests(AuthenticatedAPITestCase):
 
         roles_to_groups(user, [REGISTRIES_VIEWER_ROLE, ])
         self.client.force_authenticate(user=user)
-        url = reverse('person-list', kwargs={'version': API_VERSION})
+        url = reverse('person-list', kwargs={'version': 'v1'})
         data = {'first_name': 'Bobby', 'surname': 'Driller'}
 
         response = self.client.post(url, data, format='json')
@@ -636,7 +634,7 @@ class APIPersonTests(AuthenticatedAPITestCase):
         person_object = Person.objects.create(
             first_name='Bobby', surname='Driller')
         object_url = reverse(
-            'person-detail', kwargs={'person_guid': person_object.person_guid, 'version': API_VERSION})
+            'person-detail', kwargs={'person_guid': person_object.person_guid, 'version': 'v1'})
 
         update_response = self.client.patch(
             object_url, {'first_name': 'Billy'}, format='json')
@@ -770,7 +768,7 @@ class APIFilteringPaginationTests(APITestCase):
         )
 
     def test_user_cannot_see_unregistered_person_in_list(self):
-        url = reverse('person-list', kwargs={'version': API_VERSION})
+        url = reverse('person-list', kwargs={'version': 'v1'})
         response = self.client.get(url, format='json')
         self.assertEqual(len(response.data['results']), 2)
         self.assertContains(response, 'Wendy')
@@ -790,7 +788,7 @@ class APIFilteringPaginationTests(APITestCase):
         logger.setLevel(logging.ERROR)
 
         url = reverse(
-            'person-detail', kwargs={'person_guid': self.unregistered_driller.person_guid, 'version': API_VERSION})
+            'person-detail', kwargs={'person_guid': self.unregistered_driller.person_guid, 'version': 'v1'})
         response = self.client.get(url, format='json')
 
         # quick check to make sure the record actually exists
@@ -805,7 +803,7 @@ class APIFilteringPaginationTests(APITestCase):
         logger.setLevel(previous_level)
 
     def test_search_for_name(self):
-        url = reverse('person-list', kwargs={'version': API_VERSION}) + '?search=' + self.driller.first_name
+        url = reverse('person-list', kwargs={'version': 'v1'}) + '?search=' + self.driller.first_name
         response = self.client.get(url, format='json')
 
         self.assertContains(response, self.driller.first_name)
@@ -817,7 +815,7 @@ class APIFilteringPaginationTests(APITestCase):
         self.assertNotContains(response, self.partially_approved_driller.person_guid)
 
     def test_search_for_registration_number(self):
-        url = reverse('person-list', kwargs={'version': API_VERSION}) + '?search=' + \
+        url = reverse('person-list', kwargs={'version': 'v1'}) + '?search=' + \
             self.registration2.registration_no
         response = self.client.get(url, format='json')
 
@@ -836,7 +834,7 @@ class APIFilteringPaginationTests(APITestCase):
 
         self.client.force_authenticate(user=None)
         url = reverse('organization-detail',
-                      kwargs={'org_guid': self.company_with_no_driller.org_guid, 'version': API_VERSION})
+                      kwargs={'org_guid': self.company_with_no_driller.org_guid, 'version': 'v1'})
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
@@ -850,7 +848,7 @@ class APIFilteringPaginationTests(APITestCase):
         logger.setLevel(logging.ERROR)
 
         self.client.force_authenticate(user=None)
-        url = reverse('person-list', kwargs={'version': API_VERSION})
+        url = reverse('person-list', kwargs={'version': 'v1'})
         response = self.client.post(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
@@ -904,7 +902,7 @@ class TestPublicSearch(TestCase):
 
     def test_search_only_returns_approved(self):
         # Test that when searching, only the active applications are returned.
-        url = reverse('person-list', kwargs={'version': API_VERSION}) + '?search=&limit=10&activity=DRILL&status=Removed'
+        url = reverse('person-list', kwargs={'version': 'v1'}) + '?search=&limit=10&activity=DRILL&status=Removed'
         response = self.client.get(url, format='json')
         # We expect no pending records to have been returned.
         self.assertNotContains(response, 'Pending')
@@ -1013,27 +1011,27 @@ class TestAuthenticatedSearch(AuthenticatedAPITestCase):
 
     def test_search_all_no_registration(self):
         # We expect a person that has no registration whatsoever to show up when searching for all.
-        url = reverse('person-list', kwargs={'version': API_VERSION}) + '?search=&limit=10&activity=DRILL'
+        url = reverse('person-list', kwargs={'version': 'v1'}) + '?search=&limit=10&activity=DRILL'
         response = self.client.get(url, format='json')
         self.assertContains(response, self.person_without_registration.surname)
 
     def test_search_all_no_application(self):
         # We expect a person that has a registration, but no application to show up when searching for all.
-        url = reverse('person-list', kwargs={'version': API_VERSION}) + '?search=&limit=10&activity=DRILL'
+        url = reverse('person-list', kwargs={'version': 'v1'}) + '?search=&limit=10&activity=DRILL'
         response = self.client.get(url, format='json')
         self.assertContains(response, self.person_without_application.surname)
 
     def test_search_pending_no_registration(self):
         # We expect a person that has no registrations whatsoever to show up in any
         # pending search.
-        url = reverse('person-list', kwargs={'version': API_VERSION}) + '?search=&limit=10&activity=DRILL&status={}'.format(
+        url = reverse('person-list', kwargs={'version': 'v1'}) + '?search=&limit=10&activity=DRILL&status={}'.format(
             self.status_pending.code)
         response = self.client.get(url, format='json')
         self.assertContains(response, self.person_without_registration.surname)
 
     def test_search_pending_no_application(self):
         # We expect a person that has a registration, but no application to show up when searching for all.
-        url = reverse('person-list', kwargs={'version': API_VERSION}) + '?search=&limit=10&activity=DRILL&status={}'.format(
+        url = reverse('person-list', kwargs={'version': 'v1'}) + '?search=&limit=10&activity=DRILL&status={}'.format(
             self.status_pending.code)
         response = self.client.get(url, format='json')
         self.assertContains(response, self.person_without_application.surname)
@@ -1041,14 +1039,14 @@ class TestAuthenticatedSearch(AuthenticatedAPITestCase):
     def test_search_pending_with_pending_application(self):
         # We expect a person that has a registration, and a pending application to show up when searching for
         # pending.
-        url = reverse('person-list', kwargs={'version': API_VERSION}) + '?search=&limit=10&activity=DRILL&status={}'.format(
+        url = reverse('person-list', kwargs={'version': 'v1'}) + '?search=&limit=10&activity=DRILL&status={}'.format(
             self.status_pending.code)
         response = self.client.get(url, format='json')
         self.assertContains(response, self.person_pending.surname)
 
     def test_search_approved_does_not_return_pending_person(self):
         # Test that when we search for approved person, we don't get pending persons
-        url = reverse('person-list', kwargs={'version': API_VERSION}) + '?search=&limit=10&activity=DRILL&status={}'.format(
+        url = reverse('person-list', kwargs={'version': 'v1'}) + '?search=&limit=10&activity=DRILL&status={}'.format(
             self.status_approved.code)
         response = self.client.get(url, format='json')
         self.assertNotContains(response, self.person_pending.surname)
@@ -1056,52 +1054,52 @@ class TestAuthenticatedSearch(AuthenticatedAPITestCase):
         self.assertNotContains(response, self.person_without_registration.surname)
 
     def test_search_approved_returns_approved_person(self):
-        url = reverse('person-list', kwargs={'version': API_VERSION}) + '?search=&limit=10&activity=DRILL&status={}'.format(
+        url = reverse('person-list', kwargs={'version': 'v1'}) + '?search=&limit=10&activity=DRILL&status={}'.format(
             self.status_approved.code)
         response = self.client.get(url, format='json')
         self.assertContains(response, self.person_approved.surname)
 
     def test_search_approved_does_not_return_removed(self):
-        url = reverse('person-list', kwargs={'version': API_VERSION}) + '?search=&limit=10&activity=DRILL&status={}'.format(
+        url = reverse('person-list', kwargs={'version': 'v1'}) + '?search=&limit=10&activity=DRILL&status={}'.format(
             self.status_approved.code)
         response = self.client.get(url, format='json')
         self.assertNotContains(response, self.person_removed.surname)
 
     def test_search_for_removed_returns_removed(self):
-        url = reverse('person-list', kwargs={'version': API_VERSION}) + '?search=&limit=10&activity=DRILL&status=Removed'
+        url = reverse('person-list', kwargs={'version': 'v1'}) + '?search=&limit=10&activity=DRILL&status=Removed'
         response = self.client.get(url, format='json')
         self.assertContains(response, self.person_removed.surname)
 
     def test_search_for_removed_does_not_return_approved(self):
-        url = reverse('person-list', kwargs={'version': API_VERSION}) + '?search=&limit=10&activity=DRILL&status=Removed'
+        url = reverse('person-list', kwargs={'version': 'v1'}) + '?search=&limit=10&activity=DRILL&status=Removed'
         response = self.client.get(url, format='json')
         self.assertNotContains(response, self.person_approved.surname)
 
     def test_search_for_not_approved_returns_not_approved(self):
-        url = reverse('person-list', kwargs={'version': API_VERSION}) + '?search=&limit=10&activity=DRILL&status={}'.format(
+        url = reverse('person-list', kwargs={'version': 'v1'}) + '?search=&limit=10&activity=DRILL&status={}'.format(
             self.status_not_approved.code)
         response = self.client.get(url, format='json')
         self.assertContains(response, self.person_not_approved.surname)
 
     def test_search_for_not_approved_does_not_return_removed(self):
-        url = reverse('person-list', kwargs={'version': API_VERSION}) + '?search=&limit=10&activity=DRILL&status={}'.format(
+        url = reverse('person-list', kwargs={'version': 'v1'}) + '?search=&limit=10&activity=DRILL&status={}'.format(
             self.status_not_approved.code)
         response = self.client.get(url, format='json')
         self.assertNotContains(response, self.person_removed.surname)
 
     def test_search_for_not_approved_returns_someone_with_approved_and_removed(self):
-        url = reverse('person-list', kwargs={'version': API_VERSION}) + '?search=&limit=10&activity=DRILL&status=Removed'
+        url = reverse('person-list', kwargs={'version': 'v1'}) + '?search=&limit=10&activity=DRILL&status=Removed'
         response = self.client.get(url, format='json')
         self.assertContains(response, self.person_approved_and_removed.surname)
 
     def test_search_approved_returns_someone_with_approved_and_removed(self):
-        url = reverse('person-list', kwargs={'version': API_VERSION}) + '?search=&limit=10&activity=DRILL&status={}'.format(
+        url = reverse('person-list', kwargs={'version': 'v1'}) + '?search=&limit=10&activity=DRILL&status={}'.format(
             self.status_approved.code)
         response = self.client.get(url, format='json')
         self.assertContains(response, self.person_approved_and_removed.surname)
 
     def test_person_history_endpoint(self):
-        url = reverse('person-history', kwargs={'person_guid': self.person_approved.person_guid, 'version': API_VERSION})
+        url = reverse('person-history', kwargs={'person_guid': self.person_approved.person_guid, 'version': 'v1'})
         response = self.client.get(url, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)

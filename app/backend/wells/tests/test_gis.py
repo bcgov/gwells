@@ -19,20 +19,17 @@ from rest_framework import status
 from gwells.settings import REST_FRAMEWORK
 
 
-API_VERSION = 'v1'
-
-
 class TestWellsSpatial(APITestCase):
 
     def test_geodjango(self):
         # Currently we're re-directing to a static file.
-        url = reverse('well-geojson', kwargs={'version': API_VERSION})
+        url = reverse('well-geojson', kwargs={'version': 'v1'})
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_302_FOUND)
 
     def test_geodjango_bounds(self):
         # Currently we're re-directing to a static file.
-        url = reverse('well-geojson', kwargs={'version': API_VERSION})
+        url = reverse('well-geojson', kwargs={'version': 'v1'})
         response = self.client.get(
             url,
             {
@@ -45,13 +42,13 @@ class TestWellsLithologySpatial(APITestCase):
 
     def test_geodjango(self):
         # Currently we're re-directing to a static file.
-        url = reverse('well-lithology-geojson', kwargs={'version': API_VERSION})
+        url = reverse('well-lithology-geojson', kwargs={'version': 'v1'})
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_302_FOUND)
 
     def test_geodjango_bounds(self):
         # Currently we're re-directing to a static file.
-        url = reverse('well-lithology-geojson', kwargs={'version': API_VERSION})
+        url = reverse('well-lithology-geojson', kwargs={'version': 'v1'})
         response = self.client.get(
             url,
             {

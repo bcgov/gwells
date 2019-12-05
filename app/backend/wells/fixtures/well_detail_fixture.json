@@ -19,7 +19,8 @@
 
   {"model": "wells.well",
    "pk": 123,
-   "fields": {"backfill_depth": null,
+   "fields": {"aquifer_id": 123,
+              "backfill_depth": null,
               "intended_water_use": null,
               "owner_full_name": "John Smith",
               "utm_zone_code": null,

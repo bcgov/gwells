@@ -126,7 +126,7 @@
             <div class="aquifer-information-list-divider"></div>
             <li>
               <dt>Number of wells associated to the aquifer</dt>
-              <dd>
+              <dd class="m-0">
                 <router-link :to="{ name: 'wells-home', query: {'match_any':false, 'aquifer': this.record.aquifer_id, 'search':'', 'well':''}}">
                   {{ licence_details.num_wells }}
                 </router-link>
@@ -134,7 +134,7 @@
             </li>
             <li>
               <dt>Artesian wells</dt>
-              <dd>
+              <dd class="m-0">
                 <router-link :to="{ name: 'wells-home', query: {'match_any':false, 'aquifer':this.id, 'artesian_flow_has_value':true}, hash: '#advanced'}">
                   {{ licence_details.num_artesian_wells }} artesian wells in aquifer
                 </router-link>
@@ -163,12 +163,12 @@
             <div class="aquifer-information-list-divider"></div>
             <li>
               <dt>Number of groundwater licences</dt>
-              <dd>{{ licence_details.licence_count }}</dd>
+              <dd class="m-0">{{ licence_details.licence_count }}</dd>
             </li>
             <li>
               <dt>Water withdrawal volume (annual)</dt>
-              <dd v-if="waterWithdrawlVolume">{{ waterWithdrawlVolume | unitWaterVolume}}</dd>
-              <dd v-else>No information available.</dd>
+              <dd class="m-0" v-if="waterWithdrawlVolume">{{ waterWithdrawlVolume | unitWaterVolume}}</dd>
+              <dd class="m-0" v-else>No information available.</dd>
             </li>
           </ul>
           <div v-if="licence_details.lic_qty.length > 0">
@@ -206,39 +206,61 @@
             specific volumes are licensed for multiple purposes, individual volumes are summed.
           </p>
         </b-col>
-        <b-col cols="12" xl="4" lg="6">
+        <b-col cols="12" xl="4" lg="6" class="knowledge-indicators">
           <h5 class="mt-3 border-bottom pb-4 main-title">Knowledge Indicators</h5>
           <ul class="ml-0 mr-0 mb-0 mt-4 p-0 aquifer-information-list">
             <div class="aquifer-information-list-divider"></div>
             <li :key="section.id" v-for="section in aquifer_resource_sections">
               <div class="observational-wells" v-if="section.key === 'obs-wells'">
-                <dt>Observation wells</dt>
-                <dd v-if="obsWells.length > 0">
-                  <ul class="p-0 m-0">
-                    <li v-for="owell in obsWells" :key="owell.observation_well_number">
-                      <a :href="getObservationWellLink(owell.observation_well_number)" target="_blank" class="d-print-url">Observation Well {{ owell.observation_well_number }}</a>
-                      <br/>Water Level Analysis:
-                      <a v-if="owell.waterLevel" :href="owell.waterLevel.hasLevelAnalysis ? 'http://www.env.gov.bc.ca/soe/indicators/water/groundwater-levels.html' : false" target="_blank" class="d-print-url">
-                        {{ owell.waterLevel.levels }}
-                      </a>
-                      <span v-else>No information available.</span>
-                    </li>
-                  </ul>
-                </dd>
-                <dd v-else>
-                  No information available.
+                <dt class="text-right">Observation wells</dt>
+                <dd class="m-0">
+                  <div v-if="active_obs_wells.length > 0">
+                    <h6 class="border-bottom">Active</h6>
+                    <ul class="p-0 m-0">
+                      <li v-for="owell in active_obs_wells" :key="owell.observation_well_number" :data-water-level="owell.waterLevels">
+                        <a :href="getObservationWellLink(owell.observation_well_number)" target="_blank" class="d-print-url">
+                          {{ owell.observation_well_number }}
+                        </a>
+                        <span v-if="owell.waterLevels">
+                          Water Level Analysis:
+                          <a :href="owell.hasLevelAnalysis ? 'http://www.env.gov.bc.ca/soe/indicators/water/groundwater-levels.html' : false" target="_blank" class="d-print-url">
+                            {{ owell.waterLevels }}
+                          </a>
+                        </span>
+                      </li>
+                    </ul>
+                  </div>
+                  <div v-else-if="inactive_obs_wells.length > 0">
+                    <h6 class="border-bottom mt-2">Inactive<br><small>(data may not be available)</small></h6>
+                    <ul class="p-0 m-0">
+                      <li v-for="owell in inactive_obs_wells" :key="owell.observation_well_number" :data-water-level="owell.waterLevels">
+                        <a :href="getObservationWellLink(owell.observation_well_number)" target="_blank" class="d-print-url">
+                          {{ owell.observation_well_number }}
+                        </a>
+                        <div v-if="owell.waterLevels">
+                          Water Level Analysis:
+                          <a :href="owell.hasLevelAnalysis ? 'http://www.env.gov.bc.ca/soe/indicators/water/groundwater-levels.html' : false" target="_blank" class="d-print-url">
+                            {{ owell.waterLevels }}
+                          </a>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                  <div v-else>
+                    No information available.
+                  </div>
                 </dd>
               </div>
               <div class="water-quality-information" v-else-if="section.key === 'water-quality'">
-                <dt>Water quality information</dt>
-                <dd>
+                <dt class="text-right">Water quality information</dt>
+                <dd class="m-0">
                   <router-link :to="{ name: 'wells-home', query: {'match_any':false, 'ems_has_value':true, 'aquifer': id}, hash: '#advanced'}">
                     {{ licence_details['num_wells_with_ems'] }} wells with an EMS ID
                   </router-link>
                 </dd>
               </div>
               <div class="aquifer-connected" v-else-if="section.key === 'aquifer-connected'">
-                <dt>Hydraulically connected (screening level)
+                <dt class="text-right">Hydraulically connected (screening level)
                   <i id="aquiferConnectedInfo" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
                   <b-popover
                     target="aquiferConnectedInfo"
@@ -246,15 +268,15 @@
                     content="Inferred based on aquifer subtype - not field verified."
                   ></b-popover>
                 </dt>
-                <dd>{{ licence_details['hydraulically_connected'] ? "More likely" : "Less likely"}}</dd>
+                <dd class="m-0">{{ licence_details['hydraulically_connected'] ? "More likely" : "Less likely"}}</dd>
               </div>
               <div v-else>
-                <dt>{{ section.name }}</dt>
-                <dd>
+                <dt class="text-right">{{ section.name }}</dt>
+                <dd class="m-0">
                   <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
                     <li><a :href="resource.url" @click="handleExternalResourceClicks" target="_blank" class="d-print-url">{{ resource.name }}</a></li>
                   </ul>
-                  <p v-if="!bySection(record.resources, section).length">No information available.</p>
+                  <p class="m-0" v-if="!bySection(record.resources, section).length">No information available.</p>
                 </dd>
               </div>
             </li>
@@ -302,14 +324,21 @@ a {
 }
 
 .aquifer-information-list {
-  list-style-type: none;
+  list-style: none;
   box-sizing: border-box;
   position: relative;
 }
 
+.aquifer-information-list-divider {
+  position: absolute;
+  top: 0;
+  width: 1px;
+  height: 100%;
+  background-color: rgba(0,0,0,.1);
+  left: 50%;
+}
+
 .aquifer-information-list > li {
-  display: block;
-  width: 100%;
   margin: 0.7rem 0;
 }
 .aquifer-information-list dt,
@@ -321,16 +350,24 @@ a {
 }
 
 .aquifer-information-list dt {
+  padding-right: 2rem;
   font-weight: bold;
 }
 
 .aquifer-information-list dd {
-  padding-left: 1rem;
-  margin-bottom: 0;
+  padding-left: 2rem;
 }
 
-.aquifer-information-list dd p {
-  margin-bottom: 0;
+.observational-wells li:not([data-water-level]) {
+  display: inline;
+}
+
+.observational-wells li:not([data-water-level]):after {
+  content: ", ";
+}
+
+.observational-wells li:last-child:not([data-water-level]):after {
+  content: "";
 }
 
 .pie-chart-title {
@@ -394,7 +431,7 @@ import Documents from './Documents.vue'
 import SingleAquiferMap from './SingleAquiferMap.vue'
 import ChangeHistory from '@/common/components/ChangeHistory.vue'
 import { mapActions, mapGetters, mapState } from 'vuex'
-import { sumBy } from 'lodash'
+import { sumBy, orderBy, groupBy } from 'lodash'
 import PieChart from './PieChart.vue'
 import * as Sentry from '@sentry/browser';
 
@@ -441,8 +478,8 @@ export default {
         {code: 'I', name: 'Other information'},
       ],
       wells: [],
-      obs_wells: [],
-      waterLevels: [],
+      active_obs_wells: [],
+      inactive_obs_wells: [],
       waterWithdrawlVolume: ''
     }
   },
@@ -461,22 +498,10 @@ export default {
       'shapefile_upload_message',
       'shapefile_upload_success'
     ]),
-    obsWells () {
-      return this.obs_wells.map((owell) => {
-        const waterLevelForObsWells = this.waterLevels.find(o => o.wellNumber === owell.observation_well_number)
-        return {
-          ...owell,
-          waterLevel: waterLevelForObsWells,
-        }
-      })
-    }
   },
   watch: {
     id () {
       this.fetch()
-    },
-    obs_wells (newObsWells, oldObsWells) {
-      this.getWaterLevels(newObsWells)
     },
     licence_details (newLDetails, oldLDetails) {
       this.setWaterVolume(newLDetails)
@@ -602,7 +627,15 @@ export default {
           ]
 
           this.lic_qty = response.data.licence_details.lic_qty
-          this.obs_wells = response.data.licence_details.obs_wells
+          const obs_wells = response.data.licence_details.obs_wells
+
+          return this.getWaterLevels(obs_wells).then(() => {
+            const sortedWells = orderBy(obs_wells, ['waterLevel']) // sorts so wells with waterLevels are at the top.
+            const wellsByStatus = groupBy(sortedWells, 'observation_well_status')
+
+            this.active_obs_wells =  wellsByStatus.Active;
+            this.inactive_obs_wells = wellsByStatus.Inactive;
+          });
         }).catch((error) => {
           console.error(error)
         })
@@ -617,19 +650,21 @@ export default {
       return `https://governmentofbc.maps.arcgis.com/apps/webappviewer/index.html?id=b53cb0bf3f6848e79d66ffd09b74f00d&find=OBS WELL ${wellNumber}`
     },
     getWaterLevels (obsWells) {
-      obsWells.map((owell) => {
-        function getRequestUrl (wellNumber) {
-          return `https://catalogue.data.gov.bc.ca/api/3/action/datastore_search?resource_id=a8933793-eadb-4a9c-992c-da4f6ac8ca51&fields=EMS_ID,Well_Num,trend_line_slope,category&filters=%7b%22Well_Num%22:%22${wellNumber}%22%7d`
-        }
-        let wellNumber = owell.observation_well_number
-        ApiService.query(getRequestUrl(wellNumber)).then((response) => {
-          const {category} = response.data.result.records[0];
-          const hasLevelAnalysis = category.toUpperCase() !== 'N/A';
-          this.waterLevels.push({ wellNumber, hasLevelAnalysis, levels: category })
-        }).catch((e) => {
-          console.error(e)
-        })
-      })
+      return Promise.all(
+        obsWells.map((owell) => {
+          let wellNumber = owell.observation_well_number
+          const url = `https://catalogue.data.gov.bc.ca/api/3/action/datastore_search?resource_id=a8933793-eadb-4a9c-992c-da4f6ac8ca51&fields=EMS_ID,Well_Num,trend_line_slope,category&filters=%7b%22Well_Num%22:%22${wellNumber}%22%7d`
+          return ApiService.query(url).then((response) => {
+            if (response.data.result.records.length > 0) {
+              const {category} = response.data.result.records[0];
+              owell.hasLevelAnalysis = category.toUpperCase() !== 'N/A'
+              owell.waterLevels = category;
+            }
+          }).catch((e) => {
+            console.error(e)
+          })
+        }),
+      );
     },
     setWaterVolume (details) {
       if (details.usage && details.usage.constructor === Array && details.usage.length > 0) {

@@ -231,7 +231,23 @@ def apiTest (String stageName, String stageUrl, String envSuffix) {
                                 --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
                                 --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
                                 -r cli,junit,html
+                            newman run ./registries_v2_api_tests.json \
+                                --global-var test_user=\$GWELLS_API_TEST_USER \
+                                --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
+                                --global-var base_url=\$BASE_URL \
+                                --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
+                                --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
+                                --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
+                                -r cli,junit,html
                             newman run ./wells_api_tests.json \
+                                --global-var test_user=\$GWELLS_API_TEST_USER \
+                                --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
+                                --global-var base_url=\$BASE_URL \
+                                --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
+                                --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
+                                --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
+                                -r cli,junit,html
+                            newman run ./wells_v2_api_tests.json \
                                 --global-var test_user=\$GWELLS_API_TEST_USER \
                                 --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
                                 --global-var base_url=\$BASE_URL \
@@ -247,7 +263,23 @@ def apiTest (String stageName, String stageUrl, String envSuffix) {
                                 --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
                                 --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
                                 -r cli,junit,html
+                            newman run ./submissions_v2_api_tests.json \
+                                --global-var test_user=\$GWELLS_API_TEST_USER \
+                                --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
+                                --global-var base_url=\$BASE_URL \
+                                --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
+                                --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
+                                --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
+                                -r cli,junit,html
                             newman run ./aquifers_api_tests.json \
+                                --global-var test_user=\$GWELLS_API_TEST_USER \
+                                --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
+                                --global-var base_url=\$BASE_URL \
+                                --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
+                                --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
+                                --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
+                                -r cli,junit,html
+                            newman run ./aquifers_v2_api_tests.json \
                                 --global-var test_user=\$GWELLS_API_TEST_USER \
                                 --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
                                 --global-var base_url=\$BASE_URL \
