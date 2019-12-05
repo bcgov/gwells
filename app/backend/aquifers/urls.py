@@ -43,7 +43,7 @@ urlpatterns = [
 
     url(api_path_prefix() + r'/aquifers/(?P<aquifer_id>[0-9]+)/edit$',
         never_cache(views.AquiferEditDetailsAPIView.as_view()),
-        name='aquifer-retrieve-update'
+        name='aquifer-edit-details'
         ),
 
     url(api_path_prefix() + r'/aquifers/(?P<aquifer_id>[0-9]+)$',

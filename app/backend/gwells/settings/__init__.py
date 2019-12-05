@@ -280,7 +280,7 @@ REST_FRAMEWORK = {
         'user': '200000/hour'
     },
     'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.URLPathVersioning',
-    'DEFAULT_VERSION': 'v2',
+    'DEFAULT_VERSION': 'v1',
 }
 
 LOGIN_URL = '/gwells/accounts/login/'

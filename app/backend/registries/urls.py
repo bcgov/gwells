@@ -26,7 +26,7 @@ from gwells.urls import api_path_prefix
 schema_view = get_schema_view(
     openapi.Info(
         title="Groundwater Wells, Aquifers and Registry API",
-        default_version='v2',
+        default_version='v1',
         description=str("The groundwater wells, aquifers and registry API contains information "
                         "related to groundwater wells and aquifers as well as a register of qualified "
                         "well drillers and well pump installers registered to operate in B.C."),

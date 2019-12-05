@@ -147,4 +147,7 @@ export default {
   border-radius: 0.1em;
 }
 
+.leaflet-control-layers label:last-child {
+  margin-bottom: 0;
+}
 </style>

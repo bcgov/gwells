@@ -20,15 +20,13 @@ from rest_framework.reverse import reverse
 
 from aquifers.models import Aquifer
 from gwells.settings import REST_FRAMEWORK
-from gwells.roles import roles_to_groups, AQUIFERS_EDIT_ROLE
+from gwells.roles import roles_to_groups, AQUIFERS_EDIT_ROLE, AQUIFERS_VIEWER_ROLE
 
 # Create your tests here.
 
-API_VERSION = 'v1'
-
 class TestPostNotAuthenticated(APITestCase):
     def test_not_authenticated_attempts_patch(self):
-        url = reverse('aquifer-retrieve-update', kwargs={'aquifer_id': 1, 'version': API_VERSION})
+        url = reverse('aquifer-retrieve-update', kwargs={'aquifer_id': 1, 'version': 'v1'})
         response = self.client.patch(url, {}, format='json')
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
@@ -47,7 +45,7 @@ class TestAquifersEditRole(APITestCase):
         Aquifer(aquifer_id=1).save()
 
     def test_patch(self):
-        url = reverse('aquifer-retrieve-update', kwargs={'aquifer_id': 1, 'version': API_VERSION})
+        url = reverse('aquifer-retrieve-update', kwargs={'aquifer_id': 1, 'version': 'v1'})
         response = self.client.patch(url, {'resources': [{
             'url': '',
         }]}, format='json')
@@ -64,7 +62,7 @@ class TestAquifersEditRole(APITestCase):
 
         filepath = 'aquifers/fixtures/shp/shapefile.zip'
         with open(filepath, 'rb') as fh:
-            url = reverse('aquifer-save-geometry', kwargs={'aquifer_id': 1, 'version': API_VERSION})
+            url = reverse('aquifer-save-geometry', kwargs={'aquifer_id': 1, 'version': 'v1'})
 
             response = self.client.post(
                 url,
@@ -73,7 +71,7 @@ class TestAquifersEditRole(APITestCase):
             self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_export_csv(self):
-        url = reverse('aquifers-list-csv', kwargs={'version': API_VERSION})
+        url = reverse('aquifers-list-csv', kwargs={'version': 'v1'})
         response = self.client.get(
             url
         )
@@ -84,13 +82,13 @@ class TestAquifersSpatial(APITestCase):
 
     def test_geodjango(self):
         # Currently we're re-directing to a static file.
-        url = reverse('aquifer-geojson', kwargs={'version': API_VERSION})
+        url = reverse('aquifer-geojson', kwargs={'version': 'v1'})
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_302_FOUND)
 
     def test_geodjango_bounds(self):
         # Currently we're re-directing to a static file.
-        url = reverse('aquifer-geojson', kwargs={'version': API_VERSION})
+        url = reverse('aquifer-geojson', kwargs={'version': 'v1'})
         response = self.client.get(
             url,
             {
