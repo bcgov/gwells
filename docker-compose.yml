@@ -59,8 +59,10 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./app:/app
+      - ./app/frontend:/app/frontend:cached
       - /app/frontend/node_modules/
+    depends_on:
+      - backend
   backend:
     image: gwells/backend
     hostname: backend
@@ -120,7 +122,7 @@ services:
       python3 manage.py collectstatic --noinput &&
       python3 manage.py runserver 0.0.0.0:8000"
     volumes:
-      - ./app:/app
+      - ./app/backend:/app/backend:cached
     ports:
       - "8000:8000"
       - "3000:3000"
