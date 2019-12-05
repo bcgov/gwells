@@ -126,7 +126,7 @@
             <div class="aquifer-information-list-divider"></div>
             <li>
               <dt>Number of wells associated to the aquifer</dt>
-              <dd>
+              <dd class="m-0">
                 <router-link :to="{ name: 'wells-home', query: {'match_any':false, 'aquifer': this.record.aquifer_id, 'search':'', 'well':''}}">
                   {{ licence_details.num_wells }}
                 </router-link>
@@ -134,7 +134,7 @@
             </li>
             <li>
               <dt>Artesian wells</dt>
-              <dd>
+              <dd class="m-0">
                 <router-link :to="{ name: 'wells-home', query: {'match_any':false, 'aquifer':this.id, 'artesian_flow_has_value':true}, hash: '#advanced'}">
                   {{ licence_details.num_artesian_wells }} artesian wells in aquifer
                 </router-link>
@@ -160,12 +160,12 @@
             <div class="aquifer-information-list-divider"></div>
             <li>
               <dt>Number of groundwater licences</dt>
-              <dd>{{ licence_details.licence_count }}</dd>
+              <dd class="m-0">{{ licence_details.licence_count }}</dd>
             </li>
             <li>
               <dt>Water withdrawal volume (annual)</dt>
-              <dd v-if="waterWithdrawlVolume">{{ waterWithdrawlVolume | unitWaterVolume}}</dd>
-              <dd v-else>No information available.</dd>
+              <dd class="m-0">v-if="waterWithdrawlVolume">{{ waterWithdrawlVolume | unitWaterVolume}}</dd>
+              <dd class="m-0">v-else>No information available.</dd>
             </li>
           </ul>
           <div v-if="licence_details.lic_qty.length > 0">
@@ -192,14 +192,14 @@
             The total licensed volume is counted once for each licence (the total volume may be shared between wells if there are multiple wells in a licence). In cases where specific volumes are licensed for multiple purposes, individual volumes are summed.
           </p>
         </b-col>
-        <b-col cols="12" xl="4" lg="6">
+        <b-col cols="12" xl="4" lg="6" class="knowledge-indicators">
           <h5 class="mt-3 border-bottom pb-4 main-title">Knowledge Indicators</h5>
           <ul class="ml-0 mr-0 mb-0 mt-4 p-0 aquifer-information-list">
             <div class="aquifer-information-list-divider"></div>
             <li :key="section.id" v-for="section in aquifer_resource_sections">
               <div class="observational-wells" v-if="section.key === 'obs-wells'">
-                <dt>Observation wells</dt>
-                <dd v-if="obsWells.length > 0">
+                <dt class="text-right">Observation wells</dt>
+                <dd class="m-0" v-if="obsWells.length > 0">
                   <ul class="p-0 m-0">
                     <li v-for="owell in obsWells" :key="owell.observation_well_number">
                       <a :href="getObservationWellLink(owell.observation_well_number)" target="_blank">Observation Well {{ owell.observation_well_number }}</a>
@@ -211,20 +211,20 @@
                     </li>
                   </ul>
                 </dd>
-                <dd v-else>
+                <dd class="m-0" v-else>
                   No information available.
                 </dd>
               </div>
               <div class="water-quality-information" v-else-if="section.key === 'water-quality'">
-                <dt>Water quality information</dt>
-                <dd>
+                <dt class="text-right">Water quality information</dt>
+                <dd class="m-0">
                   <router-link :to="{ name: 'wells-home', query: {'match_any':false, 'ems_has_value':true, 'aquifer': id}, hash: '#advanced'}">
                     {{ licence_details['num_wells_with_ems'] }} wells with an EMS ID
                   </router-link>
                 </dd>
               </div>
               <div class="aquifer-connected" v-else-if="section.key === 'aquifer-connected'">
-                <dt>Hydraulically connected (screening level)
+                <dt class="text-right">Hydraulically connected (screening level)
                   <i id="aquiferConnectedInfo" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
                   <b-popover
                     target="aquiferConnectedInfo"
@@ -232,15 +232,15 @@
                     content="Inferred based on aquifer subtype - not field verified."
                   ></b-popover>
                 </dt>
-                <dd>{{ licence_details['hydraulically_connected'] ? "More likely" : "Less likely"}}</dd>
+                <dd class="m-0">{{ licence_details['hydraulically_connected'] ? "More likely" : "Less likely"}}</dd>
               </div>
               <div v-else>
-                <dt>{{ section.name }}</dt>
-                <dd>
+                <dt class="text-right">{{ section.name }}</dt>
+                <dd class="m-0">
                   <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
                     <li><a :href="resource.url" @click="handleExternalResourceClicks" target="_blank">{{ resource.name }}</a></li>
                   </ul>
-                  <p v-if="!bySection(record.resources, section).length">No information available.</p>
+                  <p class="m-0" v-if="!bySection(record.resources, section).length">No information available.</p>
                 </dd>
               </div>
             </li>
@@ -288,14 +288,21 @@ a {
 }
 
 .aquifer-information-list {
-  list-style-type: none;
+  list-style: none;
   box-sizing: border-box;
   position: relative;
 }
 
+.aquifer-information-list-divider {
+  position: absolute;
+  top: 0;
+  width: 1px;
+  height: 100%;
+  background-color: rgba(0,0,0,.1);
+  left: 50%;
+}
+
 .aquifer-information-list > li {
-  display: block;
-  width: 100%;
   margin: 0.7rem 0;
 }
 .aquifer-information-list dt,
@@ -307,16 +314,12 @@ a {
 }
 
 .aquifer-information-list dt {
+  padding-right: 2rem;
   font-weight: bold;
 }
 
 .aquifer-information-list dd {
-  padding-left: 1rem;
-  margin-bottom: 0;
-}
-
-.aquifer-information-list dd p {
-  margin-bottom: 0;
+  padding-left: 2rem;
 }
 
 .pie-chart-title {
