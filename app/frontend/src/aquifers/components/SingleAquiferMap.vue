@@ -57,12 +57,18 @@ export default {
         transparent: true
       }).addTo(this.map)
       L.control.layers(null, aquiferLayers, {collapsed: false}).addTo(this.map)
-      aquiferLayers['Cadastral'].addTo(this.map)
+      const cadastralLayer = aquiferLayers['Cadastral'];
+      cadastralLayer.addTo(this.map)
 
       this.map.addControl(this.getLegendControl())
       this.listenForLayerToggle()
       this.listenForLayerAdd()
       this.listenForLayerRemove()
+
+      this.activeLayers = [
+        {layerId: cadastralLayer._leaflet_id, layerName: cadastralLayer.options.name, legend: cadastralLayer.options.legend}
+      ]
+      this.$emit('activeLayers', this.activeLayers)
     },
     getLegendControl () {
       const self = this
