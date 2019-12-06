@@ -107,7 +107,8 @@ export default {
         transparent: true
       }).addTo(this.map)
       L.control.layers(null, aquiferLayers, {collapsed: false}).addTo(this.map)
-      aquiferLayers['Cadastral'].addTo(this.map)
+      const cadastralLayer = aquiferLayers['Cadastral'];
+      cadastralLayer.addTo(this.map)
 
       this.listenForLayerToggle()
       this.listenForLayerAdd()
@@ -115,6 +116,11 @@ export default {
       this.listenForMapMovement()
       this.listenForReset()
       this.listenForAreaSelect()
+
+      this.activeLayers = [
+        {layerId: cadastralLayer._leaflet_id, layerName: cadastralLayer.options.name, legend: cadastralLayer.options.legend}
+      ]
+      this.$emit('activeLayers', this.activeLayers)
     },
 
     getLocateControl () {
