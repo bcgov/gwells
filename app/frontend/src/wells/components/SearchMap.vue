@@ -368,7 +368,7 @@ export default {
   },
   beforeDestroy () {
     this.removeEsriLayer()
-  }
+  },
 }
 </script>
 <style lang="scss">

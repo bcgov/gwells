@@ -51,6 +51,10 @@ export default {
     })
   },
 
+  destroyed () {
+    this.map.remove();
+  },
+
   data () {
     return {
       activeLayers: [],

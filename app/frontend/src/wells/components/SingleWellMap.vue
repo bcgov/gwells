@@ -50,6 +50,9 @@ export default {
       this.initMap()
     })
   },
+  destroyed () {
+    this.map.remove();
+  },
   watch: {
     latitude () {
       this.updateCoords()
