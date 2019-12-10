@@ -32,10 +32,6 @@
       Record successfully updated.
     </b-alert>
     <b-container fluid>
-      <b-row v-if="loading" class="border-bottom mb-3 pb-2">
-        <b-col><h5>Loading...</h5></b-col>
-      </b-row>
-
       <b-row v-if="editMode && !loading" class="border-bottom mb-3 pb-2">
         <b-col><h4>Aquifer {{record.aquifer_id}} Summary - Edit</h4></b-col>
       </b-row>
@@ -114,8 +110,13 @@
             </b-col>
           </b-row>
         </b-col>
-        <b-col cols="12" md="12" lg="7" class="p-0">
-          <single-aquifer-map v-bind:geom="record.geom" :key="mapKey"/>
+        <b-col id="map-container" cols="12" md="12" lg="7" class="p-0">
+          <div id="map-loading-spinner" v-if="loadingMap">
+            <div class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></div>
+            <strong class="pl-1">Loading...</strong>
+          </div>
+
+          <single-aquifer-map :aquifer-id="id" :geom="record.geom" :wells="wells" :key="mapKey"/>
         </b-col>
       </b-row>
 
@@ -146,6 +147,7 @@
           <aquifer-documents :files="aquiferFiles"
             :editMode="editMode"
             :id="this.id"
+            :loading="loadingFiles"
             v-on:fetchFiles="fetchFiles">
           </aquifer-documents>
         </b-col>
@@ -286,6 +288,23 @@ a {
   text-decoration-skip-ink: none;
 }
 
+#map-container {
+  position: relative;
+}
+
+#map-loading-spinner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  background-color: rgba(255, 255, 255, 0.6);
+}
+
 .card-container .card-body {
   padding: 0;
   margin: 0;
@@ -413,7 +432,6 @@ import PieChart from './PieChart.vue'
 import * as Sentry from '@sentry/browser';
 
 export default {
-
   components: {
     'api-error': APIErrorMessage,
     'aquifer-form': AquiferForm,
@@ -426,8 +444,16 @@ export default {
     'edit': Boolean
   },
   created () {
-    this.fetch()
-    this.fetchFiles()
+    this.loadingMap = true;
+
+    Promise.all([
+      this.fetch(),
+      this.fetchWells(),
+    ]).then(() => {
+      this.loadingMap = false;
+    });
+
+    this.fetchFiles();
   },
   data () {
     return {
@@ -435,6 +461,8 @@ export default {
       error: undefined,
       fieldErrors: {},
       loading: false,
+      loadingFiles: false,
+      loadingMap: false,
       record: {},
       form: {},
       licence_details: {
@@ -510,9 +538,16 @@ export default {
         })
     },
     fetchWells (id = this.id) {
-      ApiService.query(`aquifers/${id}/details`)
+      // ?aquifer=608&ems_has_value=true&limit=10&match_any=false&offset=10&ordering=-well_tag_number
+      const params = { aquifer: id, limit: 100, ems_has_value: true }
+      return ApiService.query('wells', params)
         .then((response) => {
-          this.wells = response.data
+          this.wells = response.data.results || []
+          // const wells = Array.from({ length: 20000 }, (_, idx) => ({
+          //   longitude: -124.822004 + Math.floor(idx / 50) / 100,
+          //   latitude: 49.20 + (idx % 50) / 200,
+          // }));
+          // this.wells = wells;
         }).catch((error) => {
           console.error(error)
         })
@@ -588,7 +623,7 @@ export default {
       window.print()
     },
     fetch (id = this.id) {
-      ApiService.query(`aquifers/${id}`)
+      return ApiService.query(`aquifers/${id}`)
         .then((response) => {
           // force the map to update.
           this.record = response.data
@@ -608,9 +643,11 @@ export default {
         })
     },
     fetchFiles (id = this.id) {
-      ApiService.query(`aquifers/${id}/files`)
+      this.loadingFiles = true;
+      return ApiService.query(`aquifers/${id}/files`)
         .then((response) => {
           this.aquiferFiles = response.data
+          this.loadingFiles = false;
         })
     },
     getObservationWellLink (wellNumber) {

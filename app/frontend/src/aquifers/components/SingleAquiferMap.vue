@@ -12,12 +12,12 @@ import aquiferLayers from '../layers'
 
 export default {
   name: 'SingleAquiferMap',
-  props: ['geom'],
+  props: ['aquifer-id', 'geom', 'wells'],
   data () {
     return {
       map: null,
       legendControlContent: null,
-      activeLayers: []
+      activeLayers: {},
     }
   },
   mounted () {
@@ -60,15 +60,31 @@ export default {
       const cadastralLayer = aquiferLayers['Cadastral'];
       cadastralLayer.addTo(this.map)
 
+      Object.keys(aquiferLayers).forEach((layerName) => {
+        this.activeLayers[layerName] = null;
+      });
+      this.activeLayers[cadastralLayer.options.name] = {
+        layerName: cadastralLayer.options.name,
+        legend: cadastralLayer.options.legend,
+      };
+
       this.map.addControl(this.getLegendControl())
+
+      this.$emit('activeLayers', this.activeLayers)
+
+      this.canvasRenderer = L.canvas({ padding: 0.1 });
+
+      this.canvasLayer = L.layerGroup();
+      this.canvasLayer.addTo(this.map);
+
+      this.updateCanvasLayer();
+      if (this.geom) {
+        this.zoomToAquifer();
+      }
+
       this.listenForLayerToggle()
       this.listenForLayerAdd()
       this.listenForLayerRemove()
-
-      this.activeLayers = [
-        {layerId: cadastralLayer._leaflet_id, layerName: cadastralLayer.options.name, legend: cadastralLayer.options.legend}
-      ]
-      this.$emit('activeLayers', this.activeLayers)
     },
     getLegendControl () {
       const self = this
@@ -90,45 +106,140 @@ export default {
       this.$on('activeLayers', (data) => {
         let innerContent = `<ul class="p-0 m-0" style="list-style-type: none;">`
         innerContent += `<li class="m-1 text-center">Legend</li>`
-        data.map(l => {
-          innerContent += `<li class="m-1"><img src="${l.legend}"> ${l.layerName}</li>`
+        Object.keys(data).forEach((name) => {
+          const l = data[name];
+          if (l) {
+            innerContent += `<li class="m-1"><img src="${l.legend}"> ${l.layerName}</li>`
+          }
         })
         innerContent += `</ul>`
         this.legendControlContent.innerHTML = innerContent
       })
     },
     listenForLayerRemove () {
-      this.map.on('layerremove', (e) => {
-        const layerId = e.layer._leaflet_id
-        const legend = e.layer.options.legend
+      this.map.on('overlayremove', (e) => {
+        const {legend, name} = e.layer.options;
         if (legend) {
-          this.activeLayers = filter(this.activeLayers, o => o.layerId !== layerId)
+          this.activeLayers[name] = null;
           this.$emit('activeLayers', this.activeLayers)
         }
       })
     },
     listenForLayerAdd () {
-      this.map.on('layeradd', (e) => {
-        const layerId = e.layer._leaflet_id
-        const layerName = e.layer.options.name
-        const legend = e.layer.options.legend
+      this.map.on('overlayadd', (e) => {
+        const {legend, name} = e.layer.options;
         if (legend) {
-          this.activeLayers.push({layerId, layerName, legend})
+          this.activeLayers[name] = {layerName: name, legend};
           this.$emit('activeLayers', this.activeLayers)
         }
       })
+    },
+    updateCanvasLayer() {
+      this.canvasLayer.clearLayers();
+
+      this.addAquiferGeomToCanvasLayer();
+      this.addWellsToCanvasLayer();
+
+      if (this.wells.length > 0 && this.geom) {
+        this.canvasLayer.addLayer(this.aquiferLayer);
+        this.canvasLayer.addLayer(this.wellsLayer)
+      }
+    },
+    addAquiferGeomToCanvasLayer () {
+      if (!this.geom) { return; }
+
+      if (this.aquiferLayer) {
+        this.aquiferLayer.remove();
+      }
+
+      const options = {
+        style: {
+          color: 'red'
+        },
+        renderer: this.canvasRenderer,
+      };
+      this.aquiferLayer = L.geoJSON(this.geom, options)
+      this.aquiferLayer.bindTooltip(`Aquifer ${this.aquiferId}`, { sticky: true })
+    },
+    addWellsToCanvasLayer (wells) {
+      const defaultCircleMarkerOptions = {
+        stroke: false,
+        fillColor: 'orange',
+        fillOpacity: 1,
+        renderer: this.canvasRenderer,
+      };
+
+      const emsWellCircleMarkerOptions = {
+        color: 'black',
+        weight: 1,
+        fillColor: '#0162fe',
+        fillOpacity: 1,
+        radius: 6,
+        renderer: this.canvasRenderer,
+      }
+
+      if (this.wellsLayer) {
+        this.wellsLayer.remove();
+      }
+      this.wellsLayer = L.layerGroup()
+
+      let addEmsWellsToLegend = false;
+      let addNonEmsWellsToLegend = false;
+
+      this.wells.forEach((well) => {
+        const {latitude, longitude, ems} = well;
+
+        const hasEmsData = Boolean(ems);
+
+        if (hasEmsData) {
+          addEmsWellsToLegend = true;
+        } else {
+          addNonEmsWellsToLegend = true;
+        }
+
+        const color = '#'+Math.floor(Math.random()*16777215).toString(16);
+        const options = hasEmsData ? emsWellCircleMarkerOptions : defaultCircleMarkerOptions
+
+        const wellCircleMarker = L.circleMarker(L.latLng(latitude, longitude), options)
+        const wellTooltip = [
+          `Well Tag Number: ${well.well_tag_number}`,
+          `Identification Plate Number: ${well.identification_plate_number || 'N/A'}`,
+          `Address: ${well.street_address || 'N/A'}`,
+        ];
+
+        wellCircleMarker.bindTooltip(wellTooltip.join('<br>'))
+
+        this.wellsLayer.addLayer(wellCircleMarker);
+      });
+
+      if (addEmsWellsToLegend) {
+        this.activeLayers.emsWells = { layerName: 'Wells with EMS', legend: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUAQMAAAC3R49OAAAAAXNSR0IB2cksfwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAZQTFRF////BwD/fY8qdgAAADBJREFUeJxjYEAGDkD8gIGB8QMDA/MPBgb2PwwM/P8YGOT/MzDY/29gqP9/gIEAAADSqgo3kPvYzwAAAABJRU5ErkJggg==' };
+      } else {
+        this.activeLayers.emsWells = null;
+      }
+      if (addNonEmsWellsToLegend) {
+        this.activeLayers.nonEmsWells = { layerName: 'Wells without EMS', legend: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUAQMAAAC3R49OAAAAAXNSR0IB2cksfwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAZQTFRF/////wAA61rnkwAAADBJREFUeJxjYEAGDkD8gIGB8QMDA/MPBgb2PwwM/P8YGOT/MzDY/29gqP9/gIEAAADSqgo3kPvYzwAAAABJRU5ErkJggg==' };
+      } else {
+        this.activeLayers.nonEmsWells = null;
+      }
+
+      this.$emit('activeLayers', this.activeLayers)
+    },
+    zoomToAquifer () {
+      // Set map view to aquifer
+      this.map.fitBounds(this.aquiferLayer.getBounds())
     }
   },
   watch: {
-    geom: function (newGeom, oldGeom) {
+    geom (newGeom, oldGeom) {
       if (oldGeom || newGeom) {
-        var aquiferGeom = L.geoJSON(newGeom, {
-          style: {
-            'color': 'red'
-          }
-        }).addTo(this.map)
-        // Set map view to aquifer
-        this.map.fitBounds(aquiferGeom.getBounds())
+        this.updateCanvasLayer();
+        this.zoomToAquifer();
+      }
+    },
+    wells (newWells, oldWells) {
+      if (oldWells || newWells) {
+        this.updateCanvasLayer();
       }
     }
   }
