@@ -537,21 +537,6 @@ export default {
           console.error(error)
         })
     },
-    fetchWells (id = this.id) {
-      // ?aquifer=608&ems_has_value=true&limit=10&match_any=false&offset=10&ordering=-well_tag_number
-      const params = { aquifer: id, limit: 100, ems_has_value: true }
-      return ApiService.query('wells', params)
-        .then((response) => {
-          this.wells = response.data.results || []
-          // const wells = Array.from({ length: 20000 }, (_, idx) => ({
-          //   longitude: -124.822004 + Math.floor(idx / 50) / 100,
-          //   latitude: 49.20 + (idx % 50) / 200,
-          // }));
-          // this.wells = wells;
-        }).catch((error) => {
-          console.error(error)
-        })
-    },
     bySection (resources, section) {
       return (resources || []).filter(function (resource) {
         return resource.section_code === section.code
@@ -648,6 +633,21 @@ export default {
         .then((response) => {
           this.aquiferFiles = response.data
           this.loadingFiles = false;
+        })
+    },
+    fetchWells (id = this.id) {
+      // ?aquifer=608&ems_has_value=true&limit=10&match_any=false&offset=10&ordering=-well_tag_number
+      const params = { aquifer: id, limit: 100, ems_has_value: true }
+      return ApiService.query('wells', params)
+        .then((response) => {
+          this.wells = response.data.results || []
+          // const wells = Array.from({ length: 20000 }, (_, idx) => ({
+          //   longitude: -124.822004 + Math.floor(idx / 50) / 100,
+          //   latitude: 49.20 + (idx % 50) / 200,
+          // }));
+          // this.wells = wells;
+        }).catch((error) => {
+          console.error(error)
         })
     },
     getObservationWellLink (wellNumber) {
