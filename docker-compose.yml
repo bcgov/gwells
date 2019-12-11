@@ -49,8 +49,9 @@ services:
     working_dir: /app/frontend
     environment:
       DEBUG: "True"
-      VUE_APP_AXIOS_BASE_URL: http://127.0.0.1:8000/gwells/api/v2/
+      VUE_APP_AXIOS_BASE_URL: /api/
       CHOKIDAR_USEPOLLING: "True"
+      API_TARGET: "${API_TARGET}"
     command: /bin/bash -c "
         set -x &&
         cd /app/frontend &&
