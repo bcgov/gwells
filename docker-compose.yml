@@ -1,4 +1,4 @@
-version: '3'
+version: '3.7'
 # NOTE For Red Hat or other images on the internal registry please login as follows:
 #     1. Be logged into the BC Gov OpenShift Console
 #          https://console.pathfinder.gov.bc.ca:8443/console/catalog)
@@ -59,7 +59,10 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./app/frontend:/app/frontend:cached
+      - type: bind
+        source: ./app/frontend
+        target: /app/frontend
+        consistency: cached
       - /app/frontend/node_modules/
     depends_on:
       - backend
@@ -122,7 +125,10 @@ services:
       python3 manage.py collectstatic --noinput &&
       python3 manage.py runserver 0.0.0.0:8000"
     volumes:
-      - ./app/backend:/app/backend:cached
+      - type: bind
+        source: ./app/backend
+        target: /app/backend
+        consistency: cached
     ports:
       - "8000:8000"
       - "3000:3000"
