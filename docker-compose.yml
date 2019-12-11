@@ -51,6 +51,7 @@ services:
       DEBUG: "True"
       VUE_APP_AXIOS_BASE_URL: /api/
       CHOKIDAR_USEPOLLING: "True"
+      API_TARGET: "${API_TARGET}"
     command: /bin/bash -c "
         set -x &&
         cd /app/frontend &&

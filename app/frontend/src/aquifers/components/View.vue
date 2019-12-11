@@ -427,7 +427,7 @@ import Documents from './Documents.vue'
 import SingleAquiferMap from './SingleAquiferMap.vue'
 import ChangeHistory from '@/common/components/ChangeHistory.vue'
 import { mapActions, mapGetters, mapState } from 'vuex'
-import { sumBy, orderBy, groupBy } from 'lodash'
+import { sumBy, orderBy, groupBy, range } from 'lodash'
 import PieChart from './PieChart.vue'
 import * as Sentry from '@sentry/browser';
 
@@ -533,8 +533,6 @@ export default {
       ApiService.query(`aquifers/${this.id}/edit`)
         .then((response) => {
           this.form = response.data
-        }).catch((error) => {
-          console.error(error)
         })
     },
     bySection (resources, section) {
@@ -620,11 +618,9 @@ export default {
             const sortedWells = orderBy(obs_wells, ['waterLevel']) // sorts so wells with waterLevels are at the top.
             const wellsByStatus = groupBy(sortedWells, 'observation_well_status')
 
-            this.active_obs_wells =  wellsByStatus.Active;
-            this.inactive_obs_wells = wellsByStatus.Inactive;
+            this.active_obs_wells =  wellsByStatus.Active || [];
+            this.inactive_obs_wells = wellsByStatus.Inactive || [];
           });
-        }).catch((error) => {
-          console.error(error)
         })
     },
     fetchFiles (id = this.id) {
@@ -637,18 +633,35 @@ export default {
     },
     fetchWells (id = this.id) {
       // ?aquifer=608&ems_has_value=true&limit=10&match_any=false&offset=10&ordering=-well_tag_number
-      const params = { aquifer: id, limit: 100, ems_has_value: true }
+      const maxResults = 100;
+      const params = { aquifer: id, limit: maxResults, ems_has_value: true }
       return ApiService.query('wells', params)
         .then((response) => {
-          this.wells = response.data.results || []
+          const total = response.data.count;
+
+          const initialPromise = Promise.resolve(response.data.results || []);
+          let promise = initialPromise;
+
+          if (total > maxResults) {
+            const numFetches = Math.ceil(total / maxResults);
+            promise = range(1, numFetches).reduce((previousPromise, pageNum) => {
+              return previousPromise.then((results) => {
+                return ApiService.query('wells', { ...params, offset: pageNum * maxResults }).then((response2) => {
+                  return results.concat(response2.data.results);
+                });
+              });
+            }, initialPromise);
+          }
+
+          return promise;
+
           // const wells = Array.from({ length: 20000 }, (_, idx) => ({
           //   longitude: -124.822004 + Math.floor(idx / 50) / 100,
           //   latitude: 49.20 + (idx % 50) / 200,
           // }));
-          // this.wells = wells;
-        }).catch((error) => {
-          console.error(error)
-        })
+        }).then((wells) => {
+          this.wells = wells || [];
+        });
     },
     getObservationWellLink (wellNumber) {
       return `https://governmentofbc.maps.arcgis.com/apps/webappviewer/index.html?id=b53cb0bf3f6848e79d66ffd09b74f00d&find=OBS WELL ${wellNumber}`
@@ -664,8 +677,6 @@ export default {
               owell.hasLevelAnalysis = category.toUpperCase() !== 'N/A'
               owell.waterLevels = category;
             }
-          }).catch((e) => {
-            console.error(e)
           })
         }),
       );

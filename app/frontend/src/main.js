@@ -36,7 +36,7 @@ import ApiService from '@/common/services/ApiService.js'
 // Sentry
 Sentry.init({
   dsn: 'https://a83809da8c9b4f39b3d7cd683b803859@sentry.io/1802823',
-  integrations: [new Integrations.Vue({Vue, attachProps: true, logError: true})]
+  integrations: process.env.NODE_ENV === 'production' ? [new Sentry.Integrations.Vue({Vue, attachProps: true, logError: true})] : []
 });
 
 Vue.use(Vuex)

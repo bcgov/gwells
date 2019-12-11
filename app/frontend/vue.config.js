@@ -13,8 +13,7 @@ module.exports = {
   devServer: {
     proxy: {
       '^/api/': {
-        // target: 'http://backend:8000/',
-        target: 'https://gwells-staging.pathfinder.gov.bc.ca/',
+        target: process.env.API_TARGET === 'staging' ? 'https://gwells-staging.pathfinder.gov.bc.ca/' : 'http://backend:8000/',
         pathRewrite: {
           '^/api': '/gwells/api/v2'
         }
