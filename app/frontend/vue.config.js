@@ -1,5 +1,5 @@
-if (process.env.API_TARGET === 'staging') {
-  console.log('Targetting the STAGING API')
+if (process.env.API_TARGET) {
+  console.log(`Targetting the API ${process.env.API_TARGET}`)
 }
 
 module.exports = {
@@ -17,7 +17,7 @@ module.exports = {
   devServer: {
     proxy: {
       '^/api/': {
-        target: process.env.API_TARGET === 'staging' ? 'https://gwells-staging.pathfinder.gov.bc.ca/' : 'http://backend:8000/',
+        target: process.env.API_TARGET || 'http://backend:8000/',
         pathRewrite: {
           '^/api': '/gwells/api/v2'
         }
