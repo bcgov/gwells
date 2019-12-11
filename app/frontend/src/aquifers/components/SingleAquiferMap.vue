@@ -5,7 +5,6 @@
 <script>
 import L from 'leaflet'
 import 'leaflet-edgebuffer'
-import { filter } from 'lodash'
 import { tiledMapLayer } from 'esri-leaflet'
 
 import aquiferLayers from '../layers'
@@ -20,7 +19,7 @@ export default {
     return {
       map: null,
       legendControlContent: null,
-      activeLayers: {},
+      activeLayers: {}
     }
   },
   mounted () {
@@ -59,35 +58,35 @@ export default {
         layers: 'pub:WHSE_WATER_MANAGEMENT.GW_AQUIFERS_CLASSIFICATION_SVW',
         transparent: true
       }).addTo(this.map)
-      const layersControl = L.control.layers(null, aquiferLayers, {collapsed: false});
+      const layersControl = L.control.layers(null, aquiferLayers, { collapsed: false })
       layersControl.addTo(this.map)
-      const cadastralLayer = aquiferLayers['Cadastral'];
+      const cadastralLayer = aquiferLayers['Cadastral']
       cadastralLayer.addTo(this.map)
 
       Object.keys(aquiferLayers).forEach((layerName) => {
-        const layer = aquiferLayers[layerName];
+        const layer = aquiferLayers[layerName]
         this.activeLayers[layerName] = {
           layerName: layer.options.name,
           legend: layer.options.legend,
-          show: false,
-        };
-      });
-      this.activeLayers[cadastralLayer.options.name].show = true;
+          show: false
+        }
+      })
+      this.activeLayers[cadastralLayer.options.name].show = true
       this.activeLayers.emsWells = LEGEND_EMS_WELLS
-      this.activeLayers.emsWells.show = true;
+      this.activeLayers.emsWells.show = true
 
       this.map.addControl(this.getLegendControl())
 
       this.$emit('activeLayers', this.activeLayers)
 
-      this.canvasRenderer = L.canvas({ padding: 0.1 });
+      this.canvasRenderer = L.canvas({ padding: 0.1 })
 
-      this.canvasLayer = L.layerGroup();
-      this.canvasLayer.addTo(this.map);
+      this.canvasLayer = L.layerGroup()
+      this.canvasLayer.addTo(this.map)
 
-      this.updateCanvasLayer();
+      this.updateCanvasLayer()
       if (this.geom) {
-        this.zoomToAquifer();
+        this.zoomToAquifer()
       }
 
       this.listenForLayerAdd()
@@ -95,26 +94,26 @@ export default {
       this.listenForLayerToggle()
       // this.$emit('activeLayers', this.activeLayers)
 
-      this.addEmsWellsLayersControl(layersControl);
+      this.addEmsWellsLayersControl(layersControl)
     },
-    addEmsWellsLayersControl(layersControl) {
-      const overlaysContainer = layersControl.getContainer().querySelector('.leaflet-control-layers-overlays');
+    addEmsWellsLayersControl (layersControl) {
+      const overlaysContainer = layersControl.getContainer().querySelector('.leaflet-control-layers-overlays')
 
-      const checked = this.activeLayers.emsWells.show ? 'checked' : '';
-      const wellsLayerControlLabel = document.createElement('label');
+      const checked = this.activeLayers.emsWells.show ? 'checked' : ''
+      const wellsLayerControlLabel = document.createElement('label')
       wellsLayerControlLabel.innerHTML =
       '<div>' +
         '<input type="checkbox" class="leaflet-control-layers-selector" ' + checked + '>' +
         '<span> EMS Wells</span>' +
-      '</div>';
+      '</div>'
       const emsWellsCheckbox = wellsLayerControlLabel.querySelector('input')
       emsWellsCheckbox.onchange = (e) => {
-        this.activeLayers.emsWells.show = e.currentTarget.checked;
-        this.updateCanvasLayer();
+        this.activeLayers.emsWells.show = e.currentTarget.checked
+        this.updateCanvasLayer()
         this.$emit('activeLayers', this.activeLayers)
       }
 
-      overlaysContainer.appendChild(wellsLayerControlLabel);
+      overlaysContainer.appendChild(wellsLayerControlLabel)
     },
     getLegendControl () {
       const self = this
@@ -137,7 +136,7 @@ export default {
         let innerContent = `<ul class="p-0 m-0" style="list-style-type: none;">`
         innerContent += `<li class="m-1 text-center">Legend</li>`
         Object.keys(data).forEach((name) => {
-          const l = data[name];
+          const l = data[name]
           if (l.show) {
             innerContent += `<li class="m-1"><img src="${l.legend}"> ${l.layerName}</li>`
           }
@@ -148,31 +147,31 @@ export default {
     },
     listenForLayerRemove () {
       this.map.on('overlayremove', (e) => {
-        const {legend, name} = e.layer.options;
+        const { legend, name } = e.layer.options
         if (legend) {
-          this.activeLayers[name].show = false;
+          this.activeLayers[name].show = false
           this.$emit('activeLayers', this.activeLayers)
         }
       })
     },
     listenForLayerAdd () {
       this.map.on('overlayadd', (e) => {
-        const {legend, name} = e.layer.options;
+        const { legend, name } = e.layer.options
         if (legend) {
-          this.activeLayers[name].show = true;
+          this.activeLayers[name].show = true
           this.$emit('activeLayers', this.activeLayers)
         }
       })
     },
-    updateCanvasLayer() {
-      this.canvasLayer.clearLayers();
+    updateCanvasLayer () {
+      this.canvasLayer.clearLayers()
 
-      this.addAquiferGeomToCanvasLayer();
+      this.addAquiferGeomToCanvasLayer()
 
-      this.addWellsToCanvasLayer();
+      this.addWellsToCanvasLayer()
 
       if (this.wells.length > 0 && this.geom) {
-        this.canvasLayer.addLayer(this.aquiferLayer);
+        this.canvasLayer.addLayer(this.aquiferLayer)
 
         this.canvasLayer.addLayer(this.wellsLayer)
 
@@ -182,18 +181,18 @@ export default {
       }
     },
     addAquiferGeomToCanvasLayer () {
-      if (!this.geom) { return; }
+      if (!this.geom) { return }
 
       if (this.aquiferLayer) {
-        this.aquiferLayer.remove();
+        this.aquiferLayer.remove()
       }
 
       const options = {
         style: {
           color: 'red'
         },
-        renderer: this.canvasRenderer,
-      };
+        renderer: this.canvasRenderer
+      }
       this.aquiferLayer = L.geoJSON(this.geom, options)
       this.aquiferLayer.bindTooltip(`Aquifer ${this.aquiferId}`, { sticky: true })
     },
@@ -204,8 +203,8 @@ export default {
         fillColor: '#0162fe',
         fillOpacity: 1,
         radius: 6,
-        renderer: this.canvasRenderer,
-      };
+        renderer: this.canvasRenderer
+      }
 
       const emsWellCircleMarkerOptions = {
         color: 'black',
@@ -213,50 +212,40 @@ export default {
         fillColor: '#0ca287',
         fillOpacity: 1,
         radius: 6,
-        renderer: this.canvasRenderer,
+        renderer: this.canvasRenderer
       }
 
       if (this.emsWellsLayer) {
-        this.emsWellsLayer.remove();
+        this.emsWellsLayer.remove()
       }
       if (this.wellsLayer) {
-        this.wellsLayer.remove();
+        this.wellsLayer.remove()
       }
       this.emsWellsLayer = L.layerGroup()
       this.wellsLayer = L.layerGroup()
 
-      let addEmsWellsToLegend = false;
-      let addNormalWellsToLegend = false;
-
       this.wells.forEach((well) => {
-        const {latitude, longitude, ems} = well;
+        const { latitude, longitude, ems } = well
 
-        const hasEmsData = Boolean(ems);
+        const hasEmsData = Boolean(ems)
 
-        if (hasEmsData) {
-          addEmsWellsToLegend = true;
-        } else {
-          addNormalWellsToLegend = true;
-        }
-
-        const color = '#'+Math.floor(Math.random()*16777215).toString(16);
         const options = hasEmsData ? emsWellCircleMarkerOptions : defaultCircleMarkerOptions
 
         const wellCircleMarker = L.circleMarker(L.latLng(latitude, longitude), options)
         const wellTooltip = [
           `Well Tag Number: ${well.well_tag_number}`,
           `EMS ID: ${well.ems}`,
-          `Address: ${well.street_address || 'N/A'}`,
-        ];
+          `Address: ${well.street_address || 'N/A'}`
+        ]
 
         wellCircleMarker.bindTooltip(wellTooltip.join('<br>'))
 
         if (hasEmsData) {
-          this.emsWellsLayer.addLayer(wellCircleMarker);
+          this.emsWellsLayer.addLayer(wellCircleMarker)
         } else {
-          this.wellsLayer.addLayer(wellCircleMarker);
+          this.wellsLayer.addLayer(wellCircleMarker)
         }
-      });
+      })
     },
     zoomToAquifer () {
       // Set map view to aquifer
@@ -266,13 +255,13 @@ export default {
   watch: {
     geom (newGeom, oldGeom) {
       if (oldGeom || newGeom) {
-        this.updateCanvasLayer();
-        this.zoomToAquifer();
+        this.updateCanvasLayer()
+        this.zoomToAquifer()
       }
     },
     wells (newWells, oldWells) {
       if (oldWells || newWells) {
-        this.updateCanvasLayer();
+        this.updateCanvasLayer()
       }
     }
   }

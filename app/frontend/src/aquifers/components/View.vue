@@ -429,7 +429,7 @@ import ChangeHistory from '@/common/components/ChangeHistory.vue'
 import { mapActions, mapGetters, mapState } from 'vuex'
 import { sumBy, orderBy, groupBy, range } from 'lodash'
 import PieChart from './PieChart.vue'
-import * as Sentry from '@sentry/browser';
+import * as Sentry from '@sentry/browser'
 
 export default {
   components: {
@@ -444,16 +444,16 @@ export default {
     'edit': Boolean
   },
   created () {
-    this.loadingMap = true;
+    this.loadingMap = true
 
     Promise.all([
       this.fetch(),
-      this.fetchWells(),
+      this.fetchWells()
     ]).then(() => {
-      this.loadingMap = false;
-    });
+      this.loadingMap = false
+    })
 
-    this.fetchFiles();
+    this.fetchFiles()
   },
   data () {
     return {
@@ -472,15 +472,15 @@ export default {
       showSaveSuccess: false,
       aquiferFiles: {},
       aquifer_resource_sections: [
-        {code: 'M', name: 'Advanced mapping'},
-        {code: 'A', name: 'Artesian advisory'},
-        {key: 'obs-wells', name: 'Oberservation Wells'},
-        {code: 'N', name: 'Numerical model'},
-        {code: 'P', name: 'Pumping stress index'},
-        {code: 'W', name: 'Water budget'},
-        {key: 'water-quality', name: 'Water quality information'},
-        {key: 'aquifer-connected', name: 'Hydraulically connected (screening level)'},
-        {code: 'I', name: 'Other information'},
+        { code: 'M', name: 'Advanced mapping' },
+        { code: 'A', name: 'Artesian advisory' },
+        { key: 'obs-wells', name: 'Oberservation Wells' },
+        { code: 'N', name: 'Numerical model' },
+        { code: 'P', name: 'Pumping stress index' },
+        { code: 'W', name: 'Water budget' },
+        { key: 'water-quality', name: 'Water quality information' },
+        { key: 'aquifer-connected', name: 'Hydraulically connected (screening level)' },
+        { code: 'I', name: 'Other information' }
       ],
       wells: [],
       active_obs_wells: [],
@@ -502,7 +502,7 @@ export default {
       'shapefile_uploading',
       'shapefile_upload_message',
       'shapefile_upload_success'
-    ]),
+    ])
   },
   watch: {
     id () {
@@ -510,7 +510,7 @@ export default {
     },
     licence_details (newLDetails, oldLDetails) {
       this.setWaterVolume(newLDetails)
-    },
+    }
   },
   filters: {
     unitWaterVolume (volume) {
@@ -612,56 +612,56 @@ export default {
           this.record = response.data
           this.licence_details = response.data.licence_details
           this.lic_qty = response.data.licence_details.lic_qty
-          const obs_wells = response.data.licence_details.obs_wells
+          const obsWells = response.data.licence_details.obs_wells
 
-          return this.getWaterLevels(obs_wells).then(() => {
-            const sortedWells = orderBy(obs_wells, ['waterLevel']) // sorts so wells with waterLevels are at the top.
+          return this.getWaterLevels(obsWells).then(() => {
+            const sortedWells = orderBy(obsWells, ['waterLevel']) // sorts so wells with waterLevels are at the top.
             const wellsByStatus = groupBy(sortedWells, 'observation_well_status')
 
-            this.active_obs_wells =  wellsByStatus.Active || [];
-            this.inactive_obs_wells = wellsByStatus.Inactive || [];
-          });
+            this.active_obs_wells = wellsByStatus.Active || []
+            this.inactive_obs_wells = wellsByStatus.Inactive || []
+          })
         })
     },
     fetchFiles (id = this.id) {
-      this.loadingFiles = true;
+      this.loadingFiles = true
       return ApiService.query(`aquifers/${id}/files`)
         .then((response) => {
           this.aquiferFiles = response.data
-          this.loadingFiles = false;
+          this.loadingFiles = false
         })
     },
     fetchWells (id = this.id) {
       // ?aquifer=608&ems_has_value=true&limit=10&match_any=false&offset=10&ordering=-well_tag_number
-      const maxResults = 100;
+      const maxResults = 100
       const params = { aquifer: id, limit: maxResults, ems_has_value: true }
       return ApiService.query('wells', params)
         .then((response) => {
-          const total = response.data.count;
+          const total = response.data.count
 
-          const initialPromise = Promise.resolve(response.data.results || []);
-          let promise = initialPromise;
+          const initialPromise = Promise.resolve(response.data.results || [])
+          let promise = initialPromise
 
           if (total > maxResults) {
-            const numFetches = Math.ceil(total / maxResults);
+            const numFetches = Math.ceil(total / maxResults)
             promise = range(1, numFetches).reduce((previousPromise, pageNum) => {
               return previousPromise.then((results) => {
                 return ApiService.query('wells', { ...params, offset: pageNum * maxResults }).then((response2) => {
-                  return results.concat(response2.data.results);
-                });
-              });
-            }, initialPromise);
+                  return results.concat(response2.data.results)
+                })
+              })
+            }, initialPromise)
           }
 
-          return promise;
+          return promise
 
           // const wells = Array.from({ length: 20000 }, (_, idx) => ({
           //   longitude: -124.822004 + Math.floor(idx / 50) / 100,
           //   latitude: 49.20 + (idx % 50) / 200,
           // }));
         }).then((wells) => {
-          this.wells = wells || [];
-        });
+          this.wells = wells || []
+        })
     },
     getObservationWellLink (wellNumber) {
       return `https://governmentofbc.maps.arcgis.com/apps/webappviewer/index.html?id=b53cb0bf3f6848e79d66ffd09b74f00d&find=OBS WELL ${wellNumber}`
@@ -673,13 +673,13 @@ export default {
           const url = `https://catalogue.data.gov.bc.ca/api/3/action/datastore_search?resource_id=a8933793-eadb-4a9c-992c-da4f6ac8ca51&fields=EMS_ID,Well_Num,trend_line_slope,category&filters=%7b%22Well_Num%22:%22${wellNumber}%22%7d`
           return ApiService.query(url).then((response) => {
             if (response.data.result.records.length > 0) {
-              const {category} = response.data.result.records[0];
+              const { category } = response.data.result.records[0]
               owell.hasLevelAnalysis = category.toUpperCase() !== 'N/A'
-              owell.waterLevels = category;
+              owell.waterLevels = category
             }
           })
-        }),
-      );
+        })
+      )
     },
     setWaterVolume (details) {
       if (details.usage && details.usage.constructor === Array && details.usage.length > 0) {
