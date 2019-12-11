@@ -410,7 +410,7 @@ import ChangeHistory from '@/common/components/ChangeHistory.vue'
 import { mapActions, mapGetters, mapState } from 'vuex'
 import { sumBy, orderBy, groupBy } from 'lodash'
 import PieChart from './PieChart.vue'
-import * as Sentry from '@sentry/browser';
+import * as Sentry from '@sentry/browser'
 
 export default {
 
@@ -444,15 +444,15 @@ export default {
       showSaveSuccess: false,
       aquiferFiles: {},
       aquifer_resource_sections: [
-        {code: 'M', name: 'Advanced mapping'},
-        {code: 'A', name: 'Artesian advisory'},
-        {key: 'obs-wells', name: 'Oberservation Wells'},
-        {code: 'N', name: 'Numerical model'},
-        {code: 'P', name: 'Pumping stress index'},
-        {code: 'W', name: 'Water budget'},
-        {key: 'water-quality', name: 'Water quality information'},
-        {key: 'aquifer-connected', name: 'Hydraulically connected (screening level)'},
-        {code: 'I', name: 'Other information'},
+        { code: 'M', name: 'Advanced mapping' },
+        { code: 'A', name: 'Artesian advisory' },
+        { key: 'obs-wells', name: 'Oberservation Wells' },
+        { code: 'N', name: 'Numerical model' },
+        { code: 'P', name: 'Pumping stress index' },
+        { code: 'W', name: 'Water budget' },
+        { key: 'water-quality', name: 'Water quality information' },
+        { key: 'aquifer-connected', name: 'Hydraulically connected (screening level)' },
+        { code: 'I', name: 'Other information' }
       ],
       wells: [],
       active_obs_wells: [],
@@ -474,7 +474,7 @@ export default {
       'shapefile_uploading',
       'shapefile_upload_message',
       'shapefile_upload_success'
-    ]),
+    ])
   },
   watch: {
     id () {
@@ -482,7 +482,7 @@ export default {
     },
     licence_details (newLDetails, oldLDetails) {
       this.setWaterVolume(newLDetails)
-    },
+    }
   },
   filters: {
     unitWaterVolume (volume) {
@@ -594,15 +594,15 @@ export default {
           this.record = response.data
           this.licence_details = response.data.licence_details
           this.lic_qty = response.data.licence_details.lic_qty
-          const obs_wells = response.data.licence_details.obs_wells
+          const obsWells = response.data.licence_details.obs_wells
 
-          return this.getWaterLevels(obs_wells).then(() => {
-            const sortedWells = orderBy(obs_wells, ['waterLevel']) // sorts so wells with waterLevels are at the top.
+          return this.getWaterLevels(obsWells).then(() => {
+            const sortedWells = orderBy(obsWells, ['waterLevel']) // sorts so wells with waterLevels are at the top.
             const wellsByStatus = groupBy(sortedWells, 'observation_well_status')
 
-            this.active_obs_wells =  wellsByStatus.Active;
-            this.inactive_obs_wells = wellsByStatus.Inactive;
-          });
+            this.active_obs_wells = wellsByStatus.Active
+            this.inactive_obs_wells = wellsByStatus.Inactive
+          })
         }).catch((error) => {
           console.error(error)
         })
@@ -623,15 +623,15 @@ export default {
           const url = `https://catalogue.data.gov.bc.ca/api/3/action/datastore_search?resource_id=a8933793-eadb-4a9c-992c-da4f6ac8ca51&fields=EMS_ID,Well_Num,trend_line_slope,category&filters=%7b%22Well_Num%22:%22${wellNumber}%22%7d`
           return ApiService.query(url).then((response) => {
             if (response.data.result.records.length > 0) {
-              const {category} = response.data.result.records[0];
+              const { category } = response.data.result.records[0]
               owell.hasLevelAnalysis = category.toUpperCase() !== 'N/A'
-              owell.waterLevels = category;
+              owell.waterLevels = category
             }
           }).catch((e) => {
             console.error(e)
           })
-        }),
-      );
+        })
+      )
     },
     setWaterVolume (details) {
       if (details.usage && details.usage.constructor === Array && details.usage.length > 0) {

@@ -52,7 +52,7 @@ export default {
     })
   },
   destroyed () {
-    this.map.remove();
+    this.map.remove()
   },
   watch: {
     latitude () {

@@ -8,7 +8,6 @@ import OWellsInactiveLegend from '../common/assets/images/owells-inactive.png'
 import OWellsActiveLegend from '../common/assets/images/owells-active.png'
 import WellsAllLegend from '../common/assets/images/wells-all.png'
 
-
 const aquiferLayers = {
   'Cadastral': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/ows?', {
     format: 'image/png',
@@ -69,7 +68,7 @@ const aquiferLayers = {
     name: 'Artesian wells',
     legend: ArtesianLegend,
     overlay: true
-  }),
-};
+  })
+}
 
-export default aquiferLayers;
+export default aquiferLayers
