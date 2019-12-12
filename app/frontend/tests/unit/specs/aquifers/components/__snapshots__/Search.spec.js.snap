@@ -60,6 +60,53 @@ exports[`Search Component Matches the snapshot 1`] = `
                 </div>
               </fieldset>
                
+              <fieldset
+                class="form-group"
+              >
+                <!---->
+                <div
+                  role="group"
+                  tabindex="-1"
+                >
+                  <div
+                    class="custom-control custom-control-inline custom-radio"
+                  >
+                    <input
+                      autocomplete="off"
+                      class="custom-control-input"
+                      name="match-any"
+                      type="radio"
+                      value="true"
+                    />
+                    <label
+                      class="custom-control-label"
+                    >
+                      Any field match
+                    </label>
+                  </div>
+                   
+                  <div
+                    class="custom-control custom-control-inline custom-radio"
+                  >
+                    <input
+                      autocomplete="off"
+                      class="custom-control-input"
+                      name="match-any"
+                      type="radio"
+                      value="false"
+                    />
+                    <label
+                      class="custom-control-label"
+                    >
+                      All field match
+                    </label>
+                  </div>
+                  <!---->
+                  <!---->
+                  <!---->
+                </div>
+              </fieldset>
+               
               <div
                 class="aquifer-checkbox-group"
                 role="group"
