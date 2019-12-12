@@ -30,6 +30,9 @@ export default {
       this.initMap()
     })
   },
+  destroyed () {
+    this.map.remove()
+  },
   methods: {
     initLeaflet () {
       // There is a known issue using leaflet with webpack, this is a workaround

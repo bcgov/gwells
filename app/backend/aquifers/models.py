@@ -74,7 +74,7 @@ class WaterRightsLicence(AuditModel):
         db_column='water_rights_purpose_code',
         blank=True,
         null=True,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         verbose_name="Water Rights Purpose Reference",
         related_name='licences')
 
@@ -568,7 +568,7 @@ class AquiferResource(AuditModel):
         AquiferResourceSection,
         db_column='aquifer_resource_section_code',
         verbose_name="Aquifer Resource Section",
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         help_text="The section (category) of this resource.")
     name = models.CharField(
         max_length=255,
