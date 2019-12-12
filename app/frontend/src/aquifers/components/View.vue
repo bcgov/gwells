@@ -666,11 +666,6 @@ export default {
           }
 
           return promise
-
-          // const wells = Array.from({ length: 20000 }, (_, idx) => ({
-          //   longitude: -124.822004 + Math.floor(idx / 50) / 100,
-          //   latitude: 49.20 + (idx % 50) / 200,
-          // }));
         }).then((wells) => {
           this.wells = wells || []
         })

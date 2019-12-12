@@ -15,8 +15,7 @@ import aquiferLayers from '../layers'
 const provider = new EsriProvider()
 const searchControl = new GeoSearchControl({
   provider: provider,
-  autoClose: true,
-  style: 'bar'
+  autoClose: true
 })
 
 // Extend control, making a locate

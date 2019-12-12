@@ -8,7 +8,7 @@ import 'leaflet-edgebuffer'
 import { tiledMapLayer } from 'esri-leaflet'
 
 import aquiferLayers from '../layers'
-import emsWellsIcon from '../../common/assets/images/wells-all.png'
+import emsWellsIcon from '../../common/assets/images/wells-ems.png'
 
 const LEGEND_EMS_WELLS = { layerName: 'EMS Wells in Aquifer', legend: emsWellsIcon, show: false }
 
@@ -75,8 +75,11 @@ export default {
         }
       })
       this.activeLayers[cadastralLayer.options.name].show = true
+
+      // Add non-image tile layer for EMS wells
       this.activeLayers.emsWells = LEGEND_EMS_WELLS
       this.activeLayers.emsWells.show = true
+      this.addEmsWellsLayersControl(layersControl)
 
       this.map.addControl(this.getLegendControl())
 
@@ -95,9 +98,7 @@ export default {
       this.listenForLayerAdd()
       this.listenForLayerRemove()
       this.listenForLayerToggle()
-      // this.$emit('activeLayers', this.activeLayers)
-
-      this.addEmsWellsLayersControl(layersControl)
+      this.$emit('activeLayers', this.activeLayers)
     },
     addEmsWellsLayersControl (layersControl) {
       const overlaysContainer = layersControl.getContainer().querySelector('.leaflet-control-layers-overlays')
@@ -281,6 +282,10 @@ export default {
   background-color: white;
   box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.4);
   border-radius: 0.1em;
+}
+
+.leaflet-control-legend li {
+  line-height: 20px;
 }
 
 .leaflet-control-layers label:last-child {
