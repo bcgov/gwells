@@ -214,10 +214,10 @@
               <div class="observational-wells" v-if="section.key === 'obs-wells'">
                 <dt class="text-right">Observation wells</dt>
                 <dd class="m-0">
-                  <div v-if="active_obs_wells.length > 0">
+                  <div v-if="activeObsWells.length > 0">
                     <h6 class="border-bottom">Active</h6>
                     <ul class="p-0 m-0">
-                      <li v-for="owell in active_obs_wells" :key="owell.observation_well_number" :data-water-level="owell.waterLevels">
+                      <li v-for="owell in activeObsWells" :key="owell.observation_well_number" :data-water-level="owell.waterLevels">
                         <a :href="getObservationWellLink(owell.observation_well_number)" target="_blank" class="d-print-url">
                           {{ owell.observation_well_number }}
                         </a>
@@ -230,10 +230,10 @@
                       </li>
                     </ul>
                   </div>
-                  <div v-else-if="inactive_obs_wells.length > 0">
+                  <div v-if="inactiveObsWellsWithWaterLevel.length > 0 || inativeObsWellsWithOutWaterLevel.length > 0">
                     <h6 class="border-bottom mt-2">Inactive<br><small>(data may not be available)</small></h6>
                     <ul class="p-0 m-0">
-                      <li v-for="owell in inactive_obs_wells" :key="owell.observation_well_number" :data-water-level="owell.waterLevels">
+                      <li v-for="owell in inactiveObsWellsWithWaterLevel" :key="owell.observation_well_number" :data-water-level="owell.waterLevels">
                         <a :href="getObservationWellLink(owell.observation_well_number)" target="_blank" class="d-print-url">
                           {{ owell.observation_well_number }}
                         </a>
@@ -244,9 +244,15 @@
                           </a>
                         </div>
                       </li>
+                      <li v-if="inativeObsWellsWithOutWaterLevel.length > 0" class="obs-wells-wo-well-level">
+                        No Water Level Analysis:
+                        <span v-for="owell in inativeObsWellsWithOutWaterLevel" :key="owell.observation_well_number">
+                          <a :href="getObservationWellLink(owell.observation_well_number)" target="_blank">{{ owell.observation_well_number }}</a>
+                        </span>
+                      </li>
                     </ul>
                   </div>
-                  <div v-else>
+                  <div v-if="noObsWells">
                     No information available.
                   </div>
                 </dd>
@@ -358,18 +364,6 @@ a {
   padding-left: 2rem;
 }
 
-.observational-wells li:not([data-water-level]) {
-  display: inline;
-}
-
-.observational-wells li:not([data-water-level]):after {
-  content: ", ";
-}
-
-.observational-wells li:last-child:not([data-water-level]):after {
-  content: "";
-}
-
 .pie-chart-title {
   font-weight: bold !important;
   font-size: 1rem !important;
@@ -385,6 +379,10 @@ a {
 .aquifer-main-information-list .row > :nth-child(odd) {
   font-weight: bold;
   border-right: 1px solid rgba(0,0,0,0.1);
+}
+
+.observational-wells .obs-wells-wo-well-level span:not(:last-child):after {
+  content: ", ";
 }
 
 @media print {
@@ -433,7 +431,7 @@ import ChangeHistory from '@/common/components/ChangeHistory.vue'
 import { mapActions, mapGetters, mapState } from 'vuex'
 import { sumBy, orderBy, groupBy } from 'lodash'
 import PieChart from './PieChart.vue'
-import * as Sentry from '@sentry/browser';
+import * as Sentry from '@sentry/browser'
 
 export default {
 
@@ -467,19 +465,21 @@ export default {
       showSaveSuccess: false,
       aquiferFiles: {},
       aquifer_resource_sections: [
-        {code: 'M', name: 'Advanced mapping'},
-        {code: 'A', name: 'Artesian advisory'},
-        {key: 'obs-wells', name: 'Oberservation Wells'},
-        {code: 'N', name: 'Numerical model'},
-        {code: 'P', name: 'Pumping stress index'},
-        {code: 'W', name: 'Water budget'},
-        {key: 'water-quality', name: 'Water quality information'},
-        {key: 'aquifer-connected', name: 'Hydraulically connected (screening level)'},
-        {code: 'I', name: 'Other information'},
+        { code: 'M', name: 'Advanced mapping' },
+        { code: 'A', name: 'Artesian advisory' },
+        { key: 'obs-wells', name: 'Oberservation Wells' },
+        { code: 'N', name: 'Numerical model' },
+        { code: 'P', name: 'Pumping stress index' },
+        { code: 'W', name: 'Water budget' },
+        { key: 'water-quality', name: 'Water quality information' },
+        { key: 'aquifer-connected', name: 'Hydraulically connected (screening level)' },
+        { code: 'I', name: 'Other information' }
       ],
       wells: [],
-      active_obs_wells: [],
-      inactive_obs_wells: [],
+      activeObsWells: [],
+      inactiveObsWellsWithWaterLevel: [],
+      inativeObsWellsWithOutWaterLevel: [],
+      noObsWells: false,
       waterWithdrawlVolume: ''
     }
   },
@@ -497,7 +497,7 @@ export default {
       'shapefile_uploading',
       'shapefile_upload_message',
       'shapefile_upload_success'
-    ]),
+    ])
   },
   watch: {
     id () {
@@ -505,7 +505,7 @@ export default {
     },
     licence_details (newLDetails, oldLDetails) {
       this.setWaterVolume(newLDetails)
-    },
+    }
   },
   filters: {
     unitWaterVolume (volume) {
@@ -627,15 +627,23 @@ export default {
           ]
 
           this.lic_qty = response.data.licence_details.lic_qty
-          const obs_wells = response.data.licence_details.obs_wells
+          const obsWells = response.data.licence_details.obs_wells
 
-          return this.getWaterLevels(obs_wells).then(() => {
-            const sortedWells = orderBy(obs_wells, ['waterLevel']) // sorts so wells with waterLevels are at the top.
-            const wellsByStatus = groupBy(sortedWells, 'observation_well_status')
+          return this.getWaterLevels(obsWells).then(() => {
+            const sortedWells = orderBy(obsWells, ['hasLevelAnalysis', 'waterLevels'], ['desc', 'asc']) // sorts so wells with waterLevels are at the top.
+            const wellsByStatus = groupBy(sortedWells, 'observation_well_status') // groups wells into active and inactive categories
 
-            this.active_obs_wells =  wellsByStatus.Active;
-            this.inactive_obs_wells = wellsByStatus.Inactive;
-          });
+            this.activeObsWells = wellsByStatus.Active || []
+
+            const inactiveObsWells = wellsByStatus.Inactive || []
+
+            // split inactive wells into those with water level analysis and those without
+            this.inactiveObsWellsWithWaterLevel = inactiveObsWells.filter((w) => w.waterLevels)
+            this.inativeObsWellsWithOutWaterLevel = inactiveObsWells.filter((w) => !w.waterLevels)
+
+            // Show the "No information available." message when there are no obs wells to show
+            this.noObsWells = this.activeObsWells.length === 0 && inactiveObsWells.length === 0
+          })
         }).catch((error) => {
           console.error(error)
         })
@@ -652,19 +660,20 @@ export default {
     getWaterLevels (obsWells) {
       return Promise.all(
         obsWells.map((owell) => {
+          owell.hasLevelAnalysis = false
           let wellNumber = owell.observation_well_number
           const url = `https://catalogue.data.gov.bc.ca/api/3/action/datastore_search?resource_id=a8933793-eadb-4a9c-992c-da4f6ac8ca51&fields=EMS_ID,Well_Num,trend_line_slope,category&filters=%7b%22Well_Num%22:%22${wellNumber}%22%7d`
           return ApiService.query(url).then((response) => {
             if (response.data.result.records.length > 0) {
-              const {category} = response.data.result.records[0];
+              const { category } = response.data.result.records[0]
               owell.hasLevelAnalysis = category.toUpperCase() !== 'N/A'
-              owell.waterLevels = category;
+              owell.waterLevels = category
             }
           }).catch((e) => {
             console.error(e)
           })
-        }),
-      );
+        })
+      )
     },
     setWaterVolume (details) {
       if (details.usage && details.usage.constructor === Array && details.usage.length > 0) {

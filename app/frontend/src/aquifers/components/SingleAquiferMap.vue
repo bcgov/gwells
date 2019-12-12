@@ -28,6 +28,9 @@ export default {
       this.initMap()
     })
   },
+  destroyed () {
+    this.map.remove()
+  },
   methods: {
     initLeaflet () {
       // There is a known issue using leaflet with webpack, this is a workaround
@@ -56,8 +59,8 @@ export default {
         layers: 'pub:WHSE_WATER_MANAGEMENT.GW_AQUIFERS_CLASSIFICATION_SVW',
         transparent: true
       }).addTo(this.map)
-      L.control.layers(null, aquiferLayers, {collapsed: false}).addTo(this.map)
-      const cadastralLayer = aquiferLayers['Cadastral'];
+      L.control.layers(null, aquiferLayers, { collapsed: false }).addTo(this.map)
+      const cadastralLayer = aquiferLayers['Cadastral']
       cadastralLayer.addTo(this.map)
 
       this.map.addControl(this.getLegendControl())
@@ -66,7 +69,7 @@ export default {
       this.listenForLayerRemove()
 
       this.activeLayers = [
-        {layerId: cadastralLayer._leaflet_id, layerName: cadastralLayer.options.name, legend: cadastralLayer.options.legend}
+        { layerId: cadastralLayer._leaflet_id, layerName: cadastralLayer.options.name, legend: cadastralLayer.options.legend }
       ]
       this.$emit('activeLayers', this.activeLayers)
     },
@@ -113,7 +116,7 @@ export default {
         const layerName = e.layer.options.name
         const legend = e.layer.options.legend
         if (legend) {
-          this.activeLayers.push({layerId, layerName, legend})
+          this.activeLayers.push({ layerId, layerName, legend })
           this.$emit('activeLayers', this.activeLayers)
         }
       })
