@@ -59,6 +59,10 @@
                     v-model="search"
                     class="w-75"/>
                 </b-form-group>
+                <b-form-group>
+                  <b-form-radio inline v-model="filterParams.match_any" name="match-any" value="true">Any field match</b-form-radio>
+                  <b-form-radio inline v-model="filterParams.match_any" name="match-any" value="false">All field match</b-form-radio>
+                </b-form-group>
                 <b-form-checkbox-group
                   stacked
                   v-model="sections"
@@ -237,7 +241,7 @@ export default {
     'aquifer-map': AquiferMap
   },
   data () {
-    let query = this.$route.query || {}
+    let query = this.$route.query
     return {
       sortBy: 'id',
       sortDesc: false,
@@ -245,7 +249,7 @@ export default {
       aquifer_search: query.aquifer_search,
       limit: LIMIT,
       currentPage: 1,
-      filterParams: Object.assign({}, query),
+      filterParams: Object.assign({}, { match_any: false }, query),
       aquifers_search_results: {},
       response: {},
       aquiferListFields: [

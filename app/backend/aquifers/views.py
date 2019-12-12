@@ -112,20 +112,34 @@ def _aquifer_qs(query):
     @param query - the dict containing querystring arguments.
     """
     qs = Aquifer.objects.all()
-    resources__section__code = query.get(
-        "resources__section__code")
+    resources__section__code = query.get("resources__section__code")
     hydraulic = query.get('hydraulically_connected')
     search = query.get('search')
+    match_any = query.get('match_any') == 'true'
 
+    # build a list of filters from qs params
+    filters = []
     if hydraulic:
-        qs = qs.filter(subtype__code__in=serializers.HYDRAULIC_SUBTYPES)
+        filters.append(Q(subtype__code__in=serializers.HYDRAULIC_SUBTYPES))
 
-    # truthy check - ignore missing and emptystring.
+    # ignore missing and empty string for resources__section__code qs param
     if resources__section__code:
-        qs = qs.filter(
-            resources__section__code__in=resources__section__code.split(','))
+        for code in resources__section__code.split(','):
+            filters.append(Q(resources__section__code=code))
 
-    if search:  # truthy check - ignore missing and emptystring.
+    if match_any:
+        disjunction = filters.pop()
+
+        # combine all disjunctions using `|` a.k.a. SQL `OR`
+        for filter in filters:
+            disjunction |= filter
+        qs = qs.filter(disjunction)
+    else:
+        # calling .filter() one after another combines `Q`s using SQL `AND`
+        for filter in filters:
+            qs = qs.filter(filter)
+
+    if search: # only search if the search query is set to something
         disjunction = Q(aquifer_name__icontains=search)
         # if a number is searched, assume it could be an Aquifer ID.
         if search.isdigit():
