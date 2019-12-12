@@ -116,7 +116,7 @@
       "litho_stratographic_unit": "Mesozoic, Late Triassic, Karnian & Norian Epochs, Nicola Group",
       "mapping_year": 2000,
       "notes": null,
-      "geom": "SRID=4326;POLYGON((-123.34808512309087 49.400871875654985,-123.32456751444829 49.39779973215499,-123.31152124979985 49.41047806599304,-123.31890268900884 49.41488958170093,-123.32662745097173 49.413381893080384,-123.34808512309087 49.41388446109956,-123.34808512309087 49.400871875654985))"
+      "geom": "SRID=4326;POLYGON((-125.42682542410483 52.45074025146915,-125.42716874685874 52.523076333188136,-125.24623765555015 52.515346651753546,-125.25035752859702 52.422903104728974,-125.43746842947593 52.431067699390255,-125.42682542410483 52.45074025146915))"
     }
   },
   {
@@ -609,7 +609,7 @@
         "hydro_fracturing_yield_increase": null,
         "decommission_sealant_material": "CONCRETE",
         "decommission_backfill_material": "test",
-        "geom": "POINT(-125.300842 52.465454)"
+        "geom": "POINT(-125.301842 52.466454)"
     }
   },
   {
@@ -727,7 +727,7 @@
         "hydro_fracturing_yield_increase": null,
         "decommission_sealant_material": "CONCRETE",
         "decommission_backfill_material": "test",
-        "geom": "POINT(-125.300845 52.465459)"
+        "geom": "POINT(-125.301245 52.466459)"
     }
   }
 ]
