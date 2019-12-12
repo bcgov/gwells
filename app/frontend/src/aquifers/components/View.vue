@@ -616,16 +616,6 @@ export default {
           // force the map to update.
           this.record = response.data
           this.licence_details = response.data.licence_details
-
-          // REMOVE THIS
-          this.licence_details.wells_by_licence = [
-            {licence_number: 500003, well_tag_numbers_in_licence: "55889, 109507, 11895, 28360"},
-            {licence_number: 500070, well_tag_numbers_in_licence: "104603, 43284"},
-            {licence_number: 501086, well_tag_numbers_in_licence: "28360, 89594"},
-            {licence_number: 500914, well_tag_numbers_in_licence: "87864, 28360"},
-            {licence_number: 501274, well_tag_numbers_in_licence: "110988, 43284"},
-          ]
-
           this.lic_qty = response.data.licence_details.lic_qty
           const obsWells = response.data.licence_details.obs_wells
 
