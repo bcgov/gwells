@@ -52,6 +52,7 @@ from gwells.settings.base import get_env_variable
 
 from aquifers import models
 from aquifers import serializers
+from aquifers import serializers_v2
 from aquifers.models import (
     Aquifer,
     AquiferResourceSection,
@@ -93,7 +94,11 @@ class AquiferRetrieveUpdateAPIView(RevisionMixin, AuditUpdateMixin, RetrieveUpda
     permission_classes = (HasAquiferEditRoleOrReadOnly,)
     queryset = Aquifer.objects.all()
     lookup_field = 'aquifer_id'
-    serializer_class = serializers.AquiferDetailSerializer
+
+    def get_serializer_class(self):
+        if self.request.version == 'v1':
+            return serializers.AquiferDetailSerializerV1
+        return serializers_v2.AquiferDetailSerializerV2
 
 
 def _aquifer_qs(query):
@@ -161,7 +166,9 @@ class AquiferListCreateAPIView(RevisionMixin, AuditCreateMixin, ListCreateAPIVie
         if self.request.method == 'GET':
             return serializers.AquiferSerializer
         else:
-            return serializers.AquiferDetailSerializer
+            if self.request.version == 'v1':
+                return serializers.AquiferDetailSerializerV1
+            return serializers_v2.AquiferDetailSerializerV2
 
     def get_queryset(self):
         return _aquifer_qs(self.request.GET).values(
@@ -182,7 +189,7 @@ class AquiferListCreateAPIView(RevisionMixin, AuditCreateMixin, ListCreateAPIVie
 
 # TODO: delete me. This is a faster but uglier version of the view :)
 @api_view(['GET'])
-def list_view(request):
+def list_view(request, **kwargs):
     return HttpResponse(json.dumps(list(_aquifer_qs(
         request.GET).values(
             'aquifer_id',
@@ -305,7 +312,7 @@ class ListFiles(APIView):
             ))
         })
     )})
-    def get(self, request, aquifer_id):
+    def get(self, request, aquifer_id, **kwargs):
         user_is_staff = self.request.user.groups.filter(
             name=AQUIFERS_EDIT_ROLE).exists()
 
@@ -333,7 +340,7 @@ class AquiferNameList(ListAPIView):
         'aquifer_name',
     )
 
-    def get(self, request):
+    def get(self, request, **kwargs):
         search = self.request.query_params.get('search', None)
         if not search:
             # avoiding responding with excess results
@@ -351,7 +358,7 @@ class AquiferHistory(APIView):
     queryset = Aquifer.objects.all()
     swagger_schema = None
 
-    def get(self, request, aquifer_id):
+    def get(self, request, aquifer_id, **kwargs):
         """
         Retrieves version history for the specified Aquifer record and creates a list of diffs
         for each revision.
@@ -385,7 +392,7 @@ class PreSignedDocumentKey(APIView):
     permission_classes = (HasAquiferEditRole,)
 
     @swagger_auto_schema(auto_schema=None)
-    def get(self, request, aquifer_id):
+    def get(self, request, aquifer_id, **kwargs):
         client = MinioClient(
             request=request, disable_private=False)
 
@@ -415,7 +422,7 @@ class DeleteAquiferDocument(APIView):
     permission_classes = (HasAquiferEditRole,)
 
     @swagger_auto_schema(auto_schema=None)
-    def delete(self, request, aquifer_id):
+    def delete(self, request, aquifer_id, **kwargs):
         client = MinioClient(
             request=request, disable_private=False)
 
@@ -442,7 +449,7 @@ class SaveAquiferGeometry(APIView):
     parser_class = (FileUploadParser,)
 
     @swagger_auto_schema(auto_schema=None)
-    def post(self, request, aquifer_id):
+    def post(self, request, aquifer_id, **kwargs):
         logger.info(request.data)
         if 'geometry' not in request.data:
             raise ParseError("Empty content")
@@ -459,7 +466,7 @@ class SaveAquiferGeometry(APIView):
         aquifer.save()
         return Response(status=status.HTTP_200_OK)
 
-    def delete(self, request, aquifer_id):
+    def delete(self, request, aquifer_id, **kwargs):
         aquifer = Aquifer.objects.get(pk=aquifer_id)
         del aquifer.geom
         aquifer.save()
@@ -474,6 +481,13 @@ AQUIFER_PROPERTIES = openapi.Schema(
         'aquifer_id': get_model_feature_schema(Aquifer, 'aquifer_id'),
         'name': get_model_feature_schema(Aquifer, 'aquifer_name'),
         'location': get_model_feature_schema(Aquifer, 'location_description'),
+        'detail': openapi.Schema(
+            type=openapi.TYPE_STRING,
+            max_length=255,
+            title='Detail',
+            description=('Link to aquifer summary report within the Groundwater Wells and Aquifer (GWELLS)'
+                         ' application. The aquifer summary provides the overall desription and history of the'
+                         ' aquifer.')),
         'material': get_model_feature_schema(AquiferMaterial, 'description'),
         'subtype': get_model_feature_schema(AquiferSubtype, 'description'),
         'vulnerability': get_model_feature_schema(AquiferVulnerabilityCode, 'description'),
@@ -499,7 +513,7 @@ AQUIFER_PROPERTIES = openapi.Schema(
             get_geojson_schema(AQUIFER_PROPERTIES, 'Polygon'))
     })
 @api_view(['GET'])
-def aquifer_geojson(request):
+def aquifer_geojson(request, **kwargs):
     realtime = request.GET.get('realtime') in ('True', 'true')
     if realtime:
 
@@ -512,6 +526,7 @@ def aquifer_geojson(request):
             bounds_sql = 'and geom @ ST_Transform(ST_MakeEnvelope(%s, %s, %s, %s, 4326), 3005)'
             bounds = (sw_long, sw_lat, ne_long, ne_lat)
         else:
+            bounds = None
             bounds_sql = ''
 
         iterator = GeoJSONIterator(AQUIFERS_SQL.format(bounds=bounds_sql),
@@ -534,7 +549,7 @@ def aquifer_geojson(request):
 
 @api_view(['GET'])
 @cache_page(60*15)
-def aquifer_geojson_simplified(request):
+def aquifer_geojson_simplified(request, **kwargs):
     """
     Sadly, GeoDjango's ORM doesn't seem to directly support a call to
     ST_AsGEOJSON, but the latter performs much better than processing WKT
@@ -573,7 +588,7 @@ AQUIFER_EXPORT_FIELDS = [
 ]
 
 
-def csv_export(request):
+def csv_export(request, **kwargs):
     """
     Export aquifers as CSV. This is done in a vanilla functional Django view instead of DRF,
     because DRF doesn't have native CSV support.
@@ -592,7 +607,7 @@ def csv_export(request):
     return response
 
 
-def xlsx_export(request):
+def xlsx_export(request, **kwargs):
     """
     Export aquifers as XLSX.
     """

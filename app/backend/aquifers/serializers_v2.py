@@ -1,5 +1,3 @@
-from collections import OrderedDict
-from rest_framework.fields import SkipField
 """
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -13,7 +11,6 @@ from rest_framework.fields import SkipField
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-
 import json
 
 from rest_framework import serializers
@@ -53,74 +50,7 @@ class AquiferResourceSerializer(serializers.ModelSerializer):
         )
 
 
-class AquiferSerializer(serializers.ModelSerializer):
-    """Serialize an aquifer list"""
-
-    def to_representation(self, instance):
-        """
-        Rather the declare serializer fields, we must reference them here because
-        they are queried as a `dict`, which dramatically improves performance
-        due to the high number of joined tables needing pruned in the associated query.
-
-        Note: we also use short field names to save 100 kB over the network, since there are over 1000 records
-        routinely fetched
-        """
-        ret = super().to_representation(instance)
-        ret['id'] = instance['aquifer_id']
-        ret['name'] = instance['aquifer_name']
-        if instance['area']:
-            ret['area'] = float(instance.get('area'))
-        ret['lsu'] = instance['litho_stratographic_unit']
-
-        ret['location'] = instance['location_description']
-
-        ret['demand'] = instance['demand__description']
-        ret['material'] = instance['material__description']
-        ret['subtype'] = instance['subtype__description']
-        ret['vulnerability'] = instance['vulnerability__description']
-        ret['productivity'] = instance['productivity__description']
-        return ret
-
-    class Meta:
-        model = models.Aquifer
-        fields = (
-            'aquifer_id',
-            'mapping_year',
-        )
-
-
-class AquiferEditDetailSerializer(serializers.ModelSerializer):
-    """
-    Read serializer for aquifer details with primary key references needed for populating an edit form
-    """
-
-    resources = AquiferResourceSerializer(many=True, required=False)
-    licence_details = serializers.JSONField(read_only=True)
-
-    class Meta:
-        model = models.Aquifer
-        fields = (
-            'aquifer_id',
-            'aquifer_name',
-            'location_description',
-
-            'quality_concern',
-            'material',
-            'subtype',
-            'vulnerability',
-            'known_water_use',
-            'litho_stratographic_unit',
-            'productivity',
-
-            'demand',
-            'mapping_year',
-            'resources',
-            'area',
-            'notes',
-            'licence_details',
-        )
-
-class AquiferDetailSerializerV1(serializers.ModelSerializer):
+class AquiferDetailSerializerV2(serializers.ModelSerializer):
 
     resources = AquiferResourceSerializer(many=True, required=False)
     licence_details = serializers.JSONField(read_only=True)
@@ -236,7 +166,7 @@ class AquiferDetailSerializerV1(serializers.ModelSerializer):
         details['num_wells'] = instance.well_set.all().count()
         details['obs_wells'] = instance.well_set.filter(
             observation_well_number__isnull=False
-        ).values('well_tag_number', 'observation_well_number')
+        ).values('well_tag_number', 'observation_well_number', 'observation_well_status')
 
         details.update(self._tally_licence_data(licences))
 
@@ -335,101 +265,3 @@ class AquiferDetailSerializerV1(serializers.ModelSerializer):
             'notes',
             'licence_details',
         )
-
-
-class AquiferResourceSectionSerializer(serializers.ModelSerializer):
-    """Serialize aquifer section list"""
-    class Meta:
-        model = models.AquiferResourceSection
-        fields = (
-            'code',
-            'name'
-        )
-
-
-class AquiferMaterialSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.AquiferMaterial
-        fields = (
-            'code',
-            'description'
-        )
-
-
-class QualityConcernSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.QualityConcern
-        fields = (
-            'code',
-            'description'
-        )
-
-
-class AquiferVulnerabilitySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.AquiferVulnerabilityCode
-        fields = (
-            'code',
-            'description'
-        )
-
-
-class AquiferSubtypeSerializer(serializers.ModelSerializer):
-    description = serializers.CharField(source='__str__')
-
-    class Meta:
-        model = models.AquiferSubtype
-        fields = (
-            'code',
-            'description'
-        )
-
-
-class AquiferProductivitySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.AquiferProductivity
-        fields = (
-            'code',
-            'description'
-        )
-
-
-class AquiferDemandSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.AquiferDemand
-        fields = (
-            'code',
-            'description'
-        )
-
-
-class WaterUseSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.WaterUse
-        fields = (
-            'code',
-            'description'
-        )
-
-
-class AquiferSerializerBasic(serializers.ModelSerializer):
-    """Serialize a aquifer list with a simplified format"""
-
-    description = serializers.SerializerMethodField()
-
-    class Meta:
-        model = models.Aquifer
-        fields = (
-            'aquifer_id',
-            'description',
-        )
-
-    def get_description(self, obj):
-        desc = str(obj.aquifer_id)
-
-        # if aquifers have a name (not all do), append it to the aquifer number
-        name = obj.aquifer_name
-        if name:
-            desc += ' - ' + name
-
-        return desc

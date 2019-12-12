@@ -48,6 +48,7 @@ export default {
             document.head.appendChild(keyCloakScript)
           })
           .catch(error => {
+            Vue.prototype.$keycloak = {}
             reject(error)
           })
       } else {

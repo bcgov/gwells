@@ -20,7 +20,7 @@ import time
 from django.db.models import Prefetch
 from django.http import (
     FileResponse, Http404, HttpResponse, HttpResponseNotFound,
-    HttpResponseRedirect, JsonResponse, StreamingHttpResponse)
+    HttpResponseRedirect, JsonResponse, StreamingHttpResponse, HttpResponseBadRequest)
 from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView
 from django_filters import rest_framework as restfilters
@@ -39,7 +39,7 @@ from wells.change_history import get_well_history
 
 from rest_framework import filters, status
 from rest_framework.decorators import api_view
-from rest_framework.exceptions import PermissionDenied, NotFound
+from rest_framework.exceptions import PermissionDenied, NotFound, ValidationError
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.generics import ListAPIView, RetrieveAPIView
@@ -94,7 +94,8 @@ from wells.serializers import (
     WellTagSearchSerializer,
     WellDetailSerializer,
     WellDetailAdminSerializer,
-    WellLocationSerializer)
+    WellLocationSerializer,
+    WellDrawdownSerializer)
 from wells.permissions import WellsEditPermissions, WellsEditOrReadOnly
 
 
@@ -137,7 +138,7 @@ class ListExtracts(APIView):
     get: list well extracts
     """
     @swagger_auto_schema(auto_schema=None)
-    def get(self, request):
+    def get(self, request, **kwargs):
         host = get_env_variable('S3_HOST')
         use_secure = int(get_env_variable('S3_USE_SECURE', 1))
         minioClient = Minio(host,
@@ -201,7 +202,7 @@ class ListFiles(APIView):
     """
 
     @swagger_auto_schema(responses={200: openapi.Response('OK', LIST_FILES_OK)})
-    def get(self, request, tag):
+    def get(self, request, tag, **kwargs):
 
         well = get_object_or_404(Well, pk=tag)
 
@@ -292,7 +293,7 @@ class WellTagSearchAPIView(ListAPIView):
 
         return qs
 
-    def get(self, request):
+    def get(self, request, **kwargs):
         data = self.get_queryset().values('well_tag_number', 'owner_full_name').order_by('well_tag_number')
         return Response(data)
 
@@ -344,7 +345,7 @@ class WellLocationListAPIView(ListAPIView):
 
         return qs
 
-    def get(self, request):
+    def get(self, request, **kwargs):
         """ cancels request if too many wells are found"""
 
         qs = self.get_queryset()
@@ -486,7 +487,7 @@ class WellExportListAPIView(ListAPIView):
             for item in serializer.data:
                 yield item
 
-    def list(self, request):
+    def list(self, request, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
         count = queryset.count()
         # return an empty response if there are too many wells to display
@@ -524,7 +525,7 @@ class PreSignedDocumentKey(APIView):
     permission_classes = (WellsEditPermissions,)
 
     @swagger_auto_schema(auto_schema=None)
-    def get(self, request, tag):
+    def get(self, request, tag, **kwargs):
         well = get_object_or_404(self.queryset, pk=tag)
         client = MinioClient(
             request=request, disable_private=False)
@@ -557,7 +558,7 @@ class DeleteWellDocument(APIView):
     permission_classes = (WellsEditPermissions,)
 
     @swagger_auto_schema(auto_schema=None)
-    def delete(self, request, tag):
+    def delete(self, request, tag, **kwargs):
         well = get_object_or_404(self.queryset, pk=tag)
         client = MinioClient(
             request=request, disable_private=False)
@@ -587,7 +588,7 @@ class WellHistory(APIView):
     queryset = Well.objects.all()
     swagger_schema = None
 
-    def get(self, request, well_id):
+    def get(self, request, well_id, **kwargs):
         """
         Retrieves version history for the specified Well record and creates a list of diffs
         for each revision.
@@ -632,7 +633,9 @@ WELL_PROPERTIES = openapi.Schema(
         'bedrock_depth': get_model_feature_schema(Well, 'bedrock_depth'),
         'yield': get_model_feature_schema(Well, 'well_yield'),
         'yield_unit': get_model_feature_schema(WellYieldUnitCode, 'description'),
-        'aquifer_id': get_model_feature_schema(Well, 'aquifer')
+        'aquifer_id': get_model_feature_schema(Well, 'aquifer'),
+        'observation_well_number': get_model_feature_schema(Well, 'observation_well_number'),
+        'observation_well_status': get_model_feature_schema(Well, 'observation_well_status')
     })
 
 
@@ -648,7 +651,7 @@ WELL_PROPERTIES = openapi.Schema(
     }
 )
 @api_view(['GET'])
-def well_geojson(request):
+def well_geojson(request, **kwargs):
     realtime = request.GET.get('realtime') in ('True', 'true')
     if realtime:
         sw_long = request.query_params.get('sw_long')
@@ -710,7 +713,8 @@ LITHOLOGY_PROPERTIES = openapi.Schema(
         'bedrock_depth': get_model_feature_schema(Well, 'bedrock_depth'),
         'yield': get_model_feature_schema(Well, 'well_yield'),
         'yield_unit': get_model_feature_schema(WellYieldUnitCode, 'description'),
-        'aquifer_id': get_model_feature_schema(Well, 'aquifer')
+        'aquifer_id': get_model_feature_schema(Well, 'aquifer'),
+        'raw_data': get_model_feature_schema(LithologyDescription, 'lithology_raw_data')
     })
 
 
@@ -727,7 +731,7 @@ LITHOLOGY_PROPERTIES = openapi.Schema(
     }
 )
 @api_view(['GET'])
-def lithology_geojson(request):
+def lithology_geojson(request, **kwargs):
     realtime = request.GET.get('realtime') in ('True', 'true')
     if realtime:
         sw_long = request.query_params.get('sw_long')
@@ -758,7 +762,7 @@ def lithology_geojson(request):
 
 
 @api_view(['GET'])
-def well_licensing(request):
+def well_licensing(request, **kwargs):
     tag = request.GET.get('well_tag_number')
     url = get_env_variable('E_LICENSING_URL') + '{}'.format(tag)
     api_success = False
@@ -795,3 +799,26 @@ def well_licensing(request):
         }
 
     return HttpResponse(json.dumps(data), content_type="application/json")
+
+
+class WellScreens(ListAPIView):
+    """ returns well screen info for a range of wells """
+
+    model = Well
+    serializer_class = WellDrawdownSerializer
+    swagger_schema = None
+
+    def get_queryset(self):
+        wells = self.request.query_params.get('wells', None)
+        if not wells:
+            return []
+
+        wells = wells.split(',')
+
+        for w in wells:
+            if not w.isnumeric():
+                raise ValidationError(detail='Invalid well')
+
+        wells = map(int, wells)
+
+        return Well.objects.filter(well_tag_number__in=wells)

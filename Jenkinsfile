@@ -231,7 +231,23 @@ def apiTest (String stageName, String stageUrl, String envSuffix) {
                                 --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
                                 --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
                                 -r cli,junit,html
+                            newman run ./registries_v2_api_tests.json \
+                                --global-var test_user=\$GWELLS_API_TEST_USER \
+                                --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
+                                --global-var base_url=\$BASE_URL \
+                                --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
+                                --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
+                                --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
+                                -r cli,junit,html
                             newman run ./wells_api_tests.json \
+                                --global-var test_user=\$GWELLS_API_TEST_USER \
+                                --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
+                                --global-var base_url=\$BASE_URL \
+                                --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
+                                --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
+                                --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
+                                -r cli,junit,html
+                            newman run ./wells_v2_api_tests.json \
                                 --global-var test_user=\$GWELLS_API_TEST_USER \
                                 --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
                                 --global-var base_url=\$BASE_URL \
@@ -247,7 +263,23 @@ def apiTest (String stageName, String stageUrl, String envSuffix) {
                                 --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
                                 --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
                                 -r cli,junit,html
+                            newman run ./submissions_v2_api_tests.json \
+                                --global-var test_user=\$GWELLS_API_TEST_USER \
+                                --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
+                                --global-var base_url=\$BASE_URL \
+                                --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
+                                --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
+                                --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
+                                -r cli,junit,html
                             newman run ./aquifers_api_tests.json \
+                                --global-var test_user=\$GWELLS_API_TEST_USER \
+                                --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
+                                --global-var base_url=\$BASE_URL \
+                                --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
+                                --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
+                                --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
+                                -r cli,junit,html
+                            newman run ./aquifers_v2_api_tests.json \
                                 --global-var test_user=\$GWELLS_API_TEST_USER \
                                 --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
                                 --global-var base_url=\$BASE_URL \
@@ -1083,23 +1115,26 @@ pipeline {
                         )
 
                         // Create cronjob for licence import
-                        def importLicencesCronjob = openshift.process("-f",
-                            "openshift/jobs/import-licences/import-licences.cj.json",
-                            "ENV_NAME=${demoSuffix}",
-                            "PROJECT=${demoProject}",
-                            "TAG=${demoSuffix}",
-                            "NAME=licences",
-                            "COMMAND=import_licences",
-                            "SCHEDULE='42 11 * * *'"
-                        )
-                        openshift.apply(importLicencesCronjob).label(
-                            [
-                                'app':"gwells-${demoSuffix}",
-                                'app-name':"${appName}",
-                                'env-name':"${demoSuffix}"
-                            ],
-                            "--overwrite"
-                        )
+                        // commented out until issues with water licence IDs resolved
+                        // see JIRA ticket WATER-514 re: WLS_WRL_SYSID
+
+                        // def importLicencesCronjob = openshift.process("-f",
+                        //     "openshift/jobs/import-licences/import-licences.cj.json",
+                        //     "ENV_NAME=${demoSuffix}",
+                        //     "PROJECT=${demoProject}",
+                        //     "TAG=${demoSuffix}",
+                        //     "NAME=licences",
+                        //     "COMMAND=import_licences",
+                        //     "SCHEDULE='42 11 * * *'"
+                        // )
+                        // openshift.apply(importLicencesCronjob).label(
+                        //     [
+                        //         'app':"gwells-${demoSuffix}",
+                        //         'app-name':"${appName}",
+                        //         'env-name':"${demoSuffix}"
+                        //     ],
+                        //     "--overwrite"
+                        // )
 
 
                         // monitor the deployment status and wait until deployment is successful
@@ -1329,29 +1364,33 @@ pipeline {
                             "NAMESPACE=${prodProject}",
                             "TARGET=gwells-pgsql-production",
                             "PVC_NAME=${nfsProdBackupPVC}",
+                            "MONTHLY_BACKUPS=12",
                             "SCHEDULE='30 9 * * *'",
                             "JOB_NAME=postgres-nfs-backup"
                         )
                         openshift.apply(dbNFSBackup)
 
                         // Create cronjob for licence import
-                        def importLicencesCronjob = openshift.process("-f",
-                            "openshift/jobs/import-licences/import-licences.cj.json",
-                            "ENV_NAME=${prodSuffix}",
-                            "PROJECT=${prodProject}",
-                            "TAG=${prodSuffix}",
-                            "NAME=licences",
-                            "COMMAND=import_licences",
-                            "SCHEDULE='45 11 * * *'"
-                        )
-                        openshift.apply(importLicencesCronjob).label(
-                            [
-                                'app':"gwells-${prodSuffix}",
-                                'app-name':"${appName}",
-                                'env-name':"${prodSuffix}"
-                            ],
-                            "--overwrite"
-                        )
+                        // commented out until issues with water licence IDs resolved
+                        // see JIRA ticket WATER-514 re: WLS_WRL_SYSID
+
+                        // def importLicencesCronjob = openshift.process("-f",
+                        //     "openshift/jobs/import-licences/import-licences.cj.json",
+                        //     "ENV_NAME=${prodSuffix}",
+                        //     "PROJECT=${prodProject}",
+                        //     "TAG=${prodSuffix}",
+                        //     "NAME=licences",
+                        //     "COMMAND=import_licences",
+                        //     "SCHEDULE='45 11 * * *'"
+                        // )
+                        // openshift.apply(importLicencesCronjob).label(
+                        //     [
+                        //         'app':"gwells-${prodSuffix}",
+                        //         'app-name':"${appName}",
+                        //         'env-name':"${prodSuffix}"
+                        //     ],
+                        //     "--overwrite"
+                        // )
 
                         // monitor the deployment status and wait until deployment is successful
                         echo "Waiting for deployment to production..."

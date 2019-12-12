@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "b382f40f-243b-4f4d-927b-b5e401cb824e",
-		"name": "GWELLS Submissions API",
+		"_postman_id": "3e31d1ae-83c2-4df1-acf1-b51accd9a405",
+		"name": "GWELLS Submissions API v2",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -127,13 +127,13 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/api/v1/submissions/options?format=json",
+									"raw": "{{base_url}}/api/v2/submissions/options?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"submissions",
 										"options"
 									],
@@ -176,13 +176,13 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/api/v1/submissions?format=json",
+									"raw": "{{base_url}}/api/v2/submissions?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"submissions"
 									],
 									"query": [
@@ -267,13 +267,13 @@
 									]
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/drillers?format=json",
+									"raw": "{{base_url}}/api/v2/drillers?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"drillers"
 									],
 									"query": [
@@ -356,13 +356,13 @@
 									"raw": "{\n\t\"person_responsible\": \"{{created_driller_guid}}\",\n\t\"driller_name\": \"Jimithy\",\n\t\"consultant_name\": \"Bobothy\",\n\t\"consultant_company\": \"Inc & Inc\",\n\t\"work_end_date\": \"2018-07-10\",\n\t\"owner_full_name\": \"Holly Homeowner\",\n\t\"work_start_date\": \"2018-07-01\",\n\t\"owner_province_state\": \"BC\",\n\t\"owner_mailing_address\": \"321 Main Street\",\n\t\"owner_city\": \"Anytown\",\n\t\"well_orientation_status\": \"VERTICAL\",\n\t\"drilling_method\": [\"AUGER\", \"CABLE_TOOL\"]\n}"
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/submissions/construction?format=json",
+									"raw": "{{base_url}}/api/v2/submissions/construction?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"submissions",
 										"construction"
 									],
@@ -438,13 +438,13 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
+									"raw": "{{base_url}}/api/v2/wells/{{well_tag_number}}/edit",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells",
 										"{{well_tag_number}}",
 										"edit"
@@ -461,7 +461,6 @@
 									"listen": "test",
 									"script": {
 										"id": "8cda82f1-4f66-419a-9d79-636186a44b6c",
-										"type": "text/javascript",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
@@ -480,7 +479,8 @@
 											"pm.test(\"Expect linerperforation to be empty\", function() {",
 											"    pm.expect(jsonData.linerperforation_set.length).to.equal(0);",
 											"})"
-										]
+										],
+										"type": "text/javascript"
 									}
 								}
 							],
@@ -497,13 +497,13 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/api/v1/submissions/{{filing_number}}",
+									"raw": "{{base_url}}/api/v2/submissions/{{filing_number}}",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"submissions",
 										"{{filing_number}}"
 									]
@@ -555,13 +555,13 @@
 									"raw": "{\n\t\"well_activity_type\": \"CON\",\n\t\"owner_full_name\": \"Bob\",\n\t\"owner_mailing_address\": \"123 Place\",\n\t\"owner_city\": \"Victoria\",\n\t\"owner_province_state\": \"BC\",\n\t\"casing_set\": [\n\t\t{\n\t\t\t\"casing_code\": \"SURFACE\",\n\t\t\t\"start\":\"1\",\n\t\t\t\"end\":\"1\",\n\t\t\t\"diameter\":\"1\",\n\t\t\t\"drive_shoe\":\"False\",\n\t\t\t\"id\":0,\n\t\t\t\"wall_thickness\":\"87\"\n\t\t},\n\t\t{\n\t\t\t\"casing_code\":\"SURFACE\",\n\t\t\t\"start\":\"2\",\n\t\t\t\"casing_material\":\"STEEL\",\n\t\t\t\"end\":\"2\",\n\t\t\t\"diameter\":\"2\",\n\t\t\t\"drive_shoe\":\"True\",\n\t\t\t\"id\":1,\n\t\t\t\"wall_thickness\":\"7\"\n\t\t}\n\t]\n}"
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/submissions/construction?format=json",
+									"raw": "{{base_url}}/api/v2/submissions/construction?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"submissions",
 										"construction"
 									],
@@ -583,7 +583,6 @@
 									"listen": "test",
 									"script": {
 										"id": "bf57abbb-38dd-41f5-a5bc-b8b85d729ade",
-										"type": "text/javascript",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
@@ -591,7 +590,8 @@
 											"   pm.expect(pm.response.code).to.equal(400);",
 											"})",
 											""
-										]
+										],
+										"type": "text/javascript"
 									}
 								}
 							],
@@ -612,13 +612,13 @@
 									"raw": "{\n\t\"well_activity_type\": \"CON\",\n\t\"owner_full_name\": \"Bob\",\n\t\"owner_mailing_address\": \"123 Place\",\n\t\"owner_city\": \"Victoria\",\n\t\"owner_province_state\": \"BC\",\n\t\"casing_set\": [\n\t\t{\n\t\t},\n\t\t{\n\t\t}\n\t]\n}"
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/submissions/construction?format=json",
+									"raw": "{{base_url}}/api/v2/submissions/construction?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"submissions",
 										"construction"
 									],
@@ -676,13 +676,13 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
+									"raw": "{{base_url}}/api/v2/wells/{{well_tag_number}}/edit",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells",
 										"{{well_tag_number}}",
 										"edit"
@@ -699,7 +699,6 @@
 									"listen": "test",
 									"script": {
 										"id": "eaf2d1fa-c857-4c87-b7a5-bab319649826",
-										"type": "text/javascript",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
@@ -708,7 +707,8 @@
 											"pm.test(\"Status code is 201\", function() {",
 											"    pm.expect(pm.response.code).to.equal(201);",
 											"})"
-										]
+										],
+										"type": "text/javascript"
 									}
 								}
 							],
@@ -729,13 +729,13 @@
 									"raw": "{\n\t\"well_activity_type\": \"CON\",\n\t\"owner_full_name\": \"Bob\",\n\t\"owner_mailing_address\": \"123 Place\",\n\t\"owner_city\": \"Victoria\",\n\t\"owner_province_state\": \"BC\",\n\t\"liner_diameter\": 1,\n\t\"liner_from\": 0,\n\t\"liner_material\": \"PVC\",\n\t\"liner_thickness\": 2,\n\t\"liner_to\": 3,\n\t\"screen_set\": [\n\t\t{\n\t\t\t\"start\": 10,\n\t\t\t\"end\": 20,\n\t\t\t\"assembly_type\": \"SCREEN\"\n\t\t}\n\t]\n}"
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/submissions/construction?format=json",
+									"raw": "{{base_url}}/api/v2/submissions/construction?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"submissions",
 										"construction"
 									],
@@ -757,14 +757,14 @@
 									"listen": "test",
 									"script": {
 										"id": "78582a37-9917-4d5c-a736-a0db198978ef",
-										"type": "text/javascript",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
 											"pm.test(\"Status code is 400\", function() {",
 											"    pm.expect(pm.response.code).to.equal(400);",
 											"})"
-										]
+										],
+										"type": "text/javascript"
 									}
 								}
 							],
@@ -785,13 +785,13 @@
 									"raw": "{\n\t\"well_activity_type\": \"CON\",\n\t\"owner_full_name\": \"Bob\",\n\t\"owner_mailing_address\": \"123 Place\",\n\t\"owner_city\": \"Victoria\",\n\t\"owner_province_state\": \"BC\",\n\t\"liner_diameter\": 1,\n\t\"liner_from\": 0,\n\t\"liner_material\": \"PVC\",\n\t\"liner_thickness\": 2,\n\t\"liner_to\": 3,\n\t\"screen_set\": [\n\t\t{\n\t\t}\n\t]\n}"
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/submissions/construction?format=json",
+									"raw": "{{base_url}}/api/v2/submissions/construction?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"submissions",
 										"construction"
 									],
@@ -849,13 +849,13 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
+									"raw": "{{base_url}}/api/v2/wells/{{well_tag_number}}/edit",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells",
 										"{{well_tag_number}}",
 										"edit"
@@ -872,7 +872,6 @@
 									"listen": "test",
 									"script": {
 										"id": "af2703e6-b88c-41e0-a74f-14fdd2b1f927",
-										"type": "text/javascript",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
@@ -882,7 +881,8 @@
 											"   pm.expect(pm.response.code).to.equal(201);",
 											"})",
 											""
-										]
+										],
+										"type": "text/javascript"
 									}
 								}
 							],
@@ -903,13 +903,13 @@
 									"raw": "{\n\t\"well_activity_type\": \"CON\",\n\t\"owner_full_name\": \"Bob\",\n\t\"owner_mailing_address\": \"123 Place\",\n\t\"owner_city\": \"Victoria\",\n\t\"owner_province_state\": \"BC\",\n\t\"liner_diameter\": 1,\n\t\"liner_from\": 0,\n\t\"liner_material\": \"PVC\",\n\t\"liner_thickness\": 2,\n\t\"liner_to\": 3,\n\t\"linerperforation_set\": [\n\t\t{\n\t\t\t\"start\": 0,\n\t\t\t\"end\": 10\n\t\t}\n\t]\n}"
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/submissions/construction?format=json",
+									"raw": "{{base_url}}/api/v2/submissions/construction?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"submissions",
 										"construction"
 									],
@@ -960,13 +960,13 @@
 									"raw": "{\n\t\"well_activity_type\": \"CON\",\n\t\"owner_full_name\": \"Bob\",\n\t\"owner_mailing_address\": \"123 Place\",\n\t\"owner_city\": \"Victoria\",\n\t\"owner_province_state\": \"BC\",\n\t\"liner_diameter\": 1,\n\t\"liner_from\": 0,\n\t\"liner_material\": \"PVC\",\n\t\"liner_thickness\": 2,\n\t\"liner_to\": 3,\n\t\"linerperforation_set\": [\n\t\t{}\n\t]\n}"
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/submissions/construction?format=json",
+									"raw": "{{base_url}}/api/v2/submissions/construction?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"submissions",
 										"construction"
 									],
@@ -1024,13 +1024,13 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
+									"raw": "{{base_url}}/api/v2/wells/{{well_tag_number}}/edit",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells",
 										"{{well_tag_number}}",
 										"edit"
@@ -1078,13 +1078,13 @@
 									"raw": "{\n\t\"well_activity_type\": \"CON\",\n\t\"owner_full_name\": \"Bob\",\n\t\"owner_mailing_address\": \"123 Place\",\n\t\"owner_city\": \"Victoria\",\n\t\"owner_province_state\": \"BC\",\n\t\"liner_diameter\": 1,\n\t\"liner_from\": 0,\n\t\"liner_material\": \"PVC\",\n\t\"liner_thickness\": 2,\n\t\"liner_to\": 3,\n\t\"drawdown\": 10,\n\t\"yield_estimation_rate\": 10\n}"
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/submissions/construction?format=json",
+									"raw": "{{base_url}}/api/v2/submissions/construction?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"submissions",
 										"construction"
 									],
@@ -1139,13 +1139,13 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
+									"raw": "{{base_url}}/api/v2/wells/{{well_tag_number}}/edit",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells",
 										"{{well_tag_number}}",
 										"edit"
@@ -1193,13 +1193,13 @@
 									"raw": "{\n\t\"well_activity_type\": \"CON\",\n\t\"owner_full_name\": \"Bob\",\n\t\"owner_mailing_address\": \"123 Place\",\n\t\"owner_city\": \"Victoria\",\n\t\"owner_province_state\": \"BC\",\n\t\"lithologydescription_set\": [\n\t\t{\n\t\t\t\"start\": 0,\n\t\t\t\"end\": 10,\n\t\t\t\"lithology_raw_data\": \"SAND, silty, some gravel\",\n\t\t\t\"lithology_hardness\": \"DENSE\",\n\t\t\t\"lithology_colour\": 13,\n\t\t\t\"lithology_moisture\": \"WET\",\n\t\t\t\"water_bearing_estimated_flow\": 2.1,\n\t\t\t\"lithology_observation\": \"hard to drill through\"\n\t\t}\n\t]\n}"
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/submissions/construction?format=json",
+									"raw": "{{base_url}}/api/v2/submissions/construction?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"submissions",
 										"construction"
 									],
@@ -1250,13 +1250,13 @@
 									"raw": "{\n\t\"well_activity_type\": \"CON\",\n\t\"owner_full_name\": \"Bob\",\n\t\"owner_mailing_address\": \"123 Place\",\n\t\"owner_city\": \"Victoria\",\n\t\"owner_province_state\": \"BC\",\n\t\"lithologydescription_set\": []\n}"
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/submissions/construction?format=json",
+									"raw": "{{base_url}}/api/v2/submissions/construction?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"submissions",
 										"construction"
 									],
@@ -1331,13 +1331,13 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
+									"raw": "{{base_url}}/api/v2/wells/{{well_tag_number}}/edit",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells",
 										"{{well_tag_number}}",
 										"edit"
@@ -1377,13 +1377,13 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}?format=json",
+									"raw": "{{base_url}}/api/v2/drillers/{{created_driller_guid}}?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"drillers",
 										"{{created_driller_guid}}"
 									],
@@ -1445,13 +1445,13 @@
 									"raw": "{\n\t\"well_activity_type\": \"ALT\",\n\t\"owner_full_name\": \"Bob\",\n\t\"owner_mailing_address\": \"123 Place\",\n\t\"owner_city\": \"ALT_WELL_TEST_CITY\",\n\t\"owner_province_state\": \"BC\",\n\t\"casing_set\": [\n\t\t{\n\t\t\t\"casing_code\": \"SURFACE\",\n\t\t\t\"start\":\"10\",\n\t\t\t\"end\":\"20\",\n\t\t\t\"diameter\":\"1\",\n\t\t\t\"drive_shoe\":\"False\",\n\t\t\t\"id\":0,\n\t\t\t\"wall_thickness\":\"87\"\n\t\t}\n\t],\n    \"linerperforation_set\": [\n\t\t{\n\t\t\t\"start\": 10,\n\t\t\t\"end\": 20\n\t\t}\n\t]\n}"
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/submissions/alteration?format=json",
+									"raw": "{{base_url}}/api/v2/submissions/alteration?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"submissions",
 										"alteration"
 									],
@@ -1502,13 +1502,13 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
+									"raw": "{{base_url}}/api/v2/wells/{{well_tag_number}}/edit",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells",
 										"{{well_tag_number}}",
 										"edit"
@@ -1554,13 +1554,13 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/api/v1/submissions/{{filing_number}}",
+									"raw": "{{base_url}}/api/v2/submissions/{{filing_number}}",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"submissions",
 										"{{filing_number}}"
 									]
@@ -1618,13 +1618,13 @@
 									]
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/drillers?format=json",
+									"raw": "{{base_url}}/api/v2/drillers?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"drillers"
 									],
 									"query": [
@@ -1722,13 +1722,13 @@
 									]
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/organizations?format=json",
+									"raw": "{{base_url}}/api/v2/organizations?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"organizations"
 									],
 									"query": [
@@ -1801,13 +1801,13 @@
 									"raw": "{\n\t\"well\": {{well_tag_number}},\n\t\"consultant_company\": \"John Company\",\n\t\"consultant_name\": \"John Consultant\",\n\t\"driller_name\": \"John Person\",\n\t\"person_responsible\": \"{{created_driller_guid}}\",\n\t\"company_of_person_responsible\": \"{{company_guid}}\"\n}"
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/submissions/alteration",
+									"raw": "{{base_url}}/api/v2/submissions/alteration",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"submissions",
 										"alteration"
 									]
@@ -1871,13 +1871,13 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
+									"raw": "{{base_url}}/api/v2/wells/{{well_tag_number}}/edit",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells",
 										"{{well_tag_number}}",
 										"edit"
@@ -1901,7 +1901,6 @@
 									"listen": "test",
 									"script": {
 										"id": "b89b1daf-40de-46c1-9567-608d995d0702",
-										"type": "text/javascript",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
@@ -1912,7 +1911,8 @@
 											"pm.environment.set(\"well_tag_number\", jsonData.well);",
 											"pm.environment.set('filing_number', jsonData.filing_number)",
 											""
-										]
+										],
+										"type": "text/javascript"
 									}
 								}
 							],
@@ -1933,13 +1933,13 @@
 									"raw": "{\n\t\"well_activity_type\": \"DEC\",\n\t\"owner_full_name\": \"Bob\",\n\t\"owner_mailing_address\": \"123 Place\",\n\t\"owner_city\": \"ALT_WELL_TEST_CITY\",\n\t\"owner_province_state\": \"BC\",\n\t\"work_start_date\": \"2018-01-01\",\n\t\"work_end_date\": \"2018-01-01\",\n\t\"decommission_description_set\": [\n\t\t{\n\t\t\t\"start\": 0,\n\t\t\t\"end\": 1,\n\t\t\t\"material\": \"CONCRETE\",\n\t\t\t\"observations\": \"It worked!\"\n\t\t}\n\t],\n\t\"decommission_details\": \"Test\"\n}"
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/submissions/decommission?format=json",
+									"raw": "{{base_url}}/api/v2/submissions/decommission?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"submissions",
 										"decommission"
 									],
@@ -1993,13 +1993,13 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
+									"raw": "{{base_url}}/api/v2/wells/{{well_tag_number}}/edit",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells",
 										"{{well_tag_number}}",
 										"edit"
@@ -2016,7 +2016,6 @@
 									"listen": "test",
 									"script": {
 										"id": "c0ec586c-6de3-424e-b7cc-67f2b63a32c0",
-										"type": "text/javascript",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
@@ -2032,7 +2031,8 @@
 											"    pm.expect(jsonData.linerperforation_set).to.equal(undefined);",
 											"})",
 											""
-										]
+										],
+										"type": "text/javascript"
 									}
 								}
 							],
@@ -2049,13 +2049,13 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/api/v1/submissions/{{filing_number}}",
+									"raw": "{{base_url}}/api/v2/submissions/{{filing_number}}",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"submissions",
 										"{{filing_number}}"
 									]
@@ -2163,13 +2163,13 @@
 											]
 										},
 										"url": {
-											"raw": "{{base_url}}/api/v1/submissions/construction?format=json",
+											"raw": "{{base_url}}/api/v2/submissions/construction?format=json",
 											"host": [
 												"{{base_url}}"
 											],
 											"path": [
 												"api",
-												"v1",
+												"v2",
 												"submissions",
 												"construction"
 											],
@@ -2226,13 +2226,13 @@
 											"raw": "{\n\t\"well\": {{well_tag_number}},\n\t\"street_address\": \"Some street\",\n\t\"city\":\"Some city\",\n\t\"legal_lot\":\"3\",\n\t\"legal_plan\":\"3\",\n\t\"legal_district_lot\":\"3\",\n\t\"legal_block\":\"3\",\n\t\"legal_section\":\"3\",\n\t\"legal_township\":\"3\",\n\t\"legal_range\":\"3\",\n\t\"land_district\":\"03\",\n\t\"legal_pid\":\"3\",\n\t\"well_location_description\":\"Description of well location\"\n}"
 										},
 										"url": {
-											"raw": "{{base_url}}/api/v1/submissions/staff_edit?format=json",
+											"raw": "{{base_url}}/api/v2/submissions/staff_edit?format=json",
 											"host": [
 												"{{base_url}}"
 											],
 											"path": [
 												"api",
-												"v1",
+												"v2",
 												"submissions",
 												"staff_edit"
 											],
@@ -2296,13 +2296,13 @@
 											}
 										],
 										"url": {
-											"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
+											"raw": "{{base_url}}/api/v2/wells/{{well_tag_number}}/edit",
 											"host": [
 												"{{base_url}}"
 											],
 											"path": [
 												"api",
-												"v1",
+												"v2",
 												"wells",
 												"{{well_tag_number}}",
 												"edit"
@@ -2361,13 +2361,13 @@
 											"raw": "{\n\t\"well\": {{well_tag_number}},\n\t\"latitude\": 51,\n\t\"longitude\": -123,\n\t\"coordinate_acquisition_code\": \"B\"\n}"
 										},
 										"url": {
-											"raw": "{{base_url}}/api/v1/submissions/staff_edit?format=json",
+											"raw": "{{base_url}}/api/v2/submissions/staff_edit?format=json",
 											"host": [
 												"{{base_url}}"
 											],
 											"path": [
 												"api",
-												"v1",
+												"v2",
 												"submissions",
 												"staff_edit"
 											],
@@ -2422,13 +2422,13 @@
 											}
 										],
 										"url": {
-											"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
+											"raw": "{{base_url}}/api/v2/wells/{{well_tag_number}}/edit",
 											"host": [
 												"{{base_url}}"
 											],
 											"path": [
 												"api",
-												"v1",
+												"v2",
 												"wells",
 												"{{well_tag_number}}",
 												"edit"
@@ -2531,13 +2531,13 @@
 									]
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/submissions/construction?format=json",
+									"raw": "{{base_url}}/api/v2/submissions/construction?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"submissions",
 										"construction"
 									],
@@ -2594,13 +2594,13 @@
 									"raw": "{\n\t\"well\": {{well_tag_number}},\n\t\"consultant_name\": \"John Mann\",\n\t\"owner_full_name\": \"Buddy\",\n\t\"ground_elevation_method\": \"10K_MAP\",\n\t\"ground_elevation\": 12,\n\t\"drilling_methods\": [\"AIR_ROTARY\", \"AUGER\"],\n\t\"well_orientation_status\": \"HORIZONTAL\",\n\t\"observation_well_status\": \"Active\",\n\t\"observation_well_number\": 123,\n\t\"drawdown\": 11,\n\t\"yield_estimation_rate\": 11\n}"
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/submissions/staff_edit?format=json",
+									"raw": "{{base_url}}/api/v2/submissions/staff_edit?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"submissions",
 										"staff_edit"
 									],
@@ -2682,13 +2682,13 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
+									"raw": "{{base_url}}/api/v2/wells/{{well_tag_number}}/edit",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells",
 										"{{well_tag_number}}",
 										"edit"
@@ -2743,13 +2743,13 @@
 									"raw": "{\n\t\"well_activity_type\": \"CON\",\n\t\"owner_full_name\": \"Bob\",\n\t\"owner_mailing_address\": \"123 Place\",\n\t\"owner_city\": \"Victoria\",\n\t\"owner_province_state\": \"BC\",\n\t\"liner_diameter\": 1,\n\t\"liner_from\": 0,\n\t\"liner_material\": \"PVC\",\n\t\"liner_thickness\": 2,\n\t\"liner_to\": 3,\n\t\"linerperforation_set\": [\n\t\t{\n\t\t\t\"start\": 0,\n\t\t\t\"end\": 10\n\t\t},\n\t\t\t\t{\n\t\t\t\"start\": 10,\n\t\t\t\"end\": 12\n\t\t}\n\t],\n\t\"drawdown\": 10,\n\t\"yield_estimation_rate\": 10\n}\n"
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/submissions/construction?format=json",
+									"raw": "{{base_url}}/api/v2/submissions/construction?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"submissions",
 										"construction"
 									],
@@ -2818,13 +2818,13 @@
 									"raw": "{\n\t\"well\": {{well_tag_number}},\n\t\"consultant_name\": \"John Mann\",\n\t\"owner_full_name\": \"Buddy\",\n\t\"ground_elevation_method\": \"10K_MAP\",\n\t\"ground_elevation\": 12,\n\t\"drilling_method\": \"AIR_ROTARY\",\n\t\"other_drilling_method\": \"Shovel\",\n\t\"well_orientation\": \"False\",\n\t\"linerperforation_set\": [\n\t\t{\n\t\t\t\"start\": 0,\n\t\t\t\"end\": 8\n\t\t},\n\t\t{\n\t\t\t\"start\": 8,\n\t\t\t\"end\": 12\n\t\t}\n\t],\n\t\"screen_set\": [\n\t\t{\n\t\t\t\"start\": 5,\n\t\t\t\"end\": 15,\n\t\t\t\"assembly_type\": \"SCREEN\"\n\t\t},\n\t\t{\n\t\t\t\"start\": 15,\n\t\t\t\"end\": 20,\n\t\t\t\"assembly_type\": \"SCREEN\"\n\t\t}\n\t],\n\t\"casing_set\": [\n\t\t{\n\t\t\t\"casing_code\": \"SURFACE\",\n\t\t\t\"start\":\"1\",\n\t\t\t\"end\":\"2\",\n\t\t\t\"diameter\":\"1\",\n\t\t\t\"drive_shoe\":\"False\",\n\t\t\t\"id\":0,\n\t\t\t\"wall_thickness\":\"87\"\n\t\t},\n\t\t{\n\t\t\t\"casing_code\":\"SURFACE\",\n\t\t\t\"start\":\"4\",\n\t\t\t\"casing_material\":\"STEEL\",\n\t\t\t\"end\":\"8\",\n\t\t\t\"diameter\":\"2\",\n\t\t\t\"drive_shoe\":\"True\",\n\t\t\t\"id\":1,\n\t\t\t\"wall_thickness\":\"7\"\n\t\t}\n\t]\n}"
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/submissions/staff_edit?format=json",
+									"raw": "{{base_url}}/api/v2/submissions/staff_edit?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"submissions",
 										"staff_edit"
 									],
@@ -2946,13 +2946,13 @@
 									]
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/aquifers",
+									"raw": "{{base_url}}/api/v2/aquifers",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"aquifers"
 									]
 								}
@@ -3003,13 +3003,13 @@
 									"raw": "{\n\t\"well\": {{well_tag_number}},\n\t\"aquifer\": {{created_aquifer_for_well}},\n\t\"storativity\": 1\n}"
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/submissions/staff_edit?format=json",
+									"raw": "{{base_url}}/api/v2/submissions/staff_edit?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"submissions",
 										"staff_edit"
 									],
@@ -3068,13 +3068,13 @@
 									"raw": "{\n\t\"well\": {{well_tag_number}},\n\t\"linerperforation_set\": [],\n\t\"storativity\": null\n}"
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/submissions/staff_edit?format=json",
+									"raw": "{{base_url}}/api/v2/submissions/staff_edit?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"submissions",
 										"staff_edit"
 									],
@@ -3139,13 +3139,13 @@
 							"raw": "{\n\t\"well_activity_type\": \"CON\",\n\t\"owner_full_name\": \"Bob\",\n\t\"owner_mailing_address\": \"123 Place\",\n\t\"owner_city\": \"Victoria\",\n\t\"owner_province_state\": \"BC\",\n\t\"casing_set\": [\n\t\t{\n\t\t\t\"casing_code\": \"SURFACE\",\n\t\t\t\"start\":\"0\",\n\t\t\t\"end\":\"10\",\n\t\t\t\"diameter\":\"1\",\n\t\t\t\"drive_shoe\":\"False\",\n\t\t\t\"id\":0,\n\t\t\t\"wall_thickness\":\"87\"\n\t\t}\n\t],\n\t\"screen_set\": [\n        {\n            \"start\": \"0.00\",\n            \"end\": \"10.00\",\n            \"internal_diameter\": null,\n            \"assembly_type\": null,\n            \"slot_size\": null\n        }\n    ],\n    \"linerperforation_set\": [\n\t\t{\n\t\t\t\"start\": 0,\n\t\t\t\"end\": 10\n\t\t}\n\t],\n\t\"well_class\": \"GEOTECH\",\n\t\"driller_name\": \"Bob\",\n\t\"consultant_name\": \"Lois\",\n\t\"consultant_company\": \"Lois Consulting\",\n\t\"work_start_date\": \"2018-01-01\",\n\t\"work_end_date\": \"2018-01-01\",\n\t\"legal_pid\": \"123132\",\n\t\"well_location_description\": \"At the top of the hill\",\n\t\"latitude\": 48.420133,\n\t\"longitude\": -123.370083,\n\t\"ground_elevation\": 1,\n\t\"ground_elevation_method\":\"UNKNOWN\",\n\t\"drilling_method\": \"AUGER\",\n\t\"well_orientation\": \"False\",\n\t\"water_supply_system_name\": \"Pond\",\n\t\"water_supply_system_well_name\": \"1\",\n\t\"surface_seal_material\": \"BNTITE_CLY\",\n\t\"surface_seal_depth\": 1,\n\t\"surface_seal_method\": \"OTHER\",\n\t\"liner_material\": \"PVC\",\n\t\"screen_material\": \"PLASTIC\",\n\t\"development_method\": \"BAIL\",\n\t\"well_yield\": \"5.22\",\n\t\"finished_well_depth\": \"55\",\n\t\"total_depth_drilled\": \"58\",\n\t\"final_casing_stick_up\": \"3\",\n\t\"static_water_level\": \"12\",\n\t\"artesian_flow\": \"6.55\",\n\t\"well_disinfected\": \"True\",\n\t\"comments\": \"This is a well\",\n\t\"diameter\": \"3\"\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/api/v1/submissions/construction?format=json",
+							"raw": "{{base_url}}/api/v2/submissions/construction?format=json",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
-								"v1",
+								"v2",
 								"submissions",
 								"construction"
 							],
@@ -3201,13 +3201,13 @@
 							"raw": "{\n\t\"well_activity_type\": \"ALT\",\n\t\"well\": {{well_tag_number}},\n\t\"owner_full_name\": \"Bob\",\n\t\"owner_mailing_address\": \"123 Place\",\n\t\"owner_city\": \"Victoria\",\n\t\"owner_province_state\": \"BC\",\n\t\"work_start_date\": \"2018-01-02\",\n\t\"work_end_date\": \"2018-01-02\",\n\t\"casing_set\": [\n\t\t{\n\t\t\t\"casing_code\": \"SURFACE\",\n\t\t\t\"start\":\"10\",\n\t\t\t\"end\":\"20\",\n\t\t\t\"diameter\":\"1\",\n\t\t\t\"drive_shoe\":\"False\",\n\t\t\t\"id\":0,\n\t\t\t\"wall_thickness\":\"87\"\n\t\t}\n\t],\n\t\"screen_set\": [\n        {\n            \"start\": \"10.00\",\n            \"end\": \"20.00\",\n            \"internal_diameter\": null,\n            \"assembly_type\": null,\n            \"slot_size\": null\n        }\n    ],\n    \"linerperforation_set\": [\n\t\t{\n\t\t\t\"start\": 10,\n\t\t\t\"end\": 20\n\t\t}\n\t]\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/api/v1/submissions/alteration?format=json",
+							"raw": "{{base_url}}/api/v2/submissions/alteration?format=json",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
-								"v1",
+								"v2",
 								"submissions",
 								"alteration"
 							],
@@ -3269,13 +3269,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
+							"raw": "{{base_url}}/api/v2/wells/{{well_tag_number}}/edit",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
-								"v1",
+								"v2",
 								"wells",
 								"{{well_tag_number}}",
 								"edit"
@@ -3326,13 +3326,13 @@
 							"raw": "{\n\t\"well_activity_type\": \"ALT\",\n\t\"well\": {{well_tag_number}},\n\t\"work_start_date\": \"2018-01-03\",\n\t\"work_end_date\": \"2018-01-03\",\n\t\"casing_set\": [\n\t\t{\n\t\t\t\"casing_code\": \"SURFACE\",\n\t\t\t\"start\":\"10\",\n\t\t\t\"end\":\"15\",\n\t\t\t\"diameter\":\"1\",\n\t\t\t\"drive_shoe\":\"False\",\n\t\t\t\"id\":0,\n\t\t\t\"wall_thickness\":\"87\"\n\t\t},\n\t\t{\n\t\t\t\"casing_code\": \"SURFACE\",\n\t\t\t\"start\":\"15\",\n\t\t\t\"end\":\"20\",\n\t\t\t\"diameter\":\"1\",\n\t\t\t\"drive_shoe\":\"False\",\n\t\t\t\"id\":0,\n\t\t\t\"wall_thickness\":\"87\"\n\t\t}\n\t],\n\t\"screen_set\": [\n        {\n            \"start\": \"10.00\",\n            \"end\": \"15.00\",\n            \"internal_diameter\": null,\n            \"assembly_type\": null,\n            \"slot_size\": null\n        },\n        {\n            \"start\": \"15.00\",\n            \"end\": \"20.00\",\n            \"internal_diameter\": null,\n            \"assembly_type\": null,\n            \"slot_size\": null\n        }\n    ],\n    \"linerperforation_set\": [\n\t\t{\n\t\t\t\"start\": 10,\n\t\t\t\"end\": 15\n\t\t},\n\t\t{\n\t\t\t\"start\": 15,\n\t\t\t\"end\": 20\n\t\t}\n\t]\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/api/v1/submissions/alteration?format=json",
+							"raw": "{{base_url}}/api/v2/submissions/alteration?format=json",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
-								"v1",
+								"v2",
 								"submissions",
 								"alteration"
 							],
@@ -3390,13 +3390,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
+							"raw": "{{base_url}}/api/v2/wells/{{well_tag_number}}/edit",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
-								"v1",
+								"v2",
 								"wells",
 								"{{well_tag_number}}",
 								"edit"
@@ -3413,7 +3413,6 @@
 							"listen": "test",
 							"script": {
 								"id": "b89b1daf-40de-46c1-9567-608d995d0702",
-								"type": "text/javascript",
 								"exec": [
 									"var jsonData = pm.response.json();",
 									"",
@@ -3424,7 +3423,8 @@
 									"pm.environment.set(\"well_tag_number\", jsonData.well);",
 									"pm.environment.set('filing_number', jsonData.filing_number)",
 									""
-								]
+								],
+								"type": "text/javascript"
 							}
 						}
 					],
@@ -3445,13 +3445,13 @@
 							"raw": "{\n\t\"well_activity_type\": \"ALT\",\n\t\"well\": {{well_tag_number}},\n\t\"owner_full_name\": \"Bob\",\n\t\"owner_mailing_address\": \"123 Place\",\n\t\"owner_city\": \"Victoria\",\n\t\"owner_province_state\": \"BC\",\n\t\"work_start_date\": \"2018-01-04\",\n\t\"work_end_date\": \"2018-01-04\",\n\t\"decommission_description_set\": [\n\t\t{\n\t\t\t\"start\": 0,\n\t\t\t\"end\": 1,\n\t\t\t\"material\": \"CONCRETE\",\n\t\t\t\"observations\": \"It worked!\"\n\t\t}\n\t],\n\t\"decommission_details\": \"Test\"\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/api/v1/submissions/decommission?format=json",
+							"raw": "{{base_url}}/api/v2/submissions/decommission?format=json",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
-								"v1",
+								"v2",
 								"submissions",
 								"decommission"
 							],
@@ -3518,13 +3518,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/edit",
+							"raw": "{{base_url}}/api/v2/wells/{{well_tag_number}}/edit",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
-								"v1",
+								"v2",
 								"wells",
 								"{{well_tag_number}}",
 								"edit"
@@ -3570,13 +3570,13 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}?format=json",
+							"raw": "{{base_url}}/api/v2/drillers/{{created_driller_guid}}?format=json",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
-								"v1",
+								"v2",
 								"drillers",
 								"{{created_driller_guid}}"
 							],

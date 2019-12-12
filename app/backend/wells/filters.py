@@ -35,7 +35,7 @@ from wells.models import (
 )
 
 
-def copy_request(request):
+def copy_request(request, **kwargs):
     """
     Given a rest_framework.request.Request object, create a copy
     we can mutate without side effects.

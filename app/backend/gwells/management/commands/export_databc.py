@@ -65,7 +65,9 @@ select
     well.bedrock_depth,
     well.well_yield as yield,
     SUBSTRING(well_yield_unit_code.description for 100) as yield_unit,
-    well.aquifer_id as aquifer_id
+    well.aquifer_id as aquifer_id,
+    well.observation_well_number,
+    well.obs_well_status_code
 from well
     left join well_status_code on well_status_code.well_status_code = well.well_status_code
     left join licenced_status_code on
@@ -116,7 +118,8 @@ select
     well.bedrock_depth,
     well.well_yield as yield,
     SUBSTRING(well_yield_unit_code.description for 100) as yield_unit,
-    well.aquifer_id as aquifer_id
+    well.aquifer_id as aquifer_id,
+    lithology_description.lithology_raw_data as raw_data
 from well
     inner join lithology_description on
         lithology_description.well_tag_number = well.well_tag_number
@@ -162,6 +165,7 @@ select
     aquifer.aquifer_id as aquifer_id,
     SUBSTRING(aquifer.aquifer_name for 100) as name,
     SUBSTRING(aquifer.location_description for 100) as location,
+    SUBSTRING(CONCAT('https://apps.nrs.gov.bc.ca/gwells/aquifers/', aquifer.aquifer_id) for 255) as detail,
     SUBSTRING(aquifer_material_code.description for 100) as material,
     SUBSTRING(aquifer_subtype_code.description for 100) as subtype,
     SUBSTRING(aquifer_vulnerability_code.description for 100) as vulnerability,

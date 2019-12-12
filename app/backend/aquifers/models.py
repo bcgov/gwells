@@ -74,7 +74,7 @@ class WaterRightsLicence(AuditModel):
         db_column='water_rights_purpose_code',
         blank=True,
         null=True,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         verbose_name="Water Rights Purpose Reference",
         related_name='licences')
 
@@ -134,12 +134,7 @@ class AquiferSubtype(CodeTableModel):
     """
     code = models.CharField(
         primary_key=True, max_length=3, db_column='aquifer_subtype_code',
-        db_comment=('Categorizes an aquifer based on how it was formed geologically (depositional'
-                    ' description). Understanding of how aquifers were formed governs important'
-                    ' attributes such as their productivity, vulnerability to contamination as well as'
-                    ' proximity and likelihood of hydraulic connection to streams. The code value is a'
-                    ' combination of an aquifer type represented by a number and an optional letter'
-                    ' representing a more specific aquifer sub-type. E.g. 1a, 2, 6a.'))
+        db_comment=("Categorizes an aquifer based on how it was formed geologically (depositional description). Understanding of how aquifers were formed governs important attributes such as their productivity, vulnerability to contamination as well as proximity and likelihood of hydraulic connection to streams. The code value is a combination of an aquifer type represented by a number and an optional letter representing a more specific aquifer sub-type.   There are six major aquifer types, some with multiple subtypes.  E.g. aquifer sub-type code 6b is comprised of the aquifer type number (6: Crystalline bedrock aquifers) and subtype letter (b) specifically described as: Fractured crystalline (igneous intrusive or metamorphic, meta-sedimentary, meta-volcanic, volcanic) rock aquifers. Code values range from 1a to 6b."))
     description = models.CharField(
         max_length=100,
         db_comment=('Descriptions that define how the aquifer was formed geologically'
@@ -193,6 +188,10 @@ class AquiferProductivity(CodeTableModel):
 class AquiferDemand(CodeTableModel):
     """
     Demand choices for describing Aquifer
+        Note on db_comments:  db_comment properties on model columns are
+    overriden by the db_column_supplemental_comments provided below.
+    db_column_supplemental_comments provides an easier way for the DA to add/update
+    comments in bulk.
     """
     code = models.CharField(
         primary_key=True, max_length=1, db_column='aquifer_demand_code',
@@ -210,6 +209,10 @@ class AquiferDemand(CodeTableModel):
 
     db_table_comment = ('Describes the level of groundwater use at the time aquifer was mapped; i.e., High, '
                         'Moderate, Low.')
+
+    db_column_supplemental_comments = {
+
+    }
 
     def __str__(self):
         return '{} - {}'.format(self.code, self.description)
@@ -307,6 +310,11 @@ class Aquifer(AuditModel):
 
     This table holds ONLY the aquifers to which we have associated one or more wells.  It is not
     the definitive source of all aquifers in the province.
+
+    Note on db_comments:  db_comment properties on model columns are
+    overriden by the db_column_supplemental_comments provided below.
+    db_column_supplemental_comments provides an easier way for the DA to add/update
+    comments in bulk.
     """
     aquifer_id = models.AutoField(
         primary_key=True, verbose_name="Aquifer ID Number",
@@ -510,6 +518,17 @@ class Aquifer(AuditModel):
     def __str__(self):
         return '{} - {}'.format(self.aquifer_id, self.aquifer_name)
 
+    db_column_supplemental_comments = {
+        "aquifer_demand_code": "Describes the level of groundwater use at the time the aquifer was mapped; i.e., High, Moderate, Low.",
+        "aquifer_id": "System generated sequential number assigned to each aquifer. It is widely used by groundwater staff as it is the only consistent unique identifier for a mapped aquifer. It is also commonly referred to as Aquifer Number.",
+        "aquifer_material_code": "Describes the broad grouping of geological material found in the aquifer, i.e., Sand and Gravel, Sand, Gravel, Bedrock",
+        "aquifer_productivity_code": "Describes the aquifer's productivity which represent an aquifers ability to transmit and yield groundwater; i.e., Low, Moderate, High",
+        "aquifer_subtype_code": "Categorizes an aquifer based on how it was formed geologically (depositional description). Understanding of how aquifers were formed governs important attributes such as their productivity, vulnerability to contamination as well as proximity and likelihood of hydraulic connection to streams. The code value is a combination of an aquifer type represented by a number and an optional letter representing a more specific aquifer sub-type.   There are six major aquifer types, some with multiple subtypes.  E.g. aquifer sub-type code 6b is comprised of the aquifer type number (6: Crystalline bedrock aquifers) and subtype letter (b) specifically described as: Fractured crystalline (igneous intrusive or metamorphic, meta-sedimentary, meta-volcanic, volcanic) rock aquifers. Code values range from 1a to 6b.",
+        "aquifer_vulnerablity_code": "Describes an aquifer’s relative intrinsic vulnerability to impacts from human activities on the land surface. Vulnerability is based on: the type, thickness, and extent of geologic materials above the aquifer, depth to water table (or to top of confined aquifer), and type of aquifer materials, i.e., Low, Moderate, High.",
+        "quality_concern_code": "Extent of documented concerns of contaminants in the aquifer at the time of mapping. i.e. isloated, local, regional, none.",
+        "water_use_code": "Describes the type of known water use of an aquifer at the time of mapping. It indicates the variability or diversity of uses of the aquifer water as a supply source. I.e. Domestic, Multiple, Potential Domestic",
+    }
+
 
 class AquiferResourceSection(BasicCodeTableModel):
     """
@@ -544,24 +563,24 @@ class AquiferResource(AuditModel):
         Aquifer,
         related_name='resources',
         on_delete=models.CASCADE,
-        db_comment=('System generated unique sequential number assigned to each mapped aquifer. The'
-                    ' aquifer_id identifies which aquifer a well is in. An aquifer can have multiple'
-                    ' wells, while a single well can only be in one aquifer.'))
+        db_comment=('System generated sequential number assigned to each aquifer. It is widely used by groundwater staff as it is the only consistent unique identifier for a mapped aquifer. It is also commonly referred to as Aquifer Number.'))
     section = models.ForeignKey(
         AquiferResourceSection,
         db_column='aquifer_resource_section_code',
         verbose_name="Aquifer Resource Section",
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         help_text="The section (category) of this resource.")
     name = models.CharField(
         max_length=255,
         verbose_name="Aquifer Resource Name",
         help_text="",
+        db_comment=('Descriptive name of the document at the URL that contains the internal or external information about the aquifer.')
     )
     url = models.URLField(
         verbose_name="PDF Document URL",
         max_length=255,
-        help_text="A resolvable link to the PDF document associated with this aquifer resource.")
+        help_text="A resolvable link to the PDF document associated with this aquifer resource.",
+        db_comment=('The web address where the internal or external information about the aquifer can be found.'))
 
     class Meta:
         ordering = ['name']

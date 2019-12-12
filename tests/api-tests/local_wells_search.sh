@@ -15,3 +15,4 @@ fi
 
 echo "Remember to install newman (npm install -g newman) and set GWELLS_API_BASE_URL."
 newman run ./wells_search_api_tests.json --global-var base_url=$GWELLS_API_BASE_URL
+newman run ./wells_search_v2_api_tests.json --global-var base_url=$GWELLS_API_BASE_URL

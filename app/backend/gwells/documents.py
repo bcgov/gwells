@@ -40,7 +40,7 @@ class MinioClient():
     This is only required for generating private, local links.
 
     e.g.:
-    def get(self, request):
+    def get(self, request, **kwargs):
         client = MinioClient(request)
 
     """

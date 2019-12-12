@@ -132,6 +132,7 @@ class WellSubmissionSerializerBase(AuditModelSerializer):
             return attrs
 
         errors = {}
+
         # Check ground elevation fields for mutual requirement
         if 'ground_elevation' in attrs or 'ground_elevation_method' in attrs:
             if attrs.get('ground_elevation', None) is None and attrs.get('ground_elevation_method', None) is not None:
@@ -139,12 +140,24 @@ class WellSubmissionSerializerBase(AuditModelSerializer):
                     errors['ground_elevation'] = 'Both ground elevation and method are required.'
             if attrs.get('ground_elevation', None) is not None and attrs.get('ground_elevation_method', None) is None:
                 errors['ground_elevation_method'] = 'Both ground elevation and method are required.'
+
         # Check latitude longitude for mutual requirement
-        if 'latitude' in attrs or 'longitude' in attrs:
-            if len(attrs['latitude']) <= 0:
-                errors['latitude'] = 'Latitude and Longitude are both required.'
-            if len(attrs['longitude']) <= 0:
-                errors['longitude'] = 'Latitude and Longitude are both required.'
+        # lat/lng are on the request body, not the "attrs" object
+        # this is assumed to be because lat/long are not model properties, since we
+        # convert them to "geom" instead of storing them as latitude and longitude.
+        data = None
+        if self.context.get('request', None):
+            data = self.context['request'].data
+        
+        if 'latitude' in data or 'longitude' in data:
+            lat = data['latitude']
+            lng = data['longitude']
+            # there is also validation elsewhere that the point is inside BC.
+            # this is a second sanity check to make sure the coordinates are roughly valid.
+            if not 48 < lat < 60:
+                errors['latitude'] = 'Coordinates are outside British Columbia.  Please double check well location.'
+            if not -140 < -abs(lng) < -110:
+                errors['longitude'] = 'Coordinates are outside British Columbia.  Please double check well location.'
 
         # date validation checks mutual requirement and start date less than end date
         dates = ['work', 'construction', 'alteration', 'decommission']
@@ -190,9 +203,10 @@ class WellSubmissionSerializerBase(AuditModelSerializer):
                         validated_data['geom'] = None
                         data['geom'] = None
                     else:
-                        point = Point(data['longitude'], data['latitude'], srid=4326)
+                        point = Point(-abs(data['longitude']), data['latitude'], srid=4326)
                         validated_data['geom'] = point
                         data['geom'] = point
+                        
 
             # Remove the latitude and longitude fields if they exist
             validated_data.pop('latitude', None)

@@ -86,7 +86,7 @@ parameters:
     displayName: "Number of Monthly Backups to Retain"
     description: "The number of monthly backup files to be retained.  Used for the `rolling` backup strategy."
     required: false
-    value: "1"
+    value: "12"
   - name: "SUCCESS_JOBS_HISTORY_LIMIT"
     displayName: "Successful Job History Limit"
     description: "The number of successful jobs that will be retained."

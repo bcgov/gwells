@@ -159,7 +159,7 @@ class LithologyMaterialCode(CodeTableModel):
         db_comment='Numerical code for the materials noted for the lithology. E.g. 01, 02, 03.')
     description = models.CharField(
         max_length=255, verbose_name='Material Description',
-        db_comment='Description of the material noted for lithology. E.g. Rock, Clay, Sand, Unspecified,')
+        db_comment='Description of the lithologic material using standardized terms, e.g. Rock, Clay, Sand, Unspecified.')
 
     class Meta:
         db_table = 'lithology_material_code'
