@@ -1056,10 +1056,6 @@ class WellLithologySerializer(serializers.ModelSerializer):
             model = Well
             fields = (
                 "well_tag_number",
-                "static_water_level",
-                "lithologydescription_set",
-                "well_yield",
-                "well_yield_unit",
-                "finished_well_depth"
+                "lithologydescription_set"
             )
 
