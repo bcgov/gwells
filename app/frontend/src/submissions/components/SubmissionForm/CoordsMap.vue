@@ -17,6 +17,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
 <script>
 import L from 'leaflet'
+import 'leaflet-gesture-handling'
 import { tiledMapLayer } from 'esri-leaflet'
 
 export default {
@@ -75,7 +76,9 @@ export default {
     },
     initMap () {
       // Create map, with default centered and zoomed to show entire BC.
-      this.map = L.map('map').setView([this.latitude ? this.latitude : 54.5, this.getLongitude() ? this.getLongitude() : -126.5], 5)
+      this.map = L.map('map', {
+        gestureHandling: true
+      }).setView([this.latitude ? this.latitude : 54.5, this.getLongitude() ? this.getLongitude() : -126.5], 5)
       L.control.scale().addTo(this.map)
 
       // Add map layers.
@@ -169,6 +172,7 @@ export default {
 </script>
 <style>
 @import "~leaflet/dist/leaflet.css";
+@import "~leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
 
 .coords-map {
   width: 550px;
