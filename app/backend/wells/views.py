@@ -68,6 +68,7 @@ from submissions.models import WellActivityCode
 
 from wells.filters import (
     BoundingBoxFilterBackend,
+    GeometryFilterBackend,
     WellListFilterBackend,
     WellListOrderingFilter,
 )
@@ -235,7 +236,7 @@ class WellListAPIView(ListAPIView):
     pagination_class = APILimitOffsetPagination
 
     filter_backends = (WellListFilterBackend, BoundingBoxFilterBackend,
-                       filters.SearchFilter, WellListOrderingFilter)
+                       filters.SearchFilter, WellListOrderingFilter, GeometryFilterBackend)
     ordering = ('well_tag_number',)
     search_fields = ('well_tag_number', 'identification_plate_number',
                      'street_address', 'city', 'owner_full_name')
