@@ -115,7 +115,11 @@ def _aquifer_qs(query):
     resources__section__code = query.get("resources__section__code")
     hydraulic = query.get('hydraulically_connected')
     search = query.get('search')
-    match_any = query.get('match_any') == 'true'
+
+    match_any = True
+    if request.version == 'v2':
+        # V2 changes to `and`-ing the filters by default unless "match_any" is explicitly set to 'true'
+        match_any = query.get('match_any') == 'true'
 
     # build a list of filters from qs params
     filters = []
