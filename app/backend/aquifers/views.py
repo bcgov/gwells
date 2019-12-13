@@ -117,7 +117,7 @@ def _aquifer_qs(query):
     search = query.get('search')
 
     match_any = True
-    if request.version == 'v2':
+    if self.request.version == 'v2':
         # V2 changes to `and`-ing the filters by default unless "match_any" is explicitly set to 'true'
         match_any = query.get('match_any') == 'true'
 
