@@ -215,8 +215,17 @@ const wellsStore = {
       }
 
       ApiService.query('wells/locations', params, { cancelToken: cancelSource.token }).then((response) => {
-        commit(SET_LOCATION_ERRORS, {})
-        commit(SET_LOCATION_SEARCH_RESULTS, response.data)
+        if (response.data.count === 0) {
+          commit(SET_LOCATION_ERRORS, { detail: 'No well records could be found.' })
+        } else if (response.data.count > response.data.results.length) {
+          commit(SET_LOCATION_ERRORS, {
+            detail: 'Too many wells to display on map. ' +
+                    'Please zoom in or change your search criteria.'
+          })
+        } else {
+          commit(SET_LOCATION_ERRORS, {})
+          commit(SET_LOCATION_SEARCH_RESULTS, response.data.results)
+        }
       }).catch((err) => {
         // If the search was cancelled, a new one is pending, so don't bother resetting.
         if (axios.isCancel(err)) {

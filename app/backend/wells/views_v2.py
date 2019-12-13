@@ -15,8 +15,11 @@ import logging
 
 from rest_framework import filters
 from rest_framework.generics import ListAPIView
+from rest_framework.exceptions import PermissionDenied, NotFound
+from rest_framework.response import Response
 
 from gwells.roles import WELLS_EDIT_ROLE
+from gwells.pagination import apiLimitedPagination
 
 from wells.filters import (
     BoundingBoxFilterBackend,
@@ -38,6 +41,7 @@ class WellLocationListV2APIView(ListAPIView):
     """
     permission_classes = (WellsEditOrReadOnly,)
     model = Well
+    pagination_class = apiLimitedPagination(5000)
 
     # Allow searching on name fields, names of related companies, etc.
     filter_backends = (WellListFilterBackend, BoundingBoxFilterBackend,
