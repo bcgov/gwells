@@ -259,6 +259,500 @@
     }
   },
   {
+    "model": "aquifers.waterrightspurpose",
+    "pk": "00A",
+    "fields": {
+      "create_user": "",
+      "create_date": "2019-06-06T18:03:32.203Z",
+      "update_user": "",
+      "update_date": "2019-06-06T18:03:32.203Z",
+      "description": "00A - Waterworks: Local Provider ",
+      "display_order": 0,
+      "effective_date": "2019-06-06T18:03:32.203Z",
+      "expiry_date": "9999-12-31T23:59:59.999Z"
+    }
+  },
+  {
+    "model": "aquifers.waterrightspurpose",
+    "pk": "00B",
+    "fields": {
+      "create_user": "",
+      "create_date": "2019-06-06T18:03:36.368Z",
+      "update_user": "",
+      "update_date": "2019-06-06T18:03:36.368Z",
+      "description": "00B - Waterworks (other than LP) ",
+      "display_order": 0,
+      "effective_date": "2019-06-06T18:03:36.367Z",
+      "expiry_date": "9999-12-31T23:59:59.999Z"
+    }
+  },
+  {
+    "model": "aquifers.waterrightspurpose",
+    "pk": "00C",
+    "fields": {
+      "create_user": "",
+      "create_date": "2019-06-06T18:03:41.007Z",
+      "update_user": "",
+      "update_date": "2019-06-06T18:03:41.007Z",
+      "description": "00C - Waterworks: Sales ",
+      "display_order": 0,
+      "effective_date": "2019-06-06T18:03:41.007Z",
+      "expiry_date": "9999-12-31T23:59:59.999Z"
+    }
+  },
+  {
+    "model": "aquifers.waterrightspurpose",
+    "pk": "02A",
+    "fields": {
+      "create_user": "",
+      "create_date": "2019-11-26T19:41:04.314Z",
+      "update_user": "",
+      "update_date": "2019-11-26T19:41:04.314Z",
+      "description": "02A - Pulp Mill ",
+      "display_order": 0,
+      "effective_date": "2019-11-26T19:41:04.314Z",
+      "expiry_date": "9999-12-31T23:59:59.999Z"
+    }
+  },
+  {
+    "model": "aquifers.waterrightspurpose",
+    "pk": "02D",
+    "fields": {
+      "create_user": "",
+      "create_date": "2019-06-06T18:03:31.395Z",
+      "update_user": "",
+      "update_date": "2019-06-06T18:03:31.395Z",
+      "description": "02D - Comm. Enterprise: Enterprise ",
+      "display_order": 0,
+      "effective_date": "2019-06-06T18:03:31.395Z",
+      "expiry_date": "9999-12-31T23:59:59.999Z"
+    }
+  },
+  {
+    "model": "aquifers.waterrightspurpose",
+    "pk": "02E",
+    "fields": {
+      "create_user": "",
+      "create_date": "2019-06-06T18:03:44.611Z",
+      "update_user": "",
+      "update_date": "2019-06-06T18:03:44.611Z",
+      "description": "02E - Pond & Aquaculture ",
+      "display_order": 0,
+      "effective_date": "2019-06-06T18:03:44.611Z",
+      "expiry_date": "9999-12-31T23:59:59.999Z"
+    }
+  },
+  {
+    "model": "aquifers.waterrightspurpose",
+    "pk": "02G",
+    "fields": {
+      "create_user": "",
+      "create_date": "2019-06-06T18:03:40.710Z",
+      "update_user": "",
+      "update_date": "2019-06-06T18:03:40.710Z",
+      "description": "02G - Fresh Water Bottling ",
+      "display_order": 0,
+      "effective_date": "2019-06-06T18:03:40.710Z",
+      "expiry_date": "9999-12-31T23:59:59.999Z"
+    }
+  },
+  {
+    "model": "aquifers.waterrightspurpose",
+    "pk": "02I12",
+    "fields": {
+      "create_user": "",
+      "create_date": "2019-06-06T18:03:32.019Z",
+      "update_user": "",
+      "update_date": "2019-06-06T18:03:32.019Z",
+      "description": "02I12 - Misc Ind'l: Fire Protection ",
+      "display_order": 0,
+      "effective_date": "2019-06-06T18:03:32.019Z",
+      "expiry_date": "9999-12-31T23:59:59.999Z"
+    }
+  },
+  {
+    "model": "aquifers.waterrightspurpose",
+    "pk": "02I18",
+    "fields": {
+      "create_user": "",
+      "create_date": "2019-06-06T18:03:51.756Z",
+      "update_user": "",
+      "update_date": "2019-06-06T18:03:51.756Z",
+      "description": "02I18 - Heat Exchanger ",
+      "display_order": 0,
+      "effective_date": "2019-06-06T18:03:51.756Z",
+      "expiry_date": "9999-12-31T23:59:59.999Z"
+    }
+  },
+  {
+    "model": "aquifers.waterrightspurpose",
+    "pk": "02I23",
+    "fields": {
+      "create_user": "",
+      "create_date": "2019-06-06T18:04:06.970Z",
+      "update_user": "",
+      "update_date": "2019-06-06T18:04:06.970Z",
+      "description": "02I23 - O&G: Oil Fld Inject (non-deep GW) ",
+      "display_order": 0,
+      "effective_date": "2019-06-06T18:04:06.970Z",
+      "expiry_date": "9999-12-31T23:59:59.999Z"
+    }
+  },
+  {
+    "model": "aquifers.waterrightspurpose",
+    "pk": "02I35",
+    "fields": {
+      "create_user": "",
+      "create_date": "2019-06-06T18:03:40.887Z",
+      "update_user": "",
+      "update_date": "2019-06-06T18:03:40.887Z",
+      "description": "02I35 - Waterworks: Water Delivery ",
+      "display_order": 0,
+      "effective_date": "2019-06-06T18:03:40.887Z",
+      "expiry_date": "9999-12-31T23:59:59.999Z"
+    }
+  },
+  {
+    "model": "aquifers.waterrightspurpose",
+    "pk": "02I38",
+    "fields": {
+      "create_user": "",
+      "create_date": "2019-06-06T18:03:47.674Z",
+      "update_user": "",
+      "update_date": "2019-06-06T18:03:47.674Z",
+      "description": "02I38 - Fish Hatchery ",
+      "display_order": 0,
+      "effective_date": "2019-06-06T18:03:47.674Z",
+      "expiry_date": "9999-12-31T23:59:59.999Z"
+    }
+  },
+  {
+    "model": "aquifers.waterrightspurpose",
+    "pk": "03A",
+    "fields": {
+      "create_user": "",
+      "create_date": "2019-06-06T18:03:53.025Z",
+      "update_user": "",
+      "update_date": "2019-06-06T18:03:53.025Z",
+      "description": "03A - Irrigation: Local Provider ",
+      "display_order": 0,
+      "effective_date": "2019-06-06T18:03:53.025Z",
+      "expiry_date": "9999-12-31T23:59:59.999Z"
+    }
+  },
+  {
+    "model": "aquifers.waterrightspurpose",
+    "pk": "03B",
+    "fields": {
+      "create_user": "",
+      "create_date": "2019-06-06T18:03:30.260Z",
+      "update_user": "",
+      "update_date": "2019-06-06T18:03:30.260Z",
+      "description": "03B - Irrigation: Private ",
+      "display_order": 0,
+      "effective_date": "2019-06-06T18:03:30.260Z",
+      "expiry_date": "9999-12-31T23:59:59.999Z"
+    }
+  },
+  {
+    "model": "aquifers.waterrightspurpose",
+    "pk": "05C",
+    "fields": {
+      "create_user": "",
+      "create_date": "2019-06-06T18:03:32.801Z",
+      "update_user": "",
+      "update_date": "2019-06-06T18:03:32.801Z",
+      "description": "05C - Mining: Processing Ore ",
+      "display_order": 0,
+      "effective_date": "2019-06-06T18:03:32.801Z",
+      "expiry_date": "9999-12-31T23:59:59.999Z"
+    }
+  },
+  {
+    "model": "aquifers.waterrightspurpose",
+    "pk": "05E",
+    "fields": {
+      "create_user": "",
+      "create_date": "2019-06-06T18:03:46.974Z",
+      "update_user": "",
+      "update_date": "2019-06-06T18:03:46.974Z",
+      "description": "05E - O & G: Hydrlc Frctrg (non-deep GW) ",
+      "display_order": 0,
+      "effective_date": "2019-06-06T18:03:46.974Z",
+      "expiry_date": "9999-12-31T23:59:59.999Z"
+    }
+  },
+  {
+    "model": "aquifers.waterrightspurpose",
+    "pk": "08B",
+    "fields": {
+      "create_user": "",
+      "create_date": "2019-06-06T18:03:33.895Z",
+      "update_user": "",
+      "update_date": "2019-06-06T18:03:33.895Z",
+      "description": "08B - Aquifer Storage: NP ",
+      "display_order": 0,
+      "effective_date": "2019-06-06T18:03:33.895Z",
+      "expiry_date": "9999-12-31T23:59:59.999Z"
+    }
+  },
+  {
+    "model": "aquifers.waterrightspurpose",
+    "pk": "09A",
+    "fields": {
+      "create_user": "",
+      "create_date": "2019-06-06T18:03:48.586Z",
+      "update_user": "",
+      "update_date": "2019-06-06T18:03:48.586Z",
+      "description": "09A - Mineralized Water: Bottling & Dist ",
+      "display_order": 0,
+      "effective_date": "2019-06-06T18:03:48.586Z",
+      "expiry_date": "9999-12-31T23:59:59.999Z"
+    }
+  },
+  {
+    "model": "aquifers.waterrightspurpose",
+    "pk": "11B",
+    "fields": {
+      "create_user": "",
+      "create_date": "2019-06-06T18:04:08.519Z",
+      "update_user": "",
+      "update_date": "2019-06-06T18:04:08.519Z",
+      "description": "11B - Conservation: Use of Water ",
+      "display_order": 0,
+      "effective_date": "2019-06-06T18:04:08.518Z",
+      "expiry_date": "9999-12-31T23:59:59.999Z"
+    }
+  },
+  {
+    "model": "aquifers.waterrightspurpose",
+    "pk": "WSA02",
+    "fields": {
+      "create_user": "",
+      "create_date": "2019-06-06T18:03:32.111Z",
+      "update_user": "",
+      "update_date": "2019-06-06T18:03:32.111Z",
+      "description": "WSA02 - Camps & Public Facilities ",
+      "display_order": 0,
+      "effective_date": "2019-06-06T18:03:32.111Z",
+      "expiry_date": "9999-12-31T23:59:59.999Z"
+    }
+  },
+  {
+    "model": "aquifers.waterrightspurpose",
+    "pk": "WSA03",
+    "fields": {
+      "create_user": "",
+      "create_date": "2019-06-06T18:03:31.330Z",
+      "update_user": "",
+      "update_date": "2019-06-06T18:03:31.330Z",
+      "description": "WSA03 - Commercial Enterprise ",
+      "display_order": 0,
+      "effective_date": "2019-06-06T18:03:31.330Z",
+      "expiry_date": "9999-12-31T23:59:59.999Z"
+    }
+  },
+  {
+    "model": "aquifers.waterrightspurpose",
+    "pk": "WSA04",
+    "fields": {
+      "create_user": "",
+      "create_date": "2019-06-06T18:03:56.793Z",
+      "update_user": "",
+      "update_date": "2019-06-06T18:03:56.793Z",
+      "description": "WSA04 - Crop Harvest, Protect & Compost ",
+      "display_order": 0,
+      "effective_date": "2019-06-06T18:03:56.793Z",
+      "expiry_date": "9999-12-31T23:59:59.999Z"
+    }
+  },
+  {
+    "model": "aquifers.waterrightspurpose",
+    "pk": "WSA05",
+    "fields": {
+      "create_user": "",
+      "create_date": "2019-06-06T18:03:36.707Z",
+      "update_user": "",
+      "update_date": "2019-06-06T18:03:36.707Z",
+      "description": "WSA05 - Greenhouse & Nursery ",
+      "display_order": 0,
+      "effective_date": "2019-06-06T18:03:36.707Z",
+      "expiry_date": "9999-12-31T23:59:59.999Z"
+    }
+  },
+  {
+    "model": "aquifers.waterrightspurpose",
+    "pk": "WSA06",
+    "fields": {
+      "create_user": "",
+      "create_date": "2019-06-06T18:04:17.887Z",
+      "update_user": "",
+      "update_date": "2019-06-06T18:04:17.887Z",
+      "description": "WSA06 - Ice & Snow Making ",
+      "display_order": 0,
+      "effective_date": "2019-06-06T18:04:17.887Z",
+      "expiry_date": "9999-12-31T23:59:59.999Z"
+    }
+  },
+  {
+    "model": "aquifers.waterrightspurpose",
+    "pk": "WSA07",
+    "fields": {
+      "create_user": "",
+      "create_date": "2019-06-06T18:03:30.607Z",
+      "update_user": "",
+      "update_date": "2019-06-06T18:03:30.607Z",
+      "description": "WSA07 - Misc Indust ",
+      "display_order": 0,
+      "effective_date": "2019-06-06T18:03:30.607Z",
+      "expiry_date": "9999-12-31T23:59:59.999Z"
+    }
+  },
+  {
+    "model": "aquifers.waterrightspurpose",
+    "pk": "WSA08",
+    "fields": {
+      "create_user": "",
+      "create_date": "2019-06-06T18:03:30.772Z",
+      "update_user": "",
+      "update_date": "2019-06-06T18:03:30.772Z",
+      "description": "WSA08 - Livestock & Animal ",
+      "display_order": 0,
+      "effective_date": "2019-06-06T18:03:30.772Z",
+      "expiry_date": "9999-12-31T23:59:59.999Z"
+    }
+  },
+  {
+    "model": "aquifers.waterrightspurpose",
+    "pk": "WSA09",
+    "fields": {
+      "create_user": "",
+      "create_date": "2019-06-06T18:03:30.491Z",
+      "update_user": "",
+      "update_date": "2019-06-06T18:03:30.491Z",
+      "description": "WSA09 - Processing & Manufacturing ",
+      "display_order": 0,
+      "effective_date": "2019-06-06T18:03:30.491Z",
+      "expiry_date": "9999-12-31T23:59:59.999Z"
+    }
+  },
+  {
+    "model": "aquifers.waterrightspurpose",
+    "pk": "WSA10",
+    "fields": {
+      "create_user": "",
+      "create_date": "2019-06-06T18:03:35.401Z",
+      "update_user": "",
+      "update_date": "2019-06-06T18:03:35.401Z",
+      "description": "WSA10 - Well Drill/Transprt Mgmt ",
+      "display_order": 0,
+      "effective_date": "2019-06-06T18:03:35.401Z",
+      "expiry_date": "9999-12-31T23:59:59.999Z"
+    }
+  },
+  {
+    "model": "aquifers.waterrightspurpose",
+    "pk": "WSA11",
+    "fields": {
+      "create_user": "",
+      "create_date": "2019-06-06T18:03:30.909Z",
+      "update_user": "",
+      "update_date": "2019-06-06T18:03:30.909Z",
+      "description": "WSA11 - Lawn, Fairway & Garden ",
+      "display_order": 0,
+      "effective_date": "2019-06-06T18:03:30.909Z",
+      "expiry_date": "9999-12-31T23:59:59.999Z"
+    }
+  },
+  {
+    "model": "aquifers.waterrightspurpose",
+    "pk": "WSA12",
+    "fields": {
+      "create_user": "",
+      "create_date": "2019-06-06T18:03:45.507Z",
+      "update_user": "",
+      "update_date": "2019-06-06T18:03:45.507Z",
+      "description": "WSA12 - Vehicle & Equipment ",
+      "display_order": 0,
+      "effective_date": "2019-06-06T18:03:45.507Z",
+      "expiry_date": "9999-12-31T23:59:59.999Z"
+    }
+  },
+  {
+    "model": "aquifers.waterrightspurpose",
+    "pk": "WSA13",
+    "fields": {
+      "create_user": "",
+      "create_date": "2019-06-06T18:03:30.817Z",
+      "update_user": "",
+      "update_date": "2019-06-06T18:03:30.817Z",
+      "description": "WSA13 - Industrial Waste Mgmt ",
+      "display_order": 0,
+      "effective_date": "2019-06-06T18:03:30.817Z",
+      "expiry_date": "9999-12-31T23:59:59.999Z"
+    }
+  },
+  {
+    "model": "aquifers.waterrightslicence",
+    "pk": 0,
+    "fields": {
+      "create_user": "",
+      "create_date": "2019-11-23T19:41:10.495Z",
+      "update_user": "",
+      "update_date": "2019-11-24T19:48:36.386Z",
+      "purpose": "03B",
+      "licence_number": 501369,
+      "quantity_flag": "T",
+      "quantity": "100.000",
+      "effective_date": "2019-11-23T19:41:10.495Z"
+    }
+  },
+  {
+    "model": "aquifers.waterrightslicence",
+    "pk": 1,
+    "fields": {
+      "create_user": "",
+      "create_date": "2019-11-23T19:41:10.528Z",
+      "update_user": "",
+      "update_date": "2019-11-24T19:48:36.416Z",
+      "purpose": "WSA08",
+      "licence_number": 501467,
+      "quantity_flag": "T",
+      "quantity": "140.000",
+      "effective_date": "2019-11-23T19:41:10.528Z"
+    }
+  },
+  {
+    "model": "aquifers.waterrightslicence",
+    "pk": 2,
+    "fields": {
+      "create_user": "",
+      "create_date": "2019-11-28T19:40:27.991Z",
+      "update_user": "",
+      "update_date": "2019-11-28T19:40:27.991Z",
+      "purpose": "WSA09",
+      "licence_number": 500268,
+      "quantity_flag": "T",
+      "quantity": "19710.000",
+      "effective_date": "2019-11-28T19:40:27.991Z"
+    }
+  },
+  {
+    "model": "aquifers.waterrightslicence",
+    "pk": 4,
+    "fields": {
+      "create_user": "",
+      "create_date": "2019-11-04T19:40:43.379Z",
+      "update_user": "",
+      "update_date": "2019-11-04T19:47:48.075Z",
+      "purpose": "03A",
+      "licence_number": 501524,
+      "quantity_flag": "T",
+      "quantity": "2730.000",
+      "effective_date": "2019-11-04T19:40:43.379Z"
+    }
+  },
+  {
     "model": "wells.well",
     "pk": 100123,
     "fields": {
@@ -632,6 +1126,7 @@
         "intended_water_use": "DWS",
         "well_status": "NEW",
         "licenced_status": "LICENSED",
+        "licences": [0],
         "street_address": "6647 CHRISTENSEN ROAD",
         "city": "ANAHIM LAKE",
         "legal_lot": "A",
