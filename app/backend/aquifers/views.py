@@ -128,12 +128,13 @@ def _aquifer_qs(query):
             filters.append(Q(resources__section__code=code))
 
     if match_any:
-        disjunction = filters.pop()
+        if len(filters) > 0:
+            disjunction = filters.pop()
 
-        # combine all disjunctions using `|` a.k.a. SQL `OR`
-        for filter in filters:
-            disjunction |= filter
-        qs = qs.filter(disjunction)
+            # combine all disjunctions using `|` a.k.a. SQL `OR`
+            for filter in filters:
+                disjunction |= filter
+            qs = qs.filter(disjunction)
     else:
         # calling .filter() one after another combines `Q`s using SQL `AND`
         for filter in filters:
