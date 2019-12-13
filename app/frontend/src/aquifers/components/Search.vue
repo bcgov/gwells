@@ -50,7 +50,8 @@
             </h1>
 
             <b-form-row>
-              <b-col cols="12" md="12" class="pt-3 pl-4 pr-4 aquifer-search-column mt-3">
+              <b-col cols="12" md="12" class="pl-4 pr-4 aquifer-search-column mt-3">
+                <h4>Basic Search</h4>
                 <h5 class="search-title">Search by aquifer name or number (leave blank to see all aquifers)</h5>
                 <b-form-group class="search-title mt-3 mb-3">
                   <b-form-input
@@ -59,6 +60,7 @@
                     v-model="search"
                     class="w-75"/>
                 </b-form-group>
+                <h4 class="pt-5">Advanced Search</h4>
                 <b-form-group>
                   <b-form-radio inline v-model="filterParams.match_any" name="match-any" value="true">Any field match</b-form-radio>
                   <b-form-radio inline v-model="filterParams.match_any" name="match-any" value="false">All field match</b-form-radio>
