@@ -96,7 +96,6 @@ from wells.serializers import (
     WellDetailAdminSerializer,
     WellLocationSerializerV1,
     WellDrawdownSerializer)
-from wells.serializers_v2 import WellLocationSerializerV2
 from wells.permissions import WellsEditPermissions, WellsEditOrReadOnly
 
 
@@ -318,7 +317,7 @@ class WellSubmissionsListAPIView(ListAPIView):
                           record.create_date), reverse=True)
 
 
-class WellLocationListAPIView(ListAPIView):
+class WellLocationListV1APIView(ListAPIView):
     """ returns well locations for a given search
 
         get: returns a list of wells with locations only
@@ -326,6 +325,7 @@ class WellLocationListAPIView(ListAPIView):
     MAX_LOCATION_COUNT = 5000
     permission_classes = (WellsEditOrReadOnly,)
     model = Well
+    serializer_class = WellLocationSerializerV1
 
     # Allow searching on name fields, names of related companies, etc.
     filter_backends = (WellListFilterBackend, BoundingBoxFilterBackend,
@@ -335,11 +335,6 @@ class WellLocationListAPIView(ListAPIView):
 
     search_fields = ('well_tag_number', 'identification_plate_number',
                      'street_address', 'city', 'owner_full_name')
-
-    def get_serializer_class(self):
-        if self.request.version == 'v1':
-            return WellLocationSerializerV1
-        return WellLocationSerializerV2
 
     def get_queryset(self):
         """ Excludes Unpublished wells for users without edit permissions """
@@ -355,19 +350,7 @@ class WellLocationListAPIView(ListAPIView):
 
         qs = self.get_queryset()
         locations = self.filter_queryset(qs)
-
-        limit = self.request.query_params.get('limit', None)
-        offset = self.request.query_params.get('offset', None)
-
-        if limit and offset:
-            if limit > self.MAX_LOCATION_COUNT:
-                limit = self.MAX_LOCATION_COUNT
-            locations = locations[offset:limit]
-
         count = locations.count()
-
-        print(locations.query)
-
         # return an empty response if there are too many wells to display
         if count > self.MAX_LOCATION_COUNT:
             raise PermissionDenied('Too many wells to display on map. '

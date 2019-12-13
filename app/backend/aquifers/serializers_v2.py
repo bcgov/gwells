@@ -14,7 +14,7 @@
 import json
 
 from rest_framework import serializers
-from django.db.models import Sum, Max, Count
+from django.db.models import Max
 
 from aquifers import models
 
@@ -193,8 +193,7 @@ class AquiferDetailSerializerV2(serializers.ModelSerializer):
 
             _licence_dict = _licence_map[licence.licence_number]
             _licence_dict['wells'] = set(
-                [l['well_tag_number']
-                    for l in licence.well_set.all().values('well_tag_number')]
+                [l['well_tag_number'] for l in licence.well_set.all().values('well_tag_number')]
             ) | set(_licence_dict['wells'])
 
             if licence.purpose.description not in _licence_dict['usage_by_purpose']:

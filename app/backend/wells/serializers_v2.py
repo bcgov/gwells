@@ -21,10 +21,9 @@ logger = logging.getLogger(__name__)
 
 
 class WellLocationSerializerV2(serializers.ModelSerializer):
-    """ serializes well locations v2 """
+    """ serializes well locations """
 
     class Meta:
         model = Well
         fields = ("well_tag_number", "identification_plate_number",
                   "latitude", "longitude", "street_address", "city", "ems")
-

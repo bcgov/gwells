@@ -8,9 +8,11 @@ import 'leaflet-edgebuffer'
 import { tiledMapLayer } from 'esri-leaflet'
 
 import aquiferLayers from '../layers'
+import associatedWellsIcon from '../../common/assets/images/wells-associated.png'
 import emsWellsIcon from '../../common/assets/images/wells-ems.png'
 
-const LEGEND_EMS_WELLS = { layerName: 'EMS Wells in Aquifer', legend: emsWellsIcon, show: false }
+const LEGEND_ASSOCIATED_WELLS = { layerName: 'Wells - Aquifer', legend: associatedWellsIcon, show: false }
+const LEGEND_EMS_WELLS = { layerName: 'EMS Wells - Aquifer', legend: emsWellsIcon, show: false }
 
 export default {
   name: 'SingleAquiferMap',
@@ -77,9 +79,11 @@ export default {
       this.activeLayers[cadastralLayer.options.name].show = true
 
       // Add non-image tile layer for EMS wells
+      this.activeLayers.associatedWells = LEGEND_ASSOCIATED_WELLS
       this.activeLayers.emsWells = LEGEND_EMS_WELLS
+      this.activeLayers.associatedWells.show = true
       this.activeLayers.emsWells.show = true
-      this.addEmsWellsLayersControl(layersControl)
+      this.addWellsLayersControl(layersControl)
 
       this.map.addControl(this.getLegendControl())
 
@@ -100,24 +104,28 @@ export default {
       this.listenForLayerToggle()
       this.$emit('activeLayers', this.activeLayers)
     },
-    addEmsWellsLayersControl (layersControl) {
+    addWellsLayersControl (layersControl) {
       const overlaysContainer = layersControl.getContainer().querySelector('.leaflet-control-layers-overlays')
 
-      const checked = this.activeLayers.emsWells.show ? 'checked' : ''
-      const wellsLayerControlLabel = document.createElement('label')
-      wellsLayerControlLabel.innerHTML =
-      '<div>' +
-        '<input type="checkbox" class="leaflet-control-layers-selector" ' + checked + '>' +
-        '<span> EMS Wells</span>' +
-      '</div>'
-      const emsWellsCheckbox = wellsLayerControlLabel.querySelector('input')
-      emsWellsCheckbox.onchange = (e) => {
-        this.activeLayers.emsWells.show = e.currentTarget.checked
-        this.updateCanvasLayer()
-        this.$emit('activeLayers', this.activeLayers)
-      }
+      const layerNames = [ 'associatedWells', 'emsWells' ]
 
-      overlaysContainer.appendChild(wellsLayerControlLabel)
+      layerNames.forEach((name) => {
+        const checked = this.activeLayers[name].show ? 'checked' : ''
+        const wellsLayerControlLabel = document.createElement('label')
+        wellsLayerControlLabel.innerHTML =
+        '<div>' +
+          '<input type="checkbox" class="leaflet-control-layers-selector" ' + checked + '>' +
+          '<span> ' + this.activeLayers[name].layerName + '</span>' +
+        '</div>'
+        const emsWellsCheckbox = wellsLayerControlLabel.querySelector('input')
+        emsWellsCheckbox.onchange = (e) => {
+          this.activeLayers[name].show = e.currentTarget.checked
+          this.updateCanvasLayer()
+          this.$emit('activeLayers', this.activeLayers)
+        }
+
+        overlaysContainer.appendChild(wellsLayerControlLabel)
+      })
     },
     getLegendControl () {
       const self = this
@@ -177,7 +185,9 @@ export default {
       if (this.wells.length > 0 && this.geom) {
         this.canvasLayer.addLayer(this.aquiferLayer)
 
-        this.canvasLayer.addLayer(this.wellsLayer)
+        if (this.activeLayers.associatedWells.show) {
+          this.canvasLayer.addLayer(this.wellsLayer)
+        }
 
         if (this.activeLayers.emsWells.show) {
           this.canvasLayer.addLayer(this.emsWellsLayer)
@@ -238,9 +248,9 @@ export default {
         const wellCircleMarker = L.circleMarker(L.latLng(latitude, longitude), options)
         const wellTooltip = [
           `Well Tag Number: ${well.well_tag_number}`,
-          `EMS ID: ${well.ems}`,
+          well.ems ? `EMS ID: ${well.ems}` : null,
           `Address: ${well.street_address || 'N/A'}`
-        ]
+        ].filter(Boolean)
 
         wellCircleMarker.bindTooltip(wellTooltip.join('<br>'))
 
