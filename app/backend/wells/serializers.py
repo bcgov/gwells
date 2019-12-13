@@ -1060,7 +1060,6 @@ class WellLithologySerializer(serializers.ModelSerializer):
                 "lithologydescription_set",
                 "well_yield",
                 "well_yield_unit",
-                "finished_well_depth",
-                "street_address",
+                "finished_well_depth"
             )
 

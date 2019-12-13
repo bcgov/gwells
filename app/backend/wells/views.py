@@ -827,16 +827,18 @@ class WellScreens(ListAPIView):
 
 
 class WellLithology(ListAPIView):
-    """ returns lithology info for a range of wells """
+    """ returns lithology info for a range of wells or by geometry """
 
     model = Well
     serializer_class = WellLithologySerializer
     swagger_schema = None
 
+    filter_backends = (GeometryFilterBackend)
+
     def get_queryset(self):
         wells = self.request.query_params.get('wells', None)
         if not wells:
-            return []
+            return Well.objects.all()
 
         wells = wells.split(',')
 
