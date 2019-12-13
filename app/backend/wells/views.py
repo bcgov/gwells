@@ -95,7 +95,8 @@ from wells.serializers import (
     WellDetailSerializer,
     WellDetailAdminSerializer,
     WellLocationSerializer,
-    WellDrawdownSerializer)
+    WellDrawdownSerializer,
+    WellLithologySerializer)
 from wells.permissions import WellsEditPermissions, WellsEditOrReadOnly
 
 
@@ -806,6 +807,29 @@ class WellScreens(ListAPIView):
 
     model = Well
     serializer_class = WellDrawdownSerializer
+    swagger_schema = None
+
+    def get_queryset(self):
+        wells = self.request.query_params.get('wells', None)
+        if not wells:
+            return []
+
+        wells = wells.split(',')
+
+        for w in wells:
+            if not w.isnumeric():
+                raise ValidationError(detail='Invalid well')
+
+        wells = map(int, wells)
+
+        return Well.objects.filter(well_tag_number__in=wells)
+
+
+class WellLithology(ListAPIView):
+    """ returns lithology info for a range of wells """
+
+    model = Well
+    serializer_class = WellLithologySerializer
     swagger_schema = None
 
     def get_queryset(self):

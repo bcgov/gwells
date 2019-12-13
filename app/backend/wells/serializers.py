@@ -1047,3 +1047,20 @@ class WellDrawdownSerializer(serializers.ModelSerializer):
         if instance.aquifer and instance.aquifer.subtype:
             details['aquifer_hydraulically_connected'] = instance.aquifer.subtype.code in HYDRAULIC_SUBTYPES
         return details
+
+
+class WellLithologySerializer(serializers.ModelSerializer):
+    lithologydescription_set = LithologyDescriptionSummarySerializer(many=True)
+
+    class Meta:
+            model = Well
+            fields = (
+                "well_tag_number",
+                "static_water_level",
+                "lithologydescription_set",
+                "well_yield",
+                "well_yield_unit",
+                "finished_well_depth",
+                "street_address",
+            )
+
