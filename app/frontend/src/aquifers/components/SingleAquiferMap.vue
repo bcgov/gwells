@@ -5,6 +5,7 @@
 <script>
 import L from 'leaflet'
 import 'leaflet-edgebuffer'
+import 'leaflet-gesture-handling'
 import { filter } from 'lodash'
 import { tiledMapLayer } from 'esri-leaflet'
 
@@ -45,6 +46,7 @@ export default {
     initMap () {
       // Create map, with default centered and zoomed to show entire BC.
       this.map = L.map(this.$el, {
+        gestureHandling: true,
         preferCanvas: true,
         minZoom: 4,
         maxZoom: 17
@@ -139,6 +141,7 @@ export default {
 </script>
 <style>
 @import "~leaflet/dist/leaflet.css";
+@import "~leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
 
 .map {
   height: 500px;

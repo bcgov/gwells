@@ -21,7 +21,7 @@
       :max-bounds="maxBounds"
       :zoom="zoom"
       :center="center"
-      :options="{ attributionControl: false, preferCanvas: true }"
+      :options="{ attributionControl: false, preferCanvas: true, gestureHandling: true }"
       @update:zoom="zoomUpdated"
       @update:bounds="boundsUpdated"
       @update:center="centerUpdated"
@@ -131,6 +131,7 @@
 import debounce from 'lodash.debounce'
 
 import L from 'leaflet'
+import 'leaflet-gesture-handling'
 import { tiledMapLayer } from 'esri-leaflet'
 import {
   LCircleMarker,
@@ -373,6 +374,7 @@ export default {
 </script>
 <style lang="scss">
 @import "~leaflet/dist/leaflet.css";
+@import "~leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
 
 #map {
   height: 600px;
