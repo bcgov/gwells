@@ -17,7 +17,7 @@ const LEGEND_EMS_WELLS = { layerName: 'EMS Wells - Aquifer', legend: emsWellsIco
 
 export default {
   name: 'SingleAquiferMap',
-  props: ['aquifer-id', 'geom', 'wells'],
+  props: ['aquifer-id', 'geom', 'wells', 'loading'],
   data () {
     return {
       map: null,
@@ -184,7 +184,7 @@ export default {
 
       this.addWellsToCanvasLayer()
 
-      if (this.wells.length > 0 && this.geom) {
+      if (this.loading) {
         this.canvasLayer.addLayer(this.aquiferLayer)
 
         if (this.activeLayers.associatedWells.show) {
