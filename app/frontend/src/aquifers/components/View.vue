@@ -116,7 +116,7 @@
             <strong class="pl-1">Loading...</strong>
           </div>
 
-          <single-aquifer-map :aquifer-id="id" :geom="record.geom" :wells="wells" :key="mapKey" loading="loadingMap"/>
+          <single-aquifer-map :aquifer-id="id" :geom="record.geom" :wells="wells" :key="mapKey" :loading="loadingMap"/>
         </b-col>
       </b-row>
 

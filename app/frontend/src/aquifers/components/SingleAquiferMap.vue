@@ -89,7 +89,6 @@ export default {
 
       this.map.addControl(this.getLegendControl())
 
-      this.$emit('activeLayers', this.activeLayers)
 
       this.canvasRenderer = L.canvas({ padding: 0.1 })
 
@@ -104,6 +103,7 @@ export default {
       this.listenForLayerAdd()
       this.listenForLayerRemove()
       this.listenForLayerToggle()
+
       this.$emit('activeLayers', this.activeLayers)
     },
     addWellsLayersControl (layersControl) {
@@ -121,6 +121,7 @@ export default {
         '</div>'
         const emsWellsCheckbox = wellsLayerControlLabel.querySelector('input')
         emsWellsCheckbox.onchange = (e) => {
+          const foo = this.activeLayers;
           this.activeLayers[name].show = e.currentTarget.checked
           this.updateCanvasLayer()
           this.$emit('activeLayers', this.activeLayers)
@@ -184,7 +185,7 @@ export default {
 
       this.addWellsToCanvasLayer()
 
-      if (this.loading) {
+      if (!this.loading) {
         this.canvasLayer.addLayer(this.aquiferLayer)
 
         if (this.activeLayers.associatedWells.show) {
@@ -279,6 +280,9 @@ export default {
       if (oldWells || newWells) {
         this.updateCanvasLayer()
       }
+    },
+    loading () {
+      this.updateCanvasLayer()
     }
   }
 }
