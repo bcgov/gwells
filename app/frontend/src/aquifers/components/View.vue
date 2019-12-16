@@ -482,6 +482,7 @@ export default {
         { code: 'W', name: 'Water budget' },
         { key: 'water-quality', name: 'Water quality information' },
         { key: 'aquifer-connected', name: 'Hydraulically connected (screening level)' },
+        { code: 'G', name: 'Groundwater Surface Water Interactions' },
         { code: 'I', name: 'Other information' }
       ],
       wells: [],
