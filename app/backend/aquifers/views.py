@@ -101,7 +101,7 @@ class AquiferRetrieveUpdateAPIView(RevisionMixin, AuditUpdateMixin, RetrieveUpda
         return serializers_v2.AquiferDetailSerializerV2
 
 
-def _aquifer_qs(query):
+def _aquifer_qs(request):
     """
     We have a custom search which does a case insensitive substring of aquifer_name,
     exact match on aquifer_id, and also looks at an array of provided resources attachments
@@ -109,15 +109,16 @@ def _aquifer_qs(query):
     DjangoFilterBackend's querystring array syntax, preferring ?a=1,2 rather than ?a[]=1&a[]=2,
     so again we need a custom back-end implementation.
 
-    @param query - the dict containing querystring arguments.
+    @param request - the request object
     """
+    query = request.GET
     qs = Aquifer.objects.all()
     resources__section__code = query.get("resources__section__code")
     hydraulic = query.get('hydraulically_connected')
     search = query.get('search')
 
     match_any = True
-    if self.request.version == 'v2':
+    if request.version == 'v2':
         # V2 changes to `and`-ing the filters by default unless "match_any" is explicitly set to 'true'
         match_any = query.get('match_any') == 'true'
 
@@ -190,7 +191,7 @@ class AquiferListCreateAPIView(RevisionMixin, AuditCreateMixin, ListCreateAPIVie
             return serializers_v2.AquiferDetailSerializerV2
 
     def get_queryset(self):
-        return _aquifer_qs(self.request.GET).values(
+        return _aquifer_qs(self.request).values(
             'aquifer_id',
             'aquifer_name',
             'location_description',
@@ -205,25 +206,6 @@ class AquiferListCreateAPIView(RevisionMixin, AuditCreateMixin, ListCreateAPIVie
             'mapping_year',
             'litho_stratographic_unit',
         )
-
-# TODO: delete me. This is a faster but uglier version of the view :)
-@api_view(['GET'])
-def list_view(request, **kwargs):
-    return HttpResponse(json.dumps(list(_aquifer_qs(
-        request.GET).values(
-            'aquifer_id',
-            'aquifer_name',
-            'location_description',
-
-            'demand__description',
-            'material__description',
-            'subtype__description',
-            'vulnerability__description',
-            'productivity__description',
-
-            # 'area',
-            'mapping_year',
-    ))))
 
 
 class AquiferResourceSectionListAPIView(ListAPIView):
@@ -613,13 +595,14 @@ def csv_export(request, **kwargs):
     because DRF doesn't have native CSV support.
     """
 
+    request.version = kwargs['version']
     # Create the HttpResponse object with the appropriate CSV header.
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="aquifers.csv"'
     writer = csv.writer(response)
     writer.writerow(AQUIFER_EXPORT_FIELDS)
 
-    queryset = _aquifer_qs(request.GET)
+    queryset = _aquifer_qs(request)
     for aquifer in queryset:
         writer.writerow([getattr(aquifer, f) for f in AQUIFER_EXPORT_FIELDS])
 
@@ -631,10 +614,11 @@ def xlsx_export(request, **kwargs):
     Export aquifers as XLSX.
     """
 
+    request.version = kwargs['version']
     wb = openpyxl.Workbook()
     ws = wb.active
     ws.append(AQUIFER_EXPORT_FIELDS)
-    queryset = _aquifer_qs(request.GET)
+    queryset = _aquifer_qs(request)
     for aquifer in queryset:
         ws.append([str(getattr(aquifer, f)) for f in AQUIFER_EXPORT_FIELDS])
     response = HttpResponse(content=save_virtual_workbook(
