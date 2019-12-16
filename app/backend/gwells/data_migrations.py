@@ -32,12 +32,13 @@ def border_data(apps, schema_editor):
     #   --srid=4269 --mapping --multi
     Border = apps.get_model('gwells', 'Border')
 
+    tmp_path = '/tmp/BCGW_ABMS_PROV-migrations/'
+
     zip_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'migrations/BCGW_ABMS_PROV.zip')
     with ZipFile(zip_path, 'r') as zipObj:
-        zipObj.extractall(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'tmp'))
+        zipObj.extractall(tmp_path)
 
-    border_shp = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                              'tmp/ABMS_PROVINCE_SP/ABMS_PROV_polygon.shp')
+    border_shp = os.path.join(tmp_path, 'ABMS_PROVINCE_SP/ABMS_PROV_polygon.shp')
     if not os.path.exists(border_shp):
         raise FileNotFoundError('file not found: {}'.format(border_shp))
 
@@ -66,7 +67,7 @@ def border_data(apps, schema_editor):
     lm.save(strict=True, verbose=True)
 
     # Now clean up
-    shutil.rmtree(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'tmp'))
+    shutil.rmtree(tmp_path)
 
 
 def reverse_border_data(apps, schema_editor):

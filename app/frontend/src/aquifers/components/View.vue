@@ -32,10 +32,6 @@
       Record successfully updated.
     </b-alert>
     <b-container fluid>
-      <b-row v-if="loading" class="border-bottom mb-3 pb-2">
-        <b-col><h5>Loading...</h5></b-col>
-      </b-row>
-
       <b-row v-if="editMode && !loading" class="border-bottom mb-3 pb-2">
         <b-col><h4>Aquifer {{record.aquifer_id}} Summary - Edit</h4></b-col>
       </b-row>
@@ -114,8 +110,13 @@
             </b-col>
           </b-row>
         </b-col>
-        <b-col cols="12" md="12" lg="7" class="p-0">
-          <single-aquifer-map v-bind:geom="record.geom" :key="mapKey"/>
+        <b-col id="map-container" cols="12" md="12" lg="7" class="p-0">
+          <div id="map-loading-spinner" v-if="loadingMap">
+            <div class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></div>
+            <strong class="pl-1">Loading...</strong>
+          </div>
+
+          <single-aquifer-map :aquifer-id="id" :geom="record.geom" :wells="wells" :key="mapKey" loading="loadingMap"/>
         </b-col>
       </b-row>
 
@@ -146,6 +147,7 @@
           <aquifer-documents :files="aquiferFiles"
             :editMode="editMode"
             :id="this.id"
+            :loading="loadingFiles"
             v-on:fetchFiles="fetchFiles">
           </aquifer-documents>
         </b-col>
@@ -296,6 +298,23 @@ a {
   text-decoration-skip-ink: none;
 }
 
+#map-container {
+  position: relative;
+}
+
+#map-loading-spinner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  background-color: rgba(255, 255, 255, 0.6);
+}
+
 .card-container .card-body {
   padding: 0;
   margin: 0;
@@ -410,12 +429,11 @@ import Documents from './Documents.vue'
 import SingleAquiferMap from './SingleAquiferMap.vue'
 import ChangeHistory from '@/common/components/ChangeHistory.vue'
 import { mapActions, mapGetters, mapState } from 'vuex'
-import { sumBy, orderBy, groupBy } from 'lodash'
+import { sumBy, orderBy, groupBy, range } from 'lodash'
 import PieChart from './PieChart.vue'
 import * as Sentry from '@sentry/browser'
 
 export default {
-
   components: {
     'api-error': APIErrorMessage,
     'aquifer-form': AquiferForm,
@@ -428,7 +446,15 @@ export default {
     'edit': Boolean
   },
   created () {
-    this.fetch()
+    this.loadingMap = true
+
+    Promise.all([
+      this.fetch(),
+      this.fetchWells()
+    ]).then(() => {
+      this.loadingMap = false
+    })
+
     this.fetchFiles()
   },
   data () {
@@ -437,6 +463,8 @@ export default {
       error: undefined,
       fieldErrors: {},
       loading: false,
+      loadingFiles: false,
+      loadingMap: false,
       record: {},
       form: {},
       licence_details: {
@@ -509,16 +537,6 @@ export default {
       ApiService.query(`aquifers/${this.id}/edit`)
         .then((response) => {
           this.form = response.data
-        }).catch((error) => {
-          console.error(error)
-        })
-    },
-    fetchWells (id = this.id) {
-      ApiService.query(`aquifers/${id}/details`)
-        .then((response) => {
-          this.wells = response.data
-        }).catch((error) => {
-          console.error(error)
         })
     },
     bySection (resources, section) {
@@ -592,7 +610,7 @@ export default {
       window.print()
     },
     fetch (id = this.id) {
-      ApiService.query(`aquifers/${id}`)
+      return ApiService.query(`aquifers/${id}`)
         .then((response) => {
           // force the map to update.
           this.record = response.data
@@ -615,14 +633,41 @@ export default {
             // Show the "No information available." message when there are no obs wells to show
             this.noObsWells = this.activeObsWells.length === 0 && inactiveObsWells.length === 0
           })
-        }).catch((error) => {
-          console.error(error)
         })
     },
     fetchFiles (id = this.id) {
-      ApiService.query(`aquifers/${id}/files`)
+      this.loadingFiles = true
+      return ApiService.query(`aquifers/${id}/files`)
         .then((response) => {
           this.aquiferFiles = response.data
+          this.loadingFiles = false
+        })
+    },
+    fetchWells (id = this.id) {
+      // ?aquifer=608&ems_has_value=true&limit=10&match_any=false&offset=10&ordering=-well_tag_number
+      const maxResults = 100
+      const params = { aquifer: id, limit: maxResults, ems_has_value: true }
+      return ApiService.query('wells', params)
+        .then((response) => {
+          const total = response.data.count
+
+          const initialPromise = Promise.resolve(response.data.results || [])
+          let promise = initialPromise
+
+          if (total > maxResults) {
+            const numFetches = Math.ceil(total / maxResults)
+            promise = range(1, numFetches).reduce((previousPromise, pageNum) => {
+              return previousPromise.then((results) => {
+                return ApiService.query('wells', { ...params, offset: pageNum * maxResults }).then((response2) => {
+                  return results.concat(response2.data.results)
+                })
+              })
+            }, initialPromise)
+          }
+
+          return promise
+        }).then((wells) => {
+          this.wells = wells || []
         })
     },
     getObservationWellLink (wellNumber) {
@@ -640,8 +685,6 @@ export default {
               owell.hasLevelAnalysis = category.toUpperCase() !== 'N/A'
               owell.waterLevels = category
             }
-          }).catch((e) => {
-            console.error(e)
           })
         })
       )

@@ -68,6 +68,9 @@ describe('View Component', () => {
         },
         fetchResourceSections () {
           this.aquifer_resource_sections = []
+        },
+        fetchWells () {
+          this.wells = []
         }
       }
     })
@@ -96,6 +99,9 @@ describe('View Component', () => {
           },
           fetchResourceSections () {
             this.aquifer_resource_sections = []
+          },
+          fetchWells () {
+            this.wells = []
           }
         },
         propsData: { edit: true }
@@ -123,6 +129,9 @@ describe('View Component', () => {
           },
           fetchResourceSections () {
             this.aquifer_resource_sections = []
+          },
+          fetchWells () {
+            this.wells = []
           }
         },
         propsData: { edit: true }
@@ -150,6 +159,9 @@ describe('View Component', () => {
             },
             fetchResourceSections () {
               this.aquifer_resource_sections = []
+            },
+            fetchWells () {
+              this.wells = []
             },
             navigateToView () {}
           }
@@ -181,6 +193,9 @@ describe('View Component', () => {
             fetchResourceSections () {
               this.aquifer_resource_sections = []
             },
+            fetchWells () {
+              this.wells = []
+            },
             navigateToView () {}
           },
           propsData: { edit: true }
@@ -203,6 +218,9 @@ describe('View Component', () => {
             },
             fetchResourceSections () {
               this.aquifer_resource_sections = []
+            },
+            fetchWells () {
+              this.wells = []
             },
             navigateToView () {}
           },
