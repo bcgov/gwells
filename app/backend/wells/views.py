@@ -330,7 +330,7 @@ class WellLocationListAPIView(ListAPIView):
 
     # Allow searching on name fields, names of related companies, etc.
     filter_backends = (WellListFilterBackend, BoundingBoxFilterBackend,
-                       filters.SearchFilter, WellListOrderingFilter)
+                       filters.SearchFilter, WellListOrderingFilter, GeometryFilterBackend)
     ordering = ('well_tag_number',)
     pagination_class = None
 
