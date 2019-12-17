@@ -259,6 +259,28 @@
     }
   },
   {
+    "model": "aquifers.AquiferResource",
+    "fields": {
+        "create_user": "DATALOAD_USER",
+        "update_user": "DATALOAD_USER",
+        "name": " Koksilah River Watershed: Preliminary Assessment of Hydraulic Connection",
+        "aquifer_id": 1901,
+        "url": "https://a100.gov.bc.ca/pub/acat/public/viewReport.do?reportId=57126",
+        "section_id": "G"
+    }
+  },
+  {
+    "model": "aquifers.AquiferResource",
+    "fields": {
+        "create_user": "DATALOAD_USER",
+        "update_user": "DATALOAD_USER",
+        "name": "Mission Creek Groundwater-Surface water Interactions project: Analysis of Discharge and Water level record",
+        "aquifer_id": 1901,
+        "url": "https://a100.gov.bc.ca/pub/acat/public/viewReport.do?reportId=55983",
+        "section_id": "G"
+    }
+  },
+  {
     "model": "aquifers.waterrightspurpose",
     "pk": "00A",
     "fields": {

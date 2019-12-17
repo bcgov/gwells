@@ -28,11 +28,6 @@ insertGWSWInteractionsSection = """
     )
 """
 
-deleteGWSWInteractionsSection = [
-    "DELETE FROM aquifers_aquiferresource WHERE aquifer_resource_section_code = 'G';"
-    "DELETE FROM aquifer_resource_section_code WHERE aquifer_resource_section_code = 'G';"
-]
-
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -42,6 +37,5 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RunSQL(
             [insertGWSWInteractionsSection],
-            deleteGWSWInteractionsSection
         )
     ]

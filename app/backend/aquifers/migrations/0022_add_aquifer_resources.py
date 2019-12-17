@@ -13,11 +13,12 @@ from gwells.codes import CodeFixture
 TESTING = len(sys.argv) > 1 and sys.argv[1] == 'test'
 
 
-def aquifer_resources():
-    fixture = '0010_aquifer_resources.json'
-    fixture_path = os.path.join(os.path.dirname(
-        os.path.realpath(__file__)), fixture)
-    return CodeFixture(fixture_path)
+# NOTE: this is unused. It must have been part of an old migration to load data which is no longer needed.
+# def aquifer_resources():
+#     fixture = '0010_aquifer_resources.json'
+#     fixture_path = os.path.join(os.path.dirname(
+#         os.path.realpath(__file__)), fixture)
+#     return CodeFixture(fixture_path)
 
 
 # def generate_aquifer_resource_reverse(apps, schema_editor):
