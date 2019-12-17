@@ -6317,7 +6317,6 @@
   "model": "aquifers.AquiferResource",
   "fields": {
       "create_user": "DATALOAD_USER",
-      "create_user": "DATALOAD_USER",
       "update_user": "DATALOAD_USER",
       "aquifer_id": 1094,
       "url": "https://services6.arcgis.com/ubm4tcTYICKBpist/arcgis/rest/services/Aquifer_180613_NA/FeatureServer/0/287/attachments/287",

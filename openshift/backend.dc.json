@@ -20,6 +20,26 @@
             "name": "HOST",
             "required": false,
             "value": ""
+        },
+        {
+            "name": "CPU_REQUEST",
+            "required": false,
+            "value": "100m"
+        },
+        {
+            "name": "CPU_LIMIT",
+            "required": false,
+            "value": "500m"
+        },
+        {
+            "name": "MEMORY_REQUEST",
+            "required": false,
+            "value": "750Mi"
+        },
+        {
+            "name": "MEMORY_LIMIT",
+            "required": false,
+            "value": "1Gi"
         }
     ],
     "objects": [
@@ -717,12 +737,12 @@
                                 ],
                                 "resources": {
                                     "limits": {
-                                        "cpu": "300m",
-                                        "memory": "768Mi"
+                                        "cpu": "${CPU_LIMIT}",
+                                        "memory": "${MEMORY_LIMIT}"
                                     },
                                     "requests": {
-                                        "cpu": "100m",
-                                        "memory": "768Mi"
+                                        "cpu": "${CPU_REQUEST}",
+                                        "memory": "${MEMORY_REQUEST}"
                                     }
                                 },
                                 "livenessProbe": {

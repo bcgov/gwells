@@ -28,8 +28,6 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
     <div
       class="container-fluid"
     >
-      <!---->
-       
       <div
         class="row border-bottom mb-3 pb-2"
       >
@@ -88,8 +86,6 @@ exports[`View Component View mode matches the snapshot 1`] = `
     <div
       class="container-fluid"
     >
-      <!---->
-       
       <div
         class="row border-bottom mb-3 pb-2"
       >

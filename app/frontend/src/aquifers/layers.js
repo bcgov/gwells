@@ -17,11 +17,11 @@ const aquiferLayers = {
     legend: CadastralLegend,
     overlay: true
   }),
-  'Ecocat - Water related reports': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/ows?', {
+  'EcoCat - Water related reports': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/ows?', {
     format: 'image/png',
     layers: 'pub:WHSE_FISH.ACAT_REPORT_POINT_PUB_SVW',
     transparent: true,
-    name: 'Ecocat - Water related reports',
+    name: 'EcoCat - Water related reports',
     legend: EcocatWaterLegend,
     overlay: true
   }),

@@ -1229,6 +1229,10 @@ pipeline {
                             "NAME_SUFFIX=-${prodSuffix}",
                             "ENV_NAME=${prodSuffix}",
                             "HOST=${prodHost}",
+                            "CPU_REQUEST=1",
+                            "CPU_LIMIT=2",
+                            "MEMORY_REQUEST=1Gi",
+                            "MEMORY_LIMIT=2Gi"
                         )
 
                         // some objects need to be copied from a base secret or configmap

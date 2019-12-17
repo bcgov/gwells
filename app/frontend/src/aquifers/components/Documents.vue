@@ -83,11 +83,14 @@ export default {
     editMode: {
       type: Boolean,
       default: false
+    },
+    loading: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
     return {
-      loading: false,
       error: null,
       file: '',
       fileType: ''

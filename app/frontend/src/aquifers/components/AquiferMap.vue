@@ -4,11 +4,12 @@
 
 <script>
 import L from 'leaflet'
+import 'leaflet-gesture-handling'
 import { tiledMapLayer } from 'esri-leaflet'
-import { filter } from 'lodash'
 import { GeoSearchControl, EsriProvider } from 'leaflet-geosearch'
 import 'leaflet-lasso'
 import 'leaflet-fullscreen/dist/Leaflet.fullscreen.min.js'
+import { filter } from 'lodash'
 
 import aquiferLayers from '../layers'
 
@@ -90,6 +91,7 @@ export default {
     initMap () {
       this.map = L.map(this.$el, {
         preferCanvas: true,
+        gestureHandling: true,
         minZoom: 4,
         maxZoom: 17
       }).setView([54.5, -126.5], 5)
@@ -297,9 +299,11 @@ export default {
 }
 </script>
 <style>
+@import "~leaflet/dist/leaflet.css";
 @import '~leaflet-geosearch/assets/css/leaflet.css';
 @import '~leaflet-fullscreen/dist/leaflet.fullscreen.css';
-@import "~leaflet/dist/leaflet.css";
+@import "~leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
+
 .map {
   width: 100%;
   height: 500px;
