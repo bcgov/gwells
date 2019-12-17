@@ -301,9 +301,19 @@ CORS_ALLOW_METHODS = [
     'GET',
     'OPTIONS'
 ]
-
+CORS_ALLOW_HEADERS = (
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+    'x-ijt'
+)
 if DEBUG:
-    CORS_ORIGIN_WHITELIST = ('localhost:8080', '127.0.0.1:8080', 'localhost:8000', '127.0.0.1:8000')
     CORS_ALLOW_METHODS = [
         'DELETE',
         'GET',
@@ -312,18 +322,7 @@ if DEBUG:
         'POST',
         'PUT',
     ]
-    CORS_ALLOW_HEADERS = (
-        'accept',
-        'accept-encoding',
-        'authorization',
-        'content-type',
-        'dnt',
-        'origin',
-        'user-agent',
-        'x-csrftoken',
-        'x-requested-with',
-        'x-ijt'
-    )
+
 
 ADD_REVERSION_ADMIN = True
 
