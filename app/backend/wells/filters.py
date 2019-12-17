@@ -17,7 +17,7 @@ from collections import OrderedDict
 from django import forms
 from django.core.exceptions import FieldDoesNotExist
 from django.http import HttpRequest, QueryDict
-from django.contrib.gis.geos import GEOSException, Polygon
+from django.contrib.gis.geos import GEOSException, Polygon, GEOSGeometry
 from django.db.models import Max, Min, Q, QuerySet
 from django_filters import rest_framework as filters
 from django_filters.widgets import BooleanWidget
@@ -78,6 +78,26 @@ class BoundingBoxFilterBackend(BaseFilterBackend):
                 pass
             else:
                 queryset = queryset.filter(geom__bboverlaps=bbox)
+
+        return queryset
+
+
+class GeometryFilterBackend(BaseFilterBackend):
+    """
+    Filter that allows geographic filtering on a geometry/shape.
+    """
+
+    def filter_queryset(self, request, queryset, view):
+        within = request.query_params.get('within', None)
+        srid = request.query_params.get('srid', 4326)
+
+        if within:
+            try:
+                shape = GEOSGeometry(within, srid=int(srid))
+            except (ValueError, GEOSException):
+                pass
+            else:
+                queryset = queryset.filter(geom__bboverlaps=shape)
 
         return queryset
 
