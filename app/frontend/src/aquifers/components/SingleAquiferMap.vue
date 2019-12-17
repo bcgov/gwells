@@ -9,11 +9,11 @@ import 'leaflet-gesture-handling'
 import { tiledMapLayer } from 'esri-leaflet'
 
 import aquiferLayers from '../layers'
-import associatedWellsIcon from '../../common/assets/images/wells-associated.png'
-import emsWellsIcon from '../../common/assets/images/wells-ems.png'
+import associatedWellsIcon from '../../common/assets/images/wells-associated.svg'
+import emsWellsIcon from '../../common/assets/images/wells-ems.svg'
 
-const LEGEND_ASSOCIATED_WELLS = { layerName: 'Wells - Aquifer', legend: associatedWellsIcon, show: false }
-const LEGEND_EMS_WELLS = { layerName: 'EMS Wells - Aquifer', legend: emsWellsIcon, show: false }
+const LEGEND_ASSOCIATED_WELLS = { layerName: 'Wells associated to Aquifer', legend: associatedWellsIcon, show: false }
+const LEGEND_EMS_WELLS = { layerName: 'EMS Wells associated to Aquifer', legend: emsWellsIcon, show: false }
 
 export default {
   name: 'SingleAquiferMap',
@@ -84,7 +84,6 @@ export default {
       this.activeLayers.associatedWells = LEGEND_ASSOCIATED_WELLS
       this.activeLayers.emsWells = LEGEND_EMS_WELLS
       this.activeLayers.associatedWells.show = true
-      this.activeLayers.emsWells.show = true
       this.addWellsLayersControl(layersControl)
 
       this.map.addControl(this.getLegendControl())
@@ -219,7 +218,7 @@ export default {
         weight: 1,
         fillColor: '#0162fe',
         fillOpacity: 1,
-        radius: 6,
+        radius: 3,
         renderer: this.canvasRenderer
       }
 
@@ -228,7 +227,7 @@ export default {
         weight: 1,
         fillColor: '#0ca287',
         fillOpacity: 1,
-        radius: 6,
+        radius: 3,
         renderer: this.canvasRenderer
       }
 
