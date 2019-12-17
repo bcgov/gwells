@@ -47,4 +47,9 @@ export default {
       display: none!important;
     }
   }
+
+  // remove cursor CSS from bootstrap tables
+  table.b-table tr {
+    cursor: default !important;
+  }
 </style>

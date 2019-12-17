@@ -155,7 +155,10 @@
           <h5 class="mt-3 border-bottom pb-4 main-title">Licensing Information</h5>
           <div>
             <p>
-              The licensing summaries should be considered estimates. Due to complexities in the structure of the licensing data, reported values should be confirmed through the e-licensing portal.
+              The licensing summaries should be considered estimates. Due to complexities in the structure
+              of the licensing data, reported values should be confirmed through the
+              <a href="https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&amp;PosseObjectDef=o_ATIS_DocumentSearch&amp;PosseMenuName=WS_Main" target="_blank" class="d-print-url">
+                e&#8209;licensing portal</a>.
             </p>
           </div>
           <ul class="ml-0 mr-0 mt-4 mb-0 p-0 aquifer-information-list">
@@ -182,16 +185,27 @@
               </b-col>
             </b-row>
           </div>
-          <b-table striped hover :items="licence_details.wells_by_licence"></b-table>
+          <b-table striped :items="licence_details.wells_by_licence">
+            <template slot="licence_number" slot-scope="row">
+              <a :href="`https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&amp;PosseObjectDef=o_ATIS_DocumentSearch&amp;PosseMenuName=WS_Main&Criteria_LicenceNumber=${row.item.licence_number}`" target="_blank">
+                {{ row.item.licence_number }}
+              </a>
+            </template>
+          </b-table>
           <p><i v-if="licence_details.licences_updated && licence_details.licences_updated.update_date__max">Licence info last updated {{ licence_details.licences_updated.update_date__max|formatDate }}</i></p>
           <p>
-            Licensing information is obtained from the <a href="https://catalogue.data.gov.bc.ca/dataset/water-rights-licences-public" @click="handleOutboundLinkClicks('https://catalogue.data.gov.bc.ca/dataset/water-rights-licences-public')" target="_blank">Water Rights Licence - Public data layer</a>.
+            Licensing information is obtained from
+            the <a href="https://catalogue.data.gov.bc.ca/dataset/water-rights-licences-public" @click="handleOutboundLinkClicks('https://catalogue.data.gov.bc.ca/dataset/water-rights-licences-public')" target="_blank" class="d-print-url">
+              Water Rights Licence - Public data layer
+            </a>.
           </p>
           <p>
             Unique licenses are counted once for each aquifer that they are associated with.
           </p>
           <p>
-            The total licensed volume is counted once for each licence (the total volume may be shared between wells if there are multiple wells in a licence). In cases where specific volumes are licensed for multiple purposes, individual volumes are summed.
+            The total licensed volume is counted once for each licence (the total volume may
+            be shared between wells if there are multiple wells in a licence). In cases where
+            specific volumes are licensed for multiple purposes, individual volumes are summed.
           </p>
         </b-col>
         <b-col cols="12" xl="4" lg="6" class="knowledge-indicators">
@@ -206,12 +220,12 @@
                     <h6 class="border-bottom">Active</h6>
                     <ul class="p-0 m-0">
                       <li v-for="owell in activeObsWells" :key="owell.observation_well_number" :data-water-level="owell.waterLevels">
-                        <a :href="getObservationWellLink(owell.observation_well_number)" target="_blank">
+                        <a :href="getObservationWellLink(owell.observation_well_number)" target="_blank" class="d-print-url">
                           {{ owell.observation_well_number }}
                         </a>
                         <span v-if="owell.waterLevels">
                           Water Level Analysis:
-                          <a :href="owell.hasLevelAnalysis ? 'http://www.env.gov.bc.ca/soe/indicators/water/groundwater-levels.html' : false" target="_blank">
+                          <a :href="owell.hasLevelAnalysis ? 'http://www.env.gov.bc.ca/soe/indicators/water/groundwater-levels.html' : false" target="_blank" class="d-print-url">
                             {{ owell.waterLevels }}
                           </a>
                         </span>
@@ -222,12 +236,12 @@
                     <h6 class="border-bottom mt-2">Inactive<br><small>(data may not be available)</small></h6>
                     <ul class="p-0 m-0">
                       <li v-for="owell in inactiveObsWellsWithWaterLevel" :key="owell.observation_well_number" :data-water-level="owell.waterLevels">
-                        <a :href="getObservationWellLink(owell.observation_well_number)" target="_blank">
+                        <a :href="getObservationWellLink(owell.observation_well_number)" target="_blank" class="d-print-url">
                           {{ owell.observation_well_number }}
                         </a>
                         <div v-if="owell.waterLevels">
                           Water Level Analysis:
-                          <a :href="owell.hasLevelAnalysis ? 'http://www.env.gov.bc.ca/soe/indicators/water/groundwater-levels.html' : false" target="_blank">
+                          <a :href="owell.hasLevelAnalysis ? 'http://www.env.gov.bc.ca/soe/indicators/water/groundwater-levels.html' : false" target="_blank" class="d-print-url">
                             {{ owell.waterLevels }}
                           </a>
                         </div>
@@ -268,7 +282,7 @@
                 <dt class="text-right">{{ section.name }}</dt>
                 <dd class="m-0">
                   <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
-                    <li><a :href="resource.url" @click="handleExternalResourceClicks" target="_blank">{{ resource.name }}</a></li>
+                    <li><a :href="resource.url" @click="handleExternalResourceClicks" target="_blank" class="d-print-url">{{ resource.name }}</a></li>
                   </ul>
                   <p class="m-0" v-if="!bySection(record.resources, section).length">No information available.</p>
                 </dd>
@@ -391,8 +405,13 @@ a {
 }
 
 @media print {
-  .aquifer-details a::after{
+  a:not(.d-print-url) {
+    text-decoration: none !important;
+  }
+
+  a.d-print-url[href]::after {
     content: " (" attr(href) ") ";
+    word-break: break-all;
   }
 
   .aquifer-information-list dt {
