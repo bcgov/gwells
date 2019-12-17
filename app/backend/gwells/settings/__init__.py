@@ -305,6 +305,7 @@ CORS_ALLOW_METHODS = [
     'GET',
     'OPTIONS'
 ]
+CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_HEADERS = (
     'accept',
     'accept-encoding',
