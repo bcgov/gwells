@@ -17,6 +17,10 @@ import logging
 import sys
 import time
 
+import geojson
+from geojson import Feature, FeatureCollection, Point
+
+from django.core.serializers import serialize
 from django.db.models import Prefetch
 from django.http import (
     FileResponse, Http404, HttpResponse, HttpResponseNotFound,
@@ -24,7 +28,8 @@ from django.http import (
 from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView
 from django_filters import rest_framework as restfilters
-from django.db.models import Q
+from django.db.models import Q, F, Func, FloatField, TextField
+from django.db.models.functions import Cast
 from django_filters import rest_framework as restfilters
 from django.db import connection
 import requests
@@ -340,10 +345,11 @@ class WellLocationListAPIView(ListAPIView):
 
     def get_queryset(self):
         """ Excludes Unpublished wells for users without edit permissions """
-        if self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
-            qs = Well.objects.all()
-        else:
-            qs = Well.objects.all().exclude(well_publication_status='Unpublished')
+
+        qs = Well.objects.all()
+
+        if not self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
+            qs = qs.exclude(well_publication_status='Unpublished')
 
         return qs
 
@@ -361,7 +367,37 @@ class WellLocationListAPIView(ListAPIView):
         if count == 0:
             raise NotFound("No well records could be found.")
 
-        return super().get(request)
+        geojson_requested = self.request.query_params.get('geojson') == 'true'
+
+        # if geojson requested, create a query that returns each well's geometry as GeoJSON
+        # so that we can easily create a FeatureCollection.
+        # This might be more performant in the database using json_agg and ST_AsGeoJSON
+        # vs creating geojson Features here in Python.
+        if geojson_requested:
+            locations = locations.annotate(
+                geometry=Cast(Func('geom', function='ST_AsGeoJSON'), output_field=TextField())
+            ).values("well_tag_number", "identification_plate_number", "geometry",
+                     "street_address", "city")
+
+            # create a group of features
+            features = [
+                Feature(geometry=geojson.loads(x.pop('geometry')), properties=dict(x)) for x in locations
+            ]
+
+            return HttpResponse(geojson.dumps(FeatureCollection(features)))
+
+        # if geojson was not requested, create lat and long out of the geom field
+        # and return a simple JSON response.
+        else:
+            locations = locations \
+                .annotate(
+                    latitude=Cast(Func('geom', function='ST_Y'), output_field=FloatField()),
+                    longitude=Cast(Func('geom', function='ST_X'), output_field=FloatField())
+                ) \
+                .values("well_tag_number", "identification_plate_number", "latitude", "longitude",
+                        "street_address", "city")
+
+        return Response(locations)
 
 
 class WellExportListAPIView(ListAPIView):
