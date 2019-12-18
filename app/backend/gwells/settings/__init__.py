@@ -86,9 +86,22 @@ SETTINGS_EXPORT = [
 ALLOWED_HOSTS = ['*']
 
 CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_METHODS = [
+    'GET',
+    'OPTIONS'
+]
+
+if DEBUG:
+    CORS_ALLOW_METHODS = [
+        'DELETE',
+        'GET',
+        'OPTIONS',
+        'PATCH',
+        'POST',
+        'PUT',
+    ]
 
 # Application definition
-
 INSTALLED_APPS = (
     'whitenoise.runserver_nostatic',
     'django.contrib.admin',
