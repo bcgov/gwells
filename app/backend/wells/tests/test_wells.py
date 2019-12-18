@@ -31,7 +31,7 @@ class TestWellLocationsSearch(APITestCase):
 
     def test_well_locations(self):
         # Basic test to ensure that the well location search returns a non-error response
-        url = reverse('well-locations', kwargs={'version': 'v1'})
+        url = reverse('well-locations-v1')
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 

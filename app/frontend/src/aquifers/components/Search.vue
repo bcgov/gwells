@@ -50,7 +50,8 @@
             </h1>
 
             <b-form-row>
-              <b-col cols="12" md="12" class="pt-3 pl-4 pr-4 aquifer-search-column mt-3">
+              <b-col cols="12" md="12" class="pl-4 pr-4 aquifer-search-column mt-3">
+                <h4>Basic Search</h4>
                 <h5 class="search-title">Search by aquifer name or number (leave blank to see all aquifers)</h5>
                 <b-form-group class="search-title mt-3 mb-3">
                   <b-form-input
@@ -58,6 +59,11 @@
                     id="aquifers-search-field"
                     v-model="search"
                     class="w-75"/>
+                </b-form-group>
+                <h4 class="pt-5">Advanced Search</h4>
+                <b-form-group>
+                  <b-form-radio inline v-model="filterParams.match_any" name="match-any" value="true">Any field match</b-form-radio>
+                  <b-form-radio inline v-model="filterParams.match_any" name="match-any" value="false">All field match</b-form-radio>
                 </b-form-group>
                 <b-form-checkbox-group
                   stacked
@@ -237,7 +243,7 @@ export default {
     'aquifer-map': AquiferMap
   },
   data () {
-    let query = this.$route.query || {}
+    let query = this.$route.query
     return {
       sortBy: 'id',
       sortDesc: false,
@@ -245,7 +251,7 @@ export default {
       aquifer_search: query.aquifer_search,
       limit: LIMIT,
       currentPage: 1,
-      filterParams: Object.assign({}, query),
+      filterParams: Object.assign({}, { match_any: false }, query),
       aquifers_search_results: {},
       response: {},
       aquiferListFields: [
@@ -344,7 +350,7 @@ export default {
           }
         })
         this.aquifer_resource_sections.splice(2, 0, {
-          text: 'Hydraulically Connected',
+          text: 'Hydraulically connected',
           value: 'Hydra'
         })
       })

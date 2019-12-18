@@ -116,7 +116,7 @@
             <strong class="pl-1">Loading...</strong>
           </div>
 
-          <single-aquifer-map :aquifer-id="id" :geom="record.geom" :wells="wells" :key="mapKey" loading="loadingMap"/>
+          <single-aquifer-map :aquifer-id="id" :geom="record.geom" :wells="wells" :key="mapKey" :loading="loadingMap"/>
         </b-col>
       </b-row>
 
@@ -501,6 +501,7 @@ export default {
         { code: 'W', name: 'Water budget' },
         { key: 'water-quality', name: 'Water quality information' },
         { key: 'aquifer-connected', name: 'Hydraulically connected (screening level)' },
+        { code: 'G', name: 'Groundwater Surface Water Interactions' },
         { code: 'I', name: 'Other information' }
       ],
       wells: [],
@@ -663,10 +664,9 @@ export default {
         })
     },
     fetchWells (id = this.id) {
-      // ?aquifer=608&ems_has_value=true&limit=10&match_any=false&offset=10&ordering=-well_tag_number
-      const maxResults = 100
-      const params = { aquifer: id, limit: maxResults, ems_has_value: true }
-      return ApiService.query('wells', params)
+      const maxResults = 5000 // 5000 is the API max
+      const params = { aquifer: id, limit: maxResults }
+      return ApiService.query('wells/locations', params)
         .then((response) => {
           const total = response.data.count
 
@@ -677,7 +677,7 @@ export default {
             const numFetches = Math.ceil(total / maxResults)
             promise = range(1, numFetches).reduce((previousPromise, pageNum) => {
               return previousPromise.then((results) => {
-                return ApiService.query('wells', { ...params, offset: pageNum * maxResults }).then((response2) => {
+                return ApiService.query('wells/locations', { ...params, offset: pageNum * maxResults }).then((response2) => {
                   return results.concat(response2.data.results)
                 })
               })
