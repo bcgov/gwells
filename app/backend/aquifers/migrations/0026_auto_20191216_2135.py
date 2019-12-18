@@ -23,7 +23,7 @@ insertGWSWInteractionsSection = """
         '2020-01-01T08:00:00Z',
         '1970-01-01T08:00:00Z',
         '9999-12-31T23:59:59Z',
-        'Groundwater Surface Water Interactions',
+        'Groundwater surface water interactions',
         ''
     )
 """
