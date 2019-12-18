@@ -68,6 +68,7 @@ from submissions.models import WellActivityCode
 
 from wells.filters import (
     BoundingBoxFilterBackend,
+    GeometryFilterBackend,
     WellListFilterBackend,
     WellListOrderingFilter,
 )
@@ -95,7 +96,8 @@ from wells.serializers import (
     WellDetailSerializer,
     WellDetailAdminSerializer,
     WellLocationSerializerV1,
-    WellDrawdownSerializer)
+    WellDrawdownSerializer,
+    WellLithologySerializer)
 from wells.permissions import WellsEditPermissions, WellsEditOrReadOnly
 
 
@@ -234,7 +236,7 @@ class WellListAPIView(ListAPIView):
     pagination_class = APILimitOffsetPagination
 
     filter_backends = (WellListFilterBackend, BoundingBoxFilterBackend,
-                       filters.SearchFilter, WellListOrderingFilter)
+                       filters.SearchFilter, WellListOrderingFilter, GeometryFilterBackend)
     ordering = ('well_tag_number',)
     search_fields = ('well_tag_number', 'identification_plate_number',
                      'street_address', 'city', 'owner_full_name')
@@ -806,6 +808,29 @@ class WellScreens(ListAPIView):
 
     model = Well
     serializer_class = WellDrawdownSerializer
+    swagger_schema = None
+
+    def get_queryset(self):
+        wells = self.request.query_params.get('wells', None)
+        if not wells:
+            return []
+
+        wells = wells.split(',')
+
+        for w in wells:
+            if not w.isnumeric():
+                raise ValidationError(detail='Invalid well')
+
+        wells = map(int, wells)
+
+        return Well.objects.filter(well_tag_number__in=wells)
+
+
+class WellLithology(ListAPIView):
+    """ returns lithology info for a range of wells """
+
+    model = Well
+    serializer_class = WellLithologySerializer
     swagger_schema = None
 
     def get_queryset(self):

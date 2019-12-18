@@ -117,7 +117,7 @@ describe('Search Component', () => {
     wrapper.find('form').trigger('submit')
 
     expect(axios.get).toHaveBeenCalledWith('aquifers', {
-      params: { resources__section__code: 'a', search: 'asdf' }
+      params: { resources__section__code: 'a', match_any: false, search: 'asdf' }
     })
   })
 
