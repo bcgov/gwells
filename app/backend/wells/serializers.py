@@ -1056,6 +1056,8 @@ class WellLithologySerializer(serializers.ModelSerializer):
             model = Well
             fields = (
                 "well_tag_number",
+                "latitude",
+                "longitude",
                 "lithologydescription_set"
             )
 
