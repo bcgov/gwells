@@ -350,7 +350,7 @@ export default {
           }
         })
         this.aquifer_resource_sections.splice(2, 0, {
-          text: 'Hydraulically Connected',
+          text: 'Hydraulically connected',
           value: 'Hydra'
         })
       })
