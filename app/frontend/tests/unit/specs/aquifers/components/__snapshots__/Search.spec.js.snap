@@ -33,8 +33,12 @@ exports[`Search Component Matches the snapshot 1`] = `
             class="form-row"
           >
             <div
-              class="pt-3 pl-4 pr-4 aquifer-search-column mt-3 col-md-12 col-12"
+              class="pl-4 pr-4 aquifer-search-column mt-3 col-md-12 col-12"
             >
+              <h4>
+                Basic Search
+              </h4>
+               
               <h5
                 class="search-title"
               >
@@ -54,6 +58,59 @@ exports[`Search Component Matches the snapshot 1`] = `
                     id="aquifers-search-field"
                     type="text"
                   />
+                  <!---->
+                  <!---->
+                  <!---->
+                </div>
+              </fieldset>
+               
+              <h4
+                class="pt-5"
+              >
+                Advanced Search
+              </h4>
+               
+              <fieldset
+                class="form-group"
+              >
+                <!---->
+                <div
+                  role="group"
+                  tabindex="-1"
+                >
+                  <div
+                    class="custom-control custom-control-inline custom-radio"
+                  >
+                    <input
+                      autocomplete="off"
+                      class="custom-control-input"
+                      name="match-any"
+                      type="radio"
+                      value="true"
+                    />
+                    <label
+                      class="custom-control-label"
+                    >
+                      Any field match
+                    </label>
+                  </div>
+                   
+                  <div
+                    class="custom-control custom-control-inline custom-radio"
+                  >
+                    <input
+                      autocomplete="off"
+                      class="custom-control-input"
+                      name="match-any"
+                      type="radio"
+                      value="false"
+                    />
+                    <label
+                      class="custom-control-label"
+                    >
+                      All field match
+                    </label>
+                  </div>
                   <!---->
                   <!---->
                   <!---->
