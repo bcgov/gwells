@@ -9,9 +9,11 @@ import 'leaflet-gesture-handling'
 import { tiledMapLayer } from 'esri-leaflet'
 
 import aquiferLayers from '../layers'
-import emsWellsIcon from '../../common/assets/images/wells-ems.png'
+import associatedWellsIcon from '../../common/assets/images/wells-associated.svg'
+import emsWellsIcon from '../../common/assets/images/wells-ems.svg'
 
-const LEGEND_EMS_WELLS = { layerName: 'EMS Wells in Aquifer', legend: emsWellsIcon, show: false }
+const LEGEND_ASSOCIATED_WELLS = { layerName: 'Wells associated to Aquifer', legend: associatedWellsIcon, show: false }
+const LEGEND_EMS_WELLS = { layerName: 'EMS Wells associated to Aquifer', legend: emsWellsIcon, show: false }
 
 export default {
   name: 'SingleAquiferMap',
@@ -79,13 +81,13 @@ export default {
       this.activeLayers[cadastralLayer.options.name].show = true
 
       // Add non-image tile layer for EMS wells
+      this.activeLayers.associatedWells = LEGEND_ASSOCIATED_WELLS
       this.activeLayers.emsWells = LEGEND_EMS_WELLS
-      this.activeLayers.emsWells.show = true
-      this.addEmsWellsLayersControl(layersControl)
+      this.activeLayers.associatedWells.show = true
+      this.addWellsLayersControl(layersControl)
 
       this.map.addControl(this.getLegendControl())
 
-      this.$emit('activeLayers', this.activeLayers)
 
       this.canvasRenderer = L.canvas({ padding: 0.1 })
 
@@ -100,26 +102,32 @@ export default {
       this.listenForLayerAdd()
       this.listenForLayerRemove()
       this.listenForLayerToggle()
+
       this.$emit('activeLayers', this.activeLayers)
     },
-    addEmsWellsLayersControl (layersControl) {
+    addWellsLayersControl (layersControl) {
       const overlaysContainer = layersControl.getContainer().querySelector('.leaflet-control-layers-overlays')
 
-      const checked = this.activeLayers.emsWells.show ? 'checked' : ''
-      const wellsLayerControlLabel = document.createElement('label')
-      wellsLayerControlLabel.innerHTML =
-      '<div>' +
-        '<input type="checkbox" class="leaflet-control-layers-selector" ' + checked + '>' +
-        '<span> EMS Wells</span>' +
-      '</div>'
-      const emsWellsCheckbox = wellsLayerControlLabel.querySelector('input')
-      emsWellsCheckbox.onchange = (e) => {
-        this.activeLayers.emsWells.show = e.currentTarget.checked
-        this.updateCanvasLayer()
-        this.$emit('activeLayers', this.activeLayers)
-      }
+      const layerNames = [ 'associatedWells', 'emsWells' ]
 
-      overlaysContainer.appendChild(wellsLayerControlLabel)
+      layerNames.forEach((name) => {
+        const checked = this.activeLayers[name].show ? 'checked' : ''
+        const wellsLayerControlLabel = document.createElement('label')
+        wellsLayerControlLabel.innerHTML =
+        '<div>' +
+          '<input type="checkbox" class="leaflet-control-layers-selector" ' + checked + '>' +
+          '<span> ' + this.activeLayers[name].layerName + '</span>' +
+        '</div>'
+        const emsWellsCheckbox = wellsLayerControlLabel.querySelector('input')
+        emsWellsCheckbox.onchange = (e) => {
+          const foo = this.activeLayers;
+          this.activeLayers[name].show = e.currentTarget.checked
+          this.updateCanvasLayer()
+          this.$emit('activeLayers', this.activeLayers)
+        }
+
+        overlaysContainer.appendChild(wellsLayerControlLabel)
+      })
     },
     getLegendControl () {
       const self = this
@@ -176,10 +184,12 @@ export default {
 
       this.addWellsToCanvasLayer()
 
-      if (this.loading) {
+      if (!this.loading) {
         this.canvasLayer.addLayer(this.aquiferLayer)
 
-        this.canvasLayer.addLayer(this.wellsLayer)
+        if (this.activeLayers.associatedWells.show) {
+          this.canvasLayer.addLayer(this.wellsLayer)
+        }
 
         if (this.activeLayers.emsWells.show) {
           this.canvasLayer.addLayer(this.emsWellsLayer)
@@ -208,7 +218,7 @@ export default {
         weight: 1,
         fillColor: '#0162fe',
         fillOpacity: 1,
-        radius: 6,
+        radius: 3,
         renderer: this.canvasRenderer
       }
 
@@ -217,7 +227,7 @@ export default {
         weight: 1,
         fillColor: '#0ca287',
         fillOpacity: 1,
-        radius: 6,
+        radius: 3,
         renderer: this.canvasRenderer
       }
 
@@ -240,9 +250,9 @@ export default {
         const wellCircleMarker = L.circleMarker(L.latLng(latitude, longitude), options)
         const wellTooltip = [
           `Well Tag Number: ${well.well_tag_number}`,
-          `EMS ID: ${well.ems}`,
+          well.ems ? `EMS ID: ${well.ems}` : null,
           `Address: ${well.street_address || 'N/A'}`
-        ]
+        ].filter(Boolean)
 
         wellCircleMarker.bindTooltip(wellTooltip.join('<br>'))
 
@@ -269,6 +279,9 @@ export default {
       if (oldWells || newWells) {
         this.updateCanvasLayer()
       }
+    },
+    loading () {
+      this.updateCanvasLayer()
     }
   }
 }

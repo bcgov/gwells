@@ -95,7 +95,7 @@ from wells.serializers import (
     WellTagSearchSerializer,
     WellDetailSerializer,
     WellDetailAdminSerializer,
-    WellLocationSerializer,
+    WellLocationSerializerV1,
     WellDrawdownSerializer,
     WellLithologySerializer)
 from wells.permissions import WellsEditPermissions, WellsEditOrReadOnly
@@ -319,7 +319,7 @@ class WellSubmissionsListAPIView(ListAPIView):
                           record.create_date), reverse=True)
 
 
-class WellLocationListAPIView(ListAPIView):
+class WellLocationListV1APIView(ListAPIView):
     """ returns well locations for a given search
 
         get: returns a list of wells with locations only
@@ -327,7 +327,7 @@ class WellLocationListAPIView(ListAPIView):
     MAX_LOCATION_COUNT = 5000
     permission_classes = (WellsEditOrReadOnly,)
     model = Well
-    serializer_class = WellLocationSerializer
+    serializer_class = WellLocationSerializerV1
 
     # Allow searching on name fields, names of related companies, etc.
     filter_backends = (WellListFilterBackend, BoundingBoxFilterBackend,
