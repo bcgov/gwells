@@ -9,11 +9,12 @@ import 'leaflet-gesture-handling'
 import { tiledMapLayer } from 'esri-leaflet'
 
 import aquiferLayers from '../layers'
+import { buildLegendHTML } from '../legend'
 import associatedWellsIcon from '../../common/assets/images/wells-associated.svg'
 import emsWellsIcon from '../../common/assets/images/wells-ems.svg'
 
-const LEGEND_ASSOCIATED_WELLS = { layerName: 'Wells associated to Aquifer', legend: associatedWellsIcon, show: false }
-const LEGEND_EMS_WELLS = { layerName: 'EMS Wells associated to Aquifer', legend: emsWellsIcon, show: false }
+const LEGEND_ASSOCIATED_WELLS = { layerName: 'Wells associated to aquifer', legend: associatedWellsIcon, show: false }
+const LEGEND_EMS_WELLS = { layerName: 'EMS wells associated to aquifer', legend: emsWellsIcon, show: false }
 
 export default {
   name: 'SingleAquiferMap',
@@ -145,16 +146,7 @@ export default {
     },
     listenForLayerToggle () {
       this.$on('activeLayers', (data) => {
-        let innerContent = `<ul class="p-0 m-0" style="list-style-type: none;">`
-        innerContent += `<li class="m-1 text-center">Legend</li>`
-        Object.keys(data).forEach((name) => {
-          const l = data[name]
-          if (l.show) {
-            innerContent += `<li class="m-1"><img src="${l.legend}"> ${l.layerName}</li>`
-          }
-        })
-        innerContent += `</ul>`
-        this.legendControlContent.innerHTML = innerContent
+        this.legendControlContent.innerHTML = buildLegendHTML(data)
       })
     },
     listenForLayerRemove () {

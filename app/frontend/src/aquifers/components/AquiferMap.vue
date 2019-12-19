@@ -12,6 +12,7 @@ import 'leaflet-fullscreen/dist/Leaflet.fullscreen.min.js'
 import { filter } from 'lodash'
 
 import aquiferLayers from '../layers'
+import { buildLegendHTML } from '../legend'
 
 const provider = new EsriProvider()
 const searchControl = new GeoSearchControl({
@@ -116,6 +117,16 @@ export default {
       const cadastralLayer = aquiferLayers['Cadastral']
       cadastralLayer.addTo(this.map)
 
+      Object.keys(aquiferLayers).forEach((layerName) => {
+        const layer = aquiferLayers[layerName]
+        this.activeLayers[layerName] = {
+          layerName: layer.options.name,
+          legend: layer.options.legend,
+          show: false
+        }
+      })
+      this.activeLayers[cadastralLayer.options.name].show = true
+
       this.listenForLayerToggle()
       this.listenForLayerAdd()
       this.listenForLayerRemove()
@@ -123,9 +134,6 @@ export default {
       this.listenForReset()
       this.listenForAreaSelect()
 
-      this.activeLayers = [
-        { layerId: cadastralLayer._leaflet_id, layerName: cadastralLayer.options.name, legend: cadastralLayer.options.legend }
-      ]
       this.$emit('activeLayers', this.activeLayers)
     },
 
@@ -176,13 +184,7 @@ export default {
     },
     listenForLayerToggle () {
       this.$on('activeLayers', (data) => {
-        let innerContent = `<ul class="p-0 m-0" style="list-style-type: none;">`
-        innerContent += `<li class="m-1 text-center">Legend</li>`
-        data.map(l => {
-          innerContent += `<li class="m-1"><img src="${l.legend}"> ${l.layerName}</li>`
-        })
-        innerContent += `</ul>`
-        this.legendControlContent.innerHTML = innerContent
+        this.legendControlContent.innerHTML = buildLegendHTML(data)
       })
     },
     listenForAreaSelect () {
@@ -192,21 +194,18 @@ export default {
     },
     listenForLayerRemove () {
       this.map.on('layerremove', (e) => {
-        const layerId = e.layer._leaflet_id
-        const legend = e.layer.options.legend
+        const { legend, name } = e.layer.options
         if (legend) {
-          this.activeLayers = filter(this.activeLayers, o => o.layerId !== layerId)
+          this.activeLayers[name].show = false
           this.$emit('activeLayers', this.activeLayers)
         }
       })
     },
     listenForLayerAdd () {
       this.map.on('layeradd', (e) => {
-        const layerId = e.layer._leaflet_id
-        const layerName = e.layer.options.name
-        const legend = e.layer.options.legend
+        const { legend, name } = e.layer.options
         if (legend) {
-          this.activeLayers.push({ layerId, layerName, legend })
+          this.activeLayers[name].show = true
           this.$emit('activeLayers', this.activeLayers)
         }
       })
