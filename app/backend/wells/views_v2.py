@@ -84,11 +84,13 @@ class WellLocationListV2APIView(ListAPIView):
         # This might be more performant in the database using json_agg and ST_AsGeoJSON
         # vs creating geojson Features here in Python.
         if geojson_requested:
+            MAX_LOCATION_COUNT = 5000
+
             qs = self.get_queryset()
             locations = self.filter_queryset(qs)
             count = locations.count()
             # return an empty response if there are too many wells to display
-            if count > self.MAX_LOCATION_COUNT:
+            if count > MAX_LOCATION_COUNT:
                 raise PermissionDenied('Too many wells to display on map. '
                                        'Please zoom in or change your search criteria.')
 
