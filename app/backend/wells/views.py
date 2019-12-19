@@ -359,7 +359,7 @@ class WellLocationListV1APIView(ListAPIView):
         if count == 0:
             raise NotFound("No well records could be found.")
 
-       return super().get(request)
+        return super().get(request)
 
 
 class WellExportListAPIView(ListAPIView):
