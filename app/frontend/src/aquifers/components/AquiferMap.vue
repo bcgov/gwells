@@ -75,9 +75,11 @@ export default {
     aquifersGeometry () {
       this.buildAquiferLayer()
     },
-    highlightAquiferIds () {
+    highlightAquiferIds (newIds) {
       this.buildAquiferLayer()
-      this.zoomToHighlightedAquifers()
+      if (newIds.length > 0) {
+        this.zoomToHighlightedAquifers()
+      }
     },
     loading () {
       this.updateCanvasLayer()

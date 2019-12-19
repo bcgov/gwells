@@ -270,8 +270,7 @@
                   <b-popover
                     target="aquiferConnectedInfo"
                     triggers="hover focus"
-                    content="Inferred based on aquifer subtype - not field verified."
-                  ></b-popover>
+                    content="Inferred based on aquifer subtype - not field verified."/>
                 </dt>
                 <dd class="m-0">{{ licence_details['hydraulically_connected'] ? "More likely" : "Less likely"}}</dd>
               </div>

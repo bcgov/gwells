@@ -18,6 +18,7 @@ import Vuex from 'vuex'
 import axios from 'axios'
 import VueRouter from 'vue-router'
 import auth from '@/common/store/auth.js'
+import aquiferStore from '@/aquifers/store/index.js'
 
 jest.mock('axios')
 
@@ -47,7 +48,7 @@ describe('Search Component', () => {
       stubs: ['router-link', 'router-view'],
       router: new VueRouter(),
       store: new Vuex.Store({
-        modules: { auth }
+        modules: { auth, aquiferStore }
       }),
       methods: {
         scrollToTableTop () {},
@@ -55,7 +56,8 @@ describe('Search Component', () => {
           this.aquifer_resource_sections = [
             { text: 'aquifer section', value: 'a' }
           ]
-        }
+        },
+        $SmoothScroll () {}
       },
       ...options
     })
@@ -69,10 +71,14 @@ describe('Search Component', () => {
   it('Displays a message if no aquifers could be found', () => {
     axios.get.mockResolvedValue({})
     const wrapper = component({
+      data () {
+        return {
+          searchResults: [],
+          performedSearch: true,
+          loadingMap: false
+        }
+      },
       computed: {
-        aquiferList () {
-          return []
-        },
         emptyResults () {
           return true
         }
@@ -86,11 +92,17 @@ describe('Search Component', () => {
   })
 
   it('Matches the snapshot', () => {
+    axios.get.mockResolvedValue({})
+
     const wrapper = component({
+      data () {
+        return {
+          searchResults: [aquiferFixture],
+          performedSearch: true,
+          loadingMap: false
+        }
+      },
       computed: {
-        aquiferList () {
-          return [aquiferFixture]
-        },
         emptyResults () {
           return false
         },

@@ -262,7 +262,6 @@ export default {
       sortBy: 'id',
       sortDesc: false,
       search: query.search,
-      aquifer_search: query.aquifer_search,
       limit: LIMIT,
       currentPage: 1,
       filterParams: Object.assign({}, { match_any: false }, query),
@@ -334,10 +333,11 @@ export default {
       this.triggerAnalyticsSearchEvent(this.query)
       delete this.query.offset
       delete this.query.limit
-      ApiService.query('aquifers', { ...this.query, include: 'geom' })
+      ApiService.query('aquifers', this.query)
         .then((response) => {
-          this.searchResults = response.data.results
-          this.response = response.data
+          const responseData = response.data || { results: [] }
+          this.searchResults = responseData.results
+          this.response = responseData
           this.loadingResults = false
           this.scrollToMap()
         })
@@ -358,7 +358,8 @@ export default {
     },
     fetchResourceSections () {
       ApiService.query('aquifers/sections').then((response) => {
-        this.aquifer_resource_sections = response.data.results.map(function (section) {
+        const sections = response.data || { results: [] }
+        this.aquifer_resource_sections = sections.results.map(function (section) {
           return {
             text: section.name,
             value: section.code
@@ -376,9 +377,10 @@ export default {
       }
 
       return ApiService.query('gis/aquifers-simplified').then((response) => {
-        const featuresCollection = response.data
+        const featuresCollection = response.data || {}
+        const features = featuresCollection.features || []
         // Remove any features which don't have geometry
-        featuresCollection.features = featuresCollection.features.filter((feature) => feature.geometry)
+        featuresCollection.features = features.filter((feature) => feature.geometry)
         this.updateSimplifiedGeoJson(featuresCollection)
         return featuresCollection
       })
@@ -389,7 +391,7 @@ export default {
     },
     triggerReset () {
       this.response = {}
-      this.searchResults = {}
+      this.searchResults = []
       this.filterParams = {}
       this.search = undefined
       this.aquifer_id = ''
@@ -467,7 +469,7 @@ export default {
       const aquiferIdsMap = new Map()
       data.map(o => aquiferIdsMap.set(o.defaultOptions.aquifer_id, true))
       this.response.count = aquiferIdsMap.size
-      this.response.results = filter(this.searchResults, o => aquiferIdsMap.get(o.id))
+      this.response.results = this.searchResults.filter(o => aquiferIdsMap.get(o.id))
     })
   }
 }

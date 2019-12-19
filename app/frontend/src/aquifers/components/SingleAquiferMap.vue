@@ -183,7 +183,9 @@ export default {
       this.addWellsToCanvasLayer()
 
       if (!this.loading) {
-        this.canvasLayer.addLayer(this.aquiferLayer)
+        if (this.aquiferLayer) {
+          this.canvasLayer.addLayer(this.aquiferLayer)
+        }
 
         if (this.activeLayers.associatedWells.show) {
           this.canvasLayer.addLayer(this.wellsLayer)
