@@ -24,8 +24,6 @@ from django.http import (
 from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView
 from django_filters import rest_framework as restfilters
-from django.db.models import Q
-from django_filters import rest_framework as restfilters
 from django.db import connection
 import requests
 import json
