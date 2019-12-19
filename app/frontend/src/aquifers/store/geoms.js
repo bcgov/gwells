@@ -12,12 +12,14 @@
     limitations under the License.
 */
 
-import aquiferCodes from './codes.js'
-import aquiferGeoms from './geoms.js'
-
-const aquifersStore = {
+export default {
   namespaced: true,
-  modules: { aquiferCodes, aquiferGeoms }
+  state: {
+    simplifiedGeoJson: null
+  },
+  mutations: {
+    updateSimplifiedGeoJson (state, payload) {
+      state.simplifiedGeoJson = payload
+    }
+  }
 }
-
-export default aquifersStore

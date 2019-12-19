@@ -399,7 +399,7 @@ export default {
         this.setPrivate(value)
       }
     },
-    ...mapState('aquiferCodes', [
+    ...mapState('aquiferStore/aquiferCodes', [
       'demand_codes',
       'aquifer_resource_sections',
       'known_water_use_codes',
@@ -422,7 +422,7 @@ export default {
     showId: Boolean
   },
   methods: {
-    ...mapMutations('aquiferCodes', ['addCodes']),
+    ...mapMutations('aquiferStore/aquiferCodes', ['addCodes']),
     ...mapMutations('documentState', [
       'setFiles',
       'setPrivate',

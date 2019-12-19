@@ -19,6 +19,8 @@ import copy
 
 from django.utils import timezone
 from django.contrib.gis.db import models
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 
 from gwells.models import AuditModel, CodeTableModel, BasicCodeTableModel
 from django.contrib.contenttypes.fields import GenericRelation
@@ -495,13 +497,7 @@ class Aquifer(AuditModel):
                 geos_geom.__class__))
             return
 
-        geos_geom_simplified = copy.deepcopy(geos_geom_out)
-        geos_geom_simplified.transform(4326)
-        geos_geom_simplified = geos_geom_simplified.simplify(
-            .0005, preserve_topology=True)
-
         self.geom = geos_geom_out
-        self.geom_simplified = geos_geom_simplified
 
     class Meta:
         db_table = 'aquifer'
@@ -529,6 +525,12 @@ class Aquifer(AuditModel):
         "water_use_code": "Describes the type of known water use of an aquifer at the time of mapping. It indicates the variability or diversity of uses of the aquifer water as a supply source. I.e. Domestic, Multiple, Potential Domestic",
     }
 
+@receiver(pre_save, sender=Aquifer)
+def update_geom_simplified(sender, instance, **kwargs):
+    geos_geom_simplified = copy.deepcopy(instance.geom)
+    geos_geom_simplified.transform(4326)
+    geos_geom_simplified = geos_geom_simplified.simplify(0.0005, preserve_topology=True)
+    instance.geom_simplified = geos_geom_simplified
 
 class AquiferResourceSection(BasicCodeTableModel):
     """
