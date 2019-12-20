@@ -527,10 +527,14 @@ class Aquifer(AuditModel):
 
 @receiver(pre_save, sender=Aquifer)
 def update_geom_simplified(sender, instance, **kwargs):
-    geos_geom_simplified = copy.deepcopy(instance.geom)
-    geos_geom_simplified.transform(4326)
-    geos_geom_simplified = geos_geom_simplified.simplify(0.0005, preserve_topology=True)
+    geos_geom_simplified = None
+    if instance.geom:
+        geos_geom_simplified = copy.deepcopy(instance.geom)
+        geos_geom_simplified.transform(4326)
+        geos_geom_simplified = geos_geom_simplified.simplify(0.0005, preserve_topology=True)
+
     instance.geom_simplified = geos_geom_simplified
+
 
 class AquiferResourceSection(BasicCodeTableModel):
     """
