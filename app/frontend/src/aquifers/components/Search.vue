@@ -460,7 +460,7 @@ export default {
     this.fetchResourceSections()
 
     this.loadingMap = true
-    this.fetchSimplifiedGeometry().finally(() => {
+    this.fetchSimplifiedGeometry().then(() => {
       this.loadingMap = false
     })
   },
