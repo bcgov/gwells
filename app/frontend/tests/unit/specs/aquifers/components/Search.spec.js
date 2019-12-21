@@ -51,11 +51,14 @@ describe('Search Component', () => {
         modules: { auth, aquiferStore }
       }),
       methods: {
-        scrollToTableTop () {},
+        fetchSurveys () {},
         fetchResourceSections () {
-          this.aquifer_resource_sections = [
-            { text: 'aquifer section', value: 'a' }
-          ]
+          this.addSections([
+            { name: 'aquifer section', code: 'a' }
+          ])
+        },
+        fetchSimplifiedGeometry () {
+          return Promise.resolve({})
         },
         $SmoothScroll () {}
       },
@@ -74,17 +77,13 @@ describe('Search Component', () => {
       data () {
         return {
           searchResults: [],
-          performedSearch: true,
+          searchPerformed: true,
           loadingMap: false
         }
       },
-      computed: {
-        emptyResults () {
-          return true
-        }
-      },
       methods: {
-        fetchResults () {}
+        fetchResults () {},
+        $SmoothScroll () {}
       }
     })
 
@@ -98,20 +97,13 @@ describe('Search Component', () => {
       data () {
         return {
           searchResults: [aquiferFixture],
-          performedSearch: true,
+          searchPerformed: true,
           loadingMap: false
         }
       },
-      computed: {
-        emptyResults () {
-          return false
-        },
-        displayPageLength () {
-          return 0
-        }
-      },
       methods: {
-        fetchResults () {}
+        fetchResults () {},
+        $SmoothScroll () {}
       }
     })
 
@@ -129,7 +121,8 @@ describe('Search Component', () => {
     wrapper.find('form').trigger('submit')
 
     expect(axios.get).toHaveBeenCalledWith('aquifers', {
-      params: { resources__section__code: 'a', match_any: false, search: 'asdf' }
+      cancelToken: undefined,
+      params: { resources__section__code: 'a', search: 'asdf' }
     })
   })
 

@@ -121,40 +121,51 @@ exports[`Search Component Matches the snapshot 1`] = `
                 class="aquifer-checkbox-group"
                 role="group"
                 tabindex="-1"
-              />
+              >
+                <div
+                  class="custom-control custom-checkbox"
+                >
+                  <input
+                    autocomplete="off"
+                    class="custom-control-input"
+                    type="checkbox"
+                    value="a"
+                  />
+                  <label
+                    class="custom-control-label"
+                  >
+                    <span>
+                      aquifer section
+                    </span>
+                  </label>
+                </div>
+              </div>
                
               <div
                 class="form-row"
               >
-                <fieldset
-                  class="form-group aquifer-search-actions"
+                <div
+                  class="aquifer-search-actions btn-group"
+                  role="group"
                 >
-                  <!---->
-                  <div
-                    role="group"
-                    tabindex="-1"
+                  <button
+                    class="btn aquifer-buttons btn-primary"
+                    id="aquifers-search"
+                    type="submit"
                   >
-                    <button
-                      class="btn aquifer-buttons btn-primary"
-                      id="aquifers-search"
-                      type="submit"
-                    >
-                      Search
                     
-                      <!---->
-                    </button>
-                     
-                    <button
-                      class="btn aquifer-buttons btn-default"
-                      type="reset"
-                    >
-                      Reset
-                    </button>
+                    Search All Of BC
+                    
                     <!---->
-                    <!---->
-                    <!---->
-                  </div>
-                </fieldset>
+                  </button>
+                   
+                  <button
+                    class="btn aquifer-buttons btn-default"
+                    type="reset"
+                  >
+                    Reset
+                  </button>
+                </div>
               </div>
                
               <h6
@@ -221,21 +232,7 @@ exports[`Search Component Matches the snapshot 1`] = `
       <div
         class="p-5 col-12"
       >
-        <div
-          class="p-0 container-fluid"
-        >
-          <div
-            class="row"
-          >
-            <div
-              class="mb-3 col-12"
-            >
-              
-              Showing 1 to 0 of 
-            
-            </div>
-          </div>
-        </div>
+        <!---->
          
         <div
           class="table-responsive"
@@ -396,11 +393,11 @@ exports[`Search Component Matches the snapshot 1`] = `
                   class=""
                   role="cell"
                 >
-                  <p
-                    class="aquifer-id"
+                  <router-link-stub
+                    to="[object Object]"
                   >
                     
-                  </p>
+                  </router-link-stub>
                 </td>
                 <td
                   aria-colindex="2"

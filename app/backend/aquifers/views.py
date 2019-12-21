@@ -65,6 +65,7 @@ from aquifers.models import (
     QualityConcern,
     WaterUse
 )
+from aquifers.filters import BoundingBoxFilterBackend
 from aquifers.permissions import HasAquiferEditRoleOrReadOnly, HasAquiferEditRole
 from gwells.change_history import generate_history_diff
 from gwells.views import AuditCreateMixin, AuditUpdateMixin
@@ -178,7 +179,7 @@ class AquiferListCreateAPIView(RevisionMixin, AuditCreateMixin, ListCreateAPIVie
     pagination_class = LargeResultsSetPagination
     permission_classes = (HasAquiferEditRoleOrReadOnly,)
     filter_backends = (djfilters.DjangoFilterBackend,
-                       OrderingFilter, SearchFilter)
+                       OrderingFilter, SearchFilter, BoundingBoxFilterBackend)
     ordering_fields = '__all__'
     ordering = ('aquifer_id',)
 
