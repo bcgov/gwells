@@ -97,7 +97,7 @@ class GeometryFilterBackend(BaseFilterBackend):
             except (ValueError, GEOSException):
                 pass
             else:
-                queryset = queryset.filter(geom__bboverlaps=shape)
+                queryset = queryset.filter(geom__intersects=shape)
 
         return queryset
 
