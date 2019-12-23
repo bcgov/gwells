@@ -410,6 +410,7 @@ export default {
     },
     rowClicked (data) {
       this.selectedAquiferId = data.id
+      this.scrollToMap()
     },
     mapMoved (bounds, featuresOnMap) {
       const viewingBC = bounds.contains(BC_LAT_LNG_BOUNDS)
