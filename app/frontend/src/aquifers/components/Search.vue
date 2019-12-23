@@ -321,7 +321,6 @@ export default {
       'searchResultCount',
       'searchInProgress',
       'searchPerformed',
-      'searchResultCount',
       'constrainSearch',
       'mapBounds'
     ]),

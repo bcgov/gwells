@@ -16,6 +16,7 @@ import { mount, createLocalVue } from '@vue/test-utils'
 import SearchComponent from '@/aquifers/components/Search.vue'
 import Vuex from 'vuex'
 import axios from 'axios'
+import { merge } from 'lodash'
 import VueRouter from 'vue-router'
 import auth from '@/common/store/auth.js'
 import aquiferStore from '@/aquifers/store/index.js'
@@ -42,14 +43,17 @@ const aquiferFixture = {
 }
 
 describe('Search Component', () => {
-  const component = options =>
-    mount(SearchComponent, {
+  const component = (options, storeState = {}) => {
+    const store = new Vuex.Store({
+      modules: { auth, aquiferStore }
+    })
+    store.replaceState(merge(store.state, storeState))
+
+    return mount(SearchComponent, {
       localVue,
       stubs: ['router-link', 'router-view'],
       router: new VueRouter(),
-      store: new Vuex.Store({
-        modules: { auth, aquiferStore }
-      }),
+      store,
       methods: {
         fetchSurveys () {},
         fetchResourceSections () {
@@ -64,6 +68,7 @@ describe('Search Component', () => {
       },
       ...options
     })
+  }
 
   it('has child checkboxes', () => {
     axios.get.mockResolvedValue({})
@@ -74,16 +79,15 @@ describe('Search Component', () => {
   it('Displays a message if no aquifers could be found', () => {
     axios.get.mockResolvedValue({})
     const wrapper = component({
-      data () {
-        return {
-          searchResults: [],
-          searchPerformed: true,
-          loadingMap: false
-        }
-      },
       methods: {
         fetchResults () {},
         $SmoothScroll () {}
+      }
+    }, {
+      aquiferStore: {
+        search: {
+          searchPerformed: true
+        }
       }
     })
 
@@ -94,16 +98,17 @@ describe('Search Component', () => {
     axios.get.mockResolvedValue({})
 
     const wrapper = component({
-      data () {
-        return {
-          searchResults: [aquiferFixture],
-          searchPerformed: true,
-          loadingMap: false
-        }
-      },
       methods: {
         fetchResults () {},
         $SmoothScroll () {}
+      }
+    }, {
+      aquiferStore: {
+        search: {
+          searchResults: [aquiferFixture],
+          searchResultCount: 1,
+          searchPerformed: true
+        }
       }
     })
 

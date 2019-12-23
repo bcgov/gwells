@@ -232,7 +232,21 @@ exports[`Search Component Matches the snapshot 1`] = `
       <div
         class="p-5 col-12"
       >
-        <!---->
+        <div
+          class="p-0 container-fluid"
+        >
+          <div
+            class="row"
+          >
+            <div
+              class="mb-3 col-12"
+            >
+              
+              Showing 1 to 1 of 1
+            
+            </div>
+          </div>
+        </div>
          
         <div
           class="table-responsive"
@@ -470,7 +484,24 @@ exports[`Search Component Matches the snapshot 1`] = `
       </div>
     </div>
      
-    <!---->
+    <h6
+      class="pl-5 pb-5 mt-3"
+    >
+      Download searched aquifers :
+      
+      <a
+        href="#"
+      >
+        XLSX
+      </a>
+       |
+      
+      <a
+        href="#"
+      >
+        CSV
+      </a>
+    </h6>
     <!---->
     <!---->
   </div>
