@@ -155,6 +155,7 @@ const aquiferSearchStore = {
           commit(SET_SEARCH_RESULTS, searchResults)
           commit(SET_SEARCH_RESULT_COUNT, responseData.count)
           commit(SET_SEARCH_IN_PROGRESS, false)
+          commit(SET_PENDING_SEARCH, null)
         }).catch((err) => {
           // If the search was cancelled, a new one is pending, so don't bother resetting.
           if (axios.isCancel(err)) {
@@ -166,7 +167,6 @@ const aquiferSearchStore = {
           }
           commit(SET_SEARCH_RESULTS, null)
           commit(SET_SEARCH_RESULT_COUNT, 0)
-        }).finally(() => {
           commit(SET_PENDING_SEARCH, null)
         })
     }
