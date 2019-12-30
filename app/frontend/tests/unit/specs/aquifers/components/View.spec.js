@@ -50,7 +50,7 @@ describe('View Component', () => {
       store: new Vuex.Store({
         modules: { auth, aquiferCodes, documentState }
       }),
-      stubs: ['aquifer-documents', 'aquifer-form'],
+      stubs: ['router-link', 'aquifer-documents', 'aquifer-form'],
       ...options
     })
 
