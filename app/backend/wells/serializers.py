@@ -1035,6 +1035,8 @@ class WellDrawdownSerializer(serializers.ModelSerializer):
             "well_yield",
             "diameter",
             "aquifer",
+            "latitude",
+            "longitude",
             "well_yield_unit",
             "finished_well_depth",
             "street_address",
