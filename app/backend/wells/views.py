@@ -806,22 +806,29 @@ class WellScreens(ListAPIView):
 
     model = Well
     serializer_class = WellDrawdownSerializer
+    filter_backends = (GeometryFilterBackend,)
     swagger_schema = None
 
     def get_queryset(self):
+        qs = Well.objects.all()
+
+        if not self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
+            qs = Well.objects.all().exclude(well_publication_status='Unpublished')
+
+        # can also supply a comma separated list of wells
         wells = self.request.query_params.get('wells', None)
-        if not wells:
-            return []
+        if wells:
+            wells = wells.split(',')
 
-        wells = wells.split(',')
+            for w in wells:
+                if not w.isnumeric():
+                    raise ValidationError(detail='Invalid well')
 
-        for w in wells:
-            if not w.isnumeric():
-                raise ValidationError(detail='Invalid well')
+            wells = map(int, wells)
 
-        wells = map(int, wells)
-
-        return Well.objects.filter(well_tag_number__in=wells)
+            qs = qs.filter(well_tag_number__in=wells)
+        
+        return qs
 
 
 class WellLithology(ListAPIView):
@@ -829,19 +836,27 @@ class WellLithology(ListAPIView):
 
     model = Well
     serializer_class = WellLithologySerializer
+    filter_backends = (GeometryFilterBackend,)
     swagger_schema = None
 
     def get_queryset(self):
+
+        qs = Well.objects.all()
+
+        if not self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
+            qs = Well.objects.all().exclude(well_publication_status='Unpublished')
+
+        # allow comma separated list of wells by well tag number
         wells = self.request.query_params.get('wells', None)
-        if not wells:
-            return []
+        if wells:
+            wells = wells.split(',')
 
-        wells = wells.split(',')
+            for w in wells:
+                if not w.isnumeric():
+                    raise ValidationError(detail='Invalid well')
 
-        for w in wells:
-            if not w.isnumeric():
-                raise ValidationError(detail='Invalid well')
+            wells = map(int, wells)
 
-        wells = map(int, wells)
-
-        return Well.objects.filter(well_tag_number__in=wells)
+            qs = qs.filter(well_tag_number__in=wells)
+        
+        return qs

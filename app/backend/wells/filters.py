@@ -84,7 +84,7 @@ class BoundingBoxFilterBackend(BaseFilterBackend):
 
 class GeometryFilterBackend(BaseFilterBackend):
     """
-    Filter that allows geographic filtering on a geometry/shape.
+    Filter that allows geographic filtering on a geometry/shape using `?within=<geojson geometry>`
     """
 
     def filter_queryset(self, request, queryset, view):
