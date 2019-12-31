@@ -17,6 +17,8 @@ import logging
 import sys
 import time
 
+from django.contrib.gis.measure import D
+from django.contrib.gis.db.models.functions import Centroid
 from django.db.models import Prefetch
 from django.http import (
     FileResponse, Http404, HttpResponse, HttpResponseNotFound,
@@ -809,11 +811,27 @@ class WellScreens(ListAPIView):
     filter_backends = (GeometryFilterBackend,)
     swagger_schema = None
 
+
+
     def get_queryset(self):
         qs = Well.objects.all()
 
+        # check if a bounding polygon was supplied (note: actual filtering will be by
+        # the filter_backends classes).  If so, add distances from the centroid.
+        within = self.request.query_params.get('within', None)
+        if within:
+            try:
+                shape = GEOSGeometry(within, srid=int(srid))
+
+                qs = qs.annotate(
+                    distance=D('geom', shape.centroid)
+                ).order_by('distance')
+
+            except (ValueError, GEOSException):
+                pass
+
         if not self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
-            qs = Well.objects.all().exclude(well_publication_status='Unpublished')
+            qs = qs.exclude(well_publication_status='Unpublished')
 
         # can also supply a comma separated list of wells
         wells = self.request.query_params.get('wells', None)
@@ -840,11 +858,10 @@ class WellLithology(ListAPIView):
     swagger_schema = None
 
     def get_queryset(self):
-
         qs = Well.objects.all()
 
         if not self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
-            qs = Well.objects.all().exclude(well_publication_status='Unpublished')
+            qs = qs.exclude(well_publication_status='Unpublished')
 
         # allow comma separated list of wells by well tag number
         wells = self.request.query_params.get('wells', None)
