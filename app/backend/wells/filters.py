@@ -17,7 +17,8 @@ from collections import OrderedDict
 from django import forms
 from django.core.exceptions import FieldDoesNotExist
 from django.http import HttpRequest, QueryDict
-from django.contrib.gis.geos import GEOSException, Polygon, GEOSGeometry
+from django.contrib.gis.geos import GEOSException, Polygon, GEOSGeometry, Point
+from django.contrib.gis.measure import D
 from django.db.models import Max, Min, Q, QuerySet
 from django_filters import rest_framework as filters
 from django_filters.widgets import BooleanWidget
@@ -98,6 +99,28 @@ class GeometryFilterBackend(BaseFilterBackend):
                 pass
             else:
                 queryset = queryset.filter(geom__intersects=shape)
+
+        return queryset
+
+
+class RadiusFilterBackend(BaseFilterBackend):
+    """ 
+    Filter that allows searching within radius (m) of a point.
+    """
+
+    def filter_queryset(self, request, queryset, view):
+        point = request.query_params.get('point', None)
+        radius = request.query_params.get('radius', None)
+        srid = request.query_params.get('srid', 4326)
+
+        if point and radius:
+            try:
+                shape = Point(point, srid=int(srid))
+            except (ValueError, GEOSException):
+                pass
+            else:
+                shape.transform(3005)
+                queryset = queryset.transform(3005, 'geom').filter(geom__dwithin=D(m=radius))
 
         return queryset
 

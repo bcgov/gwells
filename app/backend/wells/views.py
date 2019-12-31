@@ -19,6 +19,7 @@ import time
 
 from django.contrib.gis.measure import D
 from django.contrib.gis.db.models.functions import Centroid
+from django.contrib.gis.geos import GEOSException, Point
 from django.db.models import Prefetch
 from django.http import (
     FileResponse, Http404, HttpResponse, HttpResponseNotFound,
@@ -69,6 +70,7 @@ from submissions.models import WellActivityCode
 from wells.filters import (
     BoundingBoxFilterBackend,
     GeometryFilterBackend,
+    RadiusFilterBackend,
     WellListFilterBackend,
     WellListOrderingFilter,
 )
@@ -808,27 +810,26 @@ class WellScreens(ListAPIView):
 
     model = Well
     serializer_class = WellDrawdownSerializer
-    filter_backends = (GeometryFilterBackend,)
+    filter_backends = (GeometryFilterBackend, RadiusFilterBackend)
     swagger_schema = None
-
-
 
     def get_queryset(self):
         qs = Well.objects.all()
 
-        # check if a bounding polygon was supplied (note: actual filtering will be by
-        # the filter_backends classes).  If so, add distances from the centroid.
-        within = self.request.query_params.get('within', None)
-        if within:
+        # check if a point was supplied (note: actual filtering will be by
+        # the filter_backends classes).  If so, add distances from the point.
+        point = self.request.query_params.get('point', None)
+        srid = self.request.query_params.get('srid', 4326)
+        if point:
             try:
-                shape = GEOSGeometry(within, srid=int(srid))
-
-                qs = qs.annotate(
-                    distance=D('geom', shape.centroid)
-                ).order_by('distance')
+                shape = Point(point, srid=int(srid))
 
             except (ValueError, GEOSException):
                 pass
+            else:
+                qs = qs.annotate(
+                    distance=D('geom', shape)
+                ).order_by('distance')
 
         if not self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
             qs = qs.exclude(well_publication_status='Unpublished')
@@ -845,7 +846,7 @@ class WellScreens(ListAPIView):
             wells = map(int, wells)
 
             qs = qs.filter(well_tag_number__in=wells)
-        
+
         return qs
 
 
@@ -875,5 +876,5 @@ class WellLithology(ListAPIView):
             wells = map(int, wells)
 
             qs = qs.filter(well_tag_number__in=wells)
-        
+
         return qs
