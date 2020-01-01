@@ -1025,6 +1025,7 @@ class WellDrawdownSerializer(serializers.ModelSerializer):
     screen_set = ScreenSerializer(many=True)
     intended_water_use = serializers.ReadOnlyField(source='intended_water_use.description')
     aquifer_subtype = serializers.ReadOnlyField(source='aquifer.subtype.description')
+    distance = serializers.FloatField(required=False)
 
     class Meta:
         model = Well
@@ -1035,6 +1036,7 @@ class WellDrawdownSerializer(serializers.ModelSerializer):
             "well_yield",
             "diameter",
             "aquifer",
+            "distance",
             "latitude",
             "longitude",
             "well_yield_unit",

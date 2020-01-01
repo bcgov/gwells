@@ -18,6 +18,7 @@ from django import forms
 from django.core.exceptions import FieldDoesNotExist
 from django.http import HttpRequest, QueryDict
 from django.contrib.gis.geos import GEOSException, Polygon, GEOSGeometry, Point
+from django.contrib.gis.db.models.functions import Transform
 from django.contrib.gis.measure import D
 from django.db.models import Max, Min, Q, QuerySet
 from django_filters import rest_framework as filters
@@ -115,12 +116,13 @@ class RadiusFilterBackend(BaseFilterBackend):
 
         if point and radius:
             try:
-                shape = Point(point, srid=int(srid))
-            except (ValueError, GEOSException):
+                shape = GEOSGeometry(point, srid=int(srid))
+                assert shape.geom_type == 'Point'
+            except (ValueError, AssertionError, GEOSException):
                 pass
             else:
                 shape.transform(3005)
-                queryset = queryset.transform(3005, 'geom').filter(geom__dwithin=D(m=radius))
+                queryset = queryset.annotate(geom_albers=Transform('geom', 3005)).filter(geom_albers__dwithin=(shape, D(m=radius)))
 
         return queryset
 

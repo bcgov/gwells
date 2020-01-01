@@ -17,10 +17,10 @@ import logging
 import sys
 import time
 
-from django.contrib.gis.measure import D
-from django.contrib.gis.db.models.functions import Centroid
-from django.contrib.gis.geos import GEOSException, Point
-from django.db.models import Prefetch
+from django.contrib.gis.db.models.functions import Centroid, Distance
+from django.contrib.gis.geos import GEOSException, Point, GEOSGeometry
+from django.db.models import Prefetch, FloatField
+from django.db.models.functions import Cast
 from django.http import (
     FileResponse, Http404, HttpResponse, HttpResponseNotFound,
     HttpResponseRedirect, JsonResponse, StreamingHttpResponse, HttpResponseBadRequest)
@@ -820,15 +820,17 @@ class WellScreens(ListAPIView):
         # the filter_backends classes).  If so, add distances from the point.
         point = self.request.query_params.get('point', None)
         srid = self.request.query_params.get('srid', 4326)
-        if point:
+        radius = self.request.query_params.get('radius', None)
+        if point and radius:
             try:
-                shape = Point(point, srid=int(srid))
-
-            except (ValueError, GEOSException):
+                shape = GEOSGeometry(point, srid=int(srid))
+                radius = float(radius)
+                assert shape.geom_type == 'Point'
+            except (ValueError, AssertionError, GEOSException):
                 pass
             else:
                 qs = qs.annotate(
-                    distance=D('geom', shape)
+                    distance=Cast(Distance('geom', shape), output_field=FloatField())
                 ).order_by('distance')
 
         if not self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
