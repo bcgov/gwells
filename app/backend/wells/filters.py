@@ -122,7 +122,8 @@ class RadiusFilterBackend(BaseFilterBackend):
                 pass
             else:
                 shape.transform(3005)
-                queryset = queryset.annotate(geom_albers=Transform('geom', 3005)).filter(geom_albers__dwithin=(shape, D(m=radius)))
+                queryset = queryset.annotate(geom_albers=Transform('geom', 3005)) \
+                    .filter(geom_albers__dwithin=(shape, D(m=radius)))
 
         return queryset
 
