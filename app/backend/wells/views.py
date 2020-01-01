@@ -814,7 +814,13 @@ class WellScreens(ListAPIView):
     swagger_schema = None
 
     def get_queryset(self):
-        qs = Well.objects.all()
+        qs = Well.objects.all() \
+            .select_related('intended_water_use', 'aquifer', 'aquifer__subtype') \
+            .prefetch_related('screen_set')
+
+
+        if not self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
+            qs = qs.exclude(well_publication_status='Unpublished')
 
         # check if a point was supplied (note: actual filtering will be by
         # the filter_backends classes).  If so, add distances from the point.
@@ -832,9 +838,6 @@ class WellScreens(ListAPIView):
                 qs = qs.annotate(
                     distance=Cast(Distance('geom', shape), output_field=FloatField())
                 ).order_by('distance')
-
-        if not self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
-            qs = qs.exclude(well_publication_status='Unpublished')
 
         # can also supply a comma separated list of wells
         wells = self.request.query_params.get('wells', None)
