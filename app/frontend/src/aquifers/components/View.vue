@@ -182,11 +182,18 @@
               </b-col>
             </b-row>
           </div>
-          <b-table striped :items="licence_details.wells_by_licence">
+          <b-table id="licenses" striped :items="licence_details.wells_by_licence">
             <template slot="licence_number" slot-scope="row">
               <a :href="`https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&amp;PosseObjectDef=o_ATIS_DocumentSearch&amp;PosseMenuName=WS_Main&Criteria_LicenceNumber=${row.item.licence_number}`" target="_blank">
                 {{ row.item.licence_number }}
               </a>
+            </template>
+            <template slot="well_tag_numbers_in_licence" slot-scope="row">
+              <ul class="p-0 m-0">
+                <li v-for="wtn in row.item.well_tag_numbers_in_licence" :key="wtn">
+                  <router-link :to="{ name: 'wells-detail', params: { id: wtn }}">{{ wtn }}</router-link>
+                </li>
+              </ul>
             </template>
           </b-table>
           <p><i v-if="licence_details.licences_updated && licence_details.licences_updated.update_date__max">Licence info last updated {{ licence_details.licences_updated.update_date__max|formatDate }}</i></p>
@@ -385,6 +392,15 @@ a {
 
 .observational-wells .obs-wells-wo-well-level span:not(:last-child):after {
   content: ", ";
+}
+
+#licenses li {
+  list-style: none;
+  display: inline;
+}
+
+#licenses li:not(:last-child):after {
+  content: ', ';
 }
 
 @media print {
@@ -617,11 +633,22 @@ export default {
     fetch (id = this.id) {
       return ApiService.query(`aquifers/${id}`)
         .then((response) => {
+          const responseData = response.data || {}
+
+          if (responseData.licence_details.wells_by_licence) {
+            responseData.licence_details.wells_by_licence.forEach((licence) => {
+              if (licence.well_tag_numbers_in_licence) {
+                const wtns = licence.well_tag_numbers_in_licence
+                licence.well_tag_numbers_in_licence = wtns.split(',').map((n) => parseInt(n))
+              }
+            })
+          }
+
           // force the map to update.
-          this.record = response.data
-          this.licence_details = response.data.licence_details
-          this.lic_qty = response.data.licence_details.lic_qty
-          const obsWells = response.data.licence_details.obs_wells
+          this.record = responseData
+          this.licence_details = responseData.licence_details
+          this.lic_qty = responseData.licence_details.lic_qty
+          const obsWells = responseData.licence_details.obs_wells
 
           return this.getWaterLevels(obsWells).then(() => {
             const sortedWells = orderBy(obsWells, ['hasLevelAnalysis', 'waterLevels'], ['desc', 'asc']) // sorts so wells with waterLevels are at the top.
