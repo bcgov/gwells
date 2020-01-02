@@ -11,13 +11,31 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
+<template>
+  <div class="map-loading-spinner" v-if="loading">
+    <div class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></div>
+    <strong class="pl-1">Loading...</strong>
+  </div>
+</template>
 
-import aquiferCodes from './codes.js'
-import aquiferGeoms from './geoms.js'
-
-const aquifersStore = {
-  namespaced: true,
-  modules: { aquiferCodes, aquiferGeoms }
+<style>
+.map-loading-spinner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  background-color: rgba(255, 255, 255, 0.6);
+  pointer-events: none;
 }
+</style>
 
-export default aquifersStore
+<script>
+export default {
+  props: ['loading']
+}
+</script>

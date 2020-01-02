@@ -111,10 +111,7 @@
           </b-row>
         </b-col>
         <b-col id="map-container" cols="12" md="12" lg="7" class="p-0">
-          <div id="map-loading-spinner" v-if="loadingMap">
-            <div class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></div>
-            <strong class="pl-1">Loading...</strong>
-          </div>
+          <map-loading-spinner :loading="loadingMap"/>
 
           <single-aquifer-map :aquifer-id="id" :geom="record.geom" :wells="wells" :key="mapKey" :loading="loadingMap"/>
         </b-col>
@@ -280,8 +277,7 @@
                   <b-popover
                     target="aquiferConnectedInfo"
                     triggers="hover focus"
-                    content="Inferred based on aquifer subtype - not field verified."
-                  ></b-popover>
+                    content="Inferred based on aquifer subtype - not field verified."/>
                 </dt>
                 <dd class="m-0">{{ licence_details['hydraulically_connected'] ? "More likely" : "Less likely"}}</dd>
               </div>
@@ -321,19 +317,6 @@ a {
 
 #map-container {
   position: relative;
-}
-
-#map-loading-spinner {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  background-color: rgba(255, 255, 255, 0.6);
 }
 
 .card-container .card-body {
@@ -462,6 +445,7 @@ import APIErrorMessage from '@/common/components/APIErrorMessage'
 import AquiferForm from './Form'
 import Documents from './Documents.vue'
 import SingleAquiferMap from './SingleAquiferMap.vue'
+import MapLoadingSpinner from './MapLoadingSpinner.vue'
 import ChangeHistory from '@/common/components/ChangeHistory.vue'
 import { mapActions, mapGetters, mapState } from 'vuex'
 import { sumBy, orderBy, groupBy, range } from 'lodash'
@@ -474,6 +458,7 @@ export default {
     'aquifer-form': AquiferForm,
     'aquifer-documents': Documents,
     'single-aquifer-map': SingleAquiferMap,
+    'map-loading-spinner': MapLoadingSpinner,
     ChangeHistory,
     PieChart
   },

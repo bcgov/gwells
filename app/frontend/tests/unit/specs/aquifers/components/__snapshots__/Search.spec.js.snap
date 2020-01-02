@@ -140,7 +140,7 @@ exports[`Search Component Matches the snapshot 1`] = `
                       type="submit"
                     >
                       Search
-                      
+                    
                       <!---->
                     </button>
                      
@@ -191,6 +191,22 @@ exports[`Search Component Matches the snapshot 1`] = `
         <div
           class="map-column col-md-12 col-lg-12 col-xl-8 col-12"
         >
+          <div
+            class="map-loading-spinner"
+          >
+            <div
+              aria-hidden="true"
+              class="spinner-border spinner-border-sm"
+              role="status"
+            />
+             
+            <strong
+              class="pl-1"
+            >
+              Loading...
+            </strong>
+          </div>
+           
           <div
             class="map"
             id="map"
