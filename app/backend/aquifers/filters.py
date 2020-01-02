@@ -28,11 +28,9 @@ class BoundingBoxFilterBackend(BaseFilterBackend):
         ne_lat = request.query_params.get('ne_lat')
 
         if sw_long and sw_lat and ne_long and ne_lat:
-            ct = CoordTransform(SpatialReference('NAD83'), SpatialReference('EPSG:4326'))
-
             try:
                 bbox = Polygon.from_bbox((sw_long, sw_lat, ne_long, ne_lat))
-                bbox.transform(ct)
+                bbox.srid = 4326
             except (ValueError, GEOSException):
                 pass
             else:
