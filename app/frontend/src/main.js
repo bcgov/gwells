@@ -11,9 +11,10 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
+import '@/common/helpers/browserUpdate'
 import Vue from 'vue'
-import * as Sentry from '@sentry/browser';
-import * as Integrations from '@sentry/integrations';
+import * as Sentry from '@sentry/browser'
+import * as Integrations from '@sentry/integrations'
 import Vuex, { mapActions } from 'vuex'
 import VueNoty from 'vuejs-noty'
 import BootstrapVue from 'bootstrap-vue'
@@ -37,7 +38,7 @@ import ApiService from '@/common/services/ApiService.js'
 Sentry.init({
   dsn: 'https://a83809da8c9b4f39b3d7cd683b803859@sentry.io/1802823',
   integrations: process.env.NODE_ENV === 'production' ? [new Integrations.Vue({Vue, attachProps: true, logError: true})] : []
-});
+})
 
 Vue.use(Vuex)
 Vue.use(VueNoty, {
