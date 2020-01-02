@@ -21,7 +21,7 @@
             Aquifer number
           </b-col>
           <b-col class="aquifer-id" md="8">
-            {{record.aquifer_id}}
+            {{id}}
           </b-col>
         </b-row>
 
@@ -134,7 +134,7 @@
           label-cols="4"
           label="Documents">
           <b-form-file
-            v-model="files"
+            v-model="uploadFiles"
             multiple
             plain/>
           <div class="mt-3">
@@ -142,12 +142,14 @@
              id="isPrivateCheckbox"
              v-model="privateDocument">Are these documents private?</b-form-checkbox>
           </div>
-          <div class="mt-3" v-if="upload_files.length > 0">
-            <b-list-group>
-              <b-list-group-item v-for="(f, index) in upload_files" :key="index">{{f.name}}</b-list-group-item>
-            </b-list-group>
-          </div>
         </b-form-group>
+        <h5>Public documentation</h5>
+        <aquifer-documents :files="files"
+          :editMode="true"
+          :id="id"
+          :loading="loadingFiles"
+          v-on:fetchFiles="$emit('fetchFiles')">
+        </aquifer-documents>
       </b-col>
 
       <b-col md="6">
@@ -353,8 +355,21 @@ import ApiService from '@/common/services/ApiService.js'
 import { isEmpty, mapValues } from 'lodash'
 import { mapMutations, mapState } from 'vuex'
 
+import Documents from './Documents.vue'
+
 export default {
+  components: {
+    'aquifer-documents': Documents
+  },
+  props: {
+    fieldErrors: Object,
+    record: Object,
+    showId: Boolean,
+    files: Object,
+    loadingFiles: Boolean
+  },
   computed: {
+    id () { return this.$route.params.id },
     resourceErrorMessages () {
       let messages
       if (this.fieldErrors.resources) {
@@ -375,7 +390,7 @@ export default {
     fieldHasError () {
       return mapValues(this.fieldErrors, (messages) => isEmpty(messages))
     },
-    files: {
+    uploadFiles: {
       get: function () {
         return this.upload_files
       },
@@ -415,12 +430,6 @@ export default {
       'shapefile'
     ])
   },
-
-  props: {
-    fieldErrors: Object,
-    record: Object,
-    showId: Boolean
-  },
   methods: {
     ...mapMutations('aquiferCodes', ['addCodes']),
     ...mapMutations('documentState', [
@@ -440,7 +449,7 @@ export default {
     },
     fetchCode (codePath, key) {
       ApiService.query(codePath).then((response) => {
-        this.addCodes({key, codeTable: response.data.results})
+        this.addCodes({ key, codeTable: response.data.results })
       })
     },
     fetchCodes () {
@@ -452,7 +461,7 @@ export default {
       this.fetchCode('aquifer-codes/productivity', 'productivity_codes')
       this.fetchCode('aquifer-codes/demand', 'demand_codes')
       this.fetchCode('aquifer-codes/water-use', 'known_water_use_codes')
-    },
+    }
   },
   created () {
     this.fetchCodes()

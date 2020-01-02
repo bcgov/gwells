@@ -13,46 +13,38 @@
 */
 
 <template>
-  <div>
-    <div v-if="loading" class="row no-gutters">
-      <div class="col-md-12">
-        Loading documents...
-        <div class="fa-2x text-center">
-          <i class="fa fa-circle-o-notch fa-spin"></i>
-        </div>
+  <div id="well-documents">
+    <div v-if="loading">
+      Loading documents...
+      <div class="fa-2x text-center">
+        <i class="fa fa-circle-o-notch fa-spin"/>
       </div>
     </div>
-    <div v-else>
-      <div class="row no-gutters">
-        <div class="col-md-12">
-          <!-- public documents -->
-          <div v-if="error">
-            {{error}}
-          </div>
-          <ul v-else-if="files && files.public && files.public.length">
-            <li v-for="(file, index) in files.public" :key="index">
-              <a :href="file.url" :download="file.name" target="_blank" @click="handleDownloadEvent(file.name)">{{file.name}}</a>
-            </li>
-          </ul>
-          <div v-else>
-              No additional documentation available for this well.
-          </div>
-        </div>
+    <div v-else class="mt-3">
+      <!-- public documents -->
+      <div v-if="error">
+        {{error}}
       </div>
-      <div class="row no-gutters mt-3" v-if="userRoles.wells.view">
-        <div class="col-md-12">
-          <h5>Internal documentation - authorized access only</h5>
-          <div v-if="error">
-            {{error}}
-          </div>
-          <ul v-else-if="files && files.private && files.private.length">
-            <li v-for="(file, index) in files.private" :key="index">
-              <a :href="file.url" :download="file.name" target="_blank" @click="handleDownloadEvent(file.name)">{{file.name}}</a>
-            </li>
-          </ul>
-          <div v-else>
-            No additional private documentation available for this well.
-          </div>
+      <ul v-else-if="files && files.public && files.public.length">
+        <li v-for="(file, index) in files.public" :key="index">
+          <a :href="file.url" :download="file.name" target="_blank" @click="handleDownloadEvent(file.name)">{{file.name}}</a>
+        </li>
+      </ul>
+      <div v-else>
+        No additional documentation available for this well.
+      </div>
+      <div class="internal-documents mt-5" v-if="userRoles.wells.view">
+        <h5>Internal documentation - authorized access only</h5>
+        <div v-if="error">
+          {{error}}
+        </div>
+        <ul v-else-if="files && files.private && files.private.length">
+          <li v-for="(file, index) in files.private" :key="index">
+            <a :href="file.url" :download="file.name" target="_blank" @click="handleDownloadEvent(file.name)">{{file.name}}</a>
+          </li>
+        </ul>
+        <div v-else>
+          No additional private documentation available for this well.
         </div>
       </div>
     </div>
