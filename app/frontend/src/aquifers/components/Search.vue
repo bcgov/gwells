@@ -396,7 +396,9 @@ export default {
       this.matchAny = false
       this.selectedAquiferId = null
       this[RESET_SEARCH]()
-      this.$emit('resetLayers')
+      this.$nextTick(() => {
+        this.$emit('resetLayers')
+      })
     },
     triggerSearch () {
       this[SEARCH_AQUIFERS]({

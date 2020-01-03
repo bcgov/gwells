@@ -9,7 +9,6 @@ import { tiledMapLayer } from 'esri-leaflet'
 import { GeoSearchControl, EsriProvider } from 'leaflet-geosearch'
 import 'leaflet-lasso'
 import 'leaflet-fullscreen/dist/Leaflet.fullscreen.min.js'
-import { filter } from 'lodash'
 
 import aquiferLayers from '../layers'
 import { buildLegendHTML } from '../legend'
