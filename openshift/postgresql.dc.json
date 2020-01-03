@@ -108,6 +108,12 @@
         {
             "name": "NAME_SUFFIX",
             "required": true
+        },
+        {
+            "description": "Storage class for PVCs.",
+            "displayName": "Storage class for PVCs.",
+            "name": "STORAGE_CLASS",
+            "value": "gluster-file-db"
         }
     ],
     "objects": [
@@ -168,8 +174,7 @@
             "metadata": {
                 "name": "${DATABASE_SERVICE_NAME}",
                 "annotations":{
-                    "template.openshift.io.bcgov/create": "true",
-                    "volume.beta.kubernetes.io/storage-provisioner": "kubernetes.io/glusterfs"
+                    "template.openshift.io.bcgov/create": "true"
                 }
             },
             "spec": {
@@ -181,7 +186,7 @@
                         "storage": "${VOLUME_CAPACITY}"
                     }
                 },
-                "storageClassName": "gluster-file-db"
+                "storageClassName": "${STORAGE_CLASS}"
             }
         },
         {
