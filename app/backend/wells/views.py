@@ -764,7 +764,7 @@ def lithology_geojson(request, **kwargs):
 @api_view(['GET'])
 def well_licensing(request, **kwargs):
     tag = request.GET.get('well_tag_number')
-    url = get_env_variable('E_LICENSING_URL') + '{}'.format(tag)
+    eLicensingUrl = get_env_variable('E_LICENSING_URL')
     api_success = False
 
     headers = {
@@ -773,22 +773,23 @@ def well_licensing(request, **kwargs):
         'AuthPass': get_env_variable('E_LICENSING_AUTH_PASSWORD')
     }
 
-    try:
-        response = requests.get(url, headers=headers)
-        if response.ok:
-            try:
-                licence = response.json()[-1]  # Use the latest licensing value, fails purposely if empty array
-                licence_status = 'Licensed' if licence.get('authorization_status') == 'ACTIVE' else 'Unlicensed'
-                data = {
-                    'status': licence_status,
-                    'number': licence.get('authorization_number'),
-                    'date': licence.get('authorization_status_date')
-                }
-                api_success = True
-            except:
-                pass
-    except:
-        pass
+    if eLicensingUrl:
+        try:
+            response = requests.get(eLicensingUrl + '{}'.format(tag), headers=headers)
+            if response.ok:
+                try:
+                    licence = response.json()[-1]  # Use the latest licensing value, fails purposely if empty array
+                    licence_status = 'Licensed' if licence.get('authorization_status') == 'ACTIVE' else 'Unlicensed'
+                    data = {
+                        'status': licence_status,
+                        'number': licence.get('authorization_number'),
+                        'date': licence.get('authorization_status_date')
+                    }
+                    api_success = True
+                except:
+                    pass
+        except:
+            pass
 
     if not api_success:
         well = Well.objects.get(well_tag_number=tag)

@@ -31,6 +31,7 @@ import {
   SET_CONSTRAIN_SEARCH,
   SET_PENDING_LOCATION_SEARCH,
   SET_PENDING_SEARCH,
+  SET_HAS_SEARCHED,
   SET_SEARCH_BOUNDS,
   SET_SEARCH_LIMIT,
   SET_SEARCH_OFFSET,
@@ -82,6 +83,7 @@ const wellsStore = {
     pendingLocationSearch: null,
     pendingSearch: null,
     constrainSearch: false,
+    hasSearched: false,
     searchBounds: {},
     searchErrors: {},
     searchLimit: DEFAULT_LIMIT,
@@ -118,6 +120,9 @@ const wellsStore = {
     },
     [SET_PENDING_SEARCH] (state, payload) {
       state.pendingSearch = payload
+    },
+    [SET_HAS_SEARCHED] (state, payload) {
+      state.hasSearched = payload
     },
     [SET_CONSTRAIN_SEARCH] (state, payload) {
       state.constrainSearch = payload
@@ -186,6 +191,7 @@ const wellsStore = {
       }
 
       commit(SET_PENDING_LOCATION_SEARCH, null)
+      commit(SET_HAS_SEARCHED, false)
       commit(SET_PENDING_SEARCH, null)
       commit(SET_CONSTRAIN_SEARCH, false)
       commit(SET_SEARCH_BOUNDS, {})
@@ -201,6 +207,8 @@ const wellsStore = {
       commit(SET_SEARCH_RESULT_FILTERS, {})
     },
     [SEARCH_LOCATIONS] ({ commit, state }) {
+      commit(SET_LOCATION_ERRORS, {})
+
       if (state.pendingLocationSearch !== null) {
         state.pendingLocationSearch.cancel()
       }
@@ -217,13 +225,13 @@ const wellsStore = {
       ApiService.query('wells/locations', params, { cancelToken: cancelSource.token }).then((response) => {
         if (response.data.count === 0) {
           commit(SET_LOCATION_ERRORS, { detail: 'No well records could be found.' })
+          commit(SET_LOCATION_SEARCH_RESULTS, [])
         } else if (response.data.count > response.data.results.length) {
           commit(SET_LOCATION_ERRORS, {
             detail: 'Too many wells to display on map. ' +
                     'Please zoom in or change your search criteria.'
           })
         } else {
-          commit(SET_LOCATION_ERRORS, {})
           commit(SET_LOCATION_SEARCH_RESULTS, response.data.results)
         }
       }).catch((err) => {
@@ -241,7 +249,8 @@ const wellsStore = {
       })
     },
     [SEARCH_WELLS] ({ commit, state }, { constrain = null, trigger = null }) {
-      state.lastSearchTrigger = trigger
+      commit(SET_LAST_SEARCH_TRIGGER, trigger)
+      commit(SET_HAS_SEARCHED, true)
 
       if (state.pendingSearch !== null) {
         state.pendingSearch.cancel()
@@ -318,6 +327,9 @@ const wellsStore = {
     },
     pendingLocationSearch (state) {
       return state.pendingLocationSearch
+    },
+    hasSearched (state) {
+      return state.hasSearched
     },
     pendingSearch (state) {
       return state.pendingSearch

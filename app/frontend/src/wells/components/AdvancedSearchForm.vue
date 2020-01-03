@@ -308,12 +308,12 @@ export default {
       this.filterParams[filterId] = {}
     },
     initFilterParams () {
-      const filterParams = {...this.emptyFilterParams}
+      const filterParams = { ...this.emptyFilterParams }
 
       Object.entries(this.searchParams).forEach(([param, value]) => {
         [...this.defaultFilterFields, ...this.additionalFilterFields].forEach(field => {
           if (field.params.includes(param)) {
-            filterParams[field.id] = {[param]: value}
+            filterParams[field.id] = { [param]: value }
           }
         })
       })
