@@ -252,8 +252,10 @@ export default {
     zoomToMarkers () {
       this.zoomToMarkersActive = true
       this.$nextTick(() => {
-        const markerBounds = this.$refs.wellMarkers.mapObject.getBounds().pad(0.5)
-        this.$refs.map.mapObject.fitBounds(markerBounds)
+        const markerBounds = this.$refs.wellMarkers.mapObject.getBounds()
+        if (markerBounds.isValid()) {
+          this.$refs.map.mapObject.fitBounds(markerBounds.pad(0.5))
+        }
       })
     },
     zoomUpdated (zoom) {

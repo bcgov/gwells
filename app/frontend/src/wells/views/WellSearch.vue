@@ -65,7 +65,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <search-results />
         </b-col>
       </b-row>
-      <b-row v-if="!hasSearched">
+      <b-row v-if="!hasSearched" class="mt-5">
         <b-col>
           <p>
             Can’t find the well you are looking for? Try your search again using a different set of criteria. If you still need more assistance, Contact <a href="https://portal.nrs.gov.bc.ca/web/client/contact" target="_blank">FrontCounterBC</a>.

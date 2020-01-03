@@ -33,7 +33,7 @@
     </b-alert>
     <b-container fluid>
       <b-row v-if="editMode && !loading" class="border-bottom mb-3 pb-2">
-        <b-col><h4>Aquifer {{record.aquifer_id}} Summary - Edit</h4></b-col>
+        <b-col><h4>Aquifer {{id}} Summary - Edit</h4></b-col>
       </b-row>
       <aquifer-form
         v-on:load="loadForm"
@@ -73,7 +73,7 @@
             <b-col cols="12" sm="12" class="pl-4 pr-4 aquifer-main-information-list">
               <b-row>
                 <b-col cols="6" md="3" lg="6">Aquifer number</b-col>
-                <b-col cols="6" md="3" lg="6" id="aquifer-view-number">{{record.aquifer_id}}</b-col>
+                <b-col cols="6" md="3" lg="6" id="aquifer-view-number">{{id}}</b-col>
                 <b-col cols="6" md="3" lg="6">Year of mapping</b-col>
                 <b-col cols="6" md="3" lg="6">{{record.mapping_year}}</b-col>
               </b-row>
@@ -113,7 +113,7 @@
         <b-col id="map-container" cols="12" md="12" lg="7" class="p-0">
           <map-loading-spinner :loading="loadingMap"/>
 
-          <single-aquifer-map :aquifer-id="id" :geom="record.geom" :wells="wells" :key="mapKey" :loading="loadingMap"/>
+          <single-aquifer-map :aquifer-id="id" :geom="record.geom" :wells="aquiferWells" :key="mapKey" :loading="loadingMap"/>
         </b-col>
       </b-row>
 
@@ -125,7 +125,7 @@
             <li>
               <dt>Number of wells associated to the aquifer</dt>
               <dd class="m-0">
-                <router-link :to="{ name: 'wells-home', query: {'match_any':false, 'aquifer': this.record.aquifer_id, 'search':'', 'well':''}}">
+                <router-link :to="{ name: 'wells-home', query: {'match_any':false, 'aquifer': id, 'search':'', 'well':''}, hash: '#advanced'}">
                   {{ licence_details.num_wells }}
                 </router-link>
               </dd>
@@ -133,7 +133,7 @@
             <li>
               <dt>Artesian wells</dt>
               <dd class="m-0">
-                <router-link :to="{ name: 'wells-home', query: {'match_any':false, 'aquifer':this.id, 'artesian_flow_has_value':true}, hash: '#advanced'}">
+                <router-link :to="{ name: 'wells-home', query: {'match_any':false, 'aquifer': id, 'artesian_flow_has_value':true}, hash: '#advanced'}">
                   {{ licence_details.num_artesian_wells }} artesian wells in aquifer
                 </router-link>
               </dd>
@@ -223,7 +223,7 @@
                   <div v-if="activeObsWells.length > 0">
                     <h6 class="border-bottom">Active</h6>
                     <ul class="p-0 m-0">
-                      <li v-for="owell in activeObsWells" :key="owell.observation_well_number" :data-water-level="owell.waterLevels">
+                      <li v-for="owell in activeObsWells" :key="owell.well_tag_number" :data-water-level="owell.waterLevels">
                         <a :href="getObservationWellLink(owell.observation_well_number)" target="_blank" class="d-print-url">
                           {{ owell.observation_well_number }}
                         </a>
@@ -239,7 +239,7 @@
                   <div v-if="inactiveObsWellsWithWaterLevel.length > 0 || inativeObsWellsWithOutWaterLevel.length > 0">
                     <h6 class="border-bottom mt-2">Inactive<br><small>(data may not be available)</small></h6>
                     <ul class="p-0 m-0">
-                      <li v-for="owell in inactiveObsWellsWithWaterLevel" :key="owell.observation_well_number" :data-water-level="owell.waterLevels">
+                      <li v-for="owell in inactiveObsWellsWithWaterLevel" :key="owell.well_tag_number" :data-water-level="owell.waterLevels">
                         <a :href="getObservationWellLink(owell.observation_well_number)" target="_blank" class="d-print-url">
                           {{ owell.observation_well_number }}
                         </a>
@@ -447,7 +447,7 @@ import Documents from './Documents.vue'
 import SingleAquiferMap from './SingleAquiferMap.vue'
 import MapLoadingSpinner from './MapLoadingSpinner.vue'
 import ChangeHistory from '@/common/components/ChangeHistory.vue'
-import { mapActions, mapGetters, mapState } from 'vuex'
+import { mapActions, mapGetters, mapState, mapMutations } from 'vuex'
 import { sumBy, orderBy, groupBy, range } from 'lodash'
 import PieChart from './PieChart.vue'
 import * as Sentry from '@sentry/browser'
@@ -466,33 +466,21 @@ export default {
     'edit': Boolean
   },
   created () {
-    this.loadingMap = true
+    if (this.id === null) {
+      this.error = `Unable to load aquifer '${this.id}'`
+    }
 
-    Promise.all([
-      this.fetch(),
-      this.fetchWells()
-    ]).then(() => {
-      this.loadingMap = false
-    })
+    if (this.id === this.storedId) { return }
 
-    this.fetchFiles()
+    this.loadAquifer()
   },
   data () {
     return {
       mapKey: 0, // component key to force updates.
       error: undefined,
       fieldErrors: {},
-      loading: false,
-      loadingFiles: false,
-      loadingMap: false,
-      record: {},
       form: {},
-      licence_details: {
-        usage: [],
-        lic_qty: []
-      },
       showSaveSuccess: false,
-      aquiferFiles: {},
       aquifer_resource_sections: [
         { code: 'M', name: 'Advanced mapping' },
         { code: 'A', name: 'Artesian advisory' },
@@ -505,18 +493,13 @@ export default {
         { code: 'G', name: 'Groundwater Surface Water Interactions' },
         { code: 'I', name: 'Other information' }
       ],
-      wells: [],
-      activeObsWells: [],
-      inactiveObsWellsWithWaterLevel: [],
-      inativeObsWellsWithOutWaterLevel: [],
-      noObsWells: false,
-      waterWithdrawlVolume: ''
+      waterWithdrawlVolume: '',
+      loading: false,
+      loadingFiles: false,
+      loadingMap: false
     }
   },
   computed: {
-    id () { return this.$route.params.id },
-    editMode () { return this.edit },
-    viewMode () { return !this.edit },
     ...mapGetters(['userRoles']),
     ...mapState('documentState', [
       'files_uploading',
@@ -527,11 +510,53 @@ export default {
       'shapefile_uploading',
       'shapefile_upload_message',
       'shapefile_upload_success'
-    ])
+    ]),
+    ...mapState('aquiferStore/view', [
+      'record',
+      'aquiferFiles',
+      'aquiferWells'
+    ]),
+    ...mapState('aquiferStore/view', {
+      storedId: 'id'
+    }),
+    id () { return parseInt(this.$route.params.id) || null },
+    editMode () { return this.edit },
+    viewMode () { return !this.edit },
+    licence_details () {
+      return this.record.licence_details || { usage: [], lic_qty: [] }
+    },
+    obsWells () {
+      return this.licence_details.obs_wells
+    },
+    obsWellsByStatus () {
+      const sortedWells = orderBy(this.obsWells, ['hasLevelAnalysis', 'waterLevels'], ['desc', 'asc']) // sorts so wells with waterLevels are at the top.
+      const wellsByStatus = groupBy(sortedWells, 'observation_well_status') // groups wells into active and inactive categories
+      return wellsByStatus
+    },
+    activeObsWells () {
+      return this.obsWellsByStatus.Active || []
+    },
+    inactiveObsWells () {
+      return this.obsWellsByStatus.Inactive || []
+    },
+    inactiveObsWellsWithWaterLevel () {
+      // inactive wells with water level analysis
+      return this.inactiveObsWells.filter((w) => w.waterLevels)
+    },
+    inativeObsWellsWithOutWaterLevel () {
+      // inactive wells without water level analysis
+      return this.inactiveObsWells.filter((w) => !w.waterLevels)
+    },
+    noObsWells () {
+      // Show the "No information available." message when there are no obs wells to show
+      return this.activeObsWells.length === 0 && this.inactiveObsWells.length === 0
+    }
   },
   watch: {
     id () {
-      this.fetch()
+      if (this.id !== this.storedId) {
+        this.loadAquifer()
+      }
     },
     licence_details (newLDetails, oldLDetails) {
       this.setWaterVolume(newLDetails)
@@ -553,6 +578,15 @@ export default {
       'uploadShapefile',
       'fileUploadSuccess',
       'fileUploadFail'
+    ]),
+    ...mapActions('aquiferStore/view', [
+      'resetAquiferData'
+    ]),
+    ...mapMutations('aquiferStore/view', [
+      'setAquiferId',
+      'setAquiferRecord',
+      'setAquiferFiles',
+      'setAquiferWells'
     ]),
     loadForm () {
       ApiService.query(`aquifers/${this.id}/edit`)
@@ -630,6 +664,20 @@ export default {
     print () {
       window.print()
     },
+    loadAquifer () {
+      this.resetAquiferData()
+      this.setAquiferId(this.id)
+
+      this.loadingMap = true
+      Promise.all([
+        this.fetch(),
+        this.fetchWells()
+      ]).then(() => {
+        this.loadingMap = false
+      })
+
+      this.fetchFiles()
+    },
     fetch (id = this.id) {
       return ApiService.query(`aquifers/${id}`)
         .then((response) => {
@@ -644,26 +692,10 @@ export default {
             })
           }
 
-          // force the map to update.
-          this.record = responseData
-          this.licence_details = responseData.licence_details
-          this.lic_qty = responseData.licence_details.lic_qty
           const obsWells = responseData.licence_details.obs_wells
 
           return this.getWaterLevels(obsWells).then(() => {
-            const sortedWells = orderBy(obsWells, ['hasLevelAnalysis', 'waterLevels'], ['desc', 'asc']) // sorts so wells with waterLevels are at the top.
-            const wellsByStatus = groupBy(sortedWells, 'observation_well_status') // groups wells into active and inactive categories
-
-            this.activeObsWells = wellsByStatus.Active || []
-
-            const inactiveObsWells = wellsByStatus.Inactive || []
-
-            // split inactive wells into those with water level analysis and those without
-            this.inactiveObsWellsWithWaterLevel = inactiveObsWells.filter((w) => w.waterLevels)
-            this.inativeObsWellsWithOutWaterLevel = inactiveObsWells.filter((w) => !w.waterLevels)
-
-            // Show the "No information available." message when there are no obs wells to show
-            this.noObsWells = this.activeObsWells.length === 0 && inactiveObsWells.length === 0
+            this.setAquiferRecord(responseData)
           })
         })
     },
@@ -671,7 +703,7 @@ export default {
       this.loadingFiles = true
       return ApiService.query(`aquifers/${id}/files`)
         .then((response) => {
-          this.aquiferFiles = response.data
+          this.setAquiferFiles(response.data)
           this.loadingFiles = false
         })
     },
@@ -698,7 +730,7 @@ export default {
 
           return promise
         }).then((wells) => {
-          this.wells = wells || []
+          this.setAquiferWells(wells || [])
         })
     },
     getObservationWellLink (wellNumber) {
