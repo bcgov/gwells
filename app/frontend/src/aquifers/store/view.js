@@ -24,11 +24,9 @@ export default {
     aquiferWells: []
   },
   mutations: {
-    setAquiferId (state, payload) {
-      state.id = payload
-    },
     setAquiferRecord (state, payload) {
       state.record = payload
+      state.id = payload.aquifer_id || null
     },
     setAquiferFiles (state, payload) {
       state.aquiferFiles = payload
@@ -39,7 +37,6 @@ export default {
   },
   actions: {
     resetAquiferData ({ commit, state }) {
-      commit('setAquiferId', null)
       commit('setAquiferRecord', {})
       commit('setAquiferFiles', {
         public: [],

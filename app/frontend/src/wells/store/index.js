@@ -19,7 +19,8 @@ import {
   FETCH_ORGANIZATION_NAMES,
   RESET_WELLS_SEARCH,
   SEARCH_LOCATIONS,
-  SEARCH_WELLS
+  SEARCH_WELLS,
+  RESET_WELL_DATA
 } from './actions.types.js'
 import {
   SET_DRILLER_NAMES,
@@ -41,7 +42,9 @@ import {
   SET_SEARCH_RESULT_COLUMNS,
   SET_SEARCH_RESULT_COUNT,
   SET_SEARCH_RESULT_FILTERS,
-  SET_SEARCH_RESULTS
+  SET_SEARCH_RESULTS,
+  SET_WELL_RECORD,
+  SET_WELL_LICENCE
 } from './mutations.types.js'
 
 Vue.use(Vuex)
@@ -94,7 +97,13 @@ const wellsStore = {
     // searchResultFilters provides a second level of filtering.
     searchResultFilters: {},
     searchResults: null,
-    searchResultCount: 0
+    searchResultCount: 0,
+    wellId: null,
+    wellRecord: {},
+    recordLicence: {
+      status: '',
+      number: ''
+    }
   },
   mutations: {
     [SET_ERROR] (state, payload) {
@@ -159,6 +168,13 @@ const wellsStore = {
     },
     [SET_SEARCH_RESULT_COUNT] (state, payload) {
       state.searchResultCount = payload
+    },
+    [SET_WELL_RECORD] (state, payload) {
+      state.wellRecord = payload
+      state.wellId = payload.well || null
+    },
+    [SET_WELL_LICENCE] (state, payload) {
+      state.recordLicence = payload
     }
   },
   actions: {
@@ -171,6 +187,13 @@ const wellsStore = {
           commit(SET_ERROR, err.response)
         })
       }
+    },
+    [RESET_WELL_DATA] ({ commit }) {
+      commit(SET_WELL_RECORD, {})
+      commit(SET_WELL_LICENCE, {
+        status: '',
+        number: ''
+      })
     },
     [FETCH_ORGANIZATION_NAMES] ({ commit }) {
       // fetch only once
@@ -363,6 +386,15 @@ const wellsStore = {
     },
     searchResults (state) {
       return state.searchResults
+    },
+    well (state) {
+      return state.wellRecord
+    },
+    wellLicence (state) {
+      return state.recordLicence
+    },
+    storedWellId (state) {
+      return state.wellId
     }
   }
 }

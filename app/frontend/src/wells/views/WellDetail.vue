@@ -7,14 +7,13 @@
     </div>
     <div v-else>
       <b-card no-body class="mb-3 container d-print-none">
-        <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"></b-breadcrumb>
+        <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"/>
       </b-card>
       <b-card v-if="errorNotFound" class="container p-1">
         <h1>Not Found</h1>
         <p>The page you are looking for was not found.</p>
       </b-card>
       <b-card v-else class="container p-1">
-
         <b-alert
             show
             variant="info"
@@ -33,7 +32,7 @@
           <legend>
             <span class="h2">Well Summary</span>
             <div class="float-right d-print-none">
-              <router-link v-if="show.edit" :to="{ name: 'SubmissionsEdit', params: { id: $route.params.id } }" class="mr-3">
+              <router-link v-if="show.edit" :to="{ name: 'SubmissionsEdit', params: { id } }" class="mr-3">
                 <button class="btn btn-primary mb-1">Edit</button>
               </router-link>
               <span class="print-notice">For best print results, use the Chrome browser</span>
@@ -107,8 +106,8 @@
         <fieldset id="well_licensing_fieldset" class="my-3 detail-section">
           <legend>Licensing Information</legend>
           <b-row>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Licensed Status:</span> {{ licence ? licence.status : '' }}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Licence Number:</span> {{ licence ? licence.number : '' }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Licensed Status:</span> {{ wellLicence.status }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Licence Number:</span> {{ wellLicence.number }}</b-col>
             <b-col cols="12" md="4"></b-col>
           </b-row>
         </fieldset>
@@ -219,7 +218,7 @@
               </div>
             </template>
           </b-table>
-          <b-pagination v-if="!!well.submission_work_dates.length && well.submission_work_dates.length > submissionsPerPage" size="md" :total-rows="well.submission_work_dates.length" v-model="submissionsPage" :per-page="submissionsPerPage" />
+          <b-pagination v-if="!!well.submission_work_dates && well.submission_work_dates.length > submissionsPerPage" size="md" :total-rows="well.submission_work_dates.length" v-model="submissionsPage" :per-page="submissionsPerPage" />
         </fieldset>
 
         <fieldset id="well_work_dates_fieldset" class="my-3 detail-section">
@@ -229,7 +228,7 @@
             ref="wellWorkDatesTable"
             striped
             bordered
-            :items=well_dates
+            :items=wellDates
             :fields="work_date_fields"
           >
           </b-table>
@@ -446,7 +445,7 @@
 
         <fieldset id="documents_fieldset" class="detail-section my-3">
           <legend>Documents</legend>
-          <documents :well="$route.params.id"></documents>
+          <documents :well="id"/>
         </fieldset>
 
         <fieldset id="disclaimer_fieldset" class="detail-section my-3">
@@ -462,12 +461,16 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapMutations, mapActions } from 'vuex'
+
 import SingleWellMap from '@/wells/components/SingleWellMap.vue'
 import Documents from '@/wells/components/Documents.vue'
 import convertCoordinatesMixin from '@/common/convertCoordinatesMixin.js'
 import ApiService from '@/common/services/ApiService.js'
 import codeToDescription from '@/common/codeToDescription.js'
+
+import { RESET_WELL_DATA } from '@/wells/store/actions.types.js'
+import { SET_WELL_RECORD, SET_WELL_LICENCE } from '@/wells/store/mutations.types.js'
 
 export default {
   name: 'WellDetail',
@@ -481,11 +484,6 @@ export default {
   data () {
     return {
       surveys: [],
-      well: {},
-      licence: {
-        status: '',
-        number: ''
-      },
       lithology_fields: {
         start: { label: 'From (ft bgl)' },
         end: { label: 'To (ft bgl)' },
@@ -519,7 +517,8 @@ export default {
     }
   },
   computed: {
-    well_dates () {
+    id () { return parseInt(this.$route.params.id) || null },
+    wellDates () {
       return [{
         construction_start_date: this.well.construction_start_date,
         construction_end_date: this.well.construction_end_date,
@@ -548,27 +547,18 @@ export default {
       return {}
     },
     breadcrumbs () {
-      const links = [
+      return [
         {
           text: 'Well Search',
           to: { name: 'wells-home' }
+        },
+        {
+          text: this.errorNotFound ? 'Not found' : 'Well Summary',
+          active: true
         }
       ]
-
-      if (this.errorNotFound) {
-        links.push({
-          text: 'Not found',
-          active: true
-        })
-        return links
-      }
-      links.push({
-        text: 'Well Summary',
-        active: true
-      })
-      return links
     },
-    ...mapGetters(['userRoles', 'config'])
+    ...mapGetters(['userRoles', 'config', 'well', 'wellLicence', 'storedWellId'])
   },
   methods: {
     handlePrint () {
@@ -580,17 +570,24 @@ export default {
     fetchWellData () {
       this.loading = true
       this.error = null
-      ApiService.get('wells', this.$route.params.id).then((response) => {
-        this.well = response.data
-      }).catch((e) => {
-        this.error = e.response
+
+      this[RESET_WELL_DATA]()
+
+      return Promise.all([
+        ApiService.get('wells', this.id).then((response) => {
+          return response.data || {}
+        }).catch((e) => {
+          this.error = e.response
+          throw e
+        }),
+        ApiService.query(`wells/licensing?well_tag_number=${this.id}`).then((response) => {
+          return response.data || {}
+        })
+      ]).then(([wellData, licenceData]) => {
+        this[SET_WELL_RECORD](wellData)
+        this[SET_WELL_LICENCE](licenceData)
       }).finally(() => {
         this.loading = false
-      })
-      ApiService.query(`wells/licensing?well_tag_number=${this.$route.params.id}`).then((response) => {
-        this.licence = response.data
-      }).catch((e) => {
-        this.loadLicencingError = e.response
       })
     },
     fetchSurveys () {
@@ -602,14 +599,28 @@ export default {
             }
           })
         }
-      }).catch((e) => {
-        console.error(e)
       })
+    },
+    ...mapMutations([ SET_WELL_RECORD, SET_WELL_LICENCE ]),
+    ...mapActions([ RESET_WELL_DATA ])
+  },
+  watch: {
+    id () {
+      if (this.id !== this.storedWellId) {
+        this.fetchWellData()
+      }
     }
   },
   created () {
-    this.fetchWellData()
     this.fetchSurveys()
+
+    if (this.id === null) {
+      this.error = `Unable to load well '${this.id}'`
+    }
+
+    if (this.id !== this.storedWellId) {
+      this.fetchWellData()
+    }
   }
 }
 </script>
@@ -620,9 +631,7 @@ export default {
 }
 
 @media print {
-
   .well-detail {
-
     fieldset {
       page-break-inside: avoid;
     }
@@ -642,6 +651,5 @@ export default {
       }
     }
   }
-
 }
 </style>
