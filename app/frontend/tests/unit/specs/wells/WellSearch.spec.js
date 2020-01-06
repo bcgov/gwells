@@ -46,7 +46,10 @@ describe('WellSearch.vue', () => {
       searchResultColumns: () => ({}),
       searchResults: () => ({}),
       hasSearched: () => ({}),
-      userRoles: () => ({ wells: { view: false } })
+      userRoles: () => ({ wells: { view: false } }),
+      searchMapCentre: () => (null),
+      searchMapZoom: () => (null),
+      constrainSearch: () => (false)
     }
     mutations = {
       [SET_SEARCH_PARAMS]: jest.fn()
