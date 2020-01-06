@@ -833,7 +833,9 @@ class WellScreens(ListAPIView):
                 radius = float(radius)
                 assert shape.geom_type == 'Point'
             except (ValueError, AssertionError, GEOSException):
-                pass
+                raise HttpResponseBadRequest(
+                    'point: Invalid point geometry. Use geojson geometry or WKT. Example: {"type": "Point", "coordinates": [-123,49]}'
+                )
             else:
                 qs = qs.annotate(
                     distance=Cast(Distance('geom', shape), output_field=FloatField())
