@@ -52,7 +52,6 @@
 <script>
 import { mapGetters } from 'vuex'
 import {
-  RESET_WELLS_SEARCH,
   SEARCH_LOCATIONS,
   SEARCH_WELLS
 } from '@/wells/store/actions.types.js'
@@ -83,7 +82,6 @@ export default {
       this.$emit('search', params)
     },
     handleReset () {
-      this.$store.dispatch(RESET_WELLS_SEARCH)
       this.$emit('reset')
     },
     updateSearchString () {

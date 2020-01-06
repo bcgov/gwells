@@ -56,7 +56,14 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </b-card>
         </b-col>
         <b-col>
-          <search-map ref="searchMap" @moved="handleMapMoveEnd" />
+          <search-map
+            ref="searchMap"
+            :initialCentre="searchMapCentre"
+            :initialZoom="searchMapZoom"
+            @moved="handleMapMoveEnd"
+            @zoomed="handleMapZoom"
+            @search="handleMapSearch"
+            @ready="handleMapReady"/>
           <b-alert variant="danger" class="mt-2" :show="locationErrorMessage !== ''">{{ locationErrorMessage }}</b-alert>
         </b-col>
       </b-row>
@@ -97,7 +104,10 @@ import {
   SET_SEARCH_ORDERING,
   SET_SEARCH_PARAMS,
   SET_SEARCH_RESULT_COLUMNS,
-  SET_SEARCH_RESULT_FILTERS
+  SET_SEARCH_RESULT_FILTERS,
+  SET_SEARCH_MAP_CENTRE,
+  SET_SEARCH_MAP_ZOOM,
+  SET_CONSTRAIN_SEARCH
 } from '@/wells/store/mutations.types.js'
 import { QUERY_TRIGGER } from '@/wells/store/triggers.types.js'
 import AdvancedSearchForm from '@/wells/components/AdvancedSearchForm.vue'
@@ -127,7 +137,9 @@ export default {
 
       // flag to indicate that the search should reset without a further API request
       searchShouldReset: false,
-      hasManuallySearched: false
+      hasManuallySearched: false,
+
+      performInitialSearch: false
     }
   },
   computed: {
@@ -141,7 +153,10 @@ export default {
       'searchParams',
       'searchResults',
       'searchResultColumns',
-      'searchResultFilters'
+      'searchResultFilters',
+      'searchMapCentre',
+      'searchMapZoom',
+      'constrainSearch'
     ]),
     hasResultErrors () {
       return (this.searchErrors.filter_group !== undefined && Object.entries(this.searchErrors.filter_group).length > 0)
@@ -151,8 +166,17 @@ export default {
     handleScroll () {
       this.scrolled = window.scrollY > 100
     },
-    handleMapMoveEnd () {
-      // this.updateQueryParams()
+    handleMapMoveEnd (centre, isViewReset) {
+      const coords = {
+        lat: centre.lat,
+        lng: centre.lng
+      }
+      this.$store.commit(SET_SEARCH_MAP_CENTRE, isViewReset ? null : coords)
+      this.updateQueryParams()
+    },
+    handleMapZoom (zoom, isViewReset) {
+      this.$store.commit(SET_SEARCH_MAP_ZOOM, isViewReset ? null : zoom)
+      this.updateQueryParams()
     },
     handleSearchSubmit () {
       this.updateQueryParams()
@@ -174,15 +198,25 @@ export default {
     },
     handleReset () {
       this.resetMapBounds()
-      this.$nextTick(() => {
-        this.$router.replace({ query: null })
-      })
+      this.$store.dispatch(RESET_WELLS_SEARCH)
+      this.$router.replace({ query: null })
     },
     handleResultsUpdate () {
       // The first search that happens when page loads doesn't need to automatically scroll the
       // page. Only scroll when updating the search results.
       if (this.hasManuallySearched && !this.scrolled) {
         this.$SmoothScroll(this.$el.querySelector('#map'))
+      }
+    },
+    handleMapSearch () {
+      this.updateQueryParams()
+    },
+    handleMapReady () {
+      if (this.performInitialSearch) {
+        // if the page loaded with a query, start a search.
+        // Otherwise, the search does not need to run (see #1713)
+        this.$store.dispatch(SEARCH_LOCATIONS)
+        this.$store.dispatch(SEARCH_WELLS, { trigger: QUERY_TRIGGER })
       }
     },
     setTabIndexFromUrlHash () {
@@ -219,6 +253,21 @@ export default {
         this.$store.commit(SET_SEARCH_RESULT_COLUMNS, query.result_columns.split(','))
         delete query.result_columns
       }
+      if (query.map_centre !== undefined) {
+        const latlng = query.map_centre.split(',')
+        const lat = parseFloat(latlng[0])
+        const lng = parseFloat(latlng[1])
+        this.$store.commit(SET_SEARCH_MAP_CENTRE, { lat, lng })
+        delete query.map_centre
+      }
+      if (query.map_zoom !== undefined) {
+        this.$store.commit(SET_SEARCH_MAP_ZOOM, parseInt(query.map_zoom))
+        delete query.map_zoom
+      }
+      if (query.constrain !== undefined) {
+        this.$store.commit(SET_CONSTRAIN_SEARCH, Boolean(query.constrain))
+        delete query.constrain
+      }
 
       this.$store.commit(SET_SEARCH_PARAMS, query)
     },
@@ -241,6 +290,15 @@ export default {
         query.limit = String(this.searchLimit)
         query.offset = String(this.searchOffset)
         query.ordering = this.searchOrdering
+      }
+      if (this.searchMapCentre) {
+        query.map_centre = `${this.searchMapCentre.lat.toFixed(6)},${this.searchMapCentre.lng.toFixed(6)}`
+      }
+      if (this.searchMapZoom) {
+        query.map_zoom = String(this.searchMapZoom)
+      }
+      if (this.constrainSearch) {
+        query.constrain = String(this.constrainSearch)
       }
 
       return query
@@ -289,19 +347,12 @@ export default {
       // If there are query params (which means the user has performed a search) and the current
       // store's state (as a query params object) is not equal to the current query params then we
       // need to perform the search again.
-      const performSearch = !emptyQuery && !isEqual(query, storeStateAsQS)
+      this.performInitialSearch = !emptyQuery && !isEqual(query, storeStateAsQS)
 
       if (emptyQuery) {
         this.$store.dispatch(RESET_WELLS_SEARCH)
       } else {
         this.updateStoreStateFromQS()
-      }
-
-      if (performSearch) {
-        // if the page loaded with a query, start a search.
-        // Otherwise, the search does not need to run (see #1713)
-        this.$store.dispatch(SEARCH_LOCATIONS)
-        this.$store.dispatch(SEARCH_WELLS, { constrain: false, trigger: QUERY_TRIGGER })
       }
     }
   },

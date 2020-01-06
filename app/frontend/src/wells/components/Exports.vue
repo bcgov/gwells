@@ -24,20 +24,18 @@
 </template>
 
 <script>
-import ApiService from '@/common/services/ApiService.js'
+import { mapGetters } from 'vuex'
+
+import { FETCH_WELL_DOWNLOAD_LINKS } from '@/wells/store/actions.types.js'
 
 export default {
-  data () {
-    return {
-      files: null
-    }
+  computed: {
+    ...mapGetters({
+      files: 'wellFileDownloads'
+    })
   },
   created () {
-    ApiService.query('wells/extracts').then((response) => {
-      this.files = response.data
-    }).catch((e) => {
-      console.error(e)
-    })
+    this.$store.dispatch(FETCH_WELL_DOWNLOAD_LINKS)
   },
   methods: {
     format_date (dateString) {

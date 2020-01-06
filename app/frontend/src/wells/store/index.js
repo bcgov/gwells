@@ -20,7 +20,8 @@ import {
   RESET_WELLS_SEARCH,
   SEARCH_LOCATIONS,
   SEARCH_WELLS,
-  RESET_WELL_DATA
+  RESET_WELL_DATA,
+  FETCH_WELL_DOWNLOAD_LINKS
 } from './actions.types.js'
 import {
   SET_DRILLER_NAMES,
@@ -43,6 +44,8 @@ import {
   SET_SEARCH_RESULT_COUNT,
   SET_SEARCH_RESULT_FILTERS,
   SET_SEARCH_RESULTS,
+  SET_SEARCH_MAP_CENTRE,
+  SET_SEARCH_MAP_ZOOM,
   SET_WELL_RECORD,
   SET_WELL_LICENCE
 } from './mutations.types.js'
@@ -103,7 +106,12 @@ const wellsStore = {
     recordLicence: {
       status: '',
       number: ''
-    }
+    },
+    searchMap: {
+      centre: null,
+      zoom: null
+    },
+    downloads: null
   },
   mutations: {
     [SET_ERROR] (state, payload) {
@@ -169,6 +177,12 @@ const wellsStore = {
     [SET_SEARCH_RESULT_COUNT] (state, payload) {
       state.searchResultCount = payload
     },
+    [SET_SEARCH_MAP_CENTRE] (state, payload) {
+      state.searchMap.centre = payload
+    },
+    [SET_SEARCH_MAP_ZOOM] (state, payload) {
+      state.searchMap.zoom = payload
+    },
     [SET_WELL_RECORD] (state, payload) {
       state.wellRecord = payload
       state.wellId = payload.well || null
@@ -178,9 +192,16 @@ const wellsStore = {
     }
   },
   actions: {
-    [FETCH_DRILLER_NAMES] ({ commit }) {
+    [FETCH_WELL_DOWNLOAD_LINKS] ({ commit, state }) {
+      if (state.downloads === null) {
+        ApiService.query('wells/extracts').then((response) => {
+          state.downloads = response.data
+        })
+      }
+    },
+    [FETCH_DRILLER_NAMES] ({ commit, state }) {
       // fetch only once
-      if (!this.state.drillerNames) {
+      if (state.drillerNames.length === 0) {
         ApiService.query('drillers/names').then((response) => {
           commit(SET_DRILLER_NAMES, response.data)
         }).catch((err) => {
@@ -195,9 +216,9 @@ const wellsStore = {
         number: ''
       })
     },
-    [FETCH_ORGANIZATION_NAMES] ({ commit }) {
+    [FETCH_ORGANIZATION_NAMES] ({ commit, state }) {
       // fetch only once
-      if (!this.state.organizationNames) {
+      if (state.organizationNames.length === 0) {
         ApiService.query('organizations/names').then((response) => {
           commit(SET_ORGANIZATION_NAMES, response.data)
         }).catch((err) => {
@@ -228,6 +249,8 @@ const wellsStore = {
       commit(SET_LOCATION_SEARCH_RESULTS, [])
       commit(SET_SEARCH_RESULT_COLUMNS, [...DEFAULT_COLUMNS])
       commit(SET_SEARCH_RESULT_FILTERS, {})
+      commit(SET_SEARCH_MAP_CENTRE, null)
+      commit(SET_SEARCH_MAP_ZOOM, null)
     },
     [SEARCH_LOCATIONS] ({ commit, state }) {
       commit(SET_LOCATION_ERRORS, {})
@@ -395,6 +418,15 @@ const wellsStore = {
     },
     storedWellId (state) {
       return state.wellId
+    },
+    searchMapCentre (state) {
+      return state.searchMap.centre
+    },
+    searchMapZoom (state) {
+      return state.searchMap.zoom
+    },
+    wellFileDownloads (state) {
+      return state.downloads
     }
   }
 }

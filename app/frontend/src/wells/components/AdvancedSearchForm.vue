@@ -280,11 +280,10 @@ export default {
       this.$emit('search', this.searchQueryParams)
     },
     handleReset () {
-      this.$store.dispatch(RESET_WELLS_SEARCH)
       this.$emit('reset')
     },
     filterParamsReset () {
-      const filterParams = {...this.emptyFilterParams}
+      const filterParams = { ...this.emptyFilterParams }
       filterParams.matchAny = { match_any: true }
       this.filterParams = filterParams
     },
