@@ -549,7 +549,8 @@ pipeline {
                             "IMAGE_STREAM_VERSION=v1-stable",
                             "NAME_SUFFIX=-${devSuffix}-${prNumber}",
                             "POSTGRESQL_DATABASE=gwells",
-                            "VOLUME_CAPACITY=1Gi"
+                            "VOLUME_CAPACITY=1Gi",
+                            "STORAGE_CLASS=netapp-file-standard"
                         )
 
                         // Process postgres deployment config (sub in vars, create list items)
