@@ -19,6 +19,7 @@ import time
 
 from django.contrib.gis.db.models.functions import Centroid, Distance
 from django.contrib.gis.geos import GEOSException, Point, GEOSGeometry
+from django.contrib.gis.gdal import GDALException
 from django.db.models import Prefetch, FloatField
 from django.db.models.functions import Cast
 from django.http import (
@@ -832,7 +833,7 @@ class WellScreens(ListAPIView):
                 shape = GEOSGeometry(point, srid=int(srid))
                 radius = float(radius)
                 assert shape.geom_type == 'Point'
-            except (ValueError, AssertionError, GEOSException):
+            except (ValueError, AssertionError, GDALException, GEOSException):
                 raise ValidationError({
                     'point': 'Invalid point geometry. Use geojson geometry or WKT. Example: {"type": "Point", "coordinates": [-123,49]}'
                 })

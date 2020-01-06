@@ -19,6 +19,7 @@ from django import forms
 from django.core.exceptions import FieldDoesNotExist
 from django.http import HttpRequest, QueryDict
 from django.contrib.gis.geos import GEOSException, Polygon, GEOSGeometry, Point
+from django.contrib.gis.gdal import GDALException
 from django.contrib.gis.db.models.functions import Transform
 from django.contrib.gis.measure import D
 from django.db.models import Max, Min, Q, QuerySet
@@ -103,7 +104,7 @@ class GeometryFilterBackend(BaseFilterBackend):
         if within:
             try:
                 shape = GEOSGeometry(within, srid=int(srid))
-            except (ValueError, GEOSException):
+            except (ValueError, GEOSException, ParseException):
                 raise ValidationError({
                     'within': 'Invalid geometry. Use a geojson geometry or WKT representing a polygon. Example: &within={"type": "Polygon", "coordinates": [...]}'
                 })
@@ -127,7 +128,7 @@ class RadiusFilterBackend(BaseFilterBackend):
             try:
                 shape = GEOSGeometry(point, srid=int(srid))
                 assert shape.geom_type == 'Point'
-            except (ValueError, AssertionError, GEOSException):
+            except (ValueError, AssertionError, GDALException, GEOSException):
                 pass
             else:
                 shape.transform(3005)
