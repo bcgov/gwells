@@ -320,7 +320,7 @@ export default {
         const url = this.$router.resolve(route)
         const container = L.DomUtil.create('div', 'leaflet-popup-aquifer')
         container.innerHTML = [
-          `<div>Aquifer ID: <a href="${url.href}">${aquiferId}</a></div>`,
+          `<div><a href="${url.href}">Aquifer ${aquiferId}</a></div>`,
           name ? `<div>Aquifer name: ${name}</div>` : null
         ].filter(Boolean).join('\n')
         L.DomEvent.on(container.querySelector('a'), 'click', (e) => {

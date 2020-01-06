@@ -244,7 +244,7 @@ import { SEARCH_AQUIFERS } from '../store/actions.types.js'
 import AquiferMap from './AquiferMap.vue'
 import MapLoadingSpinner from './MapLoadingSpinner.vue'
 
-const SEARCH_RESULTS_PER_PAGE = 2
+const SEARCH_RESULTS_PER_PAGE = 10
 const HYDRAULICALLY_CONNECTED_CODE = 'Hydra'
 const BC_LAT_LNG_BOUNDS = L.latLngBounds(L.latLng(60.0023, -114.0541379), L.latLng(48.2245556, -139.0536706))
 
