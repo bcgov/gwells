@@ -104,9 +104,9 @@ class GeometryFilterBackend(BaseFilterBackend):
             try:
                 shape = GEOSGeometry(within, srid=int(srid))
             except (ValueError, GEOSException):
-                raise HttpResponseBadRequest(
-                    'within: Invalid geometry. Use a geojson geometry or WKT representing a polygon. Example: &within={"type": "Polygon", "coordinates": [...]}'
-                )
+                raise ValidationError({
+                    'within': 'Invalid geometry. Use a geojson geometry or WKT representing a polygon. Example: &within={"type": "Polygon", "coordinates": [...]}'
+                })
             else:
                 queryset = queryset.filter(geom__intersects=shape)
 
