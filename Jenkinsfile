@@ -735,6 +735,8 @@ pipeline {
                             "NAME_SUFFIX=-${stagingSuffix}",
                             "ENV_NAME=${stagingSuffix}",
                             "HOST=${stagingHost}",
+                            "CPU_REQUEST=500m",
+                            "CPU_LIMIT=2",
                         )
 
                         // some objects need to be copied from a base secret or configmap
@@ -999,7 +1001,7 @@ pipeline {
                             "openshift/backend.dc.json",
                             "NAME_SUFFIX=-${demoSuffix}",
                             "ENV_NAME=${demoSuffix}",
-                            "HOST=${demoHost}",
+                            "HOST=${demoHost}"
                         )
 
                         // some objects need to be copied from a base secret or configmap
