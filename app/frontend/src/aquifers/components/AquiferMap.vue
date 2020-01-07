@@ -9,10 +9,25 @@ import { tiledMapLayer } from 'esri-leaflet'
 import { GeoSearchControl, EsriProvider } from 'leaflet-geosearch'
 import 'leaflet-lasso'
 import 'leaflet-fullscreen/dist/Leaflet.fullscreen.min.js'
-import { filter } from 'lodash'
 
 import aquiferLayers from '../layers'
 import { buildLegendHTML } from '../legend'
+
+const AQUIFER_LAYER_STYLE = {
+  color: '#FF6500',
+  fillColor: '#FF6500',
+  weight: 1
+}
+const HIGHLIGHT_LAYER_STYLE = {
+  weight: 1,
+  color: 'purple',
+  fillColor: 'purple'
+}
+const SELECTED_LAYER_STYLE = {
+  weight: 2,
+  color: 'green',
+  fillColor: 'green'
+}
 
 const provider = new EsriProvider()
 const searchControl = new GeoSearchControl({
@@ -43,7 +58,7 @@ L.control.locate = function (opts) {
 
 export default {
   name: 'AquiferMap',
-  props: ['aquifersGeometry', 'aquiferDetails', 'highlightAquiferIds', 'loading'],
+  props: ['aquifersGeometry', 'aquiferDetails', 'highlightAquiferIds', 'loading', 'selectedId', 'viewBBox'],
   mounted () {
     // There seems to be an issue loading leaflet immediately on mount, we use nextTick to ensure
     // that the view has been rendered at least once before injecting the map.
@@ -79,8 +94,21 @@ export default {
     highlightAquiferIds (newIds) {
       this.buildAquiferLayer()
       if (newIds.length > 0) {
-        this.zoomToHighlightedAquifers()
+        this.zoomToLayer(this.highlightLayer)
       }
+    },
+    selectedId (newId, oldId) {
+      if (oldId) {
+        this.unSelectAquifer(oldId)
+      }
+
+      if (newId) {
+        const selectedLayer = this.selectAquifer(newId)
+
+        this.zoomToLayer(selectedLayer)
+      }
+
+      this.updateCanvasLayer()
     },
     loading () {
       this.updateCanvasLayer()
@@ -103,7 +131,14 @@ export default {
         gestureHandling: true,
         minZoom: 4,
         maxZoom: 17
-      }).setView([54.5, -126.5], 5)
+      })
+
+      if (this.viewBBox) { // if initial view is set then
+        this.map.fitBounds(this.viewBBox)
+      } else {
+        this.map.setView([54.5, -126.5], 5)
+      }
+
       L.control.scale().addTo(this.map)
 
       this.map.addControl(this.getFullScreenControl())
@@ -138,11 +173,12 @@ export default {
 
       this.canvasRenderer = L.canvas({ padding: 0.1 })
 
+      this.highlightLayer = L.featureGroup()
+
+      this.selectedAquiferLayer = L.featureGroup()
+
       this.canvasLayer = L.layerGroup()
       this.canvasLayer.addTo(this.map)
-
-      this.highlightLayer = L.featureGroup()
-      this.highlightLayer.addTo(this.map)
 
       this.buildAquiferLayer()
       this.updateCanvasLayer()
@@ -232,6 +268,8 @@ export default {
             }
           })
           this.highlightLayer.clearLayers()
+          this.selectedAquiferLayer.clearLayers()
+          this.updateCanvasLayer()
           this.map.setView([54.5, -126.5], 5)
         }
       })
@@ -252,7 +290,8 @@ export default {
         this.map.on(eventName, (e) => {
           const map = e.target
           const layersInBound = this.getFeaturesOnMap(map)
-          this.$parent.$emit('featuresOnMap', layersInBound)
+          const aquiferIds = layersInBound.map((l) => l.aquiferId)
+          this.$emit('moved', this.map.getBounds(), aquiferIds)
         })
       })
     },
@@ -267,6 +306,12 @@ export default {
         this.highlightLayer.getLayers().forEach((l) => {
           l.bringToFront()
         })
+
+        this.canvasLayer.addLayer(this.highlightLayer)
+      }
+
+      if (this.selectedAquiferLayer) {
+        this.canvasLayer.addLayer(this.selectedAquiferLayer)
       }
     },
     createAquiferPopupContent (aquiferId, name) {
@@ -275,7 +320,7 @@ export default {
         const url = this.$router.resolve(route)
         const container = L.DomUtil.create('div', 'leaflet-popup-aquifer')
         container.innerHTML = [
-          `<div>Aquifer ID: <a href="${url.href}">${aquiferId}</a></div>`,
+          `<div><a href="${url.href}">Aquifer ${aquiferId}</a></div>`,
           name ? `<div>Aquifer name: ${name}</div>` : null
         ].filter(Boolean).join('\n')
         L.DomEvent.on(container.querySelector('a'), 'click', (e) => {
@@ -293,17 +338,8 @@ export default {
         this.highlightLayer.clearLayers()
       }
       if (this.aquifersGeometry && this.aquifersGeometry.features.length > 0) {
-        const style = {
-          color: '#FF6500',
-          weight: 1
-        }
-        const highLightStyle = {
-          ...style,
-          color: 'purple',
-          fillColor: 'purple'
-        }
         const layerGroup = L.geoJSON(this.aquifersGeometry, {
-          style,
+          style: AQUIFER_LAYER_STYLE,
           // type: 'geojsonfeature',
           onEachFeature (feature, layer) {
             const { id: aquiferId, name } = feature.properties
@@ -322,7 +358,7 @@ export default {
 
             if (aquiferId in self.highlightIdsMap) {
               self.highlightLayer.addLayer(layer)
-              layer.setStyle(highLightStyle)
+              layer.setStyle(HIGHLIGHT_LAYER_STYLE)
               layer.bringToFront()
             }
           }
@@ -330,9 +366,42 @@ export default {
         this.aquiferLayer = layerGroup
       }
     },
-    zoomToHighlightedAquifers (data) {
-      const bounds = this.highlightLayer.getBounds()
-      this.map.fitBounds(bounds)
+    zoomToLayer (layer) {
+      const bounds = layer.getBounds()
+      if (bounds) {
+        this.map.fitBounds(bounds)
+      }
+    },
+    selectAquifer (aquiferId) {
+      const foundLayer = this.aquiferLayer.getLayers().find((l) => {
+        return l.aquiferId === aquiferId
+      })
+
+      if (foundLayer) {
+        this.highlightLayer.getLayers().forEach((l) => {
+          if (l.aquiferId === aquiferId) {
+            l.remove()
+          }
+        })
+
+        this.selectedAquiferLayer.addLayer(foundLayer)
+        foundLayer.setStyle(SELECTED_LAYER_STYLE)
+        return foundLayer
+      }
+
+      return null
+    },
+    unSelectAquifer (previousAquiferId) {
+      this.selectedAquiferLayer.getLayers().forEach((layer) => {
+        layer.remove()
+        if (layer.aquiferId in this.highlightIdsMap) {
+          this.highlightLayer.addLayer(layer)
+          layer.setStyle(HIGHLIGHT_LAYER_STYLE)
+          layer.bringToFront()
+        } else {
+          layer.setStyle(AQUIFER_LAYER_STYLE)
+        }
+      })
     }
   }
 }

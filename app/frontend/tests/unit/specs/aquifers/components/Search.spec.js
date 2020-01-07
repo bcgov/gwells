@@ -16,6 +16,7 @@ import { mount, createLocalVue } from '@vue/test-utils'
 import SearchComponent from '@/aquifers/components/Search.vue'
 import Vuex from 'vuex'
 import axios from 'axios'
+import { merge } from 'lodash'
 import VueRouter from 'vue-router'
 import auth from '@/common/store/auth.js'
 import aquiferStore from '@/aquifers/store/index.js'
@@ -42,25 +43,32 @@ const aquiferFixture = {
 }
 
 describe('Search Component', () => {
-  const component = options =>
-    mount(SearchComponent, {
+  const component = (options, storeState = {}) => {
+    const store = new Vuex.Store({
+      modules: { auth, aquiferStore }
+    })
+    store.replaceState(merge(store.state, storeState))
+
+    return mount(SearchComponent, {
       localVue,
       stubs: ['router-link', 'router-view'],
       router: new VueRouter(),
-      store: new Vuex.Store({
-        modules: { auth, aquiferStore }
-      }),
+      store,
       methods: {
-        scrollToTableTop () {},
+        fetchSurveys () {},
         fetchResourceSections () {
-          this.aquifer_resource_sections = [
-            { text: 'aquifer section', value: 'a' }
-          ]
+          this.addSections([
+            { name: 'aquifer section', code: 'a' }
+          ])
+        },
+        fetchSimplifiedGeometry () {
+          return Promise.resolve({})
         },
         $SmoothScroll () {}
       },
       ...options
     })
+  }
 
   it('has child checkboxes', () => {
     axios.get.mockResolvedValue({})
@@ -71,20 +79,15 @@ describe('Search Component', () => {
   it('Displays a message if no aquifers could be found', () => {
     axios.get.mockResolvedValue({})
     const wrapper = component({
-      data () {
-        return {
-          searchResults: [],
-          performedSearch: true,
-          loadingMap: false
-        }
-      },
-      computed: {
-        emptyResults () {
-          return true
-        }
-      },
       methods: {
-        fetchResults () {}
+        fetchResults () {},
+        $SmoothScroll () {}
+      }
+    }, {
+      aquiferStore: {
+        search: {
+          searchPerformed: true
+        }
       }
     })
 
@@ -95,23 +98,17 @@ describe('Search Component', () => {
     axios.get.mockResolvedValue({})
 
     const wrapper = component({
-      data () {
-        return {
-          searchResults: [aquiferFixture],
-          performedSearch: true,
-          loadingMap: false
-        }
-      },
-      computed: {
-        emptyResults () {
-          return false
-        },
-        displayPageLength () {
-          return 0
-        }
-      },
       methods: {
-        fetchResults () {}
+        fetchResults () {},
+        $SmoothScroll () {}
+      }
+    }, {
+      aquiferStore: {
+        search: {
+          searchResults: [aquiferFixture],
+          searchResultCount: 1,
+          searchPerformed: true
+        }
       }
     })
 
@@ -129,7 +126,8 @@ describe('Search Component', () => {
     wrapper.find('form').trigger('submit')
 
     expect(axios.get).toHaveBeenCalledWith('aquifers', {
-      params: { resources__section__code: 'a', match_any: false, search: 'asdf' }
+      cancelToken: undefined,
+      params: { resources__section__code: 'a', search: 'asdf' }
     })
   })
 
