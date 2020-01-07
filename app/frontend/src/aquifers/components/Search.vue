@@ -441,6 +441,11 @@ export default {
     this.fetchSimplifiedGeometry().then(() => {
       this.loadingMap = false
     })
+
+    const query = this.$route.query
+    if (query.search) {
+      this.triggerSearch()
+    }
   }
 }
 </script>
