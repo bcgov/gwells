@@ -39,7 +39,7 @@
         v-on:reset="triggerReset">
         <b-form-row>
           <b-col cols="12" md="12" lg="12" xl="4" class="p-4">
-            <h1 class="main-title ml-4 mt-2">Aquifer Search
+            <h1 class="main-title ml-2 mt-2">Aquifer Search
               <div v-if='userRoles.aquifers.edit' class="pb-2 pull-right">
               <b-button
                 id="aquifers-add"
@@ -49,68 +49,75 @@
               </div>
             </h1>
 
-            <b-form-row>
-              <b-col cols="12" md="12" class="pl-4 pr-4 aquifer-search-column mt-3">
-                <h4>Basic Search</h4>
-                <h5 class="search-title">Search by aquifer name or number (leave blank to see all aquifers)</h5>
-                <b-form-group class="search-title mt-3 mb-3">
-                  <b-form-input
-                    type="text"
-                    id="aquifers-search-field"
-                    v-model="search"
-                    class="w-75"/>
-                </b-form-group>
-                <h4 class="pt-5">Advanced Search</h4>
-                <b-form-group>
-                  <b-form-radio inline v-model="filterParams.match_any" name="match-any" value="true">Any field match</b-form-radio>
-                  <b-form-radio inline v-model="filterParams.match_any" name="match-any" value="false">All field match</b-form-radio>
-                </b-form-group>
-                <b-form-checkbox-group
-                  stacked
-                  v-model="sections"
-                  :options="aquifer_resource_sections"
-                  class="aquifer-checkbox-group"
-                />
-                <b-form-row>
-                    <b-form-group class="aquifer-search-actions">
-                      <b-button class="aquifer-buttons" variant="primary" type="submit" id="aquifers-search">Search
-                        <i v-if="loading" class="fa fa-circle-o-notch fa-spin ml-1">
-                        </i>
-                      </b-button>
-                      <b-button class="aquifer-buttons" variant="default" type="reset">Reset</b-button>
-                    </b-form-group>
-                </b-form-row>
-                <h6 class="mt-3">Download all aquifers</h6>
-                <ul class="aquifer-download-list">
-                  <li>- <a href="#" @click.prevent="downloadXLSX(false)">Aquifer extract (XLSX)</a></li>
-                  <li>- <a href="#" @click.prevent="downloadCSV(false)">Aquifer extract (CSV)</a></li>
-                </ul>
-              </b-col>
-            </b-form-row>
+            <div class="pl-2 pr-2 aquifer-search-column mt-3">
+              <h4>Basic Search</h4>
+              <h5 class="search-title">Search by aquifer name or number (leave blank to see all aquifers)</h5>
+              <b-form-group class="search-title mt-3 mb-3">
+                <b-form-input
+                  type="text"
+                  id="aquifers-search-field"
+                  v-model="search"
+                  class="w-75"/>
+              </b-form-group>
+              <h4 class="pt-4">Advanced Search</h4>
+              <b-form-group>
+                <b-form-radio inline v-model="matchAny" name="match-any" value="true">Any field match</b-form-radio>
+                <b-form-radio inline v-model="matchAny" name="match-any" value="false">All field match</b-form-radio>
+              </b-form-group>
+              <b-form-checkbox-group
+                stacked
+                v-model="selectedSections"
+                :options="resourceSectionOptions"
+                class="aquifer-checkbox-group"
+              />
+              <b-form-row>
+                <b-button-group class="aquifer-search-actions">
+                  <b-button class="aquifer-buttons" variant="primary" type="submit" id="aquifers-search" :disabled="searchInProgress">
+                    Search
+                    <i v-if="searchInProgress" class="fa fa-circle-o-notch fa-spin ml-1"/>
+                  </b-button>
+                  <b-button class="aquifer-buttons" variant="default" type="reset">Reset</b-button>
+                </b-button-group>
+              </b-form-row>
+              <h6 class="mt-3">Download all aquifers</h6>
+              <ul class="aquifer-download-list">
+                <li>- <a href="#" @click.prevent="downloadXLSX(false)">Aquifer extract (XLSX)</a></li>
+                <li>- <a href="#" @click.prevent="downloadCSV(false)">Aquifer extract (CSV)</a></li>
+              </ul>
+            </div>
           </b-col>
 
           <b-col cols="12" md="12" lg="12" xl="8" class="map-column">
-            <aquifer-map ref="aquiferMap" v-bind:aquifers="aquifers_search_results"/>
+            <map-loading-spinner :loading="loadingMap"/>
+
+            <aquifer-map
+              ref="aquiferMap"
+              :aquifersGeometry="simplifiedAquifers"
+              :aquiferDetails="searchResults"
+              :highlightAquiferIds="searchedAquiferIds"
+              :selectedId="selectedAquiferId"
+              :loading="loadingMap"
+              :viewBBox="mapBounds"
+              @moved="mapMoved"/>
           </b-col>
         </b-form-row>
-
       </b-form>
 
       <b-row>
         <b-col cols="12" class="p-5">
-          <b-container fluid v-if="aquiferList && !emptyResults" class="p-0">
+          <b-container fluid v-if="searchPerformed && !searchInProgress && !emptyResults" class="p-0">
             <b-row>
               <b-col cols="12" class="mb-3">
-                Showing {{ displayOffset }} to {{ displayPageLength }} of {{ response.count }}
+                Showing {{ displayOffset }} to {{ displayPageLength }} of {{ searchResultCount }}
               </b-col>
             </b-row>
           </b-container>
           <b-table
             id="aquifers-results"
             :current-page="currentPage"
-            :per-page="limit"
+            :per-page="searchResultsPerPage"
             :fields="aquiferListFields"
-            :items="aquiferList"
+            :items="searchResults"
             :show-empty="emptyResults"
             :sort-by.sync="sortBy"
             :sort-desc.sync="sortDesc"
@@ -118,24 +125,31 @@
             striped
             outlined
             @row-clicked="rowClicked"
-            v-if="aquiferList"
+            :busy="searchInProgress"
+            v-if="searchPerformed"
             responsive>
             <template slot="id" slot-scope="row">
-              <p class="aquifer-id" v-on:click.prevent="onAquiferIdClick(row.item)">{{row.item.id}}</p>
+              <router-link :to="{ name: 'aquifers-view', params: {id: row.item.id} }">{{ row.item.id }}</router-link>
             </template>
             <template slot="name" slot-scope="row">
               {{row.item.name}}
             </template>
+            <template v-slot:table-busy>
+              <div class="text-center my-2">
+                <b-spinner class="align-middle"/>
+                <strong> Loading...</strong>
+              </div>
+            </template>
           </b-table>
           <b-pagination
-            v-if="response.count > 30"
+            v-if="searchResultCount > searchResultsPerPage"
             class="pull-right"
-            :total-rows="response.count"
-            :per-page="limit"
+            :total-rows="searchResultCount"
+            :per-page="searchResultsPerPage"
             v-model="currentPage"/>
         </b-col>
       </b-row>
-      <h6 class="pl-5 pb-5 mt-3" v-if="response.count > 0">Download searched aquifers :
+      <h6 class="pl-5 pb-5 mt-3" v-if="searchResultCount > 0">Download searched aquifers :
         <a href="#" @click.prevent="downloadXLSX(true)">XLSX</a> |
         <a href="#" @click.prevent="downloadCSV(true)">CSV</a>
       </h6>
@@ -162,14 +176,6 @@ table.b-table tr {
 table.b-table td {
   padding: .5rem;
   vertical-align: middle;
-}
-table.b-table .aquifer-id {
-  color: #37598A;
-  cursor: pointer;
-  text-decoration: underline;
-  font-weight: bold;
-  display: inline;
-
 }
 
 ul.pagination {
@@ -201,12 +207,9 @@ ul.pagination {
   border: 1px solid #CED4DA;
 }
 
-.aquifer-buttons {
-  padding: .300rem 1.5rem;
-}
-
 #aquifers-search {
   background-color: #38598A;
+  border-color: #38598A;
 }
 
 .aquifer-download-list {
@@ -228,31 +231,40 @@ ul.pagination {
 </style>
 
 <script>
+import L from 'leaflet'
 import querystring from 'querystring'
+import { mapGetters, mapMutations, mapState, mapActions } from 'vuex'
+
 import ApiService from '@/common/services/ApiService.js'
+import { SET_CONSTRAIN_SEARCH, SET_SEARCH_BOUNDS, RESET_SEARCH } from '../store/mutations.types.js'
+import { SEARCH_AQUIFERS } from '../store/actions.types.js'
+
 import AquiferMap from './AquiferMap.vue'
-import { filter } from 'lodash'
+import MapLoadingSpinner from './MapLoadingSpinner.vue'
 
-import { mapGetters } from 'vuex'
-const LIMIT = 30
-
-let geomCache = {}
+const SEARCH_RESULTS_PER_PAGE = 10
+const HYDRAULICALLY_CONNECTED_CODE = 'Hydra'
+const BC_LAT_LNG_BOUNDS = L.latLngBounds(L.latLng(60.0023, -114.0541379), L.latLng(48.2245556, -139.0536706))
 
 export default {
   components: {
-    'aquifer-map': AquiferMap
+    'aquifer-map': AquiferMap,
+    'map-loading-spinner': MapLoadingSpinner
   },
   data () {
     let query = this.$route.query
+
+    let selectedSections = query.resources__section__code ? query.resources__section__code.split(',') : []
+    if (query.hydraulically_connected) {
+      selectedSections.push(HYDRAULICALLY_CONNECTED_CODE)
+    }
+
     return {
       sortBy: 'id',
       sortDesc: false,
       search: query.search,
-      aquifer_search: query.aquifer_search,
-      limit: LIMIT,
+      searchResultsPerPage: SEARCH_RESULTS_PER_PAGE,
       currentPage: 1,
-      filterParams: Object.assign({}, { match_any: false }, query),
-      aquifers_search_results: {},
       response: {},
       aquiferListFields: [
         { key: 'id', label: 'Aquifer number', sortable: true },
@@ -270,62 +282,56 @@ export default {
       layers: [],
       surveys: [],
       noSearchCriteriaError: false,
-      aquifer_resource_sections: [],
-      sections: (function () {
-        let sections = query.resources__section__code ? query.resources__section__code.split(',') : []
-        if (query.hydraulically_connected) {
-          sections.push('Hydra')
-        }
-        return sections
-      })(),
+      selectedSections,
+      matchAny: Boolean(query.match_any),
       selectMode: 'single',
-      loading: false
+      selectedAquiferId: null,
+      loadingMap: false
     }
   },
   computed: {
     offset () { return parseInt(this.$route.query.offset, 10) || 0 },
     displayOffset () {
-      return (this.currentPage * this.limit) - this.limit + 1
+      return (this.currentPage * this.searchResultsPerPage) - this.searchResultsPerPage + 1
     },
     displayPageLength () {
-      if (this.response.count > 30) {
-        if ((this.currentPage * this.limit) > this.response.count) {
-          return this.response.count
+      if (this.searchResultCount > this.searchResultsPerPage) {
+        if ((this.currentPage * this.searchResultsPerPage) > this.searchResultCount) {
+          return this.searchResultCount
         }
-        return this.currentPage * this.limit
+        return this.currentPage * this.searchResultsPerPage
       } else {
-        return this.response.count
+        return this.searchResultCount
       }
     },
-    aquiferList () { return this.response && this.response.results },
-    emptyResults () { return this.response && this.response.count === 0 },
+    emptyResults () { return this.searchResultCount === 0 },
     query () { return this.$route.query },
-    ...mapGetters(['userRoles'])
+    searchedAquiferIds () { return (this.searchResults || []).map((aquifer) => aquifer.id) },
+    resourceSectionOptions () { return this.resourceSections && this.resourceSections.map((s) => ({ text: s.name, value: s.code })) },
+    ...mapGetters(['userRoles']),
+    ...mapGetters('aquiferStore/search', ['queryParams']),
+    ...mapState('aquiferStore/aquiferGeoms', {
+      simplifiedAquifers: 'simplifiedGeoJson'
+    }),
+    ...mapState('aquiferStore/search', [
+      'searchErrors',
+      'searchResults',
+      'searchResultCount',
+      'searchInProgress',
+      'searchPerformed',
+      'mapBounds'
+    ]),
+    ...mapState('aquiferStore', {
+      resourceSections: 'sections'
+    })
   },
   methods: {
+    ...mapActions('aquiferStore/search', [SEARCH_AQUIFERS]),
+    ...mapMutations('aquiferStore/aquiferGeoms', ['updateSimplifiedGeoJson']),
+    ...mapMutations('aquiferStore/search', [SET_CONSTRAIN_SEARCH, SET_SEARCH_BOUNDS, SET_CONSTRAIN_SEARCH, RESET_SEARCH]),
+    ...mapMutations('aquiferStore', ['addSections']),
     navigateToNew () {
       this.$router.push({ name: 'new' })
-    },
-    fetchResults () {
-      this.loading = true
-      // trigger the Google Analytics search event
-      this.triggerAnalyticsSearchEvent(this.query)
-      delete this.query.offset
-      delete this.query.limit
-      ApiService.query('aquifers', this.query)
-        .then((response) => {
-          this.aquifers_search_results = response.data.results
-          this.aquifers_search_results.forEach(function (aquifer) {
-            aquifer.gs = geomCache[aquifer.id]
-          })
-          this.response = response.data
-          this.loading = false
-          // Note: Aquifer <table> might not be in the DOM yet if this is a new search after a page load.
-          // Wait until next tick before searching the DOM for the #aquifers-results
-          this.$nextTick(() => {
-            this.scrollToResults()
-          })
-        })
     },
     downloadCSV (filterOnly) {
       let url = ApiService.baseURL + 'aquifers/csv?'
@@ -341,110 +347,98 @@ export default {
       }
       window.open(url)
     },
+    fetchSurveys () {
+      ApiService.query('surveys').then((response) => {
+        if (response.data) {
+          response.data.forEach((survey) => {
+            if (survey.survey_page === 'a' && survey.survey_enabled) {
+              this.surveys.push(survey)
+            }
+          })
+        }
+      })
+    },
     fetchResourceSections () {
       ApiService.query('aquifers/sections').then((response) => {
-        this.aquifer_resource_sections = response.data.results.map(function (section) {
-          return {
-            text: section.name,
-            value: section.code
-          }
+        let sections = (response.data || {}).results || []
+        sections.splice(2, 0, {
+          name: 'Hydraulically connected',
+          code: HYDRAULICALLY_CONNECTED_CODE
         })
-        this.aquifer_resource_sections.splice(2, 0, {
-          text: 'Hydraulically connected',
-          value: 'Hydra'
-        })
+        this.addSections(sections)
       })
     },
-    preFetchGeometry () {
-      ApiService.query('gis/aquifers-simplified').then((response) => {
-        response.data.features.forEach(function (feat) {
-          geomCache[feat.properties.id] = feat
-        })
-      })
-    },
-    scrollToResults () {
-      const resultsTable = this.$el.ownerDocument.getElementById('aquifers-results');
-      this.$SmoothScroll(resultsTable, 100)
-    },
-    triggerReset () {
-      this.response = {}
-      this.aquifers_search_results = {}
-      this.filterParams = {}
-      this.search = undefined
-      this.aquifer_id = ''
-      this.sections = []
-      this.currentPage = 1
-      this.noSearchCriteriaError = false
-      this.updateQueryParams()
-      this.$emit('resetLayers')
-    },
-    triggerSearch () {
-      delete this.filterParams.aquifer_id
-      delete this.filterParams.search
-      delete this.filterParams.resources__section__code
-      delete this.filterParams.hydraulically_connected
-      if (this.search) {
-        this.filterParams.search = this.search
-      }
-      if (this.sections) {
-        this.filterParams.resources__section__code = this.sections.filter(o => o !== 'Hydra').join(',')
-        if (this.sections.find(o => o === 'Hydra')) {
-          this.filterParams.hydraulically_connected = 'yes'
-        }
+    fetchSimplifiedGeometry () {
+      if (this.simplifiedAquifers !== null) {
+        return Promise.resolve(this.simplifiedAquifers)
       }
 
-      this.updateQueryParams()
-      this.fetchResults()
-    },
-    updateQueryParams () {
-      this.$router.replace({ query: this.filterParams })
-    },
-    triggerAnalyticsSearchEvent (params) {
-      // trigger the search event, sending along the search params as a string
-      if (window.ga) {
-        window.ga('send', {
-          hitType: 'event',
-          eventCategory: 'Button',
-          eventAction: 'AquiferSearch',
-          eventLabel: querystring.stringify(params)
-        })
-      }
-    },
-    onAquiferIdClick (data) {
-      if (!data.id) {
-        return
-      }
-      this.$router.push({
-        name: 'aquifers-view',
-        params: { id: data.aquifer_id }
+      return ApiService.query('gis/aquifers-simplified').then((response) => {
+        const featuresCollection = response.data || {}
+        const features = featuresCollection.features || []
+        // Remove any features which don't have geometry
+        featuresCollection.features = features.filter((feature) => feature.geometry)
+        this.updateSimplifiedGeoJson(featuresCollection)
+        return featuresCollection
       })
     },
+    scrollToMap () {
+      const map = this.$el.ownerDocument.getElementById('map')
+      this.$SmoothScroll(map, 100)
+    },
+    triggerReset (e) {
+      e.preventDefault()
+      this.search = ''
+      this.selectedSections = []
+      this.matchAny = false
+      this.selectedAquiferId = null
+      this[RESET_SEARCH]()
+      this.$nextTick(() => {
+        this.$emit('resetLayers')
+      })
+    },
+    triggerSearch () {
+      this[SEARCH_AQUIFERS]({
+        selectedSections: this.selectedSections,
+        matchAny: this.matchAny,
+        query: this.search
+      })
+    },
+    updateQueryParams () {
+      this.$router.replace({ query: this.queryParams })
+    },
     rowClicked (data) {
-      this.$refs.aquiferMap.zoomToSelectedAquifer(data)
+      this.selectedAquiferId = data.id
+      this.scrollToMap()
+    },
+    mapMoved (bounds, featuresOnMap) {
+      const viewingBC = bounds.contains(BC_LAT_LNG_BOUNDS)
+
+      this[SET_SEARCH_BOUNDS](bounds)
+      this[SET_CONSTRAIN_SEARCH](!viewingBC)
+    }
+  },
+  watch: {
+    queryParams () {
+      this.updateQueryParams()
+    },
+    searchInProgress () {
+      if (this.searchInProgress === false) {
+        this.scrollToMap()
+      }
     }
   },
   created () {
     // Fetch current surveys and add 'aquifer' surveys (if any) to this.surveys to be displayed
-    ApiService.query('surveys').then((response) => {
-      if (response.data) {
-        response.data.forEach((survey) => {
-          if (survey.survey_page === 'a' && survey.survey_enabled) {
-            this.surveys.push(survey)
-          }
-        })
-      }
-    }).catch((e) => {
-      console.error(e)
-    })
-    this.fetchResourceSections()
-    this.preFetchGeometry()
-  },
-  mounted () {
-    this.$on('featuresOnMap', (data) => {
-      const aquiferIdsMap = new Map()
-      data.map(o => aquiferIdsMap.set(o.defaultOptions.aquifer_id, true))
-      this.response.count = aquiferIdsMap.size
-      this.response.results = filter(this.aquifers_search_results, o => aquiferIdsMap.get(o.id))
+    this.fetchSurveys()
+
+    if (this.resourceSections.length === 0) {
+      this.fetchResourceSections()
+    }
+
+    this.loadingMap = true
+    this.fetchSimplifiedGeometry().then(() => {
+      this.loadingMap = false
     })
   }
 }

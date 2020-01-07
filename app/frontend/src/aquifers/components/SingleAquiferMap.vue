@@ -235,6 +235,8 @@ export default {
       this.wells.forEach((well) => {
         const { latitude, longitude, ems } = well
 
+        if (!latitude || !longitude) { return } // wells might not have lat / lng
+
         const hasEmsData = Boolean(ems)
 
         const options = hasEmsData ? emsWellCircleMarkerOptions : defaultCircleMarkerOptions

@@ -5,19 +5,19 @@ import config from '@/common/store/config.js'
 import documentState from '@/common/store/documents.js'
 import registriesStore from '@/registry/store/index.js'
 import submissionStore from '@/submissions/store/index.js'
-import aquiferCodes from '@/aquifers/store/codes.js'
+import aquiferStore from '@/aquifers/store/index.js'
 import wellsStore from '@/wells/store/index.js'
 
 Vue.use(Vuex)
 
 export const store = new Vuex.Store({
   modules: {
-    auth: auth,
-    config: config,
-    documentState: documentState,
-    registriesStore: registriesStore,
-    submissionStore: submissionStore,
-    aquiferCodes: aquiferCodes,
-    wellsStore: wellsStore
+    auth,
+    config,
+    documentState,
+    registriesStore,
+    submissionStore,
+    aquiferStore,
+    wellsStore
   }
 })
