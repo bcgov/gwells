@@ -148,7 +148,7 @@ class WellSubmissionSerializerBase(AuditModelSerializer):
         data = None
         if self.context.get('request', None):
             data = self.context['request'].data
-        
+
         if 'latitude' in data or 'longitude' in data:
             lat = data['latitude']
             lng = data['longitude']
@@ -206,7 +206,7 @@ class WellSubmissionSerializerBase(AuditModelSerializer):
                         point = Point(-abs(data['longitude']), data['latitude'], srid=4326)
                         validated_data['geom'] = point
                         data['geom'] = point
-                        
+
 
             # Remove the latitude and longitude fields if they exist
             validated_data.pop('latitude', None)
@@ -724,6 +724,11 @@ class WellDecommissionSubmissionSerializer(WellSubmissionSerializerBase):
             'owner_postal_code',
             'street_address',
             'city',
+            'consultant_company',
+            'consultant_name',
+            'driller_name',
+            'person_responsible',
+            'company_of_person_responsible',
             'legal_lot',
             'legal_plan',
             'legal_district_lot',
