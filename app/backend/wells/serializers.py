@@ -1012,8 +1012,8 @@ class WellTagSearchSerializer(serializers.ModelSerializer):
         fields = ("well_tag_number", "owner_full_name")
 
 
-class WellLocationSerializer(serializers.ModelSerializer):
-    """ serializes well locations """
+class WellLocationSerializerV1(serializers.ModelSerializer):
+    """ serializes well locations v1 """
 
     class Meta:
         model = Well
@@ -1025,6 +1025,7 @@ class WellDrawdownSerializer(serializers.ModelSerializer):
     screen_set = ScreenSerializer(many=True)
     intended_water_use = serializers.ReadOnlyField(source='intended_water_use.description')
     aquifer_subtype = serializers.ReadOnlyField(source='aquifer.subtype.description')
+    distance = serializers.FloatField(required=False)
 
     class Meta:
         model = Well
@@ -1035,6 +1036,9 @@ class WellDrawdownSerializer(serializers.ModelSerializer):
             "well_yield",
             "diameter",
             "aquifer",
+            "distance",
+            "latitude",
+            "longitude",
             "well_yield_unit",
             "finished_well_depth",
             "street_address",
@@ -1047,3 +1051,17 @@ class WellDrawdownSerializer(serializers.ModelSerializer):
         if instance.aquifer and instance.aquifer.subtype:
             details['aquifer_hydraulically_connected'] = instance.aquifer.subtype.code in HYDRAULIC_SUBTYPES
         return details
+
+
+class WellLithologySerializer(serializers.ModelSerializer):
+    lithologydescription_set = LithologyDescriptionSummarySerializer(many=True)
+
+    class Meta:
+            model = Well
+            fields = (
+                "well_tag_number",
+                "latitude",
+                "longitude",
+                "lithologydescription_set"
+            )
+

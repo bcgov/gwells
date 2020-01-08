@@ -28,8 +28,6 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
     <div
       class="container-fluid"
     >
-      <!---->
-       
       <div
         class="row border-bottom mb-3 pb-2"
       >
@@ -44,6 +42,7 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
        
       <aquifer-form-stub
         fielderrors="[object Object]"
+        files="[object Object]"
         record="[object Object]"
         showid="true"
       />
@@ -88,8 +87,6 @@ exports[`View Component View mode matches the snapshot 1`] = `
     <div
       class="container-fluid"
     >
-      <!---->
-       
       <div
         class="row border-bottom mb-3 pb-2"
       >
@@ -104,6 +101,7 @@ exports[`View Component View mode matches the snapshot 1`] = `
        
       <aquifer-form-stub
         fielderrors="[object Object]"
+        files="[object Object]"
         record="[object Object]"
         showid="true"
       />

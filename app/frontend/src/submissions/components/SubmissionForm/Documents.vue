@@ -71,7 +71,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 </li>
               </ul>
               <div v-else>
-                  No additional documentation currently available for this well.
+                No additional documentation currently available for this well.
               </div>
             </div>
           </div>

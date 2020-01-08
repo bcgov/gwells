@@ -32,21 +32,20 @@
       Record successfully updated.
     </b-alert>
     <b-container fluid>
-      <b-row v-if="loading" class="border-bottom mb-3 pb-2">
-        <b-col><h5>Loading...</h5></b-col>
-      </b-row>
-
       <b-row v-if="editMode && !loading" class="border-bottom mb-3 pb-2">
         <b-col><h4>Aquifer {{record.aquifer_id}} Summary - Edit</h4></b-col>
       </b-row>
       <aquifer-form
+        :fieldErrors="fieldErrors"
+        :record="form"
+        :files="aquiferFiles"
+        :loadingFiles="loadingFiles"
+        showId
+        v-if="editMode"
         v-on:load="loadForm"
         v-on:save="save"
         v-on:cancel="navigateToView"
-        :fieldErrors="fieldErrors"
-        :record="form"
-        showId
-        v-if="editMode"
+        v-on:fetchFiles="fetchFiles"
         />
       <change-history v-if="userRoles.aquifers.edit && editMode" class="mt-5" :id="id" resource="aquifers" ref="aquiferHistory"/>
 
@@ -114,8 +113,10 @@
             </b-col>
           </b-row>
         </b-col>
-        <b-col cols="12" md="12" lg="7" class="p-0">
-          <single-aquifer-map v-bind:geom="record.geom" :key="mapKey"/>
+        <b-col id="map-container" cols="12" md="12" lg="7" class="p-0">
+          <map-loading-spinner :loading="loadingMap"/>
+
+          <single-aquifer-map :aquifer-id="id" :geom="record.geom" :wells="wells" :key="mapKey" :loading="loadingMap"/>
         </b-col>
       </b-row>
 
@@ -146,6 +147,7 @@
           <aquifer-documents :files="aquiferFiles"
             :editMode="editMode"
             :id="this.id"
+            :loading="loadingFiles"
             v-on:fetchFiles="fetchFiles">
           </aquifer-documents>
         </b-col>
@@ -153,7 +155,10 @@
           <h5 class="mt-3 border-bottom pb-4 main-title">Licensing Information</h5>
           <div>
             <p>
-              The licensing summaries should be considered estimates. Due to complexities in the structure of the licensing data, reported values should be confirmed through the e-licensing portal.
+              The licensing summaries should be considered estimates. Due to complexities in the structure
+              of the licensing data, reported values should be confirmed through the
+              <a href="https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&amp;PosseObjectDef=o_ATIS_DocumentSearch&amp;PosseMenuName=WS_Main" target="_blank" class="d-print-url">
+                e&#8209;licensing portal</a>.
             </p>
           </div>
           <ul class="ml-0 mr-0 mt-4 mb-0 p-0 aquifer-information-list">
@@ -180,16 +185,34 @@
               </b-col>
             </b-row>
           </div>
-          <b-table striped hover :items="licence_details.wells_by_licence"></b-table>
+          <b-table id="licenses" striped :items="licence_details.wells_by_licence">
+            <template slot="licence_number" slot-scope="row">
+              <a :href="`https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&amp;PosseObjectDef=o_ATIS_DocumentSearch&amp;PosseMenuName=WS_Main&Criteria_LicenceNumber=${row.item.licence_number}`" target="_blank">
+                {{ row.item.licence_number }}
+              </a>
+            </template>
+            <template slot="well_tag_numbers_in_licence" slot-scope="row">
+              <ul class="p-0 m-0">
+                <li v-for="wtn in row.item.well_tag_numbers_in_licence" :key="wtn">
+                  <router-link :to="{ name: 'wells-detail', params: { id: wtn }}">{{ wtn }}</router-link>
+                </li>
+              </ul>
+            </template>
+          </b-table>
           <p><i v-if="licence_details.licences_updated && licence_details.licences_updated.update_date__max">Licence info last updated {{ licence_details.licences_updated.update_date__max|formatDate }}</i></p>
           <p>
-            Licensing information is obtained from the <a href="https://catalogue.data.gov.bc.ca/dataset/water-rights-licences-public" @click="handleOutboundLinkClicks('https://catalogue.data.gov.bc.ca/dataset/water-rights-licences-public')" target="_blank">Water Rights Licence - Public data layer</a>.
+            Licensing information is obtained from
+            the <a href="https://catalogue.data.gov.bc.ca/dataset/water-rights-licences-public" @click="handleOutboundLinkClicks('https://catalogue.data.gov.bc.ca/dataset/water-rights-licences-public')" target="_blank" class="d-print-url">
+              Water Rights Licence - Public data layer
+            </a>.
           </p>
           <p>
             Unique licenses are counted once for each aquifer that they are associated with.
           </p>
           <p>
-            The total licensed volume is counted once for each licence (the total volume may be shared between wells if there are multiple wells in a licence). In cases where specific volumes are licensed for multiple purposes, individual volumes are summed.
+            The total licensed volume is counted once for each licence (the total volume may
+            be shared between wells if there are multiple wells in a licence). In cases where
+            specific volumes are licensed for multiple purposes, individual volumes are summed.
           </p>
         </b-col>
         <b-col cols="12" xl="4" lg="6" class="knowledge-indicators">
@@ -204,12 +227,12 @@
                     <h6 class="border-bottom">Active</h6>
                     <ul class="p-0 m-0">
                       <li v-for="owell in activeObsWells" :key="owell.observation_well_number" :data-water-level="owell.waterLevels">
-                        <a :href="getObservationWellLink(owell.observation_well_number)" target="_blank">
+                        <a :href="getObservationWellLink(owell.observation_well_number)" target="_blank" class="d-print-url">
                           {{ owell.observation_well_number }}
                         </a>
                         <span v-if="owell.waterLevels">
                           Water Level Analysis:
-                          <a :href="owell.hasLevelAnalysis ? 'http://www.env.gov.bc.ca/soe/indicators/water/groundwater-levels.html' : false" target="_blank">
+                          <a :href="owell.hasLevelAnalysis ? 'http://www.env.gov.bc.ca/soe/indicators/water/groundwater-levels.html' : false" target="_blank" class="d-print-url">
                             {{ owell.waterLevels }}
                           </a>
                         </span>
@@ -220,12 +243,12 @@
                     <h6 class="border-bottom mt-2">Inactive<br><small>(data may not be available)</small></h6>
                     <ul class="p-0 m-0">
                       <li v-for="owell in inactiveObsWellsWithWaterLevel" :key="owell.observation_well_number" :data-water-level="owell.waterLevels">
-                        <a :href="getObservationWellLink(owell.observation_well_number)" target="_blank">
+                        <a :href="getObservationWellLink(owell.observation_well_number)" target="_blank" class="d-print-url">
                           {{ owell.observation_well_number }}
                         </a>
                         <div v-if="owell.waterLevels">
                           Water Level Analysis:
-                          <a :href="owell.hasLevelAnalysis ? 'http://www.env.gov.bc.ca/soe/indicators/water/groundwater-levels.html' : false" target="_blank">
+                          <a :href="owell.hasLevelAnalysis ? 'http://www.env.gov.bc.ca/soe/indicators/water/groundwater-levels.html' : false" target="_blank" class="d-print-url">
                             {{ owell.waterLevels }}
                           </a>
                         </div>
@@ -257,8 +280,7 @@
                   <b-popover
                     target="aquiferConnectedInfo"
                     triggers="hover focus"
-                    content="Inferred based on aquifer subtype - not field verified."
-                  ></b-popover>
+                    content="Inferred based on aquifer subtype - not field verified."/>
                 </dt>
                 <dd class="m-0">{{ licence_details['hydraulically_connected'] ? "More likely" : "Less likely"}}</dd>
               </div>
@@ -266,7 +288,7 @@
                 <dt class="text-right">{{ section.name }}</dt>
                 <dd class="m-0">
                   <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
-                    <li><a :href="resource.url" @click="handleExternalResourceClicks" target="_blank">{{ resource.name }}</a></li>
+                    <li><a :href="resource.url" @click="handleExternalResourceClicks" target="_blank" class="d-print-url">{{ resource.name }}</a></li>
                   </ul>
                   <p class="m-0" v-if="!bySection(record.resources, section).length">No information available.</p>
                 </dd>
@@ -294,6 +316,10 @@
 
 a {
   text-decoration-skip-ink: none;
+}
+
+#map-container {
+  position: relative;
 }
 
 .card-container .card-body {
@@ -371,9 +397,23 @@ a {
   content: ", ";
 }
 
+#licenses li {
+  list-style: none;
+  display: inline;
+}
+
+#licenses li:not(:last-child):after {
+  content: ', ';
+}
+
 @media print {
-  .aquifer-details a::after{
+  a:not(.d-print-url) {
+    text-decoration: none !important;
+  }
+
+  a.d-print-url[href]::after {
     content: " (" attr(href) ") ";
+    word-break: break-all;
   }
 
   .aquifer-information-list dt {
@@ -408,19 +448,20 @@ import APIErrorMessage from '@/common/components/APIErrorMessage'
 import AquiferForm from './Form'
 import Documents from './Documents.vue'
 import SingleAquiferMap from './SingleAquiferMap.vue'
+import MapLoadingSpinner from './MapLoadingSpinner.vue'
 import ChangeHistory from '@/common/components/ChangeHistory.vue'
 import { mapActions, mapGetters, mapState } from 'vuex'
-import { sumBy, orderBy, groupBy } from 'lodash'
+import { sumBy, orderBy, groupBy, range } from 'lodash'
 import PieChart from './PieChart.vue'
 import * as Sentry from '@sentry/browser'
 
 export default {
-
   components: {
     'api-error': APIErrorMessage,
     'aquifer-form': AquiferForm,
     'aquifer-documents': Documents,
     'single-aquifer-map': SingleAquiferMap,
+    'map-loading-spinner': MapLoadingSpinner,
     ChangeHistory,
     PieChart
   },
@@ -428,7 +469,15 @@ export default {
     'edit': Boolean
   },
   created () {
-    this.fetch()
+    this.loadingMap = true
+
+    Promise.all([
+      this.fetch(),
+      this.fetchWells()
+    ]).then(() => {
+      this.loadingMap = false
+    })
+
     this.fetchFiles()
   },
   data () {
@@ -437,6 +486,8 @@ export default {
       error: undefined,
       fieldErrors: {},
       loading: false,
+      loadingFiles: false,
+      loadingMap: false,
       record: {},
       form: {},
       licence_details: {
@@ -454,6 +505,7 @@ export default {
         { code: 'W', name: 'Water budget' },
         { key: 'water-quality', name: 'Water quality information' },
         { key: 'aquifer-connected', name: 'Hydraulically connected (screening level)' },
+        { code: 'G', name: 'Groundwater Surface Water Interactions' },
         { code: 'I', name: 'Other information' }
       ],
       wells: [],
@@ -509,16 +561,6 @@ export default {
       ApiService.query(`aquifers/${this.id}/edit`)
         .then((response) => {
           this.form = response.data
-        }).catch((error) => {
-          console.error(error)
-        })
-    },
-    fetchWells (id = this.id) {
-      ApiService.query(`aquifers/${id}/details`)
-        .then((response) => {
-          this.wells = response.data
-        }).catch((error) => {
-          console.error(error)
         })
     },
     bySection (resources, section) {
@@ -592,13 +634,24 @@ export default {
       window.print()
     },
     fetch (id = this.id) {
-      ApiService.query(`aquifers/${id}`)
+      return ApiService.query(`aquifers/${id}`)
         .then((response) => {
+          const responseData = response.data || {}
+
+          if (responseData.licence_details.wells_by_licence) {
+            responseData.licence_details.wells_by_licence.forEach((licence) => {
+              if (licence.well_tag_numbers_in_licence) {
+                const wtns = licence.well_tag_numbers_in_licence
+                licence.well_tag_numbers_in_licence = wtns.split(',').map((n) => parseInt(n))
+              }
+            })
+          }
+
           // force the map to update.
-          this.record = response.data
-          this.licence_details = response.data.licence_details
-          this.lic_qty = response.data.licence_details.lic_qty
-          const obsWells = response.data.licence_details.obs_wells
+          this.record = responseData
+          this.licence_details = responseData.licence_details
+          this.lic_qty = responseData.licence_details.lic_qty
+          const obsWells = responseData.licence_details.obs_wells
 
           return this.getWaterLevels(obsWells).then(() => {
             const sortedWells = orderBy(obsWells, ['hasLevelAnalysis', 'waterLevels'], ['desc', 'asc']) // sorts so wells with waterLevels are at the top.
@@ -615,14 +668,40 @@ export default {
             // Show the "No information available." message when there are no obs wells to show
             this.noObsWells = this.activeObsWells.length === 0 && inactiveObsWells.length === 0
           })
-        }).catch((error) => {
-          console.error(error)
         })
     },
     fetchFiles (id = this.id) {
-      ApiService.query(`aquifers/${id}/files`)
+      this.loadingFiles = true
+      return ApiService.query(`aquifers/${id}/files`)
         .then((response) => {
           this.aquiferFiles = response.data
+          this.loadingFiles = false
+        })
+    },
+    fetchWells (id = this.id) {
+      const maxResults = 5000 // 5000 is the API max
+      const params = { aquifer: id, limit: maxResults }
+      return ApiService.query('wells/locations', params)
+        .then((response) => {
+          const total = response.data.count
+
+          const initialPromise = Promise.resolve(response.data.results || [])
+          let promise = initialPromise
+
+          if (total > maxResults) {
+            const numFetches = Math.ceil(total / maxResults)
+            promise = range(1, numFetches).reduce((previousPromise, pageNum) => {
+              return previousPromise.then((results) => {
+                return ApiService.query('wells/locations', { ...params, offset: pageNum * maxResults }).then((response2) => {
+                  return results.concat(response2.data.results)
+                })
+              })
+            }, initialPromise)
+          }
+
+          return promise
+        }).then((wells) => {
+          this.wells = wells || []
         })
     },
     getObservationWellLink (wellNumber) {
@@ -640,8 +719,6 @@ export default {
               owell.hasLevelAnalysis = category.toUpperCase() !== 'N/A'
               owell.waterLevels = category
             }
-          }).catch((e) => {
-            console.error(e)
           })
         })
       )

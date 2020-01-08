@@ -549,7 +549,8 @@ pipeline {
                             "IMAGE_STREAM_VERSION=v1-stable",
                             "NAME_SUFFIX=-${devSuffix}-${prNumber}",
                             "POSTGRESQL_DATABASE=gwells",
-                            "VOLUME_CAPACITY=1Gi"
+                            "VOLUME_CAPACITY=1Gi",
+                            "STORAGE_CLASS=netapp-file-standard"
                         )
 
                         // Process postgres deployment config (sub in vars, create list items)
@@ -734,6 +735,8 @@ pipeline {
                             "NAME_SUFFIX=-${stagingSuffix}",
                             "ENV_NAME=${stagingSuffix}",
                             "HOST=${stagingHost}",
+                            "CPU_REQUEST=500m",
+                            "CPU_LIMIT=2",
                         )
 
                         // some objects need to be copied from a base secret or configmap
@@ -998,7 +1001,7 @@ pipeline {
                             "openshift/backend.dc.json",
                             "NAME_SUFFIX=-${demoSuffix}",
                             "ENV_NAME=${demoSuffix}",
-                            "HOST=${demoHost}",
+                            "HOST=${demoHost}"
                         )
 
                         // some objects need to be copied from a base secret or configmap
@@ -1229,6 +1232,10 @@ pipeline {
                             "NAME_SUFFIX=-${prodSuffix}",
                             "ENV_NAME=${prodSuffix}",
                             "HOST=${prodHost}",
+                            "CPU_REQUEST=1",
+                            "CPU_LIMIT=2",
+                            "MEMORY_REQUEST=1Gi",
+                            "MEMORY_LIMIT=2Gi"
                         )
 
                         // some objects need to be copied from a base secret or configmap

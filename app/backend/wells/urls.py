@@ -16,6 +16,7 @@ from django.views.decorators.cache import never_cache
 
 from gwells.urls import api_path_prefix
 from . import views
+from . import views_v2
 
 urlpatterns = [
 
@@ -45,9 +46,17 @@ urlpatterns = [
     url(api_path_prefix() + r'/wells/screens$',
         never_cache(views.WellScreens.as_view()), name='well-screens'),
 
+    # Well lithology search
+    # returns information about well lithology for a range of wells provided in ?wells=123,124,125 etc.
+    url(api_path_prefix() + r'/wells/lithology$',
+        never_cache(views.WellLithology.as_view()), name='well-lithology'),
+
     # Well tag search
-    url(api_path_prefix() + r'/wells/locations$',
-        never_cache(views.WellLocationListAPIView.as_view()), name='well-locations'),
+    url(r'api/v1/wells/locations$',
+        never_cache(views.WellLocationListV1APIView.as_view()), name='well-locations-v1'),
+
+    url(r'api/v2/wells/locations$',
+        never_cache(views_v2.WellLocationListV2APIView.as_view()), name='well-locations-v2'),
 
     # Documents (well records)
     url(api_path_prefix() + r'/wells/(?P<tag>[0-9]+)/files$',

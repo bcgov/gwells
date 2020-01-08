@@ -17,14 +17,16 @@ import logging
 import sys
 import time
 
-from django.db.models import Prefetch
+from django.contrib.gis.db.models.functions import Centroid, Distance
+from django.contrib.gis.geos import GEOSException, Point, GEOSGeometry
+from django.contrib.gis.gdal import GDALException
+from django.db.models import Prefetch, FloatField
+from django.db.models.functions import Cast
 from django.http import (
     FileResponse, Http404, HttpResponse, HttpResponseNotFound,
     HttpResponseRedirect, JsonResponse, StreamingHttpResponse, HttpResponseBadRequest)
 from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView
-from django_filters import rest_framework as restfilters
-from django.db.models import Q
 from django_filters import rest_framework as restfilters
 from django.db import connection
 import requests
@@ -68,6 +70,8 @@ from submissions.models import WellActivityCode
 
 from wells.filters import (
     BoundingBoxFilterBackend,
+    GeometryFilterBackend,
+    RadiusFilterBackend,
     WellListFilterBackend,
     WellListOrderingFilter,
 )
@@ -94,8 +98,9 @@ from wells.serializers import (
     WellTagSearchSerializer,
     WellDetailSerializer,
     WellDetailAdminSerializer,
-    WellLocationSerializer,
-    WellDrawdownSerializer)
+    WellLocationSerializerV1,
+    WellDrawdownSerializer,
+    WellLithologySerializer)
 from wells.permissions import WellsEditPermissions, WellsEditOrReadOnly
 
 
@@ -234,7 +239,7 @@ class WellListAPIView(ListAPIView):
     pagination_class = APILimitOffsetPagination
 
     filter_backends = (WellListFilterBackend, BoundingBoxFilterBackend,
-                       filters.SearchFilter, WellListOrderingFilter)
+                       filters.SearchFilter, WellListOrderingFilter, GeometryFilterBackend)
     ordering = ('well_tag_number',)
     search_fields = ('well_tag_number', 'identification_plate_number',
                      'street_address', 'city', 'owner_full_name')
@@ -317,7 +322,7 @@ class WellSubmissionsListAPIView(ListAPIView):
                           record.create_date), reverse=True)
 
 
-class WellLocationListAPIView(ListAPIView):
+class WellLocationListV1APIView(ListAPIView):
     """ returns well locations for a given search
 
         get: returns a list of wells with locations only
@@ -325,7 +330,7 @@ class WellLocationListAPIView(ListAPIView):
     MAX_LOCATION_COUNT = 5000
     permission_classes = (WellsEditOrReadOnly,)
     model = Well
-    serializer_class = WellLocationSerializer
+    serializer_class = WellLocationSerializerV1
 
     # Allow searching on name fields, names of related companies, etc.
     filter_backends = (WellListFilterBackend, BoundingBoxFilterBackend,
@@ -806,19 +811,78 @@ class WellScreens(ListAPIView):
 
     model = Well
     serializer_class = WellDrawdownSerializer
+    filter_backends = (GeometryFilterBackend, RadiusFilterBackend)
     swagger_schema = None
 
     def get_queryset(self):
+        qs = Well.objects.all() \
+            .select_related('intended_water_use', 'aquifer', 'aquifer__subtype') \
+            .prefetch_related('screen_set')
+
+
+        if not self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
+            qs = qs.exclude(well_publication_status='Unpublished')
+
+        # check if a point was supplied (note: actual filtering will be by
+        # the filter_backends classes).  If so, add distances from the point.
+        point = self.request.query_params.get('point', None)
+        srid = self.request.query_params.get('srid', 4326)
+        radius = self.request.query_params.get('radius', None)
+        if point and radius:
+            try:
+                shape = GEOSGeometry(point, srid=int(srid))
+                radius = float(radius)
+                assert shape.geom_type == 'Point'
+            except (ValueError, AssertionError, GDALException, GEOSException):
+                raise ValidationError({
+                    'point': 'Invalid point geometry. Use geojson geometry or WKT. Example: {"type": "Point", "coordinates": [-123,49]}'
+                })
+            else:
+                qs = qs.annotate(
+                    distance=Cast(Distance('geom', shape), output_field=FloatField())
+                ).order_by('distance')
+
+        # can also supply a comma separated list of wells
         wells = self.request.query_params.get('wells', None)
-        if not wells:
-            return []
+        if wells:
+            wells = wells.split(',')
 
-        wells = wells.split(',')
+            for w in wells:
+                if not w.isnumeric():
+                    raise ValidationError(detail='Invalid well')
 
-        for w in wells:
-            if not w.isnumeric():
-                raise ValidationError(detail='Invalid well')
+            wells = map(int, wells)
 
-        wells = map(int, wells)
+            qs = qs.filter(well_tag_number__in=wells)
 
-        return Well.objects.filter(well_tag_number__in=wells)
+        return qs
+
+
+class WellLithology(ListAPIView):
+    """ returns lithology info for a range of wells """
+
+    model = Well
+    serializer_class = WellLithologySerializer
+    filter_backends = (GeometryFilterBackend,)
+    swagger_schema = None
+
+    def get_queryset(self):
+        qs = Well.objects.all()
+
+        if not self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
+            qs = qs.exclude(well_publication_status='Unpublished')
+
+        # allow comma separated list of wells by well tag number
+        wells = self.request.query_params.get('wells', None)
+        if wells:
+            wells = wells.split(',')
+
+            for w in wells:
+                if not w.isnumeric():
+                    raise ValidationError(detail='Invalid well')
+
+            wells = map(int, wells)
+
+            qs = qs.filter(well_tag_number__in=wells)
+
+        return qs

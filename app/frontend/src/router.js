@@ -42,6 +42,9 @@ const router = new Router({
     {
       path: '/aquifers/',
       name: 'aquifers-home',
+      meta: {
+        allowPushWithoutScroll: true
+      },
       component: AquiferSearch
     },
     {
