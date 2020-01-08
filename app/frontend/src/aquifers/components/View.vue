@@ -36,13 +36,16 @@
         <b-col><h4>Aquifer {{record.aquifer_id}} Summary - Edit</h4></b-col>
       </b-row>
       <aquifer-form
+        :fieldErrors="fieldErrors"
+        :record="form"
+        :files="aquiferFiles"
+        :loadingFiles="loadingFiles"
+        showId
+        v-if="editMode"
         v-on:load="loadForm"
         v-on:save="save"
         v-on:cancel="navigateToView"
-        :fieldErrors="fieldErrors"
-        :record="form"
-        showId
-        v-if="editMode"
+        v-on:fetchFiles="fetchFiles"
         />
       <change-history v-if="userRoles.aquifers.edit && editMode" class="mt-5" :id="id" resource="aquifers" ref="aquiferHistory"/>
 
