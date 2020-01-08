@@ -5,7 +5,7 @@ const config = {
   insecure: true,
   unsupported: true,
   reminder: 0,
-  reminderClosed: 0,
+  reminderClosed: 1.1,
   no_permanent_hide: true,
   api: 2010.01,
   text: '{brow_name} is not supported by the Groundwater Wells and Aquifers application. We recommend using: Chrome, Firefox or Safari.<br><a{up_but}>Read more</a> or <a{ignore_but}>ignore</a>'
