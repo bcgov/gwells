@@ -36,17 +36,15 @@ export default {
       const url = `${payload.documentType}/${payload.recordId}/geometry`
       context.commit('setShapefileUploading', true)
       return ApiService.post(url, formData)
-        .then(response => {
+        .then(() => {
           context.commit('setShapefileUploadSuccess', true)
           context.commit('setShapefileUploadMessage', '')
-          setTimeout(() => {
-            context.commit('setShapefileUploadSuccess', false)
-          }, 5000)
         })
         .catch(e => {
+          context.commit('setShapefileUploading', false)
           context.commit('setShapefileUploadSuccess', false)
           console.error('failed to save shapefile', e.response)
-          context.commit('setShapefileUploadMessage', e.response.data.message)
+          context.commit('setShapefileUploadMessage', e.response.data.message || 'Server Error')
           throw e
         })
     },

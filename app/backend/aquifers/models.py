@@ -476,12 +476,15 @@ class Aquifer(AuditModel):
 
         geom = feat.geom
 
+        if not geom.srid:
+            raise Aquifer.BadShapefileException("Shapefile contains no projection information")
+
         # Make a GEOSGeometry object using the string representation.
-        if not geom.srid == 3005:
-            raise Aquifer.BadShapefileException("Not a BC-albers projection")
         # Eliminate any 3d geometry so it fits in PostGIS' 2d geometry schema.
-        wkt = wkt_w(dim=2).write(GEOSGeometry(geom.wkt, srid=3005)).decode()
-        geos_geom = GEOSGeometry(wkt, srid=3005)
+        wkt = wkt_w(dim=2).write(GEOSGeometry(geom.wkt, srid=geom.srid)).decode()
+        geos_geom = GEOSGeometry(wkt, srid=geom.srid)
+        geos_geom.transform(3005)
+
         # Convert MultiPolygons to plain Polygons,
         # We assume the largest one is the one we want to keep, and the rest are artifacts/junk.
         if isinstance(geos_geom, geos.MultiPolygon):
