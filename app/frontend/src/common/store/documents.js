@@ -47,6 +47,7 @@ export default {
           context.commit('setShapefileUploadSuccess', false)
           console.error('failed to save shapefile', e.response)
           context.commit('setShapefileUploadMessage', e.response.data.message)
+          throw e
         })
     },
     uploadFiles (context, payload) {
@@ -106,7 +107,7 @@ export default {
             .catch(error => {
               console.log(error)
               context.commit('addError', error)
-              return Promise.reject(error)
+              throw error
             })
         )
       })
@@ -137,11 +138,21 @@ export default {
     },
     resetUploadFiles (context) {
       context.commit('setFiles', [])
+    },
+    clearUploadShapeFileMessage (context) {
+      context.commit('setShapefileUploadMessage', '')
+    },
+    clearUploadFilesMessage (context) {
+      context.commit('clearErrors')
     }
   },
   mutations: {
     addError (state, payload) {
       state.file_upload_errors.push(payload)
+    },
+    clearErrors (state) {
+      state.file_upload_errors = []
+      state.file_upload_error = false
     },
     setShapefileUploadMessage (state, payload) {
       state.shapefile_upload_message = payload

@@ -15,21 +15,21 @@
 <template>
   <b-card class="container container-wide p-0 card-container pb-5" :class="{ 'p-4': editMode }">
     <api-error v-if="error" :error="error"/>
-    <b-alert show v-if="files_uploading">File Upload In Progress...</b-alert>
-    <b-alert show v-if="!files_uploading && file_upload_error" variant="warning" >
-      There was an error uploading the files
+    <b-alert show v-if="files_uploading || shapefile_uploading">File Upload In Progress...</b-alert>
+    <b-alert show v-if="!files_uploading && file_upload_error" variant="danger" >
+      There was an error uploading the documents
     </b-alert>
     <b-alert show v-if="!files_uploading && file_upload_success" variant="success" >
-      Successfully uploaded all files
+      Successfully uploaded all documents
     </b-alert>
-    <b-alert show v-if="shapefile_upload_success &! shapefile_uploading" variant="success" >
+    <b-alert show v-if="shapefile_upload_success & !shapefile_uploading" variant="success" >
       Shapefile uploaded.
     </b-alert>
-    <b-alert show v-if="!shapefile_upload_success &! shapefile_uploading && shapefile_upload_message" variant="warning" >
+    <b-alert show v-if="!shapefile_upload_success & !shapefile_uploading && shapefile_upload_message" variant="danger" >
       There was an error uploading the shapefile: {{ shapefile_upload_message }}.
     </b-alert>
     <b-alert variant="success" :show="showSaveSuccess" id="aquifer-success-alert">
-      Record successfully updated.
+      Aquifer {{ id }}'s information successfully updated.
     </b-alert>
     <b-container fluid>
       <b-row v-if="editMode && !loading" class="border-bottom mb-3 pb-2">
@@ -555,7 +555,9 @@ export default {
       'uploadFiles',
       'uploadShapefile',
       'fileUploadSuccess',
-      'fileUploadFail'
+      'fileUploadFail',
+      'clearUploadShapeFileMessage',
+      'clearUploadFilesMessage'
     ]),
     loadForm () {
       ApiService.query(`aquifers/${this.id}/edit`)
@@ -569,35 +571,12 @@ export default {
       })
     },
     handleSaveSuccess (response) {
+      this.fetch()
+
       if (this.$refs.aquiferHistory) {
         this.$refs.aquiferHistory.update()
       }
-      this.showSaveSuccess = true
-      if (this.upload_files.length > 0) {
-        this.uploadFiles({
-          documentType: 'aquifers',
-          recordId: this.id
-        }).then(() => {
-          this.fileUploadSuccess()
-          this.fetchFiles()
-        }).catch((error) => {
-          Sentry.captureException(error)
-          this.fileUploadFail()
-          console.log(error)
-        })
-      }
 
-      if (this.shapefile) {
-        this.uploadShapefile({
-          documentType: 'aquifers',
-          recordId: this.id
-        }).then(() => {
-          this.fetch()
-          this.mapKey++
-        })
-      } else {
-        this.fetch()
-      }
       this.navigateToView()
     },
     handlePatchError (error) {
@@ -614,13 +593,46 @@ export default {
     },
     save () {
       this.showSaveSuccess = false
+      this.clearUploadShapeFileMessage()
+      this.clearUploadFilesMessage()
       this.fieldErrors = {}
       let writableRecord = JSON.parse(JSON.stringify(this.form))
       delete writableRecord.licence_details
       delete writableRecord.geom
-      ApiService.patch('aquifers', this.id, writableRecord)
-        .then(this.handleSaveSuccess)
-        .catch(this.handlePatchError)
+      return ApiService.patch('aquifers', this.id, writableRecord)
+        .then(() => {
+          this.showSaveSuccess = true
+          return this.finishSavingFiles()
+        }, this.handlePatchError)
+    },
+    finishSavingFiles () {
+      const promises = []
+      if (this.upload_files.length > 0) {
+        const filePromise = this.uploadFiles({
+          documentType: 'aquifers',
+          recordId: this.id
+        }).then(() => {
+          this.fileUploadSuccess()
+          this.fetchFiles()
+        }).catch((error) => {
+          Sentry.captureException(error)
+          this.fileUploadFail()
+          throw error
+        })
+        promises.push(filePromise)
+      }
+
+      if (this.shapefile) {
+        const shapeFilePromise = this.uploadShapefile({
+          documentType: 'aquifers',
+          recordId: this.id
+        }).then(() => {
+          this.mapKey++
+        })
+        promises.push(shapeFilePromise)
+      }
+
+      return Promise.all(promises).then(this.handleSaveSuccess)
     },
     navigateToView () {
       this.$router.push({ name: 'aquifers-view', params: { id: this.id } })
@@ -719,7 +731,7 @@ export default {
               owell.hasLevelAnalysis = category.toUpperCase() !== 'N/A'
               owell.waterLevels = category
             }
-          })
+          }, () => {}) // Swallow any API error from https://catalogue.data.gov.bc.ca/api
         })
       )
     },

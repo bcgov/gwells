@@ -478,8 +478,7 @@ class Aquifer(AuditModel):
 
         # Make a GEOSGeometry object using the string representation.
         if not geom.srid == 3005:
-            logging.info("Non BC-albers feature, skipping.")
-            return
+            raise Aquifer.BadShapefileException("Not a BC-albers projection")
         # Eliminate any 3d geometry so it fits in PostGIS' 2d geometry schema.
         wkt = wkt_w(dim=2).write(GEOSGeometry(geom.wkt, srid=3005)).decode()
         geos_geom = GEOSGeometry(wkt, srid=3005)
@@ -493,9 +492,7 @@ class Aquifer(AuditModel):
         elif isinstance(geos_geom, geos.Polygon):
             geos_geom_out = geos_geom
         else:
-            logging.info("Bad geometry type: {}, skipping.".format(
-                geos_geom.__class__))
-            return
+            raise Aquifer.BadShapefileException("Bad geometry type: {}, skipping.".format(geos_geom.__class__))
 
         self.geom = geos_geom_out
 
