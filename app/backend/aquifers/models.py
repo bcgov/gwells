@@ -455,6 +455,7 @@ class Aquifer(AuditModel):
         if ret is not None:
             raise Aquifer.BadShapefileException("Bad zipfile, info: %s" % ret)
 
+        the_shapefile = None
         output_dir = tempfile.mkdtemp()
         for item in zip_ref.namelist():
             # Check filename endswith shp
@@ -464,6 +465,9 @@ class Aquifer(AuditModel):
                 the_shapefile = os.path.join(output_dir, item)
                 # break
         zip_ref.close()
+
+        if the_shapefile is None:
+            raise Aquifer.BadShapefileException("Bad zipfile. No shapefile found.")
 
         ds = DataSource(the_shapefile)
         self.update_geom_from_feature(ds[0][0])
