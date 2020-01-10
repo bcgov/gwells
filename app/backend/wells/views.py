@@ -764,7 +764,7 @@ def lithology_geojson(request, **kwargs):
 @api_view(['GET'])
 def well_licensing(request, **kwargs):
     tag = request.GET.get('well_tag_number')
-    eLicensingUrl = get_env_variable('E_LICENSING_URL')
+    e_licensing_url = get_env_variable('E_LICENSING_URL')
     api_success = False
 
     headers = {
@@ -773,9 +773,9 @@ def well_licensing(request, **kwargs):
         'AuthPass': get_env_variable('E_LICENSING_AUTH_PASSWORD')
     }
 
-    if eLicensingUrl:
+    if e_licensing_url:
         try:
-            response = requests.get(eLicensingUrl + '{}'.format(tag), headers=headers)
+            response = requests.get(e_licensing_url + '{}'.format(tag), headers=headers)
             if response.ok:
                 try:
                     licence = response.json()[-1]  # Use the latest licensing value, fails purposely if empty array

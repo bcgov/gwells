@@ -13,69 +13,103 @@
 */
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
-import VueRouter from 'vue-router'
-import WellSearch from '@/wells/views/WellSearch.vue'
+import { merge } from 'lodash'
 
-import { FETCH_CODES } from '@/submissions/store/actions.types.js'
-import { FETCH_DRILLER_NAMES, FETCH_ORGANIZATION_NAMES, RESET_WELLS_SEARCH } from '@/wells/store/actions.types.js'
-import { SET_SEARCH_PARAMS } from '@/wells/store/mutations.types.js'
+import WellSearch from '@/wells/views/WellSearch.vue'
+import auth from '@/common/store/auth.js'
+import wellsStore from '@/wells/store/index.js'
+import documentState from '@/common/store/documents.js'
 
 const localVue = createLocalVue()
 localVue.use(Vuex)
-localVue.use(VueRouter)
-
-const router = new VueRouter()
 
 describe('WellSearch.vue', () => {
-  let store
-  let getters
-  let mutations
-  let actions
+  const component = (options, storeState = {}) => {
+    const store = new Vuex.Store({
+      modules: { auth, wellsStore, documentState }
+    })
+    store.replaceState(merge(store.state, storeState))
 
-  beforeEach(() => {
-    getters = {
-      codes: () => ({}),
-      drillerNames: () => ({}),
-      locationErrorMessage: () => ({}),
-      organizationNames: () => ({}),
-      searchLimit: () => ({}),
-      searchErrors: () => ({}),
-      searchOffset: () => ({}),
-      searchOrdering: () => ({}),
-      searchParams: () => ({}),
-      searchResultColumns: () => ({}),
-      searchResults: () => ({}),
-      hasSearched: () => ({}),
-      userRoles: () => ({ wells: { view: false } }),
-      searchMapCentre: () => (null),
-      searchMapZoom: () => (null),
-      constrainSearch: () => (false)
+    return shallowMount(WellSearch, {
+      localVue,
+      store,
+      mocks: {
+        $router: {
+          push: jest.fn(),
+          replace: jest.fn()
+        },
+        $route: {
+          path: '/',
+          query: {}
+        }
+      },
+      stubs: ['router-link', 'b-popover'],
+      methods: {
+        fetchSurveys: jest.fn()
+      },
+      ...options
+    })
+  }
+
+  it('the page renders', () => {
+    const wrapper = component()
+
+    expect(wrapper.find('#wellSearchTitle').text()).toBe('Well Search')
+  })
+
+  it('should build query params', () => {
+    const searchParams = {
+      search: 'abc'
     }
-    mutations = {
-      [SET_SEARCH_PARAMS]: jest.fn()
+    const storeState = {
+      wellsStore: {
+        searchParams
+      }
     }
-    actions = {
-      [FETCH_CODES]: jest.fn(),
-      [FETCH_DRILLER_NAMES]: jest.fn(),
-      [FETCH_ORGANIZATION_NAMES]: jest.fn(),
-      [RESET_WELLS_SEARCH]: jest.fn()
-    }
-    store = new Vuex.Store({
-      getters,
-      mutations,
-      actions
+    const wrapper = component({ mocks: {
+      $router: {
+        replace: jest.fn()
+      },
+      $route: {
+        path: '/',
+        query: searchParams
+      }
+    } }, storeState)
+
+    const queryParams = wrapper.vm.buildQueryParams()
+
+    expect(queryParams).toEqual({
+      limit: '10',
+      offset: '0',
+      ordering: '-well_tag_number',
+      result_columns: 'wellTagNumber,identificationPlateNumber,ownerName,streetAddress,legalLot,legalPlan,legalDistrictLot,landDistrict,legalPid,diameter,finishedWellDepth',
+      search: 'abc'
     })
   })
 
-  it('the page renders', () => {
-    const wrapper = shallowMount(WellSearch, {
-      localVue,
-      store,
-      router,
-      stubs: ['router-link', 'search-form-select', 'b-popover'],
-      sync: false
-    })
+  it('Should replace the URL qs on map search', () => {
+    const searchParams = {
+      search: 'abc'
+    }
+    const storeState = {
+      wellsStore: {
+        searchParams
+      }
+    }
+    const routerReplaceSpy = jest.fn()
+    const wrapper = component({ mocks: {
+      $router: {
+        replace: routerReplaceSpy
+      },
+      $route: {
+        path: '/',
+        query: searchParams
+      }
+    } }, storeState)
 
-    expect(wrapper.find('#wellSearchTitle').text()).toBe('Well Search')
+    wrapper.vm.handleMapSearch()
+
+    expect(wrapper.vm.searchParams).toEqual(searchParams)
+    expect(routerReplaceSpy).toHaveBeenCalled()
   })
 })
