@@ -17,6 +17,7 @@ from django.db import transaction
 from django.db.models import OneToOneField
 from rest_framework import serializers
 from django.contrib.gis.geos import Point
+
 from rest_framework import exceptions
 
 from gwells.models import ProvinceStateCode
@@ -148,10 +149,10 @@ class WellSubmissionSerializerBase(AuditModelSerializer):
         data = None
         if self.context.get('request', None):
             data = self.context['request'].data
-        
-        if 'latitude' in data or 'longitude' in data:
-            lat = data['latitude']
-            lng = data['longitude']
+
+        if data.get('latitude') and data.get('longitude'):
+            lat = float(data['latitude'])
+            lng = float(data['longitude'])
             # there is also validation elsewhere that the point is inside BC.
             # this is a second sanity check to make sure the coordinates are roughly valid.
             if not 48 < lat < 60:
@@ -198,15 +199,14 @@ class WellSubmissionSerializerBase(AuditModelSerializer):
 
                 # Convert lat long values into geom object stored on model
                 # Values are BC Albers. but we are using WGS84 Lat Lon to avoid rounding errors
-                if 'latitude' in data and 'longitude' in data:
-                    if data.get('latitude') == '' and data.get('longitude') == '':
+                if data.get('latitude') and data.get('longitude'):
+                    if not data.get('latitude') and not data.get('longitude'):
                         validated_data['geom'] = None
                         data['geom'] = None
                     else:
                         point = Point(-abs(data['longitude']), data['latitude'], srid=4326)
                         validated_data['geom'] = point
                         data['geom'] = point
-                        
 
             # Remove the latitude and longitude fields if they exist
             validated_data.pop('latitude', None)
