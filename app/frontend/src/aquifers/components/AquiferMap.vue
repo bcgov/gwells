@@ -190,7 +190,6 @@ export default {
       const locateButton = L.control.locate({ position: 'topleft' })
       locateButton.onClick = (ev) => {
         this.map.locate({ setView: true, maxZoom: 12 })
-        this.$parent.fetchResults()
       }
       return locateButton
     },
@@ -368,7 +367,7 @@ export default {
     },
     zoomToLayer (layer) {
       const bounds = layer.getBounds()
-      if (bounds) {
+      if (bounds.isValid()) {
         this.map.fitBounds(bounds)
       }
     },
