@@ -39,7 +39,7 @@
         v-on:reset="triggerReset">
         <b-form-row>
           <b-col cols="12" md="12" lg="12" xl="4" class="p-4">
-            <h1 class="main-title ml-4 mt-2">Aquifer Search
+            <h1 class="main-title ml-2 mt-2">Aquifer Search
               <div v-if='userRoles.aquifers.edit' class="pb-2 pull-right">
               <b-button
                 id="aquifers-add"
@@ -49,44 +49,42 @@
               </div>
             </h1>
 
-            <b-form-row>
-              <b-col cols="12" md="12" class="pl-4 pr-4 aquifer-search-column mt-3">
-                <h4>Basic Search</h4>
-                <h5 class="search-title">Search by aquifer name or number (leave blank to see all aquifers)</h5>
-                <b-form-group class="search-title mt-3 mb-3">
-                  <b-form-input
-                    type="text"
-                    id="aquifers-search-field"
-                    v-model="search"
-                    class="w-75"/>
-                </b-form-group>
-                <h4 class="pt-5">Advanced Search</h4>
-                <b-form-group>
-                  <b-form-radio inline v-model="matchAny" name="match-any" value="true">Any field match</b-form-radio>
-                  <b-form-radio inline v-model="matchAny" name="match-any" value="false">All field match</b-form-radio>
-                </b-form-group>
-                <b-form-checkbox-group
-                  stacked
-                  v-model="selectedSections"
-                  :options="resourceSectionOptions"
-                  class="aquifer-checkbox-group"
-                />
-                <b-form-row>
-                  <b-button-group class="aquifer-search-actions">
-                    <b-button class="aquifer-buttons" variant="primary" type="submit" id="aquifers-search" :disabled="searchInProgress">
-                      Search {{constrainSearch ? 'In Map Area' : 'All Of BC'}}
-                      <i v-if="searchInProgress" class="fa fa-circle-o-notch fa-spin ml-1"/>
-                    </b-button>
-                    <b-button class="aquifer-buttons" variant="default" type="reset">Reset</b-button>
-                  </b-button-group>
-                </b-form-row>
-                <h6 class="mt-3">Download all aquifers</h6>
-                <ul class="aquifer-download-list">
-                  <li>- <a href="#" @click.prevent="downloadXLSX(false)">Aquifer extract (XLSX)</a></li>
-                  <li>- <a href="#" @click.prevent="downloadCSV(false)">Aquifer extract (CSV)</a></li>
-                </ul>
-              </b-col>
-            </b-form-row>
+            <div class="pl-2 pr-2 aquifer-search-column mt-3">
+              <h4>Basic Search</h4>
+              <h5 class="search-title">Search by aquifer name or number (leave blank to see all aquifers)</h5>
+              <b-form-group class="search-title mt-3 mb-3">
+                <b-form-input
+                  type="text"
+                  id="aquifers-search-field"
+                  v-model="search"
+                  class="w-75"/>
+              </b-form-group>
+              <h4 class="pt-4">Advanced Search</h4>
+              <b-form-group>
+                <b-form-radio inline v-model="matchAny" name="match-any" value="true">Any field match</b-form-radio>
+                <b-form-radio inline v-model="matchAny" name="match-any" value="false">All field match</b-form-radio>
+              </b-form-group>
+              <b-form-checkbox-group
+                stacked
+                v-model="selectedSections"
+                :options="resourceSectionOptions"
+                class="aquifer-checkbox-group"
+              />
+              <b-form-row>
+                <b-button-group class="aquifer-search-actions">
+                  <b-button class="aquifer-buttons" variant="primary" type="submit" id="aquifers-search" :disabled="searchInProgress">
+                    Search
+                    <i v-if="searchInProgress" class="fa fa-circle-o-notch fa-spin ml-1"/>
+                  </b-button>
+                  <b-button class="aquifer-buttons" variant="default" type="reset">Reset</b-button>
+                </b-button-group>
+              </b-form-row>
+              <h6 class="mt-3">Download all aquifers</h6>
+              <ul class="aquifer-download-list">
+                <li>- <a href="#" @click.prevent="downloadXLSX(false)">Aquifer extract (XLSX)</a></li>
+                <li>- <a href="#" @click.prevent="downloadCSV(false)">Aquifer extract (CSV)</a></li>
+              </ul>
+            </div>
           </b-col>
 
           <b-col cols="12" md="12" lg="12" xl="8" class="map-column">
@@ -321,7 +319,6 @@ export default {
       'searchResultCount',
       'searchInProgress',
       'searchPerformed',
-      'constrainSearch',
       'mapBounds'
     ]),
     ...mapState('aquiferStore', {
@@ -396,7 +393,9 @@ export default {
       this.matchAny = false
       this.selectedAquiferId = null
       this[RESET_SEARCH]()
-      this.$emit('resetLayers')
+      this.$nextTick(() => {
+        this.$emit('resetLayers')
+      })
     },
     triggerSearch () {
       this[SEARCH_AQUIFERS]({

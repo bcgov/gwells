@@ -12,12 +12,16 @@
     limitations under the License.
 """
 import json
+import logging
 from collections import OrderedDict
 
 from django import forms
 from django.core.exceptions import FieldDoesNotExist
 from django.http import HttpRequest, QueryDict
-from django.contrib.gis.geos import GEOSException, Polygon, GEOSGeometry
+from django.contrib.gis.geos import GEOSException, Polygon, GEOSGeometry, Point
+from django.contrib.gis.gdal import GDALException
+from django.contrib.gis.db.models.functions import Transform
+from django.contrib.gis.measure import D
 from django.db.models import Max, Min, Q, QuerySet
 from django_filters import rest_framework as filters
 from django_filters.widgets import BooleanWidget
@@ -34,6 +38,7 @@ from wells.models import (
     Well,
 )
 
+logger = logging.getLogger('wells_filters')
 
 def copy_request(request, **kwargs):
     """
@@ -74,8 +79,13 @@ class BoundingBoxFilterBackend(BaseFilterBackend):
         if sw_long and sw_lat and ne_long and ne_lat:
             try:
                 bbox = Polygon.from_bbox((sw_long, sw_lat, ne_long, ne_lat))
-            except (ValueError, GEOSException):
-                pass
+            except (ValueError, GEOSException) as e:
+                # This filter has less strict error handling because it was
+                # already in use for public v1 endpoints before v2 filters
+                # with stricter error responses were added.
+                # To avoid a breaking change, this filter will be skipped if
+                # invalid/incomplete bbox corners provided.
+                logger.debug('skipped bounding box filter; coordinates provided but could not create polygon: %s', e)
             else:
                 queryset = queryset.filter(geom__bboverlaps=bbox)
 
@@ -84,7 +94,7 @@ class BoundingBoxFilterBackend(BaseFilterBackend):
 
 class GeometryFilterBackend(BaseFilterBackend):
     """
-    Filter that allows geographic filtering on a geometry/shape.
+    Filter that allows geographic filtering on a geometry/shape using `?within=<geojson geometry>`
     """
 
     def filter_queryset(self, request, queryset, view):
@@ -94,10 +104,36 @@ class GeometryFilterBackend(BaseFilterBackend):
         if within:
             try:
                 shape = GEOSGeometry(within, srid=int(srid))
-            except (ValueError, GEOSException):
-                pass
+            except (ValueError, GEOSException, ParseException):
+                raise ValidationError({
+                    'within': 'Invalid geometry. Use a geojson geometry or WKT representing a polygon. Example: &within={"type": "Polygon", "coordinates": [...]}'
+                })
             else:
                 queryset = queryset.filter(geom__intersects=shape)
+
+        return queryset
+
+
+class RadiusFilterBackend(BaseFilterBackend):
+    """ 
+    Filter that allows searching within radius (m) of a point.
+    """
+
+    def filter_queryset(self, request, queryset, view):
+        point = request.query_params.get('point', None)
+        radius = request.query_params.get('radius', None)
+        srid = request.query_params.get('srid', 4326)
+
+        if point and radius:
+            try:
+                shape = GEOSGeometry(point, srid=int(srid))
+                assert shape.geom_type == 'Point'
+            except (ValueError, AssertionError, GDALException, GEOSException):
+                pass
+            else:
+                shape.transform(3005)
+                queryset = queryset.annotate(geom_albers=Transform('geom', 3005)) \
+                    .filter(geom_albers__dwithin=(shape, D(m=radius)))
 
         return queryset
 

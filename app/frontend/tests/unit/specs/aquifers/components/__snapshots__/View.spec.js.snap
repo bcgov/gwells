@@ -77,6 +77,7 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
          
         <aquifer-form-stub
           fielderrors="[object Object]"
+          files="[object Object]"
           record="[object Object]"
           showid="true"
         />
@@ -171,6 +172,7 @@ exports[`View Component View mode matches the snapshot 1`] = `
          
         <aquifer-form-stub
           fielderrors="[object Object]"
+          files="[object Object]"
           record="[object Object]"
           showid="true"
         />

@@ -44,13 +44,16 @@
           <b-col><h4>Aquifer {{id}} Summary - Edit</h4></b-col>
         </b-row>
         <aquifer-form
+          :fieldErrors="fieldErrors"
+          :record="form"
+          :files="aquiferFiles"
+          :loadingFiles="loadingFiles"
+          showId
+          v-if="editMode"
           v-on:load="loadForm"
           v-on:save="save"
           v-on:cancel="navigateToView"
-          :fieldErrors="fieldErrors"
-          :record="form"
-          showId
-          v-if="editMode"
+          v-on:fetchFiles="fetchFiles"
           />
         <change-history v-if="userRoles.aquifers.edit && editMode" class="mt-5" :id="id" resource="aquifers" ref="aquiferHistory"/>
 
@@ -59,22 +62,22 @@
             <b-row>
               <b-col class="pt-0 pl-4 pb-4 pr-4">
                 <div class="d-flex justify-content-between align-items-center">
-                <h4 class="color-grey main-title mt-4">Aquifer {{ id }} Summary</h4>
+                  <h4 class="color-grey main-title mt-4">Aquifer {{ id }} Summary</h4>
                   <div>
-                  <b-button
-                    variant="default"
-                    v-if="userRoles.aquifers.edit"
-                    v-on:click.prevent="navigateToEdit">
-                    <span title="Edit" class="fa fa-edit"/> Edit
-                  </b-button>
-                  <a class="ml-2 print-button fa fa-print fa-lg d-print-none"
-                    href="#"
-                    title="Print"
-                    v-on:click.prevent="print"
-                  />
+                    <b-button
+                      variant="default"
+                      v-if="userRoles.aquifers.edit"
+                      v-on:click.prevent="navigateToEdit">
+                      <span title="Edit" class="fa fa-edit"/> Edit
+                    </b-button>
+                    <a class="ml-2 print-button fa fa-print fa-lg d-print-none"
+                      href="#"
+                      title="Print"
+                      v-on:click.prevent="print"
+                    />
                   </div>
+                  <hr class="m-0 mt-2"/>
                 </div>
-                <hr class="m-0 mt-2"/>
               </b-col>
             </b-row>
             <b-row>

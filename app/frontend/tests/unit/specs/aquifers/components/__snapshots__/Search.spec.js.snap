@@ -22,7 +22,7 @@ exports[`Search Component Matches the snapshot 1`] = `
           class="p-4 col-md-12 col-lg-12 col-xl-4 col-12"
         >
           <h1
-            class="main-title ml-4 mt-2"
+            class="main-title ml-2 mt-2"
           >
             Aquifer Search
             
@@ -30,172 +30,168 @@ exports[`Search Component Matches the snapshot 1`] = `
           </h1>
            
           <div
-            class="form-row"
+            class="pl-2 pr-2 aquifer-search-column mt-3"
           >
-            <div
-              class="pl-4 pr-4 aquifer-search-column mt-3 col-md-12 col-12"
+            <h4>
+              Basic Search
+            </h4>
+             
+            <h5
+              class="search-title"
             >
-              <h4>
-                Basic Search
-              </h4>
-               
-              <h5
-                class="search-title"
-              >
-                Search by aquifer name or number (leave blank to see all aquifers)
-              </h5>
-               
-              <fieldset
-                class="form-group search-title mt-3 mb-3"
-              >
-                <!---->
-                <div
-                  role="group"
-                  tabindex="-1"
-                >
-                  <input
-                    class="w-75 form-control"
-                    id="aquifers-search-field"
-                    type="text"
-                  />
-                  <!---->
-                  <!---->
-                  <!---->
-                </div>
-              </fieldset>
-               
-              <h4
-                class="pt-5"
-              >
-                Advanced Search
-              </h4>
-               
-              <fieldset
-                class="form-group"
-              >
-                <!---->
-                <div
-                  role="group"
-                  tabindex="-1"
-                >
-                  <div
-                    class="custom-control custom-control-inline custom-radio"
-                  >
-                    <input
-                      autocomplete="off"
-                      class="custom-control-input"
-                      name="match-any"
-                      type="radio"
-                      value="true"
-                    />
-                    <label
-                      class="custom-control-label"
-                    >
-                      Any field match
-                    </label>
-                  </div>
-                   
-                  <div
-                    class="custom-control custom-control-inline custom-radio"
-                  >
-                    <input
-                      autocomplete="off"
-                      class="custom-control-input"
-                      name="match-any"
-                      type="radio"
-                      value="false"
-                    />
-                    <label
-                      class="custom-control-label"
-                    >
-                      All field match
-                    </label>
-                  </div>
-                  <!---->
-                  <!---->
-                  <!---->
-                </div>
-              </fieldset>
-               
+              Search by aquifer name or number (leave blank to see all aquifers)
+            </h5>
+             
+            <fieldset
+              class="form-group search-title mt-3 mb-3"
+            >
+              <!---->
               <div
-                class="aquifer-checkbox-group"
+                role="group"
+                tabindex="-1"
+              >
+                <input
+                  class="w-75 form-control"
+                  id="aquifers-search-field"
+                  type="text"
+                />
+                <!---->
+                <!---->
+                <!---->
+              </div>
+            </fieldset>
+             
+            <h4
+              class="pt-4"
+            >
+              Advanced Search
+            </h4>
+             
+            <fieldset
+              class="form-group"
+            >
+              <!---->
+              <div
                 role="group"
                 tabindex="-1"
               >
                 <div
-                  class="custom-control custom-checkbox"
+                  class="custom-control custom-control-inline custom-radio"
                 >
                   <input
                     autocomplete="off"
                     class="custom-control-input"
-                    type="checkbox"
-                    value="a"
+                    name="match-any"
+                    type="radio"
+                    value="true"
                   />
                   <label
                     class="custom-control-label"
                   >
-                    <span>
-                      aquifer section
-                    </span>
+                    Any field match
                   </label>
                 </div>
-              </div>
-               
-              <div
-                class="form-row"
-              >
-                <div
-                  class="aquifer-search-actions btn-group"
-                  role="group"
-                >
-                  <button
-                    class="btn aquifer-buttons btn-primary"
-                    id="aquifers-search"
-                    type="submit"
-                  >
-                    
-                    Search All Of BC
-                    
-                    <!---->
-                  </button>
-                   
-                  <button
-                    class="btn aquifer-buttons btn-default"
-                    type="reset"
-                  >
-                    Reset
-                  </button>
-                </div>
-              </div>
-               
-              <h6
-                class="mt-3"
-              >
-                Download all aquifers
-              </h6>
-               
-              <ul
-                class="aquifer-download-list"
-              >
-                <li>
-                  - 
-                  <a
-                    href="#"
-                  >
-                    Aquifer extract (XLSX)
-                  </a>
-                </li>
                  
-                <li>
-                  - 
-                  <a
-                    href="#"
+                <div
+                  class="custom-control custom-control-inline custom-radio"
+                >
+                  <input
+                    autocomplete="off"
+                    class="custom-control-input"
+                    name="match-any"
+                    type="radio"
+                    value="false"
+                  />
+                  <label
+                    class="custom-control-label"
                   >
-                    Aquifer extract (CSV)
-                  </a>
-                </li>
-              </ul>
+                    All field match
+                  </label>
+                </div>
+                <!---->
+                <!---->
+                <!---->
+              </div>
+            </fieldset>
+             
+            <div
+              class="aquifer-checkbox-group"
+              role="group"
+              tabindex="-1"
+            >
+              <div
+                class="custom-control custom-checkbox"
+              >
+                <input
+                  autocomplete="off"
+                  class="custom-control-input"
+                  type="checkbox"
+                  value="a"
+                />
+                <label
+                  class="custom-control-label"
+                >
+                  <span>
+                    aquifer section
+                  </span>
+                </label>
+              </div>
             </div>
+             
+            <div
+              class="form-row"
+            >
+              <div
+                class="aquifer-search-actions btn-group"
+                role="group"
+              >
+                <button
+                  class="btn aquifer-buttons btn-primary"
+                  id="aquifers-search"
+                  type="submit"
+                >
+                  
+                  Search
+                  
+                  <!---->
+                </button>
+                 
+                <button
+                  class="btn aquifer-buttons btn-default"
+                  type="reset"
+                >
+                  Reset
+                </button>
+              </div>
+            </div>
+             
+            <h6
+              class="mt-3"
+            >
+              Download all aquifers
+            </h6>
+             
+            <ul
+              class="aquifer-download-list"
+            >
+              <li>
+                - 
+                <a
+                  href="#"
+                >
+                  Aquifer extract (XLSX)
+                </a>
+              </li>
+               
+              <li>
+                - 
+                <a
+                  href="#"
+                >
+                  Aquifer extract (CSV)
+                </a>
+              </li>
+            </ul>
           </div>
         </div>
          
