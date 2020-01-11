@@ -92,13 +92,15 @@
 
             <aquifer-map
               ref="aquiferMap"
+              :initialCentre="searchMapCentre"
+              :initialZoom="searchMapZoom"
               :aquifersGeometry="simplifiedAquifers"
               :aquiferDetails="searchResults"
               :highlightAquiferIds="searchedAquiferIds"
               :selectedId="selectedAquiferId"
               :loading="loadingMap"
-              :viewBBox="mapBounds"
-              @moved="mapMoved"/>
+              @moved="mapMoved"
+              @zoomed="handleMapZoom"/>
           </b-col>
         </b-form-row>
       </b-form>
@@ -233,10 +235,11 @@ ul.pagination {
 <script>
 import L from 'leaflet'
 import querystring from 'querystring'
+import { isEqual } from 'lodash'
 import { mapGetters, mapMutations, mapState, mapActions } from 'vuex'
 
 import ApiService from '@/common/services/ApiService.js'
-import { SET_CONSTRAIN_SEARCH, SET_SEARCH_BOUNDS, RESET_SEARCH } from '../store/mutations.types.js'
+import { SET_CONSTRAIN_SEARCH, SET_SEARCH_BOUNDS, RESET_SEARCH, SET_SEARCH_MAP_ZOOM, SET_SEARCH_MAP_CENTRE, SET_SELECTED_SECTIONS, SET_MATCH_ANY } from '../store/mutations.types.js'
 import { SEARCH_AQUIFERS } from '../store/actions.types.js'
 
 import AquiferMap from './AquiferMap.vue'
@@ -319,7 +322,8 @@ export default {
       'searchResultCount',
       'searchInProgress',
       'searchPerformed',
-      'mapBounds'
+      'searchMapCentre',
+      'searchMapZoom'
     ]),
     ...mapState('aquiferStore', {
       resourceSections: 'sections'
@@ -328,7 +332,7 @@ export default {
   methods: {
     ...mapActions('aquiferStore/search', [SEARCH_AQUIFERS]),
     ...mapMutations('aquiferStore/aquiferGeoms', ['updateSimplifiedGeoJson']),
-    ...mapMutations('aquiferStore/search', [SET_CONSTRAIN_SEARCH, SET_SEARCH_BOUNDS, SET_CONSTRAIN_SEARCH, RESET_SEARCH]),
+    ...mapMutations('aquiferStore/search', [SET_CONSTRAIN_SEARCH, SET_SEARCH_BOUNDS, SET_CONSTRAIN_SEARCH, RESET_SEARCH, SET_SEARCH_MAP_CENTRE, SET_SEARCH_MAP_ZOOM]),
     ...mapMutations('aquiferStore', ['addSections']),
     navigateToNew () {
       this.$router.push({ name: 'new' })
@@ -411,11 +415,60 @@ export default {
       this.selectedAquiferId = data.id
       this.scrollToMap()
     },
-    mapMoved (bounds, featuresOnMap) {
+    mapMoved (bounds, featuresOnMap, isViewReset) {
       const viewingBC = bounds.contains(BC_LAT_LNG_BOUNDS)
 
+      this[SET_SEARCH_MAP_CENTRE](viewingBC ? null : bounds.getCenter())
       this[SET_SEARCH_BOUNDS](bounds)
       this[SET_CONSTRAIN_SEARCH](!viewingBC)
+      this.updateQueryParams()
+    },
+    handleMapZoom (zoom, bounds) {
+      const viewingBC = bounds.contains(BC_LAT_LNG_BOUNDS)
+
+      this[SET_SEARCH_MAP_ZOOM](viewingBC ? null : zoom)
+      this.updateQueryParams()
+    },
+    handleRouteChange () {
+      const query = { ...this.$route.query }
+      const emptyQuery = Object.keys(query).length === 0
+
+      if (emptyQuery) {
+        this[RESET_SEARCH]()
+      } else {
+        this.updateStoreStateFromQS()
+
+        const shouldSearch = !isEqual(query, this.queryParams)
+
+        if (shouldSearch) {
+          this.triggerSearch()
+        }
+      }
+    },
+    updateStoreStateFromQS () {
+      const query = this.$route.query
+      // check if the page loads with a query (e.g. user bookmarked a search)
+      // if so, set the search boxes to the query params
+      if (Object.keys(query) === 0) { return }
+
+      if (query.map_centre !== undefined) {
+        const latlng = query.map_centre.split(',')
+        const lat = parseFloat(latlng[0])
+        const lng = parseFloat(latlng[1])
+        this[SET_SEARCH_MAP_CENTRE](new L.latLng(lat, lng))
+      }
+      if (query.map_zoom !== undefined) {
+        this[SET_SEARCH_MAP_ZOOM](parseInt(query.map_zoom))
+      }
+      if (query.constrain !== undefined) {
+        this[SET_CONSTRAIN_SEARCH](Boolean(query.constrain))
+      }
+      if (query.resources__section__code) {
+        this[SET_SELECTED_SECTIONS, query.resources__section__code.split(',').map(code => code.trim())]
+      }
+      if (query.match_any) {
+        this[SET_MATCH_ANY, Boolean(query.match_any)]
+      }
     }
   },
   watch: {
@@ -426,6 +479,9 @@ export default {
       if (this.searchInProgress === false) {
         this.scrollToMap()
       }
+    },
+    $route (to, from) {
+      this.handleRouteChange()
     }
   },
   created () {
@@ -441,10 +497,7 @@ export default {
       this.loadingMap = false
     })
 
-    const query = this.$route.query
-    if (query.search) {
-      this.triggerSearch()
-    }
+    this.handleRouteChange()
   }
 }
 </script>
