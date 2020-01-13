@@ -263,7 +263,7 @@
                         </li>
                         <li v-if="inativeObsWellsWithOutWaterLevel.length > 0" class="obs-wells-wo-well-level">
                           No Water Level Analysis:
-                          <span v-for="owell in inativeObsWellsWithOutWaterLevel" :key="owell.observation_well_number">
+                          <span v-for="owell in inativeObsWellsWithOutWaterLevel" :key="owell.observation_well_number" :class="owell.errorFetching ? 'error' : ''">
                             <a :href="getObservationWellLink(owell.observation_well_number)" target="_blank">{{ owell.observation_well_number }}</a>
                           </span>
                         </li>
@@ -788,7 +788,10 @@ export default {
               owell.hasLevelAnalysis = category.toUpperCase() !== 'N/A'
               owell.waterLevels = category
             }
-          }, () => {}) // Swallow any API error from https://catalogue.data.gov.bc.ca/api
+          }, () => {
+            // Swallow any API error from https://catalogue.data.gov.bc.ca/api
+            owell.errorFetching = true
+          })
         })
       )
     },
