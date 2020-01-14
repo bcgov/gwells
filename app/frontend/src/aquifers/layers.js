@@ -26,7 +26,7 @@ const aquiferLayers = {
     legend: ecoCatWaterLegendSrc,
     overlay: true
   }),
-  'Groundwater licences': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/ows?', {
+  'Water licences': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/ows?', {
     format: 'image/png',
     // layers: 'pub:WHSE_WATER_MANAGEMENT.WLS_PWD_LICENCES_SVW', -- ask lindsay
     layers: 'pub:WHSE_WATER_MANAGEMENT.WLS_WATER_RIGHTS_LICENCES_SV',
