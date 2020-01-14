@@ -37,9 +37,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   type="text"
                   label="Latitude"
                   hint="Decimal degrees"
-                  @focus="unfreeze('deg')"
-                  @blur="freeze('deg')"
-                  v-model.number="latitudeInput"
+                  @input="handleDegreesChange"
+                  v-model.number="degrees.latitude"
                   :errors="errors['latitude']"
                   :loaded="fieldsLoaded['latitude']"
                 ></form-input>
@@ -48,11 +47,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 <form-input
                   id="longitude"
                   type="text"
-                  @focus="unfreeze('deg')"
-                  @blur="freeze('deg')"
+                  @input="handleDegreesChange"
                   label="Longitude"
                   hint="Decimal degrees"
-                  v-model.number="computedLongitude"
+                  v-model.number="degrees.longitude"
                   :errors="errors['longitude']"
                   :loaded="fieldsLoaded['longitude']"
                 ></form-input>
@@ -68,8 +66,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   <b-col cols="12" sm="4" class="px-2">
                     <form-input
                       id="latitudeDeg"
-                      @focus="unfreeze('dms')"
-                      @blur="freeze('dms')"
+                      @input="handleDMSChange"
                       hint="Degrees"
                       type="text"
                       v-model.number="dms.lat.deg"
@@ -80,8 +77,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     <form-input
                       id="latitudeMin"
                       hint="Minutes"
-                      @focus="unfreeze('dms')"
-                      @blur="freeze('dms')"
+                      @input="handleDMSChange"
                       type="text"
                       v-model.number="dms.lat.min"
                       :errors="errors['latitude']"
@@ -92,8 +88,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     <form-input
                       id="latitudeSec"
                       type="text"
-                      @focus="unfreeze('dms')"
-                      @blur="freeze('dms')"
+                      @input="handleDMSChange"
                       hint="Seconds"
                       v-model.number="dms.lat.sec"
                       :errors="errors['latitude']"
@@ -109,10 +104,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     <form-input
                       id="longitudeDeg"
                       type="text"
-                      @focus="unfreeze('dms')"
-                      @blur="freeze('dms')"
+                      @input="handleDMSChange"
                       hint="Degrees"
-                      v-model.number="computedLongitudeDeg"
+                      v-model.number="dms.long.deg"
                       :errors="errors['longitude']"
                       :loaded="fieldsLoaded['longitude']"
                     ></form-input>
@@ -121,8 +115,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     <form-input
                       id="longitudeMin"
                       type="text"
-                      @focus="unfreeze('dms')"
-                      @blur="freeze('dms')"
+                      @input="handleDMSChange"
                       hint="Minutes"
                       v-model.number="dms.long.min"
                       :errors="errors['longitude']"
@@ -133,8 +126,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     <form-input
                       id="longitudeSec"
                       type="text"
-                      @focus="unfreeze('dms')"
-                      @blur="freeze('dms')"
+                      @input="handleDMSChange"
                       hint="Seconds"
                       v-model.number="dms.long.sec"
                       :errors="errors['longitude']"
@@ -154,8 +146,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   select
                   :options="utmZones"
                   label="Zone"
-                  @focus="unfreeze('utm')"
-                  @blur="freeze('utm')"
+                  @input="handleUTMChange"
                   v-model="utm.zone"
                   text-field="name"
                   value-field="value"
@@ -169,8 +160,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   type="text"
                   label="UTM Easting"
                   v-model.number="utm.easting"
-                  @focus="unfreeze('utm')"
-                  @blur="freeze('utm')"
+                  @input="handleUTMChange"
                   :loaded="fieldsLoaded['utmEasting']"
                   :max="999999"
                 ></form-input>
@@ -181,8 +171,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   id="utmNorthing"
                   type="text"
                   label="UTM Northing"
-                  @focus="unfreeze('utm')"
-                  @blur="freeze('utm')"
+                  @input="handleUTMChange"
                   v-model.number="utm.northing"
                   :max="9999999"
                   :loaded="fieldsLoaded['utmNorthing']"
@@ -266,16 +255,6 @@ export default {
     return {
       ellps: 'GRS80', // UTM config parameters. This does not apply to degrees latitude/longitude
       datum: 'nad83',
-      lock: {
-        utm: true,
-        dms: true,
-        deg: false
-      },
-      utm: {
-        easting: null,
-        northing: null,
-        zone: ''
-      },
       degrees: {
         latitude: null,
         longitude: null
@@ -292,6 +271,11 @@ export default {
           sec: null
         }
       },
+      utm: {
+        easting: null,
+        northing: null,
+        zone: null
+      },
       latitudeDMSValidation: false,
       coordinateLookup: new Map(),
       coordinateResolveLookup: new Map(),
@@ -303,7 +287,7 @@ export default {
     if (this.latitude || this.longitude) {
       // If we're loaded with a latitude and longitude, trigger an update so that degree,minute,second
       // and East/Northing get populated.
-      this.handleMapCoordinate({lng: Number(this.longitude), lat: Number(this.latitude)})
+      this.handleMapCoordinate({ lng: Math.abs(Number(this.longitude)), lat: Number(this.latitude) })
     }
   },
   computed: {
@@ -325,176 +309,24 @@ export default {
     // In the background, longitude is stored as a negative number (West == minus). However, our B.C. based
     // users are used to ommitting the negative, because it's implicit. As such we need a workaround to
     // transform the longitude.
-    computedLongitude: {
-      get: function () {
-        return this.transformToPositive(this.longitudeInput)
-      },
-      set: function (value) {
-        this.longitudeInput = this.transformToNegative(value)
-      }
-    },
-    computedLongitudeDeg: {
-      get: function () {
-        return this.transformToPositive(this.dms.long.deg)
-      },
-      set: function (value) {
-        this.dms.long.deg = this.transformToNegative(value)
-      }
-    },
     mapLatitude () {
       // We have to make sure that the map get's a number or a null, otherwise "" may turn into 0.
-      return this.latitudeInput ? Number(this.latitudeInput) : null
+      return this.degrees.latitude ? Number(this.degrees.latitude) : null
     },
     mapLongitude () {
       // We have to make sure that the map get's a number or a null, otherwise "" may turn into 0.
-      return this.longitudeInput ? Number(this.longitudeInput) : null
+      return this.degrees.longitude ? Number(this.degrees.longitude) : null
     },
     ...mapGetters(['codes'])
-  },
-  watch: {
-    'dms.lat': {
-      deep: true,
-      handler: function (value) {
-        if (!this.lock.dms) {
-          if (!value.deg && !value.min && !value.sec) {
-          // early return if all fields empty
-          // reset other coordinate fields at the same time (e.g. clean up previously calculated valuess)
-            this.resetUTM()
-            this.resetDegrees()
-            return null
-          }
-
-          const dms = Object.assign({}, value)
-          dms.deg = value.deg
-          dms.min = value.min
-          dms.sec = value.sec
-
-          const lat = this.convertDMStoDeg(dms)
-          const { easting, northing, zone } = this.convertToUTM(this.longitudeInput, lat)
-          this.updateDegrees(this.longitudeInput, lat)
-          this.updateUTM(easting, northing, zone)
-        }
-      }
-    },
-    'dms.long': {
-      deep: true,
-      handler: function (value) {
-        if (!this.lock.dms) {
-          if (!value.deg && !value.min && !value.sec) {
-            this.resetUTM()
-            this.resetDegrees()
-            return null
-          }
-
-          const dms = Object.assign({}, value)
-          dms.deg = value.deg
-          dms.min = value.min
-          dms.sec = this.roundSeconds(value.sec)
-
-          const long = this.convertDMStoDeg(dms)
-
-          const { easting, northing, zone } = this.convertToUTM(long, this.latitudeInput)
-          this.updateDegrees(long, this.latitudeInput)
-          this.updateUTM(easting, northing, zone)
-        }
-      }
-    },
-    'latitudeInput': {
-      deep: true,
-      handler: function (latitude) {
-        if (!this.lock.deg && !isNaN(latitude)) {
-          if (!latitude) {
-            this.resetUTM()
-            this.resetDMS()
-            return null
-          }
-          latitude = Number(latitude)
-          const { easting, northing, zone } = this.convertToUTM(Number(this.longitudeInput), Number(latitude))
-
-          this.checkIfCoordinateIsValid(latitude, this.longitudeInput)
-          this.updateDMS(this.convertToDMS(Number(this.longitudeInput)), this.convertToDMS(Number(latitude)))
-          this.updateUTM(easting, northing, zone)
-        }
-      }
-    },
-    'longitudeInput': {
-      deep: true,
-      handler: function (long) {
-        if (!this.lock.deg && !isNaN(long)) {
-          if (!long) {
-            this.resetUTM()
-            this.resetDMS()
-            return null
-          }
-          long = Number(long)
-          const { easting, northing, zone } = this.convertToUTM(long, Number(this.latitudeInput))
-
-          this.checkIfCoordinateIsValid(this.latitudeInput, long)
-          this.updateDMS(this.convertToDMS(long), this.convertToDMS(Number(this.latitudeInput)))
-          this.updateUTM(easting, northing, zone)
-        }
-      }
-    },
-    'utm.northing': {
-      deep: true,
-      handler: function (value) {
-        if (!this.lock.utm) {
-          if (!value) {
-            this.resetDMS()
-            this.resetDegrees()
-            return null
-          }
-
-          const { longitude, latitude } = this.convertToWGS84(this.utm.easting, value, this.utm.zone || 0)
-
-          this.updateDegrees(longitude, latitude)
-          this.updateDMS(this.convertToDMS(longitude), this.convertToDMS(latitude))
-        }
-      }
-    },
-    'utm.easting': {
-      deep: true,
-      handler: function (value) {
-        if (!this.lock.utm) {
-          if (!value) {
-            this.resetDMS()
-            this.resetDegrees()
-            return null
-          }
-
-          const { longitude, latitude } = this.convertToWGS84(value, this.utm.northing, this.utm.zone || 0)
-
-          this.updateDegrees(longitude, latitude)
-          this.updateDMS(this.convertToDMS(longitude), this.convertToDMS(latitude))
-        }
-      }
-    },
-    'utm.zone': {
-      deep: true,
-      handler: function (value) {
-        if (!this.lock.utm) {
-          if (!value) {
-            this.resetDMS()
-            this.resetDegrees()
-            return null
-          }
-
-          const { longitude, latitude } = this.convertToWGS84(this.utm.easting, this.utm.northing, value)
-
-          this.updateDegrees(longitude, latitude)
-          this.updateDMS(this.convertToDMS(longitude), this.convertToDMS(latitude))
-        }
-      }
-    }
   },
   methods: {
     transformToPositive (value) {
       // Take a value, if it's a number - make it positive. If it's not a number, leave it alone
-      return value === '' || isNaN(value) || value === null ? value : Math.abs(value)
+      return isFinite(value) ? Math.abs(value) : value
     },
     transformToNegative (value) {
       // Take a value, if it's a number - make it negative. If it's not a number, leave it alone.
-      return value === '' || isNaN(value) || value === null ? value : Math.abs(value) * -1
+      return isFinite(value) ? Math.abs(value) * -1 : value
     },
     updateUTM (easting, northing, zone) {
       this.utm.easting = Math.round(easting)
@@ -508,8 +340,51 @@ export default {
         zone: null
       }
     },
+    handleDegreesChange () {
+      if (!this.degrees.latitude || !this.degrees.longitude) {
+        this.resetUTM()
+        this.resetDMS()
+        return null
+      }
+      const { longitude, latitude } = this.degrees
+
+      this.updateDegrees(longitude, latitude)
+
+      const { easting, northing, zone } = this.convertToUTM(longitude, latitude)
+      this.checkIfCoordinateIsValid(latitude, longitude)
+      this.updateDMS(this.convertToDMS(longitude), this.convertToDMS(latitude))
+      this.updateUTM(easting, northing, zone)
+    },
+    handleDMSChange () {
+      if (!this.dms.lat.deg || !this.dms.lat.min || !this.dms.lat.sec || !this.dms.long.deg || !this.dms.long.min || !this.dms.long.sec) {
+        // early return if any fields empty
+        // reset other coordinate fields at the same time (e.g. clean up previously calculated valuess)
+        this.resetUTM()
+        this.resetDegrees()
+        return null
+      }
+
+      const lat = this.convertDMStoDeg(this.dms.lat)
+      const lng = this.convertDMStoDeg(this.dms.long)
+      this.updateDegrees(lng, lat)
+      const { easting, northing, zone } = this.convertToUTM(this.degrees.longitude, this.degrees.latitude)
+      this.updateUTM(easting, northing, zone)
+    },
+    handleUTMChange () {
+      if (!this.utm.easting || !this.utm.northing || !this.utm.zone) {
+        this.resetDMS()
+        this.resetDegrees()
+        return null
+      }
+
+      const { longitude, latitude } = this.convertToWGS84(this.utm.easting, this.utm.northing, this.utm.zone || 0)
+
+      this.updateDegrees(longitude, latitude)
+      this.updateDMS(this.convertToDMS(longitude), this.convertToDMS(latitude))
+    },
     updateDMS (longitude = {}, latitude = {}) {
       this.dms.long = longitude
+      this.dms.long.deg = Math.abs(longitude.deg)
       this.dms.lat = latitude
     },
     resetDMS () {
@@ -529,8 +404,11 @@ export default {
     updateDegrees (longitude, latitude) {
       const newLong = this.roundDecimalDegrees(longitude)
       const newLat = this.roundDecimalDegrees(latitude)
+      // Set the prop value of longitude and latitude
       this.longitudeInput = newLong
       this.latitudeInput = newLat
+      this.degrees.longitude = Math.abs(newLong)
+      this.degrees.latitude = newLat
       this.checkIfCoordinateIsValid(newLat, newLong)
     },
     resetDegrees () {
@@ -538,16 +416,6 @@ export default {
         latitude: null,
         longitude: null
       }
-    },
-    freeze (type) {
-      // freeze updates the 'lock' object for the given type
-      // param 'type' should be one of 'utm', 'deg', 'dms'
-      // locking a type will prevent its form input field from being auto-updated
-      // while user is providing input.
-      this.lock[type] = true
-    },
-    unfreeze (type) {
-      this.lock[type] = false
     },
     handleMapCoordinate (latlng) {
       this.updateDegrees(latlng.lng, latlng.lat)
@@ -575,9 +443,7 @@ export default {
         } else {
           const resolveList = []
           this.coordinateResolveLookup.set(key, resolveList)
-          const params = {
-            latitude: latitude,
-            longitude: longitude}
+          const params = { latitude, longitude }
           ApiService.query('gis/insidebc', params).then((response) => {
             // Store the result for future lookups.
             this.coordinateLookup.set(key, response.data.inside)
