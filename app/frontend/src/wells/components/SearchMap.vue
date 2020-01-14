@@ -128,7 +128,7 @@
 </template>
 
 <script>
-import debounce from 'lodash.debounce'
+import { debounce } from 'lodash'
 
 import L from 'leaflet'
 import 'leaflet-gesture-handling'

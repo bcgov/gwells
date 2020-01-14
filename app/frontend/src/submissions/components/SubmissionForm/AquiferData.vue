@@ -186,7 +186,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 
 <script>
-import debounce from 'lodash.debounce'
+import { debounce } from 'lodash'
 import ApiService from '@/common/services/ApiService.js'
 import { mapGetters } from 'vuex'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
