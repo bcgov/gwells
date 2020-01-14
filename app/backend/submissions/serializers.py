@@ -199,7 +199,7 @@ class WellSubmissionSerializerBase(AuditModelSerializer):
 
                 # Convert lat long values into geom object stored on model
                 # Values are BC Albers. but we are using WGS84 Lat Lon to avoid rounding errors
-                if data.get('latitude') and data.get('longitude'):
+                if 'latitude' in data and 'longitude' in data:
                     if not data.get('latitude') and not data.get('longitude'):
                         validated_data['geom'] = None
                         data['geom'] = None
