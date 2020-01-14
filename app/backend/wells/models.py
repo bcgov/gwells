@@ -1260,6 +1260,7 @@ def update_utm(sender, instance, **kwargs):
         utm_point = instance.geom.transform(coord_transform, clone=True)
 
         instance.utm_zone_code = utm_zone
+        # We round to integers because easting/northing is only precise to 1m. The DB column is also an integer type.
         instance.utm_easting = round(utm_point.x)
         instance.utm_northing = round(utm_point.y)
 
