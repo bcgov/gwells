@@ -274,7 +274,7 @@ export default {
       utm: {
         easting: null,
         northing: null,
-        zone: ''
+        zone: null
       },
       latitudeDMSValidation: false,
       coordinateLookup: new Map(),
@@ -356,7 +356,7 @@ export default {
       this.updateUTM(easting, northing, zone)
     },
     handleDMSChange () {
-      if (!isFinite(this.dms.lat.deg) || !isFinite(this.dms.lat.min) || !isFinite(this.dms.lat.sec) || !isFinite(this.dms.long.deg) || !isFinite(this.dms.long.min) || !isFinite(this.dms.long.sec)) {
+      if (!this.dms.lat.deg || !this.dms.lat.min || !this.dms.lat.sec || !this.dms.long.deg || !this.dms.long.min || !this.dms.long.sec) {
         // early return if any fields empty
         // reset other coordinate fields at the same time (e.g. clean up previously calculated valuess)
         this.resetUTM()
@@ -371,13 +371,14 @@ export default {
       this.updateUTM(easting, northing, zone)
     },
     handleUTMChange () {
-      if (!isFinite(this.utm.easting) || !isFinite(this.utm.northing) || !this.utm.zone) {
+      if (!this.utm.easting || !this.utm.northing || !this.utm.zone) {
         this.resetDMS()
         this.resetDegrees()
         return null
       }
 
       const { longitude, latitude } = this.convertToWGS84(this.utm.easting, this.utm.northing, this.utm.zone || 0)
+
       this.updateDegrees(longitude, latitude)
       this.updateDMS(this.convertToDMS(longitude), this.convertToDMS(latitude))
     },

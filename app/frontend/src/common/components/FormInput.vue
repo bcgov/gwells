@@ -19,7 +19,7 @@
         :disabled="disabled"
         :required="required"
         :multiple="multiple"
-        @input="updateValue($event)"
+        @change="updateValue($event)"
     >
       <template slot="first" v-if="placeholder">
         <option value="">{{ placeholder }}</option>
