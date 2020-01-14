@@ -464,7 +464,7 @@ class SaveAquiferGeometry(APIView):
             return Response({
                 'message': str(e)
             },
-                status=status.HTTP_400_BAD_REQUEST)
+            status=status.HTTP_400_BAD_REQUEST)
         aquifer.save()
         return Response(status=status.HTTP_200_OK)
 

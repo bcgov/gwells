@@ -36,17 +36,16 @@ export default {
       const url = `${payload.documentType}/${payload.recordId}/geometry`
       context.commit('setShapefileUploading', true)
       return ApiService.post(url, formData)
-        .then(response => {
+        .then(() => {
           context.commit('setShapefileUploadSuccess', true)
           context.commit('setShapefileUploadMessage', '')
-          setTimeout(() => {
-            context.commit('setShapefileUploadSuccess', false)
-          }, 5000)
         })
         .catch(e => {
+          context.commit('setShapefileUploading', false)
           context.commit('setShapefileUploadSuccess', false)
           console.error('failed to save shapefile', e.response)
-          context.commit('setShapefileUploadMessage', e.response.data.message)
+          context.commit('setShapefileUploadMessage', e.response.data.message || 'Server Error')
+          throw e
         })
     },
     uploadFiles (context, payload) {
@@ -106,7 +105,7 @@ export default {
             .catch(error => {
               console.log(error)
               context.commit('addError', error)
-              return Promise.reject(error)
+              throw error
             })
         )
       })
@@ -137,11 +136,21 @@ export default {
     },
     resetUploadFiles (context) {
       context.commit('setFiles', [])
+    },
+    clearUploadShapeFileMessage (context) {
+      context.commit('setShapefileUploadMessage', '')
+    },
+    clearUploadFilesMessage (context) {
+      context.commit('clearErrors')
     }
   },
   mutations: {
     addError (state, payload) {
       state.file_upload_errors.push(payload)
+    },
+    clearErrors (state) {
+      state.file_upload_errors = []
+      state.file_upload_error = false
     },
     setShapefileUploadMessage (state, payload) {
       state.shapefile_upload_message = payload

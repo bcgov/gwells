@@ -455,6 +455,7 @@ class Aquifer(AuditModel):
         if ret is not None:
             raise Aquifer.BadShapefileException("Bad zipfile, info: %s" % ret)
 
+        the_shapefile = None
         output_dir = tempfile.mkdtemp()
         for item in zip_ref.namelist():
             # Check filename endswith shp
@@ -464,6 +465,9 @@ class Aquifer(AuditModel):
                 the_shapefile = os.path.join(output_dir, item)
                 # break
         zip_ref.close()
+
+        if the_shapefile is None:
+            raise Aquifer.BadShapefileException("Bad zipfile. No shapefile found.")
 
         ds = DataSource(the_shapefile)
         self.update_geom_from_feature(ds[0][0])
@@ -476,13 +480,15 @@ class Aquifer(AuditModel):
 
         geom = feat.geom
 
+        if not geom.srid:
+            raise Aquifer.BadShapefileException("Shapefile contains no projection information")
+
         # Make a GEOSGeometry object using the string representation.
-        if not geom.srid == 3005:
-            logging.info("Non BC-albers feature, skipping.")
-            return
         # Eliminate any 3d geometry so it fits in PostGIS' 2d geometry schema.
-        wkt = wkt_w(dim=2).write(GEOSGeometry(geom.wkt, srid=3005)).decode()
-        geos_geom = GEOSGeometry(wkt, srid=3005)
+        wkt = wkt_w(dim=2).write(GEOSGeometry(geom.wkt, srid=geom.srid)).decode()
+        geos_geom = GEOSGeometry(wkt, srid=geom.srid)
+        geos_geom.transform(3005)
+
         # Convert MultiPolygons to plain Polygons,
         # We assume the largest one is the one we want to keep, and the rest are artifacts/junk.
         if isinstance(geos_geom, geos.MultiPolygon):
@@ -493,9 +499,7 @@ class Aquifer(AuditModel):
         elif isinstance(geos_geom, geos.Polygon):
             geos_geom_out = geos_geom
         else:
-            logging.info("Bad geometry type: {}, skipping.".format(
-                geos_geom.__class__))
-            return
+            raise Aquifer.BadShapefileException("Bad geometry type: {}, skipping.".format(geos_geom.__class__))
 
         self.geom = geos_geom_out
 
