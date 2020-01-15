@@ -177,7 +177,7 @@
             </b-col>
             <b-col cols="12" md="6" xl="6" offset-xl="1">
               <div>
-                <single-well-map :latitude="Number(well.latitude)" :longitude="Number(well.longitude)" :draggable="false"></single-well-map>
+                <single-well-map :latitude="well.latitude" :longitude="well.longitude" :draggable="false"></single-well-map>
               </div>
               <div class="my-3">&nbsp;</div>
               <div><span class="font-weight-bold">Geographic Coordinates - North American Datum of 1983 (NAD 83)</span></div>
