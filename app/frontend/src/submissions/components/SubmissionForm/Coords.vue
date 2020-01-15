@@ -348,7 +348,7 @@ export default {
       }
     },
     handleDegreesChange () {
-      if (!this.degrees.latitude || !this.degrees.longitude) {
+      if (!this.validNumber(this.degrees, 'latitude', 'longitude')) {
         this.longitudeInput = ''
         this.latitudeInput = ''
         this.resetUTM()
