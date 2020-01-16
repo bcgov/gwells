@@ -76,12 +76,13 @@ describe('Search Component', () => {
     expect(component({}).findAll('[type="checkbox"]').length).toEqual(1)
   })
 
-  it('Displays a message if no aquifers could be found', () => {
+  it.only('Displays a message if no aquifers could be found', () => {
     axios.get.mockResolvedValue({})
     const wrapper = component({
       methods: {
         fetchResults () {},
-        $SmoothScroll () {}
+        $SmoothScroll () {},
+        handleRouteChange () {}
       }
     }, {
       aquiferStore: {

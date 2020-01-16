@@ -13,19 +13,19 @@
 */
 
 import { mount, createLocalVue } from '@vue/test-utils'
-import ViewComponent from '@/aquifers/components/View.vue'
 import Vuex from 'vuex'
 import axios from 'axios'
+import { merge } from 'lodash'
+
 import auth from '@/common/store/auth.js'
+import aquiferStore from '@/aquifers/store/index.js'
 import documentState from '@/common/store/documents.js'
-import aquiferCodes from '@/aquifers/store/codes'
-import VueRouter from 'vue-router'
+import ViewComponent from '@/aquifers/components/View.vue'
 
 jest.mock('axios')
 
 const localVue = createLocalVue()
 localVue.use(Vuex)
-localVue.use(VueRouter)
 
 const aquiferFixture = {
   aquifer_id: '4',
@@ -43,37 +43,46 @@ const aquiferFixture = {
 }
 
 describe('View Component', () => {
-  const component = options =>
-    mount(ViewComponent, {
-      localVue,
-      router: new VueRouter(),
-      store: new Vuex.Store({
-        modules: { auth, aquiferCodes, documentState }
-      }),
-      stubs: ['router-link', 'aquifer-documents', 'aquifer-form', 'b-popover'],
-      ...options
+  const fetch = jest.fn()
+
+  const component = (options, storeState = {}) => {
+    const store = new Vuex.Store({
+      modules: { auth, aquiferStore, documentState }
     })
+    store.replaceState(merge(store.state, storeState))
 
-  it('queries aquifer on load', (done) => {
-    const fetch = jest.fn()
-
-    const wrapper = component({
+    return mount(ViewComponent, {
+      localVue,
+      store,
+      mocks: {
+        $router: {
+          push: jest.fn(),
+          replace: jest.fn()
+        },
+        $route: {
+          path: `/aquifers/${aquiferFixture.aquifer_id}`,
+          params: {
+            id: aquiferFixture.aquifer_id
+          }
+        }
+      },
+      stubs: ['router-link', 'aquifer-documents', 'aquifer-form', 'b-popover'],
       methods: {
         fetch,
-        fetchFiles () {
-          return {
-            public: [],
-            private: []
-          }
-        },
-        fetchResourceSections () {
-          this.aquifer_resource_sections = []
-        },
-        fetchWells () {
-          this.wells = []
-        }
-      }
+        fetchWells: jest.fn(),
+        fetchFiles: jest.fn(),
+        navigateToView: jest.fn()
+      },
+      ...options
     })
+  }
+
+  beforeEach(() => {
+    axios.get.mockResolvedValue({})
+  })
+
+  it('queries aquifer on load', (done) => {
+    const wrapper = component()
 
     wrapper.vm.$nextTick(() => {
       expect(fetch).toHaveBeenCalled()
@@ -84,27 +93,13 @@ describe('View Component', () => {
   describe('View mode', () => {
     it('matches the snapshot', () => {
       const wrapper = component({
-        data () {
-          return {
+        propsData: { edit: true }
+      }, {
+        aquiferStore: {
+          view: {
             record: aquiferFixture
           }
-        },
-        methods: {
-          fetch () {},
-          fetchFiles () {
-            return {
-              public: [],
-              private: []
-            }
-          },
-          fetchResourceSections () {
-            this.aquifer_resource_sections = []
-          },
-          fetchWells () {
-            this.wells = []
-          }
-        },
-        propsData: { edit: true }
+        }
       })
 
       expect(wrapper.element).toMatchSnapshot()
@@ -114,27 +109,13 @@ describe('View Component', () => {
   describe('Edit mode', () => {
     it('matches the snapshot', () => {
       const wrapper = component({
-        data () {
-          return {
+        propsData: { edit: true }
+      }, {
+        aquiferStore: {
+          view: {
             record: aquiferFixture
           }
-        },
-        methods: {
-          fetch () {},
-          fetchFiles () {
-            return {
-              public: [],
-              private: []
-            }
-          },
-          fetchResourceSections () {
-            this.aquifer_resource_sections = []
-          },
-          fetchWells () {
-            this.wells = []
-          }
-        },
-        propsData: { edit: true }
+        }
       })
 
       expect(wrapper.element).toMatchSnapshot()
@@ -145,25 +126,14 @@ describe('View Component', () => {
         const wrapper = component({
           data () {
             return {
-              record: aquiferFixture,
               showSaveSuccess: true
             }
-          },
-          methods: {
-            fetch () {},
-            fetchFiles () {
-              return {
-                public: [],
-                private: []
-              }
-            },
-            fetchResourceSections () {
-              this.aquifer_resource_sections = []
-            },
-            fetchWells () {
-              this.wells = []
-            },
-            navigateToView () {}
+          }
+        }, {
+          aquiferStore: {
+            view: {
+              record: aquiferFixture
+            }
           }
         })
 
@@ -178,27 +148,16 @@ describe('View Component', () => {
         const wrapper = component({
           data () {
             return {
-              record: aquiferFixture,
               fieldErrors: { a: ['1'] }
             }
           },
-          methods: {
-            fetch () {},
-            fetchFiles () {
-              return {
-                public: [],
-                private: []
-              }
-            },
-            fetchResourceSections () {
-              this.aquifer_resource_sections = []
-            },
-            fetchWells () {
-              this.wells = []
-            },
-            navigateToView () {}
-          },
           propsData: { edit: true }
+        }, {
+          aquiferStore: {
+            view: {
+              record: aquiferFixture
+            }
+          }
         })
         axios.patch.mockResolvedValue(true)
 
@@ -208,22 +167,6 @@ describe('View Component', () => {
 
       it('sends a patch with the contents of record on save', () => {
         const wrapper = component({
-          methods: {
-            fetch () {},
-            fetchFiles () {
-              return {
-                public: [],
-                private: []
-              }
-            },
-            fetchResourceSections () {
-              this.aquifer_resource_sections = []
-            },
-            fetchWells () {
-              this.wells = []
-            },
-            navigateToView () {}
-          },
           computed: {
             id () {
               return 10
@@ -231,8 +174,13 @@ describe('View Component', () => {
           },
           data () {
             return {
-              record: aquiferFixture,
               form: aquiferFixture
+            }
+          }
+        }, {
+          aquiferStore: {
+            view: {
+              record: aquiferFixture
             }
           }
         })

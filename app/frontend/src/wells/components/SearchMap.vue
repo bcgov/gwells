@@ -128,7 +128,7 @@
 </template>
 
 <script>
-import debounce from 'lodash.debounce'
+import { debounce } from 'lodash'
 
 import L from 'leaflet'
 import 'leaflet-gesture-handling'
@@ -162,6 +162,9 @@ L.Icon.Default.mergeOptions({
   shadowUrl: require('../../common/assets/images/marker-shadow.png')
 })
 
+const DEFAULT_MAP_CENTRE = new L.LatLng(54.459, -126.495)
+const DEFAULT_MAP_ZOOM = 5
+
 export default {
   name: 'SearchMap',
   components: {
@@ -173,11 +176,11 @@ export default {
     'l-popup': LPopup,
     'l-wms-tile-layer': LWMSTileLayer
   },
-  props: {},
+  props: ['initialZoom', 'initialCentre'],
   data () {
     return {
-      zoom: 5,
-      center: [54.5, -126.5],
+      zoom: this.initialZoom || DEFAULT_MAP_ZOOM,
+      center: this.initialCentre ? [this.initialCentre.lat, this.initialCentre.lng] : DEFAULT_MAP_CENTRE,
       maxBounds: [
         [46.07323062540835, -140.27343750000003],
         [61.438767493682825, -112.71972656250001]
@@ -238,12 +241,21 @@ export default {
     },
     showSearchThisAreaButton () {
       return (!this.searchOnMapMove && this.movedSinceLastSearch && this.zoom >= 9)
+    },
+    isViewReset () {
+      if (this.zoom === DEFAULT_MAP_ZOOM) {
+        if (DEFAULT_MAP_CENTRE.equals(this.center, 1.0E-3)) {
+          return true
+        }
+      }
+
+      return false
     }
   },
   methods: {
     resetView () {
-      this.center = [54.5, -126.5]
-      this.zoom = 5
+      this.center = DEFAULT_MAP_CENTRE
+      this.zoom = DEFAULT_MAP_ZOOM
     },
     openPopup (marker) {
       this.selectedMarker = marker
@@ -252,16 +264,19 @@ export default {
     zoomToMarkers () {
       this.zoomToMarkersActive = true
       this.$nextTick(() => {
-        const markerBounds = this.$refs.wellMarkers.mapObject.getBounds().pad(0.5)
-        this.$refs.map.mapObject.fitBounds(markerBounds)
+        const markerBounds = this.$refs.wellMarkers.mapObject.getBounds()
+        if (markerBounds.isValid()) {
+          this.$refs.map.mapObject.fitBounds(markerBounds.pad(0.5))
+        }
       })
     },
     zoomUpdated (zoom) {
       this.zoom = zoom
+      this.$emit('zoomed', zoom, this.isViewReset)
     },
     centerUpdated (center) {
       this.center = center
-      this.$emit('moved', center)
+      this.$emit('moved', center, this.isViewReset)
 
       this.mapMoved()
     },
@@ -281,8 +296,11 @@ export default {
       }
     }, 500),
     triggerSearch () {
-      this.$store.dispatch(SEARCH_LOCATIONS)
-      this.$store.dispatch(SEARCH_WELLS, { trigger: MAP_TRIGGER, constrain: true })
+      if (!this.isViewReset) {
+        this.$store.dispatch(SEARCH_LOCATIONS)
+        this.$store.dispatch(SEARCH_WELLS, { trigger: MAP_TRIGGER, constrain: true })
+        this.$emit('search')
+      }
     },
     clearSearch () {
       this.$store.commit(SET_SEARCH_PARAMS, {})
@@ -365,6 +383,8 @@ export default {
     this.$nextTick(() => {
       this.initEsriLayer()
       this.initZoomBox()
+      this.boundsUpdated(this.$refs.map.mapObject.getBounds())
+      this.$emit('ready')
     })
   },
   beforeDestroy () {

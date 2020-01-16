@@ -19,7 +19,9 @@ import {
   FETCH_ORGANIZATION_NAMES,
   RESET_WELLS_SEARCH,
   SEARCH_LOCATIONS,
-  SEARCH_WELLS
+  SEARCH_WELLS,
+  RESET_WELL_DATA,
+  FETCH_WELL_DOWNLOAD_LINKS
 } from './actions.types.js'
 import {
   SET_DRILLER_NAMES,
@@ -31,6 +33,7 @@ import {
   SET_CONSTRAIN_SEARCH,
   SET_PENDING_LOCATION_SEARCH,
   SET_PENDING_SEARCH,
+  SET_HAS_SEARCHED,
   SET_SEARCH_BOUNDS,
   SET_SEARCH_LIMIT,
   SET_SEARCH_OFFSET,
@@ -40,7 +43,11 @@ import {
   SET_SEARCH_RESULT_COLUMNS,
   SET_SEARCH_RESULT_COUNT,
   SET_SEARCH_RESULT_FILTERS,
-  SET_SEARCH_RESULTS
+  SET_SEARCH_RESULTS,
+  SET_SEARCH_MAP_CENTRE,
+  SET_SEARCH_MAP_ZOOM,
+  SET_WELL_RECORD,
+  SET_WELL_LICENCE
 } from './mutations.types.js'
 
 Vue.use(Vuex)
@@ -82,6 +89,7 @@ const wellsStore = {
     pendingLocationSearch: null,
     pendingSearch: null,
     constrainSearch: false,
+    hasSearched: false,
     searchBounds: {},
     searchErrors: {},
     searchLimit: DEFAULT_LIMIT,
@@ -92,7 +100,18 @@ const wellsStore = {
     // searchResultFilters provides a second level of filtering.
     searchResultFilters: {},
     searchResults: null,
-    searchResultCount: 0
+    searchResultCount: 0,
+    wellId: null,
+    wellRecord: {},
+    recordLicence: {
+      status: '',
+      number: ''
+    },
+    searchMap: {
+      centre: null,
+      zoom: null
+    },
+    downloads: null
   },
   mutations: {
     [SET_ERROR] (state, payload) {
@@ -118,6 +137,9 @@ const wellsStore = {
     },
     [SET_PENDING_SEARCH] (state, payload) {
       state.pendingSearch = payload
+    },
+    [SET_HAS_SEARCHED] (state, payload) {
+      state.hasSearched = payload
     },
     [SET_CONSTRAIN_SEARCH] (state, payload) {
       state.constrainSearch = payload
@@ -154,12 +176,32 @@ const wellsStore = {
     },
     [SET_SEARCH_RESULT_COUNT] (state, payload) {
       state.searchResultCount = payload
+    },
+    [SET_SEARCH_MAP_CENTRE] (state, payload) {
+      state.searchMap.centre = payload
+    },
+    [SET_SEARCH_MAP_ZOOM] (state, payload) {
+      state.searchMap.zoom = payload
+    },
+    [SET_WELL_RECORD] (state, payload) {
+      state.wellRecord = payload
+      state.wellId = payload.well || null
+    },
+    [SET_WELL_LICENCE] (state, payload) {
+      state.recordLicence = payload
     }
   },
   actions: {
-    [FETCH_DRILLER_NAMES] ({ commit }) {
+    [FETCH_WELL_DOWNLOAD_LINKS] ({ commit, state }) {
+      if (state.downloads === null) {
+        ApiService.query('wells/extracts').then((response) => {
+          state.downloads = response.data
+        })
+      }
+    },
+    [FETCH_DRILLER_NAMES] ({ commit, state }) {
       // fetch only once
-      if (!this.state.drillerNames) {
+      if (state.drillerNames.length === 0) {
         ApiService.query('drillers/names').then((response) => {
           commit(SET_DRILLER_NAMES, response.data)
         }).catch((err) => {
@@ -167,9 +209,16 @@ const wellsStore = {
         })
       }
     },
-    [FETCH_ORGANIZATION_NAMES] ({ commit }) {
+    [RESET_WELL_DATA] ({ commit }) {
+      commit(SET_WELL_RECORD, {})
+      commit(SET_WELL_LICENCE, {
+        status: '',
+        number: ''
+      })
+    },
+    [FETCH_ORGANIZATION_NAMES] ({ commit, state }) {
       // fetch only once
-      if (!this.state.organizationNames) {
+      if (state.organizationNames.length === 0) {
         ApiService.query('organizations/names').then((response) => {
           commit(SET_ORGANIZATION_NAMES, response.data)
         }).catch((err) => {
@@ -186,6 +235,7 @@ const wellsStore = {
       }
 
       commit(SET_PENDING_LOCATION_SEARCH, null)
+      commit(SET_HAS_SEARCHED, false)
       commit(SET_PENDING_SEARCH, null)
       commit(SET_CONSTRAIN_SEARCH, false)
       commit(SET_SEARCH_BOUNDS, {})
@@ -199,8 +249,12 @@ const wellsStore = {
       commit(SET_LOCATION_SEARCH_RESULTS, [])
       commit(SET_SEARCH_RESULT_COLUMNS, [...DEFAULT_COLUMNS])
       commit(SET_SEARCH_RESULT_FILTERS, {})
+      commit(SET_SEARCH_MAP_CENTRE, null)
+      commit(SET_SEARCH_MAP_ZOOM, null)
     },
     [SEARCH_LOCATIONS] ({ commit, state }) {
+      commit(SET_LOCATION_ERRORS, {})
+
       if (state.pendingLocationSearch !== null) {
         state.pendingLocationSearch.cancel()
       }
@@ -217,13 +271,13 @@ const wellsStore = {
       ApiService.query('wells/locations', params, { cancelToken: cancelSource.token }).then((response) => {
         if (response.data.count === 0) {
           commit(SET_LOCATION_ERRORS, { detail: 'No well records could be found.' })
+          commit(SET_LOCATION_SEARCH_RESULTS, [])
         } else if (response.data.count > response.data.results.length) {
           commit(SET_LOCATION_ERRORS, {
             detail: 'Too many wells to display on map. ' +
                     'Please zoom in or change your search criteria.'
           })
         } else {
-          commit(SET_LOCATION_ERRORS, {})
           commit(SET_LOCATION_SEARCH_RESULTS, response.data.results)
         }
       }).catch((err) => {
@@ -241,7 +295,8 @@ const wellsStore = {
       })
     },
     [SEARCH_WELLS] ({ commit, state }, { constrain = null, trigger = null }) {
-      state.lastSearchTrigger = trigger
+      commit(SET_LAST_SEARCH_TRIGGER, trigger)
+      commit(SET_HAS_SEARCHED, true)
 
       if (state.pendingSearch !== null) {
         state.pendingSearch.cancel()
@@ -319,6 +374,9 @@ const wellsStore = {
     pendingLocationSearch (state) {
       return state.pendingLocationSearch
     },
+    hasSearched (state) {
+      return state.hasSearched
+    },
     pendingSearch (state) {
       return state.pendingSearch
     },
@@ -351,6 +409,24 @@ const wellsStore = {
     },
     searchResults (state) {
       return state.searchResults
+    },
+    well (state) {
+      return state.wellRecord
+    },
+    wellLicence (state) {
+      return state.recordLicence
+    },
+    storedWellId (state) {
+      return state.wellId
+    },
+    searchMapCentre (state) {
+      return state.searchMap.centre
+    },
+    searchMapZoom (state) {
+      return state.searchMap.zoom
+    },
+    wellFileDownloads (state) {
+      return state.downloads
     }
   }
 }
