@@ -70,6 +70,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                       hint="Degrees"
                       type="text"
                       v-model.number="dms.lat.deg"
+                      :errors="errors['latitude']"
                       :loaded="fieldsLoaded['latitude']"
                     ></form-input>
                   </b-col>
@@ -328,6 +329,12 @@ export default {
       // Take a value, if it's a number - make it negative. If it's not a number, leave it alone.
       return isFinite(value) ? Math.abs(value) * -1 : value
     },
+    validNumber (obj, ...props) {
+      return props.every((prop) => {
+        const val = obj[prop]
+        return val !== null && val !== ''
+      })
+    },
     updateUTM (easting, northing, zone) {
       this.utm.easting = Math.round(easting)
       this.utm.northing = Math.round(northing)
@@ -341,7 +348,9 @@ export default {
       }
     },
     handleDegreesChange () {
-      if (!this.degrees.latitude || !this.degrees.longitude) {
+      if (!this.validNumber(this.degrees, 'latitude', 'longitude')) {
+        this.longitudeInput = ''
+        this.latitudeInput = ''
         this.resetUTM()
         this.resetDMS()
         return null
@@ -356,7 +365,7 @@ export default {
       this.updateUTM(easting, northing, zone)
     },
     handleDMSChange () {
-      if (!this.dms.lat.deg || !this.dms.lat.min || !this.dms.lat.sec || !this.dms.long.deg || !this.dms.long.min || !this.dms.long.sec) {
+      if (!this.validNumber(this.dms.lat, 'deg', 'min', 'sec') || !this.validNumber(this.dms.long, 'deg', 'min', 'sec')) {
         // early return if any fields empty
         // reset other coordinate fields at the same time (e.g. clean up previously calculated valuess)
         this.resetUTM()
@@ -371,7 +380,7 @@ export default {
       this.updateUTM(easting, northing, zone)
     },
     handleUTMChange () {
-      if (!this.utm.easting || !this.utm.northing || !this.utm.zone) {
+      if (!this.validNumber(this.utm, 'easting', 'northing', 'zone')) {
         this.resetDMS()
         this.resetDegrees()
         return null
@@ -412,6 +421,8 @@ export default {
       this.checkIfCoordinateIsValid(newLat, newLong)
     },
     resetDegrees () {
+      this.longitudeInput = ''
+      this.latitudeInput = ''
       this.degrees = {
         latitude: null,
         longitude: null
