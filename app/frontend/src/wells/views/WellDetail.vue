@@ -60,7 +60,7 @@
           </b-row>
           <b-row>
             <b-col cols="12" md="4"><span class="font-weight-bold">Owner Name:</span> {{ well.owner_full_name }}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Well Subclass:</span> {{ well.subclass }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Well Subclass:</span> {{ well.well_subclass }}</b-col>
             <b-col cols="12" md="4"><span class="font-weight-bold">Environmental Monitoring System (EMS) ID:</span> {{ well.ems }}</b-col>
           </b-row>
           <b-row>
