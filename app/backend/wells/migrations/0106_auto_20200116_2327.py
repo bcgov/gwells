@@ -2,64 +2,28 @@
 
 from django.db import migrations
 
-# gwells=# \d registries_organization
-#            Table "public.registries_organization"
-#        Column        |           Type           | Modifiers
-# ---------------------+--------------------------+-----------
-#  create_user         | character varying(60)    | not null
-#  create_date         | timestamp with time zone | not null
-#  update_user         | character varying(60)    | not null
-#  update_date         | timestamp with time zone | not null
-#  org_guid            | uuid                     | not null
-#  name                | character varying(200)   | not null
-#  street_address      | character varying(100)   |
-#  city                | character varying(50)    |
-#  postal_code         | character varying(10)    |
-#  main_tel            | character varying(15)    |
-#  fax_tel             | character varying(15)    |
-#  website_url         | character varying(200)   |
-#  effective_date      | timestamp with time zone | not null
-#  expiry_date         | timestamp with time zone | not null
-#  province_state_code | character varying(10)    | not null
-#  email               | character varying(254)   |
 
-
-# gwells=# \d drilling_company
-#                Table "public.drilling_company"
-#         Column         |           Type           | Modifiers
-# -----------------------+--------------------------+-----------
-#  create_user           | character varying(60)    | not null
-#  create_date           | timestamp with time zone | not null
-#  update_user           | character varying(60)    | not null
-#  update_date           | timestamp with time zone | not null
-#  drilling_company_guid | uuid                     | not null
-#  drilling_company_code | character varying(10)    |
-#  name                  | character varying(200)   | not null
-
-
-# NOTE: Loses `drilling_company.drilling_company_code` at the moment.
-
-insertDrillingCompaniesIntoOrg = """
-    INSERT INTO registries_organization (create_user, create_date, update_user, update_date, org_guid, name)
-        SELECT create_user, create_date, update_user, update_date, drilling_company_guid, name FROM drilling_company;
+INSERT_DRILLING_COMPANIES_INTO_ORG = """
+    INSERT INTO registries_organization (create_user, create_date, update_user, update_date, org_guid, name, effective_date, expiry_date, province_state_code)
+        SELECT create_user, create_date, update_user, update_date, drilling_company_guid, name, '2018-01-01 00:00:00', '9999-12-31 00:00:00', 'BC' FROM drilling_company;
 """
 
 # Update any wells to use the same GUID which will point to the drilling companies inserted above
-updateWellOrgToPointToOldDrillingCompanyGUIDs = """
+UPDATE_WELL_ORG_TO_POINT_TO_OLD_DRILLING_COMPANY_GUIDS = """
     UPDATE well
     SET org_of_person_responsible_guid = drilling_company_guid
     WHERE org_of_person_responsible_guid IS NULL;
 """
 
 # Update any legacy submissions to use the same GUID which will point to the drilling companies inserted for the FK-ed well
-updateLegacySubmissionToOldDrillingCompanyGUID = """
+UPDATE_LEGACY_SUBMISSION_TO_OLD_DRILLING_COMPANY_GUID = """
     UPDATE activity_submission s1
-    SET s1.org_of_person_responsible_guid = w.drilling_company_guid
+    SET org_of_person_responsible_guid = drilling_company_guid
     FROM activity_submission s2
         INNER JOIN well w ON s2.well_tag_number = w.well_tag_number
     WHERE
         s1.org_of_person_responsible_guid IS NULL AND
-        s1.well_activity_type_code = 'LEGACY';
+        s1.well_activity_code = 'LEGACY';
 """
 
 class Migration(migrations.Migration):
@@ -70,10 +34,19 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunSQL(
-            [
-                insertDrillingCompaniesIntoOrg,
-                updateWellOrgToPointToOldDrillingCompanyGUIDs,
-                updateLegacySubmissionToOldDrillingCompanyGUID
-            ],
-        )
+            INSERT_DRILLING_COMPANIES_INTO_ORG,
+        ),
+        migrations.RunSQL(
+            UPDATE_WELL_ORG_TO_POINT_TO_OLD_DRILLING_COMPANY_GUIDS,
+        ),
+        migrations.RunSQL(
+            UPDATE_LEGACY_SUBMISSION_TO_OLD_DRILLING_COMPANY_GUID
+        ),
+        migrations.RemoveField(
+            model_name='well',
+            name='drilling_company',
+        ),
+        migrations.DeleteModel(
+            name='DrillingCompany',
+        ),
     ]

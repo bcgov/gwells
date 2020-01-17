@@ -115,7 +115,7 @@ class GeometryFilterBackend(BaseFilterBackend):
 
 
 class RadiusFilterBackend(BaseFilterBackend):
-    """ 
+    """
     Filter that allows searching within radius (m) of a point.
     """
 
@@ -307,6 +307,10 @@ class WellListFilter(AnyOrAllFilterSet):
     alternative_specs_submitted = filters.BooleanFilter(widget=BooleanWidget)
     hydro_fracturing_performed = filters.BooleanFilter(widget=BooleanWidget)
 
+    company_of_person_responsible = filters.UUIDFilter(field_name='company_of_person_responsible')
+    # Alias for any old API requests now that DrillingCompany doesn't exist
+    drilling_company = filters.UUIDFilter(field_name='company_of_person_responsible')
+
     class Meta:
         model = Well
         fields = [
@@ -345,6 +349,7 @@ class WellListFilter(AnyOrAllFilterSet):
             'drawdown',
             'driller_name',
             'drilling_company',
+            'company_of_person_responsible',
             'drilling_methods',
             'ems',
             'filter_pack_from',
