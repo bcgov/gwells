@@ -332,7 +332,7 @@ export default {
     validNumber (obj, ...props) {
       return props.every((prop) => {
         const val = obj[prop]
-        return val !== null && val !== ''
+        return val !== null && val !== '' && window.isFinite(val)
       })
     },
     updateUTM (easting, northing, zone) {
