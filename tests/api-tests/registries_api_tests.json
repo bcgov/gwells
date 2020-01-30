@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "c40faa5e-f2c3-4a5b-82ea-f20bc18a9869",
+		"_postman_id": "ef22e03f-8128-419d-bfe3-8b66bb8c8b71",
 		"name": "GWELLS Registries API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -89,6 +89,7 @@
 							"response": []
 						}
 					],
+					"protocolProfileBehavior": {},
 					"_postman_isSubFolder": true
 				},
 				{
@@ -269,10 +270,6 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/organizations?format=json",
 									"host": [
@@ -326,10 +323,6 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/organizations/names",
 									"host": [
@@ -468,10 +461,6 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/organizations/{{created_guid}}?format=json",
 									"host": [
@@ -605,10 +594,6 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/organizations/{{created_guid}}/history?format=json",
 									"host": [
@@ -928,10 +913,6 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/organizations/{{created_guid_bad_input}}?format=json",
 									"host": [
@@ -1071,6 +1052,7 @@
 						}
 					],
 					"description": "Tests for organizations endpoint\n/registries/organizations/",
+					"protocolProfileBehavior": {},
 					"_postman_isSubFolder": true
 				},
 				{
@@ -1128,10 +1110,6 @@
 										"value": "application/json"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/drillers/options?format=json",
 									"host": [
@@ -1205,6 +1183,7 @@
 											"    ",
 											"    pm.test(\"The application has proof of age\", function() {",
 											"        pm.expect(applications[0].proof_of_age.code).to.eql(\"PASSPORT\");",
+											"        pm.expect(applications[1].proof_of_age.code).to.eql(\"UNKNOWN\");",
 											"    });",
 											"})();",
 											""
@@ -1230,7 +1209,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"first_name\": \"Bobby\",\n  \"surname\": \"Driller\",\n  \"contact_tel\": \"(555) 555-1234\",\n  \"contact_email\": \"bobby@example.com\",\n  \"registrations\": [\n  \t{\n  \t\t\"registries_activity\": \"DRILL\", \n  \t\t\"status\": \"ACTIVE\",\n  \t\t\"organization\": \"{{created_guid}}\",\n  \t\t\"applications\": [\n  \t\t{\n  \t\t\t\"subactivity\": {\n  \t\t\t\t\"registries_subactivity_code\": \"WATER\"\n  \t\t\t}, \n  \t\t\t\"primary_certificate\": {\n  \t\t\t\t\"acc_cert_guid\": \"28bf8730-dbb7-4218-8e9f-06bd51f60161\"\n  \t\t\t}, \n  \t\t\t\"primary_certificate_no\": \"12345\",\n  \t\t\t\"current_status\": {\"code\": \"P\"},\n  \t\t\t\"application_recieved_date\": \"2018-05-02\",\n  \t\t\t\"proof_of_age\": { \"code\": \"PASSPORT\"}\n  \t\t},\n  \t\t{\n  \t\t\t\"subactivity\": {\n  \t\t\t\t\"registries_subactivity_code\": \"WATER\"\n  \t\t\t},\n  \t\t\t\"primary_certificate\": {\n  \t\t\t\t\"acc_cert_guid\": \"28bf8730-dbb7-4218-8e9f-06bd51f60161\"\n  \t\t\t},\n  \t\t\t\"primary_certificate_no\": \"67890\",\n  \t\t\t\"current_status\": {\"code\" : \"P\"}\n  \t\t}\n\t\t]\n  }]\n}\n"
+									"raw": "{\n  \"first_name\": \"Bobby\",\n  \"surname\": \"Driller\",\n  \"contact_tel\": \"(555) 555-1234\",\n  \"contact_email\": \"bobby@example.com\",\n  \"registrations\": [\n  \t{\n  \t\t\"registries_activity\": \"DRILL\", \n  \t\t\"status\": \"ACTIVE\",\n  \t\t\"organization\": \"{{created_guid}}\",\n  \t\t\"applications\": [\n  \t\t{\n  \t\t\t\"subactivity\": {\n  \t\t\t\t\"registries_subactivity_code\": \"WATER\"\n  \t\t\t}, \n  \t\t\t\"primary_certificate\": {\n  \t\t\t\t\"acc_cert_guid\": \"28bf8730-dbb7-4218-8e9f-06bd51f60161\"\n  \t\t\t}, \n  \t\t\t\"primary_certificate_no\": \"12345\",\n  \t\t\t\"current_status\": {\"code\": \"P\"},\n  \t\t\t\"application_recieved_date\": \"2018-05-02\",\n  \t\t\t\"proof_of_age\": { \"code\": \"PASSPORT\"}\n  \t\t},\n  \t\t{\n  \t\t\t\"subactivity\": {\n  \t\t\t\t\"registries_subactivity_code\": \"WATER\"\n  \t\t\t},\n  \t\t\t\"primary_certificate\": {\n  \t\t\t\t\"acc_cert_guid\": \"28bf8730-dbb7-4218-8e9f-06bd51f60161\"\n  \t\t\t},\n  \t\t\t\"primary_certificate_no\": \"67890\",\n  \t\t\t\"current_status\": {\"code\" : \"P\"},\n  \t\t\t\"proof_of_age\": { \"code\": \"UNKNOWN\"}\n  \t\t}\n\t\t]\n  }]\n}\n"
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/drillers?format=json",
@@ -1441,10 +1420,6 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/drillers?format=json",
 									"host": [
@@ -1496,10 +1471,6 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/drillers?search=&city=&status=&limit=10&activity=DRILL&ordering=0",
 									"host": [
@@ -1571,10 +1542,6 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/drillers?search=&city=&status=Removed&limit=10&activity=DRILL&ordering=0",
 									"host": [
@@ -1662,10 +1629,6 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}?format=json",
 									"host": [
@@ -1734,10 +1697,6 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}?format=json",
 									"host": [
@@ -1870,10 +1829,6 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}/history?format=json",
 									"host": [
@@ -2017,10 +1972,6 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}?format=json",
 									"host": [
@@ -2164,10 +2115,6 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}/presigned_put_url?filename=file.pdf",
 									"host": [
@@ -2456,10 +2403,6 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/organizations?format=json",
 									"host": [
@@ -2511,10 +2454,6 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/organizations/{{created_guid}}?format=json",
 									"host": [
@@ -2567,10 +2506,6 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}?format=json",
 									"host": [
@@ -2633,10 +2568,6 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/drillers?format=json",
 									"host": [
@@ -2719,6 +2650,7 @@
 						}
 					],
 					"description": "Tests for drillers endpoint\n/registries/drillers/",
+					"protocolProfileBehavior": {},
 					"_postman_isSubFolder": true
 				},
 				{
@@ -3263,10 +3195,6 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/registrations?format=json",
 									"host": [
@@ -3344,7 +3272,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"registration\": \"{{created_registration_guid}}\",\n\t\"subactivity\": {\n\t\t\"registries_subactivity_code\":\"WATER\"\n\t}\n}"
+									"raw": "{\n\t\"registration\": \"{{created_registration_guid}}\",\n\t\"subactivity\": {\n\t\t\"registries_subactivity_code\":\"WATER\"\n\t},\n  \t\"proof_of_age\": { \"code\": \"UNKNOWN\"}\n}"
 								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/applications?format=json",
@@ -3820,10 +3748,6 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/registrations/{{created_registration_guid}}?format=json",
 									"host": [
@@ -3877,10 +3801,6 @@
 										"value": "JWT {{token}}"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/applications/{{created_application_guid}}?format=json",
 									"host": [
@@ -4109,9 +4029,12 @@
 						}
 					],
 					"description": "Well driller or well pump installer registration records for individuals",
+					"protocolProfileBehavior": {},
 					"_postman_isSubFolder": true
 				}
-			]
+			],
+			"protocolProfileBehavior": {}
 		}
-	]
+	],
+	"protocolProfileBehavior": {}
 }
