@@ -17,13 +17,13 @@ UPDATE_WELL_ORG_TO_POINT_TO_OLD_DRILLING_COMPANY_GUIDS = """
 
 # Update any legacy submissions to use the same GUID which will point to the drilling companies inserted for the FK-ed well
 UPDATE_LEGACY_SUBMISSION_TO_OLD_DRILLING_COMPANY_GUID = """
-    UPDATE activity_submission s1
-    SET org_of_person_responsible_guid = drilling_company_guid
-    FROM activity_submission s2
-        INNER JOIN well w ON s2.well_tag_number = w.well_tag_number
+    UPDATE activity_submission AS s
+    SET org_of_person_responsible_guid = w.drilling_company_guid
+    FROM well AS w
     WHERE
-        s1.org_of_person_responsible_guid IS NULL AND
-        s1.well_activity_code = 'LEGACY';
+        s.well_tag_number = w.well_tag_number AND
+        s.org_of_person_responsible_guid IS NULL AND
+        s.well_activity_code = 'LEGACY';
 """
 
 class Migration(migrations.Migration):
@@ -41,12 +41,5 @@ class Migration(migrations.Migration):
         ),
         migrations.RunSQL(
             UPDATE_LEGACY_SUBMISSION_TO_OLD_DRILLING_COMPANY_GUID
-        ),
-        migrations.RemoveField(
-            model_name='well',
-            name='drilling_company',
-        ),
-        migrations.DeleteModel(
-            name='DrillingCompany',
         ),
     ]
