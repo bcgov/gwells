@@ -1,0 +1,30 @@
+[
+    {
+        "model": "registries.activitycode",
+        "pk": "DRILL",
+        "fields": {
+            "create_user": "DATALOAD_USER",
+            "create_date": "2018-01-01T08:00:00Z",
+            "update_user": "DATALOAD_USER",
+            "update_date": "2018-01-01T08:00:00Z",
+            "description": "Well Driller",
+            "display_order": 2,
+            "effective_date": "2018-05-25T18:20:35.936Z",
+            "expiry_date": "9999-12-31T23:59:59Z"
+        }
+    },
+    {
+        "model": "registries.activitycode",
+        "pk": "PUMP",
+        "fields": {
+            "create_user": "DATALOAD_USER",
+            "create_date": "2018-01-01T08:00:00Z",
+            "update_user": "DATALOAD_USER",
+            "update_date": "2018-01-01T08:00:00Z",
+            "description": "Pump Installer",
+            "display_order": 4,
+            "effective_date": "2018-05-25T18:20:35.936Z",
+            "expiry_date": "9999-12-31T23:59:59Z"
+        }
+    }
+]

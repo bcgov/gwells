@@ -26,6 +26,16 @@ class CodeFixture():
 
             model.objects.create(pk=item.get('pk'), **data)
 
+    def update_or_create_fixture(self, apps, schema_editor):
+        for item in self.fixture:
+            data = item.get('fields')
+
+            # determine app and model that the item belongs to
+            app, model = item.get('model').split('.', 1)
+            model = apps.get_model(app, model)
+
+            model.objects.update_or_create(pk=item.get('pk'), defaults=data)
+
     def unload_fixture(self, apps, schema_editor):
         for item in self.fixture:
             app, model = item.get('model').split('.', 1)
