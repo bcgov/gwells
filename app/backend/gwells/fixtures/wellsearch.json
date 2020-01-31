@@ -784,7 +784,7 @@
             "alteration_end_date": null,
             "decommission_start_date": null,
             "decommission_end_date": null,
-            "company_of_person_responsible": null,
+            "company_of_person_responsible": "f606669c-a60c-422d-859a-fdc54278d9b0",
             "well_identification_plate_attached": null,
             "ground_elevation": null,
             "ground_elevation_method": null,
