@@ -17,6 +17,7 @@ from django.db import transaction
 from django.db.models import OneToOneField
 from rest_framework import serializers
 from django.contrib.gis.geos import Point
+
 from rest_framework import exceptions
 
 from gwells.models import ProvinceStateCode
@@ -149,9 +150,9 @@ class WellSubmissionSerializerBase(AuditModelSerializer):
         if self.context.get('request', None):
             data = self.context['request'].data
 
-        if 'latitude' in data or 'longitude' in data:
-            lat = data['latitude']
-            lng = data['longitude']
+        if data.get('latitude') and data.get('longitude'):
+            lat = float(data['latitude'])
+            lng = float(data['longitude'])
             # there is also validation elsewhere that the point is inside BC.
             # this is a second sanity check to make sure the coordinates are roughly valid.
             if not 48 < lat < 60:
@@ -199,14 +200,13 @@ class WellSubmissionSerializerBase(AuditModelSerializer):
                 # Convert lat long values into geom object stored on model
                 # Values are BC Albers. but we are using WGS84 Lat Lon to avoid rounding errors
                 if 'latitude' in data and 'longitude' in data:
-                    if data.get('latitude') == '' and data.get('longitude') == '':
+                    if not data.get('latitude') and not data.get('longitude'):
                         validated_data['geom'] = None
                         data['geom'] = None
                     else:
                         point = Point(-abs(data['longitude']), data['latitude'], srid=4326)
                         validated_data['geom'] = point
                         data['geom'] = point
-
 
             # Remove the latitude and longitude fields if they exist
             validated_data.pop('latitude', None)
@@ -380,7 +380,7 @@ class WellConstructionSubmissionSerializer(WellSubmissionSerializerBase):
                   'water_quality_colour', 'water_quality_odour', 'ems', 'total_depth_drilled',
                   'finished_well_depth', 'final_casing_stick_up', 'bedrock_depth', 'static_water_level',
                   'well_yield', 'artesian_flow', 'artesian_pressure', 'well_cap_type', 'well_disinfected_status',
-                  'comments', 'alternative_specs_submitted', 'consultant_company', 'consultant_name',
+                  'comments', 'internal_comments', 'alternative_specs_submitted', 'consultant_company', 'consultant_name',
                   'driller_name', 'person_responsible', 'company_of_person_responsible',
                   'coordinate_acquisition_code',
                   'create_user', 'create_date',
@@ -511,6 +511,7 @@ class WellAlterationSubmissionSerializer(WellSubmissionSerializerBase):
             'well_cap_type',
             'well_disinfected_status',
             'comments',
+            'internal_comments',
             'alternative_specs_submitted',
             'create_user', 'create_date',
         )
@@ -753,6 +754,7 @@ class WellDecommissionSubmissionSerializer(WellSubmissionSerializerBase):
             'casing_set',
             'decommission_description_set',
             'comments',
+            'internal_comments',
             'alternative_specs_submitted',
             'create_user', 'create_date',
         )

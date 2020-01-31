@@ -77,7 +77,7 @@ const convertCoordinatesMixin = {
     },
     roundSeconds (seconds) {
       // Regulations are specific about how GPS coordinates are to be provided.
-      // DMS toat least 2 decimal places;
+      // DMS to at least 2 decimal places;
       return Math.round(seconds * 100) / 100
     }
   }

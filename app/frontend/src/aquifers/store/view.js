@@ -12,27 +12,37 @@
     limitations under the License.
 */
 
-import search from './search.js'
-import view from './view.js'
-import aquiferCodes from './codes.js'
-import aquiferGeoms from './geoms.js'
-
-const aquifersStore = {
+export default {
   namespaced: true,
-  modules: {
-    search,
-    view,
-    aquiferCodes,
-    aquiferGeoms
-  },
   state: {
-    sections: []
+    id: null,
+    record: {},
+    aquiferFiles: {
+      public: [],
+      private: []
+    },
+    aquiferWells: []
   },
   mutations: {
-    addSections (state, payload) {
-      state.sections = payload
+    setAquiferRecord (state, payload) {
+      state.record = payload
+      state.id = payload.aquifer_id || null
+    },
+    setAquiferFiles (state, payload) {
+      state.aquiferFiles = payload
+    },
+    setAquiferWells (state, payload) {
+      state.aquiferWells = payload
+    }
+  },
+  actions: {
+    resetAquiferData ({ commit, state }) {
+      commit('setAquiferRecord', {})
+      commit('setAquiferFiles', {
+        public: [],
+        private: []
+      })
+      commit('setAquiferWells', [])
     }
   }
 }
-
-export default aquifersStore

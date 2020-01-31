@@ -56,16 +56,23 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </b-card>
         </b-col>
         <b-col>
-          <search-map ref="searchMap" @moved="handleMapMoveEnd" />
+          <search-map
+            ref="searchMap"
+            :initialCentre="searchMapCentre"
+            :initialZoom="searchMapZoom"
+            @moved="handleMapMoveEnd"
+            @zoomed="handleMapZoom"
+            @search="handleMapSearch"
+            @ready="handleMapReady"/>
           <b-alert variant="danger" class="mt-2" :show="locationErrorMessage !== ''">{{ locationErrorMessage }}</b-alert>
         </b-col>
       </b-row>
-      <b-row class="my-5" v-show="!isInitialSearch || hasResultErrors">
+      <b-row class="my-5" v-show="hasSearched || hasResultErrors">
         <b-col>
           <search-results />
         </b-col>
       </b-row>
-      <b-row v-if="!isInitialSearch">
+      <b-row v-if="!hasSearched" class="mt-5">
         <b-col>
           <p>
             Can’t find the well you are looking for? Try your search again using a different set of criteria. If you still need more assistance, Contact <a href="https://portal.nrs.gov.bc.ca/web/client/contact" target="_blank">FrontCounterBC</a>.
@@ -82,6 +89,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
 <script>
 import querystring from 'querystring'
+import { isEqual } from 'lodash'
 import ApiService from '@/common/services/ApiService.js'
 
 import { mapGetters } from 'vuex'
@@ -96,7 +104,10 @@ import {
   SET_SEARCH_ORDERING,
   SET_SEARCH_PARAMS,
   SET_SEARCH_RESULT_COLUMNS,
-  SET_SEARCH_RESULT_FILTERS
+  SET_SEARCH_RESULT_FILTERS,
+  SET_SEARCH_MAP_CENTRE,
+  SET_SEARCH_MAP_ZOOM,
+  SET_CONSTRAIN_SEARCH
 } from '@/wells/store/mutations.types.js'
 import { QUERY_TRIGGER } from '@/wells/store/triggers.types.js'
 import AdvancedSearchForm from '@/wells/components/AdvancedSearchForm.vue'
@@ -119,19 +130,22 @@ export default {
       mapError: null,
 
       isBusy: false,
-      isInitialSearch: true,
       tabIndex: 0,
       latitude: null,
       longitude: null,
       mapBounds: {},
 
       // flag to indicate that the search should reset without a further API request
-      searchShouldReset: false
+      searchShouldReset: false,
+      hasManuallySearched: false,
+
+      performInitialSearch: false
     }
   },
   computed: {
     ...mapGetters([
       'locationErrorMessage',
+      'hasSearched',
       'searchErrors',
       'searchLimit',
       'searchOffset',
@@ -139,7 +153,10 @@ export default {
       'searchParams',
       'searchResults',
       'searchResultColumns',
-      'searchResultFilters'
+      'searchResultFilters',
+      'searchMapCentre',
+      'searchMapZoom',
+      'constrainSearch'
     ]),
     hasResultErrors () {
       return (this.searchErrors.filter_group !== undefined && Object.entries(this.searchErrors.filter_group).length > 0)
@@ -147,21 +164,30 @@ export default {
   },
   methods: {
     handleScroll () {
-      const pos = this.$el.querySelector('#map').scrollTop | 100
-      this.scrolled = window.scrollY > 0.9 * pos
+      this.scrolled = window.scrollY > 100
     },
-    handleMapMoveEnd () {
+    handleMapMoveEnd (centre, isViewReset) {
+      const coords = {
+        lat: centre.lat,
+        lng: centre.lng
+      }
+      this.$store.commit(SET_SEARCH_MAP_CENTRE, isViewReset ? null : coords)
+      this.updateQueryParams()
+    },
+    handleMapZoom (zoom, isViewReset) {
+      this.$store.commit(SET_SEARCH_MAP_ZOOM, isViewReset ? null : zoom)
       this.updateQueryParams()
     },
     handleSearchSubmit () {
       this.updateQueryParams()
 
-      // send the analytic event when triggering search by the search button
-
       const columnsRequested = {
         'search_columns': this.searchResultColumns.join(',')
       }
 
+      this.hasManuallySearched = true
+
+      // send the analytic event when triggering search by the search button
       this.triggerAnalyticsSearchEvent(
         Object.assign(
           {},
@@ -172,45 +198,44 @@ export default {
     },
     handleReset () {
       this.resetMapBounds()
-      this.$nextTick(() => {
-        this.$router.push({ query: null })
-      })
+      this.$store.dispatch(RESET_WELLS_SEARCH)
+      this.$router.replace({ query: null })
     },
     handleResultsUpdate () {
-      // the first search that happens when page loads doesn't need
-      // to automatically scroll the page.  Only scroll when updating
-      // the search results.
-      if (!this.isInitialSearch && !this.scrolled) {
+      // The first search that happens when page loads doesn't need to automatically scroll the
+      // page. Only scroll when updating the search results.
+      if (this.hasManuallySearched && !this.scrolled) {
         this.$SmoothScroll(this.$el.querySelector('#map'))
       }
-      // flag that the initial search that happens on page load
-      // has already occurred.
-      this.isInitialSearch = false
     },
-    initTabIndex () {
-      const hash = this.$route.hash
-      if (hash === '#advanced') {
-        this.tabIndex = 1
-      } else {
-        this.tabIndex = 0
+    handleMapSearch () {
+      this.updateQueryParams()
+    },
+    handleMapReady () {
+      if (this.performInitialSearch) {
+        // if the page loaded with a query, start a search.
+        // Otherwise, the search does not need to run (see #1713)
+        this.$store.dispatch(SEARCH_LOCATIONS)
+        this.$store.dispatch(SEARCH_WELLS, { trigger: QUERY_TRIGGER })
       }
     },
-    initQueryParams () {
-      const query = this.$route.query
+    setTabIndexFromUrlHash () {
+      this.tabIndex = this.$route.hash === '#advanced' ? 1 : 0
+    },
+    updateStoreStateFromQS () {
+      const query = { ...this.$route.query }
       // check if the page loads with a query (e.g. user bookmarked a search)
       // if so, set the search boxes to the query params
-      if (!(Object.entries(query).length !== 0 && query.constructor === Object)) {
-        return
-      }
+      if (Object.keys(query) === 0) { return }
 
       // Update the store with any result params in the query string
       if (query.filter_group !== undefined) {
         try {
           const resultFilters = JSON.parse(query.filter_group)
           this.$store.commit(SET_SEARCH_RESULT_FILTERS, resultFilters)
-        } catch (SyntaxError) {} finally {
-          delete query.filter_group
-        }
+        } catch (SyntaxError) {}
+
+        delete query.filter_group
       }
       if (query.limit !== undefined) {
         this.$store.commit(SET_SEARCH_LIMIT, query.limit)
@@ -228,8 +253,55 @@ export default {
         this.$store.commit(SET_SEARCH_RESULT_COLUMNS, query.result_columns.split(','))
         delete query.result_columns
       }
+      if (query.map_centre !== undefined) {
+        const latlng = query.map_centre.split(',')
+        const lat = parseFloat(latlng[0])
+        const lng = parseFloat(latlng[1])
+        this.$store.commit(SET_SEARCH_MAP_CENTRE, { lat, lng })
+        delete query.map_centre
+      }
+      if (query.map_zoom !== undefined) {
+        this.$store.commit(SET_SEARCH_MAP_ZOOM, parseInt(query.map_zoom))
+        delete query.map_zoom
+      }
+      if (query.constrain !== undefined) {
+        this.$store.commit(SET_CONSTRAIN_SEARCH, Boolean(query.constrain))
+        delete query.constrain
+      }
 
-      this.$store.commit(SET_SEARCH_PARAMS, { ...query })
+      this.$store.commit(SET_SEARCH_PARAMS, query)
+    },
+    updateQueryParams () {
+      const tabHash = (this.tabIndex === 1) ? 'advanced' : null
+
+      this.$router.replace({ query: this.buildQueryParams(), hash: tabHash })
+    },
+    buildQueryParams () {
+      const query = { ...this.searchParams }
+
+      // If params are completely empty, clear the query string, otherwise add the params to the
+      // query string. This allows users to bookmark searches. Only add result params to the query
+      // string if we have a search.
+      if (Object.keys(query).length > 0) {
+        if (Object.keys(this.searchResultFilters).length > 0) {
+          query.filter_group = JSON.stringify(this.searchResultFilters)
+        }
+        query.result_columns = this.searchResultColumns.join(',')
+        query.limit = String(this.searchLimit)
+        query.offset = String(this.searchOffset)
+        query.ordering = this.searchOrdering
+      }
+      if (this.searchMapCentre) {
+        query.map_centre = `${this.searchMapCentre.lat.toFixed(6)},${this.searchMapCentre.lng.toFixed(6)}`
+      }
+      if (this.searchMapZoom) {
+        query.map_zoom = String(this.searchMapZoom)
+      }
+      if (this.constrainSearch) {
+        query.constrain = String(this.constrainSearch)
+      }
+
+      return query
     },
     handleOutboundLinkClicks (link) {
       if (window.ga) {
@@ -252,29 +324,6 @@ export default {
         })
       }
     },
-    updateQueryParams () {
-      const params = { ...this.searchParams }
-      const paramsEmpty = Object.entries(params).length === 0 && params.constructor === Object
-
-      // if params are completely empty, clear the query string,
-      // otherwise add the params to the query string.  this allows
-      // users to bookmark searches. Only add result params to the
-      // query string if we have a search.
-      const query = paramsEmpty ? null : params
-      if (query !== null) {
-        if (Object.entries(this.searchResultFilters).length > 0) {
-          query.filter_group = JSON.stringify(this.searchResultFilters)
-        }
-        query.result_columns = this.searchResultColumns.join(',')
-        query.limit = this.searchLimit
-        query.offset = this.searchOffset
-        query.ordering = this.searchOrdering
-      }
-
-      const tabHash = (this.tabIndex === 1) ? 'advanced' : null
-
-      this.$router.push({ query: query, hash: tabHash })
-    },
     resetMapBounds () {
       if (this.$refs.searchMap && this.$refs.searchMap.resetView) {
         this.$refs.searchMap.resetView()
@@ -289,38 +338,36 @@ export default {
             }
           })
         }
-      }).catch((e) => {
-        console.error(e)
       })
+    },
+    handleRouteChange () {
+      const query = this.$route.query
+      const emptyQuery = Object.keys(query).length === 0
+      const storeStateAsQS = this.buildQueryParams()
+      // If there are query params (which means the user has performed a search) and the current
+      // store's state (as a query params object) is not equal to the current query params then we
+      // need to perform the search again.
+      this.performInitialSearch = !emptyQuery && !isEqual(query, storeStateAsQS)
+
+      if (emptyQuery) {
+        this.$store.dispatch(RESET_WELLS_SEARCH)
+      } else {
+        this.updateStoreStateFromQS()
+      }
     }
   },
   watch: {
     searchResults (results) {
       this.handleResultsUpdate()
+    },
+    $route (to, from) {
+      this.handleRouteChange()
     }
   },
   created () {
-    this.initQueryParams()
-    this.initTabIndex()
+    this.setTabIndexFromUrlHash()
     this.fetchSurveys()
-
-    // if the page loaded with a query, start a search.
-    // Otherwise, the search does not need to run (see #1713)
-    const query = this.$route.query
-    if (Object.entries(query).length !== 0 && query.constructor === Object) {
-      this.$store.dispatch(SEARCH_LOCATIONS)
-      this.$store.dispatch(SEARCH_WELLS, { constrain: false, trigger: QUERY_TRIGGER })
-    }
-
-    this.$store.subscribeAction((action, state) => {
-      if (action.type === RESET_WELLS_SEARCH) {
-        this.$nextTick(() => {
-          this.$router.push({ query: null })
-        })
-      } else if (action.type === SEARCH_WELLS) {
-        this.updateQueryParams()
-      }
-    })
+    this.handleRouteChange()
   },
   beforeMount () {
     this.scrolled = window.scrollY > 100

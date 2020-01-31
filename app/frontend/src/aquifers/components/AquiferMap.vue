@@ -6,6 +6,7 @@
 import L from 'leaflet'
 import 'leaflet-gesture-handling'
 import { tiledMapLayer } from 'esri-leaflet'
+import { uniq } from 'lodash'
 import { GeoSearchControl, EsriProvider } from 'leaflet-geosearch'
 import 'leaflet-lasso'
 import 'leaflet-fullscreen/dist/Leaflet.fullscreen.min.js'
@@ -35,6 +36,9 @@ const searchControl = new GeoSearchControl({
   autoClose: true
 })
 
+const DEFAULT_MAP_CENTRE = new L.LatLng(54.459, -126.495)
+const DEFAULT_MAP_ZOOM = 5
+
 // Extend control, making a locate
 L.Control.Locate = L.Control.extend({
   onAdd: function (map) {
@@ -58,7 +62,7 @@ L.control.locate = function (opts) {
 
 export default {
   name: 'AquiferMap',
-  props: ['aquifersGeometry', 'aquiferDetails', 'highlightAquiferIds', 'loading', 'selectedId', 'viewBBox'],
+  props: ['initialZoom', 'initialCentre', 'aquifersGeometry', 'aquiferDetails', 'highlightAquiferIds', 'loading', 'selectedId'],
   mounted () {
     // There seems to be an issue loading leaflet immediately on mount, we use nextTick to ensure
     // that the view has been rendered at least once before injecting the map.
@@ -94,7 +98,12 @@ export default {
     highlightAquiferIds (newIds) {
       this.buildAquiferLayer()
       if (newIds.length > 0) {
-        this.zoomToLayer(this.highlightLayer)
+        // setTimeout needed when loading map w/ a search. Otherwise
+        // `this.highlightLayer.getBounds()` returns invalid bounds (for reasons
+        // unknown)
+        setTimeout(() => {
+          this.zoomToLayer(this.highlightLayer)
+        }, 50)
       }
     },
     selectedId (newId, oldId) {
@@ -133,11 +142,10 @@ export default {
         maxZoom: 17
       })
 
-      if (this.viewBBox) { // if initial view is set then
-        this.map.fitBounds(this.viewBBox)
-      } else {
-        this.map.setView([54.5, -126.5], 5)
-      }
+      const zoom = this.initialZoom || DEFAULT_MAP_ZOOM
+      const centre = this.initialCentre ? [this.initialCentre.lat, this.initialCentre.lng] : DEFAULT_MAP_CENTRE
+
+      this.map.setView(centre, zoom)
 
       L.control.scale().addTo(this.map)
 
@@ -168,6 +176,7 @@ export default {
       this.listenForLayerAdd()
       this.listenForLayerRemove()
       this.listenForMapMovement()
+      this.listenForZoom()
       this.listenForReset()
       this.listenForAreaSelect()
 
@@ -269,14 +278,14 @@ export default {
           this.highlightLayer.clearLayers()
           this.selectedAquiferLayer.clearLayers()
           this.updateCanvasLayer()
-          this.map.setView([54.5, -126.5], 5)
+          this.map.setView(DEFAULT_MAP_CENTRE, DEFAULT_MAP_ZOOM)
         }
       })
     },
-    getFeaturesOnMap (map) {
+    getFeaturesOnMap () {
       const layersInBound = []
-      const bounds = map.getBounds()
-      map.eachLayer((layer) => {
+      const bounds = this.map.getBounds()
+      this.map.eachLayer((layer) => {
         if (layer.feature && bounds.overlaps(layer.getBounds())) {
           layersInBound.push(layer)
         }
@@ -287,11 +296,17 @@ export default {
       const events = ['zoomend', 'moveend']
       events.map(eventName => {
         this.map.on(eventName, (e) => {
-          const map = e.target
-          const layersInBound = this.getFeaturesOnMap(map)
+          const bounds = this.map.getBounds()
+          const layersInBound = this.getFeaturesOnMap()
           const aquiferIds = layersInBound.map((l) => l.aquiferId)
-          this.$emit('moved', this.map.getBounds(), aquiferIds)
+          this.$emit('moved', bounds, uniq(aquiferIds))
         })
+      })
+    },
+    listenForZoom () {
+      this.map.on('zoomend', () => {
+        const zoom = this.map.getZoom()
+        this.$emit('zoomed', zoom, this.map.getBounds())
       })
     },
     updateCanvasLayer () {
@@ -367,6 +382,7 @@ export default {
     },
     zoomToLayer (layer) {
       const bounds = layer.getBounds()
+
       if (bounds.isValid()) {
         this.map.fitBounds(bounds)
       }
@@ -401,6 +417,15 @@ export default {
           layer.setStyle(AQUIFER_LAYER_STYLE)
         }
       })
+    },
+    isViewReset () {
+      if (this.map.getZoom() === DEFAULT_MAP_ZOOM) {
+        if (DEFAULT_MAP_CENTRE.equals(this.map.getCenter(), 1.0E-2)) {
+          return true
+        }
+      }
+
+      return false
     }
   }
 }

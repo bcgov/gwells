@@ -32,7 +32,9 @@ import {
   SET_CONSTRAIN_SEARCH,
   SET_SEARCH_QUERY,
   SET_SELECTED_SECTIONS,
-  SET_MATCH_ANY
+  SET_MATCH_ANY,
+  SET_SEARCH_MAP_CENTRE,
+  SET_SEARCH_MAP_ZOOM
 } from './mutations.types.js'
 
 const HYDRAULICALLY_CONNECTED_CODE = 'Hydra'
@@ -45,7 +47,6 @@ const aquiferSearchStore = {
     mapBounds: null,
     searchQuery: '',
     searchErrors: {},
-    searchResultFilters: {},
     searchResults: [],
     searchResultCount: 0,
     selectedSections: [],
@@ -53,7 +54,9 @@ const aquiferSearchStore = {
     pendingSearch: null,
     searchInProgress: false,
     searchPerformed: false,
-    constrainSearch: false
+    constrainSearch: false,
+    searchMapCentre: null,
+    searchMapZoom: null
   },
   mutations: {
     [SET_ERROR] (state, payload) {
@@ -92,6 +95,12 @@ const aquiferSearchStore = {
     [SET_SEARCH_RESULT_COUNT] (state, payload) {
       state.searchResultCount = payload
     },
+    [SET_SEARCH_MAP_CENTRE] (state, payload) {
+      state.searchMapCentre = payload
+    },
+    [SET_SEARCH_MAP_ZOOM] (state, payload) {
+      state.searchMapZoom = payload
+    },
     [RESET_SEARCH] (state, payload) {
       state.searchResults = []
       state.searchQuery = ''
@@ -103,6 +112,12 @@ const aquiferSearchStore = {
       state.selectedSections = []
       state.currentPage = 1
       state.noSearchCriteriaError = false
+      state.searchErrors = {}
+      state.searchInProgress = false
+      state.constrainSearch = false
+      state.mapBounds = null
+      state.searchMapCentre = null
+      state.searchMapZoom = null
     }
   },
   actions: {
@@ -111,7 +126,7 @@ const aquiferSearchStore = {
       commit(SET_SEARCH_IN_PROGRESS, true)
       commit(SET_SEARCH_QUERY, query)
       commit(SET_SELECTED_SECTIONS, selectedSections)
-      commit(SET_MATCH_ANY, matchAny)
+      commit(SET_MATCH_ANY, Boolean(matchAny))
 
       // trigger the Google Analytics search event
       // trigger the search event, sending along the search params as a string
@@ -179,17 +194,27 @@ const aquiferSearchStore = {
         params.search = state.searchQuery
       }
 
-      const codes = state.selectedSections.filter((s) => s !== HYDRAULICALLY_CONNECTED_CODE).join(',')
+      const codes = state.selectedSections.filter((s) => s !== HYDRAULICALLY_CONNECTED_CODE)
       if (codes.length > 0) {
-        params.resources__section__code = codes
+        params.resources__section__code = codes.join(',')
       }
 
-      if (state.matchAny) {
-        params.match_any = state.matchAny
+      if (state.searchMatchAny) {
+        params.match_any = String(state.searchMatchAny)
       }
 
       if (state.selectedSections.find((o) => o === HYDRAULICALLY_CONNECTED_CODE)) {
         params.hydraulically_connected = 'yes'
+      }
+
+      if (state.searchMapCentre) {
+        params.map_centre = `${state.searchMapCentre.lat.toFixed(6)},${state.searchMapCentre.lng.toFixed(6)}`
+      }
+      if (state.searchMapZoom) {
+        params.map_zoom = String(state.searchMapZoom)
+      }
+      if (state.constrainSearch) {
+        params.constrain = String(state.constrainSearch)
       }
 
       return params

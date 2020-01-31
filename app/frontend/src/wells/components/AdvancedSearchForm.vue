@@ -280,11 +280,10 @@ export default {
       this.$emit('search', this.searchQueryParams)
     },
     handleReset () {
-      this.$store.dispatch(RESET_WELLS_SEARCH)
       this.$emit('reset')
     },
     filterParamsReset () {
-      const filterParams = {...this.emptyFilterParams}
+      const filterParams = { ...this.emptyFilterParams }
       filterParams.matchAny = { match_any: true }
       this.filterParams = filterParams
     },
@@ -308,12 +307,12 @@ export default {
       this.filterParams[filterId] = {}
     },
     initFilterParams () {
-      const filterParams = {...this.emptyFilterParams}
+      const filterParams = { ...this.emptyFilterParams }
 
       Object.entries(this.searchParams).forEach(([param, value]) => {
         [...this.defaultFilterFields, ...this.additionalFilterFields].forEach(field => {
           if (field.params.includes(param)) {
-            filterParams[field.id] = {[param]: value}
+            filterParams[field.id] = { [param]: value }
           }
         })
       })

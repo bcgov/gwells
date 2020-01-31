@@ -52,7 +52,6 @@
 <script>
 import { mapGetters } from 'vuex'
 import {
-  RESET_WELLS_SEARCH,
   SEARCH_LOCATIONS,
   SEARCH_WELLS
 } from '@/wells/store/actions.types.js'
@@ -83,29 +82,20 @@ export default {
       this.$emit('search', params)
     },
     handleReset () {
-      this.$store.dispatch(RESET_WELLS_SEARCH)
       this.$emit('reset')
     },
-    initSearchString () {
+    updateSearchString () {
       const searchString = this.searchParams.search
-      if (searchString !== undefined && searchString !== '' && searchString !== null) {
-        this.searchString = searchString
-      }
-    },
-    clearSearchString () {
-      this.searchString = null
+      this.searchString = searchString || null
+    }
+  },
+  watch: {
+    searchParams (params = {}) {
+      this.updateSearchString()
     }
   },
   created () {
-    this.initSearchString()
-
-    // On reset or advanced search, clear local params
-    this.$store.subscribeAction((action, state) => {
-      if (action.type === RESET_WELLS_SEARCH ||
-          (action.type === SEARCH_WELLS && (state.wellsStore.searchParams.search === undefined || state.wellsStore.searchParams.search === null))) {
-        this.clearSearchString()
-      }
-    })
+    this.updateSearchString()
   }
 }
 </script>

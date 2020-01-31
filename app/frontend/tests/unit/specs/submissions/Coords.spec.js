@@ -1,4 +1,4 @@
-import { shallowMount, createLocalVue } from '@vue/test-utils'
+import { mount, shallowMount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
 import Coords from '@/submissions/components/SubmissionForm/Coords.vue'
 
@@ -163,7 +163,8 @@ describe('Coords.vue', () => {
             deg: 142,
             min: 58,
             sec: 43.01
-          }},
+          }
+        },
         expected: {
           latitude: 49.41555,
           longitude: 142.97861
@@ -180,7 +181,8 @@ describe('Coords.vue', () => {
             deg: -142,
             min: 58,
             sec: 43.01
-          }},
+          }
+        },
         expected: {
           latitude: -49.41555,
           longitude: -142.97861
@@ -201,5 +203,127 @@ describe('Coords.vue', () => {
 
       expect(result).toBe(cases[i].expected.latitude)
     }
+  })
+  it('updates DMS and UTM when lat/lng changes', () => {
+    const wrapper = mount(Coords, {
+      localVue,
+      store,
+      stubs: ['router-link', 'coords-map'],
+      sync: false
+    })
+
+    // Set lat / lng to known good values
+    wrapper.find('#latitudeInput').setValue('50')
+    wrapper.find('#longitudeInput').setValue('120')
+
+    // DMS fields should be updated to reflect the change in lat / lng
+    expect(wrapper.vm.dms.lat.deg).toBe(50)
+    expect(wrapper.vm.dms.lat.min).toBe(0)
+    expect(wrapper.vm.dms.lat.sec).toBe(0)
+
+    expect(wrapper.vm.dms.long.deg).toBe(120)
+    expect(wrapper.vm.dms.long.min).toBe(0)
+    expect(wrapper.vm.dms.long.sec).toBe(0)
+
+    // UTM fields should be updated to reflect the change in lat / lng
+    expect(wrapper.vm.utm.easting).toBe(285016)
+    expect(wrapper.vm.utm.northing).toBe(5542944)
+    expect(wrapper.vm.utm.zone).toBe(11)
+
+    // When lat / lng pair is invalid then reset DMS and UTM
+    wrapper.find('#longitudeInput').setValue('')
+
+    expect(wrapper.vm.dms.lat.deg).toBe(null)
+    expect(wrapper.vm.dms.lat.min).toBe(null)
+    expect(wrapper.vm.dms.lat.sec).toBe(null)
+
+    expect(wrapper.vm.dms.long.deg).toBe(null)
+    expect(wrapper.vm.dms.long.min).toBe(null)
+    expect(wrapper.vm.dms.long.sec).toBe(null)
+
+    expect(wrapper.vm.utm.easting).toBe(null)
+    expect(wrapper.vm.utm.northing).toBe(null)
+    expect(wrapper.vm.utm.zone).toBe(null)
+  })
+  it('updates Degrees and UTM when DMS changes', () => {
+    const wrapper = mount(Coords, {
+      localVue,
+      store,
+      stubs: ['router-link', 'coords-map'],
+      sync: false
+    })
+
+    // Set DMS to known good values
+    wrapper.find('#latitudeDegInput').setValue('50')
+    wrapper.find('#latitudeMinInput').setValue('1')
+    wrapper.find('#latitudeSecInput').setValue('1')
+    wrapper.find('#longitudeDegInput').setValue('120')
+    wrapper.find('#longitudeMinInput').setValue('1')
+    wrapper.find('#longitudeSecInput').setValue('1')
+
+    // Degrees fields should be updated to reflect the change in DMS
+    expect(wrapper.vm.degrees.latitude).toBe(50.01694)
+    expect(wrapper.vm.degrees.longitude).toBe(120.01694)
+
+    // UTM fields should be updated to reflect the change in DMS
+    expect(wrapper.vm.utm.easting).toBe(713695)
+    expect(wrapper.vm.utm.northing).toBe(5544778)
+    expect(wrapper.vm.utm.zone).toBe(10)
+
+    // When any DMS field is invalid then reset Degrees and UTM
+    wrapper.find('#latitudeDegInput').setValue('')
+
+    expect(wrapper.vm.degrees.latitude).toBe(null)
+    expect(wrapper.vm.degrees.longitude).toBe(null)
+
+    expect(wrapper.vm.utm.easting).toBe(null)
+    expect(wrapper.vm.utm.northing).toBe(null)
+    expect(wrapper.vm.utm.zone).toBe(null)
+  })
+  it('updates Degrees and DMS when UTM changes', () => {
+    const wrapper = mount(Coords, {
+      localVue,
+      store,
+      stubs: ['router-link', 'coords-map'],
+      sync: false,
+      data () {
+        return {
+          utm: {
+            zone: 11
+          }
+        }
+      }
+    })
+
+    // Set UTM to known good values
+    wrapper.find('#utmEastingInput').setValue('285017')
+    wrapper.find('#utmNorthingInput').setValue('5542944')
+
+    // Degrees fields should be updated to reflect the change in UTM
+    expect(wrapper.vm.degrees.latitude).toBe(50)
+    expect(wrapper.vm.degrees.longitude).toBe(119.99998)
+
+    // DMS fields should be updated to reflect the change in UTM
+    expect(wrapper.vm.dms.lat.deg).toBe(50)
+    expect(wrapper.vm.dms.lat.min).toBe(0)
+    expect(wrapper.vm.dms.lat.sec).toBe(0)
+
+    expect(wrapper.vm.dms.long.deg).toBe(119)
+    expect(wrapper.vm.dms.long.min).toBe(59)
+    expect(wrapper.vm.dms.long.sec).toBe(59.94)
+
+    // When UTM is invalid then reset Degrees and DMS
+    wrapper.find('#utmEastingInput').setValue('')
+
+    expect(wrapper.vm.degrees.latitude).toBe(null)
+    expect(wrapper.vm.degrees.longitude).toBe(null)
+
+    expect(wrapper.vm.dms.lat.deg).toBe(null)
+    expect(wrapper.vm.dms.lat.min).toBe(null)
+    expect(wrapper.vm.dms.lat.sec).toBe(null)
+
+    expect(wrapper.vm.dms.long.deg).toBe(null)
+    expect(wrapper.vm.dms.long.min).toBe(null)
+    expect(wrapper.vm.dms.long.sec).toBe(null)
   })
 })

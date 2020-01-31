@@ -36,8 +36,8 @@ const submissionStore = {
     }
   },
   actions: {
-    [FETCH_CODES] ({ commit }) {
-      if (!this.state.codes) {
+    [FETCH_CODES] ({ commit, state }) {
+      if (state.codes === null) {
         // fetch codes once
         ApiService.query('submissions/options').then((res) => {
           commit(SET_CODES, res.data)
@@ -46,8 +46,8 @@ const submissionStore = {
         })
       }
     },
-    [FETCH_WELL_TAGS] ({ commit }) {
-      if (!this.state.wells) {
+    [FETCH_WELL_TAGS] ({ commit, state }) {
+      if (state.wells === null) {
         // fetch the wells once
         ApiService.query('wells/tags?ordering=well_tag_number').then((res) => {
           commit(SET_WELLS, res.data)

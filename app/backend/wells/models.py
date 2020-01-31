@@ -12,13 +12,17 @@
     limitations under the License.
 """
 
-from django.contrib.gis.db import models
-from django.core.validators import MinValueValidator
-
-from decimal import Decimal
-import reversion
-from django.utils import timezone
 import uuid
+import math
+import reversion
+from decimal import Decimal
+
+from django.core.validators import MinValueValidator
+from django.utils import timezone
+from django.dispatch import receiver
+from django.db.models.signals import pre_save
+from django.contrib.gis.db import models
+from django.contrib.gis.gdal import SpatialReference, CoordTransform
 
 from gwells.models import AuditModel, ProvinceStateCode, ScreenIntakeMethodCode, ScreenMaterialCode,\
     ScreenOpeningCode, ScreenBottomCode, ScreenTypeCode, ScreenAssemblyTypeCode, CodeTableModel,\
@@ -1248,6 +1252,19 @@ class Well(AuditModelStructure):
     }
 
 
+@receiver(pre_save, sender=Well)
+def update_utm(sender, instance, **kwargs):
+    if instance.geom and (-180 < instance.geom.x < 180): # only update utm when geom is valid
+        utm_zone = math.floor((instance.geom.x + 180) / 6) + 1
+        coord_transform = CoordTransform(SpatialReference(4326), SpatialReference(32600 + utm_zone))
+        utm_point = instance.geom.transform(coord_transform, clone=True)
+
+        instance.utm_zone_code = utm_zone
+        # We round to integers because easting/northing is only precise to 1m. The DB column is also an integer type.
+        instance.utm_easting = round(utm_point.x)
+        instance.utm_northing = round(utm_point.y)
+
+
 class CasingMaterialCode(CodeTableModel):
     """
      The material used for casing a well, e.g., Cement, Plastic, Steel.
@@ -1627,7 +1644,7 @@ class ActivitySubmission(AuditModelStructure):
                     'Network. I.e. Active is a well that is currently being used to collect groundwater '
                     'information, and inactive is a well that is no longer being used to collect '
                     'groundwater information.'))
-        
+
     # aquifer association
     aquifer = models.ForeignKey(
         Aquifer, db_column='aquifer_id', on_delete=models.PROTECT, blank=True,
@@ -2132,7 +2149,7 @@ class LinerPerforation(PerforationBase):
     db_table_comment = ('Describes the depths at which the liner is perforated in a well to help improve '
                         'water flow at the bottom of the well. Some wells are perforated instead of having '
                         'a screen installed.')
-    
+
     db_column_supplemental_comments = {
         "liner_perforation_from":"The depth at the top of the liner perforation, measured in feet below ground level.",
         "liner_perforation_to":"The depth at the bottom of the liner perforation, measured in feet below ground level.",
@@ -2361,10 +2378,10 @@ class HydraulicProperty(AuditModel):
         "transmissivity":"Transmissivity estimated from hydraulic testing.",
         "well_tag_number":"System generated sequential number assigned to each well. It is widely used by groundwater staff as it is the only consistent unique identifier for each well. It is different from a well ID plate number.",
     }
-    
+
     def __str__(self):
         return '{} - {}'.format(self.well, self.hydraulic_property_guid)
-    
+
 
 class DecommissionMaterialCode(BasicCodeTableModel):
     """Codes for decommission materials"""
