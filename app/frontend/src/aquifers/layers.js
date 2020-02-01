@@ -31,7 +31,7 @@ const aquiferLayers = {
     // layers: 'pub:WHSE_WATER_MANAGEMENT.WLS_PWD_LICENCES_SVW', -- ask lindsay
     layers: 'pub:WHSE_WATER_MANAGEMENT.WLS_WATER_RIGHTS_LICENCES_SV',
     transparent: true,
-    name: 'Groundwater licences',
+    name: 'Water licences',
     legend: {
       active: {
         imageSrc: groundWaterLicenceActiveLegendSrc,
