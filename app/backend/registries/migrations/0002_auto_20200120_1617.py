@@ -32,6 +32,12 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        # Change max length of proof of age code to 15 to allow longer "NOTPROVIDED" PK
+        migrations.AlterField(
+            model_name='proofofagecode',
+            name='code',
+            field=models.CharField(db_column='registries_proof_of_age_code', editable=False, max_length=15, primary_key=True, serialize=False),
+        ),
         migrations.RunPython(add_not_provided_proof_of_age, remove_not_provided_proof_of_age),
         migrations.AlterField(
             model_name='registriesapplication',
