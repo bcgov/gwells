@@ -4,14 +4,14 @@ from django.db import migrations, models
 import django.db.models.deletion
 
 
-def add_unknown_proof_of_age(apps, schema_editor):
+def add_not_provided_proof_of_age(apps, schema_editor):
     ProofOfAgeCode = apps.get_model('registries', 'ProofOfAgeCode')
 
     proof_of_age_code = ProofOfAgeCode(
         create_user='DATALOAD_USER',
         update_user='DATALOAD_USER',
-        code='UNKNOWN',
-        description='Unknown',
+        code='NOTPROVIDED',
+        description='Not Provided',
         display_order=3,
         effective_date='2020-01-01T08:00:00Z',
         expiry_date='9999-12-31T23:59:59Z'
@@ -20,10 +20,10 @@ def add_unknown_proof_of_age(apps, schema_editor):
     proof_of_age_code.save()
 
 
-def remove_unknown_proof_of_age(apps, schema_editor):
+def remove_not_provided_proof_of_age(apps, schema_editor):
     ProofOfAgeCode = apps.get_model('registries', 'ProofOfAgeCode')
 
-    ProofOfAgeCode.objects.get(code='UNKNOWN').delete()
+    ProofOfAgeCode.objects.get(code='NOTPROVIDED').delete()
 
 
 class Migration(migrations.Migration):
@@ -32,11 +32,11 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(add_unknown_proof_of_age, remove_unknown_proof_of_age),
+        migrations.RunPython(add_not_provided_proof_of_age, remove_not_provided_proof_of_age),
         migrations.AlterField(
             model_name='registriesapplication',
             name='proof_of_age',
-            field=models.ForeignKey(db_column='registries_proof_of_age_code', default='UNKNOWN', on_delete=django.db.models.deletion.PROTECT, to='registries.ProofOfAgeCode', verbose_name='Proof of age.'),
+            field=models.ForeignKey(db_column='registries_proof_of_age_code', default='NOTPROVIDED', on_delete=django.db.models.deletion.PROTECT, to='registries.ProofOfAgeCode', verbose_name='Proof of age.'),
             preserve_default=False,
         ),
     ]
