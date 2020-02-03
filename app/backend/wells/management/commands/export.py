@@ -191,7 +191,18 @@ class Command(BaseCommand):
  ems,
  registries_person.surname as person_responsible,
  registries_organization.name as company_of_person_responsible,
- aquifer_id, boundary_effect_code
+ aquifer_id,
+ aquifer_vulnerability_index as avi,
+ storativity,
+ transmissivity,
+ hydraulic_conductivity,
+ specific_storage,
+ specific_yield,
+ testing_method,
+ testing_duration,
+ analytic_solution_type,
+ boundary_effect_code,
+ aquifer_lithology_code
  from well
  left join well_subclass_code as wsc on wsc.well_subclass_guid = well.well_subclass_guid
  left join registries_person on
