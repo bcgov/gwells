@@ -529,13 +529,13 @@
     },
     {
         "model": "registries.proofofagecode",
-        "pk": "UNKNOWN",
+        "pk": "NOTPROVIDED",
         "fields": {
             "create_user": "DATALOAD_USER",
             "create_date": "2020-01-01T08:00:00Z",
             "update_user": "DATALOAD_USER",
             "update_date": "2020-01-01T08:00:00Z",
-            "description": "Unknown",
+            "description": "Not Provided",
             "display_order": 3,
             "effective_date": "2020-01-01T08:00:00Z",
             "expiry_date": "9999-12-31T23:59:59Z"

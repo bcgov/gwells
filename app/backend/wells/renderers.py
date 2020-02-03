@@ -45,7 +45,7 @@ COLUMN_LABELS = {
     "alteration_end_date": "Alteration Date",
     "decommission_start_date": "Decommission Start Date",
     "decommission_end_date": "Decommission Date",
-    "drilling_company": "Drilling Company",
+    "company_of_person_responsible": "Drilling Company",
     "well_identification_plate_attached": "Well Identification Plate Is Attached",
     "id_plate_attached_by": "Well identification plate attached by",
     "water_supply_system_name": "Water Supply System Name",

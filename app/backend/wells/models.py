@@ -352,29 +352,6 @@ class DrillingMethodCode(CodeTableModel):
         return self.description
 
 
-# TODO: Remove this class - now using registries.something
-# Not a Code table, but a representative sample of data to support search
-class DrillingCompany(AuditModel):
-    """
-    Companies who perform drilling.
-    """
-    drilling_company_guid = models.UUIDField(
-        primary_key=True, default=uuid.uuid4, editable=False)
-    drilling_company_code = models.CharField(
-        max_length=10, blank=True, null=True)
-    name = models.CharField(max_length=200)
-
-    class Meta:
-        db_table = 'drilling_company'
-        verbose_name_plural = 'Drilling Companies'
-
-    db_table_comment = ('Company or organization that was associated with the individual that conducted '
-                        'the work on the well.')
-
-    def __str__(self):
-        return self.name
-
-
 class LandDistrictCode(CodeTableModel):
     """
     Lookup of Legal Land Districts.
@@ -803,10 +780,6 @@ class Well(AuditModelStructure):
         db_comment='The start date of when the well was decommissioned.')
     decommission_end_date = models.DateField(
         null=True, verbose_name='Decommission Date')
-
-    drilling_company = models.ForeignKey(DrillingCompany, db_column='drilling_company_guid',
-                                         on_delete=models.PROTECT, blank=True, null=True,
-                                         verbose_name='Drilling Company')
 
     well_identification_plate_attached = models.CharField(
         max_length=500, blank=True, null=True, verbose_name='Well Identification Plate Is Attached',
