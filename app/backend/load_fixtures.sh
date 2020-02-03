@@ -41,6 +41,7 @@ if [ "${COMMAND}" == "all" ]
 then
 	for f in ${FIXTURES[@]}
 	do
+		echo python manage.py loaddata $f
 		python manage.py loaddata $f
 	done
 else

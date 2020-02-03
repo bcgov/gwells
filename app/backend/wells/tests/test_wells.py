@@ -27,7 +27,7 @@ from gwells.roles import roles_to_groups, WELLS_VIEWER_ROLE, WELLS_EDIT_ROLE
 
 
 class TestWellLocationsSearch(APITestCase):
-    fixtures = ['gwells-codetables', 'wellsearch-codetables', 'wellsearch']
+    fixtures = ['gwells-codetables', 'wellsearch-codetables', 'wellsearch', 'registries', 'registries-codetables']
 
     def test_well_locations(self):
         # Basic test to ensure that the well location search returns a non-error response
@@ -35,9 +35,28 @@ class TestWellLocationsSearch(APITestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    def test_old_drilling_company_filter(self):
+        # Make sure old drilling_company query string filtering still works
+        url = reverse('well-locations-v1')
+        response = self.client.get(url, {
+            'drilling_company': 'bf5d31ea-8a5a-4363-8a5e-6c00eed03058'
+        })
+        print(response.data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+
+    def test_new_company_of_person_responsible_filter(self):
+        # Make sure new company_of_person_responsible query string filtering
+        # works the same as filtering by drilling_company
+        url = reverse('well-locations-v1')
+        response = self.client.get(url, {
+            'company_of_person_responsible': 'bf5d31ea-8a5a-4363-8a5e-6c00eed03058'
+        })
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
 
 class TestWellHistory(APITestCase):
-    fixtures = ['gwells-codetables', 'wellsearch-codetables', 'wellsearch']
+    fixtures = ['gwells-codetables', 'wellsearch-codetables', 'wellsearch', 'registries', 'registries-codetables']
 
     def setUp(self):
         roles = [WELLS_VIEWER_ROLE, WELLS_EDIT_ROLE]

@@ -179,6 +179,58 @@
       "expiry_date": "9999-12-31T23:59:59Z",
       "email": "twodrillpumpcompany@fakeeemail.com"
     }
+  } , {
+    "model": "registries.organization",
+    "pk": "f606669c-a60c-422d-859a-fdc54278d9b0",
+    "fields": {
+      "create_user": "PROXY_WELLS",
+      "create_date": "2008-09-12T18:14:53Z",
+      "update_user": "",
+      "update_date": "2016-12-10T23:42:51Z",
+      "name": "Flotonic Waterwell",
+      "province_state": "BC",
+      "effective_date": "2018-10-12T18:20:35.936Z",
+      "expiry_date": "9999-12-31T23:59:59Z"
+    }
+  }, {
+    "model": "registries.organization",
+    "pk": "1237493e-ebd8-41e2-83ca-0a600da00bc9",
+    "fields": {
+      "create_user": "WELLS",
+      "create_date": "2003-08-13T15:55:14Z",
+      "update_user": "PROXY_WELLS",
+      "update_date": "2008-08-28T22:10:40Z",
+      "name": "Bezal Drilling Co",
+      "province_state": "BC",
+      "effective_date": "2018-10-12T18:20:35.936Z",
+      "expiry_date": "9999-12-31T23:59:59Z"
+    }
+  }, {
+    "model": "registries.organization",
+    "pk": "69f5459a-5ec1-49e1-94b6-58b0eb90b368",
+    "fields": {
+      "create_user": "WELLS",
+      "create_date": "2003-08-13T15:55:14Z",
+      "update_user": "WELLS",
+      "update_date": "2006-12-14T17:28:28Z",
+      "name": "Ginkogene Aquamasters",
+      "province_state": "BC",
+      "effective_date": "2018-10-12T18:20:35.936Z",
+      "expiry_date": "9999-12-31T23:59:59Z"
+    }
+  }, {
+    "model": "registries.organization",
+    "pk": "bf5d31ea-8a5a-4363-8a5e-6c00eed03058",
+    "fields": {
+      "create_user": "WELLS",
+      "create_date": "2003-08-13T15:55:14Z",
+      "update_user": "WELLS",
+      "update_date": "2006-12-14T17:28:28Z",
+      "name": "Industrial Drillers",
+      "province_state": "BC",
+      "effective_date": "2018-10-12T18:20:35.936Z",
+      "expiry_date": "9999-12-31T23:59:59Z"
+    }
   }, {
     "model": "registries.person",
     "pk": "257aa7c0-6f15-47e8-8217-ae7f749b5180",

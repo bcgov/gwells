@@ -188,15 +188,12 @@ class Command(BaseCommand):
  decommission_reason, decommission_method_code, decommission_details, decommission_sealant_material,
  decommission_backfill_material,
  comments,
- drilling_company.drilling_company_code,
  ems,
  registries_person.surname as person_responsible,
  registries_organization.name as company_of_person_responsible,
  aquifer_id, boundary_effect_code
  from well
  left join well_subclass_code as wsc on wsc.well_subclass_guid = well.well_subclass_guid
- left join drilling_company on
- drilling_company.drilling_company_guid = well.drilling_company_guid
  left join registries_person on
  registries_person.person_guid = well.person_responsible_guid
  left join registries_organization on

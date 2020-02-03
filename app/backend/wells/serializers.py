@@ -478,6 +478,8 @@ class WellDetailSerializer(AuditModelSerializer):
     screen_opening = serializers.ReadOnlyField(source='screen_opening.description')
     screen_bottom = serializers.ReadOnlyField(source='screen_bottom.description')
     alternative_specs_submitted = serializers.ReadOnlyField(source='get_alternative_specs_submitted_display')
+    drilling_company = serializers.ReadOnlyField(source='company_of_person_responsible.org_guid')
+    company_of_person_responsible = serializers.ReadOnlyField(source='company_of_person_responsible.org_guid')
 
     submission_work_dates = serializers.SerializerMethodField()
 
@@ -537,9 +539,9 @@ class WellDetailSerializer(AuditModelSerializer):
             "decommission_start_date",
             "decommission_end_date",
             "person_responsible",
-            "company_of_person_responsible",
             "driller_name",
-            "drilling_company",
+            "drilling_company", # old name for company_of_person_responsible
+            "company_of_person_responsible",
             "consultant_name",
             "consultant_company",
             "well_identification_plate_attached",
@@ -776,6 +778,10 @@ class WellListSerializer(serializers.ModelSerializer):
     """Serializes a well record"""
 
     legal_pid = serializers.SerializerMethodField()
+    drilling_company = serializers.ReadOnlyField(
+        source='company_of_person_responsible.org_guid')
+    company_of_person_responsible = serializers.ReadOnlyField(
+        source='company_of_person_responsible.org_guid')
 
     def get_legal_pid(self, instance):
         if instance.legal_pid is None:
@@ -811,7 +817,8 @@ class WellListSerializer(serializers.ModelSerializer):
             "alteration_end_date",
             "decommission_start_date",
             "decommission_end_date",
-            "drilling_company",
+            "drilling_company", # old name of company_of_person_responsible
+            "company_of_person_responsible",
             "well_identification_plate_attached",
             "id_plate_attached_by",
             "water_supply_system_name",
@@ -927,7 +934,7 @@ class WellExportSerializer(WellListSerializer):
     well_status = serializers.SlugRelatedField(read_only=True, slug_field='description')
     licenced_status = serializers.SlugRelatedField(read_only=True, slug_field='description')
     land_district = serializers.SlugRelatedField(read_only=True, slug_field='name')
-    drilling_company = serializers.SlugRelatedField(read_only=True, slug_field='name')
+    drilling_company = serializers.CharField(read_only=True, source='company_of_person_responsible.name')
     ground_elevation_method = serializers.SlugRelatedField(read_only=True,
                                                            slug_field='description')
     surface_seal_material = serializers.SlugRelatedField(read_only=True, slug_field='description')
@@ -1064,4 +1071,3 @@ class WellLithologySerializer(serializers.ModelSerializer):
                 "longitude",
                 "lithologydescription_set"
             )
-
