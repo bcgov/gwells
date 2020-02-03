@@ -61,7 +61,7 @@ def remove_nb_ns_certs(apps, schema_editor):
     AccreditedCertificateCode = apps.get_model('registries', 'AccreditedCertificateCode')
 
     AccreditedCertificateCode.objects.get(acc_cert_guid=NB_CERT_GUID).delete()
-    AccreditedCertificateCode.objects.get(acc_cert_guid=NB_CERT_GUID).delete()
+    AccreditedCertificateCode.objects.get(acc_cert_guid=NS_CERT_GUID).delete()
 
     CertifyingAuthorityCode.objects.get(cert_auth_code='NB').delete()
     CertifyingAuthorityCode.objects.get(cert_auth_code='NS').delete()

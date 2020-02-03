@@ -48,9 +48,7 @@ class CodeFixture():
 
     def _process_fixture_file(self, fixture_path):
         with open(fixture_path, 'r') as json_data:
-            data = json.load(json_data)
-            for item in data:
-                yield item
+            return json.load(json_data)
 
     def __init__(self, fixture_path):
         self.fixture = self._process_fixture_file(fixture_path)
