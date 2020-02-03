@@ -369,7 +369,7 @@ class ApplicationAdminSerializer(AuditModelSerializer):
     # valid values.
     primary_certificate = AccreditedCertificateCodeSerializer(required=False)
     primary_certificate_no = serializers.CharField(required=False)
-    proof_of_age = ProofOfAgeCodeSerializer(required=False)
+    proof_of_age = ProofOfAgeCodeSerializer(required=True)
     removal_reason = RegistriesRemovalReasonSerializer(
         required=False, allow_null=True)
     current_status = ApplicationStatusCodeSerializer(required=False)

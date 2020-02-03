@@ -537,7 +537,7 @@ class RegistriesApplication(AuditModel):
         db_column='registries_proof_of_age_code',
         on_delete=models.PROTECT,
         verbose_name="Proof of age.",
-        null=True
+        null=False
     )
     registrar_notes = models.CharField(
         max_length=255,
