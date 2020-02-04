@@ -79,11 +79,14 @@ class CasingSummarySerializer(serializers.ModelSerializer):
 
 
 class CasingSerializer(serializers.ModelSerializer):
+    length_required = serializers.BooleanField(required=False)
+
     class Meta:
         model = Casing
         fields = (
             'start',
             'end',
+            'length_required',
             'diameter',
             'casing_code',
             'casing_material',
@@ -91,10 +94,23 @@ class CasingSerializer(serializers.ModelSerializer):
             'wall_thickness'
         )
         extra_kwargs = {
-            'start': {'required': True},
-            'end': {'required': True},
             'diameter': {'required': True}
         }
+
+    def validate(self, data):
+        """
+        Check that start and end are set when the `requiredLength` parameter is true.
+        """
+        if data.get('length_required', True):
+            errors = {}
+            if not data.get('start'):
+                errors['start'] = 'This field is required.'
+            if not data.get('end'):
+                errors['end'] = 'This field is required.'
+            if len(errors) != 0:
+                raise serializers.ValidationError(errors)
+        del data['length_required']
+        return data
 
 
 class CasingStackerSerializer(serializers.ModelSerializer):

@@ -28,6 +28,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <table class="table table-sm">
         <thead>
           <tr>
+            <th class="font-weight-normal">Unknown Length</th>
             <th class="font-weight-normal">From ft (bgl)</th>
             <th class="font-weight-normal">To ft (bgl)</th>
             <th class="font-weight-normal">Casing Type</th>
@@ -40,28 +41,37 @@ Licensed under the Apache License, Version 2.0 (the "License");
         </thead>
         <tbody>
           <tr v-for="(casing, index) in casingsData" :key="casing.id">
-            <td class="pb-0">
+            <td>
+              <b-form-checkbox
+                v-model="casing.length_required"
+                inline
+                class="mr-0 mt-2"
+                @change="toggleCasingLengthRequired(index)"/>
+            </td>
+            <td>
               <form-input
-                group-class="my-0"
+                group-class="mt-1 mb-0"
                 :id="'casingFrom_' + index"
                 type="number"
                 v-model="casing.start"
+                :disabled="!casing.length_required"
                 :errors="getCasingError(index).start"
                 :loaded="getFieldsLoaded(index).start"/>
             </td>
-            <td class="pb-0">
+            <td>
               <form-input
-                group-class="my-0"
+                group-class="mt-1 mb-0"
                 :id="'casingTo_' + index"
                 type="number"
                 v-model="casing.end"
+                :disabled="!casing.length_required"
                 :errors="getCasingError(index).end"
                 :loaded="getFieldsLoaded(index).end"/>
             </td>
-            <td class="pb-0">
+            <td>
               <b-form-group
                 :id="'casingCode_' + index"
-                class="my-0"
+                class="mt-1 mb-0"
                 :aria-describedby="`casingCodeInvalidFeedback${index}`">
                 <b-form-select
                     v-model="casing.casing_code"
@@ -80,10 +90,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 </b-form-invalid-feedback>
               </b-form-group>
             </td>
-            <td class="pb-0">
+            <td>
               <b-form-group
                 :id="'casingMaterial_' + index"
-                class="my-0"
+                class="mt-1 mb-0"
                 :aria-describedby="`casingMaterialInvalidFeedback${index}`">
                 <b-form-select
                     v-model="casing.casing_material"
@@ -102,26 +112,26 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 </b-form-invalid-feedback>
               </b-form-group>
             </td>
-            <td class="pb-0">
+            <td>
               <form-input
-                group-class="my-0"
+                group-class="mt-1 mb-0"
                 :id="'casingDiameter_' + index"
                 type="number"
                 v-model="casing.diameter"
                 :errors="getCasingError(index).diameter"
                 :loaded="getFieldsLoaded(index).diameter"/>
             </td>
-            <td class="pb-0">
+            <td>
               <form-input
-                group-class="my-0"
+                group-class="mt-1 mb-0"
                 :id="'casingWallThickness_' + index"
                 type="number"
                 v-model="casing.wall_thickness"
                 :errors="getCasingError(index).wall_thickness"
                 :loaded="getFieldsLoaded(index).wall_thickness"/>
             </td>
-            <td class="my-0">
-              <b-form-group :id="'casingDriveShoe_' + index">
+            <td>
+              <b-form-group :id="'casingDriveShoe_' + index" class="mt-1 mb-0">
                 <b-form-select
                   v-model="casing.drive_shoe_status"
                   value-field="drive_shoe_code"
@@ -130,7 +140,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   :errors="errors['drive_shoe_status']"
                   :loaded="fieldsLoaded['drive_shoe_status']">
                   <template slot="first">
-                    <option value="" disabled>Select drive shoe</option>
+                    <option value="" enabled>Select drive shoe</option>
                   </template>
                 </b-form-select>
               </b-form-group>
@@ -162,7 +172,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 
 <script>
+import Vue from 'vue'
 import { mapGetters } from 'vuex'
+import { omit } from 'lodash'
+
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 export default {
   name: 'Casings',
@@ -207,7 +220,9 @@ export default {
         start: '',
         end: '',
         casing_code: '',
-        casing_material: ''
+        casing_material: '',
+        drive_shoe_status: '',
+        length_required: true
       }
     },
     removeRowByIndex (index) {
@@ -222,6 +237,11 @@ export default {
       } else {
         this.removeRowByIndex(index)
       }
+    },
+    toggleCasingLengthRequired (index) {
+      const instance = this.casingsData[index]
+      instance.length_required = !instance.length_required
+      Vue.set(this.casingsData, index, instance)
     },
     getCasingError (index) {
       if (this.errors && 'casing_set' in this.errors && index in this.errors['casing_set']) {
@@ -244,12 +264,16 @@ export default {
     focusRemoveModal () {
       // Focus the "cancel" button in the confirm remove popup.
       this.$refs.cancelRemoveBtn.focus()
+    },
+    casingIsEmpty (casing) {
+      const fieldsToTest = omit(casing, 'length_required')
+      return Object.values(fieldsToTest).every((x) => !x)
     }
   },
   computed: {
     ...mapGetters(['codes']),
-    computedCasings: function () {
-      return Object.assign({}, this.casingsData)
+    computedCasings () {
+      return [...this.casingsData]
     }
   },
   watch: {
@@ -258,13 +282,10 @@ export default {
       handler: function (n, o) {
         let casings = []
         this.casingsData.forEach((d) => {
-          if (!Object.values(d).every(x => (x === ''))) {
+          if (!this.casingIsEmpty(d)) {
             casings.push(d)
           }
         })
-        if (this.pageLoaded && this.saveDisabled) {
-          casings.push(this.emptyObject())
-        }
         this.$emit('update:casings', casings)
       }
     }
@@ -276,7 +297,7 @@ export default {
         this.addRow()
       }
     } else {
-      Object.assign(this.casingsData, this.casings)
+      this.casingsData.push(...this.casings)
       this.addRow()
     }
   },
