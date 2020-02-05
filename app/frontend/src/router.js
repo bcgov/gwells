@@ -8,6 +8,7 @@ import { store } from './store/index.js'
 import AquiferSearch from '@/aquifers/components/Search'
 import AquiferView from '@/aquifers/components/View'
 import AquiferNew from '@/aquifers/components/New'
+import BulkAquiferUpload from '@/aquifers/components/BulkUpload'
 
 import WellSearch from '@/wells/views/WellSearch.vue'
 import WellDetail from '@/wells/views/WellDetail.vue'
@@ -54,7 +55,18 @@ const router = new Router({
       path: '/aquifers/:id/edit',
       component: AquiferView,
       name: 'aquifers-edit',
+      beforeEnter: AuthGuard,
       props: { edit: true },
+      meta: {
+        edit: true,
+        app: 'aquifers'
+      }
+    },
+    {
+      path: '/aquifers/bulk',
+      component: BulkAquiferUpload,
+      name: 'BulkAquiferUpload',
+      beforeEnter: AuthGuard,
       meta: {
         edit: true,
         app: 'aquifers'

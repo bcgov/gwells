@@ -71,6 +71,10 @@ urlpatterns = [
     url(api_path_prefix() + r'/aquifers/(?P<aquifer_id>[0-9]+)/geometry$',
         never_cache(views.SaveAquiferGeometry.as_view()), name='aquifer-save-geometry'),
 
+    # Bulk (aquifer well association)
+    url(r'api/v2/aquifers/bulk$',
+        never_cache(views.BulkAquiferWellAssociation.as_view()), name='bulk-aquifer-well-association'),
+
     url(api_path_prefix() + r'/aquifers/sections$',
         cache_page(CACHE_TTL)(
             views.AquiferResourceSectionListAPIView.as_view()),

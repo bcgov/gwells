@@ -41,8 +41,8 @@ const ApiService = {
   get (resource, record) {
     return axios.get(`${resource}/${record}`)
   },
-  post (resource, params) {
-    return axios.post(resource, params)
+  post (resource, params, options) {
+    return axios.post(resource, params, options)
   },
   patch (resource, record, params) {
     return axios.patch(`${resource}/${record}`, params)
