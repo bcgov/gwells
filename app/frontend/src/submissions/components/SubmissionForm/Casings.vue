@@ -259,7 +259,7 @@ export default {
       let keys = Object.keys(row)
       if (keys.length === 0) return false
       // Check that all fields are not empty.
-      return !keys.every((key) => !row[key])
+      return !this.casingIsEmpty(row)
     },
     focusRemoveModal () {
       // Focus the "cancel" button in the confirm remove popup.
