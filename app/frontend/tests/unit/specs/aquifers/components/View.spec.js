@@ -15,7 +15,7 @@
 import { mount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
 import axios from 'axios'
-import { merge } from 'lodash'
+import { cloneDeep, merge } from 'lodash'
 
 import auth from '@/common/store/auth.js'
 import aquiferStore from '@/aquifers/store/index.js'
@@ -43,13 +43,13 @@ const aquiferFixture = {
 }
 
 describe('View Component', () => {
-  const fetch = jest.fn()
+  let loadAquifer = null
 
   const component = (options, storeState = {}) => {
     const store = new Vuex.Store({
       modules: { auth, aquiferStore, documentState }
     })
-    store.replaceState(merge(store.state, storeState))
+    store.replaceState(merge(cloneDeep(store.state), cloneDeep(storeState)))
 
     return mount(ViewComponent, {
       localVue,
@@ -68,16 +68,18 @@ describe('View Component', () => {
       },
       stubs: ['router-link', 'aquifer-documents', 'aquifer-form', 'b-popover'],
       methods: {
-        fetch,
+        fetch: jest.fn(),
         fetchWells: jest.fn(),
         fetchFiles: jest.fn(),
-        navigateToView: jest.fn()
+        navigateToView: jest.fn(),
+        loadAquifer
       },
       ...options
     })
   }
 
   beforeEach(() => {
+    loadAquifer = jest.fn()
     axios.get.mockResolvedValue({})
   })
 
@@ -85,7 +87,7 @@ describe('View Component', () => {
     const wrapper = component()
 
     wrapper.vm.$nextTick(() => {
-      expect(fetch).toHaveBeenCalled()
+      expect(loadAquifer).toHaveBeenCalled()
       done()
     })
   })
@@ -93,7 +95,7 @@ describe('View Component', () => {
   describe('View mode', () => {
     it('matches the snapshot', () => {
       const wrapper = component({
-        propsData: { edit: true }
+        propsData: { edit: false }
       }, {
         aquiferStore: {
           view: {
