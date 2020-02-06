@@ -12,8 +12,6 @@
     limitations under the License.
 */
 
-// wellTagNumber = well_tag_number
-
 <template>
   <div>
     <b-card class="container p-1" v-if="userRoles.aquifers.edit">
