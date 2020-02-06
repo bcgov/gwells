@@ -264,50 +264,6 @@
                                         }
                                     },
                                     {
-                                        "name": "FDW_USER",
-                                        "valueFrom": {
-                                            "secretKeyRef": {
-                                                "key": "fdw-database-user",
-                                                "name": "${DATABASE_SERVICE_NAME}"
-                                            }
-                                        }
-                                    },
-                                    {
-                                        "name": "FDW_PASS",
-                                        "valueFrom": {
-                                            "secretKeyRef": {
-                                                "key": "fdw-database-password",
-                                                "name": "${DATABASE_SERVICE_NAME}"
-                                            }
-                                        }
-                                    },
-                                    {
-                                        "name": "FDW_FOREIGN_SERVER",
-                                        "valueFrom": {
-                                            "secretKeyRef": {
-                                                "key": "fdw-database-server",
-                                                "name": "${DATABASE_SERVICE_NAME}"
-                                            }
-                                        }
-                                    },
-                                    {
-                                        "name": "FDW_FOREIGN_SCHEMA",
-                                        "valueFrom": {
-                                            "secretKeyRef": {
-                                                "key": "fdw-database-schema",
-                                                "name": "${DATABASE_SERVICE_NAME}"
-                                            }
-                                        }
-                                    },
-                                    {
-                                        "name": "FDW_NAME",
-                                        "value": "wells_oradb"
-                                    },
-                                    {
-                                        "name": "FDW_SCHEMA",
-                                        "value": "wells"
-                                    },
-                                    {
                                         "name": "PGCRYPTO_EXTENSION",
                                         "value": "Y"
                                     },
