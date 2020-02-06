@@ -43,7 +43,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <tr v-for="(casing, index) in casingsData" :key="casing.id">
             <td>
               <b-form-checkbox
-                v-model="casing.length_required"
+                :checked="!casing.length_required"
                 inline
                 class="mr-0 mt-2"
                 @change="toggleCasingLengthRequired(index)"/>
@@ -217,8 +217,8 @@ export default {
     },
     emptyObject () {
       return {
-        start: '',
-        end: '',
+        start: null,
+        end: null,
         casing_code: '',
         casing_material: '',
         drive_shoe_status: '',
@@ -297,7 +297,9 @@ export default {
         this.addRow()
       }
     } else {
-      this.casingsData.push(...this.casings)
+      this.casings.forEach((casing) => {
+        this.casingsData.push({ ...casing })
+      })
       this.addRow()
     }
   },

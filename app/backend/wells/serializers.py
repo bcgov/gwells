@@ -94,22 +94,38 @@ class CasingSerializer(serializers.ModelSerializer):
             'wall_thickness'
         )
         extra_kwargs = {
+            'start': {'required': False},
+            'end': {'required': False},
             'diameter': {'required': True}
         }
+
+    def to_representation(self, instance):
+        """
+        Fetch many details related to a aquifer, used to generate its' summary page.
+        """
+
+        ret = super().to_representation(instance)
+        ret['length_required'] = instance.start is not None and instance.end is not None
+        return ret
 
     def validate(self, data):
         """
         Check that start and end are set when the `requiredLength` parameter is true.
         """
-        if data.get('length_required', True):
+        data = super().validate(data)
+
+        if bool(data.get('length_required', True)):
             errors = {}
-            if not data.get('start'):
+            start = data.get('start', None)
+            end = data.get('end', None)
+            if start == '' or start is None:
                 errors['start'] = 'This field is required.'
-            if not data.get('end'):
+            if end == '' or end is None:
                 errors['end'] = 'This field is required.'
             if len(errors) != 0:
                 raise serializers.ValidationError(errors)
-        del data['length_required']
+        if 'length_required' in data:
+            del data['length_required']
         return data
 
 
