@@ -466,7 +466,7 @@ import SingleAquiferMap from './SingleAquiferMap.vue'
 import MapLoadingSpinner from './MapLoadingSpinner.vue'
 import ChangeHistory from '@/common/components/ChangeHistory.vue'
 import { mapActions, mapGetters, mapState, mapMutations } from 'vuex'
-import { sumBy, orderBy, groupBy, range } from 'lodash'
+import { sumBy, orderBy, groupBy, range, cloneDeep } from 'lodash'
 import PieChart from './PieChart.vue'
 import * as Sentry from '@sentry/browser'
 
@@ -681,9 +681,10 @@ export default {
       this.clearUploadShapeFileMessage()
       this.clearUploadFilesMessage()
       this.fieldErrors = {}
-      let writableRecord = JSON.parse(JSON.stringify(this.form))
+      let writableRecord = cloneDeep(this.form)
       delete writableRecord.licence_details
       delete writableRecord.geom
+      delete writableRecord.area
       return ApiService.patch('aquifers', this.id, writableRecord)
         .then(() => {
           this.showSaveSuccess = true

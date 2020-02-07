@@ -15,7 +15,7 @@
 import { mount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
 import axios from 'axios'
-import { cloneDeep, merge } from 'lodash'
+import { cloneDeep, merge, omit } from 'lodash'
 
 import auth from '@/common/store/auth.js'
 import aquiferStore from '@/aquifers/store/index.js'
@@ -191,7 +191,7 @@ describe('View Component', () => {
 
         wrapper.vm.save()
 
-        expect(axios.patch).toHaveBeenCalledWith('aquifers/10', aquiferFixture)
+        expect(axios.patch).toHaveBeenCalledWith('aquifers/10', omit(aquiferFixture, 'area'))
       })
     })
   })
