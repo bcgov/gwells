@@ -106,7 +106,7 @@
             {{hasBeenValidated ? 'Submit' : 'Validate Data'}}
           </b-button>
           <b-button
-            v-if="csvParsedSuccessfully || showSaveSuccess"
+            v-if="csvParsedSuccessfully || showSaveSuccess || errors.length > 0"
             variant="default"
             @click="restart">
             {{showSaveSuccess ? 'Start again' : 'Reset'}}
@@ -365,7 +365,7 @@ export default {
           commit: true
         }
       }
-      ApiService.post('aquifers/bulk', data, options)
+      ApiService.post('bulk/well-aquifer-correlation', data, options)
         .then(this.handleSaveSuccess)
         .catch(this.handleSaveError)
     },

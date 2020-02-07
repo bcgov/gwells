@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "50f250b3-310d-4bf4-9197-0b5c0e9a86d0",
+		"_postman_id": "ee6bd302-96cf-4fb4-a2f1-a936cb47eb90",
 		"name": "GWELLS Aquifers v2",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -604,15 +604,15 @@
 							"raw": "[\n\t{\n\t\t\"aquiferId\": 9999,\n\t\t\"wellTagNumbers\": [9999,9998,9997]\n\t}\n]"
 						},
 						"url": {
-							"raw": "{{base_url}}/api/v2/aquifers/bulk?format=json",
+							"raw": "{{base_url}}/api/v2/bulk/well-aquifer-correlation?format=json",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
 								"v2",
-								"aquifers",
-								"bulk"
+								"bulk",
+								"well-aquifer-correlation"
 							],
 							"query": [
 								{
@@ -671,15 +671,15 @@
 							"raw": "[\n\t{\n\t\t\"aquiferId\": {{bulk_aquifer_id}},\n\t\t\"wellTagNumbers\": [{{bulk_well_tag_number}}]\n\t}\n]"
 						},
 						"url": {
-							"raw": "{{base_url}}/api/v2/aquifers/bulk?format=json",
+							"raw": "{{base_url}}/api/v2/bulk/well-aquifer-correlation?format=json",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
 								"v2",
-								"aquifers",
-								"bulk"
+								"bulk",
+								"well-aquifer-correlation"
 							],
 							"query": [
 								{
@@ -733,15 +733,15 @@
 							"raw": "[\n\t{\n\t\t\"aquiferId\": {{bulk_aquifer_id}},\n\t\t\"wellTagNumbers\": [{{bulk_well_tag_number}}]\n\t}\n]"
 						},
 						"url": {
-							"raw": "{{base_url}}/api/v2/aquifers/bulk?format=json&commit=",
+							"raw": "{{base_url}}/api/v2/bulk/well-aquifer-correlation?format=json&commit=",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
 								"v2",
-								"aquifers",
-								"bulk"
+								"bulk",
+								"well-aquifer-correlation"
 							],
 							"query": [
 								{
