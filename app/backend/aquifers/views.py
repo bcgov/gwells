@@ -633,7 +633,7 @@ class BulkAquiferWellAssociation(APIView):
     """
     Changes multiple aquifers well associations all at once
     """
-    permission_classes = (HasAquiferEditRole, WellsEditPermissions)
+    permission_classes = (HasAquiferEditRole, )
 
     @swagger_auto_schema(auto_schema=None)
     @transaction.atomic
