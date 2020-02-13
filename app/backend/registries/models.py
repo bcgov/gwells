@@ -475,7 +475,7 @@ class ProofOfAgeCode(CodeTableModel):
     List of documents that can be used to indentify (the age) of an application
     """
     code = models.CharField(
-        primary_key=True, max_length=10, editable=False, db_column='registries_proof_of_age_code',
+        primary_key=True, max_length=15, editable=False, db_column='registries_proof_of_age_code',
         db_comment=('List of valid options for what documentation the ministry staff reviewed to verify the '
                     'applicants age to be over 19. I.e. Drivers, Birth, Passport.'))
     description = models.CharField(
