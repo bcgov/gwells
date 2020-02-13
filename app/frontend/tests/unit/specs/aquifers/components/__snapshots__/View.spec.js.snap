@@ -23,12 +23,22 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
         </router-link-stub>
       </li>
       <li
+        class="breadcrumb-item"
+      >
+        <router-link-stub
+          class=""
+          target="_self"
+        >
+          Aquifer 4 Summary
+        </router-link-stub>
+      </li>
+      <li
         class="breadcrumb-item active"
       >
         <span
           aria-current="location"
         >
-          Aquifer Summary
+          Edit Aquifer
         </span>
       </li>
     </ol>
@@ -46,6 +56,8 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
     >
       <!---->
       <!---->
+      <!---->
+       
       <!---->
        
       <!---->
@@ -132,7 +144,7 @@ exports[`View Component View mode matches the snapshot 1`] = `
   </div>
    
   <div
-    class="card container container-wide p-0 card-container pb-5 p-4"
+    class="card container container-wide p-0 card-container pb-5"
   >
     <!---->
     <!---->
@@ -155,33 +167,681 @@ exports[`View Component View mode matches the snapshot 1`] = `
        
       <!---->
        
+      <!---->
+       
       <div
         class="container-fluid"
       >
+        <!---->
+         
+        <!---->
+         
+        <!---->
+         
         <div
-          class="row border-bottom mb-3 pb-2"
+          class="row"
         >
           <div
-            class="col"
+            class="aquifer-detail col-md-12 col-lg-5 col-12"
           >
-            <h4>
-              Aquifer 4 Summary - Edit
-            </h4>
+            <div
+              class="row"
+            >
+              <div
+                class="pt-0 pl-4 pb-4 pr-4 col"
+              >
+                <div
+                  class="d-flex justify-content-between align-items-center"
+                >
+                  <h4
+                    class="color-grey main-title mt-4"
+                  >
+                    Aquifer 4 Summary
+                  </h4>
+                   
+                  <div>
+                    <!---->
+                     
+                    <a
+                      class="ml-2 print-button fa fa-print fa-lg d-print-none"
+                      href="#"
+                      title="Print"
+                    />
+                  </div>
+                   
+                  <hr
+                    class="m-0 mt-2"
+                  />
+                </div>
+              </div>
+            </div>
+             
+            <div
+              class="row"
+            >
+              <div
+                class="pl-4 pr-4 aquifer-main-information-list col-sm-12 col-12"
+              >
+                <div
+                  class="row"
+                >
+                  <div
+                    class="col-md-3 col-lg-6 col-6"
+                  >
+                    Aquifer number
+                  </div>
+                   
+                  <div
+                    class="col-md-3 col-lg-6 col-6"
+                    id="aquifer-view-number"
+                  >
+                    4
+                  </div>
+                   
+                  <div
+                    class="col-md-3 col-lg-6 col-6"
+                  >
+                    Year of mapping
+                  </div>
+                   
+                  <div
+                    class="aquifer-mapping-year col-md-3 col-lg-6 col-6"
+                  >
+                    1993
+                  </div>
+                </div>
+                 
+                <div
+                  class="row"
+                >
+                  <div
+                    class="col-md-3 col-lg-6 col-6"
+                  >
+                    Aquifer name
+                  </div>
+                   
+                  <div
+                    class="col-md-3 col-lg-6 col-6"
+                    id="aquifer-view-name"
+                  >
+                    Aggasiz
+                  </div>
+                   
+                  <div
+                    class="col-md-3 col-lg-6 col-6"
+                  >
+                    Litho stratigraphic unit
+                  </div>
+                   
+                  <div
+                    class="col-md-3 col-lg-6 col-6"
+                  >
+                    Fraser River Sediments
+                  </div>
+                </div>
+                 
+                <div
+                  class="row"
+                >
+                  <div
+                    class="col-md-3 col-lg-6 col-6"
+                  >
+                    Descriptive location
+                  </div>
+                   
+                  <div
+                    class="col-md-3 col-lg-6 col-6"
+                  >
+                    Aggasiz/Sea Bird Island
+                  </div>
+                   
+                  <div
+                    class="col-md-3 col-lg-6 col-6"
+                  >
+                    Vulnerability
+                  </div>
+                   
+                  <div
+                    class="col-md-3 col-lg-6 col-6"
+                  >
+                    
+                  </div>
+                </div>
+                 
+                <div
+                  class="row"
+                >
+                  <div
+                    class="col-md-3 col-lg-6 col-6"
+                  >
+                    Material type
+                  </div>
+                   
+                  <div
+                    class="col-md-3 col-lg-6 col-6"
+                  >
+                    
+                  </div>
+                   
+                  <div
+                    class="col-md-3 col-lg-6 col-6"
+                  >
+                    Subtype
+                  </div>
+                   
+                  <div
+                    class="col-md-3 col-lg-6 col-6"
+                  >
+                    
+                  </div>
+                </div>
+                 
+                <div
+                  class="row"
+                >
+                  <div
+                    class="col-md-3 col-lg-6 col-6"
+                  >
+                    Quality concerns
+                  </div>
+                   
+                  <div
+                    class="col-md-3 col-lg-6 col-6"
+                  >
+                    
+                  </div>
+                   
+                  <div
+                    class="col-md-3 col-lg-6 col-6"
+                  >
+                    Productivity
+                  </div>
+                   
+                  <div
+                    class="col-md-3 col-lg-6 col-6"
+                  >
+                    
+                  </div>
+                </div>
+                 
+                <div
+                  class="row"
+                >
+                  <div
+                    class="col-md-3 col-lg-6 col-6"
+                  >
+                    Size (km²)
+                  </div>
+                   
+                  <div
+                    class="col-md-3 col-lg-6 col-6"
+                  >
+                    63.3
+                  </div>
+                   
+                  <div
+                    class="col-md-3 col-lg-6 col-6"
+                  >
+                    Demand
+                  </div>
+                   
+                  <div
+                    class="col-md-3 col-lg-6 col-6"
+                  >
+                    Low
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+           
+          <div
+            class="p-0 col-md-12 col-lg-7 col-12"
+            id="map-container"
+          >
+            <!---->
+             
+            <div
+              class="map"
+              id="map"
+            />
           </div>
         </div>
          
-        <aquifer-form-stub
-          fielderrors="[object Object]"
-          files="[object Object]"
-          record="[object Object]"
-          showid="true"
-        />
-         
-        <!---->
-         
-        <!---->
-         
-        <!---->
+        <div
+          class="row mt-5 aquifer-details"
+        >
+          <div
+            class="col-lg-6 col-xl-4 col-12"
+          >
+            <h5
+              class="mt-3 border-bottom pb-4 main-title"
+            >
+              Well Information
+            </h5>
+             
+            <ul
+              class="ml-0 mr-0 mt-4 mb-0 p-0 aquifer-information-list"
+            >
+              <div
+                class="aquifer-information-list-divider"
+              />
+               
+              <li>
+                <dt>
+                  Number of wells associated to the aquifer
+                </dt>
+                 
+                <dd
+                  class="m-0"
+                >
+                  <router-link-stub
+                    to="[object Object]"
+                  >
+                    
+                  
+                
+                  </router-link-stub>
+                </dd>
+              </li>
+               
+              <li>
+                <dt>
+                  Artesian wells
+                </dt>
+                 
+                <dd
+                  class="m-0"
+                >
+                  <router-link-stub
+                    to="[object Object]"
+                  >
+                    
+                   artesian wells in aquifer
+                
+                  </router-link-stub>
+                </dd>
+              </li>
+            </ul>
+             
+            <p>
+              <!---->
+            </p>
+             
+            <h5
+              class="mt-5 border-bottom pb-4 main-title"
+            >
+              Documentation
+            </h5>
+             
+            <aquifer-documents-stub
+              files="[object Object]"
+              id="4"
+            />
+          </div>
+           
+          <div
+            class="col-lg-6 col-xl-4 col-12"
+          >
+            <h5
+              class="mt-3 border-bottom pb-4 main-title"
+            >
+              Licensing Information
+            </h5>
+             
+            <div>
+              <p>
+                
+              The licensing summaries should be considered estimates. Due to complexities in the structure
+              of the licensing data, reported values should be confirmed through the
+              
+                <a
+                  class="d-print-url"
+                  href="https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&PosseObjectDef=o_ATIS_DocumentSearch&PosseMenuName=WS_Main"
+                  target="_blank"
+                >
+                  
+                e‑licensing portal
+                </a>
+                .
+            
+              </p>
+            </div>
+             
+            <ul
+              class="ml-0 mr-0 mt-4 mb-0 p-0 aquifer-information-list"
+            >
+              <div
+                class="aquifer-information-list-divider"
+              />
+               
+              <li>
+                <dt>
+                  Number of groundwater licences
+                </dt>
+                 
+                <dd
+                  class="m-0"
+                >
+                  
+                </dd>
+              </li>
+               
+              <li>
+                <dt>
+                  Water withdrawal volume (annual)
+                </dt>
+                 
+                <dd
+                  class="m-0"
+                >
+                  No information available.
+                </dd>
+              </li>
+            </ul>
+             
+            <!---->
+             
+            <table
+              aria-busy="false"
+              aria-colcount="0"
+              class="table b-table table-striped"
+              id="licenses"
+            >
+              <!---->
+              <!---->
+              <thead
+                class=""
+                role="rowgroup"
+              >
+                <!---->
+                <tr
+                  role="row"
+                />
+              </thead>
+              <!---->
+              <tbody
+                class=""
+                role="rowgroup"
+              >
+                <!---->
+                <!---->
+                <!---->
+              </tbody>
+            </table>
+             
+            <p>
+              <!---->
+            </p>
+             
+            <p>
+              
+            Licensing information is obtained from
+            the 
+              <a
+                class="d-print-url"
+                href="https://catalogue.data.gov.bc.ca/dataset/water-rights-licences-public"
+                target="_blank"
+              >
+                
+              Water Rights Licence - Public data layer
+            
+              </a>
+              .
+          
+            </p>
+             
+            <p>
+              
+            Unique licenses are counted once for each aquifer that they are associated with.
+          
+            </p>
+             
+            <p>
+              
+            The total licensed volume is counted once for each licence (the total volume may
+            be shared between wells if there are multiple wells in a licence). In cases where
+            specific volumes are licensed for multiple purposes, individual volumes are summed.
+          
+            </p>
+          </div>
+           
+          <div
+            class="knowledge-indicators col-lg-6 col-xl-4 col-12"
+          >
+            <h5
+              class="mt-3 border-bottom pb-4 main-title"
+            >
+              Knowledge Indicators
+            </h5>
+             
+            <ul
+              class="ml-0 mr-0 mb-0 mt-4 p-0 aquifer-information-list"
+            >
+              <div
+                class="aquifer-information-list-divider"
+              />
+               
+              <li>
+                <div>
+                  <dt
+                    class="text-right"
+                  >
+                    Advanced mapping
+                  </dt>
+                   
+                  <dd
+                    class="m-0"
+                  >
+                     
+                    <p
+                      class="m-0"
+                    >
+                      No information available.
+                    </p>
+                  </dd>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <dt
+                    class="text-right"
+                  >
+                    Artesian advisory
+                  </dt>
+                   
+                  <dd
+                    class="m-0"
+                  >
+                     
+                    <p
+                      class="m-0"
+                    >
+                      No information available.
+                    </p>
+                  </dd>
+                </div>
+              </li>
+              <li>
+                <div
+                  class="observational-wells"
+                >
+                  <dt
+                    class="text-right"
+                  >
+                    Observation wells
+                  </dt>
+                   
+                  <dd
+                    class="m-0"
+                  >
+                    <!---->
+                     
+                    <!---->
+                     
+                    <div>
+                      
+                    No information available.
+                  
+                    </div>
+                  </dd>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <dt
+                    class="text-right"
+                  >
+                    Numerical model
+                  </dt>
+                   
+                  <dd
+                    class="m-0"
+                  >
+                     
+                    <p
+                      class="m-0"
+                    >
+                      No information available.
+                    </p>
+                  </dd>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <dt
+                    class="text-right"
+                  >
+                    Pumping stress index
+                  </dt>
+                   
+                  <dd
+                    class="m-0"
+                  >
+                     
+                    <p
+                      class="m-0"
+                    >
+                      No information available.
+                    </p>
+                  </dd>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <dt
+                    class="text-right"
+                  >
+                    Water budget
+                  </dt>
+                   
+                  <dd
+                    class="m-0"
+                  >
+                     
+                    <p
+                      class="m-0"
+                    >
+                      No information available.
+                    </p>
+                  </dd>
+                </div>
+              </li>
+              <li>
+                <div
+                  class="water-quality-information"
+                >
+                  <dt
+                    class="text-right"
+                  >
+                    Water quality information
+                  </dt>
+                   
+                  <dd
+                    class="m-0"
+                  >
+                    <router-link-stub
+                      to="[object Object]"
+                    >
+                      
+                     wells with an EMS ID
+                  
+                    </router-link-stub>
+                  </dd>
+                </div>
+              </li>
+              <li>
+                <div
+                  class="aquifer-connected"
+                >
+                  <dt
+                    class="text-right"
+                  >
+                    Hydraulically connected (screening level)
+                  
+                    <i
+                      class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                      id="aquiferConnectedInfo"
+                      tabindex="0"
+                    />
+                     
+                    <b-popover-stub
+                      content="Inferred based on aquifer subtype - not field verified."
+                      target="aquiferConnectedInfo"
+                      triggers="hover focus"
+                    />
+                  </dt>
+                   
+                  <dd
+                    class="m-0"
+                  >
+                    Less likely
+                  </dd>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <dt
+                    class="text-right"
+                  >
+                    Groundwater Surface Water Interactions
+                  </dt>
+                   
+                  <dd
+                    class="m-0"
+                  >
+                     
+                    <p
+                      class="m-0"
+                    >
+                      No information available.
+                    </p>
+                  </dd>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <dt
+                    class="text-right"
+                  >
+                    Other information
+                  </dt>
+                   
+                  <dd
+                    class="m-0"
+                  >
+                     
+                    <p
+                      class="m-0"
+                    >
+                      No information available.
+                    </p>
+                  </dd>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
     <!---->

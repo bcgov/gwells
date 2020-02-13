@@ -464,10 +464,10 @@ export default {
         this[SET_CONSTRAIN_SEARCH](Boolean(query.constrain))
       }
       if (query.resources__section__code) {
-        this[SET_SELECTED_SECTIONS, query.resources__section__code.split(',').map(code => code.trim())]
+        this[SET_SELECTED_SECTIONS](query.resources__section__code.split(',').map(code => code.trim()))
       }
       if (query.match_any) {
-        this[SET_MATCH_ANY, Boolean(query.match_any)]
+        this[SET_MATCH_ANY](Boolean(query.match_any))
       }
     }
   },

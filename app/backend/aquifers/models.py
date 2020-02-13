@@ -539,6 +539,14 @@ def update_geom_simplified(sender, instance, **kwargs):
 
     instance.geom_simplified = geos_geom_simplified
 
+@receiver(pre_save, sender=Aquifer)
+def update_area(sender, instance, **kwargs):
+    area = None
+    if instance.geom:
+        area = instance.geom.area / 1_000_000 # convert m² km²
+
+    instance.area = area
+
 
 class AquiferResourceSection(BasicCodeTableModel):
     """
