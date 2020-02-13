@@ -7,6 +7,7 @@ from wells.serializers import CasingSummarySerializer, ScreenSerializer, LinerPe
 from submissions.serializers import WellStaffEditSubmissionSerializer
 from wells.stack import KEY_VALUE_LOOKUP, MANY_TO_MANY_LOOKUP
 from submissions.models import WELL_ACTIVITY_CODE_LEGACY
+from gwells.models.bulk import BulkWellAquiferCorrelationHistory
 
 # Fields to skip when we are looping through the list of FieldsProvided for each submission.
 # activity_submission = the field reference foreignkey to the submission
@@ -21,7 +22,24 @@ def get_well_history(well):
         'create_date': well.create_date
     }
 
-    submissions = ActivitySubmission.objects.filter(well=well.well_tag_number).order_by('filing_number')
+    submissions = ActivitySubmission.objects \
+        .filter(well=well.well_tag_number) \
+        .order_by('filing_number')
+    bulk_well_aquifer_correlation_history = BulkWellAquiferCorrelationHistory.objects \
+        .filter(well=well) \
+        .order_by('create_date')
+
+    history = []
+    history += get_well_submission_history(submissions)
+    history += get_well_bulk_well_aquifer_correlation_history(bulk_well_aquifer_correlation_history)
+
+    history.sort(key=get_history_date, reverse=True)
+
+    well_history['history'] = history
+
+    return well_history
+
+def get_well_submission_history(submissions):
     legacy_record = submissions.filter(well_activity_type=WELL_ACTIVITY_CODE_LEGACY).first()
 
     legacy_copy = None
@@ -68,11 +86,33 @@ def get_well_history(well):
 
         if len(history_item) > 0:
             history.append(history_item)
+    return history
 
-    well_history['history'] = history[::-1]  # we reverse the list to put newest edits at the top
+def get_well_bulk_well_aquifer_correlation_history(bulk_history):
+    history = []
+    for bulk_history_item in bulk_history:
+        to_aquifer_id = bulk_history_item.update_to_aquifer.aquifer_id
+        from_aquifer_id = None
+        if bulk_history_item.update_from_aquifer:
+            from_aquifer_id = bulk_history_item.update_from_aquifer.aquifer_id
 
-    return well_history
+        item = {
+            "diff": to_aquifer_id,
+            "prev": from_aquifer_id,
+            "type": 'aquifer',
+            "action": 'Added' if bulk_history_item.update_from_aquifer is None else 'Updated',
+            "user": bulk_history_item.create_user,
+            "date": bulk_history_item.create_date
+        }
 
+        history.append([item])
+    return history
+
+
+def get_history_date(history_items):
+    if len(history_items) > 0:
+        return history_items[0]['date']
+    return None
 
 # transforms data between different relatioship types
 def clean_attrs(obj, key):

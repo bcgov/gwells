@@ -105,7 +105,7 @@
             <div v-if="hasBeenValidated && !noUpdatesToPerform">
               <strong>Note:</strong>
               <ol>
-                <li><span class="change-color">orange</span> wells are being updated ({{}}) from a previous aquifer id (in <span class="remove-color">red</span>)</li>
+                <li><span class="change-color">orange</span> wells are being updated from a previous aquifer id (in <span class="remove-color">red</span>)</li>
                 <li><span class="new-color">green</span> wells are new correlations</li>
                 <li><span class="no-change-color">un-coloured</span> wells have no changes to their aquifer correlations</li>
               </ol>

@@ -19,7 +19,9 @@
 <!--              {{history_item[0].action}}-->
 <!--              {{history_item[0].type}}-->
               Edited this Well on
-              {{history_item[0].date | moment("MMMM Do YYYY [at] LT")}}
+              <time :datetime="history_item[0].date">
+                {{history_item[0].date | moment("MMMM Do YYYY [at] LT")}}
+              </time>
               <div
                 style="margin-left:20px; width: 75%;"
                 class="font-weight-light"
@@ -104,9 +106,9 @@ export default {
     }
   },
   methods: {
-    toggleShow () {
+    toggleShow (e) {
       this.showHistory = !this.showHistory
-      if (this.showHistory && !this.loading && !this.loaded) {
+      if (this.showHistory && !this.loading && (!this.loaded || e.ctrlKey)) {
         this.update()
       }
     },
