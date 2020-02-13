@@ -13,15 +13,31 @@
 */
 
 <template>
-  <div>
+  <b-container>
     <b-card>
-      <router-link to="/bulk/well-aquifer-correlation">Well Aquifer Correlation</router-link>
+      <div v-if="noPerm">
+        <b-alert show variant="danger" >
+          You do not have permission to make any bulk changes to Gwells.
+        </b-alert>
+        Return <router-link to="/">home</router-link>
+      </div>
+      <router-link v-if="perms.wellAquiferCorrelation" to="/bulk/well-aquifer-correlation">Well Aquifer Correlation</router-link>
     </b-card>
-  </div>
+  </b-container>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
+  computed: {
+    ...mapGetters(['userRoles']),
+    perms () {
+      return this.userRoles.bulk || {}
+    },
+    noPerm () {
+      return !Object.values(this.perms).every(x => x)
+    }
+  }
 }
 </script>
 <style>

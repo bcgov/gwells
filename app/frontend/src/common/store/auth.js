@@ -41,6 +41,9 @@ const auth = {
           },
           surveys: {
             edit: state.keycloak.hasRealmRole('surveys_edit')
+          },
+          bulk: {
+            wellAquiferCorrelation: state.keycloak.hasRealmRole('bulk_well_aquifer_correlation_upload')
           }
         }
       } else {

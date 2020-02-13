@@ -71,12 +71,7 @@ const router = new Router({
     {
       path: '/bulk/well-aquifer-correlation',
       component: BulkWellAquiferCorrelation,
-      name: 'bulk-well-aquifer-correlation',
-      beforeEnter: AuthGuard,
-      meta: {
-        edit: true,
-        app: 'aquifers'
-      }
+      name: 'bulk-well-aquifer-correlation'
     },
     {
       path: '/new',

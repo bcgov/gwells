@@ -14,7 +14,7 @@
 
 <template>
   <div>
-    <b-card class="container p-1" v-if="userRoles.aquifers.edit">
+    <b-card class="container p-1" v-if="perms.wellAquiferCorrelation">
       <api-error v-if="apiError" :error="apiError"/>
 
       <b-container>
@@ -154,12 +154,12 @@
         </b-button-group>
       </b-container>
     </b-card>
-    <div class="card" v-else-if="!$keycloak.authenticated">
+    <div class="card container" v-else-if="!$keycloak.authenticated">
       <div class="card-body">
         <p>Please log in to continue.</p>
       </div>
     </div>
-    <div class="card" v-else>
+    <div class="card container" v-else>
       <div class="card-body">
         <p>You do not have permission to bulk upload aquifer data.</p>
       </div>
@@ -247,6 +247,9 @@ export default {
   },
   computed: {
     ...mapGetters(['userRoles', 'keycloak']),
+    perms () {
+      return this.userRoles.bulk || {}
+    },
     unknownAquifers () {
       return (this.apiValidationErrors || {}).unknownAquifers || []
     },

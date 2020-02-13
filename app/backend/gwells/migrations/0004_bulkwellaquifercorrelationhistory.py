@@ -9,8 +9,8 @@ import gwells.db_comments.model_mixins
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('wells', '0108_auto_20200213_1734'),
-        ('aquifers', '0028_auto_20200213_1734'),
+        ('wells', '0108_auto_20200213_1741'),
+        ('aquifers', '0028_auto_20200213_1741'),
         ('gwells', '0003_auto_20190724_1954'),
     ]
 
