@@ -10,7 +10,7 @@ updateAquiferArea = """
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('aquifers', '0027_auto_20200107_1821'),
+        ('aquifers', '0028_auto_20200213_1741'),
     ]
 
     operations = [
