@@ -39,6 +39,11 @@
       <b-alert variant="success" :show="showSaveSuccess" id="aquifer-success-alert">
         Aquifer {{ id }}'s information successfully updated.
       </b-alert>
+      <div v-if="loadingForm">
+        <div class="fa-2x text-center">
+          <i class="fa fa-circle-o-notch fa-spin"></i>
+        </div>
+      </div>
       <b-container fluid>
         <b-row v-if="editMode && !loading" class="border-bottom mb-3 pb-2">
           <b-col><h4>Aquifer {{id}} Summary - Edit</h4></b-col>
@@ -47,6 +52,7 @@
           :fieldErrors="fieldErrors"
           :record="form"
           :files="aquiferFiles"
+          :loadingData="loadingForm"
           :loadingFiles="loadingFiles"
           showId
           v-if="editMode"
@@ -86,7 +92,7 @@
                   <b-col cols="6" md="3" lg="6">Aquifer number</b-col>
                   <b-col cols="6" md="3" lg="6" id="aquifer-view-number">{{id}}</b-col>
                   <b-col cols="6" md="3" lg="6">Year of mapping</b-col>
-                  <b-col cols="6" md="3" lg="6">{{record.mapping_year}}</b-col>
+                  <b-col cols="6" md="3" lg="6" class="aquifer-mapping-year">{{record.mapping_year}}</b-col>
                 </b-row>
                 <b-row>
                   <b-col cols="6" md="3" lg="6">Aquifer name</b-col>
@@ -460,7 +466,7 @@ import SingleAquiferMap from './SingleAquiferMap.vue'
 import MapLoadingSpinner from './MapLoadingSpinner.vue'
 import ChangeHistory from '@/common/components/ChangeHistory.vue'
 import { mapActions, mapGetters, mapState, mapMutations } from 'vuex'
-import { sumBy, orderBy, groupBy, range } from 'lodash'
+import { sumBy, orderBy, groupBy, range, cloneDeep } from 'lodash'
 import PieChart from './PieChart.vue'
 import * as Sentry from '@sentry/browser'
 
@@ -508,7 +514,8 @@ export default {
       waterWithdrawlVolume: '',
       loading: false,
       loadingFiles: false,
-      loadingMap: false
+      loadingMap: false,
+      loadingForm: false
     }
   },
   computed: {
@@ -567,16 +574,32 @@ export default {
       return this.error && this.error.status === 404
     },
     breadcrumbs () {
-      return [
+      const breadcrumbs = [
         {
           text: 'Aquifer Search',
           to: { name: 'aquifers-home' }
-        },
-        {
-          text: this.errorNotFound ? 'Not found' : 'Aquifer Summary',
-          active: true
         }
       ]
+
+      if (this.editMode) {
+        breadcrumbs.push(...[
+          {
+            text: `Aquifer ${this.id} Summary`,
+            to: { name: 'aquifers-view', params: { id: this.id } }
+          },
+          {
+            text: 'Edit Aquifer',
+            active: true
+          }
+        ])
+      } else {
+        breadcrumbs.push({
+          text: this.errorNotFound ? 'Not found' : 'Aquifer Summary',
+          active: true
+        })
+      }
+
+      return breadcrumbs
     }
   },
   watch: {
@@ -617,9 +640,14 @@ export default {
       'setAquiferWells'
     ]),
     loadForm () {
+      this.loadingForm = true
       ApiService.query(`aquifers/${this.id}/edit`)
         .then((response) => {
+          this.loadingForm = false
           this.form = response.data
+        })
+        .catch(() => {
+          this.loadingForm = false
         })
     },
     bySection (resources, section) {
@@ -653,9 +681,10 @@ export default {
       this.clearUploadShapeFileMessage()
       this.clearUploadFilesMessage()
       this.fieldErrors = {}
-      let writableRecord = JSON.parse(JSON.stringify(this.form))
+      let writableRecord = cloneDeep(this.form)
       delete writableRecord.licence_details
       delete writableRecord.geom
+      delete writableRecord.area
       return ApiService.patch('aquifers', this.id, writableRecord)
         .then(() => {
           this.showSaveSuccess = true

@@ -49,8 +49,7 @@ const router = new Router({
     {
       path: '/aquifers/:id(\\d+)',
       component: AquiferView,
-      name: 'aquifers-view',
-      props: true
+      name: 'aquifers-view'
     },
     {
       path: '/aquifers/:id/edit',

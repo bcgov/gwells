@@ -864,10 +864,6 @@
 							"    pm.expect(jsonData.aquifer_name).to.eql(\"Aquifer Name\");",
 							"});",
 							"",
-							"pm.test(\"Aquifer area equals name supplied in request\", function () {",
-							"    pm.expect(jsonData.area).to.eql(\"10.0\");",
-							"});",
-							"",
 							"pm.test(\"Aquifer demand equals name supplied in request\", function () {",
 							"    pm.expect(jsonData.demand).to.eql(\"High\");",
 							"});",
@@ -948,7 +944,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{ \n\t\"aquifer_name\":\"Aquifer Name \",\n\t\"area\":\"10\",\n\t\"demand\":\"H\",\n\t\"known_water_use\":\"M\",\n\t\"litho_stratographic_unit\":\"Aquifer Litho Stratographic Unit\",\n\t\"location_description\":\"Location Description\",\n\t\"mapping_year\":\"1991\",\n\t\"material\":\"B\",\n\t\"notes\":\"Notes\",\n\t\"productivity\":\"H\",\n\t\"quality_concern\":\"N\",\n\t\"subtype\":\"1a\",\n\t\"vulnerability\":\"H\",\n\t\"resources\": [\n\t\t{ \"name\": \"resource 1\", \"url\": \"http://www.example.com/\", \"section_code\": \"M\" }\n\t]\n}\n"
+					"raw": "{ \n\t\"aquifer_name\":\"Aquifer Name \",\n\t\"demand\":\"H\",\n\t\"known_water_use\":\"M\",\n\t\"litho_stratographic_unit\":\"Aquifer Litho Stratographic Unit\",\n\t\"location_description\":\"Location Description\",\n\t\"mapping_year\":\"1991\",\n\t\"material\":\"B\",\n\t\"notes\":\"Notes\",\n\t\"productivity\":\"H\",\n\t\"quality_concern\":\"N\",\n\t\"subtype\":\"1a\",\n\t\"vulnerability\":\"H\",\n\t\"resources\": [\n\t\t{ \"name\": \"resource 1\", \"url\": \"http://www.example.com/\", \"section_code\": \"M\" }\n\t]\n}\n"
 				},
 				"url": {
 					"raw": "{{base_url}}/api/v1/aquifers",
@@ -1019,10 +1015,6 @@
 							"    pm.expect(jsonData.aquifer_name).to.eql(\"Aquifer Name\");",
 							"});",
 							"",
-							"pm.test(\"Aquifer area equals name supplied in request\", function () {",
-							"    pm.expect(jsonData.area).to.eql(\"10.0\");",
-							"});",
-							"",
 							"pm.test(\"Aquifer demand equals name supplied in request\", function () {",
 							"    pm.expect(jsonData.demand).to.eql(\"High\");",
 							"});",
@@ -1086,7 +1078,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{ \n\t\"aquifer_name\":\"Aquifer Name \",\n\t\"area\":\"10\",\n\t\"demand\":\"H\",\n\t\"known_water_use\":\"M\",\n\t\"litho_stratographic_unit\":\"Aquifer Litho Stratographic Unit\",\n\t\"location_description\":\"Location Description\",\n\t\"mapping_year\":\"1991\",\n\t\"material\":\"B\",\n\t\"notes\":\"Notes\",\n\t\"productivity\":\"H\",\n\t\"quality_concern\":\"N\",\n\t\"subtype\":\"1a\",\n\t\"vulnerability\":\"H\",\n\t\"resources\": []\n}\n"
+					"raw": "{ \n\t\"aquifer_name\":\"Aquifer Name \",\n\t\"demand\":\"H\",\n\t\"known_water_use\":\"M\",\n\t\"litho_stratographic_unit\":\"Aquifer Litho Stratographic Unit\",\n\t\"location_description\":\"Location Description\",\n\t\"mapping_year\":\"1991\",\n\t\"material\":\"B\",\n\t\"notes\":\"Notes\",\n\t\"productivity\":\"H\",\n\t\"quality_concern\":\"N\",\n\t\"subtype\":\"1a\",\n\t\"vulnerability\":\"H\",\n\t\"resources\": []\n}\n"
 				},
 				"url": {
 					"raw": "{{base_url}}/api/v2/aquifers/{{aquifer_id}}",
