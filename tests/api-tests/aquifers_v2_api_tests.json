@@ -1,10 +1,93 @@
 {
 	"info": {
-		"_postman_id": "c04d9e09-9fe2-4deb-98b5-a15960cbedca",
+		"_postman_id": "ee6bd302-96cf-4fb4-a2f1-a936cb47eb90",
 		"name": "GWELLS Aquifers v2",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Log in",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "46c51db8-8a25-45d5-941f-f55f682ab9b6",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = pm.response.json()",
+									"pm.environment.set(\"token\", jsonData.access_token);",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.expect(pm.response.code, \"Login was not successful\").to.equal(200);",
+									"})",
+									"",
+									"pm.test(\"A token was returned\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.access_token, \"a token was not returned\").to.be.ok;",
+									"    pm.expect(jsonData.access_token.length).to.be.above(36);",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "{{test_user}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{test_password}}",
+									"type": "text"
+								},
+								{
+									"key": "grant_type",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{client_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{client_secret}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{auth_server}}",
+							"host": [
+								"{{auth_server}}"
+							]
+						},
+						"description": "Get token (log in)"
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
 		{
 			"name": "Codes",
 			"item": [
@@ -361,6 +444,372 @@
 			"protocolProfileBehavior": {}
 		},
 		{
+			"name": "Bulk",
+			"item": [
+				{
+					"name": "Create Aquifer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "8f3aa783-2831-40f6-a4f9-3ccf241c44aa",
+								"exec": [
+									"var jsonData = pm.response.json()",
+									"pm.environment.set(\"bulk_aquifer_id\", jsonData.aquifer_id);",
+									"",
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.expect(pm.response.code).to.equal(201);",
+									"})",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "JWT {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \n\t\"aquifer_name\":\"Aquifer Name \",\n\t\"area\":\"10\",\n\t\"demand\":\"H\",\n\t\"known_water_use\":\"M\",\n\t\"litho_stratographic_unit\":\"Aquifer Litho Stratographic Unit\",\n\t\"location_description\":\"Location Description\",\n\t\"mapping_year\":\"1991\",\n\t\"material\":\"B\",\n\t\"notes\":\"Notes\",\n\t\"productivity\":\"H\",\n\t\"quality_concern\":\"N\",\n\t\"subtype\":\"1a\",\n\t\"vulnerability\":\"H\",\n\t\"resources\": [\n\t\t{ \"name\": \"resource 1\", \"url\": \"http://www.example.com/\", \"section_code\": \"M\" }\n\t]\n}\n"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v2/aquifers",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v2",
+								"aquifers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Well",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7a45223c-da07-49be-adc9-95919a90e263",
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.environment.set(\"bulk_well_tag_number\", jsonData.well);",
+									"",
+									"pm.test(\"Status code is 201\", function () {",
+									"   pm.expect(pm.response.code).to.equal(201);",
+									"})",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "JWT {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"driller_name\": \"Jimithy\",\n\t\"consultant_name\": \"Bobothy\",\n\t\"consultant_company\": \"Inc & Inc\",\n\t\"work_end_date\": \"2018-07-10\",\n\t\"owner_full_name\": \"Holly Homeowner\",\n\t\"work_start_date\": \"2018-07-01\",\n\t\"owner_province_state\": \"BC\",\n\t\"owner_mailing_address\": \"321 Main Street\",\n\t\"owner_city\": \"Anytown\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v2/submissions/construction?format=json",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v2",
+								"submissions",
+								"construction"
+							],
+							"query": [
+								{
+									"key": "format",
+									"value": "json"
+								}
+							]
+						},
+						"description": "Submit a submission"
+					},
+					"response": []
+				},
+				{
+					"name": "Returns Invalid well_tag_numbers and aquifer_ids",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "8a189545-04ff-4d92-ac73-24de257fb899",
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 400\", function () {",
+									"   pm.expect(pm.response.code).to.equal(400);",
+									"})",
+									"",
+									"pm.test(\"Unknown aquifers is [9999]\", function () {",
+									"   pm.expect(jsonData.unknownAquifers).to.eql([9999]);",
+									"})",
+									"",
+									"pm.test(\"Unknown wells is [9999,9998,9997]\", function () {",
+									"   pm.expect(jsonData.unknownWells).to.eql([9997,9998,9999]);",
+									"})",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "JWT {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n\t{\n\t\t\"aquiferId\": 9999,\n\t\t\"wellTagNumbers\": [9999,9998,9997]\n\t}\n]"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v2/bulk/well-aquifer-correlation?format=json",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v2",
+								"bulk",
+								"well-aquifer-correlation"
+							],
+							"query": [
+								{
+									"key": "format",
+									"value": "json"
+								}
+							]
+						},
+						"description": "POSTs to /aquifer/bulk to change many wells at once to all point to new aquifers."
+					},
+					"response": []
+				},
+				{
+					"name": "Returns valid changes",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f247ba01-7d63-42d2-b922-d505b57838de",
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"var aquifer_id = pm.environment.get('bulk_aquifer_id')",
+									"var well_tag_number = pm.environment.get('bulk_well_tag_number')",
+									"",
+									"pm.test(\"Status code is 202\", function () {",
+									"   pm.expect(pm.response.code).to.equal(202);",
+									"})",
+									"",
+									"pm.test(\"Changes are returned\", function () {",
+									"   pm.expect(jsonData[well_tag_number]).to.be.an('object');",
+									"   pm.expect(jsonData[well_tag_number]).to.include({action: 'new', aquiferId: aquifer_id });",
+									"})",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "JWT {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n\t{\n\t\t\"aquiferId\": {{bulk_aquifer_id}},\n\t\t\"wellTagNumbers\": [{{bulk_well_tag_number}}]\n\t}\n]"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v2/bulk/well-aquifer-correlation?format=json",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v2",
+								"bulk",
+								"well-aquifer-correlation"
+							],
+							"query": [
+								{
+									"key": "format",
+									"value": "json"
+								}
+							]
+						},
+						"description": "POSTs to /aquifer/bulk to change many wells at once to all point to new aquifers."
+					},
+					"response": []
+				},
+				{
+					"name": "Commits changes",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f247ba01-7d63-42d2-b922-d505b57838de",
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"var aquifer_id = pm.environment.get('bulk_aquifer_id')",
+									"var well_tag_number = pm.environment.get('bulk_well_tag_number')",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"   pm.expect(pm.response.code).to.equal(200);",
+									"})",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "JWT {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n\t{\n\t\t\"aquiferId\": {{bulk_aquifer_id}},\n\t\t\"wellTagNumbers\": [{{bulk_well_tag_number}}]\n\t}\n]"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v2/bulk/well-aquifer-correlation?format=json&commit=",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v2",
+								"bulk",
+								"well-aquifer-correlation"
+							],
+							"query": [
+								{
+									"key": "format",
+									"value": "json"
+								},
+								{
+									"key": "commit",
+									"value": ""
+								}
+							]
+						},
+						"description": "POSTs to /aquifer/bulk to change many wells at once to all point to new aquifers."
+					},
+					"response": []
+				},
+				{
+					"name": "Confirm well aquifer correlation",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "ebc2262c-3d93-4e5f-aa48-4904501c525a",
+								"exec": [
+									"var jsonData = pm.response.json()",
+									"var aquifer_id = pm.environment.get('bulk_aquifer_id')",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"})",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.expect(jsonData.aquifer).to.equal(aquifer_id);",
+									"})",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "JWT {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v2/wells/{{bulk_well_tag_number}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v2",
+								"wells",
+								"{{bulk_well_tag_number}}"
+							]
+						},
+						"description": "Request a list of wells"
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
 			"name": "Aquifers List",
 			"event": [
 				{
@@ -393,83 +842,6 @@
 						"aquifers"
 					]
 				}
-			},
-			"response": []
-		},
-		{
-			"name": "Log in",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "46c51db8-8a25-45d5-941f-f55f682ab9b6",
-						"type": "text/javascript",
-						"exec": [
-							"var jsonData = pm.response.json()",
-							"pm.environment.set(\"token\", jsonData.access_token);",
-							"",
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.expect(pm.response.code, \"Login was not successful\").to.equal(200);",
-							"})",
-							"",
-							"pm.test(\"A token was returned\", function () {",
-							"    var jsonData = pm.response.json();",
-							"    pm.expect(jsonData.access_token, \"a token was not returned\").to.be.ok;",
-							"    pm.expect(jsonData.access_token.length).to.be.above(36);",
-							"});",
-							""
-						]
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "noauth"
-				},
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/x-www-form-urlencoded"
-					}
-				],
-				"body": {
-					"mode": "urlencoded",
-					"urlencoded": [
-						{
-							"key": "username",
-							"value": "{{test_user}}",
-							"type": "text"
-						},
-						{
-							"key": "password",
-							"value": "{{test_password}}",
-							"type": "text"
-						},
-						{
-							"key": "grant_type",
-							"value": "password",
-							"type": "text"
-						},
-						{
-							"key": "client_id",
-							"value": "{{client_id}}",
-							"type": "text"
-						},
-						{
-							"key": "client_secret",
-							"value": "{{client_secret}}",
-							"type": "text"
-						}
-					]
-				},
-				"url": {
-					"raw": "{{auth_server}}",
-					"host": [
-						"{{auth_server}}"
-					]
-				},
-				"description": "Get token (log in)"
 			},
 			"response": []
 		},
@@ -575,13 +947,13 @@
 					"raw": "{ \n\t\"aquifer_name\":\"Aquifer Name \",\n\t\"demand\":\"H\",\n\t\"known_water_use\":\"M\",\n\t\"litho_stratographic_unit\":\"Aquifer Litho Stratographic Unit\",\n\t\"location_description\":\"Location Description\",\n\t\"mapping_year\":\"1991\",\n\t\"material\":\"B\",\n\t\"notes\":\"Notes\",\n\t\"productivity\":\"H\",\n\t\"quality_concern\":\"N\",\n\t\"subtype\":\"1a\",\n\t\"vulnerability\":\"H\",\n\t\"resources\": [\n\t\t{ \"name\": \"resource 1\", \"url\": \"http://www.example.com/\", \"section_code\": \"M\" }\n\t]\n}\n"
 				},
 				"url": {
-					"raw": "{{base_url}}/api/v2/aquifers",
+					"raw": "{{base_url}}/api/v1/aquifers",
 					"host": [
 						"{{base_url}}"
 					],
 					"path": [
 						"api",
-						"v2",
+						"v1",
 						"aquifers"
 					]
 				}

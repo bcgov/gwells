@@ -8,6 +8,8 @@ import { store } from './store/index.js'
 import AquiferSearch from '@/aquifers/components/Search'
 import AquiferView from '@/aquifers/components/View'
 import AquiferNew from '@/aquifers/components/New'
+import BulkHome from '@/bulk/components/BulkHome.vue'
+import BulkWellAquiferCorrelation from '@/bulk/components/BulkWellAquiferCorrelation.vue'
 
 import WellSearch from '@/wells/views/WellSearch.vue'
 import WellDetail from '@/wells/views/WellDetail.vue'
@@ -53,11 +55,22 @@ const router = new Router({
       path: '/aquifers/:id/edit',
       component: AquiferView,
       name: 'aquifers-edit',
+      beforeEnter: AuthGuard,
       props: { edit: true },
       meta: {
         edit: true,
         app: 'aquifers'
       }
+    },
+    {
+      path: '/bulk/',
+      component: BulkHome,
+      name: 'bulk-home'
+    },
+    {
+      path: '/bulk/well-aquifer-correlation',
+      component: BulkWellAquiferCorrelation,
+      name: 'bulk-well-aquifer-correlation'
     },
     {
       path: '/new',

@@ -1,5 +1,3 @@
-import json
-from django.views.static import serve
 """
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -22,11 +20,8 @@ from openpyxl.writer.excel import save_virtual_workbook
 
 from django_filters import rest_framework as djfilters
 from django.http import Http404, HttpResponse, JsonResponse, HttpResponseRedirect, StreamingHttpResponse
-from django.views.generic import TemplateView
 from django.db.models import Q
 from django.db import connection
-from django.http import HttpResponse
-from django.contrib.gis.gdal import DataSource
 from django.views.decorators.cache import cache_page
 
 from drf_yasg.utils import swagger_auto_schema
@@ -38,7 +33,6 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveUpdateAPIView, RetrieveAPIView
-from rest_framework.permissions import AllowAny
 from rest_framework.exceptions import ParseError
 from rest_framework.parsers import FileUploadParser
 from rest_framework import status
@@ -61,7 +55,6 @@ from aquifers.models import (
     AquiferProductivity,
     AquiferSubtype,
     AquiferVulnerabilityCode,
-    AquiferMaterial,
     QualityConcern,
     WaterUse
 )
@@ -72,7 +65,6 @@ from gwells.views import AuditCreateMixin, AuditUpdateMixin
 from gwells.open_api import (
     get_geojson_schema, get_model_feature_schema, GEO_JSON_302_MESSAGE, GEO_JSON_PARAMS)
 from gwells.management.commands.export_databc import AQUIFERS_SQL, GeoJSONIterator, AQUIFER_CHUNK_SIZE
-
 
 logger = logging.getLogger(__name__)
 
