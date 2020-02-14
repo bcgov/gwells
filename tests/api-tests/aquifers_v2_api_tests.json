@@ -572,12 +572,12 @@
 									"   pm.expect(pm.response.code).to.equal(400);",
 									"})",
 									"",
-									"pm.test(\"Unknown aquifers is [9999]\", function () {",
-									"   pm.expect(jsonData.unknownAquifers).to.eql([9999]);",
+									"pm.test(\"Unknown aquifers is [999999]\", function () {",
+									"   pm.expect(jsonData.unknownAquifers).to.eql([999999]);",
 									"})",
 									"",
-									"pm.test(\"Unknown wells is [9999,9998,9997]\", function () {",
-									"   pm.expect(jsonData.unknownWells).to.eql([9997,9998,9999]);",
+									"pm.test(\"Unknown wells is [999999,999998,999997]\", function () {",
+									"   pm.expect(jsonData.unknownWells).to.eql([999997,999998,999999]);",
 									"})",
 									""
 								],
@@ -601,7 +601,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "[\n\t{\n\t\t\"aquiferId\": 9999,\n\t\t\"wellTagNumbers\": [9999,9998,9997]\n\t}\n]"
+							"raw": "[\n\t{\n\t\t\"aquiferId\": 999999,\n\t\t\"wellTagNumbers\": [999999,999998,999997]\n\t}\n]"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/v2/bulk/well-aquifer-correlation?format=json",
@@ -773,7 +773,7 @@
 									"    pm.expect(pm.response.code).to.equal(200);",
 									"})",
 									"",
-									"pm.test(\"Status code is 200\", function () {",
+									"pm.test(\"Well's correlated aquifer is set\", function () {",
 									"    pm.expect(jsonData.aquifer).to.equal(aquifer_id);",
 									"})",
 									""
