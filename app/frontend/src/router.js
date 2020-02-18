@@ -13,6 +13,7 @@ import BulkWellAquiferCorrelation from '@/bulk/components/BulkWellAquiferCorrela
 
 import WellSearch from '@/wells/views/WellSearch.vue'
 import WellDetail from '@/wells/views/WellDetail.vue'
+import EditWellAquifers from '@/wells/views/EditWellAquifers.vue'
 import GroundwaterInformation from '@/wells/views/GroundwaterInformation.vue'
 
 // Registries components
@@ -187,6 +188,16 @@ const router = new Router({
       path: '/well/:id',
       name: 'wells-detail',
       component: WellDetail
+    },
+    {
+      path: '/well/:wellTagNumber/aquifers',
+      name: 'well-aquifers',
+      component: EditWellAquifers,
+      beforeEnter: AuthGuard,
+      meta: {
+        edit: true,
+        app: 'aquifers'
+      }
     },
     {
       path: '/surveys',

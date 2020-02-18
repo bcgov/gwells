@@ -473,9 +473,14 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-on:save="$emit('submit_edit')"
       />
 
+      <div v-if="showSection('aquiferData')" id="vertical-aquifer-extents">
+        <router-link :to="{ name: 'well-aquifers', params: {wellTagNumber} }">Edit vertical aquifer extents</router-link>
+      </div>
+
       <edit-history class="my-5"
         v-if="showSection('editHistory')"
         id="editHistory"
+        :well-tag-number="wellTagNumber"
         :events="events"
       ></edit-history>
 
@@ -679,6 +684,9 @@ export default {
     // we need this empty watch section for the code in beforeCreate
   },
   computed: {
+    wellTagNumber () {
+      return this.form.well
+    },
     formStep () {
       // the numbered step that the user is on
       // this value is bound by the length of the list of steps for the
