@@ -85,6 +85,9 @@ class WellLocationListV2APIView(ListAPIView):
         # vs creating geojson Features here in Python.
         if geojson_requested:
             qs = self.get_queryset()
+
+            qs = qs.exclude(geom=None)
+
             locations = self.filter_queryset(qs)
             count = locations.count()
             # return an empty response if there are too many wells to display
