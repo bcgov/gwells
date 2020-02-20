@@ -13,18 +13,17 @@
 """
 
 import geojson
-from geojson import Feature, FeatureCollection, Point
+from geojson import Feature, FeatureCollection
 
 import logging
 
+from django.http import HttpResponse
 from django.db.models import Func, TextField
 from django.db.models.functions import Cast
 
 from rest_framework import filters
 from rest_framework.generics import ListAPIView
-from rest_framework.exceptions import PermissionDenied, NotFound
-from rest_framework.response import Response
-
+from rest_framework.exceptions import PermissionDenied
 
 from gwells.roles import WELLS_EDIT_ROLE
 from gwells.pagination import apiLimitedPagination
@@ -48,6 +47,7 @@ class WellLocationListV2APIView(ListAPIView):
 
         get: returns a list of wells with locations only
     """
+    MAX_LOCATION_COUNT = 5000
     permission_classes = (WellsEditOrReadOnly,)
     model = Well
     pagination_class = apiLimitedPagination(5000)
@@ -85,6 +85,9 @@ class WellLocationListV2APIView(ListAPIView):
         # vs creating geojson Features here in Python.
         if geojson_requested:
             qs = self.get_queryset()
+
+            qs = qs.exclude(geom=None)
+
             locations = self.filter_queryset(qs)
             count = locations.count()
             # return an empty response if there are too many wells to display
