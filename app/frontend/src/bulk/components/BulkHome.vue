@@ -13,7 +13,7 @@
 */
 
 <template>
-  <b-container>
+  <b-container id="bulk-home-screen">
     <b-card>
       <div v-if="noPerm">
         <b-alert show variant="danger" >
@@ -21,7 +21,24 @@
         </b-alert>
         Return <router-link to="/">home</router-link>
       </div>
-      <router-link v-if="perms.wellAquiferCorrelation" to="/bulk/well-aquifer-correlation">Well Aquifer Correlation</router-link>
+      <h2 class="border-bottom pb-1 mb-3">Bulk Operations</h2>
+      <p>
+        Update multiple wells or aquifers at the same time with the following bulk operation utilities.
+      </p>
+      <ul>
+        <li>
+          <h5><router-link v-if="perms.wellAquiferCorrelation" :to="{ name: 'bulk-well-aquifer-correlation' }">Well Aquifer Correlation</router-link></h5>
+          <p>
+            Allow bulk changes to well aquifer correlations to be performed based on an uploaded CSV file.
+          </p>
+        </li>
+        <li>
+          <h5><router-link v-if="perms.wellAquiferCorrelation" :to="{ name: 'bulk-aquifer-documents' }">Aquifer Documents</router-link></h5>
+          <p>
+            Upload multiple documents to one or more aquifers.
+          </p>
+        </li>
+      </ul>
     </b-card>
   </b-container>
 </template>
@@ -40,5 +57,16 @@ export default {
   }
 }
 </script>
-<style>
+<style lang="scss">
+#bulk-home-screen {
+  ul, li {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  li {
+    margin-top: 1rem;
+  }
+}
 </style>

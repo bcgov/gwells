@@ -48,7 +48,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                      variant="primary"
                      style="margin-left: .5em"
                      href="#"
-                     v-on:click="removeUploadFile(f.name, $event)" />
+                     v-on:click="removeUploadFile(f, $event)" />
                 </b-list-group-item>
               </b-list-group>
             </div>

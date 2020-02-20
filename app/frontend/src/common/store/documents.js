@@ -182,7 +182,7 @@ export default {
       state.shapefile = payload
     },
     removeFile (state, file) {
-      state.upload_files = state.upload_files.filter(item => item.name !== file)
+      state.upload_files = state.upload_files.filter(item => item !== file)
     },
     setPrivate (state, payload) {
       state.isPrivate = payload
