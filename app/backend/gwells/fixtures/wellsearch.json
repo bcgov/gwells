@@ -750,9 +750,9 @@
         "model": "wells.well",
         "pk": 123,
         "fields": {
-            "create_user": "",
+            "create_user": "PROXY_WELLS",
             "create_date": "2018-02-08T17:06:47.229Z",
-            "update_user": "",
+            "update_user": "PROXY_WELLS",
             "update_date": "2018-02-08T17:06:47.231Z",
             "well_guid": "28efc8dd-4f4e-4b1e-84ce-5e2e7313bdb1",
             "identification_plate_number": null,
@@ -1317,7 +1317,7 @@
         "fields": {
             "create_user": "PROXY_EWELLS_USER",
             "create_date": "2019-02-08T18:53:16.353Z",
-            "update_user": "",
+            "update_user": "PROXY_EWELLS_USER",
             "update_date": "2019-02-11T01:47:46.945Z",
             "well_guid": "57c2de9a-b268-45a1-9b86-914b37018459",
             "identification_plate_number": 55555,
