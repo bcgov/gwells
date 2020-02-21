@@ -73,7 +73,4 @@ class Command(BaseCommand):
         # `_update_well_record()` which checks to see if it should create a new
         # legacy record (it shouldn't). Instead it will just call
         # `self._stack(records, submission.well)` for this one legacy record.
-
-        # stacker.process(instance.filing_number)
-        # stacker._update_well_record(submission)
         StackWells()._create_legacy_submission(well)
