@@ -12,17 +12,16 @@
     limitations under the License.
 """
 
-import geojson
-from geojson import Feature, FeatureCollection, Point
-
 import logging
+import geojson
+from geojson import Feature, FeatureCollection
 
 from reversion.views import RevisionMixin
 
 from django.db import transaction
+from django.http import HttpResponse, Http404
 from django.db.models import Func, TextField
 from django.db.models.functions import Cast
-from django.http import HttpResponse, Http404
 from django.utils import timezone
 
 from drf_yasg.utils import swagger_auto_schema
@@ -31,7 +30,6 @@ from rest_framework import status, filters
 from rest_framework.generics import ListAPIView
 from rest_framework.exceptions import PermissionDenied, NotFound
 from rest_framework.response import Response
-from rest_framework.views import APIView
 
 from gwells.roles import WELLS_EDIT_ROLE
 from gwells.pagination import apiLimitedPagination
@@ -58,6 +56,7 @@ class WellLocationListV2APIView(ListAPIView):
 
         get: returns a list of wells with locations only
     """
+    MAX_LOCATION_COUNT = 5000
     permission_classes = (WellsEditOrReadOnly,)
     model = Well
     pagination_class = apiLimitedPagination(5000)
@@ -95,6 +94,9 @@ class WellLocationListV2APIView(ListAPIView):
         # vs creating geojson Features here in Python.
         if geojson_requested:
             qs = self.get_queryset()
+
+            qs = qs.exclude(geom=None)
+
             locations = self.filter_queryset(qs)
             count = locations.count()
             # return an empty response if there are too many wells to display
@@ -147,11 +149,9 @@ class WellAquiferListV2APIView(RevisionMixin, ListAPIView):
 
     @swagger_auto_schema(auto_schema=None)
     @transaction.atomic
-    def post(self, request, well_tag_number, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         username = self.request.user.profile.username
         timestamp = timezone.now()
-
-        serializer_class = self.get_serializer_class()
 
         # we expect a list
         if not isinstance(request.data, list):
@@ -163,16 +163,17 @@ class WellAquiferListV2APIView(RevisionMixin, ListAPIView):
         ids = []
         items = []
         errors = []
-        hasErrors = False
+        has_errors = False
         for item in request.data: # go through each vertical aquifer extent
             item['well_id'] = well.well_tag_number
 
             vertical_aquifer_extent = None
-            vertical_aquifer_extent = item.get('id', None)
-            if vertical_aquifer_extent: # has an id - then it must be an existing one
-                vertical_aquifer_extent = VerticalAquiferExtent.objects.get(pk=vertical_aquifer_extent)
+            vae_id = item.get('id', None)
+            if vae_id: # has an id - then it must be an existing one
+                vertical_aquifer_extent = VerticalAquiferExtent.objects.get(pk=vae_id)
 
-            serializer = WellVerticalAquiferExtentSerializerV2(instance=vertical_aquifer_extent, data=item)
+            serializer = WellVerticalAquiferExtentSerializerV2(instance=vertical_aquifer_extent,
+                                                               data=item)
             serializer_errors = {}
             if serializer.is_valid():
                 # add user audit information
@@ -185,15 +186,17 @@ class WellAquiferListV2APIView(RevisionMixin, ListAPIView):
                 if self.hasChanged(vertical_aquifer_extent, serializer.validated_data):
                     vertical_aquifer_extent = serializer.save()
 
-                ids.append(vertical_aquifer_extent.id) # keep track existing ids and any newly added IDs
+                # keep track existing ids and any newly added IDs
+                ids.append(vertical_aquifer_extent.id)
                 items.append(serializer.data)
             else:
                 serializer_errors = serializer.errors
-                hasErrors = True
+                has_errors = True
 
             if vertical_aquifer_extent.start < max_depth:
-                hasErrors = True
-                serializer_errors.setdefault('start', []).append('Start depth overlaps with another')
+                has_errors = True
+                serializer_errors.setdefault('start', []) \
+                    .append('Start depth overlaps with another')
 
             max_depth = vertical_aquifer_extent.end
 
@@ -201,7 +204,7 @@ class WellAquiferListV2APIView(RevisionMixin, ListAPIView):
 
 
         # roll back on errors and undo any changes
-        if hasErrors:
+        if has_errors:
             transaction.set_rollback(True)
             return Response(errors, status=status.HTTP_400_BAD_REQUEST)
 
