@@ -47,8 +47,8 @@ describe('EditWellAquifers.vue', () => {
       methods: {
         fetchAquifersForWell () {
           this.aquifers = [
-            { from: 0, to: 100, aquifer_id: 1, lat: -123, lng: 50 },
-            { from: 200, to: 300, aquifer_id: 2, lat: -123, lng: 50 }
+            { from: 50, to: 100, aquifer_id: 1, aquifer_name: 'Test Aquifer 1', lat: -123, lng: 50 },
+            { from: 200, to: 300, aquifer_id: 2, aquifer_name: 'Test Aquifer 2', lat: -123, lng: 50 }
           ]
         }
       },

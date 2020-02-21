@@ -473,9 +473,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-on:save="$emit('submit_edit')"
       />
 
-      <div v-if="showSection('aquiferData')" id="vertical-aquifer-extents">
-        <router-link :to="{ name: 'well-aquifers', params: {wellTagNumber} }">Edit vertical aquifer extents</router-link>
-      </div>
+      <vertical-aquifer-extents class="my-5"
+        v-if="showSection('aquiferData')"
+        id="aquiferData"
+        :wellTagNumber="wellTagNumber"
+      />
 
       <edit-history class="my-5"
         v-if="showSection('editHistory')"
@@ -523,6 +525,7 @@ import Vue from 'vue'
 
 import ActivityType from './ActivityType.vue'
 import AquiferData from './AquiferData.vue'
+import VerticalAquiferExtents from './VerticalAquiferExtents.vue'
 import WellType from './WellType.vue'
 import PublicationStatus from './PublicationStatus.vue'
 import PersonResponsible from './PersonResponsible.vue'
@@ -611,6 +614,7 @@ export default {
     WorkDates,
     ActivityType,
     AquiferData,
+    VerticalAquiferExtents,
     WellType,
     PublicationStatus,
     PersonResponsible,

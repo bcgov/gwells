@@ -37,6 +37,7 @@ class WellLocationSerializerV2(serializers.ModelSerializer):
 class WellVerticalAquiferExtentSerializerV2(serializers.ModelSerializer):
     # start = serializers.DecimalField(max_digits=7, decimal_places=2, required=True, allow_null=False)
     aquifer_id = serializers.IntegerField()
+    aquifer_name = serializers.CharField(source='aquifer.aquifer_name', read_only=True)
     well_id = serializers.IntegerField(write_only=True)
 
     class Meta:
@@ -44,6 +45,7 @@ class WellVerticalAquiferExtentSerializerV2(serializers.ModelSerializer):
         fields = (
             'id',
             'aquifer_id',
+            'aquifer_name',
             'well_id',
             'start',
             'end',
@@ -79,20 +81,24 @@ class WellVerticalAquiferExtentSerializerV2(serializers.ModelSerializer):
         return super(WellVerticalAquiferExtentSerializerV2, self).to_internal_value(data)
 
     def validate(self, attrs):
+        errors = {}
+
         start_depth = attrs.get('start', None)
         end_depth = attrs.get('end', None)
         if start_depth is not None and end_depth is not None:
             if start_depth > end_depth:
-                raise serializers.ValidationError({'start': 'From can not be below to'})
+                errors['end'] = 'To can not be above from'
+            if abs(end_depth - start_depth) < Decimal('0.1'):
+                errors['end'] = 'End must be more then 0.1m from start'
 
-        point_errors = {
-            'lat': 'Latitude is not inside BC',
-            'lng': 'Longitude is not inside BC'
-        }
         point = attrs.get('geom')
         if point:
             isInside = isPointInsideBC(point.y, point.x)
             if not isInside:
-                raise serializers.ValidationError(point_errors)
+                errors['lat'] = 'Latitude is not inside BC'
+                errors['lng'] = 'Longitude is not inside BC'
+
+        if len(errors) > 0:
+            raise serializers.ValidationError(errors)
 
         return attrs

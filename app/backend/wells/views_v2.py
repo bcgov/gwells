@@ -134,7 +134,7 @@ class WellAquiferListV2APIView(RevisionMixin, ListAPIView):
         """
         well = self.getWell()
 
-        qs = VerticalAquiferExtent.objects.filter(well=well)
+        qs = VerticalAquiferExtent.objects.filter(well=well).select_related('aquifer')
 
         if not self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
             qs = qs.exclude(well__well_publication_status='Unpublished')
@@ -159,6 +159,7 @@ class WellAquiferListV2APIView(RevisionMixin, ListAPIView):
 
         # get the well and 404 if it doesn't exist
         well = self.getWell()
+        max_depth = float('-inf')
         ids = []
         items = []
         errors = []
@@ -172,6 +173,7 @@ class WellAquiferListV2APIView(RevisionMixin, ListAPIView):
                 vertical_aquifer_extent = VerticalAquiferExtent.objects.get(pk=vertical_aquifer_extent)
 
             serializer = WellVerticalAquiferExtentSerializerV2(instance=vertical_aquifer_extent, data=item)
+            serializer_errors = {}
             if serializer.is_valid():
                 # add user audit information
                 serializer.validated_data['update_user'] = username
@@ -186,8 +188,17 @@ class WellAquiferListV2APIView(RevisionMixin, ListAPIView):
                 ids.append(vertical_aquifer_extent.id) # keep track existing ids and any newly added IDs
                 items.append(serializer.data)
             else:
+                serializer_errors = serializer.errors
                 hasErrors = True
-            errors.append(serializer.errors) # always add to keep the index correct for web app
+
+            if vertical_aquifer_extent.start < max_depth:
+                hasErrors = True
+                serializer_errors.setdefault('start', []).append('Start depth overlaps with another')
+
+            max_depth = vertical_aquifer_extent.end
+
+            errors.append(serializer_errors) # always add to keep the index correct for web app
+
 
         # roll back on errors and undo any changes
         if hasErrors:

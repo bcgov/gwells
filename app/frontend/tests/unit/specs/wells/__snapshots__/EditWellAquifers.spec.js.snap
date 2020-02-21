@@ -54,20 +54,20 @@ exports[`EditWellAquifers.vue matches the snapshot 1`] = `
             id="vertical-aquifer-extents-table"
           >
             <table
-              class="table table-sm"
+              class="table table-sm mb-0"
             >
               <thead>
                 <tr>
                   <th
                     class="font-weight-normal pl-0 from-col"
                   >
-                    From ft (bgl)
+                    From meters (bgl)
                   </th>
                    
                   <th
                     class="font-weight-normal to-col"
                   >
-                    To ft (bgl)
+                    To meters (bgl)
                   </th>
                    
                   <th
@@ -76,23 +76,13 @@ exports[`EditWellAquifers.vue matches the snapshot 1`] = `
                     Aquifer
                   </th>
                    
-                  <th
-                    class="font-weight-normal latitude-col"
-                  >
-                    Latitude
-                  </th>
-                   
-                  <th
-                    class="font-weight-normal longitude-col pr-0"
-                  >
-                    Longitude
-                  </th>
-                   
                   <th />
                 </tr>
               </thead>
                
               <tbody>
+                <!---->
+                 
                 <tr>
                   <td
                     class="input-width-small py-0 pl-0"
@@ -101,6 +91,7 @@ exports[`EditWellAquifers.vue matches the snapshot 1`] = `
                       aria-label="Depth from (feet)"
                       groupclass="my-1"
                       id="aquiferDepthFrom_0"
+                      step="0.01"
                       type="number"
                     />
                   </td>
@@ -112,6 +103,7 @@ exports[`EditWellAquifers.vue matches the snapshot 1`] = `
                       aria-label="Depth to (feet)"
                       groupclass="my-1"
                       id="aquiferDepthTo_0"
+                      step="0.01"
                       type="number"
                     />
                   </td>
@@ -129,13 +121,13 @@ exports[`EditWellAquifers.vue matches the snapshot 1`] = `
                         index="aquifer_id"
                         label="description"
                         options=""
-                        reduce="function (aquifer) { return aquifer.aquifer_id; }"
+                        reduce="function (aquifer) { return row.aquifer_id; }"
                         value="1"
                       >
                         <template>
                           
-                          Search for an aquifer by name or id number
-                        
+                            Search for an aquifer by name or id number
+                          
                         </template>
                       </v-select-stub>
                        
@@ -144,32 +136,6 @@ exports[`EditWellAquifers.vue matches the snapshot 1`] = `
                         tag="div"
                       />
                     </b-form-group-stub>
-                  </td>
-                   
-                  <td
-                    class="input-width-small py-0"
-                  >
-                    <form-input-stub
-                      aria-label="Latitude"
-                      groupclass="my-1"
-                      id="aquiferDepthLat_0"
-                      step="0.00001"
-                      type="number"
-                      value="-123"
-                    />
-                  </td>
-                   
-                  <td
-                    class="input-width-small py-0"
-                  >
-                    <form-input-stub
-                      aria-label="Longitude"
-                      groupclass="my-1"
-                      id="aquiferDepthLng_0"
-                      step="0.00001"
-                      type="number"
-                      value="50"
-                    />
                   </td>
                    
                   <td
@@ -193,6 +159,8 @@ exports[`EditWellAquifers.vue matches the snapshot 1`] = `
                     </b-btn-stub>
                   </td>
                 </tr>
+                <!---->
+                 
                 <tr>
                   <td
                     class="input-width-small py-0 pl-0"
@@ -201,6 +169,7 @@ exports[`EditWellAquifers.vue matches the snapshot 1`] = `
                       aria-label="Depth from (feet)"
                       groupclass="my-1"
                       id="aquiferDepthFrom_1"
+                      step="0.01"
                       type="number"
                     />
                   </td>
@@ -212,6 +181,7 @@ exports[`EditWellAquifers.vue matches the snapshot 1`] = `
                       aria-label="Depth to (feet)"
                       groupclass="my-1"
                       id="aquiferDepthTo_1"
+                      step="0.01"
                       type="number"
                     />
                   </td>
@@ -229,13 +199,13 @@ exports[`EditWellAquifers.vue matches the snapshot 1`] = `
                         index="aquifer_id"
                         label="description"
                         options=""
-                        reduce="function (aquifer) { return aquifer.aquifer_id; }"
+                        reduce="function (aquifer) { return row.aquifer_id; }"
                         value="2"
                       >
                         <template>
                           
-                          Search for an aquifer by name or id number
-                        
+                            Search for an aquifer by name or id number
+                          
                         </template>
                       </v-select-stub>
                        
@@ -244,32 +214,6 @@ exports[`EditWellAquifers.vue matches the snapshot 1`] = `
                         tag="div"
                       />
                     </b-form-group-stub>
-                  </td>
-                   
-                  <td
-                    class="input-width-small py-0"
-                  >
-                    <form-input-stub
-                      aria-label="Latitude"
-                      groupclass="my-1"
-                      id="aquiferDepthLat_1"
-                      step="0.00001"
-                      type="number"
-                      value="-123"
-                    />
-                  </td>
-                   
-                  <td
-                    class="input-width-small py-0"
-                  >
-                    <form-input-stub
-                      aria-label="Longitude"
-                      groupclass="my-1"
-                      id="aquiferDepthLng_1"
-                      step="0.00001"
-                      type="number"
-                      value="50"
-                    />
                   </td>
                    
                   <td
@@ -293,6 +237,8 @@ exports[`EditWellAquifers.vue matches the snapshot 1`] = `
                     </b-btn-stub>
                   </td>
                 </tr>
+                <!---->
+                 
                 <tr>
                   <td
                     class="input-width-small py-0 pl-0"
@@ -301,6 +247,7 @@ exports[`EditWellAquifers.vue matches the snapshot 1`] = `
                       aria-label="Depth from (feet)"
                       groupclass="my-1"
                       id="aquiferDepthFrom_2"
+                      step="0.01"
                       type="number"
                     />
                   </td>
@@ -312,6 +259,7 @@ exports[`EditWellAquifers.vue matches the snapshot 1`] = `
                       aria-label="Depth to (feet)"
                       groupclass="my-1"
                       id="aquiferDepthTo_2"
+                      step="0.01"
                       type="number"
                     />
                   </td>
@@ -329,12 +277,12 @@ exports[`EditWellAquifers.vue matches the snapshot 1`] = `
                         index="aquifer_id"
                         label="description"
                         options=""
-                        reduce="function (aquifer) { return aquifer.aquifer_id; }"
+                        reduce="function (aquifer) { return row.aquifer_id; }"
                       >
                         <template>
                           
-                          Search for an aquifer by name or id number
-                        
+                            Search for an aquifer by name or id number
+                          
                         </template>
                       </v-select-stub>
                        
@@ -343,30 +291,6 @@ exports[`EditWellAquifers.vue matches the snapshot 1`] = `
                         tag="div"
                       />
                     </b-form-group-stub>
-                  </td>
-                   
-                  <td
-                    class="input-width-small py-0"
-                  >
-                    <form-input-stub
-                      aria-label="Latitude"
-                      groupclass="my-1"
-                      id="aquiferDepthLat_2"
-                      step="0.00001"
-                      type="number"
-                    />
-                  </td>
-                   
-                  <td
-                    class="input-width-small py-0"
-                  >
-                    <form-input-stub
-                      aria-label="Longitude"
-                      groupclass="my-1"
-                      id="aquiferDepthLng_2"
-                      step="0.00001"
-                      type="number"
-                    />
                   </td>
                    
                   <td

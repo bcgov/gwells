@@ -46,101 +46,88 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <b-form @submit.prevent="save" @reset.prevent="resetForm" :disabled="isSaving">
           <div>
             <div id="vertical-aquifer-extents-table">
-              <table class="table table-sm">
+              <table class="table table-sm mb-0">
                 <thead>
                   <tr>
-                    <th class="font-weight-normal pl-0 from-col">From ft (bgl)</th>
-                    <th class="font-weight-normal to-col">To ft (bgl)</th>
+                    <th class="font-weight-normal pl-0 from-col">From meters (bgl)</th>
+                    <th class="font-weight-normal to-col">To meters (bgl)</th>
                     <th class="font-weight-normal aquifer-col">Aquifer</th>
-                    <th class="font-weight-normal latitude-col">Latitude</th>
-                    <th class="font-weight-normal longitude-col pr-0">Longitude</th>
                     <th></th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(aquifer, index) in aquifersData" :key="aquifer.id">
-                    <td class="input-width-small py-0 pl-0">
-                      <form-input
-                        group-class="my-1"
-                        :id="`aquiferDepthFrom_${index}`"
-                        type="number"
-                        aria-label="Depth from (feet)"
-                        v-model="aquifer.start"
-                        :errors="getRowError(index).start"
-                        />
-                    </td>
-                    <td class="input-width-small py-0">
-                      <form-input
-                        group-class="my-1"
-                        :id="`aquiferDepthTo_${index}`"
-                        type="number"
-                        aria-label="Depth to (feet)"
-                        v-model="aquifer.end"
-                        :errors="getRowError(index).end"
-                        />
-                    </td>
-                    <td class="input-width-small py-0 pr-0">
-                      <b-form-group
-                        class="aquifer-search-dropdown"
-                        :class="{'has-error': getRowError(index).aquifer_id}">
-                        <v-select
-                          v-model="aquifer.aquifer_id"
-                          :id="`aquifer_${index}`"
-                          :filterable="false"
-                          :options="aquiferList || []"
-                          :key="aquifer.aquifer_id"
-                          :reduce="aquifer => aquifer.aquifer_id"
-                          class="my-1"
-                          label="description"
-                          index="aquifer_id"
-                          @search="onAquiferSearch">
-                          <template slot="no-options">
-                            Search for an aquifer by name or id number
-                          </template>
-                          <template slot="option" slot-scope="option">
-                            <div>
-                              {{ option.description }}
+                  <template v-for="(row, index) in tableData">
+                    <tr :key="`non-aquifer${index}`" v-if="row.isNonAquifer" class="non-aquifer">
+                      <td colspan="5" class="py-3">
+                        Non Aquifer {{ row.nonAquiferStart.toFixed(2) }}m to
+                        {{ row.nonAquiferEnd.toFixed(2) }}m
+                        ({{ (row.nonAquiferSize).toFixed(2) }}m)
+                      </td>
+                    </tr>
+                    <tr :key="`aquifer-${index}`">
+                      <td class="input-width-small py-0 pl-0">
+                        <form-input
+                          group-class="my-1"
+                          :id="`aquiferDepthFrom_${index}`"
+                          type="number"
+                          :step="0.01"
+                          aria-label="Depth from (feet)"
+                          v-model="aquifersData[index].start"
+                          :errors="getRowError(index).start"
+                          />
+                      </td>
+                      <td class="input-width-small py-0">
+                        <form-input
+                          group-class="my-1"
+                          :id="`aquiferDepthTo_${index}`"
+                          type="number"
+                          :step="0.01"
+                          aria-label="Depth to (feet)"
+                          v-model="aquifersData[index].end"
+                          :errors="getRowError(index).end"
+                          />
+                      </td>
+                      <td class="input-width-small py-0 pr-0">
+                        <b-form-group
+                          class="aquifer-search-dropdown"
+                          :class="{'has-error': getRowError(index).aquifer_id}">
+                          <v-select
+                            v-model="aquifersData[index].aquifer_id"
+                            :id="`aquifer_${index}`"
+                            :filterable="false"
+                            :options="aquiferList || []"
+                            :key="row.aquifer_id"
+                            :reduce="aquifer => row.aquifer_id"
+                            class="my-1"
+                            label="description"
+                            index="aquifer_id"
+                            @search="onAquiferSearch">
+                            <template slot="no-options">
+                              Search for an aquifer by name or id number
+                            </template>
+                            <template slot="option" slot-scope="option">
+                              <div>
+                                {{ option.description }}
+                              </div>
+                            </template>
+                            <template slot="selected-option" slot-scope="option">
+                              <div>
+                                {{ option.description }}
+                              </div>
+                            </template>
+                          </v-select>
+                          <b-form-invalid-feedback :id="`aquifer${index}InvalidFeedback`">
+                            <div v-for="(error, errIndex) in getRowError(index).aquifer_id" :key="`aquifer${index}Input error ${errIndex}`">
+                              {{ error }}
                             </div>
-                          </template>
-                          <template slot="selected-option" slot-scope="option">
-                            <div>
-                              {{ option.description }}
-                            </div>
-                          </template>
-                        </v-select>
-                        <b-form-invalid-feedback :id="`aquifer${index}InvalidFeedback`">
-                          <div v-for="(error, errIndex) in getRowError(index).aquifer_id" :key="`aquifer${index}Input error ${errIndex}`">
-                            {{ error }}
-                          </div>
-                        </b-form-invalid-feedback>
-                      </b-form-group>
-                    </td>
-                    <td class="input-width-small py-0">
-                      <form-input
-                        group-class="my-1"
-                        :id="`aquiferDepthLat_${index}`"
-                        type="number"
-                        aria-label="Latitude"
-                        :step="0.00001"
-                        v-model="aquifer.lat"
-                        :errors="getRowError(index).lat"
-                        />
-                    </td>
-                    <td class="input-width-small py-0">
-                      <form-input
-                        group-class="my-1"
-                        :id="`aquiferDepthLng_${index}`"
-                        type="number"
-                        aria-label="Longitude"
-                        :step="0.00001"
-                        v-model="aquifer.lng"
-                        :errors="getRowError(index).lng"
-                        />
-                    </td>
-                    <td class="py-0 text-right">
-                      <b-btn size="sm" variant="primary" @click="removeRowIfOk(index)" :id="`removeAquiferRowButton${index}`" class="mt-2" :disabled="isSaving"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
-                    </td>
-                  </tr>
+                          </b-form-invalid-feedback>
+                        </b-form-group>
+                      </td>
+                      <td class="py-0 text-right">
+                        <b-btn size="sm" variant="primary" @click="removeRowIfOk(index)" :id="`removeAquiferRowButton${index}`" class="mt-2" :disabled="isSaving"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
+                      </td>
+                    </tr>
+                  </template>
                 </tbody>
               </table>
             </div>
@@ -178,7 +165,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
 <script>
 
-import { mapGetters } from 'vuex'
 import { debounce, uniq } from 'lodash'
 import ApiService from '@/common/services/ApiService.js'
 import APIErrorMessage from '@/common/components/APIErrorMessage'
@@ -203,7 +189,6 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['codes']),
     wellTagNumber () { return parseInt(this.$route.params.wellTagNumber) || null },
     breadcrumbs () {
       const breadcrumbs = [
@@ -230,6 +215,36 @@ export default {
     filledInData () {
       return this.aquifersData.filter((row) => this.rowHasValues(row))
     },
+    tableData () {
+      let prevPos = 0
+      return this.aquifersData.map((row, i) => {
+        let isNonAquifer = false
+        let nonAquiferStart = 0
+        let nonAquiferEnd = 0
+        let nonAquiferSize = 0
+
+        // Check to see if there is a greater than 1m gap between aquifers. This means there is a non-aquifer.
+        if (Math.abs(parseFloat(row.start) - prevPos) > 1) {
+          isNonAquifer = true
+          nonAquiferStart = prevPos
+          nonAquiferEnd = parseFloat(row.start)
+          nonAquiferSize = nonAquiferEnd - nonAquiferStart
+          if (nonAquiferSize < 0) {
+            isNonAquifer = false
+          }
+        }
+
+        prevPos = parseFloat(row.end)
+
+        return {
+          ...row,
+          isNonAquifer,
+          nonAquiferStart,
+          nonAquiferEnd,
+          nonAquiferSize
+        }
+      })
+    },
     warnings () {
       const warnings = []
 
@@ -253,6 +268,11 @@ export default {
     }
   },
   methods: {
+    sortRows () {
+      this.aquifersData.sort((a, b) => {
+        return parseFloat(a.start) - parseFloat(b.start)
+      })
+    },
     addAquiferRow () {
       this.aquifersData.push(this.emptyObject())
     },
@@ -327,6 +347,8 @@ export default {
       this.initForm()
     },
     save () {
+      this.sortRows()
+
       this.isSaving = true
       this.error = null
       this.fieldErrors = []
@@ -410,25 +432,18 @@ export default {
 }
 
 #vertical-aquifer-extents-table {
-  overflow-x: auto;
-
-  table {
-    margin-bottom: 0;
+  .non-aquifer {
   }
 
   .from-col, .to-col {
-    min-width: 80px;
+    min-width: 120px;
     width: 10%;
+    white-space: nowrap;
   }
 
   .aquifer-col {
     min-width: 200px;
-    width: 50%;
-  }
-
-  .latitude-col, .longitude-col {
-    min-width: 100px;
-    width: 15%;
+    width: 70%;
   }
 
   .aquifer-search-dropdown .vs__dropdown-toggle {
