@@ -68,7 +68,7 @@
         </div>
         <div class="font-weight-bold mt-3" v-if="showHistory">
           {{create_user}}
-          Created this well on
+          created this well on
           {{create_date | moment("MMMM Do YYYY [at] LT")}}
         </div>
         <div v-if="loading">

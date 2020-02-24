@@ -31,7 +31,6 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         # Arguments added for debugging purposes.
-        # e.g. don't cleanup, don't upload: python manage.py export_databc --cleanup=0 --upload=0
         parser.add_argument('--start', type=int, nargs='?', help='Well to start at', default=1)
         parser.add_argument('--end', type=int, nargs='?', help='Well to end at', default=50)
 
