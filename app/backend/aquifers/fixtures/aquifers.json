@@ -1246,5 +1246,20 @@
         "decommission_backfill_material": "test",
         "geom": "POINT(-125.301245 52.466459)"
     }
+  },
+  {
+    "model": "aquifers.verticalaquiferextent",
+    "pk": "1",
+    "fields": {
+        "create_user": "PROXY_EWELLS_USER",
+        "create_date": "2020-01-01T01:01:01Z",
+        "update_user": "PROXY_EWELLS_USER",
+        "update_date": "2020-01-01T01:01:01Z",
+        "well": 123,
+        "aquifer_id": 1900,
+        "start": "1.00",
+        "end": "144.00",
+        "geom":  "POINT(-123.39371 49.36007)"
+    }
   }
 ]

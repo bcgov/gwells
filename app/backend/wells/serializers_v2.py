@@ -12,9 +12,14 @@
     limitations under the License.
 """
 import logging
+from decimal import Decimal
 
 from rest_framework import serializers
+from django.contrib.gis.geos import GEOSGeometry, Point
+
+from gwells.utils import isPointInsideBC
 from wells.models import Well
+from aquifers.models.vertical_aquifer_extents import VerticalAquiferExtent
 
 
 logger = logging.getLogger(__name__)
@@ -27,3 +32,73 @@ class WellLocationSerializerV2(serializers.ModelSerializer):
         model = Well
         fields = ("well_tag_number", "identification_plate_number",
                   "latitude", "longitude", "street_address", "city", "ems")
+
+
+class WellVerticalAquiferExtentSerializerV2(serializers.ModelSerializer):
+    # start = serializers.DecimalField(max_digits=7, decimal_places=2, required=True, allow_null=False)
+    aquifer_id = serializers.IntegerField()
+    aquifer_name = serializers.CharField(source='aquifer.aquifer_name', read_only=True)
+    well_id = serializers.IntegerField(write_only=True)
+
+    class Meta:
+        model = VerticalAquiferExtent
+        fields = (
+            'id',
+            'aquifer_id',
+            'aquifer_name',
+            'well_id',
+            'start',
+            'end',
+            'geom'
+        )
+
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        if instance.geom:
+            ret['lat'] = Decimal(instance.geom.y)
+            ret['lng'] = Decimal(instance.geom.x)
+        del ret['geom']
+        return ret
+
+    def to_internal_value(self, data):
+        latitude = data.pop('lat', None)
+        longitude = data.pop('lng', None)
+
+        errors = {}
+        if latitude == '' or latitude is None:
+            errors['lat'] = ['This field is required.']
+        if longitude == '' or longitude is None:
+            errors['lng'] = ['This field is required.']
+        if len(errors) > 0:
+            raise serializers.ValidationError(errors)
+
+        point = Point(-abs(float(longitude)), float(latitude), srid=4326)
+
+        # srid = 4326
+        # geom = GEOSGeometry('POINT({} {})'.format(longitude, latitude), srid=srid)
+
+        data['geom'] = point
+        return super(WellVerticalAquiferExtentSerializerV2, self).to_internal_value(data)
+
+    def validate(self, attrs):
+        errors = {}
+
+        start_depth = attrs.get('start', None)
+        end_depth = attrs.get('end', None)
+        if start_depth is not None and end_depth is not None:
+            if start_depth > end_depth:
+                errors['end'] = 'To can not be above from'
+            if abs(end_depth - start_depth) < Decimal('0.1'):
+                errors['end'] = 'End must be more then 0.1m from start'
+
+        point = attrs.get('geom')
+        if point:
+            isInside = isPointInsideBC(point.y, point.x)
+            if not isInside:
+                errors['lat'] = 'Latitude is not inside BC'
+                errors['lng'] = 'Longitude is not inside BC'
+
+        if len(errors) > 0:
+            raise serializers.ValidationError(errors)
+
+        return attrs

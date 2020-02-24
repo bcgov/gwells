@@ -1,10 +1,10 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
 from gwells.settings.base import get_env_variable
-from django.contrib.gis.geos import GEOSGeometry
-from gwells.models import Border
-
+from gwells.utils import isPointInsideBC
 
 class KeycloakConfig(APIView):
     """ serves keycloak config """
@@ -54,15 +54,14 @@ class InsideBC(APIView):
         latitude = request.query_params.get('latitude')
         longitude = request.query_params.get('longitude')
 
-        inside = False
-        if latitude and longitude:
-            latitude = float(latitude)
-            longitude = float(longitude)
-            wgs84_srid = 4269
-            pnt = GEOSGeometry('POINT({} {})'.format(longitude, latitude), srid=wgs84_srid)
-            result = Border.objects.filter(geom__contains=pnt)
-            inside = result.count() > 0
-
         return Response({
-            'inside': inside
+            'inside': isPointInsideBC(latitude, longitude)
         })
+
+
+@csrf_exempt
+def api_404(request, **kwargs):
+    response = JsonResponse({
+        'detail': 'API endpoint not found "{}"'.format(request.path)
+    }, status=404)
+    return response
