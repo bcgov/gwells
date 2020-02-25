@@ -47,7 +47,7 @@
             </b-card>
             <b-card title="Documents for specific aquifers" :class="{ chosen: behaviourPicked, active: behaviour === 'keyed'}">
               <b-card-text>
-                If you have many documents that are each named for their respective aquifers (e.g. factsheet_01.pdf and factsheet_02.pdf)
+                If you have many documents that are each named for their respective aquifers (e.g. factsheet_0001.pdf and factsheet_0002.pdf)
               </b-card-text>
               <template v-slot:footer>
                 <b-btn variant="primary" @click="behaviour = 'keyed'" :disabled="behaviourPicked">
@@ -64,13 +64,13 @@
                   <li :class="{active: this.multiActiveStep === 'one'}">Use the file picker below to choose one or more documents.</li>
                   <li :class="{active: this.multiActiveStep === 'two'}">Search for the aquifer in the dropdown list to the right.</li>
                   <li :class="{active: this.multiActiveStep === 'three'}">Add more aquifers as needed.</li>
-                  <li :class="{active: this.multiActiveStep === 'four'}">Click “Submit” to upload the {{this.documents.length}} documents for {{this.aquiferIds.length}} aquifers</li>
+                  <li :class="{active: this.multiActiveStep === 'four'}">Click “Submit” to upload the {{this.upload_files.length}} documents for {{this.aquiferIds.length}} aquifers</li>
                 </ol>
               </div>
               <div v-else>
                 <ol>
-                  <li :class="{active: this.keyedActiveStep === 'one'}">Use the file picker below to choose one or more documents keyed by aquifer ID. E.g. (factsheet_01.pdf, factsheet_02.pdf).</li>
-                  <li :class="{active: this.keyedActiveStep === 'two'}">Click “Submit” to upload the {{this.documents.length}} documents for {{Object.keys(this.aquiferDocuments).length}} aquifers</li>
+                  <li :class="{active: this.keyedActiveStep === 'one'}">Use the file picker below to choose one or more documents keyed by aquifer ID (e.g. factsheet_0001.pdf, factsheet_0002.pdf).</li>
+                  <li :class="{active: this.keyedActiveStep === 'two'}">Click “Submit” to upload the {{this.upload_files.length}} documents for {{Object.keys(this.aquiferDocuments).length}} aquifers</li>
                 </ol>
               </div>
             </b-card>
@@ -80,10 +80,13 @@
                 <b-col md="6" id="documents">
                   <h5>Documents</h5>
                   <b-row class="align-items-center mb-3">
-                    <b-col md="6">
-                      <b-form-file v-model="documents" multiple plain/>
+                    <b-col md="3">
+                      <b-form-file
+                        multiple
+                        :key="`file-upload-${this.upload_files.length}`"
+                        @input="filesPicked"/>
                     </b-col>
-                    <b-col md="6">
+                    <b-col md="9">
                       <div>
                         <b-form-checkbox
                           id="private-documents-checkbox"
@@ -93,10 +96,10 @@
                   </b-row>
                   <table id="files-to-upload">
                     <tbody>
-                      <tr v-for="(file, index) in upload_files" :key="index">
+                      <tr v-for="(file, index) in upload_files" :key="index" :class="{ error: fileIsInvalid(file) }">
+                        <td><input type="button" value="remove" @click.prevent="removeFile(file)"/></td>
                         <td>{{file.name}}</td>
                         <td>{{formatFileSize(file.size)}}</td>
-                        <td><input type="button" value="remove" @click.prevent="removeFile(file)"/></td>
                       </tr>
                     </tbody>
                   </table>
@@ -131,7 +134,7 @@
                     </ul>
                   </div>
                   <div v-else>
-                    <b-alert show variant="danger" v-if="unknonwnAquiferIdsExist">
+                    <b-alert show variant="warning" v-if="unknonwnAquiferIdsExist">
                       Aquifers in <span style="color:red">red</span> do not exist
                     </b-alert>
 
@@ -139,6 +142,8 @@
                       :items="aquiferTableData"
                       :fields="aquiferTableFields"
                       v-if="upload_files.length > 0"
+                      :show-empty="aquiferTableData.length === 0"
+                      empty-text="No documents with keyed aquifer IDs"
                       striped>
                       <template slot="aquiferId" slot-scope="row">
                         <span :class="{ unknown: checkAquiferIsUnknown(row.item.aquiferId) }">
@@ -160,7 +165,7 @@
               <b-button-group class="mt-3">
                 <b-button
                   v-if="showSubmitButton"
-                  :disabled="isSaving || upload_files.length === 0"
+                  :disabled="submitButtonIsDisabled"
                   variant="primary"
                   @click="save">
                   <b-spinner v-if="isSaving" small label="Loading…"/>
@@ -244,14 +249,6 @@ export default {
     keyedBehaviourPicked () {
       return this.behaviour === 'keyed'
     },
-    documents: {
-      get: function () {
-        return this.upload_files
-      },
-      set: function (value) {
-        this.setFiles(value)
-      }
-    },
     privateDocument: {
       get: function () {
         return this.isPrivate
@@ -270,14 +267,10 @@ export default {
       const list = []
 
       this.upload_files.forEach((file) => {
-        const matches = file.name.match(/[_ -](\d+)\.[a-zA-Z0-9]+$/)
-        if (matches) {
-          const aquiferId = parseInt(matches[1], 10) || null
-
-          if (aquiferId) {
-            list[aquiferId] = list[aquiferId] || []
-            list[aquiferId].push(file)
-          }
+        const aquiferId = this.parseAquiferIdFromFileName(file.name)
+        if (aquiferId) {
+          list[aquiferId] = list[aquiferId] || []
+          list[aquiferId].push(file)
         }
       })
 
@@ -302,6 +295,17 @@ export default {
       }
 
       return true
+    },
+    submitButtonIsDisabled () {
+      if (this.isSaving) {
+        return true
+      } else if (this.upload_files.length === 0) {
+        return true
+      } else if (this.unknonwnAquiferIdsExist) {
+        return true
+      }
+
+      return false
     },
     showResetButton () {
       return true
@@ -485,6 +489,37 @@ export default {
       }
 
       return this.unknonwnAquiferIds.indexOf(aquiferId) !== -1
+    },
+    parseAquiferIdFromFileName (fileName) {
+      const matches = fileName.match(/[_ -](\d+)\.[a-zA-Z0-9]+$/)
+      if (matches) {
+        return parseInt(matches[1], 10) || null
+      }
+      return null
+    },
+    fileIsInvalid (file) {
+      if (this.keyedBehaviourPicked) {
+        const aquiferId = this.parseAquiferIdFromFileName(file.name)
+
+        if (aquiferId) {
+          if (this.unknonwnAquiferIdsExist && this.unknonwnAquiferIds.indexOf(aquiferId) !== -1) {
+            return true
+          }
+
+          return false
+        }
+
+        return true
+      }
+
+      return false
+    },
+    filesPicked (files) {
+      // Only setFiles when files > 0 because setFiles will empty the
+      // upload_files collection if sent an empty array.
+      if (files.length > 0) {
+        this.setFiles(files)
+      }
     }
   }
 }
@@ -539,6 +574,12 @@ export default {
 }
 
 #files-to-upload {
+  tr {
+    &.error {
+      color: red;
+    }
+  }
+
   td {
     padding: 0.3rem 0.5rem;
     border-bottom: 1px solid #EEE;
@@ -605,6 +646,17 @@ export default {
     &:hover {
       background-color: #b92227;
       border-color: #ae2025;
+    }
+  }
+
+  .custom-file-label {
+    color: transparent;
+    overflow: hidden;
+
+    &:after {
+      left: 0;
+      border-left: none;
+      content: "Pick files";
     }
   }
 }
