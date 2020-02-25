@@ -51,10 +51,10 @@ class BulkWellAquiferCorrelationHistory(BulkHistory):
     update_to_aquifer = models.ForeignKey(
         Aquifer, db_column='to_aquifer_id', on_delete=models.PROTECT, blank=False,
         null=False, verbose_name='Aquifer ID Number',
-        related_name='update_to_aquifer',
+        related_name='update_to_aquifer_set',
         db_comment=('The aquifer that this well is to be correlated with'))
     update_from_aquifer = models.ForeignKey(
         Aquifer, db_column='from_aquifer_id', on_delete=models.PROTECT, blank=True,
         null=True, verbose_name='Aquifer ID Number',
-        related_name='update_from_aquifer',
+        related_name='update_from_aquifer_set',
         db_comment=('The aquifer that this well was previously correlated with'))

@@ -11,9 +11,6 @@
         <div class="loader" style="margin-right: 5px"></div>Loading...
       </div>
       <div id="historyList" ref="history" v-if="loaded && !loading">
-        <div class="mt-2" v-if="!history || !history.length">
-          <b-row><b-col>No history for this record.</b-col></b-row>
-        </div>
         <div class="mt-2" v-if="history && history.length && showHistory">
           <div class="mt-3" v-for="(history_item, index) in history" :key="`history-version ${index}`" :id="`history-version-${index}`">
             <div class="font-weight-bold">
@@ -70,11 +67,11 @@
               </div>
             </div>
           </div>
-          <div class="font-weight-bold mt-3">
-            {{create_user}}
-            Created this well on
-            {{create_date | moment("MMMM Do YYYY [at] LT")}}
-          </div>
+        </div>
+        <div class="font-weight-bold mt-3" v-if="showHistory">
+          {{create_user}}
+          created this well on
+          {{create_date | moment("MMMM Do YYYY [at] LT")}}
         </div>
         <div v-if="loading">
           <b-row><b-col>Loading history...</b-col></b-row>
