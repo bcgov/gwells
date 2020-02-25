@@ -66,16 +66,17 @@ class WellVerticalAquiferExtentSerializerV2(serializers.ModelSerializer):
         well_tag_number = data.get('well_tag_number', None)
 
         errors = {}
-        if well_tag_number:
+        # If lat and lng are not in the payload then we want to use the well's lat lng
+        if latitude is None and longitude is None and well_tag_number:
             well = Well.objects.get(well_tag_number=well_tag_number)
             if well.geom:
                 longitude = well.geom.x
                 latitude = well.geom.y
-        else:
-            if latitude == '' or latitude is None:
-                errors['lat'] = ['This field is required.']
-            if longitude == '' or longitude is None:
-                errors['lng'] = ['This field is required.']
+
+        if latitude == '' or latitude is None:
+            errors['lat'] = ['This field is required.']
+        if longitude == '' or longitude is None:
+            errors['lng'] = ['This field is required.']
 
         if len(errors) > 0:
             raise serializers.ValidationError(errors)
