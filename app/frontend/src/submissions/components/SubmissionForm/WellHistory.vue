@@ -1,10 +1,12 @@
 <template>
   <div class="card">
     <div class="card-body">
-      <h6 class="card-title" id="changeHistoryTitle">Change History
+      <h6 class="card-title mb-0" id="changeHistoryTitle">
+        Change History
         <span class="ml-3">
           <b-button link size="sm" variant="outline-primary" v-on:click="toggleShow">{{showHistory ? "Hide":"Show"}}</b-button>
-        </span></h6>
+        </span>
+      </h6>
       <div v-if="loading">
         <div class="loader" style="margin-right: 5px"></div>Loading...
       </div>
@@ -86,8 +88,8 @@ import ApiService from '@/common/services/ApiService.js'
 export default {
   name: 'WellHistory',
   props: {
-    id: {
-      type: String,
+    wellTagNumber: {
+      type: Number,
       isInput: false
     },
     events: {
@@ -111,7 +113,7 @@ export default {
     },
     update () {
       this.loading = true
-      ApiService.history('wells', this.id).then((response) => {
+      ApiService.history('wells', this.wellTagNumber).then((response) => {
         this.history = response.data.history
         this.create_user = response.data.create_user
         this.create_date = response.data.create_date

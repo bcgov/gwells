@@ -33,6 +33,10 @@ urlpatterns = [
     url(api_path_prefix() + r'/wells/(?P<well_id>[0-9]+)/submissions$',
         never_cache(views.WellSubmissionsListAPIView.as_view()), name='submissions-by-well'),
 
+    # Well's vertical aquifer extents
+    url(r'api/v2/wells/(?P<well_tag_number>[0-9]+)/vertical-aquifer-extents$',
+        never_cache(views_v2.WellAquiferListV2APIView.as_view()), name='well-aquifers'),
+
     # Well
     url(api_path_prefix() + r'/wells/(?P<well_tag_number>[0-9]+)$',
         never_cache(views.WellDetail.as_view()), name='well-detail'),

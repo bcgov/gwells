@@ -15,13 +15,12 @@ Licensed under the Apache License, Version 2.0 (the "License");
   <fieldset :id="id" class="mt-5">
     <b-row>
       <b-col cols="12" lg="6">
-        <legend :id="id">Change History
-        </legend>
+        <legend>Change History</legend>
       </b-col>
     </b-row>
     <b-row>
       <b-col cols="12">
-        <well-history :id="$route.params.id" resource="wells" :events="events" ref="wellHistory"/>
+        <well-history :well-tag-number="wellTagNumber" resource="wells" :events="events" ref="wellHistory"/>
       </b-col>
     </b-row>
   </fieldset>
@@ -36,7 +35,10 @@ export default {
   name: 'StaffEditHistory',
   props: {
     id: {
-      type: String,
+      type: String
+    },
+    wellTagNumber: {
+      type: Number,
       isInput: false
     },
     events: {
