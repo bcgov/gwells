@@ -32,10 +32,9 @@ from gwells.models.lithology import (
     LithologyDescriptionCode, LithologyColourCode, LithologyHardnessCode,
     LithologyMaterialCode, BedrockMaterialCode, BedrockMaterialDescriptorCode, LithologyStructureCode,
     LithologyMoistureCode, SurficialMaterialCode)
-from registries.models import Person, Organization
-from submissions.models import WellActivityCode
-from aquifers.models import Aquifer
 from gwells.db_comments.patch_fields import patch_fields
+
+# from aquifers.models import Aquifer
 
 patch_fields()
 
@@ -1006,18 +1005,18 @@ class Well(AuditModelStructure):
     decommission_details = models.CharField(
         max_length=250, blank=True, null=True, verbose_name="Decommission Details")
     aquifer = models.ForeignKey(
-        Aquifer, db_column='aquifer_id', on_delete=models.PROTECT, blank=True,
+        'aquifers.Aquifer', db_column='aquifer_id', on_delete=models.PROTECT, blank=True,
         null=True, verbose_name='Aquifer ID Number',
         db_comment=('System generated unique sequential number assigned to each mapped aquifer. The'
                     ' aquifer_id identifies which aquifer a well is in. An aquifer can have multiple'
                     ' wells, while a single well can only be in one aquifer.'))
 
-    person_responsible = models.ForeignKey(Person, db_column='person_responsible_guid',
+    person_responsible = models.ForeignKey('registries.Person', db_column='person_responsible_guid',
                                            on_delete=models.PROTECT,
                                            verbose_name='Person Responsible for Drilling',
                                            null=True, blank=True)
     company_of_person_responsible = models.ForeignKey(
-        Organization, db_column='org_of_person_responsible_guid', on_delete=models.PROTECT,
+        'registries.Organization', db_column='org_of_person_responsible_guid', on_delete=models.PROTECT,
         verbose_name='Company of person responsible for drilling', null=True, blank=True)
     driller_name = models.CharField(
         max_length=200, blank=True, null=True, verbose_name='Name of Person Who Did the Work')
@@ -1295,7 +1294,7 @@ class ActivitySubmission(AuditModelStructure):
         db_comment=('The file number assigned to a particular well in the in the province\'s Groundwater '
                     'Wells and Aquifers application.'))
     well_activity_type = models.ForeignKey(
-        WellActivityCode, db_column='well_activity_code', on_delete=models.PROTECT,
+        'submissions.WellActivityCode', db_column='well_activity_code', on_delete=models.PROTECT,
         verbose_name='Type of Work')
     well_status = models.ForeignKey(
         WellStatusCode, db_column='well_status_code',
@@ -1325,12 +1324,12 @@ class ActivitySubmission(AuditModelStructure):
                     ' time of work completion on the well. E.g DOM, IRR, DWS, COM'))
     # Driller responsible should be a required field on all submissions, but for legacy well
     # information this may not be available, so we can't enforce this on a database level.
-    person_responsible = models.ForeignKey(Person, db_column='person_responsible_guid',
+    person_responsible = models.ForeignKey('registries.Person', db_column='person_responsible_guid',
                                            on_delete=models.PROTECT,
                                            verbose_name='Person Responsible for Drilling',
                                            blank=True, null=True)
     company_of_person_responsible = models.ForeignKey(
-        Organization, db_column='org_of_person_responsible_guid', on_delete=models.PROTECT,
+        'registries.Organization', db_column='org_of_person_responsible_guid', on_delete=models.PROTECT,
         verbose_name='Company of person responsible for drilling', null=True, blank=True)
     driller_name = models.CharField(
         max_length=200, blank=True, null=True, verbose_name='Name of Person Who Did the Work')
@@ -1620,7 +1619,7 @@ class ActivitySubmission(AuditModelStructure):
 
     # aquifer association
     aquifer = models.ForeignKey(
-        Aquifer, db_column='aquifer_id', on_delete=models.PROTECT, blank=True,
+        'aquifers.Aquifer', db_column='aquifer_id', on_delete=models.PROTECT, blank=True,
         null=True, verbose_name='Aquifer ID Number',
         db_comment=('System generated unique sequential number assigned to each mapped aquifer. The'
                     ' aquifer_id identifies which aquifer a well is in. An aquifer can have multiple'

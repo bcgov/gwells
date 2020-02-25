@@ -12,13 +12,15 @@
     limitations under the License.
 """
 import uuid
-from django.utils import timezone
 import logging
 import reversion
+from reversion.models import Version
+
+from django.utils import timezone
 from django.contrib.gis.db import models
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.fields import GenericRelation
-from reversion.models import Version
+
 from gwells.models import AuditModel, ProvinceStateCode, CodeTableModel, BasicCodeTableModel
 
 User = get_user_model()

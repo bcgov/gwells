@@ -30,7 +30,7 @@ from gwells.models.lithology import (
     LithologyColourCode, LithologyHardnessCode,
     LithologyMaterialCode, LithologyMoistureCode, LithologyDescriptionCode)
 
-from wells.models import Well, ActivitySubmission, WellActivityCode, FieldsProvided
+from wells.models import Well, ActivitySubmission, FieldsProvided
 from wells.serializers import (
     ActivitySubmissionLinerPerforationSerializer,
     CasingSerializer,
@@ -88,6 +88,9 @@ from wells.models import (
     ObsWellStatusCode,
     AquiferLithologyCode,
 )
+
+from .models import WellActivityCode
+
 
 logger = logging.getLogger(__name__)
 

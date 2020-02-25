@@ -97,7 +97,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                             :filterable="false"
                             :options="aquiferList || []"
                             :key="row.aquifer_id"
-                            :reduce="aquifer => row.aquifer_id"
+                            :reduce="aquifer => aquifer.aquifer_id"
                             class="my-1"
                             label="description"
                             index="aquifer_id"

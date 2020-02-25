@@ -13,10 +13,11 @@
 """
 from decimal import Decimal
 import uuid
-from django.utils import timezone
 
+from django.utils import timezone
 from django.contrib.gis.db import models
 from django.core.validators import MinValueValidator
+
 from gwells.models import AuditModel, CodeTableModel
 
 WELL_ACTIVITY_CODE_CONSTRUCTION = 'CON'

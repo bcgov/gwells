@@ -38,7 +38,7 @@ class WellVerticalAquiferExtentSerializerV2(serializers.ModelSerializer):
     # start = serializers.DecimalField(max_digits=7, decimal_places=2, required=True, allow_null=False)
     aquifer_id = serializers.IntegerField()
     aquifer_name = serializers.CharField(source='aquifer.aquifer_name', read_only=True)
-    well_id = serializers.IntegerField(write_only=True)
+    well_tag_number = serializers.IntegerField(write_only=True)
 
     class Meta:
         model = VerticalAquiferExtent
@@ -46,7 +46,7 @@ class WellVerticalAquiferExtentSerializerV2(serializers.ModelSerializer):
             'id',
             'aquifer_id',
             'aquifer_name',
-            'well_id',
+            'well_tag_number',
             'start',
             'end',
             'geom'
@@ -63,19 +63,24 @@ class WellVerticalAquiferExtentSerializerV2(serializers.ModelSerializer):
     def to_internal_value(self, data):
         latitude = data.pop('lat', None)
         longitude = data.pop('lng', None)
+        well_tag_number = data.get('well_tag_number', None)
 
         errors = {}
-        if latitude == '' or latitude is None:
-            errors['lat'] = ['This field is required.']
-        if longitude == '' or longitude is None:
-            errors['lng'] = ['This field is required.']
+        if well_tag_number:
+            well = Well.objects.get(well_tag_number=well_tag_number)
+            if well.geom:
+                longitude = well.geom.x
+                latitude = well.geom.y
+        else:
+            if latitude == '' or latitude is None:
+                errors['lat'] = ['This field is required.']
+            if longitude == '' or longitude is None:
+                errors['lng'] = ['This field is required.']
+
         if len(errors) > 0:
             raise serializers.ValidationError(errors)
 
         point = Point(-abs(float(longitude)), float(latitude), srid=4326)
-
-        # srid = 4326
-        # geom = GEOSGeometry('POINT({} {})'.format(longitude, latitude), srid=srid)
 
         data['geom'] = point
         return super(WellVerticalAquiferExtentSerializerV2, self).to_internal_value(data)
@@ -102,3 +107,9 @@ class WellVerticalAquiferExtentSerializerV2(serializers.ModelSerializer):
             raise serializers.ValidationError(errors)
 
         return attrs
+
+    def create(self, validated_data):
+        well_tag_number = validated_data.pop('well_tag_number', None)
+        well = Well.objects.get(well_tag_number=well_tag_number)
+        validated_data['well'] = well
+        return super().create(validated_data)
