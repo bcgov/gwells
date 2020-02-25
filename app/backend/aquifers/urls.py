@@ -41,6 +41,11 @@ urlpatterns = [
         name='aquifer-name-list'
         ),
 
+    url(r'api/v2/aquifers/slim$',
+        never_cache(views.AquiferSlimList.as_view()),
+        name='aquifer-slim-list'
+        ),
+
     url(api_path_prefix() + r'/aquifers/(?P<aquifer_id>[0-9]+)/edit$',
         never_cache(views.AquiferEditDetailsAPIView.as_view()),
         name='aquifer-edit-details'

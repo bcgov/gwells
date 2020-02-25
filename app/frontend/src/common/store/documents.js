@@ -52,6 +52,7 @@ export default {
       context.commit('setFilesUploading', true)
       let documentType = payload.documentType
       let recordId = payload.recordId
+      const files = payload.files || context.state.upload_files
 
       // Driller documents are always private
       let isPrivate = context.state.isPrivate
@@ -61,7 +62,7 @@ export default {
 
       let uploadPromises = []
 
-      context.state.upload_files.forEach(file => {
+      files.forEach(file => {
         uploadPromises.push(
           ApiService.presignedPutUrl(
             documentType,

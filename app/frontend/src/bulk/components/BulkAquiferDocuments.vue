@@ -22,92 +22,160 @@
           <b-col><h4>Aquifer Documents Bulk Upload</h4></b-col>
         </b-row>
 
-        <b-alert show v-if="showSaveSuccess" variant="success" >
-          All documents uploaded for aquifers {{this.aquiferIds.join(', ')}}
-        </b-alert>
+        <div v-if="showSaveSuccess">
+          <b-alert show variant="success" >
+            All documents uploaded for aquifers.
+          </b-alert>
 
-        <b-card id="instructions" class="mb-3" title="Instructions">
-          <ol>
-            <li :class="{active: this.activeStep === 'one'}">Use the file picker below to choose one or more documents.</li>
-            <li :class="{active: this.activeStep === 'two'}">Search for the aquifer in the dropdown list to the right.</li>
-            <li :class="{active: this.activeStep === 'three'}">Add more aquifers as needed.</li>
-            <li :class="{active: this.activeStep === 'four'}">Click “Save” to upload the selected documents for aquifers: {{this.aquiferIds.join(', ')}}</li>
-          </ol>
-        </b-card>
+          <b-button
+            variant="default"
+            @click="restart">
+            Upload more documents
+          </b-button>
+        </div>
+        <div v-else>
+          <b-card-group id="upload-behaviour" class="mb-3">
+            <b-card title="Multiple documents for multiple aquifers" :class="{ chosen: behaviourPicked, active: multiBehaviourPicked}">
+              <b-card-text>
+                If you have one or more documents that you want to upload for one or more aquifers.
+              </b-card-text>
+              <template v-slot:footer>
+                <b-btn variant="primary" @click="behaviour = 'multi'" :disabled="behaviourPicked">
+                  Multiple Uploads
+                </b-btn>
+              </template>
+            </b-card>
+            <b-card title="Documents for specific aquifers" :class="{ chosen: behaviourPicked, active: behaviour === 'keyed'}">
+              <b-card-text>
+                If you have many documents that are each named for their respective aquifers (e.g. factsheet_01.pdf and factsheet_02.pdf)
+              </b-card-text>
+              <template v-slot:footer>
+                <b-btn variant="primary" @click="behaviour = 'keyed'" :disabled="behaviourPicked">
+                  Aquifer Keyed Files
+                </b-btn>
+              </template>
+            </b-card>
+          </b-card-group>
 
-        <b-form @submit.prevent="save()" @reset.prevent="restart()">
-          <b-row>
-            <b-col md="6" id="documents">
-              <h5>Documents</h5>
-              <b-row class="align-items-center mb-3">
-                <b-col md="6">
-                  <b-form-file v-model="documents" multiple plain/>
+          <div v-if="behaviourPicked">
+            <b-card id="instructions" class="mb-3" title="Instructions">
+              <div v-if="multiBehaviourPicked">
+                <ol>
+                  <li :class="{active: this.multiActiveStep === 'one'}">Use the file picker below to choose one or more documents.</li>
+                  <li :class="{active: this.multiActiveStep === 'two'}">Search for the aquifer in the dropdown list to the right.</li>
+                  <li :class="{active: this.multiActiveStep === 'three'}">Add more aquifers as needed.</li>
+                  <li :class="{active: this.multiActiveStep === 'four'}">Click “Submit” to upload the {{this.documents.length}} documents for {{this.aquiferIds.length}} aquifers</li>
+                </ol>
+              </div>
+              <div v-else>
+                <ol>
+                  <li :class="{active: this.keyedActiveStep === 'one'}">Use the file picker below to choose one or more documents keyed by aquifer ID. E.g. (factsheet_01.pdf, factsheet_02.pdf).</li>
+                  <li :class="{active: this.keyedActiveStep === 'two'}">Click “Submit” to upload the {{this.documents.length}} documents for {{Object.keys(this.aquiferDocuments).length}} aquifers</li>
+                </ol>
+              </div>
+            </b-card>
+
+            <b-form @submit.prevent="save()" @reset.prevent="reset()">
+              <b-row>
+                <b-col md="6" id="documents">
+                  <h5>Documents</h5>
+                  <b-row class="align-items-center mb-3">
+                    <b-col md="6">
+                      <b-form-file v-model="documents" multiple plain/>
+                    </b-col>
+                    <b-col md="6">
+                      <div>
+                        <b-form-checkbox
+                          id="private-documents-checkbox"
+                          v-model="privateDocument">Are these documents private?</b-form-checkbox>
+                      </div>
+                    </b-col>
+                  </b-row>
+                  <table id="files-to-upload">
+                    <tbody>
+                      <tr v-for="(file, index) in upload_files" :key="index">
+                        <td>{{file.name}}</td>
+                        <td>{{formatFileSize(file.size)}}</td>
+                        <td><input type="button" value="remove" @click.prevent="removeFile(file)"/></td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </b-col>
-                <b-col md="6">
-                  <div>
-                    <b-form-checkbox
-                      id="private-documents-checkbox"
-                      v-model="privateDocument">Are these documents private?</b-form-checkbox>
+                <b-col md="6" id="aquifers">
+                  <h5>Aquifers</h5>
+                  <div v-if="multiBehaviourPicked">
+                    <ul>
+                      <li v-for="(aquiferId, index) in aquifersList" :key="index">
+                        <v-select
+                          :id="`aquifer_${index}`"
+                          v-model="aquifersList[index]"
+                          :filterable="false"
+                          :options="aquiferSearchResults"
+                          :reduce="aquifer => aquifer.aquifer_id"
+                          label="description"
+                          index="aquifer_id"
+                          :key="aquiferId"
+                          @search="onAquiferSearch"
+                          @input="onAquiferSelected(index)">
+                          <template slot="no-options">
+                            Search for an aquifer by name or id number
+                          </template>
+                          <template slot="option" slot-scope="option">
+                            <div>{{ option.description }}</div>
+                          </template>
+                          <template slot="selected-option" slot-scope="option">
+                            <div>{{ option.description }}</div>
+                          </template>
+                        </v-select>
+                      </li>
+                    </ul>
+                  </div>
+                  <div v-else>
+                    <b-alert show variant="danger" v-if="unknonwnAquiferIdsExist">
+                      Aquifers in <span style="color:red">red</span> do not exist
+                    </b-alert>
+
+                    <b-table
+                      :items="aquiferTableData"
+                      :fields="aquiferTableFields"
+                      v-if="upload_files.length > 0"
+                      striped>
+                      <template slot="aquiferId" slot-scope="row">
+                        <span :class="{ unknown: checkAquiferIsUnknown(row.item.aquiferId) }">
+                          {{row.item.aquiferId}}
+                        </span>
+                      </template>
+                      <template slot="documents" slot-scope="row">
+                        <ul>
+                          <li v-for="(file, index) in row.item.documents" :key="index">
+                            {{ file.name }}
+                          </li>
+                        </ul>
+                      </template>
+                    </b-table>
                   </div>
                 </b-col>
               </b-row>
-              <table id="files-to-upload">
-                <tbody>
-                  <tr v-for="(file, index) in upload_files" :key="index">
-                    <td>{{file.name}}</td>
-                    <td>{{formatFileSize(file.size)}}</td>
-                    <td><input type="button" value="remove" @click.prevent="removeFile(file)"/></td>
-                  </tr>
-                </tbody>
-              </table>
-            </b-col>
-            <b-col md="6" id="aquifers">
-              <h5>Aquifers</h5>
-              <ul>
-                <li v-for="(aquiferId, index) in aquifersList" :key="index">
-                  <v-select
-                    :id="`aquifer_${index}`"
-                    v-model="aquifersList[index]"
-                    :filterable="false"
-                    :options="aquiferSearchResults"
-                    :reduce="aquifer => aquifer.aquifer_id"
-                    label="description"
-                    index="aquifer_id"
-                    :key="aquiferId"
-                    @search="onAquiferSearch"
-                    @input="onAquiferSelected(index)">
-                    <template slot="no-options">
-                      Search for an aquifer by name or id number
-                    </template>
-                    <template slot="option" slot-scope="option">
-                      <div>{{ option.description }}</div>
-                    </template>
-                    <template slot="selected-option" slot-scope="option">
-                      <div>{{ option.description }}</div>
-                    </template>
-                  </v-select>
-                </li>
-              </ul>
-            </b-col>
-          </b-row>
 
-          <b-button-group class="mt-3">
-            <b-button
-              v-if="showSubmitButton"
-              :disabled="isSaving || upload_files.length === 0"
-              variant="primary"
-              @click="save">
-              <b-spinner v-if="isSaving" small label="Loading…"/>
-              Submit
-            </b-button>
-            <b-button
-              v-if="showResetButton"
-              variant="default"
-              @click="restart">
-              Reset
-            </b-button>
-          </b-button-group>
-        </b-form>
+              <b-button-group class="mt-3">
+                <b-button
+                  v-if="showSubmitButton"
+                  :disabled="isSaving || upload_files.length === 0"
+                  variant="primary"
+                  @click="save">
+                  <b-spinner v-if="isSaving" small label="Loading…"/>
+                  Submit
+                </b-button>
+                <b-button
+                  v-if="showResetButton"
+                  variant="default"
+                  @click="reset">
+                  Reset
+                </b-button>
+              </b-button-group>
+            </b-form>
+          </div>
+        </div>
       </b-container>
     </b-card>
     <div class="card container" v-else-if="!$keycloak.authenticated">
@@ -133,13 +201,26 @@ import APIErrorMessage from '@/common/components/APIErrorMessage'
 export default {
   data () {
     return {
+      behaviour: null,
       apiError: null,
       files: null,
       apiValidationErrors: {},
       isSaving: false,
       showSaveSuccess: false,
       aquifersList: [null],
-      aquiferSearchResults: []
+      aquiferSearchResults: [],
+      unknonwnAquiferIds: null,
+      aquiferTableFields: [
+        {
+          key: 'aquiferId',
+          label: 'Aquifer',
+          sortable: true
+        },
+        {
+          key: 'documents',
+          label: 'Documents'
+        }
+      ]
     }
   },
   components: {
@@ -153,6 +234,15 @@ export default {
     ...mapGetters(['userRoles', 'keycloak']),
     perms () {
       return this.userRoles.bulk || {}
+    },
+    behaviourPicked () {
+      return this.behaviour !== null
+    },
+    multiBehaviourPicked () {
+      return this.behaviour === 'multi'
+    },
+    keyedBehaviourPicked () {
+      return this.behaviour === 'keyed'
     },
     documents: {
       get: function () {
@@ -176,6 +266,34 @@ export default {
     hasAPIValidationErrors () {
       return Object.keys(this.apiValidationErrors).length > 0
     },
+    aquiferDocuments () {
+      const list = []
+
+      this.upload_files.forEach((file) => {
+        const matches = file.name.match(/[_ -](\d+)\.[a-zA-Z0-9]+$/)
+        if (matches) {
+          const aquiferId = parseInt(matches[1], 10) || null
+
+          if (aquiferId) {
+            list[aquiferId] = list[aquiferId] || []
+            list[aquiferId].push(file)
+          }
+        }
+      })
+
+      return list
+    },
+    aquiferTableData () {
+      return Object.keys(this.aquiferDocuments).map((aquiferId) => {
+        return {
+          aquiferId: parseInt(aquiferId, 10),
+          documents: this.aquiferDocuments[aquiferId]
+        }
+      })
+    },
+    unknonwnAquiferIdsExist () {
+      return this.unknonwnAquiferIds !== null && this.unknonwnAquiferIds.length > 0
+    },
     showSubmitButton () {
       if (this.hasAPIValidationErrors) {
         return false
@@ -186,17 +304,9 @@ export default {
       return true
     },
     showResetButton () {
-      if (this.upload_files.length > 0) {
-        return true
-      } else if (this.aquiferIds.length > 0) {
-        return true
-      } else if (this.showSaveSuccess) {
-        return true
-      }
-
-      return false
+      return true
     },
-    activeStep () {
+    multiActiveStep () {
       if (this.upload_files.length === 0) {
         return 'one'
       } else if (this.aquiferIds.length === 0) {
@@ -207,11 +317,23 @@ export default {
 
       return 'four'
     },
+    keyedActiveStep () {
+      if (this.upload_files.length === 0) {
+        return 'one'
+      }
+
+      return 'two'
+    },
     stepTwoActive () {
       return this.upload_files.length > 0 && this.aquiferIds.length === 0
     },
     stepThreeActive () {
       return this.aquiferIds.length > 0
+    }
+  },
+  watch: {
+    upload_files () {
+      this.checkAquiferIds()
     }
   },
   methods: {
@@ -235,12 +357,12 @@ export default {
       this.apiValidationErrors = {}
       this.isSaving = true
 
-      const promises = this.aquiferIds.map((aquiferId) => {
-        return this.uploadFiles({
-          documentType: 'aquifers',
-          recordId: aquiferId
-        })
-      })
+      let promises = []
+      if (this.multiBehaviourPicked) {
+        promises = this.uploadAllFilesForAllAquifers()
+      } else {
+        promises = this.uploadAquiferFiles()
+      }
 
       return Promise.all(promises)
         .then(() => {
@@ -248,8 +370,29 @@ export default {
           this.handleSaveSuccess()
         }).catch((error) => {
           this.fileUploadFail()
-          this.handleSaveError(error)
+          this.handleApiError(error)
           throw error
+        })
+    },
+    uploadAllFilesForAllAquifers () {
+      return this.aquiferIds.map((aquiferId) => {
+        return this.uploadFiles({
+          documentType: 'aquifers',
+          recordId: aquiferId
+        })
+      })
+    },
+    uploadAquiferFiles () {
+      return Object.keys(this.aquiferDocuments)
+        .filter((key) => {
+          return (this.unknonwnAquiferIds || []).indexOf(parseInt(key, 10)) === -1
+        }).map((key) => {
+          const aquiferId = parseInt(key, 10)
+          return this.uploadFiles({
+            documentType: 'aquifers',
+            recordId: aquiferId,
+            files: this.aquiferDocuments[aquiferId]
+          })
         })
     },
     handleSaveSuccess () {
@@ -257,7 +400,7 @@ export default {
       this.showSaveSuccess = true
       this.reset()
     },
-    handleSaveError (error) {
+    handleApiError (error) {
       this.isSaving = false
       if (error.response) {
         if (error.response.status === 400) {
@@ -275,6 +418,7 @@ export default {
       this.setFiles([])
       this.aquifersList = [null]
       this.aquiferSearchResults = []
+      this.behaviour = null
     },
     restart () {
       this.showSaveSuccess = false
@@ -323,11 +467,42 @@ export default {
     onAquiferSearch (search, loading) {
       loading(true)
       this.aquiferSearch(loading, search, this)
+    },
+    checkAquiferIds () {
+      const aquiferIds = Object.keys(this.aquiferDocuments).map((id) => parseInt(id, 10))
+      this.unknonwnAquiferIds = null
+      if (aquiferIds.length > 0) {
+        ApiService.query(`aquifers/slim?aquifer_ids=${aquiferIds.join(',')}`)
+          .then(({ data }) => {
+            this.unknonwnAquiferIds = aquiferIds.filter((aquiferId) => !data.find((aquifer) => aquiferId === aquifer.aquifer_id))
+          })
+          .catch(this.handleApiError)
+      }
+    },
+    checkAquiferIsUnknown (aquiferId) {
+      if (this.unknonwnAquiferIds === null) {
+        return false
+      }
+
+      return this.unknonwnAquiferIds.indexOf(aquiferId) !== -1
     }
   }
 }
 </script>
 <style lang="scss">
+#upload-behaviour {
+  .card.chosen {
+    &:not(.active) {
+      opacity: 0.2;
+    }
+  }
+
+  .card.active {
+    opacity: 1;
+    border-left: 1px solid rgba(0,0,0,.125) !important;
+  }
+}
+
 #instructions {
   ol {
     list-style: none;
@@ -394,6 +569,16 @@ export default {
   li {
     margin: 0 0 0.5rem 0;
     padding: 0;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  table {
+    .unknown {
+      color: red;
+    }
   }
 }
 
