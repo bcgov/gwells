@@ -54,7 +54,7 @@ class Command(BaseCommand):
             try:
                 self.create_legacy_record(well)
             except Exception as err:
-                print('Error creating legacy record for well_tag_number {well.well_tag_number}')
+                print(f'Error creating legacy record for well_tag_number {well.well_tag_number}')
                 raise err
         end = timer()
 
