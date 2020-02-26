@@ -660,20 +660,6 @@ pipeline {
         }
 
 
-        // Functional tests temporarily limited to smoke tests
-        // See https://github.com/BCDevOps/BDDStack
-        stage('DEV - Smoke Tests') {
-            when {
-                expression { env.CHANGE_TARGET != 'master' && env.CHANGE_TARGET != 'demo' }
-            }
-            steps {
-                script {
-                    def result = functionalTest ('DEV - Smoke Tests', devHost, devSuffix, 'SearchSpecs')
-                }
-            }
-        }
-
-
         stage('DEV - API Tests') {
             when {
                 expression { env.CHANGE_TARGET != 'master' && env.CHANGE_TARGET != 'demo' }
