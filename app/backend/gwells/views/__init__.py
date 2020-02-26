@@ -26,7 +26,7 @@ from gwells.models import Survey
 from gwells.permissions import SurveysEditOrReadOnly
 from gwells.roles import SURVEYS_EDIT_ROLE
 
-from wells.models import WellActivityCode
+from submissions.models import WellActivityCode
 
 
 logger = logging.getLogger(__name__)

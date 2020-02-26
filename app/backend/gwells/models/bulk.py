@@ -15,16 +15,11 @@ from django.contrib.gis.db import models
 
 from gwells.models.common import AuditModelStructure
 from gwells.db_comments.patch_fields import patch_fields
-from wells.models import Well
-from aquifers.models import Aquifer
 
 
 patch_fields()
 
 
-# BulkHistory does not use AuditModelStructure as that adds update_user and
-# update_date columns that are not needed for a un-changeable historical record
-# table.
 class BulkHistory(AuditModelStructure):
     """
     A abstract class for all bulk history changes
@@ -41,20 +36,25 @@ class BulkWellAquiferCorrelationHistory(BulkHistory):
     class Meta:
         db_table = 'bulk_well_aquifer_correlation_history'
 
+    db_table_comment = ('Keeps track of the changes to the well aquifer '
+                        'correlation from a bulk change.')
+
     id = models.AutoField(
         db_column='bulk_well_aquifer_correlation_history_id',
         primary_key=True, verbose_name='Bulk History Id',
         db_comment=('The primary key for the bulk_history table'))
     well = models.ForeignKey(
-        Well, db_column='well_tag_number', on_delete=models.PROTECT, blank=False, null=False,
-        db_comment=('The file number assigned to a particular well that has it\'s aquifer correlation changed'))
+        'wells.Well', db_column='well_tag_number', on_delete=models.PROTECT,
+        blank=False, null=False,
+        db_comment=('The file number assigned to a particular well that has it\'s '
+                    'aquifer correlation changed'))
     update_to_aquifer = models.ForeignKey(
-        Aquifer, db_column='to_aquifer_id', on_delete=models.PROTECT, blank=False,
+        'aquifers.Aquifer', db_column='to_aquifer_id', on_delete=models.PROTECT, blank=False,
         null=False, verbose_name='Aquifer ID Number',
         related_name='update_to_aquifer_set',
         db_comment=('The aquifer that this well is to be correlated with'))
     update_from_aquifer = models.ForeignKey(
-        Aquifer, db_column='from_aquifer_id', on_delete=models.PROTECT, blank=True,
+        'aquifers.Aquifer', db_column='from_aquifer_id', on_delete=models.PROTECT, blank=True,
         null=True, verbose_name='Aquifer ID Number',
         related_name='update_from_aquifer_set',
         db_comment=('The aquifer that this well was previously correlated with'))

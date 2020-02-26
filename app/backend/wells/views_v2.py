@@ -165,7 +165,7 @@ class WellAquiferListV2APIView(RevisionMixin, ListAPIView):
         errors = []
         has_errors = False
         for item in request.data: # go through each vertical aquifer extent
-            item['well_id'] = well.well_tag_number
+            item['well_tag_number'] = well.well_tag_number
 
             vertical_aquifer_extent = None
             vae_id = item.get('id', None)
@@ -193,15 +193,15 @@ class WellAquiferListV2APIView(RevisionMixin, ListAPIView):
                 serializer_errors = serializer.errors
                 has_errors = True
 
-            if vertical_aquifer_extent.start < max_depth:
-                has_errors = True
-                serializer_errors.setdefault('start', []) \
-                    .append('Start depth overlaps with another')
+            if vertical_aquifer_extent is not None:
+                if vertical_aquifer_extent.start < max_depth:
+                    has_errors = True
+                    serializer_errors.setdefault('start', []) \
+                        .append('Start depth overlaps with another')
 
-            max_depth = vertical_aquifer_extent.end
+                max_depth = vertical_aquifer_extent.end
 
             errors.append(serializer_errors) # always add to keep the index correct for web app
-
 
         # roll back on errors and undo any changes
         if has_errors:

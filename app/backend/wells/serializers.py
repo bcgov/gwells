@@ -34,9 +34,9 @@ from wells.models import (
     LinerPerforation,
     LithologyDescription,
     Screen,
-    Well,
-    WellActivityCode
+    Well
 )
+from submissions.models import WellActivityCode
 
 
 logger = logging.getLogger(__name__)
