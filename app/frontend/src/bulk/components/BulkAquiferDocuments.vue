@@ -476,7 +476,7 @@ export default {
       const aquiferIds = Object.keys(this.aquiferDocuments).map((id) => parseInt(id, 10))
       this.unknonwnAquiferIds = null
       if (aquiferIds.length > 0) {
-        ApiService.query(`aquifers/slim?aquifer_ids=${aquiferIds.join(',')}`)
+        ApiService.query(`aquifers/names?aquifer_ids=${aquiferIds.join(',')}`)
           .then(({ data }) => {
             this.unknonwnAquiferIds = aquiferIds.filter((aquiferId) => !data.find((aquifer) => aquiferId === aquifer.aquifer_id))
           })
