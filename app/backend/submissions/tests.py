@@ -28,10 +28,10 @@ from wells.models import (
     LithologyDescription,
     Screen,
     Well,
-    WellStatusCode,
-    WellActivityCode
-    )
+    WellStatusCode
+)
 from submissions.models import (
+    WellActivityCode,
     WELL_ACTIVITY_CODE_STAFF_EDIT, WELL_ACTIVITY_CODE_LEGACY, WELL_ACTIVITY_CODE_ALTERATION)
 from gwells.models import DATALOAD_USER
 

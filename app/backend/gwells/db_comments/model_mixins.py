@@ -59,8 +59,8 @@ class DBComments(object):
                         column_comments[column] = comment
                         added_supplemental_comments += 1
 
-                if added_supplemental_comments:
-                    logger.info(f"Added {added_supplemental_comments} comments from db_column_supplemental_comments in {current}")
+                if added_supplemental_comments > 0:
+                    logger.debug(f"Added {added_supplemental_comments} comments from db_column_supplemental_comments in {current}")
 
             inspection_list = inspection_list + list(current.__bases__)
 

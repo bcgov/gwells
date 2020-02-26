@@ -22,10 +22,11 @@ from django.contrib.auth.models import User
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 
-from .common import AuditModel, ProvinceStateCode, CodeTableModel, BasicCodeTableModel
-from .screen import ScreenIntakeMethodCode, ScreenMaterialCode, ScreenOpeningCode, ScreenBottomCode,\
-    ScreenTypeCode, ScreenAssemblyTypeCode
-from .survey import Survey, OnlineSurvey
+from ..db_comments.model_mixins import DBComments
+from .common import *
+from .screen import *
+from .survey import *
+from .bulk import *
 
 # DATALOAD_USER: Use for ETL etc.
 DATALOAD_USER = 'DATALOAD_USER'
@@ -33,7 +34,7 @@ DATALOAD_USER = 'DATALOAD_USER'
 DE_DUPLICATE_USER = 'DE_DUPLICATE_USER'
 
 
-class Profile(models.Model):
+class Profile(models.Model, DBComments):
     """
     Extended User Profile
     """

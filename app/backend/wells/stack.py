@@ -141,6 +141,9 @@ def overlap(a, b):
     """
     Checks to see if two casings intersect, or have identical start/end positions.
     """
+    # if any start / end is None then it doesn't overlap
+    if a[0] is None or a[1] is None or b[0] is None or b[1] is None:
+        return False
     # If the casing start/end intersects
     intersect = (a[0] > b[0] and a[0] < b[1]) or (a[1] > b[0] and a[1] < b[1])
     # If the casings start or end in the same place
@@ -443,7 +446,15 @@ class StackWells():
                 'well_status',
                 'well_activity_type'
         )
-        if records.count() > 1:
+
+        # 1) only 1 legacy record created from a previous _create_legacy_submission call [*no* legacy creation]
+        # 2) (previous behaviour) - 1 non-legacy record created (e.g. staff_edit) [*yes* legacy creation]
+        # 3) (previous behaviour) - 2 records exist (1 legacy, one previous non-legacy) = [*no* legacy creation]
+
+        legacy_record_creation_needed = False
+        if records.count() == 1 and records[0].well_activity_type.code != WELL_ACTIVITY_CODE_LEGACY:
+            legacy_record_creation_needed = True
+        if not legacy_record_creation_needed:
             # If there's more than one submission we don't need to create a legacy well, we can safely
             # assume that the 1st submission is either a legacy or construction report submission.
             return self._stack(records, submission.well)

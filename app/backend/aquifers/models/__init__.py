@@ -11,30 +11,30 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-import reversion
 import zipfile
 import tempfile
 import os
 import copy
+
+import reversion
+from reversion.models import Version
 
 from django.utils import timezone
 from django.contrib.gis.db import models
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 
-from gwells.models import AuditModel, CodeTableModel, BasicCodeTableModel
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django.contrib.gis.db import models
 from django.contrib.gis.gdal import DataSource
 from django.contrib.gis.geos import GEOSGeometry
 from django.contrib.gis.geos.prototypes.io import wkt_w
 from django.contrib.gis import geos
 
-from reversion.models import Version
-
-from gwells.models import AuditModel, CodeTableModel
+from gwells.models import AuditModel, CodeTableModel, BasicCodeTableModel
 from gwells.db_comments.patch_fields import patch_fields
+
+from .vertical_aquifer_extents import *
 
 patch_fields()
 

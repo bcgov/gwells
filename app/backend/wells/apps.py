@@ -16,15 +16,15 @@ import logging
 from django.apps import AppConfig
 from django.db.models.signals import post_migrate
 
-from django.db.models import Max
-
 from gwells.db_comments import db_actions
+
 
 logger = logging.getLogger(__name__)
 
 
 def post_migration_callback(sender, **kwargs):
     # Dynamic comments from models
+    logger.info('Running post_migration_callback for wells')
     db_actions.create_db_comments_from_models(db_actions.get_all_model_classes('wells.models'))
 
 

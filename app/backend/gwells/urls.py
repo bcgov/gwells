@@ -92,6 +92,9 @@ urlpatterns = [
     url(r'^' + app_root_slash + 'api/v2/bulk/well-aquifer-correlation$',
         never_cache(BulkWellAquiferCorrelation.as_view()), name='bulk-well-aquifer-correlation'),
 
+    # Catch all other cases to api/ and 404 them
+    re_path(r'' + app_root_slash + api_path_prefix() + '/*', api.api_404, name='api-404'),
+
     # Catch all other cases and push it to the SPA
     re_path(r'' + app_root_slash + '*', index, name='spa'),
 ]
