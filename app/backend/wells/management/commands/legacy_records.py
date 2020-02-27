@@ -57,7 +57,7 @@ class Command(BaseCommand):
         num_wells = len(wells)
 
         if num_wells == 0:
-            self.stdout.write(self.style.ERROR(f'No records foundd between well tag number {start} and {end}'))
+            self.stdout.write(self.style.ERROR(f'No records found between well tag number {start} and {end}'))
             return
 
         print(f'Creating {num_wells} legacy records from well_tag_number {wells[0].well_tag_number} to {wells[len(wells) - 1].well_tag_number}')
