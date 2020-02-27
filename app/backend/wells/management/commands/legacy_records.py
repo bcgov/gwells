@@ -12,12 +12,14 @@
     limitations under the License.
 """
 import logging
+import traceback
 from timeit import default_timer as timer
 
+import reversion
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
-from wells.models import Well
+from wells.models import Well, ActivitySubmission
 from wells.stack import StackWells
 
 logger = logging.getLogger(__name__)
@@ -33,12 +35,18 @@ class Command(BaseCommand):
         # Arguments added for debugging purposes.
         parser.add_argument('--start', type=int, nargs='?', help='Well to start at', default=1)
         parser.add_argument('--end', type=int, nargs='?', help='Well to end at', default=50)
-        parser.add_argument('--next', type=int, nargs='?', help='Process n wells', default=50)
+        parser.add_argument('--next', type=int, nargs='?', help='Process n wells', default=0)
 
     def handle(self, *args, **options):
+        # pylint: disable=broad-except
+
         start = options['start']
         end = options['end']
         to_do_amount = options['next']
+
+        # We turn off reversion of ActivitySubmissions as we don't want to bloat the DB
+        reversion.unregister(ActivitySubmission)
+        reversion.unregister(Well)
 
         num_wells = 0
         if to_do_amount:
@@ -47,19 +55,39 @@ class Command(BaseCommand):
             wells = self.find_wells_without_legacy_records(start, end)
 
         num_wells = len(wells)
+
+        if num_wells == 0:
+            self.stdout.write(self.style.ERROR(f'No records found between well tag number {start} and {end}'))
+            return
+
         print(f'Creating {num_wells} legacy records from well_tag_number {wells[0].well_tag_number} to {wells[len(wells) - 1].well_tag_number}')
 
+        failures = []
         start = timer()
         for well in wells:
             try:
                 self.create_legacy_record(well)
             except Exception as err:
-                print('Error creating legacy record for well_tag_number {well.well_tag_number}')
-                raise err
+                failures.append(well.well_tag_number)
+                print(f'Error creating legacy record for well_tag_number {well.well_tag_number}')
+                # logger.exception(err)
+                print(traceback.format_exc(limit=8))
         end = timer()
 
-        success_msg = 'Created {} legacy reports in {:.2f}s'.format(num_wells, end - start)
-        self.stdout.write(self.style.SUCCESS(success_msg))
+        num_fails = len(failures)
+        num_created = num_wells - num_fails
+
+        if num_created > 0:
+            success_msg = 'Created {} legacy reports in {:.2f}s'.format(num_created, end - start)
+            self.stdout.write(self.style.SUCCESS(success_msg))
+
+        if num_fails > 0:
+            failed_wells = ', '.join(map(str, failures))
+            error_msg = 'Failed to create {} legacy reports for wells: {}' \
+                        .format(num_fails, failed_wells)
+            clues_msg = 'See above stack traces for clues to why these failed'
+            self.stdout.write(self.style.ERROR(error_msg))
+            self.stdout.write(self.style.ERROR(clues_msg))
 
     def find_wells_without_legacy_records(self, start, end):
         wells = Well.objects \
@@ -78,6 +106,8 @@ class Command(BaseCommand):
 
     @transaction.atomic
     def create_legacy_record(self, well):
+        # pylint: disable=protected-access
+
         # NOTE that _create_legacy_submission() will create the LEGACY activity
         # submission but then when the `submission_serializer.save()` is called
         # inside of `_create_legacy_submission()` this will trigger a
