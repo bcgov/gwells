@@ -51,6 +51,7 @@ describe('Casings.vue', () => {
       }
     })
 
+    expect(wrapper.vm.casingsData.length).toBe(3)
     wrapper.find('#removeCasingRowBtn0').trigger('click')
     expect(wrapper.vm.casingsData.length).toBe(2)
   })
