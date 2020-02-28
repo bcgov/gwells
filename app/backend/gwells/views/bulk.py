@@ -12,7 +12,7 @@
     limitations under the License.
 """
 import logging
-import unittest
+from decimal import Decimal
 
 from rest_framework.views import APIView
 from rest_framework import status
@@ -25,7 +25,7 @@ from django.contrib.gis.geos import Point
 
 from aquifers.models import Aquifer, VerticalAquiferExtent
 from wells.models import Well
-from gwells.models.bulk import BulkWellAquiferCorrelationHistory
+from gwells.models.bulk import BulkWellAquiferCorrelationHistory, BulkVerticalAquiferExtentsHistory
 from gwells.permissions import (
     HasBulkWellAquiferCorrelationUploadRole,
     HasBulkVerticalAquiferExtentsUploadRole
@@ -164,19 +164,14 @@ class BulkVerticalAquiferExtents(APIView):
         self.conflicts = []
         self.change_log = []
         self.create_date = timezone.now()
+        self.unknown_well_tag_numbers = set()
+        self.unknown_aquifer_ids = set()
 
     @swagger_auto_schema(auto_schema=None)
     @transaction.atomic
     def post(self, request, **kwargs):
         vertical_aquifer_extents = request.data
-        known_aquifers_ids = set()
-        unknown_wells_tag_numbers = set()
-        unknown_aquifers_ids = set()
-        errors = {
-            'unknownAquifers': unknown_aquifers_ids,
-            'unknownWells': unknown_wells_tag_numbers,
-            'conflicts': self.conflicts
-        }
+
         new_vae_models = []
 
         # check for a ?commit querystring parameter for this /bulk API
@@ -185,69 +180,65 @@ class BulkVerticalAquiferExtents(APIView):
         # that would have been made
         update_db = 'commit' in request.GET
 
-        wells = self.as_wells(vertical_aquifer_extents)
+        incoming_vae_data = self.as_wells(vertical_aquifer_extents)
 
-        for well_tag_number, data in wells.items():
-            well = Well.objects.filter(pk=well_tag_number).first()
-            if well is None:
-                unknown_wells_tag_numbers.add(well_tag_number)
-                continue # if this well is not known then skip all checks below
+        incoming_well_tag_numbers = incoming_vae_data.keys()
+        existing_wells = self.lookupExistingWells(incoming_well_tag_numbers)
+
+        incoming_aquifer_ids = set(row['aquiferId'] for row in vertical_aquifer_extents)
+        existing_aquifers = self.lookupExistingAquifers(incoming_aquifer_ids)
+
+        if len(self.unknown_well_tag_numbers) > 0 or len(self.unknown_aquifer_ids) > 0:
+            return self.return_errors()
+
+        for well_tag_number, data in incoming_vae_data.items():
+            well = existing_wells[well_tag_number]
 
             existing_data = VerticalAquiferExtent.objects \
                 .filter(well_id=well_tag_number) \
                 .order_by('start')[:]
             existing_aquifer_ids = [item.aquifer_id for item in existing_data]
+            extents = [{'start': item.start, 'end': item.end} for item in existing_data]
 
             max_depth = float('-inf')
             data.sort(key=lambda item: item['fromDepth'])
             for vae in data:
                 aquifer_id = vae['aquiferId']
-                from_depth = vae['fromDepth']
-                to_depth = vae['toDepth']
-
-                if from_depth < 0:
-                    self.addConflict(well_tag_number, aquifer_id, 'From depth can not be less then zero')
-                    continue
-                if to_depth < 0:
-                    self.addConflict(well_tag_number, aquifer_id, 'To depth can not be less then zero')
-                    continue
-                if to_depth < from_depth:
-                    self.addConflict(well_tag_number, aquifer_id, 'From depth must be below to depth')
-                    continue
-
-                aquifer = None
-                # determine if we have seen this aquifer_id before and if it is known or unknown
-                if aquifer_id not in known_aquifers_ids and aquifer_id not in unknown_aquifers_ids:
-                    # now check the DB for this aquifer_id
-                    aquifer = Aquifer.objects.filter(pk=aquifer_id).first()
-                    if aquifer is None:
-                        unknown_aquifers_ids.add(aquifer_id)
-                        continue  # if this aquifer is not known then skip all checks below
-                    else:
-                        known_aquifers_ids.add(aquifer_id)
+                from_depth = Decimal(format(vae['fromDepth'], '.2f')) if vae['fromDepth'] is not None else None
+                to_depth = Decimal(format(vae['toDepth'], '.2f')) if vae['toDepth'] is not None else Decimal('Infinity')
 
                 if aquifer_id in existing_aquifer_ids:
-                    self.addConflict(well_tag_number, aquifer_id, 'Aquifer %s already defined for well' % aquifer_id)
+                    self.addConflict(vae, 'Aquifer %s already defined for well' % aquifer_id)
+                    continue
+                if from_depth < 0:
+                    self.addConflict(vae, 'From depth can not be less then zero')
+                    continue
+                if to_depth < 0:
+                    self.addConflict(vae, 'To depth can not be less then zero')
+                    continue
+                if to_depth < from_depth:
+                    self.addConflict(vae, 'From depth must be below to depth')
                     continue
 
-                extents = [{'start': item.start, 'end': item.end} for item in existing_data]
+                aquifer = existing_aquifers[aquifer_id]
 
                 if self.checkExtentOverlaps(from_depth, to_depth, extents):
-                    self.addConflict(well_tag_number, aquifer_id, 'Overlaps with an existing vertical aquifer extent')
+                    self.addConflict(vae, 'Overlaps with an existing vertical aquifer extent')
                     continue
 
                 if from_depth < max_depth:
-                    self.addConflict(well_tag_number, aquifer_id, 'Overlaps with another vertical aquifer extent in the CSV')
+                    self.addConflict(vae, 'Overlaps with another vertical aquifer extent in the CSV')
                     continue
                 max_depth = to_depth
 
                 if update_db:
-                    vae_model = self.createVerticalAquiferExtentModel(well, aquifer, from_depth, to_depth)
+                    vae_model = self.buildVerticalAquiferExtentModel(well, aquifer, from_depth, to_depth)
                     new_vae_models.append(vae_model)
+                    self.append_to_history_log(vae_model)
 
         # if there are any unknown aquifers or wells then we want to return errors
-        if len(unknown_aquifers_ids) > 0 or len(unknown_wells_tag_numbers) > 0 or len(self.conflicts) > 0:
-            return self.return_errors(errors)
+        if len(self.conflicts) > 0:
+            return self.return_errors()
 
         if update_db: # no errors then updated the DB (if ?commit is passed in)
             self.create_vertical_aquifer_extents(new_vae_models)
@@ -262,14 +253,31 @@ class BulkVerticalAquiferExtents(APIView):
             wells.setdefault(record['wellTagNumber'], []).append(record)
         return wells
 
-    def addConflict(self, well_tag_number, aquifer_id, msg):
+    def lookupExistingWells(self, well_tag_numbers):
+        wells = Well.objects.filter(pk__in=well_tag_numbers)
+        keyed_wells = {well.well_tag_number: well for well in wells}
+        known_well_tag_numbers = set(keyed_wells.keys())
+
+        self.unknown_well_tag_numbers = well_tag_numbers - known_well_tag_numbers
+
+        return keyed_wells
+
+    def lookupExistingAquifers(self, aquifer_ids):
+        aquifers = Aquifer.objects.filter(pk__in=aquifer_ids)
+        keyed_aquifers = {aquifer.aquifer_id: aquifer for aquifer in aquifers}
+        known_aquifer_ids = set(keyed_aquifers.keys())
+
+        self.unknown_aquifer_ids = aquifer_ids - known_aquifer_ids
+
+        return keyed_aquifers
+
+    def addConflict(self, data, msg):
         self.conflicts.append({
-            'wellTagNumber': well_tag_number,
-            'aquiferId': aquifer_id,
+            **data,
             'message': msg,
         })
 
-    def createVerticalAquiferExtentModel(self, well, aquifer, from_depth, to_depth):
+    def buildVerticalAquiferExtentModel(self, well, aquifer, from_depth, to_depth):
         if well.geom:
             longitude = well.geom.x
             latitude = well.geom.y
@@ -285,30 +293,43 @@ class BulkVerticalAquiferExtents(APIView):
         )
 
     def checkExtentOverlaps(self, from_depth, to_depth, existing_extents):
-        for extent in existing_extents:
-            if from_depth > extent['start']:
-                return True
-        return False
+        if len(existing_extents) == 0:
+            return False
 
-    def return_errors(self, errors):
+        max_depth = float('-inf')
+        for extent in existing_extents:
+            start = extent['start']
+            end = extent['end'] if extent['end'] is not None else Decimal('Infinity')
+            if from_depth >= max_depth and to_depth <= start:
+                return False
+            max_depth = end
+        return True
+
+    def return_errors(self):
         # roll back the transaction as the bulk_update could have run for one
         # aquifer but errored on another. Best to abort the whole thing and warn the user
         transaction.set_rollback(True)
-
+        errors = {
+            'unknownAquifers': self.unknown_aquifer_ids,
+            'unknownWells': self.unknown_well_tag_numbers,
+            'conflicts': self.conflicts
+        }
         return Response(errors, status=status.HTTP_400_BAD_REQUEST)
 
     def create_vertical_aquifer_extents(self, models):
         logger.info("Bulk updating %d VerticalAquiferExtents", len(models))
         # bulk update using efficient SQL for any well aquifer correlations that have changed
-        Well.objects.bulk_insert(models, ['start', 'end'])
+        VerticalAquiferExtent.objects.bulk_create(models)
         # save the BulkWellAquiferCorrelation records
         BulkWellAquiferCorrelationHistory.objects.bulk_create(self.change_log)
 
-    def append_to_change_log(self, well_tag_number, to_aquifer_id, from_aquifer_id):
-        bulk_history_item = BulkWellAquiferCorrelationHistory(
-            well_id=well_tag_number,
-            update_to_aquifer_id=to_aquifer_id,
-            update_from_aquifer_id=from_aquifer_id,
+    def append_to_history_log(self, model):
+        bulk_history_item = BulkVerticalAquiferExtentsHistory(
+            well=model.well,
+            aquifer=model.aquifer,
+            geom=model.geom,
+            start=model.start,
+            end=model.end,
             create_user=self.request.user.profile.username,
             create_date=self.create_date
         )

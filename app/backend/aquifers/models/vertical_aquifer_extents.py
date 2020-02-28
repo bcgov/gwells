@@ -25,6 +25,7 @@ from gwells.db_comments.patch_fields import patch_fields
 patch_fields()
 
 
+# NOTE: this model has a duplicate defined in gwells.models.bulk
 @reversion.register()
 class VerticalAquiferExtent(AuditModel):
     """
@@ -41,7 +42,7 @@ class VerticalAquiferExtent(AuditModel):
         primary_key=True,
         verbose_name="VerticalAquiferExtent Resource Identifier",
         db_column='vertical_aquifer_extent_id',
-        db_comment=('System generated unique sequential number assigned to each vertical' \
+        db_comment=('System generated unique sequential number assigned to each vertical'
             ' aquifer extent.'))
     well = models.ForeignKey(
         'wells.Well', db_column='well_tag_number', on_delete=models.PROTECT, blank=True, null=True,

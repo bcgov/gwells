@@ -13,8 +13,8 @@
 */
 
 <template>
-  <div>
-    <b-card class="container p-1" v-if="perms.wellAquiferCorrelation">
+  <div id="bulk-vertical-aquifer-extents-screen">
+    <b-card class="container p-1" v-if="perms.verticalAquiferExtents">
       <api-error v-if="apiError" :error="apiError"/>
 
       <b-container>
@@ -26,16 +26,49 @@
           All vertical aquifer extents successfully changed
         </b-alert>
 
-        <b-card v-if="!file" title="Instructions">
+        <b-card v-if="!file" title="Instructions" id="instructions">
           <b-card-text>
+            <p>
+              Please note that the data in the CSV must be for <strong>new</strong> vertical aquifer
+              extents.
+            </p>
+            <p>
+              If you want to modify existing vertical aquifer extents you will need to first find
+              your well and edit it. At the bottom of the well edit screen is a table which shows
+              the existing vertical aquifer extents. Click the “Edit” button to load a form where
+              you can alter the information.
+            </p>
             <p>Choose a CSV file below that is the following <strong>exact</strong> format:</p>
             <ol>
               <li>Only four columns</li>
-              <li>The first row must contain “well_tag_number” in column “A”, “aquifer_id” in column “B”, “from_depth” in column “C”, “to_depth” in column “D”.</li>
-              <li>The first column “A” must be only numeric well tag numbers</li>
-              <li>The second column “B” must be only numeric aquifer ids</li>
-              <li>The second column “C” must be only numeric values in meters</li>
-              <li>The second column “D” must be only numeric values in meters</li>
+              <li>
+                The first column “A”
+                <ol type="a">
+                  <li>have “well_tag_number” in row one</li>
+                  <li>only contain numeric well tag numbers</li>
+                </ol>
+              </li>
+              <li>
+                The second column “B”
+                <ol type="a">
+                  <li>have “aquifer_id” in row one</li>
+                  <li>only contain numeric aquifer IDs</li>
+                </ol>
+              </li>
+              <li>
+                The third column “C”
+                <ol type="a">
+                  <li>have “from_depth” in row one</li>
+                  <li>only contain numeric values in metres</li>
+                </ol>
+              </li>
+              <li>
+                The fourth column “D”
+                <ol type="a">
+                  <li>have “to_depth” in row one</li>
+                  <li>only contain numeric values in metres</li>
+                </ol>
+              </li>
             </ol>
           </b-card-text>
 
@@ -74,55 +107,41 @@
         </b-card>
 
         <b-card v-if="!hasCSVErrors && hasDataToProcess" title="Data to process">
-          <b-alert show v-if="hasBeenValidated && !noUpdatesToPerform" variant="success">
-            All {{numVerticalAquiferExtents}} wells and aquifers are valid. Review the changes below and then click “Submit” to really update.
+          <b-alert show v-if="hasBeenValidated" variant="success">
+            All {{numVerticalAquiferExtents}} vertical aquifer extents are valid. Review the changes below and then click “Submit” to create {{numVerticalAquiferExtents}} records.
           </b-alert>
-          <b-alert show v-if="hasBeenValidated && noUpdatesToPerform" variant="warning">
-            There are no updates to perform. Double check your CSV and try again.
-          </b-alert>
-          <div v-if="hasAPIValidationErrors" id="api-errors">
+          <div v-if="hasUnknownWellsOrAquifers" id="unknown-wells-or-aquifers">
             <b-alert show variant="danger">
               The wells and aquifers listed below can not be found in the GWELLS database.
             </b-alert>
 
             <b-table
               class="errors"
-              :tbody-tr-class="rowClass"
               striped
               hover
               :items="errorsTableData"
               :fields="errorTableFields">
-              <template slot="aquiferId" slot-scope="row">
-                <span :class="{ error: isUnknownAquifer(row.item.aquiferId) }">
-                  {{row.item.aquiferId}}
-                </span>
-              </template>
               <template slot="wellTagNumber" slot-scope="row">
                 <span :class="{ error: isUnknownWell(row.item.wellTagNumber) }">
                   {{row.item.wellTagNumber}}
                 </span>
               </template>
+              <template slot="aquiferId" slot-scope="row">
+                <span :class="{ error: isUnknownAquifer(row.item.aquiferId) }">
+                  {{row.item.aquiferId}}
+                </span>
+              </template>
             </b-table>
           </div>
-
-          <div v-if="!hasAPIValidationErrors">
-            <div v-if="hasBeenValidated && !noUpdatesToPerform">
-              <strong>Note:</strong>
+          <div v-else>
+            <b-alert show v-if="hasConflicts" variant="danger">
+              <p>The CSV data conflits with existing vertical aquifer extents in the GWELLS database.</p>
+              <p>You can resolve the conflicts by either:</p>
               <ol>
-                <li><span class="change-color">orange</span> wells are being updated from a previous aquifer id (in <span class="remove-color">red</span>)</li>
-                <li><span class="new-color">green</span> wells are new correlations</li>
-                <li><span class="no-change-color">un-coloured</span> wells have no changes to their aquifer correlations</li>
+                <li>Editing the CSV and re-uploading it</li>
+                <li>Click the well tag numbers below to edit the existing data</li>
               </ol>
-            </div>
-
-            <div id="summary">
-              <strong>Summary:</strong>
-              <ul>
-                <li v-if="numVerticalAquiferExtentsToUpdate > 0">{{numVerticalAquiferExtentsToUpdate}} to be changed</li>
-                <li v-if="numVerticalAquiferExtentsToAdd > 0">{{numVerticalAquiferExtentsToAdd}} to add</li>
-                <li v-if="numVerticalAquiferExtentsUnchanged > 0">{{numVerticalAquiferExtentsUnchanged}} unchanged</li>
-              </ul>
-            </div>
+            </b-alert>
 
             <b-table
               id="vertical-aquifer-extents"
@@ -131,6 +150,11 @@
               hover
               :items="tableData"
               :fields="tableFields">
+              <template slot="wellTagNumber" slot-scope="row">
+                <router-link :to="{ name: 'well-aquifers', params: {wellTagNumber: row.item.wellTagNumber} }" target="_blank">
+                  {{row.item.wellTagNumber}}
+                </router-link>
+              </template>
               <template slot="fromDepth" slot-scope="row">
                 {{row.item.fromDepth.toFixed(2)}}
               </template>
@@ -148,7 +172,7 @@
             variant="primary"
             @click="save">
             <b-spinner v-if="isSaving" small label="Loading…"/>
-            {{hasBeenValidated ? 'Submit' : 'Validate Data'}}
+            {{submitButtonLabel}}
           </b-button>
           <b-button
             v-if="showResetButton"
@@ -220,14 +244,12 @@ export default {
       file: null,
       apiValidationErrors: {},
       verticalAquiferExtents: [],
-      wellUpdates: null,
       isSaving: false,
       showSaveSuccess: false,
       hasBeenValidated: false,
       tooManyCSVRows: false,
       numberOfCSVRows: null,
       maxNumberOfRows: MAX_NUMBER_OF_ROWS,
-      tableFields: BASE_TABLE_FIELDS,
       showBuildingTable: false,
       csvErrorTableFields: [
         {
@@ -253,7 +275,7 @@ export default {
         {
           key: 'aquiferId',
           label: 'Aquifer ID',
-          class: 'aquifer-id text-right pr-4',
+          class: 'aquifer-id',
           sortable: false
         }
       ]
@@ -267,17 +289,26 @@ export default {
     perms () {
       return this.userRoles.bulk || {}
     },
+    hasCSVErrors () {
+      return this.csvErrors.length > 0
+    },
     unknownAquifers () {
       return (this.apiValidationErrors || {}).unknownAquifers || []
     },
     unknownWells () {
       return (this.apiValidationErrors || {}).unknownWells || []
     },
-    hasCSVErrors () {
-      return this.csvErrors.length > 0
+    conflicts () {
+      return (this.apiValidationErrors || {}).conflicts || []
     },
     hasDataToProcess () {
       return this.verticalAquiferExtents.length > 0
+    },
+    hasUnknownWellsOrAquifers () {
+      return this.unknownAquifers.length > 0 || this.unknownWells.length > 0
+    },
+    hasConflicts () {
+      return this.conflicts.length > 0
     },
     hasAPIValidationErrors () {
       return Object.keys(this.apiValidationErrors).length > 0
@@ -298,60 +329,47 @@ export default {
     numVerticalAquiferExtents () {
       return this.verticalAquiferExtents.length
     },
-    listOfChanges () {
-      return this.wellUpdates !== null ? Object.values(this.wellUpdates) : []
-    },
-    numVerticalAquiferExtentsToAdd () {
-      return this.listOfChanges.filter((change) => change.action === 'new').length
-    },
-    numVerticalAquiferExtentsToUpdate () {
-      return this.listOfChanges.filter((change) => change.action === 'update').length
-    },
-    numVerticalAquiferExtentsUnchanged () {
-      return this.listOfChanges.filter((change) => change.action === 'same').length
-    },
     tableData () {
       const vae = this.verticalAquiferExtents
         .map((val) => {
           const data = { ...val }
-          if (this.wellUpdates !== null) {
-            const change = this.wellUpdates[val.wellTagNumber]
-            if (change) {
-              switch (change.action) {
-                case 'new':
-                  data.isNew = true
-                  break
-                case 'update':
-                  data.oldAquiferId = change.existingAquiferId
-                  data.isUpdate = true
-                  break
-                case 'same':
-                  data.isSame = true
-                  break
-                default:
-                  console.warn(`Unknown change action of ${change.action}`)
-              }
-            }
+
+          const conflict = this.conflicts.find((conflict) => {
+            return (
+              conflict.wellTagNumber === val.wellTagNumber &&
+              conflict.aquiferId === val.aquiferId &&
+              conflict.fromDepth === val.fromDepth &&
+              conflict.toDepth === val.toDepth
+            )
+          })
+
+          if (conflict) {
+            data.conflictMessage = conflict.message
           }
+
           return data
         })
 
       return vae
     },
-    noUpdatesToPerform () {
-      if (this.wellUpdates) {
-        return Object.values(this.wellUpdates).every((change) => {
-          return change.action === 'same'
-        })
+    tableFields () {
+      if (this.hasConflicts) {
+        return BASE_TABLE_FIELDS.concat([
+          {
+            key: 'conflictMessage',
+            label: 'Error',
+            class: 'conflict-msg',
+            sortable: false
+          }
+        ])
       }
-      return false
+
+      return BASE_TABLE_FIELDS
     },
     showSubmitButton () {
       if (this.hasCSVErrors) {
         return false
-      } else if (this.hasBeenValidated && this.noUpdatesToPerform) {
-        return false
-      } else if (this.hasAPIValidationErrors) {
+      } else if (this.hasUnknownWellsOrAquifers) {
         return false
       } else if (this.showSaveSuccess) {
         return false
@@ -377,6 +395,15 @@ export default {
       }
 
       return false
+    },
+    submitButtonLabel () {
+      if (this.hasBeenValidated) {
+        return 'Submit'
+      } else if (this.hasConflicts) {
+        return 'Validate Data Again'
+      }
+
+      return 'Validate Data'
     }
   },
   watch: {
@@ -388,6 +415,13 @@ export default {
     }
   },
   methods: {
+    floatPrecision (val) {
+      if (!isFinite(val)) return 0
+      let e = 1
+      let p = 0
+      while (Math.round(val * e) / e !== val) { e *= 10; p++ }
+      return p
+    },
     isBlank (value) {
       return value === '' || value === null || value === undefined
     },
@@ -513,6 +547,8 @@ export default {
         return this.logCSVError(rowNumLabel, `to_depth "${toDepth}" is not a number`)
       } else if (toDepth < 0) {
         return this.logCSVError(rowNumLabel, `to_depth "${toDepth}" must not be a negative number`)
+      } else if (toDepth !== null && (fromDepth > toDepth)) {
+        return this.logCSVError(rowNumLabel, `from_depth "${fromDepth}" is below "${toDepth}"`)
       }
       return true
     },
@@ -537,7 +573,6 @@ export default {
         this.showSaveSuccess = true
         this.reset()
       } else {
-        this.wellUpdates = data
         this.hasBeenValidated = true
       }
     },
@@ -559,7 +594,6 @@ export default {
       this.csvErrors = []
       this.apiValidationErrors = {}
       this.verticalAquiferExtents = []
-      this.wellUpdates = null
       this.isSaving = false
       this.hasBeenValidated = false
     },
@@ -586,10 +620,8 @@ export default {
       if (!item || type !== 'row') return
       const classes = []
 
-      if (item.isUpdate) {
-        classes.push('update')
-      } else if (item.isNew) {
-        classes.push('new')
+      if (item.conflictMessage) {
+        classes.push('has-conflict')
       }
       return classes.join(' ')
     }
@@ -597,88 +629,41 @@ export default {
 }
 </script>
 <style lang="scss">
-.change-color {
-  font-weight: bold;
-  color: #eca013;
-}
-
-.remove-color {
-  font-weight: bold;
-  color: #ec3838;
-}
-
-.new-color {
-  font-weight: bold;
-  color: #057513;
-}
-
-.no-change-color {
-  color: inherit;
-}
-
-ol {
-  margin: 0;
-  padding: 0 0 0 1.1em;
-
-  li {
-    margin: 0.5rem 0;
-  }
-}
-
-.alert ul {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-
-  li {
-    margin: 0;
-    padding: 0.5rem;
-  }
-}
-.errors .error {
-  font-weight: bold;
-  color: red;
-}
-
-#summary {
-  ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
+#bulk-vertical-aquifer-extents-screen {
+  .conflict-color {
+    color: #ec3838;
   }
 
-  li {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: inline;
+  #instructions {
+    ol {
+      margin: 0;
+      padding: 0 0 0 1.1em;
 
-    &::after {
-      content: ", ";
-    }
-
-    &:last-child {
-      &::before {
-        content: " and ";
-      }
-
-      &::after {
-        content: ".";
+      li {
+        margin: 0.2rem 0;
       }
     }
   }
-}
 
-.correlations {
-  .new {
-    @extend .new-color;
+  .alert ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    li {
+      margin: 0;
+      padding: 0.5rem;
+    }
   }
 
-  .update {
-    @extend .change-color;
+  .errors .error {
+    font-weight: bold;
+    color: red;
+  }
 
-    .old-aquifer-id {
-      @extend .remove-color;
+  #vertical-aquifer-extents {
+    tr.has-conflict {
+      @extend .conflict-color;
     }
   }
 }

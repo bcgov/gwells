@@ -81,7 +81,7 @@ const router = new Router({
       name: 'bulk-aquifer-documents'
     },
     {
-      path: '/bulk/vertical-aquier-extents',
+      path: '/bulk/vertical-aquifer-extents',
       component: BulkVerticalAquiferExtents,
       name: 'bulk-vertical-aquifer-extents'
     },
