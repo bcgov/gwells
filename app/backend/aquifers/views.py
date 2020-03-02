@@ -344,6 +344,36 @@ class AquiferNameList(ListAPIView):
         return Response(serializer(results[:20], many=True).data)
 
 
+class AquiferNameListV2(ListAPIView):
+    """ List all aquifers in a simplified format """
+
+    serializer_class = serializers.AquiferSerializerBasic
+    model = Aquifer
+    queryset = Aquifer.objects.all()
+    pagination_class = None
+
+    filter_backends = (filters.SearchFilter,)
+    ordering = ('aquifer_id',)
+    search_fields = (
+        'aquifer_id',
+        'aquifer_name',
+    )
+
+    def get(self, request, **kwargs):
+        serializer = self.get_serializer_class()
+
+        ids = self.request.query_params.get('aquifer_ids', '')
+        search = self.request.query_params.get('search', None)
+
+        # avoiding responding with excess results
+        results = []
+        if ids:
+            results = self.queryset.filter(aquifer_id__in=ids.split(','))
+        elif search:
+            results = self.filter_queryset(self.get_queryset())
+        return Response(serializer(results[:20], many=True).data)
+
+
 class AquiferHistory(APIView):
     """
     get: returns a history of changes to a Aquifer model record
