@@ -19,11 +19,7 @@
             <div
               :key="`submission data row ${i} value`"
               class="row record"
-              v-if="
-                value !== null &&
-                (Array.isArray(value) && value.length > 0 || !Array.isArray(value)) &&
-                !(value in excluded_fields)
-            ">
+              v-if="showRow(key, value)">
               <dt class="col-12 col-md-6 col-xl-2">{{key | readable}}</dt>
               <dd class="col-12 col-md-6 col-xl-10">{{value}}</dd>
             </div>
@@ -93,6 +89,17 @@ export default {
         this.$noty.info('Error retrieving activity report summary. Please try again later.', { killer: true })
         throw e
       })
+    },
+    showRow (key, value) {
+      if (value === null) {
+        return false
+      } else if (Array.isArray(value) && value.length === 0) {
+        return false
+      } else if (this.excluded_fields.indexOf(key) !== -1) {
+        return false
+      }
+
+      return true
     }
   },
   created () {

@@ -313,7 +313,8 @@ class WellSubmissionLegacySerializer(WellSubmissionSerializerBase):
             'well_activity_type': {'required': False},
             'owner_city': {'required': False, 'allow_blank': True},
             'yield_estimation_duration': {'required': False},
-            'owner_email': {'required': False}
+            'owner_email': {'required': False},
+            'static_level_before_test': {'min_value': None}
         }
         fields = '__all__'
 
@@ -1120,8 +1121,6 @@ class ConstructionSubmissionDisplaySerializer(serializers.ModelSerializer):
     hydro_fracturing_performed = serializers.SerializerMethodField()
     water_quality_colour = serializers.ReadOnlyField(
         source='water_quality_colour.description')
-    well_cap_type = serializers.ReadOnlyField(
-        source='well_cap_type.description')
     alternative_specs_submitted = serializers.SerializerMethodField()
     surface_seal_method = serializers.ReadOnlyField(
         source='surface_seal_method.description')
@@ -1207,8 +1206,6 @@ class AlterationSubmissionDisplaySerializer(serializers.ModelSerializer):
     hydro_fracturing_performed = serializers.SerializerMethodField()
     water_quality_colour = serializers.ReadOnlyField(
         source='water_quality_colour.description')
-    well_cap_type = serializers.ReadOnlyField(
-        source='well_cap_type.description')
     alternative_specs_submitted = serializers.SerializerMethodField()
     surface_seal_method = serializers.ReadOnlyField(
         source='surface_seal_method.description')
@@ -1447,8 +1444,6 @@ class LegacyWellDisplaySerializer(serializers.ModelSerializer):
     hydro_fracturing_performed = serializers.SerializerMethodField()
     water_quality_colour = serializers.ReadOnlyField(
         source='water_quality_colour.description')
-    well_cap_type = serializers.ReadOnlyField(
-        source='well_cap_type.description')
     alternative_specs_submitted = serializers.SerializerMethodField()
     surface_seal_method = serializers.ReadOnlyField(
         source='surface_seal_method.description')
