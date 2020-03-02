@@ -14,6 +14,9 @@
 
 <template>
   <div id="bulk-vertical-aquifer-extents-screen">
+    <b-card no-body class="mb-3 container d-print-none">
+      <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"/>
+    </b-card>
     <b-card class="container p-1" v-if="perms.verticalAquiferExtents">
       <api-error v-if="apiError" :error="apiError"/>
 
@@ -277,6 +280,16 @@ export default {
           label: 'Aquifer ID',
           class: 'aquifer-id',
           sortable: false
+        }
+      ],
+      breadcrumbs: [
+        {
+          text: 'Bulk Upload',
+          to: { name: 'bulk-home' }
+        },
+        {
+          text: 'Vertical Aquifer Extents Bulk Upload',
+          active: true
         }
       ]
     }

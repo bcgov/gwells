@@ -3,6 +3,7 @@
 from django.db import migrations, models
 import django.db.models.deletion
 
+# NOTE: That this isn't actually a no-op migration. This migration actually adds the related_name field.
 
 class Migration(migrations.Migration):
 

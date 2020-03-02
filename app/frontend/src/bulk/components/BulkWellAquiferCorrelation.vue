@@ -14,6 +14,9 @@
 
 <template>
   <div id="bulk-well-aquifer-correlation-screen">
+    <b-card no-body class="mb-3 container d-print-none">
+      <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"/>
+    </b-card>
     <b-card class="container p-1" v-if="perms.wellAquiferCorrelation">
       <api-error v-if="apiError" :error="apiError"/>
 
@@ -238,6 +241,16 @@ export default {
           label: 'Aquifer ID',
           class: 'aquifer-id text-right pr-4',
           sortable: false
+        }
+      ],
+      breadcrumbs: [
+        {
+          text: 'Bulk Upload',
+          to: { name: 'bulk-home' }
+        },
+        {
+          text: 'Well Aquifer Correlation Bulk Upload',
+          active: true
         }
       ]
     }
@@ -481,7 +494,7 @@ export default {
       const aquiferIds = Object.keys(this.aquifers)
       const data = aquiferIds.map((aquiferId) => {
         return {
-          aquiferId: aquiferId,
+          aquiferId: parseInt(aquiferId),
           wellTagNumbers: this.aquifers[aquiferId]
         }
       })

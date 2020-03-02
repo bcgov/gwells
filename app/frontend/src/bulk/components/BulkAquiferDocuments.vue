@@ -14,6 +14,9 @@
 
 <template>
   <div id="bulk-aquifer-documents-upload-screen">
+    <b-card no-body class="mb-3 container d-print-none">
+      <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"/>
+    </b-card>
     <b-card class="container p-1" v-if="perms.aquiferDocuments">
       <api-error v-if="apiError" :error="apiError"/>
 
@@ -224,6 +227,16 @@ export default {
         {
           key: 'documents',
           label: 'Documents'
+        }
+      ],
+      breadcrumbs: [
+        {
+          text: 'Bulk Upload',
+          to: { name: 'bulk-home' }
+        },
+        {
+          text: 'Aquifer Documents Bulk Upload',
+          active: true
         }
       ]
     }
