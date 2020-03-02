@@ -194,14 +194,14 @@ class WellAquiferListV2APIView(ListAPIView):
                 has_errors = True
 
             if vertical_aquifer_extent is not None:
+                self.log_history(vertical_aquifer_extent, username, timestamp)
+
                 if vertical_aquifer_extent.start < max_depth:
                     has_errors = True
                     serializer_errors.setdefault('start', []) \
                         .append('Start depth overlaps with another')
 
                 max_depth = vertical_aquifer_extent.end
-
-            self.log_history(vertical_aquifer_extent, username, timestamp)
 
             errors.append(serializer_errors) # always add to keep the index correct for web app
 
