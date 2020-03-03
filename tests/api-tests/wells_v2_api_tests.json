@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "280b5ba2-50e9-4d41-b861-43407bb64646",
+		"_postman_id": "e27c4a75-c9e6-4a49-b020-ca0fe3322f7f",
 		"name": "GWELLS Well API v2",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -175,7 +175,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"driller_name\": \"Jimithy\",\n\t\"consultant_name\": \"Bobothy\",\n\t\"consultant_company\": \"Inc & Inc\",\n\t\"work_end_date\": \"2018-07-10\",\n\t\"owner_full_name\": \"Holly Homeowner\",\n\t\"work_start_date\": \"2018-07-01\",\n\t\"owner_province_state\": \"BC\",\n\t\"owner_mailing_address\": \"321 Main Street\",\n\t\"owner_city\": \"Anytown\"\n}"
+							"raw": "{\n\t\"driller_name\": \"Jimithy\",\n\t\"consultant_name\": \"Bobothy\",\n\t\"consultant_company\": \"Inc & Inc\",\n\t\"work_end_date\": \"2018-07-10\",\n\t\"owner_full_name\": \"Holly Homeowner\",\n\t\"work_start_date\": \"2018-07-01\",\n\t\"owner_province_state\": \"BC\",\n\t\"owner_mailing_address\": \"321 Main Street\",\n\t\"owner_city\": \"Anytown\",\n\t\"latitude\": 50,\n\t\"longitude\": 123\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/v2/submissions/construction?format=json",
@@ -476,6 +476,204 @@
 							"mode": "raw",
 							"raw": "[\n  {\n    \"aquifer_id\": {{aquifer_id}},\n    \"start\": \"1\",\n    \"end\": \"100.00\",\n    \"lat\": \"50\",\n    \"lng\": \"-120\"\n  }\n]"
 						},
+						"url": {
+							"raw": "{{base_url}}/api/v2/wells/{{well_tag_number}}/vertical-aquifer-extents",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v2",
+								"wells",
+								"{{well_tag_number}}",
+								"vertical-aquifer-extents"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create another Aquifer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "8f3aa783-2831-40f6-a4f9-3ccf241c44aa",
+								"exec": [
+									"var jsonData = pm.response.json()",
+									"pm.environment.set(\"aquifer2_id\", jsonData.aquifer_id);",
+									"",
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.expect(pm.response.code).to.equal(201);",
+									"})",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "JWT {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \n\t\"aquifer_name\":\"Aquifer Name 2\",\n\t\"area\":\"10\",\n\t\"demand\":\"H\",\n\t\"known_water_use\":\"M\",\n\t\"litho_stratographic_unit\":\"Aquifer Litho Stratographic Unit\",\n\t\"location_description\":\"Location Description\",\n\t\"mapping_year\":\"1992\",\n\t\"material\":\"B\",\n\t\"notes\":\"Notes\",\n\t\"productivity\":\"H\",\n\t\"quality_concern\":\"N\",\n\t\"subtype\":\"1a\",\n\t\"vulnerability\":\"H\",\n\t\"resources\": [\n\t\t{ \"name\": \"resource 1\", \"url\": \"http://www.example.com/\", \"section_code\": \"M\" }\n\t]\n}\n"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/aquifers",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"aquifers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Bulk Addition to Well's Extents",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7a45223c-da07-49be-adc9-95919a90e263",
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"   pm.expect(pm.response.code).to.equal(200);\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "JWT {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n  {\n    \"aquiferId\": {{aquifer2_id}},\n    \"fromDepth\": 200,\n    \"toDepth\": 300.00,\n    \"wellTagNumber\": {{well_tag_number}}\n  }\n]"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v2/bulk/vertical-aquifer-extents?commit",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v2",
+								"bulk",
+								"vertical-aquifer-extents"
+							],
+							"query": [
+								{
+									"key": "commit",
+									"value": null
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Well with Two Extents",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "768133b0-7dd6-4197-97ca-ddca5cb1743f",
+								"exec": [
+									"var jsonData = pm.response.json()",
+									"var aquifer_id = pm.environment.get('aquifer_id')",
+									"var aquifer2_id = pm.environment.get('aquifer2_id')",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"})",
+									"",
+									"pm.test(\"Two vertical aquifer extents returned\", function () {",
+									"   pm.expect(jsonData.length).to.equal(2);",
+									"})",
+									"",
+									"pm.test(\"Well's first vertical aquifer extent aquifer_id equals name supplied in request\", function () {",
+									"    pm.expect(jsonData[0].aquifer_id).to.eql(aquifer_id);",
+									"});",
+									"",
+									"pm.test(\"Well's first vertical aquifer extent start equals name supplied in request\", function () {",
+									"    pm.expect(jsonData[0].start).to.eql('1.00');",
+									"});",
+									"",
+									"pm.test(\"Well's first vertical aquifer extent end equals name supplied in request\", function () {",
+									"    pm.expect(jsonData[0].end).to.eql('100.00');",
+									"});",
+									"",
+									"pm.test(\"Well's first vertical aquifer extent latitude equals name supplied in request\", function () {",
+									"    pm.expect(jsonData[0].lat).to.eql(50.0);",
+									"});",
+									"",
+									"pm.test(\"Well's first vertical aquifer extent longitude equals name supplied in request\", function () {",
+									"    pm.expect(jsonData[0].lng).to.eql(-120.0);",
+									"});",
+									"",
+									"pm.test(\"Well's second vertical aquifer extent aquifer_id equals name supplied in request\", function () {",
+									"    pm.expect(jsonData[1].aquifer_id).to.eql(aquifer2_id);",
+									"});",
+									"",
+									"pm.test(\"Well's second vertical aquifer extent start equals name supplied in request\", function () {",
+									"    pm.expect(jsonData[1].start).to.eql('200.00');",
+									"});",
+									"",
+									"pm.test(\"Well's second vertical aquifer extent end equals name supplied in request\", function () {",
+									"    pm.expect(jsonData[1].end).to.eql('300.00');",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "4d7ea87d-32ab-4696-9176-b041b6673698",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "JWT {{token}}"
+							}
+						],
 						"url": {
 							"raw": "{{base_url}}/api/v2/wells/{{well_tag_number}}/vertical-aquifer-extents",
 							"host": [

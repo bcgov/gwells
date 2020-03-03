@@ -19,7 +19,6 @@ from rest_framework import status
 from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema
 from django.db import transaction
-from django.http import JsonResponse
 from django.utils import timezone
 from django.contrib.gis.geos import Point
 
@@ -233,31 +232,31 @@ class BulkVerticalAquiferExtents(APIView):
                 to_depth = Decimal(format(vae['toDepth'], '.2f')) if vae['toDepth'] is not None else Decimal('Infinity')
 
                 if aquifer_id in existing_aquifer_ids:
-                    self.addConflict(vae, 'Aquifer %s already defined for well' % aquifer_id)
+                    self.add_conflict(vae, 'Aquifer %s already defined for well' % aquifer_id)
                     continue
                 if from_depth < 0:
-                    self.addConflict(vae, 'From depth can not be less then zero')
+                    self.add_conflict(vae, 'From depth can not be less then zero')
                     continue
                 if to_depth < 0:
-                    self.addConflict(vae, 'To depth can not be less then zero')
+                    self.add_conflict(vae, 'To depth can not be less then zero')
                     continue
                 if to_depth < from_depth:
-                    self.addConflict(vae, 'From depth must be below to depth')
+                    self.add_conflict(vae, 'From depth must be below to depth')
                     continue
 
                 aquifer = existing_aquifers[aquifer_id]
 
-                if self.checkExtentOverlaps(from_depth, to_depth, extents):
-                    self.addConflict(vae, 'Overlaps with an existing vertical aquifer extent')
+                if self.check_extent_overlaps(from_depth, to_depth, extents):
+                    self.add_conflict(vae, 'Overlaps with an existing vertical aquifer extent')
                     continue
 
                 if from_depth < max_depth:
-                    self.addConflict(vae, 'Overlaps with another vertical aquifer extent in the CSV')
+                    self.add_conflict(vae, 'Overlaps with another vertical aquifer extent in the CSV')
                     continue
                 max_depth = to_depth
 
                 if update_db:
-                    vae_model = self.buildVerticalAquiferExtentModel(well, aquifer, from_depth, to_depth)
+                    vae_model = self.build_vertical_aquifer_extent_model(well, aquifer, from_depth, to_depth)
                     new_vae_models.append(vae_model)
                     self.append_to_history_log(vae_model)
 
@@ -299,14 +298,14 @@ class BulkVerticalAquiferExtents(APIView):
 
         return keyed_aquifers
 
-    def addConflict(self, data, msg):
+    def add_conflict(self, data, msg):
         """ Logs a conflict to be returned as a list of conflicts """
         self.conflicts.append({
             **data,
             'message': msg,
         })
 
-    def buildVerticalAquiferExtentModel(self, well, aquifer, from_depth, to_depth):
+    def build_vertical_aquifer_extent_model(self, well, aquifer, from_depth, to_depth):
         """ A new VerticalAquiferExtentModel which uses the well's geom """
         if well.geom:
             longitude = well.geom.x
@@ -324,7 +323,7 @@ class BulkVerticalAquiferExtents(APIView):
             create_date=self.create_date
         )
 
-    def checkExtentOverlaps(self, from_depth, to_depth, existing_extents):
+    def check_extent_overlaps(self, from_depth, to_depth, existing_extents):
         """ Checks an extent against a list of existing extents """
         if len(existing_extents) == 0:
             return False
@@ -336,7 +335,7 @@ class BulkVerticalAquiferExtents(APIView):
             if from_depth >= max_depth and to_depth <= start:
                 return False
             max_depth = end
-        return True
+        return from_depth < max_depth # check the bottom of all extents
 
     def return_errors(self):
         # roll back the transaction as the bulk_update could have run for one
