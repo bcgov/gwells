@@ -414,7 +414,7 @@ export default {
       const newLong = this.roundDecimalDegrees(longitude)
       const newLat = this.roundDecimalDegrees(latitude)
       // Set the prop value of longitude and latitude
-      this.longitudeInput = Math.abs(newLong) * -1
+      this.longitudeInput = Math.abs(newLong) * -1 // Always make longitude negative so form is clean
       this.latitudeInput = newLat
       this.degrees.longitude = Math.abs(newLong)
       this.degrees.latitude = newLat
