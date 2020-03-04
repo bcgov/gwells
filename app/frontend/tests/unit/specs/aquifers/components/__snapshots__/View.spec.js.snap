@@ -476,7 +476,10 @@ exports[`View Component View mode matches the snapshot 1`] = `
              
             <aquifer-documents-stub
               files="[object Object]"
+              highlightregexp="/[_ -]factsheet[_ -]*.*\\\\.pdf$/i"
+              highlighttitle="Factsheets"
               id="4"
+              publicfilestitle="Other Documents"
             />
           </div>
            
