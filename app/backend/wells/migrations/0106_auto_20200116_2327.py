@@ -5,7 +5,7 @@ from django.db import migrations
 
 INSERT_DRILLING_COMPANIES_INTO_ORG = """
     INSERT INTO registries_organization (create_user, create_date, update_user, update_date, org_guid, name, effective_date, expiry_date, province_state_code)
-        SELECT create_user, create_date, update_user, update_date, drilling_company_guid, name, '2018-01-01 00:00:00', '9999-12-31 00:00:00', 'BC' FROM drilling_company;
+        SELECT create_user, create_date, update_user, update_date, drilling_company_guid, name, '1970-01-01 00:00:00', '2020-01-01 00:00:00', 'OTHER' FROM drilling_company;
 """
 
 # Update any wells to use the same GUID which will point to the drilling companies inserted above
