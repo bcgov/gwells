@@ -623,11 +623,25 @@ exports[`View Component View mode matches the snapshot 1`] = `
               />
                
               <li>
-                <div>
+                <div
+                  class="advanced-mapping"
+                >
                   <dt
                     class="text-right"
                   >
                     Advanced mapping
+                  
+                    <i
+                      class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                      id="aquifer-advanced-mapping"
+                      tabindex="0"
+                    />
+                     
+                    <b-popover-stub
+                      content="Aquifers with advanced mapping have been mapped both laterally and vertically. Vertical interpretations, cross-sections, and/or a three-dimension model will generally have been developed for these aquifers."
+                      target="aquifer-advanced-mapping"
+                      triggers="hover focus"
+                    />
                   </dt>
                    
                   <dd

@@ -234,7 +234,22 @@
             <ul class="ml-0 mr-0 mb-0 mt-4 p-0 aquifer-information-list">
               <div class="aquifer-information-list-divider"></div>
               <li :key="section.id" v-for="section in aquifer_resource_sections">
-                <div class="observational-wells" v-if="section.key === 'obs-wells'">
+                <div class="advanced-mapping" v-if="section.code === 'M'">
+                  <dt class="text-right">Advanced mapping
+                    <i id="aquifer-advanced-mapping" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+                    <b-popover
+                      target="aquifer-advanced-mapping"
+                      triggers="hover focus"
+                      content="Aquifers with advanced mapping have been mapped both laterally and vertically. Vertical interpretations, cross-sections, and/or a three-dimension model will generally have been developed for these aquifers."/>
+                  </dt>
+                  <dd class="m-0">
+                    <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
+                      <li><a :href="resource.url" @click="handleExternalResourceClicks" target="_blank" class="d-print-url">{{ resource.name }}</a></li>
+                    </ul>
+                    <p class="m-0" v-if="!bySection(record.resources, section).length">No information available.</p>
+                  </dd>
+                </div>
+                <div class="observational-wells" v-else-if="section.key === 'obs-wells'">
                   <dt class="text-right">Observation wells</dt>
                   <dd class="m-0">
                     <div v-if="activeObsWells.length > 0">
