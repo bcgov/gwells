@@ -12,54 +12,38 @@
     limitations under the License.
 """
 from urllib.parse import quote
-from datetime import datetime
 import logging
-import sys
-import time
+import json
+import requests
 
-from django.contrib.gis.db.models.functions import Centroid, Distance
-from django.contrib.gis.geos import GEOSException, Point, GEOSGeometry
+from django.contrib.gis.db.models.functions import Distance
+from django.contrib.gis.geos import GEOSException, GEOSGeometry
 from django.contrib.gis.gdal import GDALException
-from django.db.models import Prefetch, FloatField
+from django.db.models import FloatField
 from django.db.models.functions import Cast
 from django.http import (
     FileResponse, Http404, HttpResponse, HttpResponseNotFound,
-    HttpResponseRedirect, JsonResponse, StreamingHttpResponse, HttpResponseBadRequest)
+    HttpResponseRedirect, JsonResponse, StreamingHttpResponse
+)
 from django.shortcuts import get_object_or_404
-from django.views.generic import DetailView
-from django_filters import rest_framework as restfilters
 from django.db import connection
-import requests
-import json
 
-from functools import reduce
-import operator
-import re
-
-from django.db.models import Q
-from wells.change_history import get_well_history
-
-from rest_framework import filters, status
+from rest_framework import filters
 from rest_framework.decorators import api_view
 from rest_framework.exceptions import PermissionDenied, NotFound, ValidationError
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.generics import ListAPIView, RetrieveAPIView
-from rest_framework.permissions import AllowAny
-from rest_framework.settings import api_settings
 
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 
 from minio import Minio
 
-from gwells import settings
 from gwells.documents import MinioClient
-from gwells.models import Survey
 from gwells.roles import WELLS_VIEWER_ROLE, WELLS_EDIT_ROLE
 from gwells.pagination import APILimitOffsetPagination
 from gwells.settings.base import get_env_variable
-from gwells.db_comments import get_column_description
 from gwells.open_api import (
     get_geojson_schema, get_model_feature_schema, GEO_JSON_302_MESSAGE, GEO_JSON_PARAMS)
 from gwells.management.commands.export_databc import (WELLS_SQL, LITHOLOGY_SQL, GeoJSONIterator,
@@ -88,19 +72,22 @@ from wells.models import (
     Well,
     WellClassCode,
     WellYieldUnitCode,
-    WellStatusCode)
+    WellStatusCode,
+)
+from wells.change_history import get_well_history
 from wells.renderers import WellListCSVRenderer, WellListExcelRenderer
 from wells.serializers import (
-    WellExportAdminSerializer,
-    WellExportSerializer,
-    WellListAdminSerializer,
-    WellListSerializer,
+    WellExportAdminSerializerV1,
+    WellExportSerializerV1,
+    WellListAdminSerializerV1,
+    WellListSerializerV1,
     WellTagSearchSerializer,
     WellDetailSerializer,
     WellDetailAdminSerializer,
     WellLocationSerializerV1,
     WellDrawdownSerializer,
-    WellLithologySerializer)
+    WellLithologySerializer,
+)
 from wells.permissions import WellsEditPermissions, WellsEditOrReadOnly
 
 
@@ -228,7 +215,7 @@ class ListFiles(APIView):
         return Response(documents)
 
 
-class WellListAPIView(ListAPIView):
+class WellListAPIViewV1(ListAPIView):
     """List and create wells
 
     get: returns a list of wells
@@ -247,10 +234,10 @@ class WellListAPIView(ListAPIView):
 
     def get_serializer_class(self):
         """Returns a different serializer class for admin users."""
-        serializer_class = WellListSerializer
+        serializer_class = WellListSerializerV1
         if (self.request.user and self.request.user.is_authenticated and
                 self.request.user.groups.filter(name=WELLS_VIEWER_ROLE).exists()):
-            serializer_class = WellListAdminSerializer
+            serializer_class = WellListAdminSerializerV1
 
         return serializer_class
 
@@ -322,7 +309,7 @@ class WellSubmissionsListAPIView(ListAPIView):
                           record.create_date), reverse=True)
 
 
-class WellLocationListV1APIView(ListAPIView):
+class WellLocationListAPIViewV1(ListAPIView):
     """ returns well locations for a given search
 
         get: returns a list of wells with locations only
@@ -367,7 +354,7 @@ class WellLocationListV1APIView(ListAPIView):
         return super().get(request)
 
 
-class WellExportListAPIView(ListAPIView):
+class WellExportListAPIViewV1(ListAPIView):
     """Returns CSV or Excel data for wells.
     """
     permission_classes = (WellsEditOrReadOnly,)
@@ -453,10 +440,10 @@ class WellExportListAPIView(ListAPIView):
 
     def get_serializer_class(self):
         """Returns a different serializer class for admin users."""
-        serializer_class = WellExportSerializer
+        serializer_class = WellExportSerializerV1
         if (self.request.user and self.request.user.is_authenticated and
                 self.request.user.groups.filter(name=WELLS_VIEWER_ROLE).exists()):
-            serializer_class = WellExportAdminSerializer
+            serializer_class = WellExportAdminSerializerV1
 
         return serializer_class
 

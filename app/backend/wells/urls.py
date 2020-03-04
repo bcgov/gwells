@@ -57,7 +57,7 @@ urlpatterns = [
 
     # Well tag search
     url(r'api/v1/wells/locations$',
-        never_cache(views.WellLocationListV1APIView.as_view()), name='well-locations-v1'),
+        never_cache(views.WellLocationListAPIViewV1.as_view()), name='well-locations-v1'),
 
     url(r'api/v2/wells/locations$',
         never_cache(views_v2.WellLocationListV2APIView.as_view()), name='well-locations-v2'),
@@ -78,12 +78,20 @@ urlpatterns = [
         never_cache(views.DeleteWellDocument.as_view()), name='well-delete-document'),
 
     # Well list
-    url(api_path_prefix() + r'/wells$',
-        never_cache(views.WellListAPIView.as_view()), name='well-list'),
+    url(r'api/v1/wells$',
+        never_cache(views.WellListAPIViewV1.as_view()), name='well-list-v1'),
+
+    # Well list
+    url(r'api/v2/wells$',
+        never_cache(views_v2.WellListAPIViewV2.as_view()), name='well-list-v2'),
 
     # Well search export
-    url(api_path_prefix() + r'/wells/export$',
-        never_cache(views.WellExportListAPIView.as_view()), name='well-export'),
+    url(r'api/v1/wells/export$',
+        never_cache(views.WellExportListAPIViewV1.as_view()), name='well-export-v1'),
+
+    # Well search export
+    url(r'api/v2/wells/export$',
+        never_cache(views_v2.WellExportListAPIViewV2.as_view()), name='well-export-v2'),
 
     # GeoJSON well endpoint for DataBC.
     url(api_path_prefix() + r'/gis/wells$',

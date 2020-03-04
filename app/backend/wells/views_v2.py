@@ -15,24 +15,22 @@
 import logging
 import geojson
 from geojson import Feature, FeatureCollection
-
 from reversion.views import RevisionMixin
+from drf_yasg.utils import swagger_auto_schema
 
 from django.db import transaction
-from django.http import HttpResponse, Http404
 from django.db.models import Func, TextField
 from django.db.models.functions import Cast
 from django.utils import timezone
-
-from drf_yasg.utils import swagger_auto_schema
+from django.http import FileResponse, Http404, HttpResponse, StreamingHttpResponse
 
 from rest_framework import status, filters
 from rest_framework.generics import ListAPIView
 from rest_framework.exceptions import PermissionDenied, NotFound
 from rest_framework.response import Response
 
-from gwells.roles import WELLS_EDIT_ROLE
-from gwells.pagination import apiLimitedPagination
+from gwells.roles import WELLS_VIEWER_ROLE, WELLS_EDIT_ROLE
+from gwells.pagination import apiLimitedPagination, APILimitOffsetPagination
 
 from wells.filters import (
     BoundingBoxFilterBackend,
@@ -41,8 +39,16 @@ from wells.filters import (
     GeometryFilterBackend
 )
 from wells.models import Well
-from wells.serializers_v2 import WellLocationSerializerV2, WellVerticalAquiferExtentSerializerV2
+from wells.serializers_v2 import (
+    WellLocationSerializerV2,
+    WellVerticalAquiferExtentSerializerV2,
+    WellListSerializerV2,
+    WellListAdminSerializerV2,
+    WellExportSerializerV2,
+    WellExportAdminSerializerV2,
+)
 from wells.permissions import WellsEditOrReadOnly
+from wells.renderers import WellListCSVRenderer, WellListExcelRenderer
 
 from aquifers.models.vertical_aquifer_extents import VerticalAquiferExtent
 from aquifers.permissions import HasAquiferEditRole
@@ -243,3 +249,200 @@ class WellAquiferListV2APIView(RevisionMixin, ListAPIView):
             return True
 
         return False
+
+
+class WellListAPIViewV2(ListAPIView):
+    """List and create wells
+
+    get: returns a list of wells
+    """
+
+    permission_classes = (WellsEditOrReadOnly,)
+    model = Well
+    pagination_class = APILimitOffsetPagination
+
+    filter_backends = (WellListFilterBackend, BoundingBoxFilterBackend,
+                       filters.SearchFilter, WellListOrderingFilter, GeometryFilterBackend)
+    ordering = ('well_tag_number',)
+    search_fields = ('well_tag_number', 'identification_plate_number',
+                     'street_address', 'city', 'owner_full_name')
+    default_limit = 10
+
+    def get_serializer_class(self):
+        """Returns a different serializer class for admin users."""
+        serializer_class = WellListSerializerV2
+        if (self.request.user and self.request.user.is_authenticated and
+                self.request.user.groups.filter(name=WELLS_VIEWER_ROLE).exists()):
+            serializer_class = WellListAdminSerializerV2
+
+        return serializer_class
+
+    def get_queryset(self):
+        """ Excludes Unpublished wells for users without edit permissions """
+        if self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
+            qs = Well.objects.all()
+        else:
+            qs = Well.objects.all().exclude(well_publication_status='Unpublished')
+
+        qs = qs \
+            .select_related(
+                "bcgs_id",
+            ).prefetch_related(
+                "water_quality_characteristics",
+                "drilling_methods",
+                "development_methods"
+            )
+
+        return qs
+
+
+class WellExportListAPIViewV2(ListAPIView):
+    """Returns CSV or Excel data for wells.
+    """
+    permission_classes = (WellsEditOrReadOnly,)
+    model = Well
+
+    # Allow searching on name fields, names of related companies, etc.
+    filter_backends = (WellListFilterBackend, BoundingBoxFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter)
+    ordering = ('well_tag_number',)
+    pagination_class = None
+
+    search_fields = ('well_tag_number', 'identification_plate_number',
+                     'street_address', 'city', 'owner_full_name')
+    renderer_classes = (WellListCSVRenderer, WellListExcelRenderer)
+    MAX_EXPORT_COUNT = 5000
+
+    SELECT_RELATED_OPTIONS = [
+        'well_class',
+        'well_subclass',
+        'well_status',
+        'licenced_status',
+        'land_district',
+        'company_of_person_responsible',
+        'ground_elevation_method',
+        'surface_seal_material',
+        'surface_seal_method',
+        'liner_material',
+        'screen_intake_method',
+        'screen_type',
+        'screen_material',
+        'screen_opening',
+        'screen_bottom',
+        'well_yield_unit',
+        'observation_well_status',
+        'coordinate_acquisition_code',
+        'bcgs_id',
+        'decommission_method',
+        'aquifer',
+        'aquifer_lithology',
+        'yield_estimation_method',
+        'well_disinfected_status',
+    ]
+    PREFETCH_RELATED_OPTIONS = [
+        'development_methods',
+        'drilling_methods',
+        'water_quality_characteristics',
+    ]
+
+    def get_fields(self):
+        raw_fields = self.request.query_params.get('fields')
+        return raw_fields.split(',') if raw_fields else None
+
+    def get_queryset(self):
+        """Excludes unpublished wells for users without edit permissions.
+        """
+        if self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
+            qs = Well.objects.all()
+        else:
+            qs = Well.objects.all().exclude(well_publication_status='Unpublished')
+
+        included_fields = self.get_fields()
+
+        if included_fields:
+            select_relateds = [
+                relation for relation in self.SELECT_RELATED_OPTIONS
+                if relation in included_fields
+            ]
+            prefetches = [
+                relation for relation in self.PREFETCH_RELATED_OPTIONS
+                if relation in included_fields
+            ]
+
+            if select_relateds:
+                qs = qs.select_related(*select_relateds)
+            if prefetches:
+                qs = qs.prefetch_related(*prefetches)
+        elif included_fields is None:
+            # If no fields are passed, then include everything
+            qs = qs.select_related(*self.SELECT_RELATED_OPTIONS)
+            qs = qs.prefetch_related(*self.PREFETCH_RELATED_OPTIONS)
+
+        return qs
+
+    def get_serializer_class(self):
+        """Returns a different serializer class for admin users."""
+        serializer_class = WellExportSerializerV2
+        if (self.request.user and self.request.user.is_authenticated and
+                self.request.user.groups.filter(name=WELLS_VIEWER_ROLE).exists()):
+            serializer_class = WellExportAdminSerializerV2
+
+        return serializer_class
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+
+        fields = self.get_fields()
+        if fields:
+            context['fields'] = fields
+
+        return context
+
+    def get_renderer_context(self):
+        context = super().get_renderer_context()
+
+        fields = self.get_fields()
+        if fields:
+            context['header'] = fields
+
+        return context
+
+    def batch_iterator(self, queryset, count, batch_size=200):
+        """Batch a queryset into chunks of batch_size, and serialize the results
+
+        Allows iterative processing while taking advantage of prefetching many
+        to many relations.
+        """
+        for offset in range(0, count, batch_size):
+            end = min(offset + batch_size, count)
+            batch = queryset[offset:end]
+
+            serializer = self.get_serializer(batch, many=True)
+            for item in serializer.data:
+                yield item
+
+    def list(self, request, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        count = queryset.count()
+        # return an empty response if there are too many wells to display
+        if count > self.MAX_EXPORT_COUNT:
+            raise PermissionDenied(
+                'Too many wells to export. Please change your search criteria.'
+            )
+        elif count == 0:
+            raise NotFound('No well records could be found.')
+
+        renderer = request.accepted_renderer
+        if renderer.format == 'xlsx':
+            response_class = FileResponse
+        else:
+            response_class = StreamingHttpResponse
+
+        context = self.get_renderer_context()
+        data_iterator = self.batch_iterator(queryset, count)
+        render_result = renderer.render(data_iterator, renderer_context=context)
+
+        response = response_class(render_result, content_type=renderer.media_type)
+        response['Content-Disposition'] = 'attachment; filename="search-results.{ext}"'.format(ext=renderer.format)
+
+        return response

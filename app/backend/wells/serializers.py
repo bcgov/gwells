@@ -806,7 +806,7 @@ class WellStackerSerializer(AuditModelSerializer):
         return instance
 
 
-class WellListSerializer(serializers.ModelSerializer):
+class WellListSerializerV1(serializers.ModelSerializer):
     """Serializes a well record"""
 
     legal_pid = serializers.SerializerMethodField()
@@ -941,11 +941,11 @@ class WellListSerializer(serializers.ModelSerializer):
         )
 
 
-class WellListAdminSerializer(WellListSerializer):
+class WellListAdminSerializerV1(WellListSerializerV1):
 
     class Meta:
         model = Well
-        fields = WellListSerializer.Meta.fields + (
+        fields = WellListSerializerV1.Meta.fields + (
             'create_user',
             'create_date',
             'update_user',
@@ -959,7 +959,7 @@ class WellListAdminSerializer(WellListSerializer):
         )
 
 
-class WellExportSerializer(WellListSerializer):
+class WellExportSerializerV1(WellListSerializerV1):
     """Serializes a well for export (using display names for codes, etc)"""
     well_class = serializers.SlugRelatedField(read_only=True, slug_field='description')
     well_subclass = serializers.SlugRelatedField(read_only=True, slug_field='description')
@@ -1031,7 +1031,7 @@ class WellExportSerializer(WellListSerializer):
         return data
 
 
-class WellExportAdminSerializer(WellExportSerializer):
+class WellExportAdminSerializerV1(WellExportSerializerV1):
     """Serializes a well for export (using display names for codes, etc)"""
     owner_province_state = serializers.SlugRelatedField(read_only=True,
                                                         slug_field='description')
@@ -1040,7 +1040,7 @@ class WellExportAdminSerializer(WellExportSerializer):
 
     class Meta:
         model = Well
-        fields = WellListAdminSerializer.Meta.fields
+        fields = WellListAdminSerializerV1.Meta.fields
 
 
 class WellTagSearchSerializer(serializers.ModelSerializer):
