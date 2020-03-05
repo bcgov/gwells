@@ -240,7 +240,7 @@
                     <b-popover
                       target="aquifer-advanced-mapping"
                       triggers="hover focus"
-                      content="Aquifers with advanced mapping have been mapped both laterally and vertically. Vertical interpretations, cross-sections, and/or a three-dimension model will generally have been developed for these aquifers."/>
+                      content="Aquifers with advanced mapping have been mapped in three dimension. Cross-sections, and/or a three-dimensional model will generally have been developed."/>
                   </dt>
                   <dd class="m-0">
                     <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">

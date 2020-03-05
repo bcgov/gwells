@@ -638,7 +638,7 @@ exports[`View Component View mode matches the snapshot 1`] = `
                     />
                      
                     <b-popover-stub
-                      content="Aquifers with advanced mapping have been mapped both laterally and vertically. Vertical interpretations, cross-sections, and/or a three-dimension model will generally have been developed for these aquifers."
+                      content="Aquifers with advanced mapping have been mapped in three dimension. Cross-sections, and/or a three-dimensional model will generally have been developed."
                       target="aquifer-advanced-mapping"
                       triggers="hover focus"
                     />
