@@ -159,6 +159,9 @@
             <p><i v-if="licence_details.wells_updated">Well info last updated {{ licence_details.wells_updated.update_date__max|formatDate }}</i></p>
             <h5 class="mt-5 border-bottom pb-4 main-title">Documentation</h5>
             <aquifer-documents :files="aquiferFiles"
+              highlightTitle="Factsheets"
+              :highlightRegexp="factsheetRe"
+              publicFilesTitle="Other Documents"
               :editMode="editMode"
               :id="this.id"
               :loading="loadingFiles"
@@ -512,6 +515,7 @@ export default {
         { code: 'I', name: 'Other information' }
       ],
       waterWithdrawlVolume: '',
+      factsheetRe: /[_ -]factsheet[_ -]*.*\.pdf$/i,
       loading: false,
       loadingFiles: false,
       loadingMap: false,
