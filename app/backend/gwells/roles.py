@@ -36,6 +36,10 @@ WELLS_SUBMISSION_VIEWER_ROLE = 'wells_submission_viewer'
 AQUIFERS_VIEWER_ROLE = 'aquifers_view'
 AQUIFERS_EDIT_ROLE = 'aquifers_edit'
 
+BULK_WELL_AQUIFER_CORRELATION_UPLOAD = 'bulk_well_aquifer_correlation_upload'
+BULK_AQUIFER_DOCUMENTS_UPLOAD = 'bulk_aquifer_documents_upload'
+BULK_VERTICAL_AQUIFER_EXTENTS_UPLOAD = 'bulk_vertical_aquifer_extents_upload'
+
 # Surveys
 SURVEYS_EDIT_ROLE = 'surveys_edit'
 

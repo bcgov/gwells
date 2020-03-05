@@ -11,6 +11,9 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
+from decimal import Decimal
+
+from django.core.validators import MinValueValidator
 from django.contrib.gis.db import models
 
 from gwells.models.common import AuditModelStructure
@@ -42,7 +45,7 @@ class BulkWellAquiferCorrelationHistory(BulkHistory):
     id = models.AutoField(
         db_column='bulk_well_aquifer_correlation_history_id',
         primary_key=True, verbose_name='Bulk History Id',
-        db_comment=('The primary key for the bulk_history table'))
+        db_comment=('The primary key for the bulk_well_aquifer_correlation_history table'))
     well = models.ForeignKey(
         'wells.Well', db_column='well_tag_number', on_delete=models.PROTECT,
         blank=False, null=False,
