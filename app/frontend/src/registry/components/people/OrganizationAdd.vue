@@ -44,7 +44,7 @@
             </b-col>
             <b-col cols="12" md="6">
               <b-form-group
-                label="Province/State:"
+                label="Province:"
                 label-for="orgAddProvinceInput">
                 <b-form-select
                   id="orgAddProvinceInput"
@@ -79,7 +79,7 @@
           <b-row class="mt-3">
             <b-col cols="12" md="6">
               <b-form-group
-                label="Telephone:"
+                label="Office telephone number:"
                 label-for="orgAddPhoneInput">
                 <b-form-input
                     id="orgAddPhoneInput"
