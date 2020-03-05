@@ -39,26 +39,6 @@ const searchControl = new GeoSearchControl({
 const DEFAULT_MAP_CENTRE = new L.LatLng(54.459, -126.495)
 const DEFAULT_MAP_ZOOM = 5
 
-// Extend control, making a locate
-L.Control.Locate = L.Control.extend({
-  onAdd: function (map) {
-    let container = L.DomUtil.create('div', 'geolocate')
-    L.DomEvent.addListener(container, 'click', this.click, this)
-    return container
-  },
-  onRemove: function (map) {
-
-  },
-  click: function (ev) {
-    // Use callback to handle clicks
-    if (this.onClick) {
-      this.onClick(ev)
-    }
-  }
-})
-L.control.locate = function (opts) {
-  return new L.Control.Locate(opts)
-}
 
 export default {
   name: 'AquiferMap',
@@ -196,11 +176,21 @@ export default {
     },
 
     getLocateControl () {
-      const locateButton = L.control.locate({ position: 'topleft' })
-      locateButton.onClick = (ev) => {
-        this.map.locate({ setView: true, maxZoom: 12 })
+      const options = {
+        position: 'topleft'
       }
-      return locateButton
+      return new (L.Control.extend({
+        onAdd (map) {
+          const title = 'Zoom to your location'
+          let container = L.DomUtil.create('div', 'geolocate')
+          container.title = title
+          L.DomEvent.addListener(container, 'click', this.click, this)
+          return container
+        },
+        click: (ev) => {
+          this.map.locate({ setView: true, maxZoom: 12 })
+        }
+      }))(options)
     },
     getFullScreenControl () {
       return new L.Control.Fullscreen({
@@ -213,9 +203,13 @@ export default {
         options: {
           position: 'topleft'
         },
-        onAdd: function (map) {
-          var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control')
-          container.innerHTML = '<a class="leaflet-bar-part leaflet-bar-part-single"><span class="fa fa-hand-paper-o"></span></a>'
+        onAdd (map) {
+          const title = 'Draw a polygon to zoom'
+          const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control')
+          container.innerHTML = '' +
+            `<a class="leaflet-bar-part leaflet-bar-part-single" title="${title}">` +
+              '<span class="fa fa-hand-paper-o"></span>' +
+            '</a>'
           container.onclick = function (map) {
             lasso.enable()
           }
