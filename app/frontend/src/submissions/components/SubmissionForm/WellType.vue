@@ -109,7 +109,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         </b-col>
       </b-row>
       <b-row>
-        <b-col cols="12" md="4"  v-if="!isStaffEdit">
+        <b-col cols="12" md="4" v-if="!isStaffEdit && wellActivityType !== 'CON'">
           <b-form-group>
             <label>Well Tag Number (if known) <span class="font-weight-bold"></span></label>
             <v-select
@@ -228,6 +228,7 @@ import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 export default {
   mixins: [inputBindingsMixin],
   props: {
+    wellActivityType: String,
     units: String,
     wellTagNumber: null,
     wellStatusCode: String,
