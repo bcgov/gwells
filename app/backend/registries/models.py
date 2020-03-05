@@ -12,13 +12,15 @@
     limitations under the License.
 """
 import uuid
-from django.utils import timezone
 import logging
 import reversion
+from reversion.models import Version
+
+from django.utils import timezone
 from django.contrib.gis.db import models
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.fields import GenericRelation
-from reversion.models import Version
+
 from gwells.models import AuditModel, ProvinceStateCode, CodeTableModel, BasicCodeTableModel
 
 User = get_user_model()
@@ -475,7 +477,7 @@ class ProofOfAgeCode(CodeTableModel):
     List of documents that can be used to indentify (the age) of an application
     """
     code = models.CharField(
-        primary_key=True, max_length=10, editable=False, db_column='registries_proof_of_age_code',
+        primary_key=True, max_length=15, editable=False, db_column='registries_proof_of_age_code',
         db_comment=('List of valid options for what documentation the ministry staff reviewed to verify the '
                     'applicants age to be over 19. I.e. Drivers, Birth, Passport.'))
     description = models.CharField(
@@ -537,7 +539,7 @@ class RegistriesApplication(AuditModel):
         db_column='registries_proof_of_age_code',
         on_delete=models.PROTECT,
         verbose_name="Proof of age.",
-        null=True
+        null=False
     )
     registrar_notes = models.CharField(
         max_length=255,

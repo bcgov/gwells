@@ -36,9 +36,14 @@ urlpatterns = [
         name='aquifers-list-xlsx'
         ),
 
-    url(api_path_prefix() + r'/aquifers/names$',
+    url(r'api/v1/aquifers/names$',
         never_cache(views.AquiferNameList.as_view()),
-        name='aquifer-name-list'
+        name='aquifer-name-list-v1'
+        ),
+
+    url(r'api/v2/aquifers/names$',
+        never_cache(views.AquiferNameListV2.as_view()),
+        name='aquifer-name-list-v2'
         ),
 
     url(api_path_prefix() + r'/aquifers/(?P<aquifer_id>[0-9]+)/edit$',

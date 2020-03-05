@@ -19,6 +19,8 @@ import logging
 
 from django.db.models import CharField, Field, EmailField, ForeignKey, \
     DateField, UUIDField, BooleanField, IntegerField, BigIntegerField, AutoField, DecimalField, TextField
+from django.contrib.postgres.fields import JSONField
+from django.contrib.gis.db.models import PointField
 
 
 class PatchedField(Field):
@@ -85,7 +87,9 @@ def patch_fields():
         DecimalField,
         AutoField,
         ForeignKey,
-        TextField
+        TextField,
+        JSONField,
+        PointField
     ]
 
     for cls in to_patch:

@@ -30,25 +30,26 @@
           </li>
         </b-navbar-nav>
         <b-navbar-nav class="ml-auto d-sm-none">
-          <b-navbar-toggle class="d-sm-none" target="nav_collapse"></b-navbar-toggle>
+          <b-navbar-toggle class="d-sm-none" target="nav_collapse"/>
         </b-navbar-nav>
       </b-container>
     </b-navbar>
     <b-navbar class="bc-nav-links py-0" toggleable="sm" type="dark">
-      <b-container fluid>
+      <b-container>
         <b-collapse class="py-2" is-nav id="nav_collapse">
-          <b-container id="navContainer">
-            <b-nav-text class="d-sm-none text-light">Groundwater Wells and Aquifers</b-nav-text>
-            <b-navbar-nav class="gwells-nav">
-              <b-nav-item id="ribbon-search" class="navbar-link lvl2-link" :to="{ name: 'wells-home'}">Well Search</b-nav-item>
-              <b-nav-item id="ribbon-aquifers" v-if="show.aquifers" class="navbar-link lvl2-link" :to="{ name: 'aquifers-home' }">Aquifer Search</b-nav-item>
-              <b-nav-item id="ribbon-registry" class="navbar-link lvl2-link" :to="{ name: 'SearchHome'}">Registry Search</b-nav-item>
-              <b-nav-item class="navbar-link lvl2-link" v-if="show.dataEntry" :to="{ name: 'SubmissionsHome'}">Submit Report</b-nav-item>
-              <b-nav-item id="ribbon-groundwaterinfo" class="navbar-link lvl2-link" :to="{ name: 'groundwater-information' }">Groundwater Information</b-nav-item>
-              <b-nav-item id="ribbon-surveys" class="navbar-link lvl2-link" v-if="show.surveys" :to="{ name: 'Surveys' }">Admin</b-nav-item>
-              <b-nav-item class="d-sm-none"><keycloak-auth v-if="auth !== 'hide'" id="keycloak-auth-xs"/></b-nav-item>
-            </b-navbar-nav>
-          </b-container>
+          <b-nav-text class="d-sm-none text-light">Groundwater Wells and Aquifers</b-nav-text>
+          <b-navbar-nav class="gwells-nav">
+            <b-nav-item id="ribbon-search" class="navbar-link lvl2-link" :to="{ name: 'wells-home'}">Well Search</b-nav-item>
+            <b-nav-item id="ribbon-aquifers" v-if="show.aquifers" class="navbar-link lvl2-link" :to="{ name: 'aquifers-home' }">Aquifer Search</b-nav-item>
+            <b-nav-item id="ribbon-registry" class="navbar-link lvl2-link" :to="{ name: 'SearchHome'}">Registry Search</b-nav-item>
+            <b-nav-item class="navbar-link lvl2-link" v-if="show.dataEntry" :to="{ name: 'SubmissionsHome'}">Submit Report</b-nav-item>
+            <b-nav-item id="ribbon-bulk" class="navbar-link lvl2-link" v-if="show.bulk" :to="{ name: 'bulk-home' }">Bulk Upload</b-nav-item>
+            <b-nav-item id="ribbon-surveys" class="navbar-link lvl2-link" v-if="show.surveys" :to="{ name: 'Surveys' }">Admin</b-nav-item>
+            <b-nav-item class="d-sm-none"><keycloak-auth v-if="auth !== 'hide'" id="keycloak-auth-xs"/></b-nav-item>
+          </b-navbar-nav>
+          <b-navbar-nav class="ml-auto">
+            <b-nav-item id="ribbon-groundwaterinfo" class="navbar-link lvl2-link" :to="{ name: 'groundwater-information' }">Groundwater Information</b-nav-item>
+          </b-navbar-nav>
         </b-collapse>
       </b-container>
     </b-navbar>
@@ -64,20 +65,27 @@ export default {
   },
   props: ['auth'],
   data () {
-    return {
-    }
+    return {}
   },
   computed: {
+    ...mapGetters(['userRoles', 'config']),
+    hasConfig () {
+      return Boolean(this.config)
+    },
     show () {
       const adminMeta = document.head.querySelector('meta[name="show.admin"]')
-      return {
-        dataEntry: !!this.config && this.userRoles.submissions.edit === true,
-        admin: adminMeta ? adminMeta.content === 'true' : false,
-        aquifers: !!this.config && this.config.enable_aquifers_search === true,
-        surveys: !!this.config && this.userRoles.surveys.edit === true
+      let bulk = false
+      if (this.userRoles.bulk) {
+        bulk = Object.values(this.userRoles.bulk).some(x => x)
       }
-    },
-    ...mapGetters(['userRoles', 'config'])
+      return {
+        dataEntry: this.hasConfig && this.userRoles.submissions.edit === true,
+        admin: adminMeta ? adminMeta.content === 'true' : false,
+        aquifers: this.hasConfig && this.config.enable_aquifers_search === true,
+        surveys: this.hasConfig && this.userRoles.surveys.edit === true,
+        bulk
+      }
+    }
   }
 }
 </script>

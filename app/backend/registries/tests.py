@@ -33,7 +33,8 @@ from registries.models import (
     RegistriesApplication,
     Register,
     ActivityCode,
-    SubactivityCode)
+    SubactivityCode,
+    ProofOfAgeCode)
 from registries.views import PersonListView, PersonDetailView
 from gwells.roles import (roles_to_groups, REGISTRIES_VIEWER_ROLE, REGISTRIES_EDIT_ROLE)
 
@@ -120,11 +121,8 @@ class RegistriesApplicationTestBase(AuthenticatedAPITestCase):
 
     def setUp(self):
         super().setUp()
-        # Crate activityCode
-        self.activity_drill = ActivityCode.objects.create(
-            registries_activity_code="DRILL",
-            description="driller",
-            display_order="1")
+        # Get activityCode
+        self.activity_drill = ActivityCode.objects.get(registries_activity_code="DRILL")
         # Create new registrations
         # Create registered driller 1
         self.driller = Person.objects.create(
@@ -134,17 +132,9 @@ class RegistriesApplicationTestBase(AuthenticatedAPITestCase):
             registries_activity=self.activity_drill,
             registration_no="F12345",
         )
-        # Create subactivities
-        self.subactivity = SubactivityCode.objects.create(
-            registries_activity=self.activity_drill,
-            registries_subactivity_code='WATER',
-            description='water',
-            display_order=1)
-        self.subactivity = SubactivityCode.objects.create(
-            registries_activity=self.activity_drill,
-            registries_subactivity_code='GEOTECH',
-            description='geotech',
-            display_order=1)
+        # Get subactivities
+        self.subactivity = SubactivityCode.objects.get(registries_subactivity_code='WATER')
+        self.subactivity = SubactivityCode.objects.get(registries_subactivity_code='GEOTECH')
         # Create application status
         self.application_status_active = ApplicationStatusCode.objects.create(
             code='A',
@@ -156,9 +146,15 @@ class RegistriesApplicationTestBase(AuthenticatedAPITestCase):
             description='Pending',
             display_order=1
         )
+        self.proof_of_age = ProofOfAgeCode.objects.create(
+            code="TESTING",
+            description="Testing",
+            display_order="1")
+
         # Application
         self.app = RegistriesApplication.objects.create(
             registration=self.registration,
+            proof_of_age=self.proof_of_age,
             subactivity=self.subactivity)
 
 
@@ -675,19 +671,13 @@ class APIFilteringPaginationTests(APITestCase):
             code="NA",
             description="inactive",
             display_order="2")
-        self.activity_drill = ActivityCode.objects.create(
-            registries_activity_code="DRILL",
-            description="driller",
+        self.activity_drill = ActivityCode.objects.get(registries_activity_code="DRILL")
+        self.activity_pump = ActivityCode.objects.get(registries_activity_code="PUMP")
+        self.subactivity_pump = SubactivityCode.objects.get(registries_subactivity_code='PUMPINST')
+        self.proof_of_age = ProofOfAgeCode.objects.create(
+            code="TESTING",
+            description="Testing",
             display_order="1")
-        self.activity_pump = ActivityCode.objects.create(
-            registries_activity_code="PUMP",
-            description="pump installer",
-            display_order="2")
-        self.subactivity_pump = SubactivityCode.objects.create(
-            registries_activity=self.activity_pump,
-            registries_subactivity_code='PUMPINST',
-            description='Pump Installer',
-            display_order=4)
         # Create registered driller 1
         self.driller = Person.objects.create(
             first_name='Wendy', surname="Well")
@@ -696,14 +686,11 @@ class APIFilteringPaginationTests(APITestCase):
             registries_activity=self.activity_drill,
             registration_no="F12345",
         )
-        self.subactivity = SubactivityCode.objects.create(
-            registries_activity=self.activity_drill,
-            registries_subactivity_code='WAT',
-            description='water',
-            display_order=1)
+        self.subactivity = SubactivityCode.objects.get(registries_subactivity_code='WATER')
 
         self.app = RegistriesApplication.objects.create(
             registration=self.registration,
+            proof_of_age=self.proof_of_age,
             current_status=self.status_active,
             subactivity=self.subactivity)
 
@@ -718,6 +705,7 @@ class APIFilteringPaginationTests(APITestCase):
 
         self.app2 = RegistriesApplication.objects.create(
             registration=self.registration2,
+            proof_of_age=self.proof_of_age,
             current_status=self.status_active,
             subactivity=self.subactivity)
 
@@ -735,6 +723,7 @@ class APIFilteringPaginationTests(APITestCase):
         )
         self.retired_app = RegistriesApplication.objects.create(
             registration=self.retired_registration,
+            proof_of_age=self.proof_of_age,
             subactivity=self.subactivity)
 
         # create a company with no registered driller
@@ -753,6 +742,7 @@ class APIFilteringPaginationTests(APITestCase):
         )
         self.partially_approved_drill_app = RegistriesApplication.objects.create(
             registration=self.partially_approved_drill_registration,
+            proof_of_age=self.proof_of_age,
             current_status=self.status_inactive,
             subactivity=self.subactivity
         )
@@ -763,6 +753,7 @@ class APIFilteringPaginationTests(APITestCase):
         )
         self.partially_approved_drill_app = RegistriesApplication.objects.create(
             registration=self.partially_approved_pump_registration,
+            proof_of_age=self.proof_of_age,
             current_status=self.status_active,
             subactivity=self.subactivity_pump
         )
@@ -860,10 +851,7 @@ class TestPublicSearch(TestCase):
 
     def setUp(self):
         super().setUp()
-        self.activity_drill = ActivityCode.objects.create(
-            registries_activity_code="DRILL",
-            description="driller",
-            display_order="1")
+        self.activity_drill = ActivityCode.objects.get(registries_activity_code="DRILL")
         self.status_pending = ApplicationStatusCode.objects.create(
             code="P",
             description="Pending",
@@ -872,12 +860,13 @@ class TestPublicSearch(TestCase):
             code="A",
             description="Approved",
             display_order="3")
-        # Create subactivities
-        self.subactivity = SubactivityCode.objects.create(
-            registries_activity=self.activity_drill,
-            registries_subactivity_code='WATER',
-            description='water',
-            display_order=1)
+        self.proof_of_age = ProofOfAgeCode.objects.create(
+            code="TESTING",
+            description="Testing",
+            display_order="1")
+
+        # Get subactivities
+        self.subactivity = SubactivityCode.objects.get(registries_subactivity_code='WATER')
         # Person with Pending, Removed and Approved
         # A person with a removed application
         self.person_removed = Person.objects.create(
@@ -888,14 +877,17 @@ class TestPublicSearch(TestCase):
             registration_no="F12345")
         RegistriesApplication.objects.create(
             registration=self.registration,
+            proof_of_age=self.proof_of_age,
             current_status=self.status_approved,
             subactivity=self.subactivity)
         RegistriesApplication.objects.create(
             registration=self.registration,
+            proof_of_age=self.proof_of_age,
             current_status=self.status_pending,
             subactivity=self.subactivity)
         RegistriesApplication.objects.create(
             registration=self.registration,
+            proof_of_age=self.proof_of_age,
             current_status=self.status_approved,
             removal_date='2018-01-01',
             subactivity=self.subactivity)
@@ -915,10 +907,7 @@ class TestAuthenticatedSearch(AuthenticatedAPITestCase):
 
     def setUp(self):
         super().setUp()
-        self.activity_drill = ActivityCode.objects.create(
-            registries_activity_code="DRILL",
-            description="driller",
-            display_order="1")
+        self.activity_drill = ActivityCode.objects.get(registries_activity_code="DRILL")
         self.status_pending = ApplicationStatusCode.objects.create(
             code="P",
             description="Pending",
@@ -931,12 +920,13 @@ class TestAuthenticatedSearch(AuthenticatedAPITestCase):
             code="NA",
             description="Not Approved",
             display_order="4")
-        # Create subactivities
-        self.subactivity = SubactivityCode.objects.create(
-            registries_activity=self.activity_drill,
-            registries_subactivity_code='WATER',
-            description='water',
-            display_order=1)
+        self.proof_of_age = ProofOfAgeCode.objects.create(
+            code="TESTING",
+            description="Testing",
+            display_order="1")
+
+        # Get subactivities
+        self.subactivity = SubactivityCode.objects.get(registries_subactivity_code='WATER')
         # A person with no registration associated
         self.person_without_registration = Person.objects.create(
             first_name='Wendy', surname="NoRegistration")
@@ -956,6 +946,7 @@ class TestAuthenticatedSearch(AuthenticatedAPITestCase):
             registration_no="F12345")
         self.app = RegistriesApplication.objects.create(
             registration=self.registration,
+            proof_of_age=self.proof_of_age,
             current_status=self.status_pending,
             subactivity=self.subactivity)
         # A person with an approved application
@@ -967,6 +958,7 @@ class TestAuthenticatedSearch(AuthenticatedAPITestCase):
             registration_no="F12345")
         self.app = RegistriesApplication.objects.create(
             registration=self.registration,
+            proof_of_age=self.proof_of_age,
             current_status=self.status_approved,
             subactivity=self.subactivity)
         # A person with a removed application
@@ -978,6 +970,7 @@ class TestAuthenticatedSearch(AuthenticatedAPITestCase):
             registration_no="F12345")
         self.app = RegistriesApplication.objects.create(
             registration=self.registration,
+            proof_of_age=self.proof_of_age,
             current_status=self.status_approved,
             removal_date='2018-01-01',
             subactivity=self.subactivity)
@@ -990,6 +983,7 @@ class TestAuthenticatedSearch(AuthenticatedAPITestCase):
             registration_no="F12345")
         self.app = RegistriesApplication.objects.create(
             registration=self.registration,
+            proof_of_age=self.proof_of_age,
             current_status=self.status_not_approved,
             subactivity=self.subactivity)
         # A person with an approved application, AND a removed application
@@ -1001,11 +995,13 @@ class TestAuthenticatedSearch(AuthenticatedAPITestCase):
             registration_no="F12345")
         self.app = RegistriesApplication.objects.create(
             registration=self.registration,
+            proof_of_age=self.proof_of_age,
             current_status=self.status_approved,
             removal_date='2018-01-01',
             subactivity=self.subactivity)
         self.app = RegistriesApplication.objects.create(
             registration=self.registration,
+            proof_of_age=self.proof_of_age,
             current_status=self.status_approved,
             subactivity=self.subactivity)
 

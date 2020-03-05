@@ -68,54 +68,6 @@
         }
     },
     {
-        "model": "wells.drillingcompany",
-        "pk": "f606669c-a60c-422d-859a-fdc54278d9b0",
-        "fields": {
-            "create_user": "PROXY_WELLS",
-            "create_date": "2008-09-12T18:14:53Z",
-            "update_user": "",
-            "update_date": "2016-12-10T23:42:51Z",
-            "drilling_company_code": "496",
-            "name": "Flotonic Waterwell"
-        }
-    },
-    {
-        "model": "wells.drillingcompany",
-        "pk": "1237493e-ebd8-41e2-83ca-0a600da00bc9",
-        "fields": {
-            "create_user": "WELLS",
-            "create_date": "2003-08-13T15:55:14Z",
-            "update_user": "PROXY_WELLS",
-            "update_date": "2008-08-28T22:10:40Z",
-            "drilling_company_code": "104",
-            "name": "Bezal Drilling Co"
-        }
-    },
-    {
-        "model": "wells.drillingcompany",
-        "pk": "69f5459a-5ec1-49e1-94b6-58b0eb90b368",
-        "fields": {
-            "create_user": "WELLS",
-            "create_date": "2003-08-13T15:55:14Z",
-            "update_user": "WELLS",
-            "update_date": "2006-12-14T17:28:28Z",
-            "drilling_company_code": "145",
-            "name": "Ginkogene Aquamasters"
-        }
-    },
-    {
-        "model": "wells.drillingcompany",
-        "pk": "bf5d31ea-8a5a-4363-8a5e-6c00eed03058",
-        "fields": {
-            "create_user": "WELLS",
-            "create_date": "2003-08-13T15:55:14Z",
-            "update_user": "WELLS",
-            "update_date": "2006-12-14T17:28:28Z",
-            "drilling_company_code": "44",
-            "name": "Industrial Drillers"
-        }
-    },
-    {
         "model": "gwells.onlinesurvey",
         "pk": "73a7b852-f472-4f97-8dba-d3415c008430",
         "fields": {
@@ -798,9 +750,9 @@
         "model": "wells.well",
         "pk": 123,
         "fields": {
-            "create_user": "",
+            "create_user": "PROXY_WELLS",
             "create_date": "2018-02-08T17:06:47.229Z",
-            "update_user": "",
+            "update_user": "PROXY_WELLS",
             "update_date": "2018-02-08T17:06:47.231Z",
             "well_guid": "28efc8dd-4f4e-4b1e-84ce-5e2e7313bdb1",
             "identification_plate_number": null,
@@ -832,7 +784,7 @@
             "alteration_end_date": null,
             "decommission_start_date": null,
             "decommission_end_date": null,
-            "drilling_company": null,
+            "company_of_person_responsible": "f606669c-a60c-422d-859a-fdc54278d9b0",
             "well_identification_plate_attached": null,
             "ground_elevation": null,
             "ground_elevation_method": null,
@@ -935,7 +887,7 @@
             "alteration_end_date": null,
             "decommission_start_date": null,
             "decommission_end_date": null,
-            "drilling_company": "f606669c-a60c-422d-859a-fdc54278d9b0",
+            "company_of_person_responsible": "f606669c-a60c-422d-859a-fdc54278d9b0",
             "well_identification_plate_attached": "SIDE OF CASING",
             "ground_elevation": "1697.00",
             "ground_elevation_method": null,
@@ -1050,7 +1002,7 @@
             "alteration_end_date": null,
             "decommission_start_date": null,
             "decommission_end_date": null,
-            "drilling_company": "1237493e-ebd8-41e2-83ca-0a600da00bc9",
+            "company_of_person_responsible": "1237493e-ebd8-41e2-83ca-0a600da00bc9",
             "well_identification_plate_attached": "Top of Casing",
             "ground_elevation": "3091.00",
             "ground_elevation_method": "GPS",
@@ -1165,7 +1117,7 @@
             "alteration_end_date": null,
             "decommission_start_date": null,
             "decommission_end_date": null,
-            "drilling_company": "69f5459a-5ec1-49e1-94b6-58b0eb90b368",
+            "company_of_person_responsible": "69f5459a-5ec1-49e1-94b6-58b0eb90b368",
             "well_identification_plate_attached": "CASING STICK UP",
             "ground_elevation": null,
             "ground_elevation_method": null,
@@ -1280,7 +1232,7 @@
             "alteration_end_date": "2014-11-23",
             "decommission_start_date": "2014-11-23",
             "decommission_end_date": "2014-11-23",
-            "drilling_company": "bf5d31ea-8a5a-4363-8a5e-6c00eed03058",
+            "company_of_person_responsible": "bf5d31ea-8a5a-4363-8a5e-6c00eed03058",
             "well_identification_plate_attached": "ON TOP",
             "ground_elevation": "1.20",
             "ground_elevation_method": "GPS",
@@ -1365,7 +1317,7 @@
         "fields": {
             "create_user": "PROXY_EWELLS_USER",
             "create_date": "2019-02-08T18:53:16.353Z",
-            "update_user": "",
+            "update_user": "PROXY_EWELLS_USER",
             "update_date": "2019-02-11T01:47:46.945Z",
             "well_guid": "57c2de9a-b268-45a1-9b86-914b37018459",
             "identification_plate_number": 55555,
@@ -1399,7 +1351,6 @@
             "alteration_end_date": "2018-12-31",
             "decommission_start_date": "2019-02-02",
             "decommission_end_date": "2019-02-08",
-            "drilling_company": null,
             "well_identification_plate_attached": null,
             "id_plate_attached_by": null,
             "ground_elevation": null,

@@ -390,7 +390,7 @@ class WellExportListAPIView(ListAPIView):
         'well_status',
         'licenced_status',
         'land_district',
-        'drilling_company',
+        'company_of_person_responsible',
         'ground_elevation_method',
         'surface_seal_material',
         'surface_seal_method',

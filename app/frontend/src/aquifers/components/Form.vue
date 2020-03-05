@@ -36,6 +36,7 @@
               tabindex="1"
               id="aquifer-name"
               type="text"
+              :disabled="loadingData"
               v-model="record.aquifer_name"/>
         </b-form-group>
 
@@ -50,6 +51,7 @@
               tabindex="3"
               id="aquifer-location-description"
               type="text"
+              :disabled="loadingData"
               v-model="record.location_description"/>
         </b-form-group>
 
@@ -63,6 +65,7 @@
           <b-form-select
             tabindex="5"
             :options="[''].concat(material_codes)"
+            :disabled="loadingData"
             id="aquifer-material"
             text-field="description"
             v-model="record.material"
@@ -81,6 +84,7 @@
             id="aquifer-quality-concern"
             v-model="record.quality_concern"
             :options="[''].concat(quality_concern_codes)"
+            :disabled="loadingData"
             value-field="code"
             text-field="description"/>
         </b-form-group>
@@ -89,14 +93,10 @@
           horizontal
           label-cols="4"
           label="Size (km²)"
-          label-for="area"
-          :invalid-feedback="fieldErrorMessages.area"
-          :state="fieldHasError.area">
-          <b-form-input
-            tabindex="9"
-            id="aquifer-area"
-            type="text"
-            v-model="record.area"/>
+          label-for="area">
+          <div class="pt-2">
+            {{record.area}}
+          </div>
         </b-form-group>
 
         <b-form-group
@@ -111,6 +111,7 @@
             id="aquifer-known-water-use"
             v-model="record.known_water_use"
             :options="[''].concat(known_water_use_codes)"
+            :disabled="loadingData"
             value-field="code"
             text-field="description"/>
         </b-form-group>
@@ -126,6 +127,7 @@
             tabindex="13"
             rows="4"
             id="aquifer-notes"
+            :disabled="loadingData"
             v-model="record.notes"/>
         </b-form-group>
 
@@ -140,6 +142,7 @@
           <div class="mt-3">
             <b-form-checkbox
              id="isPrivateCheckbox"
+            :disabled="loadingData"
              v-model="privateDocument">Are these documents private?</b-form-checkbox>
           </div>
         </b-form-group>
@@ -164,6 +167,7 @@
               tabindex="2"
               id="aquifer-mapping-year"
               type="text"
+              :disabled="loadingData"
               v-model="record.mapping_year"/>
         </b-form-group>
 
@@ -178,6 +182,7 @@
               tabindex="4"
               id="aquifer-litho-stratigraphic-unit"
               type="text"
+              :disabled="loadingData"
               v-model="record.litho_stratographic_unit"/>
         </b-form-group>
 
@@ -191,6 +196,7 @@
           <b-form-select
             tabindex="6"
             :options="[''].concat(vulnerability_codes)"
+            :disabled="loadingData"
             id="aquifer-vulnerability"
             text-field="description"
             v-model="record.vulnerability"
@@ -209,6 +215,7 @@
             id="aquifer-subtype"
             v-model="record.subtype"
             :options="[''].concat(subtype_codes)"
+            :disabled="loadingData"
             value-field="code"
             text-field="description"/>
         </b-form-group>
@@ -225,6 +232,7 @@
             id="aquifer-productivity"
             v-model="record.productivity"
             :options="[''].concat(productivity_codes)"
+            :disabled="loadingData"
             value-field="code"
             text-field="description"/>
         </b-form-group>
@@ -241,6 +249,7 @@
             id="aquifer-demand"
             v-model="record.demand"
             :options="[''].concat(demand_codes)"
+            :disabled="loadingData"
             value-field="code"
             text-field="description"/>
         </b-form-group>
@@ -250,6 +259,7 @@
           description="Please upload a shapefile containing only this aqufier in ZIP format."
           label="Shapefile">
           <b-form-file
+            :disabled="loadingData"
             v-model="shape"/>
         </b-form-group>
 
@@ -267,6 +277,7 @@
           <b-form-select
             v-model="resource.section_code"
             :options="['-- Section --'].concat(aquifer_resource_sections)"
+            :disabled="loadingData"
             value-field="code"
             text-field="name"/>
         </b-form-group>
@@ -279,6 +290,7 @@
           :state="!resourceErrorMessages[index].name">
           <b-form-input
             type="text"
+            :disabled="loadingData"
             v-model="resource.name"/>
         </b-form-group>
       </b-col>
@@ -290,6 +302,7 @@
           :state="!resourceErrorMessages[index].url">
           <b-form-input
             type="text"
+            :disabled="loadingData"
             v-model="resource.url"/>
         </b-form-group>
       </b-col>
@@ -366,7 +379,8 @@ export default {
     record: Object,
     showId: Boolean,
     files: Object,
-    loadingFiles: Boolean
+    loadingFiles: Boolean,
+    loadingData: Boolean
   },
   computed: {
     id () { return this.$route.params.id },

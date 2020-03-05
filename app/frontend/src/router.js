@@ -8,9 +8,13 @@ import { store } from './store/index.js'
 import AquiferSearch from '@/aquifers/components/Search'
 import AquiferView from '@/aquifers/components/View'
 import AquiferNew from '@/aquifers/components/New'
+import BulkHome from '@/bulk/components/BulkHome.vue'
+import BulkWellAquiferCorrelation from '@/bulk/components/BulkWellAquiferCorrelation.vue'
+import BulkAquiferDocuments from '@/bulk/components/BulkAquiferDocuments.vue'
 
 import WellSearch from '@/wells/views/WellSearch.vue'
 import WellDetail from '@/wells/views/WellDetail.vue'
+import EditWellAquifers from '@/wells/views/EditWellAquifers.vue'
 import GroundwaterInformation from '@/wells/views/GroundwaterInformation.vue'
 
 // Registries components
@@ -47,18 +51,33 @@ const router = new Router({
     {
       path: '/aquifers/:id(\\d+)',
       component: AquiferView,
-      name: 'aquifers-view',
-      props: true
+      name: 'aquifers-view'
     },
     {
       path: '/aquifers/:id/edit',
       component: AquiferView,
       name: 'aquifers-edit',
+      beforeEnter: AuthGuard,
       props: { edit: true },
       meta: {
         edit: true,
         app: 'aquifers'
       }
+    },
+    {
+      path: '/bulk/',
+      component: BulkHome,
+      name: 'bulk-home'
+    },
+    {
+      path: '/bulk/well-aquifer-correlation',
+      component: BulkWellAquiferCorrelation,
+      name: 'bulk-well-aquifer-correlation'
+    },
+    {
+      path: '/bulk/aquifer-documents',
+      component: BulkAquiferDocuments,
+      name: 'bulk-aquifer-documents'
     },
     {
       path: '/new',
@@ -175,6 +194,16 @@ const router = new Router({
       path: '/well/:id',
       name: 'wells-detail',
       component: WellDetail
+    },
+    {
+      path: '/well/:wellTagNumber/aquifers',
+      name: 'well-aquifers',
+      component: EditWellAquifers,
+      beforeEnter: AuthGuard,
+      meta: {
+        edit: true,
+        app: 'aquifers'
+      }
     },
     {
       path: '/surveys',

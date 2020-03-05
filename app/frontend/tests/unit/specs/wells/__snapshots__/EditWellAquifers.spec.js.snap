@@ -1,0 +1,421 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`EditWellAquifers.vue matches the snapshot 1`] = `
+<div
+  class="edit-well-aquifers"
+>
+  <div>
+    <b-card-stub
+      bodytag="div"
+      class="mb-3 container d-print-none"
+      footertag="div"
+      headertag="div"
+      nobody="true"
+      subtitle=""
+      subtitletag="h6"
+      subtitletextvariant="muted"
+      tag="div"
+      title=""
+      titletag="h4"
+    >
+      <b-breadcrumb-stub
+        class="py-0 my-2"
+        items="[object Object],[object Object],[object Object],[object Object]"
+      />
+    </b-card-stub>
+     
+    <b-card-stub
+      bodytag="div"
+      class="container"
+      footertag="div"
+      headertag="div"
+      subtitle=""
+      subtitletag="h6"
+      subtitletextvariant="muted"
+      tag="div"
+      title=""
+      titletag="h4"
+    >
+      <!---->
+       
+      <!---->
+       
+      <h2
+        id="page-title"
+      >
+        Well 1 Vertical Aquifer Extents
+      </h2>
+       
+      <!---->
+       
+      <b-form-stub>
+        <div>
+          <div
+            id="vertical-aquifer-extents-table"
+          >
+            <table
+              class="table table-sm mb-0"
+            >
+              <thead>
+                <tr>
+                  <th
+                    class="font-weight-normal pl-0 from-col"
+                  >
+                    From meters (bgl)
+                  </th>
+                   
+                  <th
+                    class="font-weight-normal to-col"
+                  >
+                    To meters (bgl)
+                  </th>
+                   
+                  <th
+                    class="font-weight-normal aquifer-col"
+                  >
+                    Aquifer
+                  </th>
+                   
+                  <th />
+                </tr>
+              </thead>
+               
+              <tbody>
+                <!---->
+                 
+                <tr>
+                  <td
+                    class="input-width-small py-0 pl-0"
+                  >
+                    <form-input-stub
+                      aria-label="Depth from (feet)"
+                      groupclass="my-1"
+                      id="aquiferDepthFrom_0"
+                      step="0.01"
+                      type="number"
+                    />
+                  </td>
+                   
+                  <td
+                    class="input-width-small py-0"
+                  >
+                    <form-input-stub
+                      aria-label="Depth to (feet)"
+                      groupclass="my-1"
+                      id="aquiferDepthTo_0"
+                      step="0.01"
+                      type="number"
+                    />
+                  </td>
+                   
+                  <td
+                    class="input-width-small py-0 pr-0"
+                  >
+                    <b-form-group-stub
+                      class="aquifer-search-dropdown"
+                      feedbackarialive="assertive"
+                    >
+                      <v-select-stub
+                        class="my-1"
+                        id="aquifer_0"
+                        index="aquifer_id"
+                        label="description"
+                        options=""
+                        reduce="function (aquifer) { return aquifer.aquifer_id; }"
+                        value="1"
+                      >
+                        <template>
+                          
+                            Search for an aquifer by name or id number
+                          
+                        </template>
+                      </v-select-stub>
+                       
+                      <b-form-invalid-feedback-stub
+                        id="aquifer0InvalidFeedback"
+                        tag="div"
+                      />
+                    </b-form-group-stub>
+                  </td>
+                   
+                  <td
+                    class="py-0 text-right"
+                  >
+                    <b-btn-stub
+                      class="mt-2"
+                      event="click"
+                      id="removeAquiferRowButton0"
+                      routertag="a"
+                      size="sm"
+                      tag="button"
+                      target="_self"
+                      type="button"
+                      variant="primary"
+                    >
+                      <i
+                        class="fa fa-minus-square-o"
+                      />
+                       Remove
+                    </b-btn-stub>
+                  </td>
+                </tr>
+                <!---->
+                 
+                <tr>
+                  <td
+                    class="input-width-small py-0 pl-0"
+                  >
+                    <form-input-stub
+                      aria-label="Depth from (feet)"
+                      groupclass="my-1"
+                      id="aquiferDepthFrom_1"
+                      step="0.01"
+                      type="number"
+                    />
+                  </td>
+                   
+                  <td
+                    class="input-width-small py-0"
+                  >
+                    <form-input-stub
+                      aria-label="Depth to (feet)"
+                      groupclass="my-1"
+                      id="aquiferDepthTo_1"
+                      step="0.01"
+                      type="number"
+                    />
+                  </td>
+                   
+                  <td
+                    class="input-width-small py-0 pr-0"
+                  >
+                    <b-form-group-stub
+                      class="aquifer-search-dropdown"
+                      feedbackarialive="assertive"
+                    >
+                      <v-select-stub
+                        class="my-1"
+                        id="aquifer_1"
+                        index="aquifer_id"
+                        label="description"
+                        options=""
+                        reduce="function (aquifer) { return aquifer.aquifer_id; }"
+                        value="2"
+                      >
+                        <template>
+                          
+                            Search for an aquifer by name or id number
+                          
+                        </template>
+                      </v-select-stub>
+                       
+                      <b-form-invalid-feedback-stub
+                        id="aquifer1InvalidFeedback"
+                        tag="div"
+                      />
+                    </b-form-group-stub>
+                  </td>
+                   
+                  <td
+                    class="py-0 text-right"
+                  >
+                    <b-btn-stub
+                      class="mt-2"
+                      event="click"
+                      id="removeAquiferRowButton1"
+                      routertag="a"
+                      size="sm"
+                      tag="button"
+                      target="_self"
+                      type="button"
+                      variant="primary"
+                    >
+                      <i
+                        class="fa fa-minus-square-o"
+                      />
+                       Remove
+                    </b-btn-stub>
+                  </td>
+                </tr>
+                <!---->
+                 
+                <tr>
+                  <td
+                    class="input-width-small py-0 pl-0"
+                  >
+                    <form-input-stub
+                      aria-label="Depth from (feet)"
+                      groupclass="my-1"
+                      id="aquiferDepthFrom_2"
+                      step="0.01"
+                      type="number"
+                    />
+                  </td>
+                   
+                  <td
+                    class="input-width-small py-0"
+                  >
+                    <form-input-stub
+                      aria-label="Depth to (feet)"
+                      groupclass="my-1"
+                      id="aquiferDepthTo_2"
+                      step="0.01"
+                      type="number"
+                    />
+                  </td>
+                   
+                  <td
+                    class="input-width-small py-0 pr-0"
+                  >
+                    <b-form-group-stub
+                      class="aquifer-search-dropdown"
+                      feedbackarialive="assertive"
+                    >
+                      <v-select-stub
+                        class="my-1"
+                        id="aquifer_2"
+                        index="aquifer_id"
+                        label="description"
+                        options=""
+                        reduce="function (aquifer) { return aquifer.aquifer_id; }"
+                      >
+                        <template>
+                          
+                            Search for an aquifer by name or id number
+                          
+                        </template>
+                      </v-select-stub>
+                       
+                      <b-form-invalid-feedback-stub
+                        id="aquifer2InvalidFeedback"
+                        tag="div"
+                      />
+                    </b-form-group-stub>
+                  </td>
+                   
+                  <td
+                    class="py-0 text-right"
+                  >
+                    <b-btn-stub
+                      class="mt-2"
+                      event="click"
+                      id="removeAquiferRowButton2"
+                      routertag="a"
+                      size="sm"
+                      tag="button"
+                      target="_self"
+                      type="button"
+                      variant="primary"
+                    >
+                      <i
+                        class="fa fa-minus-square-o"
+                      />
+                       Remove
+                    </b-btn-stub>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+           
+          <b-btn-stub
+            class="mt-2"
+            event="click"
+            id="addAquiferRowButton"
+            routertag="a"
+            size="sm"
+            tag="button"
+            target="_self"
+            type="button"
+            variant="primary"
+          >
+            <i
+              class="fa fa-plus-square-o"
+            />
+             Add row
+          </b-btn-stub>
+        </div>
+         
+        <b-row-stub
+          class="mt-3"
+          tag="div"
+        >
+          <b-col-stub
+            tag="div"
+          >
+            <b-btn-stub
+              class="mr-2"
+              event="click"
+              routertag="a"
+              tag="button"
+              target="_self"
+              type="submit"
+              variant="primary"
+            >
+              <!---->
+              
+              Save
+            
+            </b-btn-stub>
+             
+            <b-btn-stub
+              event="click"
+              routertag="a"
+              tag="button"
+              target="_self"
+              type="reset"
+              variant="default"
+            >
+              Reset
+            </b-btn-stub>
+          </b-col-stub>
+        </b-row-stub>
+      </b-form-stub>
+       
+      <b-modal-stub
+        buttonsize=""
+        canceltitle="Cancel"
+        cancelvariant="secondary"
+        centered="true"
+        headercloselabel="Close"
+        oktitle="OK"
+        okvariant="primary"
+        size="md"
+        title="Confirm remove"
+        titletag="h5"
+      >
+        
+        Are you sure you want to remove this row?
+        
+        <div>
+          <b-btn-stub
+            event="click"
+            routertag="a"
+            tag="button"
+            target="_self"
+            type="button"
+            variant="secondary"
+          >
+            
+            Cancel
+          
+          </b-btn-stub>
+           
+          <b-btn-stub
+            event="click"
+            routertag="a"
+            tag="button"
+            target="_self"
+            type="button"
+            variant="danger"
+          >
+            
+            Remove
+          
+          </b-btn-stub>
+        </div>
+      </b-modal-stub>
+    </b-card-stub>
+  </div>
+</div>
+`;

@@ -19,8 +19,10 @@ from django.contrib import admin
 from django.views.generic import TemplateView
 from django.urls import path, re_path
 from django.shortcuts import redirect
+from django.views.decorators.cache import never_cache
 
 from gwells.views import SurveyListCreateView, SurveyUpdateDeleteView, HealthView, index, api
+from gwells.views.bulk import BulkWellAquiferCorrelation
 from gwells.views.admin import *
 from gwells.settings.base import get_env_variable
 
@@ -85,6 +87,14 @@ urlpatterns = [
     url(r'^' + app_root_slash, include('registries.urls')),
     url(r'^' + app_root_slash, include('wells.urls')),
     url(r'^' + app_root_slash, include('aquifers.urls')),
+
+    # Bulk (aquifer well correlation)
+    url(r'^' + app_root_slash + 'api/v2/bulk/well-aquifer-correlation$',
+        never_cache(BulkWellAquiferCorrelation.as_view()), name='bulk-well-aquifer-correlation'),
+
+    # Catch all other cases to api/ and 404 them
+    re_path(r'' + app_root_slash + api_path_prefix() + '/*', api.api_404, name='api-404'),
+
     # Catch all other cases and push it to the SPA
     re_path(r'' + app_root_slash + '*', index, name='spa'),
 ]

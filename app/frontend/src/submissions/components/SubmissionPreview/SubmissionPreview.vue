@@ -229,8 +229,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
             :fields="['from', 'to', 'casing_type', 'casing_material', 'diameter', 'wall_thickness', 'drive_shoe']"
             show-empty>
 
-          <template slot="from" slot-scope="data">{{data.item.start}} ft</template>
-          <template slot="to" slot-scope="data">{{data.item.end}} ft</template>
+          <template slot="from" slot-scope="data">{{data.item.start}}{{data.item.start ? ' ft' : '' }}</template>
+          <template slot="to" slot-scope="data">{{data.item.end}}{{data.item.end ? ' ft' : '' }}</template>
           <template slot="casing_type" slot-scope="data">{{codeToDescription('casing_codes', data.item.casing_code)}}</template>
           <template slot="casing_material" slot-scope="data">{{codeToDescription('casing_materials', data.item.casing_material)}}</template>
 
@@ -345,6 +345,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <b-row>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Developed by:</span> <div v-for="(item, index) in form.development_methods" :key="index"> {{ codeToDescription('development_methods', item) }}</div></b-col>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Development Total Duration:</span> {{ form.development_hours }} {{ form.development_hours ? 'hours':'' }}</b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Development Notes:</span> {{ form.development_notes }}</b-col>
       </b-row>
     </fieldset>
 

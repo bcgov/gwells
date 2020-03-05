@@ -32,10 +32,9 @@ from gwells.models.lithology import (
     LithologyDescriptionCode, LithologyColourCode, LithologyHardnessCode,
     LithologyMaterialCode, BedrockMaterialCode, BedrockMaterialDescriptorCode, LithologyStructureCode,
     LithologyMoistureCode, SurficialMaterialCode)
-from registries.models import Person, Organization
-from submissions.models import WellActivityCode
-from aquifers.models import Aquifer
 from gwells.db_comments.patch_fields import patch_fields
+
+# from aquifers.models import Aquifer
 
 patch_fields()
 
@@ -350,29 +349,6 @@ class DrillingMethodCode(CodeTableModel):
 
     def __str__(self):
         return self.description
-
-
-# TODO: Remove this class - now using registries.something
-# Not a Code table, but a representative sample of data to support search
-class DrillingCompany(AuditModel):
-    """
-    Companies who perform drilling.
-    """
-    drilling_company_guid = models.UUIDField(
-        primary_key=True, default=uuid.uuid4, editable=False)
-    drilling_company_code = models.CharField(
-        max_length=10, blank=True, null=True)
-    name = models.CharField(max_length=200)
-
-    class Meta:
-        db_table = 'drilling_company'
-        verbose_name_plural = 'Drilling Companies'
-
-    db_table_comment = ('Company or organization that was associated with the individual that conducted '
-                        'the work on the well.')
-
-    def __str__(self):
-        return self.name
 
 
 class LandDistrictCode(CodeTableModel):
@@ -804,10 +780,6 @@ class Well(AuditModelStructure):
     decommission_end_date = models.DateField(
         null=True, verbose_name='Decommission Date')
 
-    drilling_company = models.ForeignKey(DrillingCompany, db_column='drilling_company_guid',
-                                         on_delete=models.PROTECT, blank=True, null=True,
-                                         verbose_name='Drilling Company')
-
     well_identification_plate_attached = models.CharField(
         max_length=500, blank=True, null=True, verbose_name='Well Identification Plate Is Attached',
         db_comment=('Description of where the well identification plate has been attached on or near the '
@@ -1033,18 +1005,18 @@ class Well(AuditModelStructure):
     decommission_details = models.CharField(
         max_length=250, blank=True, null=True, verbose_name="Decommission Details")
     aquifer = models.ForeignKey(
-        Aquifer, db_column='aquifer_id', on_delete=models.PROTECT, blank=True,
+        'aquifers.Aquifer', db_column='aquifer_id', on_delete=models.PROTECT, blank=True,
         null=True, verbose_name='Aquifer ID Number',
         db_comment=('System generated unique sequential number assigned to each mapped aquifer. The'
                     ' aquifer_id identifies which aquifer a well is in. An aquifer can have multiple'
                     ' wells, while a single well can only be in one aquifer.'))
 
-    person_responsible = models.ForeignKey(Person, db_column='person_responsible_guid',
+    person_responsible = models.ForeignKey('registries.Person', db_column='person_responsible_guid',
                                            on_delete=models.PROTECT,
                                            verbose_name='Person Responsible for Drilling',
                                            null=True, blank=True)
     company_of_person_responsible = models.ForeignKey(
-        Organization, db_column='org_of_person_responsible_guid', on_delete=models.PROTECT,
+        'registries.Organization', db_column='org_of_person_responsible_guid', on_delete=models.PROTECT,
         verbose_name='Company of person responsible for drilling', null=True, blank=True)
     driller_name = models.CharField(
         max_length=200, blank=True, null=True, verbose_name='Name of Person Who Did the Work')
@@ -1322,7 +1294,7 @@ class ActivitySubmission(AuditModelStructure):
         db_comment=('The file number assigned to a particular well in the in the province\'s Groundwater '
                     'Wells and Aquifers application.'))
     well_activity_type = models.ForeignKey(
-        WellActivityCode, db_column='well_activity_code', on_delete=models.PROTECT,
+        'submissions.WellActivityCode', db_column='well_activity_code', on_delete=models.PROTECT,
         verbose_name='Type of Work')
     well_status = models.ForeignKey(
         WellStatusCode, db_column='well_status_code',
@@ -1352,12 +1324,12 @@ class ActivitySubmission(AuditModelStructure):
                     ' time of work completion on the well. E.g DOM, IRR, DWS, COM'))
     # Driller responsible should be a required field on all submissions, but for legacy well
     # information this may not be available, so we can't enforce this on a database level.
-    person_responsible = models.ForeignKey(Person, db_column='person_responsible_guid',
+    person_responsible = models.ForeignKey('registries.Person', db_column='person_responsible_guid',
                                            on_delete=models.PROTECT,
                                            verbose_name='Person Responsible for Drilling',
                                            blank=True, null=True)
     company_of_person_responsible = models.ForeignKey(
-        Organization, db_column='org_of_person_responsible_guid', on_delete=models.PROTECT,
+        'registries.Organization', db_column='org_of_person_responsible_guid', on_delete=models.PROTECT,
         verbose_name='Company of person responsible for drilling', null=True, blank=True)
     driller_name = models.CharField(
         max_length=200, blank=True, null=True, verbose_name='Name of Person Who Did the Work')
@@ -1647,7 +1619,7 @@ class ActivitySubmission(AuditModelStructure):
 
     # aquifer association
     aquifer = models.ForeignKey(
-        Aquifer, db_column='aquifer_id', on_delete=models.PROTECT, blank=True,
+        'aquifers.Aquifer', db_column='aquifer_id', on_delete=models.PROTECT, blank=True,
         null=True, verbose_name='Aquifer ID Number',
         db_comment=('System generated unique sequential number assigned to each mapped aquifer. The'
                     ' aquifer_id identifies which aquifer a well is in. An aquifer can have multiple'

@@ -1,17 +1,16 @@
 <template>
   <div class="card">
     <div class="card-body">
-      <h6 class="card-title" id="changeHistoryTitle">Change History
+      <h6 class="card-title mb-0" id="changeHistoryTitle">
+        Change History
         <span class="ml-3">
           <b-button link size="sm" variant="outline-primary" v-on:click="toggleShow">{{showHistory ? "Hide":"Show"}}</b-button>
-        </span></h6>
+        </span>
+      </h6>
       <div v-if="loading">
         <div class="loader" style="margin-right: 5px"></div>Loading...
       </div>
       <div id="historyList" ref="history" v-if="loaded && !loading">
-        <div class="mt-2" v-if="!history || !history.length">
-          <b-row><b-col>No history for this record.</b-col></b-row>
-        </div>
         <div class="mt-2" v-if="history && history.length && showHistory">
           <div class="mt-3" v-for="(history_item, index) in history" :key="`history-version ${index}`" :id="`history-version-${index}`">
             <div class="font-weight-bold">
@@ -19,7 +18,9 @@
 <!--              {{history_item[0].action}}-->
 <!--              {{history_item[0].type}}-->
               Edited this Well on
-              {{history_item[0].date | moment("MMMM Do YYYY [at] LT")}}
+              <time :datetime="history_item[0].date">
+                {{history_item[0].date | moment("MMMM Do YYYY [at] LT")}}
+              </time>
               <div
                 style="margin-left:20px; width: 75%;"
                 class="font-weight-light"
@@ -66,11 +67,11 @@
               </div>
             </div>
           </div>
-          <div class="font-weight-bold mt-3">
-            {{create_user}}
-            Created this well on
-            {{create_date | moment("MMMM Do YYYY [at] LT")}}
-          </div>
+        </div>
+        <div class="font-weight-bold mt-3" v-if="showHistory">
+          {{create_user}}
+          created this well on
+          {{create_date | moment("MMMM Do YYYY [at] LT")}}
         </div>
         <div v-if="loading">
           <b-row><b-col>Loading history...</b-col></b-row>
@@ -87,8 +88,8 @@ import ApiService from '@/common/services/ApiService.js'
 export default {
   name: 'WellHistory',
   props: {
-    id: {
-      type: String,
+    wellTagNumber: {
+      type: Number,
       isInput: false
     },
     events: {
@@ -104,15 +105,15 @@ export default {
     }
   },
   methods: {
-    toggleShow () {
+    toggleShow (e) {
       this.showHistory = !this.showHistory
-      if (this.showHistory && !this.loading && !this.loaded) {
+      if (this.showHistory && !this.loading && (!this.loaded || e.ctrlKey)) {
         this.update()
       }
     },
     update () {
       this.loading = true
-      ApiService.history('wells', this.id).then((response) => {
+      ApiService.history('wells', this.wellTagNumber).then((response) => {
         this.history = response.data.history
         this.create_user = response.data.create_user
         this.create_date = response.data.create_date

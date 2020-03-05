@@ -94,19 +94,6 @@ def _openshift(String name, String project, Closure body) {
 
 // Functional test script
 // Can be limited by assinging toTest var
-def functionalTest (String stageName, String stageUrl, String envSuffix, String toTest='all') {
-    _openshift(env.STAGE_NAME, toolsProject) {
-        echo "Testing"
-        // this set of tests is commented out, because we no longer use the page they were
-        // written for. 
-
-    }
-    return true
-}
-
-
-// Functional test script
-// Can be limited by assinging toTest var
 def unitTestDjango (String stageName, String envProject, String envSuffix) {
     _openshift(env.STAGE_NAME, envProject) {
         def DB_target = envSuffix == "staging" ? "${appName}-pgsql-${envSuffix}" : "${appName}-pgsql-${envSuffix}-${prNumber}"
@@ -673,20 +660,6 @@ pipeline {
         }
 
 
-        // Functional tests temporarily limited to smoke tests
-        // See https://github.com/BCDevOps/BDDStack
-        stage('DEV - Smoke Tests') {
-            when {
-                expression { env.CHANGE_TARGET != 'master' && env.CHANGE_TARGET != 'demo' }
-            }
-            steps {
-                script {
-                    def result = functionalTest ('DEV - Smoke Tests', devHost, devSuffix, 'SearchSpecs')
-                }
-            }
-        }
-
-
         stage('DEV - API Tests') {
             when {
                 expression { env.CHANGE_TARGET != 'master' && env.CHANGE_TARGET != 'demo' }
@@ -945,31 +918,6 @@ pipeline {
         }
 
 
-        // Single functional test
-        stage('STAGING - Smoke Tests') {
-            when {
-                expression { env.CHANGE_TARGET == 'master' }
-            }
-            steps {
-                script {
-                    def result = functionalTest ('STAGING - Smoke Tests', stagingHost, stagingSuffix, 'SearchSpecs')
-                }
-            }
-        }
-
-
-        stage('STAGING - ZAP Tests') {
-            when {
-                expression { env.CHANGE_TARGET == 'master' }
-            }
-            steps {
-                script {
-                    def result = zapTests ('STAGING - ZAP Tests', stagingHost, stagingSuffix)
-                }
-            }
-        }
-
-
         // Push to Demo branch to deploy in demo environment
         stage('DEMO - Deploy') {
             when {
@@ -1168,19 +1116,6 @@ pipeline {
             steps {
                 script {
                     def result = apiTest ('DEMO - API Tests', demoHost, demoSuffix)
-                }
-            }
-        }
-
-
-        // Single functional test
-        stage('DEMO - Smoke Tests') {
-            when {
-                expression { env.CHANGE_TARGET == 'demo' }
-            }
-            steps {
-                script {
-                    def result = functionalTest ('DEMO - Smoke Tests', demoHost, demoSuffix, 'SearchSpecs')
                 }
             }
         }
@@ -1415,19 +1350,6 @@ pipeline {
 
                         createDeploymentStatus(prodSuffix, 'SUCCESS', prodHost)
                     }
-                }
-            }
-        }
-
-
-        // Single functional test
-        stage('PROD - Smoke Tests') {
-            when {
-                expression { env.CHANGE_TARGET == 'master' }
-            }
-            steps {
-                script {
-                    def result = functionalTest ('PROD - Smoke Tests', prodHost, prodSuffix, 'SearchSpecs')
                 }
             }
         }

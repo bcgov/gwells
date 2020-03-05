@@ -141,6 +141,9 @@ def overlap(a, b):
     """
     Checks to see if two casings intersect, or have identical start/end positions.
     """
+    # if any start / end is None then it doesn't overlap
+    if a[0] is None or a[1] is None or b[0] is None or b[1] is None:
+        return False
     # If the casing start/end intersects
     intersect = (a[0] > b[0] and a[0] < b[1]) or (a[1] > b[0] and a[1] < b[1])
     # If the casings start or end in the same place
@@ -443,18 +446,37 @@ class StackWells():
                 'well_status',
                 'well_activity_type'
         )
-        if records.count() > 1:
-            # If there's more than one submission we don't need to create a legacy well, we can safely
-            # assume that the 1st submission is either a legacy or construction report submission.
+
+        # 1) only 1 legacy record created from a previous _create_legacy_submission call [*no* legacy creation]
+        # 2) (previous behaviour) - 1 non-legacy record created (e.g. staff_edit) [*yes* legacy creation]
+        # 3) (previous behaviour) - 2 records exist (1 legacy, one previous non-legacy) = [*no* legacy creation]
+
+        legacy_record_creation_needed = False
+        if records.count() == 1:
+            if records[0].well_activity_type.code == WELL_ACTIVITY_CODE_LEGACY:
+                # if there is only one activity submission and it is LEGACY type then we know that
+                # we don't need to process the stack. This one ActivitySubmission was created by the
+                # legacy_records command from an existing well and therefore we don't need to update
+                # the Well via the self._stack() call. The reason why we don't want to allow the
+                # stack to be processed is that saving a Well could fail because the current well's
+                # data is invalid according to the model validators.
+                return records[0].well
+            else:
+                legacy_record_creation_needed = True
+        if not legacy_record_creation_needed:
+            # If there's more than one submission we don't need to create a legacy well, we can
+            # safely assume that the 1st submission is either a legacy or construction report
+            # submission.
             return self._stack(records, submission.well)
         else:
-            # If there aren't prior submissions, we may create a legacy record using the current well
-            # record.
+            # If there aren't prior submissions, we may create a legacy record using the current
+            # well record.
             # Edge case of note:
             # Re. discussion with Lindsay on Oct 15 2018: There may be an instance, where there is a
-            # pre-existing well, and a construct report is submitted. In this instance, we may end up with a
-            # LEGACY record and a CONSTRUCTION record. This is odd, but we don't want to lose the information
-            # stored in the existing well record. It is imerative that we always create a legacy record.
+            # pre-existing well, and a construct report is submitted. In this instance, we may end
+            # up with a LEGACY record and a CONSTRUCTION record. This is odd, but we don't want to
+            # lose the information stored in the existing well record. It is imerative that we
+            # always create a legacy record.
             self._create_legacy_submission(submission.well)
             # We should now have multiple records
             records = ActivitySubmission.objects.filter(well=submission.well)

@@ -34,9 +34,9 @@ from wells.models import (
     LinerPerforation,
     LithologyDescription,
     Screen,
-    Well,
-    WellActivityCode
+    Well
 )
+from submissions.models import WellActivityCode
 
 
 logger = logging.getLogger(__name__)
@@ -79,11 +79,14 @@ class CasingSummarySerializer(serializers.ModelSerializer):
 
 
 class CasingSerializer(serializers.ModelSerializer):
+    length_required = serializers.BooleanField(required=False)
+
     class Meta:
         model = Casing
         fields = (
             'start',
             'end',
+            'length_required',
             'diameter',
             'casing_code',
             'casing_material',
@@ -91,10 +94,39 @@ class CasingSerializer(serializers.ModelSerializer):
             'wall_thickness'
         )
         extra_kwargs = {
-            'start': {'required': True},
-            'end': {'required': True},
+            'start': {'required': False},
+            'end': {'required': False},
             'diameter': {'required': True}
         }
+
+    def to_representation(self, instance):
+        """
+        Fetch many details related to a aquifer, used to generate its' summary page.
+        """
+
+        ret = super().to_representation(instance)
+        ret['length_required'] = instance.start is not None and instance.end is not None
+        return ret
+
+    def validate(self, data):
+        """
+        Check that start and end are set when the `requiredLength` parameter is true.
+        """
+        data = super().validate(data)
+
+        if bool(data.get('length_required', True)):
+            errors = {}
+            start = data.get('start', None)
+            end = data.get('end', None)
+            if start == '' or start is None:
+                errors['start'] = 'This field is required.'
+            if end == '' or end is None:
+                errors['end'] = 'This field is required.'
+            if len(errors) != 0:
+                raise serializers.ValidationError(errors)
+        if 'length_required' in data:
+            del data['length_required']
+        return data
 
 
 class CasingStackerSerializer(serializers.ModelSerializer):
@@ -478,6 +510,8 @@ class WellDetailSerializer(AuditModelSerializer):
     screen_opening = serializers.ReadOnlyField(source='screen_opening.description')
     screen_bottom = serializers.ReadOnlyField(source='screen_bottom.description')
     alternative_specs_submitted = serializers.ReadOnlyField(source='get_alternative_specs_submitted_display')
+    drilling_company = serializers.ReadOnlyField(source='company_of_person_responsible.org_guid')
+    company_of_person_responsible = serializers.ReadOnlyField(source='company_of_person_responsible.org_guid')
 
     submission_work_dates = serializers.SerializerMethodField()
 
@@ -537,9 +571,9 @@ class WellDetailSerializer(AuditModelSerializer):
             "decommission_start_date",
             "decommission_end_date",
             "person_responsible",
-            "company_of_person_responsible",
             "driller_name",
-            "drilling_company",
+            "drilling_company", # old name for company_of_person_responsible
+            "company_of_person_responsible",
             "consultant_name",
             "consultant_company",
             "well_identification_plate_attached",
@@ -776,6 +810,10 @@ class WellListSerializer(serializers.ModelSerializer):
     """Serializes a well record"""
 
     legal_pid = serializers.SerializerMethodField()
+    drilling_company = serializers.ReadOnlyField(
+        source='company_of_person_responsible.org_guid')
+    company_of_person_responsible = serializers.ReadOnlyField(
+        source='company_of_person_responsible.org_guid')
 
     def get_legal_pid(self, instance):
         if instance.legal_pid is None:
@@ -811,7 +849,8 @@ class WellListSerializer(serializers.ModelSerializer):
             "alteration_end_date",
             "decommission_start_date",
             "decommission_end_date",
-            "drilling_company",
+            "drilling_company", # old name of company_of_person_responsible
+            "company_of_person_responsible",
             "well_identification_plate_attached",
             "id_plate_attached_by",
             "water_supply_system_name",
@@ -927,7 +966,7 @@ class WellExportSerializer(WellListSerializer):
     well_status = serializers.SlugRelatedField(read_only=True, slug_field='description')
     licenced_status = serializers.SlugRelatedField(read_only=True, slug_field='description')
     land_district = serializers.SlugRelatedField(read_only=True, slug_field='name')
-    drilling_company = serializers.SlugRelatedField(read_only=True, slug_field='name')
+    drilling_company = serializers.CharField(read_only=True, source='company_of_person_responsible.name')
     ground_elevation_method = serializers.SlugRelatedField(read_only=True,
                                                            slug_field='description')
     surface_seal_material = serializers.SlugRelatedField(read_only=True, slug_field='description')
@@ -1064,4 +1103,3 @@ class WellLithologySerializer(serializers.ModelSerializer):
                 "longitude",
                 "lithologydescription_set"
             )
-

@@ -68,6 +68,9 @@ def create_db_comments_from_models(models):
             column_comments = model_class.db_column_comments() \
                 if hasattr(model_class, 'db_column_comments') else None
 
+            if table is None and table_comment is not None:
+                raise Exception('Missing db_table_name method on %s' % model_class.__name__)
+
             if table_comment is not None:
                 try:
                     # logger.info('comment on table "{}" is "{}"'.format(table, table_comment))
