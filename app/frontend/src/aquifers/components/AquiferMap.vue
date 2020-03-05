@@ -433,7 +433,7 @@ export default {
 }
 
 .leaflet-control-area-select a {
-  background: url('../../common/assets/images/shape-polygon-plus.svg') no-repeat center center;
+  background: url('../../common/assets/images/shape-polygon-plus.svg') no-repeat center center white;
   cursor: pointer;
 }
 
@@ -457,7 +457,7 @@ export default {
 }
 
 .geolocate a {
-  background: url('../../common/assets/images/geolocate.png') no-repeat center center;
+  background: url('../../common/assets/images/geolocate.png') no-repeat center center white;
   cursor: pointer;
 }
 
