@@ -399,23 +399,19 @@
         <fieldset id="well_yield_fieldset" class="my-3 detail-section">
           <legend>Well Yield</legend>
 
-          <div v-if="!well.production_data_set">No well yield data available.</div>
-
-          <div v-for="(productionTest, index) in well.production_data_set" :key="`ProductionDataSet${index}`">
-            <b-row>
-              <b-col cols="12" md="4"><span class="font-weight-bold">Estimation Method:</span> {{codeToDescription('yield_estimation_methods', productionTest.yield_estimation_method)}} </b-col>
-              <b-col cols="12" md="4"><span class="font-weight-bold">Estimation Rate:</span> {{productionTest.yield_estimation_rate}} </b-col>
-              <b-col cols="12" md="4"><span class="font-weight-bold">Estimation Duration:</span> {{productionTest.yield_estimation_duration}}</b-col>
-            </b-row>
-            <b-row>
-              <b-col cols="12" md="4"><span class="font-weight-bold">Static Water Level Before Test:</span> {{productionTest.static_level}}</b-col>
-              <b-col cols="12" md="4"><span class="font-weight-bold">Drawdown:</span> {{productionTest.drawdown}}</b-col>
-            </b-row>
-            <b-row>
-              <b-col cols="12" md="4"><span class="font-weight-bold">Hydrofracturing Performed:</span> {{productionTest.hydro_fracturing_performed}}</b-col>
-              <b-col cols="12" md="4"><span class="font-weight-bold">Increase in Yield Due to Hydrofracturing:</span> {{productionTest.hydro_fracturing_yield_increase}}</b-col>
-            </b-row>
-          </div>
+          <b-row>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Estimation Method:</span> {{codeToDescription('yield_estimation_methods', well.yield_estimation_method)}} </b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Estimation Rate:</span> {{well.yield_estimation_rate}} </b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Estimation Duration:</span> {{well.yield_estimation_duration}}</b-col>
+          </b-row>
+          <b-row>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Static Water Level Before Test:</span> {{well.static_level}}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Drawdown:</span> {{well.drawdown}}</b-col>
+          </b-row>
+          <b-row>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Hydrofracturing Performed:</span> {{well.hydro_fracturing_performed === true ? 'Yes' : 'No'}}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Increase in Yield Due to Hydrofracturing:</span> {{well.hydro_fracturing_yield_increase}}</b-col>
+          </b-row>
         </fieldset>
 
         <fieldset id="well_decommissioning_fieldset" class="my-3 detail-section">
