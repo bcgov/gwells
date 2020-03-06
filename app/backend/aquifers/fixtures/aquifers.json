@@ -768,9 +768,54 @@
       "update_user": "",
       "update_date": "2019-11-04T19:47:48.075Z",
       "purpose": "03A",
-      "licence_number": 501524,
+      "licence_number": 501525,
       "quantity_flag": "T",
-      "quantity": "2730.000",
+      "quantity": "2730000.000",
+      "effective_date": "2019-11-04T19:40:43.379Z"
+    }
+  },
+  {
+    "model": "aquifers.waterrightslicence",
+    "pk": 5,
+    "fields": {
+      "create_user": "",
+      "create_date": "2019-11-04T19:40:43.379Z",
+      "update_user": "",
+      "update_date": "2019-11-04T19:47:48.075Z",
+      "purpose": "WSA09",
+      "licence_number": 501526,
+      "quantity_flag": "T",
+      "quantity": "980000.000",
+      "effective_date": "2019-11-04T19:40:43.379Z"
+    }
+  },
+  {
+    "model": "aquifers.waterrightslicence",
+    "pk": 6,
+    "fields": {
+      "create_user": "",
+      "create_date": "2019-11-04T19:40:43.379Z",
+      "update_user": "",
+      "update_date": "2019-11-04T19:47:48.075Z",
+      "purpose": "03B",
+      "licence_number": 501527,
+      "quantity_flag": "T",
+      "quantity": "6750000.000",
+      "effective_date": "2019-11-04T19:40:43.379Z"
+    }
+  },
+  {
+    "model": "aquifers.waterrightslicence",
+    "pk": 7,
+    "fields": {
+      "create_user": "",
+      "create_date": "2019-11-04T19:40:43.379Z",
+      "update_user": "",
+      "update_date": "2019-11-04T19:47:48.075Z",
+      "purpose": "03B",
+      "licence_number": 501528,
+      "quantity_flag": "T",
+      "quantity": "100000.000",
       "effective_date": "2019-11-04T19:40:43.379Z"
     }
   },
@@ -1148,7 +1193,7 @@
         "intended_water_use": "DWS",
         "well_status": "NEW",
         "licenced_status": "LICENSED",
-        "licences": [0],
+        "licences": [4, 5, 6, 7],
         "street_address": "6647 CHRISTENSEN ROAD",
         "city": "ANAHIM LAKE",
         "legal_lot": "A",
