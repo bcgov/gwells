@@ -107,7 +107,11 @@
           <legend>Licensing Information</legend>
           <b-row>
             <b-col cols="12" md="4"><span class="font-weight-bold">Licensed Status:</span> {{ wellLicence.status }}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Licence Number:</span> {{ wellLicence.number }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Licence Number:</span>&nbsp;
+              <a :href="`https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&amp;PosseObjectDef=o_ATIS_DocumentSearch&amp;PosseMenuName=WS_Main&Criteria_LicenceNumber=${wellLicence.number}`" target="_blank">
+                {{ wellLicence.number }}
+              </a>
+            </b-col>
             <b-col cols="12" md="4"></b-col>
           </b-row>
         </fieldset>
