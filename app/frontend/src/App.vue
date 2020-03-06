@@ -1,7 +1,7 @@
 <template>
   <div>
     <gwells-header ref="header"/>
-    <main role="main" class="p-0 mt-0 mt-sm-4">
+    <main role="main" class="p-0 mt-4">
       <router-view/>
     </main>
     <gwells-footer/>
