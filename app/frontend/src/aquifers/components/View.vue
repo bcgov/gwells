@@ -409,7 +409,8 @@ export default {
             this.data.datasets.forEach(function (dataset) {
               for (var i = 0; i < dataset.data.length; i++) {
                 var model = dataset._meta[Object.keys(dataset._meta)[0]].data[i]._model
-                ctx.fillText(dataset.data[i], model.x, model.y - 5)
+                const val = dataset.data[i]
+                ctx.fillText(val === 0 ? '<0.01' : val, model.x, model.y - 5)
               }
             })
           }
