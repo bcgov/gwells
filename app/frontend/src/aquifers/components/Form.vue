@@ -315,6 +315,7 @@
       <b-col cols="auto">
         <b-button
           variant="primary"
+          :disabled="loadingData"
           v-on:click="handleAddResource">
           Add additional link
         </b-button>
@@ -325,6 +326,7 @@
       <b-col cols="auto">
         <b-button
           variant="primary"
+          :disabled="loadingData"
           v-b-modal.confirmSave>
           Save
         </b-button>
