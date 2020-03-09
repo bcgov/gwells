@@ -33,7 +33,8 @@ export default {
         },
         layout: {
           padding: {
-            top: 20
+            top: 20,
+            left: 12
           }
         },
         responsive: true,
