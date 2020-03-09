@@ -638,7 +638,7 @@ exports[`View Component View mode matches the snapshot 1`] = `
                     />
                      
                     <b-popover-stub
-                      content="Aquifers with advanced mapping have been mapped in three dimension. Cross-sections, and/or a three-dimensional model will generally have been developed."
+                      content="Aquifers with advanced mapping have been mapped in three dimensions. Generally, cross-sections and/or three-dimensional models, have been developed."
                       target="aquifer-advanced-mapping"
                       triggers="hover focus"
                     />
