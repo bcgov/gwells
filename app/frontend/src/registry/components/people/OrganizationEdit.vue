@@ -122,7 +122,7 @@
           <b-row class="mt-4">
             <b-col cols="12" md="5">
               <b-form-group
-                label="Office number:"
+                label="Office telephone number:"
                 label-for="orgEditPhoneInput">
                 <b-form-input
                   :disabled="!selectedCompany"

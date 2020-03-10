@@ -308,6 +308,12 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <b-row>
             <b-col cols="12" lg="6"><span class="font-weight-bold">Bottom:</span> {{ codeToDescription('screen_bottoms', form.screen_bottom) }}</b-col>
           </b-row>
+          <b-row>
+            <b-col cols="12" lg="6"><span class="font-weight-bold">Other Material:</span> {{form.other_screen_material}}</b-col>
+          </b-row>
+          <b-row>
+            <b-col cols="12" lg="6"><span class="font-weight-bold">Information:</span> {{form.screen_information}}</b-col>
+          </b-row>
         </b-col>
         <b-col cols="12" lg="8">
           <div class="font-weight-bold">Installed Screens</div>
@@ -345,6 +351,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <b-row>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Developed by:</span> <div v-for="(item, index) in form.development_methods" :key="index"> {{ codeToDescription('development_methods', item) }}</div></b-col>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Development Total Duration:</span> {{ form.development_hours }} {{ form.development_hours ? 'hours':'' }}</b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Development Notes:</span> {{ form.development_notes }}</b-col>
       </b-row>
     </fieldset>
 

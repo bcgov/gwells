@@ -15,7 +15,7 @@ import logging
 from decimal import Decimal
 
 from rest_framework import serializers
-from django.contrib.gis.geos import GEOSGeometry, Point
+from django.contrib.gis.geos import Point
 
 from gwells.utils import isPointInsideBC
 from wells.models import Well

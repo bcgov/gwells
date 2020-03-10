@@ -34,7 +34,9 @@ import { FETCH_CONFIG } from '@/common/store/config.js'
 // GWELLS js API library (helper methods for working with API)
 import ApiService from '@/common/services/ApiService.js'
 
-if (process.env.NODE_ENV === 'production') {
+const PRODUCTION_GWELLS_URL = 'https://apps.nrs.gov.bc.ca/gwells'
+
+if (window.location.href.substr(0, PRODUCTION_GWELLS_URL.length) === PRODUCTION_GWELLS_URL) {
   Sentry.init({
     dsn: 'https://a83809da8c9b4f39b3d7cd683b803859@sentry.io/1802823',
     integrations: [new Integrations.Vue({ Vue, attachProps: true, logError: true })]

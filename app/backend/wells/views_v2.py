@@ -15,7 +15,6 @@
 import logging
 import geojson
 from geojson import Feature, FeatureCollection
-from reversion.views import RevisionMixin
 from drf_yasg.utils import swagger_auto_schema
 
 from django.db import transaction
@@ -50,7 +49,10 @@ from wells.serializers_v2 import (
 from wells.permissions import WellsEditOrReadOnly
 from wells.renderers import WellListCSVRenderer, WellListExcelRenderer
 
-from aquifers.models.vertical_aquifer_extents import VerticalAquiferExtent
+from aquifers.models.vertical_aquifer_extents import (
+    VerticalAquiferExtent,
+    VerticalAquiferExtentsHistory
+)
 from aquifers.permissions import HasAquiferEditRole
 
 
@@ -126,12 +128,11 @@ class WellLocationListV2APIView(ListAPIView):
 
 
 
-class WellAquiferListV2APIView(RevisionMixin, ListAPIView):
+class WellAquiferListV2APIView(ListAPIView):
     """
     Returns a list of aquifers with depth information for a well
     """
     permission_classes = (HasAquiferEditRole,)
-    # model = VerticalAquiferExtent
     ordering = ('start',)
     serializer_class = WellVerticalAquiferExtentSerializerV2
     pagination_class = None
@@ -140,7 +141,7 @@ class WellAquiferListV2APIView(RevisionMixin, ListAPIView):
         """
         Excludes Aquifer 3D points that relate to unpublished wells for users without edit permissions
         """
-        well = self.getWell()
+        well = self.get_well()
 
         qs = VerticalAquiferExtent.objects.filter(well=well).select_related('aquifer')
 
@@ -164,7 +165,7 @@ class WellAquiferListV2APIView(RevisionMixin, ListAPIView):
             raise Http404()
 
         # get the well and 404 if it doesn't exist
-        well = self.getWell()
+        well = self.get_well()
         max_depth = float('-inf')
         ids = []
         items = []
@@ -189,7 +190,7 @@ class WellAquiferListV2APIView(RevisionMixin, ListAPIView):
                     serializer.validated_data['create_user'] = username
                     serializer.validated_data['create_date'] = timestamp
 
-                if self.hasChanged(vertical_aquifer_extent, serializer.validated_data):
+                if self.has_changed(vertical_aquifer_extent, serializer.validated_data):
                     vertical_aquifer_extent = serializer.save()
 
                 # keep track existing ids and any newly added IDs
@@ -200,6 +201,8 @@ class WellAquiferListV2APIView(RevisionMixin, ListAPIView):
                 has_errors = True
 
             if vertical_aquifer_extent is not None:
+                self.log_history(vertical_aquifer_extent, username, timestamp)
+
                 if vertical_aquifer_extent.start < max_depth:
                     has_errors = True
                     serializer_errors.setdefault('start', []) \
@@ -219,14 +222,14 @@ class WellAquiferListV2APIView(RevisionMixin, ListAPIView):
 
         return Response(items, status=status.HTTP_201_CREATED)
 
-    def getWell(self):
+    def get_well(self):
         well_tag_number = int(self.kwargs['well_tag_number'])
         try:
             return Well.objects.get(pk=well_tag_number)
         except:
             raise NotFound(f'Well {well_tag_number} could not be found')
 
-    def hasChanged(self, existing_vertical_aquifer_extent, new_data):
+    def has_changed(self, existing_vertical_aquifer_extent, new_data):
         if existing_vertical_aquifer_extent is None:
             return True
 
@@ -249,6 +252,21 @@ class WellAquiferListV2APIView(RevisionMixin, ListAPIView):
             return True
 
         return False
+
+    def log_history(self, vertical_aquifer_extent, username, timestamp):
+        # Whenever a VerticalAquiferExtent is saved - insert a copy of the data into the
+        # vertical_aquifer_extents_history table
+        VerticalAquiferExtentsHistory.objects.create(
+            create_user=username,
+            create_date=timestamp,
+            update_user=username,
+            update_date=timestamp,
+            well_tag_number=vertical_aquifer_extent.well_id,
+            aquifer_id=vertical_aquifer_extent.aquifer_id,
+            geom=vertical_aquifer_extent.geom,
+            start=vertical_aquifer_extent.start,
+            end=vertical_aquifer_extent.end
+        )
 
 
 class WellListAPIViewV2(ListAPIView):

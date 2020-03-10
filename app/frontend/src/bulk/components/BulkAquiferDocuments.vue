@@ -13,8 +13,11 @@
 */
 
 <template>
-  <div>
-    <b-card class="container p-1" v-if="perms.wellAquiferCorrelation">
+  <div id="bulk-aquifer-documents-upload-screen">
+    <b-card no-body class="mb-3 container d-print-none">
+      <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"/>
+    </b-card>
+    <b-card class="container p-1" v-if="perms.aquiferDocuments">
       <api-error v-if="apiError" :error="apiError"/>
 
       <b-container>
@@ -224,6 +227,16 @@ export default {
         {
           key: 'documents',
           label: 'Documents'
+        }
+      ],
+      breadcrumbs: [
+        {
+          text: 'Bulk Upload',
+          to: { name: 'bulk-home' }
+        },
+        {
+          text: 'Aquifer Documents Bulk Upload',
+          active: true
         }
       ]
     }
@@ -525,138 +538,141 @@ export default {
 }
 </script>
 <style lang="scss">
-#upload-behaviour {
-  .card.chosen {
-    &:not(.active) {
-      opacity: 0.2;
-    }
-  }
+#bulk-aquifer-documents-upload-screen {
 
-  .card.active {
-    opacity: 1;
-    border-left: 1px solid rgba(0,0,0,.125) !important;
-  }
-}
-
-#instructions {
-  ol {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  li {
-    margin: 0 0 0.5rem 0;
-    padding: 0;
-
-    &:before {
-      display: inline-block;
-      width: 16px;
-      height: 16px;
-      vertical-align: middle;
-      margin-top: -2px;
-      margin-right: 5px;
-      content: "";
-    }
-
-    &.active {
-      color: #5c35f9;
-
-      &:before {
-        background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' fill='%235c35f9' viewBox='0 0 640 640' width='16' height='16'><path d='M128 0L0 128L192 320L0 512L128 640L448 320L128 0Z'/></svg>") no-repeat center center;
+  #upload-behaviour {
+    .card.chosen {
+      &:not(.active) {
+        opacity: 0.2;
       }
     }
 
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-}
-
-#files-to-upload {
-  tr {
-    &.error {
-      color: red;
+    .card.active {
+      opacity: 1;
+      border-left: 1px solid rgba(0,0,0,.125) !important;
     }
   }
 
-  td {
-    padding: 0.3rem 0.5rem;
-    border-bottom: 1px solid #EEE;
-
-    &:first-child {
-      padding-left: 0;
+  #instructions {
+    ol {
+      list-style: none;
+      margin: 0;
+      padding: 0;
     }
 
-    &:last-child {
-      padding-right: 0;
+    li {
+      margin: 0 0 0.5rem 0;
+      padding: 0;
+
+      &:before {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        vertical-align: middle;
+        margin-top: -2px;
+        margin-right: 5px;
+        content: "";
+      }
+
+      &.active {
+        color: #5c35f9;
+
+        &:before {
+          background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' fill='%235c35f9' viewBox='0 0 640 640' width='16' height='16'><path d='M128 0L0 128L192 320L0 512L128 640L448 320L128 0Z'/></svg>") no-repeat center center;
+        }
+      }
+
+      &:last-child {
+        margin-bottom: 0;
+      }
     }
   }
 
-  tr:last-child {
+  #files-to-upload {
+    tr {
+      &.error {
+        color: red;
+      }
+    }
+
     td {
-      border-bottom: none;
+      padding: 0.3rem 0.5rem;
+      border-bottom: 1px solid #EEE;
+
+      &:first-child {
+        padding-left: 0;
+      }
+
+      &:last-child {
+        padding-right: 0;
+      }
     }
-  }
-}
 
-#aquifers {
-  ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  li {
-    margin: 0 0 0.5rem 0;
-    padding: 0;
-
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-
-  table {
-    .unknown {
-      color: red;
-    }
-  }
-}
-
-#documents {
-  ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  li {
-    margin: 0 0 0.5rem 0;
-    padding: 0;
-  }
-
-  input[type="button"] {
-    background-color: #d8292f;
-    padding: 2px 5px;
-    font-size: 10px;
-    color: white;
-    border: 1px solid #d8292f;
-    border-radius: 2px;
-
-    &:hover {
-      background-color: #b92227;
-      border-color: #ae2025;
+    tr:last-child {
+      td {
+        border-bottom: none;
+      }
     }
   }
 
-  .custom-file-label {
-    color: transparent;
-    overflow: hidden;
+  #aquifers {
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
 
-    &:after {
-      left: 0;
-      border-left: none;
-      content: "Pick files";
+    li {
+      margin: 0 0 0.5rem 0;
+      padding: 0;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    table {
+      .unknown {
+        color: red;
+      }
+    }
+  }
+
+  #documents {
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    li {
+      margin: 0 0 0.5rem 0;
+      padding: 0;
+    }
+
+    input[type="button"] {
+      background-color: #d8292f;
+      padding: 2px 5px;
+      font-size: 10px;
+      color: white;
+      border: 1px solid #d8292f;
+      border-radius: 2px;
+
+      &:hover {
+        background-color: #b92227;
+        border-color: #ae2025;
+      }
+    }
+
+    .custom-file-label {
+      color: transparent;
+      overflow: hidden;
+
+      &:after {
+        left: 0;
+        border-left: none;
+        content: "Pick files";
+      }
     }
   }
 }
