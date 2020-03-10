@@ -22,7 +22,7 @@ limitations under the License.
           <b-btn v-if="isStaffEdit" variant="primary" class="ml-2" @click="$emit('save')" :disabled="saveDisabled">
             Save
           </b-btn>
-          <a href="#top" v-if="isStaffEdit">Back to top</a>
+          <back-to-top-link v-if="isStaffEdit"/>
         </div>
       </b-col>
     </b-row>
@@ -47,11 +47,17 @@ limitations under the License.
 </template>
 
 <script>
-import {mapGetters} from 'vuex'
+import { mapGetters } from 'vuex'
+
+import BackToTopLink from '@/common/components/BackToTopLink.vue'
+
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 
 export default {
   mixins: [inputBindingsMixin],
+  components: {
+    BackToTopLink
+  },
   props: {
     wellPublicationStatusCode: String,
     errors: {

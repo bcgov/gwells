@@ -43,7 +43,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <div v-else>
       <b-row v-if="isStaffEdit">
           <b-col lg="3" v-for="step in formSteps[activityType]" :key='step'>
-            <a href="#" @click="anchorLinkHandler(step)">{{formStepDescriptions[step] ? formStepDescriptions[step] : step}}</a>
+            <a :href="`#${step}`" @click.prevent="anchorLinkHandler(step)">{{formStepDescriptions[step] ? formStepDescriptions[step] : step}}</a>
           </b-col>
         </b-row>
       <p v-if="!isStaffEdit">Submit activity on a well. <a href="/gwells/" target="_blank">Try a search</a> to see if the well exists in the system before submitting a report.</p>
@@ -762,6 +762,7 @@ export default {
     },
     anchorLinkHandler (step) {
       this.$SmoothScroll(this.$el.querySelector(`#${step}`))
+      this.$router.replace({ hash: `#${step}` })
     }
   },
   created () {
