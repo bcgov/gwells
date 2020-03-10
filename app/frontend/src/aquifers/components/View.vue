@@ -143,7 +143,7 @@
                 <dt>Number of wells associated to the aquifer</dt>
                 <dd class="m-0">
                   <router-link :to="{ name: 'wells-home', query: {'match_any':false, 'aquifer': id, 'search':'', 'well':''}, hash: '#advanced'}">
-                    {{ licence_details.num_wells }}
+                    {{ licenceDetails.num_wells }}
                   </router-link>
                 </dd>
               </li>
@@ -151,12 +151,14 @@
                 <dt>Artesian wells</dt>
                 <dd class="m-0">
                   <router-link :to="{ name: 'wells-home', query: {'match_any':false, 'aquifer': id, 'artesian_flow_has_value':true}, hash: '#advanced'}">
-                    {{ licence_details.num_artesian_wells }} artesian wells in aquifer
+                    {{ licenceDetails.num_artesian_wells }} artesian wells in aquifer
                   </router-link>
                 </dd>
               </li>
             </ul>
-            <p><i v-if="licence_details.wells_updated">Well info last updated {{ licence_details.wells_updated.update_date__max|formatDate }}</i></p>
+            <p>
+              <i v-if="licenceDetails.wells_updated">Well info last updated {{ licenceDetails.wells_updated.update_date__max|formatDate }}</i>
+            </p>
             <h5 class="mt-5 border-bottom pb-4 main-title">Documentation</h5>
             <aquifer-documents :files="aquiferFiles"
               highlightTitle="Factsheets"
@@ -182,7 +184,7 @@
               <div class="aquifer-information-list-divider"></div>
               <li>
                 <dt>Number of groundwater licences</dt>
-                <dd class="m-0">{{ licence_details.licence_count }}</dd>
+                <dd class="m-0">{{ licenceDetails.licence_count }}</dd>
               </li>
               <li>
                 <dt>Water withdrawal volume (annual)</dt>
@@ -190,19 +192,27 @@
                 <dd class="m-0" v-else>No information available.</dd>
               </li>
             </ul>
-            <div v-if="licence_details.lic_qty.length > 0">
+            <div v-if="licenceDetails.lic_qty.length > 0">
               <b-row class="pt-5">
                 <b-col cols="12" md="6" lg="12" class="pb-5">
-                  <h5 class="pie-chart-title">Licensed volume by purpose</h5>
-                  <PieChart :chartData="licence_details.usage" class="mt-3"></PieChart>
+                  <h5 class="bar-chart-title">Licensed volume by purpose</h5>
+                  <bar-chart
+                    :data="licenceUsageChartData"
+                    :labels="licenceUsageChartLabels"
+                    :chart-options="licenceUsageChartOptions"
+                    class="mt-3"/>
                 </b-col>
                 <b-col cols="12" md="6" lg="12" class="pb-5">
-                  <h5 class="pie-chart-title">Number of licences by purpose</h5>
-                  <PieChart :chartData="licence_details.lic_qty" class="mt-3"></PieChart>
+                  <h5 class="bar-chart-title">Number of licences by purpose</h5>
+                  <bar-chart
+                    :data="licenceQuantityChartData"
+                    :labels="licenceQuantityChartLabels"
+                    :chart-options="licenceQuantityChartOptions"
+                    class="mt-3"/>
                 </b-col>
               </b-row>
             </div>
-            <b-table id="licenses" striped :items="licence_details.wells_by_licence">
+            <b-table id="licenses" striped :items="licenceDetails.wells_by_licence">
               <template slot="licence_number" slot-scope="row">
                 <a :href="`https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&amp;PosseObjectDef=o_ATIS_DocumentSearch&amp;PosseMenuName=WS_Main&Criteria_LicenceNumber=${row.item.licence_number}`" target="_blank">
                   {{ row.item.licence_number }}
@@ -216,7 +226,7 @@
                 </ul>
               </template>
             </b-table>
-            <p><i v-if="licence_details.licences_updated && licence_details.licences_updated.update_date__max">Licence info last updated {{ licence_details.licences_updated.update_date__max|formatDate }}</i></p>
+            <p><i v-if="licenceDetails.licences_updated && licenceDetails.licences_updated.update_date__max">Licence info last updated {{ licenceDetails.licences_updated.update_date__max|formatDate }}</i></p>
             <p>
               Licensing information is obtained from
               the <a href="https://catalogue.data.gov.bc.ca/dataset/water-rights-licences-public" @click="handleOutboundLinkClicks('https://catalogue.data.gov.bc.ca/dataset/water-rights-licences-public')" target="_blank" class="d-print-url">
@@ -302,7 +312,7 @@
                   <dt class="text-right">Water quality information</dt>
                   <dd class="m-0">
                     <router-link :to="{ name: 'wells-home', query: {'match_any':false, 'ems_has_value':true, 'aquifer': id}, hash: '#advanced'}">
-                      {{ licence_details['num_wells_with_ems'] }} wells with an EMS ID
+                      {{ licenceDetails['num_wells_with_ems'] }} wells with an EMS ID
                     </router-link>
                   </dd>
                 </div>
@@ -314,7 +324,7 @@
                       triggers="hover focus"
                       content="Inferred based on aquifer subtype - not field verified."/>
                   </dt>
-                  <dd class="m-0">{{ licence_details['hydraulically_connected'] ? "More likely" : "Less likely"}}</dd>
+                  <dd class="m-0">{{ licenceDetails['hydraulically_connected'] ? "More likely" : "Less likely"}}</dd>
                 </div>
                 <div v-else>
                   <dt class="text-right">{{ section.name }}</dt>
@@ -334,159 +344,22 @@
   </div>
 </template>
 
-<style>
-.print-button, .print-button:hover {
-  color: black;
-  text-decoration: none;
-}
-.aquifer-detail dt,
-.aquifer-detail dd {
-  display: block;
-}
-.artesian-search {
-  cursor: pointer;
-}
-
-a {
-  text-decoration-skip-ink: none;
-}
-
-#map-container {
-  position: relative;
-}
-
-.card-container .card-body {
-  padding: 0;
-  margin: 0;
-}
-
-.color-grey {
-  color: #494949
-}
-
-.color-info {
-  color: #38598a;
-}
-
-.main-title {
-  padding-bottom: 1rem;
-  font-size: 1.8em;
-  color: #494949;
-}
-
-.aquifer-information-list {
-  list-style: none;
-  box-sizing: border-box;
-  position: relative;
-}
-
-.aquifer-information-list-divider {
-  position: absolute;
-  top: 0;
-  width: 1px;
-  height: 100%;
-  background-color: rgba(0,0,0,.1);
-  left: 50%;
-}
-
-.aquifer-information-list > li {
-  margin: 0.7rem 0;
-}
-.aquifer-information-list dt,
-.aquifer-information-list dd {
-  display: inline-block;
-  vertical-align: top;
-  width: 50%;
-  font-size: 1rem;
-}
-
-.aquifer-information-list dt {
-  padding-right: 2rem;
-  font-weight: bold;
-}
-
-.aquifer-information-list dd {
-  padding-left: 2rem;
-}
-
-.pie-chart-title {
-  font-weight: bold !important;
-  font-size: 1rem !important;
-}
-.pie-chart-container {
-  margin: 0 auto;
-}
-
-.aquifer-main-information-list .row > div {
-  padding-bottom: 0.7rem;
-}
-
-.aquifer-main-information-list .row > :nth-child(odd) {
-  font-weight: bold;
-  border-right: 1px solid rgba(0,0,0,0.1);
-}
-
-.observational-wells .obs-wells-wo-well-level span:not(:last-child):after {
-  content: ", ";
-}
-
-#licenses li {
-  list-style: none;
-  display: inline;
-}
-
-#licenses li:not(:last-child):after {
-  content: ', ';
-}
-
-@media print {
-  a:not(.d-print-url) {
-    text-decoration: none !important;
-  }
-
-  a.d-print-url[href]::after {
-    content: " (" attr(href) ") ";
-    word-break: break-all;
-  }
-
-  .aquifer-information-list dt {
-    width: 25%;
-  }
-
-  .aquifer-information-list dd {
-    width: 75%;
-  }
-
-  .aquifer-main-information-list .row > :nth-child(odd) {
-    border: none;
-  }
-
-  main {
-    margin-bottom: 0 !important;
-  }
-
-  main > .card.container {
-    padding-bottom: 0 !important;
-  }
-
-  body, main, .card, .aquifer-details {
-    display: block !important;
-  }
-}
-</style>
-
 <script>
+import { mapActions, mapGetters, mapState, mapMutations } from 'vuex'
+import { sumBy, orderBy, groupBy, range, cloneDeep } from 'lodash'
+import * as Sentry from '@sentry/browser'
+
 import ApiService from '@/common/services/ApiService.js'
 import APIErrorMessage from '@/common/components/APIErrorMessage'
+import ChangeHistory from '@/common/components/ChangeHistory.vue'
+
 import AquiferForm from './Form'
 import Documents from './Documents.vue'
 import SingleAquiferMap from './SingleAquiferMap.vue'
 import MapLoadingSpinner from './MapLoadingSpinner.vue'
-import ChangeHistory from '@/common/components/ChangeHistory.vue'
-import { mapActions, mapGetters, mapState, mapMutations } from 'vuex'
-import { sumBy, orderBy, groupBy, range, cloneDeep } from 'lodash'
-import PieChart from './PieChart.vue'
-import * as Sentry from '@sentry/browser'
+import BarChart from './BarChart.vue'
+
+const ONE_MILLION = 1 * 1000 * 1000
 
 export default {
   components: {
@@ -495,8 +368,8 @@ export default {
     'aquifer-documents': Documents,
     'single-aquifer-map': SingleAquiferMap,
     'map-loading-spinner': MapLoadingSpinner,
-    ChangeHistory,
-    PieChart
+    'change-history': ChangeHistory,
+    'bar-chart': BarChart
   },
   props: {
     'edit': Boolean
@@ -534,7 +407,49 @@ export default {
       loading: false,
       loadingFiles: false,
       loadingMap: false,
-      loadingForm: false
+      loadingForm: false,
+      licenceUsageChartOptions: {
+        events: false,
+        hover: {
+          animationDuration: 0
+        },
+        animation: {
+          duration: 1,
+          onComplete: function () {
+            // render the value of the chart above the bar
+            const ctx = this.chart.ctx
+            ctx.fillStyle = this.chart.config.options.defaultFontColor
+            ctx.textAlign = 'center'
+            ctx.textBaseline = 'bottom'
+            this.data.datasets.forEach(function (dataset) {
+              for (var i = 0; i < dataset.data.length; i++) {
+                var model = dataset._meta[Object.keys(dataset._meta)[0]].data[i]._model
+                const val = dataset.data[i]
+                ctx.fillText(val === 0 ? '<0.01' : val, model.x, model.y - 5)
+              }
+            })
+          }
+        },
+        scales: {
+          yAxes: [{
+            scaleLabel: {
+              display: true,
+              labelString: 'millions of cubic meters'
+            },
+            ticks: {
+              min: 0,
+              precision: 0
+            }
+          }]
+        }
+      },
+      licenceQuantityChartOptions: {
+        scales: {
+          yAxes: [{
+            minBarLength: 5
+          }]
+        }
+      }
     }
   },
   computed: {
@@ -560,11 +475,39 @@ export default {
     id () { return parseInt(this.$route.params.id) || null },
     editMode () { return this.edit },
     viewMode () { return !this.edit },
-    licence_details () {
-      return this.record.licence_details || { usage: [], lic_qty: [] }
+    licenceDetails () {
+      return this.record.licence_details || { usage: [], lic_qty: [], obs_wells: [] }
+    },
+    licenceUsageChartData () {
+      const groupedLabels = groupBy(this.licenceDetails.usage, 'purpose__description')
+      const chartData = Object.values(groupedLabels).map((val) => {
+        return Math.round(sumBy(val, o => o.total_qty) / ONE_MILLION * 100) / 100
+      })
+      return chartData
+    },
+    licenceUsageChartLabels () {
+      const groupedLabels = groupBy(this.licenceDetails.lic_qty, 'purpose__description')
+      const chartLabels = Object.keys(groupedLabels).map((label) => {
+        return label.split(' - ')[1] // the label, without code.
+      })
+      return chartLabels
+    },
+    licenceQuantityChartData () {
+      const groupedLabels = groupBy(this.licenceDetails.lic_qty, 'purpose__description')
+      const chartData = Object.values(groupedLabels).map((val) => {
+        return sumBy(val, o => o.total_qty)
+      })
+      return chartData
+    },
+    licenceQuantityChartLabels () {
+      const groupedLabels = groupBy(this.licenceDetails.lic_qty, 'purpose__description')
+      const chartLabels = Object.keys(groupedLabels).map((label) => {
+        return label.split(' - ')[1] // the label, without code.
+      })
+      return chartLabels
     },
     obsWells () {
-      return this.licence_details.obs_wells
+      return this.licenceDetails.obs_wells || []
     },
     obsWellsByStatus () {
       const sortedWells = orderBy(this.obsWells, ['hasLevelAnalysis', 'waterLevels'], ['desc', 'asc']) // sorts so wells with waterLevels are at the top.
@@ -627,7 +570,7 @@ export default {
         this.loadAquifer()
       }
     },
-    licence_details (newLDetails, oldLDetails) {
+    licenceDetails (newLDetails, oldLDetails) {
       this.setWaterVolume(newLDetails)
     }
   },
@@ -872,3 +815,144 @@ export default {
   }
 }
 </script>
+
+<style>
+.print-button, .print-button:hover {
+  color: black;
+  text-decoration: none;
+}
+.aquifer-detail dt,
+.aquifer-detail dd {
+  display: block;
+}
+.artesian-search {
+  cursor: pointer;
+}
+
+a {
+  text-decoration-skip-ink: none;
+}
+
+#map-container {
+  position: relative;
+}
+
+.card-container .card-body {
+  padding: 0;
+  margin: 0;
+}
+
+.color-grey {
+  color: #494949
+}
+
+.color-info {
+  color: #38598a;
+}
+
+.main-title {
+  padding-bottom: 1rem;
+  font-size: 1.8em;
+  color: #494949;
+}
+
+.aquifer-information-list {
+  list-style: none;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.aquifer-information-list-divider {
+  position: absolute;
+  top: 0;
+  width: 1px;
+  height: 100%;
+  background-color: rgba(0,0,0,.1);
+  left: 50%;
+}
+
+.aquifer-information-list > li {
+  margin: 0.7rem 0;
+}
+.aquifer-information-list dt,
+.aquifer-information-list dd {
+  display: inline-block;
+  vertical-align: top;
+  width: 50%;
+  font-size: 1rem;
+}
+
+.aquifer-information-list dt {
+  padding-right: 2rem;
+  font-weight: bold;
+}
+
+.aquifer-information-list dd {
+  padding-left: 2rem;
+}
+
+.bar-chart-title {
+  font-weight: bold !important;
+  font-size: 1rem !important;
+}
+.bar-chart-container {
+  margin: 0 auto;
+}
+
+.aquifer-main-information-list .row > div {
+  padding-bottom: 0.7rem;
+}
+
+.aquifer-main-information-list .row > :nth-child(odd) {
+  font-weight: bold;
+  border-right: 1px solid rgba(0,0,0,0.1);
+}
+
+.observational-wells .obs-wells-wo-well-level span:not(:last-child):after {
+  content: ", ";
+}
+
+#licenses li {
+  list-style: none;
+  display: inline;
+}
+
+#licenses li:not(:last-child):after {
+  content: ', ';
+}
+
+@media print {
+  a:not(.d-print-url) {
+    text-decoration: none !important;
+  }
+
+  a.d-print-url[href]::after {
+    content: " (" attr(href) ") ";
+    word-break: break-all;
+  }
+
+  .aquifer-information-list dt {
+    width: 25%;
+  }
+
+  .aquifer-information-list dd {
+    width: 75%;
+  }
+
+  .aquifer-main-information-list .row > :nth-child(odd) {
+    border: none;
+  }
+
+  main {
+    margin-bottom: 0 !important;
+  }
+
+  main > .card.container {
+    padding-bottom: 0 !important;
+  }
+
+  body, main, .card, .aquifer-details {
+    display: block !important;
+  }
+}
+</style>

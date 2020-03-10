@@ -439,7 +439,7 @@ exports[`View Component View mode matches the snapshot 1`] = `
                     to="[object Object]"
                   >
                     
-                  
+                  4
                 
                   </router-link-stub>
                 </dd>
@@ -457,7 +457,7 @@ exports[`View Component View mode matches the snapshot 1`] = `
                     to="[object Object]"
                   >
                     
-                   artesian wells in aquifer
+                  4 artesian wells in aquifer
                 
                   </router-link-stub>
                 </dd>
@@ -465,7 +465,9 @@ exports[`View Component View mode matches the snapshot 1`] = `
             </ul>
              
             <p>
-              <!---->
+              <i>
+                Well info last updated 1/9/2016
+              </i>
             </p>
              
             <h5
@@ -526,7 +528,7 @@ exports[`View Component View mode matches the snapshot 1`] = `
                 <dd
                   class="m-0"
                 >
-                  
+                  4
                 </dd>
               </li>
                
@@ -543,11 +545,59 @@ exports[`View Component View mode matches the snapshot 1`] = `
               </li>
             </ul>
              
-            <!---->
+            <div>
+              <div
+                class="row pt-5"
+              >
+                <div
+                  class="pb-5 col-md-6 col-lg-12 col-12"
+                >
+                  <h5
+                    class="bar-chart-title"
+                  >
+                    Licensed volume by purpose
+                  </h5>
+                   
+                  <bar-chart-stub
+                    chartid="bar-chart"
+                    chartoptions="[object Object]"
+                    class="mt-3"
+                    cssclasses=""
+                    data="2.73,0.98,6.85"
+                    height="400"
+                    labels="Irrigation: Local Provider ,Processing & Manufacturing ,Irrigation: Private "
+                    plugins=""
+                    width="400"
+                  />
+                </div>
+                 
+                <div
+                  class="pb-5 col-md-6 col-lg-12 col-12"
+                >
+                  <h5
+                    class="bar-chart-title"
+                  >
+                    Number of licences by purpose
+                  </h5>
+                   
+                  <bar-chart-stub
+                    chartid="bar-chart"
+                    chartoptions="[object Object]"
+                    class="mt-3"
+                    cssclasses=""
+                    data="1,1,2"
+                    height="400"
+                    labels="Irrigation: Local Provider ,Processing & Manufacturing ,Irrigation: Private "
+                    plugins=""
+                    width="400"
+                  />
+                </div>
+              </div>
+            </div>
              
             <table
               aria-busy="false"
-              aria-colcount="0"
+              aria-colcount="2"
               class="table b-table table-striped"
               id="licenses"
             >
@@ -560,7 +610,24 @@ exports[`View Component View mode matches the snapshot 1`] = `
                 <!---->
                 <tr
                   role="row"
-                />
+                >
+                  <th
+                    aria-colindex="1"
+                    class=""
+                    role="columnheader"
+                    scope="col"
+                  >
+                    Licence Number
+                  </th>
+                  <th
+                    aria-colindex="2"
+                    class=""
+                    role="columnheader"
+                    scope="col"
+                  >
+                    Well Tag Numbers In Licence
+                  </th>
+                </tr>
               </thead>
               <!---->
               <tbody
@@ -568,13 +635,159 @@ exports[`View Component View mode matches the snapshot 1`] = `
                 role="rowgroup"
               >
                 <!---->
+                <tr
+                  class=""
+                  role="row"
+                >
+                  <td
+                    aria-colindex="1"
+                    class=""
+                    role="cell"
+                  >
+                    <a
+                      href="https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&PosseObjectDef=o_ATIS_DocumentSearch&PosseMenuName=WS_Main&Criteria_LicenceNumber=501525"
+                      target="_blank"
+                    >
+                      
+                501525
+              
+                    </a>
+                  </td>
+                  <td
+                    aria-colindex="2"
+                    class=""
+                    role="cell"
+                  >
+                    <ul
+                      class="p-0 m-0"
+                    >
+                      <li>
+                        <router-link-stub
+                          to="[object Object]"
+                        >
+                          117041
+                        </router-link-stub>
+                      </li>
+                    </ul>
+                  </td>
+                </tr>
+                <tr
+                  class=""
+                  role="row"
+                >
+                  <td
+                    aria-colindex="1"
+                    class=""
+                    role="cell"
+                  >
+                    <a
+                      href="https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&PosseObjectDef=o_ATIS_DocumentSearch&PosseMenuName=WS_Main&Criteria_LicenceNumber=501526"
+                      target="_blank"
+                    >
+                      
+                501526
+              
+                    </a>
+                  </td>
+                  <td
+                    aria-colindex="2"
+                    class=""
+                    role="cell"
+                  >
+                    <ul
+                      class="p-0 m-0"
+                    >
+                      <li>
+                        <router-link-stub
+                          to="[object Object]"
+                        >
+                          117043
+                        </router-link-stub>
+                      </li>
+                    </ul>
+                  </td>
+                </tr>
+                <tr
+                  class=""
+                  role="row"
+                >
+                  <td
+                    aria-colindex="1"
+                    class=""
+                    role="cell"
+                  >
+                    <a
+                      href="https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&PosseObjectDef=o_ATIS_DocumentSearch&PosseMenuName=WS_Main&Criteria_LicenceNumber=501527"
+                      target="_blank"
+                    >
+                      
+                501527
+              
+                    </a>
+                  </td>
+                  <td
+                    aria-colindex="2"
+                    class=""
+                    role="cell"
+                  >
+                    <ul
+                      class="p-0 m-0"
+                    >
+                      <li>
+                        <router-link-stub
+                          to="[object Object]"
+                        >
+                          117044
+                        </router-link-stub>
+                      </li>
+                    </ul>
+                  </td>
+                </tr>
+                <tr
+                  class=""
+                  role="row"
+                >
+                  <td
+                    aria-colindex="1"
+                    class=""
+                    role="cell"
+                  >
+                    <a
+                      href="https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&PosseObjectDef=o_ATIS_DocumentSearch&PosseMenuName=WS_Main&Criteria_LicenceNumber=501528"
+                      target="_blank"
+                    >
+                      
+                501528
+              
+                    </a>
+                  </td>
+                  <td
+                    aria-colindex="2"
+                    class=""
+                    role="cell"
+                  >
+                    <ul
+                      class="p-0 m-0"
+                    >
+                      <li>
+                        <router-link-stub
+                          to="[object Object]"
+                        >
+                          117045
+                        </router-link-stub>
+                      </li>
+                    </ul>
+                  </td>
+                </tr>
                 <!---->
                 <!---->
               </tbody>
             </table>
              
             <p>
-              <!---->
+              <i>
+                Licence info last updated 10/4/2019
+              </i>
             </p>
              
             <p>
@@ -692,15 +905,48 @@ exports[`View Component View mode matches the snapshot 1`] = `
                   <dd
                     class="m-0"
                   >
-                    <!---->
-                     
-                    <!---->
-                     
                     <div>
-                      
-                    No information available.
-                  
+                      <h6
+                        class="border-bottom"
+                      >
+                        Active
+                      </h6>
+                       
+                      <ul
+                        class="p-0 m-0"
+                      >
+                        <li>
+                          <a
+                            class="d-print-url"
+                            href="https://governmentofbc.maps.arcgis.com/apps/webappviewer/index.html?id=b53cb0bf3f6848e79d66ffd09b74f00d&find=OBS WELL 2"
+                            target="_blank"
+                          >
+                            
+                          2
+                        
+                          </a>
+                           
+                          <!---->
+                        </li>
+                        <li>
+                          <a
+                            class="d-print-url"
+                            href="https://governmentofbc.maps.arcgis.com/apps/webappviewer/index.html?id=b53cb0bf3f6848e79d66ffd09b74f00d&find=OBS WELL 2"
+                            target="_blank"
+                          >
+                            
+                          2
+                        
+                          </a>
+                           
+                          <!---->
+                        </li>
+                      </ul>
                     </div>
+                     
+                    <!---->
+                     
+                    <!---->
                   </dd>
                 </div>
               </li>
@@ -781,7 +1027,7 @@ exports[`View Component View mode matches the snapshot 1`] = `
                       to="[object Object]"
                     >
                       
-                     wells with an EMS ID
+                    3 wells with an EMS ID
                   
                     </router-link-stub>
                   </dd>
@@ -812,7 +1058,7 @@ exports[`View Component View mode matches the snapshot 1`] = `
                   <dd
                     class="m-0"
                   >
-                    Less likely
+                    More likely
                   </dd>
                 </div>
               </li>
