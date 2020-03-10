@@ -728,7 +728,7 @@ class PersonNote(AuditModel):
 Tue Apr 10 10:15:34 2018 Expose DB Views to Django
 """
 
-
+# TODO: This appears to be unused. Remove?
 class vw_well_class(models.Model):
 
     subactivity = models.CharField(
