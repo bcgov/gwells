@@ -374,6 +374,7 @@ class WellConstructionSubmissionSerializer(WellSubmissionSerializerBase):
                   'liner_material', 'liner_diameter', 'liner_thickness', 'liner_from', 'liner_to',
                   'linerperforation_set', 'screen_intake_method', 'screen_type', 'screen_material',
                   'other_screen_material', 'screen_opening', 'screen_bottom', 'other_screen_bottom',
+                  'screen_information',
                   'screen_set', 'filter_pack_from', 'filter_pack_to', 'filter_pack_thickness',
                   'filter_pack_material', 'filter_pack_material_size', 'development_methods',
                   'development_hours', 'yield_estimation_method', 'yield_estimation_rate',
