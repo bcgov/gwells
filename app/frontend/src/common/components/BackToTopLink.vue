@@ -1,5 +1,5 @@
 <template>
-  <a href="#top" class="back-to-top-link" @click.prevent="handleBackToTop">back top top</a>
+  <a href="#top" class="back-to-top-link" @click.prevent="handleBackToTop">back to top</a>
 </template>
 
 <script>
