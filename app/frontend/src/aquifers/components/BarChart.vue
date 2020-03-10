@@ -33,8 +33,7 @@ export default {
         },
         layout: {
           padding: {
-            top: 20,
-            left: 12
+            top: 20
           }
         },
         responsive: true,
@@ -65,7 +64,7 @@ export default {
   methods: {
     renderBarChart () {
       this.renderChart({
-        labels: this.labels,
+        labels: this.labels.map(l => `  ${l}`), // adds two spaces to prevent cut off text
         datasets: [
           {
             // color-blindness safe colors:
