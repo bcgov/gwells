@@ -11,6 +11,7 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
+import math
 import logging
 from decimal import Decimal
 
@@ -318,7 +319,7 @@ class BulkVerticalAquiferExtents(APIView):
             aquifer=aquifer,
             geom=point,
             start=from_depth,
-            end=to_depth,
+            end=None if math.isinf(to_depth) else to_depth,
             create_user=self.request.user.profile.username,
             create_date=self.create_date
         )
