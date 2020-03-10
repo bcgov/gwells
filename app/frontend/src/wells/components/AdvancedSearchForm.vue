@@ -62,7 +62,7 @@
     <b-row>
       <b-col sm="9" class="mb-1">
         <b-form-select id="additionalFilterInput" v-model="selectedFilterId">
-          <option :value="null">Select a field to search on</option>
+          <option :value="null">Select a field</option>
           <optgroup v-for="optGroup in additionalFilterSelectOptions" :key="optGroup.label" :label="optGroup.label">
             <option v-for="option in optGroup.options" :key="option.id" :value="option.value" :disabled="option.disabled">{{ option.text }}</option>
           </optgroup>
