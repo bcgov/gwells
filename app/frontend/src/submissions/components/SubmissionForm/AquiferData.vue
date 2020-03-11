@@ -59,6 +59,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <form-input
             id="aquiferVulnerabilityIndexInput"
             label="AVI"
+            hint="years"
             type="number"
             v-model="aquiferVulnerabilityIndexInput"
             :errors="errors['aquifer_vulnerability_index']"
@@ -79,6 +80,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <form-input
             id="transmissivityInput"
             label="Transmissivity"
+            hint="m²/s"
             type="number"
             v-model="transmissivityInput"
             :errors="errors['transmissivity']"
@@ -91,6 +93,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <form-input
             id="hydraulicConductivityInput"
             label="Hydraulic Conductivity"
+            hint="m/s"
             type="text"
             v-model="hydraulicConductivityInput"
             :errors="errors['hydraulic_conductivity']"
@@ -101,6 +104,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <form-input
             id="specificStorageInput"
             label="Specific storage"
+            hint="1/m"
             type="text"
             v-model="specificStorageInput"
             :errors="errors['specific_storage']"
@@ -133,6 +137,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <form-input
             id="testingDuration"
             label="Testing duration"
+            hint="hours"
             type="number"
             v-model="testingDurationInput"
             :errors="errors['testing_duration']"
