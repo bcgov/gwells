@@ -255,11 +255,15 @@ export default {
       if (val && prev && val.name !== prev.name) {
         this.drillerSameAsPersonResponsibleInput = false
       }
-      this.drillerNameInput = (this.personResponsible && this.drillerSameAsPersonResponsible) ? this.personResponsible.name : ''
+      if (this.drillerSameAsPersonResponsible) {
+        this.drillerNameInput = this.personResponsible ? this.personResponsible.name : ''
+      }
     },
     drillerSameAsPersonResponsible (val) {
       // keep driller name disabled & set to "person responsible", or leave it enabled and blank
-      this.drillerNameInput = (this.personResponsible && this.drillerSameAsPersonResponsible) ? this.personResponsible.name : ''
+      if (this.drillerSameAsPersonResponsible) {
+        this.drillerNameInput = this.personResponsible ? this.personResponsible.name : ''
+      }
     }
   },
   created () {
