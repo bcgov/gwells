@@ -145,7 +145,6 @@ def get_well_submission_history(well_tag_number):
         .select_related(*ALL_SUBMISSION_FOREIGN_KEY) \
         .prefetch_related(*ALL_SUBMISSION_MANY_TO_MANY_RELATIONS) \
         .filter(well_id=well_tag_number) \
-        .exclude(well_activity_type=WELL_ACTIVITY_CODE_LEGACY) \
         .order_by('filing_number') \
         .all()
 
