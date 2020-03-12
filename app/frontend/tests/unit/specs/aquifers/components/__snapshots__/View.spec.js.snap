@@ -553,19 +553,19 @@ exports[`View Component View mode matches the snapshot 1`] = `
                   class="pb-5 col-md-6 col-lg-12 col-12"
                 >
                   <h5
-                    class="bar-chart-title"
+                    class="pie-chart-title"
                   >
-                    Licensed volume by purpose
+                    Licensed volume by purpose (millions of cubic meters)
                   </h5>
                    
-                  <bar-chart-stub
-                    chartid="bar-chart"
+                  <pie-chart-stub
+                    chartid="pie-chart"
                     chartoptions="[object Object]"
                     class="mt-3"
                     cssclasses=""
                     data="2.73,0.98,6.85"
                     height="400"
-                    labels="Irrigation: Local Provider ,Processing & Manufacturing ,Irrigation: Private "
+                    labels="Irrigation: Local Provider  2.73 (MCM),Processing & Manufacturing  0.98 (MCM),Irrigation: Private  6.85 (MCM)"
                     plugins=""
                     width="400"
                   />
@@ -575,13 +575,13 @@ exports[`View Component View mode matches the snapshot 1`] = `
                   class="pb-5 col-md-6 col-lg-12 col-12"
                 >
                   <h5
-                    class="bar-chart-title"
+                    class="pie-chart-title"
                   >
                     Number of licences by purpose
                   </h5>
                    
-                  <bar-chart-stub
-                    chartid="bar-chart"
+                  <pie-chart-stub
+                    chartid="pie-chart"
                     chartoptions="[object Object]"
                     class="mt-3"
                     cssclasses=""
