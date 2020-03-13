@@ -913,7 +913,7 @@
         "well_yield_unit": "USGPM",
         "diameter": "4.5",
         "aquifer_id": 1901,
-        "observation_well_number": "2",
+        "observation_well_number": "300",
         "observation_well_status": "Active",
         "ems": "2",
         "utm_zone_code": "10",
@@ -934,7 +934,7 @@
         "hydro_fracturing_yield_increase": null,
         "decommission_sealant_material": "CONCRETE",
         "decommission_backfill_material": "test",
-        "geom": "POINT(-125.300840 52.465459)"
+        "geom": "POINT(-125.376319 52.528545)"
     }
   },
   {
@@ -1031,7 +1031,7 @@
         "well_yield_unit": "USGPM",
         "diameter": "4.5",
         "aquifer_id": 1901,
-        "observation_well_number": "2",
+        "observation_well_number": "334",
         "observation_well_status": "Active",
         "ems": 9876,
         "utm_zone_code": "10",
@@ -1149,7 +1149,7 @@
         "well_yield_unit": "USGPM",
         "diameter": "4.5",
         "aquifer_id": 1901,
-        "observation_well_number": "2",
+        "observation_well_number": "067",
         "observation_well_status": "Active",
         "ems": "2234",
         "utm_zone_code": "10",
@@ -1268,7 +1268,7 @@
         "well_yield_unit": "USGPM",
         "diameter": "4.5",
         "aquifer_id": 1901,
-        "observation_well_number": "2",
+        "observation_well_number": "212",
         "observation_well_status": "Active",
         "ems": null,
         "utm_zone_code": "10",

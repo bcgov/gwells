@@ -21,7 +21,7 @@ from django.db import transaction
 from django.db.models import Func, TextField
 from django.db.models.functions import Cast
 from django.utils import timezone
-from django.http import FileResponse, Http404, HttpResponse, StreamingHttpResponse
+from django.http import FileResponse, HttpResponse, StreamingHttpResponse
 
 from rest_framework import status, filters
 from rest_framework.generics import ListAPIView
@@ -49,7 +49,8 @@ from wells.serializers_v2 import (
 from wells.permissions import WellsEditOrReadOnly
 from wells.renderers import WellListCSVRenderer, WellListExcelRenderer
 
-from aquifers.models.vertical_aquifer_extents import (
+from aquifers.models import (
+    Aquifer,
     VerticalAquiferExtent,
     VerticalAquiferExtentsHistory
 )
@@ -86,6 +87,21 @@ class WellLocationListV2APIView(ListAPIView):
             qs = Well.objects.all()
         else:
             qs = Well.objects.all().exclude(well_publication_status='Unpublished')
+
+        # check to see if we should filter wells by which ones intersect an aquifer
+        intersects_aquifer_id = self.request.query_params.get('intersects_aquifer_id', None)
+        if intersects_aquifer_id:
+            aquifer = Aquifer.objects.filter(aquifer_id=int(intersects_aquifer_id)).first()
+
+            if not aquifer:
+                raise NotFound(f'Unknown aquifer {intersects_aquifer_id}')
+
+            # Simplify polygon and expand it by 1km
+            aqufier_geom = aquifer.geom.simplify(10, preserve_topology=True).buffer(1000)
+
+            qs = qs.exclude(geom=None)
+            # find all wells that intersect this simplified aquifer polygon
+            qs = qs.filter(geom__intersects=aqufier_geom)
 
         return qs
 
@@ -127,7 +143,6 @@ class WellLocationListV2APIView(ListAPIView):
         return super().get(request)
 
 
-
 class WellAquiferListV2APIView(ListAPIView):
     """
     Returns a list of aquifers with depth information for a well
@@ -162,7 +177,7 @@ class WellAquiferListV2APIView(ListAPIView):
 
         # we expect a list
         if not isinstance(request.data, list):
-            raise Http404()
+            raise NotFound()
 
         # get the well and 404 if it doesn't exist
         well = self.get_well()

@@ -429,7 +429,7 @@ exports[`View Component View mode matches the snapshot 1`] = `
                
               <li>
                 <dt>
-                  Number of wells associated to the aquifer
+                  Number of wells correlated to the aquifer
                 </dt>
                  
                 <dd
@@ -442,6 +442,33 @@ exports[`View Component View mode matches the snapshot 1`] = `
                   4
                 
                   </router-link-stub>
+                </dd>
+              </li>
+               
+              <li>
+                <dt>
+                  
+                Number of wells potentially located within the aquifer
+                
+                  <i
+                    class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                    id="uncorrelated-wells-count"
+                    tabindex="0"
+                  />
+                   
+                  <b-popover-stub
+                    content="Count of wells that potentially fall within the aquifer polygon; however, they are not necessarily screened within the aquifer of interest."
+                    target="uncorrelated-wells-count"
+                    triggers="hover focus"
+                  />
+                </dt>
+                 
+                <dd
+                  class="m-0"
+                >
+                  
+                0
+              
                 </dd>
               </li>
                
@@ -915,7 +942,9 @@ exports[`View Component View mode matches the snapshot 1`] = `
                       <ul
                         class="p-0 m-0"
                       >
-                        <li>
+                        <li
+                          class=""
+                        >
                           <a
                             class="d-print-url"
                             href="https://governmentofbc.maps.arcgis.com/apps/webappviewer/index.html?id=b53cb0bf3f6848e79d66ffd09b74f00d&find=OBS WELL 2"
@@ -928,7 +957,9 @@ exports[`View Component View mode matches the snapshot 1`] = `
                            
                           <!---->
                         </li>
-                        <li>
+                        <li
+                          class=""
+                        >
                           <a
                             class="d-print-url"
                             href="https://governmentofbc.maps.arcgis.com/apps/webappviewer/index.html?id=b53cb0bf3f6848e79d66ffd09b74f00d&find=OBS WELL 2"
