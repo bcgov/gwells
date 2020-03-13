@@ -195,16 +195,16 @@
             <div v-if="licenceDetails.lic_qty.length > 0">
               <b-row class="pt-5">
                 <b-col cols="12" md="6" lg="12" class="pb-5">
-                  <h5 class="bar-chart-title">Licensed volume by purpose</h5>
-                  <bar-chart
+                  <h5 class="pie-chart-title">Licensed volume by purpose (millions of cubic meters)</h5>
+                  <pie-chart
                     :data="licenceUsageChartData"
                     :labels="licenceUsageChartLabels"
                     :chart-options="licenceUsageChartOptions"
                     class="mt-3"/>
                 </b-col>
                 <b-col cols="12" md="6" lg="12" class="pb-5">
-                  <h5 class="bar-chart-title">Number of licences by purpose</h5>
-                  <bar-chart
+                  <h5 class="pie-chart-title">Number of licences by purpose</h5>
+                  <pie-chart
                     :data="licenceQuantityChartData"
                     :labels="licenceQuantityChartLabels"
                     :chart-options="licenceQuantityChartOptions"
@@ -357,7 +357,7 @@ import AquiferForm from './Form'
 import Documents from './Documents.vue'
 import SingleAquiferMap from './SingleAquiferMap.vue'
 import MapLoadingSpinner from './MapLoadingSpinner.vue'
-import BarChart from './BarChart.vue'
+import PieChart from './PieChart.vue'
 
 const ONE_MILLION = 1 * 1000 * 1000
 
@@ -369,7 +369,7 @@ export default {
     'single-aquifer-map': SingleAquiferMap,
     'map-loading-spinner': MapLoadingSpinner,
     'change-history': ChangeHistory,
-    'bar-chart': BarChart
+    'pie-chart': PieChart
   },
   props: {
     'edit': Boolean
@@ -409,47 +409,15 @@ export default {
       loadingMap: false,
       loadingForm: false,
       licenceUsageChartOptions: {
-        events: false,
-        hover: {
-          animationDuration: 0
-        },
-        animation: {
-          duration: 1,
-          onComplete: function () {
-            // render the value of the chart above the bar
-            const ctx = this.chart.ctx
-            ctx.fillStyle = this.chart.config.options.defaultFontColor
-            ctx.textAlign = 'center'
-            ctx.textBaseline = 'bottom'
-            this.data.datasets.forEach(function (dataset) {
-              for (var i = 0; i < dataset.data.length; i++) {
-                var model = dataset._meta[Object.keys(dataset._meta)[0]].data[i]._model
-                const val = dataset.data[i]
-                ctx.fillText(val === 0 ? '<0.01' : val, model.x, model.y - 5)
-              }
-            })
-          }
-        },
-        scales: {
-          yAxes: [{
-            scaleLabel: {
-              display: true,
-              labelString: 'millions of cubic meters'
-            },
-            ticks: {
-              min: 0,
-              precision: 0
+        tooltips: {
+          callbacks: {
+            label (tooltipItem, data) {
+              return data.labels[tooltipItem.index]
             }
-          }]
+          }
         }
       },
-      licenceQuantityChartOptions: {
-        scales: {
-          yAxes: [{
-            minBarLength: 5
-          }]
-        }
-      }
+      licenceQuantityChartOptions: {}
     }
   },
   computed: {
@@ -479,29 +447,31 @@ export default {
       return this.record.licence_details || { usage: [], lic_qty: [], obs_wells: [] }
     },
     licenceUsageChartData () {
-      const groupedLabels = groupBy(this.licenceDetails.usage, 'purpose__description')
-      const chartData = Object.values(groupedLabels).map((val) => {
+      const groupedLicenses = groupBy(this.licenceDetails.usage, 'purpose__description')
+      const chartData = Object.values(groupedLicenses).map((val) => {
         return Math.round(sumBy(val, o => o.total_qty) / ONE_MILLION * 100) / 100
       })
       return chartData
     },
     licenceUsageChartLabels () {
-      const groupedLabels = groupBy(this.licenceDetails.lic_qty, 'purpose__description')
-      const chartLabels = Object.keys(groupedLabels).map((label) => {
-        return label.split(' - ')[1] // the label, without code.
+      const groupedLicenses = groupBy(this.licenceDetails.lic_qty, 'purpose__description')
+      const chartLabels = Object.keys(groupedLicenses).map((purpose, i) => {
+        const label = purpose.split(' - ')[1] // the label, without code.
+        const mcm = this.licenceUsageChartData[i]
+        return `${label} ${mcm === 0 ? '<0.01' : mcm} (MCM)`
       })
       return chartLabels
     },
     licenceQuantityChartData () {
-      const groupedLabels = groupBy(this.licenceDetails.lic_qty, 'purpose__description')
-      const chartData = Object.values(groupedLabels).map((val) => {
+      const groupedLicenses = groupBy(this.licenceDetails.lic_qty, 'purpose__description')
+      const chartData = Object.values(groupedLicenses).map((val) => {
         return sumBy(val, o => o.total_qty)
       })
       return chartData
     },
     licenceQuantityChartLabels () {
-      const groupedLabels = groupBy(this.licenceDetails.lic_qty, 'purpose__description')
-      const chartLabels = Object.keys(groupedLabels).map((label) => {
+      const groupedLicenses = groupBy(this.licenceDetails.lic_qty, 'purpose__description')
+      const chartLabels = Object.keys(groupedLicenses).map((label) => {
         return label.split(' - ')[1] // the label, without code.
       })
       return chartLabels
@@ -891,11 +861,11 @@ a {
   padding-left: 2rem;
 }
 
-.bar-chart-title {
+.pie-chart-title {
   font-weight: bold !important;
   font-size: 1rem !important;
 }
-.bar-chart-container {
+.pie-chart-container {
   margin: 0 auto;
 }
 

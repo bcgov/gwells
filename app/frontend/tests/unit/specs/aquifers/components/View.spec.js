@@ -121,7 +121,7 @@ describe('View Component', () => {
           }
         }
       },
-      stubs: ['router-link', 'aquifer-documents', 'aquifer-form', 'b-popover', 'bar-chart'],
+      stubs: ['router-link', 'aquifer-documents', 'aquifer-form', 'b-popover', 'pie-chart'],
       methods: {
         fetch: jest.fn(),
         fetchWells: jest.fn(),
