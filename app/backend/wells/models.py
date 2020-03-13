@@ -1412,7 +1412,7 @@ class ActivitySubmission(AuditModelStructure):
                     'of the house; or the well is located in the pump house near the pond.'))
 
     identification_plate_number = models.PositiveIntegerField(
-        blank=True, null=True, verbose_name='Identification Plate Number',
+        unique=True, blank=True, null=True, verbose_name='Identification Plate Number',
         db_comment=('Steel plate with a unique number that is attached to required wells under the '
                     'groundwater protection regulations such as water supply wells, recharge or injection '
                     'wells made by drilling or boring, and permanent dewatering wells.'))
@@ -1709,6 +1709,7 @@ class ActivitySubmission(AuditModelStructure):
 
     class Meta:
         db_table = 'activity_submission'
+        verbose_name = 'A well record'
 
     db_table_comment = 'Submission of data and information related to a groundwater wells.'
     db_column_supplemental_comments = {
