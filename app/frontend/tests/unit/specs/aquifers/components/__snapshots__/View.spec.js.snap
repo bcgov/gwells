@@ -565,7 +565,7 @@ exports[`View Component View mode matches the snapshot 1`] = `
                     cssclasses=""
                     data="2.73,0.98,6.85"
                     height="400"
-                    labels="Irrigation: Local Provider  2.73 (MCM),Processing & Manufacturing  0.98 (MCM),Irrigation: Private  6.85 (MCM)"
+                    labels="Irrigation: Local Provider  2.73,Processing & Manufacturing  0.98,Irrigation: Private  6.85"
                     plugins=""
                     width="400"
                   />

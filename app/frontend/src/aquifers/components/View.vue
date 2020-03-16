@@ -458,7 +458,7 @@ export default {
       const chartLabels = Object.keys(groupedLicenses).map((purpose, i) => {
         const label = purpose.split(' - ')[1] // the label, without code.
         const mcm = this.licenceUsageChartData[i]
-        return `${label} ${mcm === 0 ? '<0.01' : mcm} (MCM)`
+        return `${label} ${mcm === 0 ? '<0.01' : mcm}`
       })
       return chartLabels
     },
