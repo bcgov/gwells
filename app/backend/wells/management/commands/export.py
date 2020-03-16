@@ -146,7 +146,7 @@ class Command(BaseCommand):
         well_sql = ("""select well_tag_number, identification_plate_number,
  well_identification_plate_attached,
  well_status_code, well.well_class_code,
- wsc.well_class_code as well_subclass,
+ wsc.well_subclass_code as well_subclass,
  intended_water_use_code, licenced_status_code,
  observation_well_number, obs_well_status_code, water_supply_system_name,
  water_supply_system_well_name,
