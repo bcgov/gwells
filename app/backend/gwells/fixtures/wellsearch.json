@@ -1420,7 +1420,7 @@
             "decommission_method": null,
             "decommission_details": null,
             "aquifer": null,
-            "person_responsible": null,
+            "person_responsible": "257aa7c0-6f15-47e8-8217-ae7f749b5180",
             "company_of_person_responsible": null,
             "driller_name": null,
             "consultant_name": null,
