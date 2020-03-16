@@ -68,6 +68,12 @@ const SEARCH_FIELDS = {
     valueField: 'licenced_status_code'
   },
   personResponsible: {
+    param: 'person_responsible_name',
+    sortParam: 'person_responsible__name',
+    label: 'Person responsible for work',
+    type: 'text'
+  },
+  personResponsibleGuid: {
     param: 'person_responsible',
     label: 'Person responsible for work',
     type: 'select',
@@ -75,6 +81,12 @@ const SEARCH_FIELDS = {
     valueField: 'person_guid'
   },
   orgResponsible: {
+    param: 'company_of_person_responsible_name',
+    sortParam: 'company_of_person_responsible__name',
+    label: 'Company that did the work',
+    type: 'text'
+  },
+  orgResponsibleGuid: {
     param: 'company_of_person_responsible',
     label: 'Company that did the work',
     type: 'select',
@@ -691,6 +703,9 @@ export default {
     ]),
     searchFields () {
       const fields = { ...SEARCH_FIELDS }
+      Object.keys(fields).forEach(k => {
+        fields[k].sortParam = fields[k].sortParam || fields[k].param
+      })
 
       if (!(this.userRoles.wells && this.userRoles.wells.view)) {
         Object.entries(fields).forEach(([fieldId, field]) => {
@@ -745,9 +760,9 @@ export default {
         licencedStatus: this.codes.licenced_status_codes || [],
         linerMaterial: this.codes.liner_material_codes || [],
         observationWellStatus: this.codes.observation_well_status || [],
-        orgResponsible: this.organizationNames || [],
+        orgResponsibleGuid: this.organizationNames || [],
         ownerProvince: this.codes.province_codes || [],
-        personResponsible: this.drillerNames || [],
+        personResponsibleGuid: this.drillerNames || [],
         publicationStatus: this.codes.well_publication_status_codes || [],
         screenIntakeMethod: this.codes.screen_intake_methods || [],
         screenBottom: this.codes.screen_bottoms || [],
@@ -814,7 +829,7 @@ export default {
       })
     },
     clearFilterParams () {
-      this.filterParams = {...this.emptyFilterParams}
+      this.filterParams = { ...this.emptyFilterParams }
     }
   }
 }

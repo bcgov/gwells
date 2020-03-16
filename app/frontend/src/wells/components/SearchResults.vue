@@ -36,10 +36,10 @@
               {{ column.resultLabel ? column.resultLabel : column.label }}
               <b-button
                 class="sort-button px-0"
-                :class="{active: column.param === orderingParam}"
+                :class="{active: column.sortParam === orderingParam}"
                 variant="link"
-                @click="sortResults({ param: column.param, desc: (column.param === orderingParam) ? !orderingDesc : false })">
-                {{ (column.param === orderingParam) ? orderingDesc ? '&#x2191;' : '&#x2193;' : '&#x2195;' }}
+                @click="sortResults({ param: column.sortParam || column.sortParam, desc: (column.sortParam === orderingParam) ? !orderingDesc : false })">
+                {{ (column.sortParam === orderingParam) ? orderingDesc ? '&#x2191;' : '&#x2193;' : '&#x2195;' }}
               </b-button>
             </th>
           </tr>
@@ -61,11 +61,13 @@
         <tbody role="rowgroup" v-if="(isBusy || isEmpty || isReset)">
           <tr :class="{loading: isBusy}">
             <td :colspan="columnCount">
-              <div class="d-flex justify-content-left my-1 mx-1">
-                <div v-if="isBusy" class="spinner-border m-3" role="status" aria-hidden="true"></div>
-                <strong v-if="isBusy" class="align-middle my-3 pt-1">
-                  Loading...
-                </strong>
+              <div class="position-relative my-1 mx-1">
+                <div v-if="isBusy" class="d-flex">
+                  <div class="spinner-border m-3" role="status" aria-hidden="true"></div>
+                  <strong class="align-middle my-3 pt-1">
+                    Loading...
+                  </strong>
+                </div>
                 <strong v-else-if="hasResultErrors" class="text-danger align-middle my-3 pt-1">
                   An error occurred processing the search.
                 </strong>

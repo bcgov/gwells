@@ -225,7 +225,7 @@ export default {
       defaultFilterSections: [
         { header: 'Search By', fields: ['matchAny', 'well', 'streetOrCity', 'ownerName', 'publicationStatus'] },
         { header: 'Location', fields: ['legal', 'landDistrict'] },
-        { header: 'Well Details', fields: ['wellStatus', 'licencedStatus', 'personResponsible', 'orgResponsible', 'dateOfWork', 'wellDepth'] },
+        { header: 'Well Details', fields: ['wellStatus', 'licencedStatus', 'personResponsibleGuid', 'orgResponsibleGuid', 'dateOfWork', 'wellDepth'] },
         { header: 'Aquifer', fields: ['aquiferNr'] }
       ],
       additionalFilterSections: ADDITIONAL_FILTER_SECTIONS
