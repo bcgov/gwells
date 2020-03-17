@@ -682,7 +682,9 @@ export default {
     },
     // This watches for a route change between Submission and Well Edit and resets the page data
     '$route' (to, from) {
-      this.setupPage()
+      if (to.path !== from.path) {
+        this.setupPage()
+      }
     }
   },
   created () {

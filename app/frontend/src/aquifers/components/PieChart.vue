@@ -17,55 +17,53 @@
 
 <script>
 import { Pie } from 'vue-chartjs'
-import { groupBy, map, sumBy } from 'lodash'
+import { merge } from 'lodash'
 
 export default {
   extends: Pie,
-  props: ['chartData'],
+  props: ['data', 'labels', 'chartOptions'],
+  data () {
+    return {
+      defaultChartOptions: {
+        legend: {
+          display: true
+        },
+        tooltips: {
+          enabled: true
+        },
+        layout: {
+          padding: {
+            top: 20
+          }
+        },
+        responsive: true,
+        maintainAspectRatio: true
+      }
+    }
+  },
   watch: {
-    chartData (newChartData) {
-      this.renderPieChart(newChartData)
+    data (newChartData) {
+      this.renderPieChart()
+    },
+    labels (labels) {
+      this.renderPieChart()
     }
   },
   mounted () {
-    this.renderPieChart(this.chartData)
+    this.renderPieChart()
   },
-
   methods: {
     renderPieChart (newChartData) {
-      if (Object.keys(newChartData).length) {
-        const groupedLabels = groupBy(newChartData, (o) => o.purpose__description)
-        const groupedSum = map(groupedLabels, (val, key) => {
-          let sum = {}
-          sum[key] = sumBy(val, o => o.total_qty)
-          return sum
-        })
-        const chartLabel = groupedSum.map(o =>
-          Object.keys(o)[0].split(' - ')[1] + // the label, without code.
-          ': ' +
-          Object.values(o)[0]) // the value of the pie slice.
-        const chartData = groupedSum.map(o => Object.values(o)[0])
-
-        this.renderChart({
-          labels: chartLabel,
-          datasets: [
-            {
-              // color-blindness safe colors:
-              backgroundColor: ['#E69F00', '#56B4E9', '#2B9F78', '#F0E442', '#CC79A7', '#D55E00', '#0072B2'],
-              data: chartData
-            }
-          ]
-        }, {
-          legend: {
-            display: true
-          },
-          tooltips: {
-            enabled: false
-          },
-          responsive: true,
-          maintainAspectRatio: true
-        })
-      }
+      this.renderChart({
+        labels: this.labels.map(l => `  ${l}`), // adds two spaces to prevent cut off text
+        datasets: [
+          {
+            // color-blindness safe colors:
+            backgroundColor: ['#E69F00', '#56B4E9', '#2B9F78', '#F0E442', '#CC79A7', '#D55E00', '#0072B2', '#EE442F', '#9C9EB5', '#8B7F47'],
+            data: this.data
+          }
+        ]
+      }, merge({}, this.defaultChartOptions, this.chartOptions))
     }
   }
 }

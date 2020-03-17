@@ -12,20 +12,18 @@
     limitations under the License.
 """
 
-import reversion
 from decimal import Decimal
 
 from django.core.validators import MinValueValidator
 from django.contrib.gis.db import models
 
-from gwells.models import AuditModel
+from gwells.models import AuditModel, AuditModelStructure
 from gwells.db_comments.patch_fields import patch_fields
 
 
 patch_fields()
 
 
-@reversion.register()
 class VerticalAquiferExtent(AuditModel):
     """
     Aquifer 3d information
@@ -41,7 +39,7 @@ class VerticalAquiferExtent(AuditModel):
         primary_key=True,
         verbose_name="VerticalAquiferExtent Resource Identifier",
         db_column='vertical_aquifer_extent_id',
-        db_comment=('System generated unique sequential number assigned to each vertical' \
+        db_comment=('System generated unique sequential number assigned to each vertical'
             ' aquifer extent.'))
     well = models.ForeignKey(
         'wells.Well', db_column='well_tag_number', on_delete=models.PROTECT, blank=True, null=True,
@@ -75,3 +73,40 @@ class VerticalAquiferExtent(AuditModel):
         parts.append(' for aquifer {}'.format(self.aquifer))
 
         return ''.join(parts)
+
+
+class VerticalAquiferExtentsHistory(AuditModelStructure):
+    """
+    Keeps track of the changes to vertical aquifer extents
+    """
+    class Meta:
+        db_table = 'vertical_aquifer_extents_history'
+        ordering = ['-create_date']
+
+    db_table_comment = ('Keeps track of the changes to the vertical aquifer extents '
+                        'from a bulk change.')
+
+    id = models.AutoField(
+        db_column='vertical_aquifer_extents_history_id',
+        primary_key=True, verbose_name='Vertical Aquifer Extents History Id',
+        db_comment=('The primary key for the vertical_aquifer_extents_history table'))
+    well_tag_number = models.IntegerField(
+        db_column='well_tag_number',
+        blank=True, null=True,
+        db_comment=('The file number assigned to a particular well on a vertical aquifer extent'))
+    aquifer_id = models.IntegerField(
+        db_column='aquifer_id',
+        blank=False, null=False,
+        db_comment=('The id assigned to a particular aquifer on a vertical aquifer extent'))
+    geom = models.PointField(
+        blank=False, null=False,
+        verbose_name='Geo-referenced location of aquifer\'s depth', srid=4326,
+        db_comment=('Geo-referenced location of aquifer\'s depth'))
+    start = models.DecimalField(
+        db_column='vertical_aquifer_extent_from', max_digits=7, decimal_places=2, null=False,
+        blank=False, verbose_name='From',
+        db_comment=('Depth below ground surface of the start of the aquifer measured in meters.'))
+    end = models.DecimalField(
+        db_column='vertical_aquifer_extent_to', max_digits=7, decimal_places=2, verbose_name='To',
+        null=True, blank=True,
+        db_comment=('Depth below ground surface of the end of the aquifer measured in meters.'))

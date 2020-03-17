@@ -39,34 +39,13 @@ const searchControl = new GeoSearchControl({
 const DEFAULT_MAP_CENTRE = new L.LatLng(54.459, -126.495)
 const DEFAULT_MAP_ZOOM = 5
 
-// Extend control, making a locate
-L.Control.Locate = L.Control.extend({
-  onAdd: function (map) {
-    let container = L.DomUtil.create('div', 'geolocate')
-    L.DomEvent.addListener(container, 'click', this.click, this)
-    return container
-  },
-  onRemove: function (map) {
-
-  },
-  click: function (ev) {
-    // Use callback to handle clicks
-    if (this.onClick) {
-      this.onClick(ev)
-    }
-  }
-})
-L.control.locate = function (opts) {
-  return new L.Control.Locate(opts)
-}
-
 export default {
   name: 'AquiferMap',
   props: ['initialZoom', 'initialCentre', 'aquifersGeometry', 'aquiferDetails', 'highlightAquiferIds', 'loading', 'selectedId'],
   mounted () {
     // There seems to be an issue loading leaflet immediately on mount, we use nextTick to ensure
     // that the view has been rendered at least once before injecting the map.
-    this.$nextTick(function () {
+    this.$nextTick(() => {
       this.initLeaflet()
       this.initMap()
     })
@@ -196,11 +175,22 @@ export default {
     },
 
     getLocateControl () {
-      const locateButton = L.control.locate({ position: 'topleft' })
-      locateButton.onClick = (ev) => {
-        this.map.locate({ setView: true, maxZoom: 12 })
+      const options = {
+        position: 'topleft'
       }
-      return locateButton
+      return new (L.Control.extend({
+        onAdd (map) {
+          const title = 'Zoom to your location'
+          let container = L.DomUtil.create('div', 'leaflet-bar geolocate')
+          container.title = title
+          container.innerHTML = `<a></a>`
+          L.DomEvent.addListener(container, 'click', this.click, this)
+          return container
+        },
+        click: (ev) => {
+          this.map.locate({ setView: true, maxZoom: 12 })
+        }
+      }))(options)
     },
     getFullScreenControl () {
       return new L.Control.Fullscreen({
@@ -213,10 +203,11 @@ export default {
         options: {
           position: 'topleft'
         },
-        onAdd: function (map) {
-          var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control')
-          container.innerHTML = '<a class="leaflet-bar-part leaflet-bar-part-single"><span class="fa fa-hand-paper-o"></span></a>'
-          container.onclick = function (map) {
+        onAdd (map) {
+          const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-area-select')
+          container.title = 'Draw a polygon to zoom'
+          container.innerHTML = `<a></a>`
+          container.onclick = (e) => {
             lasso.enable()
           }
           return container
@@ -441,48 +432,33 @@ export default {
   height: 500px;
 }
 
+.leaflet-control-area-select a {
+  background: url('../../common/assets/images/shape-polygon-plus.svg') no-repeat center center white;
+  cursor: pointer;
+}
+
 .leaflet-control-geosearch a.reset {
   display: none;
 }
 
 .leaflet-areaselect-shade {
-    position: absolute;
-    background: rgba(0,0,0, 0.4);
-}
-.leaflet-areaselect-handle {
-    position: absolute;
-    background: #fff;
-    border: 1px solid #666;
-    -moz-box-shadow: 1px 1px rgba(0,0,0, 0.2);
-    -webkit-box-shadow: 1px 1px rgba(0,0,0, 0.2);
-    box-shadow: 1px 1px rgba(0,0,0, 0.2);
-    width: 14px;
-    height: 14px;
-    cursor: move;
-}
-.geolocate {
-    background-image: url('../../common/assets/images/geolocate.png');
-    width: 30px;
-    height: 30px;
-    left: 2px;
-    box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.4);
-    cursor: pointer;
+  position: absolute;
+  background: rgba(0,0,0, 0.4);
 }
 
-.leaflet-control-address {
-    width: 30px;
-    height: 30px;
-    left: 2px;
-    box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.4);
-    cursor: pointer;
-    background-color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
+.leaflet-areaselect-handle {
+  position: absolute;
+  background: #fff;
+  border: 1px solid #666;
+  box-shadow: 1px 1px rgba(0,0,0, 0.2);
+  width: 14px;
+  height: 14px;
+  cursor: move;
 }
-.geolocate:hover {
-    opacity: 0.8;
+
+.geolocate a {
+  background: url('../../common/assets/images/geolocate.png') no-repeat center center white;
+  cursor: pointer;
 }
 
 .leaflet-control-legend {

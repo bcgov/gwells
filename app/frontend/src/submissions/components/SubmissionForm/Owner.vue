@@ -20,7 +20,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <b-col cols="12" lg="6">
         <div class="float-right">
           <b-btn v-if="isStaffEdit" variant="primary" class="ml-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
-          <a href="#top" v-if="isStaffEdit">Back to top</a>
+          <back-to-top-link v-if="isStaffEdit"/>
         </div>
       </b-col>
     </b-row>
@@ -85,11 +85,17 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
 <script>
 import { mapGetters } from 'vuex'
+
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 import inputFormatMixin from '@/common/inputFormatMixin.js'
 
+import BackToTopLink from '@/common/components/BackToTopLink.vue'
+
 export default {
   mixins: [inputBindingsMixin, inputFormatMixin],
+  components: {
+    BackToTopLink
+  },
   props: {
     ownerFullName: String,
     ownerMailingAddress: String,

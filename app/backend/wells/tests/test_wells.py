@@ -41,7 +41,6 @@ class TestWellLocationsSearch(APITestCase):
         response = self.client.get(url, {
             'drilling_company': 'bf5d31ea-8a5a-4363-8a5e-6c00eed03058'
         })
-        print(response.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
 

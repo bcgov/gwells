@@ -1,6 +1,6 @@
 <template>
   <header id="header">
-    <b-navbar type="dark" class="navbar-expand-lg d-print-block" bg-variant="primary">
+    <b-navbar type="dark" class="navbar-expand-lg d-print-block" bg-variant="primary" toggleable="md">
       <!-- Navbar content -->
       <b-container>
         <a class="navbar-brand" href="https://www2.gov.bc.ca">
@@ -45,10 +45,8 @@
             <b-nav-item class="navbar-link lvl2-link" v-if="show.dataEntry" :to="{ name: 'SubmissionsHome'}">Submit Report</b-nav-item>
             <b-nav-item id="ribbon-bulk" class="navbar-link lvl2-link" v-if="show.bulk" :to="{ name: 'bulk-home' }">Bulk Upload</b-nav-item>
             <b-nav-item id="ribbon-surveys" class="navbar-link lvl2-link" v-if="show.surveys" :to="{ name: 'Surveys' }">Admin</b-nav-item>
-            <b-nav-item class="d-sm-none"><keycloak-auth v-if="auth !== 'hide'" id="keycloak-auth-xs"/></b-nav-item>
-          </b-navbar-nav>
-          <b-navbar-nav class="ml-auto">
             <b-nav-item id="ribbon-groundwaterinfo" class="navbar-link lvl2-link" :to="{ name: 'groundwater-information' }">Groundwater Information</b-nav-item>
+            <b-nav-item class="d-sm-none"><keycloak-auth v-if="auth !== 'hide'" id="keycloak-auth-xs"/></b-nav-item>
           </b-navbar-nav>
         </b-collapse>
       </b-container>

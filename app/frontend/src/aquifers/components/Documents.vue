@@ -11,18 +11,37 @@
       <div v-if="error">
         {{error}}
       </div>
-      <ul v-else-if="files && files.public && files.public.length">
-        <li v-for="(file, index) in files.public" :key="index">
-          <a :href="file.url" :download="file.name" target="_blank">{{file.name}}</a>
-          <a class="fa fa-trash fa-lg"
-            variant="primary"
-            v-if="editMode"
-            style="margin-left: .5em"
-            href="#"
-            v-on:click="confirmDeleteFile(file.name, 'public', $event)" />
-        </li>
-      </ul>
       <div v-else>
+        <div class="highlighted-files" v-if="publicHighlightedFiles.length > 0">
+          <h5 v-if="highlightTitle">{{highlightTitle}}</h5>
+          <ul>
+            <li v-for="(file, index) in publicHighlightedFiles" :key="index">
+              <a :href="file.url" :download="file.name" target="_blank">{{file.name}}</a>
+              <a class="fa fa-trash fa-lg highlighted-file"
+                variant="primary"
+                v-if="editMode"
+                style="margin-left: .5em"
+                href="#"
+                v-on:click="confirmDeleteFile(file.name, 'public', $event)" />
+            </li>
+          </ul>
+        </div>
+        <div v-if="publicFiles.length > 0">
+          <h5 v-if="publicFilesTitle && publicHighlightedFiles.length > 0">{{publicFilesTitle}}</h5>
+          <ul>
+            <li v-for="(file, index) in publicFiles" :key="index">
+              <a :href="file.url" :download="file.name" target="_blank">{{file.name}}</a>
+              <a class="fa fa-trash fa-lg"
+                variant="primary"
+                v-if="editMode"
+                style="margin-left: .5em"
+                href="#"
+                v-on:click="confirmDeleteFile(file.name, 'public', $event)" />
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div v-if="publicHighlightedFiles.length === 0 && publicFiles.length === 0">
         No additional documentation available for this aquifer.
       </div>
       <div class="internal-documents mt-5" v-if="userRoles.aquifers.edit">
@@ -79,6 +98,18 @@ export default {
     loading: {
       type: Boolean,
       default: false
+    },
+    highlightRegexp: {
+      type: RegExp,
+      default: null
+    },
+    highlightTitle: {
+      type: String,
+      default: null
+    },
+    publicFilesTitle: {
+      type: String,
+      default: null
     }
   },
   data () {
@@ -89,7 +120,29 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['userRoles'])
+    ...mapGetters(['userRoles']),
+    shouldHighlightPublicFiles () {
+      return this.highlightRegexp !== null
+    },
+    publicHighlightedFiles () {
+      if (this.files && this.files.public.length > 0) {
+        if (this.shouldHighlightPublicFiles) {
+          return this.files.public.filter((file) => this.highlightRegexp.test(file.name))
+        }
+      }
+      return []
+    },
+    publicFiles () {
+      if (this.files && this.files.public.length > 0) {
+        if (this.shouldHighlightPublicFiles) {
+          return this.files.public.filter((file) => {
+            return !this.highlightRegexp.test(file.name)
+          })
+        }
+        return this.files.public
+      }
+      return []
+    }
   },
   methods: {
     showModal () {

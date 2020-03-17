@@ -21,7 +21,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <b-col cols="12" lg="6">
           <div class="float-right">
             <b-btn v-if="isStaffEdit" variant="primary" class="ml-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
-            <a href="#top" v-if="isStaffEdit">Back to top</a>
+            <back-to-top-link v-if="isStaffEdit"/>
           </div>
         </b-col>
       </b-row>
@@ -215,14 +215,19 @@ Licensed under the Apache License, Version 2.0 (the "License");
   </div>
 </template>
 <script>
-import inputBindingsMixin from '@/common/inputBindingsMixin.js'
-import CoordsMap from '@/submissions/components/SubmissionForm/CoordsMap.vue'
 import { mapGetters } from 'vuex'
+
+import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 import convertCoordinatesMixin from '@/common/convertCoordinatesMixin.js'
 import ApiService from '@/common/services/ApiService.js'
+
+import CoordsMap from '@/submissions/components/SubmissionForm/CoordsMap.vue'
+import BackToTopLink from '@/common/components/BackToTopLink.vue'
+
 export default {
   components: {
-    'coords-map': CoordsMap
+    'coords-map': CoordsMap,
+    BackToTopLink
   },
   name: 'Coords',
   mixins: [inputBindingsMixin, convertCoordinatesMixin],
@@ -414,7 +419,7 @@ export default {
       const newLong = this.roundDecimalDegrees(longitude)
       const newLat = this.roundDecimalDegrees(latitude)
       // Set the prop value of longitude and latitude
-      this.longitudeInput = newLong
+      this.longitudeInput = Math.abs(newLong) * -1 // Always make longitude negative so form is clean
       this.latitudeInput = newLat
       this.degrees.longitude = Math.abs(newLong)
       this.degrees.latitude = newLat

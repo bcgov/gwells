@@ -20,7 +20,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <b-col cols="12" lg="6">
         <div class="float-right">
           <b-btn v-if="isStaffEdit" variant="primary" class="ml-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
-          <a href="#top" v-if="isStaffEdit">Back to top</a>
+          <back-to-top-link v-if="isStaffEdit"/>
         </div>
       </b-col>
     </b-row>
@@ -36,7 +36,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             v-model="yieldEstimationMethodInput"
             placeholder="Select method"></form-input>
       </b-col>
-      <b-col cols="12" md="4" lg="2">
+      <b-col cols="12" md="4" lg="3">
         <form-input
             id="yieldEstimationRate"
             label="Yield Estimation Rate"
@@ -44,7 +44,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             hint="USgpm"
             v-model="yieldEstimationRateInput"></form-input>
       </b-col>
-      <b-col cols="12" md="4" lg="2">
+      <b-col cols="12" md="4" lg="3">
         <form-input
             id="yieldEstimationDuration"
             label="Yield Estimation Duration"
@@ -54,7 +54,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </b-col>
     </b-row>
     <b-row>
-      <b-col cols="12" md="4" lg="2">
+      <b-col cols="12" md="4" lg="3">
         <form-input
             id="staticWaterLevelTest"
             label="SWL Before Test"
@@ -62,7 +62,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             v-model="staticLevelInput"
             hint="ft (btoc)"></form-input>
       </b-col>
-      <b-col>
+      <b-col cols="12" md="4" lg="3">
         <b-form-group label="Hydro-fracturing Performed">
           <b-form-radio-group v-model="hydroFracturingPerformedInput"
             id="hydroFracPerformedOptions"
@@ -73,7 +73,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </b-form-radio-group>
         </b-form-group>
       </b-col>
-      <b-col cols="12" md="4" lg="4" offset-md="1">
+      <b-col cols="12" md="4" lg="4">
         <form-input
           id="hydroFracturingYieldIncrease"
           label="Increase in Well Yield Due to Hydro-fracturing"
@@ -84,7 +84,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </b-col>
     </b-row>
     <b-row>
-      <b-col cols="12" md="4" lg="2">
+      <b-col cols="12" md="4" lg="3">
         <form-input
             id="drawdown"
             label="Drawdown"
@@ -93,7 +93,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             hint="ft (btoc)"
             ></form-input>
       </b-col>
-      <b-col v-if="isStaffEdit" cols="12" md="4" lg="2">
+      <b-col v-if="isStaffEdit" cols="12" md="4" lg="3">
         <form-input
           id="recommendedPumpDepth"
           label="Recommended Pump Depth"
@@ -102,7 +102,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           hint="ft (btoc)"
         />
       </b-col>
-      <b-col v-if="isStaffEdit" cols="12" md="4" lg="2">
+      <b-col v-if="isStaffEdit" cols="12" md="4" lg="3">
         <form-input
           id="recommendedPumpRate"
           label="Recommended Pump Rate"
@@ -117,9 +117,16 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
 <script>
 import { mapGetters } from 'vuex'
+
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
+
+import BackToTopLink from '@/common/components/BackToTopLink.vue'
+
 export default {
   mixins: [inputBindingsMixin],
+  components: {
+    BackToTopLink
+  },
   props: {
     yieldEstimationMethod: String,
     yieldEstimationRate: String,

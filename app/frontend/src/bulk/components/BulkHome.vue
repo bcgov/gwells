@@ -38,6 +38,12 @@
             Upload multiple documents to one or more aquifers.
           </p>
         </li>
+        <li>
+          <h5><router-link v-if="perms.wellAquiferCorrelation" :to="{ name: 'bulk-vertical-aquifer-extents' }">Vertical Aquifer Extents</router-link></h5>
+          <p>
+            Upload a CSV with vertical aquifer extents.
+          </p>
+        </li>
       </ul>
     </b-card>
   </b-container>

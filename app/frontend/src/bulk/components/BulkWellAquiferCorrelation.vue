@@ -13,7 +13,10 @@
 */
 
 <template>
-  <div>
+  <div id="bulk-well-aquifer-correlation-screen">
+    <b-card no-body class="mb-3 container d-print-none">
+      <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"/>
+    </b-card>
     <b-card class="container p-1" v-if="perms.wellAquiferCorrelation">
       <api-error v-if="apiError" :error="apiError"/>
 
@@ -238,6 +241,16 @@ export default {
           label: 'Aquifer ID',
           class: 'aquifer-id text-right pr-4',
           sortable: false
+        }
+      ],
+      breadcrumbs: [
+        {
+          text: 'Bulk Upload',
+          to: { name: 'bulk-home' }
+        },
+        {
+          text: 'Well Aquifer Correlation Bulk Upload',
+          active: true
         }
       ]
     }
@@ -481,7 +494,7 @@ export default {
       const aquiferIds = Object.keys(this.aquifers)
       const data = aquiferIds.map((aquiferId) => {
         return {
-          aquiferId: aquiferId,
+          aquiferId: parseInt(aquiferId),
           wellTagNumbers: this.aquifers[aquiferId]
         }
       })
@@ -563,88 +576,90 @@ export default {
 }
 </script>
 <style lang="scss">
-.change-color {
-  font-weight: bold;
-  color: #eca013;
-}
-
-.remove-color {
-  font-weight: bold;
-  color: #ec3838;
-}
-
-.new-color {
-  font-weight: bold;
-  color: #057513;
-}
-
-.no-change-color {
-  color: inherit;
-}
-
-ol {
-  margin: 0;
-  padding: 0 0 0 1.1em;
-
-  li {
-    margin: 0.5rem 0;
+#bulk-well-aquifer-correlation-screen {
+  .change-color {
+    font-weight: bold;
+    color: #eca013;
   }
-}
 
-.alert ul {
-  margin: 0;
-  padding: 0;
-  list-style: none;
+  .remove-color {
+    font-weight: bold;
+    color: #ec3838;
+  }
 
-  li {
+  .new-color {
+    font-weight: bold;
+    color: #057513;
+  }
+
+  .no-change-color {
+    color: inherit;
+  }
+
+  ol {
     margin: 0;
-    padding: 0.5rem;
-  }
-}
-.errors .error {
-  font-weight: bold;
-  color: red;
-}
+    padding: 0 0 0 1.1em;
 
-#summary {
-  ul {
-    list-style: none;
+    li {
+      margin: 0.5rem 0;
+    }
+  }
+
+  .alert ul {
     margin: 0;
     padding: 0;
+    list-style: none;
+
+    li {
+      margin: 0;
+      padding: 0.5rem;
+    }
+  }
+  .errors .error {
+    font-weight: bold;
+    color: red;
   }
 
-  li {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: inline;
-
-    &::after {
-      content: ", ";
+  #summary {
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
     }
 
-    &:last-child {
-      &::before {
-        content: " and ";
-      }
+    li {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: inline;
 
       &::after {
-        content: ".";
+        content: ", ";
+      }
+
+      &:last-child {
+        &::before {
+          content: " and ";
+        }
+
+        &::after {
+          content: ".";
+        }
       }
     }
   }
-}
 
-.correlations {
-  .new {
-    @extend .new-color;
-  }
+  .correlations {
+    .new {
+      @extend .new-color;
+    }
 
-  .update {
-    @extend .change-color;
+    .update {
+      @extend .change-color;
 
-    .old-aquifer-id {
-      @extend .remove-color;
+      .old-aquifer-id {
+        @extend .remove-color;
+      }
     }
   }
 }

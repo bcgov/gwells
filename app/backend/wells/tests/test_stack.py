@@ -22,7 +22,7 @@ from rest_framework.status import HTTP_500_INTERNAL_SERVER_ERROR, HTTP_400_BAD_R
 from gwells.models import ProvinceStateCode
 from wells.models import Well, ActivitySubmission, Casing, Screen, LinerPerforation, LithologyDescription, FieldsProvided
 from submissions.models import WellActivityCode
-from wells.stack import StackWells, overlap
+from wells.stack import StackWells, overlap, merge_series
 from registries.models import Person
 
 
@@ -66,8 +66,7 @@ class SeriesMergeTest(TestCase):
             }
         ]
         expected = incoming
-        stacker = StackWells()
-        new = stacker._merge_series(prev, incoming)
+        new = merge_series(prev, incoming)
         self.assertEqual(new, expected)
 
     def test_no_overlap(self):
@@ -98,8 +97,7 @@ class SeriesMergeTest(TestCase):
                 "end": 20
             },
         ]
-        stacker = StackWells()
-        new = stacker._merge_series(prev, incoming)
+        new = merge_series(prev, incoming)
         self.assertEqual(new, expected)
 
     def test_overlap(self):
@@ -135,8 +133,7 @@ class SeriesMergeTest(TestCase):
                 "end": 20
             },
         ]
-        stacker = StackWells()
-        new = stacker._merge_series(prev, incoming)
+        new = merge_series(prev, incoming)
         self.assertEqual(new, expected)
 
     def test_intersection(self):
@@ -167,8 +164,7 @@ class SeriesMergeTest(TestCase):
                 "end": 15
             },
         ]
-        stacker = StackWells()
-        new = stacker._merge_series(prev, incoming)
+        new = merge_series(prev, incoming)
         self.assertEqual(new, expected)
 
 

@@ -12,12 +12,9 @@
     limitations under the License.
 """
 import logging
-import dateutil.parser
 import threading
-from django.core.serializers import serialize
-from django.forms.models import model_to_dict
+
 from django.db import transaction
-from django.db.models import F
 from rest_framework.exceptions import ValidationError, APIException
 from rest_framework import serializers
 
@@ -139,17 +136,40 @@ def is_staff_edit(submission):
 
 def overlap(a, b):
     """
-    Checks to see if two casings intersect, or have identical start/end positions.
+    Checks to see if two series intersect, or have identical start/end positions.
     """
     # if any start / end is None then it doesn't overlap
     if a[0] is None or a[1] is None or b[0] is None or b[1] is None:
         return False
     # If the casing start/end intersects
-    intersect = (a[0] > b[0] and a[0] < b[1]) or (a[1] > b[0] and a[1] < b[1])
-    # If the casings start or end in the same place
-    overlap = (a[0] == b[0]) or (a[1] == b[1])
-    return intersect or overlap
+    records_intersect = (a[0] > b[0] and a[0] < b[1]) or (a[1] > b[0] and a[1] < b[1])
+    # If the series start or end in the same place
+    records_overlap = (a[0] == b[0]) or (a[1] == b[1])
+    return records_intersect or records_overlap
 
+def series_overlaps(record, record_set):
+    """
+    Return True if a record overlaps with a list of records
+    """
+    record_start = record.get('start')
+    record_end = record.get('end')
+    for other_record in record_set:
+        other_record_start = other_record.get('start')
+        other_record_end = other_record.get('end')
+        if overlap((record_start, record_end), (other_record_start, other_record_end)):
+            return True
+    return False
+
+def merge_series(prev_series, next_series):
+    """
+    Merges two start / end series if there are overlaps
+    """
+    # Remove old records that overlap with new records
+    prev_series = [record for record in prev_series if not series_overlaps(record, next_series)]
+    # Join the old with the new
+    new = prev_series + next_series
+    new.sort(key=lambda record: (record.get('start'), record.get('end')))
+    return new
 
 class StackWells():
 
@@ -255,23 +275,6 @@ class StackWells():
         # users can't do anything to fix this, we have to fix a bug!
         logger.error('submission_serializer validation error')
         raise APIException()
-
-    def _series_overlaps(self, record, record_set):
-        # Return True if a record overlaps with a list of records
-        for other_record in record_set:
-            if overlap((record.get('start'), record.get('end')),
-                       (other_record.get('start'), other_record.get('end'))):
-                return True
-        return False
-
-    def _merge_series(self, prev_series, next_series):
-        # Remove old records that overlap with new records
-        prev_series = [record for record in prev_series if not self._series_overlaps(record, next_series)]
-        # Join the old with the new
-        new = prev_series + next_series
-        # Sort
-        new.sort(key=lambda record: (record.get('start'), record.get('end')))
-        return new
 
     def transform_value(self, value, source_key):
         if value is None:
@@ -402,7 +405,7 @@ class StackWells():
                         elif target_key in composite and target_key in FOREIGN_KEYS:
                             # foreign key sets are based on depth and need special merge handling.
                             value = self.transform_value(value, source_key)
-                            composite[target_key] = self._merge_series(composite[source_key], value)
+                            composite[target_key] = merge_series(composite[source_key], value)
                         elif target_key in composite and target_key in MANY_TO_MANY_LOOKUP:
                             value = self.transform_value(value, source_key)
 

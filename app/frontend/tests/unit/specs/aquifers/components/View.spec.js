@@ -39,7 +39,62 @@ const aquiferFixture = {
   productivity_description: 'High',
   demand: 'Low',
   mapping_year: '1993',
-  resources: []
+  resources: [],
+  licence_details: {
+    licence_count: 4,
+    licences_updated: {
+      update_date__max: '2019-11-04T19:47:48.075000Z'
+    },
+    num_wells_with_ems: 3,
+    num_artesian_wells: 4,
+    wells_updated: {
+      update_date__max: '2016-02-09T21:55:31Z'
+    },
+    num_wells: 4,
+    obs_wells: [{
+      well_tag_number: 117042,
+      observation_well_number: '2',
+      observation_well_status: 'Active'
+    }, {
+      well_tag_number: 100125,
+      observation_well_number: '2',
+      observation_well_status: 'Active'
+    }],
+    wells_by_licence: [{
+      licence_number: 501525,
+      well_tag_numbers_in_licence: [117041]
+    }, {
+      licence_number: 501526,
+      well_tag_numbers_in_licence: [117043]
+    }, {
+      licence_number: 501527,
+      well_tag_numbers_in_licence: [117044]
+    }, {
+      licence_number: 501528,
+      well_tag_numbers_in_licence: [117045]
+    }],
+    usage: [{
+      purpose__description: '03A - Irrigation: Local Provider ',
+      total_qty: 2730000.0
+    }, {
+      purpose__description: 'WSA09 - Processing & Manufacturing ',
+      total_qty: 980000.0
+    }, {
+      purpose__description: '03B - Irrigation: Private ',
+      total_qty: 6850000.0
+    }],
+    lic_qty: [{
+      purpose__description: '03A - Irrigation: Local Provider ',
+      total_qty: 1
+    }, {
+      purpose__description: 'WSA09 - Processing & Manufacturing ',
+      total_qty: 1
+    }, {
+      purpose__description: '03B - Irrigation: Private ',
+      total_qty: 2
+    }],
+    hydraulically_connected: true
+  }
 }
 
 describe('View Component', () => {
@@ -66,7 +121,7 @@ describe('View Component', () => {
           }
         }
       },
-      stubs: ['router-link', 'aquifer-documents', 'aquifer-form', 'b-popover'],
+      stubs: ['router-link', 'aquifer-documents', 'aquifer-form', 'b-popover', 'pie-chart'],
       methods: {
         fetch: jest.fn(),
         fetchWells: jest.fn(),
@@ -191,7 +246,7 @@ describe('View Component', () => {
 
         wrapper.vm.save()
 
-        expect(axios.patch).toHaveBeenCalledWith('aquifers/10', omit(aquiferFixture, 'area'))
+        expect(axios.patch).toHaveBeenCalledWith('aquifers/10', omit(aquiferFixture, 'area', 'licence_details'))
       })
     })
   })

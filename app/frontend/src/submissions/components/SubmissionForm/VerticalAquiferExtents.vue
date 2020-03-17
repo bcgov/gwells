@@ -18,7 +18,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
     <div v-if="loading">
       <div class="fa-2x text-center">
-        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <i class="fa fa-circle-o-notch fa-spin"/>
       </div>
     </div>
     <div v-else>
@@ -26,7 +26,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
       <b-table
         :fields="tableFields"
-        :items="tableData">
+        :items="tableData"
+        show-empty
+        empty-text="There are currently no vertical aquifer extents for this well.">
         <template slot="start" slot-scope="data">{{parseFloat(data.item.start).toFixed(2)}} m</template>
         <template slot="end" slot-scope="data">{{parseFloat(data.item.end).toFixed(2)}} m</template>
         <template slot="height" slot-scope="data">{{data.item.height.toFixed(2)}} m</template>
@@ -34,8 +36,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
       <div>
         <router-link :to="{ name: 'well-aquifers', params: {wellTagNumber} }" class="btn btn-primary" role="button">
-          <i class="fa fa-edit"></i>
-          Edit
+          <i class="fa fa-edit"/>
+          {{this.aquifers.length > 0 ? 'Edit' : 'Add'}}
         </router-link>
       </div>
     </div>
