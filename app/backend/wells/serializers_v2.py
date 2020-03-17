@@ -19,7 +19,7 @@ from django.contrib.gis.geos import Point
 
 from gwells.utils import isPointInsideBC
 from wells.models import Well
-from aquifers.models.vertical_aquifer_extents import VerticalAquiferExtent
+from aquifers.models import VerticalAquiferExtent
 
 
 logger = logging.getLogger(__name__)
@@ -30,12 +30,19 @@ class WellLocationSerializerV2(serializers.ModelSerializer):
 
     class Meta:
         model = Well
-        fields = ("well_tag_number", "identification_plate_number",
-                  "latitude", "longitude", "street_address", "city", "ems")
+        fields = (
+            'well_tag_number',
+            'identification_plate_number',
+            'latitude',
+            'longitude',
+            'street_address',
+            'city',
+            'ems',
+            'aquifer_id'
+        )
 
 
 class WellVerticalAquiferExtentSerializerV2(serializers.ModelSerializer):
-    # start = serializers.DecimalField(max_digits=7, decimal_places=2, required=True, allow_null=False)
     aquifer_id = serializers.IntegerField()
     aquifer_name = serializers.CharField(source='aquifer.aquifer_name', read_only=True)
     well_tag_number = serializers.IntegerField(write_only=True)

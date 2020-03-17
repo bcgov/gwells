@@ -65,7 +65,7 @@
           </b-row>
           <b-row>
             <b-col cols="12" md="4"><span class="font-weight-bold">Intended Water Use:</span> {{ well.intended_water_use }}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Aquifer Number:</span>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Aquifer Number: </span>
               <router-link :to="{ name: 'aquifers-view', params: { id: well.aquifer } }">
                 {{ well.aquifer }}
               </router-link>
