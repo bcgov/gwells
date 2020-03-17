@@ -35,7 +35,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <b-col cols="12" lg="4"><span class="font-weight-bold">Intended Water Use:</span> {{ codeToDescription('intended_water_uses', form.intended_water_use) }}</b-col>
       </b-row>
       <b-row>
-        <b-col cols="12" lg="4" id="wellTagNumberDisplay"><span class="font-weight-bold">Well Tag Number:</span> {{ form.well }}</b-col>
+        <b-col cols="12" lg="4" id="wellTagNumberDisplay">
+          <span class="font-weight-bold">Well Tag Number: </span>
+          <router-link :to="{ name: 'SubmissionsEdit', params: { id: form.well }}" v-if="reportSubmitted && canEditWells">
+            {{ form.well }}
+          </router-link>
+          <span v-else>{{ form.well }}</span>
+        </b-col>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Well Identification Plate Number:</span> {{ form.identification_plate_number }}</b-col>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Where Plate Attached:</span> {{ form.well_identification_plate_attached }}</b-col>
       </b-row>
@@ -535,6 +541,13 @@ export default {
     this.fetchFiles()
   },
   computed: {
+    ...mapGetters(['codes', 'userRoles']),
+    ...mapState('documentState', [
+      'upload_files'
+    ]),
+    canEditWells () {
+      return this.userRoles.wells.edit
+    },
     wellSubclass () {
       let subclassCodes = []
       let subclass = null
@@ -570,10 +583,6 @@ export default {
         }
       }
     },
-    ...mapGetters(['codes']),
-    ...mapState('documentState', [
-      'upload_files'
-    ])
   }
 }
 </script>

@@ -54,7 +54,8 @@ const auth = {
           wells: {},
           submissions: {},
           aquifers: {},
-          surveys: {}
+          surveys: {},
+          bulk: {}
         }
       }
     }
