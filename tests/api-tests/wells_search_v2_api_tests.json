@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "b7955e50-0474-4e58-b907-3b1f7dc15530",
+		"_postman_id": "ee7069b5-ca4a-4e6e-ab4e-9f04a0148941",
 		"name": "Well List API filters v2",
 		"description": "Well List API endpoint filters required for advanced search options.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -1399,6 +1399,48 @@
 							"response": []
 						},
 						{
+							"name": "company_of_person_responsible param",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"exec": [
+											"pm.test(\"Company of person responsible matches filter\", function () {",
+											"  const company_guid = pm.request.url.query.get(\"company_of_person_responsible\");",
+											"  pm.response.json().results.forEach(function(result) {",
+											"    pm.expect(result.company_of_person_responsible).to.equal(company_guid);",
+											"  });",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/v2/wells?company_of_person_responsible=f606669c-a60c-422d-859a-fdc54278d9b0",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v2",
+										"wells"
+									],
+									"query": [
+										{
+											"key": "company_of_person_responsible",
+											"value": "f606669c-a60c-422d-859a-fdc54278d9b0"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
 							"name": "coordinate_acquisition_code param",
 							"event": [
 								{
@@ -2358,6 +2400,90 @@
 										{
 											"key": "owner_full_name",
 											"value": "Alice"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "company_of_person_responsible_name param",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"exec": [
+											"pm.test(\"Company name matches filter\", function () {",
+											"  const companyNameQuery = pm.request.url.query.get(\"company_of_person_responsible_name\").toLowerCase();",
+											"  pm.response.json().results.forEach(function(result) {",
+											"    pm.expect(result.company_of_person_responsible_name.toLowerCase()).to.include(companyNameQuery);",
+											"  });",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/v2/wells?company_of_person_responsible_name=drill",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v2",
+										"wells"
+									],
+									"query": [
+										{
+											"key": "company_of_person_responsible_name",
+											"value": "drill"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "person_responsible_name param Copy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"exec": [
+											"pm.test(\"Company name matches filter\", function () {",
+											"  const personNameQuery = pm.request.url.query.get(\"person_responsible_name\").toLowerCase();",
+											"  pm.response.json().results.forEach(function(result) {",
+											"    pm.expect(result.person_responsible_name.toLowerCase()).to.include(personNameQuery);",
+											"  });",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/v2/wells?person_responsible_name=drill",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v2",
+										"wells"
+									],
+									"query": [
+										{
+											"key": "person_responsible_name",
+											"value": "drill"
 										}
 									]
 								}

@@ -311,6 +311,14 @@ class WellListFilter(AnyOrAllFilterSet):
     # Alias for any old API requests now that DrillingCompany doesn't exist
     drilling_company = filters.UUIDFilter(field_name='company_of_person_responsible')
 
+    company_of_person_responsible_name = filters.CharFilter(
+        field_name='company_of_person_responsible__name',
+        lookup_expr='icontains'
+    )
+    person_responsible_name = filters.CharFilter(field_name='person_responsible',
+                                                 method='filter_person_responsible_name',
+                                                 label='Person responsible')
+
     class Meta:
         model = Well
         fields = [
@@ -330,7 +338,6 @@ class WellListFilter(AnyOrAllFilterSet):
             'boundary_effect',
             'city',
             'comments',
-            'company_of_person_responsible',
             'construction_end_date',
             'construction_start_date',
             'coordinate_acquisition_code',
@@ -350,6 +357,7 @@ class WellListFilter(AnyOrAllFilterSet):
             'driller_name',
             'drilling_company',
             'company_of_person_responsible',
+            'company_of_person_responsible_name',
             'drilling_methods',
             'ems',
             'filter_pack_from',
@@ -389,6 +397,7 @@ class WellListFilter(AnyOrAllFilterSet):
             'other_screen_material',
             'owner_full_name',
             'person_responsible',
+            'person_responsible_name',
             'recommended_pump_depth',
             'recommended_pump_rate',
             'screen_bottom',
@@ -563,6 +572,13 @@ class WellListFilter(AnyOrAllFilterSet):
 
         return queryset
 
+    def filter_person_responsible_name(self, queryset, name, value):
+        lookups = (
+            Q(person_responsible__first_name__icontains=value) |
+            Q(person_responsible__surname__icontains=value)
+        )
+        return queryset.filter(lookups)
+
 
 class WellListAdminFilter(WellListFilter):
     create_user = filters.CharFilter(lookup_expr='icontains')
@@ -679,9 +695,9 @@ class WellListOrderingFilter(OrderingFilter):
             return ['land_district__land_district_code', 'land_district__name']
         elif related_field.name == 'well_subclass':
             return ['well_class__description', 'well_subclass__description']
-        elif related_field.name == 'person_responsible':
+        elif related_field.name == 'person_responsible__name':
             return ['person_responsible__name']
-        elif related_field.name == 'company_of_person_responsible':
+        elif related_field.name == 'company_of_person_responsible__name':
             return ['company_of_person_responsible__name']
 
         # Check if the description column actually exists

@@ -125,8 +125,11 @@ class WellListSerializerV2(serializers.ModelSerializer):
         source='company_of_person_responsible.org_guid')
     company_of_person_responsible = serializers.ReadOnlyField(
         source='company_of_person_responsible.org_guid')
+    company_of_person_responsible_name = serializers.ReadOnlyField(
+        source='company_of_person_responsible.name')
     person_responsible = serializers.ReadOnlyField(
         source='person_responsible.person_guid')
+    person_responsible_name = serializers.ReadOnlyField(source='person_responsible.name')
 
     def get_legal_pid(self, instance):
         if instance.legal_pid is None:
@@ -164,7 +167,9 @@ class WellListSerializerV2(serializers.ModelSerializer):
             "decommission_end_date",
             "drilling_company", # old name of company_of_person_responsible
             "company_of_person_responsible",
+            "company_of_person_responsible_name",
             "person_responsible",
+            "person_responsible_name",
             "driller_name",
             "well_identification_plate_attached",
             "id_plate_attached_by",
