@@ -14,28 +14,35 @@ import wellsAquiferIcon from '../../common/assets/images/wells-aquifer.svg'
 import uncorrelatedWellsIcon from '../../common/assets/images/wells-uncorrelated.svg'
 import emsWellsIcon from '../../common/assets/images/wells-ems.svg'
 
-const LEGEND_AQUIFER_WELLS = { layerName: 'Wells near aquifer', legend: wellsAquiferIcon, show: false }
-const LEGEND_UNCORRELATED_WELLS = { layerName: 'Wells not correlated to aquifer', legend: uncorrelatedWellsIcon, show: false }
-const LEGEND_EMS_WELLS = { layerName: 'EMS wells in aquifer', legend: emsWellsIcon, show: false }
+const LAYER_AQUIFER_WELLS = { layerName: 'Wells near aquifer', legend: wellsAquiferIcon, show: true }
+const LAYER_UNCORRELATED_WELLS = { layerName: 'Wells not correlated to aquifer', legend: uncorrelatedWellsIcon, show: false }
+const LAYER_EMS_WELLS = { layerName: 'EMS wells in aquifer', legend: emsWellsIcon, show: false }
 
 const DEFAULT_CIRCLE_MARKER_OPTIONS = {
-  color: 'black',
   radius: 3,
   fillColor: '#0162fe',
   fillOpacity: 1,
-  stroke: '#000',
+  stroke: true,
+  color: '#000', // stroke color
   weight: 1, // stroke width
   opacity: 1
 }
 
-const EMS_WELL_CIRCLE_MARKER_OPTIONS = {
-  ...DEFAULT_CIRCLE_MARKER_OPTIONS,
-  fillColor: '#0ca287'
+const UNCORRELATED_WELL_CIRCLE_MARKER_OPTIONS_OVERRIDES = {
+  fillColor: 'white',
+  opacity: 1,
+  fillOpacity: 1
 }
 
-const UNCORRELATED_WELL_CIRCLE_MARKER_OPTIONS = {
-  ...DEFAULT_CIRCLE_MARKER_OPTIONS,
-  fillColor: '#666666'
+const EMS_WELL_CIRCLE_MARKER_OPTIONS_OVERRIDES = {
+  fillColor: '#0CA287',
+  opacity: 1,
+  fillOpacity: 1
+}
+
+const AQUIFER_LAYER_STYLES = {
+  color: '#FF6500',
+  fillOpacity: 0.1
 }
 
 export default {
@@ -103,6 +110,8 @@ export default {
       layersControl.addTo(this.map)
       const cadastralLayer = aquiferLayers['Cadastral']
       cadastralLayer.addTo(this.map)
+      const wellsAllLayer = aquiferLayers['Wells – all']
+      wellsAllLayer.addTo(this.map)
 
       Object.keys(aquiferLayers).forEach((layerName) => {
         const layer = aquiferLayers[layerName]
@@ -113,13 +122,13 @@ export default {
         }
       })
       this.activeLayers[cadastralLayer.options.name].show = true
+      this.activeLayers[wellsAllLayer.options.name].show = true
 
       // Add non-image tile layers
-      this.activeLayers.aquiferWells = LEGEND_AQUIFER_WELLS
-      this.activeLayers.uncorrelatedWells = LEGEND_UNCORRELATED_WELLS
-      this.activeLayers.emsWells = LEGEND_EMS_WELLS
+      this.activeLayers.aquiferWells = LAYER_AQUIFER_WELLS
+      this.activeLayers.uncorrelatedWells = LAYER_UNCORRELATED_WELLS
+      this.activeLayers.emsWells = LAYER_EMS_WELLS
 
-      this.activeLayers.aquiferWells.show = true
       this.addWellsLayersControl(layersControl)
 
       this.map.addControl(this.getLegendControl())
@@ -143,7 +152,7 @@ export default {
     addWellsLayersControl (layersControl) {
       const overlaysContainer = layersControl.getContainer().querySelector('.leaflet-control-layers-overlays')
 
-      const layerNames = [ 'aquiferWells', 'uncorrelatedWells', 'emsWells' ]
+      const layerNames = [ 'uncorrelatedWells', 'emsWells' ]
 
       layerNames.forEach((name) => {
         const checked = this.activeLayers[name].show ? 'checked' : ''
@@ -184,7 +193,13 @@ export default {
     },
     listenForLayerToggle () {
       this.$on('activeLayers', (data) => {
-        this.legendControlContent.innerHTML = buildLegendHTML(data)
+        const layers = {}
+        Object.keys(data).forEach((key) => {
+          if (key === 'aquiferWells') { return }
+          layers[key] = data[key]
+        })
+
+        this.legendControlContent.innerHTML = buildLegendHTML(layers)
       })
     },
     listenForLayerRemove () {
@@ -192,6 +207,10 @@ export default {
         const { legend, name } = e.layer.options
         if (legend) {
           this.activeLayers[name].show = false
+          if (name === 'Wells – all') {
+            this.activeLayers.aquiferWells.show = false
+            this.updateWellsCanvasLayer()
+          }
           this.$emit('activeLayers', this.activeLayers)
         }
       })
@@ -201,6 +220,10 @@ export default {
         const { legend, name } = e.layer.options
         if (legend) {
           this.activeLayers[name].show = true
+          if (name === 'Wells – all') {
+            this.activeLayers.aquiferWells.show = true
+            this.updateWellsCanvasLayer()
+          }
           this.$emit('activeLayers', this.activeLayers)
         }
       })
@@ -237,9 +260,7 @@ export default {
       }
 
       const options = {
-        style: {
-          color: 'red'
-        },
+        style: AQUIFER_LAYER_STYLES,
         renderer: this.canvasRenderer
       }
       this.aquiferLayer = L.geoJSON(this.geom, options)
@@ -339,11 +360,16 @@ export default {
       }
 
       if (!this.activeLayers.aquiferWells.show) {
-        style = { opacity: 0, fillOpacity: 0 }
-      } if (this.activeLayers.emsWells.show && ems) {
-        style = EMS_WELL_CIRCLE_MARKER_OPTIONS
-      } else if (this.activeLayers.uncorrelatedWells.show && !aquiferId) {
-        style = UNCORRELATED_WELL_CIRCLE_MARKER_OPTIONS
+        Object.assign(style, {
+          opacity: 0,
+          fillOpacity: 0
+        })
+      }
+      if (this.activeLayers.uncorrelatedWells.show && !aquiferId) {
+        Object.assign(style, UNCORRELATED_WELL_CIRCLE_MARKER_OPTIONS_OVERRIDES)
+      }
+      if (this.activeLayers.emsWells.show && ems) {
+        Object.assign(style, EMS_WELL_CIRCLE_MARKER_OPTIONS_OVERRIDES)
       }
 
       return style
