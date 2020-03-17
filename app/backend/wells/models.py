@@ -1106,6 +1106,7 @@ class Well(AuditModelStructure):
 
     class Meta:
         db_table = 'well'
+        verbose_name = 'A well record'
 
     def __str__(self):
         if self.well_tag_number:
