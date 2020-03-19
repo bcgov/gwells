@@ -44,5 +44,16 @@ export default {
       })
       commit('setAquiferWells', [])
     }
+  },
+  getters: {
+    wellsWithAquiferCorrelation: (state) => {
+      return state.aquiferWells.filter((w) => w.aquifer_id === state.id)
+    },
+    wellsWithoutAquiferCorrelation: (state) => {
+      return state.aquiferWells.filter((w) => w.aquifer_id === null)
+    },
+    wellsCorrelatedWithADifferentAquifer: (state) => {
+      return state.aquiferWells.filter((w) => w.aquifer_id !== state.id)
+    }
   }
 }

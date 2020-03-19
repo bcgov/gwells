@@ -130,7 +130,12 @@
           <b-col id="map-container" cols="12" md="12" lg="7" class="p-0">
             <map-loading-spinner :loading="loadingMap"/>
 
-            <single-aquifer-map :aquifer-id="id" :geom="record.geom" :wells="aquiferWells" :key="mapKey" :loading="loadingMap"/>
+            <single-aquifer-map
+              :aquifer-id="id"
+              :geom="record.geom"
+              :wells="aquiferWells"
+              :key="mapKey"
+              :loading="loadingMap"/>
           </b-col>
         </b-row>
 
@@ -140,11 +145,24 @@
             <ul class="ml-0 mr-0 mt-4 mb-0 p-0 aquifer-information-list">
               <div class="aquifer-information-list-divider"></div>
               <li>
-                <dt>Number of wells associated to the aquifer</dt>
+                <dt>Number of wells correlated to the aquifer</dt>
                 <dd class="m-0">
                   <router-link :to="{ name: 'wells-home', query: {'match_any':false, 'aquifer': id, 'search':'', 'well':''}, hash: '#advanced'}">
                     {{ licenceDetails.num_wells }}
                   </router-link>
+                </dd>
+              </li>
+              <li>
+                <dt>
+                  Number of wells potentially located within the aquifer
+                  <i id="uncorrelated-wells-count" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+                  <b-popover
+                    target="uncorrelated-wells-count"
+                    triggers="hover focus"
+                    content="Count of wells that potentially fall within the aquifer polygon; however, they are not necessarily screened within the aquifer of interest."/>
+                </dt>
+                <dd class="m-0">
+                  {{ uncorrelatedWells.length }}
                 </dd>
               </li>
               <li>
@@ -268,7 +286,7 @@
                     <div v-if="activeObsWells.length > 0">
                       <h6 class="border-bottom">Active</h6>
                       <ul class="p-0 m-0">
-                        <li v-for="owell in activeObsWells" :key="owell.well_tag_number" :data-water-level="owell.waterLevels">
+                        <li v-for="owell in activeObsWells" :key="owell.well_tag_number" :data-water-level="owell.waterLevels" :class="{error: owell.errorFetching}">
                           <a :href="getObservationWellLink(owell.observation_well_number)" target="_blank" class="d-print-url">
                             {{ owell.observation_well_number }}
                           </a>
@@ -284,7 +302,7 @@
                     <div v-if="inactiveObsWellsWithWaterLevel.length > 0 || inativeObsWellsWithOutWaterLevel.length > 0">
                       <h6 class="border-bottom mt-2">Inactive<br><small>(data may not be available)</small></h6>
                       <ul class="p-0 m-0">
-                        <li v-for="owell in inactiveObsWellsWithWaterLevel" :key="owell.well_tag_number" :data-water-level="owell.waterLevels">
+                        <li v-for="owell in inactiveObsWellsWithWaterLevel" :key="owell.well_tag_number" :data-water-level="owell.waterLevels" :class="{error: owell.errorFetching}">
                           <a :href="getObservationWellLink(owell.observation_well_number)" target="_blank" class="d-print-url">
                             {{ owell.observation_well_number }}
                           </a>
@@ -297,7 +315,7 @@
                         </li>
                         <li v-if="inativeObsWellsWithOutWaterLevel.length > 0" class="obs-wells-wo-well-level">
                           No Water Level Analysis:
-                          <span v-for="owell in inativeObsWellsWithOutWaterLevel" :key="owell.observation_well_number" :class="owell.errorFetching ? 'error' : ''">
+                          <span v-for="owell in inativeObsWellsWithOutWaterLevel" :key="owell.observation_well_number" :class="{error: owell.errorFetching}">
                             <a :href="getObservationWellLink(owell.observation_well_number)" target="_blank">{{ owell.observation_well_number }}</a>
                           </span>
                         </li>
@@ -422,6 +440,10 @@ export default {
   },
   computed: {
     ...mapGetters(['userRoles']),
+    ...mapGetters('aquiferStore/view', {
+      // aquiferWells: 'wellsWithAquiferCorrelation',
+      uncorrelatedWells: 'wellsWithoutAquiferCorrelation'
+    }),
     ...mapState('documentState', [
       'files_uploading',
       'file_upload_error',
@@ -710,7 +732,7 @@ export default {
     },
     fetchWells (id = this.id) {
       const maxResults = 5000 // 5000 is the API max
-      const params = { aquifer: id, limit: maxResults }
+      const params = { intersects_aquifer_id: id, limit: maxResults }
       return ApiService.query('wells/locations', params)
         .then((response) => {
           const total = response.data.count
@@ -786,7 +808,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 .print-button, .print-button:hover {
   color: black;
   text-decoration: none;
@@ -841,24 +863,26 @@ a {
   left: 50%;
 }
 
-.aquifer-information-list > li {
-  margin: 0.7rem 0;
-}
-.aquifer-information-list dt,
-.aquifer-information-list dd {
-  display: inline-block;
-  vertical-align: top;
-  width: 50%;
-  font-size: 1rem;
-}
+.aquifer-information-list {
+  & > li {
+    margin: 0.7rem 0;
+  }
 
-.aquifer-information-list dt {
-  padding-right: 2rem;
-  font-weight: bold;
-}
+  dt, dd {
+    display: inline-block;
+    vertical-align: top;
+    width: 50%;
+    font-size: 1rem;
+  }
 
-.aquifer-information-list dd {
-  padding-left: 2rem;
+  dt {
+    padding-right: 2rem;
+    font-weight: bold;
+  }
+
+  dd {
+    padding-left: 2rem;
+  }
 }
 
 .pie-chart-title {
@@ -869,26 +893,30 @@ a {
   margin: 0 auto;
 }
 
-.aquifer-main-information-list .row > div {
-  padding-bottom: 0.7rem;
+.aquifer-main-information-list .row {
+  & > div {
+    padding-bottom: 0.7rem;
+  }
+
+  & > :nth-child(odd) {
+    font-weight: bold;
+    border-right: 1px solid rgba(0,0,0,0.1);
+  }
 }
 
-.aquifer-main-information-list .row > :nth-child(odd) {
-  font-weight: bold;
-  border-right: 1px solid rgba(0,0,0,0.1);
-}
-
-.observational-wells .obs-wells-wo-well-level span:not(:last-child):after {
-  content: ", ";
+.observational-wells {
+  .obs-wells-wo-well-level span:not(:last-child):after {
+    content: ", ";
+  }
 }
 
 #licenses li {
   list-style: none;
   display: inline;
-}
 
-#licenses li:not(:last-child):after {
-  content: ', ';
+  &:not(:last-child):after {
+    content: ', ';
+  }
 }
 
 @media print {
@@ -901,24 +929,26 @@ a {
     word-break: break-all;
   }
 
-  .aquifer-information-list dt {
-    width: 25%;
-  }
+  .aquifer-information-list {
+    dt {
+      width: 25%;
+    }
 
-  .aquifer-information-list dd {
-    width: 75%;
-  }
+    dd {
+      width: 75%;
+    }
 
-  .aquifer-main-information-list .row > :nth-child(odd) {
-    border: none;
+    .row > :nth-child(odd) {
+      border: none;
+    }
   }
 
   main {
     margin-bottom: 0 !important;
-  }
 
-  main > .card.container {
-    padding-bottom: 0 !important;
+    & > .card.container {
+      padding-bottom: 0 !important;
+    }
   }
 
   body, main, .card, .aquifer-details {

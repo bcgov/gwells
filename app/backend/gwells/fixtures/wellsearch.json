@@ -1308,7 +1308,7 @@
             "hydro_fracturing_yield_increase": null,
             "decommission_sealant_material": "CONCRETE",
             "decommission_backfill_material": "test",
-            "geom": "POINT(-125.300830 52.465449)"
+            "geom": "POINT(-125.360830 52.456449)"
         }
     },
     {
@@ -1420,7 +1420,7 @@
             "decommission_method": null,
             "decommission_details": null,
             "aquifer": null,
-            "person_responsible": null,
+            "person_responsible": "257aa7c0-6f15-47e8-8217-ae7f749b5180",
             "company_of_person_responsible": null,
             "driller_name": null,
             "consultant_name": null,
