@@ -85,6 +85,18 @@
           </b-button>
         </div>
       </l-control>
+      <l-control position="bottomright">
+        <div class="map-legend d-flex" v-if="legend.length > 0">
+          <div class="leaflet-control-legend">
+            <div class="m-1 text-center">Legend</div>
+            <ul class="p-0 m-0" style="list-style-type: none;">
+              <li v-for="(legendItem, i) in legend" class="m-1" :key="i">
+                <img :src="legendItem.iconSrc"> {{legendItem.name}}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </l-control>
       <!-- esri layer is added on mount -->
       <l-wms-tile-layer
         base-url="https://openmaps.gov.bc.ca/geo/pub/WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW/ows?"
@@ -101,11 +113,7 @@
           :lat-lng="marker.latLng"
           :visible="true"
           :draggable="false"
-          :radius="6"
-          :weight="1"
-          :fill-opacity="1.0"
-          color="#000"
-          fill-color="#0162fe"
+          v-bind="markerStyle(marker)"
           @click="openPopup(marker)">
         </l-circle-marker>
         <l-popup>
@@ -150,6 +158,8 @@ import {
   SET_SEARCH_RESULT_FILTERS
 } from '@/wells/store/mutations.types.js'
 import { MAP_TRIGGER } from '@/wells/store/triggers.types.js'
+import wellsAllLegendSrc from '../../common/assets/images/wells-all.svg'
+import wellsArtesianLegendSrc from '../../common/assets/images/wells-artesian.svg'
 
 // There is a known issue using leaflet with webpack, this is a workaround
 // Fix courtesy of: https://github.com/PaulLeCam/react-leaflet/issues/255
@@ -194,7 +204,17 @@ export default {
       movedSinceLastSearch: false,
       zoomBoxActive: false,
       zoomToMarkersActive: false,
-      esriLayer: null
+      esriLayer: null,
+      legend: [
+        {
+          name: 'Wells – all',
+          iconSrc: wellsAllLegendSrc
+        },
+        {
+          name: 'Wells – artesian',
+          iconSrc: wellsArtesianLegendSrc
+        }
+      ]
     }
   },
   computed: {
@@ -216,19 +236,22 @@ export default {
       }
     },
     markers () {
-      return this.locations.filter(location => location.latitude !== null && location.longitude !== null).map(location => {
-        let address = location.street_address
-        if (location.city !== undefined && location.city !== null && location.city.toString().trim() !== '') {
-          address = `${address}, ${location.city}`
-        }
+      return this.locations
+        .filter((location) => location.latitude !== null && location.longitude !== null)
+        .map((location) => {
+          let address = location.street_address
+          if (location.city !== undefined && location.city !== null && location.city.toString().trim() !== '') {
+            address = `${address}, ${location.city}`
+          }
 
-        return {
-          wellTagNumber: location.well_tag_number,
-          latLng: L.latLng(location.latitude, location.longitude),
-          idPlateNumber: location.identification_plate_number || '',
-          address: address
-        }
-      })
+          return {
+            wellTagNumber: location.well_tag_number,
+            latLng: L.latLng(location.latitude, location.longitude),
+            idPlateNumber: location.identification_plate_number || '',
+            address: address,
+            artesian: location.artesian
+          }
+        })
     },
     atMaxZoom () {
       return this.zoom === this.maxZoom
@@ -368,6 +391,26 @@ export default {
         }
         originalMouseDown.call(mapObject.boxZoom, newEvent)
       }
+    },
+    markerStyle (marker) {
+      const wellStyles = {
+        radius: 6,
+        weight: 1.3,
+        color: '#000',
+        opacity: 0.5,
+        'fill-color': '#0162FE',
+        'fill-opacity': 1
+      }
+
+      if (marker.artesian) {
+        return {
+          ...wellStyles,
+          opacity: 1,
+          color: '#EE14CA'
+        }
+      }
+
+      return wellStyles
     }
   },
   watch: {
@@ -479,5 +522,16 @@ export default {
       opacity: 1;
     }
   }
+
+  .leaflet-control-legend {
+    background-color: white;
+    box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.4);
+    border-radius: 0.1em;
+  }
+}
+
+.leaflet-right .leaflet-control:empty {
+  margin-right: 0;
+  margin-bottom: 0;
 }
 </style>
