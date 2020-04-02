@@ -274,6 +274,9 @@ export default {
         }
       })
 
+      // Check to see if we are currently saving this form. If so - don't try to POST again
+      if (this.formSubmitLoading) { return }
+
       this.formSubmitLoading = true
       this.formSubmitSuccess = false
       this.formSubmitError = false
