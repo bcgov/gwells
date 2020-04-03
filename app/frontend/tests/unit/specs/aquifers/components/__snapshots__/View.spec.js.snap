@@ -403,7 +403,7 @@ exports[`View Component View mode matches the snapshot 1`] = `
              
             <div
               class="map"
-              id="map"
+              id="single-aquifer-map"
             />
           </div>
         </div>
