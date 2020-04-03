@@ -41,11 +41,11 @@ def delete_entire_submission(activity_submission):
     activity_submission.development_methods.clear()
     activity_submission.water_quality_characteristics.clear()
 
-    activity_submission.lithologydescription_set.clear()
-    activity_submission.casing_set.clear()
-    activity_submission.decommission_description_set.clear()
-    activity_submission.screen_set.clear()
-    activity_submission.linerperforation_set.clear()
+    activity_submission.lithologydescription_set.all().delete()
+    activity_submission.casing_set.all().delete()
+    activity_submission.decommission_description_set.all().delete()
+    activity_submission.screen_set.all().delete()
+    activity_submission.linerperforation_set.all().delete()
 
     activity_submission.fields_provided.delete()
 
