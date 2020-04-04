@@ -697,7 +697,7 @@ pipeline {
                             "IMAGE_STREAM_VERSION=v1-stable",
                             "POSTGRESQL_DATABASE=gwells",
                             "VOLUME_CAPACITY=20Gi",
-                            "STORAGE_CLASS=netapp-file-standard"
+                            "STORAGE_CLASS=netapp-file-standard",
                             "REQUEST_CPU=400m",
                             "REQUEST_MEMORY=2Gi",
                             "LIMIT_CPU=400m",
