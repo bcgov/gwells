@@ -1,7 +1,7 @@
 export function buildLegendHTML (items) {
   let html = []
-  html.push('<ul class="p-0 m-0" style="list-style-type: none;">')
   html.push('<div class="m-1 text-center">Legend</div>')
+  html.push('<ul class="p-0 m-0" style="list-style-type: none;">')
   Object.keys(items).forEach((name) => {
     const l = items[name]
     if (l.show) {
