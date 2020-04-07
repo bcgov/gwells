@@ -207,7 +207,7 @@ export default {
         const { legend, name } = e.layer.options
         if (legend) {
           this.activeLayers[name].show = false
-          if (name === 'Wells – all') {
+          if (name === 'Wells') {
             this.activeLayers.aquiferWells.show = false
             this.updateWellsCanvasLayer()
           }
@@ -220,7 +220,7 @@ export default {
         const { legend, name } = e.layer.options
         if (legend) {
           this.activeLayers[name].show = true
-          if (name === 'Wells – all') {
+          if (name === 'Wells') {
             this.activeLayers.aquiferWells.show = true
             this.updateWellsCanvasLayer()
           }
