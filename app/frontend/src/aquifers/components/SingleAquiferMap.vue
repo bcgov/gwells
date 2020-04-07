@@ -110,7 +110,7 @@ export default {
       layersControl.addTo(this.map)
       const cadastralLayer = aquiferLayers['Cadastral']
       cadastralLayer.addTo(this.map)
-      const wellsAllLayer = aquiferLayers['Wells – all']
+      const wellsAllLayer = aquiferLayers['Wells']
       wellsAllLayer.addTo(this.map)
 
       Object.keys(aquiferLayers).forEach((layerName) => {

@@ -1,13 +1,13 @@
 import L from 'leaflet'
 
-import artesianLegendSrc from '../common/assets/images/artesian.png'
 import cadastralLegendSrc from '../common/assets/images/cadastral.png'
-import ecoCatWaterLegendSrc from '../common/assets/images/ecocat-water.png'
+import ecoCatWaterLegendSrc from '../common/assets/images/ecocat-water.svg'
 import groundWaterLicenceActiveLegendSrc from '../common/assets/images/gwater-licence-active.svg'
 import groundWaterLicenceInactiveLegendSrc from '../common/assets/images/gwater-licence-inactive.svg'
-import observationWellInactiveLegendSrc from '../common/assets/images/owells-inactive.png'
-import observationWellActiveLegendSrc from '../common/assets/images/owells-active.png'
-import wellsAllLegendSrc from '../common/assets/images/wells-all.png'
+import observationWellInactiveLegendSrc from '../common/assets/images/owells-inactive.svg'
+import observationWellActiveLegendSrc from '../common/assets/images/owells-active.svg'
+import wellsAllLegendSrc from '../common/assets/images/wells-all.svg'
+import wellsArtesianLegendSrc from '../common/assets/images/wells-artesian.svg'
 
 const aquiferLayers = {
   'Cadastral': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/ows?', {
@@ -44,39 +44,39 @@ const aquiferLayers = {
     },
     overlay: true
   }),
-  'Wells – all': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/ows?', {
+  'Wells': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/ows?', {
     format: 'image/png',
     layers: 'pub:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
     transparent: true,
-    name: 'Wells – all',
-    legend: wellsAllLegendSrc,
+    name: 'Wells',
+    legend: {
+      all: {
+        imageSrc: wellsAllLegendSrc,
+        name: 'all'
+      },
+      artesian: {
+        imageSrc: wellsArtesianLegendSrc,
+        name: 'artesian'
+      }
+    },
     overlay: true
   }),
-  'Observation wells – active': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/ows?', {
+  'Observation wells': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/ows?', {
     format: 'image/png',
     layers: 'pub:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
-    styles: 'Provincial_Groundwater_Observation_Wells_Active',
+    styles: '7707',
     transparent: true,
-    name: 'Observation wells – active',
-    legend: observationWellActiveLegendSrc,
-    overlay: true
-  }),
-  'Observation wells – inactive': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/ows?', {
-    format: 'image/png',
-    layers: 'pub:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
-    styles: 'Provincial_Groundwater_Observation_Wells_Inactive',
-    transparent: true,
-    name: 'Observation wells – inactive',
-    legend: observationWellInactiveLegendSrc,
-    overlay: true
-  }),
-  'Artesian wells': L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/ows?', {
-    format: 'image/png',
-    layers: 'pub:WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
-    styles: 'Water_Wells_Artesian',
-    transparent: true,
-    name: 'Artesian wells',
-    legend: artesianLegendSrc,
+    name: 'Observation wells',
+    legend: {
+      all: {
+        imageSrc: observationWellActiveLegendSrc,
+        name: 'active'
+      },
+      artesian: {
+        imageSrc: observationWellInactiveLegendSrc,
+        name: 'inactive'
+      }
+    },
     overlay: true
   })
 }
