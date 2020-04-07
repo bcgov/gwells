@@ -97,7 +97,7 @@ class WellLocationListV2APIView(ListAPIView):
                 raise NotFound(f'Unknown aquifer {intersects_aquifer_id}')
 
             # Simplify polygon and expand it by 1km
-            aqufier_geom = aquifer.geom.simplify(10, preserve_topology=True).buffer(1000)
+            aqufier_geom = aquifer.geom.simplify(40, preserve_topology=True).buffer(1000)
 
             qs = qs.exclude(geom=None)
             # find all wells that intersect this simplified aquifer polygon

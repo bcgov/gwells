@@ -11,9 +11,7 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-from datetime import datetime
 import logging
-import os
 import csv
 import openpyxl
 from openpyxl.writer.excel import save_virtual_workbook
@@ -43,10 +41,17 @@ from reversion.views import RevisionMixin
 from gwells.documents import MinioClient
 from gwells.roles import AQUIFERS_EDIT_ROLE
 from gwells.settings.base import get_env_variable
+from gwells.views import AuditCreateMixin, AuditUpdateMixin
+from gwells.open_api import (
+    get_geojson_schema,
+    get_model_feature_schema,
+    GEO_JSON_302_MESSAGE,
+    GEO_JSON_PARAMS
+)
+from gwells.management.commands.export_databc import AQUIFERS_SQL, GeoJSONIterator, AQUIFER_CHUNK_SIZE
 
-from aquifers import models
-from aquifers import serializers
-from aquifers import serializers_v2
+from aquifers import models, serializers, serializers_v2
+from aquifers.change_history import get_aquifer_history
 from aquifers.models import (
     Aquifer,
     AquiferResourceSection,
@@ -60,11 +65,6 @@ from aquifers.models import (
 )
 from aquifers.filters import BoundingBoxFilterBackend
 from aquifers.permissions import HasAquiferEditRoleOrReadOnly, HasAquiferEditRole
-from gwells.change_history import generate_history_diff
-from gwells.views import AuditCreateMixin, AuditUpdateMixin
-from gwells.open_api import (
-    get_geojson_schema, get_model_feature_schema, GEO_JSON_302_MESSAGE, GEO_JSON_PARAMS)
-from gwells.management.commands.export_databc import AQUIFERS_SQL, GeoJSONIterator, AQUIFER_CHUNK_SIZE
 
 logger = logging.getLogger(__name__)
 
@@ -393,15 +393,7 @@ class AquiferHistory(APIView):
         except Aquifer.DoesNotExist:
             raise Http404("Aquifer not found")
 
-        # query records in history for this model.
-        aquifer_history = [obj for obj in aquifer.history.all().order_by(
-            '-revision__date_created')]
-
-        aquifer_history_diff = generate_history_diff(
-            aquifer_history, 'aquifer ' + aquifer_id)
-
-        history_diff = sorted(aquifer_history_diff,
-                              key=lambda x: x['date'], reverse=True)
+        history_diff = get_aquifer_history(aquifer)
 
         return Response(history_diff)
 
