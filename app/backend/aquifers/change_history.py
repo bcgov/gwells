@@ -41,7 +41,21 @@ KEY_VALUE_LOOKUP = {
     'quality_concern': 'description',
 }
 
-def get_aquifer_history(aquifer):
+def get_aquifer_history_diff(aquifer):
+    """
+    Returns a list of revisions for an aquifer, showing fields that changed in each revision.
+
+    aquifer: a Django Aquifer model
+
+    returns a list:
+        [{
+            diff: {},
+            prev: {},
+            user: string,
+            date: date
+        }]
+    """
+
     history = []
     history += get_aquifer_reversion_history(aquifer)
     history += get_vertical_aquifer_extents_history(aquifer)
@@ -51,6 +65,18 @@ def get_aquifer_history(aquifer):
     return history
 
 def get_aquifer_reversion_history(aquifer):
+    """
+    Returns a list of history items for an aquifer from django-revision Version history records.
+
+    returns a list:
+        [{
+            diff: {},
+            prev: {},
+            user: string,
+            date: date
+        }]
+    """
+
     # pylint: disable=protected-access
 
     history_name = f'Aquifer {aquifer.aquifer_id}'
@@ -109,6 +135,18 @@ def get_aquifer_reversion_history(aquifer):
 
 
 def get_vertical_aquifer_extents_history(aquifer):
+    """
+    Returns a list of this aquifer's vertical extent history changes
+
+    returns a list:
+        [{
+            diff: {},
+            prev: {},
+            user: string,
+            date: date
+        }]
+    """
+
     clean_keys = ['well_tag_number', 'start', 'end']
 
     vertical_aquifer_extents_history = VerticalAquiferExtentsHistory.objects \
@@ -156,26 +194,30 @@ def get_vertical_aquifer_extents_history(aquifer):
     return history
 
 
-def get_history_date(history_items):
-    if len(history_items) > 0:
-        return history_items['date']
-    return None
+def get_history_date(history_item):
+    """
+    Returns the date of a history item
+    """
+    return history_item['date']
 
 
-# transforms data between different relationship types
 def clean_attrs(obj, key, ver):
+    """
+    Returns the value of a Reversion Version item
+    """
     if obj is None:
         return None
 
+    # For geom we need to deserialize the stored JSON text from the DB. This is because of an
+    # error that is thrown because of an incompatibility between legacy Polygon versioned data
+    # and the updated DB MultiPolygon.
     if key == 'geom':
         return json.loads(ver.serialized_data)[0]['fields']['geom']
 
+    # get the value from the object
     val = getattr(obj, key, None)
     if val is None:
         return None
-
-    if isinstance(val, GEOSGeometry):  # convert geom to string
-        return json.dumps(val.coords)
 
     # Key Value lookup
     if key in KEY_VALUE_LOOKUP:

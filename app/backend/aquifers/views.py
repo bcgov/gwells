@@ -48,10 +48,14 @@ from gwells.open_api import (
     GEO_JSON_302_MESSAGE,
     GEO_JSON_PARAMS
 )
-from gwells.management.commands.export_databc import AQUIFERS_SQL, GeoJSONIterator, AQUIFER_CHUNK_SIZE
+from gwells.management.commands.export_databc import (
+    AQUIFERS_SQL_V1,
+    GeoJSONIterator,
+    AQUIFER_CHUNK_SIZE,
+)
 
-from aquifers import models, serializers, serializers_v2
-from aquifers.change_history import get_aquifer_history
+from aquifers import models, serializers
+from aquifers.change_history import get_aquifer_history_diff
 from aquifers.models import (
     Aquifer,
     AquiferResourceSection,
@@ -89,9 +93,7 @@ class AquiferRetrieveUpdateAPIView(RevisionMixin, AuditUpdateMixin, RetrieveUpda
     lookup_field = 'aquifer_id'
 
     def get_serializer_class(self):
-        if self.request.version == 'v1':
-            return serializers.AquiferDetailSerializerV1
-        return serializers_v2.AquiferDetailSerializerV2
+        return serializers.AquiferDetailSerializerV1
 
 
 def _aquifer_qs(request):
@@ -111,9 +113,6 @@ def _aquifer_qs(request):
     search = query.get('search')
 
     match_any = True
-    if request.version == 'v2':
-        # V2 changes to `and`-ing the filters by default unless "match_any" is explicitly set to 'true'
-        match_any = query.get('match_any') == 'true'
 
     # build a list of filters from qs params
     filters = []
@@ -179,9 +178,7 @@ class AquiferListCreateAPIView(RevisionMixin, AuditCreateMixin, ListCreateAPIVie
         if self.request.method == 'GET':
             return serializers.AquiferSerializer
         else:
-            if self.request.version == 'v1':
-                return serializers.AquiferDetailSerializerV1
-            return serializers_v2.AquiferDetailSerializerV2
+            return serializers.AquiferDetailSerializerV1
 
     def get_queryset(self):
         return _aquifer_qs(self.request).values(
@@ -344,36 +341,6 @@ class AquiferNameList(ListAPIView):
         return Response(serializer(results[:20], many=True).data)
 
 
-class AquiferNameListV2(ListAPIView):
-    """ List all aquifers in a simplified format """
-
-    serializer_class = serializers.AquiferSerializerBasic
-    model = Aquifer
-    queryset = Aquifer.objects.all()
-    pagination_class = None
-
-    filter_backends = (filters.SearchFilter,)
-    ordering = ('aquifer_id',)
-    search_fields = (
-        'aquifer_id',
-        'aquifer_name',
-    )
-
-    def get(self, request, **kwargs):
-        serializer = self.get_serializer_class()
-
-        ids = self.request.query_params.get('aquifer_ids', '')
-        search = self.request.query_params.get('search', None)
-
-        # avoiding responding with excess results
-        results = []
-        if ids:
-            results = self.queryset.filter(aquifer_id__in=ids.split(','))
-        elif search:
-            results = self.filter_queryset(self.get_queryset())
-        return Response(serializer(results[:20], many=True).data)
-
-
 class AquiferHistory(APIView):
     """
     get: returns a history of changes to a Aquifer model record
@@ -393,7 +360,7 @@ class AquiferHistory(APIView):
         except Aquifer.DoesNotExist:
             raise Http404("Aquifer not found")
 
-        history_diff = get_aquifer_history(aquifer)
+        history_diff = get_aquifer_history_diff(aquifer)
 
         return Response(history_diff)
 
@@ -529,7 +496,7 @@ AQUIFER_PROPERTIES = openapi.Schema(
             get_geojson_schema(AQUIFER_PROPERTIES, 'Polygon'))
     })
 @api_view(['GET'])
-def aquifer_geojson(request, **kwargs):
+def aquifer_geojson_v1(request, **kwargs):
     realtime = request.GET.get('realtime') in ('True', 'true')
     if realtime:
 
@@ -545,7 +512,7 @@ def aquifer_geojson(request, **kwargs):
             bounds = None
             bounds_sql = ''
 
-        iterator = GeoJSONIterator(AQUIFERS_SQL.format(bounds=bounds_sql),
+        iterator = GeoJSONIterator(AQUIFERS_SQL_V1.format(bounds=bounds_sql),
                                    AQUIFER_CHUNK_SIZE,
                                    connection.cursor(),
                                    bounds)
@@ -565,7 +532,7 @@ def aquifer_geojson(request, **kwargs):
 
 @api_view(['GET'])
 @cache_page(60*15)
-def aquifer_geojson_simplified(request, **kwargs):
+def aquifer_geojson_simplified_v1(request, **kwargs):
     """
     Sadly, GeoDjango's ORM doesn't seem to directly support a call to
     ST_AsGEOJSON, but the latter performs much better than processing WKT
@@ -574,7 +541,7 @@ def aquifer_geojson_simplified(request, **kwargs):
 
     SQL = """
     SELECT
-           ST_AsGeoJSON(geom_simplified, 8) :: json AS "geometry",
+           ST_AsGeoJSON((ST_GeometryN(geom_simplified, 1)), 8) :: json AS "geometry",
            aquifer.aquifer_id                       AS id
     FROM aquifer;
     """
