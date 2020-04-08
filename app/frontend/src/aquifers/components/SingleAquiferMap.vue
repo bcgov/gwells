@@ -1,5 +1,5 @@
 <template>
-  <div id="map" class="map"/>
+  <div id="single-aquifer-map" class="map"/>
 </template>
 
 <script>
@@ -405,25 +405,25 @@ export default {
   }
 }
 </script>
-<style>
+<style lang="scss">
 @import "~leaflet/dist/leaflet.css";
 @import "~leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
 
-.map {
-  height: 500px;
-}
+#single-aquifer-map {
+  height: 600px;
 
-.leaflet-control-legend {
-  background-color: white;
-  box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.4);
-  border-radius: 0.1em;
-}
+  .leaflet-control-legend {
+    background-color: white;
+    box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.4);
+    border-radius: 0.1em;
+  }
 
-.leaflet-control-legend li {
-  line-height: 20px;
-}
+  .leaflet-control-legend li {
+    line-height: 20px;
+  }
 
-.leaflet-control-layers label:last-child {
-  margin-bottom: 0;
+  .leaflet-control-layers label:last-child {
+    margin-bottom: 0;
+  }
 }
 </style>
