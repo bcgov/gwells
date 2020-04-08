@@ -207,7 +207,7 @@ def apiTest (String stageName, String stageUrl, String envSuffix) {
             node("nodejs-${appName}-${envSuffix}-${prNumber}") {
                 checkout scm
                 dir('tests/api-tests') {
-                    sh 'npm install -g newman'
+                    sh 'npm install -g newman@4.6.1'
                     try {
                         sh """
                             newman run ./registries_api_tests.json \
@@ -446,7 +446,7 @@ pipeline {
         prodProject = "moe-gwells-prod"
         prodSuffix = "production"
         prodHost = "gwells-prod.pathfinder.gov.bc.ca"
-        
+
         // name of the provisioned PVC claim for NFS backup storage
         // this will not be created during the pipeline; it must be created
         // before running the production pipeline.
