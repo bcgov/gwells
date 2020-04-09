@@ -212,7 +212,7 @@ def clean_attrs(obj, key, ver):
     # error that is thrown because of an incompatibility between legacy Polygon versioned data
     # and the updated DB MultiPolygon.
     if key == 'geom':
-        return json.loads(ver.serialized_data)[0]['fields']['geom']
+        return json.loads(ver.serialized_data)[0]['fields'].get('geom')
 
     # get the value from the object
     val = getattr(obj, key, None)
