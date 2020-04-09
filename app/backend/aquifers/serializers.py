@@ -194,7 +194,10 @@ class AquiferDetailSerializerV1(serializers.ModelSerializer):
         ret = super().to_representation(instance)
         if instance.geom:
             instance.geom.transform(4326)
-            ret['geom'] = json.loads(instance.geom.json)
+            # NOTE: DB geom changed to MultiPolygon in https://github.com/bcgov/gwells/pull/1594
+            # We need to use the first polygon defined in the multipolygon geom in order to maintain
+            # API compatibility
+            ret['geom'] = json.loads(instance.geom[0].json)
 
         # respond with the 'description' field for the following items, which are otherwise
         # references to code tables. Testing for the reference first prevents type errors,

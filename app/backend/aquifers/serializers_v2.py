@@ -21,7 +21,7 @@ from aquifers import models
 HYDRAULIC_SUBTYPES = ['1a', '1b', '1c', '2', '3', '4a', '5']
 
 
-class AquiferResourceSerializer(serializers.ModelSerializer):
+class AquiferResourceSerializerV2(serializers.ModelSerializer):
     """Serialize aquifer resourcelist"""
     section_code = serializers.PrimaryKeyRelatedField(
         queryset=models.AquiferResourceSection.objects.all(),
@@ -33,7 +33,7 @@ class AquiferResourceSerializer(serializers.ModelSerializer):
         Add instance key to values if `id` present in primitive dict
         :param data:
         """
-        obj = super(AquiferResourceSerializer, self).to_internal_value(data)
+        obj = super(AquiferResourceSerializerV2, self).to_internal_value(data)
         instance_id = data.get('id', None)
         if instance_id:
             obj['instance'] = models.AquiferResource.objects.get(
@@ -52,7 +52,7 @@ class AquiferResourceSerializer(serializers.ModelSerializer):
 
 class AquiferDetailSerializerV2(serializers.ModelSerializer):
 
-    resources = AquiferResourceSerializer(many=True, required=False)
+    resources = AquiferResourceSerializerV2(many=True, required=False)
     licence_details = serializers.JSONField(read_only=True)
 
     def create(self, validated_data):

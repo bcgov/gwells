@@ -43,7 +43,7 @@ logger = logging.getLogger(__name__)
 # IMPORTANT: If the underlying data structure changes (e.g. column name changes etc.), the
 # property names have to stay the same! This endpoint is consumed by DataBC and must remain
 # stable!
-# Casing diameter: For now, grab the smallest diameter (should be using type, but we don't have 
+# Casing diameter: For now, grab the smallest diameter (should be using type, but we don't have
 # date right now.)
 WELLS_SQL = ("""
 select
@@ -159,9 +159,9 @@ LITHOLOGY_CHUNK_SIZE = 10000
 # IMPORTANT: If the underlying data structure changes (e.g. column name changes etc.), the
 # property names have to stay the same! This endpoint is consumed by DataBC and must remain
 # stable!
-AQUIFERS_SQL = ("""
+AQUIFERS_SQL_V1 = ("""
 select
-    ST_AsGeoJSON(ST_Transform(geom, 4326)) :: json as "geometry",
+    ST_AsGeoJSON(ST_Transform(ST_GeometryN(geom, 1), 4326)) :: json as "geometry",
     aquifer.aquifer_id as aquifer_id,
     SUBSTRING(aquifer.aquifer_name for 100) as name,
     SUBSTRING(aquifer.location_description for 100) as location,
@@ -195,6 +195,43 @@ from aquifer
         aquifer.geom is not null
         {bounds}
     order by aquifer.aquifer_id
+""")
+AQUIFERS_SQL_V2 = ("""
+select
+    ST_AsGeoJSON(ST_Transform(a.geom, 4326)) :: json as "geometry",
+    a.aquifer_id as aquifer_id,
+    SUBSTRING(a.aquifer_name for 100) as name,
+    SUBSTRING(a.location_description for 100) as location,
+    SUBSTRING(CONCAT('https://apps.nrs.gov.bc.ca/gwells/aquifers/', a.aquifer_id) for 255) as detail,
+    SUBSTRING(aquifer_material_code.description for 100) as material,
+    SUBSTRING(aquifer_subtype_code.description for 100) as subtype,
+    SUBSTRING(aquifer_vulnerability_code.description for 100) as vulnerability,
+    SUBSTRING(aquifer_productivity_code.description for 100) as productivity,
+    SUBSTRING(aquifer_demand_code.description for 100) as demand,
+    SUBSTRING(water_use_code.description for 100) as water_use,
+    SUBSTRING(quality_concern_code.description for 100) as quality_concern,
+    SUBSTRING(a.litho_stratographic_unit for 100) as litho_stratographic_unit,
+    a.mapping_year,
+    SUBSTRING(a.notes for 2000) as notes
+from aquifer a
+    left join aquifer_material_code on
+        aquifer_material_code.aquifer_material_code = a.aquifer_material_code
+    left join aquifer_subtype_code on
+        aquifer_subtype_code.aquifer_subtype_code = a.aquifer_subtype_code
+    left join aquifer_vulnerability_code on
+        aquifer_vulnerability_code.aquifer_vulnerability_code = a.aquifer_vulnerablity_code
+    left join aquifer_productivity_code on
+        aquifer_productivity_code.aquifer_productivity_code = a.aquifer_productivity_code
+    left join aquifer_demand_code on
+        aquifer_demand_code.aquifer_demand_code = a.aquifer_demand_code
+    left join water_use_code on
+        water_use_code.water_use_code = a.water_use_code
+    left join quality_concern_code on
+        quality_concern_code.quality_concern_code = a.quality_concern_code
+    where
+        a.geom is not null
+        {bounds}
+    order by a.aquifer_id
 """)
 AQUIFER_CHUNK_SIZE = 100
 
@@ -341,7 +378,7 @@ class Command(BaseCommand):
 
     def generate_aquifers(self, filename):
         self.generate_geojson_chunks(
-            AQUIFERS_SQL.format(bounds=''), filename, AQUIFER_CHUNK_SIZE)
+            AQUIFERS_SQL_V1.format(bounds=''), filename, AQUIFER_CHUNK_SIZE)
 
     def generate_wells(self, filename):
         self.generate_geojson_chunks(WELLS_SQL.format(bounds=''), filename, WELL_CHUNK_SIZE)

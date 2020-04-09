@@ -21,12 +21,12 @@ exports[`Search Component Matches the snapshot 1`] = `
         <div
           class="p-4 col-md-12 col-lg-12 col-xl-4 col-12"
         >
+          <!---->
+           
           <h1
             class="main-title ml-2 mt-2"
           >
             Aquifer Search
-            
-            <!---->
           </h1>
            
           <div
