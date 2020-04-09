@@ -1,5 +1,5 @@
 <template>
-  <div id="map" class="map"/>
+  <div id="aquifer-search-map" class="map"/>
 </template>
 
 <script>
@@ -10,6 +10,7 @@ import { uniq } from 'lodash'
 import { GeoSearchControl, EsriProvider } from 'leaflet-geosearch'
 import 'leaflet-lasso'
 import 'leaflet-fullscreen/dist/Leaflet.fullscreen.min.js'
+import { pointInPolygon } from 'geojson-utils'
 
 import aquiferLayers from '../layers'
 import { buildLegendHTML } from '../legend'
@@ -29,6 +30,12 @@ const SELECTED_LAYER_STYLE = {
   weight: 2,
   color: 'green',
   fillColor: 'green'
+}
+const AQUIFER_HOVER_OVER_STYLE = {
+  fillOpacity: 0.5
+}
+const AQUIFER_HOVER_OUT_STYLE = {
+  fillOpacity: 0.2
 }
 
 const provider = new EsriProvider()
@@ -389,20 +396,58 @@ export default {
         this.canvasLayer.addLayer(this.selectedAquiferLayer)
       }
     },
-    createAquiferPopupContent (aquiferId, name) {
-      return () => {
-        const route = { name: 'aquifers-view', params: { id: aquiferId } }
-        const url = this.$router.resolve(route)
-        const container = L.DomUtil.create('div', 'leaflet-popup-aquifer')
-        container.innerHTML = [
-          `<div><a href="${url.href}">Aquifer ${aquiferId}</a></div>`,
-          name ? `<div>Aquifer name: ${name}</div>` : null
-        ].filter(Boolean).join('\n')
-        L.DomEvent.on(container.querySelector('a'), 'click', (e) => {
-          if (!e.ctrlKey) {
-            e.preventDefault()
-            this.$router.push(route)
+    findAquifersUnderPoint (lat, lng) {
+      const point = { type: 'Point', coordinates: [lng, lat] }
+      const aquifers = []
+      this.aquiferLayer.getLayers()
+        .filter((layer) => {
+          // Filter to those layers' bounds that contain the point
+          return layer.getBounds().contains([lat, lng])
+        })
+        .forEach((layer) => {
+          // Build a GeoJSON object to test
+          const feature = layer.toGeoJSON()
+          const isInPolygon = pointInPolygon(point, feature.geometry)
+          if (isInPolygon) {
+            aquifers.push({
+              layer: layer,
+              featureProperties: feature.properties
+            })
           }
+        })
+      return aquifers
+    },
+    createAquiferPopupContent (clickedLayer, clickedFeatureProperties) {
+      var self = this
+      return function (e) {
+        const latlng = this.getLatLng()
+
+        clickedLayer.setStyle({ fillOpacity: 0.2 })
+
+        const container = L.DomUtil.create('div', 'leaflet-popup-aquifer')
+        const ul = L.DomUtil.create('ul')
+        container.appendChild(ul)
+
+        self.findAquifersUnderPoint(latlng.lat, latlng.lng).forEach(({ layer, featureProperties }) => {
+          const { id: aquiferId } = featureProperties
+          const route = { name: 'aquifers-view', params: { id: aquiferId } }
+          const url = self.$router.resolve(route)
+          const li = L.DomUtil.create('li')
+          li.innerHTML = `<a href="${url.href}">Aquifer ${aquiferId}</a>`
+          const a = li.querySelector('a')
+          a.onclick = (e) => {
+            if (!e.ctrlKey) {
+              e.preventDefault()
+              self.$router.push(route)
+            }
+          }
+          li.onmouseenter = () => {
+            layer.setStyle(AQUIFER_HOVER_OVER_STYLE)
+          }
+          li.onmouseleave = () => {
+            layer.setStyle(AQUIFER_HOVER_OUT_STYLE)
+          }
+          ul.appendChild(li)
         })
         return container
       }
@@ -420,15 +465,19 @@ export default {
           style: AQUIFER_LAYER_STYLE,
           // type: 'geojsonfeature',
           onEachFeature (feature, layer) {
-            const { id: aquiferId, name } = feature.properties
+            const { id: aquiferId } = feature.properties
             layer.aquiferId = aquiferId
 
-            layer.bindPopup(self.createAquiferPopupContent(aquiferId, name))
+            layer.bindPopup(self.createAquiferPopupContent(layer, feature.properties))
             layer.on('mouseover', () => {
               layer.unbindTooltip()
               if (!layer.isPopupOpen()) {
+                layer.setStyle(AQUIFER_HOVER_OVER_STYLE)
                 layer.bindTooltip(`Aquifer ${feature.properties.id}`, { sticky: true }).openTooltip()
               }
+            })
+            layer.on('mouseout', () => {
+              layer.setStyle(AQUIFER_HOVER_OUT_STYLE)
             })
             layer.on('click', () => {
               layer.unbindTooltip()
@@ -503,44 +552,56 @@ export default {
 @import '~leaflet-fullscreen/dist/leaflet.fullscreen.css';
 @import "~leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
 
-.map {
-  width: 100%;
-  height: 500px;
-}
+#aquifer-search-map {
+  height: 600px;
 
-.leaflet-control-area-select a {
-  background: url('../../common/assets/images/shape-polygon-plus.svg') no-repeat center center white;
-  cursor: pointer;
-}
+  .leaflet-control-area-select a {
+    background: url('../../common/assets/images/shape-polygon-plus.svg') no-repeat center center white;
+    cursor: pointer;
+  }
 
-.leaflet-control-geosearch a.reset {
-  display: none;
-}
+  .leaflet-control-geosearch a.reset {
+    display: none;
+  }
 
-.leaflet-areaselect-shade {
-  position: absolute;
-  background: rgba(0,0,0, 0.4);
-}
+  .leaflet-areaselect-shade {
+    position: absolute;
+    background: rgba(0,0,0, 0.4);
+  }
 
-.leaflet-areaselect-handle {
-  position: absolute;
-  background: #fff;
-  border: 1px solid #666;
-  box-shadow: 1px 1px rgba(0,0,0, 0.2);
-  width: 14px;
-  height: 14px;
-  cursor: move;
-}
+  .leaflet-areaselect-handle {
+    position: absolute;
+    background: #fff;
+    border: 1px solid #666;
+    box-shadow: 1px 1px rgba(0,0,0, 0.2);
+    width: 14px;
+    height: 14px;
+    cursor: move;
+  }
 
-.geolocate a {
-  background: url('../../common/assets/images/geolocate.png') no-repeat center center white;
-  cursor: pointer;
-}
+  .geolocate a {
+    background: url('../../common/assets/images/geolocate.png') no-repeat center center white;
+    cursor: pointer;
+  }
 
-.leaflet-control-legend {
-  background-color: white;
-  box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.4);
-  border-radius: 0.1em;
+  .leaflet-control-legend {
+    background-color: white;
+    box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.4);
+    border-radius: 0.1em;
+  }
+
+  .leaflet-popup-aquifer {
+    ul {
+      margin: 0;
+      padding: 0;
+      list-style-type: none;
+    }
+
+    li {
+      margin: 0;
+      padding: 0;
+    }
+  }
 }
 
 .leaflet-top.leaflet-center {

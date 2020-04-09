@@ -291,7 +291,7 @@ def get_history_date(history_items):
     return None
 
 
-# transforms data between different relatioship types
+# transforms data between different relationship types
 def clean_attrs(obj, key, prev_val):
     if obj is None:
         return None

@@ -39,15 +39,15 @@
         v-on:reset="triggerReset">
         <b-form-row>
           <b-col cols="12" md="12" lg="12" xl="4" class="p-4">
-            <h1 class="main-title ml-2 mt-2">Aquifer Search
-              <div v-if='userRoles.aquifers.edit' class="pb-2 pull-right">
-              <b-button
-                id="aquifers-add"
-                v-on:click="navigateToNew"
-                v-if="userRoles.aquifers.edit"
-                variant="primary">Add new Aquifer</b-button>
-              </div>
-            </h1>
+            <b-button
+              id="aquifers-add"
+              class="pull-right"
+              v-on:click="navigateToNew"
+              v-if="userRoles.aquifers.edit"
+              variant="primary">
+              Add new Aquifer
+            </b-button>
+            <h1 class="main-title ml-2 mt-2">Aquifer Search</h1>
 
             <div class="pl-2 pr-2 aquifer-search-column mt-3">
               <h4>Basic Search</h4>

@@ -12,7 +12,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-  <div id="map" class="single-well-map"/>
+  <div id="single-well-map" class="map"/>
 </template>
 
 <script>
@@ -75,7 +75,7 @@ export default {
     },
     initMap () {
       // Create map, with default centered and zoomed to show entire BC.
-      this.map = L.map('map', {
+      this.map = L.map(this.$el, {
         gestureHandling: true
       }).setView([this.latitude ? this.latitude : 54.5, this.getLongitude() ? this.getLongitude() : -126.5], 5)
       L.control.scale().addTo(this.map)
@@ -132,7 +132,7 @@ export default {
 @import "~leaflet/dist/leaflet.css";
 @import "~leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
 
-.single-well-map {
+#single-well-map {
   width: 100%;
   height: 500px;
 }

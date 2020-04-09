@@ -15,7 +15,7 @@
   <div class="search-map" :class="{ 'zoom-box-crosshair': zoomBoxActive }">
     <l-map
       ref="map"
-      id="map"
+      id="well-search-map"
       :min-zoom="minZoom"
       :max-zoom="maxZoom"
       :max-bounds="maxBounds"
@@ -439,10 +439,8 @@ export default {
 @import "~leaflet/dist/leaflet.css";
 @import "~leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
 
-#map {
+#well-search-map {
   height: 600px;
-}
-.search-map {
 
   &.zoom-box-crosshair {
       cursor: crosshair !important;

@@ -12,7 +12,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-  <div id="map" class="coords-map"/>
+  <div id="coords-map" class="map"/>
 </template>
 
 <script>
@@ -76,7 +76,7 @@ export default {
     },
     initMap () {
       // Create map, with default centered and zoomed to show entire BC.
-      this.map = L.map('map', {
+      this.map = L.map(this.$el, {
         gestureHandling: true
       }).setView([this.latitude ? this.latitude : 54.5, this.getLongitude() ? this.getLongitude() : -126.5], 5)
       L.control.scale().addTo(this.map)
@@ -174,9 +174,9 @@ export default {
 @import "~leaflet/dist/leaflet.css";
 @import "~leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
 
-.coords-map {
+#coords-map {
   width: 550px;
-  height: 500px;
+  height: 600px;
 }
 
 </style>

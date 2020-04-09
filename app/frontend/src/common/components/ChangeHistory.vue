@@ -3,31 +3,66 @@
     <div class="card-body">
       <h6 class="card-title" id="changeHistoryTitle">Change History
         <span class="ml-3">
-          <b-button link size="sm" variant="outline-primary" @click="showHistory = !showHistory">{{showHistory ? "Hide":"Show"}}</b-button>
-        </span></h6>
-      <div id="historyList" ref="history" v-if="!loading">
-        <div class="mt-2" v-if="!history || !history.length">
-          <b-row><b-col>No history for this record.</b-col></b-row>
-        </div>
-        <div class="mt-2" v-if="history && history.length && showHistory">
-          <div class="mt-3" v-for="(version, index) in history" :key="`history-version ${index}`" :id="`history-version-${index}`">
-              <span class="font-weight-bold">{{ version.user }}</span>
-                {{ version.created ? "created" : "edited" }}
-                {{ version.name ? version.name : 'record' }}
-                ({{ version.date | moment("MMMM Do YYYY [at] LT") }}){{ version.created ? "." : ":" }}
-              <div class="ml-4">
-                <!-- compare current value to prev value, ignoring insignificant type changes (null to empty string) -->
-                <div
-                    v-for="(value, key) in version.diff"
-                    v-if="!(value === '' && version.prev[key] === null)"
-                    :key="`history-item-${key}-in-version ${index}`">
-                  {{ key | readable }} changed from {{ version.prev[key] | formatValue }} to {{ value | formatValue }}
+          <b-button link size="sm" variant="outline-primary" @click="toggleHistory">{{showHistory ? "Hide":"Show"}}</b-button>
+        </span>
+      </h6>
+      <div id="historyList">
+        <div v-if="!loading">
+          <div class="mt-2" v-if="showHistory && (!history || !history.length)">
+            <b-row><b-col>No history for this record.</b-col></b-row>
+          </div>
+          <div class="mt-2" v-if="history && history.length && showHistory">
+            <div class="mt-3" v-for="(version, index) in history" :key="`history-version ${index}`" :id="`history-version-${index}`">
+                <span class="font-weight-bold">{{ version.user }}</span>
+                  {{ version.created ? "created" : "edited" }}
+                  {{ version.name ? version.name : 'record' }}
+                  ({{ version.date | moment("MMMM Do YYYY [at] LT") }}){{ version.created ? "." : ":" }}
+                <div class="ml-4">
+                  <!-- compare current value to prev value, ignoring insignificant type changes (null to empty string) -->
+                  <div
+                      v-for="(value, key) in version.diff"
+                      v-if="!(value === '' && version.prev[key] === null)"
+                      :key="`history-item-${key}-in-version ${index}`">
+                    <div v-if="isTable(value)" class="mt-2">
+                      {{ key | formatKey | readable }} changed to:
+                      <div v-if="value != null && value.length > 0">
+                        <b-table
+                          responsive
+                          striped
+                          small
+                          fixed
+                          bordered
+                          :items="value"/>
+                      </div>
+                      <div v-else>
+                        None
+                      </div>
+                      <div style="margin-bottom:10px;">
+                        From:
+                        <div v-if="version.prev[key] != null && version.prev[key].length > 0">
+                          <b-table
+                            responsive
+                            striped
+                            small
+                            fixed
+                            bordered
+                            :items="version.prev[key]"/>
+                        </div>
+                        <div v-else>
+                          None
+                        </div>
+                      </div>
+                    </div>
+                    <div v-else>
+                      {{ key | readable }} changed from {{ version.prev[key] | formatValue }} to {{ value | formatValue }}
+                    </div>
+                  </div>
                 </div>
-              </div>
+            </div>
           </div>
         </div>
-        <div v-if="loading">
-          <b-row><b-col>Loading history...</b-col></b-row>
+        <div v-else>
+          Loading history...
         </div>
       </div>
     </div>
@@ -69,6 +104,8 @@ export default {
   },
   methods: {
     update () {
+      if (!this.showHistory) { return }
+
       this.loading = true
       ApiService.history(this.endpoint, this.id).then((response) => {
         this.history = response.data
@@ -76,6 +113,16 @@ export default {
       }).catch(() => {
         this.loading = false
       })
+    },
+    toggleHistory () {
+      this.showHistory = !this.showHistory
+
+      if (this.showHistory) {
+        this.update()
+      }
+    },
+    isTable (arr) {
+      return Array.isArray(arr) && arr.length > 0
     }
   },
   filters: {
@@ -91,6 +138,9 @@ export default {
       return val.split('_').map((word) => {
         return word.charAt(0).toUpperCase() + word.substring(1)
       }).join(' ')
+    },
+    formatKey (val) {
+      return val
     },
     formatValue (val) {
       // takes a single value and returns a string in a human readable format.

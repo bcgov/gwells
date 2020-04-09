@@ -27,7 +27,7 @@ from django.dispatch import receiver
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.gis.gdal import DataSource
-from django.contrib.gis.geos import GEOSGeometry
+from django.contrib.gis.geos import GEOSGeometry, MultiPolygon
 from django.contrib.gis.geos.prototypes.io import wkt_w
 from django.contrib.gis import geos
 
@@ -416,7 +416,7 @@ class Aquifer(AuditModel):
     litho_stratographic_unit = models.CharField(
         max_length=100, blank=True, null=True, verbose_name='Lithographic Stratographic Unit',
         db_comment=('Permeable geologic unit (where available) that comprises the aquifer. It is typically '
-                    'either; the era of deposition, the name of a specific formation and\or the broad '
+                    'either; the era of deposition, the name of a specific formation and/or the broad '
                     'material types, e.g., Paleozoic to Mesozoic Era, Cache Creek Complex, Intrusive Rock.'))
     mapping_year = models.PositiveIntegerField(
         validators=[
@@ -435,9 +435,9 @@ class Aquifer(AuditModel):
         db_comment=('Details about the mapped aquifer that the province deems important to maintain such as'
                     ' local knowledge about the aquifer or decisions for changes related to attributes of'
                     ' the mapped aquifer.'))
-    geom = models.PolygonField(srid=3005, null=True)
+    geom = models.MultiPolygonField(srid=3005, null=True)
     # This version is pre-rendered in WGS 84 for display on web-maps.
-    geom_simplified = models.PolygonField(srid=4326, null=True)
+    geom_simplified = models.MultiPolygonField(srid=4326, null=True)
 
     history = GenericRelation(Version)
 
@@ -489,15 +489,11 @@ class Aquifer(AuditModel):
         geos_geom = GEOSGeometry(wkt, srid=geom.srid)
         geos_geom.transform(3005)
 
-        # Convert MultiPolygons to plain Polygons,
-        # We assume the largest one is the one we want to keep, and the rest are artifacts/junk.
+        # Convert plain Polygons to MultiPolygons,
         if isinstance(geos_geom, geos.MultiPolygon):
-            geos_geom_out = geos_geom[0]
-            for g in geos_geom:
-                if len(g.wkt) > len(geos_geom_out.wkt):
-                    geos_geom_out = g
-        elif isinstance(geos_geom, geos.Polygon):
             geos_geom_out = geos_geom
+        elif isinstance(geos_geom, geos.Polygon):
+            geos_geom_out = MultiPolygon(geos_geom)
         else:
             raise Aquifer.BadShapefileException("Bad geometry type: {}, skipping.".format(geos_geom.__class__))
 
@@ -533,9 +529,13 @@ class Aquifer(AuditModel):
 def update_geom_simplified(sender, instance, **kwargs):
     geos_geom_simplified = None
     if instance.geom:
-        geos_geom_simplified = copy.deepcopy(instance.geom)
-        geos_geom_simplified.transform(4326)
-        geos_geom_simplified = geos_geom_simplified.simplify(0.0005, preserve_topology=True)
+        simplified_polygons = []
+        for poly in instance.geom:
+            geos_geom_simplified = poly.simplify(40, preserve_topology=True)
+            geos_geom_simplified.transform(4326)
+            simplified_polygons.append(geos_geom_simplified)
+
+        geos_geom_simplified = MultiPolygon(simplified_polygons)
 
     instance.geom_simplified = geos_geom_simplified
 
@@ -564,9 +564,6 @@ class AquiferResourceSection(BasicCodeTableModel):
 
     def __str__(self):
         return '{} - {}'.format(self.code, self.description)
-
-    def __str__(self):
-        return self.name
 
 
 class AquiferResource(AuditModel):
