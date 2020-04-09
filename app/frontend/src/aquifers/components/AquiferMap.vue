@@ -13,6 +13,7 @@ import 'leaflet-fullscreen/dist/Leaflet.fullscreen.min.js'
 
 import aquiferLayers from '../layers'
 import { buildLegendHTML } from '../legend'
+import { SEARCH_AQUIFERS } from '../store/actions.types'
 
 const AQUIFER_LAYER_STYLE = {
   color: '#FF6500',
@@ -41,7 +42,16 @@ const DEFAULT_MAP_ZOOM = 5
 
 export default {
   name: 'AquiferMap',
-  props: ['initialZoom', 'initialCentre', 'aquifersGeometry', 'aquiferDetails', 'highlightAquiferIds', 'loading', 'selectedId'],
+  props: [
+    'initialZoom',
+    'initialCentre',
+    'aquifersGeometry',
+    'aquiferDetails',
+    'highlightAquiferIds',
+    'loading',
+    'selectedId',
+    'searchText'
+  ],
   mounted () {
     // There seems to be an issue loading leaflet immediately on mount, we use nextTick to ensure
     // that the view has been rendered at least once before injecting the map.
@@ -100,6 +110,9 @@ export default {
     },
     loading () {
       this.updateCanvasLayer()
+    },
+    searchText (searchQuery) {
+      this.updateSearchButtonText(searchQuery)
     }
   },
   methods: {
@@ -121,6 +134,8 @@ export default {
         maxZoom: 17
       })
 
+      this.map._controlCorners['topcenter'] = L.DomUtil.create('div', 'leaflet-top leaflet-center', this.map._controlContainer)
+
       const zoom = this.initialZoom || DEFAULT_MAP_ZOOM
       const centre = this.initialCentre ? [this.initialCentre.lat, this.initialCentre.lng] : DEFAULT_MAP_CENTRE
 
@@ -133,6 +148,7 @@ export default {
       this.map.addControl(this.getAreaSelectControl())
       this.map.addControl(this.getLegendControl())
       this.map.addControl(this.getLocateControl())
+      this.map.addControl(this.getMapSearchControl())
 
       // Add map layers.
       tiledMapLayer({ url: 'https://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer' }).addTo(this.map)
@@ -230,6 +246,25 @@ export default {
         }
       }))()
     },
+    getMapSearchControl () {
+      const self = this
+      return new (L.Control.extend({
+        options: {
+          position: 'topcenter'
+        },
+        onAdd (map) {
+          const container = L.DomUtil.create('div', 'leaflet-control-search leaflet-control-center')
+          container.innerHTML = `<button class="btn btn-primary" type="button"></button>`
+          const button = container.querySelector('button')
+          self.mapSearchButton = button
+          self.updateSearchButtonText()
+          button.onclick = () => {
+            self.searchButtonClicked()
+          }
+          return container
+        }
+      }))()
+    },
     listenForLayerToggle () {
       this.$on('activeLayers', (data) => {
         this.legendControlContent.innerHTML = buildLegendHTML(data)
@@ -260,6 +295,8 @@ export default {
     },
     listenForReset () {
       this.$parent.$on('resetLayers', (data) => {
+        this.hideMapSearchButton()
+        this.supressShowMapSearchButton = true
         if (this.map) {
           this.map.eachLayer((layer) => {
             if (layer.wmsParams && layer.wmsParams.overlay) {
@@ -273,6 +310,29 @@ export default {
         }
       })
     },
+    hideMapSearchButton () {
+      window.clearTimeout(this.showMapSearchButtonTimer)
+      this.showMapSearchButtonTimer = null
+      this.mapSearchButton.classList.remove('show')
+    },
+    showMapSearchButton () {
+      if (this.showMapSearchButtonTimer) { return }
+      this.showMapSearchButtonTimer = window.setTimeout(() => {
+        this.showMapSearchButtonTimer = null
+        if (!this.supressShowMapSearchButton) {
+          this.mapSearchButton.classList.add('show')
+        } else {
+          this.supressShowMapSearchButton = false
+        }
+      }, 500)
+    },
+    updateSearchButtonText () {
+      let label = 'Search in map'
+      if (this.searchText) {
+        label = `Search for "${this.searchText}"`
+      }
+      this.mapSearchButton.textContent = label
+    },
     getFeaturesOnMap () {
       const layersInBound = []
       const bounds = this.map.getBounds()
@@ -284,8 +344,14 @@ export default {
       return layersInBound
     },
     listenForMapMovement () {
-      const events = ['zoomend', 'moveend']
-      events.map(eventName => {
+      const startEvents = ['zoomstart', 'movestart']
+      startEvents.forEach(eventName => {
+        this.map.on(eventName, (e) => {
+          this.showMapSearchButton()
+        })
+      })
+      const endEvents = ['zoomend', 'moveend']
+      endEvents.forEach(eventName => {
         this.map.on(eventName, (e) => {
           const bounds = this.map.getBounds()
           const layersInBound = this.getFeaturesOnMap()
@@ -299,6 +365,10 @@ export default {
         const zoom = this.map.getZoom()
         this.$emit('zoomed', zoom, this.map.getBounds())
       })
+    },
+    searchButtonClicked () {
+      this.hideMapSearchButton()
+      this.$emit('search', this.map.getZoom(), this.map.getBounds())
     },
     updateCanvasLayer () {
       this.canvasLayer.clearLayers()
@@ -342,6 +412,9 @@ export default {
       if (this.highlightLayer) {
         this.highlightLayer.clearLayers()
       }
+      if (this.selectedAquiferLayer) {
+        this.selectedAquiferLayer.clearLayers()
+      }
       if (this.aquifersGeometry && this.aquifersGeometry.features.length > 0) {
         const layerGroup = L.geoJSON(this.aquifersGeometry, {
           style: AQUIFER_LAYER_STYLE,
@@ -361,7 +434,10 @@ export default {
               layer.unbindTooltip()
             })
 
-            if (aquiferId in self.highlightIdsMap) {
+            if (self.selectedId === aquiferId) {
+              self.selectedAquiferLayer.addLayer(layer)
+              layer.setStyle(SELECTED_LAYER_STYLE)
+            } else if (aquiferId in self.highlightIdsMap) {
               self.highlightLayer.addLayer(layer)
               layer.setStyle(HIGHLIGHT_LAYER_STYLE)
               layer.bringToFront()
@@ -375,6 +451,7 @@ export default {
       const bounds = layer.getBounds()
 
       if (bounds.isValid()) {
+        this.supressShowMapSearchButton = true
         this.map.fitBounds(bounds)
       }
     },
@@ -408,20 +485,19 @@ export default {
           layer.setStyle(AQUIFER_LAYER_STYLE)
         }
       })
-    },
-    isViewReset () {
-      if (this.map.getZoom() === DEFAULT_MAP_ZOOM) {
-        if (DEFAULT_MAP_CENTRE.equals(this.map.getCenter(), 1.0E-2)) {
-          return true
-        }
-      }
-
-      return false
     }
+  },
+  created () {
+    // On reset or basic search, clear local params
+    this.$store.subscribeAction((action, state) => {
+      if (action.type === `aquiferStore/search/${SEARCH_AQUIFERS}`) {
+        this.hideMapSearchButton()
+      }
+    })
   }
 }
 </script>
-<style>
+<style lang="scss">
 @import "~leaflet/dist/leaflet.css";
 @import '~leaflet-geosearch/assets/css/leaflet.css';
 @import '~leaflet-fullscreen/dist/leaflet.fullscreen.css';
@@ -465,5 +541,31 @@ export default {
   background-color: white;
   box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.4);
   border-radius: 0.1em;
+}
+
+.leaflet-top.leaflet-center {
+  left: 50%;
+  transform: translate(-50%, 0%);
+}
+
+.leaflet-control-search {
+  button {
+    opacity: 0;
+
+    &.show {
+      animation: fade-in 300ms ease-in forwards;
+    }
+  }
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>

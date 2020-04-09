@@ -99,8 +99,10 @@
               :highlightAquiferIds="searchedAquiferIds"
               :selectedId="selectedAquiferId"
               :loading="loadingMap"
+              :searchText="search"
               @moved="mapMoved"
-              @zoomed="handleMapZoom"/>
+              @zoomed="handleMapZoom"
+              @search="mapSearch"/>
           </b-col>
         </b-form-row>
       </b-form>
@@ -126,9 +128,10 @@
             empty-text="No aquifers could be found"
             striped
             outlined
-            @row-clicked="rowClicked"
+            @row-clicked="searchResultsRowClicked"
             :busy="searchInProgress"
             v-if="searchPerformed"
+            :tbody-tr-class="searchResultsRowClass"
             responsive>
             <template slot="id" slot-scope="row">
               <router-link :to="{ name: 'aquifers-view', params: {id: row.item.id} }">{{ row.item.id }}</router-link>
@@ -159,7 +162,7 @@
   </div>
 </template>
 
-<style>
+<style lang="scss">
 table.b-table > thead > tr > th.sorting::before,
 table.b-table > tfoot > tr > th.sorting::before {
   display: none !important;
@@ -229,6 +232,13 @@ ul.pagination {
   text-decoration: underline;
   text-decoration-color: #37598A;
   text-decoration-skip-ink: none;
+}
+
+#aquifers-results {
+  tr.selected {
+    background-color: rgba(119, 204, 119, 0.7);
+    outline-color: rgb(55, 153, 37);
+  }
 }
 </style>
 
@@ -401,26 +411,28 @@ export default {
         this.$emit('resetLayers')
       })
     },
-    triggerSearch () {
+    triggerSearch (options = {}) {
+      this.selectedAquiferId = null
+      this[SET_CONSTRAIN_SEARCH](!!options.constrain)
       this[SEARCH_AQUIFERS]({
         selectedSections: this.selectedSections,
         matchAny: this.matchAny,
         query: this.search
       })
     },
+    mapSearch (zoom, bounds) {
+      this[SET_SEARCH_MAP_CENTRE](bounds.getCenter())
+      this[SET_SEARCH_MAP_ZOOM](zoom)
+      this.triggerSearch({ constrain: true })
+    },
     updateQueryParams () {
       this.$router.replace({ query: this.queryParams })
-    },
-    rowClicked (data) {
-      this.selectedAquiferId = data.id
-      this.scrollToMap()
     },
     mapMoved (bounds, featuresOnMap, isViewReset) {
       const viewingBC = bounds.contains(BC_LAT_LNG_BOUNDS)
 
       this[SET_SEARCH_MAP_CENTRE](viewingBC ? null : bounds.getCenter())
       this[SET_SEARCH_BOUNDS](bounds)
-      this[SET_CONSTRAIN_SEARCH](!viewingBC)
       this.updateQueryParams()
     },
     handleMapZoom (zoom, bounds) {
@@ -469,6 +481,16 @@ export default {
       if (query.match_any) {
         this[SET_MATCH_ANY](Boolean(query.match_any))
       }
+    },
+    searchResultsRowClass (item, type) {
+      if (!item || type !== 'row') { return }
+      if (item.aquifer_id === this.selectedAquiferId) {
+        return 'selected'
+      }
+    },
+    searchResultsRowClicked (data) {
+      this.selectedAquiferId = data.id
+      this.scrollToMap()
     }
   },
   watch: {
