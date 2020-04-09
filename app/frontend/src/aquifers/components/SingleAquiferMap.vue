@@ -30,14 +30,23 @@ const DEFAULT_CIRCLE_MARKER_OPTIONS = {
 
 const UNCORRELATED_WELL_CIRCLE_MARKER_OPTIONS_OVERRIDES = {
   fillColor: 'white',
+  color: '#000', // stroke color
   opacity: 1,
   fillOpacity: 1
 }
 
 const EMS_WELL_CIRCLE_MARKER_OPTIONS_OVERRIDES = {
   fillColor: '#0CA287',
+  color: '#000', // stroke color
   opacity: 1,
   fillOpacity: 1
+}
+
+const ARTESIAN_WELL_CIRCLE_MARKER_OPTIONS_OVERRIDES = {
+  opacity: 1,
+  weight: 1.5,
+  color: '#EE14CA',
+  fillColor: '#1099FE'
 }
 
 const AQUIFER_LAYER_STYLES = {
@@ -352,11 +361,14 @@ export default {
       }
     },
     getWellLayerStyle (well) {
-      const { ems, aquifer_id: aquiferId } = well
+      const { ems, aquifer_id: aquiferId, artesian } = well
 
       let style = {
         ...DEFAULT_CIRCLE_MARKER_OPTIONS,
         renderer: this.canvasRenderer
+      }
+      if (artesian) {
+        Object.assign(style, ARTESIAN_WELL_CIRCLE_MARKER_OPTIONS_OVERRIDES)
       }
 
       if (!this.activeLayers.aquiferWells.show) {

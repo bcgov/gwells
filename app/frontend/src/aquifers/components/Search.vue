@@ -455,6 +455,7 @@ export default {
         const latlng = query.map_centre.split(',')
         const lat = parseFloat(latlng[0])
         const lng = parseFloat(latlng[1])
+        // eslint-disable-next-line new-cap
         this[SET_SEARCH_MAP_CENTRE](new L.latLng(lat, lng))
       }
       if (query.map_zoom !== undefined) {
