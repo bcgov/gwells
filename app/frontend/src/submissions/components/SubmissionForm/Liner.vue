@@ -34,6 +34,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             v-model="linerMaterialInput"
             text-field="description"
             value-field="code"
+            placeholder="Select material"
             :errors="errors['liner_material']"
             :loaded="fieldsLoaded['liner_material']"/>
         </b-col>
@@ -104,7 +105,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     :id="`liner_perforated_from_${index}`"
                     type="number"
                     class="mb-0"
-                    v-model.number="liner.start"
+                    v-model="liner.start"
                     :errors="getLinerPerforationError(index).start"
                     :loaded="getFieldsLoaded(index).start"/>
                 </td>
@@ -113,7 +114,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     :id="`liner_perforated_to_${index}`"
                     type="number"
                     class="mb-0"
-                    v-model.number="liner.end"
+                    v-model="liner.end"
                     :errors="getLinerPerforationError(index).end"
                     :loaded="getFieldsLoaded(index).end"/>
                 </td>
@@ -193,11 +194,16 @@ export default {
     return {
       confirmRemoveModal: false,
       rowIndexToRemove: null,
-      linerPerforationsData: [],
-      pageLoaded: false
+      linerPerforationsData: []
     }
   },
   methods: {
+    emptyObject () {
+      return {
+        start: null,
+        end: null
+      }
+    },
     getLinerPerforationError (index) {
       if (this.errors && 'linerperforation_set' in this.errors && index in this.errors['linerperforation_set']) {
         return this.errors['linerperforation_set'][index]
@@ -211,7 +217,7 @@ export default {
       return {}
     },
     addRow () {
-      this.linerPerforationsData.push({ start: '', end: '' })
+      this.linerPerforationsData.push(this.emptyObject())
     },
     removeRowByIndex (index) {
       this.linerPerforationsData.splice(index, 1)
@@ -229,32 +235,27 @@ export default {
       let keys = Object.keys(row)
       if (keys.length === 0) return false
       // Check that all fields are not empty.
-      return !keys.every((key) => !row[key])
+      return !this.linerIsEmpty(row)
     },
     focusRemoveModal () {
       // Focus the "cancel" button in the confirm remove popup.
       this.$refs.cancelRemoveBtn.focus()
+    },
+    linerIsEmpty (liner) {
+      return Object.values(liner).every((x) => !x)
     }
   },
   computed: {
     ...mapGetters(['codes']),
-    computedLinerPerforations: function () {
-      return Object.assign({}, this.linerPerforationsData)
+    computedLinerPerforations () {
+      return [...this.linerPerforationsData]
     }
   },
   watch: {
     computedLinerPerforations: {
       deep: true,
       handler: function (n, o) {
-        let perforations = []
-        this.linerPerforationsData.forEach((d) => {
-          if (!Object.values(d).every(x => (x === ''))) {
-            perforations.push(d)
-          }
-        })
-        if (this.pageLoaded && this.saveDisabled) {
-          perforations.push({ start: '', end: '' })
-        }
+        const perforations = this.linerPerforationsData.filter((d) => !this.linerIsEmpty(d))
         this.$emit('update:linerPerforations', perforations)
       }
     }
@@ -266,12 +267,11 @@ export default {
         this.addRow()
       }
     } else {
-      Object.assign(this.linerPerforationsData, this.linerPerforations)
+      this.linerPerforations.forEach((liner) => {
+        this.linerPerforationsData.push({ ...liner })
+      })
       this.addRow()
     }
-  },
-  updated () {
-    this.pageLoaded = true
   }
 }
 </script>

@@ -181,7 +181,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             :loaded="fieldsLoaded['aquifer_lithology']"
             text-field="description">
             <template slot="first">
-              <option value="" disabled>Select Lithology</option>
+              <option :value="null" disabled>Select Lithology</option>
             </template>
           </b-form-select>
         </b-form-group>

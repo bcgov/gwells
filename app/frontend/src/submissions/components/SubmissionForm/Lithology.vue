@@ -62,7 +62,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </tr>
         </thead>
         <tbody>
-          <template v-for="(row, index) in lithologyData.length">
+          <template v-for="(row, index) in lithologyData">
             <tr :key="`lithology row ${index}`" :id="`lithologyRow${index}`">
               <td class="input-width-small">
                 <form-input
@@ -233,30 +233,20 @@ export default {
       confirmRemoveModal: false,
       rowIndexToRemove: null,
       lithSoils: [],
-      lithologyData: [],
-      pageLoaded: false
+      lithologyData: []
     }
   },
   computed: {
     ...mapGetters(['codes']),
-    computedLithology: function () {
-      return Object.assign({}, this.lithologyData)
+    computedLithology () {
+      return [...this.lithologyData]
     }
   },
   watch: {
     computedLithology: {
       deep: true,
       handler: function (n, o) {
-        let lithology = []
-        this.lithologyData.forEach((d) => {
-          if (!Object.values(d).every(x => (x === ''))) {
-            lithology.push(d)
-          }
-        })
-        if (this.pageLoaded) {
-          // HACK to trick Vue into detecting a change in the array
-          lithology.push(this.emptyObject())
-        }
+        const lithology = this.lithologyData.filter((d) => !this.lithologyIsEmpty(d))
         this.$emit('update:lithology', lithology)
       }
     }
@@ -267,13 +257,13 @@ export default {
     },
     emptyObject () {
       return {
-        lithology_raw_data: '',
-        lithology_colour: '',
-        lithology_hardness: '',
-        lithology_moisture: '',
-        lithology_observation: '',
+        lithology_raw_data: null,
+        lithology_colour: null,
+        lithology_hardness: null,
+        lithology_moisture: null,
+        lithology_observation: null,
         // lithology_description is a "descriptor" (containing an additional descriptive term like 'weathered', 'competent')
-        lithology_description: ''
+        lithology_description: null
       }
     },
     removeRowByIndex (index) {
@@ -293,7 +283,7 @@ export default {
       let keys = Object.keys(row)
       if (keys.length === 0) return false
       // Check that all fields are not empty.
-      return !keys.every((key) => !row[key])
+      return !this.lithologyIsEmpty(row)
     },
     focusRemoveModal () {
       // Focus the "cancel" button in the confirm remove popup.
@@ -302,6 +292,9 @@ export default {
     parseDescription (index, value) {
       const lithology = new Lithology(value)
       this.lithSoils[index] = lithology.parseSoilTerms()
+    },
+    lithologyIsEmpty (lithology) {
+      return Object.values(lithology).every((x) => !x)
     }
   },
   created () {
@@ -311,12 +304,11 @@ export default {
         this.addLithologyRow()
       }
     } else {
-      Object.assign(this.lithologyData, this.lithology)
+      this.lithology.forEach((lithology) => {
+        this.lithologyData.push({ ...lithology })
+      })
       this.addLithologyRow()
     }
-  },
-  updated () {
-    this.pageLoaded = true
   }
 }
 </script>

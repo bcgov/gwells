@@ -80,7 +80,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     text-field="description"
                     :state="getCasingError(index).casing_code ? false : null">
                   <template slot="first">
-                    <option value="">Select a type</option>
+                    <option :value="null">Select a type</option>
                   </template>
                 </b-form-select>
                 <b-form-invalid-feedback :id="`casingCodeInvalidFeedback${index}`">
@@ -102,7 +102,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     text-field="description"
                     :state="getCasingError(index).casing_material ? false : null">
                   <template slot="first">
-                    <option value="" enabled>Select a material</option>
+                    <option :value="null" enabled>Select a material</option>
                   </template>
                 </b-form-select>
                 <b-form-invalid-feedback :id="`casingCodeInvalidFeedback${index}`">
@@ -140,13 +140,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   :errors="errors['drive_shoe_status']"
                   :loaded="fieldsLoaded['drive_shoe_status']">
                   <template slot="first">
-                    <option value="" enabled>Select drive shoe</option>
+                    <option :value="null" enabled>Select drive shoe</option>
                   </template>
                 </b-form-select>
               </b-form-group>
             </td>
             <td class="pt-1 py-0">
-              <b-btn size="sm" variant="primary" :id="`removeCasingRowBtn${index}`" @click="removeRowIfOk(casing)" class="mt-2"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
+              <b-btn size="sm" variant="primary" :id="`removeCasingRowBtn${index}`" @click="removeRowIfOk(casing)" class="mt-2 float-right"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
             </td>
           </tr>
         </tbody>
@@ -213,8 +213,7 @@ export default {
     return {
       confirmRemoveModal: false,
       rowIndexToRemove: null,
-      casingsData: [],
-      pageLoaded: false
+      casingsData: []
     }
   },
   methods: {
@@ -225,9 +224,9 @@ export default {
       return {
         start: null,
         end: null,
-        casing_code: '',
-        casing_material: '',
-        drive_shoe_status: '',
+        casing_code: null,
+        casing_material: null,
+        drive_shoe_status: null,
         length_required: true
       }
     },
@@ -286,12 +285,7 @@ export default {
     computedCasings: {
       deep: true,
       handler: function (n, o) {
-        let casings = []
-        this.casingsData.forEach((d) => {
-          if (!this.casingIsEmpty(d)) {
-            casings.push(d)
-          }
-        })
+        const casings = this.casingsData.filter((d) => !this.casingIsEmpty(d))
         this.$emit('update:casings', casings)
       }
     }
@@ -308,9 +302,6 @@ export default {
       })
       this.addRow()
     }
-  },
-  updated () {
-    this.pageLoaded = true
   }
 }
 </script>

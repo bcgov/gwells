@@ -22,7 +22,7 @@
         @change="updateValue($event)"
     >
       <template slot="first" v-if="placeholder">
-        <option value="">{{ placeholder }}</option>
+        <option :value="null">{{ placeholder }}</option>
       </template>
     </b-form-select>
     <b-form-input

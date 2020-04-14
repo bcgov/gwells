@@ -96,7 +96,6 @@
                     :options="provinceStateOptions"
                     aria-describedby="provInputFeedback"
                     v-model="companyForm.province_state">
-                    <option value="" disabled>Select a province</option>
                   </b-form-select>
                   <b-form-invalid-feedback id="provInputFeedback">
                     <div v-for="(error, index) in fieldErrors.province_state" :key="`provInput error ${index}`">
@@ -346,7 +345,7 @@ export default {
         name: '',
         street_address: '',
         city: '',
-        province_state: '',
+        province_state: null,
         postal_code: '',
         email: '',
         main_tel: '',
@@ -473,7 +472,7 @@ export default {
       this.companyForm.name = company.name || ''
       this.companyForm.street_address = company.street_address || ''
       this.companyForm.city = company.city || ''
-      this.companyForm.province_state = company.province_state || ''
+      this.companyForm.province_state = company.province_state || null
       this.companyForm.postal_code = company.postal_code || ''
       this.companyForm.email = company.email || ''
       this.companyForm.main_tel = company.main_tel || ''
