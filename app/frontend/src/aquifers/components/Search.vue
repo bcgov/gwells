@@ -35,7 +35,7 @@
         <i class="fa fa-exclamation-circle"/>&nbsp;&nbsp;At least one search field is required
       </b-alert>
       <b-form
-        v-on:submit.prevent="triggerSearch"
+        v-on:submit.prevent="triggerSearch()"
         v-on:reset="triggerReset">
         <b-form-row>
           <b-col cols="12" md="12" lg="12" xl="4" class="p-4">
@@ -99,7 +99,6 @@
               :highlightAquiferIds="searchedAquiferIds"
               :selectedId="selectedAquiferId"
               :loading="loadingMap"
-              :searchText="search"
               @moved="mapMoved"
               @zoomed="handleMapZoom"
               @search="mapSearch"/>
@@ -245,7 +244,7 @@ ul.pagination {
 <script>
 import L from 'leaflet'
 import querystring from 'querystring'
-import { isEqual } from 'lodash'
+import { isEqual, pick } from 'lodash'
 import { mapGetters, mapMutations, mapState, mapActions } from 'vuex'
 
 import ApiService from '@/common/services/ApiService.js'
@@ -254,10 +253,12 @@ import { SEARCH_AQUIFERS } from '../store/actions.types.js'
 
 import AquiferMap from './AquiferMap.vue'
 import MapLoadingSpinner from './MapLoadingSpinner.vue'
+import features from '../../common/features'
 
 const SEARCH_RESULTS_PER_PAGE = 10
 const HYDRAULICALLY_CONNECTED_CODE = 'Hydra'
 const BC_LAT_LNG_BOUNDS = L.latLngBounds(L.latLng(60.0023, -114.0541379), L.latLng(48.2245556, -139.0536706))
+const URL_QS_SEARCH_KEYS = ['constrain', 'resources__section__code', 'match_any', 'search']
 
 export default {
   components: {
@@ -397,7 +398,7 @@ export default {
       })
     },
     scrollToMap () {
-      const map = this.$el.ownerDocument.getElementById('map')
+      const map = this.$el.ownerDocument.getElementById('aquifer-search-map')
       this.$SmoothScroll(map, 100)
     },
     triggerReset (e) {
@@ -412,8 +413,15 @@ export default {
       })
     },
     triggerSearch (options = {}) {
+      let constrainSearch = !!options.constrain
+      // If the search-in-map feature is not enabled use the old behaviour where all searches are
+      // constrained to the visible map area.
+      if (!features.searchInAquiferMap) {
+        constrainSearch = true
+      }
+
       this.selectedAquiferId = null
-      this[SET_CONSTRAIN_SEARCH](!!options.constrain)
+      this[SET_CONSTRAIN_SEARCH](constrainSearch)
       this[SEARCH_AQUIFERS]({
         selectedSections: this.selectedSections,
         matchAny: this.matchAny,
@@ -450,7 +458,9 @@ export default {
       } else {
         this.updateStoreStateFromQS()
 
-        const shouldSearch = !isEqual(query, this.queryParams)
+        const cleanedQuery = pick(query, URL_QS_SEARCH_KEYS)
+
+        const shouldSearch = !isEqual(cleanedQuery, pick(this.queryParams, URL_QS_SEARCH_KEYS))
 
         if (shouldSearch) {
           this.triggerSearch()

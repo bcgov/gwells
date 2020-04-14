@@ -14,6 +14,7 @@ import { pointInPolygon } from 'geojson-utils'
 
 import aquiferLayers from '../layers'
 import { buildLegendHTML } from '../legend'
+import features from '../../common/features'
 import { SEARCH_AQUIFERS } from '../store/actions.types'
 
 const AQUIFER_LAYER_STYLE = {
@@ -56,8 +57,7 @@ export default {
     'aquiferDetails',
     'highlightAquiferIds',
     'loading',
-    'selectedId',
-    'searchText'
+    'selectedId'
   ],
   mounted () {
     // There seems to be an issue loading leaflet immediately on mount, we use nextTick to ensure
@@ -117,9 +117,6 @@ export default {
     },
     loading () {
       this.updateCanvasLayer()
-    },
-    searchText (searchQuery) {
-      this.updateSearchButtonText(searchQuery)
     }
   },
   methods: {
@@ -261,10 +258,9 @@ export default {
         },
         onAdd (map) {
           const container = L.DomUtil.create('div', 'leaflet-control-search leaflet-control-center')
-          container.innerHTML = `<button class="btn btn-primary" type="button"></button>`
+          container.innerHTML = `<button class="btn btn-primary" type="button">Search this area</button>`
           const button = container.querySelector('button')
           self.mapSearchButton = button
-          self.updateSearchButtonText()
           button.onclick = () => {
             self.searchButtonClicked()
           }
@@ -323,6 +319,7 @@ export default {
       this.mapSearchButton.classList.remove('show')
     },
     showMapSearchButton () {
+      if (!features.searchInAquiferMap) { return }
       if (this.showMapSearchButtonTimer) { return }
       this.showMapSearchButtonTimer = window.setTimeout(() => {
         this.showMapSearchButtonTimer = null
@@ -332,13 +329,6 @@ export default {
           this.supressShowMapSearchButton = false
         }
       }, 500)
-    },
-    updateSearchButtonText () {
-      let label = 'Search in map'
-      if (this.searchText) {
-        label = `Search for "${this.searchText}"`
-      }
-      this.mapSearchButton.textContent = label
     },
     getFeaturesOnMap () {
       const layersInBound = []
