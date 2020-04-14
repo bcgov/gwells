@@ -406,6 +406,8 @@ export default {
         return {
           ...wellStyles,
           opacity: 1,
+          weight: 2.5,
+          'fill-color': '#3E88FF',
           color: '#EE14CA'
         }
       }
