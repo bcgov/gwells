@@ -142,7 +142,7 @@ describe('Search Component', () => {
 
     expect(axios.get).toHaveBeenCalledWith('aquifers', {
       cancelToken: undefined,
-      params: { 'resources__section__code': 'a', search: 'asdf' }
+      params: { 'resources__section__code': 'a', search: 'asdf', constrain: 'true' }
     })
   })
 

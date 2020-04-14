@@ -99,6 +99,7 @@
               :highlightAquiferIds="searchedAquiferIds"
               :selectedId="selectedAquiferId"
               :loading="loadingMap"
+              :searchText="search"
               @moved="mapMoved"
               @zoomed="handleMapZoom"
               @search="mapSearch"/>

@@ -57,7 +57,8 @@ export default {
     'aquiferDetails',
     'highlightAquiferIds',
     'loading',
-    'selectedId'
+    'selectedId',
+    'searchText'
   ],
   mounted () {
     // There seems to be an issue loading leaflet immediately on mount, we use nextTick to ensure
@@ -76,7 +77,8 @@ export default {
     return {
       activeLayers: [],
       map: null,
-      legendControlContent: null
+      legendControlContent: null,
+      searchMapButtonEnabled: Boolean(this.searchText)
     }
   },
   computed: {
@@ -117,6 +119,9 @@ export default {
     },
     loading () {
       this.updateCanvasLayer()
+    },
+    searchText (searchQuery) {
+      this.searchMapButtonEnabled = Boolean(searchQuery)
     }
   },
   methods: {
@@ -258,9 +263,9 @@ export default {
         },
         onAdd (map) {
           const container = L.DomUtil.create('div', 'leaflet-control-search leaflet-control-center')
-          container.innerHTML = `<button class="btn btn-primary" type="button">Search this area</button>`
+          container.innerHTML = `<button class="btn btn-default" type="button">Search this area</button>`
           const button = container.querySelector('button')
-          self.mapSearchButton = button
+          self.mapSearchButtonContainer = container
           button.onclick = () => {
             self.searchButtonClicked()
           }
@@ -316,7 +321,7 @@ export default {
     hideMapSearchButton () {
       window.clearTimeout(this.showMapSearchButtonTimer)
       this.showMapSearchButtonTimer = null
-      this.mapSearchButton.classList.remove('show')
+      this.mapSearchButtonContainer.classList.remove('show')
     },
     showMapSearchButton () {
       if (!features.searchInAquiferMap) { return }
@@ -324,7 +329,7 @@ export default {
       this.showMapSearchButtonTimer = window.setTimeout(() => {
         this.showMapSearchButtonTimer = null
         if (!this.supressShowMapSearchButton) {
-          this.mapSearchButton.classList.add('show')
+          this.mapSearchButtonContainer.classList.add('show')
         } else {
           this.supressShowMapSearchButton = false
         }
@@ -344,7 +349,9 @@ export default {
       const startEvents = ['zoomstart', 'movestart']
       startEvents.forEach(eventName => {
         this.map.on(eventName, (e) => {
-          this.showMapSearchButton()
+          if (this.searchMapButtonEnabled) {
+            this.showMapSearchButton()
+          }
         })
       })
       const endEvents = ['zoomend', 'moveend']
@@ -595,16 +602,27 @@ export default {
 }
 
 .leaflet-top.leaflet-center {
-  left: 50%;
-  transform: translate(-50%, 0%);
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
 }
 
 .leaflet-control-search {
-  button {
-    opacity: 0;
+  opacity: 0;
+  border: 2px solid rgba(0,0,0,0.2);
+  border-radius: 4px;
 
-    &.show {
-      animation: fade-in 300ms ease-in forwards;
+  &.show {
+    animation: fade-in 300ms ease-in forwards;
+  }
+
+  button {
+    background-color: white;
+    border: none;
+
+    &:hover {
+      background-color: #f4f4f4;
     }
   }
 }
