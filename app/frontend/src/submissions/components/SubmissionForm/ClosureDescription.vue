@@ -43,7 +43,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   v-for="(item, index) in closureDescriptionSetData"
                   :key="`closureDescription${index}`"
                   :id="`closureDescription${index}`">
-
                 <td class="input-width-small">
                   <form-input
                       group-class="mt-1 mb-0"
@@ -88,8 +87,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
                       :loaded="getFieldsLoaded(index).observations"
                   />
                 </td>
-                <td class="align-middle">
-                  <b-btn size="sm" variant="primary" @click="removeClosureRow(index)" :id="`removeClosureRowButton${index}`"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
+                <td class="pt-1 py-0">
+                  <b-btn size="sm" variant="primary" :id="`removeClosureDescriptionRowBtn${index}`" @click="removeRowIfOk(item)" class="mt-2 float-right"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
                 </td>
               </tr>
             </tbody>
@@ -98,6 +97,21 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <b-btn size="sm" variant="primary" @click="addClosureRow" id="addClosureRowButton"><i class="fa fa-plus-square-o"></i> Add row</b-btn>
       </b-col>
     </b-row>
+    <b-modal
+        v-model="confirmRemoveModal"
+        centered
+        title="Confirm remove"
+        @shown="focusRemoveModal">
+      Are you sure you want to remove this row?
+      <div slot="modal-footer">
+        <b-btn variant="secondary" @click="confirmRemoveModal=false;rowIndexToRemove=null" ref="cancelRemoveBtn">
+          Cancel
+        </b-btn>
+        <b-btn variant="danger" @click="confirmRemoveModal=false;removeRowByIndex(rowIndexToRemove)">
+          Remove
+        </b-btn>
+      </div>
+    </b-modal>
   </fieldset>
 </template>
 
@@ -138,29 +152,23 @@ export default {
   },
   data () {
     return {
+      confirmRemoveModal: false,
       closureDescriptionSetData: [],
-      pageLoaded: false
+      rowIndexToRemove: null
     }
   },
   computed: {
     ...mapGetters(['codes']),
-    computedClosureDescriptionSet: function () {
-      return Object.assign({}, this.closureDescriptionSetData)
+    computedClosureDescriptionSet () {
+      return [...this.closureDescriptionSetData]
     }
   },
   watch: {
     computedClosureDescriptionSet: {
       deep: true,
       handler: function (n, o) {
-        let closures = []
-        this.closureDescriptionSetData.forEach((d) => {
-          if (!Object.values(d).every(x => (x === ''))) {
-            closures.push(d)
-          }
-        })
-        if (this.pageLoaded && this.saveDisabled) {
-          closures.push(this.emptyObject())
-        }
+        const closures = this.closureDescriptionSetData
+          .filter((d) => !this.closureDescriptionIsEmpty(d))
         this.$emit('update:closureDescriptionSet', closures)
       }
     }
@@ -171,14 +179,23 @@ export default {
     },
     emptyObject () {
       return {
-        start: '',
-        end: '',
-        material: '',
+        start: null,
+        end: null,
+        material: null,
         observations: ''
       }
     },
-    removeClosureRow (rowNumber) {
+    removeRowByIndex (rowNumber) {
       this.closureDescriptionSetData.splice(rowNumber, 1)
+    },
+    removeRowIfOk (instance) {
+      const index = this.closureDescriptionSetData.findIndex(item => item === instance)
+      if (this.rowHasValues(this.closureDescriptionSetData[index])) {
+        this.rowIndexToRemove = index
+        this.confirmRemoveModal = true
+      } else {
+        this.removeRowByIndex(index)
+      }
     },
     getClosureError (index) {
       if (this.errors && 'decommission_description_set' in this.errors && index in this.errors['decommission_description_set']) {
@@ -191,6 +208,19 @@ export default {
         return this.fieldsLoaded['decommission_description_set'][index]
       }
       return {}
+    },
+    rowHasValues (row) {
+      let keys = Object.keys(row)
+      if (keys.length === 0) return false
+      // Check that all fields are not empty.
+      return !this.closureDescriptionIsEmpty(row)
+    },
+    focusRemoveModal () {
+      // Focus the "cancel" button in the confirm remove popup.
+      this.$refs.cancelRemoveBtn.focus()
+    },
+    closureDescriptionIsEmpty (closureDescription) {
+      return Object.values(closureDescription).every((x) => !x)
     }
   },
   created () {
@@ -199,12 +229,11 @@ export default {
         this.addClosureRow()
       }
     } else {
-      Object.assign(this.closureDescriptionSetData, this.closureDescriptionSet)
+      this.closureDescriptionSet.forEach((closureDescription) => {
+        this.closureDescriptionSetData.push({ ...closureDescription })
+      })
       this.addClosureRow()
     }
-  },
-  updated () {
-    this.pageLoaded = true
   }
 }
 </script>

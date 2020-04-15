@@ -53,7 +53,7 @@
                   :state="validation.province_state"
                   required>
                   <template slot="first">
-                    <option :value="''" disabled>Select a province</option>
+                    <option :value="null" disabled>Select a province</option>
                   </template>
                 </b-form-select>
                 <b-form-invalid-feedback id="orgAddProvinceFeedback">
@@ -177,7 +177,7 @@ export default {
         name: '',
         street_address: '',
         city: '',
-        province_state: '',
+        province_state: null,
         postal_code: '',
         email: '',
         main_tel: '',
@@ -232,7 +232,7 @@ export default {
         name: '',
         street_address: '',
         city: '',
-        province_state: '',
+        province_state: null,
         postal_code: '',
         email: '',
         main_tel: '',

@@ -124,7 +124,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </th>
         </thead>
         <tbody>
-          <template v-for="(row, index) in screensData.length">
+          <template v-for="(row, index) in screensData">
             <tr :key="`screen row ${index}`" :id="`screenRow${index}`">
               <td class="input-width-small py-0">
                 <form-input
@@ -187,7 +187,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   />
               </td>
               <td class="py-0">
-                <b-btn size="sm" variant="primary" @click="removeRowIfOk(index)" :id="`removeScreenRowButton${index}`" class="mt-2"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
+                <b-btn size="sm" variant="primary" @click="removeRowIfOk(index)" :id="`removeScreenRowButton${index}`" class="mt-2 float-right"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
               </td>
             </tr>
           </template>
@@ -195,7 +195,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </table>
     </div>
     <datalist id="screenSlotSizeList">
-      <option v-for="size in screenSlotSizeSuggestions" :key="`screenSlotSizeListOption-${size}`">{{size}}</option>
+      <option v-for="size in screenSlotSizeSuggestions" :key="`screenSlotSizeListOption-${size}`">{{size}}.00</option>
     </datalist>
     <b-btn size="sm" variant="primary" @click="addScreenRow" id="addScreenRowButton"><i class="fa fa-plus-square-o"></i> Add row</b-btn>
     <b-modal
@@ -266,29 +266,20 @@ export default {
       screenSlotSizeSuggestions: ['10', '20', '40', '80'],
       confirmRemoveModal: false,
       rowIndexToRemove: null,
-      screensData: [],
-      pageLoaded: false
+      screensData: []
     }
   },
   computed: {
     ...mapGetters(['codes']),
-    computedScreens: function () {
-      return Object.assign({}, this.screensData)
+    computedScreens () {
+      return [...this.screensData]
     }
   },
   watch: {
     computedScreens: {
       deep: true,
       handler: function (n, o) {
-        let screens = []
-        this.screensData.forEach((d) => {
-          if (!Object.values(d).every(x => (x === ''))) {
-            screens.push(d)
-          }
-        })
-        if (this.pageLoaded && this.saveDisabled) {
-          screens.push(this.emptyObject())
-        }
+        const screens = this.screensData.filter((d) => !this.screenIsEmpty(d))
         this.$emit('update:screens', screens)
       }
     }
@@ -302,8 +293,8 @@ export default {
         start: '',
         end: '',
         diameter: '',
-        assembly_type: '',
-        slot_size: ''
+        assembly_type: null,
+        slot_size: null
       }
     },
     removeRowByIndex (index) {
@@ -334,11 +325,14 @@ export default {
       let keys = Object.keys(row)
       if (keys.length === 0) return false
       // Check that all fields are not empty.
-      return !keys.every((key) => !row[key])
+      return !this.screenIsEmpty(row)
     },
     focusRemoveModal () {
       // Focus the "cancel" button in the confirm remove popup.
       this.$refs.cancelRemoveBtn.focus()
+    },
+    screenIsEmpty (screen) {
+      return Object.values(screen).every((x) => !x)
     }
   },
   created () {
@@ -348,12 +342,11 @@ export default {
         this.addScreenRow()
       }
     } else {
-      Object.assign(this.screensData, this.screens)
+      this.screens.forEach((screens) => {
+        this.screensData.push({ ...screens })
+      })
       this.addScreenRow()
     }
-  },
-  updated () {
-    this.pageLoaded = true
   }
 }
 </script>
