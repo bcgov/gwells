@@ -160,7 +160,7 @@ objects:
                 - name: PGDATA_PATH_OVERRIDE
                   value: pgsql96/data
                 - name: PGDATA
-                  value: /pgdata/pgsql96/data
+                  value: /pgdata/pgsql96/data/userdata
                 - name: PG_DATABASE
                   valueFrom:
                     secretKeyRef:
