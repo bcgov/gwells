@@ -66,15 +66,6 @@ parameters:
     name: IMAGE_STREAM_VERSION
     required: true
     value: v1-stable
-  - description: Indicator to enable pgcrypto extension (provided out-of-the-box with
-      PostgreSQL).
-    displayName: Flag to enable pgcrypto PostgreSQL extension.
-    name: PGCRYPTO_EXTENSION
-    value: Y
-  - description: Indicator to enable postgis extension (from official PostgeSQL YUM repo).
-    displayName: Flag to enable postgis PostgreSQL extension.
-    name: POSTGIS_EXTENSION
-    value: Y
   - name: NAME_SUFFIX
     required: true
   - description: Storage class for PVCs.
