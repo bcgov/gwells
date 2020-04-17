@@ -35,12 +35,25 @@ services:
     entrypoint: /minio-entrypoint.sh
     command: server --address :9001 /data
   db:
-    image: mdillon/postgis
+    image: crunchydata/crunchy-postgres-gis:centos7-9.6.17-4.1.2
     hostname: db
     environment:
-      POSTGRES_USER: gwells
-      POSTGRES_PASSWORD: test1
-      POSTGRES_DATABASE: gwells
+      PG_USER: gwells
+      PG_PASSWORD: test1
+      PG_DATABASE: gwells
+      PG_MODE: primary
+      PG_ROOT: /var/lib/postgresql
+      PG_PRIMARY_USER: primaryuser
+      PG_PRIMARY_PASSWORD: primaryuser
+      PG_ROOT_PASSWORD: test_password
+      PG_PRIMARY_PORT: 5432
+      TEMP_BUFFERS: 9MB
+      PGHOST: /tmp
+      MAX_CONNECTIONS: 101
+      SHARED_BUFFERS: 129MB
+      MAX_WAL_SENDERS: 7
+      WORK_MEM: 5MB
+      PG_PRIMARY_HOST: db
     volumes:
       - /var/lib/postgresql
   frontend:

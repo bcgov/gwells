@@ -37,3 +37,6 @@ backend:
 	docker-compose pull backend
 	docker-compose build backend
 	docker-compose up backend
+
+psql:
+	docker-compose exec db /bin/bash -c "psql -U gwells -d gwells"
