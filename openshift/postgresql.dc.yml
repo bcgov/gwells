@@ -159,6 +159,8 @@ objects:
                   value: "5432"
                 - name: PGDATA_PATH_OVERRIDE
                   value: pgsql96/data
+                - name: PGDATA
+                  value: /pgdata/pgsql96/data
                 - name: PG_DATABASE
                   valueFrom:
                     secretKeyRef:
