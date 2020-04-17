@@ -157,10 +157,10 @@ objects:
               env:
                 - name: PG_PRIMARY_PORT
                   value: "5432"
-                - name: PGDATA_PATH_OVERRIDE
-                  value: pgsql96/data
-                - name: PGDATA
-                  value: /pgdata/pgsql96/data/userdata
+                - name: CONTAINER_NAME
+                  value: postgres-gis
+                - name: PG_PRIMARY_HOST
+                  value: ${DATABASE_SERVICE_NAME}
                 - name: PG_DATABASE
                   valueFrom:
                     secretKeyRef:
@@ -209,7 +209,7 @@ objects:
                 privileged: false
               terminationMessagePath: /dev/termination-log
               volumeMounts:
-                - mountPath: /pgdata/pgsql96/data
+                - mountPath: /pgdata
                   name: ${DATABASE_SERVICE_NAME}-data
                 - mountPath: /var/run/postgresql
                   name: ${DATABASE_SERVICE_NAME}-run
