@@ -3,6 +3,7 @@
 </template>
 
 <script>
+import { mapActions, mapState } from 'vuex'
 import L from 'leaflet'
 import 'leaflet-gesture-handling'
 import { tiledMapLayer } from 'esri-leaflet'
@@ -14,6 +15,7 @@ import { pointInPolygon } from 'geojson-utils'
 
 import aquiferLayers from '../layers'
 import { buildLegendHTML } from '../legend'
+import { FETCH_SIMPLIFIED_GEOMETRY } from '../store/actions.types.js'
 
 const AQUIFER_LAYER_STYLE = {
   color: '#FF6500',
@@ -48,7 +50,7 @@ const DEFAULT_MAP_ZOOM = 5
 
 export default {
   name: 'AquiferMap',
-  props: ['initialZoom', 'initialCentre', 'aquifersGeometry', 'aquiferDetails', 'highlightAquiferIds', 'loading', 'selectedId'],
+  props: ['initialZoom', 'initialCentre', 'aquiferDetails', 'highlightAquiferIds', 'loading', 'selectedId'],
   mounted () {
     // There seems to be an issue loading leaflet immediately on mount, we use nextTick to ensure
     // that the view has been rendered at least once before injecting the map.
@@ -70,6 +72,10 @@ export default {
     }
   },
   computed: {
+    ...mapState('aquiferStore/aquiferGeoms', {
+      aquifersGeometry: 'simplifiedGeoJson',
+      aquifersGeometryFetched: 'simplifiedGeoJsonFetched'
+    }),
     highlightIdsMap () {
       return this.highlightAquiferIds.reduce((obj, aquiferId) => {
         obj[aquiferId] = aquiferId
@@ -110,6 +116,9 @@ export default {
     }
   },
   methods: {
+    ...mapActions('aquiferStore/aquiferGeoms', {
+      fetchSimplifiedGeometry: FETCH_SIMPLIFIED_GEOMETRY
+    }),
     initLeaflet () {
       // There is a known issue using leaflet with webpack, this is a workaround
       // Fix courtesy of: https://github.com/PaulLeCam/react-leaflet/issues/255
@@ -166,8 +175,6 @@ export default {
       this.listenForReset()
       this.listenForAreaSelect()
 
-      this.canvasRenderer = L.canvas({ padding: 0.1 })
-
       this.highlightLayer = L.featureGroup()
 
       this.selectedAquiferLayer = L.featureGroup()
@@ -179,6 +186,10 @@ export default {
       this.updateCanvasLayer()
 
       this.$emit('activeLayers', this.activeLayers)
+
+      if (!this.aquifersGeometryFetched) {
+        this.fetchSimplifiedGeometry()
+      }
     },
 
     getLocateControl () {

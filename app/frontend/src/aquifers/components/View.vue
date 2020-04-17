@@ -45,7 +45,7 @@
         </div>
       </div>
       <b-container fluid>
-        <b-row v-if="editMode && !loading" class="border-bottom mb-3 pb-2">
+        <b-row v-if="editMode" class="border-bottom mb-3 pb-2">
           <b-col><h4>Aquifer {{id}} Summary - Edit</h4></b-col>
         </b-row>
         <aquifer-form
@@ -700,6 +700,7 @@ export default {
       this.fetchFiles()
     },
     fetch (id = this.id) {
+      this.loading = true
       return ApiService.query(`aquifers/${id}`)
         .then((response) => {
           const responseData = response.data || {}
@@ -718,8 +719,12 @@ export default {
           return this.getWaterLevels(obsWells).then(() => {
             this.setAquiferRecord(responseData)
           })
-        }).catch((e) => {
+        })
+        .catch((e) => {
           this.error = e.response
+        })
+        .finally(() => {
+          this.loading = false
         })
     },
     fetchFiles (id = this.id) {
