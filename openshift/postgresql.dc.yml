@@ -157,6 +157,8 @@ objects:
               env:
                 - name: PG_PRIMARY_PORT
                   value: "5432"
+                - name: PGDATA_PATH_OVERRIDE
+                  value: /var/lib/pgsql96/data
                 - name: PG_DATABASE
                   valueFrom:
                     secretKeyRef:
