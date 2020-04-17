@@ -498,23 +498,23 @@ pipeline {
 
         // the Build stage builds files; an image will be outputted to the app's imagestream,
         // using the source-to-image (s2i) strategy. See /app/.s2i/assemble for image build script
-        // stage('ALL - Build') {
-        //     steps {
-        //         script {
-        //             _openshift(env.STAGE_NAME, toolsProject) {
-        //                 echo "Running unit tests and building images..."
-        //                 echo "This may take several minutes. Logs are not forwarded to Jenkins by default (at this time)."
-        //                 echo "Additional logs can be found by monitoring builds in ${toolsProject}"
+        stage('ALL - Build') {
+            steps {
+                script {
+                    _openshift(env.STAGE_NAME, toolsProject) {
+                        echo "Running unit tests and building images..."
+                        echo "This may take several minutes. Logs are not forwarded to Jenkins by default (at this time)."
+                        echo "Additional logs can be found by monitoring builds in ${toolsProject}"
 
-        //                 // Select appropriate buildconfig
-        //                 def appBuild = openshift.selector("bc", "${devAppName}")
-        //                 echo "Building"
-        //                 echo " \$ oc start-build -n moe-gwells-tools ${devAppName} --wait --follow=true"
-        //                 appBuild.startBuild("--wait").logs("-f")
-        //             }
-        //         }
-        //     }
-        // }
+                        // Select appropriate buildconfig
+                        def appBuild = openshift.selector("bc", "${devAppName}")
+                        echo "Building"
+                        echo " \$ oc start-build -n moe-gwells-tools ${devAppName} --wait --follow=true"
+                        appBuild.startBuild("--wait").logs("-f")
+                    }
+                }
+            }
+        }
 
         // the Deploy to Dev stage creates a new dev environment for the pull request (if necessary), tagging
         // the newly built application image into that environment.  This stage monitors the newest deployment

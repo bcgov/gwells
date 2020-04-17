@@ -158,7 +158,7 @@ objects:
                 - name: PG_PRIMARY_PORT
                   value: "5432"
                 - name: CONTAINER_NAME
-                  value: postgres-gis
+                  value: postgresql
                 - name: PG_PRIMARY_HOST
                   value: ${DATABASE_SERVICE_NAME}
                 - name: PGDATA_PATH_OVERRIDE
