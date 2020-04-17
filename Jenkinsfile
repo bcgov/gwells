@@ -104,7 +104,7 @@ def unitTestDjango (String stageName, String envProject, String envSuffix) {
             DB_pod.objects()[0].metadata.name,
             "--",
             "bash -c '\
-                psql -c \"ALTER USER \\\"\${POSTGRESQL_USER}\\\" WITH SUPERUSER;\" \
+                psql -c \"ALTER USER \\\"\${PG_USER}\\\" WITH SUPERUSER;\" \
             '"
         )
         echo "Temporary DB grant results: "+ db_ocoutput_grant.actions[0].out
@@ -140,7 +140,7 @@ def unitTestDjango (String stageName, String envProject, String envSuffix) {
             DB_pod.objects()[0].metadata.name,
             "--",
             "bash -c '\
-                psql -c \"ALTER USER \\\"\${POSTGRESQL_USER}\\\" WITH NOSUPERUSER;\" \
+                psql -c \"ALTER USER \\\"\${PG_USER}\\\" WITH NOSUPERUSER;\" \
             '"
         )
         echo "DB Revocation results: "+ db_ocoutput_revoke.actions[0].out
@@ -371,7 +371,7 @@ def dbBackup (String envProject, String envSuffix) {
 
     // Dump to temporary file
     sh "oc rsh -n ${envProject} dc/${dcName} bash -c ' \
-        pg_dump -U \${POSTGRESQL_USER} -d \${POSTGRESQL_DATABASE} -Fc -f ${dumpTemp} ${dumpOpts} \
+        pg_dump -U \${PG_USER} -d \${PG_DATABASE} -Fc -f ${dumpTemp} ${dumpOpts} \
     '"
 
     // Verify dump size is at least 1M
