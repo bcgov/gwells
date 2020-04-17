@@ -161,6 +161,8 @@ objects:
                   value: postgres-gis
                 - name: PG_PRIMARY_HOST
                   value: ${DATABASE_SERVICE_NAME}
+                - name: PGHOST
+                  value: /tmp
                 - name: PG_DATABASE
                   valueFrom:
                     secretKeyRef:
