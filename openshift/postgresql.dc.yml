@@ -158,7 +158,7 @@ objects:
                 - name: PG_PRIMARY_PORT
                   value: "5432"
                 - name: PGDATA_PATH_OVERRIDE
-                  value: /var/lib/pgsql96/data
+                  value: pgsql96/data
                 - name: PG_DATABASE
                   valueFrom:
                     secretKeyRef:
@@ -207,7 +207,7 @@ objects:
                 privileged: false
               terminationMessagePath: /dev/termination-log
               volumeMounts:
-                - mountPath: /var/lib/pgsql96/data
+                - mountPath: /pgdata/pgsql96/data
                   name: ${DATABASE_SERVICE_NAME}-data
                 - mountPath: /var/run/postgresql
                   name: ${DATABASE_SERVICE_NAME}-run
