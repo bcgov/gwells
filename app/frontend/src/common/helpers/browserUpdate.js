@@ -7,8 +7,10 @@ const config = {
   reminder: 0,
   reminderClosed: 1.1,
   no_permanent_hide: true,
+  noclose: true,
+  shift_page_down: false,
   api: 2010.01,
-  text: '{brow_name} is not supported by the Groundwater Wells and Aquifers application. We recommend using: Chrome, Firefox or Safari.<br><a{up_but}>Read more</a> or <a{ignore_but}>ignore</a>'
+  text: '<strong>The Groundwater Wells and Aquifers application will not work correctly on ({brow_name}).</strong><br>We recommend Chrome, Firefox or Safari.<br><a{up_but}>Update browser</a>'
 }
 
 browserUpdate(config)

@@ -52,4 +52,9 @@ export default {
   table.b-table tr {
     cursor: default !important;
   }
+
+  .buorg {
+    background-color: #FFEAEA !important;
+    border-bottom-color: #FFB8B8 !important;
+  }
 </style>
