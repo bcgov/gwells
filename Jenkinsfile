@@ -527,9 +527,9 @@ pipeline {
                 script {
                     _openshift(env.STAGE_NAME, devProject) {
                         // Process postgres deployment config (sub in vars, create list items)
-                        echo " \$ oc process -f openshift/postgresql.dc.json -p DATABASE_SERVICE_NAME=gwells-pgsql-${devSuffix}-${prNumber} -p IMAGE_STREAM_NAMESPACE=bcgov -p IMAGE_STREAM_NAME=postgresql-9.6-oracle-fdw -p IMAGE_STREAM_VERSION=v1-stable -p NAME_SUFFIX=-${devSuffix}-${prNumber} -p POSTGRESQL_DATABASE=gwells -p VOLUME_CAPACITY=1Gi | oc apply -n moe-gwells-dev -f -"
+                        echo " \$ oc process -f openshift/postgresql.dc.yml -p DATABASE_SERVICE_NAME=gwells-pgsql-${devSuffix}-${prNumber} -p IMAGE_STREAM_NAMESPACE=bcgov -p IMAGE_STREAM_NAME=postgresql-9.6-oracle-fdw -p IMAGE_STREAM_VERSION=v1-stable -p NAME_SUFFIX=-${devSuffix}-${prNumber} -p POSTGRESQL_DATABASE=gwells -p VOLUME_CAPACITY=1Gi | oc apply -n moe-gwells-dev -f -"
                         def deployDBTemplate = openshift.process("-f",
-                            "openshift/postgresql.dc.json",
+                            "openshift/postgresql.dc.yml",
                             "DATABASE_SERVICE_NAME=gwells-pgsql-${devSuffix}-${prNumber}",
                             "IMAGE_STREAM_NAMESPACE=bcgov",
                             "IMAGE_STREAM_NAME=postgresql-9.6-oracle-fdw",
@@ -689,7 +689,7 @@ pipeline {
                         // TODO: Match docker-compose image from moe-gwells-tools
                         echo "Updating staging deployment..."
                         def deployDBTemplate = openshift.process("-f",
-                            "openshift/postgresql.dc.json",
+                            "openshift/postgresql.dc.yml",
                             "NAME_SUFFIX=-${stagingSuffix}",
                             "DATABASE_SERVICE_NAME=gwells-pgsql-${stagingSuffix}",
                             "IMAGE_STREAM_NAMESPACE=bcgov",
@@ -932,7 +932,7 @@ pipeline {
                         // Process db and app template into list objects
                         echo "Updating staging deployment..."
                         def deployDBTemplate = openshift.process("-f",
-                            "openshift/postgresql.dc.json",
+                            "openshift/postgresql.dc.yml",
                             "NAME_SUFFIX=-${demoSuffix}",
                             "DATABASE_SERVICE_NAME=gwells-pgsql-${demoSuffix}",
                             "IMAGE_STREAM_NAMESPACE=bcgov",
@@ -1149,7 +1149,7 @@ pipeline {
                         def dbBackupResult = dbBackup (prodProject, prodSuffix)
 
                         def deployDBTemplate = openshift.process("-f",
-                            "openshift/postgresql.dc.json",
+                            "openshift/postgresql.dc.yml",
                             "NAME_SUFFIX=-${prodSuffix}",
                             "DATABASE_SERVICE_NAME=gwells-pgsql-${prodSuffix}",
                             "IMAGE_STREAM_NAMESPACE=bcgov",
