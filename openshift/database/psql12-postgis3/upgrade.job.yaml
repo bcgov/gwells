@@ -1,0 +1,56 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: gwells-96-12
+parameters:
+- description: PVC where 9.6 data is located.
+  displayName: Layer name
+  name: OLD_DATA_PVC
+- description: PVC where 12 data is located.
+  displayName: Layer name
+  name: NEW_DATA_PVC
+objects:
+  - apiVersion: batch/v1
+    kind: Job
+    metadata:
+      name: gwells-96-12
+      labels:
+        component: upgrader
+        job: gwells-96-12
+        name: gwells-96-12
+    spec:
+      backoffLimit: 1
+      parallelism: 1    
+      completions: 1    
+      template:         
+        metadata:
+          name: gwells-96-12
+        spec:
+          containers:
+          - name: upgrader
+            image: docker-registry.default.svc:5000/moe-gwells-tools/docker-postgres-upgrade:latest
+            resources:
+              requests:
+                cpu: 200m
+                memory: 4Gi
+              limits:
+                cpu: '1'
+                memory: 4Gi
+            env:
+            - name: PGDATAOLD
+              value: /var/lib/postgresql/9.6/userdata
+            - name: PGDATANEW
+              value: /var/lib/postgresql/12/userdata
+            volumeMounts:
+              - mountPath: /var/lib/postgresql/9.6
+                name: old-data
+              - mountPath: /var/lib/postgresql/12
+                name: old-data
+          volumes:
+            - name: old-data
+              persistentVolumeClaim:
+                claimName: ${OLD_DATA_PVC}
+            - name: new-data
+              persistentVolumeClaim:
+                claimName: ${NEW_DATA_PVC}
+          restartPolicy: Never

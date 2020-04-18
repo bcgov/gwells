@@ -530,10 +530,10 @@ pipeline {
                         echo "Processing database deployment"
                         def deployDBTemplate = openshift.process("-f",
                             "openshift/postgresql.dc.yml",
-                            "DATABASE_SERVICE_NAME=gwells-pgsql-${devSuffix}-${prNumber}",
+                            "DATABASE_SERVICE_NAME=gwells-pg12-${devSuffix}-${prNumber}",
                             "IMAGE_STREAM_NAMESPACE=${devProject}",
                             "IMAGE_STREAM_NAME=crunchy-postgres-gis",
-                            "IMAGE_STREAM_VERSION=centos7-9.6.17-4.1.2",
+                            "IMAGE_STREAM_VERSION=centos7-12.2-4.2.2",
                             "NAME_SUFFIX=-${devSuffix}-${prNumber}",
                             "POSTGRESQL_DATABASE=gwells",
                             "VOLUME_CAPACITY=1Gi",
