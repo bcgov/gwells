@@ -29,7 +29,6 @@
 # Logs and databases #
 ######################
 *.log
-*.sql
 app/backend/aquifers/fixtures/tmp/*
 
 # OS generated files #
