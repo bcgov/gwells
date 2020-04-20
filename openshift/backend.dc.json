@@ -224,7 +224,7 @@
                                     },
                                     {
                                         "name": "PGHOST",
-                                        "value": "gwells-pgsql${NAME_SUFFIX}"
+                                        "value": "gwells-pg12${NAME_SUFFIX}"
                                     }
                                 ]
                             }
@@ -305,7 +305,7 @@
                                     },
                                     {
                                         "name": "PGHOST",
-                                        "value": "gwells-pgsql${NAME_SUFFIX}"
+                                        "value": "gwells-pg12${NAME_SUFFIX}"
                                     }
                                 ],
                                 "resources": {
@@ -333,7 +333,7 @@
                                 "env": [
                                     {
                                         "name": "DATABASE_SERVICE_NAME",
-                                        "value": "gwells-pgsql${NAME_SUFFIX}"
+                                        "value": "gwells-pg12{NAME_SUFFIX}"
                                     },
                                     {
                                         "name": "DATABASE_NAME",

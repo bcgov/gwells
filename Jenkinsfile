@@ -361,17 +361,21 @@ def zapTests (String stageName, String envUrl, String envSuffix) {
 
 
 // Database backup
-def dbBackup (String envProject, String envSuffix) {
+def dbBackup (String envProject, String envSuffix, Boolean datestamp = true) {
     def dcName = envSuffix == "dev" ? "${appName}-pgsql-${envSuffix}-${prNumber}" : "${appName}-pgsql-${envSuffix}"
     def dumpDir = "/var/lib/pgsql/data/deployment-backups"
-    def dumpName = "${envSuffix}-\$( date +%Y-%m-%d-%H%M ).dump"
-    def dumpOpts = "--no-privileges --no-tablespaces --schema=public --exclude-table=spatial_ref_sys"
+    String dumpName = "${envSuffix}-latest.dump"
+    if (datestamp) {
+        def dumpName = "${envSuffix}-\$( date +%Y-%m-%d-%H%M ).dump"
+
+    }
+    def dumpOpts = "--schema=public --exclude-table=spatial_ref_sys"
     def dumpTemp = "/tmp/unverified.dump"
     int maxBackups = 10
 
     // Dump to temporary file
     sh "oc rsh -n ${envProject} dc/${dcName} bash -c ' \
-        pg_dump -U \${PG_USER} -d \${PG_DATABASE} -Fc -f ${dumpTemp} ${dumpOpts} \
+        pg_dump -U \${PG_USER} -d \${PG_DATABASE} -Fp -f ${dumpTemp} ${dumpOpts} \
     '"
 
     // Verify dump size is at least 1M
@@ -411,6 +415,31 @@ def dbBackup (String envProject, String envSuffix) {
                 | sort -nr | cut -f2 | tail -n +${maxBackups} | xargs rm 2>/dev/null \
                 || echo 'No extra backups to remove' \
     \""
+}
+
+// uses psql to restore a database backup.
+// created to help with upgrading database versions
+// procedure (using Postgres 12 and Postgres 9.6 as examples):
+// 1. Deploy new postgres 12 database alongside the postgres 9.6 database, with the 9.6 database's
+//    data PVC mounted (read-only)
+// 2. scale down the app image so no users are accessing the database
+// 3. pg_dump from 9.6 database into the pvc mounted by pg12 (handled by dbUpgrade function)
+// 4. restore from the pg12 pod from the backup file created by the 9.6 server (handled by this function).
+// 5. Switch app's OpenShift Service to the pg12 server and scale up application (ensure that the database host in
+//    backend.dc.json references the new server).
+// 6. Scale application back up
+def dbUpgrade(String envProject, String envSuffix) {
+    def dcName = envSuffix == "dev" ? "${appName}-pg12-${envSuffix}-${prNumber}" : "${appName}-pg12-${envSuffix}"
+    def dumpDir = "/mnt/96/data/deployment-backups"
+    def dumpName = "${envSuffix}-latest.dump"
+
+    sh """
+        oc rsh -n ${envProject} dc/${dcName} bash -c ' \
+            set -e; \
+            psql -d gwells -x -v ON_ERROR_STOP=1 < ${dumpDir}/${dumpName}
+        '
+    """
+
 }
 
 pipeline {
@@ -671,6 +700,18 @@ pipeline {
         }
 
 
+
+        stage('STAGING - Backup') {
+            when {
+                expression { env.CHANGE_TARGET == 'master' }
+            }
+            steps {
+                script {
+                    dbBackup (stagingProject, stagingSuffix, false)
+                }
+            }
+        }
+
         // the Promote to Test stage allows approving the tagging of the newly built image into the test environment,
         // which will trigger an automatic deployment of that image.
         // The deployment configs in the openshift folder are applied first in case there are any changes to the templates.
@@ -690,10 +731,10 @@ pipeline {
                         def deployDBTemplate = openshift.process("-f",
                             "openshift/postgresql.dc.yml",
                             "NAME_SUFFIX=-${stagingSuffix}",
-                            "DATABASE_SERVICE_NAME=gwells-pgsql-${stagingSuffix}",
+                            "DATABASE_SERVICE_NAME=gwells-pg12-${stagingSuffix}",
                             "IMAGE_STREAM_NAMESPACE=${stagingProject}",
                             "IMAGE_STREAM_NAME=crunchy-postgres-gis",
-                            "IMAGE_STREAM_VERSION=centos7-9.6.17-4.1.2",
+                            "IMAGE_STREAM_VERSION=centos7-12.2-4.2.2",
                             "POSTGRESQL_DATABASE=gwells",
                             "VOLUME_CAPACITY=20Gi",
                             "STORAGE_CLASS=netapp-file-standard",
@@ -861,7 +902,7 @@ pipeline {
                         def dbNFSBackup = openshift.process("-f",
                             "openshift/jobs/postgres-backup-nfs/postgres-backup.cj.yaml",
                             "NAMESPACE=${stagingProject}",
-                            "TARGET=gwells-pgsql-staging",
+                            "TARGET=gwells-pg12-staging",
                             "PVC_NAME=${nfsStagingBackupPVC}",
                             "SCHEDULE='30 10 * * *'",
                             "JOB_NAME=postgres-nfs-backup",
@@ -933,10 +974,10 @@ pipeline {
                         def deployDBTemplate = openshift.process("-f",
                             "openshift/postgresql.dc.yml",
                             "NAME_SUFFIX=-${demoSuffix}",
-                            "DATABASE_SERVICE_NAME=gwells-pgsql-${demoSuffix}",
+                            "DATABASE_SERVICE_NAME=gwells-pg12-${demoSuffix}",
                             "IMAGE_STREAM_NAMESPACE=${stagingProject}",
                             "IMAGE_STREAM_NAME=crunchy-postgres-gis",
-                            "IMAGE_STREAM_VERSION=centos7-9.6.17-4.1.2",
+                            "IMAGE_STREAM_VERSION=centos7-12.2-4.2.2",
                             "POSTGRESQL_DATABASE=gwells",
                             "VOLUME_CAPACITY=5Gi",
                             "REQUEST_CPU=400m",
@@ -1127,7 +1168,7 @@ pipeline {
             }
             steps {
                 script {
-                    dbBackup (prodProject, prodSuffix)
+                    dbBackup (prodProject, prodSuffix, true)
                 }
             }
         }
@@ -1145,15 +1186,15 @@ pipeline {
                     _openshift(env.STAGE_NAME, prodProject) {
 
                         // Pre-deployment database backup
-                        def dbBackupResult = dbBackup (prodProject, prodSuffix)
+                        def dbBackupResult = dbBackup (prodProject, prodSuffix, false)
 
                         def deployDBTemplate = openshift.process("-f",
                             "openshift/postgresql.dc.yml",
                             "NAME_SUFFIX=-${prodSuffix}",
-                            "DATABASE_SERVICE_NAME=gwells-pgsql-${prodSuffix}",
+                            "DATABASE_SERVICE_NAME=gwells-pg12-${prodSuffix}",
                             "IMAGE_STREAM_NAMESPACE=${prodProject}",
                             "IMAGE_STREAM_NAME=crunchy-postgres-gis",
-                            "IMAGE_STREAM_VERSION=centos7-9.6.17-4.1.2",
+                            "IMAGE_STREAM_VERSION=centos7-12.2-4.2.2",
                             "POSTGRESQL_DATABASE=gwells",
                             "VOLUME_CAPACITY=20Gi",
                             "REQUEST_CPU=800m",
@@ -1304,7 +1345,7 @@ pipeline {
                         def dbNFSBackup = openshift.process("-f",
                             "openshift/jobs/postgres-backup-nfs/postgres-backup.cj.yaml",
                             "NAMESPACE=${prodProject}",
-                            "TARGET=gwells-pgsql-production",
+                            "TARGET=gwells-pg12-production",
                             "PVC_NAME=${nfsProdBackupPVC}",
                             "MONTHLY_BACKUPS=12",
                             "SCHEDULE='30 9 * * *'",
