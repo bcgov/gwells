@@ -366,7 +366,7 @@ def dbBackup (String envProject, String envSuffix, Boolean datestamp = true) {
     def dumpDir = "/var/lib/pgsql/data/deployment-backups"
     String dumpName = "${envSuffix}-latest.dump"
     if (datestamp) {
-        def dumpName = "${envSuffix}-\$( date +%Y-%m-%d-%H%M ).dump"
+        dumpName = "${envSuffix}-\$( date +%Y-%m-%d-%H%M ).dump"
 
     }
     def dumpOpts = "--schema=public --exclude-table=spatial_ref_sys"
