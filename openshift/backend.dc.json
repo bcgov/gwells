@@ -333,7 +333,7 @@
                                 "env": [
                                     {
                                         "name": "DATABASE_SERVICE_NAME",
-                                        "value": "gwells-pg12{NAME_SUFFIX}"
+                                        "value": "gwells-pg12${NAME_SUFFIX}"
                                     },
                                     {
                                         "name": "DATABASE_NAME",
