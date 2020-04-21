@@ -28,6 +28,8 @@ logger = logging.getLogger(__name__)
 class WellLocationSerializerV2(serializers.ModelSerializer):
     """ serializes well locations """
 
+    artesian = serializers.SerializerMethodField()
+
     class Meta:
         model = Well
         fields = (
@@ -38,8 +40,14 @@ class WellLocationSerializerV2(serializers.ModelSerializer):
             'street_address',
             'city',
             'ems',
+            'artesian',
             'aquifer_id'
         )
+
+    def get_artesian(self, obj):
+        if obj.artesian_flow is not None and obj.artesian_flow > 0:
+            return True
+        return False
 
 
 class WellVerticalAquiferExtentSerializerV2(serializers.ModelSerializer):

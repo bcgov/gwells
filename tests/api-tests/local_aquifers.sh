@@ -1,5 +1,5 @@
 #!/bin/bash
-# 
+#
 # Usage:
 # - Set env variables (choose any username and password):
 #   GWELLS_API_TEST_USER:  test account username
@@ -25,7 +25,7 @@ ENV_VARS=(
 
 for env_var in ${ENV_VARS[@]}
 do
-    if [ -z ${!env_var+x} ]; then 
+    if [ -z ${!env_var+x} ]; then
         echo "$env_var is unset"
         exit
     fi

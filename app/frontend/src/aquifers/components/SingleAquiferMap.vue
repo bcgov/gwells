@@ -1,5 +1,5 @@
 <template>
-  <div id="map" class="map"/>
+  <div id="single-aquifer-map" class="map"/>
 </template>
 
 <script>
@@ -30,14 +30,23 @@ const DEFAULT_CIRCLE_MARKER_OPTIONS = {
 
 const UNCORRELATED_WELL_CIRCLE_MARKER_OPTIONS_OVERRIDES = {
   fillColor: 'white',
+  color: '#000', // stroke color
   opacity: 1,
   fillOpacity: 1
 }
 
 const EMS_WELL_CIRCLE_MARKER_OPTIONS_OVERRIDES = {
   fillColor: '#0CA287',
+  color: '#000', // stroke color
   opacity: 1,
   fillOpacity: 1
+}
+
+const ARTESIAN_WELL_CIRCLE_MARKER_OPTIONS_OVERRIDES = {
+  opacity: 1,
+  weight: 1.5,
+  color: '#EE14CA',
+  fillColor: '#1099FE'
 }
 
 const AQUIFER_LAYER_STYLES = {
@@ -110,7 +119,7 @@ export default {
       layersControl.addTo(this.map)
       const cadastralLayer = aquiferLayers['Cadastral']
       cadastralLayer.addTo(this.map)
-      const wellsAllLayer = aquiferLayers['Wells – all']
+      const wellsAllLayer = aquiferLayers['Wells']
       wellsAllLayer.addTo(this.map)
 
       Object.keys(aquiferLayers).forEach((layerName) => {
@@ -207,7 +216,7 @@ export default {
         const { legend, name } = e.layer.options
         if (legend) {
           this.activeLayers[name].show = false
-          if (name === 'Wells – all') {
+          if (name === 'Wells') {
             this.activeLayers.aquiferWells.show = false
             this.updateWellsCanvasLayer()
           }
@@ -220,7 +229,7 @@ export default {
         const { legend, name } = e.layer.options
         if (legend) {
           this.activeLayers[name].show = true
-          if (name === 'Wells – all') {
+          if (name === 'Wells') {
             this.activeLayers.aquiferWells.show = true
             this.updateWellsCanvasLayer()
           }
@@ -352,11 +361,14 @@ export default {
       }
     },
     getWellLayerStyle (well) {
-      const { ems, aquifer_id: aquiferId } = well
+      const { ems, aquifer_id: aquiferId, artesian } = well
 
       let style = {
         ...DEFAULT_CIRCLE_MARKER_OPTIONS,
         renderer: this.canvasRenderer
+      }
+      if (artesian) {
+        Object.assign(style, ARTESIAN_WELL_CIRCLE_MARKER_OPTIONS_OVERRIDES)
       }
 
       if (!this.activeLayers.aquiferWells.show) {
@@ -405,25 +417,25 @@ export default {
   }
 }
 </script>
-<style>
+<style lang="scss">
 @import "~leaflet/dist/leaflet.css";
 @import "~leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
 
-.map {
-  height: 500px;
-}
+#single-aquifer-map {
+  height: 600px;
 
-.leaflet-control-legend {
-  background-color: white;
-  box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.4);
-  border-radius: 0.1em;
-}
+  .leaflet-control-legend {
+    background-color: white;
+    box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.4);
+    border-radius: 0.1em;
+  }
 
-.leaflet-control-legend li {
-  line-height: 20px;
-}
+  .leaflet-control-legend li {
+    line-height: 20px;
+  }
 
-.leaflet-control-layers label:last-child {
-  margin-bottom: 0;
+  .leaflet-control-layers label:last-child {
+    margin-bottom: 0;
+  }
 }
 </style>

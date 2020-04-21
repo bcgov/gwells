@@ -26,7 +26,7 @@ from gwells.roles import roles_to_groups, AQUIFERS_EDIT_ROLE, AQUIFERS_VIEWER_RO
 
 class TestPostNotAuthenticated(APITestCase):
     def test_not_authenticated_attempts_patch(self):
-        url = reverse('aquifer-retrieve-update', kwargs={'aquifer_id': 1, 'version': 'v1'})
+        url = reverse('aquifer-retrieve-update-v1', kwargs={'aquifer_id': 1})
         response = self.client.patch(url, {}, format='json')
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
@@ -45,7 +45,7 @@ class TestAquifersEditRole(APITestCase):
         Aquifer(aquifer_id=1).save()
 
     def test_patch(self):
-        url = reverse('aquifer-retrieve-update', kwargs={'aquifer_id': 1, 'version': 'v1'})
+        url = reverse('aquifer-retrieve-update-v1', kwargs={'aquifer_id': 1})
         response = self.client.patch(url, {'resources': [{
             'url': '',
         }]}, format='json')
@@ -81,13 +81,13 @@ class TestAquifersSpatial(APITestCase):
 
     def test_geodjango(self):
         # Currently we're re-directing to a static file.
-        url = reverse('aquifer-geojson', kwargs={'version': 'v1'})
+        url = reverse('aquifer-geojson-v1')
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_302_FOUND)
 
     def test_geodjango_bounds(self):
         # Currently we're re-directing to a static file.
-        url = reverse('aquifer-geojson', kwargs={'version': 'v1'})
+        url = reverse('aquifer-geojson-v1')
         response = self.client.get(
             url,
             {

@@ -61,7 +61,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 text-field="description"
                 :state="errors['well_class'] ? false : null">
               <template slot="first">
-                <option value="" disabled>Select class</option>
+                <option :value="null">Select class</option>
               </template>
             </b-form-select>
             <b-form-invalid-feedback id="wellClassInvalidFeedback">
@@ -84,7 +84,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 :disabled="!subclasses.length"
                 :state="errors['well_subclass'] ? false : null">
               <template slot="first">
-                <option value="" disabled>Select subclass</option>
+                <option :value="null">Select subclass</option>
               </template>
             </b-form-select>
             <b-form-invalid-feedback id="wellSubclassInvalidFeedback">
@@ -323,8 +323,8 @@ export default {
       this.wellTagOptions = []
     },
     wellClass (val, prev) {
-      if (prev !== '') {
-        this.wellSubclassInput = ''
+      if (val === null) {
+        this.wellSubclassInput = null
       }
     }
   }

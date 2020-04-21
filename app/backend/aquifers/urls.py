@@ -15,15 +15,21 @@
 from django.conf.urls import url
 from django.views.decorators.cache import never_cache, cache_page
 
-from aquifers import views
+from . import views
+from . import views_v2
 from gwells.urls import api_path_prefix
 
 CACHE_TTL = 60*15
 
 urlpatterns = [
-    url(api_path_prefix() + r'/aquifers$',
+    url(r'api/v1/aquifers$',
         never_cache(views.AquiferListCreateAPIView.as_view()),
-        name='aquifers-list-create'
+        name='aquifers-list-create-v1'
+        ),
+
+    url(r'api/v2/aquifers$',
+        never_cache(views_v2.AquiferListCreateAPIViewV2.as_view()),
+        name='aquifers-list-create-v2'
         ),
 
     url(api_path_prefix() + r'/aquifers/csv$',
@@ -42,7 +48,7 @@ urlpatterns = [
         ),
 
     url(r'api/v2/aquifers/names$',
-        never_cache(views.AquiferNameListV2.as_view()),
+        never_cache(views_v2.AquiferNameListV2.as_view()),
         name='aquifer-name-list-v2'
         ),
 
@@ -51,9 +57,14 @@ urlpatterns = [
         name='aquifer-edit-details'
         ),
 
-    url(api_path_prefix() + r'/aquifers/(?P<aquifer_id>[0-9]+)$',
+    url(r'api/v1/aquifers/(?P<aquifer_id>[0-9]+)$',
         never_cache(views.AquiferRetrieveUpdateAPIView.as_view()),
-        name='aquifer-retrieve-update'
+        name='aquifer-retrieve-update-v1'
+        ),
+
+    url(r'api/v2/aquifers/(?P<aquifer_id>[0-9]+)$',
+        never_cache(views_v2.AquiferRetrieveUpdateAPIViewV2.as_view()),
+        name='aquifer-retrieve-update-v2'
         ),
 
     # Documents (aquifer records)
@@ -116,10 +127,18 @@ urlpatterns = [
         cache_page(CACHE_TTL)(views.WaterUseListAPIView.as_view()),
         name='aquifer-water-use-code-list'
         ),
-    url(api_path_prefix() + r'/gis/aquifers-simplified$',
-        views.aquifer_geojson_simplified, name='aquifer-geojson-simplified'),
+
+    url(r'api/v1/gis/aquifers-simplified$',
+        views.aquifer_geojson_simplified_v1, name='aquifer-geojson-simplified-v1'),
+
+    url(r'api/v2/gis/aquifers-simplified$',
+        views_v2.aquifer_geojson_simplified_v2, name='aquifer-geojson-simplified-v2'),
 
     # GeoJSON aquifers endpoint for DataBC.
-    url(api_path_prefix() + r'/gis/aquifers$',
-        views.aquifer_geojson, name='aquifer-geojson')
+    url(r'api/v1/gis/aquifers$',
+        views.aquifer_geojson_v1, name='aquifer-geojson-v1'),
+
+    # GeoJSON aquifers endpoint for DataBC.
+    url(r'api/v2/gis/aquifers$',
+        views_v2.aquifer_geojson_v2, name='aquifer-geojson-v2'),
 ]

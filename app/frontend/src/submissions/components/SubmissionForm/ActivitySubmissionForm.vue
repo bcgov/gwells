@@ -285,7 +285,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <!-- Screens -->
       <screens class="my-5"
         :key="`screensComponent${componentUpdateTrigger}`"
-        v-if="showSection('screens' )"
+        v-if="showSection('screens')"
         id="screens"
         :screenIntakeMethod.sync="form.screen_intake_method"
         :screenType.sync="form.screen_type"

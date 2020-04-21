@@ -45,7 +45,7 @@ describe('ClosureDescription.vue', () => {
       sync: false
     })
 
-    wrapper.find('#removeClosureRowButton0').trigger('click')
+    wrapper.find('#removeClosureDescriptionRowBtn0').trigger('click')
     expect(wrapper.vm.closureDescriptionSetData.length).toBe(defaultRows - 1)
   })
   it('Passes errors into the input components', (done) => {
