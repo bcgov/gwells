@@ -203,6 +203,7 @@ exports[`Search Component Matches the snapshot 1`] = `
           <aquifer-map-stub
             aquiferdetails="[object Object]"
             highlightaquiferids=""
+            searchtext="4"
           />
         </div>
       </div>
