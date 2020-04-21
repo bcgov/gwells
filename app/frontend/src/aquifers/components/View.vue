@@ -287,15 +287,9 @@
                       <h6 class="border-bottom">Active</h6>
                       <ul class="p-0 m-0">
                         <li v-for="owell in activeObsWells" :key="owell.well_tag_number" :data-water-level="owell.waterLevels" :class="{error: owell.errorFetching}">
-                          <a :href="getObservationWellLink(owell.observation_well_number)" target="_blank" class="d-print-url">
-                            {{ owell.observation_well_number }}
-                          </a>
-                          <span v-if="owell.waterLevels">
-                            Water Level Analysis:
-                            <a :href="owell.hasLevelAnalysis ? 'http://www.env.gov.bc.ca/soe/indicators/water/groundwater-levels.html' : false" target="_blank" class="d-print-url">
-                              {{ owell.waterLevels }}
-                            </a>
-                          </span>
+                          <observation-well
+                            :observationWell="owell"
+                            @reload="getWaterLevels"/>
                         </li>
                       </ul>
                     </div>
@@ -303,21 +297,17 @@
                       <h6 class="border-bottom mt-2">Inactive<br><small>(data may not be available)</small></h6>
                       <ul class="p-0 m-0">
                         <li v-for="owell in inactiveObsWellsWithWaterLevel" :key="owell.well_tag_number" :data-water-level="owell.waterLevels" :class="{error: owell.errorFetching}">
-                          <a :href="getObservationWellLink(owell.observation_well_number)" target="_blank" class="d-print-url">
-                            {{ owell.observation_well_number }}
-                          </a>
-                          <div v-if="owell.waterLevels">
-                            Water Level Analysis:
-                            <a :href="owell.hasLevelAnalysis ? 'http://www.env.gov.bc.ca/soe/indicators/water/groundwater-levels.html' : false" target="_blank" class="d-print-url">
-                              {{ owell.waterLevels }}
-                            </a>
-                          </div>
+                          <observation-well
+                            :observationWell="owell"
+                            @reload="getWaterLevels"/>
                         </li>
                         <li v-if="inativeObsWellsWithOutWaterLevel.length > 0" class="obs-wells-wo-well-level">
                           No Water Level Analysis:
-                          <span v-for="owell in inativeObsWellsWithOutWaterLevel" :key="owell.observation_well_number" :class="{error: owell.errorFetching}">
-                            <a :href="getObservationWellLink(owell.observation_well_number)" target="_blank">{{ owell.observation_well_number }}</a>
-                          </span>
+                          <observation-well
+                            v-for="owell in inativeObsWellsWithOutWaterLevel"
+                            :key="owell.observation_well_number"
+                            :observationWell="owell"
+                            @reload="getWaterLevels"/>
                         </li>
                       </ul>
                     </div>
@@ -376,6 +366,7 @@ import Documents from './Documents.vue'
 import SingleAquiferMap from './SingleAquiferMap.vue'
 import MapLoadingSpinner from './MapLoadingSpinner.vue'
 import PieChart from './PieChart.vue'
+import ObservationWell from './ObservationWell.vue'
 
 const ONE_MILLION = 1 * 1000 * 1000
 
@@ -387,7 +378,8 @@ export default {
     'single-aquifer-map': SingleAquiferMap,
     'map-loading-spinner': MapLoadingSpinner,
     'change-history': ChangeHistory,
-    'pie-chart': PieChart
+    'pie-chart': PieChart,
+    'observation-well': ObservationWell
   },
   props: {
     'edit': Boolean
@@ -507,10 +499,10 @@ export default {
       return wellsByStatus
     },
     activeObsWells () {
-      return this.obsWellsByStatus.Active || []
+      return orderBy(this.obsWellsByStatus.Active || [], ['observation_well_number'])
     },
     inactiveObsWells () {
-      return this.obsWellsByStatus.Inactive || []
+      return orderBy(this.obsWellsByStatus.Inactive || [], ['observation_well_number'])
     },
     inactiveObsWellsWithWaterLevel () {
       // inactive wells with water level analysis
@@ -714,8 +706,9 @@ export default {
           }
 
           const obsWells = responseData.licence_details.obs_wells
-
-          return this.getWaterLevels(obsWells).then(() => {
+          Promise.all(
+            obsWells.map((owell) => this.getWaterLevels(owell))
+          ).then(() => {
             this.setAquiferRecord(responseData)
           })
         }).catch((e) => {
@@ -756,27 +749,25 @@ export default {
           this.setAquiferWells(wells || [])
         })
     },
-    getObservationWellLink (wellNumber) {
-      return `https://governmentofbc.maps.arcgis.com/apps/webappviewer/index.html?id=b53cb0bf3f6848e79d66ffd09b74f00d&find=OBS WELL ${wellNumber}`
-    },
-    getWaterLevels (obsWells) {
-      return Promise.all(
-        obsWells.map((owell) => {
-          owell.hasLevelAnalysis = false
-          let wellNumber = owell.observation_well_number
-          const url = `https://catalogue.data.gov.bc.ca/api/3/action/datastore_search?resource_id=a8933793-eadb-4a9c-992c-da4f6ac8ca51&fields=EMS_ID,Well_Num,trend_line_slope,category&filters=%7b%22Well_Num%22:%22${wellNumber}%22%7d`
-          return ApiService.query(url).then((response) => {
-            if (response.data.result.records.length > 0) {
-              const { category } = response.data.result.records[0]
-              owell.hasLevelAnalysis = category.toUpperCase() !== 'N/A'
-              owell.waterLevels = category
-            }
-          }, () => {
-            // Swallow any API error from https://catalogue.data.gov.bc.ca/api
-            owell.errorFetching = true
-          })
-        })
-      )
+    getWaterLevels (owell) {
+      owell.hasLevelAnalysis = false
+      owell.fetchingAnalysis = true
+      let wellNumber = owell.observation_well_number
+      const url = `https://catalogue.data.gov.bc.ca/api/3/action/datastore_search?resource_id=a8933793-eadb-4a9c-992c-da4f6ac8ca51&fields=EMS_ID,Well_Num,trend_line_slope,category&filters=%7b%22Well_Num%22:%22${wellNumber}%22%7d`
+
+      return ApiService.query(url).then((response) => {
+        owell.errorFetching = false
+        owell.fetchingAnalysis = false
+        if (response.data.result.records.length > 0) {
+          const { category } = response.data.result.records[0]
+          owell.hasLevelAnalysis = category.toUpperCase() !== 'N/A'
+          owell.waterLevels = category
+        }
+      }, () => {
+        // Swallow any API error from https://catalogue.data.gov.bc.ca/api
+        owell.fetchingAnalysis = false
+        owell.errorFetching = true
+      })
     },
     setWaterVolume (details) {
       if (details.usage && details.usage.constructor === Array && details.usage.length > 0) {
@@ -905,7 +896,7 @@ a {
 }
 
 .observational-wells {
-  .obs-wells-wo-well-level span:not(:last-child):after {
+  .obs-wells-wo-well-level span.observation-well:not(:last-child):after {
     content: ", ";
   }
 }
