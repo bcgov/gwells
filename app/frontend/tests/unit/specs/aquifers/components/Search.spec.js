@@ -68,9 +68,6 @@ describe('Search Component', () => {
             { name: 'aquifer section', code: 'a' }
           ])
         },
-        fetchSimplifiedGeometry () {
-          return Promise.resolve({})
-        },
         $SmoothScroll () {}
       },
       ...options

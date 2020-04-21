@@ -3,6 +3,7 @@
 </template>
 
 <script>
+import { mapActions, mapState } from 'vuex'
 import L from 'leaflet'
 import 'leaflet-gesture-handling'
 import { tiledMapLayer } from 'esri-leaflet'
@@ -12,9 +13,10 @@ import 'leaflet-lasso'
 import 'leaflet-fullscreen/dist/Leaflet.fullscreen.min.js'
 import { pointInPolygon } from 'geojson-utils'
 
+import features from '../../common/features'
 import aquiferLayers from '../layers'
 import { buildLegendHTML } from '../legend'
-import features from '../../common/features'
+import { FETCH_SIMPLIFIED_GEOMETRY } from '../store/actions.types.js'
 import { SEARCH_AQUIFERS } from '../store/actions.types'
 
 const AQUIFER_LAYER_STYLE = {
@@ -53,7 +55,6 @@ export default {
   props: [
     'initialZoom',
     'initialCentre',
-    'aquifersGeometry',
     'aquiferDetails',
     'highlightAquiferIds',
     'loading',
@@ -82,6 +83,10 @@ export default {
     }
   },
   computed: {
+    ...mapState('aquiferStore/aquiferGeoms', {
+      aquifersGeometry: 'simplifiedGeoJson',
+      aquifersGeometryFetched: 'simplifiedGeoJsonFetched'
+    }),
     highlightIdsMap () {
       return this.highlightAquiferIds.reduce((obj, aquiferId) => {
         obj[aquiferId] = aquiferId
@@ -125,6 +130,9 @@ export default {
     }
   },
   methods: {
+    ...mapActions('aquiferStore/aquiferGeoms', {
+      fetchSimplifiedGeometry: FETCH_SIMPLIFIED_GEOMETRY
+    }),
     initLeaflet () {
       // There is a known issue using leaflet with webpack, this is a workaround
       // Fix courtesy of: https://github.com/PaulLeCam/react-leaflet/issues/255
@@ -184,8 +192,6 @@ export default {
       this.listenForReset()
       this.listenForAreaSelect()
 
-      this.canvasRenderer = L.canvas({ padding: 0.1 })
-
       this.highlightLayer = L.featureGroup()
 
       this.selectedAquiferLayer = L.featureGroup()
@@ -197,6 +203,10 @@ export default {
       this.updateCanvasLayer()
 
       this.$emit('activeLayers', this.activeLayers)
+
+      if (!this.aquifersGeometryFetched) {
+        this.fetchSimplifiedGeometry()
+      }
     },
 
     getLocateControl () {

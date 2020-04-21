@@ -3,6 +3,7 @@
 </template>
 
 <script>
+import { mapActions, mapState } from 'vuex'
 import L from 'leaflet'
 import 'leaflet-edgebuffer'
 import 'leaflet-gesture-handling'
@@ -13,6 +14,7 @@ import { buildLegendHTML } from '../legend'
 import wellsAquiferIcon from '../../common/assets/images/wells-aquifer.svg'
 import uncorrelatedWellsIcon from '../../common/assets/images/wells-uncorrelated.svg'
 import emsWellsIcon from '../../common/assets/images/wells-ems.svg'
+import { FETCH_SIMPLIFIED_GEOMETRY } from '../store/actions.types.js'
 
 const LAYER_AQUIFER_WELLS = { layerName: 'Wells near aquifer', legend: wellsAquiferIcon, show: true }
 const LAYER_UNCORRELATED_WELLS = { layerName: 'Wells not correlated to aquifer', legend: uncorrelatedWellsIcon, show: false }
@@ -49,9 +51,21 @@ const ARTESIAN_WELL_CIRCLE_MARKER_OPTIONS_OVERRIDES = {
   fillColor: '#1099FE'
 }
 
-const AQUIFER_LAYER_STYLES = {
+const AQUIFERS_LAYER_STYLE = {
   color: '#FF6500',
+  fillColor: '#FF6500',
+  weight: 1
+}
+const FOCUSED_AQUIFER_LAYER_STYLE = {
+  color: 'red',
+  fillColor: 'red',
   fillOpacity: 0.1
+}
+const AQUIFER_HOVER_OVER_STYLE = {
+  fillOpacity: 0.5
+}
+const AQUIFER_HOVER_OUT_STYLE = {
+  fillOpacity: 0.2
 }
 
 export default {
@@ -65,6 +79,10 @@ export default {
     }
   },
   computed: {
+    ...mapState('aquiferStore/aquiferGeoms', {
+      aquifersGeometry: 'simplifiedGeoJson',
+      aquifersGeometryFetched: 'simplifiedGeoJsonFetched'
+    }),
     correlatedWells () {
       return this.wells.filter(w => w.aquifer_id !== null)
     },
@@ -87,6 +105,9 @@ export default {
     this.map.remove()
   },
   methods: {
+    ...mapActions('aquiferStore/aquiferGeoms', {
+      fetchSimplifiedGeometry: FETCH_SIMPLIFIED_GEOMETRY
+    }),
     initLeaflet () {
       // There is a known issue using leaflet with webpack, this is a workaround
       // Fix courtesy of: https://github.com/PaulLeCam/react-leaflet/issues/255
@@ -109,12 +130,6 @@ export default {
       // Add map layers.
       tiledMapLayer({ url: 'https://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer' }).addTo(this.map)
 
-      // Aquifer outlines
-      L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_WATER_MANAGEMENT.GW_AQUIFERS_CLASSIFICATION_SVW/ows?', {
-        format: 'image/png',
-        layers: 'pub:WHSE_WATER_MANAGEMENT.GW_AQUIFERS_CLASSIFICATION_SVW',
-        transparent: true
-      }).addTo(this.map)
       const layersControl = L.control.layers(null, aquiferLayers, { collapsed: false })
       layersControl.addTo(this.map)
       const cadastralLayer = aquiferLayers['Cadastral']
@@ -142,12 +157,14 @@ export default {
 
       this.map.addControl(this.getLegendControl())
 
-      this.canvasRenderer = L.canvas({ padding: 0.1 })
-
       this.canvasLayer = L.layerGroup()
       this.canvasLayer.addTo(this.map)
 
+      this.buildAquifersLayer()
+      this.buildAquiferLayer()
+      this.buildWellLayers()
       this.updateCanvasLayer()
+
       if (this.geom) {
         this.zoomToAquifer()
       }
@@ -157,6 +174,10 @@ export default {
       this.listenForLayerToggle()
 
       this.$emit('activeLayers', this.activeLayers)
+
+      if (!this.aquifersGeometryFetched) {
+        this.fetchSimplifiedGeometry()
+      }
     },
     addWellsLayersControl (layersControl) {
       const overlaysContainer = layersControl.getContainer().querySelector('.leaflet-control-layers-overlays')
@@ -240,9 +261,9 @@ export default {
     updateCanvasLayer () {
       this.canvasLayer.clearLayers()
 
-      this.buildAquiferLayer()
-
-      this.buildWellLayers()
+      if (this.aquifersLayer) {
+        this.canvasLayer.addLayer(this.aquifersLayer)
+      }
 
       if (!this.loading) {
         if (this.aquiferLayer) {
@@ -261,19 +282,56 @@ export default {
         this.updateWellLayerStyle(layer)
       })
     },
+    initAquiferLayer (layer, aquiferId) {
+      layer.aquiferId = aquiferId
+      layer.bindTooltip(`Aquifer ${aquiferId}`, { sticky: true }).openTooltip()
+      layer.on('mouseover', () => {
+        layer.setStyle(AQUIFER_HOVER_OVER_STYLE)
+      })
+      layer.on('mouseout', () => {
+        layer.setStyle(AQUIFER_HOVER_OUT_STYLE)
+      })
+    },
+    buildAquifersLayer (aquifers) {
+      const self = this
+      if (this.aquifersLayer) {
+        this.aquifersLayer.remove()
+      }
+
+      if (this.aquifersGeometry && this.aquifersGeometry.features.length > 0) {
+        const layerGroup = L.geoJSON(this.aquifersGeometry, {
+          style: AQUIFERS_LAYER_STYLE,
+          // type: 'geojsonfeature',
+          onEachFeature (feature, layer) {
+            const { id: aquiferId } = feature.properties
+
+            self.initAquiferLayer(layer, aquiferId)
+
+            layer.on('click', (e) => {
+              self.$router.push({
+                name: 'aquifers-view',
+                params: { id: aquiferId }
+              })
+            })
+          }
+        })
+        this.aquifersLayer = layerGroup
+      }
+    },
     buildAquiferLayer () {
+      const self = this
       if (!this.geom) { return }
 
       if (this.aquiferLayer) {
         this.aquiferLayer.remove()
       }
 
-      const options = {
-        style: AQUIFER_LAYER_STYLES,
-        renderer: this.canvasRenderer
-      }
-      this.aquiferLayer = L.geoJSON(this.geom, options)
-      this.aquiferLayer.bindTooltip(`Aquifer ${this.aquiferId}`, { sticky: true })
+      this.aquiferLayer = L.geoJSON(this.geom, {
+        style: FOCUSED_AQUIFER_LAYER_STYLE,
+        onEachFeature (feature, layer) {
+          self.initAquiferLayer(layer, self.aquiferId)
+        }
+      })
     },
     buildWellLayers (wells) {
       if (this.wellsLayer) {
@@ -364,8 +422,7 @@ export default {
       const { ems, aquifer_id: aquiferId, artesian } = well
 
       let style = {
-        ...DEFAULT_CIRCLE_MARKER_OPTIONS,
-        renderer: this.canvasRenderer
+        ...DEFAULT_CIRCLE_MARKER_OPTIONS
       }
       if (artesian) {
         Object.assign(style, ARTESIAN_WELL_CIRCLE_MARKER_OPTIONS_OVERRIDES)
@@ -395,19 +452,25 @@ export default {
     }
   },
   watch: {
+    aquifersGeometry () {
+      this.buildAquifersLayer()
+    },
     geom (newGeom, oldGeom) {
-      if (oldGeom || newGeom) {
+      if (newGeom && newGeom !== oldGeom) {
+        this.buildAquiferLayer()
         this.updateCanvasLayer()
         this.zoomToAquifer()
       }
     },
     wells (newWells, oldWells) {
       if (oldWells || newWells) {
+        this.buildWellLayers()
         this.updateCanvasLayer()
       }
     },
     uncorrelatedWells (newWells, oldWells) {
       if (oldWells || newWells) {
+        this.buildWellLayers()
         this.updateCanvasLayer()
       }
     },

@@ -94,7 +94,6 @@
               ref="aquiferMap"
               :initialCentre="searchMapCentre"
               :initialZoom="searchMapZoom"
-              :aquifersGeometry="simplifiedAquifers"
               :aquiferDetails="searchResults"
               :highlightAquiferIds="searchedAquiferIds"
               :selectedId="selectedAquiferId"
@@ -249,7 +248,15 @@ import { isEqual, pick } from 'lodash'
 import { mapGetters, mapMutations, mapState, mapActions } from 'vuex'
 
 import ApiService from '@/common/services/ApiService.js'
-import { SET_CONSTRAIN_SEARCH, SET_SEARCH_BOUNDS, RESET_SEARCH, SET_SEARCH_MAP_ZOOM, SET_SEARCH_MAP_CENTRE, SET_SELECTED_SECTIONS, SET_MATCH_ANY } from '../store/mutations.types.js'
+import {
+  SET_CONSTRAIN_SEARCH,
+  SET_SEARCH_BOUNDS,
+  RESET_SEARCH,
+  SET_SEARCH_MAP_ZOOM,
+  SET_SEARCH_MAP_CENTRE,
+  SET_SELECTED_SECTIONS,
+  SET_MATCH_ANY
+} from '../store/mutations.types.js'
 import { SEARCH_AQUIFERS } from '../store/actions.types.js'
 
 import AquiferMap from './AquiferMap.vue'
@@ -300,8 +307,7 @@ export default {
       selectedSections,
       matchAny: Boolean(query.match_any),
       selectMode: 'single',
-      selectedAquiferId: null,
-      loadingMap: false
+      selectedAquiferId: null
     }
   },
   computed: {
@@ -326,7 +332,7 @@ export default {
     ...mapGetters(['userRoles']),
     ...mapGetters('aquiferStore/search', ['queryParams']),
     ...mapState('aquiferStore/aquiferGeoms', {
-      simplifiedAquifers: 'simplifiedGeoJson'
+      loadingMap: 'simplifiedGeoJsonLoading'
     }),
     ...mapState('aquiferStore/search', [
       'searchErrors',
@@ -343,7 +349,6 @@ export default {
   },
   methods: {
     ...mapActions('aquiferStore/search', [SEARCH_AQUIFERS]),
-    ...mapMutations('aquiferStore/aquiferGeoms', ['updateSimplifiedGeoJson']),
     ...mapMutations('aquiferStore/search', [SET_CONSTRAIN_SEARCH, SET_SEARCH_BOUNDS, SET_CONSTRAIN_SEARCH, RESET_SEARCH, SET_SEARCH_MAP_CENTRE, SET_SEARCH_MAP_ZOOM]),
     ...mapMutations('aquiferStore', ['addSections']),
     navigateToNew () {
@@ -382,20 +387,6 @@ export default {
           code: HYDRAULICALLY_CONNECTED_CODE
         })
         this.addSections(sections)
-      })
-    },
-    fetchSimplifiedGeometry () {
-      if (this.simplifiedAquifers !== null) {
-        return Promise.resolve(this.simplifiedAquifers)
-      }
-
-      return ApiService.query('gis/aquifers-simplified').then((response) => {
-        const featuresCollection = response.data || {}
-        const features = featuresCollection.features || []
-        // Remove any features which don't have geometry
-        featuresCollection.features = features.filter((feature) => feature.geometry)
-        this.updateSimplifiedGeoJson(featuresCollection)
-        return featuresCollection
       })
     },
     scrollToMap () {
@@ -525,11 +516,6 @@ export default {
     if (this.resourceSections.length === 0) {
       this.fetchResourceSections()
     }
-
-    this.loadingMap = true
-    this.fetchSimplifiedGeometry().then(() => {
-      this.loadingMap = false
-    })
 
     this.handleRouteChange()
   }
