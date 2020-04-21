@@ -35,7 +35,7 @@
         <i class="fa fa-exclamation-circle"/>&nbsp;&nbsp;At least one search field is required
       </b-alert>
       <b-form
-        v-on:submit.prevent="triggerSearch"
+        v-on:submit.prevent="triggerSearch()"
         v-on:reset="triggerReset">
         <b-form-row>
           <b-col cols="12" md="12" lg="12" xl="4" class="p-4">
@@ -99,8 +99,10 @@
               :highlightAquiferIds="searchedAquiferIds"
               :selectedId="selectedAquiferId"
               :loading="loadingMap"
+              :searchText="search"
               @moved="mapMoved"
-              @zoomed="handleMapZoom"/>
+              @zoomed="handleMapZoom"
+              @search="mapSearch"/>
           </b-col>
         </b-form-row>
       </b-form>
@@ -126,9 +128,10 @@
             empty-text="No aquifers could be found"
             striped
             outlined
-            @row-clicked="rowClicked"
+            @row-clicked="searchResultsRowClicked"
             :busy="searchInProgress"
             v-if="searchPerformed"
+            :tbody-tr-class="searchResultsRowClass"
             responsive>
             <template slot="id" slot-scope="row">
               <router-link :to="{ name: 'aquifers-view', params: {id: row.item.id} }">{{ row.item.id }}</router-link>
@@ -159,7 +162,7 @@
   </div>
 </template>
 
-<style>
+<style lang="scss">
 table.b-table > thead > tr > th.sorting::before,
 table.b-table > tfoot > tr > th.sorting::before {
   display: none !important;
@@ -230,12 +233,19 @@ ul.pagination {
   text-decoration-color: #37598A;
   text-decoration-skip-ink: none;
 }
+
+#aquifers-results {
+  tr.selected {
+    background-color: rgba(119, 204, 119, 0.7);
+    outline-color: rgb(55, 153, 37);
+  }
+}
 </style>
 
 <script>
 import L from 'leaflet'
 import querystring from 'querystring'
-import { isEqual } from 'lodash'
+import { isEqual, pick } from 'lodash'
 import { mapGetters, mapMutations, mapState, mapActions } from 'vuex'
 
 import ApiService from '@/common/services/ApiService.js'
@@ -244,10 +254,12 @@ import { SEARCH_AQUIFERS } from '../store/actions.types.js'
 
 import AquiferMap from './AquiferMap.vue'
 import MapLoadingSpinner from './MapLoadingSpinner.vue'
+import features from '../../common/features'
 
 const SEARCH_RESULTS_PER_PAGE = 10
 const HYDRAULICALLY_CONNECTED_CODE = 'Hydra'
 const BC_LAT_LNG_BOUNDS = L.latLngBounds(L.latLng(60.0023, -114.0541379), L.latLng(48.2245556, -139.0536706))
+const URL_QS_SEARCH_KEYS = ['constrain', 'resources__section__code', 'match_any', 'search']
 
 export default {
   components: {
@@ -387,7 +399,7 @@ export default {
       })
     },
     scrollToMap () {
-      const map = this.$el.ownerDocument.getElementById('map')
+      const map = this.$el.ownerDocument.getElementById('aquifer-search-map')
       this.$SmoothScroll(map, 100)
     },
     triggerReset (e) {
@@ -401,26 +413,35 @@ export default {
         this.$emit('resetLayers')
       })
     },
-    triggerSearch () {
+    triggerSearch (options = {}) {
+      let constrainSearch = !!options.constrain
+      // If the search-in-map feature is not enabled use the old behaviour where all searches are
+      // constrained to the visible map area.
+      if (!features.searchInAquiferMap) {
+        constrainSearch = true
+      }
+
+      this.selectedAquiferId = null
+      this[SET_CONSTRAIN_SEARCH](constrainSearch)
       this[SEARCH_AQUIFERS]({
         selectedSections: this.selectedSections,
         matchAny: this.matchAny,
         query: this.search
       })
     },
+    mapSearch (zoom, bounds) {
+      this[SET_SEARCH_MAP_CENTRE](bounds.getCenter())
+      this[SET_SEARCH_MAP_ZOOM](zoom)
+      this.triggerSearch({ constrain: true })
+    },
     updateQueryParams () {
       this.$router.replace({ query: this.queryParams })
-    },
-    rowClicked (data) {
-      this.selectedAquiferId = data.id
-      this.scrollToMap()
     },
     mapMoved (bounds, featuresOnMap, isViewReset) {
       const viewingBC = bounds.contains(BC_LAT_LNG_BOUNDS)
 
       this[SET_SEARCH_MAP_CENTRE](viewingBC ? null : bounds.getCenter())
       this[SET_SEARCH_BOUNDS](bounds)
-      this[SET_CONSTRAIN_SEARCH](!viewingBC)
       this.updateQueryParams()
     },
     handleMapZoom (zoom, bounds) {
@@ -438,7 +459,9 @@ export default {
       } else {
         this.updateStoreStateFromQS()
 
-        const shouldSearch = !isEqual(query, this.queryParams)
+        const cleanedQuery = pick(query, URL_QS_SEARCH_KEYS)
+
+        const shouldSearch = !isEqual(cleanedQuery, pick(this.queryParams, URL_QS_SEARCH_KEYS))
 
         if (shouldSearch) {
           this.triggerSearch()
@@ -470,6 +493,16 @@ export default {
       if (query.match_any) {
         this[SET_MATCH_ANY](Boolean(query.match_any))
       }
+    },
+    searchResultsRowClass (item, type) {
+      if (!item || type !== 'row') { return }
+      if (item.aquifer_id === this.selectedAquiferId) {
+        return 'selected'
+      }
+    },
+    searchResultsRowClicked (data) {
+      this.selectedAquiferId = data.id
+      this.scrollToMap()
     }
   },
   watch: {
