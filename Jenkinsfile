@@ -566,7 +566,11 @@ pipeline {
                             "NAME_SUFFIX=-${devSuffix}-${prNumber}",
                             "POSTGRESQL_DATABASE=gwells",
                             "VOLUME_CAPACITY=1Gi",
-                            "STORAGE_CLASS=netapp-file-standard"
+                            "STORAGE_CLASS=netapp-file-standard",
+                            "REQUEST_CPU=200m",
+                            "REQUEST_MEMORY=512Mi",
+                            "LIMIT_CPU=500m",
+                            "LIMIT_MEMORY=1Gi"
                         )
 
                         // Process postgres deployment config (sub in vars, create list items)
