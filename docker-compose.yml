@@ -35,7 +35,7 @@ services:
     entrypoint: /minio-entrypoint.sh
     command: server --address :9001 /data
   db:
-    image: crunchydata/crunchy-postgres-gis:centos7-9.6.17-4.1.2
+    image: crunchydata/crunchy-postgres-gis:centos7-12.2-4.2.2
     hostname: db
     environment:
       PG_USER: gwells
@@ -52,6 +52,8 @@ services:
       MAX_WAL_SENDERS: 7
       WORK_MEM: 5MB
       PG_PRIMARY_HOST: db
+      PG_HOST: /tmp
+      PGHOST: /tmp
     volumes:
       - pgdata-volume:/pgdata:z
   frontend:

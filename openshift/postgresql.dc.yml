@@ -190,7 +190,7 @@ objects:
                 exec:
                   command:
                   - "/opt/cpm/bin/liveness.sh"
-                timeoutSeconds: 1
+                timeoutSeconds: 5
               name: postgresql
               ports:
                 - containerPort: 5432
@@ -200,7 +200,7 @@ objects:
                   command:
                   - "/opt/cpm/bin/readiness.sh"
                 initialDelaySeconds: 5
-                timeoutSeconds: 1
+                timeoutSeconds: 5
               resources:
                 requests:
                   cpu: ${REQUEST_CPU}
