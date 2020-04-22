@@ -361,14 +361,10 @@ def zapTests (String stageName, String envUrl, String envSuffix) {
 
 
 // Database backup
-def dbBackup (String envProject, String envSuffix, Boolean datestamp = true) {
+def dbBackup (String envProject, String envSuffix) {
     def dcName = envSuffix == "dev" ? "${appName}-pgsql-${envSuffix}-${prNumber}" : "${appName}-pgsql-${envSuffix}"
     def dumpDir = "/var/lib/pgsql/data/deployment-backups"
-    String dumpName = "${envSuffix}-latest.dump"
-    if (datestamp) {
-        dumpName = "${envSuffix}-\$( date +%Y-%m-%d-%H%M ).dump"
-
-    }
+    def dumpName = "${envSuffix}-\$( date +%Y-%m-%d-%H%M ).dump"
     def dumpOpts = "--schema=public --exclude-table=spatial_ref_sys"
     def dumpTemp = "/tmp/unverified.dump"
     int maxBackups = 10
@@ -421,23 +417,73 @@ def dbBackup (String envProject, String envSuffix, Boolean datestamp = true) {
 // created to help with upgrading database versions
 // procedure (using Postgres 12 and Postgres 9.6 as examples):
 // 1. Deploy new postgres 12 database alongside the postgres 9.6 database, with the 9.6 database's
-//    data PVC mounted (read-only)
+//    data PVC mounted (read-only) - (not handled by this function)
 // 2. scale down the app image so no users are accessing the database
-// 3. pg_dump from 9.6 database into the pvc mounted by pg12 (handled by dbUpgrade function)
-// 4. restore from the pg12 pod from the backup file created by the 9.6 server (handled by this function).
+// 3. pg_dump from 9.6 database into the pvc mounted by pg12
+// 4. restore from the pg12 pod from the backup file created by the 9.6 server
 // 5. Switch app's OpenShift Service to the pg12 server and scale up application (ensure that the database host in
 //    backend.dc.json references the new server).
 // 6. Scale application back up
 def dbUpgrade(String envProject, String envSuffix) {
+    def backendName = envSuffix == "dev" ? "${appName}-${envSuffix}-${prNumber}" : "${appName}-${envSuffix}"
+    def oldDcName = envSuffix == "dev" ? "${appName}-pgsql-${envSuffix}-${prNumber}" : "${appName}-pgsql-${envSuffix}"
+
     def dcName = envSuffix == "dev" ? "${appName}-pg12-${envSuffix}-${prNumber}" : "${appName}-pg12-${envSuffix}"
-    def dumpDir = "/mnt/96/data/deployment-backups"
+    def dumpDir = "/mnt/96/data/upgrade-backup"
     def dumpName = "${envSuffix}-latest.dump"
+    def dumpOpts = "--schema=public --exclude-table=spatial_ref_sys"
+
+    echo "scaling application down..."
+
+    // scale application pod down
+    sh """
+    oc scale -n ${envProject} dc/${backendName} --replicas=0
+    """
+
+    sleep(15)
+
+    echo "running pg_dump on old database..."
+
+    // dump database
+    def dbdump = sh(
+        script: "mkdir -p /var/lib/pgsql/upgrade-backup; oc rsh -n ${envProject} dc/${oldDcName} bash -c ' \
+        pg_dump -U \${PG_USER} -d \${PG_DATABASE} -Fp -f /var/lib/pgsql/${dumpName} ${dumpOpts} \
+    '",
+    returnStdout: true)
+
+    println dbdump
+
+    sleep(1)
+
+    echo "mounting dump pvc to new database pod..."
 
     sh """
+    oc volume -n ${envProject} dc/${dcName} --add --name=v1 --type=persistentVolumeClaim --claim-name=${oldDcName} --mount-path=/mnt/96/data --containers=postgresql --read-only
+    """
+
+    sleep(5)
+
+    echo "Restoring dump file to new database..."
+
+    // restore database
+    def dbrestore = sh(
+        script:"""
         oc rsh -n ${envProject} dc/${dcName} bash -c ' \
             set -e; \
             psql -d gwells -x -v ON_ERROR_STOP=1 < ${dumpDir}/${dumpName}
         '
+    """,
+    returnStdout: true)
+
+    println dbrestore
+
+    sleep(10)
+
+    echo "scaling application back up"
+
+    // scale up application
+    sh """
+    oc scale -n ${envProject} dc/${backendName} --replicas=2
     """
 
 }
@@ -643,6 +689,54 @@ pipeline {
         }
 
 
+        stage('DEMO - upgrading db (test run)') {
+            steps {
+                script {
+
+                    def deployDBTemplate = openshift.process("-f",
+                            "openshift/postgresql.dc.yml",
+                            "DATABASE_SERVICE_NAME=gwells-pg12-demo",
+                            "IMAGE_STREAM_NAMESPACE=${stagingProject}",
+                            "IMAGE_STREAM_NAME=crunchy-postgres-gis",
+                            "IMAGE_STREAM_VERSION=centos7-12.2-4.2.2",
+                            "NAME_SUFFIX=-demo",
+                            "POSTGRESQL_DATABASE=gwells",
+                            "VOLUME_CAPACITY=1Gi",
+                            "STORAGE_CLASS=netapp-file-standard",
+                            "REQUEST_CPU=200m",
+                            "REQUEST_MEMORY=512Mi",
+                            "LIMIT_CPU=500m",
+                            "LIMIT_MEMORY=1Gi"
+                        )
+                    openshift.apply(deployDBTemplate).label(['app':"gwells-demo", 'app-name':"gwells", 'env-name':"demo"], "--overwrite")
+
+                    def newVersion = openshift.selector("dc", "gwells-pg12-demo").object().status.latestVersion
+                    def pods = openshift.selector('pod', [deployment: "gwells-pg12-demo-${newVersion}"])
+
+                    // wait until each container in this deployment's pod reports as ready
+                    timeout(15) {
+                        pods.untilEach(2) {
+                            return it.object().status.containerStatuses.every {
+                                it.ready
+                            }
+                        }
+                    }
+
+
+
+                    dbUpgrade(stagingProject, "demo")
+
+
+                    echo "upgrade finished"
+
+
+
+
+                }
+            }
+        }
+
+
         // the Django Unit Tests stage runs backend unit tests using a test DB that is
         // created and destroyed afterwards.
         stage('DEV - Django Unit Tests') {
@@ -711,7 +805,7 @@ pipeline {
             }
             steps {
                 script {
-                    dbBackup (stagingProject, stagingSuffix, false)
+                    dbBackup (stagingProject, stagingSuffix)
                 }
             }
         }
@@ -1172,7 +1266,7 @@ pipeline {
             }
             steps {
                 script {
-                    dbBackup (prodProject, prodSuffix, true)
+                    dbBackup (prodProject, prodSuffix)
                 }
             }
         }
@@ -1190,7 +1284,7 @@ pipeline {
                     _openshift(env.STAGE_NAME, prodProject) {
 
                         // Pre-deployment database backup
-                        def dbBackupResult = dbBackup (prodProject, prodSuffix, false)
+                        def dbBackupResult = dbBackup (prodProject, prodSuffix)
 
                         def deployDBTemplate = openshift.process("-f",
                             "openshift/postgresql.dc.yml",
