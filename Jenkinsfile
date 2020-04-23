@@ -471,7 +471,7 @@ def dbUpgrade(String envProject, String envSuffix) {
         script:"""
         oc rsh -n ${envProject} dc/${dcName} bash -c ' \
             set -e; \
-            psql -d gwells -x -v ON_ERROR_STOP=1 < ${dumpDir}/${dumpName}
+            psql -d gwells -x -v ON_ERROR_STOP=1 2>&1 < ${dumpDir}/${dumpName}
         '
     """,
     returnStdout: true)
@@ -707,10 +707,10 @@ pipeline {
                                 "POSTGRESQL_DATABASE=gwells",
                                 "VOLUME_CAPACITY=1Gi",
                                 "STORAGE_CLASS=netapp-file-standard",
-                                "REQUEST_CPU=200m",
-                                "REQUEST_MEMORY=512Mi",
-                                "LIMIT_CPU=500m",
-                                "LIMIT_MEMORY=1Gi"
+                                "REQUEST_CPU=500m",
+                                "REQUEST_MEMORY=1Gi",
+                                "LIMIT_CPU=2",
+                                "LIMIT_MEMORY=3Gi"
                             )
                         openshift.apply(deployDBTemplate).label(['app':"gwells-demo", 'app-name':"gwells", 'env-name':"demo"], "--overwrite")
 
