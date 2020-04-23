@@ -186,11 +186,13 @@ objects:
               image: " "
               imagePullPolicy: IfNotPresent
               livenessProbe:
+                failureThreshold: 3
                 initialDelaySeconds: 30
-                exec:
-                  command:
-                  - "/opt/cpm/bin/liveness.sh"
-                timeoutSeconds: 5
+                periodSeconds: 10
+                successThreshold: 1
+                tcpSocket:
+                  port: 5432
+                timeoutSeconds: 1
               name: postgresql
               ports:
                 - containerPort: 5432
@@ -198,9 +200,17 @@ objects:
               readinessProbe:
                 exec:
                   command:
-                  - "/opt/cpm/bin/readiness.sh"
+                    - /usr/bin/env
+                    - bash
+                    - '-c'
+                    - >-
+                      psql -h 127.0.0.1 -U $PG_USER -q -d
+                      $PG_DATABASE -c 'SELECT 1'
+                failureThreshold: 3
                 initialDelaySeconds: 5
-                timeoutSeconds: 5
+                periodSeconds: 10
+                successThreshold: 1
+                timeoutSeconds: 1
               resources:
                 requests:
                   cpu: ${REQUEST_CPU}
