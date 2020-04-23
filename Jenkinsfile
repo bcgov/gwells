@@ -705,7 +705,7 @@ pipeline {
                                 "IMAGE_STREAM_VERSION=centos7-12.2-4.2.2",
                                 "NAME_SUFFIX=-demo",
                                 "POSTGRESQL_DATABASE=gwells",
-                                "VOLUME_CAPACITY=1Gi",
+                                "VOLUME_CAPACITY=10Gi",
                                 "STORAGE_CLASS=netapp-file-standard",
                                 "REQUEST_CPU=500m",
                                 "REQUEST_MEMORY=1Gi",
