@@ -204,7 +204,7 @@ objects:
                     - bash
                     - '-c'
                     - >-
-                      psql -h 127.0.0.1 -U $PG_USER -q -d
+                      psql -q -d
                       $PG_DATABASE -c 'SELECT 1'
                 failureThreshold: 3
                 initialDelaySeconds: 5
