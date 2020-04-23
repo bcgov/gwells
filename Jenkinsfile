@@ -459,7 +459,7 @@ def dbUpgrade(String envProject, String envSuffix) {
     echo "mounting dump pvc to new database pod..."
 
     sh """
-    oc volume -n ${envProject} dc/${dcName} --add --name=v1 --type=persistentVolumeClaim --claim-name=${oldDcName} --mount-path=/mnt/96/data --containers=postgresql --read-only
+    oc set  -n ${envProject} volume dc/${dcName} --add --name=v1 --type=persistentVolumeClaim --claim-name=${oldDcName} --mount-path=/mnt/96/data --containers=postgresql --read-only
     """
 
     sleep(5)
