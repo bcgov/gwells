@@ -718,7 +718,7 @@ pipeline {
 
                         // wait until each container in this deployment's pod reports as ready
                         timeout(15) {
-                            pods.untilEach(2) {
+                            pods.untilEach(1) {
                                 return it.object().status.containerStatuses.every {
                                     it.ready
                                 }
