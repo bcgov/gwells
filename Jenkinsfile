@@ -690,6 +690,9 @@ pipeline {
 
 
         stage('DEMO - upgrading db (test run)') {
+            when {
+                expression { env.CHANGE_TARGET != 'master' && env.CHANGE_TARGET != 'demo' }
+            }
             steps {
                 script {
 
