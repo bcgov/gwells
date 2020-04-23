@@ -448,7 +448,7 @@ def dbUpgrade(String envProject, String envSuffix) {
     def dbdump = sh(
         script: " oc rsh -n ${envProject} dc/${oldDcName} bash -c ' \
         mkdir -p /var/lib/pgsql/data/upgrade-backup; \
-        pg_dump -U \${POSTGRESQL_USER} -d \${POSTGRESQL_DATABASE} -Fp -f /var/lib/pgsql/${dumpName} ${dumpOpts} \
+        pg_dump -U \${POSTGRESQL_USER} -d \${POSTGRESQL_DATABASE} -Fp -f /var/lib/pgsql/data/upgrade-backup/${dumpName} ${dumpOpts} \
     '",
     returnStdout: true)
 
