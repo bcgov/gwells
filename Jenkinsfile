@@ -363,16 +363,16 @@ def zapTests (String stageName, String envUrl, String envSuffix) {
 
 // Database backup
 def dbBackup (String envProject, String envSuffix) {
-    def dcName = envSuffix == "dev" ? "${appName}-pg12-${envSuffix}-${prNumber}" : "${appName}-pg12-${envSuffix}"
+    def dcName = envSuffix == "dev" ? "${appName}-pgsql-${envSuffix}-${prNumber}" : "${appName}-pgsql-${envSuffix}"
     def dumpDir = "/var/lib/pgsql/data/deployment-backups"
     def dumpName = "${envSuffix}-\$( date +%Y-%m-%d-%H%M ).dump"
-    def dumpOpts = "--schema=public --exclude-table=spatial_ref_sys"
+    def dumpOpts = "--no-privileges --no-tablespaces --schema=public --exclude-table=spatial_ref_sys"
     def dumpTemp = "/tmp/unverified.dump"
     int maxBackups = 10
 
     // Dump to temporary file
     sh "oc rsh -n ${envProject} dc/${dcName} bash -c ' \
-        pg_dump -U \${PG_USER} -d \${PG_DATABASE} -Fp -f ${dumpTemp} ${dumpOpts} \
+        pg_dump -U \${POSTGRESQL_USER} -d \${POSTGRESQL_DATABASE} -Fp -f ${dumpTemp} ${dumpOpts} \
     '"
 
     // Verify dump size is at least 1M
