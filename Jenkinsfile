@@ -447,7 +447,6 @@ def dbUpgrade(String envProject, String envSuffix) {
     timeout(10) {
         dc.untilEach(1) {
             return it.object().status.replicas.equals(0)
-            }
         }
     }
 
@@ -704,7 +703,6 @@ pipeline {
                         timeout(10) {
                             dc.untilEach(1) {
                                 return it.object().status.replicas.equals(0)
-                                }
                             }
                         }
 
