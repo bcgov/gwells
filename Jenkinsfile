@@ -441,7 +441,17 @@ def dbUpgrade(String envProject, String envSuffix) {
     oc scale -n ${envProject} dc/${backendName} --replicas=0
     """
 
-    sleep(15)
+    def dc = openshift.selector('dc', "${backendName}")
+
+    // wait until scaled down
+    timeout(10) {
+        dc.untilEach(1) {
+            return it.object().status.replicas.equals(0)
+            }
+        }
+    }
+
+    echo "scaled down"
 
     echo "running pg_dump on old database..."
 
@@ -681,6 +691,41 @@ pipeline {
                                 }
                             }
                         }
+
+                        echo "test scaling down"
+
+                        sh """
+                        oc scale dc/${devAppName} --replicas=0
+                        """
+
+                        def dc = openshift.selector('dc', "${devAppName}")
+
+                        // wait until scaled down
+                        timeout(10) {
+                            dc.untilEach(1) {
+                                return it.object().status.replicas.equals(0)
+                                }
+                            }
+                        }
+
+                        echo "scaled down, scaling back to 2..."
+
+
+                        sh """
+                        oc scale dc/${devAppName} --replicas=2
+                        """
+
+                        // wait until each container in this deployment's pod reports as ready
+                        timeout(15) {
+                            pods.untilEach(2) {
+                                return it.object().status.containerStatuses.every {
+                                    it.ready
+                                }
+                            }
+                        }
+
+                        echo "finished test scale"
+
 
                         // Report a pass to GitHub
                         createDeploymentStatus(devSuffix, 'SUCCESS', devHost)
