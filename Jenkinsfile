@@ -372,7 +372,7 @@ def dbBackup (String envProject, String envSuffix) {
 
     // Dump to temporary file
     sh "oc rsh -n ${envProject} dc/${dcName} bash -c ' \
-        pg_dump -U \${POSTGRESQL_USER} -d \${POSTGRESQL_DATABASE} -Fp -f ${dumpTemp} ${dumpOpts} \
+        pg_dump -U \${POSTGRESQL_USER} -d \${POSTGRESQL_DATABASE} -Fc -f ${dumpTemp} ${dumpOpts} \
     '"
 
     // Verify dump size is at least 1M
