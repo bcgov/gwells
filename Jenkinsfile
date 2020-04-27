@@ -664,7 +664,6 @@ pipeline {
                         // promote the newly built image to DEV
                         echo "Tagging new image to DEV imagestream."
                         openshift.tag("${toolsProject}/gwells-application:${prNumber}", "${devProject}/${devAppName}:dev")  // todo: clean up labels/tags
-                        openshift.tag("${toolsProject}/gwells-postgresql:dev", "${devProject}/gwells-postgresql-${devSuffix}-${prNumber}:dev")  // todo: clean up labels/tags
 
                         // post a notification to Github that this pull request is being deployed
                         createDeploymentStatus(devSuffix, 'PENDING', devHost)
