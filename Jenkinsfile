@@ -100,6 +100,8 @@ def unitTestDjango (String stageName, String envProject, String envSuffix) {
         def DB_newVersion = openshift.selector("dc", "${DB_target}").object().status.latestVersion
         def DB_pod = openshift.selector('pod', [deployment: "${DB_target}-${DB_newVersion}"])
         echo "Temporarily granting elevated DB rights"
+        echo DB_target
+        echo DB_newVersion
         def db_ocoutput_grant = openshift.exec(
             DB_pod.objects()[0].metadata.name,
             "--",
