@@ -400,7 +400,7 @@ export default {
         const url = this.$router.resolve(routes[0])
         const container = L.DomUtil.create('div', 'leaflet-popup-aquifer')
         container.innerHTML = [
-          `<a href="${url.href}">Well ${well.well_tag_number}</a>`,
+          `<a href="${url.href}">Well Tag Number ${well.well_tag_number}</a>`,
           `Identification Plate Number: ${well.identification_plate_number || '—'}`,
           `Address: ${well.street_address || 'N/A'}`,
           correlatedAquiferItem,
