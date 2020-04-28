@@ -56,7 +56,7 @@
                                         "env": [
                                             {
                                                 "name": "DATABASE_SERVICE_NAME",
-                                                "value": "gwells-pgsql-${ENV_NAME}"
+                                                "value": "gwells-pg12-${ENV_NAME}"
                                             },
                                             {
                                                 "name": "DATABASE_ENGINE",
