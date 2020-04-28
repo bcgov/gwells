@@ -58,7 +58,7 @@
                                         "env": [
                                             {
                                                 "name": "PGHOST",
-                                                "value": "gwells-pgsql-production"
+                                                "value": "gwells-pg12-production"
                                             },
                                             {
                                                 "name": "PGDATABASE",
