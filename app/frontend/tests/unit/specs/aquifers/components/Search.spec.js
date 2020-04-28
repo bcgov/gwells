@@ -68,9 +68,6 @@ describe('Search Component', () => {
             { name: 'aquifer section', code: 'a' }
           ])
         },
-        fetchSimplifiedGeometry () {
-          return Promise.resolve({})
-        },
         $SmoothScroll () {}
       },
       ...options
@@ -142,7 +139,7 @@ describe('Search Component', () => {
 
     expect(axios.get).toHaveBeenCalledWith('aquifers', {
       cancelToken: undefined,
-      params: { 'resources__section__code': 'a', search: 'asdf' }
+      params: { 'resources__section__code': 'a', search: 'asdf', constrain: 'true' }
     })
   })
 
