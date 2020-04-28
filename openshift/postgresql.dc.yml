@@ -206,9 +206,9 @@ objects:
                     - >-
                       psql -q -d
                       $PG_DATABASE -c 'SELECT 1'
-                failureThreshold: 3
-                initialDelaySeconds: 5
-                periodSeconds: 10
+                failureThreshold: 5
+                initialDelaySeconds: 30
+                periodSeconds: 15
                 successThreshold: 1
                 timeoutSeconds: 1
               resources:
