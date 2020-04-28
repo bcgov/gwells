@@ -694,7 +694,7 @@ pipeline {
                         echo "test scaling down"
 
                         sh """
-                        oc scale dc/${devAppName} --replicas=0
+                        oc scale -n ${devProject} dc/${devAppName} --replicas=0
                         """
 
                         def dc = openshift.selector('dc', "${devAppName}")
@@ -710,7 +710,7 @@ pipeline {
 
 
                         sh """
-                        oc scale dc/${devAppName} --replicas=2
+                        oc scale -n ${devProject} dc/${devAppName} --replicas=2
                         """
 
                         // wait until each container in this deployment's pod reports as ready
