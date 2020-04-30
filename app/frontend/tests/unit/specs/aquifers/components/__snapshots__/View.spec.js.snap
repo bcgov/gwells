@@ -945,32 +945,44 @@ exports[`View Component View mode matches the snapshot 1`] = `
                         <li
                           class=""
                         >
-                          <a
-                            class="d-print-url"
-                            href="https://governmentofbc.maps.arcgis.com/apps/webappviewer/index.html?id=b53cb0bf3f6848e79d66ffd09b74f00d&find=OBS WELL 2"
-                            target="_blank"
+                          <span
+                            class="observation-well"
                           >
-                            
-                          2
-                        
-                          </a>
-                           
-                          <!---->
+                            <a
+                              class="d-print-url"
+                              href="https://governmentofbc.maps.arcgis.com/apps/webappviewer/index.html?id=b53cb0bf3f6848e79d66ffd09b74f00d&find=OBS WELL 2"
+                              target="_blank"
+                            >
+                              
+    2
+  
+                            </a>
+                             
+                            <!---->
+                             
+                            <!---->
+                          </span>
                         </li>
                         <li
                           class=""
                         >
-                          <a
-                            class="d-print-url"
-                            href="https://governmentofbc.maps.arcgis.com/apps/webappviewer/index.html?id=b53cb0bf3f6848e79d66ffd09b74f00d&find=OBS WELL 2"
-                            target="_blank"
+                          <span
+                            class="observation-well"
                           >
-                            
-                          2
-                        
-                          </a>
-                           
-                          <!---->
+                            <a
+                              class="d-print-url"
+                              href="https://governmentofbc.maps.arcgis.com/apps/webappviewer/index.html?id=b53cb0bf3f6848e79d66ffd09b74f00d&find=OBS WELL 2"
+                              target="_blank"
+                            >
+                              
+    2
+  
+                            </a>
+                             
+                            <!---->
+                             
+                            <!---->
+                          </span>
                         </li>
                       </ul>
                     </div>
