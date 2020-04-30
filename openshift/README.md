@@ -51,7 +51,7 @@ ConfigMaps and Secrets must be created for each environment. The Jenkinsfile is 
 * Secrets:
   * `gwells-minio-secrets` (backend.dc.json)
   * `gwells-django-secrets` (backend.dc.json)
-  * `gwells-database-secrets` (postgresql.dc.json)
+  * `gwells-database-secrets` (postgresql.dc.yml)
 
 #### Minio object storage
 

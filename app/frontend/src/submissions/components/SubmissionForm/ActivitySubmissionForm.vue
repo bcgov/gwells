@@ -42,7 +42,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     </div>
     <div v-else>
       <b-row v-if="isStaffEdit">
-          <b-col lg="3" v-for="step in formSteps[activityType]" :key='step'>
+          <b-col lg="3" v-for="step in stepCodes" :key='step'>
             <a :href="`#${step}`" @click.prevent="anchorLinkHandler(step)">{{formStepDescriptions[step] ? formStepDescriptions[step] : step}}</a>
           </b-col>
         </b-row>
@@ -51,7 +51,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <!-- Form load/save -->
       <b-row v-if="!isStaffEdit">
         <b-col class="text-right">
-          <b-btn size="sm" variant="outline-primary" @click="saveForm">
+          <b-btn size="sm" variant="outline-primary" class="mr-2" @click="saveForm">
             Save report progress
             <transition name="bounce" mode="out-in">
               <i v-show="saveFormSuccess" class="fa fa-check text-success"></i>
@@ -489,10 +489,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <!-- Back / Next / Submit controls -->
       <b-row v-else class="mt-5">
         <b-col v-if="!formIsFlat">
-          <b-btn v-if="step > 1 && !formIsFlat" @click="step > 1 ? step-- : null" variant="primary">Back</b-btn>
+          <b-btn v-if="step > 1 && !formIsFlat" @click="gotoPrevStep" variant="primary">Back</b-btn>
         </b-col>
         <b-col class="pr-4 text-right">
-          <b-btn v-if="step < maxSteps && !formIsFlat" @click="step++" variant="primary" id="nextSubmissionStep">Next</b-btn>
+          <b-btn v-if="step < maxSteps && !formIsFlat" @click="gotoNextStep" variant="primary" id="nextSubmissionStep">Next</b-btn>
           <span v-else>
             <b-btn variant="primary" @click="$emit('preview')" id="formPreviewButton">Preview &amp; Submit</b-btn>
           </span>
@@ -687,6 +687,22 @@ export default {
   },
   watch: {
     // we need this empty watch section for the code in beforeCreate
+    '$route' (to, from) {
+      if (to.hash !== from.hash && !this.formIsFlat) {
+        const routeFromUrlHash = to.hash.substr(1)
+        if (routeFromUrlHash) {
+          const stepNum = this.stepCodes.indexOf(routeFromUrlHash)
+          if (stepNum >= 0) {
+            this.step = Math.min(stepNum + 1, this.maxSteps)
+          }
+        } else {
+          this.step = 1
+        }
+      }
+    },
+    formIsFlat () {
+      this.formFlatnessChanged()
+    }
   },
   computed: {
     wellTagNumber () {
@@ -698,13 +714,16 @@ export default {
       // current type of submission
       return (this.step % (this.maxSteps + 1))
     },
+    stepCodes () {
+      return this.formSteps[this.activityType]
+    },
     maxSteps () {
-      return this.formSteps[this.activityType].length
+      return this.stepCodes.length
     },
     currentStep () {
       // the string name of the step corresponding to formStep
       // this will determine which step is currently displayed
-      return this.formSteps[this.activityType][this.formStep - 1]
+      return this.stepCodes[this.formStep - 1]
     },
     isLoadFormDisabled () {
       // During unit tests, the localStorage object might not exist, so we have to check it's existence.
@@ -764,11 +783,31 @@ export default {
     anchorLinkHandler (step) {
       smoothScroll(this.$el.querySelector(`#${step}`))
       this.$router.replace({ hash: `#${step}` })
+    },
+    gotoPrevStep () {
+      this.step--
+      this.changeRouteHash(this.step)
+    },
+    gotoNextStep () {
+      this.step++
+      this.changeRouteHash(this.step)
+    },
+    formFlatnessChanged () {
+      this.changeRouteHash(this.step)
+    },
+    changeRouteHash (step) {
+      // Only set the route hash on a multi-step form
+      const hash = this.formIsFlat ? '' : `#${this.stepCodes[step - 1]}`
+      this.$router.push({ hash })
     }
   },
   created () {
     // When the form is saved, reset the formValueChanged variable.
     this.$parent.$on('formSaved', () => { this.formValueChanged = false })
+    if (this.$route.hash) {
+      this.step = 1
+      this.changeRouteHash(this.step)
+    }
   },
   beforeCreate () {
     // We know right from the start if this is going to be a SubmissionsEdit, and then we add watches

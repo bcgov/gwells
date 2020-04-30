@@ -199,7 +199,7 @@
                                         "name": "PGDATABASE",
                                         "valueFrom": {
                                             "secretKeyRef": {
-                                                "name": "gwells-pgsql${NAME_SUFFIX}",
+                                                "name": "gwells-pg12${NAME_SUFFIX}",
                                                 "key": "database-name"
                                             }
                                         }
@@ -208,7 +208,7 @@
                                         "name": "PGUSER",
                                         "valueFrom": {
                                             "secretKeyRef": {
-                                                "name": "gwells-pgsql${NAME_SUFFIX}",
+                                                "name": "gwells-pg12${NAME_SUFFIX}",
                                                 "key": "database-user"
                                             }
                                         }
@@ -217,14 +217,14 @@
                                         "name": "PGPASSWORD",
                                         "valueFrom": {
                                             "secretKeyRef": {
-                                                "name": "gwells-pgsql${NAME_SUFFIX}",
+                                                "name": "gwells-pg12${NAME_SUFFIX}",
                                                 "key": "database-password"
                                             }
                                         }
                                     },
                                     {
                                         "name": "PGHOST",
-                                        "value": "gwells-pgsql${NAME_SUFFIX}"
+                                        "value": "gwells-pg12${NAME_SUFFIX}"
                                     }
                                 ]
                             }
@@ -280,7 +280,7 @@
                                         "name": "PGDATABASE",
                                         "valueFrom": {
                                             "secretKeyRef": {
-                                                "name": "gwells-pgsql${NAME_SUFFIX}",
+                                                "name": "gwells-pg12${NAME_SUFFIX}",
                                                 "key": "database-name"
                                             }
                                         }
@@ -289,7 +289,7 @@
                                         "name": "PGUSER",
                                         "valueFrom": {
                                             "secretKeyRef": {
-                                                "name": "gwells-pgsql${NAME_SUFFIX}",
+                                                "name": "gwells-pg12${NAME_SUFFIX}",
                                                 "key": "database-user"
                                             }
                                         }
@@ -298,14 +298,14 @@
                                         "name": "PGPASSWORD",
                                         "valueFrom": {
                                             "secretKeyRef": {
-                                                "name": "gwells-pgsql${NAME_SUFFIX}",
+                                                "name": "gwells-pg12${NAME_SUFFIX}",
                                                 "key": "database-password"
                                             }
                                         }
                                     },
                                     {
                                         "name": "PGHOST",
-                                        "value": "gwells-pgsql${NAME_SUFFIX}"
+                                        "value": "gwells-pg12${NAME_SUFFIX}"
                                     }
                                 ],
                                 "resources": {
@@ -333,13 +333,13 @@
                                 "env": [
                                     {
                                         "name": "DATABASE_SERVICE_NAME",
-                                        "value": "gwells-pgsql${NAME_SUFFIX}"
+                                        "value": "gwells-pg12${NAME_SUFFIX}"
                                     },
                                     {
                                         "name": "DATABASE_NAME",
                                         "valueFrom": {
                                             "secretKeyRef": {
-                                                "name": "gwells-pgsql${NAME_SUFFIX}",
+                                                "name": "gwells-pg12${NAME_SUFFIX}",
                                                 "key": "database-name"
                                             }
                                         }
@@ -348,7 +348,7 @@
                                         "name": "DATABASE_USER",
                                         "valueFrom": {
                                             "secretKeyRef": {
-                                                "name": "gwells-pgsql${NAME_SUFFIX}",
+                                                "name": "gwells-pg12${NAME_SUFFIX}",
                                                 "key": "database-user"
                                             }
                                         }
@@ -357,7 +357,7 @@
                                         "name": "DATABASE_PASSWORD",
                                         "valueFrom": {
                                             "secretKeyRef": {
-                                                "name": "gwells-pgsql${NAME_SUFFIX}",
+                                                "name": "gwells-pg12${NAME_SUFFIX}",
                                                 "key": "database-password"
                                             }
                                         }
