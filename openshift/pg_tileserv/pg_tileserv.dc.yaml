@@ -150,7 +150,7 @@ objects:
                   value: postgis_ftw
                 - name: DATABASE_URL
                   value: postgres://$(PG_USER):$(PG_PASSWORD)@$(DATABASE_HOST)/gwells
-              image: pg_tileserv:${IMAGE_TAG}
+              image: pramsey/pg_tileserv:${IMAGE_TAG}
               imagePullPolicy: IfNotPresent
               livenessProbe:
                 failureThreshold: 3
