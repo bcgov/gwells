@@ -170,12 +170,14 @@
 </template>
 
 <script>
+import querystring from 'querystring'
+import { mapGetters, mapActions } from 'vuex'
+import smoothScroll from 'smoothscroll'
+
 import ApiService from '@/common/services/ApiService.js'
 import SearchTable from '@/registry/components/search/SearchTable.vue'
 import LegalText from '@/registry/components/Legal.vue'
 import APIErrorMessage from '@/common/components/APIErrorMessage.vue'
-import querystring from 'querystring'
-import { mapGetters, mapActions } from 'vuex'
 import { FETCH_CITY_LIST, FETCH_DRILLER_LIST, FETCH_DRILLER_OPTIONS } from '@/registry/store/actions.types'
 import { SET_DRILLER_LIST, SET_LAST_SEARCHED_ACTIVITY } from '@/registry/store/mutations.types'
 
@@ -290,7 +292,7 @@ export default {
         })
       }
       this.$store.dispatch(FETCH_DRILLER_LIST, params).then(() => {
-        this.$SmoothScroll(table, 100)
+        smoothScroll(table, 100)
         this.drillerSearchReset({ keepActivity: true, keepLimit: true })
         this.searchLoading = false
         this.lastSearchedParams = Object.assign({}, params)

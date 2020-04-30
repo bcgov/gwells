@@ -246,6 +246,7 @@ import L from 'leaflet'
 import querystring from 'querystring'
 import { isEqual, pick } from 'lodash'
 import { mapGetters, mapMutations, mapState, mapActions } from 'vuex'
+import smoothScroll from 'smoothscroll'
 
 import ApiService from '@/common/services/ApiService.js'
 import {
@@ -391,7 +392,7 @@ export default {
     },
     scrollToMap () {
       const map = this.$el.ownerDocument.getElementById('aquifer-search-map')
-      this.$SmoothScroll(map, 100)
+      smoothScroll(map, 200)
     },
     triggerReset (e) {
       e.preventDefault()

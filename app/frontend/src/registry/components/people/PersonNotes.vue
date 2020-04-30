@@ -69,7 +69,10 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import smoothScroll from 'smoothscroll'
+
 import ApiService from '@/common/services/ApiService.js'
+
 export default {
   name: 'PersonNotes',
   data () {
@@ -103,7 +106,7 @@ export default {
           this.noteReset()
           this.submitLoading = false
           this.submitSuccess = true
-          this.$SmoothScroll(notes, 1000)
+          smoothScroll(notes, 1000)
           this.$emit('updated')
         }).catch((e) => {
           this.submitLoading = false

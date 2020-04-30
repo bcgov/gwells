@@ -3,6 +3,8 @@
 </template>
 
 <script>
+import smoothScroll from 'smoothscroll'
+
 export default {
   name: 'BackToTopLink',
   props: ['target'],
@@ -16,7 +18,7 @@ export default {
   },
   methods: {
     handleBackToTop () {
-      this.$SmoothScroll(this.targetEl)
+      smoothScroll(this.targetEl)
     }
   }
 }
