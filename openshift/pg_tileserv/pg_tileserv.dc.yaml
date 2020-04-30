@@ -39,8 +39,7 @@ objects:
       Caddyfile: |-
         0.0.0.0:2015 {
           root * /var/www/html
-          log stdout
-          errors stdout
+          log
           encoding gzip
           uri strip_prefix /tiles
           reverse_proxy localhost:7800

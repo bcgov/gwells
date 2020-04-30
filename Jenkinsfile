@@ -646,7 +646,8 @@ pipeline {
                         def pgtileservTemplate = openshift.process("-f",
                             "openshift/pg_tileserv/pg_tileserv.dc.yaml",
                             "NAME_SUFFIX=-${devSuffix}-${prNumber}",
-                            "DATABASE_SERVICE_NAME=gwells-pg12-${devSuffix}-${prNumber}"
+                            "DATABASE_SERVICE_NAME=gwells-pg12-${devSuffix}-${prNumber}",
+                            "IMAGE_TAG=20200427"
                         )
 
                         // some objects need to be copied from a base secret or configmap
