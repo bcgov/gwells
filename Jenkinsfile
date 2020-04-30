@@ -852,20 +852,11 @@ pipeline {
                             ],
                             "--overwrite"
                         )
-                        openshift.apply(newObjectCopies).label(
-                            [
-                                'app':"gwells-${stagingSuffix}",
-                                'app-name':"${appName}",
-                                'env-name':"${stagingSuffix}"
-                            ],
-                            "--overwrite"
-                        )
-
 
 
                         // upgrade
                         // note: temporary step for upgrading database.
-                        dbUpgrade(stagingProject, stagingSuffix)
+                        // dbUpgrade(stagingProject, stagingSuffix)
 
 
 
@@ -875,6 +866,15 @@ pipeline {
                         echo "Applying deployment config for pull request ${prNumber} on ${stagingProject}"
 
                         openshift.apply(deployTemplate).label(
+                            [
+                                'app':"gwells-${stagingSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${stagingSuffix}"
+                            ],
+                            "--overwrite"
+                        )
+
+                        openshift.apply(newObjectCopies).label(
                             [
                                 'app':"gwells-${stagingSuffix}",
                                 'app-name':"${appName}",
@@ -1331,21 +1331,9 @@ pipeline {
                             "--overwrite"
                         )
 
-                        openshift.apply(newObjectCopies).label(
-                            [
-                                'app':"gwells-${prodSuffix}",
-                                'app-name':"${appName}",
-                                'env-name':"${prodSuffix}"
-                            ],
-                            "--overwrite"
-                        )
-
 
                         // temporary upgrade step
                         dbUpgrade(prodProject, prodSuffix)
-
-
-
 
                         openshift.apply(deployTemplate).label(
                             [
@@ -1355,6 +1343,17 @@ pipeline {
                             ],
                             "--overwrite"
                         )
+
+
+                        openshift.apply(newObjectCopies).label(
+                            [
+                                'app':"gwells-${prodSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${prodSuffix}"
+                            ],
+                            "--overwrite"
+                        )
+
 
                         echo "Successfully applied production deployment config"
 
