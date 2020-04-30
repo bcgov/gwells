@@ -128,14 +128,15 @@
             </b-row>
           </b-col>
           <b-col id="map-container" cols="12" md="12" lg="7" class="p-0">
-            <map-loading-spinner :loading="loadingMap"/>
+            <map-loading-spinner :loading="loadingAquifer || loadingMap"/>
 
             <single-aquifer-map
               :aquifer-id="id"
               :geom="record.geom"
               :wells="aquiferWells"
               :key="mapKey"
-              :loading="loadingMap"/>
+              @mapLoading="loadingMap = true"
+              @mapLoaded="loadingMap = false"/>
           </b-col>
         </b-row>
 
@@ -390,7 +391,7 @@ export default {
     }
 
     if (this.id !== this.storedId) {
-      this.loadAquifer()
+      this.fetch()
     }
   },
   data () {
@@ -414,7 +415,7 @@ export default {
       ],
       waterWithdrawlVolume: '',
       factsheetRe: /[_ -]factsheet[_ -]*.*\.pdf$/i,
-      loading: false,
+      loadingAquifer: false,
       loadingFiles: false,
       loadingMap: false,
       loadingForm: false,
@@ -551,7 +552,7 @@ export default {
   watch: {
     id () {
       if (this.id !== this.storedId) {
-        this.loadAquifer()
+        this.fetch()
       }
     },
     licenceDetails (newLDetails, oldLDetails) {
@@ -602,7 +603,7 @@ export default {
       })
     },
     handleSaveSuccess (response) {
-      this.fetch()
+      this.fetchAquifer()
 
       if (this.$refs.aquiferHistory) {
         this.$refs.aquiferHistory.update()
@@ -668,7 +669,7 @@ export default {
     },
     navigateToView () {
       this.$router.push({ name: 'aquifers-view', params: { id: this.id } })
-      this.fetch()
+      this.fetchAquifer()
     },
     navigateToEdit () {
       this.showSaveSuccess = false
@@ -677,22 +678,16 @@ export default {
     print () {
       window.print()
     },
-    loadAquifer () {
+    fetch () {
       this.error = undefined
       this.resetAquiferData()
 
-      this.loadingMap = true
-      Promise.all([
-        this.fetch(),
-        this.fetchWells()
-      ]).then(() => {
-        this.loadingMap = false
-      })
-
+      this.fetchAquifer()
+      this.fetchWells()
       this.fetchFiles()
     },
-    fetch (id = this.id) {
-      this.loading = true
+    fetchAquifer (id = this.id) {
+      this.loadingAquifer = true
       return ApiService.query(`aquifers/${id}`)
         .then((response) => {
           const responseData = response.data || {}
@@ -717,7 +712,7 @@ export default {
           this.error = e.response
         })
         .finally(() => {
-          this.loading = false
+          this.loadingAquifer = false
         })
     },
     fetchFiles (id = this.id) {

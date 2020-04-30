@@ -109,6 +109,12 @@ export const DATABC_OBSERVATION_WELLS_LAYER = {
   }
 }
 
+export const WELLS_BASE_AND_ARTESIAN_LAYER_ID = 'wells-with-artesian'
+export const WELLS_UNCORRELATED_LAYER_ID = 'wells-uncorrelated'
+export const WELLS_EMS_LAYER_ID = 'wells-ems'
+export const AQUIFERS_LINE_LAYER_ID = 'aquifer-line'
+export const AQUIFERS_FILL_LAYER_ID = 'aquifer-fill'
+
 export function vectorTileServerUrl (sourceLayerName) {
   return `${VECTOR_TILE_SERVER}${sourceLayerName}/{z}/{x}/{y}.pbf`
 }
@@ -171,7 +177,7 @@ export function toggleAquiferHover (map, aquiferId, hoveredState) {
 
 // Builds MapBox layer config object for wells with artesian ones with a fuchsia outline
 export function wellsBaseAndArtesianLayer (options = {}) {
-  const layerId = options.id || 'wells'
+  const layerId = options.id || WELLS_BASE_AND_ARTESIAN_LAYER_ID
   const styles = defaultsDeep(options.styles, {
     'circle-color': [
       'case',
@@ -192,7 +198,7 @@ export function wellsBaseAndArtesianLayer (options = {}) {
 
 // Builds MapBox layer config object for wells that are uncorrelated to any aquifer
 export function wellsUncorrelatedLayer (options = {}) {
-  const layerId = options.id || 'wells-uncorrelated'
+  const layerId = options.id || WELLS_UNCORRELATED_LAYER_ID
   const styles = defaultsDeep(options.styles, {
     'circle-color': [
       'case',
@@ -213,7 +219,7 @@ export function wellsUncorrelatedLayer (options = {}) {
 
 // Builds MapBox layer config object for wells that have EMS data
 export function wellsEmsLayer (options = {}) {
-  const layerId = options.id || 'wells-ems'
+  const layerId = options.id || WELLS_EMS_LAYER_ID
   const styles = defaultsDeep(options.styles, {
     'circle-color': [
       'case',
@@ -234,15 +240,18 @@ export function wellsEmsLayer (options = {}) {
 
 // Builds MapBox layer config object for aquifer line outlines
 export function aquifersLineLayer (options = {}) {
-  const layerId = options.id || 'aquifer-line'
+  const layerId = options.id || AQUIFERS_LINE_LAYER_ID
   const styles = defaultsDeep(options.styles, {
     'line-color': [
       'case',
-      ['boolean', ['feature-state', 'selected'], false], 'purple',
+      ['boolean', ['feature-state', 'focused'], false], 'purple',
+      ['boolean', ['feature-state', 'selected'], false], 'green',
+      ['boolean', ['feature-state', 'searchResult'], false], 'purple',
       '#FF6500'
     ],
     'line-width': [
       'case',
+      ['boolean', ['feature-state', 'selected'], false], 2,
       ['boolean', ['feature-state', 'selected'], false], 2,
       1
     ]
@@ -253,11 +262,13 @@ export function aquifersLineLayer (options = {}) {
 
 // Builds MapBox layer config object for aquifer fill
 export function aquifersFillLayer (options = {}) {
-  const layerId = options.id || 'aquifer-fill'
+  const layerId = options.id || AQUIFERS_FILL_LAYER_ID
   const styles = defaultsDeep(options.styles, {
     'fill-color': [
       'case',
-      ['boolean', ['feature-state', 'selected'], false], 'purple',
+      ['boolean', ['feature-state', 'focused'], false], 'purple',
+      ['boolean', ['feature-state', 'selected'], false], 'green',
+      ['boolean', ['feature-state', 'searchResult'], false], 'purple',
       '#FF6500'
     ],
     'fill-opacity': [

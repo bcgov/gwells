@@ -1,7 +1,11 @@
 import mapboxgl from 'mapbox-gl'
 
 import { getLngLatOfPointFeature } from '../common/mapbox/geometry'
-import { toggleAquiferHover } from '../common/mapbox/layers'
+import {
+  toggleAquiferHover,
+  WELLS_BASE_AND_ARTESIAN_LAYER_ID,
+  AQUIFERS_FILL_LAYER_ID
+} from '../common/mapbox/layers'
 
 // Creates a <div> for the well's popup content
 export function createWellPopupElement ($router, wellFeatureProperties, options = {}) {
@@ -94,13 +98,27 @@ export function createAquiferPopupElement (map, $router, point) {
   return container
 }
 
+// The tooltip is currently shows exactly the same data as the popup but they could be different
+export function createWellTooltipElement ($router, wellFeatureProperties, options) {
+  return createWellPopupElement($router, wellFeatureProperties, options)
+}
+
+// The tooltip is currently shows exactly the same data as the popup but they could be different
+export function createAquiferTooltipElement (map, $router, point) {
+  return createAquiferPopupElement(map, $router, point)
+}
+
 // Adds mouse event listeners to the map which will show the tooltip for an aquifer or well
 export function setupMapTooltips (map, $router, options = {}) {
   const wellsTooltip = new mapboxgl.Popup()
   const aquifersTooltip = new mapboxgl.Popup()
+
+  const wellsLayerId = options.wellsLayerId || WELLS_BASE_AND_ARTESIAN_LAYER_ID
+  const aquiferFillLayerId = options.aquiferFillLayerId || AQUIFERS_FILL_LAYER_ID
+
   let overAquifer = false
 
-  map.on('mousemove', 'wells', (e) => {
+  map.on('mousemove', wellsLayerId, (e) => {
     map.getCanvas().style.cursor = 'pointer'
 
     aquifersTooltip.remove()
@@ -108,14 +126,14 @@ export function setupMapTooltips (map, $router, options = {}) {
     if (map.popup.isOpen()) { return }
 
     const feature = e.features[0]
-    const contentDiv = createWellPopupElement($router, feature.properties, options)
+    const contentDiv = createWellTooltipElement($router, feature.properties, options)
     wellsTooltip
       .setLngLat(getLngLatOfPointFeature(feature))
       .setDOMContent(contentDiv)
       .addTo(map)
   })
 
-  map.on('mouseleave', 'wells', () => {
+  map.on('mouseleave', wellsLayerId, () => {
     map.getCanvas().style.cursor = ''
     wellsTooltip.remove()
     if (overAquifer && !map.popup.isOpen()) {
@@ -123,28 +141,28 @@ export function setupMapTooltips (map, $router, options = {}) {
     }
   })
 
-  map.on('mouseenter', 'aquifer-fill', (e) => {
+  map.on('mouseenter', aquiferFillLayerId, (e) => {
     overAquifer = true
     if (map.popup.isOpen() || wellsTooltip.isOpen()) { return }
 
-    const contentDiv = createAquiferPopupElement(map, $router, e.point)
+    const contentDiv = createAquiferTooltipElement(map, $router, e.point)
     aquifersTooltip
       .setDOMContent(contentDiv)
       .setLngLat(e.lngLat)
       .addTo(map)
   })
 
-  map.on('mousemove', 'aquifer-fill', (e) => {
+  map.on('mousemove', aquiferFillLayerId, (e) => {
     if (map.popup.isOpen() || wellsTooltip.isOpen()) { return }
 
-    const contentDiv = createAquiferPopupElement(map, $router, e.point)
+    const contentDiv = createAquiferTooltipElement(map, $router, e.point)
     aquifersTooltip
       .setDOMContent(contentDiv)
       .setLngLat(e.lngLat)
       .addTo(map)
   })
 
-  map.on('mouseleave', 'aquifer-fill', () => {
+  map.on('mouseleave', aquiferFillLayerId, () => {
     aquifersTooltip.remove()
     overAquifer = false
   })
@@ -152,6 +170,9 @@ export function setupMapTooltips (map, $router, options = {}) {
 
 // Adds mouse event listeners to the map which will show the popup for the clicked well or aquifer
 export function setupMapPopups (map, $router, options = {}) {
+  const wellsLayerId = options.wellsLayerId || WELLS_BASE_AND_ARTESIAN_LAYER_ID
+  const aquiferFillLayerId = options.aquiferFillLayerId || AQUIFERS_FILL_LAYER_ID
+
   let clickedOnWell = false
   const popup = new mapboxgl.Popup()
   popup.on('close', () => {
@@ -159,7 +180,7 @@ export function setupMapPopups (map, $router, options = {}) {
   })
   map.popup = popup
 
-  map.on('click', 'wells', (e) => {
+  map.on('click', wellsLayerId, (e) => {
     clickedOnWell = true
     const feature = e.features[0]
     const contentDiv = createWellPopupElement($router, feature.properties, options)
@@ -169,7 +190,7 @@ export function setupMapPopups (map, $router, options = {}) {
       .addTo(map)
   })
 
-  map.on('click', 'aquifer-fill', (e) => {
+  map.on('click', aquiferFillLayerId, (e) => {
     if (clickedOnWell) { return }
     if (map.hoveredAquiferId) {
       toggleAquiferHover(map, map.hoveredAquiferId, false)

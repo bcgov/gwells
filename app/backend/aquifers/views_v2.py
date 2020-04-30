@@ -12,13 +12,16 @@
     limitations under the License.
 """
 import logging
+import csv
 import openpyxl
 from openpyxl.writer.excel import save_virtual_workbook
 
 from django_filters import rest_framework as djfilters
-from django.http import HttpResponseRedirect, StreamingHttpResponse
-from django.db.models import Q
+from django.http import HttpResponse, HttpResponseRedirect, StreamingHttpResponse
 from django.db import connection
+from django.db.models import Q, Func, TextField
+from django.db.models.functions import Cast
+from django.contrib.gis.db.models.functions import Transform
 from django.views.decorators.cache import cache_page
 
 from drf_yasg.utils import swagger_auto_schema
@@ -158,12 +161,16 @@ class AquiferListCreateAPIViewV2(RevisionMixin, AuditCreateMixin, ListCreateAPIV
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
-            return serializers.AquiferSerializer
+            return serializers_v2.AquiferSerializerV2
         else:
             return serializers_v2.AquiferDetailSerializerV2
 
     def get_queryset(self):
-        return _aquifer_qs(self.request).values(
+        qs = _aquifer_qs(self.request)
+
+        qs = qs.annotate(extent=Cast(Transform(Func('geom', function='ST_Envelope'), 4326), output_field=TextField()))
+
+        return qs.values(
             'aquifer_id',
             'aquifer_name',
             'location_description',
@@ -177,6 +184,7 @@ class AquiferListCreateAPIViewV2(RevisionMixin, AuditCreateMixin, ListCreateAPIV
             'area',
             'mapping_year',
             'litho_stratographic_unit',
+            'extent'
         )
 
 
@@ -284,29 +292,3 @@ def aquifer_geojson_v2(request, **kwargs):
             get_env_variable('S3_WELL_EXPORT_BUCKET'),
             'api/v1/gis/aquifers.json')
         return HttpResponseRedirect(url)
-
-
-@api_view(['GET'])
-@cache_page(60*15)
-def aquifer_geojson_simplified_v2(request, **kwargs):
-    """
-    Sadly, GeoDjango's ORM doesn't seem to directly support a call to
-    ST_AsGEOJSON, but the latter performs much better than processing WKT
-    in Python, so we must generate SQL here. Returns MultiPolygon features.
-    """
-
-    SQL = """
-    SELECT
-           ST_AsGeoJSON(geom_simplified, 8) :: json AS "geometry",
-           aquifer.aquifer_id                       AS id
-    FROM aquifer;
-    """
-
-    iterator = GeoJSONIterator(
-        SQL,
-        AQUIFER_CHUNK_SIZE,
-        connection.cursor())
-    response = StreamingHttpResponse(
-        (item for item in iterator),
-        content_type='application/json')
-    return response

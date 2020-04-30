@@ -84,6 +84,8 @@ urlpatterns = [
         api.AnalyticsConfig.as_view(), name='analytics'),
     url(r'^' + app_root_slash + api_path_prefix() + r'/gis/insidebc',
         api.InsideBC.as_view(), name='insidebc'),
+    url(r'^' + app_root_slash + api_path_prefix() + r'/geocoding/v\d/.+\.places/(?P<query>.+)\.json$',
+        api.DataBCGeocoder.as_view(), name='insidebc'),
     url(r'^' + app_root_slash, include('registries.urls')),
     url(r'^' + app_root_slash, include('wells.urls')),
     url(r'^' + app_root_slash, include('aquifers.urls')),

@@ -32,7 +32,8 @@ module.exports = {
         target: process.env.VECTOR_TILE_SERVER || 'http://localhost:7800/',
         pathRewrite: {
           '^/tiles/': '/'
-        }
+        },
+        changeOrigin: true
       }
     }
   }

@@ -88,21 +88,6 @@ class WellLocationListV2APIView(ListAPIView):
         else:
             qs = Well.objects.all().exclude(well_publication_status='Unpublished')
 
-        # check to see if we should filter wells by which ones intersect an aquifer
-        intersects_aquifer_id = self.request.query_params.get('intersects_aquifer_id', None)
-        if intersects_aquifer_id:
-            aquifer = Aquifer.objects.filter(aquifer_id=int(intersects_aquifer_id)).first()
-
-            if not aquifer:
-                raise NotFound(f'Unknown aquifer {intersects_aquifer_id}')
-
-            # Simplify polygon and expand it by 1km
-            aqufier_geom = aquifer.geom.simplify(40, preserve_topology=True).buffer(1000)
-
-            qs = qs.exclude(geom=None)
-            # find all wells that intersect this simplified aquifer polygon
-            qs = qs.filter(geom__intersects=aqufier_geom)
-
         return qs
 
     def get(self, request, **kwargs):

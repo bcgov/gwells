@@ -51,7 +51,7 @@ services:
       DEBUG: "True"
       VUE_APP_AXIOS_BASE_URL: /api/
       VUE_APP_VECTOR_TILE_BASE_URL: "/tiles/"
-      VECTOR_TILE_SERVER: "http://localhost:7800/"
+      VECTOR_TILE_SERVER: "http://tileserv:7800/"
       CHOKIDAR_USEPOLLING: "True"
       API_TARGET: "${API_TARGET}"
     command: /bin/bash -c "

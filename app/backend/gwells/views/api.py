@@ -1,6 +1,10 @@
+import requests
+import geojson
+from geojson import Feature, FeatureCollection, Point
+
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
 from gwells.settings.base import get_env_variable
@@ -57,6 +61,43 @@ class InsideBC(APIView):
         return Response({
             'inside': isPointInsideBC(latitude, longitude)
         })
+
+
+class DataBCGeocoder(APIView):
+    """ Looks up address using DataBC's geocoder """
+
+    def get(self, request, **kwargs):
+        query = kwargs['query']
+
+        params = {
+            "addressString": query,
+            "autoComplete": "true",
+            "maxResults": 5,
+            "brief": "true"
+        }
+
+        search_url = "https://geocoder.api.gov.bc.ca/addresses.json"
+
+        resp = requests.get(search_url, params=params)
+        resp.raise_for_status()
+
+        features = resp.json().get('features')
+
+        geocoder_features = []
+
+        # add metadata to features
+        for feat in features:
+            coordinates = feat['geometry']['coordinates']
+            point = Point(coordinates)
+            new_feature = Feature(geometry=point)
+
+            # add mapbox-gl-js geocoder specific data (used for populating search box)
+            new_feature['center'] = coordinates
+            new_feature['place_name'] = feat.get('properties', {}).get('fullAddress')
+
+            geocoder_features.append(new_feature)
+
+        return HttpResponse(geojson.dumps(FeatureCollection(geocoder_features)))
 
 
 @csrf_exempt

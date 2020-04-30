@@ -97,11 +97,13 @@
               :aquiferDetails="searchResults"
               :highlightAquiferIds="searchedAquiferIds"
               :selectedId="selectedAquiferId"
-              :loading="loadingMap"
+              :viewBounds="mapViewBounds"
               :searchText="search"
               @moved="mapMoved"
               @zoomed="handleMapZoom"
-              @search="mapSearch"/>
+              @search="mapSearch"
+              @mapLoading="loadingMap = true"
+              @mapLoaded="loadingMap = false"/>
           </b-col>
         </b-form-row>
       </b-form>
@@ -133,7 +135,7 @@
             :tbody-tr-class="searchResultsRowClass"
             responsive>
             <template slot="id" slot-scope="row">
-              <router-link :to="{ name: 'aquifers-view', params: {id: row.item.id} }">{{ row.item.id }}</router-link>
+              <router-link :to="{ name: 'aquifers-view', params: {id: row.item.aquifer_id} }">{{ row.item.aquifer_id }}</router-link>
             </template>
             <template slot="name" slot-scope="row">
               {{row.item.name}}
@@ -160,6 +162,320 @@
     </b-card>
   </div>
 </template>
+
+<script>
+import mapboxgl from 'mapbox-gl'
+import L from 'leaflet'
+import querystring from 'querystring'
+import { isEqual, pick } from 'lodash'
+import { mapGetters, mapMutations, mapState, mapActions } from 'vuex'
+
+import ApiService from '@/common/services/ApiService.js'
+import {
+  SET_CONSTRAIN_SEARCH,
+  SET_SEARCH_BOUNDS,
+  RESET_SEARCH,
+  SET_SEARCH_MAP_ZOOM,
+  SET_SEARCH_MAP_CENTRE,
+  SET_SELECTED_SECTIONS,
+  SET_MATCH_ANY
+} from '../store/mutations.types.js'
+import { SEARCH_AQUIFERS } from '../store/actions.types.js'
+
+import AquiferMap from './AquiferMap.vue'
+import MapLoadingSpinner from './MapLoadingSpinner.vue'
+import features from '../../common/features'
+import { BC_LAT_LNG_BOUNDS, containsBounds } from '../../common/mapbox/geometry'
+
+const SEARCH_RESULTS_PER_PAGE = 10
+const HYDRAULICALLY_CONNECTED_CODE = 'Hydra'
+const URL_QS_SEARCH_KEYS = ['constrain', 'resources__section__code', 'match_any', 'search']
+
+export default {
+  components: {
+    'aquifer-map': AquiferMap,
+    'map-loading-spinner': MapLoadingSpinner
+  },
+  data () {
+    let query = this.$route.query
+
+    let selectedSections = query.resources__section__code ? query.resources__section__code.split(',') : []
+    if (query.hydraulically_connected) {
+      selectedSections.push(HYDRAULICALLY_CONNECTED_CODE)
+    }
+
+    return {
+      sortBy: 'id',
+      sortDesc: false,
+      search: query.search,
+      searchResultsPerPage: SEARCH_RESULTS_PER_PAGE,
+      currentPage: 1,
+      response: {},
+      aquiferListFields: [
+        { key: 'id', label: 'Aquifer number', sortable: true },
+        { key: 'name', label: 'Aquifer name', sortable: true },
+        { key: 'location', label: 'Descriptive location', sortable: true },
+        { key: 'material', label: 'Material', sortable: true },
+        { key: 'lsu', label: 'Litho stratigraphic unit', sortable: true },
+        { key: 'subtype', label: 'Subtype', sortable: true },
+        { key: 'vulnerability', label: 'Vulnerability', sortable: true },
+        { key: 'area', label: 'Size-km²', sortable: true },
+        { key: 'productivity', label: 'Productivity', sortable: true },
+        { key: 'demand', label: 'Demand', sortable: true },
+        { key: 'mapping_year', label: 'Year of mapping', sortable: true }
+      ],
+      layers: [],
+      surveys: [],
+      noSearchCriteriaError: false,
+      selectedSections,
+      matchAny: Boolean(query.match_any),
+      selectMode: 'single',
+      selectedAquiferId: null,
+      mapViewBounds: null,
+      loadingMap: false
+    }
+  },
+  computed: {
+    offset () { return parseInt(this.$route.query.offset, 10) || 0 },
+    displayOffset () {
+      return (this.currentPage * this.searchResultsPerPage) - this.searchResultsPerPage + 1
+    },
+    displayPageLength () {
+      if (this.searchResultCount > this.searchResultsPerPage) {
+        if ((this.currentPage * this.searchResultsPerPage) > this.searchResultCount) {
+          return this.searchResultCount
+        }
+        return this.currentPage * this.searchResultsPerPage
+      } else {
+        return this.searchResultCount
+      }
+    },
+    emptyResults () { return this.searchResultCount === 0 },
+    query () { return this.$route.query },
+    searchedAquiferIds () { return (this.searchResults || []).map((aquifer) => aquifer.aquifer_id) },
+    searchedAquifersBounds () {
+      const bounds = new mapboxgl.LngLatBounds()
+      const results = (this.searchResults || [])
+      results.forEach((aquifer) => bounds.extend(aquifer.extent))
+      return bounds
+    },
+    resourceSectionOptions () { return this.resourceSections && this.resourceSections.map((s) => ({ text: s.name, value: s.code })) },
+    ...mapGetters(['userRoles']),
+    ...mapGetters('aquiferStore/search', ['queryParams']),
+    ...mapState('aquiferStore/search', [
+      'searchErrors',
+      'searchResults',
+      'searchResultCount',
+      'searchInProgress',
+      'searchPerformed',
+      'searchMapCentre',
+      'searchMapZoom'
+    ]),
+    ...mapState('aquiferStore', {
+      resourceSections: 'sections'
+    })
+  },
+  methods: {
+    ...mapActions('aquiferStore/search', [SEARCH_AQUIFERS]),
+    ...mapMutations('aquiferStore/search', [
+      SET_CONSTRAIN_SEARCH,
+      SET_SEARCH_BOUNDS,
+      SET_CONSTRAIN_SEARCH,
+      RESET_SEARCH,
+      SET_SEARCH_MAP_CENTRE,
+      SET_SEARCH_MAP_ZOOM,
+      SET_SELECTED_SECTIONS,
+      SET_MATCH_ANY
+    ]),
+    ...mapMutations('aquiferStore', ['addSections']),
+    navigateToNew () {
+      this.$router.push({ name: 'new' })
+    },
+    downloadCSV (filterOnly) {
+      let url = ApiService.baseURL + 'aquifers/csv?'
+      if (filterOnly) {
+        url += querystring.stringify(this.query)
+      }
+      window.open(url)
+    },
+    downloadXLSX (filterOnly) {
+      let url = ApiService.baseURL + 'aquifers/xlsx?'
+      if (filterOnly) {
+        url += querystring.stringify(this.query)
+      }
+      window.open(url)
+    },
+    fetchSurveys () {
+      ApiService.query('surveys').then((response) => {
+        if (response.data) {
+          response.data.forEach((survey) => {
+            if (survey.survey_page === 'a' && survey.survey_enabled) {
+              this.surveys.push(survey)
+            }
+          })
+        }
+      })
+    },
+    fetchResourceSections () {
+      ApiService.query('aquifers/sections').then((response) => {
+        let sections = (response.data || {}).results || []
+        sections.splice(2, 0, {
+          name: 'Hydraulically connected',
+          code: HYDRAULICALLY_CONNECTED_CODE
+        })
+        this.addSections(sections)
+      })
+    },
+    scrollToMap () {
+      const map = this.$el.ownerDocument.getElementById('aquifer-search-map')
+      this.$SmoothScroll(map, 100)
+    },
+    triggerReset (e) {
+      e.preventDefault()
+      this.search = ''
+      this.selectedSections = []
+      this.matchAny = false
+      this.selectedAquiferId = null
+      this[RESET_SEARCH]()
+      this.$emit('resetLayers')
+    },
+    triggerSearch (options = {}) {
+      let constrainSearch = !!options.constrain
+      // If the search-in-map feature is not enabled use the old behaviour where all searches are
+      // constrained to the visible map area.
+      if (!features.searchInAquiferMap) {
+        constrainSearch = true
+      }
+
+      this.loadingMap = true
+
+      this.selectedAquiferId = null
+      this[SET_CONSTRAIN_SEARCH](constrainSearch)
+      this[SEARCH_AQUIFERS]({
+        selectedSections: this.selectedSections,
+        matchAny: this.matchAny,
+        query: this.search
+      })
+    },
+    mapSearch (zoom, bounds) {
+      this[SET_SEARCH_MAP_CENTRE](bounds.getCenter())
+      this[SET_SEARCH_MAP_ZOOM](zoom)
+      this.triggerSearch({ constrain: true })
+    },
+    updateQueryParams () {
+      this.$router.replace({ query: this.queryParams })
+    },
+    mapMoved (bounds, featuresOnMap, isViewReset) {
+      const viewingBC = containsBounds(bounds, BC_LAT_LNG_BOUNDS)
+
+      this[SET_SEARCH_MAP_CENTRE](viewingBC ? null : bounds.getCenter())
+      this[SET_SEARCH_BOUNDS](bounds)
+      this.updateQueryParams()
+    },
+    handleMapZoom (zoom, bounds) {
+      const viewingBC = containsBounds(bounds, BC_LAT_LNG_BOUNDS)
+
+      this[SET_SEARCH_MAP_ZOOM](viewingBC ? null : zoom)
+      this.updateQueryParams()
+    },
+    handleRouteChange () {
+      const query = { ...this.$route.query }
+      const emptyQuery = Object.keys(query).length === 0
+
+      if (emptyQuery) {
+        this[RESET_SEARCH]()
+      } else {
+        this.updateStoreStateFromQS()
+
+        const cleanedQuery = pick(query, URL_QS_SEARCH_KEYS)
+
+        const shouldSearch = !isEqual(cleanedQuery, pick(this.queryParams, URL_QS_SEARCH_KEYS))
+
+        if (shouldSearch) {
+          this.triggerSearch()
+        } else {
+          this.mapViewBounds = this.searchedAquifersBounds
+        }
+      }
+    },
+    updateStoreStateFromQS () {
+      const query = this.$route.query
+      // check if the page loads with a query (e.g. user bookmarked a search)
+      // if so, set the search boxes to the query params
+      if (Object.keys(query) === 0) { return }
+
+      if (query.map_centre !== undefined) {
+        const latlng = query.map_centre.split(',')
+        const lat = parseFloat(latlng[0])
+        const lng = parseFloat(latlng[1])
+        // eslint-disable-next-line new-cap
+        this[SET_SEARCH_MAP_CENTRE](new mapboxgl.LngLat(lng, lat))
+      }
+      if (query.map_zoom !== undefined) {
+        this[SET_SEARCH_MAP_ZOOM](parseInt(query.map_zoom))
+      }
+      if (query.constrain !== undefined) {
+        this[SET_CONSTRAIN_SEARCH](Boolean(query.constrain))
+      }
+      if (query.resources__section__code) {
+        this[SET_SELECTED_SECTIONS](query.resources__section__code.split(',').map(code => code.trim()))
+      }
+      if (query.match_any) {
+        this[SET_MATCH_ANY](Boolean(query.match_any))
+      }
+    },
+    searchResultsRowClass (item, type) {
+      if (!item || type !== 'row') { return }
+      if (item.aquifer_id === this.selectedAquiferId) {
+        return 'selected'
+      }
+    },
+    searchResultsRowClicked (data) {
+      this.mapViewBounds = new mapboxgl.LngLatBounds(data.extent)
+      this.selectedAquiferId = data.aquifer_id
+      this.scrollToMap()
+    },
+    windowMouseDown (e) {
+      if (document.getElementById('aquifers-results').contains(e.target)) { return }
+
+      this.mapViewBounds = this.searchedAquifersBounds
+      this.selectedAquiferId = null
+    }
+  },
+  watch: {
+    queryParams () {
+      this.updateQueryParams()
+    },
+    searchInProgress () {
+      if (this.searchInProgress === false) {
+        this.loadingMap = false
+        this.mapViewBounds = this.searchedAquifersBounds
+        this.scrollToMap()
+      }
+    },
+    $route (to, from) {
+      this.handleRouteChange()
+    }
+  },
+  created () {
+    // Fetch current surveys and add 'aquifer' surveys (if any) to this.surveys to be displayed
+    this.fetchSurveys()
+
+    if (this.resourceSections.length === 0) {
+      this.fetchResourceSections()
+    }
+
+    this.handleRouteChange()
+  },
+  mounted () {
+    window.addEventListener('mousedown', this.windowMouseDown)
+  },
+  destroyed () {
+    window.removeEventListener('mousedown', this.windowMouseDown)
+  }
+}
+</script>
+
 
 <style lang="scss">
 table.b-table > thead > tr > th.sorting::before,
@@ -240,284 +556,3 @@ ul.pagination {
   }
 }
 </style>
-
-<script>
-import L from 'leaflet'
-import querystring from 'querystring'
-import { isEqual, pick } from 'lodash'
-import { mapGetters, mapMutations, mapState, mapActions } from 'vuex'
-
-import ApiService from '@/common/services/ApiService.js'
-import {
-  SET_CONSTRAIN_SEARCH,
-  SET_SEARCH_BOUNDS,
-  RESET_SEARCH,
-  SET_SEARCH_MAP_ZOOM,
-  SET_SEARCH_MAP_CENTRE,
-  SET_SELECTED_SECTIONS,
-  SET_MATCH_ANY
-} from '../store/mutations.types.js'
-import { SEARCH_AQUIFERS } from '../store/actions.types.js'
-
-import AquiferMap from './AquiferMap.vue'
-import MapLoadingSpinner from './MapLoadingSpinner.vue'
-import features from '../../common/features'
-
-const SEARCH_RESULTS_PER_PAGE = 10
-const HYDRAULICALLY_CONNECTED_CODE = 'Hydra'
-const BC_LAT_LNG_BOUNDS = L.latLngBounds(L.latLng(60.0023, -114.0541379), L.latLng(48.2245556, -139.0536706))
-const URL_QS_SEARCH_KEYS = ['constrain', 'resources__section__code', 'match_any', 'search']
-
-export default {
-  components: {
-    'aquifer-map': AquiferMap,
-    'map-loading-spinner': MapLoadingSpinner
-  },
-  data () {
-    let query = this.$route.query
-
-    let selectedSections = query.resources__section__code ? query.resources__section__code.split(',') : []
-    if (query.hydraulically_connected) {
-      selectedSections.push(HYDRAULICALLY_CONNECTED_CODE)
-    }
-
-    return {
-      sortBy: 'id',
-      sortDesc: false,
-      search: query.search,
-      searchResultsPerPage: SEARCH_RESULTS_PER_PAGE,
-      currentPage: 1,
-      response: {},
-      aquiferListFields: [
-        { key: 'id', label: 'Aquifer number', sortable: true },
-        { key: 'name', label: 'Aquifer name', sortable: true },
-        { key: 'location', label: 'Descriptive location', sortable: true },
-        { key: 'material', label: 'Material', sortable: true },
-        { key: 'lsu', label: 'Litho stratigraphic unit', sortable: true },
-        { key: 'subtype', label: 'Subtype', sortable: true },
-        { key: 'vulnerability', label: 'Vulnerability', sortable: true },
-        { key: 'area', label: 'Size-km²', sortable: true },
-        { key: 'productivity', label: 'Productivity', sortable: true },
-        { key: 'demand', label: 'Demand', sortable: true },
-        { key: 'mapping_year', label: 'Year of mapping', sortable: true }
-      ],
-      layers: [],
-      surveys: [],
-      noSearchCriteriaError: false,
-      selectedSections,
-      matchAny: Boolean(query.match_any),
-      selectMode: 'single',
-      selectedAquiferId: null
-    }
-  },
-  computed: {
-    offset () { return parseInt(this.$route.query.offset, 10) || 0 },
-    displayOffset () {
-      return (this.currentPage * this.searchResultsPerPage) - this.searchResultsPerPage + 1
-    },
-    displayPageLength () {
-      if (this.searchResultCount > this.searchResultsPerPage) {
-        if ((this.currentPage * this.searchResultsPerPage) > this.searchResultCount) {
-          return this.searchResultCount
-        }
-        return this.currentPage * this.searchResultsPerPage
-      } else {
-        return this.searchResultCount
-      }
-    },
-    emptyResults () { return this.searchResultCount === 0 },
-    query () { return this.$route.query },
-    searchedAquiferIds () { return (this.searchResults || []).map((aquifer) => aquifer.id) },
-    resourceSectionOptions () { return this.resourceSections && this.resourceSections.map((s) => ({ text: s.name, value: s.code })) },
-    ...mapGetters(['userRoles']),
-    ...mapGetters('aquiferStore/search', ['queryParams']),
-    ...mapState('aquiferStore/aquiferGeoms', {
-      loadingMap: 'simplifiedGeoJsonLoading'
-    }),
-    ...mapState('aquiferStore/search', [
-      'searchErrors',
-      'searchResults',
-      'searchResultCount',
-      'searchInProgress',
-      'searchPerformed',
-      'searchMapCentre',
-      'searchMapZoom'
-    ]),
-    ...mapState('aquiferStore', {
-      resourceSections: 'sections'
-    })
-  },
-  methods: {
-    ...mapActions('aquiferStore/search', [SEARCH_AQUIFERS]),
-    ...mapMutations('aquiferStore/search', [SET_CONSTRAIN_SEARCH, SET_SEARCH_BOUNDS, SET_CONSTRAIN_SEARCH, RESET_SEARCH, SET_SEARCH_MAP_CENTRE, SET_SEARCH_MAP_ZOOM]),
-    ...mapMutations('aquiferStore', ['addSections']),
-    navigateToNew () {
-      this.$router.push({ name: 'new' })
-    },
-    downloadCSV (filterOnly) {
-      let url = ApiService.baseURL + 'aquifers/csv?'
-      if (filterOnly) {
-        url += querystring.stringify(this.query)
-      }
-      window.open(url)
-    },
-    downloadXLSX (filterOnly) {
-      let url = ApiService.baseURL + 'aquifers/xlsx?'
-      if (filterOnly) {
-        url += querystring.stringify(this.query)
-      }
-      window.open(url)
-    },
-    fetchSurveys () {
-      ApiService.query('surveys').then((response) => {
-        if (response.data) {
-          response.data.forEach((survey) => {
-            if (survey.survey_page === 'a' && survey.survey_enabled) {
-              this.surveys.push(survey)
-            }
-          })
-        }
-      })
-    },
-    fetchResourceSections () {
-      ApiService.query('aquifers/sections').then((response) => {
-        let sections = (response.data || {}).results || []
-        sections.splice(2, 0, {
-          name: 'Hydraulically connected',
-          code: HYDRAULICALLY_CONNECTED_CODE
-        })
-        this.addSections(sections)
-      })
-    },
-    scrollToMap () {
-      const map = this.$el.ownerDocument.getElementById('aquifer-search-map')
-      this.$SmoothScroll(map, 100)
-    },
-    triggerReset (e) {
-      e.preventDefault()
-      this.search = ''
-      this.selectedSections = []
-      this.matchAny = false
-      this.selectedAquiferId = null
-      this[RESET_SEARCH]()
-      this.$nextTick(() => {
-        this.$emit('resetLayers')
-      })
-    },
-    triggerSearch (options = {}) {
-      let constrainSearch = !!options.constrain
-      // If the search-in-map feature is not enabled use the old behaviour where all searches are
-      // constrained to the visible map area.
-      if (!features.searchInAquiferMap) {
-        constrainSearch = true
-      }
-
-      this.selectedAquiferId = null
-      this[SET_CONSTRAIN_SEARCH](constrainSearch)
-      this[SEARCH_AQUIFERS]({
-        selectedSections: this.selectedSections,
-        matchAny: this.matchAny,
-        query: this.search
-      })
-    },
-    mapSearch (zoom, bounds) {
-      this[SET_SEARCH_MAP_CENTRE](bounds.getCenter())
-      this[SET_SEARCH_MAP_ZOOM](zoom)
-      this.triggerSearch({ constrain: true })
-    },
-    updateQueryParams () {
-      this.$router.replace({ query: this.queryParams })
-    },
-    mapMoved (bounds, featuresOnMap, isViewReset) {
-      const viewingBC = bounds.contains(BC_LAT_LNG_BOUNDS)
-
-      this[SET_SEARCH_MAP_CENTRE](viewingBC ? null : bounds.getCenter())
-      this[SET_SEARCH_BOUNDS](bounds)
-      this.updateQueryParams()
-    },
-    handleMapZoom (zoom, bounds) {
-      const viewingBC = bounds.contains(BC_LAT_LNG_BOUNDS)
-
-      this[SET_SEARCH_MAP_ZOOM](viewingBC ? null : zoom)
-      this.updateQueryParams()
-    },
-    handleRouteChange () {
-      const query = { ...this.$route.query }
-      const emptyQuery = Object.keys(query).length === 0
-
-      if (emptyQuery) {
-        this[RESET_SEARCH]()
-      } else {
-        this.updateStoreStateFromQS()
-
-        const cleanedQuery = pick(query, URL_QS_SEARCH_KEYS)
-
-        const shouldSearch = !isEqual(cleanedQuery, pick(this.queryParams, URL_QS_SEARCH_KEYS))
-
-        if (shouldSearch) {
-          this.triggerSearch()
-        }
-      }
-    },
-    updateStoreStateFromQS () {
-      const query = this.$route.query
-      // check if the page loads with a query (e.g. user bookmarked a search)
-      // if so, set the search boxes to the query params
-      if (Object.keys(query) === 0) { return }
-
-      if (query.map_centre !== undefined) {
-        const latlng = query.map_centre.split(',')
-        const lat = parseFloat(latlng[0])
-        const lng = parseFloat(latlng[1])
-        // eslint-disable-next-line new-cap
-        this[SET_SEARCH_MAP_CENTRE](new L.latLng(lat, lng))
-      }
-      if (query.map_zoom !== undefined) {
-        this[SET_SEARCH_MAP_ZOOM](parseInt(query.map_zoom))
-      }
-      if (query.constrain !== undefined) {
-        this[SET_CONSTRAIN_SEARCH](Boolean(query.constrain))
-      }
-      if (query.resources__section__code) {
-        this[SET_SELECTED_SECTIONS](query.resources__section__code.split(',').map(code => code.trim()))
-      }
-      if (query.match_any) {
-        this[SET_MATCH_ANY](Boolean(query.match_any))
-      }
-    },
-    searchResultsRowClass (item, type) {
-      if (!item || type !== 'row') { return }
-      if (item.aquifer_id === this.selectedAquiferId) {
-        return 'selected'
-      }
-    },
-    searchResultsRowClicked (data) {
-      this.selectedAquiferId = data.id
-      this.scrollToMap()
-    }
-  },
-  watch: {
-    queryParams () {
-      this.updateQueryParams()
-    },
-    searchInProgress () {
-      if (this.searchInProgress === false) {
-        this.scrollToMap()
-      }
-    },
-    $route (to, from) {
-      this.handleRouteChange()
-    }
-  },
-  created () {
-    // Fetch current surveys and add 'aquifer' surveys (if any) to this.surveys to be displayed
-    this.fetchSurveys()
-
-    if (this.resourceSections.length === 0) {
-      this.fetchResourceSections()
-    }
-
-    this.handleRouteChange()
-  }
-}
-</script>

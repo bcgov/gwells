@@ -15,15 +15,13 @@
 import search from './search.js'
 import view from './view.js'
 import aquiferCodes from './codes.js'
-import aquiferGeoms from './geoms.js'
 
 const aquifersStore = {
   namespaced: true,
   modules: {
     search,
     view,
-    aquiferCodes,
-    aquiferGeoms
+    aquiferCodes
   },
   state: {
     sections: []
