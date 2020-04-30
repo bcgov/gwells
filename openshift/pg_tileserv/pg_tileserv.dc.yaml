@@ -40,7 +40,7 @@ objects:
         0.0.0.0:2015 {
           root * /var/www/html
           log
-          encoding gzip
+          encode gzip
           uri strip_prefix /tiles
           reverse_proxy localhost:7800
         }
