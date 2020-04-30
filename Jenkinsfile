@@ -644,7 +644,7 @@ pipeline {
 
                         echo "Processing deployment config for tile server"
                         def pgtileservTemplate = openshift.process("-f",
-                            "openshift/pg_tileserv.dc.yaml",
+                            "openshift/pg_tileserv/pg_tileserv.dc.yaml",
                             "NAME_SUFFIX=-${devSuffix}-${prNumber}",
                             "DATABASE_SERVICE_NAME=gwells-pg12-${devSuffix}-${prNumber}"
                         )
