@@ -642,6 +642,13 @@ pipeline {
                             "NAME_SUFFIX=-${devSuffix}-${prNumber}"
                         )
 
+                        echo "Processing deployment config for tile server"
+                        def pgtileservTemplate = openshift.process("-f",
+                            "openshift/pg_tileserv.dc.yaml",
+                            "NAME_SUFFIX=-${devSuffix}-${prNumber}",
+                            "DATABASE_SERVICE_NAME=gwells-pg12-${devSuffix}-${prNumber}"
+                        )
+
                         // some objects need to be copied from a base secret or configmap
                         // these objects have an annotation "as-copy-of" in their object spec (e.g. an object in backend.dc.json)
                         echo "Creating configmaps and secrets objects"
@@ -671,6 +678,7 @@ pipeline {
                         openshift.apply(deployTemplate).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
                         openshift.apply(deployDBTemplate).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
                         openshift.apply(newObjectCopies).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
+                        openshift.apply(pgtileservTemplate).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
                         echo "Successfully applied deployment configs for ${prNumber}"
 
                         // promote the newly built image to DEV
