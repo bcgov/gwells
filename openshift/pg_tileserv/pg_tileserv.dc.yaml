@@ -38,7 +38,7 @@ objects:
     data:
       Caddyfile: |-
         0.0.0.0:2015 {
-          root /var/www/html
+          root * /var/www/html
           log stdout
           errors stdout
           encoding gzip
