@@ -41,7 +41,7 @@ objects:
           root * /var/www/html
           log
           encode gzip
-          uri strip_prefix /tiles
+          uri strip_prefix /gwells/tiles
           reverse_proxy localhost:7800
         }
         :2016 {
