@@ -37,7 +37,7 @@ objects:
   - apiVersion: v1
     data:
       Caddyfile: |-
-        0.0.0.0:2015 {
+        :2015 {
           root * /var/www/html
           log
           encode gzip
