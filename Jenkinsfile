@@ -91,7 +91,6 @@ def _openshift(String name, String project, Closure body) {
     }
 }
 
-
 // Functional test script
 // Can be limited by assinging toTest var
 def unitTestDjango (String stageName, String envProject, String envSuffix) {
@@ -945,10 +944,6 @@ pipeline {
                             "${toolsProject}/gwells-application:${stagingSuffix}",
                             "${stagingProject}/gwells-${stagingSuffix}:${stagingSuffix}"
                         )  // todo: clean up labels/tags
-                        openshift.tag(
-                            "${toolsProject}/gwells-postgresql:${stagingSuffix}",
-                            "${stagingProject}/gwells-postgresql-${stagingSuffix}:${stagingSuffix}"
-                        )  // todo: clean up labels/tags
 
                         createDeploymentStatus(stagingSuffix, 'PENDING', stagingHost)
 
@@ -1062,7 +1057,6 @@ pipeline {
                                 }
                             }
                         }
-
 
                         createDeploymentStatus(stagingSuffix, 'SUCCESS', stagingHost)
                     }
@@ -1361,7 +1355,6 @@ pipeline {
                             "HOST=${prodHost}",
                         )
 
-
                         // some objects need to be copied from a base secret or configmap
                         // these objects have an annotation "as-copy-of" in their object spec (e.g. an object in backend.dc.json)
                         echo "Creating configmaps and secrets objects"
@@ -1384,9 +1377,6 @@ pipeline {
                             }
                         }
 
-
-
-
                         // apply the templates, which will create new objects or modify existing ones as necessary.
                         // the copies of base objects (secrets, configmaps) are also applied.
                         echo "Applying deployment config for pull request ${prNumber} on ${prodProject}"
@@ -1400,11 +1390,8 @@ pipeline {
                             "--overwrite"
                         )
 
-
                         // temporary upgrade step
                         dbUpgrade(prodProject, prodSuffix)
-
-
 
                         openshift.apply(pgtileservTemplate).label(
                             [
@@ -1423,16 +1410,6 @@ pipeline {
                             ],
                             "--overwrite"
                         )
-
-                        openshift.apply(pgtileservTemplate).label(
-                            [
-                                'app':"gwells-${prodSuffix}",
-                                'app-name':"${appName}",
-                                'env-name':"${prodSuffix}"
-                            ],
-                            "--overwrite"
-                        )
-
 
                         openshift.apply(newObjectCopies).label(
                             [
@@ -1463,10 +1440,7 @@ pipeline {
                             "${toolsProject}/gwells-application:${prodSuffix}",
                             "${prodProject}/gwells-${prodSuffix}:${prodSuffix}"
                         )  // todo: clean up labels/tags
-                        openshift.tag(
-                            "${toolsProject}/gwells-postgresql:prod",
-                            "${prodProject}/gwells-postgresql-${prodSuffix}:${prodSuffix}"
-                        )  // todo: clean up labels/tags
+
 
                         createDeploymentStatus(prodSuffix, 'PENDING', prodHost)
 
@@ -1520,7 +1494,6 @@ pipeline {
                         )
 
                         openshift.apply(docBackupCronJob)
-
 
                         def dbNFSBackup = openshift.process("-f",
                             "openshift/jobs/postgres-backup-nfs/postgres-backup.cj.yaml",
