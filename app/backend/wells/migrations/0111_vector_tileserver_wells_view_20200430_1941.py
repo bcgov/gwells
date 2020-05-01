@@ -19,6 +19,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('wells', '0110_delete_legacy_dupes_20200401_2244'),
+        ('gwells', '0007_create_postgis_ftw_schema_20200501_2146'),
     ]
 
     operations = [

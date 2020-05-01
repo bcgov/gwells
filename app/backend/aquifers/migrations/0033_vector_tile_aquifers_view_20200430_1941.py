@@ -16,6 +16,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('aquifers', '0032_multi_polygon_20200403_2018'),
+        ('gwells', '0007_create_postgis_ftw_schema_20200501_2146'),
     ]
 
     operations = [

@@ -11,7 +11,7 @@ create extension plr;
 alter user postgres password 'PG_ROOT_PASSWORD';
 
 create user "PG_PRIMARY_USER" with REPLICATION  PASSWORD 'PG_PRIMARY_PASSWORD';
-create user "PG_USER" with password 'PG_PASSWORD';
+create user "PG_USER" with password 'PG_PASSWORD' SUPERUSER;
 create user ftw_reader with password 'PG_PASSWORD';
 
 create table primarytable (key varchar(20), value varchar(20));
