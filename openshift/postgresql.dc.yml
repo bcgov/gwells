@@ -192,18 +192,6 @@ objects:
         requests:
           storage: ${VOLUME_CAPACITY}
       storageClassName: ${STORAGE_CLASS}
-  - kind: ImageStream
-    apiVersion: v1
-    metadata:
-      name: ${IMAGE_STREAM_NAME}
-      creationTimestamp: null
-      labels:
-        base-name: gwells-postgresql
-        appver: gwells${NAME_SUFFIX}
-      annotations: {}
-    spec:
-      lookupPolicy:
-        local: false
   - apiVersion: v1
     kind: DeploymentConfig
     metadata:
