@@ -32,8 +32,32 @@ parameters:
     name: LIMIT_MEMORY
     required: false
     value: 512Mi
+  - name: HOST
+    required: true
 objects:
 
+  - apiVersion: v1
+    kind: Route
+    metadata:
+      name: pgtileserv${NAME_SUFFIX}
+      labels:
+        app: gwells${NAME_SUFFIX}
+        name: pgtileserv${NAME_SUFFIX}
+        appver: gwells${NAME_SUFFIX}
+        component: pgtileserv
+    spec:
+      host: ${HOST}
+      path: /gwells/tiles
+      to:
+        kind: Service
+        name: pgtileserv${NAME_SUFFIX}
+        weight: 100
+      port:
+        targetPort: 2015
+      tls:
+        insecureEdgeTerminationPolicy: Redirect
+        termination: edge
+      wildcardPolicy: None
   - apiVersion: v1
     data:
       Caddyfile: |-

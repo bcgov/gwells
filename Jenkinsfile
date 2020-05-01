@@ -647,7 +647,8 @@ pipeline {
                             "openshift/pg_tileserv/pg_tileserv.dc.yaml",
                             "NAME_SUFFIX=-${devSuffix}-${prNumber}",
                             "DATABASE_SERVICE_NAME=gwells-pg12-${devSuffix}-${prNumber}",
-                            "IMAGE_TAG=20200427"
+                            "IMAGE_TAG=20200427",
+                            "HOST=${devHost}",
                         )
 
                         // some objects need to be copied from a base secret or configmap
@@ -838,6 +839,16 @@ pipeline {
                             "CPU_LIMIT=2",
                         )
 
+
+                        echo "Processing deployment config for tile server"
+                        def pgtileservTemplate = openshift.process("-f",
+                            "openshift/pg_tileserv/pg_tileserv.dc.yaml",
+                            "NAME_SUFFIX=-${stagingSuffix}",
+                            "DATABASE_SERVICE_NAME=gwells-pg12-${stagingSuffix}",
+                            "IMAGE_TAG=20200427",
+                            "HOST=${stagingHost}",
+                        )
+
                         // some objects need to be copied from a base secret or configmap
                         // these objects have an annotation "as-copy-of" in their object spec (e.g. an object in backend.dc.json)
                         echo "Creating configmaps and secrets objects"
@@ -896,7 +907,14 @@ pipeline {
                             ],
                             "--overwrite"
                         )
-
+                        openshift.apply(pgtileservTemplate).label(
+                            [
+                                'app':"gwells-${stagingSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${stagingSuffix}"
+                            ],
+                            "--overwrite"
+                        )
                         openshift.apply(newObjectCopies).label(
                             [
                                 'app':"gwells-${stagingSuffix}",
@@ -1330,6 +1348,16 @@ pipeline {
                             "MEMORY_LIMIT=2Gi"
                         )
 
+                        echo "Processing deployment config for tile server"
+                        def pgtileservTemplate = openshift.process("-f",
+                            "openshift/pg_tileserv/pg_tileserv.dc.yaml",
+                            "NAME_SUFFIX=-${prodSuffix}",
+                            "DATABASE_SERVICE_NAME=gwells-pg12-${prodSuffix}",
+                            "IMAGE_TAG=20200427",
+                            "HOST=${prodHost}",
+                        )
+
+
                         // some objects need to be copied from a base secret or configmap
                         // these objects have an annotation "as-copy-of" in their object spec (e.g. an object in backend.dc.json)
                         echo "Creating configmaps and secrets objects"
@@ -1373,6 +1401,15 @@ pipeline {
                         dbUpgrade(prodProject, prodSuffix)
 
                         openshift.apply(deployTemplate).label(
+                            [
+                                'app':"gwells-${prodSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${prodSuffix}"
+                            ],
+                            "--overwrite"
+                        )
+
+                        openshift.apply(pgtileservTemplate).label(
                             [
                                 'app':"gwells-${prodSuffix}",
                                 'app-name':"${appName}",
