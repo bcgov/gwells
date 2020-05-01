@@ -146,7 +146,7 @@ objects:
                         key: database-password
                         name: ${DATABASE_SERVICE_NAME}
                 - name: PG_USER
-                  value: postgis_ftw
+                  value: ftw_reader
                 - name: DATABASE_URL
                   value: postgres://$(PG_USER):$(PG_PASSWORD)@$(DATABASE_HOST)/gwells
               image: pramsey/pg_tileserv:${IMAGE_TAG}
