@@ -703,6 +703,20 @@ pipeline {
                             }
                         }
 
+                        def pgtileservVersion = openshift.selector("dc", "pgtileserv-${devSuffix}-${prNumber}").object().status.latestVersion
+                        def pgtileservPods = openshift.selector('pod', [deployment: "pgtileserv-${devSuffix}-${prNumber}-${newVersion}"])
+
+                        // wait until each container in this deployment's pod reports as ready
+                        timeout(15) {
+                            pods.untilEach(2) {
+                                return it.object().status.containerStatuses.every {
+                                    it.ready
+                                }
+                            }
+                        }
+
+
+
                         // Report a pass to GitHub
                         createDeploymentStatus(devSuffix, 'SUCCESS', devHost)
                     }
