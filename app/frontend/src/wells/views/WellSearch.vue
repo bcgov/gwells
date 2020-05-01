@@ -205,7 +205,7 @@ export default {
       // The first search that happens when page loads doesn't need to automatically scroll the
       // page. Only scroll when updating the search results.
       if (this.hasManuallySearched && !this.scrolled) {
-        this.$SmoothScroll(this.$el.querySelector('#map'))
+        this.$SmoothScroll(this.$el.querySelector('#well-search-map'))
       }
     },
     handleMapSearch () {
