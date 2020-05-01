@@ -299,7 +299,6 @@ objects:
                   name: ${DATABASE_SERVICE_NAME}-run
                 - mountPath: /pgconf
                   name: ${DATABASE_SERVICE_NAME}-setupcfg
-                  subPath: setup.sql
           dnsPolicy: ClusterFirst
           restartPolicy: Always
           volumes:
@@ -309,11 +308,7 @@ objects:
             - name: ${DATABASE_SERVICE_NAME}-run
               emptyDir: {}
             - configMap:
-                defaultMode: 420
                 name: ${DATABASE_SERVICE_NAME}-setupcfg
-                items:
-                  - key: setup.sql
-                    path: setup.sql
               name: ${DATABASE_SERVICE_NAME}-setupcfg
       triggers:
         - imageChangeParams:
