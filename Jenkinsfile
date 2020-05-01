@@ -1029,6 +1029,19 @@ pipeline {
                             }
                         }
 
+                        def pgtileservVersion = openshift.selector("dc", "pgtileserv-${stagingSuffix}").object().status.latestVersion
+                        def pgtileservPods = openshift.selector('pod', [deployment: "pgtileserv-${stagingSuffix}-${newVersion}"])
+
+                        // wait until each container in this deployment's pod reports as ready
+                        timeout(15) {
+                            pods.untilEach(2) {
+                                return it.object().status.containerStatuses.every {
+                                    it.ready
+                                }
+                            }
+                        }
+
+
                         createDeploymentStatus(stagingSuffix, 'SUCCESS', stagingHost)
                     }
                 }
@@ -1497,6 +1510,18 @@ pipeline {
                         def pods = openshift.selector('pod', [deployment: "gwells-${prodSuffix}-${newVersion}"])
 
                         // wait until pods reports as ready
+                        timeout(15) {
+                            pods.untilEach(2) {
+                                return it.object().status.containerStatuses.every {
+                                    it.ready
+                                }
+                            }
+                        }
+
+                        def pgtileservVersion = openshift.selector("dc", "pgtileserv-${prodSuffix}").object().status.latestVersion
+                        def pgtileservPods = openshift.selector('pod', [deployment: "pgtileserv-${prodSuffix}-${newVersion}"])
+
+                        // wait until each container in this deployment's pod reports as ready
                         timeout(15) {
                             pods.untilEach(2) {
                                 return it.object().status.containerStatuses.every {
