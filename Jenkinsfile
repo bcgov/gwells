@@ -855,10 +855,6 @@ pipeline {
                         echo "Creating configmaps and secrets objects"
                         List newObjectCopies = []
 
-
-
-
-
                         // todo: refactor to explicitly copy the objects we need
                         for (o in (deployTemplate + deployDBTemplate)) {
 
@@ -877,8 +873,6 @@ pipeline {
                             }
                         }
 
-
-
                         openshift.apply(deployDBTemplate).label(
                             [
                                 'app':"gwells-${stagingSuffix}",
@@ -887,14 +881,6 @@ pipeline {
                             ],
                             "--overwrite"
                         )
-
-
-                        // upgrade
-                        // note: temporary step for upgrading database.
-                        // dbUpgrade(stagingProject, stagingSuffix)
-
-
-
 
                         // apply the templates, which will create new objects or modify existing ones as necessary.
                         // the copies of base objects (secrets, configmaps) are also applied.
