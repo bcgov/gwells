@@ -642,6 +642,15 @@ pipeline {
                             "NAME_SUFFIX=-${devSuffix}-${prNumber}"
                         )
 
+                        echo "Processing deployment config for tile server"
+                        def pgtileservTemplate = openshift.process("-f",
+                            "openshift/pg_tileserv/pg_tileserv.dc.yaml",
+                            "NAME_SUFFIX=-${devSuffix}-${prNumber}",
+                            "DATABASE_SERVICE_NAME=gwells-pg12-${devSuffix}-${prNumber}",
+                            "IMAGE_TAG=20200427",
+                            "HOST=${devHost}",
+                        )
+
                         // some objects need to be copied from a base secret or configmap
                         // these objects have an annotation "as-copy-of" in their object spec (e.g. an object in backend.dc.json)
                         echo "Creating configmaps and secrets objects"
@@ -671,6 +680,7 @@ pipeline {
                         openshift.apply(deployTemplate).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
                         openshift.apply(deployDBTemplate).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
                         openshift.apply(newObjectCopies).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
+                        openshift.apply(pgtileservTemplate).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
                         echo "Successfully applied deployment configs for ${prNumber}"
 
                         // promote the newly built image to DEV
@@ -693,6 +703,20 @@ pipeline {
                                 }
                             }
                         }
+
+                        def pgtileservVersion = openshift.selector("dc", "pgtileserv-${devSuffix}-${prNumber}").object().status.latestVersion
+                        def pgtileservPods = openshift.selector('pod', [deployment: "pgtileserv-${devSuffix}-${prNumber}-${newVersion}"])
+
+                        // wait until each container in this deployment's pod reports as ready
+                        timeout(15) {
+                            pods.untilEach(2) {
+                                return it.object().status.containerStatuses.every {
+                                    it.ready
+                                }
+                            }
+                        }
+
+
 
                         // Report a pass to GitHub
                         createDeploymentStatus(devSuffix, 'SUCCESS', devHost)
@@ -815,6 +839,16 @@ pipeline {
                             "CPU_LIMIT=2",
                         )
 
+
+                        echo "Processing deployment config for tile server"
+                        def pgtileservTemplate = openshift.process("-f",
+                            "openshift/pg_tileserv/pg_tileserv.dc.yaml",
+                            "NAME_SUFFIX=-${stagingSuffix}",
+                            "DATABASE_SERVICE_NAME=gwells-pg12-${stagingSuffix}",
+                            "IMAGE_TAG=20200427",
+                            "HOST=${stagingHost}",
+                        )
+
                         // some objects need to be copied from a base secret or configmap
                         // these objects have an annotation "as-copy-of" in their object spec (e.g. an object in backend.dc.json)
                         echo "Creating configmaps and secrets objects"
@@ -873,7 +907,14 @@ pipeline {
                             ],
                             "--overwrite"
                         )
-
+                        openshift.apply(pgtileservTemplate).label(
+                            [
+                                'app':"gwells-${stagingSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${stagingSuffix}"
+                            ],
+                            "--overwrite"
+                        )
                         openshift.apply(newObjectCopies).label(
                             [
                                 'app':"gwells-${stagingSuffix}",
@@ -981,6 +1022,7 @@ pipeline {
                         def dbNFSBackup = openshift.process("-f",
                             "openshift/jobs/postgres-backup-nfs/postgres-backup.cj.yaml",
                             "NAMESPACE=${stagingProject}",
+                            "TAG_NAME=v12.0.0",
                             "TARGET=gwells-pg12-staging",
                             "PVC_NAME=${nfsStagingBackupPVC}",
                             "SCHEDULE='30 10 * * *'",
@@ -1004,6 +1046,19 @@ pipeline {
                                 }
                             }
                         }
+
+                        def pgtileservVersion = openshift.selector("dc", "pgtileserv-${stagingSuffix}").object().status.latestVersion
+                        def pgtileservPods = openshift.selector('pod', [deployment: "pgtileserv-${stagingSuffix}-${newVersion}"])
+
+                        // wait until each container in this deployment's pod reports as ready
+                        timeout(15) {
+                            pods.untilEach(2) {
+                                return it.object().status.containerStatuses.every {
+                                    it.ready
+                                }
+                            }
+                        }
+
 
                         createDeploymentStatus(stagingSuffix, 'SUCCESS', stagingHost)
                     }
@@ -1293,6 +1348,16 @@ pipeline {
                             "MEMORY_LIMIT=2Gi"
                         )
 
+                        echo "Processing deployment config for tile server"
+                        def pgtileservTemplate = openshift.process("-f",
+                            "openshift/pg_tileserv/pg_tileserv.dc.yaml",
+                            "NAME_SUFFIX=-${prodSuffix}",
+                            "DATABASE_SERVICE_NAME=gwells-pg12-${prodSuffix}",
+                            "IMAGE_TAG=20200427",
+                            "HOST=${prodHost}",
+                        )
+
+
                         // some objects need to be copied from a base secret or configmap
                         // these objects have an annotation "as-copy-of" in their object spec (e.g. an object in backend.dc.json)
                         echo "Creating configmaps and secrets objects"
@@ -1336,6 +1401,15 @@ pipeline {
                         dbUpgrade(prodProject, prodSuffix)
 
                         openshift.apply(deployTemplate).label(
+                            [
+                                'app':"gwells-${prodSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${prodSuffix}"
+                            ],
+                            "--overwrite"
+                        )
+
+                        openshift.apply(pgtileservTemplate).label(
                             [
                                 'app':"gwells-${prodSuffix}",
                                 'app-name':"${appName}",
@@ -1436,6 +1510,7 @@ pipeline {
                         def dbNFSBackup = openshift.process("-f",
                             "openshift/jobs/postgres-backup-nfs/postgres-backup.cj.yaml",
                             "NAMESPACE=${prodProject}",
+                            "TAG_NAME=v12.0.0",
                             "TARGET=gwells-pg12-production",
                             "PVC_NAME=${nfsProdBackupPVC}",
                             "MONTHLY_BACKUPS=12",
@@ -1472,6 +1547,18 @@ pipeline {
                         def pods = openshift.selector('pod', [deployment: "gwells-${prodSuffix}-${newVersion}"])
 
                         // wait until pods reports as ready
+                        timeout(15) {
+                            pods.untilEach(2) {
+                                return it.object().status.containerStatuses.every {
+                                    it.ready
+                                }
+                            }
+                        }
+
+                        def pgtileservVersion = openshift.selector("dc", "pgtileserv-${prodSuffix}").object().status.latestVersion
+                        def pgtileservPods = openshift.selector('pod', [deployment: "pgtileserv-${prodSuffix}-${newVersion}"])
+
+                        // wait until each container in this deployment's pod reports as ready
                         timeout(15) {
                             pods.untilEach(2) {
                                 return it.object().status.containerStatuses.every {
