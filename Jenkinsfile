@@ -677,10 +677,11 @@ pipeline {
 
                         // apply the templates, which will create new objects or modify existing ones as necessary.
                         // the copies of base objects (secrets, configmaps) are also applied.
+                        openshift.apply(pgtileservTemplate).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
+
                         openshift.apply(deployTemplate).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
                         openshift.apply(deployDBTemplate).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
                         openshift.apply(newObjectCopies).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
-                        openshift.apply(pgtileservTemplate).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
                         echo "Successfully applied deployment configs for ${prNumber}"
 
                         // promote the newly built image to DEV
@@ -793,6 +794,7 @@ pipeline {
             }
             steps {
                 script {
+                    echo "temporarily stop staging backups"
                     // dbBackup (stagingProject, stagingSuffix)
                 }
             }
@@ -899,14 +901,6 @@ pipeline {
                         // the copies of base objects (secrets, configmaps) are also applied.
                         echo "Applying deployment config for pull request ${prNumber} on ${stagingProject}"
 
-                        openshift.apply(deployTemplate).label(
-                            [
-                                'app':"gwells-${stagingSuffix}",
-                                'app-name':"${appName}",
-                                'env-name':"${stagingSuffix}"
-                            ],
-                            "--overwrite"
-                        )
                         openshift.apply(pgtileservTemplate).label(
                             [
                                 'app':"gwells-${stagingSuffix}",
@@ -915,6 +909,16 @@ pipeline {
                             ],
                             "--overwrite"
                         )
+
+                        openshift.apply(deployTemplate).label(
+                            [
+                                'app':"gwells-${stagingSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${stagingSuffix}"
+                            ],
+                            "--overwrite"
+                        )
+
                         openshift.apply(newObjectCopies).label(
                             [
                                 'app':"gwells-${stagingSuffix}",
@@ -1399,6 +1403,17 @@ pipeline {
 
                         // temporary upgrade step
                         dbUpgrade(prodProject, prodSuffix)
+
+
+
+                        openshift.apply(pgtileservTemplate).label(
+                            [
+                                'app':"gwells-${prodSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${prodSuffix}"
+                            ],
+                            "--overwrite"
+                        )
 
                         openshift.apply(deployTemplate).label(
                             [
