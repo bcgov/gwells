@@ -35,14 +35,42 @@ services:
     entrypoint: /minio-entrypoint.sh
     command: server --address :9001 /data
   db:
-    image: mdillon/postgis
+    image: crunchydata/crunchy-postgres-gis:centos7-12.2-4.2.2
     hostname: db
     environment:
-      POSTGRES_USER: gwells
-      POSTGRES_PASSWORD: test1
-      POSTGRES_DATABASE: gwells
+      PG_USER: gwells
+      PG_PASSWORD: test1
+      PG_DATABASE: gwells
+      PG_MODE: primary
+      PG_PRIMARY_USER: primaryuser
+      PG_PRIMARY_PASSWORD: test_primary_password
+      PG_ROOT_PASSWORD: test_root_password
+      PG_PRIMARY_PORT: 5432
+      TEMP_BUFFERS: 9MB
+      MAX_CONNECTIONS: 101
+      SHARED_BUFFERS: 128MB
+      MAX_WAL_SENDERS: 7
+      WORK_MEM: 5MB
+      PG_PRIMARY_HOST: db
+      PGHOST: /tmp
+      TILESERVER_USER: ftw_reader
+      TILESERVER_PASSWORD: test1
     volumes:
-      - /var/lib/postgresql
+      - pgdata-volume:/pgdata:z
+      - type: bind
+        source: ./app/database/scripts/local_dev/setup.sql
+        target: /pgconf/setup.sql
+        consistency: cached
+  tileserv:
+    hostname: tileserv
+    depends_on:
+      - db
+    image: pramsey/pg_tileserv:20200327
+    environment:
+      DATABASE_URL: postgres://ftw_reader:test1@db:5432/gwells
+    ports:
+      - "7800:7800"
+    entrypoint: sh -c "sleep 10; /app/pg_tileserv"
   frontend:
     image: node:8.9.4
     hostname: frontend
@@ -137,3 +165,5 @@ services:
       - "3000:3000"
     depends_on:
       - db
+volumes:
+  pgdata-volume:

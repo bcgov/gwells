@@ -2,8 +2,8 @@ import { defaultsDeep } from 'lodash'
 
 const VECTOR_TILE_SERVER = `${window.location.protocol}${window.location.host}${process.env.VUE_APP_VECTOR_TILE_BASE_URL}`
 
-export const WELLS_LAYER_SOURCE = 'postgis_ftw.well_view'
-export const AQUIFERS_LAYER_SOURCE = 'postgis_ftw.aquifer_view'
+export const WELLS_LAYER_SOURCE = 'postgis_ftw.gwells_well_view'
+export const AQUIFERS_LAYER_SOURCE = 'postgis_ftw.gwells_aquifer_view'
 
 export const DATABC_ROADS_SOURCE_ID = 'DATABC-roads-source'
 export const DATABC_ROADS_LAYER_ID = 'DATABC-roads-layer'
