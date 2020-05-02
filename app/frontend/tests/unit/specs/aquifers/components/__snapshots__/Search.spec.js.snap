@@ -202,8 +202,9 @@ exports[`Search Component Matches the snapshot 1`] = `
            
           <aquifer-map-stub
             aquiferdetails="[object Object]"
-            highlightaquiferids=""
+            highlightaquiferids="4"
             searchtext="4"
+            viewbounds="[object Object]"
           />
         </div>
       </div>
@@ -393,7 +394,7 @@ exports[`Search Component Matches the snapshot 1`] = `
                   <router-link-stub
                     to="[object Object]"
                   >
-                    
+                    4
                   </router-link-stub>
                 </td>
                 <td
