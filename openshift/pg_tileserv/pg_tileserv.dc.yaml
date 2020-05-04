@@ -177,14 +177,12 @@ objects:
               imagePullPolicy: IfNotPresent
               livenessProbe:
                 failureThreshold: 3
-                initialDelaySeconds: 30
-                periodSeconds: 10
+                initialDelaySeconds: 5
+                periodSeconds: 30
                 successThreshold: 1
-                httpGet:
-                  path: /
+                tcpSocket:
                   port: 7800
-                  # fix below here
-                timeoutSeconds: 1
+                timeoutSeconds: 5
               name: pgtileserv
               ports:
                 - containerPort: 7800
@@ -194,10 +192,10 @@ objects:
                   path: /
                   port: 7800
                 failureThreshold: 3
-                initialDelaySeconds: 5
-                periodSeconds: 10
+                initialDelaySeconds: 10
+                periodSeconds: 30
                 successThreshold: 1
-                timeoutSeconds: 1
+                timeoutSeconds: 5
               resources:
                 requests:
                   cpu: ${REQUEST_CPU}
