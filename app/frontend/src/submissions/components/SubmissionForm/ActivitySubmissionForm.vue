@@ -522,6 +522,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
 <script>
 import Vue from 'vue'
+import smoothScroll from 'smoothscroll'
 
 import ActivityType from './ActivityType.vue'
 import AquiferData from './AquiferData.vue'
@@ -780,7 +781,7 @@ export default {
       this.$emit('fetchFiles')
     },
     anchorLinkHandler (step) {
-      this.$SmoothScroll(this.$el.querySelector(`#${step}`))
+      smoothScroll(this.$el.querySelector(`#${step}`))
       this.$router.replace({ hash: `#${step}` })
     },
     gotoPrevStep () {

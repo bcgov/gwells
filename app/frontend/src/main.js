@@ -24,7 +24,6 @@ import router from './router.js'
 import { store } from './store'
 import '@/common/assets/css/bootstrap-theme.min.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
-import vueSmoothScroll from 'vue-smoothscroll'
 import vSelect from 'vue-select'
 import 'vue-select/dist/vue-select.css'
 import VueMoment from 'vue-moment'
@@ -51,7 +50,6 @@ Vue.use(VueNoty, {
 })
 Vue.use(BootstrapVue)
 Vue.use(VueMoment)
-Vue.use(vueSmoothScroll)
 Vue.component('v-select', vSelect)
 Vue.component('form-input', FormInput)
 

@@ -90,9 +90,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
 <script>
 import querystring from 'querystring'
 import { isEqual } from 'lodash'
+import smoothScroll from 'smoothscroll'
+import { mapGetters } from 'vuex'
+
 import ApiService from '@/common/services/ApiService.js'
 
-import { mapGetters } from 'vuex'
 import {
   RESET_WELLS_SEARCH,
   SEARCH_LOCATIONS,
@@ -205,7 +207,7 @@ export default {
       // The first search that happens when page loads doesn't need to automatically scroll the
       // page. Only scroll when updating the search results.
       if (this.hasManuallySearched && !this.scrolled) {
-        this.$SmoothScroll(this.$el.querySelector('#well-search-map'))
+        smoothScroll(this.$el.querySelector('#well-search-map'))
       }
     },
     handleMapSearch () {

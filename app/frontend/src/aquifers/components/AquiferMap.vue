@@ -16,8 +16,7 @@ import { pointInPolygon } from 'geojson-utils'
 import features from '../../common/features'
 import aquiferLayers from '../layers'
 import { buildLegendHTML } from '../legend'
-import { FETCH_SIMPLIFIED_GEOMETRY } from '../store/actions.types.js'
-import { SEARCH_AQUIFERS } from '../store/actions.types'
+import { FETCH_SIMPLIFIED_GEOMETRY, SEARCH_AQUIFERS } from '../store/actions.types'
 
 const AQUIFER_LAYER_STYLE = {
   color: '#FF6500',

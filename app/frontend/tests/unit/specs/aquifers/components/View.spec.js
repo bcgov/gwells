@@ -12,6 +12,10 @@
     limitations under the License.
 */
 
+/* eslint-disable import/first */
+jest.mock('mapbox-gl', () => {})
+jest.mock('@geolonia/mbgl-gesture-handling', () => {})
+
 import { mount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
 import axios from 'axios'

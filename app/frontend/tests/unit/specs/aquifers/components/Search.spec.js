@@ -68,7 +68,7 @@ describe('Search Component', () => {
             { name: 'aquifer section', code: 'a' }
           ])
         },
-        $SmoothScroll () {}
+        scrollToMap () { }
       },
       ...options
     })
