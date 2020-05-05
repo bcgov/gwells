@@ -64,7 +64,7 @@ objects:
       name: pgtileserv${NAME_SUFFIX}
     spec:
       ports:
-        - port: 2015
+        - port: 8080
           protocol: TCP
       selector:
         name: pgtileserv${NAME_SUFFIX}
