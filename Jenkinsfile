@@ -990,26 +990,26 @@ pipeline {
                             "--overwrite"
                         )
 
-                        // automated minio backup to NFS
+                        // automated minio backup 
                         def docBackupCronjob = openshift.process("-f",
                             "openshift/jobs/minio-backup/minio-backup.cj.yaml",
                             "NAME_SUFFIX=${stagingSuffix}",
                             "NAMESPACE=${stagingProject}",
                             "VERSION=v1.0.0",
                             "SCHEDULE='15 11 * * *'",
-                            "DEST_PVC=${nfsStagingBackupPVC}",
+                            "DEST_PVC=gwells-pg12-backup",
                             "SOURCE_PVC=${minioDataPVC}"
                         )
 
                         openshift.apply(docBackupCronjob)
 
-                        // automated database backup to NFS volume
+                        // automated database backup
                         def dbNFSBackup = openshift.process("-f",
                             "openshift/jobs/postgres-backup-nfs/postgres-backup.cj.yaml",
                             "NAMESPACE=${stagingProject}",
                             "TAG_NAME=v12.0.0",
                             "TARGET=gwells-pg12-staging",
-                            "PVC_NAME=${nfsStagingBackupPVC}",
+                            "PVC_NAME=gwells-pg12-backup",
                             "SCHEDULE='30 10 * * *'",
                             "JOB_NAME=postgres-nfs-backup",
                             "DAILY_BACKUPS=2",
