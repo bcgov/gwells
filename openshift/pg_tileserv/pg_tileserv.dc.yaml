@@ -53,31 +53,11 @@ objects:
         name: pgtileserv${NAME_SUFFIX}
         weight: 100
       port:
-        targetPort: 2015
+        targetPort: 8080
       tls:
         insecureEdgeTerminationPolicy: Redirect
         termination: edge
       wildcardPolicy: None
-  - apiVersion: v1
-    data:
-      Caddyfile: |-
-        :2015 {
-          root * /var/www/html
-          log
-          encode gzip
-          uri strip_prefix /gwells/tiles
-          reverse_proxy localhost:7800
-        }
-        :2016 {
-          respond /health 200
-        }
-    kind: ConfigMap
-    metadata:
-      labels:
-        app: gwells${NAME_SUFFIX}
-        name: pgtileserv${NAME_SUFFIX}-caddyfile
-        appver: gwells${NAME_SUFFIX}
-      name: pgtileserv${NAME_SUFFIX}-caddyfile
   - apiVersion: v1
     kind: Service
     metadata:
@@ -110,20 +90,9 @@ objects:
             appver: gwells${NAME_SUFFIX}
         spec:
           volumes:
-          - configMap:
-              defaultMode: 420
-              name: pgtileserv${NAME_SUFFIX}-caddyfile
-              items:
-                - key: Caddyfile
-                  path: Caddyfile
-            name: volume-caddyfile
           containers:
-            - name: caddy
-              volumeMounts:
-              - mountPath: /etc/caddy/Caddyfile
-                name: volume-caddyfile
-                subPath: Caddyfile
-              image: caddy/caddy:2.0.0-rc.3
+            - name: nginx
+              image: docker-registry.default.svc:5000/moe-gwells-tools/nginx-tilecache
               imagePullPolicy: IfNotPresent
               readinessProbe:
                 failureThreshold: 3
@@ -132,7 +101,7 @@ objects:
                 successThreshold: 1
                 httpGet:
                   path: /health
-                  port: 2016
+                  port: 8080
                 timeoutSeconds: 1
               livenessProbe:
                 failureThreshold: 3
@@ -141,12 +110,10 @@ objects:
                 successThreshold: 1
                 httpGet:
                   path: /health
-                  port: 2016
+                  port: 8080
                 timeoutSeconds: 1
               ports:
-                - containerPort: 2015
-                  protocol: TCP
-                - containerPort: 2016
+                - containerPort: 8080
                   protocol: TCP
               resources:
                 requests:
