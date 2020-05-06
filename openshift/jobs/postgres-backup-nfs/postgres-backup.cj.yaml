@@ -218,6 +218,21 @@ objects:
                     secretKeyRef:
                       key: database-password
                       name: ${TARGET}
+                - name: DATABASE_NAME
+                  valueFrom:
+                    configMapKeyRef:
+                      key: POSTGRESQL_DATABASE
+                      name: ${TARGET}-backup
+                - name: DATABASE_USER
+                  valueFrom:
+                    secretKeyRef:
+                      key: database-user
+                      name: ${TARGET}
+                - name: DATABASE_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: database-password
+                      name: ${TARGET}
                 image: docker-registry.default.svc:5000/${IMAGE_NAMESPACE}/${SOURCE_IMAGE_NAME}:${TAG_NAME}
                 imagePullPolicy: Always
                 name: backup-cronjob

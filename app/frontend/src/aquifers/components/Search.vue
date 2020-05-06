@@ -13,7 +13,7 @@
 */
 
 <template>
-  <div class="container p-1">
+  <div id="aquifers-search" class="container p-1">
     <!-- Active surveys -->
     <b-alert
         show
@@ -72,7 +72,7 @@
               />
               <b-form-row>
                 <b-button-group class="aquifer-search-actions">
-                  <b-button class="aquifer-buttons" variant="primary" type="submit" id="aquifers-search" :disabled="searchInProgress">
+                  <b-button class="aquifer-buttons" variant="primary" type="submit" id="aquifers-search-button" :disabled="searchInProgress">
                     Search
                     <i v-if="searchInProgress" class="fa fa-circle-o-notch fa-spin ml-1"/>
                   </b-button>
@@ -165,7 +165,6 @@
 
 <script>
 import mapboxgl from 'mapbox-gl'
-import L from 'leaflet'
 import querystring from 'querystring'
 import { isEqual, pick } from 'lodash'
 import { mapGetters, mapMutations, mapState, mapActions } from 'vuex'
@@ -394,8 +393,6 @@ export default {
 
         if (shouldSearch) {
           this.triggerSearch()
-        } else {
-          this.mapViewBounds = this.searchedAquifersBounds
         }
       }
     },
@@ -432,15 +429,15 @@ export default {
       }
     },
     searchResultsRowClicked (data) {
-      this.mapViewBounds = new mapboxgl.LngLatBounds(data.extent)
-      this.selectedAquiferId = data.aquifer_id
-      this.scrollToMap()
-    },
-    windowMouseDown (e) {
-      if (document.getElementById('aquifers-results').contains(e.target)) { return }
+      if (this.selectedAquiferId === data.aquifer_id) { // toggle off
+        this.mapViewBounds = this.searchedAquifersBounds
+        this.selectedAquiferId = null
+      } else {
+        this.mapViewBounds = new mapboxgl.LngLatBounds(data.extent)
+        this.selectedAquiferId = data.aquifer_id
+      }
 
-      this.mapViewBounds = this.searchedAquifersBounds
-      this.selectedAquiferId = null
+      this.scrollToMap()
     }
   },
   watch: {
@@ -467,93 +464,88 @@ export default {
     }
 
     this.handleRouteChange()
-  },
-  mounted () {
-    window.addEventListener('mousedown', this.windowMouseDown)
-  },
-  destroyed () {
-    window.removeEventListener('mousedown', this.windowMouseDown)
   }
 }
 </script>
 
-
 <style lang="scss">
-table.b-table > thead > tr > th.sorting::before,
-table.b-table > tfoot > tr > th.sorting::before {
-  display: none !important;
-}
-table.b-table > thead > tr > th.sorting::after,
-table.b-table > tfoot > tr > th.sorting::after {
-  content: "\f0dc" !important;
-  font-family: "FontAwesome";
-  opacity: 1 !important;
-}
-
-table.b-table tr {
-  cursor: pointer;
-}
-
-table.b-table td {
-  padding: .5rem;
-  vertical-align: middle;
-}
-
-ul.pagination {
-  justify-content: end;
-}
-
-.aquifer-search-actions {
-  margin-top: 1em
-}
-
-.main-search-card .main-title {
-  border-bottom: 1px solid rgba(0,0,0,0.1);
-  padding-bottom: 1rem;
-  font-size: 1.8em;
-}
-
-.map-column {
-  margin-right: -2rem;
-}
-
-.search-title {
-  font-size: 1.1em;
-  padding: 0;
-  margin: 0;
-}
-
-.aquifer-checkbox-group .custom-control-label:before {
-  background-color: white;
-  border: 1px solid #CED4DA;
-}
-
 #aquifers-search {
-  background-color: #38598A;
-  border-color: #38598A;
-}
+  table.b-table > thead > tr > th.sorting::before,
+  table.b-table > tfoot > tr > th.sorting::before {
+    display: none !important;
+  }
+  table.b-table > thead > tr > th.sorting::after,
+  table.b-table > tfoot > tr > th.sorting::after {
+    content: "\f0dc" !important;
+    font-family: "FontAwesome";
+    opacity: 1 !important;
+  }
 
-.aquifer-download-list {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-}
+  table.b-table tr {
+    cursor: pointer;
+  }
 
-.aquifer-download-list li {
-  color: #37598A;
-}
+  table.b-table td {
+    padding: .5rem;
+    vertical-align: middle;
+  }
 
-.aquifer-download-list li a {
-  color: #37598A;
-  text-decoration: underline;
-  text-decoration-color: #37598A;
-  text-decoration-skip-ink: none;
-}
+  ul.pagination {
+    justify-content: end;
+  }
 
-#aquifers-results {
-  tr.selected {
-    background-color: rgba(119, 204, 119, 0.7);
-    outline-color: rgb(55, 153, 37);
+  .aquifer-search-actions {
+    margin-top: 1em
+  }
+
+  .main-search-card .main-title {
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    padding-bottom: 1rem;
+    font-size: 1.8em;
+  }
+
+  .map-column {
+    margin-right: -2rem;
+  }
+
+  .search-title {
+    font-size: 1.1em;
+    padding: 0;
+    margin: 0;
+  }
+
+  .aquifer-checkbox-group .custom-control-label:before {
+    background-color: white;
+    border: 1px solid #CED4DA;
+  }
+
+  #aquifers-search-button {
+    background-color: #38598A;
+    border-color: #38598A;
+  }
+
+  .aquifer-download-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .aquifer-download-list li {
+    color: #37598A;
+  }
+
+  .aquifer-download-list li a {
+    color: #37598A;
+    text-decoration: underline;
+    text-decoration-color: #37598A;
+    text-decoration-skip-ink: none;
+  }
+
+  #aquifers-results {
+    tr.selected {
+      background-color: rgba(119, 204, 119, 0.7);
+      outline-color: rgb(55, 153, 37);
+    }
   }
 }
 </style>

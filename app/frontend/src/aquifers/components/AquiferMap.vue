@@ -209,7 +209,7 @@ export default {
         unit: 'metric'
       }))
       this.map.addControl(new mapboxgl.AttributionControl({
-        customAttribution: 'MapBox | Powered by Esri | Government of British Columbia, DataBC, GeoBC '
+        customAttribution: 'MapBox | Government of British Columbia, DataBC, GeoBC '
       }))
       this.layersControl = new LayersControl({
         layers: this.mapLayers,

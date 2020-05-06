@@ -161,7 +161,7 @@ export default {
       }
 
       this.map = new mapboxgl.Map(mapConfig)
-      new GestureHandling().addTo(this.map)
+      new GestureHandling({ modifierKey: 'ctrl' }).addTo(this.map)
 
       /* Add controls */
 
@@ -175,7 +175,7 @@ export default {
         unit: 'metric'
       }))
       this.map.addControl(new mapboxgl.AttributionControl({
-        customAttribution: 'MapBox | Powered by Esri | Government of British Columbia, DataBC, GeoBC '
+        customAttribution: 'MapBox | Government of British Columbia, DataBC, GeoBC '
       }))
       this.map.addControl(new LayersControl({
         layers: this.mapLayers,
