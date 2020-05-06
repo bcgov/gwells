@@ -34,7 +34,7 @@ export function createWellPopupElement ($router, wellFeatureProperties, options 
   const url = $router.resolve(routes.wellDetail)
 
   const items = [
-    `<a href="${url.href}" data-route-name="wellDetail">Well Tag Number ${wellTagNumber}</a>`,
+    `Well Tag Number: <a href="${url.href}" data-route-name="wellDetail">${wellTagNumber}</a>`,
     `Identification Plate Number: ${identificationPlateNumber || '—'}`,
     `Address: ${streetAddress || '—'}`,
     correlatedAquiferItem,
@@ -100,27 +100,31 @@ export function setupMapTooltips (map, $router, options = {}) {
   const aquifersTooltip = new mapboxgl.Popup()
   let overAquifer = false
 
-  map.on('mousemove', 'wells', (e) => {
-    map.getCanvas().style.cursor = 'pointer'
+  const wellsLayerIds = options.wellsLayerIds || [ 'wells', 'wells-ems', 'wells-uncorrelated' ]
 
-    aquifersTooltip.remove()
+  wellsLayerIds.forEach((wellLayerId) => {
+    map.on('mousemove', wellLayerId, (e) => {
+      map.getCanvas().style.cursor = 'pointer'
 
-    if (map.popup.isOpen()) { return }
+      aquifersTooltip.remove()
 
-    const feature = e.features[0]
-    const contentDiv = createWellPopupElement($router, feature.properties, options)
-    wellsTooltip
-      .setLngLat(getLngLatOfPointFeature(feature))
-      .setDOMContent(contentDiv)
-      .addTo(map)
-  })
+      if (map.popup.isOpen()) { return }
 
-  map.on('mouseleave', 'wells', () => {
-    map.getCanvas().style.cursor = ''
-    wellsTooltip.remove()
-    if (overAquifer && !map.popup.isOpen()) {
-      aquifersTooltip.addTo(map)
-    }
+      const feature = e.features[0]
+      const contentDiv = createWellPopupElement($router, feature.properties, options)
+      wellsTooltip
+        .setLngLat(getLngLatOfPointFeature(feature))
+        .setDOMContent(contentDiv)
+        .addTo(map)
+    })
+
+    map.on('mouseleave', wellLayerId, () => {
+      map.getCanvas().style.cursor = ''
+      wellsTooltip.remove()
+      if (overAquifer && !map.popup.isOpen()) {
+        aquifersTooltip.addTo(map)
+      }
+    })
   })
 
   map.on('mouseenter', 'aquifer-fill', (e) => {

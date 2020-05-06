@@ -172,7 +172,7 @@ export default {
       }
 
       this.map = new mapboxgl.Map(mapConfig)
-      new GestureHandling().addTo(this.map)
+      new GestureHandling({ modifierKey: 'ctrl' }).addTo(this.map)
 
       /* Add controls */
 
@@ -311,7 +311,7 @@ export default {
     }
   }
 
-  #mbgl-gesture-handling-help-container-0 {
+  [id^=mbgl-gesture-handling-help-container-] {
     font-size: 25px;
   }
 

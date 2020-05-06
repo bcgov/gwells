@@ -12,7 +12,7 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
-    "@geolonia/mbgl-gesture-handling": "^1.0.11",
+    "@geolonia/mbgl-gesture-handling": "seamus-oconnor/mbgl-gesture-handling#f99d70e34e4573ebdfdfa70bd68708178e9306d4",
     "@sentry/browser": "^5.7.1",
     "@sentry/integrations": "^5.7.1",
     "@types/leaflet": "^1.2.11",
