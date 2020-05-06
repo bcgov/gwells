@@ -60,7 +60,7 @@ import emsWellsIconSrc from '../../common/assets/images/wells-ems.svg'
 
 export default {
   name: 'SingleAquiferMap',
-  props: ['aquifer-id', 'geom', 'wells'],
+  props: ['aquifer-id', 'geom'],
   data () {
     return {
       browserUnsupported: false,
@@ -132,7 +132,8 @@ export default {
           label: 'Uncorrelated wells',
           imageSrc: uncorrelatedWellsIconSrc
         }
-      ]
+      ],
+      jumpToAquifer: true
     }
   },
   mounted () {
@@ -199,7 +200,9 @@ export default {
 
         this.setSelectedAquifer(this.aquiferId, true)
 
-        this.zoomToAquifer()
+        // On map load jump to the aquifer (if there is geom) by setting the `fitBounds()` duration
+        // option to zero/
+        this.zoomToAquifer({ duration: 0 })
 
         this.$emit('mapLoaded')
       })
@@ -239,15 +242,18 @@ export default {
       // Turn the layer's visibility on / off
       this.map.setLayoutProperty(layerId, 'visibility', show ? 'visible' : 'none')
     },
-    zoomToAquifer (well) {
+    zoomToAquifer (fitBoundsOptions) {
       if (!this.geom) { return }
 
       /* Compute the bounds from the MultiPolygon geometry coordinates */
       const bounds = computeBoundsFromMultiPolygon(this.geom.coordinates)
 
-      this.map.fitBounds(bounds, {
-        padding: 20
-      })
+      const options = {
+        padding: 40,
+        ...fitBoundsOptions
+      }
+
+      this.map.fitBounds(bounds, options)
     },
     setSelectedAquifer (aquiferId, focused = true) {
       this.map.setFeatureState(
@@ -263,7 +269,15 @@ export default {
     },
     geom (newGeom, oldGeom) {
       if (newGeom && newGeom !== oldGeom) {
-        this.zoomToAquifer()
+        const options = {}
+        if (this.jumpToAquifer) {
+          // We set the duration option to zero for `fitBounds()` to make it jump to the aquifer
+          // which avoids a long fly-to which will end up loading too many vector tiles.
+          options.duration = 0
+        }
+        // From now on when a user selects a different aquifer on the map we fly to it
+        this.jumpToAquifer = false
+        this.zoomToAquifer(options)
       }
     }
   }

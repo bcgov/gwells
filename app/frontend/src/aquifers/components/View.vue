@@ -133,7 +133,6 @@
             <single-aquifer-map
               :aquifer-id="id"
               :geom="record.geom"
-              :wells="aquiferWells"
               :key="mapKey"
               @mapLoading="loadingMap = true"
               @mapLoaded="loadingMap = false"/>
@@ -434,7 +433,6 @@ export default {
   computed: {
     ...mapGetters(['userRoles']),
     ...mapGetters('aquiferStore/view', {
-      // aquiferWells: 'wellsWithAquiferCorrelation',
       uncorrelatedWells: 'wellsWithoutAquiferCorrelation'
     }),
     ...mapState('documentState', [
