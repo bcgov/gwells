@@ -13,9 +13,8 @@
 */
 
 /* eslint-disable import/first */
-jest.mock('mapbox-gl', () => {})
-jest.mock('@geolonia/mbgl-gesture-handling', () => {})
 
+import '../../../mocks/mapbox-gl'
 import { mount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
 import axios from 'axios'
@@ -102,7 +101,7 @@ const aquiferFixture = {
 }
 
 describe('View Component', () => {
-  let loadAquifer = null
+  let fetch = null
 
   const component = (options, storeState = {}) => {
     const store = new Vuex.Store({
@@ -127,18 +126,18 @@ describe('View Component', () => {
       },
       stubs: ['router-link', 'aquifer-documents', 'aquifer-form', 'b-popover', 'pie-chart', 'single-aquifer-map'],
       methods: {
-        fetch: jest.fn(),
+        fetch,
+        fetchAquifer: jest.fn(),
         fetchWells: jest.fn(),
         fetchFiles: jest.fn(),
-        navigateToView: jest.fn(),
-        loadAquifer
+        navigateToView: jest.fn()
       },
       ...options
     })
   }
 
   beforeEach(() => {
-    loadAquifer = jest.fn()
+    fetch = jest.fn()
     axios.get.mockResolvedValue({})
   })
 
@@ -146,7 +145,7 @@ describe('View Component', () => {
     const wrapper = component()
 
     wrapper.vm.$nextTick(() => {
-      expect(loadAquifer).toHaveBeenCalled()
+      expect(fetch).toHaveBeenCalled()
       done()
     })
   })

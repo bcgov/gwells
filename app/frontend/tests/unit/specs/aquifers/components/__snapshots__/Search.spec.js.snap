@@ -3,6 +3,7 @@
 exports[`Search Component Matches the snapshot 1`] = `
 <div
   class="container p-1"
+  id="aquifers-search"
 >
    
   <div
@@ -147,7 +148,7 @@ exports[`Search Component Matches the snapshot 1`] = `
               >
                 <button
                   class="btn aquifer-buttons btn-primary"
-                  id="aquifers-search"
+                  id="aquifers-search-button"
                   type="submit"
                 >
                   
@@ -202,7 +203,7 @@ exports[`Search Component Matches the snapshot 1`] = `
            
           <aquifer-map-stub
             aquiferdetails="[object Object]"
-            highlightaquiferids=""
+            highlightaquiferids="4"
             searchtext="4"
           />
         </div>
@@ -393,7 +394,7 @@ exports[`Search Component Matches the snapshot 1`] = `
                   <router-link-stub
                     to="[object Object]"
                   >
-                    
+                    4
                   </router-link-stub>
                 </td>
                 <td

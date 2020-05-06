@@ -403,7 +403,6 @@ exports[`View Component View mode matches the snapshot 1`] = `
              
             <single-aquifer-map-stub
               aquiferid="4"
-              wells=""
             />
           </div>
         </div>

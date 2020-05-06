@@ -13,7 +13,7 @@
 */
 
 <template>
-  <div class="container p-1">
+  <div id="aquifers-search" class="container p-1">
     <!-- Active surveys -->
     <b-alert
         show
@@ -72,7 +72,7 @@
               />
               <b-form-row>
                 <b-button-group class="aquifer-search-actions">
-                  <b-button class="aquifer-buttons" variant="primary" type="submit" id="aquifers-search" :disabled="searchInProgress">
+                  <b-button class="aquifer-buttons" variant="primary" type="submit" id="aquifers-search-button" :disabled="searchInProgress">
                     Search
                     <i v-if="searchInProgress" class="fa fa-circle-o-notch fa-spin ml-1"/>
                   </b-button>
@@ -97,11 +97,13 @@
               :aquiferDetails="searchResults"
               :highlightAquiferIds="searchedAquiferIds"
               :selectedId="selectedAquiferId"
-              :loading="loadingMap"
+              :viewBounds="mapViewBounds"
               :searchText="search"
               @moved="mapMoved"
               @zoomed="handleMapZoom"
-              @search="mapSearch"/>
+              @search="mapSearch"
+              @mapLoading="loadingMap = true"
+              @mapLoaded="loadingMap = false"/>
           </b-col>
         </b-form-row>
       </b-form>
@@ -133,7 +135,7 @@
             :tbody-tr-class="searchResultsRowClass"
             responsive>
             <template slot="id" slot-scope="row">
-              <router-link :to="{ name: 'aquifers-view', params: {id: row.item.id} }">{{ row.item.id }}</router-link>
+              <router-link :to="{ name: 'aquifers-view', params: {id: row.item.aquifer_id} }">{{ row.item.aquifer_id }}</router-link>
             </template>
             <template slot="name" slot-scope="row">
               {{row.item.name}}
@@ -161,88 +163,8 @@
   </div>
 </template>
 
-<style lang="scss">
-table.b-table > thead > tr > th.sorting::before,
-table.b-table > tfoot > tr > th.sorting::before {
-  display: none !important;
-}
-table.b-table > thead > tr > th.sorting::after,
-table.b-table > tfoot > tr > th.sorting::after {
-  content: "\f0dc" !important;
-  font-family: "FontAwesome";
-  opacity: 1 !important;
-}
-
-table.b-table tr {
-  cursor: pointer;
-}
-
-table.b-table td {
-  padding: .5rem;
-  vertical-align: middle;
-}
-
-ul.pagination {
-  justify-content: end;
-}
-
-.aquifer-search-actions {
-  margin-top: 1em
-}
-
-.main-search-card .main-title {
-  border-bottom: 1px solid rgba(0,0,0,0.1);
-  padding-bottom: 1rem;
-  font-size: 1.8em;
-}
-
-.map-column {
-  margin-right: -2rem;
-}
-
-.search-title {
-  font-size: 1.1em;
-  padding: 0;
-  margin: 0;
-}
-
-.aquifer-checkbox-group .custom-control-label:before {
-  background-color: white;
-  border: 1px solid #CED4DA;
-}
-
-#aquifers-search {
-  background-color: #38598A;
-  border-color: #38598A;
-}
-
-.aquifer-download-list {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-}
-
-.aquifer-download-list li {
-  color: #37598A;
-}
-
-.aquifer-download-list li a {
-  color: #37598A;
-  text-decoration: underline;
-  text-decoration-color: #37598A;
-  text-decoration-skip-ink: none;
-}
-
-#aquifers-results {
-  tr.selected {
-    background-color: rgba(119, 204, 119, 0.7);
-    outline-color: rgb(55, 153, 37);
-  }
-}
-</style>
-
 <script>
-import L from 'leaflet'
+import mapboxgl from 'mapbox-gl'
 import querystring from 'querystring'
 import { isEqual, pick } from 'lodash'
 import { mapGetters, mapMutations, mapState, mapActions } from 'vuex'
@@ -263,10 +185,10 @@ import { SEARCH_AQUIFERS } from '../store/actions.types.js'
 import AquiferMap from './AquiferMap.vue'
 import MapLoadingSpinner from './MapLoadingSpinner.vue'
 import features from '../../common/features'
+import { BC_LAT_LNG_BOUNDS, containsBounds } from '../../common/mapbox/geometry'
 
 const SEARCH_RESULTS_PER_PAGE = 10
 const HYDRAULICALLY_CONNECTED_CODE = 'Hydra'
-const BC_LAT_LNG_BOUNDS = L.latLngBounds(L.latLng(60.0023, -114.0541379), L.latLng(48.2245556, -139.0536706))
 const URL_QS_SEARCH_KEYS = ['constrain', 'resources__section__code', 'match_any', 'search']
 
 export default {
@@ -308,7 +230,9 @@ export default {
       selectedSections,
       matchAny: Boolean(query.match_any),
       selectMode: 'single',
-      selectedAquiferId: null
+      selectedAquiferId: null,
+      mapViewBounds: null,
+      loadingMap: false
     }
   },
   computed: {
@@ -328,13 +252,16 @@ export default {
     },
     emptyResults () { return this.searchResultCount === 0 },
     query () { return this.$route.query },
-    searchedAquiferIds () { return (this.searchResults || []).map((aquifer) => aquifer.id) },
+    searchedAquiferIds () { return (this.searchResults || []).map((aquifer) => aquifer.aquifer_id) },
+    searchedAquifersBounds () {
+      const bounds = new mapboxgl.LngLatBounds()
+      const results = (this.searchResults || [])
+      results.forEach((aquifer) => bounds.extend(aquifer.extent))
+      return bounds
+    },
     resourceSectionOptions () { return this.resourceSections && this.resourceSections.map((s) => ({ text: s.name, value: s.code })) },
     ...mapGetters(['userRoles']),
     ...mapGetters('aquiferStore/search', ['queryParams']),
-    ...mapState('aquiferStore/aquiferGeoms', {
-      loadingMap: 'simplifiedGeoJsonLoading'
-    }),
     ...mapState('aquiferStore/search', [
       'searchErrors',
       'searchResults',
@@ -350,7 +277,16 @@ export default {
   },
   methods: {
     ...mapActions('aquiferStore/search', [SEARCH_AQUIFERS]),
-    ...mapMutations('aquiferStore/search', [SET_CONSTRAIN_SEARCH, SET_SEARCH_BOUNDS, SET_CONSTRAIN_SEARCH, RESET_SEARCH, SET_SEARCH_MAP_CENTRE, SET_SEARCH_MAP_ZOOM]),
+    ...mapMutations('aquiferStore/search', [
+      SET_CONSTRAIN_SEARCH,
+      SET_SEARCH_BOUNDS,
+      SET_CONSTRAIN_SEARCH,
+      RESET_SEARCH,
+      SET_SEARCH_MAP_CENTRE,
+      SET_SEARCH_MAP_ZOOM,
+      SET_SELECTED_SECTIONS,
+      SET_MATCH_ANY
+    ]),
     ...mapMutations('aquiferStore', ['addSections']),
     navigateToNew () {
       this.$router.push({ name: 'new' })
@@ -401,9 +337,7 @@ export default {
       this.matchAny = false
       this.selectedAquiferId = null
       this[RESET_SEARCH]()
-      this.$nextTick(() => {
-        this.$emit('resetLayers')
-      })
+      this.$emit('resetLayers')
     },
     triggerSearch (options = {}) {
       let constrainSearch = !!options.constrain
@@ -412,6 +346,8 @@ export default {
       if (!features.searchInAquiferMap) {
         constrainSearch = true
       }
+
+      this.loadingMap = true
 
       this.selectedAquiferId = null
       this[SET_CONSTRAIN_SEARCH](constrainSearch)
@@ -430,14 +366,14 @@ export default {
       this.$router.replace({ query: this.queryParams })
     },
     mapMoved (bounds, featuresOnMap, isViewReset) {
-      const viewingBC = bounds.contains(BC_LAT_LNG_BOUNDS)
+      const viewingBC = containsBounds(bounds, BC_LAT_LNG_BOUNDS)
 
       this[SET_SEARCH_MAP_CENTRE](viewingBC ? null : bounds.getCenter())
       this[SET_SEARCH_BOUNDS](bounds)
       this.updateQueryParams()
     },
     handleMapZoom (zoom, bounds) {
-      const viewingBC = bounds.contains(BC_LAT_LNG_BOUNDS)
+      const viewingBC = containsBounds(bounds, BC_LAT_LNG_BOUNDS)
 
       this[SET_SEARCH_MAP_ZOOM](viewingBC ? null : zoom)
       this.updateQueryParams()
@@ -471,7 +407,7 @@ export default {
         const lat = parseFloat(latlng[0])
         const lng = parseFloat(latlng[1])
         // eslint-disable-next-line new-cap
-        this[SET_SEARCH_MAP_CENTRE](new L.latLng(lat, lng))
+        this[SET_SEARCH_MAP_CENTRE](new mapboxgl.LngLat(lng, lat))
       }
       if (query.map_zoom !== undefined) {
         this[SET_SEARCH_MAP_ZOOM](parseInt(query.map_zoom))
@@ -493,7 +429,14 @@ export default {
       }
     },
     searchResultsRowClicked (data) {
-      this.selectedAquiferId = data.id
+      if (this.selectedAquiferId === data.aquifer_id) { // toggle off
+        this.mapViewBounds = this.searchedAquifersBounds
+        this.selectedAquiferId = null
+      } else {
+        this.mapViewBounds = new mapboxgl.LngLatBounds(data.extent)
+        this.selectedAquiferId = data.aquifer_id
+      }
+
       this.scrollToMap()
     }
   },
@@ -503,6 +446,8 @@ export default {
     },
     searchInProgress () {
       if (this.searchInProgress === false) {
+        this.loadingMap = false
+        this.mapViewBounds = this.searchedAquifersBounds
         this.scrollToMap()
       }
     },
@@ -522,3 +467,85 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+#aquifers-search {
+  table.b-table > thead > tr > th.sorting::before,
+  table.b-table > tfoot > tr > th.sorting::before {
+    display: none !important;
+  }
+  table.b-table > thead > tr > th.sorting::after,
+  table.b-table > tfoot > tr > th.sorting::after {
+    content: "\f0dc" !important;
+    font-family: "FontAwesome";
+    opacity: 1 !important;
+  }
+
+  table.b-table tr {
+    cursor: pointer;
+  }
+
+  table.b-table td {
+    padding: .5rem;
+    vertical-align: middle;
+  }
+
+  ul.pagination {
+    justify-content: end;
+  }
+
+  .aquifer-search-actions {
+    margin-top: 1em
+  }
+
+  .main-search-card .main-title {
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    padding-bottom: 1rem;
+    font-size: 1.8em;
+  }
+
+  .map-column {
+    margin-right: -2rem;
+  }
+
+  .search-title {
+    font-size: 1.1em;
+    padding: 0;
+    margin: 0;
+  }
+
+  .aquifer-checkbox-group .custom-control-label:before {
+    background-color: white;
+    border: 1px solid #CED4DA;
+  }
+
+  #aquifers-search-button {
+    background-color: #38598A;
+    border-color: #38598A;
+  }
+
+  .aquifer-download-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .aquifer-download-list li {
+    color: #37598A;
+  }
+
+  .aquifer-download-list li a {
+    color: #37598A;
+    text-decoration: underline;
+    text-decoration-color: #37598A;
+    text-decoration-skip-ink: none;
+  }
+
+  #aquifers-results {
+    tr.selected {
+      background-color: rgba(119, 204, 119, 0.7);
+      outline-color: rgb(55, 153, 37);
+    }
+  }
+}
+</style>
