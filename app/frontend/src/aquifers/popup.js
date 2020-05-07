@@ -191,6 +191,8 @@ export function setupMapPopups (map, $router, options = {}) {
 
   wellsLayerIds.forEach((wellLayerId) => {
     map.on('click', wellLayerId, (e) => {
+      // Check to see if we have already clicked on a well (could be an invisible EMS layer click)
+      if (clickedOnWell) { return }
       clickedOnWell = true
       const feature = e.features[0]
       const contentDiv = createWellPopupElement($router, feature.properties, options)
