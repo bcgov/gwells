@@ -179,7 +179,7 @@ export function setupMapTooltips (map, $router, options = {}) {
 
 // Adds mouse event listeners to the map which will show the popup for the clicked well or aquifer
 export function setupMapPopups (map, $router, options = {}) {
-  const wellsLayerId = options.wellsLayerId || WELLS_BASE_AND_ARTESIAN_LAYER_ID
+  const wellsLayerIds = options.wellsLayerIds || DEFAULT_WELL_LAYER_IDS
   const aquiferFillLayerId = options.aquiferFillLayerId || AQUIFERS_FILL_LAYER_ID
 
   let clickedOnWell = false
@@ -189,14 +189,16 @@ export function setupMapPopups (map, $router, options = {}) {
   })
   map.popup = popup
 
-  map.on('click', wellsLayerId, (e) => {
-    clickedOnWell = true
-    const feature = e.features[0]
-    const contentDiv = createWellPopupElement($router, feature.properties, options)
-    popup
-      .setLngLat(getLngLatOfPointFeature(feature))
-      .setDOMContent(contentDiv)
-      .addTo(map)
+  wellsLayerIds.forEach((wellLayerId) => {
+    map.on('click', wellLayerId, (e) => {
+      clickedOnWell = true
+      const feature = e.features[0]
+      const contentDiv = createWellPopupElement($router, feature.properties, options)
+      popup
+        .setLngLat(getLngLatOfPointFeature(feature))
+        .setDOMContent(contentDiv)
+        .addTo(map)
+    })
   })
 
   map.on('click', aquiferFillLayerId, (e) => {
