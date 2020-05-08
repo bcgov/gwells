@@ -82,7 +82,7 @@
           </tr>
         </tbody>
         <tbody role="rowgroup" v-else>
-          <tr v-for="row in results" :key="row.well_tag_number">
+          <tr v-for="row in results" :key="row.well_tag_number" @mousedown="searchResultsRowClicked(row)">
             <td v-for="column in columns" :key="column.id" class="data">
               <template v-if="column.param === 'well_tag_number'">
                 <router-link :to="{ name: 'wells-detail', params: {id: row.well_tag_number} }">{{ row.well_tag_number }}</router-link>
@@ -128,7 +128,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { SEARCH_LOCATIONS, SEARCH_WELLS } from '@/wells/store/actions.types.js'
+import { SEARCH_WELLS } from '@/wells/store/actions.types.js'
 import {
   SET_SEARCH_LIMIT,
   SET_SEARCH_OFFSET,
@@ -168,7 +168,8 @@ export default {
       resultFilters: 'searchResultFilters',
       resultColumns: 'searchResultColumns',
       resultCount: 'searchResultCount',
-      results: 'searchResults'
+      results: 'searchResults',
+      selectedWells: 'selectedWells'
     }),
     columns () {
       return this.getFilterFields(this.resultColumns)
@@ -241,25 +242,27 @@ export default {
     },
     applyFilter ({ id }, values) {
       this.filterParams[id] = values
-      const filterGroup = {...this.searchQueryParams}
+      const filterGroup = { ...this.searchQueryParams }
       this.$store.commit(SET_SEARCH_RESULT_FILTERS, filterGroup)
       this.$emit('filter-changed', filterGroup)
 
-      this.$store.dispatch(SEARCH_LOCATIONS)
       this.$store.dispatch(SEARCH_WELLS, { trigger: FILTER_TRIGGER })
     },
     initFilterParams () {
-      const filterParams = {...this.emptyFilterParams}
+      const filterParams = { ...this.emptyFilterParams }
 
       Object.entries(this.resultFilters).forEach(([param, value]) => {
         this.columns.forEach(column => {
           if (column.params.includes(param)) {
-            filterParams[column.id] = {[param]: value}
+            filterParams[column.id] = { [param]: value }
           }
         })
       })
 
       this.filterParams = filterParams
+    },
+    searchResultsRowClicked (data) {
+      this.$emit('rowClicked', data)
     }
   },
   filters: {
@@ -326,26 +329,26 @@ export default {
 
 #searchResultsTable {
   min-height: 36rem;
-}
 
-#searchResultsTable td.data {
-  white-space: nowrap;
-  overflow-wrap: break-word;
-}
-
-#searchResultsTable .sort-button {
-  opacity: 0.4;
-
-  &:hover,
-  &:active,
-  &:visited,
-  &:focus {
-    text-decoration: none;
+  td.data {
+    white-space: nowrap;
+    overflow-wrap: break-word;
   }
-}
 
-#searchResultsTable .sort-button.active {
-  opacity: 1;
+ .sort-button {
+    opacity: 0.4;
+
+    &:hover,
+    &:active,
+    &:visited,
+    &:focus {
+      text-decoration: none;
+    }
+  }
+
+  .sort-button.active {
+    opacity: 1;
+  }
 }
 
 /* Spinner styles — these can be removed when moving to bootstrap 4.3 */
@@ -379,18 +382,4 @@ $spinner-border-width-sm: .2em !default;
   height: $spinner-height-sm;
   border-width: $spinner-border-width-sm;
 }
-
-//
-// Growing circle
-//
-
-@keyframes spinner-grow {
-  0% {
-    transform: scale(0);
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
 </style>

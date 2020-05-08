@@ -13,13 +13,9 @@
 """
 
 import logging
-import geojson
-from geojson import Feature, FeatureCollection
 from drf_yasg.utils import swagger_auto_schema
 
 from django.db import transaction
-from django.db.models import Func, TextField
-from django.db.models.functions import Cast
 from django.utils import timezone
 from django.http import FileResponse, HttpResponse, StreamingHttpResponse
 
@@ -30,6 +26,7 @@ from rest_framework.response import Response
 
 from gwells.roles import WELLS_VIEWER_ROLE, WELLS_EDIT_ROLE
 from gwells.pagination import apiLimitedPagination, APILimitOffsetPagination
+from gwells.geojson import GeoJSONIterator
 
 from wells.filters import (
     BoundingBoxFilterBackend,
@@ -78,6 +75,8 @@ class WellLocationListV2APIView(ListAPIView):
     search_fields = ('well_tag_number', 'identification_plate_number',
                      'street_address', 'city', 'owner_full_name', 'ems')
 
+    TOO_MANY_ERROR_MESSAGE = "Too many wells to display on map. Please zoom in or change your search criteria."
+
     def get_serializer_class(self):
         return WellLocationSerializerV2
 
@@ -105,7 +104,7 @@ class WellLocationListV2APIView(ListAPIView):
 
         return qs
 
-    def get(self, request, **kwargs):
+    def get(self, request, *args, **kwargs):
         """
         Returns geojson if requested, otherwise handles request as normal.
         """
@@ -117,30 +116,33 @@ class WellLocationListV2APIView(ListAPIView):
         # This might be more performant in the database using json_agg and ST_AsGeoJSON
         # vs creating geojson Features here in Python.
         if geojson_requested:
-            qs = self.get_queryset()
-
-            qs = qs.exclude(geom=None)
-
-            locations = self.filter_queryset(qs)
-            count = locations.count()
-            # return an empty response if there are too many wells to display
-            if count > self.MAX_LOCATION_COUNT:
-                raise PermissionDenied('Too many wells to display on map. '
-                                       'Please zoom in or change your search criteria.')
-
-            locations = locations.annotate(
-                geometry=Cast(Func('geom', function='ST_AsGeoJSON'), output_field=TextField())
-            ).values("well_tag_number", "identification_plate_number", "geometry",
-                     "street_address", "city")
-
-            # create a group of features
-            features = [
-                Feature(geometry=geojson.loads(x.pop('geometry')), properties=dict(x)) for x in locations
-            ]
-
-            return HttpResponse(geojson.dumps(FeatureCollection(features)))
+            return self.geoJSONResponse()
 
         return super().get(request)
+
+    def geoJSONResponse(self):
+        """
+        Returns a streaming GeoJSON HTTP response of the searched wells
+        """
+        qs = self.get_queryset()
+
+        qs = qs.exclude(geom=None)
+
+        locations = self.filter_queryset(qs)
+        locations = locations.values(
+            "geom", "well_tag_number", "identification_plate_number", "street_address", "city", "artesian_flow"
+        )
+        locations = list(locations[:self.MAX_LOCATION_COUNT + 1])
+
+        # return a 403 response if there are too many wells to display
+        if len(locations) > self.MAX_LOCATION_COUNT:
+            raise PermissionDenied(self.TOO_MANY_ERROR_MESSAGE)
+
+        # turn the list of locations into a generator so the GeoJSONIterator can use it
+        locations_iter = (location for location in locations)
+        iterator = GeoJSONIterator(locations_iter)
+
+        return StreamingHttpResponse(iterator, content_type="application/json")
 
 
 class WellAquiferListV2APIView(ListAPIView):
@@ -454,7 +456,7 @@ class WellExportListAPIViewV2(ListAPIView):
             for item in serializer.data:
                 yield item
 
-    def list(self, request, **kwargs):
+    def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
         count = queryset.count()
         # return an empty response if there are too many wells to display

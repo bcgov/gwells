@@ -11,6 +11,8 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
+import '../../mocks/mapbox-gl'
+import { LngLatBounds } from 'mapbox-gl'
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
 import { merge } from 'lodash'
@@ -107,7 +109,7 @@ describe('WellSearch.vue', () => {
       }
     } }, storeState)
 
-    wrapper.vm.handleMapSearch()
+    wrapper.vm.handleMapSearch(new LngLatBounds())
 
     expect(wrapper.vm.searchParams).toEqual(searchParams)
     expect(routerReplaceSpy).toHaveBeenCalled()

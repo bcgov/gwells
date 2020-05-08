@@ -183,7 +183,7 @@ import {
 import { SEARCH_AQUIFERS } from '../store/actions.types.js'
 
 import AquiferMap from './AquiferMap.vue'
-import MapLoadingSpinner from './MapLoadingSpinner.vue'
+import MapLoadingSpinner from '../../common/components/MapLoadingSpinner.vue'
 import features from '../../common/features'
 import { BC_LAT_LNG_BOUNDS, containsBounds } from '../../common/mapbox/geometry'
 

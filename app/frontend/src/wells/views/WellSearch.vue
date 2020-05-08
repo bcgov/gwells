@@ -13,13 +13,12 @@ Licensed under the Apache License, Version 2.0 (the "License");
 */
 <template>
   <b-card class="container p-1">
-
       <b-alert
-          show
-          variant="info"
-          class="mb-3"
-          v-for="(survey, index) in surveys"
-          :key="`survey ${index}`">
+        show
+        variant="info"
+        class="mb-3"
+        v-for="(survey, index) in surveys"
+        :key="`survey ${index}`">
         <p class="m-0">
           <a :href="survey.survey_link">
             {{ survey.survey_introduction_text }}
@@ -56,38 +55,62 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </b-card>
         </b-col>
         <b-col>
-          <search-map
-            ref="searchMap"
-            :initialCentre="searchMapCentre"
-            :initialZoom="searchMapZoom"
-            @moved="handleMapMoveEnd"
-            @zoomed="handleMapZoom"
-            @search="handleMapSearch"
-            @ready="handleMapReady"/>
-          <b-alert variant="danger" class="mt-2" :show="locationErrorMessage !== ''">{{ locationErrorMessage }}</b-alert>
+          <div>
+            <map-loading-spinner :loading="loadingMap"/>
+
+            <search-map
+              :initialCentre="searchMapCentre"
+              :initialZoom="searchMapZoom"
+              :focusWell="focusedWell"
+              @boundsChanged="handleMapBoundsChange"
+              @search="handleMapSearch"
+              @clearSearch="handleMapClearSearch"
+              @wellsLoading="mapServerErrorMessage = null; noWellsInView = null"
+              @wellsLoaded="handleWellsLoaded"
+              @error="handleMapError"
+              @mapLoaded="handleMapReady"/>
+          </div>
+
+          <b-alert variant="danger" class="mt-2" :show="mapServerErrorMessage || noWellsInView">
+            <div v-if="mapServerErrorMessage">
+              {{mapServerErrorMessage}}
+            </div>
+            <!--  handle 0 search results in BC with "No matching wells found in BC" -->
+            <div v-else-if="noWellsInView">
+              <div v-if="searchBCInProgress">
+                <div class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></div>
+                Searching all of BC for any matching wells ...
+              </div>
+              <div v-else>
+                No matching wells found in map view. Please zoom out or change your search criteria
+                <span v-if="totalSearchResultsInBC === 1">
+                  or view the
+                  <a href="#" @click.prevent="focusOnWell(bcSearchResults[0])">one well</a>
+                  that matches your criteria
+                </span>
+              </div>
+            </div>
+          </b-alert>
         </b-col>
       </b-row>
-      <b-row class="my-5" v-show="hasSearched || hasResultErrors">
-        <b-col>
-          <search-results />
-        </b-col>
-      </b-row>
-      <b-row v-if="!hasSearched" class="mt-5">
-        <b-col>
-          <p>
-            Can’t find the well you are looking for? Try your search again using a different set of criteria. If you still need more assistance, Contact <a href="https://portal.nrs.gov.bc.ca/web/client/contact" target="_blank">FrontCounterBC</a>.
-          </p>
-          <p>
-            <a href="http://www.frontcounterbc.gov.bc.ca/Start/surface-water/" @click="handleOutboundLinkClicks('www.frontcounterbc.gov.bc.ca/Start/surface-water/')" target="_blank">
-              Learn about and submit water license applications
-            </a> with FrontCounterBC.
-          </p>
-        </b-col>
-      </b-row>
+      <div class="my-5" v-show="hasSearched || hasResultErrors">
+        <search-results/>
+      </div>
+      <div v-if="!hasSearched" class="mt-5">
+        <p>
+          Can’t find the well you are looking for? Try your search again using a different set of criteria. If you still need more assistance, Contact <a href="https://portal.nrs.gov.bc.ca/web/client/contact" target="_blank">FrontCounterBC</a>.
+        </p>
+        <p>
+          <a href="http://www.frontcounterbc.gov.bc.ca/Start/surface-water/" @click="handleOutboundLinkClicks('www.frontcounterbc.gov.bc.ca/Start/surface-water/')" target="_blank">
+            Learn about and submit water license applications
+          </a> with FrontCounterBC.
+        </p>
+      </div>
     </b-card>
 </template>
 
 <script>
+import axios from 'axios'
 import querystring from 'querystring'
 import { isEqual } from 'lodash'
 import smoothScroll from 'smoothscroll'
@@ -97,7 +120,7 @@ import ApiService from '@/common/services/ApiService.js'
 
 import {
   RESET_WELLS_SEARCH,
-  SEARCH_LOCATIONS,
+  // SEARCH_LOCATIONS,
   SEARCH_WELLS
 } from '@/wells/store/actions.types.js'
 import {
@@ -109,13 +132,17 @@ import {
   SET_SEARCH_RESULT_FILTERS,
   SET_SEARCH_MAP_CENTRE,
   SET_SEARCH_MAP_ZOOM,
-  SET_CONSTRAIN_SEARCH
+  SET_CONSTRAIN_SEARCH,
+  SET_SEARCH_BOUNDS
 } from '@/wells/store/mutations.types.js'
-import { QUERY_TRIGGER } from '@/wells/store/triggers.types.js'
+import { QUERY_TRIGGER, MAP_TRIGGER } from '@/wells/store/triggers.types.js'
+
+import MapLoadingSpinner from '../../common/components/MapLoadingSpinner.vue'
 import AdvancedSearchForm from '@/wells/components/AdvancedSearchForm.vue'
 import BasicSearchForm from '@/wells/components/BasicSearchForm.vue'
 import SearchMap from '@/wells/components/SearchMap.vue'
 import SearchResults from '@/wells/components/SearchResults.vue'
+import { convertLngLatBoundsToDirectionBounds, DEFAULT_MAP_ZOOM, CENTRE_LNG_LAT_BC } from '../../common/mapbox/geometry'
 
 export default {
   name: 'WellSearch',
@@ -123,7 +150,8 @@ export default {
     'advanced-search-form': AdvancedSearchForm,
     'basic-search-form': BasicSearchForm,
     'search-map': SearchMap,
-    'search-results': SearchResults
+    'search-results': SearchResults,
+    'map-loading-spinner': MapLoadingSpinner
   },
   data () {
     return {
@@ -141,12 +169,20 @@ export default {
       searchShouldReset: false,
       hasManuallySearched: false,
 
-      performInitialSearch: false
+      performInitialSearch: false,
+      loadingMap: false,
+      noWellsInView: false,
+      focusedWell: null,
+      mapServerErrorMessage: null,
+      showMapErrorMessage: false,
+      searchBCInProgress: false,
+      totalSearchResultsInBC: 0,
+      bcSearchResults: [],
+      searchBCAxiosCancelSource: null
     }
   },
   computed: {
     ...mapGetters([
-      'locationErrorMessage',
       'hasSearched',
       'searchErrors',
       'searchLimit',
@@ -158,27 +194,76 @@ export default {
       'searchResultFilters',
       'searchMapCentre',
       'searchMapZoom',
-      'constrainSearch'
+      'constrainSearch',
+      'searchInProgress',
+      'searchQueryParams'
     ]),
     hasResultErrors () {
       return (this.searchErrors.filter_group !== undefined && Object.entries(this.searchErrors.filter_group).length > 0)
+    },
+    hasSearchParams (state) {
+      return Object.keys(this.searchQueryParams).length > 0
     }
   },
   methods: {
     handleScroll () {
       this.scrolled = window.scrollY > 100
     },
-    handleMapMoveEnd (centre, isViewReset) {
-      const coords = {
-        lat: centre.lat,
-        lng: centre.lng
+    handleMapBoundsChange (bounds, zoom, centre) {
+      let isViewReset = false
+      if (zoom === DEFAULT_MAP_ZOOM) {
+        if (CENTRE_LNG_LAT_BC.distanceTo(centre) < 0.001) {
+          isViewReset = true
+        }
       }
-      this.$store.commit(SET_SEARCH_MAP_CENTRE, isViewReset ? null : coords)
+
+      this.noWellsInView = false
+
+      this.$store.commit(SET_SEARCH_MAP_CENTRE, isViewReset ? null : centre)
+      this.$store.commit(SET_SEARCH_MAP_ZOOM, isViewReset ? null : zoom)
+      this.$store.commit(SET_SEARCH_BOUNDS, convertLngLatBoundsToDirectionBounds(bounds))
+
       this.updateQueryParams()
     },
-    handleMapZoom (zoom, isViewReset) {
-      this.$store.commit(SET_SEARCH_MAP_ZOOM, isViewReset ? null : zoom)
+    handleMapSearch (bounds, options = {}) {
       this.updateQueryParams()
+
+      if (options.showLoadingSpinner) {
+        this.loadingMap = true
+      }
+
+      this.$store.commit(SET_SEARCH_BOUNDS, convertLngLatBoundsToDirectionBounds(bounds))
+      this.$store.dispatch(SEARCH_WELLS, { trigger: MAP_TRIGGER, constrain: true })
+    },
+    handleMapClearSearch () {
+      this.updateQueryParams()
+
+      this.$store.commit(SET_SEARCH_PARAMS, {})
+      this.$store.commit(SET_SEARCH_RESULT_FILTERS, {})
+
+      this.$store.dispatch(SEARCH_WELLS, { trigger: MAP_TRIGGER, constrain: true })
+    },
+    handleWellsLoaded (numWells) {
+      this.loadingMap = false
+    },
+    handleMapError (err) {
+      if (err.noFeatures) {
+        this.noWellsInView = true
+      } else if (err.serverError) {
+        this.mapServerErrorMessage = err.serverError
+      }
+    },
+    handleMapReady (bounds) {
+      if (this.performInitialSearch) {
+        this.searchWellsInBC()
+
+        this.$store.commit(SET_SEARCH_BOUNDS, convertLngLatBoundsToDirectionBounds(bounds))
+        // if the page loaded with a query, start a search.
+        // Otherwise, the search does not need to run (see #1713)
+        this.$store.dispatch(SEARCH_WELLS, { trigger: QUERY_TRIGGER, constrain: true })
+      } else {
+        this.loadingMap = false
+      }
     },
     handleSearchSubmit () {
       this.updateQueryParams()
@@ -188,6 +273,18 @@ export default {
       }
 
       this.hasManuallySearched = true
+
+      if (this.hasSearchParams) {
+        // Only show the loading spinner on the map if we are going to show the search map markers
+        // on the map. If the user has no search criteria then we are already showing all the wells
+        // on the map via vector tiles and there is nothing to do.
+        this.loadingMap = true
+      }
+
+      // We limit the returned search results in all of BC to one so we can allow the user to zoom
+      // to that one matching well they are looking for. We also want the count to show the user
+      // how many wells outside of their current map view match their search criteria.
+      this.searchWellsInBC({ limit: 1 })
 
       // send the analytic event when triggering search by the search button
       this.triggerAnalyticsSearchEvent(
@@ -199,7 +296,7 @@ export default {
       )
     },
     handleReset () {
-      this.resetMapBounds()
+      this.$emit('reset')
       this.$store.dispatch(RESET_WELLS_SEARCH)
       this.$router.replace({ query: null })
     },
@@ -207,19 +304,13 @@ export default {
       // The first search that happens when page loads doesn't need to automatically scroll the
       // page. Only scroll when updating the search results.
       if (this.hasManuallySearched && !this.scrolled) {
-        smoothScroll(this.$el.querySelector('#well-search-map'))
+        smoothScroll(this.$el.querySelector('#wells-search-map'))
       }
     },
-    handleMapSearch () {
-      this.updateQueryParams()
-    },
-    handleMapReady () {
-      if (this.performInitialSearch) {
-        // if the page loaded with a query, start a search.
-        // Otherwise, the search does not need to run (see #1713)
-        this.$store.dispatch(SEARCH_LOCATIONS)
-        this.$store.dispatch(SEARCH_WELLS, { trigger: QUERY_TRIGGER })
-      }
+    focusOnWell (well) {
+      this.focusedWell = { ...well }
+      this.noWellsInView = false
+      this.showMapErrorMessage = false
     },
     setTabIndexFromUrlHash () {
       this.tabIndex = this.$route.hash === '#advanced' ? 1 : 0
@@ -299,7 +390,7 @@ export default {
       if (this.searchMapZoom) {
         query.map_zoom = String(this.searchMapZoom)
       }
-      if (this.constrainSearch) {
+      if (!this.constrainSearch) {
         query.constrain = String(this.constrainSearch)
       }
 
@@ -324,11 +415,6 @@ export default {
           eventAction: 'WellSearch',
           eventLabel: querystring.stringify(params)
         })
-      }
-    },
-    resetMapBounds () {
-      if (this.$refs.searchMap && this.$refs.searchMap.resetView) {
-        this.$refs.searchMap.resetView()
       }
     },
     fetchSurveys () {
@@ -356,6 +442,28 @@ export default {
       } else {
         this.updateStoreStateFromQS()
       }
+    },
+    searchWellsInBC (options = {}) {
+      let cancelSource = this.allWellsAxiosCancelSource
+      if (cancelSource) {
+        cancelSource.cancel()
+      }
+      cancelSource = axios.CancelToken.source()
+      const params = {
+        ...this.searchQueryParams,
+        ...options
+      }
+      this.searchBCInProgress = true
+      return ApiService.query('wells', params, { cancelToken: cancelSource.token })
+        .then((response) => {
+          this.searchBCInProgress = false
+          const { count, results } = response.data
+          this.totalSearchResultsInBC = count
+          this.bcSearchResults = results
+        }).catch((err) => {
+          this.searchBCInProgress = false
+          throw err
+        })
     }
   },
   watch: {
@@ -372,6 +480,7 @@ export default {
     this.handleRouteChange()
   },
   beforeMount () {
+    this.loadingMap = true
     this.scrolled = window.scrollY > 100
     window.addEventListener('scroll', this.handleScroll)
   },

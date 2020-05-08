@@ -1,4 +1,5 @@
 import mapboxgl from 'mapbox-gl'
+import { pick } from 'lodash'
 
 export const CENTRE_LNG_LAT_BC = new mapboxgl.LngLat(-126.495, 54.459)
 export const DEFAULT_MAP_ZOOM = 4
@@ -42,4 +43,47 @@ export function containsBounds (containerBounds, testBounds) {
   }
 
   return true
+}
+
+export function buildWellsGeoJSON (wells = [], properties = []) {
+  const features = wells.map((well) => {
+    return {
+      type: 'Feature',
+      properties: properties.length > 0 ? pick(properties) : properties,
+      geometry: {
+        type: 'Point',
+        coordinates: [well.longitude, well.latitude]
+      }
+    }
+  })
+
+  return {
+    type: 'FeatureCollection',
+    features
+  }
+}
+
+export function convertLngLatBoundsToDirectionBounds (lngLatBounds) {
+  const sw = lngLatBounds.getSouthWest()
+  const ne = lngLatBounds.getNorthEast()
+
+  return {
+    sw_lat: sw.lat,
+    sw_long: sw.lng,
+    ne_lat: ne.lat,
+    ne_long: ne.lng
+  }
+}
+
+export function boundsCompletelyContains (boundsOuter, boundsInner) {
+  const boundsPoints = [
+    boundsInner.getSouthWest(),
+    boundsInner.getSouthEast(),
+    boundsInner.getNorthEast(),
+    boundsInner.getNorthWest()
+  ]
+
+  return boundsPoints.every((coordinate) => {
+    return boundsOuter.contains(coordinate)
+  })
 }
