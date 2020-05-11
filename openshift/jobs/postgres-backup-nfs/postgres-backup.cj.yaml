@@ -209,15 +209,12 @@ objects:
                       key: POSTGRESQL_DATABASE
                       name: ${TARGET}-backup
                 - name: POSTGRESQL_USER
-                  valueFrom:
-                    secretKeyRef:
-                      key: database-user
-                      name: ${TARGET}
+                  value: postgres
                 - name: POSTGRESQL_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      key: database-password
-                      name: ${TARGET}
+                      key: PG_ROOT_PASSWORD
+                      name: crunchy-db-credentials
                 - name: DATABASE_NAME
                   valueFrom:
                     configMapKeyRef:
