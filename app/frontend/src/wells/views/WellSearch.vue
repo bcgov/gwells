@@ -61,7 +61,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             <search-map
               :initialCentre="searchMapCentre"
               :initialZoom="searchMapZoom"
-              :focusWell="focusedWell"
+              :focusedWells="focusedWells"
               @boundsChanged="handleMapBoundsChange"
               @search="handleMapSearch"
               @clearSearch="handleMapClearSearch"
@@ -82,11 +82,14 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 Searching all of BC for any matching wells ...
               </div>
               <div v-else>
-                No matching wells found in map view. Please zoom out or change your search criteria
-                <span v-if="totalSearchResultsInBC === 1">
-                  or view the
-                  <a href="#" @click.prevent="focusOnWell(bcSearchResults[0])">one well</a>
-                  that matches your criteria
+                No matching wells found in map view.
+                <span v-if="totalSearchResultsInBC <= 10">
+                  Go to the
+                  <a href="#" @click.prevent="focusOnWells(bcSearchResults)">{{ englishNumber(bcSearchResults.length) }} well{{ bcSearchResults.length === 1 ? '' : 's' }}</a>
+                  that match your search criteria
+                </span>
+                <span v-else>
+                  Please zoom out to view the {{totalSearchResultsInBC}} matching wells across BC or change your search criteria
                 </span>
               </div>
             </div>
@@ -156,29 +159,18 @@ export default {
   data () {
     return {
       surveys: [],
-      scrolled: false,
-      mapError: null,
-
-      isBusy: false,
       tabIndex: 0,
-      latitude: null,
-      longitude: null,
-      mapBounds: {},
-
-      // flag to indicate that the search should reset without a further API request
-      searchShouldReset: false,
+      scrolled: false,
       hasManuallySearched: false,
-
       performInitialSearch: false,
       loadingMap: false,
       noWellsInView: false,
-      focusedWell: null,
+      focusedWells: [],
       mapServerErrorMessage: null,
       showMapErrorMessage: false,
       searchBCInProgress: false,
       totalSearchResultsInBC: 0,
-      bcSearchResults: [],
-      searchBCAxiosCancelSource: null
+      bcSearchResults: []
     }
   },
   computed: {
@@ -281,10 +273,12 @@ export default {
         this.loadingMap = true
       }
 
+      this.focusedWells = []
+
       // We limit the returned search results in all of BC to one so we can allow the user to zoom
-      // to that one matching well they are looking for. We also want the count to show the user
+      // to a few matching well they are looking for. We also want the count to show the user
       // how many wells outside of their current map view match their search criteria.
-      this.searchWellsInBC({ limit: 1 })
+      this.searchWellsInBC({ limit: 10 })
 
       // send the analytic event when triggering search by the search button
       this.triggerAnalyticsSearchEvent(
@@ -297,7 +291,18 @@ export default {
     },
     handleReset () {
       this.$emit('reset')
-      this.$store.dispatch(RESET_WELLS_SEARCH)
+
+      this.loadingMap = false
+      this.noWellsInView = false
+      this.focusedWells = []
+      this.mapServerErrorMessage = null
+      this.showMapErrorMessage = false
+      this.searchBCInProgress = false
+      this.totalSearchResultsInBC = 0
+      this.bcSearchResults = []
+
+      // this.$store.dispatch(RESET_WELLS_SEARCH)
+      // when the URL query is set to null the `handleRouteChange()` method will be triggered
       this.$router.replace({ query: null })
     },
     handleResultsUpdate () {
@@ -307,8 +312,8 @@ export default {
         smoothScroll(this.$el.querySelector('#wells-search-map'))
       }
     },
-    focusOnWell (well) {
-      this.focusedWell = { ...well }
+    focusOnWells (wells) {
+      this.focusedWells = wells.slice()
       this.noWellsInView = false
       this.showMapErrorMessage = false
     },
@@ -464,6 +469,30 @@ export default {
           this.searchBCInProgress = false
           throw err
         })
+    },
+    englishNumber (num) {
+      switch (num) {
+        case 1:
+          return 'one'
+        case 2:
+          return 'two'
+        case 3:
+          return 'three'
+        case 4:
+          return 'four'
+        case 5:
+          return 'five'
+        case 6:
+          return 'six'
+        case 7:
+          return 'seven'
+        case 8:
+          return 'eight'
+        case 9:
+          return 'nine'
+        case 10:
+          return '10'
+      }
     }
   },
   watch: {

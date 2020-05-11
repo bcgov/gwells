@@ -49,7 +49,7 @@ export function buildWellsGeoJSON (wells = [], properties = []) {
   const features = wells.map((well) => {
     return {
       type: 'Feature',
-      properties: properties.length > 0 ? pick(properties) : properties,
+      properties: properties.length > 0 ? pick(well, properties) : properties,
       geometry: {
         type: 'Point',
         coordinates: [well.longitude, well.latitude]
@@ -86,4 +86,8 @@ export function boundsCompletelyContains (boundsOuter, boundsInner) {
   return boundsPoints.every((coordinate) => {
     return boundsOuter.contains(coordinate)
   })
+}
+
+export function isViewingBC (bounds) {
+  return containsBounds(bounds, BC_LAT_LNG_BOUNDS)
 }

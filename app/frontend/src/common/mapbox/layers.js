@@ -11,7 +11,10 @@ export const SEARCHED_WELLS_SOURCE_ID = 'searched-wells'
 export const SEARCHED_WELLS_LAYER_ID = 'highlight-wells-with-artesian'
 
 export const FOCUSED_WELLS_SOURCE_ID = 'focused-wells'
-export const FOCUSED_WELLS_LAYER_ID = 'focused-wells-with-artesian'
+export const FOCUSED_WELLS_LAYER_ID = 'focused-wells'
+export const FOCUSED_WELLS_ARTESIAN_LAYER_ID = 'focused-wells-artesian'
+export const FOCUSED_WELL_IMAGE_ID = 'focused-well-image'
+export const FOCUSED_WELL_ARTESIAN_IMAGE_ID = 'focused-artesian-well-image'
 
 export const AQUIFERS_SOURCE_ID = 'postgis_ftw.gwells_aquifer_view'
 export const AQUIFERS_LINE_LAYER_ID = 'aquifer-line'
@@ -212,7 +215,7 @@ export function wellsBaseAndArtesianLayer (options = {}) {
   return vectorLayerConfig(layerId, options.source || WELLS_SOURCE_ID, options.layerType || 'circle', styles, options.layout)
 }
 
-// Builds MapBox layer config object for highlighted wells with artesian ones with a fuchsia outline
+// Builds MapBox layer config object for searched wells with artesian ones with a fuchsia outline
 export function searchedWellsLayer (options = {}) {
   const layerId = options.id || SEARCHED_WELLS_LAYER_ID
   const styles = defaultsDeep(options.styles, {
@@ -233,26 +236,20 @@ export function searchedWellsLayer (options = {}) {
   return layerConfig(layerId, options.source || SEARCHED_WELLS_SOURCE_ID, options.layerType || 'circle', styles, options.layout)
 }
 
-// Builds MapBox layer config object for highlighted wells with artesian ones with a fuchsia outline
+// Builds MapBox layer config object for focus wells (and artesian) images that pulse
 export function focusedWellsLayer (options = {}) {
   const layerId = options.id || FOCUSED_WELLS_LAYER_ID
-  const styles = defaultsDeep(options.styles, {
-    'circle-color': [
+  const layout = defaultsDeep(options.layout, {
+    'icon-image': [
       'case',
-      ['to-boolean', ['get', 'artesian']], 'red',
-      'green'
-    ],
-    'circle-radius': 5,
-    'circle-stroke-color': [
-      'case',
-      ['to-boolean', ['get', 'artesian']], '#EE14CA',
-      'transparent'
-    ],
-    'circle-stroke-width': 1
+      ['>', ['to-number', ['get', 'artesian_flow']], 0], FOCUSED_WELL_ARTESIAN_IMAGE_ID,
+      FOCUSED_WELL_IMAGE_ID
+    ]
   })
 
-  return layerConfig(layerId, options.source || FOCUSED_WELLS_SOURCE_ID, options.layerType || 'circle', styles, options.layout)
+  return layerConfig(layerId, options.source || FOCUSED_WELLS_SOURCE_ID, options.layerType || 'symbol', options.styles, layout)
 }
+
 // Builds MapBox layer config object for wells that are uncorrelated to any aquifer
 export function wellsUncorrelatedLayer (options = {}) {
   const layerId = options.id || WELLS_UNCORRELATED_LAYER_ID

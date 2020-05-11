@@ -63,6 +63,7 @@ export default {
   props: ['aquifer-id', 'geom'],
   data () {
     return {
+      map: null,
       browserUnsupported: false,
       mapLayers: [
         {
@@ -143,6 +144,7 @@ export default {
   },
   destroyed () {
     this.map.remove()
+    this.map = null
   },
   methods: {
     initMapBox () {

@@ -28,8 +28,8 @@
     </b-row>
     <b-row class="my-3">
       <b-col>
-        <b-btn variant="primary" type="submit">Search</b-btn>
-        <b-btn variant="dark" type="reset" class="mx-2">Reset</b-btn>
+        <b-btn variant="primary" type="submit" :disabled="searchInProgress">Search</b-btn>
+        <b-btn variant="dark" type="reset" :disabled="searchInProgress" class="mx-2">Reset</b-btn>
       </b-col>
     </b-row>
     <b-row>
@@ -66,7 +66,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['searchParams'])
+    ...mapGetters(['searchParams', 'searchInProgress'])
   },
   methods: {
     handleSubmit () {

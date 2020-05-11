@@ -71,6 +71,7 @@ export default {
   ],
   data () {
     return {
+      map: null,
       browserUnsupported: false,
       activeLayers: [],
       searchMapButtonEnabled: Boolean(this.searchText),
@@ -140,7 +141,7 @@ export default {
     this.$emit('mapLoading')
 
     // On reset or basic search, clear local params
-    this.$store.subscribeAction((action, state) => {
+    this.unsubscribeAction = this.$store.subscribeAction((action, state) => {
       if (action.type === `aquiferStore/search/${SEARCH_AQUIFERS}`) {
         this.hideMapSearchButton()
       }
@@ -151,7 +152,9 @@ export default {
     this.listenForReset()
   },
   destroyed () {
+    this.unsubscribeAction()
     this.map.remove()
+    this.map = null
   },
   computed: {
     highlightIdsMap () {

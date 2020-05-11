@@ -46,10 +46,13 @@ import {
   searchedWellsLayer,
   SEARCHED_WELLS_SOURCE_ID,
   FOCUSED_WELLS_SOURCE_ID,
-  focusedWellsLayer
+  focusedWellsLayer,
+  FOCUSED_WELL_IMAGE_ID,
+  FOCUSED_WELL_ARTESIAN_IMAGE_ID
 } from '../../common/mapbox/layers'
 import { LegendControl, BoxZoomControl, SearchOnMoveControl, ClearSearchCriteriaControl } from '../../common/mapbox/controls'
 import { setupMapPopups, WELL_FEATURE_PROPERTIES_FOR_POPUP } from '../popup'
+import { PulsingWellImage, PulsingArtesianWellImage } from '../../common/mapbox/images'
 import { DEFAULT_MAP_ZOOM, CENTRE_LNG_LAT_BC, buildWellsGeoJSON, convertLngLatBoundsToDirectionBounds, boundsCompletelyContains } from '../../common/mapbox/geometry'
 
 import { RESET_WELLS_SEARCH, SEARCH_WELLS } from '../../wells/store/actions.types'
@@ -60,19 +63,18 @@ import wellsArtesianLegendSrc from '../../common/assets/images/wells-artesian.sv
 import wellsArtesianSearchResultLegendSrc from '../../common/assets/images/wells-artesian-search-result.svg'
 import { mapGetters } from 'vuex'
 
+const FOCUSED_WELL_PROPERTIES = WELL_FEATURE_PROPERTIES_FOR_POPUP.concat(['artesian_flow'])
+
 export default {
   name: 'SearchMap',
   props: [
     'initialZoom',
     'initialCentre',
-    'selectedId',
-    'searchText',
-    'viewBounds',
-    'focusWell',
-    'selectedWells'
+    'focusedWells'
   ],
   data () {
     return {
+      map: null,
       browserUnsupported: false,
       mapLayers: [
         {
@@ -110,7 +112,8 @@ export default {
       movedSinceLastSearch: false,
 
       pendingLocationSearch: null,
-      searchInProgress: false
+      searchInProgress: false,
+      hasMapBeenReset: false
     }
   },
   mounted () {
@@ -119,16 +122,22 @@ export default {
     this.initMapBox()
 
     // When the search is reset - fly the map back to view all of BC
-    this.$store.subscribeAction((action, state) => {
+    this.unsubscribeAction = this.$store.subscribeAction((action, state) => {
       if (action.type === SEARCH_WELLS) {
+        this.hasMapBeenReset = false
         this.loadWells()
       } else if (action.type === RESET_WELLS_SEARCH) {
-        this.resetMap()
+        // Check to make sure we don't accidentially reset the map again
+        if (!this.hasMapBeenReset) {
+          this.resetMap()
+        }
       }
     })
   },
   destroyed () {
+    this.unsubscribeAction()
     this.map.remove()
+    this.map = null
   },
   computed: {
     ...mapGetters(['searchQueryParams']),
@@ -158,7 +167,7 @@ export default {
 
       this.map = new mapboxgl.Map(mapConfig)
 
-      new GestureHandling().addTo(this.map)
+      new GestureHandling({ modifierKey: 'ctrl' }).addTo(this.map)
 
       /* Add controls */
 
@@ -205,15 +214,20 @@ export default {
       this.listenForMapMovement()
 
       this.map.on('load', () => {
+        this.map.addImage(FOCUSED_WELL_ARTESIAN_IMAGE_ID, new PulsingArtesianWellImage(this.map), { pixelRatio: 2 })
+        this.map.addImage(FOCUSED_WELL_IMAGE_ID, new PulsingWellImage(this.map), { pixelRatio: 2 })
+
         setupMapPopups(this.map, this.$router)
 
-        this.setFocusedWells(this.selectedWells)
+        this.setFocusedWells(this.focusedWells)
 
         if (this.hasSearchParams) { // must be an existing search so load wells in view
           this.loadWells()
         }
 
-        this.$emit('mapLoaded', this.map.getBounds())
+        const mapBounds = this.map.getBounds()
+
+        this.$emit('mapLoaded', mapBounds)
       })
     },
     buildMapStyle () {
@@ -245,6 +259,7 @@ export default {
       this.flyToBC()
       this.clearWellSearchResultsLayer()
       this.setFocusedWells([])
+      this.hasMapBeenReset = true
     },
     zoomToBBox (bbox) {
       if (bbox) {
@@ -262,9 +277,14 @@ export default {
     deboucedBoundsUpdated: debounce((vm) => {
       vm.movedSinceLastSearch = true
       if (vm.searchOnMapMove) {
-        vm.$emit('search', vm.map.getBounds(), { showLoadingSpinner: false })
+        // Only emit a 'search' when the map was moved because of the user, not when the reset
+        // button was clicked.
+        if (!vm.hasMapBeenReset) {
+          vm.$emit('search', vm.map.getBounds(), { showLoadingSpinner: false })
+        }
         vm.loadWells()
       }
+      vm.hasMapBeenReset = false
     }, 500),
     loadWells () {
       if (this.hasSearchParams) {
@@ -278,13 +298,14 @@ export default {
       this.searchOnMoveControl.showSearchAreaButton(false)
     },
     clearSearch () {
+      this.setFocusedWells([])
       this.clearWellSearchResultsLayer()
       this.clearSearchCriteriaControl.toggleShow(false)
       this.$emit('clearSearch')
     },
-    boundsOfSelectedWells () {
+    boundsOfFocusedWells () {
       const bounds = new mapboxgl.LngLatBounds()
-      this.selectedWells.forEach((well) => {
+      this.focusedWells.forEach((well) => {
         bounds.extend(new mapboxgl.LngLat(well.longitude, well.latitude))
       })
       return bounds
@@ -335,6 +356,7 @@ export default {
               : 'Server error'
 
             this.$emit('error', { serverError: errorMessage })
+            this.$emit('wellsLoaded', 0)
 
             this.clearWellSearchResultsLayer()
           }
@@ -347,7 +369,7 @@ export default {
       this.updateWellSearchResultsLayer(buildWellsGeoJSON([]))
     },
     setFocusedWells (wells) {
-      this.map.getSource(FOCUSED_WELLS_SOURCE_ID).setData(buildWellsGeoJSON(wells, WELL_FEATURE_PROPERTIES_FOR_POPUP))
+      this.map.getSource(FOCUSED_WELLS_SOURCE_ID).setData(buildWellsGeoJSON(wells, FOCUSED_WELL_PROPERTIES))
     },
     flyToBC () {
       this.map.flyTo({ center: CENTRE_LNG_LAT_BC, zoom: DEFAULT_MAP_ZOOM })
@@ -361,13 +383,7 @@ export default {
     }
   },
   watch: {
-    focusWell (well) {
-      if (well) {
-        const { longitude, latitude } = well
-        this.map.flyTo({ center: [longitude, latitude], zoom: 10 })
-      }
-    },
-    selectedWells (wells) {
+    focusedWells (wells) {
       this.setFocusedWells(wells)
 
       if (wells.length > 0) {
@@ -378,11 +394,11 @@ export default {
             this.map.flyTo({ center: wellLngLat, zoom: 10 })
           }
         } else {
-          const selectedWellsBounds = this.boundsOfSelectedWells()
+          const focusedWellsBounds = this.boundsOfFocusedWells()
 
-          if (!boundsCompletelyContains(this.map.getBounds(), selectedWellsBounds)) {
-            // We can't see all selected wells then fly them into view
-            this.flyToBounds(this.boundsOfSelectedWells())
+          if (!boundsCompletelyContains(this.map.getBounds(), focusedWellsBounds)) {
+            // We can't see all focused wells then fly them into view
+            this.flyToBounds(this.boundsOfFocusedWells())
           }
         }
       }

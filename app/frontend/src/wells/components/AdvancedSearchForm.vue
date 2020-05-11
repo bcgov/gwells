@@ -35,8 +35,8 @@
     </div>
     <b-row>
       <b-col class="my-3">
-        <b-btn variant="primary" type="submit">Search</b-btn>
-        <b-btn variant="dark" type="reset" class="mx-2">Reset</b-btn>
+        <b-btn variant="primary" type="submit" :disabled="searchInProgress">Search</b-btn>
+        <b-btn variant="dark" type="reset" :disabled="searchInProgress" class="mx-2">Reset</b-btn>
       </b-col>
     </b-row>
     <b-row class="mt-1">
@@ -233,7 +233,8 @@ export default {
   computed: {
     ...mapGetters({
       errors: 'searchErrors',
-      searchParams: 'searchParams'
+      searchParams: 'searchParams',
+      searchInProgress: 'searchInProgress'
     }),
     defaultFilterIds () {
       return reduceSections(this.defaultFilterSections)
