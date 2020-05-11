@@ -81,6 +81,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 <div class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></div>
                 Searching all of BC for any matching wells ...
               </div>
+              <div v-if="totalSearchResultsInBC === 0">
+                No matching wells found
+              </div>
               <div v-else>
                 No matching wells found in map view.
                 <span v-if="totalSearchResultsInBC <= 10">
@@ -492,6 +495,8 @@ export default {
           return 'nine'
         case 10:
           return '10'
+        default:
+          return ''
       }
     }
   },
