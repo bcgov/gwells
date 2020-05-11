@@ -514,9 +514,15 @@ export default {
     margin: 0;
   }
 
-  .aquifer-checkbox-group .custom-control-label:before {
-    background-color: white;
-    border: 1px solid #CED4DA;
+  .aquifer-checkbox-group {
+    .custom-control-label:before {
+      background-color: white;
+      border: 1px solid #CED4DA;
+    }
+
+    .custom-control-input:checked~.custom-control-label:before {
+      background-color: #007bff;
+    }
   }
 
   #aquifers-search-button {
