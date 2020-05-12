@@ -371,7 +371,7 @@ def dbBackup (String envProject, String envSuffix) {
 
     // Dump to temporary file
     sh "oc rsh -n ${envProject} dc/${dcName} bash -c ' \
-        pg_dump -U \${POSTGRESQL_USER} -d \${POSTGRESQL_DATABASE} -Fc -f ${dumpTemp} ${dumpOpts} \
+        pg_dump -U \${PG_USER} -d \${PG_DATABASE} -Fc -f ${dumpTemp} ${dumpOpts} \
     '"
 
     // Verify dump size is at least 1M
@@ -389,9 +389,7 @@ def dbBackup (String envProject, String envSuffix) {
             set -e; \
             psql -c "DROP DATABASE IF EXISTS db_verify"; \
             createdb db_verify; \
-            psql -d db_verify -c "CREATE EXTENSION IF NOT EXISTS oracle_fdw;"; \
             psql -d db_verify -c "CREATE EXTENSION IF NOT EXISTS postgis;"; \
-            psql -d db_verify -c "CREATE EXTENSION IF NOT EXISTS pgcrypto;"; \
             psql -d db_verify -c "COMMIT;"; \
             pg_restore -d db_verify --schema-only --create ${dumpTemp}; \
             psql -c "DROP DATABASE IF EXISTS db_verify"
@@ -411,94 +409,6 @@ def dbBackup (String envProject, String envSuffix) {
                 | sort -nr | cut -f2 | tail -n +${maxBackups} | xargs rm 2>/dev/null \
                 || echo 'No extra backups to remove' \
     \""
-}
-
-// uses psql to restore a database backup.
-// created to help with upgrading database versions
-// procedure (using Postgres 12 and Postgres 9.6 as examples):
-// 1. Deploy new postgres 12 database alongside the postgres 9.6 database, with the 9.6 database's
-//    data PVC mounted (read-only) - (not handled by this function)
-// 2. scale down the app image so no users are accessing the database
-// 3. pg_dump from 9.6 database into the pvc mounted by pg12
-// 4. restore from the pg12 pod from the backup file created by the 9.6 server
-// 5. Switch app's OpenShift Service to the pg12 server and scale up application (ensure that the database host in
-//    backend.dc.json references the new server).
-// 6. Scale application back up
-def dbUpgrade(String envProject, String envSuffix) {
-    def backendName = envSuffix == "dev" ? "${appName}-${envSuffix}-${prNumber}" : "${appName}-${envSuffix}"
-    def oldDcName = envSuffix == "dev" ? "${appName}-pgsql-${envSuffix}-${prNumber}" : "${appName}-pgsql-${envSuffix}"
-
-    def dcName = envSuffix == "dev" ? "${appName}-pg12-${envSuffix}-${prNumber}" : "${appName}-pg12-${envSuffix}"
-    def dumpDir = "/mnt/96/data/upgrade-backup"
-    def dumpName = "${envSuffix}-latest.dump"
-    def dumpOpts = "--schema=public --exclude-table=spatial_ref_sys"
-
-    echo "scaling application down..."
-
-    // scale application pod down
-    sh """
-    oc scale -n ${envProject} dc/${backendName} --replicas=0
-    """
-
-
-    def dc = openshift.selector('dc', "${backendName}")
-
-    // wait until scaled down
-    timeout(10) {
-        dc.untilEach(1) {
-            return it.object().status.replicas.equals(0)
-        }
-    }
-
-
-    echo "scaled down"
-    sleep(10)
-
-    echo "running pg_dump on old database..."
-
-    // dump database
-    def dbdump = sh(
-        script: " oc rsh -n ${envProject} dc/${oldDcName} bash -c ' \
-        mkdir -p /var/lib/pgsql/data/upgrade-backup; \
-        pg_dump -U \${POSTGRESQL_USER} -d \${POSTGRESQL_DATABASE} -Fp -f /var/lib/pgsql/data/upgrade-backup/${dumpName} ${dumpOpts} \
-    '",
-    returnStdout: true)
-
-    println dbdump
-
-    sleep(1)
-
-    echo "mounting dump pvc to new database pod..."
-
-    sh """
-    oc set  -n ${envProject} volume dc/${dcName} --add --name=v1 --type=persistentVolumeClaim --claim-name=${oldDcName} --mount-path=/mnt/96/data --containers=postgresql --read-only
-    """
-
-    sleep(5)
-
-    echo "Restoring dump file to new database..."
-
-    // restore database
-    def dbrestore = sh(
-        script:"""
-        oc rsh -n ${envProject} dc/${dcName} bash -c ' \
-            set -e; \
-            psql -d gwells -x -v ON_ERROR_STOP=1 2>&1 < ${dumpDir}/${dumpName}
-        '
-    """,
-    returnStdout: true)
-
-    println dbrestore
-
-    sleep(10)
-
-    echo "scaling application back up"
-
-    // scale up application
-    sh """
-    oc scale -n ${envProject} dc/${backendName} --replicas=2
-    """
-
 }
 
 pipeline {
