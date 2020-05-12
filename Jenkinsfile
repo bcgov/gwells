@@ -391,7 +391,7 @@ def dbBackup (String envProject, String envSuffix) {
             createdb db_verify; \
             psql -d db_verify -c "CREATE EXTENSION IF NOT EXISTS postgis;"; \
             psql -d db_verify -c "COMMIT;"; \
-            pg_restore -d db_verify --schema-only --create ${dumpTemp}; \
+            pg_restore -U postgres -d db_verify -e --schema-only ${dumpTemp}; \
             psql -c "DROP DATABASE IF EXISTS db_verify"
         '
     """
