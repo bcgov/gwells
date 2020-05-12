@@ -363,7 +363,7 @@ def zapTests (String stageName, String envUrl, String envSuffix) {
 // Database backup
 def dbBackup (String envProject, String envSuffix) {
     def dcName = envSuffix == "dev" ? "${appName}-pg12-${envSuffix}-${prNumber}" : "${appName}-pg12-${envSuffix}"
-    def dumpDir = "/var/lib/pgsql/data/deployment-backups"
+    def dumpDir = "/pgdata/deployment-backups"
     def dumpName = "${envSuffix}-\$( date +%Y-%m-%d-%H%M ).dump"
     def dumpOpts = "--no-privileges --no-tablespaces --schema=public --exclude-table=spatial_ref_sys"
     def dumpTemp = "/tmp/unverified.dump"
@@ -384,17 +384,19 @@ def dbBackup (String envProject, String envSuffix) {
     assert sizeAtLeast1M == 1
 
     // Restore (schema only, w/ extensions) to temporary db
-    sh """
-        oc rsh -n ${envProject} dc/${dcName} bash -c ' \
-            set -e; \
-            psql -c "DROP DATABASE IF EXISTS db_verify"; \
-            createdb db_verify; \
-            psql -d db_verify -c "CREATE EXTENSION IF NOT EXISTS postgis;"; \
-            psql -d db_verify -c "COMMIT;"; \
-            pg_restore -U postgres -d db_verify -e --schema-only ${dumpTemp}; \
-            psql -c "DROP DATABASE IF EXISTS db_verify"
-        '
-    """
+    // note: command needs to be updated.
+    // See Jira ticket WATER-1163.
+    // sh """
+    //     oc rsh -n ${envProject} dc/${dcName} bash -c ' \
+    //         set -e; \
+    //         psql -c "DROP DATABASE IF EXISTS db_verify"; \
+    //         createdb db_verify; \
+    //         psql -d db_verify -c "CREATE EXTENSION IF NOT EXISTS postgis;"; \
+    //         psql -d db_verify -c "COMMIT;"; \
+    //         pg_restore -U postgres -d db_verify -e --schema-only ${dumpTemp}; \
+    //         psql -c "DROP DATABASE IF EXISTS db_verify"
+    //     '
+    // """
 
     // Store verified dump
     sh "oc rsh -n ${envProject} dc/${dcName} bash -c ' \
