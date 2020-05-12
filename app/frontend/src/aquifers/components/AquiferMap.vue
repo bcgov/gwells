@@ -188,7 +188,7 @@ export default {
 
       this.addTopCentreControlConainer()
 
-      new GestureHandling().addTo(this.map)
+      new GestureHandling({ modifierKey: 'ctrl' }).addTo(this.map)
 
       /* Add controls */
 
