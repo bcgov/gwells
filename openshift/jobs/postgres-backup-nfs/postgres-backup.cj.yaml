@@ -221,15 +221,12 @@ objects:
                       key: POSTGRESQL_DATABASE
                       name: ${TARGET}-backup
                 - name: DATABASE_USER
-                  valueFrom:
-                    secretKeyRef:
-                      key: database-user
-                      name: ${TARGET}
+                  value: postgres
                 - name: DATABASE_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      key: database-password
-                      name: ${TARGET}
+                      key: PG_ROOT_PASSWORD
+                      name: crunchy-db-credentials
                 image: docker-registry.default.svc:5000/${IMAGE_NAMESPACE}/${SOURCE_IMAGE_NAME}:${TAG_NAME}
                 imagePullPolicy: Always
                 name: backup-cronjob
