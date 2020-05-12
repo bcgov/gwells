@@ -362,7 +362,7 @@ def zapTests (String stageName, String envUrl, String envSuffix) {
 
 // Database backup
 def dbBackup (String envProject, String envSuffix) {
-    def dcName = envSuffix == "dev" ? "${appName}-pgsql-${envSuffix}-${prNumber}" : "${appName}-pgsql-${envSuffix}"
+    def dcName = envSuffix == "dev" ? "${appName}-pg12-${envSuffix}-${prNumber}" : "${appName}-pg12-${envSuffix}"
     def dumpDir = "/var/lib/pgsql/data/deployment-backups"
     def dumpName = "${envSuffix}-\$( date +%Y-%m-%d-%H%M ).dump"
     def dumpOpts = "--no-privileges --no-tablespaces --schema=public --exclude-table=spatial_ref_sys"
@@ -794,7 +794,7 @@ pipeline {
             steps {
                 script {
                     echo "temporarily stop staging backups"
-                    // dbBackup (stagingProject, stagingSuffix)
+                    dbBackup (stagingProject, stagingSuffix)
                 }
             }
         }
@@ -1314,6 +1314,7 @@ pipeline {
                             "IMAGE_STREAM_NAME=crunchy-postgres-gis",
                             "IMAGE_STREAM_VERSION=centos7-12.2-4.2.2",
                             "POSTGRESQL_DATABASE=gwells",
+                            "STORAGE_CLASS=netapp-file-standard",
                             "VOLUME_CAPACITY=40Gi",
                             "REQUEST_CPU=800m",
                             "REQUEST_MEMORY=4Gi",
@@ -1375,9 +1376,6 @@ pipeline {
                             ],
                             "--overwrite"
                         )
-
-                        // temporary upgrade step
-                        dbUpgrade(prodProject, prodSuffix)
 
                         openshift.apply(pgtileservTemplate).label(
                             [
