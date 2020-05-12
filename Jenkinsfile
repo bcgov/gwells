@@ -851,7 +851,7 @@ pipeline {
                             "TAG=${stagingSuffix}",
                             "NAME=export",
                             "COMMAND=export",
-                            "SCHEDULE='30 11 * * *'"
+                            "SCHEDULE='30 3 * * *'"
                         )
                         openshift.apply(exportWellCronTemplate).label(
                             [
@@ -870,7 +870,7 @@ pipeline {
                             "TAG=${stagingSuffix}",
                             "NAME=licences",
                             "COMMAND=import_licences",
-                            "SCHEDULE='40 11 * * *'"
+                            "SCHEDULE='40 3 * * *'"
                         )
                         openshift.apply(importLicencesCronjob).label(
                             [
@@ -889,7 +889,7 @@ pipeline {
                             "TAG=${stagingSuffix}",
                             "NAME=export-databc",
                             "COMMAND=export_databc",
-                            "SCHEDULE='0 13 * * *'"
+                            "SCHEDULE='0 4 * * *'"
                         )
                         openshift.apply(exportDataBCTemplate).label(
                             [
@@ -906,7 +906,7 @@ pipeline {
                             "NAME_SUFFIX=${stagingSuffix}",
                             "NAMESPACE=${stagingProject}",
                             "VERSION=v1.0.0",
-                            "SCHEDULE='15 11 * * *'",
+                            "SCHEDULE='15 3 * * *'",
                             "DEST_PVC=gwells-pg12-backup",
                             "SOURCE_PVC=${minioDataPVC}"
                         )
@@ -920,7 +920,7 @@ pipeline {
                             "TAG_NAME=v12.0.0",
                             "TARGET=gwells-pg12-staging",
                             "PVC_NAME=gwells-pg12-backup",
-                            "SCHEDULE='30 10 * * *'",
+                            "SCHEDULE='30 2 * * *'",
                             "JOB_NAME=postgres-nfs-backup",
                             "DAILY_BACKUPS=2",
                             "WEEKLY_BACKUPS=1",
@@ -1346,7 +1346,7 @@ pipeline {
                             "TAG=${prodSuffix}",
                             "NAME=export",
                             "COMMAND=export",
-                            "SCHEDULE='30 11 * * *'"
+                            "SCHEDULE='30 3 * * *'"
                         )
                         openshift.apply(exportWellCronTemplate).label(
                             [
@@ -1365,7 +1365,7 @@ pipeline {
                             "TAG=${prodSuffix}",
                             "NAME=export-databc",
                             "COMMAND=export_databc",
-                            "SCHEDULE='0 13 * * *'"
+                            "SCHEDULE='0 5 * * *'"
                         )
                         openshift.apply(exportDataBCCronTemplate).label(
                             [
@@ -1381,7 +1381,7 @@ pipeline {
                             "NAME_SUFFIX=${prodSuffix}",
                             "NAMESPACE=${prodProject}",
                             "VERSION=v1.0.0",
-                            "SCHEDULE='15 12 * * *'",
+                            "SCHEDULE='15 4 * * *'",
                             "DEST_PVC=${nfsProdBackupPVC}",
                             "SOURCE_PVC=${minioDataPVC}",
                             "PVC_SIZE=40Gi"
@@ -1396,7 +1396,7 @@ pipeline {
                             "TARGET=gwells-pg12-production",
                             "PVC_NAME=${nfsProdBackupPVC}",
                             "MONTHLY_BACKUPS=12",
-                            "SCHEDULE='30 9 * * *'",
+                            "SCHEDULE='30 1 * * *'",
                             "JOB_NAME=postgres-nfs-backup"
                         )
                         openshift.apply(dbNFSBackup)
