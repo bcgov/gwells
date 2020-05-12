@@ -1314,6 +1314,7 @@ pipeline {
                             "IMAGE_STREAM_NAME=crunchy-postgres-gis",
                             "IMAGE_STREAM_VERSION=centos7-12.2-4.2.2",
                             "POSTGRESQL_DATABASE=gwells",
+                            "STORAGE_CLASS=netapp-file-standard",
                             "VOLUME_CAPACITY=40Gi",
                             "REQUEST_CPU=800m",
                             "REQUEST_MEMORY=4Gi",
@@ -1375,9 +1376,6 @@ pipeline {
                             ],
                             "--overwrite"
                         )
-
-                        // temporary upgrade step
-                        dbUpgrade(prodProject, prodSuffix)
 
                         openshift.apply(pgtileservTemplate).label(
                             [
