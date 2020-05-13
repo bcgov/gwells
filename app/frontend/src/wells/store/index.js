@@ -18,7 +18,7 @@ import {
   FETCH_DRILLER_NAMES,
   FETCH_ORGANIZATION_NAMES,
   RESET_WELLS_SEARCH,
-  SEARCH_LOCATIONS,
+  // SEARCH_LOCATIONS,
   SEARCH_WELLS,
   RESET_WELL_DATA,
   FETCH_WELL_DOWNLOAD_LINKS
@@ -27,7 +27,7 @@ import {
   SET_DRILLER_NAMES,
   SET_ERROR,
   SET_LAST_SEARCH_TRIGGER,
-  SET_LOCATION_ERRORS,
+  // SET_LOCATION_ERRORS,
   SET_LOCATION_SEARCH_RESULTS,
   SET_ORGANIZATION_NAMES,
   SET_CONSTRAIN_SEARCH,
@@ -62,6 +62,16 @@ const cleanParams = (payload) => {
   }, {})
 }
 
+function buildSearchParams (state) {
+  const params = { ...state.searchParams }
+
+  if (Object.entries(state.searchResultFilters).length > 0) {
+    params['filter_group'] = JSON.stringify(state.searchResultFilters)
+  }
+
+  return params
+}
+
 const DEFAULT_COLUMNS = [
   'wellTagNumber',
   'identificationPlateNumber',
@@ -83,12 +93,11 @@ const wellsStore = {
     error: null,
     drillerNames: [],
     lastSearchTrigger: null,
-    locationErrors: {},
     locationSearchResults: [],
     organizationNames: [],
     pendingLocationSearch: null,
     pendingSearch: null,
-    constrainSearch: false,
+    constrainSearch: true,
     hasSearched: false,
     searchBounds: {},
     searchErrors: {},
@@ -122,9 +131,6 @@ const wellsStore = {
     },
     [SET_LAST_SEARCH_TRIGGER] (state, payload) {
       state.lastSearchTrigger = payload
-    },
-    [SET_LOCATION_ERRORS] (state, payload) {
-      state.locationErrors = payload
     },
     [SET_LOCATION_SEARCH_RESULTS] (state, payload) {
       state.locationSearchResults = payload
@@ -237,7 +243,7 @@ const wellsStore = {
       commit(SET_PENDING_LOCATION_SEARCH, null)
       commit(SET_HAS_SEARCHED, false)
       commit(SET_PENDING_SEARCH, null)
-      commit(SET_CONSTRAIN_SEARCH, false)
+      commit(SET_CONSTRAIN_SEARCH, true)
       commit(SET_SEARCH_BOUNDS, {})
       commit(SET_SEARCH_ORDERING, DEFAULT_ORDERING)
       commit(SET_SEARCH_LIMIT, DEFAULT_LIMIT)
@@ -251,48 +257,6 @@ const wellsStore = {
       commit(SET_SEARCH_RESULT_FILTERS, {})
       commit(SET_SEARCH_MAP_CENTRE, null)
       commit(SET_SEARCH_MAP_ZOOM, null)
-    },
-    [SEARCH_LOCATIONS] ({ commit, state }) {
-      commit(SET_LOCATION_ERRORS, {})
-
-      if (state.pendingLocationSearch !== null) {
-        state.pendingLocationSearch.cancel()
-      }
-
-      const cancelSource = axios.CancelToken.source()
-      commit(SET_PENDING_LOCATION_SEARCH, cancelSource)
-
-      const params = { ...state.searchParams, ...state.searchBounds }
-
-      if (Object.entries(state.searchResultFilters).length > 0) {
-        params['filter_group'] = JSON.stringify(state.searchResultFilters)
-      }
-
-      ApiService.query('wells/locations', params, { cancelToken: cancelSource.token }).then((response) => {
-        if (response.data.count === 0) {
-          commit(SET_LOCATION_ERRORS, { detail: 'No well records could be found.' })
-          commit(SET_LOCATION_SEARCH_RESULTS, [])
-        } else if (response.data.count > response.data.results.length) {
-          commit(SET_LOCATION_ERRORS, {
-            detail: 'Too many wells to display on map. ' +
-                    'Please zoom in or change your search criteria.'
-          })
-        } else {
-          commit(SET_LOCATION_SEARCH_RESULTS, response.data.results)
-        }
-      }).catch((err) => {
-        // If the search was cancelled, a new one is pending, so don't bother resetting.
-        if (axios.isCancel(err)) {
-          return
-        }
-
-        if (err.response && err.response.data) {
-          commit(SET_LOCATION_ERRORS, err.response.data)
-        }
-        commit(SET_LOCATION_SEARCH_RESULTS, [])
-      }).finally(() => {
-        commit(SET_PENDING_LOCATION_SEARCH, null)
-      })
     },
     [SEARCH_WELLS] ({ commit, state }, { constrain = null, trigger = null }) {
       commit(SET_LAST_SEARCH_TRIGGER, trigger)
@@ -310,15 +274,12 @@ const wellsStore = {
       }
 
       const params = {
-        ...state.searchParams,
+        ...buildSearchParams(state),
         ordering: state.searchOrdering,
         limit: state.searchLimit,
         offset: state.searchOffset
       }
 
-      if (Object.entries(state.searchResultFilters).length > 0) {
-        params['filter_group'] = JSON.stringify(state.searchResultFilters)
-      }
       // if triggering the search using the map, the search will be restricted to
       // the visible map bounds
       if (state.constrainSearch) {
@@ -352,16 +313,6 @@ const wellsStore = {
     lastSearchTrigger (state) {
       return state.lastSearchTrigger
     },
-    locationErrors (state) {
-      return state.locationErrors
-    },
-    locationErrorMessage (state) {
-      if (Object.entries(state.locationErrors).length === 0 && state.locationErrors.constructor === Object) {
-        return ''
-      } else {
-        return state.locationErrors.detail
-      }
-    },
     locationSearchResults (state) {
       return state.locationSearchResults
     },
@@ -379,6 +330,9 @@ const wellsStore = {
     },
     pendingSearch (state) {
       return state.pendingSearch
+    },
+    searchInProgress (state) {
+      return Boolean(state.pendingSearch)
     },
     searchBounds (state) {
       return state.searchBounds
@@ -427,6 +381,9 @@ const wellsStore = {
     },
     wellFileDownloads (state) {
       return state.downloads
+    },
+    searchQueryParams (state) {
+      return buildSearchParams(state)
     }
   }
 }

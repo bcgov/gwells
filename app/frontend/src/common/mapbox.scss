@@ -1,5 +1,5 @@
 &.map {
-  .mapbox-control-layers {
+  .mapbox-ctrl-layers {
     background-color: white;
     padding: 6px 10px 6px 6px;
 
@@ -18,10 +18,10 @@
     }
   }
 
-  .mapbox-control-legend {
+  .mapbox-ctrl-legend {
     padding: 6px 10px 6px 6px;
 
-    .mapbox-control-legend-content {
+    .mapbox-ctrl-legend-content {
       ul, li {
         list-style: none
       }
@@ -144,6 +144,48 @@
 
     .mapboxgl-ctrl-geocoder--icon {
       fill: #333;
+    }
+  }
+
+  .mapboxgl-ctrl-search-on-move {
+    &.show-search-area-button {
+      padding: 0;
+    }
+
+    button {
+      width: auto;
+      height: auto;
+    }
+  }
+
+  .mapboxgl-ctrl-clear-search-criteria {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    margin-bottom: -0.25rem !important;
+
+    .mapboxgl-ctrl-clear-search-criteria-active-search-info {
+      background-color: rgba(255, 255, 255, .75);
+      color: #222;
+      border-radius: 2px;
+      text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.25)
+    }
+
+    button {
+      box-shadow: 0 0 0 2px rgba(0, 0, 0, .1);
+      background-color: white;
+
+      &:hover {
+        background-color: #F2F2F2;
+      }
+    }
+  }
+
+  .mapboxgl-ctrl-attrib {
+    margin-top: 10px;
+
+    &.mapboxgl-compact {
+      min-height: 24px;
     }
   }
 }

@@ -11,9 +11,9 @@ import GestureHandling from '@geolonia/mbgl-gesture-handling'
 import {
   DATABC_ROADS_SOURCE,
   DATABC_CADASTREL_SOURCE,
-  vectorLayerConfig,
-  WELLS_LAYER_SOURCE,
-  AQUIFERS_LAYER_SOURCE,
+  vectorSourceConfig,
+  WELLS_SOURCE_ID,
+  AQUIFERS_SOURCE_ID,
   DATABC_ROADS_SOURCE_ID,
   DATABC_CADASTREL_SOURCE_ID,
   DATABC_ROADS_LAYER,
@@ -63,6 +63,7 @@ export default {
   props: ['aquifer-id', 'geom'],
   data () {
     return {
+      map: null,
       browserUnsupported: false,
       mapLayers: [
         {
@@ -143,6 +144,7 @@ export default {
   },
   destroyed () {
     this.map.remove()
+    this.map = null
   },
   methods: {
     initMapBox () {
@@ -216,8 +218,8 @@ export default {
           [DATABC_ECOCAT_SOURCE_ID]: DATABC_ECOCAT_SOURCE,
           [DATABC_WATER_LICENCES_SOURCE_ID]: DATABC_WATER_LICENCES_SOURCE,
           [DATABC_OBSERVATION_WELLS_SOURCE_ID]: DATABC_OBSERVATION_WELLS_SOURCE,
-          [WELLS_LAYER_SOURCE]: vectorLayerConfig(WELLS_LAYER_SOURCE),
-          [AQUIFERS_LAYER_SOURCE]: vectorLayerConfig(AQUIFERS_LAYER_SOURCE, { promoteId: 'aquifer_id' })
+          [WELLS_SOURCE_ID]: vectorSourceConfig(WELLS_SOURCE_ID),
+          [AQUIFERS_SOURCE_ID]: vectorSourceConfig(AQUIFERS_SOURCE_ID, { promoteId: 'aquifer_id' })
         },
         layers: [
           DATABC_ROADS_LAYER,
@@ -257,7 +259,7 @@ export default {
     },
     setSelectedAquifer (aquiferId, focused = true) {
       this.map.setFeatureState(
-        { source: AQUIFERS_LAYER_SOURCE, id: aquiferId, sourceLayer: AQUIFERS_LAYER_SOURCE },
+        { source: AQUIFERS_SOURCE_ID, id: aquiferId, sourceLayer: AQUIFERS_SOURCE_ID },
         { focused }
       )
     }
