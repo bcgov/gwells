@@ -20,6 +20,9 @@ module.exports = {
       }
     }
   },
+  transpileDependencies: [
+    '@geolonia/mbgl-gesture-handling'
+  ],
   devServer: {
     proxy: {
       '^/api/': {
