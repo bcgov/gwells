@@ -20,6 +20,9 @@ module.exports = {
       }
     }
   },
+  transpileDependencies: [
+    '@geolonia/mbgl-gesture-handling'
+  ],
   devServer: {
     proxy: {
       '^/api/': {
@@ -27,6 +30,13 @@ module.exports = {
         pathRewrite: {
           '^/api': '/gwells/api/v2'
         }
+      },
+      '^/tiles/': {
+        target: process.env.VECTOR_TILE_SERVER || 'http://localhost:7800/',
+        pathRewrite: {
+          '^/tiles/': '/'
+        },
+        changeOrigin: true
       }
     }
   }

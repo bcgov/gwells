@@ -203,21 +203,18 @@ objects:
                       key: DEFAULT_PORT
                       name: ${TARGET}-backup
                       optional: true
-                - name: POSTGRESQL_DATABASE
+                - name: DATABASE_NAME
                   valueFrom:
                     configMapKeyRef:
                       key: POSTGRESQL_DATABASE
                       name: ${TARGET}-backup
-                - name: POSTGRESQL_USER
+                - name: DATABASE_USER
+                  value: postgres
+                - name: DATABASE_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      key: database-user
-                      name: ${TARGET}
-                - name: POSTGRESQL_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      key: database-password
-                      name: ${TARGET}
+                      key: PG_ROOT_PASSWORD
+                      name: crunchy-db-credentials
                 image: docker-registry.default.svc:5000/${IMAGE_NAMESPACE}/${SOURCE_IMAGE_NAME}:${TAG_NAME}
                 imagePullPolicy: Always
                 name: backup-cronjob

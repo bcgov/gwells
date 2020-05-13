@@ -7,6 +7,8 @@
 </template>
 
 <script>
+import smoothScroll from 'smoothscroll'
+
 export default {
   name: 'BackToTop',
   props: ['target'],
@@ -20,7 +22,7 @@ export default {
       this.scrolled = window.scrollY > 10
     },
     handleBackToTop () {
-      this.$SmoothScroll(this.target.$el)
+      smoothScroll(this.target.$el)
     }
   },
   beforeMount () {

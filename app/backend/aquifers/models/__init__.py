@@ -437,6 +437,7 @@ class Aquifer(AuditModel):
                     ' the mapped aquifer.'))
     geom = models.MultiPolygonField(srid=3005, null=True)
     # This version is pre-rendered in WGS 84 for display on web-maps.
+    # Only used by the v1 API
     geom_simplified = models.MultiPolygonField(srid=4326, null=True)
 
     history = GenericRelation(Version)

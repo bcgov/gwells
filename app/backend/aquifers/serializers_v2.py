@@ -15,6 +15,7 @@ import json
 
 from rest_framework import serializers
 from django.db.models import Max
+from django.contrib.gis.geos import GEOSGeometry
 
 from aquifers import models
 
@@ -47,6 +48,55 @@ class AquiferResourceSerializerV2(serializers.ModelSerializer):
             'name',
             'url',
             'section_code'
+        )
+
+
+
+class AquiferSerializerV2(serializers.ModelSerializer):
+    """Serialize an aquifer list"""
+    extent = serializers.SerializerMethodField()
+
+    def get_extent(self, obj):
+        """
+        Gets a GeoJSON extent
+        """
+        extent_raw_geom = obj["extent"]
+        if extent_raw_geom is not None:
+            extent_geometry = GEOSGeometry(extent_raw_geom)
+            return extent_geometry.extent
+        return None
+
+    def to_representation(self, instance):
+        """
+        Rather the declare serializer fields, we must reference them here because
+        they are queried as a `dict`, which dramatically improves performance
+        due to the high number of joined tables needing pruned in the associated query.
+
+        Note: we also use short field names to save 100 kB over the network, since there are over 1000 records
+        routinely fetched
+        """
+        ret = super().to_representation(instance)
+        ret['id'] = instance['aquifer_id']
+        ret['name'] = instance['aquifer_name']
+        if instance['area']:
+            ret['area'] = float(instance.get('area'))
+        ret['lsu'] = instance['litho_stratographic_unit']
+
+        ret['location'] = instance['location_description']
+
+        ret['demand'] = instance['demand__description']
+        ret['material'] = instance['material__description']
+        ret['subtype'] = instance['subtype__description']
+        ret['vulnerability'] = instance['vulnerability__description']
+        ret['productivity'] = instance['productivity__description']
+        return ret
+
+    class Meta:
+        model = models.Aquifer
+        fields = (
+            'aquifer_id',
+            'mapping_year',
+            'extent',
         )
 
 

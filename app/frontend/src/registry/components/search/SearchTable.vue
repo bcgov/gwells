@@ -82,6 +82,9 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import smoothScroll from 'smoothscroll'
+import querystring from 'querystring'
+
 import { FETCH_DRILLER_LIST } from '@/registry/store/actions.types'
 import DrillerSubactivity from '@/registry/components/search/table-helpers/DrillerSubactivity.vue'
 import DrillerRegistrationStatus from '@/registry/components/search/table-helpers/DrillerRegistrationStatus.vue'
@@ -89,8 +92,6 @@ import DrillerContactInfo from '@/registry/components/search/table-helpers/Drill
 import DrillerCertAuth from '@/registry/components/search/table-helpers/DrillerCertAuth.vue'
 import DrillerOrganization from '@/registry/components/search/table-helpers/DrillerOrganization.vue'
 import DrillerOrgAddress from '@/registry/components/search/table-helpers/DrillerOrgAddress.vue'
-
-const querystring = require('querystring')
 
 export default {
   name: 'RegisterTable',
@@ -210,7 +211,7 @@ export default {
      * Scrolls user's screen to the top of the SearchTable component.
      */
     scrollToTableTop () {
-      this.$SmoothScroll(this.$el, 100)
+      smoothScroll(this.$el, 100)
     }
   }
 }

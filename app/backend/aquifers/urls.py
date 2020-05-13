@@ -128,11 +128,9 @@ urlpatterns = [
         name='aquifer-water-use-code-list'
         ),
 
+    # The /aquifers-simplified endpoint only exists in v1. In V2 we use vector tiles instead
     url(r'api/v1/gis/aquifers-simplified$',
         views.aquifer_geojson_simplified_v1, name='aquifer-geojson-simplified-v1'),
-
-    url(r'api/v2/gis/aquifers-simplified$',
-        views_v2.aquifer_geojson_simplified_v2, name='aquifer-geojson-simplified-v2'),
 
     # GeoJSON aquifers endpoint for DataBC.
     url(r'api/v1/gis/aquifers$',

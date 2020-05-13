@@ -11,7 +11,7 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-
+import '../../../mocks/mapbox-gl'
 import { mount, createLocalVue } from '@vue/test-utils'
 import SearchComponent from '@/aquifers/components/Search.vue'
 import Vuex from 'vuex'
@@ -68,7 +68,7 @@ describe('Search Component', () => {
             { name: 'aquifer section', code: 'a' }
           ])
         },
-        $SmoothScroll () {}
+        scrollToMap () { }
       },
       ...options
     })

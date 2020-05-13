@@ -91,20 +91,20 @@ def _openshift(String name, String project, Closure body) {
     }
 }
 
-
 // Functional test script
 // Can be limited by assinging toTest var
 def unitTestDjango (String stageName, String envProject, String envSuffix) {
     _openshift(env.STAGE_NAME, envProject) {
-        def DB_target = envSuffix == "staging" ? "${appName}-pgsql-${envSuffix}" : "${appName}-pgsql-${envSuffix}-${prNumber}"
+        def DB_target = envSuffix == "staging" ? "${appName}-pg12-${envSuffix}" : "${appName}-pg12-${envSuffix}-${prNumber}"
         def DB_newVersion = openshift.selector("dc", "${DB_target}").object().status.latestVersion
         def DB_pod = openshift.selector('pod', [deployment: "${DB_target}-${DB_newVersion}"])
         echo "Temporarily granting elevated DB rights"
+        echo DB_target
         def db_ocoutput_grant = openshift.exec(
             DB_pod.objects()[0].metadata.name,
             "--",
             "bash -c '\
-                psql -c \"ALTER USER \\\"\${POSTGRESQL_USER}\\\" WITH SUPERUSER;\" \
+                psql -c \"ALTER USER \\\"\${PG_USER}\\\" WITH SUPERUSER;\" \
             '"
         )
         echo "Temporary DB grant results: "+ db_ocoutput_grant.actions[0].out
@@ -140,7 +140,7 @@ def unitTestDjango (String stageName, String envProject, String envSuffix) {
             DB_pod.objects()[0].metadata.name,
             "--",
             "bash -c '\
-                psql -c \"ALTER USER \\\"\${POSTGRESQL_USER}\\\" WITH NOSUPERUSER;\" \
+                psql -c \"ALTER USER \\\"\${PG_USER}\\\" WITH NOSUPERUSER;\" \
             '"
         )
         echo "DB Revocation results: "+ db_ocoutput_revoke.actions[0].out
@@ -362,8 +362,8 @@ def zapTests (String stageName, String envUrl, String envSuffix) {
 
 // Database backup
 def dbBackup (String envProject, String envSuffix) {
-    def dcName = envSuffix == "dev" ? "${appName}-pgsql-${envSuffix}-${prNumber}" : "${appName}-pgsql-${envSuffix}"
-    def dumpDir = "/var/lib/pgsql/data/deployment-backups"
+    def dcName = envSuffix == "dev" ? "${appName}-pg12-${envSuffix}-${prNumber}" : "${appName}-pg12-${envSuffix}"
+    def dumpDir = "/pgdata/deployment-backups"
     def dumpName = "${envSuffix}-\$( date +%Y-%m-%d-%H%M ).dump"
     def dumpOpts = "--no-privileges --no-tablespaces --schema=public --exclude-table=spatial_ref_sys"
     def dumpTemp = "/tmp/unverified.dump"
@@ -371,7 +371,7 @@ def dbBackup (String envProject, String envSuffix) {
 
     // Dump to temporary file
     sh "oc rsh -n ${envProject} dc/${dcName} bash -c ' \
-        pg_dump -U \${POSTGRESQL_USER} -d \${POSTGRESQL_DATABASE} -Fc -f ${dumpTemp} ${dumpOpts} \
+        pg_dump -U \${PG_USER} -d \${PG_DATABASE} -Fc -f ${dumpTemp} ${dumpOpts} \
     '"
 
     // Verify dump size is at least 1M
@@ -384,19 +384,19 @@ def dbBackup (String envProject, String envSuffix) {
     assert sizeAtLeast1M == 1
 
     // Restore (schema only, w/ extensions) to temporary db
-    sh """
-        oc rsh -n ${envProject} dc/${dcName} bash -c ' \
-            set -e; \
-            psql -c "DROP DATABASE IF EXISTS db_verify"; \
-            createdb db_verify; \
-            psql -d db_verify -c "CREATE EXTENSION IF NOT EXISTS oracle_fdw;"; \
-            psql -d db_verify -c "CREATE EXTENSION IF NOT EXISTS postgis;"; \
-            psql -d db_verify -c "CREATE EXTENSION IF NOT EXISTS pgcrypto;"; \
-            psql -d db_verify -c "COMMIT;"; \
-            pg_restore -d db_verify --schema-only --create ${dumpTemp}; \
-            psql -c "DROP DATABASE IF EXISTS db_verify"
-        '
-    """
+    // note: command needs to be updated.
+    // See Jira ticket WATER-1163.
+    // sh """
+    //     oc rsh -n ${envProject} dc/${dcName} bash -c ' \
+    //         set -e; \
+    //         psql -c "DROP DATABASE IF EXISTS db_verify"; \
+    //         createdb db_verify; \
+    //         psql -d db_verify -c "CREATE EXTENSION IF NOT EXISTS postgis;"; \
+    //         psql -d db_verify -c "COMMIT;"; \
+    //         pg_restore -U postgres -d db_verify -e --schema-only ${dumpTemp}; \
+    //         psql -c "DROP DATABASE IF EXISTS db_verify"
+    //     '
+    // """
 
     // Store verified dump
     sh "oc rsh -n ${envProject} dc/${dcName} bash -c ' \
@@ -527,27 +527,39 @@ pipeline {
                 script {
                     _openshift(env.STAGE_NAME, devProject) {
                         // Process postgres deployment config (sub in vars, create list items)
-                        echo " \$ oc process -f openshift/postgresql.dc.json -p DATABASE_SERVICE_NAME=gwells-pgsql-${devSuffix}-${prNumber} -p IMAGE_STREAM_NAMESPACE=bcgov -p IMAGE_STREAM_NAME=postgresql-9.6-oracle-fdw -p IMAGE_STREAM_VERSION=v1-stable -p NAME_SUFFIX=-${devSuffix}-${prNumber} -p POSTGRESQL_DATABASE=gwells -p VOLUME_CAPACITY=1Gi | oc apply -n moe-gwells-dev -f -"
+                        echo "Processing database deployment"
                         def deployDBTemplate = openshift.process("-f",
-                            "openshift/postgresql.dc.json",
-                            "DATABASE_SERVICE_NAME=gwells-pgsql-${devSuffix}-${prNumber}",
-                            "IMAGE_STREAM_NAMESPACE=bcgov",
-                            "IMAGE_STREAM_NAME=postgresql-9.6-oracle-fdw",
-                            "IMAGE_STREAM_VERSION=v1-stable",
+                            "openshift/postgresql.dc.yml",
+                            "DATABASE_SERVICE_NAME=gwells-pg12-${devSuffix}-${prNumber}",
+                            "IMAGE_STREAM_NAMESPACE=${devProject}",
+                            "IMAGE_STREAM_NAME=crunchy-postgres-gis",
+                            "IMAGE_STREAM_VERSION=centos7-12.2-4.2.2",
                             "NAME_SUFFIX=-${devSuffix}-${prNumber}",
                             "POSTGRESQL_DATABASE=gwells",
                             "VOLUME_CAPACITY=1Gi",
-                            "STORAGE_CLASS=netapp-file-standard"
+                            "STORAGE_CLASS=netapp-file-standard",
+                            "REQUEST_CPU=200m",
+                            "REQUEST_MEMORY=512Mi",
+                            "LIMIT_CPU=500m",
+                            "LIMIT_MEMORY=1Gi"
                         )
 
                         // Process postgres deployment config (sub in vars, create list items)
-                        echo " \$ oc process -f openshift/backend.dc.json -p ENV_NAME=${devSuffix} -p NAME_SUFFIX=-${devSuffix}-${prNumber} | oc apply -n moe-gwells-dev -f -"
                         echo "Processing deployment config for pull request ${prNumber}"
                         def deployTemplate = openshift.process("-f",
                             "openshift/backend.dc.json",
                             "ENV_NAME=${devSuffix}",
                             "HOST=${devHost}",
                             "NAME_SUFFIX=-${devSuffix}-${prNumber}"
+                        )
+
+                        echo "Processing deployment config for tile server"
+                        def pgtileservTemplate = openshift.process("-f",
+                            "openshift/pg_tileserv/pg_tileserv.dc.yaml",
+                            "NAME_SUFFIX=-${devSuffix}-${prNumber}",
+                            "DATABASE_SERVICE_NAME=gwells-pg12-${devSuffix}-${prNumber}",
+                            "IMAGE_TAG=20200427",
+                            "HOST=${devHost}",
                         )
 
                         // some objects need to be copied from a base secret or configmap
@@ -576,6 +588,8 @@ pipeline {
 
                         // apply the templates, which will create new objects or modify existing ones as necessary.
                         // the copies of base objects (secrets, configmaps) are also applied.
+                        openshift.apply(pgtileservTemplate).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
+
                         openshift.apply(deployTemplate).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
                         openshift.apply(deployDBTemplate).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
                         openshift.apply(newObjectCopies).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
@@ -584,7 +598,6 @@ pipeline {
                         // promote the newly built image to DEV
                         echo "Tagging new image to DEV imagestream."
                         openshift.tag("${toolsProject}/gwells-application:${prNumber}", "${devProject}/${devAppName}:dev")  // todo: clean up labels/tags
-                        openshift.tag("${toolsProject}/gwells-postgresql:dev", "${devProject}/gwells-postgresql-${devSuffix}-${prNumber}:dev")  // todo: clean up labels/tags
 
                         // post a notification to Github that this pull request is being deployed
                         createDeploymentStatus(devSuffix, 'PENDING', devHost)
@@ -603,13 +616,26 @@ pipeline {
                             }
                         }
 
+                        def pgtileservVersion = openshift.selector("dc", "pgtileserv-${devSuffix}-${prNumber}").object().status.latestVersion
+                        def pgtileservPods = openshift.selector('pod', [deployment: "pgtileserv-${devSuffix}-${prNumber}-${newVersion}"])
+
+                        // wait until each container in this deployment's pod reports as ready
+                        timeout(15) {
+                            pods.untilEach(2) {
+                                return it.object().status.containerStatuses.every {
+                                    it.ready
+                                }
+                            }
+                        }
+
+
+
                         // Report a pass to GitHub
                         createDeploymentStatus(devSuffix, 'SUCCESS', devHost)
                     }
                 }
             }
         }
-
 
         // the Django Unit Tests stage runs backend unit tests using a test DB that is
         // created and destroyed afterwards.
@@ -672,6 +698,19 @@ pipeline {
         }
 
 
+
+        stage('STAGING - Backup') {
+            when {
+                expression { env.CHANGE_TARGET == 'master' }
+            }
+            steps {
+                script {
+                    echo "temporarily stop staging backups"
+                    dbBackup (stagingProject, stagingSuffix)
+                }
+            }
+        }
+
         // the Promote to Test stage allows approving the tagging of the newly built image into the test environment,
         // which will trigger an automatic deployment of that image.
         // The deployment configs in the openshift folder are applied first in case there are any changes to the templates.
@@ -689,12 +728,12 @@ pipeline {
                         // TODO: Match docker-compose image from moe-gwells-tools
                         echo "Updating staging deployment..."
                         def deployDBTemplate = openshift.process("-f",
-                            "openshift/postgresql.dc.json",
+                            "openshift/postgresql.dc.yml",
                             "NAME_SUFFIX=-${stagingSuffix}",
-                            "DATABASE_SERVICE_NAME=gwells-pgsql-${stagingSuffix}",
-                            "IMAGE_STREAM_NAMESPACE=bcgov",
-                            "IMAGE_STREAM_NAME=postgresql-9.6-oracle-fdw",
-                            "IMAGE_STREAM_VERSION=v1-stable",
+                            "DATABASE_SERVICE_NAME=gwells-pg12-${stagingSuffix}",
+                            "IMAGE_STREAM_NAMESPACE=${stagingProject}",
+                            "IMAGE_STREAM_NAME=crunchy-postgres-gis",
+                            "IMAGE_STREAM_VERSION=centos7-12.2-4.2.2",
                             "POSTGRESQL_DATABASE=gwells",
                             "VOLUME_CAPACITY=20Gi",
                             "STORAGE_CLASS=netapp-file-standard",
@@ -711,6 +750,16 @@ pipeline {
                             "HOST=${stagingHost}",
                             "CPU_REQUEST=500m",
                             "CPU_LIMIT=2",
+                        )
+
+
+                        echo "Processing deployment config for tile server"
+                        def pgtileservTemplate = openshift.process("-f",
+                            "openshift/pg_tileserv/pg_tileserv.dc.yaml",
+                            "NAME_SUFFIX=-${stagingSuffix}",
+                            "DATABASE_SERVICE_NAME=gwells-pg12-${stagingSuffix}",
+                            "IMAGE_TAG=20200427",
+                            "HOST=${stagingHost}",
                         )
 
                         // some objects need to be copied from a base secret or configmap
@@ -736,9 +785,27 @@ pipeline {
                             }
                         }
 
+                        openshift.apply(deployDBTemplate).label(
+                            [
+                                'app':"gwells-${stagingSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${stagingSuffix}"
+                            ],
+                            "--overwrite"
+                        )
+
                         // apply the templates, which will create new objects or modify existing ones as necessary.
                         // the copies of base objects (secrets, configmaps) are also applied.
                         echo "Applying deployment config for pull request ${prNumber} on ${stagingProject}"
+
+                        openshift.apply(pgtileservTemplate).label(
+                            [
+                                'app':"gwells-${stagingSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${stagingSuffix}"
+                            ],
+                            "--overwrite"
+                        )
 
                         openshift.apply(deployTemplate).label(
                             [
@@ -748,14 +815,7 @@ pipeline {
                             ],
                             "--overwrite"
                         )
-                        openshift.apply(deployDBTemplate).label(
-                            [
-                                'app':"gwells-${stagingSuffix}",
-                                'app-name':"${appName}",
-                                'env-name':"${stagingSuffix}"
-                            ],
-                            "--overwrite"
-                        )
+
                         openshift.apply(newObjectCopies).label(
                             [
                                 'app':"gwells-${stagingSuffix}",
@@ -764,6 +824,7 @@ pipeline {
                             ],
                             "--overwrite"
                         )
+
                         echo "Successfully applied TEST deployment config"
 
                         // promote the newly built image to DEV
@@ -781,10 +842,6 @@ pipeline {
                             "${toolsProject}/gwells-application:${stagingSuffix}",
                             "${stagingProject}/gwells-${stagingSuffix}:${stagingSuffix}"
                         )  // todo: clean up labels/tags
-                        openshift.tag(
-                            "${toolsProject}/gwells-postgresql:${stagingSuffix}",
-                            "${stagingProject}/gwells-postgresql-${stagingSuffix}:${stagingSuffix}"
-                        )  // todo: clean up labels/tags
 
                         createDeploymentStatus(stagingSuffix, 'PENDING', stagingHost)
 
@@ -796,7 +853,7 @@ pipeline {
                             "TAG=${stagingSuffix}",
                             "NAME=export",
                             "COMMAND=export",
-                            "SCHEDULE='30 11 * * *'"
+                            "SCHEDULE='30 3 * * *'"
                         )
                         openshift.apply(exportWellCronTemplate).label(
                             [
@@ -815,7 +872,7 @@ pipeline {
                             "TAG=${stagingSuffix}",
                             "NAME=licences",
                             "COMMAND=import_licences",
-                            "SCHEDULE='40 11 * * *'"
+                            "SCHEDULE='40 3 * * *'"
                         )
                         openshift.apply(importLicencesCronjob).label(
                             [
@@ -834,7 +891,7 @@ pipeline {
                             "TAG=${stagingSuffix}",
                             "NAME=export-databc",
                             "COMMAND=export_databc",
-                            "SCHEDULE='0 13 * * *'"
+                            "SCHEDULE='0 4 * * *'"
                         )
                         openshift.apply(exportDataBCTemplate).label(
                             [
@@ -845,26 +902,27 @@ pipeline {
                             "--overwrite"
                         )
 
-                        // automated minio backup to NFS
+                        // automated minio backup 
                         def docBackupCronjob = openshift.process("-f",
                             "openshift/jobs/minio-backup/minio-backup.cj.yaml",
                             "NAME_SUFFIX=${stagingSuffix}",
                             "NAMESPACE=${stagingProject}",
                             "VERSION=v1.0.0",
-                            "SCHEDULE='15 11 * * *'",
-                            "DEST_PVC=${nfsStagingBackupPVC}",
+                            "SCHEDULE='15 3 * * *'",
+                            "DEST_PVC=gwells-pg12-backup",
                             "SOURCE_PVC=${minioDataPVC}"
                         )
 
                         openshift.apply(docBackupCronjob)
 
-                        // automated database backup to NFS volume
+                        // automated database backup
                         def dbNFSBackup = openshift.process("-f",
                             "openshift/jobs/postgres-backup-nfs/postgres-backup.cj.yaml",
                             "NAMESPACE=${stagingProject}",
-                            "TARGET=gwells-pgsql-staging",
-                            "PVC_NAME=${nfsStagingBackupPVC}",
-                            "SCHEDULE='30 10 * * *'",
+                            "TAG_NAME=v12.0.0",
+                            "TARGET=gwells-pg12-staging",
+                            "PVC_NAME=gwells-pg12-backup",
+                            "SCHEDULE='30 2 * * *'",
                             "JOB_NAME=postgres-nfs-backup",
                             "DAILY_BACKUPS=2",
                             "WEEKLY_BACKUPS=1",
@@ -878,6 +936,18 @@ pipeline {
                         def pods = openshift.selector('pod', [deployment: "gwells-${stagingSuffix}-${newVersion}"])
 
                         // wait until at least one pod reports as ready
+                        timeout(15) {
+                            pods.untilEach(2) {
+                                return it.object().status.containerStatuses.every {
+                                    it.ready
+                                }
+                            }
+                        }
+
+                        def pgtileservVersion = openshift.selector("dc", "pgtileserv-${stagingSuffix}").object().status.latestVersion
+                        def pgtileservPods = openshift.selector('pod', [deployment: "pgtileserv-${stagingSuffix}-${newVersion}"])
+
+                        // wait until each container in this deployment's pod reports as ready
                         timeout(15) {
                             pods.untilEach(2) {
                                 return it.object().status.containerStatuses.every {
@@ -932,12 +1002,12 @@ pipeline {
                         // Process db and app template into list objects
                         echo "Updating staging deployment..."
                         def deployDBTemplate = openshift.process("-f",
-                            "openshift/postgresql.dc.json",
+                            "openshift/postgresql.dc.yml",
                             "NAME_SUFFIX=-${demoSuffix}",
-                            "DATABASE_SERVICE_NAME=gwells-pgsql-${demoSuffix}",
-                            "IMAGE_STREAM_NAMESPACE=bcgov",
-                            "IMAGE_STREAM_NAME=postgresql-9.6-oracle-fdw",
-                            "IMAGE_STREAM_VERSION=v1-stable",
+                            "DATABASE_SERVICE_NAME=gwells-pg12-${demoSuffix}",
+                            "IMAGE_STREAM_NAMESPACE=${stagingProject}",
+                            "IMAGE_STREAM_NAME=crunchy-postgres-gis",
+                            "IMAGE_STREAM_VERSION=centos7-12.2-4.2.2",
                             "POSTGRESQL_DATABASE=gwells",
                             "VOLUME_CAPACITY=5Gi",
                             "REQUEST_CPU=400m",
@@ -1149,17 +1219,18 @@ pipeline {
                         def dbBackupResult = dbBackup (prodProject, prodSuffix)
 
                         def deployDBTemplate = openshift.process("-f",
-                            "openshift/postgresql.dc.json",
+                            "openshift/postgresql.dc.yml",
                             "NAME_SUFFIX=-${prodSuffix}",
-                            "DATABASE_SERVICE_NAME=gwells-pgsql-${prodSuffix}",
-                            "IMAGE_STREAM_NAMESPACE=bcgov",
-                            "IMAGE_STREAM_NAME=postgresql-9.6-oracle-fdw",
-                            "IMAGE_STREAM_VERSION=v1-stable",
+                            "DATABASE_SERVICE_NAME=gwells-pg12-${prodSuffix}",
+                            "IMAGE_STREAM_NAMESPACE=${prodProject}",
+                            "IMAGE_STREAM_NAME=crunchy-postgres-gis",
+                            "IMAGE_STREAM_VERSION=centos7-12.2-4.2.2",
                             "POSTGRESQL_DATABASE=gwells",
-                            "VOLUME_CAPACITY=20Gi",
+                            "STORAGE_CLASS=netapp-file-standard",
+                            "VOLUME_CAPACITY=40Gi",
                             "REQUEST_CPU=800m",
                             "REQUEST_MEMORY=4Gi",
-                            "LIMIT_CPU=800m",
+                            "LIMIT_CPU=2",
                             "LIMIT_MEMORY=4Gi"
                         )
 
@@ -1172,6 +1243,15 @@ pipeline {
                             "CPU_LIMIT=2",
                             "MEMORY_REQUEST=1Gi",
                             "MEMORY_LIMIT=2Gi"
+                        )
+
+                        echo "Processing deployment config for tile server"
+                        def pgtileservTemplate = openshift.process("-f",
+                            "openshift/pg_tileserv/pg_tileserv.dc.yaml",
+                            "NAME_SUFFIX=-${prodSuffix}",
+                            "DATABASE_SERVICE_NAME=gwells-pg12-${prodSuffix}",
+                            "IMAGE_TAG=20200427",
+                            "HOST=${prodHost}",
                         )
 
                         // some objects need to be copied from a base secret or configmap
@@ -1208,6 +1288,16 @@ pipeline {
                             ],
                             "--overwrite"
                         )
+
+                        openshift.apply(pgtileservTemplate).label(
+                            [
+                                'app':"gwells-${prodSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${prodSuffix}"
+                            ],
+                            "--overwrite"
+                        )
+
                         openshift.apply(deployTemplate).label(
                             [
                                 'app':"gwells-${prodSuffix}",
@@ -1216,6 +1306,7 @@ pipeline {
                             ],
                             "--overwrite"
                         )
+
                         openshift.apply(newObjectCopies).label(
                             [
                                 'app':"gwells-${prodSuffix}",
@@ -1224,6 +1315,8 @@ pipeline {
                             ],
                             "--overwrite"
                         )
+
+
                         echo "Successfully applied production deployment config"
 
                         // promote the newly built image to DEV
@@ -1243,10 +1336,7 @@ pipeline {
                             "${toolsProject}/gwells-application:${prodSuffix}",
                             "${prodProject}/gwells-${prodSuffix}:${prodSuffix}"
                         )  // todo: clean up labels/tags
-                        openshift.tag(
-                            "${toolsProject}/gwells-postgresql:prod",
-                            "${prodProject}/gwells-postgresql-${prodSuffix}:${prodSuffix}"
-                        )  // todo: clean up labels/tags
+
 
                         createDeploymentStatus(prodSuffix, 'PENDING', prodHost)
 
@@ -1258,7 +1348,7 @@ pipeline {
                             "TAG=${prodSuffix}",
                             "NAME=export",
                             "COMMAND=export",
-                            "SCHEDULE='30 11 * * *'"
+                            "SCHEDULE='30 3 * * *'"
                         )
                         openshift.apply(exportWellCronTemplate).label(
                             [
@@ -1277,7 +1367,7 @@ pipeline {
                             "TAG=${prodSuffix}",
                             "NAME=export-databc",
                             "COMMAND=export_databc",
-                            "SCHEDULE='0 13 * * *'"
+                            "SCHEDULE='0 5 * * *'"
                         )
                         openshift.apply(exportDataBCCronTemplate).label(
                             [
@@ -1293,7 +1383,7 @@ pipeline {
                             "NAME_SUFFIX=${prodSuffix}",
                             "NAMESPACE=${prodProject}",
                             "VERSION=v1.0.0",
-                            "SCHEDULE='15 12 * * *'",
+                            "SCHEDULE='15 4 * * *'",
                             "DEST_PVC=${nfsProdBackupPVC}",
                             "SOURCE_PVC=${minioDataPVC}",
                             "PVC_SIZE=40Gi"
@@ -1301,14 +1391,14 @@ pipeline {
 
                         openshift.apply(docBackupCronJob)
 
-
                         def dbNFSBackup = openshift.process("-f",
                             "openshift/jobs/postgres-backup-nfs/postgres-backup.cj.yaml",
                             "NAMESPACE=${prodProject}",
-                            "TARGET=gwells-pgsql-production",
+                            "TAG_NAME=v12.0.0",
+                            "TARGET=gwells-pg12-production",
                             "PVC_NAME=${nfsProdBackupPVC}",
                             "MONTHLY_BACKUPS=12",
-                            "SCHEDULE='30 9 * * *'",
+                            "SCHEDULE='30 1 * * *'",
                             "JOB_NAME=postgres-nfs-backup"
                         )
                         openshift.apply(dbNFSBackup)
@@ -1341,6 +1431,18 @@ pipeline {
                         def pods = openshift.selector('pod', [deployment: "gwells-${prodSuffix}-${newVersion}"])
 
                         // wait until pods reports as ready
+                        timeout(15) {
+                            pods.untilEach(2) {
+                                return it.object().status.containerStatuses.every {
+                                    it.ready
+                                }
+                            }
+                        }
+
+                        def pgtileservVersion = openshift.selector("dc", "pgtileserv-${prodSuffix}").object().status.latestVersion
+                        def pgtileservPods = openshift.selector('pod', [deployment: "pgtileserv-${prodSuffix}-${newVersion}"])
+
+                        // wait until each container in this deployment's pod reports as ready
                         timeout(15) {
                             pods.untilEach(2) {
                                 return it.object().status.containerStatuses.every {
