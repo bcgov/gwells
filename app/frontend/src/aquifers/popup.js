@@ -48,7 +48,7 @@ export function createWellPopupElement ($router, wellFeatureProperties, options 
   ]
 
   const container = document.createElement('div')
-  container.className = 'leaflet-popup-aquifer'
+  container.className = 'mapbox-popup-well'
   container.innerHTML = items.filter(Boolean).join('<br>')
   // Add onclick handlers for every anchor
   const anchors = container.querySelectorAll('a')

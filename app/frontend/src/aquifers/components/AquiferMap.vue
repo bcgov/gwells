@@ -426,7 +426,5 @@ export default {
 
 #aquifer-search-map {
   height: 600px;
-
-  @import "@/common/mapbox.scss";
 }
 </style>
