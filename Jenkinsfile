@@ -363,7 +363,7 @@ def zapTests (String stageName, String envUrl, String envSuffix) {
 // Database backup
 def dbBackup (String envProject, String envSuffix) {
     def dcName = envSuffix == "dev" ? "${appName}-pg12-${envSuffix}-${prNumber}" : "${appName}-pg12-${envSuffix}"
-    def dumpDir = "/var/lib/pgsql/data/deployment-backups"
+    def dumpDir = "/pgdata/deployment-backups"
     def dumpName = "${envSuffix}-\$( date +%Y-%m-%d-%H%M ).dump"
     def dumpOpts = "--no-privileges --no-tablespaces --schema=public --exclude-table=spatial_ref_sys"
     def dumpTemp = "/tmp/unverified.dump"
@@ -384,17 +384,19 @@ def dbBackup (String envProject, String envSuffix) {
     assert sizeAtLeast1M == 1
 
     // Restore (schema only, w/ extensions) to temporary db
-    sh """
-        oc rsh -n ${envProject} dc/${dcName} bash -c ' \
-            set -e; \
-            psql -c "DROP DATABASE IF EXISTS db_verify"; \
-            createdb db_verify; \
-            psql -d db_verify -c "CREATE EXTENSION IF NOT EXISTS postgis;"; \
-            psql -d db_verify -c "COMMIT;"; \
-            pg_restore -d db_verify --schema-only --create ${dumpTemp}; \
-            psql -c "DROP DATABASE IF EXISTS db_verify"
-        '
-    """
+    // note: command needs to be updated.
+    // See Jira ticket WATER-1163.
+    // sh """
+    //     oc rsh -n ${envProject} dc/${dcName} bash -c ' \
+    //         set -e; \
+    //         psql -c "DROP DATABASE IF EXISTS db_verify"; \
+    //         createdb db_verify; \
+    //         psql -d db_verify -c "CREATE EXTENSION IF NOT EXISTS postgis;"; \
+    //         psql -d db_verify -c "COMMIT;"; \
+    //         pg_restore -U postgres -d db_verify -e --schema-only ${dumpTemp}; \
+    //         psql -c "DROP DATABASE IF EXISTS db_verify"
+    //     '
+    // """
 
     // Store verified dump
     sh "oc rsh -n ${envProject} dc/${dcName} bash -c ' \
@@ -851,7 +853,7 @@ pipeline {
                             "TAG=${stagingSuffix}",
                             "NAME=export",
                             "COMMAND=export",
-                            "SCHEDULE='30 11 * * *'"
+                            "SCHEDULE='30 3 * * *'"
                         )
                         openshift.apply(exportWellCronTemplate).label(
                             [
@@ -870,7 +872,7 @@ pipeline {
                             "TAG=${stagingSuffix}",
                             "NAME=licences",
                             "COMMAND=import_licences",
-                            "SCHEDULE='40 11 * * *'"
+                            "SCHEDULE='40 3 * * *'"
                         )
                         openshift.apply(importLicencesCronjob).label(
                             [
@@ -889,7 +891,7 @@ pipeline {
                             "TAG=${stagingSuffix}",
                             "NAME=export-databc",
                             "COMMAND=export_databc",
-                            "SCHEDULE='0 13 * * *'"
+                            "SCHEDULE='0 4 * * *'"
                         )
                         openshift.apply(exportDataBCTemplate).label(
                             [
@@ -906,7 +908,7 @@ pipeline {
                             "NAME_SUFFIX=${stagingSuffix}",
                             "NAMESPACE=${stagingProject}",
                             "VERSION=v1.0.0",
-                            "SCHEDULE='15 11 * * *'",
+                            "SCHEDULE='15 3 * * *'",
                             "DEST_PVC=gwells-pg12-backup",
                             "SOURCE_PVC=${minioDataPVC}"
                         )
@@ -920,7 +922,7 @@ pipeline {
                             "TAG_NAME=v12.0.0",
                             "TARGET=gwells-pg12-staging",
                             "PVC_NAME=gwells-pg12-backup",
-                            "SCHEDULE='30 10 * * *'",
+                            "SCHEDULE='30 2 * * *'",
                             "JOB_NAME=postgres-nfs-backup",
                             "DAILY_BACKUPS=2",
                             "WEEKLY_BACKUPS=1",
@@ -1346,7 +1348,7 @@ pipeline {
                             "TAG=${prodSuffix}",
                             "NAME=export",
                             "COMMAND=export",
-                            "SCHEDULE='30 11 * * *'"
+                            "SCHEDULE='30 3 * * *'"
                         )
                         openshift.apply(exportWellCronTemplate).label(
                             [
@@ -1365,7 +1367,7 @@ pipeline {
                             "TAG=${prodSuffix}",
                             "NAME=export-databc",
                             "COMMAND=export_databc",
-                            "SCHEDULE='0 13 * * *'"
+                            "SCHEDULE='0 5 * * *'"
                         )
                         openshift.apply(exportDataBCCronTemplate).label(
                             [
@@ -1381,7 +1383,7 @@ pipeline {
                             "NAME_SUFFIX=${prodSuffix}",
                             "NAMESPACE=${prodProject}",
                             "VERSION=v1.0.0",
-                            "SCHEDULE='15 12 * * *'",
+                            "SCHEDULE='15 4 * * *'",
                             "DEST_PVC=${nfsProdBackupPVC}",
                             "SOURCE_PVC=${minioDataPVC}",
                             "PVC_SIZE=40Gi"
@@ -1396,7 +1398,7 @@ pipeline {
                             "TARGET=gwells-pg12-production",
                             "PVC_NAME=${nfsProdBackupPVC}",
                             "MONTHLY_BACKUPS=12",
-                            "SCHEDULE='30 9 * * *'",
+                            "SCHEDULE='30 1 * * *'",
                             "JOB_NAME=postgres-nfs-backup"
                         )
                         openshift.apply(dbNFSBackup)

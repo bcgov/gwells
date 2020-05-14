@@ -1,6 +1,6 @@
 import { defaultsDeep } from 'lodash'
 
-const VECTOR_TILE_SERVER = `${window.location.protocol}${window.location.host}${process.env.VUE_APP_VECTOR_TILE_BASE_URL}`
+const VECTOR_TILE_SERVER = `${window.location.protocol}//${window.location.host}${process.env.VUE_APP_VECTOR_TILE_BASE_URL}`
 
 export const WELLS_SOURCE_ID = 'postgis_ftw.gwells_well_view'
 export const WELLS_BASE_AND_ARTESIAN_LAYER_ID = 'wells-with-artesian'
