@@ -1,4 +1,5 @@
 import mapboxgl from 'mapbox-gl'
+import { uniqBy } from 'lodash'
 
 import { getLngLatOfPointFeature } from '../common/mapbox/geometry'
 import {
@@ -8,6 +9,7 @@ import {
   WELLS_EMS_LAYER_ID,
   WELLS_UNCORRELATED_LAYER_ID
 } from '../common/mapbox/layers'
+import { wireUpAnchors } from '../common/mapbox/popup'
 
 // Creates a <div> for the well's popup content
 export function createWellPopupElement ($router, wellFeatureProperties, options = {}) {
@@ -48,20 +50,49 @@ export function createWellPopupElement ($router, wellFeatureProperties, options 
   ]
 
   const container = document.createElement('div')
-  container.className = 'leaflet-popup-aquifer'
+  container.className = 'mapbox-popup-well'
   container.innerHTML = items.filter(Boolean).join('<br>')
-  // Add onclick handlers for every anchor
-  const anchors = container.querySelectorAll('a')
-  for (let i = 0; i < anchors.length; i++) {
-    anchors[i].onclick = (e) => {
-      if (!e.ctrlKey) {
-        e.preventDefault()
-        const routeName = anchors[i].getAttribute('data-route-name')
-        $router.push(routes[routeName])
-      }
+  return wireUpAnchors(container, $router, routes)
+}
+
+// Creates a <div> for the well's tooltip content
+export function createWellTooltipElement (wellFeatureProperties, options) {
+  const {
+    well_tag_number: wellTagNumber,
+    identification_plate_number: identificationPlateNumber,
+    street_address: streetAddress,
+    aquifer_id: aquiferId,
+    ems
+  } = wellFeatureProperties
+
+  let correlatedAquiferItem = 'Uncorrelated well'
+  if (aquiferId) {
+    // well is correlated to diff aquifer = link it
+    correlatedAquiferItem = `Correlated to aquifer ${aquiferId}`
+
+    // If there is an optional `currentAquiferId` check to see if this well's aquifer_id is the same
+    // as `currentAquiferId`. If it is then don't bother linking to the aquifer.
+    if (options.currentAquiferId !== undefined && aquiferId === options.currentAquiferId) {
+      correlatedAquiferItem = `Correlated to aquifer ${aquiferId}`
     }
   }
+
+  const items = [
+    `Well Tag Number: ${wellTagNumber}`,
+    `Identification Plate Number: ${identificationPlateNumber || '—'}`,
+    `Address: ${streetAddress || '—'}`,
+    correlatedAquiferItem,
+    ems ? `EMS ID: ${ems}` : null
+  ]
+
+  const container = document.createElement('div')
+  container.className = 'mapbox-tooltip-well'
+  container.innerHTML = items.filter(Boolean).join('<br>')
   return container
+}
+
+function aquiferFeatures (map, point) {
+  return uniqBy(map.queryRenderedFeatures(point, { layers: [ AQUIFERS_FILL_LAYER_ID ] }), 'id')
 }
 
 // Creates a <div> for the aquifer's popup content
@@ -73,8 +104,7 @@ export function createAquiferPopupElement (map, $router, point) {
   ul.style = 'list-style: none'
   container.appendChild(ul)
 
-  var features = map.queryRenderedFeatures(point, { layers: [ 'aquifer-fill' ] })
-  features.forEach((feature) => {
+  aquiferFeatures(map, point).forEach((feature) => {
     const { aquifer_id: aquiferId } = feature.properties
     const route = { name: 'aquifers-view', params: { id: aquiferId } }
     const url = $router.resolve(route)
@@ -100,14 +130,24 @@ export function createAquiferPopupElement (map, $router, point) {
   return container
 }
 
-// The tooltip is currently shows exactly the same data as the popup but they could be different
-export function createWellTooltipElement ($router, wellFeatureProperties, options) {
-  return createWellPopupElement($router, wellFeatureProperties, options)
-}
+// Creates a <div> for the aquifer's tooltip content
+export function createAquiferTooltipElement (map, point) {
+  const container = document.createElement('div')
+  container.className = 'mapbox-tooltip-aquifer'
+  const ul = document.createElement('ul')
+  ul.className = 'm-0 p-0'
+  ul.style = 'list-style: none'
+  container.appendChild(ul)
 
-// The tooltip is currently shows exactly the same data as the popup but they could be different
-export function createAquiferTooltipElement (map, $router, point) {
-  return createAquiferPopupElement(map, $router, point)
+  aquiferFeatures(map, point).forEach((feature) => {
+    const { aquifer_id: aquiferId } = feature.properties
+    const li = document.createElement('li')
+    li.className = 'm-0 p-0'
+    li.innerHTML = `Aquifer ${aquiferId}`
+    ul.appendChild(li)
+  })
+
+  return container
 }
 
 const DEFAULT_WELL_LAYER_IDS = [
@@ -134,7 +174,7 @@ export function setupMapTooltips (map, $router, options = {}) {
       if (map.popup.isOpen()) { return }
 
       const feature = e.features[0]
-      const contentDiv = createWellPopupElement($router, feature.properties, options)
+      const contentDiv = createWellTooltipElement(feature.properties, options)
       wellsTooltip
         .setLngLat(getLngLatOfPointFeature(feature))
         .setDOMContent(contentDiv)
@@ -154,7 +194,7 @@ export function setupMapTooltips (map, $router, options = {}) {
     overAquifer = true
     if (map.popup.isOpen() || wellsTooltip.isOpen()) { return }
 
-    const contentDiv = createAquiferTooltipElement(map, $router, e.point)
+    const contentDiv = createAquiferTooltipElement(map, e.point)
     aquifersTooltip
       .setDOMContent(contentDiv)
       .setLngLat(e.lngLat)
@@ -164,7 +204,7 @@ export function setupMapTooltips (map, $router, options = {}) {
   map.on('mousemove', aquiferFillLayerId, (e) => {
     if (map.popup.isOpen() || wellsTooltip.isOpen()) { return }
 
-    const contentDiv = createAquiferTooltipElement(map, $router, e.point)
+    const contentDiv = createAquiferTooltipElement(map, e.point)
     aquifersTooltip
       .setDOMContent(contentDiv)
       .setLngLat(e.lngLat)

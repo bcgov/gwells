@@ -18,9 +18,9 @@ export function createWellTooltipElement (wellFeatureProperties) {
   } = wellFeatureProperties
 
   const container = document.createElement('div')
-  container.className = 'leaflet-tooltip-well'
+  container.className = 'mapbox-tooltip-well'
   container.innerHTML = `
-    Well Tag Number ${wellTagNumber}<br>
+    Well Tag Number: ${wellTagNumber}<br>
     Identification Plate Number: ${identificationPlateNumber || '—'}<br>
     Address: ${streetAddress || '—'}
   `
@@ -41,9 +41,9 @@ export function createWellPopupElement ($router, wellFeatureProperties) {
   const url = $router.resolve(routes.wellDetail)
 
   const container = document.createElement('div')
-  container.className = 'leaflet-popup-well'
+  container.className = 'mapbox-popup-well'
   container.innerHTML = `
-    <a href="${url.href}" data-route-name="wellDetail">Well Tag Number ${wellTagNumber}</a><br>
+    Well Tag Number: <a href="${url.href}" data-route-name="wellDetail">${wellTagNumber}</a><br>
     Identification Plate Number: ${identificationPlateNumber || '—'}<br>
     Address: ${streetAddress || '—'}
   `
