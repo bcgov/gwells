@@ -215,6 +215,11 @@ export function setupMapTooltips (map, $router, options = {}) {
     aquifersTooltip.remove()
     overAquifer = false
   })
+
+  map.on('reset', () => {
+    wellsTooltip.remove()
+    aquifersTooltip.remove()
+  })
 }
 
 // Adds mouse event listeners to the map which will show the popup for the clicked well or aquifer
@@ -254,5 +259,9 @@ export function setupMapPopups (map, $router, options = {}) {
       .setLngLat(e.lngLat)
       .setDOMContent(contentDiv)
       .addTo(map)
+  })
+
+  map.on('reset', () => {
+    popup.remove()
   })
 }

@@ -58,9 +58,7 @@ import { DEFAULT_MAP_ZOOM, CENTRE_LNG_LAT_BC, buildWellsGeoJSON, convertLngLatBo
 import { RESET_WELLS_SEARCH, SEARCH_WELLS } from '../../wells/store/actions.types'
 
 import wellsAllLegendSrc from '../../common/assets/images/wells-all.svg'
-import wellsAllSearchResultLegendSrc from '../../common/assets/images/wells-search-result.svg'
 import wellsArtesianLegendSrc from '../../common/assets/images/wells-artesian.svg'
-import wellsArtesianSearchResultLegendSrc from '../../common/assets/images/wells-artesian-search-result.svg'
 import { mapGetters } from 'vuex'
 
 const FOCUSED_WELL_PROPERTIES = WELL_FEATURE_PROPERTIES_FOR_POPUP.concat(['artesian_flow'])
@@ -91,21 +89,6 @@ export default {
               label: 'artesian'
             }
           ]
-        },
-        {
-          show: true,
-          id: 'wells-searched',
-          label: 'Search Results',
-          legend: [
-            {
-              imageSrc: wellsAllSearchResultLegendSrc,
-              label: 'all'
-            },
-            {
-              imageSrc: wellsArtesianSearchResultLegendSrc,
-              label: 'artesian'
-            }
-          ]
         }
       ],
       searchOnMapMove: true,
@@ -117,8 +100,6 @@ export default {
     }
   },
   mounted () {
-    this.updateVisibilityOfSearchResultsLayer()
-
     this.initMapBox()
 
     // When the search is reset - fly the map back to view all of BC
@@ -256,6 +237,7 @@ export default {
       }
     },
     resetMap () {
+      this.map.fire('reset')
       this.flyToBC()
       this.clearWellSearchResultsLayer()
       this.setFocusedWells([])
@@ -376,10 +358,6 @@ export default {
     },
     flyToBounds (bounds) {
       this.map.fitBounds(bounds, { duration: 1 * 1000, padding: 60 })
-    },
-    updateVisibilityOfSearchResultsLayer () {
-      const searchResultsLayer = this.mapLayers.find((layer) => layer.id === 'wells-searched')
-      searchResultsLayer.show = this.hasSearchParams
     }
   },
   watch: {
@@ -407,8 +385,6 @@ export default {
       this.searchOnMoveControl.loading(isLoading)
     },
     hasSearchParams (hasSearchParams) {
-      this.updateVisibilityOfSearchResultsLayer()
-      this.legendControl.update()
       this.searchOnMoveControl.toggleShow(hasSearchParams)
       this.clearSearchCriteriaControl.toggleShow(hasSearchParams)
     }
