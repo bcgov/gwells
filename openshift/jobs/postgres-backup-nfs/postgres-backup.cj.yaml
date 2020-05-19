@@ -203,6 +203,18 @@ objects:
                       key: DEFAULT_PORT
                       name: ${TARGET}-backup
                       optional: true
+                - name: POSTGRESQL_DATABASE
+                  valueFrom:
+                    configMapKeyRef:
+                      key: POSTGRESQL_DATABASE
+                      name: ${TARGET}-backup
+                - name: POSTGRESQL_USER
+                  value: postgres
+                - name: POSTGRESQL_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: PG_ROOT_PASSWORD
+                      name: crunchy-db-credentials
                 - name: DATABASE_NAME
                   valueFrom:
                     configMapKeyRef:
