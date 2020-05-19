@@ -56,88 +56,95 @@ class Command(BaseCommand):
             counter = 0
             num_wells = Well.objects.count()
 
+            # Delete all the water rights licenses as the WLS_WRL_SYSIDs can change (re: WATER-1115)
+            WaterRightsLicence.objects.all().delete()
+
+            use_dev_fixtures = options.get('dev_fixtures')
+
+            # in dev envs, only import 100 licences.
             for row in reader:
+                counter += 1
+                well = None
+                aquifer = None
 
-                if row['POD_SUBTYPE'] not in ['PWD', 'PG']:
-                    # [Nicole]: (we are only concerned with PWD and PG data – exclude any
-                    # rows with POD. POD refers to surface water which is out of scope for GWELLS)
-                    continue
-
-                if not row['SOURCE_NAME'].isdigit():
-                    # Licence must be for an aquifer
-                    continue
-
-                if not row['WELL_TAG_NUMBER'].isdigit():
-                    # Licence must be for a well
-                    continue
-
-                logging.info("importing licence #{}".format(
-                    row['LICENCE_NUMBER']))
-
-                if options.get('dev_fixtures'):
-                    # NOTE: If you want to limit the data for the standard dev environment bootstrap for testng.
-                    counter += 1
-                    if counter > 10:
-                        continue
+                # If using dev_fixtures option then we limit the data for testng.
+                if use_dev_fixtures:
+                    if counter > 100:
+                        break
                     well = Well.objects.all()[counter % num_wells:][0]
-                    # we need our wells to actually have an aquifir for nontrivial testing.
+                    # We need our wells to actually have an aquifer for non-trivial testing.
                     if not well.aquifer:
                         well.aquifer = Aquifer.objects.first()
                         well.save()
                     aquifer = well.aquifer
-                    # in dev envs, only import 100 licences.
-                    if counter > 100:
-                        break
-                else:
-                    # Check the Licence is for a valid Aquifer
-                    aquifer = Aquifer.objects.get(pk=row['SOURCE_NAME'])
-                    well = Well.objects.get(pk=row['WELL_TAG_NUMBER'])
 
-                try:
-                    # Maintaina code table with water rights purpose.
-                    purpose = WaterRightsPurpose.objects.get(
-                        code=row['PURPOSE_USE_CODE'])
-                except WaterRightsPurpose.DoesNotExist:
-                    purpose = WaterRightsPurpose.objects.create(
-                        code=row['PURPOSE_USE_CODE'],
-                        description=row['PURPOSE_USE'])
+                self.process_row(row, use_dev_fixtures=use_dev_fixtures, well=well, aquifer=aquifer)
 
-                try:
-                    # Update existing licences with changes.
-                    licence = WaterRightsLicence.objects.get(
-                        wrl_sysid=row['WLS_WRL_SYSID'])
-                except WaterRightsLicence.DoesNotExist:
-                    licence = WaterRightsLicence(
-                        wrl_sysid=row['WLS_WRL_SYSID'])
+    def process_row(self, row, use_dev_fixtures=False, well=None, aquifer=None):
+        if row['POD_SUBTYPE'] not in ['PWD', 'PG']:
+            # [Nicole]: (we are only concerned with PWD and PG data – exclude any
+            # rows with POD. POD refers to surface water which is out of scope for GWELLS)
+            return
 
-                licence.licence_number = row['LICENCE_NUMBER']
-                licence.quantity_flag = row['QUANTITY_FLAG']
+        if not row['SOURCE_NAME'].isdigit():
+            # Licence must be for an aquifer
+            return
 
-                licence.purpose = purpose
+        if not row['WELL_TAG_NUMBER'].isdigit():
+            # Licence must be for a well
+            return
 
-                # Convert quantity to m3/year
-                quantity = float(row['QUANTITY'])
-                if row['QUANTITY_UNITS'].strip() == "m3/sec":
-                    quantity = quantity * 60*60*24*365
-                elif row['QUANTITY_UNITS'].strip() == "m3/day":
-                    quantity = quantity * 365
-                elif row['QUANTITY_UNITS'].strip() == "m3/year":
-                    quantity = quantity
-                else:
-                    raise Exception(
-                        'unknown quantity unit: `{}`'.format(row['QUANTITY_UNITS']))
+        logging.info("importing licence #{}".format(row['LICENCE_NUMBER']))
 
-                licence.quantity = quantity
-                licence.save()
+        if not well or not aquifer:
+            # Check the Licence is for a valid Aquifer and Well
+            aquifer = Aquifer.objects.get(pk=row['SOURCE_NAME'])
+            well = Well.objects.get(pk=row['WELL_TAG_NUMBER'])
 
-                if not well.aquifer:
-                    well.aquifer = aquifer
-                if licence not in well.licences.all():
-                    well.licences.add(licence)
-                well.save()
+        try:
+            # Maintain code table with water rights purpose.
+            purpose = WaterRightsPurpose.objects.get(
+                code=row['PURPOSE_USE_CODE'])
+        except WaterRightsPurpose.DoesNotExist:
+            purpose = WaterRightsPurpose.objects.create(
+                code=row['PURPOSE_USE_CODE'],
+                description=row['PURPOSE_USE'])
 
-                logging.info('assocated well={} aqufier={} licence_sysid={}'.format(
-                    well.pk,
-                    aquifer.pk,
-                    licence.pk
-                ))
+        try:
+            # Check to see if licence already exists in DB
+            licence = WaterRightsLicence.objects.get(wrl_sysid=row['WLS_WRL_SYSID'])
+        except WaterRightsLicence.DoesNotExist:
+            licence = WaterRightsLicence(wrl_sysid=row['WLS_WRL_SYSID'])
+
+        licence.licence_number = row['LICENCE_NUMBER']
+        licence.quantity_flag = row['QUANTITY_FLAG']
+
+        licence.purpose = purpose
+
+        # Convert quantity to m3/year
+        quantity = float(row['QUANTITY'])
+        if row['QUANTITY_UNITS'].strip() == "m3/sec":
+            quantity = quantity * 60*60*24*365
+        elif row['QUANTITY_UNITS'].strip() == "m3/day":
+            quantity = quantity * 365
+        elif row['QUANTITY_UNITS'].strip() == "m3/year":
+            quantity = quantity
+        else:
+            raise Exception('unknown quantity unit: `{}`'.format(row['QUANTITY_UNITS']))
+
+        licence.quantity = quantity
+        licence.save()
+
+        if not well.aquifer:
+            well.aquifer = aquifer
+        if licence not in well.licences.all():
+            well.licences.add(licence)
+        well.save()
+
+        logging.info('assocated well={} aquifer={} licence_sysid={}'.format(
+            well.pk,
+            aquifer.pk,
+            licence.pk
+        ))
+
+        return licence

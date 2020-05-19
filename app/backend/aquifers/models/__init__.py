@@ -63,7 +63,7 @@ class WaterRightsPurpose(AuditModel):
 
 class WaterRightsLicence(AuditModel):
     """
-    Material choices for describing Aquifer Material
+    Water rights licences for an aquifer
     """
 
     # Unique in the water rights database we import from.

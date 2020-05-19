@@ -897,7 +897,7 @@ pipeline {
                             "--overwrite"
                         )
 
-                        // automated minio backup 
+                        // automated minio backup
                         def docBackupCronjob = openshift.process("-f",
                             "openshift/jobs/minio-backup/minio-backup.cj.yaml",
                             "NAME_SUFFIX=${stagingSuffix}",
@@ -1195,26 +1195,23 @@ pipeline {
                         openshift.apply(dbNFSBackup)
 
                         // Create cronjob for licence import
-                        // commented out until issues with water licence IDs resolved
-                        // see JIRA ticket WATER-514 re: WLS_WRL_SYSID
-
-                        // def importLicencesCronjob = openshift.process("-f",
-                        //     "openshift/jobs/import-licences/import-licences.cj.json",
-                        //     "ENV_NAME=${prodSuffix}",
-                        //     "PROJECT=${prodProject}",
-                        //     "TAG=${prodSuffix}",
-                        //     "NAME=licences",
-                        //     "COMMAND=import_licences",
-                        //     "SCHEDULE='45 11 * * *'"
-                        // )
-                        // openshift.apply(importLicencesCronjob).label(
-                        //     [
-                        //         'app':"gwells-${prodSuffix}",
-                        //         'app-name':"${appName}",
-                        //         'env-name':"${prodSuffix}"
-                        //     ],
-                        //     "--overwrite"
-                        // )
+                        def importLicencesCronjob = openshift.process("-f",
+                            "openshift/jobs/import-licences/import-licences.cj.json",
+                            "ENV_NAME=${prodSuffix}",
+                            "PROJECT=${prodProject}",
+                            "TAG=${prodSuffix}",
+                            "NAME=licences",
+                            "COMMAND=import_licences",
+                            "SCHEDULE='45 11 * * *'"
+                        )
+                        openshift.apply(importLicencesCronjob).label(
+                            [
+                                'app':"gwells-${prodSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${prodSuffix}"
+                            ],
+                            "--overwrite"
+                        )
 
                         // monitor the deployment status and wait until deployment is successful
                         echo "Waiting for deployment to production..."
