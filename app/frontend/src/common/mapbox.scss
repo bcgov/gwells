@@ -188,6 +188,42 @@
       min-height: 24px;
     }
   }
+
+  .mapboxgl-marker.map-pin {
+    // transform: none !important;
+    width: 25px;
+    height: 41px;
+    // left: 50%;
+    // top: 50%;
+    // margin-top: -41px;
+    // margin-left: -11px;
+
+    &:before {
+      content: "";
+      position: absolute;
+      width: 41px;
+      height: 41px;
+      bottom: 0;
+      left: 0;
+      background: url('../../common/assets/images/marker-shadow.png') no-repeat;
+    }
+
+    &:after {
+      content: "";
+      position: absolute;
+      background: url('../../common/assets/images/marker-icon.png') no-repeat;
+      bottom: 0;
+      left: 0;
+      width: 25px;
+      height: 41px;
+
+      /* 1.5 dpr */
+      @media (-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 144dpi) {
+        background-image: url('../../common/assets/images/marker-icon-2x.png');
+        background-size: 100%;
+      }
+    }
+  }
 }
 
 @keyframes fade-in {

@@ -1,3 +1,16 @@
+/*
+Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*/
 <template>
   <div class="well-detail">
     <div v-if="loading">
@@ -179,11 +192,10 @@
               </b-row>
             </b-col>
             <b-col cols="12" md="6" xl="6" offset-xl="1">
-              <div>
-                <single-well-map :latitude="well.latitude" :longitude="well.longitude" :draggable="false"></single-well-map>
+              <single-well-map :latitude="well.latitude" :longitude="well.longitude"/>
+              <div class="font-weight-bold mt-5">
+                Geographic Coordinates - North American Datum of 1983 (NAD 83)
               </div>
-              <div class="my-3">&nbsp;</div>
-              <div><span class="font-weight-bold">Geographic Coordinates - North American Datum of 1983 (NAD 83)</span></div>
               <b-row>
                 <b-col cols="12" md="4"><span class="font-weight-bold">Latitude:</span> {{well.latitude}}</b-col>
                 <b-col cols="12" md="6"><span class="font-weight-bold">Longitude:</span> {{well.longitude}}</b-col>

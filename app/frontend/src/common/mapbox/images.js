@@ -1,3 +1,5 @@
+import mapboxgl from 'mapbox-gl'
+
 export class PulsingDotImage {
   constructor (map, options = {}) {
     this._map = map
@@ -106,4 +108,15 @@ export class PulsingArtesianWellImage extends PulsingDotImage {
       pulseColour: 'rgba(255, 235, 253, %d)'
     })
   }
+}
+
+export function buildLeafletStyleMarker (longitude, latitude) {
+  const element = document.createElement('div')
+  element.className = 'map-pin'
+
+  const marker = new mapboxgl.Marker({ element, anchor: 'bottom' })
+  if (longitude && latitude) {
+    marker.setLngLat([longitude, latitude])
+  }
+  return marker
 }
