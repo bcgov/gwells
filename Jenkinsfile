@@ -700,7 +700,7 @@ pipeline {
             }
             steps {
                 script {
-                    echo "temporarily stop staging backups"
+                    echo "backing up staging environment before deploying"
                     dbBackup (stagingProject, stagingSuffix)
                 }
             }
