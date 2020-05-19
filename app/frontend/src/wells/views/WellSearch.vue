@@ -87,9 +87,18 @@ Licensed under the Apache License, Version 2.0 (the "License");
               <div v-else>
                 No matching wells found in map view.
                 <span v-if="totalSearchResultsInBC <= 10">
-                  Go to the
-                  <a href="#" @click.prevent="focusOnWells(bcSearchResults)">{{ englishNumber(bcSearchResults.length) }} well{{ bcSearchResults.length === 1 ? '' : 's' }}</a>
-                  that match your search criteria
+                  <span v-if="totalSearchResultsInBC == 1">
+                    <!-- Singular -->
+                    Go to the
+                    <a href="#" @click.prevent="focusOnWells(bcSearchResults)">one well</a>
+                    that matches your search criteria
+                  </span>
+                  <span v-else>
+                    <!-- plural -->
+                    Go to the
+                    <a href="#" @click.prevent="focusOnWells(bcSearchResults)">{{ englishNumber(bcSearchResults.length) }} wells</a>
+                    that match your search criteria
+                  </span>
                 </span>
                 <span v-else>
                   Please zoom out to view the {{totalSearchResultsInBC}} matching wells across BC or change your search criteria

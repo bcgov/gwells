@@ -94,5 +94,10 @@ export function setupMapPopups (map, $router, options = {}) {
         .setDOMContent(contentDiv)
         .addTo(map)
     })
+
+    map.on('reset', () => {
+      tooltip.remove()
+      popup.remove()
+    })
   })
 }
