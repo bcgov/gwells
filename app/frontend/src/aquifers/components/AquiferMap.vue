@@ -305,6 +305,7 @@ export default {
         this.layersControl.update()
         this.legendControl.update()
         this.map.flyTo({ center: CENTRE_LNG_LAT_BC, zoom: DEFAULT_MAP_ZOOM })
+        this.map.fire('reset')
       })
     },
     hideMapSearchButton () {
