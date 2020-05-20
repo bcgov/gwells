@@ -35,8 +35,8 @@
     </div>
     <b-row>
       <b-col class="my-3">
-        <b-btn variant="primary" type="submit">Search</b-btn>
-        <b-btn variant="dark" type="reset" class="mx-2">Reset</b-btn>
+        <b-btn variant="primary" type="submit" :disabled="searchInProgress">Search</b-btn>
+        <b-btn variant="dark" type="reset" :disabled="searchInProgress" class="mx-2">Reset</b-btn>
       </b-col>
     </b-row>
     <b-row class="mt-1">
@@ -82,7 +82,6 @@ import {
   FETCH_DRILLER_NAMES,
   FETCH_ORGANIZATION_NAMES,
   RESET_WELLS_SEARCH,
-  SEARCH_LOCATIONS,
   SEARCH_WELLS
 } from '@/wells/store/actions.types.js'
 import { SET_SEARCH_PARAMS } from '@/wells/store/mutations.types.js'
@@ -234,7 +233,8 @@ export default {
   computed: {
     ...mapGetters({
       errors: 'searchErrors',
-      searchParams: 'searchParams'
+      searchParams: 'searchParams',
+      searchInProgress: 'searchInProgress'
     }),
     defaultFilterIds () {
       return reduceSections(this.defaultFilterSections)
@@ -274,8 +274,7 @@ export default {
     handleSubmit () {
       this.$store.commit(SET_SEARCH_PARAMS, { ...this.searchQueryParams })
 
-      this.$store.dispatch(SEARCH_LOCATIONS)
-      this.$store.dispatch(SEARCH_WELLS, { trigger: SEARCH_TRIGGER, constrain: false })
+      this.$store.dispatch(SEARCH_WELLS, { trigger: SEARCH_TRIGGER, constrain: true })
 
       this.$emit('search', this.searchQueryParams)
     },

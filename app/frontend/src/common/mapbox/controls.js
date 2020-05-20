@@ -13,7 +13,7 @@ export class LayersControl {
   onAdd (map) {
     this._map = map
     this._container = document.createElement('div')
-    this._container.className = 'mapboxgl-ctrl mapboxgl-ctrl-group mapbox-control-layers'
+    this._container.className = 'mapboxgl-ctrl mapboxgl-ctrl-group mapbox-ctrl-layers'
 
     const ol = document.createElement('ol')
     const totalNumLayers = this.layers.length
@@ -65,12 +65,12 @@ export class LegendControl {
   onAdd (map) {
     this._map = map
     this._container = document.createElement('div')
-    this._container.className = 'mapboxgl-ctrl mapboxgl-ctrl-group mapbox-control-legend'
+    this._container.className = 'mapboxgl-ctrl mapboxgl-ctrl-group mapbox-ctrl-legend'
     this._container.innerHTML = `<div class="m-1 text-center">Legend</div>`
 
     this._legendControlContent = document.createElement('div')
 
-    this._legendControlContent.className = 'mapbox-control-legend-content'
+    this._legendControlContent.className = 'mapbox-ctrl-legend-content'
     this._container.appendChild(this._legendControlContent)
 
     this.update()
@@ -345,5 +345,155 @@ export class ViewBCControl {
 
   zoomToBC () {
     this._map.flyTo({ center: CENTRE_LNG_LAT_BC, zoom: DEFAULT_MAP_ZOOM })
+  }
+}
+
+// SearchOnMoveControl is a MapBox control for the map's search as I move behaviour
+export class SearchOnMoveControl {
+  constructor (options = {}) {
+    this.options = options
+
+    this._onSearchThisArea = this.options.onSearchThisArea || function () {}
+    this._onSearchAsIMove = this.options.onSearchAsIMove || function () {}
+    this._searchOnMapMove = Boolean(options.searchOnMapMove) || true
+    this._loading = false
+    this._showSearchAreaButton = false
+    this._isShown = options.show === undefined ? true : !!options.show // show control by default
+  }
+
+  onAdd (map) {
+    this._map = map
+    this._container = document.createElement('div')
+    this._container.className = 'mapboxgl-ctrl mapboxgl-ctrl-group mapboxgl-ctrl-search-on-move'
+    this._container.hidden = !this._isShown
+
+    this._loadingEl = document.createElement('div')
+    this._loadingEl.className = 'm-2'
+    this._loadingEl.innerHTML = '' +
+      '<div class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></div>' +
+      '<strong class="pl-1">Loading...</strong>'
+
+    this._searchAreaButtonEl = document.createElement('button')
+    this._searchAreaButtonEl.type = 'button'
+    this._searchAreaButtonEl.className = 'btn btn-light btn-sm p-2'
+    this._searchAreaButtonEl.innerHTML = 'Search this area <span class="pl-1 fa fa-refresh" />'
+    this._searchAreaButtonEl.onclick = (e) => this.searchAreaButtonClicked(e)
+
+    this._searchOnMoveEl = document.createElement('div')
+    this._searchOnMoveEl.className = 'custom-control custom-checkbox m-2'
+    this._searchOnMoveEl.innerHTML = '' +
+      '<input id="search-as-i-move-checkbox" type="checkbox" autocomplete="off" class="custom-control-input">' +
+      '<label for="search-as-i-move-checkbox" class="custom-control-label">' +
+      '  Search as I move the map' +
+      '</label>'
+
+    this._searchAsIMoveCheckbox = this._searchOnMoveEl.querySelector('#search-as-i-move-checkbox')
+    this._searchAsIMoveCheckbox.checked = this._searchOnMapMove
+    this._searchAsIMoveCheckbox.onchange = (e) => this.onSearchAsIMoveChange(e)
+
+    this._container.appendChild(this._loadingEl)
+    this._container.appendChild(this._searchAreaButtonEl)
+    this._container.appendChild(this._searchOnMoveEl)
+
+    this.update()
+
+    return this._container
+  }
+
+  onRemove () {
+    this._container.parentNode.removeChild(this._container)
+    this._map = undefined
+    this._loadingEl = undefined
+    this._searchAreaButtonEl = undefined
+    this._searchOnMoveEl = undefined
+
+    this._loading = false
+    this._showSearchAreaButton = false
+  }
+
+  searchAreaButtonClicked (e) {
+    this._onSearchThisArea(e)
+  }
+
+  onSearchAsIMoveChange (e) {
+    this._showSearchAreaButton = !e.currentTarget.checked
+    this.update()
+    this._onSearchAsIMove(e)
+  }
+
+  loading (isLoading) {
+    this._isLoading = Boolean(isLoading)
+    this.update()
+  }
+
+  showSearchAreaButton (show) {
+    this._showSearchAreaButton = Boolean(show)
+    this._searchAsIMoveCheckbox.checked = !show
+    this.update()
+  }
+
+  update () {
+    if (this._isLoading) {
+      this._loadingEl.removeAttribute('hidden')
+      this._searchAreaButtonEl.setAttribute('hidden', true)
+      this._searchOnMoveEl.setAttribute('hidden', true)
+    } else if (this._showSearchAreaButton) {
+      this._loadingEl.setAttribute('hidden', true)
+      this._searchAreaButtonEl.removeAttribute('hidden')
+      this._searchOnMoveEl.setAttribute('hidden', true)
+    } else {
+      this._loadingEl.setAttribute('hidden', true)
+      this._searchAreaButtonEl.setAttribute('hidden', true)
+      this._searchOnMoveEl.removeAttribute('hidden')
+    }
+  }
+
+  toggleShow (show) {
+    this._isShown = show === undefined ? !this._isShown : !!show
+    this._container.hidden = !this._isShown
+  }
+}
+
+// ClearSearchCriteriaControl is a MapBox control for a button to clear the search criteria
+export class ClearSearchCriteriaControl {
+  constructor (options = {}) {
+    this._onClearClick = options.onClearClick || function () {}
+    this._isShown = options.show === undefined ? true : !!options.show // show control by default
+  }
+
+  onAdd (map) {
+    this._map = map
+    this._container = document.createElement('div')
+    this._container.className = 'mapboxgl-ctrl mapboxgl-ctrl-clear-search-criteria ml-5'
+    this._container.hidden = !this._isShown
+
+    const messageEl = document.createElement('div')
+    messageEl.className = 'mapboxgl-ctrl-clear-search-criteria-active-search-info py-1 px-3 mb-1 font-weight-bold'
+    messageEl.innerHTML = 'Wells that match active search criteria are highlighted.'
+
+    const button = document.createElement('button')
+    button.type = 'button'
+    button.className = 'btn btn-light btn-sm mb-1 ml-2'
+    button.innerHTML = 'Clear search criteria'
+    button.onclick = (e) => this.clearClicked(e)
+
+    this._container.appendChild(messageEl)
+    this._container.appendChild(button)
+
+    return this._container
+  }
+
+  onRemove () {
+    this._container.parentNode.removeChild(this._container)
+    this._map = undefined
+  }
+
+  clearClicked (e) {
+    this._onClearClick(e)
+  }
+
+  toggleShow (show) {
+    this._isShown = show === undefined ? !this._isShown : !!show
+    this._container.hidden = !this._isShown
   }
 }

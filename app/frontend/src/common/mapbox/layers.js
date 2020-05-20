@@ -2,8 +2,23 @@ import { defaultsDeep } from 'lodash'
 
 const VECTOR_TILE_SERVER = `${window.location.protocol}//${window.location.host}${process.env.VUE_APP_VECTOR_TILE_BASE_URL}`
 
-export const WELLS_LAYER_SOURCE = 'postgis_ftw.gwells_well_view'
-export const AQUIFERS_LAYER_SOURCE = 'postgis_ftw.gwells_aquifer_view'
+export const WELLS_SOURCE_ID = 'postgis_ftw.gwells_well_view'
+export const WELLS_BASE_AND_ARTESIAN_LAYER_ID = 'wells-with-artesian'
+export const WELLS_UNCORRELATED_LAYER_ID = 'wells-uncorrelated'
+export const WELLS_EMS_LAYER_ID = 'wells-ems'
+
+export const SEARCHED_WELLS_SOURCE_ID = 'searched-wells'
+export const SEARCHED_WELLS_LAYER_ID = 'highlight-wells-with-artesian'
+
+export const FOCUSED_WELLS_SOURCE_ID = 'focused-wells'
+export const FOCUSED_WELLS_LAYER_ID = 'focused-wells'
+export const FOCUSED_WELLS_ARTESIAN_LAYER_ID = 'focused-wells-artesian'
+export const FOCUSED_WELL_IMAGE_ID = 'focused-well-image'
+export const FOCUSED_WELL_ARTESIAN_IMAGE_ID = 'focused-artesian-well-image'
+
+export const AQUIFERS_SOURCE_ID = 'postgis_ftw.gwells_aquifer_view'
+export const AQUIFERS_LINE_LAYER_ID = 'aquifer-line'
+export const AQUIFERS_FILL_LAYER_ID = 'aquifer-fill'
 
 export const DATABC_ROADS_SOURCE_ID = 'DATABC-roads-source'
 export const DATABC_ROADS_LAYER_ID = 'DATABC-roads-layer'
@@ -109,17 +124,11 @@ export const DATABC_OBSERVATION_WELLS_LAYER = {
   }
 }
 
-export const WELLS_BASE_AND_ARTESIAN_LAYER_ID = 'wells-with-artesian'
-export const WELLS_UNCORRELATED_LAYER_ID = 'wells-uncorrelated'
-export const WELLS_EMS_LAYER_ID = 'wells-ems'
-export const AQUIFERS_LINE_LAYER_ID = 'aquifer-line'
-export const AQUIFERS_FILL_LAYER_ID = 'aquifer-fill'
-
 export function vectorTileServerUrl (sourceLayerName) {
   return `${VECTOR_TILE_SERVER}${sourceLayerName}/{z}/{x}/{y}.pbf`
 }
 
-export function vectorLayerConfig (sourceLayerName, options = {}) {
+export function vectorSourceConfig (sourceLayerName, options = {}) {
   return {
     type: 'vector',
     tiles: [ vectorTileServerUrl(sourceLayerName) ],
@@ -129,14 +138,24 @@ export function vectorLayerConfig (sourceLayerName, options = {}) {
   }
 }
 
-export function layerConfig (id, source, painttype, paint = {}, layout = {}) {
+function vectorLayerConfig (id, source, painttype, paint = {}, layout = {}) {
   return {
-    id: id,
-    source: source,
+    id,
+    source,
     'source-layer': source,
     type: painttype,
-    paint: paint,
-    layout: layout
+    paint,
+    layout
+  }
+}
+
+function layerConfig (id, source, painttype, paint = {}, layout = {}) {
+  return {
+    id,
+    source,
+    type: painttype,
+    paint,
+    layout
   }
 }
 
@@ -170,7 +189,7 @@ export function setupAquiferHover (map, aquifersFillLayerId) {
 
 export function toggleAquiferHover (map, aquiferId, hoveredState) {
   map.setFeatureState(
-    { source: AQUIFERS_LAYER_SOURCE, id: aquiferId, sourceLayer: AQUIFERS_LAYER_SOURCE },
+    { source: AQUIFERS_SOURCE_ID, id: aquiferId, sourceLayer: AQUIFERS_SOURCE_ID },
     { hover: hoveredState }
   )
 }
@@ -193,7 +212,42 @@ export function wellsBaseAndArtesianLayer (options = {}) {
     'circle-stroke-width': 1
   })
 
-  return layerConfig(layerId, options.source || WELLS_LAYER_SOURCE, options.layerType || 'circle', styles, options.layout)
+  return vectorLayerConfig(layerId, options.source || WELLS_SOURCE_ID, options.layerType || 'circle', styles, options.layout)
+}
+
+// Builds MapBox layer config object for searched wells with artesian ones with a fuchsia outline
+export function searchedWellsLayer (options = {}) {
+  const layerId = options.id || SEARCHED_WELLS_LAYER_ID
+  const styles = defaultsDeep(options.styles, {
+    'circle-color': [
+      'case',
+      ['>', ['to-number', ['get', 'artesian_flow']], 0], '#1099FE',
+      '#0162FE'
+    ],
+    'circle-radius': 5,
+    'circle-stroke-color': [
+      'case',
+      ['>', ['to-number', ['get', 'artesian_flow']], 0], '#EE14CA',
+      'black'
+    ],
+    'circle-stroke-width': 2
+  })
+
+  return layerConfig(layerId, options.source || SEARCHED_WELLS_SOURCE_ID, options.layerType || 'circle', styles, options.layout)
+}
+
+// Builds MapBox layer config object for focus wells (and artesian) images that pulse
+export function focusedWellsLayer (options = {}) {
+  const layerId = options.id || FOCUSED_WELLS_LAYER_ID
+  const layout = defaultsDeep(options.layout, {
+    'icon-image': [
+      'case',
+      ['>', ['to-number', ['get', 'artesian_flow']], 0], FOCUSED_WELL_ARTESIAN_IMAGE_ID,
+      FOCUSED_WELL_IMAGE_ID
+    ]
+  })
+
+  return layerConfig(layerId, options.source || FOCUSED_WELLS_SOURCE_ID, options.layerType || 'symbol', options.styles, layout)
 }
 
 // Builds MapBox layer config object for wells that are uncorrelated to any aquifer
@@ -214,7 +268,7 @@ export function wellsUncorrelatedLayer (options = {}) {
     ]
   })
 
-  return layerConfig(layerId, options.source || WELLS_LAYER_SOURCE, options.layerType || 'circle', styles, options.layout)
+  return vectorLayerConfig(layerId, options.source || WELLS_SOURCE_ID, options.layerType || 'circle', styles, options.layout)
 }
 
 // Builds MapBox layer config object for wells that have EMS data
@@ -235,7 +289,7 @@ export function wellsEmsLayer (options = {}) {
     ]
   })
 
-  return layerConfig(layerId, options.source || WELLS_LAYER_SOURCE, options.layerType || 'circle', styles, options.layout)
+  return vectorLayerConfig(layerId, options.source || WELLS_SOURCE_ID, options.layerType || 'circle', styles, options.layout)
 }
 
 // Builds MapBox layer config object for aquifer line outlines
@@ -257,7 +311,7 @@ export function aquifersLineLayer (options = {}) {
     ]
   })
 
-  return layerConfig(layerId, options.source || AQUIFERS_LAYER_SOURCE, options.layerType || 'line', styles, options.layout)
+  return vectorLayerConfig(layerId, options.source || AQUIFERS_SOURCE_ID, options.layerType || 'line', styles, options.layout)
 }
 
 // Builds MapBox layer config object for aquifer fill
@@ -278,5 +332,5 @@ export function aquifersFillLayer (options = {}) {
     ]
   })
 
-  return layerConfig(layerId, options.source || AQUIFERS_LAYER_SOURCE, options.layerType || 'fill', styles, options.layout)
+  return vectorLayerConfig(layerId, options.source || AQUIFERS_SOURCE_ID, options.layerType || 'fill', styles, options.layout)
 }

@@ -1,4 +1,7 @@
 import mapboxgl from 'mapbox-gl'
+import { pick } from 'lodash'
+
+import ApiService from '@/common/services/ApiService.js'
 
 export const CENTRE_LNG_LAT_BC = new mapboxgl.LngLat(-126.495, 54.459)
 export const DEFAULT_MAP_ZOOM = 4
@@ -42,4 +45,82 @@ export function containsBounds (containerBounds, testBounds) {
   }
 
   return true
+}
+
+export function buildWellsGeoJSON (wells = [], properties = []) {
+  const features = wells.map((well) => {
+    return {
+      type: 'Feature',
+      properties: properties.length > 0 ? pick(well, properties) : properties,
+      geometry: {
+        type: 'Point',
+        coordinates: [well.longitude, well.latitude]
+      }
+    }
+  })
+
+  return {
+    type: 'FeatureCollection',
+    features
+  }
+}
+
+export function convertLngLatBoundsToDirectionBounds (lngLatBounds) {
+  const sw = lngLatBounds.getSouthWest()
+  const ne = lngLatBounds.getNorthEast()
+
+  return {
+    sw_lat: sw.lat,
+    sw_long: sw.lng,
+    ne_lat: ne.lat,
+    ne_long: ne.lng
+  }
+}
+
+export function boundsCompletelyContains (boundsOuter, boundsInner) {
+  const boundsPoints = [
+    boundsInner.getSouthWest(),
+    boundsInner.getSouthEast(),
+    boundsInner.getNorthEast(),
+    boundsInner.getNorthWest()
+  ]
+
+  return boundsPoints.every((coordinate) => {
+    return boundsOuter.contains(coordinate)
+  })
+}
+
+export function isViewingBC (bounds) {
+  return containsBounds(bounds, BC_LAT_LNG_BOUNDS)
+}
+
+const coordinateLookup = {}
+
+export function fetchInsideBCCheck (longitude, latitude, options) {
+  // We use a dictionary to reduce network traffic, by storing and checking for coordinates locally.
+  const key = `${latitude};${longitude}`
+
+  if (coordinateLookup[key]) {
+    return coordinateLookup[key]
+  }
+
+  // We don't a previous request for this lat / lng pair
+  const promise = new Promise((resolve, reject) => {
+    const params = { latitude, longitude }
+    ApiService.query('gis/insidebc', params, options).then((response) => {
+      resolve(response.data.inside)
+    }, reject)
+  })
+
+  coordinateLookup[key] = promise
+
+  return promise
+}
+
+export function checkCoordsAreTheSame (lngLat1, lngLat2, precision = 0.00001) {
+  if (!lngLat1 || !lngLat2) { return null }
+
+  const { lng: lng1, lat: lat1 } = lngLat1
+  const { lng: lng2, lat: lat2 } = lngLat2
+  return Math.abs(lat1 - lat2) <= precision && Math.abs(lng1 - lng2) <= precision
 }

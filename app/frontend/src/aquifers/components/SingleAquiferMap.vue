@@ -1,3 +1,16 @@
+/*
+Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*/
 <template>
   <div id="single-aquifer-map" class="map">
     <p id="unsupported-browser" v-if="browserUnsupported">Your browser is unable to view the map</p>
@@ -11,9 +24,9 @@ import GestureHandling from '@geolonia/mbgl-gesture-handling'
 import {
   DATABC_ROADS_SOURCE,
   DATABC_CADASTREL_SOURCE,
-  vectorLayerConfig,
-  WELLS_LAYER_SOURCE,
-  AQUIFERS_LAYER_SOURCE,
+  vectorSourceConfig,
+  WELLS_SOURCE_ID,
+  AQUIFERS_SOURCE_ID,
   DATABC_ROADS_SOURCE_ID,
   DATABC_CADASTREL_SOURCE_ID,
   DATABC_ROADS_LAYER,
@@ -63,6 +76,7 @@ export default {
   props: ['aquifer-id', 'geom'],
   data () {
     return {
+      map: null,
       browserUnsupported: false,
       mapLayers: [
         {
@@ -143,6 +157,7 @@ export default {
   },
   destroyed () {
     this.map.remove()
+    this.map = null
   },
   methods: {
     initMapBox () {
@@ -216,8 +231,8 @@ export default {
           [DATABC_ECOCAT_SOURCE_ID]: DATABC_ECOCAT_SOURCE,
           [DATABC_WATER_LICENCES_SOURCE_ID]: DATABC_WATER_LICENCES_SOURCE,
           [DATABC_OBSERVATION_WELLS_SOURCE_ID]: DATABC_OBSERVATION_WELLS_SOURCE,
-          [WELLS_LAYER_SOURCE]: vectorLayerConfig(WELLS_LAYER_SOURCE),
-          [AQUIFERS_LAYER_SOURCE]: vectorLayerConfig(AQUIFERS_LAYER_SOURCE, { promoteId: 'aquifer_id' })
+          [WELLS_SOURCE_ID]: vectorSourceConfig(WELLS_SOURCE_ID),
+          [AQUIFERS_SOURCE_ID]: vectorSourceConfig(AQUIFERS_SOURCE_ID, { promoteId: 'aquifer_id' })
         },
         layers: [
           DATABC_ROADS_LAYER,
@@ -257,7 +272,7 @@ export default {
     },
     setSelectedAquifer (aquiferId, focused = true) {
       this.map.setFeatureState(
-        { source: AQUIFERS_LAYER_SOURCE, id: aquiferId, sourceLayer: AQUIFERS_LAYER_SOURCE },
+        { source: AQUIFERS_SOURCE_ID, id: aquiferId, sourceLayer: AQUIFERS_SOURCE_ID },
         { focused }
       )
     }
@@ -288,7 +303,5 @@ export default {
 
 #single-aquifer-map {
   height: 600px;
-
-  @import "@/common/mapbox.scss";
 }
 </style>

@@ -436,11 +436,6 @@ pipeline {
         stagingSuffix = "staging"
         stagingHost = "gwells-staging.pathfinder.gov.bc.ca"
 
-        // demoProject is for a stable demo environment.  It can be for training or presentation.
-        demoProject = "moe-gwells-test"
-        demoSuffix = "demo"
-        demoHost = "gwells-demo.pathfinder.gov.bc.ca"
-
         // prodProject is the prod deployment.
         // TODO: New production images can be deployed by tagging an existing "test" image as "prod".
         prodProject = "moe-gwells-prod"
@@ -521,7 +516,7 @@ pipeline {
         // for pods/containers to report back as ready.
         stage('DEV - Deploy') {
             when {
-                expression { env.CHANGE_TARGET != 'master' && env.CHANGE_TARGET != 'demo' }
+                expression { env.CHANGE_TARGET != 'master' }
             }
             steps {
                 script {
@@ -641,7 +636,7 @@ pipeline {
         // created and destroyed afterwards.
         stage('DEV - Django Unit Tests') {
             when {
-                expression { env.CHANGE_TARGET != 'master' && env.CHANGE_TARGET != 'demo' }
+                expression { env.CHANGE_TARGET != 'master' }
             }
             steps {
                 script {
@@ -653,7 +648,7 @@ pipeline {
 
         stage('DEV - Load Fixtures') {
             when {
-                expression { env.CHANGE_TARGET != 'master' && env.CHANGE_TARGET != 'demo' }
+                expression { env.CHANGE_TARGET != 'master' }
             }
             steps {
                 script {
@@ -688,7 +683,7 @@ pipeline {
 
         stage('DEV - API Tests') {
             when {
-                expression { env.CHANGE_TARGET != 'master' && env.CHANGE_TARGET != 'demo' }
+                expression { env.CHANGE_TARGET != 'master' }
             }
             steps {
                 script {
@@ -705,7 +700,7 @@ pipeline {
             }
             steps {
                 script {
-                    echo "temporarily stop staging backups"
+                    echo "backing up staging environment before deploying"
                     dbBackup (stagingProject, stagingSuffix)
                 }
             }
@@ -902,7 +897,7 @@ pipeline {
                             "--overwrite"
                         )
 
-                        // automated minio backup 
+                        // automated minio backup
                         def docBackupCronjob = openshift.process("-f",
                             "openshift/jobs/minio-backup/minio-backup.cj.yaml",
                             "NAME_SUFFIX=${stagingSuffix}",
@@ -987,210 +982,6 @@ pipeline {
                 }
             }
         }
-
-
-        // Push to Demo branch to deploy in demo environment
-        stage('DEMO - Deploy') {
-            when {
-                expression { env.CHANGE_TARGET == 'demo' }
-            }
-            steps {
-                script {
-                    _openshift(env.STAGE_NAME, demoProject) {
-                        echo "Preparing..."
-
-                        // Process db and app template into list objects
-                        echo "Updating staging deployment..."
-                        def deployDBTemplate = openshift.process("-f",
-                            "openshift/postgresql.dc.yml",
-                            "NAME_SUFFIX=-${demoSuffix}",
-                            "DATABASE_SERVICE_NAME=gwells-pg12-${demoSuffix}",
-                            "IMAGE_STREAM_NAMESPACE=${stagingProject}",
-                            "IMAGE_STREAM_NAME=crunchy-postgres-gis",
-                            "IMAGE_STREAM_VERSION=centos7-12.2-4.2.2",
-                            "POSTGRESQL_DATABASE=gwells",
-                            "VOLUME_CAPACITY=5Gi",
-                            "REQUEST_CPU=400m",
-                            "REQUEST_MEMORY=2Gi",
-                            "LIMIT_CPU=400m",
-                            "LIMIT_MEMORY=2Gi"
-                        )
-
-                        def deployTemplate = openshift.process("-f",
-                            "openshift/backend.dc.json",
-                            "NAME_SUFFIX=-${demoSuffix}",
-                            "ENV_NAME=${demoSuffix}",
-                            "HOST=${demoHost}"
-                        )
-
-                        // some objects need to be copied from a base secret or configmap
-                        // these objects have an annotation "as-copy-of" in their object spec (e.g. an object in backend.dc.json)
-                        echo "Creating configmaps and secrets objects"
-                        List newObjectCopies = []
-
-                        // todo: refactor to explicitly copy the objects we need
-                        for (o in (deployTemplate + deployDBTemplate)) {
-
-                            // only perform this operation on objects with 'as-copy-of'
-                            def sourceName = o.metadata && o.metadata.annotations && o.metadata.annotations['as-copy-of']
-                            if (sourceName && sourceName.length() > 0) {
-
-                                def selector = openshift.selector("${o.kind}/${sourceName}")
-                                if (selector.count() == 1) {
-                                    // create a copy of the object and add it to the new list of objects to be applied
-                                    Map copiedModel = selector.object(exportable:true)
-                                    copiedModel.metadata.name = o.metadata.name
-                                    echo "Copying ${o.kind} ${o.metadata.name}"
-                                    newObjectCopies.add(copiedModel)
-                                }
-                            }
-                        }
-
-                        // apply the templates, which will create new objects or modify existing ones as necessary.
-                        // the copies of base objects (secrets, configmaps) are also applied.
-                        echo "Applying deployment config for pull request ${prNumber} on ${demoProject}"
-
-                        openshift.apply(deployTemplate).label(
-                            [
-                                'app':"gwells-${demoSuffix}",
-                                'app-name':"${appName}",
-                                'env-name':"${demoSuffix}"
-                            ],
-                            "--overwrite"
-                        )
-                        openshift.apply(deployDBTemplate).label(
-                            [
-                                'app':"gwells-${demoSuffix}",
-                                'app-name':"${appName}",
-                                'env-name':"${demoSuffix}"
-                            ],
-                            "--overwrite"
-                        )
-                        openshift.apply(newObjectCopies).label(
-                            [
-                                'app':"gwells-${demoSuffix}",
-                                'app-name':"${appName}",
-                                'env-name':"${demoSuffix}"
-                            ],
-                            "--overwrite"
-                        )
-                        echo "Successfully applied DEMO deployment config"
-
-                        // promote the newly built image to DEV
-                        echo "Tagging new image to DEMO imagestream."
-
-                        // Application/database images are tagged in the tools imagestream as the new test/prod image
-                        openshift.tag(
-                            "${toolsProject}/gwells-application:${prNumber}",
-                            "${toolsProject}/gwells-application:${demoSuffix}"
-                        )  // todo: clean up labels/tags
-                        // openshift.tag("${toolsProject}/gwells-postgresql:staging", "${toolsProject}/gwells-postgresql:${demoSuffix}")
-
-                        // Images are then tagged into the target environment namespace (test or prod)
-                        openshift.tag(
-                            "${toolsProject}/gwells-application:${demoSuffix}",
-                            "${demoProject}/gwells-${demoSuffix}:${demoSuffix}"
-                        )  // todo: clean up labels/tags
-                        openshift.tag(
-                            "${toolsProject}/gwells-postgresql:staging",
-                            "${demoProject}/gwells-postgresql-${demoSuffix}:${demoSuffix}"
-                        )  // todo: clean up labels/tags
-
-                        createDeploymentStatus(demoSuffix, 'PENDING', demoHost)
-
-                        // Create cronjob for well export
-                        def exportWellCronTemplate = openshift.process("-f",
-                            "openshift/export.cj.json",
-                            "ENV_NAME=${demoSuffix}",
-                            "PROJECT=${demoProject}",
-                            "TAG=${demoSuffix}",
-                            "NAME=export",
-                            "COMMAND=export",
-                            "SCHEDULE='30 11 * * *'"
-                        )
-                        openshift.apply(exportWellCronTemplate).label(
-                            [
-                                'app':"gwells-${demoSuffix}",
-                                'app-name':"${appName}",
-                                'env-name':"${demoSuffix}"
-                            ],
-                            "--overwrite"
-                        )
-
-                        // Create cronjob for databc export
-                        def exportDataBCCronTemplate = openshift.process("-f",
-                            "openshift/export.cj.json",
-                            "ENV_NAME=${demoSuffix}",
-                            "PROJECT=${demoProject}",
-                            "TAG=${demoSuffix}",
-                            "NAME=export-databc",
-                            "COMMAND=export_databc",
-                            "SCHEDULE='0 13 * * *'"
-                        )
-                        openshift.apply(exportDataBCCronTemplate).label(
-                            [
-                                'app':"gwells-${demoSuffix}",
-                                'app-name':"${appName}",
-                                'env-name':"${demoSuffix}"
-                            ],
-                            "--overwrite"
-                        )
-
-                        // Create cronjob for licence import
-                        // commented out until issues with water licence IDs resolved
-                        // see JIRA ticket WATER-514 re: WLS_WRL_SYSID
-
-                        // def importLicencesCronjob = openshift.process("-f",
-                        //     "openshift/jobs/import-licences/import-licences.cj.json",
-                        //     "ENV_NAME=${demoSuffix}",
-                        //     "PROJECT=${demoProject}",
-                        //     "TAG=${demoSuffix}",
-                        //     "NAME=licences",
-                        //     "COMMAND=import_licences",
-                        //     "SCHEDULE='42 11 * * *'"
-                        // )
-                        // openshift.apply(importLicencesCronjob).label(
-                        //     [
-                        //         'app':"gwells-${demoSuffix}",
-                        //         'app-name':"${appName}",
-                        //         'env-name':"${demoSuffix}"
-                        //     ],
-                        //     "--overwrite"
-                        // )
-
-
-                        // monitor the deployment status and wait until deployment is successful
-                        echo "Waiting for deployment to DEMO..."
-                        def newVersion = openshift.selector("dc", "gwells-${demoSuffix}").object().status.latestVersion
-                        def pods = openshift.selector('pod', [deployment: "gwells-${demoSuffix}-${newVersion}"])
-
-                        // wait until at least one pod reports as ready
-                        timeout(15) {
-                            pods.untilEach(2) {
-                                return it.object().status.containerStatuses.every {
-                                    it.ready
-                                }
-                            }
-                        }
-
-                        createDeploymentStatus(demoSuffix, 'SUCCESS', demoHost)
-                    }
-                }
-            }
-        }
-
-
-        stage('DEMO - API Tests') {
-            when {
-                expression { env.CHANGE_TARGET == 'demo' }
-            }
-            steps {
-                script {
-                    def result = apiTest ('DEMO - API Tests', demoHost, demoSuffix)
-                }
-            }
-        }
-
 
         stage('PROD - Backup') {
             when {
@@ -1404,26 +1195,23 @@ pipeline {
                         openshift.apply(dbNFSBackup)
 
                         // Create cronjob for licence import
-                        // commented out until issues with water licence IDs resolved
-                        // see JIRA ticket WATER-514 re: WLS_WRL_SYSID
-
-                        // def importLicencesCronjob = openshift.process("-f",
-                        //     "openshift/jobs/import-licences/import-licences.cj.json",
-                        //     "ENV_NAME=${prodSuffix}",
-                        //     "PROJECT=${prodProject}",
-                        //     "TAG=${prodSuffix}",
-                        //     "NAME=licences",
-                        //     "COMMAND=import_licences",
-                        //     "SCHEDULE='45 11 * * *'"
-                        // )
-                        // openshift.apply(importLicencesCronjob).label(
-                        //     [
-                        //         'app':"gwells-${prodSuffix}",
-                        //         'app-name':"${appName}",
-                        //         'env-name':"${prodSuffix}"
-                        //     ],
-                        //     "--overwrite"
-                        // )
+                        def importLicencesCronjob = openshift.process("-f",
+                            "openshift/jobs/import-licences/import-licences.cj.json",
+                            "ENV_NAME=${prodSuffix}",
+                            "PROJECT=${prodProject}",
+                            "TAG=${prodSuffix}",
+                            "NAME=licences",
+                            "COMMAND=import_licences",
+                            "SCHEDULE='45 11 * * *'"
+                        )
+                        openshift.apply(importLicencesCronjob).label(
+                            [
+                                'app':"gwells-${prodSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${prodSuffix}"
+                            ],
+                            "--overwrite"
+                        )
 
                         // monitor the deployment status and wait until deployment is successful
                         echo "Waiting for deployment to production..."

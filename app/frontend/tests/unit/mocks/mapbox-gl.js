@@ -11,6 +11,11 @@ jest.mock('mapbox-gl', () => {
 
   LngLatBounds.prototype.extend = () => {}
 
+  LngLatBounds.prototype.getSouthWest = () => ({ lat: 0, lng: 0 })
+  LngLatBounds.prototype.getSouthWest = () => ({ lat: 0, lng: 0 })
+  LngLatBounds.prototype.getNorthEast = () => ({ lat: 0, lng: 0 })
+  LngLatBounds.prototype.getNorthEast = () => ({ lat: 0, lng: 0 })
+
   return {
     LngLat,
     LngLatBounds

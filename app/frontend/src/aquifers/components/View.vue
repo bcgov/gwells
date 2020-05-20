@@ -364,7 +364,7 @@ import ChangeHistory from '@/common/components/ChangeHistory.vue'
 import AquiferForm from './Form'
 import Documents from './Documents.vue'
 import SingleAquiferMap from './SingleAquiferMap.vue'
-import MapLoadingSpinner from './MapLoadingSpinner.vue'
+import MapLoadingSpinner from '../../common/components/MapLoadingSpinner.vue'
 import PieChart from './PieChart.vue'
 import ObservationWell from './ObservationWell.vue'
 

@@ -12,526 +12,390 @@
     limitations under the License.
 */
 <template>
-  <div class="search-map" :class="{ 'zoom-box-crosshair': zoomBoxActive }">
-    <l-map
-      ref="map"
-      id="well-search-map"
-      :min-zoom="minZoom"
-      :max-zoom="maxZoom"
-      :max-bounds="maxBounds"
-      :zoom="zoom"
-      :center="center"
-      :options="{ attributionControl: false, preferCanvas: true, gestureHandling: true }"
-      @update:zoom="zoomUpdated"
-      @update:bounds="boundsUpdated"
-      @update:center="centerUpdated"
-      @locationfound="userLocationFound($event)"
-      @boxzoomend="deactivateZoomBox()">
-      <l-control position="topleft" class="leaflet-control leaflet-bar zoom-box-control">
-        <a
-          class="zoom-box-icon"
-          :class="{ active: zoomBoxActive, 'leaflet-disabled': atMaxZoom }"
-          title="Zoom to specific area"
-          aria-label="Zoom to specific area"
-          role="button"
-          href="#"
-          @click.stop.prevent="toggleZoomBox()" />
-      </l-control>
-      <l-control position="topleft" class="leaflet-control leaflet-bar">
-        <a
-          class="geolocate-icon"
-          title="Zoom to your location"
-          aria-label="Zoom to your location"
-          role="button"
-          href="#"
-          @click.stop.prevent="geolocate()" />
-      </l-control>
-      <l-control position="topright" class="leaflet-control leaflet-bar search-as-i-move-control form-inline p-2">
-        <div v-if="pendingSearch">
-          <div class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></div>
-          <strong class="pl-1">Loading...</strong>
-        </div>
-        <div v-else-if="showSearchThisAreaButton">
-          <b-button
-            id="search-this-area-btn"
-            variant="light"
-            size="sm"
-            @click.stop="triggerSearch">
-            Search this area <span class="pl-1 fa fa-refresh" />
-          </b-button>
-        </div>
-        <div class="ml-1" v-else>
-          <b-form-checkbox
-            id="search-as-i-move-checkbox"
-            :checked="searchOnMapMove"
-            @input="searchOnMapMove = $event"
-            @click.stop="null">
-            Search as I move the map
-          </b-form-checkbox>
-        </div>
-      </l-control>
-      <l-control-scale position="bottomleft" metric />
-      <l-control position="bottomright">
-        <div class="active-search-info d-inline-flex flex-wrap justify-content-end ml-5" v-if="activeSearch">
-          <div class="active-search-text py-1 px-3 mb-1">
-            <strong>Wells that match active search criteria are displayed.</strong>
-          </div>
-          <b-button
-            class="ml-md-1 mb-1"
-            variant="primary"
-            size="sm"
-            @click.stop="clearSearch()">
-            Clear search criteria
-          </b-button>
-        </div>
-      </l-control>
-      <l-control position="bottomright">
-        <div class="map-legend d-flex" v-if="legend.length > 0">
-          <div class="leaflet-control-legend">
-            <div class="m-1 text-center">Legend</div>
-            <ul class="p-0 m-0" style="list-style-type: none;">
-              <li v-for="(legendItem, i) in legend" class="m-1" :key="i">
-                <img :src="legendItem.iconSrc"> {{legendItem.name}}
-              </li>
-            </ul>
-          </div>
-        </div>
-      </l-control>
-      <!-- esri layer is added on mount -->
-      <l-wms-tile-layer
-        base-url="https://openmaps.gov.bc.ca/geo/pub/WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW/ows?"
-        format="image/png"
-        layers="pub:WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW"
-        styles="PMBC_Parcel_Fabric_Cadastre_Outlined"
-        :transparent="true"
-        :visible="true"
-        :z-index="2" />
-      <l-feature-group ref="wellMarkers">
-        <l-circle-marker
-          v-for="marker in markers"
-          :key="marker.wellTagNumber"
-          :lat-lng="marker.latLng"
-          :visible="true"
-          :draggable="false"
-          v-bind="markerStyle(marker)"
-          @click="openPopup(marker)">
-        </l-circle-marker>
-        <l-popup>
-          <div>
-            Well Tag Number: <router-link v-if="selectedMarker" :to="{ name: 'wells-detail', params: {id: selectedMarker.wellTagNumber} }">{{ selectedMarker.wellTagNumber }}</router-link>
-          </div>
-          <div>
-            Identification Plate Number: <span v-if="selectedMarker">{{ selectedMarker.idPlateNumber }}</span>
-          </div>
-          <div>
-            Address: <span v-if="selectedMarker">{{ selectedMarker.address }}</span>
-          </div>
-        </l-popup>
-      </l-feature-group>
-    </l-map>
-    <div class="attribution">
-      <a href="http://leafletjs.com" title="A JS library for interactive maps" target="_blank">Leaflet</a> | Powered by <a href="https://www.esri.com" target="_blank">Esri</a>
-    </div>
-  </div>
+  <div id="wells-search-map" class="map"/>
 </template>
 
 <script>
+import axios from 'axios'
+import mapboxgl from 'mapbox-gl'
+import GestureHandling from '@geolonia/mbgl-gesture-handling'
 import { debounce } from 'lodash'
 
-import L from 'leaflet'
-import 'leaflet-gesture-handling'
-import { tiledMapLayer } from 'esri-leaflet'
+import ApiService from '@/common/services/ApiService.js'
+
 import {
-  LCircleMarker,
-  LControl,
-  LControlScale,
-  LFeatureGroup,
-  LMap,
-  LPopup,
-  LWMSTileLayer
-} from 'vue2-leaflet'
-import { mapGetters } from 'vuex'
-import { SEARCH_LOCATIONS, SEARCH_WELLS } from '@/wells/store/actions.types.js'
-import {
-  SET_SEARCH_BOUNDS,
-  SET_SEARCH_PARAMS,
-  SET_SEARCH_RESULT_FILTERS
-} from '@/wells/store/mutations.types.js'
-import { MAP_TRIGGER } from '@/wells/store/triggers.types.js'
+  DATABC_ROADS_SOURCE,
+  DATABC_CADASTREL_SOURCE,
+  vectorSourceConfig,
+  WELLS_SOURCE_ID,
+  DATABC_ROADS_SOURCE_ID,
+  DATABC_CADASTREL_SOURCE_ID,
+  DATABC_ROADS_LAYER,
+  DATABC_CADASTREL_LAYER,
+  wellsBaseAndArtesianLayer,
+  DATABC_OBSERVATION_WELLS_LAYER,
+  DATABC_WATER_LICENCES_LAYER,
+  DATABC_ECOCAT_LAYER,
+  DATABC_ECOCAT_SOURCE,
+  DATABC_WATER_LICENCES_SOURCE_ID,
+  DATABC_ECOCAT_SOURCE_ID,
+  DATABC_OBSERVATION_WELLS_SOURCE_ID,
+  DATABC_OBSERVATION_WELLS_SOURCE,
+  DATABC_WATER_LICENCES_SOURCE,
+  WELLS_BASE_AND_ARTESIAN_LAYER_ID,
+  searchedWellsLayer,
+  SEARCHED_WELLS_SOURCE_ID,
+  FOCUSED_WELLS_SOURCE_ID,
+  focusedWellsLayer,
+  FOCUSED_WELL_IMAGE_ID,
+  FOCUSED_WELL_ARTESIAN_IMAGE_ID
+} from '../../common/mapbox/layers'
+import { LegendControl, BoxZoomControl, SearchOnMoveControl, ClearSearchCriteriaControl } from '../../common/mapbox/controls'
+import { setupMapPopups, WELL_FEATURE_PROPERTIES_FOR_POPUP } from '../popup'
+import { PulsingWellImage, PulsingArtesianWellImage } from '../../common/mapbox/images'
+import { DEFAULT_MAP_ZOOM, CENTRE_LNG_LAT_BC, buildWellsGeoJSON, convertLngLatBoundsToDirectionBounds, boundsCompletelyContains } from '../../common/mapbox/geometry'
+
+import { RESET_WELLS_SEARCH, SEARCH_WELLS } from '../../wells/store/actions.types'
+
 import wellsAllLegendSrc from '../../common/assets/images/wells-all.svg'
 import wellsArtesianLegendSrc from '../../common/assets/images/wells-artesian.svg'
+import { mapGetters } from 'vuex'
 
-// There is a known issue using leaflet with webpack, this is a workaround
-// Fix courtesy of: https://github.com/PaulLeCam/react-leaflet/issues/255
-delete L.Icon.Default.prototype._getIconUrl
-// Can't figure out how to reference images inside node_modules, so have
-// copied it into project.
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: require('../../common/assets/images/marker-icon-2x.png'),
-  iconUrl: require('../../common/assets/images/marker-icon.png'),
-  shadowUrl: require('../../common/assets/images/marker-shadow.png')
-})
-
-const DEFAULT_MAP_CENTRE = new L.LatLng(54.459, -126.495)
-const DEFAULT_MAP_ZOOM = 5
+const FOCUSED_WELL_PROPERTIES = WELL_FEATURE_PROPERTIES_FOR_POPUP.concat(['artesian_flow'])
 
 export default {
   name: 'SearchMap',
-  components: {
-    'l-circle-marker': LCircleMarker,
-    'l-control': LControl,
-    'l-control-scale': LControlScale,
-    'l-feature-group': LFeatureGroup,
-    'l-map': LMap,
-    'l-popup': LPopup,
-    'l-wms-tile-layer': LWMSTileLayer
-  },
-  props: ['initialZoom', 'initialCentre'],
+  props: [
+    'initialZoom',
+    'initialCentre',
+    'focusedWells'
+  ],
   data () {
     return {
-      zoom: this.initialZoom || DEFAULT_MAP_ZOOM,
-      center: this.initialCentre ? [this.initialCentre.lat, this.initialCentre.lng] : DEFAULT_MAP_CENTRE,
-      maxBounds: [
-        [46.07323062540835, -140.27343750000003],
-        [61.438767493682825, -112.71972656250001]
+      map: null,
+      browserUnsupported: false,
+      mapLayers: [
+        {
+          show: true,
+          id: WELLS_BASE_AND_ARTESIAN_LAYER_ID,
+          label: 'Wells',
+          legend: [
+            {
+              imageSrc: wellsAllLegendSrc,
+              label: 'all'
+            },
+            {
+              imageSrc: wellsArtesianLegendSrc,
+              label: 'artesian'
+            }
+          ]
+        }
       ],
-      maxZoom: 17,
-      minZoom: 4,
-      bounds: null,
-      selectedMarker: null,
-
       searchOnMapMove: true,
       movedSinceLastSearch: false,
-      zoomBoxActive: false,
-      zoomToMarkersActive: false,
-      esriLayer: null,
-      legend: [
-        {
-          name: 'Wells – all',
-          iconSrc: wellsAllLegendSrc
-        },
-        {
-          name: 'Wells – artesian',
-          iconSrc: wellsArtesianLegendSrc
-        }
-      ]
-    }
-  },
-  computed: {
-    ...mapGetters({
-      lastSearchTrigger: 'lastSearchTrigger',
-      locations: 'locationSearchResults',
-      pendingSearch: 'pendingLocationSearch',
-      searchParams: 'searchParams',
-      searchResultFilters: 'searchResultFilters'
-    }),
-    searchBoundBox () {
-      const sw = this.bounds.getSouthWest()
-      const ne = this.bounds.getNorthEast()
-      return {
-        sw_lat: sw.lat,
-        sw_long: sw.lng,
-        ne_lat: ne.lat,
-        ne_long: ne.lng
-      }
-    },
-    markers () {
-      return this.locations
-        .filter((location) => location.latitude !== null && location.longitude !== null)
-        .map((location) => {
-          let address = location.street_address
-          if (location.city !== undefined && location.city !== null && location.city.toString().trim() !== '') {
-            address = `${address}, ${location.city}`
-          }
 
-          return {
-            wellTagNumber: location.well_tag_number,
-            latLng: L.latLng(location.latitude, location.longitude),
-            idPlateNumber: location.identification_plate_number || '',
-            address: address,
-            artesian: location.artesian
-          }
-        })
-    },
-    atMaxZoom () {
-      return this.zoom === this.maxZoom
-    },
-    activeSearch () {
-      return (
-        Object.entries(this.searchParams).length > 0 ||
-        Object.entries(this.searchResultFilters).length > 0
-      )
-    },
-    showSearchThisAreaButton () {
-      return (!this.searchOnMapMove && this.movedSinceLastSearch && this.zoom >= 9)
-    },
-    isViewReset () {
-      if (this.zoom === DEFAULT_MAP_ZOOM) {
-        if (DEFAULT_MAP_CENTRE.equals(this.center, 1.0E-3)) {
-          return true
-        }
-      }
-
-      return false
-    }
-  },
-  methods: {
-    resetView () {
-      this.center = DEFAULT_MAP_CENTRE
-      this.zoom = DEFAULT_MAP_ZOOM
-    },
-    openPopup (marker) {
-      this.selectedMarker = marker
-      this.$refs.wellMarkers.mapObject.openPopup(marker.latLng)
-    },
-    zoomToMarkers () {
-      this.zoomToMarkersActive = true
-      this.$nextTick(() => {
-        const markerBounds = this.$refs.wellMarkers.mapObject.getBounds()
-        if (markerBounds.isValid()) {
-          this.$refs.map.mapObject.fitBounds(markerBounds.pad(0.5))
-        }
-      })
-    },
-    zoomUpdated (zoom) {
-      this.zoom = zoom
-      this.$emit('zoomed', zoom, this.isViewReset)
-    },
-    centerUpdated (center) {
-      this.center = center
-      this.$emit('moved', center, this.isViewReset)
-
-      this.mapMoved()
-    },
-    boundsUpdated (bounds) {
-      this.bounds = bounds
-      this.$store.commit(SET_SEARCH_BOUNDS, this.searchBoundBox)
-    },
-    mapMoved: debounce(function () {
-      if (this.zoomToMarkersActive) {
-        this.zoomToMarkersActive = false
-        return
-      }
-
-      this.movedSinceLastSearch = true
-      if (this.searchOnMapMove) {
-        this.triggerSearch()
-      }
-    }, 500),
-    triggerSearch () {
-      if (!this.isViewReset) {
-        this.$store.dispatch(SEARCH_LOCATIONS)
-        this.$store.dispatch(SEARCH_WELLS, { trigger: MAP_TRIGGER, constrain: true })
-        this.$emit('search')
-      }
-    },
-    clearSearch () {
-      this.$store.commit(SET_SEARCH_PARAMS, {})
-      this.$store.commit(SET_SEARCH_RESULT_FILTERS, {})
-
-      this.triggerSearch()
-    },
-    geolocate () {
-      this.$refs.map.mapObject.locate()
-    },
-    userLocationFound (location) {
-      this.center = location.latlng
-    },
-    toggleZoomBox () {
-      if (this.atMaxZoom) {
-        return
-      }
-
-      if (!this.zoomBoxActive) {
-        this.activateZoomBox()
-      } else {
-        this.deactivateZoomBox()
-      }
-    },
-    activateZoomBox () {
-      this.zoomBoxActive = true
-      this.$refs.map.mapObject.dragging.disable()
-      this.$refs.map.mapObject.boxZoom.addHooks()
-    },
-    deactivateZoomBox () {
-      this.$refs.map.mapObject.boxZoom.removeHooks()
-      this.$refs.map.mapObject.dragging.enable()
-      this.zoomBoxActive = false
-    },
-    initEsriLayer () {
-      this.esriLayer = tiledMapLayer({ url: 'https://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer' })
-      this.$refs.map.mapObject.addLayer(this.esriLayer)
-      // Should be behind the WMS layer
-      this.esriLayer.bringToBack()
-    },
-    removeEsriLayer () {
-      this.$refs.map.mapObject.removeLayer(this.esriLayer)
-    },
-    initZoomBox () {
-      // Bind to the map's boxZoom handler
-      const mapObject = this.$refs.map.mapObject
-      const originalMouseDown = mapObject.boxZoom._onMouseDown
-
-      mapObject.on('locationfound', function (e) {
-        let latlng = new L.LatLng(e.latlng.lng, e.latlng.lat)
-        mapObject.setView(latlng, 16)
-      })
-
-      mapObject.boxZoom._onMouseDown = (event) => {
-        // prevent right-click from triggering zoom tool
-        if (event.button === 2) {
-          return
-        }
-
-        const newEvent = {
-          clientX: event.clientX,
-          clientY: event.clientY,
-          which: 1,
-          shiftKey: true
-        }
-        originalMouseDown.call(mapObject.boxZoom, newEvent)
-      }
-    },
-    markerStyle (marker) {
-      const wellStyles = {
-        radius: 6,
-        weight: 1.3,
-        color: '#000',
-        opacity: 0.5,
-        'fill-color': '#0162FE',
-        'fill-opacity': 1
-      }
-
-      if (marker.artesian) {
-        return {
-          ...wellStyles,
-          opacity: 1,
-          weight: 2.5,
-          'fill-color': '#3E88FF',
-          color: '#EE14CA'
-        }
-      }
-
-      return wellStyles
-    }
-  },
-  watch: {
-    locations (locations) {
-      if (!this.zoomToMarkersActive && this.lastSearchTrigger !== MAP_TRIGGER) {
-        this.zoomToMarkers()
-      }
-      this.movedSinceLastSearch = false
-      this.searchOnMapMove = true
+      pendingLocationSearch: null,
+      searchInProgress: false,
+      hasMapBeenReset: false
     }
   },
   mounted () {
-    this.$nextTick(() => {
-      this.initEsriLayer()
-      this.initZoomBox()
-      this.boundsUpdated(this.$refs.map.mapObject.getBounds())
-      this.$emit('ready')
+    this.initMapBox()
+
+    // When the search is reset - fly the map back to view all of BC
+    this.unsubscribeAction = this.$store.subscribeAction((action, state) => {
+      if (action.type === SEARCH_WELLS) {
+        this.hasMapBeenReset = false
+        this.loadWells()
+      } else if (action.type === RESET_WELLS_SEARCH) {
+        // Check to make sure we don't accidentially reset the map again
+        if (!this.hasMapBeenReset) {
+          this.resetMap()
+        }
+      }
     })
   },
-  beforeDestroy () {
-    this.removeEsriLayer()
+  destroyed () {
+    this.unsubscribeAction()
+    this.map.remove()
+    this.map = null
+  },
+  computed: {
+    ...mapGetters(['searchQueryParams']),
+    hasSearchParams (state) {
+      return Object.keys(this.searchQueryParams).length > 0
+    }
+  },
+  methods: {
+    initMapBox () {
+      if (!mapboxgl.supported()) {
+        this.browserUnsupported = true
+        return
+      }
+
+      const zoom = this.initialZoom || DEFAULT_MAP_ZOOM
+      const centre = this.initialCentre ? this.initialCentre : CENTRE_LNG_LAT_BC
+
+      var mapConfig = {
+        container: this.$el,
+        zoom,
+        minZoom: 4,
+        maxPitch: 0,
+        dragRotate: false,
+        center: centre,
+        style: this.buildMapStyle()
+      }
+
+      this.map = new mapboxgl.Map(mapConfig)
+
+      new GestureHandling({ modifierKey: 'ctrl' }).addTo(this.map)
+
+      /* Add controls */
+
+      this.map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-left')
+      this.map.addControl(new BoxZoomControl({
+        onZoom: this.zoomToBBox
+      }), 'top-left')
+      this.map.addControl(new mapboxgl.GeolocateControl({
+        positionOptions: {
+          enableHighAccuracy: true
+        }
+      }), 'top-left')
+      this.map.addControl(new mapboxgl.ScaleControl({
+        maxWidth: 80,
+        unit: 'imperial'
+      }))
+      this.map.addControl(new mapboxgl.ScaleControl({
+        maxWidth: 80,
+        unit: 'metric'
+      }))
+      this.map.addControl(new mapboxgl.AttributionControl({
+        customAttribution: 'MapBox | Government of British Columbia, DataBC, GeoBC '
+      }))
+
+      this.searchOnMoveControl = new SearchOnMoveControl({
+        show: this.hasSearchParams,
+        searchOnMapMove: this.searchOnMapMove,
+        onSearchThisArea: () => this.triggerSearchMapArea(),
+        onSearchAsIMove: (e) => (this.searchOnMapMove = e.checked)
+      })
+      this.map.addControl(this.searchOnMoveControl, 'top-right')
+
+      this.clearSearchCriteriaControl = new ClearSearchCriteriaControl({
+        show: this.hasSearchParams,
+        onClearClick: this.clearSearch
+      })
+      this.map.addControl(this.clearSearchCriteriaControl, 'bottom-right')
+
+      this.legendControl = new LegendControl({
+        layers: this.mapLayers
+      })
+      this.map.addControl(this.legendControl, 'bottom-right')
+
+      this.listenForMapMovement()
+
+      this.map.on('load', () => {
+        this.map.addImage(FOCUSED_WELL_ARTESIAN_IMAGE_ID, new PulsingArtesianWellImage(this.map), { pixelRatio: 2 })
+        this.map.addImage(FOCUSED_WELL_IMAGE_ID, new PulsingWellImage(this.map), { pixelRatio: 2 })
+
+        setupMapPopups(this.map, this.$router)
+
+        this.setFocusedWells(this.focusedWells)
+
+        if (this.hasSearchParams) { // must be an existing search so load wells in view
+          this.loadWells()
+        }
+
+        const mapBounds = this.map.getBounds()
+
+        this.$emit('mapLoaded', mapBounds)
+      })
+    },
+    buildMapStyle () {
+      return {
+        version: 8,
+        sources: {
+          [DATABC_ROADS_SOURCE_ID]: DATABC_ROADS_SOURCE,
+          [DATABC_CADASTREL_SOURCE_ID]: DATABC_CADASTREL_SOURCE,
+          [DATABC_ECOCAT_SOURCE_ID]: DATABC_ECOCAT_SOURCE,
+          [DATABC_WATER_LICENCES_SOURCE_ID]: DATABC_WATER_LICENCES_SOURCE,
+          [DATABC_OBSERVATION_WELLS_SOURCE_ID]: DATABC_OBSERVATION_WELLS_SOURCE,
+          [WELLS_SOURCE_ID]: vectorSourceConfig(WELLS_SOURCE_ID),
+          [SEARCHED_WELLS_SOURCE_ID]: { type: 'geojson', data: buildWellsGeoJSON([]) },
+          [FOCUSED_WELLS_SOURCE_ID]: { type: 'geojson', data: buildWellsGeoJSON([]) }
+        },
+        layers: [
+          DATABC_ROADS_LAYER,
+          DATABC_CADASTREL_LAYER,
+          DATABC_ECOCAT_LAYER,
+          DATABC_WATER_LICENCES_LAYER,
+          DATABC_OBSERVATION_WELLS_LAYER,
+          wellsBaseAndArtesianLayer(),
+          searchedWellsLayer(),
+          focusedWellsLayer()
+        ]
+      }
+    },
+    resetMap () {
+      this.map.fire('reset')
+      this.flyToBC()
+      this.clearWellSearchResultsLayer()
+      this.setFocusedWells([])
+      this.hasMapBeenReset = true
+    },
+    zoomToBBox (bbox) {
+      if (bbox) {
+        this.map.fitBounds(bbox)
+      }
+    },
+    listenForMapMovement () {
+      ['zoomend', 'moveend', 'resize'].forEach((eventName) => {
+        this.map.on(eventName, (e) => {
+          this.$emit('boundsChanged', this.map.getBounds(), this.map.getZoom(), this.map.getCenter())
+          this.deboucedBoundsUpdated(this)
+        })
+      })
+    },
+    deboucedBoundsUpdated: debounce((vm) => {
+      vm.movedSinceLastSearch = true
+      if (vm.searchOnMapMove) {
+        // Only emit a 'search' when the map was moved because of the user, not when the reset
+        // button was clicked.
+        if (!vm.hasMapBeenReset) {
+          vm.$emit('search', vm.map.getBounds(), { showLoadingSpinner: false })
+        }
+        vm.loadWells()
+      }
+      vm.hasMapBeenReset = false
+    }, 500),
+    loadWells () {
+      if (this.hasSearchParams) {
+        this.fetchWellsGeoJSON()
+      } else {
+        this.$emit('wellsLoaded', 0)
+      }
+    },
+    triggerSearchMapArea () {
+      this.$emit('search', this.map.getBounds(), { showLoadingSpinner: true })
+      this.searchOnMoveControl.showSearchAreaButton(false)
+    },
+    clearSearch () {
+      this.setFocusedWells([])
+      this.clearWellSearchResultsLayer()
+      this.clearSearchCriteriaControl.toggleShow(false)
+      this.$emit('clearSearch')
+    },
+    boundsOfFocusedWells () {
+      const bounds = new mapboxgl.LngLatBounds()
+      this.focusedWells.forEach((well) => {
+        bounds.extend(new mapboxgl.LngLat(well.longitude, well.latitude))
+      })
+      return bounds
+    },
+    fetchWellsGeoJSON () {
+      if (this.pendingLocationSearch !== null) {
+        this.searchInProgress = false
+        this.pendingLocationSearch.cancel()
+        this.pendingLocationSearch = null
+      }
+
+      this.pendingLocationSearch = axios.CancelToken.source()
+
+      const params = {
+        ...this.searchQueryParams,
+        ...convertLngLatBoundsToDirectionBounds(this.map.getBounds()),
+        geojson: true
+      }
+
+      this.searchInProgress = true
+      this.$emit('wellsLoading')
+
+      ApiService.query('wells/locations', params, { cancelToken: this.pendingLocationSearch.token })
+        .then(
+          // resolved
+          (response) => {
+            this.searchInProgress = false
+            this.searchOnMapMove = true
+            this.movedSinceLastSearch = false
+            this.pendingLocationSearch = null
+
+            const features = response.data.features
+            this.$emit('wellsLoaded', features.length)
+
+            if (features.length === 0) {
+              this.$emit('error', { noFeatures: true })
+            }
+
+            this.updateWellSearchResultsLayer(response.data)
+          }, (err) => { // rejected
+            // If the search was cancelled, a new one is pending, so don't bother resetting.
+            if (axios.isCancel(err)) { return }
+
+            this.searchInProgress = false
+
+            const errorMessage = err.response && err.response.data
+              ? err.response.data.detail
+              : 'Server error'
+
+            this.$emit('error', { serverError: errorMessage })
+            this.$emit('wellsLoaded', 0)
+
+            this.clearWellSearchResultsLayer()
+          }
+        )
+    },
+    updateWellSearchResultsLayer (geoJSON) {
+      this.map.getSource(SEARCHED_WELLS_SOURCE_ID).setData(geoJSON)
+    },
+    clearWellSearchResultsLayer () {
+      this.updateWellSearchResultsLayer(buildWellsGeoJSON([]))
+    },
+    setFocusedWells (wells) {
+      this.map.getSource(FOCUSED_WELLS_SOURCE_ID).setData(buildWellsGeoJSON(wells, FOCUSED_WELL_PROPERTIES))
+    },
+    flyToBC () {
+      this.map.flyTo({ center: CENTRE_LNG_LAT_BC, zoom: DEFAULT_MAP_ZOOM })
+    },
+    flyToBounds (bounds) {
+      this.map.fitBounds(bounds, { duration: 1 * 1000, padding: 60 })
+    }
+  },
+  watch: {
+    focusedWells (wells) {
+      this.setFocusedWells(wells)
+
+      if (wells.length > 0) {
+        if (wells.length === 1) {
+          const { longitude, latitude } = wells[0]
+          const wellLngLat = [longitude, latitude]
+          if (!this.map.getBounds().contains(wellLngLat)) { // if not in view
+            this.map.flyTo({ center: wellLngLat, zoom: 10 })
+          }
+        } else {
+          const focusedWellsBounds = this.boundsOfFocusedWells()
+
+          if (!boundsCompletelyContains(this.map.getBounds(), focusedWellsBounds)) {
+            // We can't see all focused wells then fly them into view
+            this.flyToBounds(this.boundsOfFocusedWells())
+          }
+        }
+      }
+    },
+    searchInProgress (isLoading) {
+      this.searchOnMoveControl.loading(isLoading)
+    },
+    hasSearchParams (hasSearchParams) {
+      this.searchOnMoveControl.toggleShow(hasSearchParams)
+      this.clearSearchCriteriaControl.toggleShow(hasSearchParams)
+    }
   }
 }
 </script>
 <style lang="scss">
-@import "~leaflet/dist/leaflet.css";
-@import "~leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
+@import "~mapbox-gl/dist/mapbox-gl.css";
+@import "~@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 
-#well-search-map {
+#wells-search-map {
   height: 600px;
-
-  &.zoom-box-crosshair {
-      cursor: crosshair !important;
-  }
-  .zoom-box-control {
-      font-size: 18px;
-  }
-  .zoom-box-icon {
-    background-image: url('../../common/assets/images/select-zoom.png');
-
-    &.active, &:hover {
-      opacity: 0.8;
-    }
-    &.leaflet-disabled{
-      opacity: 0.6;
-    }
-  }
-
-  .geolocate-icon {
-    background-image: url('../../common/assets/images/geolocate.png');
-    &:hover {
-      opacity: 0.8;
-    }
-  }
-
-  .search-as-i-move-control {
-    background-color: #fff;
-  }
-
-  .active-search-text {
-    color: #000;
-    background-color: rgba(0,0,0,0.3);
-    border-radius: 4px;
-  }
-
-  /* Spinner styles — these can be removed when moving to bootstrap 4.3 */
-
-  $spinner-width:         2rem !default;
-  $spinner-height:        $spinner-width !default;
-  $spinner-border-width:  .25em !default;
-
-  $spinner-width-sm:        1rem !default;
-  $spinner-height-sm:       $spinner-width-sm !default;
-  $spinner-border-width-sm: .2em !default;
-
-  @keyframes spinner-border {
-    to { transform: rotate(360deg); }
-  }
-
-  .spinner-border {
-    display: inline-block;
-    width: $spinner-width;
-    height: $spinner-height;
-    vertical-align: text-bottom;
-    border: $spinner-border-width solid currentColor;
-    border-right-color: transparent;
-    // stylelint-disable-next-line property-blacklist
-    border-radius: 50%;
-    animation: spinner-border .75s linear infinite;
-  }
-
-  .spinner-border-sm {
-    width: $spinner-width-sm;
-    height: $spinner-height-sm;
-    border-width: $spinner-border-width-sm;
-  }
-
-  //
-  // Growing circle
-  //
-
-  @keyframes spinner-grow {
-    0% {
-      transform: scale(0);
-    }
-    50% {
-      opacity: 1;
-    }
-  }
-
-  .leaflet-control-legend {
-    background-color: white;
-    box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.4);
-    border-radius: 0.1em;
-  }
-}
-
-.leaflet-right .leaflet-control:empty {
-  margin-right: 0;
-  margin-bottom: 0;
 }
 </style>
