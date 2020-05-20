@@ -1,4 +1,4 @@
-&.map {
+.map {
   .mapbox-ctrl-layers {
     background-color: white;
     padding: 6px 10px 6px 6px;
@@ -79,7 +79,7 @@
 
   .mapboxgl-ctrl-box-zoom {
     button span {
-      background: url('../../common/assets/images/zoom-rect.svg') center center no-repeat
+      background: url('./common/assets/images/zoom-rect.svg') center center no-repeat
     }
 
     &.active {
@@ -205,13 +205,13 @@
       height: 41px;
       bottom: 0;
       left: 0;
-      background: url('../../common/assets/images/marker-shadow.png') no-repeat;
+      background: url('./common/assets/images/marker-shadow.png') no-repeat;
     }
 
     &:after {
       content: "";
       position: absolute;
-      background: url('../../common/assets/images/marker-icon.png') no-repeat;
+      background: url('./common/assets/images/marker-icon.png') no-repeat;
       bottom: 0;
       left: 0;
       width: 25px;
@@ -219,8 +219,28 @@
 
       /* 1.5 dpr */
       @media (-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 144dpi) {
-        background-image: url('../../common/assets/images/marker-icon-2x.png');
+        background-image: url('./common/assets/images/marker-icon-2x.png');
         background-size: 100%;
+      }
+    }
+
+    .map-pin-spinner {
+      position: absolute;
+      z-index: 1;
+      top: 2px;
+      left: 2px;
+      border: 7px solid transparent;
+      width: 22px;
+      height: 22px;
+      display: none;
+    }
+
+    &.loading {
+      .map-pin-spinner {
+        display: block;
+        animation: spin 2s linear infinite;
+        border-color: transparent #ffffff4d;
+        border-radius: 50%;
       }
     }
   }

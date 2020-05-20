@@ -1,3 +1,4 @@
+import '../../mocks/mapbox-gl'
 import Vuex from 'vuex'
 import documentState from '@/common/store/documents.js'
 import SubmissionPreview from '@/submissions/components/SubmissionPreview/SubmissionPreview.vue'

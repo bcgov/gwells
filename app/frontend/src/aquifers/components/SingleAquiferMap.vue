@@ -303,7 +303,5 @@ export default {
 
 #single-aquifer-map {
   height: 600px;
-
-  @import "@/common/mapbox.scss";
 }
 </style>

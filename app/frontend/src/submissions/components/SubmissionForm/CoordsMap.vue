@@ -12,13 +12,26 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-  <div id="coords-map" class="map"/>
+  <div id="single-well-map" class="map">
+    <p id="unsupported-browser" v-if="browserUnsupported">Your browser is unable to view the map</p>
+  </div>
 </template>
 
 <script>
-import L from 'leaflet'
-import 'leaflet-gesture-handling'
-import { tiledMapLayer } from 'esri-leaflet'
+import axios from 'axios'
+import mapboxgl from 'mapbox-gl'
+import GestureHandling from '@geolonia/mbgl-gesture-handling'
+
+import {
+  DATABC_ROADS_SOURCE,
+  DATABC_CADASTREL_SOURCE,
+  DATABC_ROADS_SOURCE_ID,
+  DATABC_CADASTREL_SOURCE_ID,
+  DATABC_ROADS_LAYER,
+  DATABC_CADASTREL_LAYER
+} from '../../../common/mapbox/layers'
+import { buildLeafletStyleMarker } from '../../../common/mapbox/images'
+import { fetchInsideBCCheck, checkCoordsAreTheSame } from '../../../common/mapbox/geometry'
 
 export default {
   name: 'CoordsMap',
@@ -41,142 +54,199 @@ export default {
   data () {
     return {
       map: null,
-      timeout: null
+      browserUnsupported: false,
+      marker: null,
+      insideBCCheckCancelSource: null,
+      coordsChangeTimer: null,
+      markerOnMap: false
     }
   },
   mounted () {
-    // There seems to be an issue loading leaflet immediately on mount, we use nextTick to ensure
-    // that the view has been rendered at least once before injecting the map.
-    this.$nextTick(function () {
-      this.initLeaflet()
-      this.initMap()
-    })
+    this.$emit('mapLoading')
+
+    this.initMapBox()
   },
   destroyed () {
     this.map.remove()
+    this.map = null
   },
-  watch: {
-    latitude () {
-      this.updateCoords()
+  computed: {
+    insideBCCheckInProgress () {
+      return !!this.insideBCCheckCancelSource
     },
-    longitude () {
-      this.updateCoords()
+    hasCoords () {
+      return Boolean(this.longitude) && Boolean(this.latitude)
     }
   },
   methods: {
-    initLeaflet () {
-      // There is a known issue using leaflet with webpack, this is a workaround
-      // Fix courtesy of: https://github.com/PaulLeCam/react-leaflet/issues/255
-      delete L.Icon.Default.prototype._getIconUrl
-      L.Icon.Default.mergeOptions({
-        iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
-        iconUrl: require('leaflet/dist/images/marker-icon.png'),
-        shadowUrl: require('leaflet/dist/images/marker-shadow.png')
-      })
-    },
-    initMap () {
-      // Create map, with default centered and zoomed to show entire BC.
-      this.map = L.map(this.$el, {
-        gestureHandling: true
-      }).setView([this.latitude ? this.latitude : 54.5, this.getLongitude() ? this.getLongitude() : -126.5], 5)
-      L.control.scale().addTo(this.map)
+    initMapBox () {
+      if (!mapboxgl.supported()) {
+        this.browserUnsupported = true
+        return
+      }
 
-      // Add map layers.
-      tiledMapLayer({ url: 'https://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer' }).addTo(this.map)
-      L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW/ows?', {
-        format: 'image/png',
-        layers: 'pub:WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW',
-        styles: 'PMBC_Parcel_Fabric_Cadastre_Outlined',
-        transparent: true
-      }).addTo(this.map)
-      this.createMarker()
-    },
-    createMarker () {
-      if (this.map && this.latitude !== null && this.getLongitude() !== null) {
-        const latlng = L.latLng(this.latitude, this.getLongitude())
-        this.marker = L.marker(latlng, { draggable: this.draggable, autoPan: true })
+      var mapConfig = {
+        container: this.$el,
+        zoom: 4,
+        minZoom: 4,
+        maxPitch: 0,
+        dragRotate: false,
+        center: [this.longitude || -126.5, this.latitude || 54.5],
+        style: {
+          version: 8,
+          sources: {
+            [DATABC_ROADS_SOURCE_ID]: DATABC_ROADS_SOURCE,
+            [DATABC_CADASTREL_SOURCE_ID]: DATABC_CADASTREL_SOURCE
+          },
+          layers: [
+            DATABC_ROADS_LAYER,
+            DATABC_CADASTREL_LAYER
+          ]
+        }
+      }
+
+      this.map = new mapboxgl.Map(mapConfig)
+      new GestureHandling({ modifierKey: 'ctrl' }).addTo(this.map)
+
+      /* Add controls */
+
+      this.map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-left')
+      this.map.addControl(new mapboxgl.ScaleControl({
+        maxWidth: 80,
+        unit: 'imperial'
+      }))
+      this.map.addControl(new mapboxgl.ScaleControl({
+        maxWidth: 80,
+        unit: 'metric'
+      }))
+      this.map.addControl(new mapboxgl.AttributionControl({
+        customAttribution: 'MapBox | Government of British Columbia, DataBC, GeoBC '
+      }))
+
+      this.map.on('load', () => {
+        this.marker = buildLeafletStyleMarker(this.longitude, this.latitude, { draggable: this.draggable })
+
         if (this.draggable) {
           this.marker.on('dragend', (ev) => {
             this.handleDrag(ev)
           })
         }
-        this.marker.addTo(this.map)
-        this.setMarkerPopup(this.latitude, this.longitude)
-        // The 1st time we create a marker, we jump to a different zoom level.
-        this.map.setView(latlng, 13)
-      }
-    },
-    updateMarkerLatLong (latlng) {
-      if (this.marker) {
-        this.setMarkerPopup(latlng.lat, latlng.lng)
-        this.marker.setLatLng(latlng)
-      }
-    },
-    setMarkerPopup (latitude, longitude) {
-      this.marker.bindPopup('Latitude: ' + latitude + ', Longitude: ' + longitude)
+
+        if (this.longitude && this.latitude) {
+          this.coordsChanged(this.longitude, this.latitude)
+
+          this.marker.addTo(this.map)
+
+          this.map.setZoom(12)
+        }
+
+        this.$emit('mapLoaded')
+      })
     },
     resetMap () {
-      if (this.marker) {
-        this.map.removeLayer(this.marker)
-        this.marker = null
-      }
-      this.map.setView([54.5, -126.5], 5)
+      this.markerOnMap = false
+      this.marker.remove()
+      this.map.flyTo({ center: [-126.5, 54.5], zoom: 5 })
     },
-    updateCoords () {
-      if (this.latitude && this.getLongitude()) {
-        const latlng = L.latLng(this.latitude, this.getLongitude())
-        clearTimeout(this.timeout)
-        this.timeout = setTimeout(() => {
-          this.insideBC(latlng.lat, latlng.lng).then((result) => {
-            if (result) {
-              if (this.marker) {
-                this.updateMarkerLatLong(latlng)
-                this.map.panTo(latlng)
-              } else {
-                this.createMarker()
-              }
-            } else {
-              if (this.marker) {
-                this.map.removeLayer(this.marker)
-                this.marker = null
-              }
-            }
-          })
+    coordsChanged (longitude, latitude) {
+      const markerCoords = this.marker.getLngLat() // get previous coords
+      const newCoords = new mapboxgl.LngLat(this.longitude, this.latitude)
+
+      // Check to see if the current marker position is the the same-ish as the where the
+      // incoming longitude and latitude arguments. If they are the same-ish then the user must
+      // have just dragged the map where they wanted and this `coordsChanged` is being called
+      // because the latitude and longitude props has changed based on that drag position. In
+      // this case there is no need to fly to the marker.
+      const coordsAreSame = checkCoordsAreTheSame(markerCoords, newCoords)
+      if (this.markerOnMap && coordsAreSame) {
+        // the spinner could have been loading - toggle marker loading off
+        this.toggleMarkerLoading(false)
+        return
+      }
+
+      this.performCheck(longitude, latitude).then((isInsideBC) => {
+        if (isInsideBC) {
+          this.updateMarkerLatLong([longitude, latitude])
+          const flyToOptions = { center: [longitude, latitude] }
+          if (!this.markerOnMap) {
+            this.markerOnMap = true
+            this.marker.addTo(this.map)
+            flyToOptions.zoom = 12 // change the zoom level the first time we add the marker
+          }
+          this.map.flyTo(flyToOptions)
+        } else if (this.markerOnMap) {
+          this.markerOnMap = false
+          this.marker.remove()
+        }
+      })
+    },
+    coordPropsChanged () {
+      if (this.longitude && this.latitude) {
+        clearTimeout(this.coordsChangeTimer)
+
+        this.coordsChangeTimer = setTimeout(() => {
+          this.coordsChanged(this.longitude, this.latitude)
         }, 500)
       } else {
         this.resetMap()
       }
     },
-    handleDrag (ev) {
-      const markerLatLng = this.marker.getLatLng()
-      this.insideBC(markerLatLng.lat, markerLatLng.lng).then((result) => {
-        if (result) {
+    handleDrag () {
+      const markerLngLat = this.marker.getLngLat()
+      this.performCheck(markerLngLat.lng, markerLngLat.lat).then((isInsideBC) => {
+        if (isInsideBC) {
           // In B.C. that longitude is always negative, so people aren't used to seeing the minus sign - so
           // we're hiding it away from them.
-          const newLatLng = { lng: markerLatLng.lng > 0 ? markerLatLng.lng : markerLatLng.lng * -1, lat: markerLatLng.lat }
-          this.$emit('coordinate', newLatLng)
+          const lngLat = { lng: Math.abs(markerLngLat.lng), lat: markerLngLat.lat }
+          this.$emit('coordinate', lngLat)
         } else {
           // We don't allow dragging the marker outside of BC, put it back.
-          const latlng = L.latLng(this.latitude, this.getLongitude())
-          this.updateMarkerLatLong(latlng)
+          this.updateMarkerLatLong([this.longitude, this.latitude])
         }
       })
     },
-    getLongitude () {
-      // In B.C. users are used to omitting the minus sign on longitude, it's always negative. So we're
-      // very forgiving, and just always make sure longitude is negative.
-      return this.longitude > 0 ? this.longitude * -1 : this.longitude
+    updateMarkerLatLong (lngLat) {
+      if (this.marker) {
+        // this.setMarkerPopup(latlng.lat, latlng.lng)
+        this.marker.setLngLat(lngLat)
+      }
+    },
+    performCheck (longitude, latitude) {
+      if (this.insideBCCheckCancelSource) {
+        this.insideBCCheckCancelSource.cancel()
+      }
+      this.insideBCCheckCancelSource = axios.CancelToken.source()
+      const options = { cancelToken: this.insideBCCheckCancelSource.token }
+
+      longitude = Math.round(longitude * 100000) / 100000
+      latitude = Math.round(latitude * 100000) / 100000
+
+      return fetchInsideBCCheck(longitude, latitude, options).finally(() => (this.insideBCCheckCancelSource = null))
+    },
+    toggleMarkerLoading (isLoading) {
+      this.marker.getElement().classList.toggle('loading', isLoading)
+    }
+  },
+  watch: {
+    latitude (newLatitude) {
+      this.toggleMarkerLoading(true)
+      this.coordPropsChanged()
+    },
+    longitude () {
+      this.toggleMarkerLoading(true)
+      this.coordPropsChanged()
+    },
+    insideBCCheckInProgress (fetchInProgress) {
+      this.toggleMarkerLoading(fetchInProgress)
     }
   }
 }
 </script>
-<style>
-@import "~leaflet/dist/leaflet.css";
-@import "~leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
+<style lang="scss">
+@import "~mapbox-gl/dist/mapbox-gl.css";
 
 #coords-map {
   width: 550px;
   height: 600px;
 }
-
 </style>

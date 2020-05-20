@@ -110,13 +110,18 @@ export class PulsingArtesianWellImage extends PulsingDotImage {
   }
 }
 
-export function buildLeafletStyleMarker (longitude, latitude) {
+export function buildLeafletStyleMarker (longitude, latitude, options = {}) {
   const element = document.createElement('div')
   element.className = 'map-pin'
 
-  const marker = new mapboxgl.Marker({ element, anchor: 'bottom' })
+  const marker = new mapboxgl.Marker({ element, anchor: 'bottom', ...options })
   if (longitude && latitude) {
     marker.setLngLat([longitude, latitude])
   }
+
+  const spinner = document.createElement('span')
+  spinner.className = 'map-pin-spinner'
+  element.appendChild(spinner)
+
   return marker
 }

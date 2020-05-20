@@ -203,7 +203,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </b-row>
         </b-col>
         <b-col sm="12" md="6">
-          <coords-map :latitude="mapLatitude" :longitude="mapLongitude" v-on:coordinate="handleMapCoordinate" :insideBC="insideBC"/>
+          <coords-map :latitude="mapLatitude" :longitude="mapLongitude" v-on:coordinate="handleMapCoordinate"/>
         </b-col>
       </b-row>
 
@@ -219,10 +219,10 @@ import { mapGetters } from 'vuex'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 import convertCoordinatesMixin from '@/common/convertCoordinatesMixin.js'
-import ApiService from '@/common/services/ApiService.js'
 
 import CoordsMap from '@/submissions/components/SubmissionForm/CoordsMap.vue'
 import BackToTopLink from '@/common/components/BackToTopLink.vue'
+import { fetchInsideBCCheck } from '../../../common/mapbox/geometry'
 
 export default {
   components: {
@@ -321,7 +321,9 @@ export default {
     },
     mapLongitude () {
       // We have to make sure that the map get's a number or a null, otherwise "" may turn into 0.
-      return this.degrees.longitude ? Number(this.degrees.longitude) : null
+      // `this.degrees.longitude` is always a positive number. We need to convert it to negative
+      // number as that is the true longitude.
+      return this.degrees.longitude ? this.degrees.longitude * -1 : null
     },
     ...mapGetters(['codes'])
   },
@@ -442,39 +444,10 @@ export default {
       this.updateUTM(easting, northing, zone)
     },
     insideBC (latitude, longitude) {
-      return new Promise((resolve, reject) => {
-        // Longitude may sometimes drop the minus (negative) sign, we make sure to add it back in.
-        longitude = this.roundDecimalDegrees(this.transformToNegative(longitude))
-        latitude = this.roundDecimalDegrees(latitude)
-        // We use a dictionary to reduce network traffic, by storing and checking for coordinates locally.
-        const key = `${latitude};${longitude}`
-        if (this.coordinateLookup.has(key)) {
-          // We already have this key, so we don't have to do a network call.
-          resolve(this.coordinateLookup.get(key))
-        } else if (this.coordinateResolveLookup.has(key)) {
-          // We already have an outstanding promise for this key, so we store a reference to the resolve for
-          // this promise.
-          const resolveList = this.coordinateResolveLookup.get(key)
-          resolveList.push(resolve)
-        } else {
-          const resolveList = []
-          this.coordinateResolveLookup.set(key, resolveList)
-          const params = { latitude, longitude }
-          ApiService.query('gis/insidebc', params).then((response) => {
-            // Store the result for future lookups.
-            this.coordinateLookup.set(key, response.data.inside)
-            // Remove our promise lookup
-            this.coordinateResolveLookup.delete(key)
-            // Call resolve for any other promises that have been made on this key
-            resolveList.forEach((item) => {
-              // We resolve all the other promises
-              item(response.data.inside)
-            })
-            // We resolve this promise
-            resolve(response.data.inside)
-          })
-        }
-      })
+      longitude = this.roundDecimalDegrees(this.transformToNegative(longitude))
+      latitude = this.roundDecimalDegrees(latitude)
+
+      return fetchInsideBCCheck(longitude, latitude)
     },
     checkIfCoordinateIsValid (latitude, longitude) {
       clearTimeout(this.timeout)

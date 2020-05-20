@@ -119,7 +119,5 @@ export default {
 
 #single-well-map {
   height: 500px;
-
-  @import "@/common/mapbox.scss";
 }
 </style>

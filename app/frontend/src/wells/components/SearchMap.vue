@@ -397,7 +397,5 @@ export default {
 
 #wells-search-map {
   height: 600px;
-
-  @import "@/common/mapbox.scss";
 }
 </style>

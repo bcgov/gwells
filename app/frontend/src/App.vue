@@ -31,6 +31,7 @@ export default {
 
 <style lang="scss">
   @import './common/common.scss';
+  @import './common/mapbox.scss';
   @import './common/assets/css/ie10-viewport-bug-workaround.css';
 
   @media (min-width: 1500px) {

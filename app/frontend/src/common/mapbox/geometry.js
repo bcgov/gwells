@@ -1,6 +1,8 @@
 import mapboxgl from 'mapbox-gl'
 import { pick } from 'lodash'
 
+import ApiService from '@/common/services/ApiService.js'
+
 export const CENTRE_LNG_LAT_BC = new mapboxgl.LngLat(-126.495, 54.459)
 export const DEFAULT_MAP_ZOOM = 4
 export const BC_LAT_LNG_BOUNDS = new mapboxgl.LngLatBounds(new mapboxgl.LngLat(-114.0541379, 60.0023), new mapboxgl.LngLat(-139.0536706, 48.2245556))
@@ -90,4 +92,35 @@ export function boundsCompletelyContains (boundsOuter, boundsInner) {
 
 export function isViewingBC (bounds) {
   return containsBounds(bounds, BC_LAT_LNG_BOUNDS)
+}
+
+const coordinateLookup = {}
+
+export function fetchInsideBCCheck (longitude, latitude, options) {
+  // We use a dictionary to reduce network traffic, by storing and checking for coordinates locally.
+  const key = `${latitude};${longitude}`
+
+  if (coordinateLookup[key]) {
+    return coordinateLookup[key]
+  }
+
+  // We don't a previous request for this lat / lng pair
+  const promise = new Promise((resolve, reject) => {
+    const params = { latitude, longitude }
+    ApiService.query('gis/insidebc', params, options).then((response) => {
+      resolve(response.data.inside)
+    }, reject)
+  })
+
+  coordinateLookup[key] = promise
+
+  return promise
+}
+
+export function checkCoordsAreTheSame (lngLat1, lngLat2, precision = 0.00001) {
+  if (!lngLat1 || !lngLat2) { return null }
+
+  const { lng: lng1, lat: lat1 } = lngLat1
+  const { lng: lng2, lat: lat2 } = lngLat2
+  return Math.abs(lat1 - lat2) <= precision && Math.abs(lng1 - lng2) <= precision
 }
