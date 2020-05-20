@@ -78,19 +78,22 @@ class Command(BaseCommand):
                         well.save()
                     aquifer = well.aquifer
 
-                self.process_row(row, use_dev_fixtures=use_dev_fixtures, well=well, aquifer=aquifer)
+                try:
+                    self.process_row(row, use_dev_fixtures=use_dev_fixtures, well=well, aquifer=aquifer)
+                except:
+                    logger.exception('Error processing CSV row WLS_WRL_SYSID=%s', row['WLS_WRL_SYSID'])
 
     def process_row(self, row, use_dev_fixtures=False, well=None, aquifer=None):
-        if row['POD_SUBTYPE'] not in ['PWD', 'PG']:
+        if row['POD_SUBTYPE'].strip() not in ['PWD', 'PG']:
             # [Nicole]: (we are only concerned with PWD and PG data – exclude any
             # rows with POD. POD refers to surface water which is out of scope for GWELLS)
             return
 
-        if not row['SOURCE_NAME'].isdigit():
+        if not row['SOURCE_NAME'].strip().isdigit():
             # Licence must be for an aquifer
             return
 
-        if not row['WELL_TAG_NUMBER'].isdigit():
+        if not row['WELL_TAG_NUMBER'].strip().isdigit():
             # Licence must be for a well
             return
 
@@ -104,11 +107,11 @@ class Command(BaseCommand):
         try:
             # Maintain code table with water rights purpose.
             purpose = WaterRightsPurpose.objects.get(
-                code=row['PURPOSE_USE_CODE'])
+                code=row['PURPOSE_USE_CODE'].strip())
         except WaterRightsPurpose.DoesNotExist:
             purpose = WaterRightsPurpose.objects.create(
-                code=row['PURPOSE_USE_CODE'],
-                description=row['PURPOSE_USE'])
+                code=row['PURPOSE_USE_CODE'].strip(),
+                description=row['PURPOSE_USE'].strip())
 
         try:
             # Check to see if licence already exists in DB
@@ -116,13 +119,13 @@ class Command(BaseCommand):
         except WaterRightsLicence.DoesNotExist:
             licence = WaterRightsLicence(wrl_sysid=row['WLS_WRL_SYSID'])
 
-        licence.licence_number = row['LICENCE_NUMBER']
-        licence.quantity_flag = row['QUANTITY_FLAG']
+        licence.licence_number = row['LICENCE_NUMBER'].strip()
+        licence.quantity_flag = row['QUANTITY_FLAG'].strip()
 
         licence.purpose = purpose
 
         # Convert quantity to m3/year
-        quantity = float(row['QUANTITY'])
+        quantity = float(row['QUANTITY'].strip() or '0')
         if row['QUANTITY_UNITS'].strip() == "m3/sec":
             quantity = quantity * 60*60*24*365
         elif row['QUANTITY_UNITS'].strip() == "m3/day":
