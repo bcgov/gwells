@@ -13,7 +13,6 @@
 """
 
 import logging
-from drf_yasg.utils import swagger_auto_schema
 
 from django.db import transaction
 from django.utils import timezone
@@ -62,6 +61,7 @@ class WellLocationListV2APIView(ListAPIView):
 
         get: returns a list of wells with locations only
     """
+    swagger_schema = None
     MAX_LOCATION_COUNT = 5000
     permission_classes = (WellsEditOrReadOnly,)
     model = Well
@@ -149,6 +149,7 @@ class WellAquiferListV2APIView(ListAPIView):
     """
     Returns a list of aquifers with depth information for a well
     """
+    swagger_schema = None
     permission_classes = (HasAquiferEditRole,)
     ordering = ('start',)
     serializer_class = WellVerticalAquiferExtentSerializerV2
@@ -167,11 +168,9 @@ class WellAquiferListV2APIView(ListAPIView):
 
         return qs
 
-    @swagger_auto_schema(auto_schema=None)
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
 
-    @swagger_auto_schema(auto_schema=None)
     @transaction.atomic
     def post(self, request, *args, **kwargs):
         username = self.request.user.profile.username
@@ -292,6 +291,7 @@ class WellListAPIViewV2(ListAPIView):
     get: returns a list of wells
     """
 
+    swagger_schema = None
     permission_classes = (WellsEditOrReadOnly,)
     model = Well
     pagination_class = APILimitOffsetPagination
@@ -334,6 +334,7 @@ class WellListAPIViewV2(ListAPIView):
 class WellExportListAPIViewV2(ListAPIView):
     """Returns CSV or Excel data for wells.
     """
+    swagger_schema = None
     permission_classes = (WellsEditOrReadOnly,)
     model = Well
 

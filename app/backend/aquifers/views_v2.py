@@ -12,7 +12,6 @@
     limitations under the License.
 """
 import logging
-import csv
 import openpyxl
 from openpyxl.writer.excel import save_virtual_workbook
 
@@ -28,7 +27,7 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
 from rest_framework import filters
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, schema
 from rest_framework.response import Response
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveUpdateAPIView
@@ -38,12 +37,6 @@ from reversion.views import RevisionMixin
 
 from gwells.settings.base import get_env_variable
 from gwells.views import AuditCreateMixin, AuditUpdateMixin
-from gwells.open_api import (
-    get_geojson_schema,
-    get_model_feature_schema,
-    GEO_JSON_302_MESSAGE,
-    GEO_JSON_PARAMS
-)
 from gwells.management.commands.export_databc import (
     AQUIFERS_SQL_V2,
     GeoJSONIterator,
@@ -51,16 +44,7 @@ from gwells.management.commands.export_databc import (
 )
 
 from aquifers import serializers, serializers_v2
-from aquifers.models import (
-    Aquifer,
-    AquiferDemand,
-    AquiferMaterial,
-    AquiferProductivity,
-    AquiferSubtype,
-    AquiferVulnerabilityCode,
-    QualityConcern,
-    WaterUse
-)
+from aquifers.models import Aquifer
 from aquifers.filters import BoundingBoxFilterBackend
 from aquifers.permissions import HasAquiferEditRoleOrReadOnly
 
@@ -72,6 +56,7 @@ class AquiferRetrieveUpdateAPIViewV2(RevisionMixin, AuditUpdateMixin, RetrieveUp
     get: return details of aquifers
     patch: update aquifer
     """
+    swagger_schema = None
     permission_classes = (HasAquiferEditRoleOrReadOnly,)
     queryset = Aquifer.objects.all()
     lookup_field = 'aquifer_id'
@@ -152,6 +137,7 @@ class AquiferListCreateAPIViewV2(RevisionMixin, AuditCreateMixin, ListCreateAPIV
     get: return a list of aquifers
     post: create an aquifer
     """
+    swagger_schema = None
     pagination_class = LargeResultsSetPagination
     permission_classes = (HasAquiferEditRoleOrReadOnly,)
     filter_backends = (djfilters.DjangoFilterBackend,
@@ -191,6 +177,7 @@ class AquiferListCreateAPIViewV2(RevisionMixin, AuditCreateMixin, ListCreateAPIV
 class AquiferNameListV2(ListAPIView):
     """ List all aquifers in a simplified format """
 
+    swagger_schema = None
     serializer_class = serializers.AquiferSerializerBasic
     model = Aquifer
     queryset = Aquifer.objects.all()
@@ -218,46 +205,8 @@ class AquiferNameListV2(ListAPIView):
         return Response(serializer(results[:20], many=True).data)
 
 
-AQUIFER_PROPERTIES = openapi.Schema(
-    type=openapi.TYPE_OBJECT,
-    title='GeoJSON Feature properties.',
-    description='See: https://tools.ietf.org/html/rfc7946#section-3.2',
-    properties={
-        'aquifer_id': get_model_feature_schema(Aquifer, 'aquifer_id'),
-        'name': get_model_feature_schema(Aquifer, 'aquifer_name'),
-        'location': get_model_feature_schema(Aquifer, 'location_description'),
-        'detail': openapi.Schema(
-            type=openapi.TYPE_STRING,
-            max_length=255,
-            title='Detail',
-            description=('Link to aquifer summary report within the Groundwater Wells and Aquifer (GWELLS)'
-                         ' application. The aquifer summary provides the overall desription and history of the'
-                         ' aquifer.')),
-        'material': get_model_feature_schema(AquiferMaterial, 'description'),
-        'subtype': get_model_feature_schema(AquiferSubtype, 'description'),
-        'vulnerability': get_model_feature_schema(AquiferVulnerabilityCode, 'description'),
-        'productivity': get_model_feature_schema(AquiferProductivity, 'description'),
-        'demand': get_model_feature_schema(AquiferDemand, 'description'),
-        'water_use': get_model_feature_schema(WaterUse, 'description'),
-        'quality_concern': get_model_feature_schema(QualityConcern, 'description'),
-        'litho_stratographic_unit': get_model_feature_schema(Aquifer, 'litho_stratographic_unit'),
-        'mapping_year': get_model_feature_schema(Aquifer, 'mapping_year'),
-        'notes': get_model_feature_schema(Aquifer, 'notes')
-    })
-
-
-@swagger_auto_schema(
-    operation_description=(
-        'Get GeoJSON (see https://tools.ietf.org/html/rfc7946) dump of aquifers.'),
-    method='get',
-    manual_parameters=GEO_JSON_PARAMS,
-    responses={
-        302: openapi.Response(GEO_JSON_302_MESSAGE),
-        200: openapi.Response(
-            'GeoJSON data for aquifers.',
-            get_geojson_schema(AQUIFER_PROPERTIES, 'MultiPolygon'))
-    })
 @api_view(['GET'])
+@schema(None)
 def aquifer_geojson_v2(request, **kwargs):
     realtime = request.GET.get('realtime') in ('True', 'true')
     if realtime:
