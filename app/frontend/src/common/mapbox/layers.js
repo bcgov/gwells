@@ -38,7 +38,8 @@ export const DATABC_OBSERVATION_WELLS_LAYER_ID = 'DATABC-obswells-layer'
 export const DATABC_ROADS_SOURCE = {
   type: 'raster',
   tiles: [
-    'https://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer/tile/{z}/{y}/{x}'
+    // NOTE: added ?env= param because of WATER-1183
+    `https://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer/tile/{z}/{y}/{x}?env=${window.location.hostname}`
   ],
   minzoom: 0,
   maxzoom: 17,
