@@ -102,6 +102,11 @@ class WellLocationListV2APIView(ListAPIView):
             # find all wells that intersect this simplified aquifer polygon
             qs = qs.filter(geom__intersects=aquifer_geom)
 
+        well_tag_numbers = self.request.query_params.get('well_tag_numbers', '')
+        if well_tag_numbers:
+            well_tag_numbers = well_tag_numbers.split(',')
+            qs = qs.filter(well_tag_number__in=well_tag_numbers)
+
         return qs
 
     def get(self, request, *args, **kwargs):

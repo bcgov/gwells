@@ -44,6 +44,7 @@ const auth = {
           },
           bulk: {
             wellAquiferCorrelation: state.keycloak.hasRealmRole('bulk_well_aquifer_correlation_upload'),
+            wellDocuments: state.keycloak.hasRealmRole('bulk_well_documents_upload'),
             aquiferDocuments: state.keycloak.hasRealmRole('bulk_aquifer_documents_upload'),
             verticalAquiferExtents: state.keycloak.hasRealmRole('bulk_vertical_aquifer_extents_upload')
           }
