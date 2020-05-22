@@ -259,7 +259,14 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </b-row>
           <b-row>
             <b-col cols="12" md="4"><span class="font-weight-bold">Finished Well Depth:</span> {{ well.finished_well_depth }} {{ well.finished_well_depth ? 'feet':''}}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Estimated Well Yield:</span> {{ well.well_yield }} {{ well.well_yield ? 'USGPM': ''}}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Estimated Well Yield:</span>
+              <span v-if="well.well_yield === null">
+                unknown
+              </span>
+              <span v-else>
+                {{ well.well_yield }} {{well.well_yield_unit}}
+              </span>
+            </b-col>
             <b-col cols="12" md="4"><span class="font-weight-bold">Well Disinfected Status:</span> {{ well.well_disinfected_status }}</b-col>
           </b-row>
           <b-row>

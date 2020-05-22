@@ -1570,7 +1570,8 @@ class ActivitySubmission(AuditModelStructure):
         db_comment=('The level (depth below ground) to which water will naturally rise in a well without '
                     'pumping, measured in feet.'))
     well_yield = models.DecimalField(
-        max_digits=8, decimal_places=3, blank=True, null=True, verbose_name='Estimated Well Yield')
+        max_digits=8, decimal_places=3, blank=True, null=True, verbose_name='Estimated Well Yield',
+        validators=[MinValueValidator(Decimal('0.01'))])
     artesian_flow = models.DecimalField(
         max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Artesian Flow',
         db_comment=('Measurement of the artesian well\'s water flow that occurs naturally due to'
