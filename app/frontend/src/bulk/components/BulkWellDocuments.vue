@@ -56,7 +56,7 @@
                     {{count}} documents
                   </template>
                 </plural>
-                <plural :count="Object.keys(wellDocuments).length">
+                <plural :count="numWellDocuments">
                   <template #zero>
                     <!-- needs a zero-width-word-joiner on purpose to force zero case to be empty -->
                     &#8203;
@@ -243,6 +243,11 @@ export default {
 
       return list
     },
+    numWellDocuments () {
+      return Object.keys(this.wellDocuments).reduce((count, key) => {
+        return count + this.wellDocuments[key].length
+      }, 0)
+    },
     wellTableData () {
       return Object.keys(this.wellDocuments).map((wellTagNumber) => {
         return {
@@ -266,7 +271,7 @@ export default {
     submitButtonIsDisabled () {
       if (this.isSaving) {
         return true
-      } else if (this.upload_files.length === 0) {
+      } else if (this.numWellDocuments === 0) {
         return true
       } else if (this.unknonwnWellIdsExist) {
         return true
@@ -391,7 +396,7 @@ export default {
       return this.unknonwnWellIds.indexOf(wellTagNumber) !== -1
     },
     parseWellIdFromFileName (fileName) {
-      const matches = fileName.match(/[_ -](\d+)\.[a-zA-Z0-9]+$/)
+      const matches = fileName.match(/WTN\s+(\d+)/i)
       if (matches) {
         return parseInt(matches[1], 10) || null
       }
