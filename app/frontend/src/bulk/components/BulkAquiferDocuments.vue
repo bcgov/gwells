@@ -62,18 +62,38 @@
 
           <div v-if="behaviourPicked">
             <b-card id="instructions" class="mb-3" title="Instructions">
-              <div v-if="multiBehaviourPicked">
+              <div>
                 <ol>
-                  <li :class="{active: this.multiActiveStep === 'one'}">Use the file picker below to choose one or more documents.</li>
-                  <li :class="{active: this.multiActiveStep === 'two'}">Search for the aquifer in the dropdown list to the right.</li>
-                  <li :class="{active: this.multiActiveStep === 'three'}">Add more aquifers as needed.</li>
-                  <li :class="{active: this.multiActiveStep === 'four'}">Click “Submit” to upload the {{this.upload_files.length}} documents for {{this.aquiferIds.length}} aquifers</li>
-                </ol>
-              </div>
-              <div v-else>
-                <ol>
-                  <li :class="{active: this.keyedActiveStep === 'one'}">Use the file picker below to choose one or more documents keyed by aquifer ID (e.g. factsheet_0001.pdf, factsheet_0002.pdf).</li>
-                  <li :class="{active: this.keyedActiveStep === 'two'}">Click “Submit” to upload the {{this.upload_files.length}} documents for {{Object.keys(this.aquiferDocuments).length}} aquifers</li>
+                  <li v-if="multiBehaviourPicked" :class="{active: multiActiveStep === 'one'}">Use the file picker below to choose one or more documents.</li>
+                  <li v-else :class="{active: keyedActiveStep === 'one'}">Use the file picker below to choose one or more documents keyed by aquifer ID (e.g. factsheet_0001.pdf, factsheet_0002.pdf).</li>
+                  <li v-if="multiBehaviourPicked" :class="{active: multiActiveStep === 'two'}">Search for the aquifer in the dropdown list to the right.</li>
+                  <li v-if="multiBehaviourPicked" :class="{active: multiActiveStep === 'three'}">Add more aquifers as needed.</li>
+                  <li :class="{active: multiActiveStep === 'four' || keyedActiveStep === 'two'}">
+                    Click “Submit” to upload the
+                    <plural :count="multiBehaviourPicked ? upload_files.length : numAquiferDocuments">
+                      <template #zero>
+                        documents
+                      </template>
+                      <template #singular="{ count }">
+                        {{count}} document
+                      </template>
+                      <template #plural="{ count }">
+                        {{count}} documents
+                      </template>
+                    </plural>
+                    <plural :count="multiBehaviourPicked ? aquiferIds.length : Object.keys(aquiferDocuments).length">
+                      <template #zero>
+                        <!-- needs a zero-width-word-joiner on purpose to force zero case to be empty -->
+                        &#8203;
+                      </template>
+                      <template #singular="{ count }">
+                        for {{count}} aquifer
+                      </template>
+                      <template #plural="{ count }">
+                        for {{count}} aquifers
+                      </template>
+                    </plural>
+                  </li>
                 </ol>
               </div>
             </b-card>
@@ -86,7 +106,7 @@
                     <b-col md="3">
                       <b-form-file
                         multiple
-                        :key="`file-upload-${this.upload_files.length}`"
+                        :key="`file-upload-${upload_files.length}`"
                         @input="filesPicked"/>
                     </b-col>
                     <b-col md="9">
@@ -205,6 +225,7 @@ import { debounce } from 'lodash'
 
 import ApiService from '@/common/services/ApiService.js'
 import APIErrorMessage from '@/common/components/APIErrorMessage'
+import Plural from '@/common/components/Plural'
 
 export default {
   data () {
@@ -242,7 +263,8 @@ export default {
     }
   },
   components: {
-    'api-error': APIErrorMessage
+    'api-error': APIErrorMessage,
+    plural: Plural
   },
   computed: {
     ...mapState('documentState', [
@@ -297,6 +319,11 @@ export default {
         }
       })
     },
+    numAquiferDocuments () {
+      return Object.keys(this.aquiferDocuments).reduce((count, key) => {
+        return count + this.aquiferDocuments[key].length
+      }, 0)
+    },
     unknonwnAquiferIdsExist () {
       return this.unknonwnAquiferIds !== null && this.unknonwnAquiferIds.length > 0
     },
@@ -324,6 +351,8 @@ export default {
       return true
     },
     multiActiveStep () {
+      if (!this.multiBehaviourPicked) { return null }
+
       if (this.upload_files.length === 0) {
         return 'one'
       } else if (this.aquiferIds.length === 0) {
@@ -335,17 +364,13 @@ export default {
       return 'four'
     },
     keyedActiveStep () {
+      if (!this.keyedBehaviourPicked) { return null }
+
       if (this.upload_files.length === 0) {
         return 'one'
       }
 
       return 'two'
-    },
-    stepTwoActive () {
-      return this.upload_files.length > 0 && this.aquiferIds.length === 0
-    },
-    stepThreeActive () {
-      return this.aquiferIds.length > 0
     }
   },
   watch: {
@@ -363,8 +388,7 @@ export default {
       'uploadFiles',
       'fileUploadSuccess',
       'fileUploadFail',
-      'clearUploadFilesMessage',
-      'resetUploadFiles'
+      'clearUploadFilesMessage'
     ]),
     save () {
       this.clearUploadFilesMessage()
