@@ -14,17 +14,42 @@
 
 <template>
   <div class="container p-1">
+    <b-alert show v-if="statusMessage" variant="info">
+      {{statusMessage}}
+    </b-alert>
     <b-row>
       <b-col md="6">
-        <b-row v-if="showId">
-          <b-col md="4" class="aquifer-id col-form-label">
-            Aquifer number
-          </b-col>
-          <b-col class="aquifer-id" md="8">
-            {{id}}
-          </b-col>
-        </b-row>
-
+        <b-form-group
+          horizontal
+          label-cols="4"
+          label="Aquifer Status"
+          label-for="aquifer-status">
+          <b-form-select
+            :options="aquiferStatusOptions"
+            :disabled="fieldDisabled"
+            id="aquifer-status"
+            v-model="status"
+            @change="statusChanged"/>
+        </b-form-group>
+      </b-col>
+      <b-col md="6">
+        <b-form-group
+          horizontal
+          label-cols="4"
+          label="Year of mapping"
+          label-for="mapping_year"
+          :invalid-feedback="fieldErrorMessages.mapping_year"
+          :state="fieldHasError.mapping_year">
+            <b-form-input
+              id="aquifer-mapping-year"
+              type="text"
+              :disabled="fieldDisabled"
+              v-model="record.mapping_year"/>
+        </b-form-group>
+      </b-col>
+    </b-row>
+    <b-row>
+      <b-col md="6">
         <b-form-group
           horizontal
           label-cols="4"
@@ -33,13 +58,30 @@
           :invalid-feedback="fieldErrorMessages.aquifer_name"
           :state="fieldHasError.aquifer_name">
             <b-form-input
-              tabindex="1"
               id="aquifer-name"
               type="text"
-              :disabled="loadingData"
+              :disabled="fieldDisabled"
               v-model="record.aquifer_name"/>
         </b-form-group>
-
+      </b-col>
+      <b-col md="6">
+        <b-form-group
+          horizontal
+          label-cols="4"
+          label="Litho stratigraphic unit"
+          label-for="litho_stratographic_unit"
+          :invalid-feedback="fieldErrorMessages.litho_stratographic_unit"
+          :state="fieldHasError.litho_stratographic_unit">
+            <b-form-input
+              id="aquifer-litho-stratigraphic-unit"
+              type="text"
+              :disabled="fieldDisabled"
+              v-model="record.litho_stratographic_unit"/>
+        </b-form-group>
+      </b-col>
+    </b-row>
+    <b-row>
+      <b-col md="6">
         <b-form-group
           horizontal
           label-cols="4"
@@ -48,13 +90,32 @@
           :invalid-feedback="fieldErrorMessages.location_description"
           :state="fieldHasError.location_description">
             <b-form-input
-              tabindex="3"
               id="aquifer-location-description"
               type="text"
-              :disabled="loadingData"
+              :disabled="fieldDisabled"
               v-model="record.location_description"/>
         </b-form-group>
-
+      </b-col>
+      <b-col md="6">
+        <b-form-group
+          horizontal
+          label-cols="4"
+          label="Vulnerability"
+          label-for="vulnerability"
+          :invalid-feedback="fieldErrorMessages.vulnerability"
+          :state="fieldHasError.vulnerability">
+          <b-form-select
+            :options="[''].concat(vulnerability_codes)"
+            :disabled="fieldDisabled"
+            id="aquifer-vulnerability"
+            text-field="description"
+            v-model="record.vulnerability"
+            value-field="code"/>
+        </b-form-group>
+      </b-col>
+    </b-row>
+    <b-row>
+      <b-col md="6">
         <b-form-group
           horizontal
           label-cols="4"
@@ -63,15 +124,34 @@
           :invalid-feedback="fieldErrorMessages.material"
           :state="fieldHasError.material">
           <b-form-select
-            tabindex="5"
             :options="[''].concat(material_codes)"
-            :disabled="loadingData"
+            :disabled="fieldDisabled"
             id="aquifer-material"
             text-field="description"
             v-model="record.material"
             value-field="code"/>
         </b-form-group>
-
+      </b-col>
+      <b-col md="6">
+        <b-form-group
+          horizontal
+          label-cols="4"
+          label="Subtype"
+          label-for="subtype"
+          :invalid-feedback="fieldErrorMessages.subtype"
+          :state="fieldHasError.subtype">
+          <b-form-select
+            id="aquifer-subtype"
+            v-model="record.subtype"
+            :options="[''].concat(subtype_codes)"
+            :disabled="fieldDisabled"
+            value-field="code"
+            text-field="description"/>
+        </b-form-group>
+      </b-col>
+    </b-row>
+    <b-row>
+      <b-col md="6">
         <b-form-group
           horizontal
           label-cols="4"
@@ -80,25 +160,34 @@
           :invalid-feedback="fieldErrorMessages.quality_concern"
           :state="fieldHasError.quality_concern">
           <b-form-select
-            tabindex="7"
             id="aquifer-quality-concern"
             v-model="record.quality_concern"
             :options="[''].concat(quality_concern_codes)"
-            :disabled="loadingData"
+            :disabled="fieldDisabled"
             value-field="code"
             text-field="description"/>
         </b-form-group>
-
+      </b-col>
+      <b-col md="6">
         <b-form-group
           horizontal
           label-cols="4"
-          label="Size (km²)"
-          label-for="area">
-          <div class="pt-2">
-            {{record.area}}
-          </div>
+          label="Productivity"
+          label-for="productivity"
+          :invalid-feedback="fieldErrorMessages.productivity"
+          :state="fieldHasError.productivity">
+          <b-form-select
+            id="aquifer-productivity"
+            v-model="record.productivity"
+            :options="[''].concat(productivity_codes)"
+            :disabled="fieldDisabled"
+            value-field="code"
+            text-field="description"/>
         </b-form-group>
-
+      </b-col>
+    </b-row>
+    <b-row>
+      <b-col md="6">
         <b-form-group
           horizontal
           label-cols="4"
@@ -107,15 +196,34 @@
           :invalid-feedback="fieldErrorMessages.known_water_use"
           :state="fieldHasError.known_water_use">
           <b-form-select
-            tabindex="11"
             id="aquifer-known-water-use"
             v-model="record.known_water_use"
             :options="[''].concat(known_water_use_codes)"
-            :disabled="loadingData"
+            :disabled="fieldDisabled"
             value-field="code"
             text-field="description"/>
         </b-form-group>
-
+      </b-col>
+      <b-col md="6">
+        <b-form-group
+          horizontal
+          label-cols="4"
+          label="Demand"
+          label-for="demand"
+          :invalid-feedback="fieldErrorMessages.demand"
+          :state="fieldHasError.demand">
+          <b-form-select
+            id="aquifer-demand"
+            v-model="record.demand"
+            :options="[''].concat(demand_codes)"
+            :disabled="fieldDisabled"
+            value-field="code"
+            text-field="description"/>
+        </b-form-group>
+      </b-col>
+    </b-row>
+    <b-row>
+      <b-col md="6">
         <b-form-group
           horizontal
           label-cols="4"
@@ -124,13 +232,26 @@
           :invalid-feedback="fieldErrorMessages.notes"
           :state="fieldHasError.notes">
           <b-form-textarea
-            tabindex="13"
             rows="4"
             id="aquifer-notes"
-            :disabled="loadingData"
+            :disabled="fieldDisabled"
             v-model="record.notes"/>
         </b-form-group>
-
+      </b-col>
+      <b-col md="6">
+        <b-form-group
+          horizontal
+          label-cols="4"
+          description="Please upload a shapefile containing only this aqufier in ZIP format."
+          label="Shapefile">
+          <b-form-file
+            :disabled="fieldDisabled"
+            v-model="shape"/>
+        </b-form-group>
+      </b-col>
+    </b-row>
+    <b-row>
+      <b-col md="6">
         <b-form-group
           horizontal
           label-cols="4"
@@ -142,7 +263,7 @@
           <div class="mt-3">
             <b-form-checkbox
              id="isPrivateCheckbox"
-            :disabled="loadingData"
+            :disabled="fieldDisabled"
              v-model="privateDocument">Are these documents private?</b-form-checkbox>
           </div>
         </b-form-group>
@@ -154,119 +275,10 @@
           v-on:fetchFiles="$emit('fetchFiles')">
         </aquifer-documents>
       </b-col>
-
-      <b-col md="6">
-        <b-form-group
-          horizontal
-          label-cols="4"
-          label="Year of mapping"
-          label-for="mapping_year"
-          :invalid-feedback="fieldErrorMessages.mapping_year"
-          :state="fieldHasError.mapping_year">
-            <b-form-input
-              tabindex="2"
-              id="aquifer-mapping-year"
-              type="text"
-              :disabled="loadingData"
-              v-model="record.mapping_year"/>
-        </b-form-group>
-
-        <b-form-group
-          horizontal
-          label-cols="4"
-          label="Litho stratigraphic unit"
-          label-for="litho_stratographic_unit"
-          :invalid-feedback="fieldErrorMessages.litho_stratographic_unit"
-          :state="fieldHasError.litho_stratographic_unit">
-            <b-form-input
-              tabindex="4"
-              id="aquifer-litho-stratigraphic-unit"
-              type="text"
-              :disabled="loadingData"
-              v-model="record.litho_stratographic_unit"/>
-        </b-form-group>
-
-        <b-form-group
-          horizontal
-          label-cols="4"
-          label="Vulnerability"
-          label-for="vulnerability"
-          :invalid-feedback="fieldErrorMessages.vulnerability"
-          :state="fieldHasError.vulnerability">
-          <b-form-select
-            tabindex="6"
-            :options="[''].concat(vulnerability_codes)"
-            :disabled="loadingData"
-            id="aquifer-vulnerability"
-            text-field="description"
-            v-model="record.vulnerability"
-            value-field="code"/>
-        </b-form-group>
-
-        <b-form-group
-          horizontal
-          label-cols="4"
-          label="Subtype"
-          label-for="subtype"
-          :invalid-feedback="fieldErrorMessages.subtype"
-          :state="fieldHasError.subtype">
-          <b-form-select
-            tabindex="8"
-            id="aquifer-subtype"
-            v-model="record.subtype"
-            :options="[''].concat(subtype_codes)"
-            :disabled="loadingData"
-            value-field="code"
-            text-field="description"/>
-        </b-form-group>
-
-        <b-form-group
-          horizontal
-          label-cols="4"
-          label="Productivity"
-          label-for="productivity"
-          :invalid-feedback="fieldErrorMessages.productivity"
-          :state="fieldHasError.productivity">
-          <b-form-select
-            tabindex="10"
-            id="aquifer-productivity"
-            v-model="record.productivity"
-            :options="[''].concat(productivity_codes)"
-            :disabled="loadingData"
-            value-field="code"
-            text-field="description"/>
-        </b-form-group>
-
-        <b-form-group
-          horizontal
-          label-cols="4"
-          label="Demand"
-          label-for="demand"
-          :invalid-feedback="fieldErrorMessages.demand"
-          :state="fieldHasError.demand">
-          <b-form-select
-            tabindex="12"
-            id="aquifer-demand"
-            v-model="record.demand"
-            :options="[''].concat(demand_codes)"
-            :disabled="loadingData"
-            value-field="code"
-            text-field="description"/>
-        </b-form-group>
-        <b-form-group
-          horizontal
-          label-cols="4"
-          description="Please upload a shapefile containing only this aqufier in ZIP format."
-          label="Shapefile">
-          <b-form-file
-            :disabled="loadingData"
-            v-model="shape"/>
-        </b-form-group>
-
-      </b-col>
     </b-row>
 
-    <b-row class="mt-4"
+    <h4 class="mt-4">Resource Links</h4>
+    <b-row
       v-for="(resource, index) in record.resources" :key="index">
       <b-col cols="auto">
         <b-form-group
@@ -277,7 +289,7 @@
           <b-form-select
             v-model="resource.section_code"
             :options="['-- Section --'].concat(aquifer_resource_sections)"
-            :disabled="loadingData"
+            :disabled="fieldDisabled"
             value-field="code"
             text-field="name"/>
         </b-form-group>
@@ -290,7 +302,7 @@
           :state="!resourceErrorMessages[index].name">
           <b-form-input
             type="text"
-            :disabled="loadingData"
+            :disabled="fieldDisabled"
             v-model="resource.name"/>
         </b-form-group>
       </b-col>
@@ -302,7 +314,7 @@
           :state="!resourceErrorMessages[index].url">
           <b-form-input
             type="text"
-            :disabled="loadingData"
+            :disabled="fieldDisabled"
             v-model="resource.url"/>
         </b-form-group>
       </b-col>
@@ -311,33 +323,31 @@
         <b-button variant="primary" @click="handleDeleteResource(index)">Remove</b-button>
       </b-col>
     </b-row>
-    <b-row class="mt-4">
+    <b-row>
       <b-col cols="auto">
         <b-button
           variant="primary"
-          :disabled="loadingData"
+          :disabled="fieldDisabled"
           v-on:click="handleAddResource">
           Add additional link
         </b-button>
       </b-col>
     </b-row>
 
-    <b-row class="mt-4">
-      <b-col cols="auto">
-        <b-button
-          variant="primary"
-          :disabled="loadingData"
-          v-b-modal.confirmSave>
-          Save
-        </b-button>
+    <div class="mt-4">
+      <b-button
+        variant="primary"
+        :disabled="loadingData"
+        v-b-modal.confirmSave>
+        Save
+      </b-button>
 
-        <b-button
-          variant="default"
-          v-b-modal.confirmCancel>
-          Cancel
-        </b-button>
-      </b-col>
-    </b-row>
+      <b-button
+        variant="default"
+        v-b-modal.confirmCancel>
+        Cancel
+      </b-button>
+    </div>
 
     <b-modal
       ok-variant="primary"
@@ -357,18 +367,13 @@
   </div>
 </template>
 
-<style>
-.aquifer-id {
-  padding-top: 1rem !important;
-  padding-bottom: 1rem !important;
-}
-</style>
-
 <script>
-import ApiService from '@/common/services/ApiService.js'
 // import AquiferResources from './AquiferResources.vue'
-import { isEmpty, mapValues } from 'lodash'
+import { isEmpty, mapValues, cloneDeep } from 'lodash'
 import { mapMutations, mapState } from 'vuex'
+
+import ApiService from '@/common/services/ApiService.js'
+import { END_OF_TIME_ISO_8601 } from '@/common/helpers/dates.js'
 
 import Documents from './Documents.vue'
 
@@ -377,15 +382,34 @@ export default {
     'aquifer-documents': Documents
   },
   props: {
+    isNew: Boolean,
     fieldErrors: Object,
     record: Object,
-    showId: Boolean,
     files: Object,
     loadingFiles: Boolean,
     loadingData: Boolean
   },
+  data () {
+    const aquiferStatusOptions = [
+      { value: 'unpublished', text: 'Unpublished' },
+      { value: 'published', text: 'Published' }
+    ]
+
+    if (!this.isNew) {
+      aquiferStatusOptions.push({ value: 'retired', text: 'Retired' })
+    }
+
+    return {
+      recordCopy: this.hasFormData ? cloneDeep(this.record) : {}, // keep a copy of the record
+      status: this.isNew ? 'unpublished' : null,
+      aquiferStatusOptions
+    }
+  },
   computed: {
     id () { return this.$route.params.id },
+    hasFormData () {
+      return Object.keys(this.record).length > 0
+    },
     resourceErrorMessages () {
       let messages
       if (this.fieldErrors.resources) {
@@ -430,6 +454,20 @@ export default {
         this.setPrivate(value)
       }
     },
+    statusMessage () {
+      if (this.status === 'unpublished') {
+        return `
+          An unpublished aquifer will be hidden from DataBC, the GWELLS Aquifer Search, the GWELLS
+          Aquifer Summary and the CSV/XLS export.
+        `
+      } else if (this.status === 'retired') {
+        return `
+          A retired aquifer will not exist in DataBC or the CSV/XLS export. However it still can be
+          viewed on the GWELLS Aquifer Search and the GWELLS Aquifer Summary pages.
+        `
+      }
+      return ''
+    },
     ...mapState('aquiferStore/aquiferCodes', [
       'demand_codes',
       'aquifer_resource_sections',
@@ -444,7 +482,10 @@ export default {
       'isPrivate',
       'upload_files',
       'shapefile'
-    ])
+    ]),
+    fieldDisabled () {
+      return this.loadingData
+    }
   },
   methods: {
     ...mapMutations('aquiferStore/aquiferCodes', ['addCodes']),
@@ -477,11 +518,65 @@ export default {
       this.fetchCode('aquifer-codes/productivity', 'productivity_codes')
       this.fetchCode('aquifer-codes/demand', 'demand_codes')
       this.fetchCode('aquifer-codes/water-use', 'known_water_use_codes')
+    },
+    statusChanged (val) {
+      const now = new Date().toISOString()
+      switch (val) {
+        case 'unpublished':
+          // if !isNew then reset to initial value
+          this.record.effective_date = this.isNew ? END_OF_TIME_ISO_8601 : this.recordCopy.effective_date
+          this.record.expiry_date = now
+          this.record.retire_date = END_OF_TIME_ISO_8601
+          break
+        case 'published':
+          this.record.effective_date = now
+          this.record.expiry_date = END_OF_TIME_ISO_8601
+          this.record.retire_date = END_OF_TIME_ISO_8601
+          break
+        case 'retired':
+          this.record.retire_date = now
+          break
+      }
+
+      console.log(this.record)
+    },
+    setStatus (record) {
+      if (!this.hasFormData) { return }
+
+      const now = new Date()
+      if ((new Date(record.effective_date) <= now) && (new Date(record.expiry_date) >= now)) {
+        if (record.retire_date && new Date(record.retire_date) <= now) { // retired
+          this.status = 'retired'
+        } else {
+          this.status = 'published'
+        }
+      } else {
+        // unpublished
+        this.status = 'unpublished'
+      }
     }
   },
   created () {
     this.fetchCodes()
-    this.$emit('load', true)
+
+    if (this.hasFormData) {
+      this.setStatus(this.record)
+    }
+  },
+  watch: {
+    record (record) {
+      if (this.hasFormData) {
+        this.recordCopy = cloneDeep(record) // keep a copy of the loaded data to compare with later
+        this.setStatus(record)
+      }
+    }
   }
 }
 </script>
+
+<style>
+.aquifer-id {
+  padding-top: calc(.375rem + 1px) !important;
+  padding-bottom: calc(.375rem + 1px) !important;
+}
+</style>

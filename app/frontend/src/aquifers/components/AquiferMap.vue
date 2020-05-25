@@ -19,6 +19,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 import mapboxgl from 'mapbox-gl'
 import GestureHandling from '@geolonia/mbgl-gesture-handling'
 import { difference, uniq } from 'lodash'
+import { mapGetters } from 'vuex'
 
 import { SEARCH_AQUIFERS } from '../store/actions.types'
 import {
@@ -49,7 +50,8 @@ import {
   DATABC_OBSERVATION_WELLS_SOURCE,
   DATABC_WATER_LICENCES_SOURCE,
   WELLS_BASE_AND_ARTESIAN_LAYER_ID,
-  AQUIFERS_FILL_LAYER_ID
+  AQUIFERS_FILL_LAYER_ID,
+  aquiferLayerFilter
 } from '../../common/mapbox/layers'
 import {
   LayersControl,
@@ -79,8 +81,9 @@ export default {
     'aquiferDetails',
     'highlightAquiferIds',
     'selectedId',
+    'viewBounds',
     'searchText',
-    'viewBounds'
+    'showRetired'
   ],
   data () {
     return {
@@ -170,11 +173,15 @@ export default {
     this.map = null
   },
   computed: {
+    ...mapGetters(['userRoles']),
     highlightIdsMap () {
       return this.highlightAquiferIds.reduce((obj, aquiferId) => {
         obj[aquiferId] = aquiferId
         return obj
       }, {})
+    },
+    showUnpublished () {
+      return Boolean(this.userRoles.aquifers.edit)
     }
   },
   methods: {
@@ -280,8 +287,8 @@ export default {
           DATABC_ECOCAT_LAYER,
           DATABC_WATER_LICENCES_LAYER,
           DATABC_OBSERVATION_WELLS_LAYER,
-          aquifersFillLayer({ aquiferId: this.aquiferId }),
-          aquifersLineLayer({ aquiferId: this.aquiferId }),
+          aquifersFillLayer({ filter: aquiferLayerFilter(this.showUnpublished, this.showRetired) }),
+          aquifersLineLayer({ filter: aquiferLayerFilter(this.showUnpublished, this.showRetired) }),
           wellsBaseAndArtesianLayer({ layout: { visibility: 'none' } })
         ]
       }
@@ -417,6 +424,12 @@ export default {
     },
     searchText (searchQuery) {
       this.searchMapButtonEnabled = Boolean(searchQuery)
+    },
+    showRetired () {
+      this.map.setStyle(this.buildMapStyle())
+    },
+    userRoles () {
+      this.map.setStyle(this.buildMapStyle())
     }
   }
 }

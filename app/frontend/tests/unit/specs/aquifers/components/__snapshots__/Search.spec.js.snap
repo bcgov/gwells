@@ -237,7 +237,7 @@ exports[`Search Component Matches the snapshot 1`] = `
         >
           <table
             aria-busy="false"
-            aria-colcount="11"
+            aria-colcount="12"
             class="table b-table table-striped border"
             id="aquifers-results"
           >
@@ -260,7 +260,7 @@ exports[`Search Component Matches the snapshot 1`] = `
                   scope="col"
                   tabindex="0"
                 >
-                  Aquifer number
+                  Aquifer number
                 </th>
                 <th
                   aria-colindex="2"
@@ -271,7 +271,7 @@ exports[`Search Component Matches the snapshot 1`] = `
                   scope="col"
                   tabindex="0"
                 >
-                  Aquifer name
+                  Aquifer name
                 </th>
                 <th
                   aria-colindex="3"
@@ -282,7 +282,7 @@ exports[`Search Component Matches the snapshot 1`] = `
                   scope="col"
                   tabindex="0"
                 >
-                  Descriptive location
+                  Descriptive location
                 </th>
                 <th
                   aria-colindex="4"
@@ -304,7 +304,7 @@ exports[`Search Component Matches the snapshot 1`] = `
                   scope="col"
                   tabindex="0"
                 >
-                  Litho stratigraphic unit
+                  Litho stratigraphic unit
                 </th>
                 <th
                   aria-colindex="6"
@@ -337,7 +337,7 @@ exports[`Search Component Matches the snapshot 1`] = `
                   scope="col"
                   tabindex="0"
                 >
-                  Size-km²
+                  Size‑km²
                 </th>
                 <th
                   aria-colindex="9"
@@ -370,7 +370,18 @@ exports[`Search Component Matches the snapshot 1`] = `
                   scope="col"
                   tabindex="0"
                 >
-                  Year of mapping
+                  Year of mapping
+                </th>
+                <th
+                  aria-colindex="12"
+                  aria-label="Click to sort Ascending"
+                  aria-sort="none"
+                  class=""
+                  role="columnheader"
+                  scope="col"
+                  tabindex="0"
+                >
+                  Date retired
                 </th>
               </tr>
             </thead>
@@ -384,7 +395,6 @@ exports[`Search Component Matches the snapshot 1`] = `
                 aria-rowindex="1"
                 class=""
                 role="row"
-                tabindex="0"
               >
                 <td
                   aria-colindex="1"
@@ -456,6 +466,15 @@ exports[`Search Component Matches the snapshot 1`] = `
                   role="cell"
                 >
                   1993
+                </td>
+                <td
+                  aria-colindex="12"
+                  class=""
+                  role="cell"
+                >
+                  <span>
+                    
+                  </span>
                 </td>
               </tr>
               <!---->

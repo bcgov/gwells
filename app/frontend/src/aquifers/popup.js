@@ -67,14 +67,7 @@ export function createWellTooltipElement (wellFeatureProperties, options) {
 
   let correlatedAquiferItem = 'Uncorrelated well'
   if (aquiferId) {
-    // well is correlated to diff aquifer = link it
     correlatedAquiferItem = `Correlated to aquifer ${aquiferId}`
-
-    // If there is an optional `currentAquiferId` check to see if this well's aquifer_id is the same
-    // as `currentAquiferId`. If it is then don't bother linking to the aquifer.
-    if (options.currentAquiferId !== undefined && aquiferId === options.currentAquiferId) {
-      correlatedAquiferItem = `Correlated to aquifer ${aquiferId}`
-    }
   }
 
   const items = [
@@ -91,26 +84,35 @@ export function createWellTooltipElement (wellFeatureProperties, options) {
   return container
 }
 
-function aquiferFeatures (map, point) {
-  return uniqBy(map.queryRenderedFeatures(point, { layers: [ AQUIFERS_FILL_LAYER_ID ] }), 'id')
+function aquiferFeatures (map, point, aquiferLayerIds) {
+  return uniqBy(map.queryRenderedFeatures(point, { layers: aquiferLayerIds }), 'id')
 }
 
 // Creates a <div> for the aquifer's popup content
-export function createAquiferPopupElement (map, $router, point) {
+export function createAquiferPopupElement (map, $router, point, aquiferLayerIds) {
   const container = document.createElement('div')
   container.className = 'mapbox-popup-aquifer'
   const ul = document.createElement('ul')
-  ul.className = 'm-0 p-0'
+  ul.className = 'm-0 p-0 text-center'
   ul.style = 'list-style: none'
   container.appendChild(ul)
 
-  aquiferFeatures(map, point).forEach((feature) => {
-    const { aquifer_id: aquiferId } = feature.properties
+  aquiferFeatures(map, point, aquiferLayerIds).forEach((feature) => {
+    const {
+      aquifer_id: aquiferId,
+      is_retired: isRetired,
+      is_published: isPublished
+    } = feature.properties
     const route = { name: 'aquifers-view', params: { id: aquiferId } }
     const url = $router.resolve(route)
+    const items = [
+      `<a href="${url.href}">Aquifer ${aquiferId}</a>`,
+      isRetired ? '<b>retired</b>' : null,
+      !isPublished ? '<b>unpublished</b>' : null
+    ]
     const li = document.createElement('li')
     li.className = 'm-0 p-0'
-    li.innerHTML = `<a href="${url.href}">Aquifer ${aquiferId}</a>`
+    li.innerHTML = items.filter(Boolean).join('<br>')
     const a = li.querySelector('a')
     a.onclick = (e) => {
       if (!e.ctrlKey) {
@@ -131,19 +133,28 @@ export function createAquiferPopupElement (map, $router, point) {
 }
 
 // Creates a <div> for the aquifer's tooltip content
-export function createAquiferTooltipElement (map, point) {
+export function createAquiferTooltipElement (map, point, aquiferLayerIds) {
   const container = document.createElement('div')
   container.className = 'mapbox-tooltip-aquifer'
   const ul = document.createElement('ul')
-  ul.className = 'm-0 p-0'
+  ul.className = 'm-0 p-0 text-center'
   ul.style = 'list-style: none'
   container.appendChild(ul)
 
-  aquiferFeatures(map, point).forEach((feature) => {
-    const { aquifer_id: aquiferId } = feature.properties
+  aquiferFeatures(map, point, aquiferLayerIds).forEach((feature) => {
+    const {
+      aquifer_id: aquiferId,
+      is_retired: isRetired,
+      is_published: isPublished
+    } = feature.properties
+    const items = [
+      `Aquifer ${aquiferId}`,
+      isRetired ? '<b>retired</b>' : null,
+      !isPublished ? '<b>unpublished</b>' : null
+    ]
     const li = document.createElement('li')
     li.className = 'm-0 p-0'
-    li.innerHTML = `Aquifer ${aquiferId}`
+    li.innerHTML = items.filter(Boolean).join('<br>')
     ul.appendChild(li)
   })
 
@@ -161,7 +172,7 @@ export function setupMapTooltips (map, $router, options = {}) {
   const wellsTooltip = new mapboxgl.Popup()
   const aquifersTooltip = new mapboxgl.Popup()
 
-  const aquiferFillLayerId = options.aquiferFillLayerId || AQUIFERS_FILL_LAYER_ID
+  const aquiferLayerIds = options.aquiferLayerIds || [ AQUIFERS_FILL_LAYER_ID ]
   const wellsLayerIds = options.wellsLayerIds || DEFAULT_WELL_LAYER_IDS
 
   let overAquifer = false
@@ -190,30 +201,32 @@ export function setupMapTooltips (map, $router, options = {}) {
     })
   })
 
-  map.on('mouseenter', aquiferFillLayerId, (e) => {
-    overAquifer = true
-    if (map.popup.isOpen() || wellsTooltip.isOpen()) { return }
+  aquiferLayerIds.forEach((aquiferLayerId) => {
+    map.on('mouseenter', aquiferLayerId, (e) => {
+      overAquifer = true
+      if (map.popup.isOpen() || wellsTooltip.isOpen()) { return }
 
-    const contentDiv = createAquiferTooltipElement(map, e.point)
-    aquifersTooltip
-      .setDOMContent(contentDiv)
-      .setLngLat(e.lngLat)
-      .addTo(map)
-  })
+      const contentDiv = createAquiferTooltipElement(map, e.point, aquiferLayerIds)
+      aquifersTooltip
+        .setDOMContent(contentDiv)
+        .setLngLat(e.lngLat)
+        .addTo(map)
+    })
 
-  map.on('mousemove', aquiferFillLayerId, (e) => {
-    if (map.popup.isOpen() || wellsTooltip.isOpen()) { return }
+    map.on('mousemove', aquiferLayerId, (e) => {
+      if (map.popup.isOpen() || wellsTooltip.isOpen()) { return }
 
-    const contentDiv = createAquiferTooltipElement(map, e.point)
-    aquifersTooltip
-      .setDOMContent(contentDiv)
-      .setLngLat(e.lngLat)
-      .addTo(map)
-  })
+      const contentDiv = createAquiferTooltipElement(map, e.point, aquiferLayerIds)
+      aquifersTooltip
+        .setDOMContent(contentDiv)
+        .setLngLat(e.lngLat)
+        .addTo(map)
+    })
 
-  map.on('mouseleave', aquiferFillLayerId, () => {
-    aquifersTooltip.remove()
-    overAquifer = false
+    map.on('mouseleave', aquiferLayerId, () => {
+      aquifersTooltip.remove()
+      overAquifer = false
+    })
   })
 
   map.on('reset', () => {
@@ -225,7 +238,7 @@ export function setupMapTooltips (map, $router, options = {}) {
 // Adds mouse event listeners to the map which will show the popup for the clicked well or aquifer
 export function setupMapPopups (map, $router, options = {}) {
   const wellsLayerIds = options.wellsLayerIds || DEFAULT_WELL_LAYER_IDS
-  const aquiferFillLayerId = options.aquiferFillLayerId || AQUIFERS_FILL_LAYER_ID
+  const aquiferLayerIds = options.aquiferLayerIds || [ AQUIFERS_FILL_LAYER_ID ]
 
   let clickedOnWell = false
   const popup = new mapboxgl.Popup()
@@ -248,17 +261,19 @@ export function setupMapPopups (map, $router, options = {}) {
     })
   })
 
-  map.on('click', aquiferFillLayerId, (e) => {
-    if (clickedOnWell) { return }
-    if (map.hoveredAquiferId) {
-      toggleAquiferHover(map, map.hoveredAquiferId, false)
-    }
+  aquiferLayerIds.forEach((aquiferLayerId) => {
+    map.on('click', aquiferLayerId, (e) => {
+      if (clickedOnWell) { return }
+      if (map.hoveredAquiferId) {
+        toggleAquiferHover(map, map.hoveredAquiferId, false)
+      }
 
-    const contentDiv = createAquiferPopupElement(map, $router, e.point)
-    popup
-      .setLngLat(e.lngLat)
-      .setDOMContent(contentDiv)
-      .addTo(map)
+      const contentDiv = createAquiferPopupElement(map, $router, e.point, aquiferLayerIds)
+      popup
+        .setLngLat(e.lngLat)
+        .setDOMContent(contentDiv)
+        .addTo(map)
+    })
   })
 
   map.on('reset', () => {

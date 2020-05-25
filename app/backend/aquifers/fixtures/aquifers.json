@@ -31,6 +31,7 @@
       "create_date": "2003-08-14T07:48:06Z",
       "update_user": "PROXY_WELLS",
       "update_date": "2017-07-21T11:05:18Z",
+      "retire_date": "2017-07-21T11:05:18Z",
       "aquifer_name": "Retired in 2017",
       "location_description": "Merged with Aquifer 115",
       "material": null,
@@ -117,6 +118,57 @@
       "mapping_year": 2000,
       "notes": null,
       "geom": "SRID=3005;MULTIPOLYGON (((1191327.020098582 488600.955241011, 1193116.870294359 490134.2304767846, 1194055.853751307 489392.9740429612, 1193568.666891278 487746.4669217904, 1192059.830418326 487863.9024609113, 1191327.020098582 488600.955241011)))"
+    }
+  },
+  {
+    "model": "aquifers.aquifer",
+    "pk": 1903,
+    "fields": {
+      "create_user": "WELLS",
+      "create_date": "2003-08-14T07:48:06Z",
+      "update_user": "PROXY_WELLS",
+      "update_date": "2016-04-13T09:41:35Z",
+      "retire_date": "2020-01-01T07:48:06Z",
+      "aquifer_name": "1903 retried",
+      "location_description": "",
+      "material": "B",
+      "subtype": "6b",
+      "area": "250.6",
+      "vulnerability": "M",
+      "productivity": "M",
+      "demand": "L",
+      "known_water_use": "M",
+      "quality_concern": "L",
+      "litho_stratographic_unit": null,
+      "mapping_year": 2020,
+      "notes": null,
+      "geom": "SRID=3005;MULTIPOLYGON (((1147991.612534973 512041.1677187852, 1146340.442830084 507240.9263042948, 1154408.521978676 503514.0319022309, 1154122.345814798 513013.9315958053, 1147991.612534973 512041.1677187852)))"
+    }
+  },
+  {
+    "model": "aquifers.aquifer",
+    "pk": 1904,
+    "fields": {
+      "create_user": "WELLS",
+      "create_date": "2003-08-14T07:48:06Z",
+      "update_user": "PROXY_WELLS",
+      "update_date": "2016-04-13T09:41:35Z",
+      "effective_date": "2020-01-01T07:48:06Z",
+      "expiry_date": "2020-02-02T07:48:06Z",
+      "aquifer_name": "1904 unpublished",
+      "location_description": "",
+      "material": "B",
+      "subtype": "6b",
+      "area": "250.6",
+      "vulnerability": "M",
+      "productivity": "M",
+      "demand": "L",
+      "known_water_use": "M",
+      "quality_concern": "L",
+      "litho_stratographic_unit": null,
+      "mapping_year": 2020,
+      "notes": null,
+      "geom": "SRID=3005;MULTIPOLYGON (((1138068.04980895 444476.6134661267, 1132624.707523296 436922.5872472817, 1139957.821999488 434107.5251999822, 1146998.233916819 441918.465586747, 1138068.04980895 444476.6134661267)), ((1147060.6344456 439716.4481795306, 1142207.895932704 432965.1762886296, 1143926.177773166 429199.9311643956, 1149603.66594797 435379.0817868391, 1149499.814434025 438984.5555272618, 1147060.6344456 439716.4481795306)))"
     }
   },
   {
