@@ -219,7 +219,9 @@ export function wellsBaseAndArtesianLayer (options = {}) {
     'circle-stroke-width': 1
   })
 
-  return vectorLayerConfig(layerId, options.source || WELLS_SOURCE_ID, options.layerType || 'circle', styles, options.layout)
+  const filter = options.filter || wellLayerFilter(false)
+
+  return vectorLayerConfig(layerId, options.source || WELLS_SOURCE_ID, options.layerType || 'circle', styles, options.layout, filter)
 }
 
 // Builds MapBox layer config object for searched wells with artesian ones with a fuchsia outline
@@ -344,6 +346,14 @@ export function aquifersFillLayer (options = {}) {
   const filter = options.filter || aquiferLayerFilter(false, false)
 
   return vectorLayerConfig(layerId, options.source || AQUIFERS_SOURCE_ID, options.layerType || 'fill', styles, options.layout, filter)
+}
+
+export function wellLayerFilter (showUnpublishedWells) {
+  return [
+    'case',
+    ['!', ['get', 'is_published']], showUnpublishedWells,
+    true
+  ]
 }
 
 export function aquiferLayerFilter (showUnpublishedAquifers, showRetiredAquifers) {

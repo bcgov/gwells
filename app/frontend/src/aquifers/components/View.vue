@@ -29,10 +29,10 @@
     <div v-else>
       <b-card class="container container-wide card-container p-0 pb-5 main-card" :class="{ 'p-4': editMode }">
         <api-error v-if="error" :error="error"/>
-        <b-alert show v-if="viewMode && isRetired && !isUnpublished" variant="danger">
+        <b-alert show v-if="viewMode && isRetired && !isUnpublished" variant="warning">
           This aquifer is retired and stored for record keeping purposes.
         </b-alert>
-        <b-alert show v-if="viewMode && isUnpublished" variant="danger">
+        <b-alert show v-if="viewMode && isUnpublished" variant="warning">
           This aquifer is unpublished.
         </b-alert>
         <b-alert show v-if="files_uploading || shapefile_uploading">File Upload In Progress...</b-alert>

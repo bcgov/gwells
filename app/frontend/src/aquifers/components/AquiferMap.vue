@@ -51,7 +51,8 @@ import {
   DATABC_WATER_LICENCES_SOURCE,
   WELLS_BASE_AND_ARTESIAN_LAYER_ID,
   AQUIFERS_FILL_LAYER_ID,
-  aquiferLayerFilter
+  aquiferLayerFilter,
+  wellLayerFilter
 } from '../../common/mapbox/layers'
 import {
   LayersControl,
@@ -180,8 +181,11 @@ export default {
         return obj
       }, {})
     },
-    showUnpublished () {
+    showUnpublishedAquifers () {
       return Boolean(this.userRoles.aquifers.edit)
+    },
+    showUnpublishedWells () {
+      return Boolean(this.userRoles.wells.edit)
     }
   },
   methods: {
@@ -287,9 +291,9 @@ export default {
           DATABC_ECOCAT_LAYER,
           DATABC_WATER_LICENCES_LAYER,
           DATABC_OBSERVATION_WELLS_LAYER,
-          aquifersFillLayer({ filter: aquiferLayerFilter(this.showUnpublished, this.showRetired) }),
-          aquifersLineLayer({ filter: aquiferLayerFilter(this.showUnpublished, this.showRetired) }),
-          wellsBaseAndArtesianLayer({ layout: { visibility: 'none' } })
+          aquifersFillLayer({ filter: aquiferLayerFilter(this.showUnpublishedAquifers, this.showRetired) }),
+          aquifersLineLayer({ filter: aquiferLayerFilter(this.showUnpublishedAquifers, this.showRetired) }),
+          wellsBaseAndArtesianLayer({ layout: { visibility: 'none' }, filter: wellLayerFilter(this.showUnpublishedWells) })
         ]
       }
     },

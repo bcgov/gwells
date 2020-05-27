@@ -2,7 +2,7 @@ export const SET_KEYCLOAK = 'SET_KEYCLOAK'
 
 const auth = {
   state: {
-    keycloak: {}
+    keycloak: null
   },
   mutations: {
     [SET_KEYCLOAK] (state, payload) {
@@ -58,6 +58,9 @@ const auth = {
           bulk: {}
         }
       }
+    },
+    authenticated (state) {
+      return Boolean(state.keycloak && state.keycloak.authenticated)
     }
   }
 }

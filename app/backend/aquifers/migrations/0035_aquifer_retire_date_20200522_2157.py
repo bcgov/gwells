@@ -19,7 +19,21 @@ UPDATE_GWELLS_AQUIFER_VIEW_SQL = """
             retire_date <= NOW() AS is_retired,
             effective_date <= NOW() AND expiry_date >= NOW() AS is_published,
             geom
-        FROM aquifer;
+        FROM aquifer
+        WHERE geom IS NOT NULL;
+"""
+
+UPDATE_WALLY_AQUIFER_VIEW_SQL = """
+    DROP VIEW postgis_ftw.wally_aquifer_view;
+    CREATE VIEW postgis_ftw.wally_aquifer_view AS
+        SELECT
+            aquifer_id,
+            geom
+        FROM aquifer
+        WHERE
+            geom IS NOT NULL AND
+            aquifer.effective_date <= NOW() AND aquifer.expiry_date >= NOW() AND
+            aquifer.retire_date >= NOW();
 """
 
 class Migration(migrations.Migration):
@@ -48,6 +62,6 @@ class Migration(migrations.Migration):
             UPDATE_AQUIFER_EFFECTIVE_DATE_SQL,
         ),
         migrations.RunSQL(
-            UPDATE_GWELLS_AQUIFER_VIEW_SQL,
+            UPDATE_WALLY_AQUIFER_VIEW_SQL,
         ),
     ]

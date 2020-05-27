@@ -233,7 +233,8 @@ from aquifer a
         quality_concern_code.quality_concern_code = a.quality_concern_code
     where
         a.geom is not null AND
-        a.effective_date <= NOW() AND a.expiry_date >= NOW()
+        a.effective_date <= NOW() AND a.expiry_date >= NOW() AND
+        a.retire_date >= NOW()
         {bounds}
     order by a.aquifer_id
 """)

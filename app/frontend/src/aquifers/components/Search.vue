@@ -337,7 +337,7 @@ export default {
           code: HYDRAULICALLY_CONNECTED_CODE
         })
         sections.push({
-          name: 'Retired Aquifers',
+          name: 'Retired aquifers',
           code: RETIRED_CODE
         })
         this.addSections(sections)

@@ -48,7 +48,8 @@ import {
   FOCUSED_WELLS_SOURCE_ID,
   focusedWellsLayer,
   FOCUSED_WELL_IMAGE_ID,
-  FOCUSED_WELL_ARTESIAN_IMAGE_ID
+  FOCUSED_WELL_ARTESIAN_IMAGE_ID,
+  wellLayerFilter
 } from '../../common/mapbox/layers'
 import { LegendControl, BoxZoomControl, SearchOnMoveControl, ClearSearchCriteriaControl } from '../../common/mapbox/controls'
 import { setupMapPopups, WELL_FEATURE_PROPERTIES_FOR_POPUP } from '../popup'
@@ -121,9 +122,12 @@ export default {
     this.map = null
   },
   computed: {
-    ...mapGetters(['searchQueryParams']),
+    ...mapGetters(['userRoles', 'searchQueryParams']),
     hasSearchParams (state) {
       return Object.keys(this.searchQueryParams).length > 0
+    },
+    showUnpublished () {
+      return Boolean(this.userRoles.wells.edit)
     }
   },
   methods: {
@@ -230,7 +234,7 @@ export default {
           DATABC_ECOCAT_LAYER,
           DATABC_WATER_LICENCES_LAYER,
           DATABC_OBSERVATION_WELLS_LAYER,
-          wellsBaseAndArtesianLayer(),
+          wellsBaseAndArtesianLayer({ filter: wellLayerFilter(this.showUnpublished) }),
           searchedWellsLayer(),
           focusedWellsLayer()
         ]
@@ -387,6 +391,9 @@ export default {
     hasSearchParams (hasSearchParams) {
       this.searchOnMoveControl.toggleShow(hasSearchParams)
       this.clearSearchCriteriaControl.toggleShow(hasSearchParams)
+    },
+    userRoles () {
+      this.map.setStyle(this.buildMapStyle())
     }
   }
 }
