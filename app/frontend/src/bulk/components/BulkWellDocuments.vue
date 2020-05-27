@@ -80,6 +80,7 @@
                   <b-col md="3">
                     <b-form-file
                       multiple
+                      :disabled="isSaving"
                       :key="`file-upload-${upload_files.length}`"
                       @input="filesPicked"/>
                   </b-col>
@@ -87,6 +88,7 @@
                     <div>
                       <b-form-checkbox
                         id="private-documents-checkbox"
+                        :disabled="isSaving"
                         v-model="privateDocument">Are these documents private?</b-form-checkbox>
                     </div>
                   </b-col>
@@ -94,7 +96,7 @@
                 <table id="files-to-upload">
                   <tbody>
                     <tr v-for="(file, index) in upload_files" :key="index" :class="{ error: fileIsInvalid(file) }">
-                      <td><input type="button" value="remove" @click.prevent="removeFile(file)"/></td>
+                      <td><input type="button" value="remove" :disabled="isSaving" @click.prevent="removeFile(file)"/></td>
                       <td>{{file.name}}</td>
                       <td>{{formatFileSize(file.size)}}</td>
                     </tr>
@@ -142,6 +144,7 @@
               <b-button
                 v-if="showResetButton"
                 variant="default"
+                :disabled="isSaving"
                 @click="reset">
                 Reset
               </b-button>
@@ -315,9 +318,7 @@ export default {
       this.apiValidationErrors = {}
       this.isSaving = true
 
-      const promises = this.uploadWellFiles()
-
-      return Promise.all(promises)
+      this.uploadWellFiles()
         .then(() => {
           this.fileUploadSuccess()
           this.handleSaveSuccess()
@@ -328,17 +329,27 @@ export default {
         })
     },
     uploadWellFiles () {
-      return Object.keys(this.wellDocuments)
-        .filter((key) => {
-          return (this.unknonwnWellIds || []).indexOf(parseInt(key, 10)) === -1
-        }).map((key) => {
-          const wellTagNumber = parseInt(key, 10)
+      const documents = this.wellDocuments
+      const wellTagNumbers = Object.keys(documents)
+        .map((key) => parseInt(key, 10))
+        .filter((wellTagNumber) => {
+          return (this.unknonwnWellIds || []).indexOf(wellTagNumber) === -1
+        })
+
+      return wellTagNumbers.reduce((previousPromise, wellTagNumber) => {
+        return previousPromise.then(() => {
+          const files = documents[wellTagNumber]
+          if (files.length === 0) {
+            return Promise.resolve()
+          }
+
           return this.uploadFiles({
             documentType: 'wells',
             recordId: wellTagNumber,
-            files: this.wellDocuments[wellTagNumber]
+            files
           })
         })
+      }, Promise.resolve())
     },
     handleSaveSuccess () {
       this.isSaving = false
@@ -532,7 +543,11 @@ export default {
       border: 1px solid #d8292f;
       border-radius: 2px;
 
-      &:hover {
+      &:disabled {
+        opacity: 0.5;
+      }
+
+      &:hover:not(:disabled) {
         background-color: #b92227;
         border-color: #ae2025;
       }
