@@ -21,6 +21,7 @@ UPDATE_GWELLS_AQUIFER_VIEW_SQL = """
             geom
         FROM aquifer
         WHERE geom IS NOT NULL;
+        GRANT SELECT ON postgis_ftw.gwells_aquifer_view TO ftw_reader;
 """
 
 UPDATE_WALLY_AQUIFER_VIEW_SQL = """
@@ -34,6 +35,7 @@ UPDATE_WALLY_AQUIFER_VIEW_SQL = """
             geom IS NOT NULL AND
             aquifer.effective_date <= NOW() AND aquifer.expiry_date >= NOW() AND
             aquifer.retire_date >= NOW();
+        GRANT SELECT ON postgis_ftw.wally_aquifer_view TO ftw_reader;
 """
 
 class Migration(migrations.Migration):
@@ -60,6 +62,9 @@ class Migration(migrations.Migration):
         ),
         migrations.RunSQL(
             UPDATE_AQUIFER_EFFECTIVE_DATE_SQL,
+        ),
+        migrations.RunSQL(
+            UPDATE_GWELLS_AQUIFER_VIEW_SQL,
         ),
         migrations.RunSQL(
             UPDATE_WALLY_AQUIFER_VIEW_SQL,
