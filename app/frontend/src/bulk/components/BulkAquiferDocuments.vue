@@ -398,43 +398,52 @@ export default {
       this.apiValidationErrors = {}
       this.isSaving = true
 
-      let promises = []
+      let promise = null
       if (this.multiBehaviourPicked) {
-        promises = this.uploadAllFilesForAllAquifers()
+        promise = this.uploadAllFilesForAllAquifers()
       } else {
-        promises = this.uploadAquiferFiles()
+        promise = this.uploadAquiferFiles()
       }
 
-      return Promise.all(promises)
-        .then(() => {
-          this.fileUploadSuccess()
-          this.handleSaveSuccess()
-        }).catch((error) => {
-          this.fileUploadFail()
-          this.handleApiError(error)
-          throw error
-        })
+      promise.then(() => {
+        this.fileUploadSuccess()
+        this.handleSaveSuccess()
+      }).catch((error) => {
+        this.fileUploadFail()
+        this.handleApiError(error)
+        throw error
+      })
     },
     uploadAllFilesForAllAquifers () {
-      return this.aquiferIds.map((aquiferId) => {
+      return this.aquiferIds.reduce((previousPromise, aquiferId) => {
         return this.uploadFiles({
           documentType: 'aquifers',
           recordId: aquiferId
         })
-      })
+      }, Promise.resolve())
     },
     uploadAquiferFiles () {
-      return Object.keys(this.aquiferDocuments)
-        .filter((key) => {
-          return (this.unknonwnAquiferIds || []).indexOf(parseInt(key, 10)) === -1
-        }).map((key) => {
-          const aquiferId = parseInt(key, 10)
+      const documents = this.aquiferDocuments
+      const aquiferIds = Object.keys(documents)
+        .map((key) => parseInt(key, 10))
+        .filter((aquiferId) => {
+          return (this.unknonwnAquiferIds || []).indexOf(aquiferId) === -1
+        })
+
+      return aquiferIds.reduce((previousPromise, aquiferId) => {
+        return previousPromise.then(() => {
+          const files = documents[aquiferId]
+          if (files.length === 0) {
+            return Promise.resolve()
+          }
+
           return this.uploadFiles({
             documentType: 'aquifers',
             recordId: aquiferId,
-            files: this.aquiferDocuments[aquiferId]
+            files
           })
         })
+      }, Promise.resolve())
     },
     handleSaveSuccess () {
       this.isSaving = false

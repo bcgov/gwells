@@ -60,11 +60,9 @@ export default {
         isPrivate = true
       }
 
-      let uploadPromises = []
-
-      files.forEach(file => {
-        uploadPromises.push(
-          ApiService.presignedPutUrl(
+      return files.reduce((previousPromise, file) => {
+        return previousPromise.then((results) => {
+          return ApiService.presignedPutUrl(
             documentType,
             recordId,
             encodeURIComponent(file.name),
@@ -73,19 +71,6 @@ export default {
             .then(response => {
               let url = response.data.url
               let objectName = response.data.object_name
-              let filename = response.data.filename
-              let file = context.state.upload_files.filter(
-                file => file.name === objectName
-              )
-
-              if (file.length !== 1) {
-                context.commit('addError', 'Error uploading file: ' + filename)
-                return Promise.reject(
-                  new Error('Error uploading file' + filename)
-                )
-              }
-
-              file = file[0]
 
               let options = {
                 headers: {
@@ -108,10 +93,8 @@ export default {
               context.commit('addError', error)
               throw error
             })
-        )
-      })
-
-      return Promise.all(uploadPromises)
+        })
+      }, Promise.resolve())
     },
     fileUploadSuccess (context) {
       context.commit('setFilesUploading', false)
