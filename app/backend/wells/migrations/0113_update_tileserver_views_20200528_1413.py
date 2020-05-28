@@ -17,6 +17,7 @@ UPDATE_GWELLS_WELLS_VIEW_SQL = """
             geom
         FROM well
         WHERE geom IS NOT NULL;
+        GRANT SELECT ON postgis_ftw.gwells_well_view TO ftw_reader;
 """
 
 UPDATE_WALLY_WELLS_VIEW_SQL = """
@@ -29,6 +30,7 @@ UPDATE_WALLY_WELLS_VIEW_SQL = """
         WHERE
             geom IS NOT NULL AND
             well_publication_status_code = 'Published';
+    GRANT SELECT ON postgis_ftw.wally_well_view TO ftw_reader;
 """
 
 
