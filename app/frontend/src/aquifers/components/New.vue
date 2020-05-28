@@ -23,10 +23,11 @@
         </b-row>
 
         <aquifer-form
-          v-on:save="save"
-          v-on:cancel="navigateToView"
+          :isNew="true"
           :record="record"
           :fieldErrors="fieldErrors"
+          @save="save"
+          @cancel="navigateToView"
           />
       </b-container>
     </b-card>
@@ -54,7 +55,8 @@ export default {
       error: undefined,
       fieldErrors: {},
       record: {
-        resources: []
+        resources: [],
+        effective_date: '9999-12-31T23:59:59.999Z'
       }
     }
   },
@@ -67,7 +69,7 @@ export default {
     navigateToView () {
       this.$router.push({ name: 'home' })
     },
-    handleSuccess ({data}) {
+    handleSuccess ({ data }) {
       if (this.upload_files.length > 0) {
         this.uploadFiles({
           documentType: 'aquifers',

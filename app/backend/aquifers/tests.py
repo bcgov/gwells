@@ -70,7 +70,7 @@ class TestAquifersEditRole(APITestCase):
             self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_export_csv(self):
-        url = reverse('aquifers-list-csv', kwargs={'version': 'v1'})
+        url = reverse('aquifers-list-csv-v1')
         response = self.client.get(
             url
         )

@@ -89,7 +89,7 @@ class AquiferSerializer(serializers.ModelSerializer):
         )
 
 
-class AquiferEditDetailSerializer(serializers.ModelSerializer):
+class AquiferEditDetailSerializerV1(serializers.ModelSerializer):
     """
     Read serializer for aquifer details with primary key references needed for populating an edit form
     """

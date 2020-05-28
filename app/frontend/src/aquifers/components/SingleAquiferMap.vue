@@ -20,6 +20,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 <script>
 import mapboxgl from 'mapbox-gl'
 import GestureHandling from '@geolonia/mbgl-gesture-handling'
+import { mapGetters } from 'vuex'
 
 import {
   DATABC_ROADS_SOURCE,
@@ -53,7 +54,8 @@ import {
   AQUIFERS_FILL_LAYER_ID,
   WELLS_BASE_AND_ARTESIAN_LAYER_ID,
   WELLS_EMS_LAYER_ID,
-  WELLS_UNCORRELATED_LAYER_ID
+  WELLS_UNCORRELATED_LAYER_ID,
+  aquiferLayerFilter
 } from '../../common/mapbox/layers'
 import { computeBoundsFromMultiPolygon } from '../../common/mapbox/geometry'
 import { LayersControl, LegendControl } from '../../common/mapbox/controls'
@@ -147,7 +149,14 @@ export default {
           imageSrc: uncorrelatedWellsIconSrc
         }
       ],
-      jumpToAquifer: true
+      jumpToAquifer: true,
+      popupOptions: {
+        currentAquiferId: this.aquiferId,
+        aquiferLayerIds: [
+          AQUIFERS_FILL_LAYER_ID,
+          'cur-aquifer-fill'
+        ]
+      }
     }
   },
   mounted () {
@@ -158,6 +167,12 @@ export default {
   destroyed () {
     this.map.remove()
     this.map = null
+  },
+  computed: {
+    ...mapGetters(['userRoles']),
+    showUnpublished () {
+      return Boolean(this.userRoles.aquifers.edit)
+    }
   },
   methods: {
     initMapBox () {
@@ -204,12 +219,11 @@ export default {
 
       this.map.on('load', () => {
         /* Setup tooltips and popups  */
-
-        setupMapTooltips(this.map, this.$router)
-
-        setupMapPopups(this.map, this.$router)
+        setupMapTooltips(this.map, this.$router, this.popupOptions)
+        setupMapPopups(this.map, this.$router, this.popupOptions)
 
         setupAquiferHover(this.map, AQUIFERS_FILL_LAYER_ID)
+        setupAquiferHover(this.map, 'cur-aquifer-fill')
 
         /* Goto Aquifer */
 
@@ -240,13 +254,28 @@ export default {
           DATABC_ECOCAT_LAYER,
           DATABC_WATER_LICENCES_LAYER,
           DATABC_OBSERVATION_WELLS_LAYER,
-          aquifersFillLayer({ aquiferId: this.aquiferId }),
-          aquifersLineLayer({ aquiferId: this.aquiferId }),
+          aquifersFillLayer({ filter: this.allOtherAquiferFilter() }),
+          aquifersLineLayer({ filter: this.allOtherAquiferFilter() }),
+          aquifersFillLayer({ id: 'cur-aquifer-fill', filter: this.currentAquiferFilter() }),
+          aquifersLineLayer({ id: 'cur-aquifer-line', filter: this.currentAquiferFilter() }),
           wellsBaseAndArtesianLayer(),
           wellsEmsLayer({ layout: { visibility: 'none' } }),
           wellsUncorrelatedLayer({ layout: { visibility: 'none' } })
         ]
       }
+    },
+    currentAquiferFilter () {
+      return [
+        'case',
+        ['==', ['get', 'aquifer_id'], this.aquiferId], true,
+        false
+      ]
+    },
+    allOtherAquiferFilter () {
+      const filter = aquiferLayerFilter(this.showUnpublished, false)
+      // splice in a filter to remove the current aquifer from this layer
+      filter.splice(1, 0, ['==', ['get', 'aquifer_id'], this.aquiferId], false)
+      return filter
     },
     layersChanged (layerId, show) {
       // Find the layer and mark it as shown so the legend can be updated properly
@@ -281,6 +310,7 @@ export default {
     aquiferId (newAquiferId, oldAquiferId) {
       this.setSelectedAquifer(oldAquiferId, false)
       this.setSelectedAquifer(newAquiferId, true)
+      this.popupOptions.currentAquiferId = newAquiferId
     },
     geom (newGeom, oldGeom) {
       if (newGeom && newGeom !== oldGeom) {

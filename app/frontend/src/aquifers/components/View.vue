@@ -13,342 +13,356 @@
 */
 
 <template>
-  <div class="aquifer-detail">
+  <div id="aquifer-detail">
     <b-card no-body class="mb-3 container d-print-none">
       <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"/>
     </b-card>
-    <b-card v-if="errorNotFound" class="container p-1">
+    <div v-if="loadingAquifer">
+      <div class="fa-2x text-center">
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+      </div>
+    </div>
+    <b-card v-else-if="errorNotFound" class="container p-1">
       <h1>Not Found</h1>
       <p>The page you are looking for was not found.</p>
     </b-card>
-    <b-card v-else class="container container-wide p-0 card-container pb-5" :class="{ 'p-4': editMode }">
-      <api-error v-if="error" :error="error"/>
-      <b-alert show v-if="files_uploading || shapefile_uploading">File Upload In Progress...</b-alert>
-      <b-alert show v-if="!files_uploading && file_upload_error" variant="danger" >
-        There was an error uploading the documents
-      </b-alert>
-      <b-alert show v-if="!files_uploading && file_upload_success" variant="success" >
-        Successfully uploaded all documents
-      </b-alert>
-      <b-alert show v-if="shapefile_upload_success & !shapefile_uploading" variant="success" >
-        Shapefile uploaded.
-      </b-alert>
-      <b-alert show v-if="!shapefile_upload_success & !shapefile_uploading && shapefile_upload_message" variant="danger" >
-        There was an error uploading the shapefile: {{ shapefile_upload_message }}.
-      </b-alert>
-      <b-alert variant="success" :show="showSaveSuccess" id="aquifer-success-alert">
-        Aquifer {{ id }}'s information successfully updated.
-      </b-alert>
-      <div v-if="loadingForm">
-        <div class="fa-2x text-center">
-          <i class="fa fa-circle-o-notch fa-spin"></i>
-        </div>
-      </div>
-      <b-container fluid>
-        <b-row v-if="editMode" class="border-bottom mb-3 pb-2">
-          <b-col><h4>Aquifer {{id}} Summary - Edit</h4></b-col>
-        </b-row>
-        <aquifer-form
-          :fieldErrors="fieldErrors"
-          :record="form"
-          :files="aquiferFiles"
-          :loadingData="loadingForm"
-          :loadingFiles="loadingFiles"
-          showId
-          v-if="editMode"
-          v-on:load="loadForm"
-          v-on:save="save"
-          v-on:cancel="navigateToView"
-          v-on:fetchFiles="fetchFiles"
-          />
-        <change-history v-if="userRoles.aquifers.edit && editMode" class="mt-5" :id="id" resource="aquifers" ref="aquiferHistory"/>
+    <div v-else>
+      <b-card class="container container-wide card-container p-0 pb-5 main-card" :class="{ 'p-4': editMode }">
+        <api-error v-if="error" :error="error"/>
+        <b-alert show v-if="viewMode && isRetired && !isUnpublished" variant="warning">
+          This aquifer is retired and stored for record keeping purposes.
+        </b-alert>
+        <b-alert show v-if="viewMode && isUnpublished" variant="warning">
+          This aquifer is unpublished.
+        </b-alert>
+        <b-alert show v-if="files_uploading || shapefile_uploading">File Upload In Progress...</b-alert>
+        <b-alert show v-if="!files_uploading && file_upload_error" variant="danger">
+          There was an error uploading the documents
+        </b-alert>
+        <b-alert show v-if="!files_uploading && file_upload_success" variant="success">
+          Successfully uploaded all documents
+        </b-alert>
+        <b-alert show v-if="shapefile_upload_success & !shapefile_uploading" variant="success">
+          Shapefile uploaded.
+        </b-alert>
+        <b-alert show v-if="!shapefile_upload_success & !shapefile_uploading && shapefile_upload_message" variant="danger">
+          There was an error uploading the shapefile: {{ shapefile_upload_message }}.
+        </b-alert>
+        <b-alert variant="success" :show="showSaveSuccess" id="aquifer-success-alert">
+          Aquifer {{ id }}'s information successfully updated.
+        </b-alert>
 
-        <b-row v-if="viewMode">
-          <b-col class="aquifer-detail" cols="12" md="12" lg="5">
-            <b-row>
-              <b-col class="pt-0 pl-4 pb-4 pr-4">
-                <div class="d-flex justify-content-between align-items-center">
-                  <h4 class="color-grey main-title mt-4">Aquifer {{ id }} Summary</h4>
-                  <div>
-                    <b-button
-                      variant="default"
-                      v-if="userRoles.aquifers.edit"
-                      v-on:click.prevent="navigateToEdit">
-                      <span title="Edit" class="fa fa-edit"/> Edit
-                    </b-button>
-                    <a class="ml-2 print-button fa fa-print fa-lg d-print-none"
-                      href="#"
-                      title="Print"
-                      v-on:click.prevent="print"
-                    />
-                  </div>
-                  <hr class="m-0 mt-2"/>
-                </div>
-              </b-col>
-            </b-row>
-            <b-row>
-              <b-col cols="12" sm="12" class="pl-4 pr-4 aquifer-main-information-list">
-                <b-row>
-                  <b-col cols="6" md="3" lg="6">Aquifer number</b-col>
-                  <b-col cols="6" md="3" lg="6" id="aquifer-view-number">{{id}}</b-col>
-                  <b-col cols="6" md="3" lg="6">Year of mapping</b-col>
-                  <b-col cols="6" md="3" lg="6" class="aquifer-mapping-year">{{record.mapping_year}}</b-col>
-                </b-row>
-                <b-row>
-                  <b-col cols="6" md="3" lg="6">Aquifer name</b-col>
-                  <b-col cols="6" md="3" lg="6" id="aquifer-view-name">{{record.aquifer_name}}</b-col>
-                  <b-col cols="6" md="3" lg="6">Litho stratigraphic unit</b-col>
-                  <b-col cols="6" md="3" lg="6">{{record.litho_stratographic_unit}}</b-col>
-                </b-row>
-                <b-row>
-                  <b-col cols="6" md="3" lg="6">Descriptive location</b-col>
-                  <b-col cols="6" md="3" lg="6">{{record.location_description}}</b-col>
-                  <b-col cols="6" md="3" lg="6">Vulnerability</b-col>
-                  <b-col cols="6" md="3" lg="6">{{record.vulnerability}}</b-col>
-                </b-row>
-                <b-row>
-                  <b-col cols="6" md="3" lg="6">Material type</b-col>
-                  <b-col cols="6" md="3" lg="6">{{record.material}}</b-col>
-                  <b-col cols="6" md="3" lg="6">Subtype</b-col>
-                  <b-col cols="6" md="3" lg="6">{{record.subtype}}</b-col>
-                </b-row>
-                <b-row>
-                  <b-col cols="6" md="3" lg="6">Quality concerns</b-col>
-                  <b-col cols="6" md="3" lg="6">{{record.quality_concern}}</b-col>
-                  <b-col cols="6" md="3" lg="6">Productivity</b-col>
-                  <b-col cols="6" md="3" lg="6">{{record.productivity}}</b-col>
-                </b-row>
-                <b-row>
-                  <b-col cols="6" md="3" lg="6">Size (km²)</b-col>
-                  <b-col cols="6" md="3" lg="6">{{record.area}}</b-col>
-                  <b-col cols="6" md="3" lg="6">Demand</b-col>
-                  <b-col cols="6" md="3" lg="6">{{record.demand}}</b-col>
-                </b-row>
-              </b-col>
-            </b-row>
-          </b-col>
-          <b-col id="map-container" cols="12" md="12" lg="7" class="p-0">
-            <map-loading-spinner :loading="loadingAquifer || loadingMap"/>
-
-            <single-aquifer-map
-              :aquifer-id="id"
-              :geom="record.geom"
-              :key="mapKey"
-              @mapLoading="loadingMap = true"
-              @mapLoaded="loadingMap = false"/>
-          </b-col>
-        </b-row>
-
-        <b-row v-if="viewMode" class="mt-5 aquifer-details">
-          <b-col cols="12" xl="4" lg="6">
-            <h5 class="mt-3 border-bottom pb-4 main-title">Well Information</h5>
-            <ul class="ml-0 mr-0 mt-4 mb-0 p-0 aquifer-information-list">
-              <div class="aquifer-information-list-divider"></div>
-              <li>
-                <dt>Number of wells correlated to the aquifer</dt>
-                <dd class="m-0">
-                  <router-link :to="{ name: 'wells-home', query: {'match_any':false, 'aquifer': id, 'search':'', 'well':''}, hash: '#advanced'}">
-                    {{ licenceDetails.num_wells }}
-                  </router-link>
-                </dd>
-              </li>
-              <li>
-                <dt>
-                  Number of wells potentially located within the aquifer
-                  <i id="uncorrelated-wells-count" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
-                  <b-popover
-                    target="uncorrelated-wells-count"
-                    triggers="hover focus"
-                    content="Count of wells that potentially fall within the aquifer polygon; however, they are not necessarily screened within the aquifer of interest."/>
-                </dt>
-                <dd class="m-0">
-                  {{ uncorrelatedWells.length }}
-                </dd>
-              </li>
-              <li>
-                <dt>Artesian wells</dt>
-                <dd class="m-0">
-                  <router-link :to="{ name: 'wells-home', query: {'match_any':false, 'aquifer': id, 'artesian_flow_has_value':true}, hash: '#advanced'}">
-                    {{ licenceDetails.num_artesian_wells }} artesian wells in aquifer
-                  </router-link>
-                </dd>
-              </li>
-            </ul>
-            <p>
-              <i v-if="licenceDetails.wells_updated">Well info last updated {{ licenceDetails.wells_updated.update_date__max|formatDate }}</i>
-            </p>
-            <h5 class="mt-5 border-bottom pb-4 main-title">Documentation</h5>
-            <aquifer-documents :files="aquiferFiles"
-              highlightTitle="Factsheets"
-              :highlightRegexp="factsheetRe"
-              publicFilesTitle="Other Documents"
-              :editMode="editMode"
-              :id="this.id"
-              :loading="loadingFiles"
-              v-on:fetchFiles="fetchFiles">
-            </aquifer-documents>
-          </b-col>
-          <b-col cols="12" xl="4" lg="6">
-            <h5 class="mt-3 border-bottom pb-4 main-title">Licensing Information</h5>
-            <div>
-              <p>
-                The licensing summaries should be considered estimates. Due to complexities in the structure
-                of the licensing data, reported values should be confirmed through the
-                <a href="https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&amp;PosseObjectDef=o_ATIS_DocumentSearch&amp;PosseMenuName=WS_Main" target="_blank" class="d-print-url">
-                  e&#8209;licensing portal</a>.
-              </p>
+        <div v-if="editMode">
+          <div v-if="loadingForm" id="form-loading-spinner">
+            <div class="fa-2x text-center">
+              <i class="fa fa-circle-o-notch fa-spin"></i>
             </div>
-            <ul class="ml-0 mr-0 mt-4 mb-0 p-0 aquifer-information-list">
-              <div class="aquifer-information-list-divider"></div>
-              <li>
-                <dt>Number of groundwater licences</dt>
-                <dd class="m-0">{{ licenceDetails.licence_count }}</dd>
-              </li>
-              <li>
-                <dt>Water withdrawal volume (annual)</dt>
-                <dd class="m-0" v-if="waterWithdrawlVolume">{{ waterWithdrawlVolume | unitWaterVolume}}</dd>
-                <dd class="m-0" v-else>No information available.</dd>
-              </li>
-            </ul>
-            <div v-if="licenceDetails.lic_qty.length > 0">
-              <b-row class="pt-5">
-                <b-col cols="12" md="6" lg="12" class="pb-5">
-                  <h5 class="pie-chart-title">Licensed volume by purpose (millions of cubic meters)</h5>
-                  <pie-chart
-                    :data="licenceUsageChartData"
-                    :labels="licenceUsageChartLabels"
-                    :chart-options="licenceUsageChartOptions"
-                    class="mt-3"/>
-                </b-col>
-                <b-col cols="12" md="6" lg="12" class="pb-5">
-                  <h5 class="pie-chart-title">Number of licences by purpose</h5>
-                  <pie-chart
-                    :data="licenceQuantityChartData"
-                    :labels="licenceQuantityChartLabels"
-                    :chart-options="licenceQuantityChartOptions"
-                    class="mt-3"/>
+          </div>
+          <b-row class="border-bottom mb-3 pb-2">
+            <b-col><h4>Aquifer {{id}} Summary - Edit</h4></b-col>
+          </b-row>
+          <aquifer-form
+            :fieldErrors="fieldErrors"
+            :record="form"
+            :files="aquiferFiles"
+            :loadingData="loadingForm"
+            :loadingFiles="loadingFiles"
+            showId
+            v-on:save="save"
+            v-on:cancel="navigateToView"
+            v-on:fetchFiles="fetchFiles"
+            />
+          <change-history class="mt-5" :id="id" resource="aquifers" ref="aquiferHistory"/>
+        </div>
+
+        <b-container fluid v-if="viewMode">
+          <b-row>
+            <b-col class="aquifer-detail" cols="12" md="12" lg="5">
+              <b-row>
+                <b-col class="pt-0 pl-4 pb-4 pr-4">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="color-grey main-title mt-4">Aquifer {{ id }} Summary</h4>
+                    <div>
+                      <b-button
+                        variant="default"
+                        v-if="userRoles.aquifers.edit"
+                        v-on:click.prevent="navigateToEdit">
+                        <span title="Edit" class="fa fa-edit"/> Edit
+                      </b-button>
+                      <a class="ml-2 print-button fa fa-print fa-lg d-print-none"
+                        v-if="!isRetired"
+                        href="#"
+                        title="Print"
+                        v-on:click.prevent="print"
+                      />
+                    </div>
+                  </div>
                 </b-col>
               </b-row>
-            </div>
-            <b-table id="licenses" striped :items="licenceDetails.wells_by_licence">
-              <template slot="licence_number" slot-scope="row">
-                <a :href="`https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&amp;PosseObjectDef=o_ATIS_DocumentSearch&amp;PosseMenuName=WS_Main&Criteria_LicenceNumber=${row.item.licence_number}`" target="_blank">
-                  {{ row.item.licence_number }}
-                </a>
-              </template>
-              <template slot="well_tag_numbers_in_licence" slot-scope="row">
-                <ul class="p-0 m-0">
-                  <li v-for="wtn in row.item.well_tag_numbers_in_licence" :key="wtn">
-                    <router-link :to="{ name: 'wells-detail', params: { id: wtn }}">{{ wtn }}</router-link>
-                  </li>
-                </ul>
-              </template>
-            </b-table>
-            <p><i v-if="licenceDetails.licences_updated && licenceDetails.licences_updated.update_date__max">Licence info last updated {{ licenceDetails.licences_updated.update_date__max|formatDate }}</i></p>
-            <p>
-              Licensing information is obtained from
-              the <a href="https://catalogue.data.gov.bc.ca/dataset/water-rights-licences-public" @click="handleOutboundLinkClicks('https://catalogue.data.gov.bc.ca/dataset/water-rights-licences-public')" target="_blank" class="d-print-url">
-                Water Rights Licence - Public data layer
-              </a>.
-            </p>
-            <p>
-              Unique licenses are counted once for each aquifer that they are associated with.
-            </p>
-            <p>
-              The total licensed volume is counted once for each licence (the total volume may
-              be shared between wells if there are multiple wells in a licence). In cases where
-              specific volumes are licensed for multiple purposes, individual volumes are summed.
-            </p>
-          </b-col>
-          <b-col cols="12" xl="4" lg="6" class="knowledge-indicators">
-            <h5 class="mt-3 border-bottom pb-4 main-title">Knowledge Indicators</h5>
-            <ul class="ml-0 mr-0 mb-0 mt-4 p-0 aquifer-information-list">
-              <div class="aquifer-information-list-divider"></div>
-              <li :key="section.id" v-for="section in aquifer_resource_sections">
-                <div class="advanced-mapping" v-if="section.code === 'M'">
-                  <dt class="text-right">Advanced mapping
-                    <i id="aquifer-advanced-mapping" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
-                    <b-popover
-                      target="aquifer-advanced-mapping"
-                      triggers="hover focus"
-                      content="Aquifers with advanced mapping have been mapped in three dimensions. Generally, cross-sections and/or three-dimensional models, have been developed."/>
-                  </dt>
+              <b-row>
+                <b-col cols="12" sm="12" class="pl-4 pr-4 aquifer-main-information-list">
+                  <b-row>
+                    <b-col cols="6" md="3" lg="6">Aquifer number</b-col>
+                    <b-col cols="6" md="3" lg="6" id="aquifer-view-number">{{id}}</b-col>
+                    <b-col cols="6" md="3" lg="6">Year of mapping</b-col>
+                    <b-col cols="6" md="3" lg="6" class="aquifer-mapping-year">{{record.mapping_year}}</b-col>
+                  </b-row>
+                  <b-row>
+                    <b-col cols="6" md="3" lg="6">Aquifer name</b-col>
+                    <b-col cols="6" md="3" lg="6" id="aquifer-view-name">{{record.aquifer_name}}</b-col>
+                    <b-col cols="6" md="3" lg="6">Litho stratigraphic unit</b-col>
+                    <b-col cols="6" md="3" lg="6">{{record.litho_stratographic_unit}}</b-col>
+                  </b-row>
+                  <b-row>
+                    <b-col cols="6" md="3" lg="6">Descriptive location</b-col>
+                    <b-col cols="6" md="3" lg="6">{{record.location_description}}</b-col>
+                    <b-col cols="6" md="3" lg="6">Vulnerability</b-col>
+                    <b-col cols="6" md="3" lg="6">{{record.vulnerability}}</b-col>
+                  </b-row>
+                  <b-row>
+                    <b-col cols="6" md="3" lg="6">Material type</b-col>
+                    <b-col cols="6" md="3" lg="6">{{record.material}}</b-col>
+                    <b-col cols="6" md="3" lg="6">Subtype</b-col>
+                    <b-col cols="6" md="3" lg="6">{{record.subtype}}</b-col>
+                  </b-row>
+                  <b-row>
+                    <b-col cols="6" md="3" lg="6">Quality concerns</b-col>
+                    <b-col cols="6" md="3" lg="6">{{record.quality_concern}}</b-col>
+                    <b-col cols="6" md="3" lg="6">Productivity</b-col>
+                    <b-col cols="6" md="3" lg="6">{{record.productivity}}</b-col>
+                  </b-row>
+                  <b-row>
+                    <b-col cols="6" md="3" lg="6">Size (km²)</b-col>
+                    <b-col cols="6" md="3" lg="6">{{record.area}}</b-col>
+                    <b-col cols="6" md="3" lg="6">Demand</b-col>
+                    <b-col cols="6" md="3" lg="6">{{record.demand}}</b-col>
+                  </b-row>
+                </b-col>
+              </b-row>
+            </b-col>
+            <b-col id="map-container" cols="12" md="12" lg="7" class="p-0">
+              <map-loading-spinner :loading="loadingMap"/>
+
+              <single-aquifer-map
+                :aquifer-id="id"
+                :geom="record.geom"
+                :key="mapKey"
+                @mapLoading="loadingMap = true"
+                @mapLoaded="loadingMap = false"/>
+            </b-col>
+          </b-row>
+
+          <b-row v-if="!isRetired" class="mt-5 aquifer-details">
+            <b-col cols="12" xl="4" lg="6">
+              <h5 class="mt-3 border-bottom pb-4 main-title">Well Information</h5>
+              <ul class="ml-0 mr-0 mt-4 mb-0 p-0 aquifer-information-list">
+                <div class="aquifer-information-list-divider"></div>
+                <li>
+                  <dt>Number of wells correlated to the aquifer</dt>
                   <dd class="m-0">
-                    <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
-                      <li><a :href="resource.url" @click="handleExternalResourceClicks" target="_blank" class="d-print-url">{{ resource.name }}</a></li>
-                    </ul>
-                    <p class="m-0" v-if="!bySection(record.resources, section).length">No information available.</p>
-                  </dd>
-                </div>
-                <div class="observational-wells" v-else-if="section.key === 'obs-wells'">
-                  <dt class="text-right">Observation wells</dt>
-                  <dd class="m-0">
-                    <div v-if="activeObsWells.length > 0">
-                      <h6 class="border-bottom">Active</h6>
-                      <ul class="p-0 m-0">
-                        <li v-for="owell in activeObsWells" :key="owell.well_tag_number" :data-water-level="owell.waterLevels" :class="{error: owell.errorFetching}">
-                          <observation-well
-                            :observationWell="owell"
-                            @reload="getWaterLevels"/>
-                        </li>
-                      </ul>
-                    </div>
-                    <div v-if="inactiveObsWellsWithWaterLevel.length > 0 || inativeObsWellsWithOutWaterLevel.length > 0">
-                      <h6 class="border-bottom mt-2">Inactive<br><small>(data may not be available)</small></h6>
-                      <ul class="p-0 m-0">
-                        <li v-for="owell in inactiveObsWellsWithWaterLevel" :key="owell.well_tag_number" :data-water-level="owell.waterLevels" :class="{error: owell.errorFetching}">
-                          <observation-well
-                            :observationWell="owell"
-                            @reload="getWaterLevels"/>
-                        </li>
-                        <li v-if="inativeObsWellsWithOutWaterLevel.length > 0" class="obs-wells-wo-well-level">
-                          No Water Level Analysis:
-                          <observation-well
-                            v-for="owell in inativeObsWellsWithOutWaterLevel"
-                            :key="owell.observation_well_number"
-                            :observationWell="owell"
-                            @reload="getWaterLevels"/>
-                        </li>
-                      </ul>
-                    </div>
-                    <div v-if="noObsWells">
-                      No information available.
-                    </div>
-                  </dd>
-                </div>
-                <div class="water-quality-information" v-else-if="section.key === 'water-quality'">
-                  <dt class="text-right">Water quality information</dt>
-                  <dd class="m-0">
-                    <router-link :to="{ name: 'wells-home', query: {'match_any':false, 'ems_has_value':true, 'aquifer': id}, hash: '#advanced'}">
-                      {{ licenceDetails['num_wells_with_ems'] }} wells with an EMS ID
+                    <router-link :to="{ name: 'wells-home', query: {'match_any':false, 'aquifer': id, 'search':'', 'well':''}, hash: '#advanced'}">
+                      {{ licenceDetails.num_wells }}
                     </router-link>
                   </dd>
-                </div>
-                <div class="aquifer-connected" v-else-if="section.key === 'aquifer-connected'">
-                  <dt class="text-right">Hydraulically connected (screening level)
-                    <i id="aquiferConnectedInfo" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+                </li>
+                <li>
+                  <dt>
+                    Number of wells potentially located within the aquifer
+                    <i id="uncorrelated-wells-count" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
                     <b-popover
-                      target="aquiferConnectedInfo"
+                      target="uncorrelated-wells-count"
                       triggers="hover focus"
-                      content="Inferred based on aquifer subtype - not field verified."/>
+                      content="Count of wells that potentially fall within the aquifer polygon; however, they are not necessarily screened within the aquifer of interest."/>
                   </dt>
-                  <dd class="m-0">{{ licenceDetails['hydraulically_connected'] ? "More likely" : "Less likely"}}</dd>
-                </div>
-                <div v-else>
-                  <dt class="text-right">{{ section.name }}</dt>
                   <dd class="m-0">
-                    <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
-                      <li><a :href="resource.url" @click="handleExternalResourceClicks" target="_blank" class="d-print-url">{{ resource.name }}</a></li>
-                    </ul>
-                    <p class="m-0" v-if="!bySection(record.resources, section).length">No information available.</p>
+                    {{ uncorrelatedWells.length }}
                   </dd>
-                </div>
-              </li>
-            </ul>
-          </b-col>
-        </b-row>
-      </b-container>
-    </b-card>
+                </li>
+                <li>
+                  <dt>Artesian wells</dt>
+                  <dd class="m-0">
+                    <router-link :to="{ name: 'wells-home', query: {'match_any':false, 'aquifer': id, 'artesian_flow_has_value':true}, hash: '#advanced'}">
+                      {{ licenceDetails.num_artesian_wells }} artesian wells in aquifer
+                    </router-link>
+                  </dd>
+                </li>
+              </ul>
+              <p>
+                <i v-if="licenceDetails.wells_updated">Well info last updated {{ licenceDetails.wells_updated.update_date__max|formatDate }}</i>
+              </p>
+              <h5 class="mt-5 border-bottom pb-4 main-title">Documentation</h5>
+              <aquifer-documents :files="aquiferFiles"
+                highlightTitle="Factsheets"
+                :highlightRegexp="factsheetRe"
+                publicFilesTitle="Other Documents"
+                :editMode="editMode"
+                :id="this.id"
+                :loading="loadingFiles"
+                v-on:fetchFiles="fetchFiles">
+              </aquifer-documents>
+            </b-col>
+            <b-col cols="12" xl="4" lg="6">
+              <h5 class="mt-3 border-bottom pb-4 main-title">Licensing Information</h5>
+              <div>
+                <p>
+                  The licensing summaries should be considered estimates. Due to complexities in the structure
+                  of the licensing data, reported values should be confirmed through the
+                  <a href="https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&amp;PosseObjectDef=o_ATIS_DocumentSearch&amp;PosseMenuName=WS_Main" target="_blank" class="d-print-url">
+                    e&#8209;licensing portal</a>.
+                </p>
+              </div>
+              <ul class="ml-0 mr-0 mt-4 mb-0 p-0 aquifer-information-list">
+                <div class="aquifer-information-list-divider"></div>
+                <li>
+                  <dt>Number of groundwater licences</dt>
+                  <dd class="m-0">{{ licenceDetails.licence_count }}</dd>
+                </li>
+                <li>
+                  <dt>Water withdrawal volume (annual)</dt>
+                  <dd class="m-0" v-if="waterWithdrawlVolume">{{ waterWithdrawlVolume | unitWaterVolume}}</dd>
+                  <dd class="m-0" v-else>No information available.</dd>
+                </li>
+              </ul>
+              <div v-if="licenceDetails.lic_qty.length > 0">
+                <b-row class="pt-5">
+                  <b-col cols="12" md="6" lg="12" class="pb-5">
+                    <h5 class="pie-chart-title">Licensed volume by purpose (millions of cubic meters)</h5>
+                    <pie-chart
+                      :data="licenceUsageChartData"
+                      :labels="licenceUsageChartLabels"
+                      :chart-options="licenceUsageChartOptions"
+                      class="mt-3"/>
+                  </b-col>
+                  <b-col cols="12" md="6" lg="12" class="pb-5">
+                    <h5 class="pie-chart-title">Number of licences by purpose</h5>
+                    <pie-chart
+                      :data="licenceQuantityChartData"
+                      :labels="licenceQuantityChartLabels"
+                      :chart-options="licenceQuantityChartOptions"
+                      class="mt-3"/>
+                  </b-col>
+                </b-row>
+              </div>
+              <b-table id="licenses" striped :items="licenceDetails.wells_by_licence">
+                <template slot="licence_number" slot-scope="row">
+                  <a :href="`https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&amp;PosseObjectDef=o_ATIS_DocumentSearch&amp;PosseMenuName=WS_Main&Criteria_LicenceNumber=${row.item.licence_number}`" target="_blank">
+                    {{ row.item.licence_number }}
+                  </a>
+                </template>
+                <template slot="well_tag_numbers_in_licence" slot-scope="row">
+                  <ul class="p-0 m-0">
+                    <li v-for="wtn in row.item.well_tag_numbers_in_licence" :key="wtn">
+                      <router-link :to="{ name: 'wells-detail', params: { id: wtn }}">{{ wtn }}</router-link>
+                    </li>
+                  </ul>
+                </template>
+              </b-table>
+              <p><i v-if="licenceDetails.licences_updated && licenceDetails.licences_updated.update_date__max">Licence info last updated {{ licenceDetails.licences_updated.update_date__max|formatDate }}</i></p>
+              <p>
+                Licensing information is obtained from
+                the <a href="https://catalogue.data.gov.bc.ca/dataset/water-rights-licences-public" @click="handleOutboundLinkClicks('https://catalogue.data.gov.bc.ca/dataset/water-rights-licences-public')" target="_blank" class="d-print-url">
+                  Water Rights Licence - Public data layer
+                </a>.
+              </p>
+              <p>
+                Unique licenses are counted once for each aquifer that they are associated with.
+              </p>
+              <p>
+                The total licensed volume is counted once for each licence (the total volume may
+                be shared between wells if there are multiple wells in a licence). In cases where
+                specific volumes are licensed for multiple purposes, individual volumes are summed.
+              </p>
+            </b-col>
+            <b-col cols="12" xl="4" lg="6" class="knowledge-indicators">
+              <h5 class="mt-3 border-bottom pb-4 main-title">Knowledge Indicators</h5>
+              <ul class="ml-0 mr-0 mb-0 mt-4 p-0 aquifer-information-list">
+                <div class="aquifer-information-list-divider"></div>
+                <li :key="section.id" v-for="section in aquifer_resource_sections">
+                  <div class="advanced-mapping" v-if="section.code === 'M'">
+                    <dt class="text-right">Advanced mapping
+                      <i id="aquifer-advanced-mapping" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+                      <b-popover
+                        target="aquifer-advanced-mapping"
+                        triggers="hover focus"
+                        content="Aquifers with advanced mapping have been mapped in three dimensions. Generally, cross-sections and/or three-dimensional models, have been developed."/>
+                    </dt>
+                    <dd class="m-0">
+                      <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
+                        <li><a :href="resource.url" @click="handleExternalResourceClicks" target="_blank" class="d-print-url">{{ resource.name }}</a></li>
+                      </ul>
+                      <p class="m-0" v-if="!bySection(record.resources, section).length">No information available.</p>
+                    </dd>
+                  </div>
+                  <div class="observational-wells" v-else-if="section.key === 'obs-wells'">
+                    <dt class="text-right">Observation wells</dt>
+                    <dd class="m-0">
+                      <div v-if="activeObsWells.length > 0">
+                        <h6 class="border-bottom">Active</h6>
+                        <ul class="p-0 m-0">
+                          <li v-for="owell in activeObsWells" :key="owell.well_tag_number" :data-water-level="owell.waterLevels" :class="{error: owell.errorFetching}">
+                            <observation-well
+                              :observationWell="owell"
+                              @reload="getWaterLevels"/>
+                          </li>
+                        </ul>
+                      </div>
+                      <div v-if="inactiveObsWellsWithWaterLevel.length > 0 || inativeObsWellsWithOutWaterLevel.length > 0">
+                        <h6 class="border-bottom mt-2">Inactive<br><small>(data may not be available)</small></h6>
+                        <ul class="p-0 m-0">
+                          <li v-for="owell in inactiveObsWellsWithWaterLevel" :key="owell.well_tag_number" :data-water-level="owell.waterLevels" :class="{error: owell.errorFetching}">
+                            <observation-well
+                              :observationWell="owell"
+                              @reload="getWaterLevels"/>
+                          </li>
+                          <li v-if="inativeObsWellsWithOutWaterLevel.length > 0" class="obs-wells-wo-well-level">
+                            No Water Level Analysis:
+                            <observation-well
+                              v-for="owell in inativeObsWellsWithOutWaterLevel"
+                              :key="owell.observation_well_number"
+                              :observationWell="owell"
+                              @reload="getWaterLevels"/>
+                          </li>
+                        </ul>
+                      </div>
+                      <div v-if="noObsWells">
+                        No information available.
+                      </div>
+                    </dd>
+                  </div>
+                  <div class="water-quality-information" v-else-if="section.key === 'water-quality'">
+                    <dt class="text-right">Water quality information</dt>
+                    <dd class="m-0">
+                      <router-link :to="{ name: 'wells-home', query: {'match_any':false, 'ems_has_value':true, 'aquifer': id}, hash: '#advanced'}">
+                        {{ licenceDetails['num_wells_with_ems'] }} wells with an EMS ID
+                      </router-link>
+                    </dd>
+                  </div>
+                  <div class="aquifer-connected" v-else-if="section.key === 'aquifer-connected'">
+                    <dt class="text-right">Hydraulically connected (screening level)
+                      <i id="aquiferConnectedInfo" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+                      <b-popover
+                        target="aquiferConnectedInfo"
+                        triggers="hover focus"
+                        content="Inferred based on aquifer subtype - not field verified."/>
+                    </dt>
+                    <dd class="m-0">{{ licenceDetails['hydraulically_connected'] ? "More likely" : "Less likely"}}</dd>
+                  </div>
+                  <div v-else>
+                    <dt class="text-right">{{ section.name }}</dt>
+                    <dd class="m-0">
+                      <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
+                        <li><a :href="resource.url" @click="handleExternalResourceClicks" target="_blank" class="d-print-url">{{ resource.name }}</a></li>
+                      </ul>
+                      <p class="m-0" v-if="!bySection(record.resources, section).length">No information available.</p>
+                    </dd>
+                  </div>
+                </li>
+              </ul>
+            </b-col>
+          </b-row>
+        </b-container>
+      </b-card>
+    </div>
   </div>
 </template>
 
@@ -358,13 +372,13 @@ import { sumBy, orderBy, groupBy, range, cloneDeep } from 'lodash'
 import * as Sentry from '@sentry/browser'
 
 import ApiService from '@/common/services/ApiService.js'
+
 import APIErrorMessage from '@/common/components/APIErrorMessage'
 import ChangeHistory from '@/common/components/ChangeHistory.vue'
-
+import MapLoadingSpinner from '@/common/components/MapLoadingSpinner.vue'
 import AquiferForm from './Form'
 import Documents from './Documents.vue'
 import SingleAquiferMap from './SingleAquiferMap.vue'
-import MapLoadingSpinner from '../../common/components/MapLoadingSpinner.vue'
 import PieChart from './PieChart.vue'
 import ObservationWell from './ObservationWell.vue'
 
@@ -391,6 +405,10 @@ export default {
 
     if (this.id !== this.storedId) {
       this.fetch()
+    }
+
+    if (this.editMode) {
+      this.loadForm()
     }
   },
   data () {
@@ -545,12 +563,33 @@ export default {
       }
 
       return breadcrumbs
+    },
+    isRetired () {
+      const { retire_date: retireDate } = this.record
+      if (retireDate) {
+        return new Date(retireDate) < new Date()
+      }
+
+      return false
+    },
+    isUnpublished () {
+      const { effective_date: effectiveDate, expiry_date: expiryDate } = this.record
+      if (effectiveDate && expiryDate) {
+        return new Date(effectiveDate) > new Date() || new Date(expiryDate) < new Date()
+      }
+
+      return false
     }
   },
   watch: {
     id () {
       if (this.id !== this.storedId) {
         this.fetch()
+      }
+    },
+    editMode (editMode) {
+      if (editMode) {
+        this.loadForm()
       }
     },
     licenceDetails (newLDetails, oldLDetails) {
@@ -798,150 +837,163 @@ export default {
 </script>
 
 <style lang="scss">
-.print-button, .print-button:hover {
-  color: black;
-  text-decoration: none;
-}
-.aquifer-detail dt,
-.aquifer-detail dd {
-  display: block;
-}
-.artesian-search {
-  cursor: pointer;
-}
+#aquifer-detail {
 
-a {
-  text-decoration-skip-ink: none;
-}
-
-#map-container {
-  position: relative;
-}
-
-.card-container .card-body {
-  padding: 0;
-  margin: 0;
-}
-
-.color-grey {
-  color: #494949
-}
-
-.color-info {
-  color: #38598a;
-}
-
-.main-title {
-  padding-bottom: 1rem;
-  font-size: 1.8em;
-  color: #494949;
-}
-
-.aquifer-information-list {
-  list-style: none;
-  box-sizing: border-box;
-  position: relative;
-}
-
-.aquifer-information-list-divider {
-  position: absolute;
-  top: 0;
-  width: 1px;
-  height: 100%;
-  background-color: rgba(0,0,0,.1);
-  left: 50%;
-}
-
-.aquifer-information-list {
-  & > li {
-    margin: 0.7rem 0;
+  .print-button, .print-button:hover {
+    color: black;
+    text-decoration: none;
+  }
+  .aquifer-detail dt,
+  .aquifer-detail dd {
+    display: block;
+  }
+  .artesian-search {
+    cursor: pointer;
   }
 
-  dt, dd {
-    display: inline-block;
-    vertical-align: top;
-    width: 50%;
-    font-size: 1rem;
+  a {
+    text-decoration-skip-ink: none;
   }
 
-  dt {
-    padding-right: 2rem;
-    font-weight: bold;
+  #map-container {
+    position: relative;
   }
 
-  dd {
-    padding-left: 2rem;
-  }
-}
+  .main-card > .card-body {
+    padding: 0;
+    margin: 0;
 
-.pie-chart-title {
-  font-weight: bold !important;
-  font-size: 1rem !important;
-}
-.pie-chart-container {
-  margin: 0 auto;
-}
-
-.aquifer-main-information-list .row {
-  & > div {
-    padding-bottom: 0.7rem;
+    & > .alert {
+      margin: 1.25rem;
+    }
   }
 
-  & > :nth-child(odd) {
-    font-weight: bold;
-    border-right: 1px solid rgba(0,0,0,0.1);
-  }
-}
-
-.observational-wells {
-  .obs-wells-wo-well-level span.observation-well:not(:last-child):after {
-    content: ", ";
-  }
-}
-
-#licenses li {
-  list-style: none;
-  display: inline;
-
-  &:not(:last-child):after {
-    content: ', ';
-  }
-}
-
-@media print {
-  a:not(.d-print-url) {
-    text-decoration: none !important;
+  .color-grey {
+    color: #494949
   }
 
-  a.d-print-url[href]::after {
-    content: " (" attr(href) ") ";
-    word-break: break-all;
+  .color-info {
+    color: #38598a;
+  }
+
+  .main-title {
+    padding-bottom: 1rem;
+    font-size: 1.8em;
+    color: #494949;
   }
 
   .aquifer-information-list {
+    list-style: none;
+    box-sizing: border-box;
+    position: relative;
+  }
+
+  .aquifer-information-list-divider {
+    position: absolute;
+    top: 0;
+    width: 1px;
+    height: 100%;
+    background-color: rgba(0,0,0,.1);
+    left: 50%;
+  }
+
+  .aquifer-information-list {
+    & > li {
+      margin: 0.7rem 0;
+    }
+
+    dt, dd {
+      display: inline-block;
+      vertical-align: top;
+      width: 50%;
+      font-size: 1rem;
+    }
+
     dt {
-      width: 25%;
+      padding-right: 2rem;
+      font-weight: bold;
     }
 
     dd {
-      width: 75%;
-    }
-
-    .row > :nth-child(odd) {
-      border: none;
+      padding-left: 2rem;
     }
   }
 
-  main {
-    margin-bottom: 0 !important;
+  .pie-chart-title {
+    font-weight: bold !important;
+    font-size: 1rem !important;
+  }
+  .pie-chart-container {
+    margin: 0 auto;
+  }
 
-    & > .card.container {
-      padding-bottom: 0 !important;
+  .aquifer-main-information-list .row {
+    & > div {
+      padding-bottom: 0.7rem;
+    }
+
+    & > :nth-child(odd) {
+      font-weight: bold;
+      border-right: 1px solid rgba(0,0,0,0.1);
     }
   }
 
-  body, main, .card, .aquifer-details {
-    display: block !important;
+  .observational-wells {
+    .obs-wells-wo-well-level span.observation-well:not(:last-child):after {
+      content: ", ";
+    }
+  }
+
+  #licenses li {
+    list-style: none;
+    display: inline;
+
+    &:not(:last-child):after {
+      content: ', ';
+    }
+  }
+
+  #form-loading-spinner {
+    position: absolute;
+    top: 13px;
+    left: 50%;
+  }
+
+  @media print {
+    a:not(.d-print-url) {
+      text-decoration: none !important;
+    }
+
+    a.d-print-url[href]::after {
+      content: " (" attr(href) ") ";
+      word-break: break-all;
+    }
+
+    .aquifer-information-list {
+      dt {
+        width: 25%;
+      }
+
+      dd {
+        width: 75%;
+      }
+
+      .row > :nth-child(odd) {
+        border: none;
+      }
+    }
+
+    main {
+      margin-bottom: 0 !important;
+
+      & > .card.container {
+        padding-bottom: 0 !important;
+      }
+    }
+
+    body, main, .card, .aquifer-details {
+      display: block !important;
+    }
   }
 }
 </style>

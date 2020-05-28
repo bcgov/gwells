@@ -22,6 +22,7 @@ from django.db.models import Q, Func, TextField
 from django.db.models.functions import Cast
 from django.contrib.gis.db.models.functions import Transform
 from django.views.decorators.cache import cache_page
+from django.utils import timezone
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -30,7 +31,7 @@ from rest_framework import filters
 from rest_framework.decorators import api_view, schema
 from rest_framework.response import Response
 from rest_framework.filters import SearchFilter, OrderingFilter
-from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveUpdateAPIView
+from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveUpdateAPIView, RetrieveAPIView
 from rest_framework.pagination import PageNumberPagination
 
 from reversion.views import RevisionMixin
@@ -42,27 +43,53 @@ from gwells.management.commands.export_databc import (
     GeoJSONIterator,
     AQUIFER_CHUNK_SIZE,
 )
+from gwells.roles import AQUIFERS_EDIT_ROLE
 
 from aquifers import serializers, serializers_v2
 from aquifers.models import Aquifer
 from aquifers.filters import BoundingBoxFilterBackend
-from aquifers.permissions import HasAquiferEditRoleOrReadOnly
+from aquifers.permissions import HasAquiferEditRole, HasAquiferEditRoleOrReadOnly
 
 logger = logging.getLogger(__name__)
 
 
+class AquiferEditDetailsAPIViewV2(RetrieveAPIView):
+    """Get aquifer
+    get: return details of aquifers
+    """
+    permission_classes = (HasAquiferEditRole,)
+    swagger_schema = None
+    lookup_field = 'aquifer_id'
+    serializer_class = serializers_v2.AquiferEditDetailSerializerV2
+
+    def get_queryset(self):
+        now = timezone.now()
+        qs = Aquifer.objects.all()
+        # filter out any non-published aquifer if the user doesn't have the `aquifers_edit` perm
+        if not self.request.user.groups.filter(name=AQUIFERS_EDIT_ROLE).exists():
+            qs = qs.filter(effective_date__lte=now, expiry_date__gt=now)
+        return qs
+
+
 class AquiferRetrieveUpdateAPIViewV2(RevisionMixin, AuditUpdateMixin, RetrieveUpdateAPIView):
-    """List aquifers
+    """Get aquifer
     get: return details of aquifers
     patch: update aquifer
     """
     swagger_schema = None
     permission_classes = (HasAquiferEditRoleOrReadOnly,)
-    queryset = Aquifer.objects.all()
     lookup_field = 'aquifer_id'
 
     def get_serializer_class(self):
         return serializers_v2.AquiferDetailSerializerV2
+
+    def get_queryset(self):
+        now = timezone.now()
+        qs = Aquifer.objects.all()
+        # filter out any non-published aquifer if the user doesn't have the `aquifers_edit` perm
+        if not self.request.user.groups.filter(name=AQUIFERS_EDIT_ROLE).exists():
+            qs = qs.filter(effective_date__lte=now, expiry_date__gt=now)
+        return qs
 
 
 def _aquifer_qs(request):
@@ -79,15 +106,22 @@ def _aquifer_qs(request):
     qs = Aquifer.objects.all()
     resources__section__code = query.get("resources__section__code")
     hydraulic = query.get('hydraulically_connected')
+    retired = query.get('retired') == 'yes'
     search = query.get('search')
 
     # V2 changes to `and`-ing the filters by default unless "match_any" is explicitly set to 'true'
     match_any = query.get('match_any') == 'true'
+    now = timezone.now()
 
     # build a list of filters from qs params
     filters = []
     if hydraulic:
         filters.append(Q(subtype__code__in=serializers.HYDRAULIC_SUBTYPES))
+
+    if retired:
+        filters.append(Q(retire_date__lte=now))
+    else:
+        qs = qs.filter(retire_date__gt=now)
 
     # ignore missing and empty string for resources__section__code qs param
     if resources__section__code:
@@ -113,6 +147,10 @@ def _aquifer_qs(request):
         if search.isdigit():
             disjunction = disjunction | Q(pk=int(search))
         qs = qs.filter(disjunction)
+
+    # filter out any non-published aquifer if the user doesn't have the `aquifers_edit` perm
+    if not request.user.groups.filter(name=AQUIFERS_EDIT_ROLE).exists():
+        qs = qs.filter(effective_date__lte=now, expiry_date__gt=now)
 
     qs = qs.select_related(
         'demand',
@@ -170,6 +208,7 @@ class AquiferListCreateAPIViewV2(RevisionMixin, AuditCreateMixin, ListCreateAPIV
             'area',
             'mapping_year',
             'litho_stratographic_unit',
+            'retire_date',
             'extent'
         )
 
@@ -241,3 +280,55 @@ def aquifer_geojson_v2(request, **kwargs):
             get_env_variable('S3_WELL_EXPORT_BUCKET'),
             'api/v1/gis/aquifers.json')
         return HttpResponseRedirect(url)
+
+
+AQUIFER_EXPORT_FIELDS_V2 = [
+    'aquifer_id',
+    'aquifer_name',
+    'location_description',
+    'material',
+    'litho_stratographic_unit',
+    'subtype',
+    'vulnerability',
+    'area',
+    'productivity',
+    'demand',
+    'mapping_year',
+    'retire_date',
+]
+
+
+def csv_export_v2(request, **kwargs):
+    """
+    Export aquifers as CSV. This is done in a vanilla functional Django view instead of DRF,
+    because DRF doesn't have native CSV support.
+    """
+
+    # Create the HttpResponse object with the appropriate CSV header.
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="aquifers.csv"'
+    writer = csv.writer(response)
+    writer.writerow(AQUIFER_EXPORT_FIELDS_V2)
+
+    queryset = _aquifer_qs(request)
+    for aquifer in queryset:
+        writer.writerow([getattr(aquifer, f) for f in AQUIFER_EXPORT_FIELDS_V2])
+
+    return response
+
+
+def xlsx_export_v2(request, **kwargs):
+    """
+    Export aquifers as XLSX.
+    """
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.append(AQUIFER_EXPORT_FIELDS_V2)
+    queryset = _aquifer_qs(request)
+    for aquifer in queryset:
+        ws.append([str(getattr(aquifer, f)) for f in AQUIFER_EXPORT_FIELDS_V2])
+    response = HttpResponse(content=save_virtual_workbook(
+        wb), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=aquifers.xlsx'
+    return response

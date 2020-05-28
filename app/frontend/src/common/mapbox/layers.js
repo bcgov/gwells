@@ -139,8 +139,8 @@ export function vectorSourceConfig (sourceLayerName, options = {}) {
   }
 }
 
-function vectorLayerConfig (id, source, painttype, paint = {}, layout = {}) {
-  return {
+function vectorLayerConfig (id, source, painttype, paint = {}, layout = {}, filter = null) {
+  const cfg = {
     id,
     source,
     'source-layer': source,
@@ -148,6 +148,12 @@ function vectorLayerConfig (id, source, painttype, paint = {}, layout = {}) {
     paint,
     layout
   }
+
+  if (filter) {
+    cfg.filter = filter
+  }
+
+  return cfg
 }
 
 function layerConfig (id, source, painttype, paint = {}, layout = {}) {
@@ -213,7 +219,9 @@ export function wellsBaseAndArtesianLayer (options = {}) {
     'circle-stroke-width': 1
   })
 
-  return vectorLayerConfig(layerId, options.source || WELLS_SOURCE_ID, options.layerType || 'circle', styles, options.layout)
+  const filter = options.filter || wellLayerFilter(false)
+
+  return vectorLayerConfig(layerId, options.source || WELLS_SOURCE_ID, options.layerType || 'circle', styles, options.layout, filter)
 }
 
 // Builds MapBox layer config object for searched wells with artesian ones with a fuchsia outline
@@ -312,7 +320,9 @@ export function aquifersLineLayer (options = {}) {
     ]
   })
 
-  return vectorLayerConfig(layerId, options.source || AQUIFERS_SOURCE_ID, options.layerType || 'line', styles, options.layout)
+  const filter = options.filter || aquiferLayerFilter(false, false)
+
+  return vectorLayerConfig(layerId, options.source || AQUIFERS_SOURCE_ID, options.layerType || 'line', styles, options.layout, filter)
 }
 
 // Builds MapBox layer config object for aquifer fill
@@ -333,5 +343,24 @@ export function aquifersFillLayer (options = {}) {
     ]
   })
 
-  return vectorLayerConfig(layerId, options.source || AQUIFERS_SOURCE_ID, options.layerType || 'fill', styles, options.layout)
+  const filter = options.filter || aquiferLayerFilter(false, false)
+
+  return vectorLayerConfig(layerId, options.source || AQUIFERS_SOURCE_ID, options.layerType || 'fill', styles, options.layout, filter)
+}
+
+export function wellLayerFilter (showUnpublishedWells) {
+  return [
+    'case',
+    ['!', ['get', 'is_published']], showUnpublishedWells,
+    true
+  ]
+}
+
+export function aquiferLayerFilter (showUnpublishedAquifers, showRetiredAquifers) {
+  return [
+    'case',
+    ['!', ['get', 'is_published']], showUnpublishedAquifers,
+    ['get', 'is_retired'], !!showRetiredAquifers,
+    true
+  ]
 }

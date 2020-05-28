@@ -192,7 +192,9 @@ from aquifer
     left join quality_concern_code on
         quality_concern_code.quality_concern_code = aquifer.quality_concern_code
     where
-        aquifer.geom is not null
+        aquifer.geom is not null AND
+        aquifer.effective_date <= NOW() AND aquifer.expiry_date >= NOW() AND
+        aquifer.retire_date >= NOW()
         {bounds}
     order by aquifer.aquifer_id
 """)
@@ -212,7 +214,8 @@ select
     SUBSTRING(quality_concern_code.description for 100) as quality_concern,
     SUBSTRING(a.litho_stratographic_unit for 100) as litho_stratographic_unit,
     a.mapping_year,
-    SUBSTRING(a.notes for 2000) as notes
+    a.retire_date,
+    SUBSTRING(a.notes for 2000) as notes,
 from aquifer a
     left join aquifer_material_code on
         aquifer_material_code.aquifer_material_code = a.aquifer_material_code
@@ -229,7 +232,9 @@ from aquifer a
     left join quality_concern_code on
         quality_concern_code.quality_concern_code = a.quality_concern_code
     where
-        a.geom is not null
+        a.geom is not null AND
+        a.effective_date <= NOW() AND a.expiry_date >= NOW() AND
+        a.retire_date >= NOW()
         {bounds}
     order by a.aquifer_id
 """)

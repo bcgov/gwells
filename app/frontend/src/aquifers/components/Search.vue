@@ -99,6 +99,7 @@
               :selectedId="selectedAquiferId"
               :viewBounds="mapViewBounds"
               :searchText="search"
+              :showRetired="showRetiredAquifersOnMap"
               @moved="mapMoved"
               @zoomed="handleMapZoom"
               @search="mapSearch"
@@ -129,7 +130,6 @@
             empty-text="No aquifers could be found"
             striped
             outlined
-            @row-clicked="searchResultsRowClicked"
             :busy="searchInProgress"
             v-if="searchPerformed"
             :tbody-tr-class="searchResultsRowClass"
@@ -139,6 +139,9 @@
             </template>
             <template slot="name" slot-scope="row">
               {{row.item.name}}
+            </template>
+            <template slot="retire_date" slot-scope="row">
+              <span :title="row.item.retire_date">{{ row.item.retire_date | moment("MMMM Do YYYY [at] LT") }}</span>
             </template>
             <template v-slot:table-busy>
               <div class="text-center my-2">
@@ -189,6 +192,7 @@ import { BC_LAT_LNG_BOUNDS, containsBounds } from '../../common/mapbox/geometry'
 
 const SEARCH_RESULTS_PER_PAGE = 10
 const HYDRAULICALLY_CONNECTED_CODE = 'Hydra'
+const RETIRED_CODE = 'Retired'
 const URL_QS_SEARCH_KEYS = ['constrain', 'resources__section__code', 'match_any', 'search']
 
 export default {
@@ -197,11 +201,16 @@ export default {
     'map-loading-spinner': MapLoadingSpinner
   },
   data () {
+    let showRetiredAquifersOnMap = false
     let query = this.$route.query
 
     let selectedSections = query.resources__section__code ? query.resources__section__code.split(',') : []
     if (query.hydraulically_connected) {
       selectedSections.push(HYDRAULICALLY_CONNECTED_CODE)
+    }
+    if (query.retired) {
+      showRetiredAquifersOnMap = true
+      selectedSections.push(RETIRED_CODE)
     }
 
     return {
@@ -212,18 +221,20 @@ export default {
       currentPage: 1,
       response: {},
       aquiferListFields: [
-        { key: 'id', label: 'Aquifer number', sortable: true },
-        { key: 'name', label: 'Aquifer name', sortable: true },
-        { key: 'location', label: 'Descriptive location', sortable: true },
+        { key: 'id', label: 'Aquifer\xa0number', sortable: true },
+        { key: 'name', label: 'Aquifer\xa0name', sortable: true },
+        { key: 'location', label: 'Descriptive\xa0location', sortable: true },
         { key: 'material', label: 'Material', sortable: true },
-        { key: 'lsu', label: 'Litho stratigraphic unit', sortable: true },
+        { key: 'lsu', label: 'Litho\xa0stratigraphic\xa0unit', sortable: true },
         { key: 'subtype', label: 'Subtype', sortable: true },
         { key: 'vulnerability', label: 'Vulnerability', sortable: true },
-        { key: 'area', label: 'Size-km²', sortable: true },
+        { key: 'area', label: 'Size\u2011km²', sortable: true },
         { key: 'productivity', label: 'Productivity', sortable: true },
         { key: 'demand', label: 'Demand', sortable: true },
-        { key: 'mapping_year', label: 'Year of mapping', sortable: true }
+        { key: 'mapping_year', label: 'Year\xa0of\xa0mapping', sortable: true },
+        { key: 'retire_date', label: 'Date\xa0retired', sortable: true }
       ],
+      includeRetired: false,
       layers: [],
       surveys: [],
       noSearchCriteriaError: false,
@@ -232,7 +243,8 @@ export default {
       selectMode: 'single',
       selectedAquiferId: null,
       mapViewBounds: null,
-      loadingMap: false
+      loadingMap: false,
+      showRetiredAquifersOnMap
     }
   },
   computed: {
@@ -259,12 +271,13 @@ export default {
       results.forEach((aquifer) => bounds.extend(aquifer.extent))
       return bounds
     },
-    resourceSectionOptions () { return this.resourceSections && this.resourceSections.map((s) => ({ text: s.name, value: s.code })) },
+    resourceSectionOptions () {
+      return this.resourceSections && this.resourceSections.map((s) => ({ text: s.name, value: s.code }))
+    },
     ...mapGetters(['userRoles']),
-    ...mapGetters('aquiferStore/search', ['queryParams']),
+    ...mapGetters('aquiferStore/search', ['queryParams', 'searchResults']),
     ...mapState('aquiferStore/search', [
       'searchErrors',
-      'searchResults',
       'searchResultCount',
       'searchInProgress',
       'searchPerformed',
@@ -323,6 +336,10 @@ export default {
           name: 'Hydraulically connected',
           code: HYDRAULICALLY_CONNECTED_CODE
         })
+        sections.push({
+          name: 'Retired aquifers',
+          code: RETIRED_CODE
+        })
         this.addSections(sections)
       })
     },
@@ -348,6 +365,8 @@ export default {
       }
 
       this.loadingMap = true
+
+      this.showRetiredAquifersOnMap = this.selectedSections.indexOf(RETIRED_CODE) !== -1
 
       this.selectedAquiferId = null
       this[SET_CONSTRAIN_SEARCH](constrainSearch)
@@ -428,7 +447,7 @@ export default {
         return 'selected'
       }
     },
-    searchResultsRowClicked (data) {
+    selectAquifer (data) {
       if (this.selectedAquiferId === data.aquifer_id) { // toggle off
         this.mapViewBounds = this.searchedAquifersBounds
         this.selectedAquiferId = null
@@ -445,6 +464,7 @@ export default {
       this.updateQueryParams()
     },
     searchInProgress () {
+      // search has finished
       if (this.searchInProgress === false) {
         this.loadingMap = false
         this.mapViewBounds = this.searchedAquifersBounds

@@ -435,12 +435,35 @@ class Aquifer(AuditModel):
         db_comment=('Details about the mapped aquifer that the province deems important to maintain such as'
                     ' local knowledge about the aquifer or decisions for changes related to attributes of'
                     ' the mapped aquifer.'))
+    effective_date = models.DateTimeField(
+        default=timezone.now, null=False,
+        db_comment='The date and time that the aquifer became published.')
+    expiry_date = models.DateTimeField(
+        default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False,
+        db_comment='The date and time after which the aquifer became unpublished.')
+    retire_date = models.DateTimeField(
+        default=timezone.make_aware(timezone.datetime.max, timezone.get_default_timezone()), null=False,
+        db_comment='The date and time after which the aquifer is considered to be retired')
+
     geom = models.MultiPolygonField(srid=3005, null=True)
     # This version is pre-rendered in WGS 84 for display on web-maps.
     # Only used by the v1 API
     geom_simplified = models.MultiPolygonField(srid=4326, null=True)
 
     history = GenericRelation(Version)
+
+    def status_retired(self):
+        return datetime.now() > self.retire_date
+
+    def status_draft(self):
+        return datetime.now() < self.effective_date
+
+    def status_published(self):
+        now = datetime.now()
+        return now >= self.effective_date and now < self.expiry_date
+
+    def status_unpublished(self):
+        return now >= self.expiry_date
 
     def load_shapefile(self, f):
         """

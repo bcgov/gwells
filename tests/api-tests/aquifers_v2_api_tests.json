@@ -1260,6 +1260,211 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Retire Aquifer",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "cfe894ea-0d9f-4b92-8857-34eb257915ab",
+						"exec": [
+							"var jsonData = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"})",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "JWT {{token}}"
+					},
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \n\t\"retire_date\": \"2020-01-01T00:00:00Z\"\n}\n"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v2/aquifers/{{aquifer_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v2",
+						"aquifers",
+						"{{aquifer_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Retired Aquifers List",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4a882f11-c10d-44ee-a3b9-1915ce90baff",
+						"exec": [
+							"var jsonData = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"})",
+							"",
+							"pm.test(\"Response is greater then zero\", function() {",
+							"    pm.expect(jsonData.count).to.be.above(0)",
+							"})",
+							"",
+							"pm.test(\"Only retired aquifers\", function () {",
+							"    const onlyRetired = jsonData.results.every((aquifer) => {",
+							"        return new Date(aquifer.retire_date) < new Date();",
+							"    });",
+							"    pm.expect(onlyRetired).to.be.true;",
+							"})",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/v2/aquifers?retired=yes",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v2",
+						"aquifers"
+					],
+					"query": [
+						{
+							"key": "retired",
+							"value": "yes"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Unpublish Aquifer",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "cd8fff75-07d1-4eff-865d-3a88ccadb210",
+						"exec": [
+							"var jsonData = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"})",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "JWT {{token}}"
+					},
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \n\t\"retire_date\": \"9999-12-31T00:00:00Z\",\n\t\"effective_date\": \"2000-01-01T00:00:00Z\",\n\t\"expiry_date\": \"2020-01-01T00:00:00Z\"\n}\n"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v2/aquifers/{{aquifer_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v2",
+						"aquifers",
+						"{{aquifer_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Logged-in views unpublished Aquifers List",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "42917a15-1f0e-445e-ba78-3a5171313c13",
+						"exec": [
+							"var jsonData = pm.response.json()",
+							"var aquifer_id = pm.environment.get(\"aquifer_id\");",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"})",
+							"",
+							"pm.test(\"Unpublished Aquifer found\", function () {",
+							"    const aquifer = jsonData.results.find((aquifer) => {",
+							"        return aquifer.aquifer_id === aquifer_id",
+							"    });",
+							"    pm.expect(aquifer).to.be.an('object');",
+							"})",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "JWT {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/v2/aquifers",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v2",
+						"aquifers"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"event": [
