@@ -105,8 +105,12 @@
               </b-col>
               <b-col md="6" id="wells">
                 <h5>Wells</h5>
-                <b-alert show variant="warning" v-if="unknonwnWellIdsExist">
+                <b-alert show variant="warning" v-if="unknownWellIdsExist">
                   Wells in <span style="color:red">red</span> do not exist
+                </b-alert>
+
+                <b-alert show variant="warning" v-if="showOverwriteWarningMessage">
+                  Wells in <span style="color:orange">orange</span> will be overwritten
                 </b-alert>
 
                 <b-table
@@ -120,11 +124,12 @@
                     <span :class="{ unknown: checkWellIsUnknown(row.item.wellTagNumber) }">
                       {{row.item.wellTagNumber}}
                     </span>
+                    <b-spinner v-if="fetchWellFilesInProgress[row.item.wellTagNumber]" small/>
                   </template>
                   <template slot="documents" slot-scope="row">
                     <ul>
-                      <li v-for="(file, index) in row.item.documents" :key="index">
-                        {{ file.name }}
+                      <li v-for="(doc, index) in row.item.documents" :key="index" :class="{overwrite: doc.exists}">
+                        {{ doc.name }}
                       </li>
                     </ul>
                   </template>
@@ -168,10 +173,13 @@
 
 <script>
 import { mapGetters, mapMutations, mapState, mapActions } from 'vuex'
+import { difference } from 'lodash'
 
 import ApiService from '@/common/services/ApiService.js'
 import APIErrorMessage from '@/common/components/APIErrorMessage'
 import Plural from '@/common/components/Plural'
+
+const WELL_ID_RE = /WTN\s+(\d+)[\s_-]+/i
 
 export default {
   data () {
@@ -182,7 +190,7 @@ export default {
       isSaving: false,
       showSaveSuccess: false,
       wellsList: [null],
-      unknonwnWellIds: null,
+      unknownWellIds: null,
       wellTableFields: [
         {
           key: 'wellTagNumber',
@@ -203,7 +211,9 @@ export default {
           text: 'Well Documents Bulk Upload',
           active: true
         }
-      ]
+      ],
+      existingFiles: {},
+      fetchWellFilesInProgress: {}
     }
   },
   components: {
@@ -234,17 +244,17 @@ export default {
       return Object.keys(this.apiValidationErrors).length > 0
     },
     wellDocuments () {
-      const list = []
+      const docs = {}
 
       this.upload_files.forEach((file) => {
         const wellTagNumber = this.parseWellIdFromFileName(file.name)
         if (wellTagNumber) {
-          list[wellTagNumber] = list[wellTagNumber] || []
-          list[wellTagNumber].push(file)
+          docs[wellTagNumber] = docs[wellTagNumber] || []
+          docs[wellTagNumber].push(file)
         }
       })
 
-      return list
+      return docs
     },
     numWellDocuments () {
       return Object.keys(this.wellDocuments).reduce((count, key) => {
@@ -253,14 +263,38 @@ export default {
     },
     wellTableData () {
       return Object.keys(this.wellDocuments).map((wellTagNumber) => {
+        let existingFiles = []
+
+        if (wellTagNumber in this.existingFiles) {
+          existingFiles = this.existingFiles[wellTagNumber][this.isPrivate ? 'private' : 'public']
+        }
+
         return {
           wellTagNumber: parseInt(wellTagNumber, 10),
-          documents: this.wellDocuments[wellTagNumber]
+          documents: this.wellDocuments[wellTagNumber].map((file) => {
+            const name = this.fileNameWithoutPrefix(file.name)
+            let exists = null
+            if (!this.fetchWellFilesInProgress[wellTagNumber]) {
+              exists = existingFiles.findIndex(({ name: existingFileName }) => {
+                return existingFileName.endsWith(name)
+              }) !== -1 // found
+            }
+
+            return {
+              name,
+              exists
+            }
+          })
         }
       })
     },
-    unknonwnWellIdsExist () {
-      return this.unknonwnWellIds !== null && this.unknonwnWellIds.length > 0
+    showOverwriteWarningMessage () {
+      return Object.values(this.wellTableData).some(({ documents }) => {
+        return documents.some(({ exists }) => exists === true)
+      })
+    },
+    unknownWellIdsExist () {
+      return this.unknownWellIds !== null && this.unknownWellIds.length > 0
     },
     showSubmitButton () {
       if (this.hasAPIValidationErrors) {
@@ -276,7 +310,7 @@ export default {
         return true
       } else if (this.numWellDocuments === 0) {
         return true
-      } else if (this.unknonwnWellIdsExist) {
+      } else if (this.unknownWellIdsExist) {
         return true
       }
 
@@ -295,7 +329,10 @@ export default {
   },
   watch: {
     upload_files () {
-      this.checkWellIds()
+      const wellTagNumbers = Object.keys(this.wellDocuments).map((id) => parseInt(id, 10))
+
+      this.checkWellTagNumbers(wellTagNumbers)
+      this.fetchExistingFiles(wellTagNumbers)
     }
   },
   methods: {
@@ -317,6 +354,7 @@ export default {
       this.apiError = null
       this.apiValidationErrors = {}
       this.isSaving = true
+      this.willOverwriteExisting = false
 
       this.uploadWellFiles()
         .then(() => {
@@ -333,7 +371,7 @@ export default {
       const wellTagNumbers = Object.keys(documents)
         .map((key) => parseInt(key, 10))
         .filter((wellTagNumber) => {
-          return (this.unknonwnWellIds || []).indexOf(wellTagNumber) === -1
+          return (this.unknownWellIds || []).indexOf(wellTagNumber) === -1
         })
 
       return wellTagNumbers.reduce((previousPromise, wellTagNumber) => {
@@ -343,10 +381,13 @@ export default {
             return Promise.resolve()
           }
 
+          const fileNames = files.map((file) => this.fileNameWithoutPrefix(file.name))
+
           return this.uploadFiles({
             documentType: 'wells',
             recordId: wellTagNumber,
-            files
+            files,
+            fileNames
           })
         })
       }, Promise.resolve())
@@ -369,9 +410,11 @@ export default {
       }
     },
     reset () {
+      this.willOverwriteExisting = false
       this.apiError = null
       this.apiValidationErrors = {}
       this.isSaving = false
+      this.unknownWellIds = null
       this.setFiles([])
       this.wellsList = [null]
     },
@@ -388,36 +431,66 @@ export default {
 
       return `${sizeInBytes} bytes`
     },
-    checkWellIds () {
-      const wellTagNumbers = Object.keys(this.wellDocuments).map((id) => parseInt(id, 10))
-      this.unknonwnWellIds = null
-      if (wellTagNumbers.length > 0) {
-        ApiService.query(`wells/locations?well_tag_numbers=${wellTagNumbers.join(',')}`)
-          .then(({ data: { results } }) => {
-            this.unknonwnWellIds = wellTagNumbers.filter((wellTagNumber) => !results.find((well) => wellTagNumber === well.well_tag_number))
-          })
-          .catch(this.handleApiError)
-      }
+    checkWellTagNumbers (wellTagNumbers) {
+      if (wellTagNumbers.length === 0) { return }
+
+      this.unknownWellIds = null
+      ApiService.query(`wells/locations?well_tag_numbers=${wellTagNumbers.join(',')}`)
+        .then(({ data: { results } }) => {
+          this.unknownWellIds = wellTagNumbers.filter((wellTagNumber) => !results.find((well) => wellTagNumber === well.well_tag_number))
+        })
+        .catch(this.handleApiError)
     },
     checkWellIsUnknown (wellTagNumber) {
-      if (this.unknonwnWellIds === null) {
+      if (this.unknownWellIds === null) {
         return false
       }
 
-      return this.unknonwnWellIds.indexOf(wellTagNumber) !== -1
+      return this.unknownWellIds.indexOf(wellTagNumber) !== -1
+    },
+    fetchExistingFiles (wellTagNumbers) {
+      const existingWellTagNumbers = Object.keys(this.existingFiles).map((wtn) => parseInt(wtn))
+      // remove the existing files from the list so we only fetch things we don't know
+      const wtns = difference(wellTagNumbers, existingWellTagNumbers)
+
+      if (wtns.length === 0) { return }
+
+      const promises = wtns.map((wellTagNumber) => {
+        this.fetchWellFilesInProgress[wellTagNumber] = true
+        return ApiService.query(`wells/${wellTagNumber}/files`)
+          .then((response) => {
+            this.existingFiles[wellTagNumber] = response.data
+          })
+          .catch((err) => {
+            if (err.isAxiosError && err.response.status === 404) { // 404 = unknown wtn
+              this.existingFiles[wellTagNumber] = { public: [], private: [] }
+              return
+            }
+            this.handleApiError(err)
+            throw err
+          })
+          .finally(() => {
+            this.fetchWellFilesInProgress = Object.assign({}, this.fetchWellFilesInProgress, { [wellTagNumber]: false })
+          })
+      })
+      return Promise.all(promises)
     },
     parseWellIdFromFileName (fileName) {
-      const matches = fileName.match(/WTN\s+(\d+)/i)
+      const matches = fileName.match(WELL_ID_RE)
       if (matches) {
         return parseInt(matches[1], 10) || null
       }
       return null
     },
+    fileNameWithoutPrefix (fileName) {
+      // Strips `WTN \d+` prefix from file name. A `WTN ${wellTagNumber}` gets added on upload.
+      return fileName.replace(WELL_ID_RE, '')
+    },
     fileIsInvalid (file) {
       const wellTagNumber = this.parseWellIdFromFileName(file.name)
 
       if (wellTagNumber) {
-        if (this.unknonwnWellIdsExist && this.unknonwnWellIds.indexOf(wellTagNumber) !== -1) {
+        if (this.unknownWellIdsExist && this.unknownWellIds.indexOf(wellTagNumber) !== -1) {
           return true
         }
 
@@ -519,6 +592,10 @@ export default {
     table {
       .unknown {
         color: red;
+      }
+
+      .overwrite {
+        color: orange;
       }
     }
   }

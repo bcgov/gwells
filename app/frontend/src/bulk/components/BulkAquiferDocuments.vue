@@ -176,7 +176,7 @@
                       <template slot="documents" slot-scope="row">
                         <ul>
                           <li v-for="(file, index) in row.item.documents" :key="index">
-                            {{ file.name }}
+                            {{ fileNameWithoutPrefix(file.name) }}
                           </li>
                         </ul>
                       </template>
@@ -226,6 +226,8 @@ import { debounce } from 'lodash'
 import ApiService from '@/common/services/ApiService.js'
 import APIErrorMessage from '@/common/components/APIErrorMessage'
 import Plural from '@/common/components/Plural'
+
+const AQUIFER_ID_RE = /([_ -]+)(\d+)(\.[a-zA-Z0-9]+)$/
 
 export default {
   data () {
@@ -299,17 +301,17 @@ export default {
       return Object.keys(this.apiValidationErrors).length > 0
     },
     aquiferDocuments () {
-      const list = []
+      const docs = {}
 
       this.upload_files.forEach((file) => {
         const aquiferId = this.parseAquiferIdFromFileName(file.name)
         if (aquiferId) {
-          list[aquiferId] = list[aquiferId] || []
-          list[aquiferId].push(file)
+          docs[aquiferId] = docs[aquiferId] || []
+          docs[aquiferId].push(file)
         }
       })
 
-      return list
+      return docs
     },
     aquiferTableData () {
       return Object.keys(this.aquiferDocuments).map((aquiferId) => {
@@ -437,10 +439,13 @@ export default {
             return Promise.resolve()
           }
 
+          const fileNames = files.map((file) => this.fileNameWithoutPrefix(file.name))
+
           return this.uploadFiles({
             documentType: 'aquifers',
             recordId: aquiferId,
-            files
+            files,
+            fileNames
           })
         })
       }, Promise.resolve())
@@ -537,11 +542,15 @@ export default {
       return this.unknonwnAquiferIds.indexOf(aquiferId) !== -1
     },
     parseAquiferIdFromFileName (fileName) {
-      const matches = fileName.match(/[_ -](\d+)\.[a-zA-Z0-9]+$/)
+      const matches = fileName.match(AQUIFER_ID_RE)
       if (matches) {
-        return parseInt(matches[1], 10) || null
+        return parseInt(matches[2], 10) || null
       }
       return null
+    },
+    fileNameWithoutPrefix (fileName) {
+      // Strips aquifer ID from file name.
+      return fileName.replace(AQUIFER_ID_RE, '$3')
     },
     fileIsInvalid (file) {
       if (this.keyedBehaviourPicked) {

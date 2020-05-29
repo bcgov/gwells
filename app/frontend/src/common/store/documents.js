@@ -53,6 +53,7 @@ export default {
       let documentType = payload.documentType
       let recordId = payload.recordId
       const files = payload.files || context.state.upload_files
+      const fileNames = payload.fileNames || []
 
       // Driller documents are always private
       let isPrivate = context.state.isPrivate
@@ -60,12 +61,15 @@ export default {
         isPrivate = true
       }
 
-      return files.reduce((previousPromise, file) => {
+      return files.reduce((previousPromise, file, i) => {
         return previousPromise.then((results) => {
+          // use override file name if it exists
+          const fileName = fileNames[i] || file.name
+
           return ApiService.presignedPutUrl(
             documentType,
             recordId,
-            encodeURIComponent(file.name),
+            encodeURIComponent(fileName),
             isPrivate
           )
             .then(response => {
