@@ -457,12 +457,12 @@ export default {
     statusMessage () {
       if (this.status === 'unpublished') {
         return `
-          An unpublished aquifer will be hidden from DataBC, the GWELLS Aquifer Search, the GWELLS
+          An unpublished aquifer will be hidden from DataBC, iMapBC, the GWELLS Aquifer Search, the GWELLS
           Aquifer Summary and the CSV/XLS export.
         `
       } else if (this.status === 'retired') {
         return `
-          A retired aquifer will not exist in DataBC or the CSV/XLS export. However it still can be
+          A retired aquifer will not exist in DataBC, iMapBC, or the CSV/XLS export. However it still can be
           viewed on the GWELLS Aquifer Search and the GWELLS Aquifer Summary pages.
         `
       }

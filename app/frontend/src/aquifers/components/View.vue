@@ -33,7 +33,7 @@
           This aquifer is retired and stored for record keeping purposes.
         </b-alert>
         <b-alert show v-if="viewMode && isUnpublished" variant="warning">
-          This aquifer is unpublished.
+          This aquifer is unpublished and will be hidden from DataBC, iMapBC, the GWELLS Aquifer Search, the GWELLS Aquifer Summary and the CSV/XLS export.
         </b-alert>
         <b-alert show v-if="files_uploading || shapefile_uploading">File Upload In Progress...</b-alert>
         <b-alert show v-if="!files_uploading && file_upload_error" variant="danger">
