@@ -1,0 +1,110 @@
+{
+    "kind": "Template",
+    "apiVersion": "v1",
+    "metadata": {},
+    "parameters": [
+        {
+            "name": "ENV_NAME",
+            "required": true
+        },
+        {
+            "name": "PROJECT",
+            "required": true
+        },
+        {
+            "name": "TAG",
+            "required": false,
+            "value": "${ENV_NAME}"
+        },
+        {
+            "name": "NAME",
+            "required": true
+        },
+        {
+            "name": "COMMAND",
+            "required": true
+        },
+        {
+            "name": "SCHEDULE",
+            "required": true
+        }
+    ],
+    "objects": [
+        {
+            "apiVersion": "batch/v1beta1",
+            "kind": "CronJob",
+            "metadata": {
+                "name": "${NAME}"
+            },
+            "spec": {
+                "schedule": "${SCHEDULE}",
+                "concurrencyPolicy": "Forbid",
+                "jobTemplate": {
+                    "spec": {
+                        "template": {
+                            "spec": {
+                                "containers": [
+                                    {
+                                        "name": "${NAME}",
+                                        "image": "docker-registry.default.svc:5000/${PROJECT}/gwells-${ENV_NAME}:${TAG}",
+                                        "imagePullPolicy": "Always",
+                                        "command": [
+                                            "python",
+                                            "backend/manage.py",
+                                            "${COMMAND}"
+                                        ],
+                                        "env": [
+                                            {
+                                                "name": "DATABASE_SERVICE_NAME",
+                                                "value": "gwells-pg12-${ENV_NAME}"
+                                            },
+                                            {
+                                                "name": "DATABASE_ENGINE",
+                                                "value": "postgresql"
+                                            },
+                                            {
+                                                "name": "DATABASE_NAME",
+                                                "valueFrom": {
+                                                    "secretKeyRef": {
+                                                        "name": "gwells-pgsql-${ENV_NAME}",
+                                                        "key": "database-name"
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                "name": "DATABASE_USER",
+                                                "valueFrom": {
+                                                    "secretKeyRef": {
+                                                        "name": "gwells-pgsql-${ENV_NAME}",
+                                                        "key": "database-user"
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                "name": "DATABASE_PASSWORD",
+                                                "valueFrom": {
+                                                    "secretKeyRef": {
+                                                        "name": "gwells-pgsql-${ENV_NAME}",
+                                                        "key": "database-password"
+                                                    }
+                                                }
+                                            }
+                                        ],
+                                        "envFrom": [
+                                            {
+                                                "configMapRef": {
+                                                    "name": "gwells-global-config-${ENV_NAME}"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "restartPolicy": "OnFailure"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    ]
+}

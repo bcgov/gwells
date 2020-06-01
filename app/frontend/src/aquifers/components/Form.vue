@@ -208,17 +208,11 @@
         <b-form-group
           horizontal
           label-cols="4"
-          label="Demand"
-          label-for="demand"
-          :invalid-feedback="fieldErrorMessages.demand"
-          :state="fieldHasError.demand">
-          <b-form-select
-            id="aquifer-demand"
-            v-model="record.demand"
-            :options="[''].concat(demand_codes)"
+          description="Please upload a shapefile containing only this aqufier in ZIP format."
+          label="Shapefile">
+          <b-form-file
             :disabled="fieldDisabled"
-            value-field="code"
-            text-field="description"/>
+            v-model="shape"/>
         </b-form-group>
       </b-col>
     </b-row>
@@ -236,17 +230,6 @@
             id="aquifer-notes"
             :disabled="fieldDisabled"
             v-model="record.notes"/>
-        </b-form-group>
-      </b-col>
-      <b-col md="6">
-        <b-form-group
-          horizontal
-          label-cols="4"
-          description="Please upload a shapefile containing only this aqufier in ZIP format."
-          label="Shapefile">
-          <b-form-file
-            :disabled="fieldDisabled"
-            v-model="shape"/>
         </b-form-group>
       </b-col>
     </b-row>

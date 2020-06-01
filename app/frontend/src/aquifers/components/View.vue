@@ -134,7 +134,7 @@
                   <b-row>
                     <b-col cols="6" md="3" lg="6">Size (km²)</b-col>
                     <b-col cols="6" md="3" lg="6">{{record.area}}</b-col>
-                    <b-col cols="6" md="3" lg="6">Demand</b-col>
+                    <b-col cols="6" md="3" lg="6">Calculated well density</b-col>
                     <b-col cols="6" md="3" lg="6">{{record.demand}}</b-col>
                   </b-row>
                 </b-col>
