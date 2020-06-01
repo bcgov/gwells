@@ -472,8 +472,10 @@ exports[`Search Component Matches the snapshot 1`] = `
                   class=""
                   role="cell"
                 >
-                  <span>
-                    
+                  <span
+                    title="2020-01-01"
+                  >
+                    January 1st 2020 at 12:00 AM
                   </span>
                 </td>
               </tr>

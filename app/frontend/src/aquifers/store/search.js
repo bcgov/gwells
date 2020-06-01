@@ -147,21 +147,7 @@ const aquiferSearchStore = {
       const cancelSource = axios.CancelToken.source()
       commit(SET_PENDING_SEARCH, cancelSource)
 
-      let params = aquiferSearchStore.getters.queryParams(state)
-
-      // if triggering the search using the map, the search will be restricted to
-      // the visible map bounds
-      if (state.constrainSearch && state.mapBounds) {
-        const bounds = state.mapBounds
-        const mapBBox = {
-          sw_lat: bounds.getSouthWest().lat,
-          sw_long: bounds.getSouthWest().lng,
-          ne_lat: bounds.getNorthEast().lat,
-          ne_long: bounds.getNorthEast().lng
-        }
-
-        Object.assign(params, mapBBox)
-      }
+      let params = aquiferSearchStore.getters.searchParams(state)
 
       ApiService.query('aquifers', params, { cancelToken: (cancelSource || {}).token })
         .then((response) => {
@@ -227,6 +213,23 @@ const aquiferSearchStore = {
       }
       if (state.constrainSearch) {
         params.constrain = String(state.constrainSearch)
+      }
+
+      return params
+    },
+    searchParams (state) {
+      const params = aquiferSearchStore.getters.queryParams(state)
+
+      if (state.constrainSearch && state.mapBounds) {
+        const bounds = state.mapBounds
+        const mapBBox = {
+          sw_lat: bounds.getSouthWest().lat,
+          sw_long: bounds.getSouthWest().lng,
+          ne_lat: bounds.getNorthEast().lat,
+          ne_long: bounds.getNorthEast().lng
+        }
+
+        Object.assign(params, mapBBox)
       }
 
       return params

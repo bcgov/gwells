@@ -275,7 +275,7 @@ export default {
       return this.resourceSections && this.resourceSections.map((s) => ({ text: s.name, value: s.code }))
     },
     ...mapGetters(['userRoles']),
-    ...mapGetters('aquiferStore/search', ['queryParams', 'searchResults']),
+    ...mapGetters('aquiferStore/search', ['queryParams', 'searchParams', 'searchResults']),
     ...mapState('aquiferStore/search', [
       'searchErrors',
       'searchResultCount',
@@ -305,16 +305,16 @@ export default {
       this.$router.push({ name: 'new' })
     },
     downloadCSV (filterOnly) {
-      let url = ApiService.baseURL + 'aquifers/csv?'
+      let url = `${ApiService.baseURL}aquifers/csv`
       if (filterOnly) {
-        url += querystring.stringify(this.query)
+        url += `?${querystring.stringify(this.searchParams)}`
       }
       window.open(url)
     },
     downloadXLSX (filterOnly) {
-      let url = ApiService.baseURL + 'aquifers/xlsx?'
+      let url = `${ApiService.baseURL}aquifers/xlsx`
       if (filterOnly) {
-        url += querystring.stringify(this.query)
+        url += `?${querystring.stringify(this.searchParams)}`
       }
       window.open(url)
     },
