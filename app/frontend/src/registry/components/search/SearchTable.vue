@@ -1,14 +1,21 @@
 <template>
-  <div>
+  <div class="registry-search-table">
+    <div class="registry-search-table-loading" v-if="loading">
+      <b-spinner/>
+    </div>
     <div class="table-responsive">
       <table class="table table-striped" id="registry-table">
         <thead>
-          <th v-for="field in fields"
-              :key="field.name"
-              :class="field.class"
-              v-if="(field.visible === 'public' || userRoles.registry.view) && (field.activity === activity || field.activity == 'all')">
-            {{field.name}} <i class="fa fa-sort" v-if="field.sortable && field.sortCode" @click="sortBy(field.sortCode)"></i>
-          </th>
+          <tr>
+            <th v-for="field in fields"
+                :key="field.name"
+                :class="{[field.class]: true, sortable: fieldSortable(field)}"
+                v-if="(field.visible === 'public' || userRoles.registry.view) && (field.activity === activity || field.activity == 'all')"
+                @click="sortBy(field)">
+              {{field.name}}
+              <i class="fa fa-sort" v-if="field.sortable && field.sortCode"/>
+            </th>
+          </tr>
         </thead>
         <tbody>
           <tr v-if="drillers.results && drillers.results.length"
@@ -63,7 +70,7 @@
       <div v-if="drillers.results && drillers.results.length" class="col-xs-12 col-sm-4 offset-sm-4 offset-md-5 col-md-3">
         <nav aria-label="List navigation" v-if="drillers.results && drillers.results.length">
           <ul class="pagination">
-            <li>
+            <li class="ml-auto">
               <button type="button" @click="paginationPrev" class="btn btn-default" aria-label="Previous" id="table-pagination-prev" :disabled="!drillers.previous">
                 <span aria-hidden="true">Previous</span>
               </button>
@@ -204,8 +211,13 @@ export default {
       if (!query) throw new Error('query parameter is required.')
       this.$store.dispatch(FETCH_DRILLER_LIST, querystring.parse(query))
     },
-    sortBy (sortCode) {
-      this.$emit('sort', sortCode)
+    fieldSortable (field) {
+      return Boolean(field.sortable && field.sortCode)
+    },
+    sortBy (field) {
+      if (this.fieldSortable(field)) {
+        this.$emit('sort', field.sortCode)
+      }
     },
     /**
      * Scrolls user's screen to the top of the SearchTable component.
@@ -217,7 +229,22 @@ export default {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style>
+<style lang="scss">
+.registry-search-table {
+  tr th.sortable {
+    cursor: pointer;
+  }
 
+  .registry-search-table-loading {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(255, 255, 255, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
 </style>

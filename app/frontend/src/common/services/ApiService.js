@@ -1,5 +1,6 @@
 import axios from 'axios'
 import qs from 'querystring'
+import { triggerDownload } from '../helpers/download'
 
 const ApiService = {
   init () {
@@ -58,6 +59,17 @@ const ApiService = {
   },
   presignedPutUrl (resource, record, filename, isPrivate) {
     return axios.get(`${resource}/${record}/presigned_put_url?filename=${filename}&private=${isPrivate}`)
+  },
+  download (url, options) {
+    options = { ...options, responseType: 'blob' }
+    return axios.get(url, options).then((response) => {
+      const blob = response.data
+      const contentDispositionHeader = response.headers['content-disposition']
+      const fileNameMatch = contentDispositionHeader.match(/filename=(["']?)([^'"]+)\1/)
+      const fileName = fileNameMatch ? fileNameMatch[2] : 'gwells-download'
+
+      triggerDownload(blob, fileName, document.body)
+    })
   },
   // fileUpload uploads a file using a pre-signed S3 URL
   fileUpload (presignedUrl, file) {

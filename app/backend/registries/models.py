@@ -224,6 +224,15 @@ class Organization(AuditModel):
 
         return '{} ({})'.format(self.name, location)
 
+    @property
+    def mailing_address(self):
+        address = [
+            self.street_address,
+            self.city,
+            self.province_state_id,
+            self.postal_code,
+        ]
+        return ", ".join([part for part in address if part])
 
 @reversion.register()
 class Person(AuditModel):

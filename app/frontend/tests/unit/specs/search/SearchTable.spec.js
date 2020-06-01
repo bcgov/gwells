@@ -43,7 +43,7 @@ describe('SearchTable.vue', () => {
       localVue,
       stubs: ['router-link', 'router-view']
     })
-    expect(wrapper.findAll('#registry-table tr').length)
+    expect(wrapper.findAll('#registry-table tbody tr').length)
       .toEqual(2)
   })
 

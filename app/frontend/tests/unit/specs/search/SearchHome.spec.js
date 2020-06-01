@@ -7,6 +7,7 @@ import APIErrorMessage from '@/common/components/APIErrorMessage'
 import fakeDrillerOptions from '../fakeDrillerOptions'
 import { FETCH_CITY_LIST, FETCH_DRILLER_LIST, FETCH_DRILLER_OPTIONS } from '@/registry/store/actions.types'
 import { SET_DRILLER_LIST } from '@/registry/store/mutations.types'
+import fakePersonList from '../fakePersonList.js'
 
 const localVue = createLocalVue()
 localVue.use(Vuex)
@@ -194,5 +195,26 @@ describe('SearchHome.vue', () => {
     })
     wrapper.find('[type=reset]').trigger('reset')
     expect(mutations.SET_DRILLER_LIST).toHaveBeenCalled()
+  })
+  it('shows shows the xlsx and csv download links', () => {
+    const getters = {
+      drillerOptions: jest.fn().mockReturnValue(fakeDrillerOptions),
+      drillers: jest.fn().mockReturnValue(fakePersonList),
+      loading: () => false,
+      listError: () => {
+        return { status: '400', statusText: 'error!' }
+      },
+      cityList: () => [],
+      activity: () => 'DRILL',
+      userRoles: () => ({ registry: { edit: false, view: true, approve: false } })
+    }
+    const store = new Vuex.Store({ getters, actions })
+    const wrapper = shallowMount(SearchHome, {
+      store,
+      localVue
+    })
+
+    const downloadlinks = wrapper.findAll('#searched-registry-download a')
+    expect(downloadlinks.length).toBe(2)
   })
 })

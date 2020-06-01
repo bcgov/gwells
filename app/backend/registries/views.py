@@ -204,6 +204,114 @@ class PersonOptionsView(APIView):
         return Response(result)
 
 
+def person_search_qs(request):
+    """ Returns Person queryset, removing non-active and unregistered drillers for anonymous users """
+    query = request.GET
+    qs = Person.objects.filter(expiry_date__gt=timezone.now())
+
+    # base registration and application querysets
+    registrations_qs = Register.objects.all()
+    applications_qs = RegistriesApplication.objects.all()
+
+    # Search for cities (split list and return all matches)
+    # search comes in as a comma-separated querystring param e.g: ?city=Atlin,Lake Windermere,Duncan
+    cities = query.get('city', None)
+    if cities:
+        cities = cities.split(',')
+        qs = qs.filter(registrations__organization__city__in=cities)
+        registrations_qs = registrations_qs.filter(
+            organization__city__in=cities)
+
+    activity = query.get('activity', None)
+    status = query.get('status', None)
+
+    user_is_staff = request.user.groups.filter(name=REGISTRIES_VIEWER_ROLE).exists()
+
+    if activity:
+        if (status == 'P' or not status) and user_is_staff:
+            # We only allow staff to filter on status
+            # For pending, or all, we also return search where there is no registration.
+            qs = qs.filter(Q(registrations__registries_activity__registries_activity_code=activity) |
+                            Q(registrations__isnull=True))
+            registrations_qs = registrations_qs.filter(
+                registries_activity__registries_activity_code=activity)
+        else:
+            # For all other searches, we strictly filter on activity.
+            qs = qs.filter(
+                registrations__registries_activity__registries_activity_code=activity)
+            registrations_qs = registrations_qs.filter(
+                registries_activity__registries_activity_code=activity)
+
+    if user_is_staff:
+        # User is logged in
+        if status:
+            if status == 'Removed':
+                # Things are a bit more complicated if we're looking for removed, as the current
+                # status doesn't come in to play.
+                qs = qs.filter(
+                    registrations__applications__removal_date__isnull=False)
+            else:
+                if status == 'P':
+                    # If the status is pending, we also pull in any people without registrations
+                    # or applications.
+                    qs = qs.filter(Q(registrations__applications__current_status__code=status) |
+                                    Q(registrations__isnull=True) |
+                                    Q(registrations__applications__isnull=True),
+                                    Q(registrations__applications__removal_date__isnull=True))
+                else:
+                    qs = qs.filter(
+                        Q(registrations__applications__current_status__code=status),
+                        Q(registrations__applications__removal_date__isnull=True))
+    else:
+        # User is not logged in
+        # Only show active drillers to non-admin users and public
+        qs = qs.filter(
+            Q(registrations__applications__current_status__code='A',
+                registrations__registries_activity=activity),
+            Q(registrations__applications__removal_date__isnull=True),
+            Q()
+        )
+
+        registrations_qs = registrations_qs.filter(
+            Q(applications__current_status__code='A'),
+            Q(applications__removal_date__isnull=True))
+
+        applications_qs = applications_qs.filter(
+            current_status='A', removal_date__isnull=True)
+
+    # generate applications queryset
+    applications_qs = applications_qs \
+        .select_related(
+            'current_status',
+            'primary_certificate',
+            'primary_certificate__cert_auth',
+            'subactivity',
+        ) \
+        .prefetch_related(
+            'subactivity__qualification_set',
+            'subactivity__qualification_set__well_class'
+        ).distinct()
+
+    # generate registrations queryset, inserting filtered applications queryset defined above
+    registrations_qs = registrations_qs \
+        .select_related(
+            'registries_activity',
+            'organization',
+            'organization__province_state',
+        ) \
+        .prefetch_related(
+            Prefetch('applications', queryset=applications_qs)
+        ).distinct()
+
+    # insert filtered registrations set
+    qs = qs \
+        .prefetch_related(
+            Prefetch('registrations', queryset=registrations_qs)
+        )
+
+    return qs.distinct()
+
+
 class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     """
     get:
@@ -235,109 +343,8 @@ class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
 
     def get_queryset(self):
         """ Returns Person queryset, removing non-active and unregistered drillers for anonymous users """
-        qs = self.queryset.filter(expiry_date__gt=timezone.now())
 
-        # base registration and application querysets
-        registrations_qs = Register.objects.all()
-        applications_qs = RegistriesApplication.objects.all()
-
-        # Search for cities (split list and return all matches)
-        # search comes in as a comma-separated querystring param e.g: ?city=Atlin,Lake Windermere,Duncan
-        cities = self.request.query_params.get('city', None)
-        if cities:
-            cities = cities.split(',')
-            qs = qs.filter(registrations__organization__city__in=cities)
-            registrations_qs = registrations_qs.filter(
-                organization__city__in=cities)
-
-        activity = self.request.query_params.get('activity', default='DRILL')
-        status = self.request.query_params.get('status', None)
-
-        user_is_staff = self.request.user.groups.filter(name=REGISTRIES_VIEWER_ROLE).exists()
-
-        if activity:
-            if (status == 'P' or not status) and user_is_staff:
-                # We only allow staff to filter on status
-                # For pending, or all, we also return search where there is no registration.
-                qs = qs.filter(Q(registrations__registries_activity__registries_activity_code=activity) |
-                               Q(registrations__isnull=True))
-                registrations_qs = registrations_qs.filter(
-                    registries_activity__registries_activity_code=activity)
-            else:
-                # For all other searches, we strictly filter on activity.
-                qs = qs.filter(
-                    registrations__registries_activity__registries_activity_code=activity)
-                registrations_qs = registrations_qs.filter(
-                    registries_activity__registries_activity_code=activity)
-
-        if user_is_staff:
-            # User is logged in
-            if status:
-                if status == 'Removed':
-                    # Things are a bit more complicated if we're looking for removed, as the current
-                    # status doesn't come in to play.
-                    qs = qs.filter(
-                        registrations__applications__removal_date__isnull=False)
-                else:
-                    if status == 'P':
-                        # If the status is pending, we also pull in any people without registrations
-                        # or applications.
-                        qs = qs.filter(Q(registrations__applications__current_status__code=status) |
-                                       Q(registrations__isnull=True) |
-                                       Q(registrations__applications__isnull=True),
-                                       Q(registrations__applications__removal_date__isnull=True))
-                    else:
-                        qs = qs.filter(
-                            Q(registrations__applications__current_status__code=status),
-                            Q(registrations__applications__removal_date__isnull=True))
-        else:
-            # User is not logged in
-            # Only show active drillers to non-admin users and public
-            qs = qs.filter(
-                Q(registrations__applications__current_status__code='A',
-                    registrations__registries_activity=activity),
-                Q(registrations__applications__removal_date__isnull=True),
-                Q()
-            )
-
-            registrations_qs = registrations_qs.filter(
-                Q(applications__current_status__code='A'),
-                Q(applications__removal_date__isnull=True))
-
-            applications_qs = applications_qs.filter(
-                current_status='A', removal_date__isnull=True)
-
-        # generate applications queryset
-        applications_qs = applications_qs \
-            .select_related(
-                'current_status',
-                'primary_certificate',
-                'primary_certificate__cert_auth',
-                'subactivity',
-            ) \
-            .prefetch_related(
-                'subactivity__qualification_set',
-                'subactivity__qualification_set__well_class'
-            ).distinct()
-
-        # generate registrations queryset, inserting filtered applications queryset defined above
-        registrations_qs = registrations_qs \
-            .select_related(
-                'registries_activity',
-                'organization',
-                'organization__province_state',
-            ) \
-            .prefetch_related(
-                Prefetch('applications', queryset=applications_qs)
-            ).distinct()
-
-        # insert filtered registrations set
-        qs = qs \
-            .prefetch_related(
-                Prefetch('registrations', queryset=registrations_qs)
-            )
-
-        return qs.distinct()
+        return person_search_qs(self.request)
 
     @swagger_auto_schema(responses={200: PersonListSerializer(many=True)})
     def get(self, request, *args, **kwargs):
