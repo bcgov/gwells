@@ -1321,6 +1321,7 @@
 						"id": "4a882f11-c10d-44ee-a3b9-1915ce90baff",
 						"exec": [
 							"var jsonData = pm.response.json()",
+							"var aquifer_id = pm.environment.get(\"aquifer_id\");",
 							"",
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.expect(pm.response.code).to.equal(200);",
@@ -1330,11 +1331,11 @@
 							"    pm.expect(jsonData.count).to.be.above(0)",
 							"})",
 							"",
-							"pm.test(\"Only retired aquifers\", function () {",
-							"    const onlyRetired = jsonData.results.every((aquifer) => {",
-							"        return new Date(aquifer.retire_date) < new Date();",
+							"pm.test(\"Retired Aquifer found\", function () {",
+							"    const aquifer = jsonData.results.find((aquifer) => {",
+							"        return aquifer.aquifer_id === aquifer_id",
 							"    });",
-							"    pm.expect(onlyRetired).to.be.true;",
+							"    pm.expect(aquifer).to.be.an('object');",
 							"})",
 							""
 						],
@@ -1346,7 +1347,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{base_url}}/api/v2/aquifers?retired=yes",
+					"raw": "{{base_url}}/api/v2/aquifers",
 					"host": [
 						"{{base_url}}"
 					],
@@ -1354,12 +1355,6 @@
 						"api",
 						"v2",
 						"aquifers"
-					],
-					"query": [
-						{
-							"key": "retired",
-							"value": "yes"
-						}
 					]
 				}
 			},

@@ -79,7 +79,6 @@ export default {
   props: [
     'initialZoom',
     'initialCentre',
-    'aquiferDetails',
     'highlightAquiferIds',
     'selectedId',
     'viewBounds',

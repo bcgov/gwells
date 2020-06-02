@@ -202,9 +202,9 @@ exports[`Search Component Matches the snapshot 1`] = `
           <!---->
            
           <aquifer-map-stub
-            aquiferdetails="[object Object]"
             highlightaquiferids="4"
             searchtext="4"
+            showretired="true"
           />
         </div>
       </div>
@@ -220,14 +220,38 @@ exports[`Search Component Matches the snapshot 1`] = `
           class="p-0 container-fluid"
         >
           <div
-            class="row"
+            class="row mb-3"
           >
             <div
-              class="mb-3 col-12"
+              class="col-md-6"
             >
+              <div>
+                
+                Showing 1 to 1 of 1
               
-              Showing 1 to 1 of 1
-            
+              </div>
+            </div>
+             
+            <div
+              class="text-right col-md-6"
+            >
+              <div
+                class="d-inline-block custom-control custom-checkbox"
+              >
+                <input
+                  autocomplete="off"
+                  class="custom-control-input"
+                  type="checkbox"
+                  value="true"
+                />
+                <label
+                  class="custom-control-label"
+                >
+                  
+                Show 1 retired aquifers
+              
+                </label>
+              </div>
             </div>
           </div>
         </div>
@@ -271,7 +295,7 @@ exports[`Search Component Matches the snapshot 1`] = `
                   scope="col"
                   tabindex="0"
                 >
-                  Aquifer name
+                  Date retired
                 </th>
                 <th
                   aria-colindex="3"
@@ -282,7 +306,7 @@ exports[`Search Component Matches the snapshot 1`] = `
                   scope="col"
                   tabindex="0"
                 >
-                  Descriptive location
+                  Aquifer name
                 </th>
                 <th
                   aria-colindex="4"
@@ -293,7 +317,7 @@ exports[`Search Component Matches the snapshot 1`] = `
                   scope="col"
                   tabindex="0"
                 >
-                  Material
+                  Descriptive location
                 </th>
                 <th
                   aria-colindex="5"
@@ -304,7 +328,7 @@ exports[`Search Component Matches the snapshot 1`] = `
                   scope="col"
                   tabindex="0"
                 >
-                  Litho stratigraphic unit
+                  Material
                 </th>
                 <th
                   aria-colindex="6"
@@ -315,7 +339,7 @@ exports[`Search Component Matches the snapshot 1`] = `
                   scope="col"
                   tabindex="0"
                 >
-                  Subtype
+                  Litho stratigraphic unit
                 </th>
                 <th
                   aria-colindex="7"
@@ -326,7 +350,7 @@ exports[`Search Component Matches the snapshot 1`] = `
                   scope="col"
                   tabindex="0"
                 >
-                  Vulnerability
+                  Subtype
                 </th>
                 <th
                   aria-colindex="8"
@@ -337,7 +361,7 @@ exports[`Search Component Matches the snapshot 1`] = `
                   scope="col"
                   tabindex="0"
                 >
-                  Size‑km²
+                  Vulnerability
                 </th>
                 <th
                   aria-colindex="9"
@@ -348,7 +372,7 @@ exports[`Search Component Matches the snapshot 1`] = `
                   scope="col"
                   tabindex="0"
                 >
-                  Productivity
+                  Size‑km²
                 </th>
                 <th
                   aria-colindex="10"
@@ -359,7 +383,7 @@ exports[`Search Component Matches the snapshot 1`] = `
                   scope="col"
                   tabindex="0"
                 >
-                  Demand
+                  Productivity
                 </th>
                 <th
                   aria-colindex="11"
@@ -370,7 +394,7 @@ exports[`Search Component Matches the snapshot 1`] = `
                   scope="col"
                   tabindex="0"
                 >
-                  Year of mapping
+                  Demand
                 </th>
                 <th
                   aria-colindex="12"
@@ -381,7 +405,7 @@ exports[`Search Component Matches the snapshot 1`] = `
                   scope="col"
                   tabindex="0"
                 >
-                  Date retired
+                  Year of mapping
                 </th>
               </tr>
             </thead>
@@ -393,7 +417,7 @@ exports[`Search Component Matches the snapshot 1`] = `
               <!---->
               <tr
                 aria-rowindex="1"
-                class=""
+                class="retired"
                 role="row"
               >
                 <td
@@ -412,15 +436,21 @@ exports[`Search Component Matches the snapshot 1`] = `
                   class=""
                   role="cell"
                 >
-                  
-            
-          
+                  <span
+                    title="2020-01-01"
+                  >
+                    January 1st 2020 at 12:00 AM
+                  </span>
                 </td>
                 <td
                   aria-colindex="3"
                   class=""
                   role="cell"
-                />
+                >
+                  
+            
+          
+                </td>
                 <td
                   aria-colindex="4"
                   class=""
@@ -445,38 +475,32 @@ exports[`Search Component Matches the snapshot 1`] = `
                   aria-colindex="8"
                   class=""
                   role="cell"
-                >
-                  63.3
-                </td>
+                />
                 <td
                   aria-colindex="9"
                   class=""
                   role="cell"
-                />
+                >
+                  63.3
+                </td>
                 <td
                   aria-colindex="10"
+                  class=""
+                  role="cell"
+                />
+                <td
+                  aria-colindex="11"
                   class=""
                   role="cell"
                 >
                   Low
                 </td>
                 <td
-                  aria-colindex="11"
-                  class=""
-                  role="cell"
-                >
-                  1993
-                </td>
-                <td
                   aria-colindex="12"
                   class=""
                   role="cell"
                 >
-                  <span
-                    title="2020-01-01"
-                  >
-                    January 1st 2020 at 12:00 AM
-                  </span>
+                  1993
                 </td>
               </tr>
               <!---->

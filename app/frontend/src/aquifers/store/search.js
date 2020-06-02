@@ -38,7 +38,6 @@ import {
 } from './mutations.types.js'
 
 const HYDRAULICALLY_CONNECTED_CODE = 'Hydra'
-const RETIRED_CODE = 'Retired'
 
 Vue.use(Vuex)
 
@@ -184,8 +183,6 @@ const aquiferSearchStore = {
       const codes = state.selectedSections.filter((s) => {
         if (s === HYDRAULICALLY_CONNECTED_CODE) {
           return false
-        } else if (s === RETIRED_CODE) {
-          return false
         }
         return true
       })
@@ -199,10 +196,6 @@ const aquiferSearchStore = {
 
       if (state.selectedSections.find((o) => o === HYDRAULICALLY_CONNECTED_CODE)) {
         params.hydraulically_connected = 'yes'
-      }
-
-      if (state.selectedSections.find((o) => o === RETIRED_CODE)) {
-        params.retired = 'yes'
       }
 
       if (state.searchMapCentre) {

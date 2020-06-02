@@ -112,7 +112,8 @@ describe('Search Component', () => {
         $route: {
           path: '/',
           query: {
-            search: aquiferFixture.aquifer_id
+            search: aquiferFixture.aquifer_id,
+            'show-retired': 'true'
           }
         }
       }

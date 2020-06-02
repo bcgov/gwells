@@ -107,7 +107,6 @@ def _aquifer_qs(request):
     qs = Aquifer.objects.all()
     resources__section__code = query.get("resources__section__code")
     hydraulic = query.get('hydraulically_connected')
-    retired = query.get('retired') == 'yes'
     search = query.get('search')
 
     # V2 changes to `and`-ing the filters by default unless "match_any" is explicitly set to 'true'
@@ -118,11 +117,6 @@ def _aquifer_qs(request):
     filters = []
     if hydraulic:
         filters.append(Q(subtype__code__in=serializers.HYDRAULIC_SUBTYPES))
-
-    if retired:
-        filters.append(Q(retire_date__lte=now))
-    else:
-        qs = qs.filter(retire_date__gt=now)
 
     # ignore missing and empty string for resources__section__code qs param
     if resources__section__code:
@@ -294,8 +288,7 @@ AQUIFER_EXPORT_FIELDS_V2 = [
     'area',
     'productivity',
     'demand',
-    'mapping_year',
-    'retire_date',
+    'mapping_year'
 ]
 
 
@@ -311,8 +304,9 @@ def csv_export_v2(request, **kwargs):
     writer = csv.writer(response)
     writer.writerow(AQUIFER_EXPORT_FIELDS_V2)
 
-    queryset = _aquifer_qs(request)
-    for aquifer in queryset:
+    qs = _aquifer_qs(request)
+    qs = qs.filter(retire_date__gt=timezone.now()) # filter out retired aquifers
+    for aquifer in qs:
         writer.writerow([getattr(aquifer, f) for f in AQUIFER_EXPORT_FIELDS_V2])
 
     return response
@@ -326,8 +320,9 @@ def xlsx_export_v2(request, **kwargs):
     wb = openpyxl.Workbook()
     ws = wb.active
     ws.append(AQUIFER_EXPORT_FIELDS_V2)
-    queryset = _aquifer_qs(request)
-    for aquifer in queryset:
+    qs = _aquifer_qs(request)
+    qs = qs.filter(retire_date__gt=timezone.now()) # filter out retired aquifers
+    for aquifer in qs:
         ws.append([str(getattr(aquifer, f)) for f in AQUIFER_EXPORT_FIELDS_V2])
     response = HttpResponse(content=save_virtual_workbook(
         wb), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
