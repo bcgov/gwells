@@ -20,7 +20,7 @@ from django.http import FileResponse, HttpResponse, StreamingHttpResponse
 
 from rest_framework import status, filters
 from rest_framework.generics import ListAPIView
-from rest_framework.exceptions import PermissionDenied, NotFound
+from rest_framework.exceptions import PermissionDenied, NotFound, ValidationError
 from rest_framework.response import Response
 
 from gwells.roles import WELLS_VIEWER_ROLE, WELLS_EDIT_ROLE
@@ -41,6 +41,7 @@ from wells.serializers_v2 import (
     WellListAdminSerializerV2,
     WellExportSerializerV2,
     WellExportAdminSerializerV2,
+    WellAquiferSerializerV2
 )
 from wells.permissions import WellsEditOrReadOnly
 from wells.renderers import WellListCSVRenderer, WellListExcelRenderer
@@ -487,3 +488,33 @@ class WellExportListAPIViewV2(ListAPIView):
         response['Content-Disposition'] = 'attachment; filename="search-results.{ext}"'.format(ext=renderer.format)
 
         return response
+
+
+class WellAquifer(ListAPIView):
+    """ returns aquifer info for a range of wells """
+
+    model = Well
+    serializer_class = WellAquiferSerializerV2
+    filter_backends = (GeometryFilterBackend,)
+    swagger_schema = None
+
+    def get_queryset(self):
+        qs = Well.objects.all()
+
+        if not self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
+            qs = qs.exclude(well_publication_status='Unpublished')
+
+        # allow comma separated list of wells by well tag number
+        wells = self.request.query_params.get('wells', None)
+        if wells:
+            wells = wells.split(',')
+
+            for w in wells:
+                if not w.isnumeric():
+                    raise ValidationError(detail='Invalid well')
+
+            wells = map(int, wells)
+
+            qs = qs.filter(well_tag_number__in=wells)
+
+        return qs
