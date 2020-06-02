@@ -30,10 +30,12 @@
       <b-card class="container container-wide card-container p-0 pb-5 main-card" :class="{ 'p-4': editMode }">
         <api-error v-if="error" :error="error"/>
         <b-alert show v-if="viewMode && isRetired && !isUnpublished" variant="warning">
-          This aquifer is retired and stored for record keeping purposes.
+          This aquifer is retired and stored for record keeping purposes. It will be hidden from
+          DataBC, iMapBC and the CSV/XLS export.
         </b-alert>
         <b-alert show v-if="viewMode && isUnpublished" variant="warning">
-          This aquifer is unpublished and will be hidden from DataBC, iMapBC, the GWELLS Aquifer Search, the GWELLS Aquifer Summary and the CSV/XLS export.
+          This aquifer is unpublished and will be hidden from DataBC, iMapBC, the GWELLS Aquifer
+          Search, the GWELLS Aquifer Summary and the CSV/XLS export.
         </b-alert>
         <b-alert show v-if="files_uploading || shapefile_uploading">File Upload In Progress...</b-alert>
         <b-alert show v-if="!files_uploading && file_upload_error" variant="danger">
