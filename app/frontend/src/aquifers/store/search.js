@@ -146,21 +146,7 @@ const aquiferSearchStore = {
       const cancelSource = axios.CancelToken.source()
       commit(SET_PENDING_SEARCH, cancelSource)
 
-      let params = aquiferSearchStore.getters.queryParams(state)
-
-      // if triggering the search using the map, the search will be restricted to
-      // the visible map bounds
-      if (state.constrainSearch && state.mapBounds) {
-        const bounds = state.mapBounds
-        const mapBBox = {
-          sw_lat: bounds.getSouthWest().lat,
-          sw_long: bounds.getSouthWest().lng,
-          ne_lat: bounds.getNorthEast().lat,
-          ne_long: bounds.getNorthEast().lng
-        }
-
-        Object.assign(params, mapBBox)
-      }
+      let params = aquiferSearchStore.getters.searchParams(state)
 
       ApiService.query('aquifers', params, { cancelToken: (cancelSource || {}).token })
         .then((response) => {
@@ -194,7 +180,12 @@ const aquiferSearchStore = {
         params.search = state.searchQuery
       }
 
-      const codes = state.selectedSections.filter((s) => s !== HYDRAULICALLY_CONNECTED_CODE)
+      const codes = state.selectedSections.filter((s) => {
+        if (s === HYDRAULICALLY_CONNECTED_CODE) {
+          return false
+        }
+        return true
+      })
       if (codes.length > 0) {
         params.resources__section__code = codes.join(',')
       }
@@ -218,6 +209,32 @@ const aquiferSearchStore = {
       }
 
       return params
+    },
+    searchParams (state) {
+      const params = aquiferSearchStore.getters.queryParams(state)
+
+      if (state.constrainSearch && state.mapBounds) {
+        const bounds = state.mapBounds
+        const mapBBox = {
+          sw_lat: bounds.getSouthWest().lat,
+          sw_long: bounds.getSouthWest().lng,
+          ne_lat: bounds.getNorthEast().lat,
+          ne_long: bounds.getNorthEast().lng
+        }
+
+        Object.assign(params, mapBBox)
+      }
+
+      return params
+    },
+    searchResults (state) {
+      const now = new Date()
+      return state.searchResults.map((result) => {
+        return {
+          ...result,
+          retire_date: new Date(result.retire_date) <= now ? result.retire_date : null
+        }
+      })
     }
   }
 }

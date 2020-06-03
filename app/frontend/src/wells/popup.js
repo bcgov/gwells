@@ -14,7 +14,8 @@ export function createWellTooltipElement (wellFeatureProperties) {
   const {
     well_tag_number: wellTagNumber,
     identification_plate_number: identificationPlateNumber,
-    street_address: streetAddress
+    street_address: streetAddress,
+    is_published: isPublished
   } = wellFeatureProperties
 
   const container = document.createElement('div')
@@ -22,7 +23,8 @@ export function createWellTooltipElement (wellFeatureProperties) {
   container.innerHTML = `
     Well Tag Number: ${wellTagNumber}<br>
     Identification Plate Number: ${identificationPlateNumber || '—'}<br>
-    Address: ${streetAddress || '—'}
+    Address: ${streetAddress || '—'}<br>
+    ${!isPublished ? '<b>unpublished</b>' : ''}
   `
   return container
 }
@@ -31,7 +33,8 @@ export function createWellPopupElement ($router, wellFeatureProperties) {
   const {
     well_tag_number: wellTagNumber,
     identification_plate_number: identificationPlateNumber,
-    street_address: streetAddress
+    street_address: streetAddress,
+    is_published: isPublished
   } = wellFeatureProperties
 
   const routes = {
@@ -45,7 +48,8 @@ export function createWellPopupElement ($router, wellFeatureProperties) {
   container.innerHTML = `
     Well Tag Number: <a href="${url.href}" data-route-name="wellDetail">${wellTagNumber}</a><br>
     Identification Plate Number: ${identificationPlateNumber || '—'}<br>
-    Address: ${streetAddress || '—'}
+    Address: ${streetAddress || '—'}<br>
+    ${!isPublished ? '<b>unpublished</b>' : ''}
   `
   return wireUpAnchors(container, $router, routes)
 }

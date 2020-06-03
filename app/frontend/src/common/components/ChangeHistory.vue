@@ -1,7 +1,7 @@
 <template>
   <div class="card">
     <div class="card-body">
-      <h6 class="card-title" id="changeHistoryTitle">Change History
+      <h6 class="card-title mb-0" id="changeHistoryTitle">Change History
         <span class="ml-3">
           <b-button link size="sm" variant="outline-primary" @click="toggleHistory">{{showHistory ? "Hide":"Show"}}</b-button>
         </span>

@@ -53,6 +53,7 @@ export default {
       let documentType = payload.documentType
       let recordId = payload.recordId
       const files = payload.files || context.state.upload_files
+      const fileNames = payload.fileNames || []
 
       // Driller documents are always private
       let isPrivate = context.state.isPrivate
@@ -60,32 +61,20 @@ export default {
         isPrivate = true
       }
 
-      let uploadPromises = []
+      return files.reduce((previousPromise, file, i) => {
+        return previousPromise.then((results) => {
+          // use override file name if it exists
+          const fileName = fileNames[i] || file.name
 
-      files.forEach(file => {
-        uploadPromises.push(
-          ApiService.presignedPutUrl(
+          return ApiService.presignedPutUrl(
             documentType,
             recordId,
-            encodeURIComponent(file.name),
+            encodeURIComponent(fileName),
             isPrivate
           )
             .then(response => {
               let url = response.data.url
               let objectName = response.data.object_name
-              let filename = response.data.filename
-              let file = context.state.upload_files.filter(
-                file => file.name === objectName
-              )
-
-              if (file.length !== 1) {
-                context.commit('addError', 'Error uploading file: ' + filename)
-                return Promise.reject(
-                  new Error('Error uploading file' + filename)
-                )
-              }
-
-              file = file[0]
 
               let options = {
                 headers: {
@@ -108,10 +97,8 @@ export default {
               context.commit('addError', error)
               throw error
             })
-        )
-      })
-
-      return Promise.all(uploadPromises)
+        })
+      }, Promise.resolve())
     },
     fileUploadSuccess (context) {
       context.commit('setFilesUploading', false)

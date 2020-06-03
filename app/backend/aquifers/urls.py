@@ -32,14 +32,24 @@ urlpatterns = [
         name='aquifers-list-create-v2'
         ),
 
-    url(api_path_prefix() + r'/aquifers/csv$',
+    url(r'api/v1/aquifers/csv$',
         never_cache(views.csv_export),
-        name='aquifers-list-csv'
+        name='aquifers-list-csv-v1'
         ),
 
-    url(api_path_prefix() + r'/aquifers/xlsx$',
+    url(r'api/v2/aquifers/csv$',
+        never_cache(views_v2.csv_export_v2),
+        name='aquifers-list-csv-v2'
+        ),
+
+    url(r'api/v1/aquifers/xlsx$',
         never_cache(views.xlsx_export),
-        name='aquifers-list-xlsx'
+        name='aquifers-list-xlsx-v1'
+        ),
+
+    url(r'api/v2/aquifers/xlsx$',
+        never_cache(views_v2.xlsx_export_v2),
+        name='aquifers-list-xlsx-v2'
         ),
 
     url(r'api/v1/aquifers/names$',
@@ -52,9 +62,14 @@ urlpatterns = [
         name='aquifer-name-list-v2'
         ),
 
-    url(api_path_prefix() + r'/aquifers/(?P<aquifer_id>[0-9]+)/edit$',
-        never_cache(views.AquiferEditDetailsAPIView.as_view()),
-        name='aquifer-edit-details'
+    url(r'api/v1/aquifers/(?P<aquifer_id>[0-9]+)/edit$',
+        never_cache(views.AquiferEditDetailsAPIViewV1.as_view()),
+        name='aquifer-edit-details-v1'
+        ),
+
+    url(r'api/v2/aquifers/(?P<aquifer_id>[0-9]+)/edit$',
+        never_cache(views_v2.AquiferEditDetailsAPIViewV2.as_view()),
+        name='aquifer-edit-details-v2'
         ),
 
     url(r'api/v1/aquifers/(?P<aquifer_id>[0-9]+)$',

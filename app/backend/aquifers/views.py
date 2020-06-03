@@ -21,6 +21,7 @@ from django.http import Http404, HttpResponse, JsonResponse, HttpResponseRedirec
 from django.db.models import Q
 from django.db import connection
 from django.views.decorators.cache import cache_page
+from django.utils import timezone
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -72,15 +73,22 @@ from aquifers.permissions import HasAquiferEditRoleOrReadOnly, HasAquiferEditRol
 
 logger = logging.getLogger(__name__)
 
-class AquiferEditDetailsAPIView(RetrieveAPIView):
+class AquiferEditDetailsAPIViewV1(RetrieveAPIView):
     """List aquifers
     get: return details of aquifers
     """
     permission_classes = (HasAquiferEditRole,)
-    queryset = Aquifer.objects.all()
     swagger_schema = None
     lookup_field = 'aquifer_id'
-    serializer_class = serializers.AquiferEditDetailSerializer
+    serializer_class = serializers.AquiferEditDetailSerializerV1
+
+    def get_queryset(self):
+        now = timezone.now()
+        qs = Aquifer.objects.all()
+        # filter out any non-published aquifer if the user doesn't have the `aquifers_edit` perm
+        if not self.request.user.groups.filter(name=AQUIFERS_EDIT_ROLE).exists():
+            qs = qs.filter(effective_date__lte=now, expiry_date__gt=now)
+        return qs
 
 
 class AquiferRetrieveUpdateAPIView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateAPIView):
@@ -94,6 +102,14 @@ class AquiferRetrieveUpdateAPIView(RevisionMixin, AuditUpdateMixin, RetrieveUpda
 
     def get_serializer_class(self):
         return serializers.AquiferDetailSerializerV1
+
+    def get_queryset(self):
+        now = timezone.now()
+        qs = Aquifer.objects.all()
+        # filter out any non-published aquifer if the user doesn't have the `aquifers_edit` perm
+        if not self.request.user.groups.filter(name=AQUIFERS_EDIT_ROLE).exists():
+            qs = qs.filter(effective_date__lte=now, expiry_date__gt=now)
+        return qs
 
 
 def _aquifer_qs(request):
@@ -113,6 +129,7 @@ def _aquifer_qs(request):
     search = query.get('search')
 
     match_any = True
+    now = timezone.now()
 
     # build a list of filters from qs params
     filters = []
@@ -143,6 +160,10 @@ def _aquifer_qs(request):
         if search.isdigit():
             disjunction = disjunction | Q(pk=int(search))
         qs = qs.filter(disjunction)
+
+    # exclude non-published and non-retired aquifer if the user doesn't have `aquifers_edit` perm
+    if not request.user.groups.filter(name=AQUIFERS_EDIT_ROLE).exists():
+        qs = qs.filter(effective_date__lte=timezone.now(), expiry_date__gt=timezone.now(), retire_date__gt=now)
 
     qs = qs.select_related(
         'demand',
@@ -321,7 +342,6 @@ class AquiferNameList(ListAPIView):
 
     serializer_class = serializers.AquiferSerializerBasic
     model = Aquifer
-    queryset = Aquifer.objects.all()
     pagination_class = None
 
     filter_backends = (filters.SearchFilter,)
@@ -330,6 +350,14 @@ class AquiferNameList(ListAPIView):
         'aquifer_id',
         'aquifer_name',
     )
+
+    def get_queryset(self):
+        now = timezone.now()
+        qs = Aquifer.objects.all()
+        # filter out any non-published aquifer if the user doesn't have the `aquifers_edit` perm
+        if not self.request.user.groups.filter(name=AQUIFERS_EDIT_ROLE).exists():
+            qs = qs.filter(effective_date__lte=now, expiry_date__gt=now, retire_date__gt=now)
+        return qs
 
     def get(self, request, **kwargs):
         search = self.request.query_params.get('search', None)
@@ -539,15 +567,18 @@ def aquifer_geojson_simplified_v1(request, **kwargs):
     in Python, so we must generate SQL here.
     """
 
-    SQL = """
+    sql = """
     SELECT
            ST_AsGeoJSON((ST_GeometryN(geom_simplified, 1)), 8) :: json AS "geometry",
            aquifer.aquifer_id                       AS id
-    FROM aquifer;
+    FROM aquifer
     """
 
+    if not request.user.groups.filter(name=AQUIFERS_EDIT_ROLE).exists():
+        sql += "WHERE effective_date <= NOW() AND expiry_date >= NOW() AND retire_date >= NOW()"
+
     iterator = GeoJSONIterator(
-        SQL,
+        sql,
         AQUIFER_CHUNK_SIZE,
         connection.cursor())
     response = StreamingHttpResponse(
@@ -577,7 +608,6 @@ def csv_export(request, **kwargs):
     because DRF doesn't have native CSV support.
     """
 
-    request.version = kwargs['version']
     # Create the HttpResponse object with the appropriate CSV header.
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="aquifers.csv"'
@@ -596,7 +626,6 @@ def xlsx_export(request, **kwargs):
     Export aquifers as XLSX.
     """
 
-    request.version = kwargs['version']
     wb = openpyxl.Workbook()
     ws = wb.active
     ws.append(AQUIFER_EXPORT_FIELDS)

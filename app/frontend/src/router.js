@@ -10,6 +10,7 @@ import AquiferView from '@/aquifers/components/View'
 import AquiferNew from '@/aquifers/components/New'
 import BulkHome from '@/bulk/components/BulkHome.vue'
 import BulkWellAquiferCorrelation from '@/bulk/components/BulkWellAquiferCorrelation.vue'
+import BulkWellDocuments from '@/bulk/components/BulkWellDocuments.vue'
 import BulkAquiferDocuments from '@/bulk/components/BulkAquiferDocuments.vue'
 import BulkVerticalAquiferExtents from '@/bulk/components/BulkVerticalAquiferExtents.vue'
 
@@ -74,6 +75,11 @@ const router = new Router({
       path: '/bulk/well-aquifer-correlation',
       component: BulkWellAquiferCorrelation,
       name: 'bulk-well-aquifer-correlation'
+    },
+    {
+      path: '/bulk/well-documents',
+      component: BulkWellDocuments,
+      name: 'bulk-well-documents'
     },
     {
       path: '/bulk/aquifer-documents',

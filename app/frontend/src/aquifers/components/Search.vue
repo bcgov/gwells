@@ -94,11 +94,11 @@
               ref="aquiferMap"
               :initialCentre="searchMapCentre"
               :initialZoom="searchMapZoom"
-              :aquiferDetails="searchResults"
               :highlightAquiferIds="searchedAquiferIds"
               :selectedId="selectedAquiferId"
               :viewBounds="mapViewBounds"
               :searchText="search"
+              :showRetired="showRetiredAquifers"
               @moved="mapMoved"
               @zoomed="handleMapZoom"
               @search="mapSearch"
@@ -110,10 +110,17 @@
 
       <b-row>
         <b-col cols="12" class="p-5">
-          <b-container fluid v-if="searchPerformed && !searchInProgress && !emptyResults" class="p-0">
-            <b-row>
-              <b-col cols="12" class="mb-3">
-                Showing {{ displayOffset }} to {{ displayPageLength }} of {{ searchResultCount }}
+          <b-container fluid v-if="searchPerformed && !searchInProgress" class="p-0">
+            <b-row class="mb-3">
+              <b-col md="6">
+                <div v-if="!emptyResults">
+                  Showing {{ displayOffset }} to {{ displayPageLength }} of {{ searchResultCount }}
+                </div>
+              </b-col>
+              <b-col md="6" class="text-right">
+                <b-form-checkbox v-model="showRetiredAquifers" v-if="numRetiredAquifers > 0" class="d-inline-block">
+                  Show {{numRetiredAquifers}} retired aquifers
+                </b-form-checkbox>
               </b-col>
             </b-row>
           </b-container>
@@ -122,14 +129,13 @@
             :current-page="currentPage"
             :per-page="searchResultsPerPage"
             :fields="aquiferListFields"
-            :items="searchResults"
+            :items="resultsTableData"
             :show-empty="emptyResults"
             :sort-by.sync="sortBy"
             :sort-desc.sync="sortDesc"
             empty-text="No aquifers could be found"
             striped
             outlined
-            @row-clicked="searchResultsRowClicked"
             :busy="searchInProgress"
             v-if="searchPerformed"
             :tbody-tr-class="searchResultsRowClass"
@@ -139,6 +145,9 @@
             </template>
             <template slot="name" slot-scope="row">
               {{row.item.name}}
+            </template>
+            <template slot="retire_date" slot-scope="row">
+              <span :title="row.item.retire_date">{{ row.item.retire_date | moment("MMMM Do YYYY [at] LT") }}</span>
             </template>
             <template v-slot:table-busy>
               <div class="text-center my-2">
@@ -191,6 +200,20 @@ const SEARCH_RESULTS_PER_PAGE = 10
 const HYDRAULICALLY_CONNECTED_CODE = 'Hydra'
 const URL_QS_SEARCH_KEYS = ['constrain', 'resources__section__code', 'match_any', 'search']
 
+const RESULTS_TABLE_FIELDS = [
+  { key: 'id', label: 'Aquifer\xa0number', sortable: true },
+  { key: 'name', label: 'Aquifer\xa0name', sortable: true },
+  { key: 'location', label: 'Descriptive\xa0location', sortable: true },
+  { key: 'material', label: 'Material', sortable: true },
+  { key: 'lsu', label: 'Litho\xa0stratigraphic\xa0unit', sortable: true },
+  { key: 'subtype', label: 'Subtype', sortable: true },
+  { key: 'vulnerability', label: 'Vulnerability', sortable: true },
+  { key: 'area', label: 'Size\u2011km²', sortable: true },
+  { key: 'productivity', label: 'Productivity', sortable: true },
+  { key: 'demand', label: 'Demand', sortable: true },
+  { key: 'mapping_year', label: 'Year\xa0of\xa0mapping', sortable: true },
+]
+
 export default {
   components: {
     'aquifer-map': AquiferMap,
@@ -211,19 +234,7 @@ export default {
       searchResultsPerPage: SEARCH_RESULTS_PER_PAGE,
       currentPage: 1,
       response: {},
-      aquiferListFields: [
-        { key: 'id', label: 'Aquifer number', sortable: true },
-        { key: 'name', label: 'Aquifer name', sortable: true },
-        { key: 'location', label: 'Descriptive location', sortable: true },
-        { key: 'material', label: 'Material', sortable: true },
-        { key: 'lsu', label: 'Litho stratigraphic unit', sortable: true },
-        { key: 'subtype', label: 'Subtype', sortable: true },
-        { key: 'vulnerability', label: 'Vulnerability', sortable: true },
-        { key: 'area', label: 'Size-km²', sortable: true },
-        { key: 'productivity', label: 'Productivity', sortable: true },
-        { key: 'demand', label: 'Demand', sortable: true },
-        { key: 'mapping_year', label: 'Year of mapping', sortable: true }
-      ],
+      includeRetired: false,
       layers: [],
       surveys: [],
       noSearchCriteriaError: false,
@@ -232,7 +243,8 @@ export default {
       selectMode: 'single',
       selectedAquiferId: null,
       mapViewBounds: null,
-      loadingMap: false
+      loadingMap: false,
+      showRetiredAquifers: Boolean(query.retired)
     }
   },
   computed: {
@@ -252,20 +264,49 @@ export default {
     },
     emptyResults () { return this.searchResultCount === 0 },
     query () { return this.$route.query },
-    searchedAquiferIds () { return (this.searchResults || []).map((aquifer) => aquifer.aquifer_id) },
+    searchedAquiferIds () { return (this.resultsTableData || []).map((aquifer) => aquifer.aquifer_id) },
     searchedAquifersBounds () {
       const bounds = new mapboxgl.LngLatBounds()
-      const results = (this.searchResults || [])
+      const results = (this.resultsTableData || [])
       results.forEach((aquifer) => bounds.extend(aquifer.extent))
       return bounds
     },
-    resourceSectionOptions () { return this.resourceSections && this.resourceSections.map((s) => ({ text: s.name, value: s.code })) },
+    resourceSectionOptions () {
+      return this.resourceSections && this.resourceSections.map((s) => ({ text: s.name, value: s.code }))
+    },
+    aquiferListFields () {
+      const fields = RESULTS_TABLE_FIELDS.slice()
+      if (this.showRetiredAquifers) {
+        fields.splice(1, 0, { key: 'retire_date', label: 'Date\xa0retired', sortable: true })
+      }
+      return fields
+    },
+    resultsTableData () {
+      return this.searchResults.filter((result) => {
+        if (this.showRetiredAquifers) {
+          return true
+        }
+        return result.retire_date ? new Date(result.retire_date) > new Date() : true
+      })
+    },
+    retiredAquifers () {
+      return this.searchResults.filter((result) => {
+        return result.retire_date && new Date(result.retire_date) <= new Date()
+      })
+    },
+    retiredAquifersIds () {
+      return this.retiredAquifers.map((aquifer) => aquifer.aquifer_id)
+    },
+    numRetiredAquifers () {
+      return this.retiredAquifers.length
+    },
+    searchResultCount () {
+      return this.resultsTableData.length
+    },
     ...mapGetters(['userRoles']),
-    ...mapGetters('aquiferStore/search', ['queryParams']),
+    ...mapGetters('aquiferStore/search', ['queryParams', 'searchParams', 'searchResults']),
     ...mapState('aquiferStore/search', [
       'searchErrors',
-      'searchResults',
-      'searchResultCount',
       'searchInProgress',
       'searchPerformed',
       'searchMapCentre',
@@ -292,16 +333,16 @@ export default {
       this.$router.push({ name: 'new' })
     },
     downloadCSV (filterOnly) {
-      let url = ApiService.baseURL + 'aquifers/csv?'
+      let url = `${ApiService.baseURL}aquifers/csv`
       if (filterOnly) {
-        url += querystring.stringify(this.query)
+        url += `?${querystring.stringify(this.searchParams)}`
       }
       window.open(url)
     },
     downloadXLSX (filterOnly) {
-      let url = ApiService.baseURL + 'aquifers/xlsx?'
+      let url = `${ApiService.baseURL}aquifers/xlsx`
       if (filterOnly) {
-        url += querystring.stringify(this.query)
+        url += `?${querystring.stringify(this.searchParams)}`
       }
       window.open(url)
     },
@@ -336,6 +377,7 @@ export default {
       this.selectedSections = []
       this.matchAny = false
       this.selectedAquiferId = null
+      this.showRetiredAquifers = false
       this[RESET_SEARCH]()
       this.$emit('resetLayers')
     },
@@ -363,13 +405,17 @@ export default {
       this.triggerSearch({ constrain: true })
     },
     updateQueryParams () {
-      this.$router.replace({ query: this.queryParams })
+      const query = { ...this.queryParams }
+      if (this.showRetiredAquifers) {
+        query['show-retired'] = true
+      }
+      this.$router.replace({ query })
     },
     mapMoved (bounds, featuresOnMap, isViewReset) {
       const viewingBC = containsBounds(bounds, BC_LAT_LNG_BOUNDS)
 
       this[SET_SEARCH_MAP_CENTRE](viewingBC ? null : bounds.getCenter())
-      this[SET_SEARCH_BOUNDS](bounds)
+      this[SET_SEARCH_BOUNDS](viewingBC ? null : bounds)
       this.updateQueryParams()
     },
     handleMapZoom (zoom, bounds) {
@@ -386,6 +432,8 @@ export default {
         this[RESET_SEARCH]()
       } else {
         this.updateStoreStateFromQS()
+
+        this.showRetiredAquifers = Boolean(query['show-retired'])
 
         const cleanedQuery = pick(query, URL_QS_SEARCH_KEYS)
 
@@ -423,12 +471,17 @@ export default {
       }
     },
     searchResultsRowClass (item, type) {
+      const classes = []
       if (!item || type !== 'row') { return }
       if (item.aquifer_id === this.selectedAquiferId) {
-        return 'selected'
+        classes.push('selected')
       }
+      if (this.retiredAquifersIds.indexOf(item.aquifer_id) >= 0) {
+        classes.push('retired')
+      }
+      return classes.join(' ')
     },
-    searchResultsRowClicked (data) {
+    selectAquifer (data) {
       if (this.selectedAquiferId === data.aquifer_id) { // toggle off
         this.mapViewBounds = this.searchedAquifersBounds
         this.selectedAquiferId = null
@@ -445,6 +498,7 @@ export default {
       this.updateQueryParams()
     },
     searchInProgress () {
+      // search has finished
       if (this.searchInProgress === false) {
         this.loadingMap = false
         this.mapViewBounds = this.searchedAquifersBounds
@@ -548,9 +602,16 @@ export default {
   }
 
   #aquifers-results {
-    tr.selected {
-      background-color: rgba(119, 204, 119, 0.7);
-      outline-color: rgb(55, 153, 37);
+    tr {
+      &.selected {
+        background-color: rgba(119, 204, 119, 0.7);
+        outline-color: rgb(55, 153, 37);
+      }
+
+      &.retired td {
+        opacity: 0.7;
+        background-color: rgba(255, 255, 232, 0.7);
+      }
     }
   }
 }

@@ -2,7 +2,7 @@ export const SET_KEYCLOAK = 'SET_KEYCLOAK'
 
 const auth = {
   state: {
-    keycloak: {}
+    keycloak: null
   },
   mutations: {
     [SET_KEYCLOAK] (state, payload) {
@@ -44,6 +44,7 @@ const auth = {
           },
           bulk: {
             wellAquiferCorrelation: state.keycloak.hasRealmRole('bulk_well_aquifer_correlation_upload'),
+            wellDocuments: state.keycloak.hasRealmRole('bulk_well_documents_upload'),
             aquiferDocuments: state.keycloak.hasRealmRole('bulk_aquifer_documents_upload'),
             verticalAquiferExtents: state.keycloak.hasRealmRole('bulk_vertical_aquifer_extents_upload')
           }
@@ -58,6 +59,9 @@ const auth = {
           bulk: {}
         }
       }
+    },
+    authenticated (state) {
+      return Boolean(state.keycloak && state.keycloak.authenticated)
     }
   }
 }

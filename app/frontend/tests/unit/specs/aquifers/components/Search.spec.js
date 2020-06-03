@@ -15,6 +15,7 @@ import '../../../mocks/mapbox-gl'
 import { mount, createLocalVue } from '@vue/test-utils'
 import SearchComponent from '@/aquifers/components/Search.vue'
 import Vuex from 'vuex'
+import VueMoment from 'vue-moment'
 import axios from 'axios'
 import { cloneDeep, merge } from 'lodash'
 import auth from '@/common/store/auth.js'
@@ -24,6 +25,7 @@ jest.mock('axios')
 
 const localVue = createLocalVue()
 localVue.use(Vuex)
+localVue.use(VueMoment)
 
 const aquiferFixture = {
   aquifer_id: '4',
@@ -37,7 +39,8 @@ const aquiferFixture = {
   productivity_description: 'High',
   demand: 'Low',
   mapping_year: '1993',
-  resources: []
+  resources: [],
+  retire_date: '2020-01-01'
 }
 
 describe('Search Component', () => {
@@ -109,7 +112,8 @@ describe('Search Component', () => {
         $route: {
           path: '/',
           query: {
-            search: aquiferFixture.aquifer_id
+            search: aquiferFixture.aquifer_id,
+            'show-retired': 'true'
           }
         }
       }

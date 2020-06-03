@@ -97,6 +97,43 @@ class AquiferSerializerV2(serializers.ModelSerializer):
             'aquifer_id',
             'mapping_year',
             'extent',
+            'retire_date'
+        )
+
+
+class AquiferEditDetailSerializerV2(serializers.ModelSerializer):
+    """
+    Read serializer for aquifer details with primary key references needed for populating an edit form
+    """
+
+    resources = AquiferResourceSerializerV2(many=True, required=False)
+    licence_details = serializers.JSONField(read_only=True)
+
+    class Meta:
+        model = models.Aquifer
+        fields = (
+            'aquifer_id',
+            'aquifer_name',
+            'location_description',
+
+            'quality_concern',
+            'material',
+            'subtype',
+            'vulnerability',
+            'known_water_use',
+            'litho_stratographic_unit',
+            'productivity',
+
+            'demand',
+            'mapping_year',
+            'resources',
+            'area',
+            'notes',
+            'licence_details',
+
+            'effective_date',
+            'expiry_date',
+            'retire_date',
         )
 
 
@@ -123,12 +160,12 @@ class AquiferDetailSerializerV2(serializers.ModelSerializer):
         resources_data = validated_data.pop('resources', [])
         aquifer = models.Aquifer.objects.create(**validated_data)
         for resource_item in resources_data:
-            r = models.AquiferResource(
+            aquifer_resource = models.AquiferResource(
                 url=resource_item['url'],
                 name=resource_item['name'],
                 aquifer=aquifer,
                 section_id=resource_item['section']['code'].code)
-            r.save()
+            aquifer_resource.save()
         return aquifer
 
     def update(self, instance, validated_data):
@@ -313,4 +350,8 @@ class AquiferDetailSerializerV2(serializers.ModelSerializer):
             'area',
             'notes',
             'licence_details',
+
+            'effective_date',
+            'expiry_date',
+            'retire_date',
         )
