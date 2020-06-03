@@ -878,6 +878,25 @@ pipeline {
                             "--overwrite"
                         )
 
+                        // Create cronjob for aquifer demand calc update
+                        def importUpdateAquiferCronjob = openshift.process("-f",
+                            "openshift/jobs/update-aquifer/update-aquifer.cj.json",
+                            "ENV_NAME=${stagingSuffix}",
+                            "PROJECT=${stagingProject}",
+                            "TAG=${stagingSuffix}",
+                            "NAME=demand",
+                            "COMMAND=update_demand",
+                            "SCHEDULE='50 3 * * *'"
+                        )
+                        openshift.apply(importUpdateAquiferCronjob).label(
+                            [
+                                'app':"gwells-${stagingSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${stagingSuffix}"
+                            ],
+                            "--overwrite"
+                        )
+
                         // Create cronjob for databc export
                         def exportDataBCTemplate = openshift.process("-f",
                             "openshift/export.cj.json",
