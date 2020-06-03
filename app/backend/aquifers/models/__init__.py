@@ -567,7 +567,7 @@ def update_geom_simplified(sender, instance, **kwargs):
 def update_area(sender, instance, **kwargs):
     area = None
     if instance.geom:
-        area = instance.geom.area / 1_000_000 # convert m² km²
+        area = instance.geom.area / 1_000_000 # convert to km²
 
     instance.area = area
 
