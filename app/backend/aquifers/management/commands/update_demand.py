@@ -15,6 +15,7 @@ import logging
 
 from django.core.management.base import BaseCommand
 from django.conf import settings
+from django.db import transaction
 from django.db.models import Count
 
 from aquifers.models import Aquifer
@@ -31,6 +32,7 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('-a', '--aquifer', help='aquifer number to update demand')
 
+    @transaction.atomic
     def handle(self, *_args, **options):
         qs = Aquifer.objects.all()
 
@@ -45,14 +47,19 @@ class Command(BaseCommand):
         for aquifer in qs:
             aquifer_id = aquifer.aquifer_id
             before_demand = aquifer.demand_id
-            changed = update_aquifer_demand(aquifer)
-            if changed:
-                count += 1
-                logger.info("Changing aquifer %s demand from %s to %s",
-                            aquifer_id, before_demand, aquifer.demand_id)
-            else:
-                logger.debug("No changes to aquifer %s demand stays at %s",
-                             aquifer_id, aquifer.demand_id)
+            try:
+                changed = update_aquifer_demand(aquifer)
+
+                if changed:
+                    count += 1
+                    logger.info("Changing aquifer %s demand from %s to %s",
+                                aquifer_id, before_demand, aquifer.demand_id)
+                else:
+                    logger.debug("No changes to aquifer %s demand stays at %s",
+                                aquifer_id, aquifer.demand_id)
+            except:
+                logger.exception("Failed to compute demand for aquifer %d", aquifer_id)
+                raise
         logger.info("Updated %d aquifers", count)
 
 def update_aquifer_demand(aquifer, num_correlated_wells=None):
@@ -65,7 +72,13 @@ def update_aquifer_demand(aquifer, num_correlated_wells=None):
     if num_correlated_wells is None:
         raise Exception("update_aquifer_demand() called with num_correlated_wells = None")
 
-    demand = aquifer_demand(aquifer.area, num_correlated_wells)
+    # Use aquifer geom.area as the area column only has one decimal place of precision and some
+    # aquifers (e.g. 778) are so small that they will return `Decimal(0.0)`.
+    if not aquifer.geom:
+        return False
+
+    area = aquifer.geom.area / 1_000_000 # convert to km²
+    demand = aquifer_demand(area, num_correlated_wells)
 
     if demand != aquifer.demand_id:
         aquifer.demand_id = demand
