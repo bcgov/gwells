@@ -435,7 +435,7 @@ exports[`View Component View mode matches the snapshot 1`] = `
                       />
                        
                       <b-popover-stub
-                        content="Calculated based on the number of wells completed in the aquifer per square kilometer. Light ≤ 4 km²; Medium 4 – 20 km²; Heavy > 20 km²"
+                        content="Calculated based on the number of wells known to be completed in the aquifer per square kilometer. Light ≤ 4 km²; Medium 4 – 20 km²; Heavy > 20 km²"
                         target="calculated-demand-density-info"
                         triggers="hover focus"
                       />

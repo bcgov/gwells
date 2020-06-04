@@ -142,7 +142,7 @@
                       <b-popover
                         target="calculated-demand-density-info"
                         triggers="hover focus"
-                        content="Calculated based on the number of wells completed in the aquifer per square kilometer. Light ≤ 4 km²; Medium 4 – 20 km²; Heavy > 20 km²"/>
+                        content="Calculated based on the number of wells known to be completed in the aquifer per square kilometer. Light ≤ 4 km²; Medium 4 – 20 km²; Heavy > 20 km²"/>
                     </b-col>
                     <b-col cols="6" md="3" lg="6">{{record.demand}}</b-col>
                   </b-row>
