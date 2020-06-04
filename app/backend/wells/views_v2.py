@@ -41,7 +41,7 @@ from wells.serializers_v2 import (
     WellListAdminSerializerV2,
     WellExportSerializerV2,
     WellExportAdminSerializerV2,
-    WellAquiferSerializerV2
+    WellListAquiferSerializerV2
 )
 from wells.permissions import WellsEditOrReadOnly
 from wells.renderers import WellListCSVRenderer, WellListExcelRenderer
@@ -52,6 +52,7 @@ from aquifers.models import (
     VerticalAquiferExtentsHistory
 )
 from aquifers.permissions import HasAquiferEditRole
+from aquifers.serializers_v2 import ( AquiferSerializerV2 )
 
 
 logger = logging.getLogger(__name__)
@@ -490,22 +491,22 @@ class WellExportListAPIViewV2(ListAPIView):
         return response
 
 
-class WellAquifer(ListAPIView):
-    """ returns aquifer info for a range of wells """
+class WellListAquifer(ListAPIView):
+    """ returns a list of wells and their aquifer info """
 
     model = Well
-    serializer_class = WellAquiferSerializerV2
-    filter_backends = (GeometryFilterBackend,)
+    serializer_class = WellListAquiferSerializerV2
     swagger_schema = None
 
     def get_queryset(self):
-        qs = Well.objects.all()
+        qs = Well.objects.select_related('aquifer')
 
         if not self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
             qs = qs.exclude(well_publication_status='Unpublished')
 
         # allow comma separated list of wells by well tag number
         wells = self.request.query_params.get('wells', None)
+
         if wells:
             wells = wells.split(',')
 
@@ -514,7 +515,6 @@ class WellAquifer(ListAPIView):
                     raise ValidationError(detail='Invalid well')
 
             wells = map(int, wells)
-
             qs = qs.filter(well_tag_number__in=wells)
 
         return qs

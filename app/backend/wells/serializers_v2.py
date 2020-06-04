@@ -378,14 +378,13 @@ class WellExportAdminSerializerV2(WellExportSerializerV2):
         fields = WellListAdminSerializerV2.Meta.fields
 
 
-class WellAquiferSerializerV2(serializers.ModelSerializer):
-    """Serializes aquifer info for a selection of wells"""
-    aquifer_subtype = serializers.ReadOnlyField(source='aquifer.subtype.description')
+class WellListAquiferSerializerV2(serializers.ModelSerializer):
+    """Serializes aquifer info for a list of wells"""
 
     class Meta:
         model = Well
         fields = (
             "well_tag_number",
             "aquifer",
-            "aquifer_subtype"
         )
+        depth = 1

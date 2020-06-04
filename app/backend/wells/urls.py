@@ -58,7 +58,7 @@ urlpatterns = [
     # Well aquifer search
     # returns information about well aquifer for a range of wells provided in ?wells=123,124,125 etc.
     url(r'api/v2/wells/aquifer$',
-        never_cache(views_v2.WellAquifer.as_view()), name='well-aquifer'),
+        never_cache(views_v2.WellListAquifer.as_view()), name='well-aquifer'),
 
     # Well tag search
     url(r'api/v1/wells/locations$',
