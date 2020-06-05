@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="registry-screen">
 
     <!-- Active surveys -->
     <b-alert
@@ -123,31 +123,39 @@
           <b-form-row>
             <b-col>
               <b-form-group>
-                  <button
-                    type="submit"
-                    class="btn btn-primary registries-search-btn mr-md-1"
-                    id="personSearchSubmit"
-                    :disabled="searchLoading">
-                    <span>Search</span>
-                  </button>
-                  <button type="reset" class="btn btn-default" id="personSearchReset">Reset</button>
+                <button
+                  type="submit"
+                  class="btn btn-primary registries-search-btn mr-md-1"
+                  :disabled="searchLoading">
+                  Search
+                </button>
+                <button type="reset" class="btn btn-default">Reset</button>
               </b-form-group>
             </b-col>
           </b-form-row>
         </b-form>
+
+        <div id="registry-download" v-if="userRoles.registry.view">
+          <h6 class="mt-3">Download everyone in registry</h6>
+          <ul>
+            <li><a href="drillers/xlsx" @click.prevent="downloadFile">Registries extract (XLSX)</a></li>
+            <li><a href="drillers/csv" @click.prevent="downloadFile">Registries extract (CSV)</a></li>
+          </ul>
+        </div>
       </div>
+
       <!-- Search results table -->
-      <div ref="registryTableResults">
+      <div id="search-results-table">
         <template v-if="!searchLoading">
           <b-row>
-            <b-col cols="12" v-if="drillers.results && !drillers.results.length">
+            <b-col cols="12" v-if="!hasResults && hasSearched">
               No results were found.
             </b-col>
             <b-col cols="12" v-if="listError">
               <api-error :error="listError" resetter="SET_LIST_ERROR"></api-error>
             </b-col>
           </b-row>
-          <b-row v-if="drillers.results && drillers.results.length">
+          <b-row v-if="hasResults">
             <div class="col-xs-12 col-sm-4">
               <h3>{{ activityTitle }} Results</h3>
             </div>
@@ -158,11 +166,14 @@
               <registry-table @sort="sortTable"/>
             </b-col>
           </b-row>
-          <b-row v-if="drillers.results && drillers.results.length" class="mt-5">
-            <b-col cols="12">
-              <register-legal-text class="register-legal" :activity="activity"/>
-            </b-col>
-          </b-row>
+          <div id="searched-registry-download" v-if="hasResults && userRoles.registry.view">
+            Download searched well driller or well pump installer:
+            <a :href="`drillers/xlsx?${downloadLinkQS}`" @click.prevent="downloadFile">XLSX</a> |
+            <a :href="`drillers/csv?${downloadLinkQS}`" @click.prevent="downloadFile">CSV</a>
+          </div>
+          <div v-if="hasResults" class="mt-5">
+            <register-legal-text class="register-legal" :activity="activity"/>
+          </div>
         </template>
       </div>
     </b-card>
@@ -173,6 +184,7 @@
 import querystring from 'querystring'
 import { mapGetters, mapActions } from 'vuex'
 import smoothScroll from 'smoothscroll'
+import { omit } from 'lodash'
 
 import ApiService from '@/common/services/ApiService.js'
 import SearchTable from '@/registry/components/search/SearchTable.vue'
@@ -205,7 +217,8 @@ export default {
       },
       searchLoading: false,
       lastSearchedParams: {},
-      surveys: []
+      surveys: [],
+      hasSearched: false
     }
   },
   computed: {
@@ -240,7 +253,7 @@ export default {
       }
       return ''
     },
-    APISearchParams () {
+    apiSearchParams () {
       // bundles searchParams into fields compatible with API
       return {
         search: this.searchParams.search,
@@ -251,6 +264,12 @@ export default {
         activity: this.searchParams.activity,
         ordering: this.searchParams.ordering
       }
+    },
+    downloadLinkQS () {
+      return querystring.stringify(omit(this.lastSearchedParams, 'limit'))
+    },
+    hasResults () {
+      return this.drillers.results && this.drillers.results.length > 0
     },
     ...mapGetters([
       'userRoles',
@@ -275,14 +294,14 @@ export default {
   },
   methods: {
     drillerSearch () {
-      const table = this.$refs.registryTableResults
-      const params = this.APISearchParams
+      const params = this.apiSearchParams
 
       // save the last searched activity in the store for reference by table components
       // (e.g. for formatting table for pump installer searches)
       this.$store.commit(SET_LAST_SEARCHED_ACTIVITY, this.searchParams.activity || 'DRILL')
 
       this.searchLoading = true
+      this.hasSearched = true
       if (window.ga) {
         window.ga('send', {
           hitType: 'event',
@@ -292,7 +311,7 @@ export default {
         })
       }
       this.$store.dispatch(FETCH_DRILLER_LIST, params).then(() => {
-        smoothScroll(table, 100)
+        smoothScroll(this.$el.querySelector('#search-results-table'), 100)
         this.drillerSearchReset({ keepActivity: true, keepLimit: true })
         this.searchLoading = false
         this.lastSearchedParams = Object.assign({}, params)
@@ -306,6 +325,7 @@ export default {
       this.searchParams.status = 'A'
       this.searchParams.ordering = ''
       if (options.clearDrillers) {
+        this.hasSearched = false
         this.$store.commit(SET_DRILLER_LIST, [])
       }
       if (!options.keepActivity) {
@@ -322,6 +342,11 @@ export default {
         this.lastSearchedParams['ordering'] = `${sortCode}`
       }
       this.$store.dispatch(FETCH_DRILLER_LIST, this.lastSearchedParams)
+    },
+    downloadFile (e) {
+      if (!e.ctrlKey) {
+        ApiService.download(e.currentTarget.getAttribute('href'))
+      }
     },
     ...mapActions([
       FETCH_DRILLER_OPTIONS
@@ -344,8 +369,13 @@ export default {
 }
 </script>
 
-<style>
-.registries-search-btn {
-  min-width: 70px;
+<style lang="scss">
+#registry-screen {
+  #registry-download {
+    ul {
+      margin: 0;
+      padding: 0;
+    }
+  }
 }
 </style>
