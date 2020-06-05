@@ -73,11 +73,14 @@
         </b-card>
 
         <b-card v-if="!hasCSVErrors && hasDataToProcess" title="Data to process">
-          <b-alert show v-if="hasBeenValidated && !noUpdatesToPerform" variant="success">
-            All {{numWells}} wells and aquifers are valid. Review the changes below and then click “Submit” to really update.
+          <b-alert show v-if="hasBeenValidated && !noUpdatesToPerform && !hasAPIValidationWarnings" variant="success">
+            All {{numWells}} wells and aquifers are valid. Review the changes below and then click “Submit” to perform update.
+          </b-alert>
+          <b-alert show v-if="hasBeenValidated && !noUpdatesToPerform && hasAPIValidationWarnings" variant="warning">
+            All {{numWells}} wells and aquifers are valid, but warnings exist. Review changes below and verify warnings. Click “Ignore warnings and submit” to perform update.
           </b-alert>
           <b-alert show v-if="hasBeenValidated && noUpdatesToPerform" variant="warning">
-            There are no updates to perform. Double check your CSV and try again.
+            There are no updates to perform. Verify your CSV and try again.
           </b-alert>
           <div v-if="hasAPIValidationErrors" id="api-errors">
             <b-alert show variant="danger">
@@ -104,7 +107,7 @@
             </b-table>
           </div>
 
-          <div v-if="!hasAPIValidationErrors">
+          <div v-else>
             <div v-if="hasBeenValidated && !noUpdatesToPerform">
               <strong>Note:</strong>
               <ol>
@@ -135,6 +138,13 @@
                   {{formatOldAquifer(row)}}
                 </span>
               </template>
+              <template slot="warnings" slot-scope="row">
+                <ul v-if="row.item.warnings.length > 0">
+                  <li v-for="(warning, index) in row.item.warnings" :key="index">
+                    {{ warning }}
+                  </li>
+                </ul>
+              </template>
             </b-table>
           </div>
         </b-card>
@@ -146,7 +156,7 @@
             variant="primary"
             @click="save">
             <b-spinner v-if="isSaving" small label="Loading…"/>
-            {{hasBeenValidated ? 'Submit' : 'Validate Data'}}
+            {{saveButtonLabel}}
           </b-button>
           <b-button
             v-if="showResetButton"
@@ -171,10 +181,13 @@
 </template>
 
 <script>
-import ApiService from '@/common/services/ApiService.js'
-import Papa from 'papaparse'
-import APIErrorMessage from '@/common/components/APIErrorMessage'
 import { mapGetters } from 'vuex'
+import Papa from 'papaparse'
+
+import ApiService from '@/common/services/ApiService.js'
+import APIErrorMessage from '@/common/components/APIErrorMessage'
+
+import { AQUIFER_ID_FOR_UNCORRELATED_WELLS } from '@/common/contants'
 
 const MAX_NUMBER_OF_ROWS = 4000
 
@@ -188,7 +201,7 @@ const BASE_TABLE_FIELDS = [
   {
     key: 'aquiferId',
     label: 'New Aquifer ID',
-    class: 'aquifer-id text-right pr-4',
+    class: 'aquifer-id text-right',
     sortable: false
   }
 ]
@@ -198,6 +211,13 @@ const OLD_AQUIFER_FIELD = {
   label: 'Old Aquifer ID',
   sortable: true,
   class: 'old-aquifer-id text-right pr-4'
+}
+
+const WARNINGS_FIELD = {
+  key: 'warnings',
+  label: 'Warnings',
+  sortable: true,
+  class: 'warnings pr-4'
 }
 
 export default {
@@ -269,6 +289,21 @@ export default {
     unknownWells () {
       return (this.apiValidationErrors || {}).unknownWells || []
     },
+    unpublishedAquifers () {
+      return (this.apiValidationErrors || {}).unpublishedAquifers || []
+    },
+    retiredAquifers () {
+      return (this.apiValidationErrors || {}).retiredAquifers || []
+    },
+    unpublishedWells () {
+      return (this.apiValidationErrors || {}).unpublishedWells || []
+    },
+    wellsOutsideAquifer () {
+      return (this.apiValidationErrors || {}).wellsNotInAquifer || {}
+    },
+    aquifersWithoutGeometry () {
+      return (this.apiValidationErrors || {}).aquiferHasNoGeom || []
+    },
     hasCSVErrors () {
       return this.csvErrors.length > 0
     },
@@ -276,7 +311,16 @@ export default {
       return Object.keys(this.wells).length > 0
     },
     hasAPIValidationErrors () {
-      return Object.keys(this.apiValidationErrors).length > 0
+      return this.unknownWells.length > 0 || this.unknownAquifers.length > 0
+    },
+    hasAPIValidationWarnings () {
+      return (
+        this.unpublishedAquifers.length > 0 ||
+        this.retiredAquifers.length > 0 ||
+        this.unpublishedWells.length > 0 ||
+        Object.keys(this.wellsOutsideAquifer).length > 0 ||
+        this.aquifersWithoutGeometry.length > 0
+      )
     },
     csvErrorsTableData () {
       return this.csvErrors
@@ -315,9 +359,13 @@ export default {
     tableData () {
       const wells = Object.keys(this.wells)
         .map((wellTagNumber) => {
+          wellTagNumber = parseInt(wellTagNumber, 10)
+          const warnings = []
+          const aquiferId = this.wells[wellTagNumber]
           const data = {
-            aquiferId: this.wells[wellTagNumber],
-            wellTagNumber: parseInt(wellTagNumber)
+            aquiferId,
+            wellTagNumber,
+            warnings
           }
           if (this.wellUpdates !== null) {
             const change = this.wellUpdates[wellTagNumber]
@@ -337,6 +385,31 @@ export default {
                   console.warn(`Unknown change action of ${change.action}`)
               }
             }
+
+            if (this.unpublishedAquifers.indexOf(aquiferId) !== -1) {
+              warnings.push('Aquifer is unpublished')
+            }
+
+            if (this.retiredAquifers.indexOf(aquiferId) !== -1) {
+              warnings.push('Aquifer is retired')
+            }
+
+            if (this.aquifersWithoutGeometry.indexOf(aquiferId) !== -1) {
+              warnings.push('Aquifer has no geometry / shapefile')
+            }
+
+            if (aquiferId === AQUIFER_ID_FOR_UNCORRELATED_WELLS) {
+              warnings.push(`This Aquifer is for wells that are not correlated at the time of interpretation`)
+            }
+
+            if (this.unpublishedWells.indexOf(wellTagNumber) !== -1) {
+              warnings.push('Well is unpublished')
+            }
+
+            if (this.wellsOutsideAquifer[wellTagNumber]) {
+              const distance = this.wellsOutsideAquifer[wellTagNumber].distance
+              warnings.push(`Well is located ~${distance.toFixed(0)}m outside aquifer`)
+            }
           }
           return data
         })
@@ -351,6 +424,11 @@ export default {
       }
 
       const baseTableFieldsCopy = BASE_TABLE_FIELDS.slice()
+
+      if (this.hasAPIValidationWarnings) {
+        baseTableFieldsCopy.push(WARNINGS_FIELD)
+      }
+
       baseTableFieldsCopy.splice(1, 0, OLD_AQUIFER_FIELD)
       return baseTableFieldsCopy
     },
@@ -384,6 +462,15 @@ export default {
       }
 
       return true
+    },
+    saveButtonLabel () {
+      if (!this.hasBeenValidated) {
+        return 'Validate data'
+      } else if (this.hasAPIValidationWarnings) {
+        return 'Ignore warnings and submit'
+      }
+
+      return 'Submit'
     },
     showResetButton () {
       if (this.hasCSVErrors) {
@@ -525,6 +612,11 @@ export default {
       if (error.response) {
         if (error.response.status === 400) {
           this.apiValidationErrors = error.response.data
+          this.wellUpdates = error.response.data.changes
+
+          if (!this.hasAPIValidationErrors) {
+            this.hasBeenValidated = true
+          }
         } else {
           this.apiError = error.response
         }
@@ -633,11 +725,11 @@ export default {
       padding: 0;
       display: inline;
 
-      &::after {
+      &:not(:only-child)::after {
         content: ", ";
       }
 
-      &:last-child {
+      &:last-child:not(:first-child) {
         &::before {
           content: " and ";
         }
@@ -650,15 +742,32 @@ export default {
   }
 
   .correlations {
-    .new {
+    td {
+      vertical-align: middle;
+    }
+
+    .new td:not(.warnings) {
       @extend .new-color;
     }
 
-    .update {
+    .update td:not(.warnings) {
       @extend .change-color;
 
-      .old-aquifer-id {
+      &.old-aquifer-id {
         @extend .remove-color;
+      }
+    }
+
+    .warnings {
+      ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      li {
+        margin: 2px 0;
+        padding: 0;
       }
     }
   }

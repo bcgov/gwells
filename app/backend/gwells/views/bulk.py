@@ -23,6 +23,7 @@ from django.db import transaction
 from django.utils import timezone
 from django.contrib.gis.geos import Point
 
+from aquifers.constants import AQUIFER_ID_FOR_UNCORRELATED_WELLS
 from aquifers.models import Aquifer, VerticalAquiferExtent, VerticalAquiferExtentsHistory
 from wells.models import Well
 from gwells.models.bulk import BulkWellAquiferCorrelationHistory
@@ -47,13 +48,16 @@ class BulkWellAquiferCorrelation(APIView):
         self.create_date = timezone.now()
         self.unknown_well_tag_numbers = set()
         self.unknown_aquifer_ids = set()
+        self.wells_outside_aquifer = dict()
+        self.no_geom_aquifers = set()
+        self.retired_aquifers = set()
+        self.unpublished_aquifers = set()
+        self.unpublished_wells = set()
 
     @swagger_auto_schema(auto_schema=None)
     @transaction.atomic
     def post(self, request, **kwargs):
         aquifers = request.data
-        unknown_aquifers = []
-        unknown_wells = []
         changes = {}
         wells_to_update = []
 
@@ -69,7 +73,7 @@ class BulkWellAquiferCorrelation(APIView):
         existing_wells = self.lookup_existing_wells(incoming_well_tag_numbers)
         existing_aquifers = self.lookup_existing_aquifers(incoming_aquifer_ids)
 
-        if len(self.unknown_well_tag_numbers) > 0 or len(self.unknown_aquifer_ids) > 0:
+        if self.has_errors():
             return self.return_errors({})
 
         for aquifer in aquifers:
@@ -84,28 +88,35 @@ class BulkWellAquiferCorrelation(APIView):
             # now figure out what has changed for each well
             for well in wells:
                 well_tag_number = well.well_tag_number
-                existing_aquifer_id = well.aquifer.aquifer_id if well.aquifer else None
+                existing_aquifer_id = well.aquifer_id if well.aquifer_id else None
 
-                # No existing aquifer for this well? Must be a new correlation
-                if existing_aquifer_id is None:
-                    self.append_to_change_log(well_tag_number, aquifer_id, None)
-                    change = {
-                        'action': 'new',
-                        'aquiferId': aquifer_id
-                    }
-                    wells_to_update.append(well)
-                elif existing_aquifer_id != aquifer_id: # existing ids don't match - must be a change
-                    self.append_to_change_log(well_tag_number, aquifer_id, existing_aquifer_id)
-                    change = {
-                        'action': 'update',
-                        'existingAquiferId': existing_aquifer_id,
-                        'newAquiferId': aquifer_id
-                    }
-                    wells_to_update.append(well)
-                else: # all other cases must mean this well is unchanged
+                # We need to skip aquifer 1143 as it is the aquifer without geom that wells are
+                # assigned to when they are not correlated at the time of interpretation.
+                if aquifer_id != AQUIFER_ID_FOR_UNCORRELATED_WELLS:
+                    # If the correlation is changing — check if the well is inside the aquifer
+                    self.check_well_in_aquifer(well, aquifer)
+
+                if existing_aquifer_id == aquifer_id: # this well correlation is unchanged
                     change = {
                         'action': 'same'
                     }
+                else:
+                    if existing_aquifer_id is None:
+                        # No existing aquifer for this well? Must be a new correlation
+                        self.append_to_change_log(well_tag_number, aquifer_id, None)
+                        change = {
+                            'action': 'new',
+                            'aquiferId': aquifer_id
+                        }
+                        wells_to_update.append(well)
+                    elif existing_aquifer_id != aquifer_id: # existing ids don't match - must be a change
+                        self.append_to_change_log(well_tag_number, aquifer_id, existing_aquifer_id)
+                        change = {
+                            'action': 'update',
+                            'existingAquiferId': existing_aquifer_id,
+                            'newAquiferId': aquifer_id
+                        }
+                        wells_to_update.append(well)
 
                 if change:
                     changes[well_tag_number] = change
@@ -117,10 +128,29 @@ class BulkWellAquiferCorrelation(APIView):
 
         if update_db: # no errors then updated the DB (if ?commit is passed in)
             self.update_wells(wells_to_update)
+        elif self.has_warnings():
+            return self.return_errors(changes)
 
         # no errors then we return the changes that were (or could be) performed
         http_status = status.HTTP_200_OK if update_db else status.HTTP_202_ACCEPTED
         return Response(changes, status=http_status)
+
+    def has_errors(self):
+        has_errors = (
+            len(self.unknown_well_tag_numbers) > 0 or
+            len(self.unknown_aquifer_ids) > 0
+        )
+        return has_errors
+
+    def has_warnings(self):
+        has_warnings = (
+            len(self.wells_outside_aquifer) > 0 or
+            len(self.no_geom_aquifers) > 0 or
+            len(self.unpublished_wells) > 0 or
+            len(self.unpublished_aquifers) > 0 or
+            len(self.retired_aquifers) > 0
+        )
+        return has_warnings
 
     def lookup_existing_wells(self, well_tag_numbers):
         wells = Well.objects.filter(pk__in=well_tag_numbers)
@@ -129,16 +159,39 @@ class BulkWellAquiferCorrelation(APIView):
 
         self.unknown_well_tag_numbers = well_tag_numbers - known_well_tag_numbers
 
+        self.unpublished_wells = [well.well_tag_number for well in wells if well.well_publication_status_id != 'Published']
+
         return keyed_wells
 
     def lookup_existing_aquifers(self, aquifer_ids):
-        aquifers = Aquifer.objects.filter(pk__in=aquifer_ids)
+        aquifers = Aquifer.objects.filter(pk__in=aquifer_ids).defer('geom') # we are not using geom
         keyed_aquifers = {aquifer.aquifer_id: aquifer for aquifer in aquifers}
         known_aquifer_ids = set(keyed_aquifers.keys())
 
         self.unknown_aquifer_ids = aquifer_ids - known_aquifer_ids
 
+        self.retired_aquifers = [a.aquifer_id for a in aquifers if a.status_retired]
+        self.unpublished_aquifers = [a.aquifer_id for a in aquifers if not a.status_published]
+
         return keyed_aquifers
+
+    def check_well_in_aquifer(self, well, aquifer):
+        if aquifer.geom is None:
+            self.no_geom_aquifers.add(aquifer.aquifer_id)
+            return None
+
+        if aquifer.geom_simplified is None:
+            raise Exception(f"Aquifer {aquifer.aquifer_id} has no geom_simplified")
+
+        # Expand simplified polygon by ~1000m in WGS-84 (srid 4326)
+        aquifer_geom = aquifer.geom_simplified.buffer(0.01)
+        if not aquifer_geom.contains(well.geom):
+            well_3005_geom = well.geom.transform(3005, clone=True)
+            distance = aquifer.geom.distance(well_3005_geom)
+            # NOTE: 3005 projection's `.distance()` returns almost-meters
+            self.wells_outside_aquifer[well.well_tag_number] = {'distance': distance, 'units': 'meters'}
+            return False
+        return True
 
     def return_errors(self, changes):
         # roll back the transaction as the bulk_update could have run for one
@@ -148,6 +201,11 @@ class BulkWellAquiferCorrelation(APIView):
         errors = {
             'unknownAquifers': self.unknown_aquifer_ids,
             'unknownWells': self.unknown_well_tag_numbers,
+            'wellsNotInAquifer': self.wells_outside_aquifer,
+            'aquiferHasNoGeom': self.no_geom_aquifers,
+            'retiredAquifers': self.retired_aquifers,
+            'unpublishedAquifers': self.unpublished_aquifers,
+            'unpublishedWells': self.unpublished_wells,
             'changes': changes # always return the list of changes even if there are unknowns
         }
 
