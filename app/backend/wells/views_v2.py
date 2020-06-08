@@ -17,10 +17,15 @@ import logging
 from django.db import transaction
 from django.utils import timezone
 from django.http import FileResponse, HttpResponse, StreamingHttpResponse
+from django.contrib.gis.db.models.functions import Distance
+from django.contrib.gis.geos import GEOSException, GEOSGeometry
+from django.contrib.gis.gdal import GDALException
+from django.db.models import FloatField
+from django.db.models.functions import Cast
 
 from rest_framework import status, filters
 from rest_framework.generics import ListAPIView
-from rest_framework.exceptions import PermissionDenied, NotFound
+from rest_framework.exceptions import PermissionDenied, NotFound, ValidationError
 from rest_framework.response import Response
 
 from gwells.roles import WELLS_VIEWER_ROLE, WELLS_EDIT_ROLE
@@ -31,7 +36,8 @@ from wells.filters import (
     BoundingBoxFilterBackend,
     WellListFilterBackend,
     WellListOrderingFilter,
-    GeometryFilterBackend
+    GeometryFilterBackend,
+    RadiusFilterBackend
 )
 from wells.models import Well
 from wells.serializers_v2 import (
@@ -41,6 +47,7 @@ from wells.serializers_v2 import (
     WellListAdminSerializerV2,
     WellExportSerializerV2,
     WellExportAdminSerializerV2,
+    WellSubsurfaceSerializer
 )
 from wells.permissions import WellsEditOrReadOnly
 from wells.renderers import WellListCSVRenderer, WellListExcelRenderer
@@ -51,6 +58,7 @@ from aquifers.models import (
     VerticalAquiferExtentsHistory
 )
 from aquifers.permissions import HasAquiferEditRole
+from aquifers.serializers_v2 import ( AquiferSerializerV2 )
 
 
 logger = logging.getLogger(__name__)
@@ -487,3 +495,56 @@ class WellExportListAPIViewV2(ListAPIView):
         response['Content-Disposition'] = 'attachment; filename="search-results.{ext}"'.format(ext=renderer.format)
 
         return response
+
+
+class WellSubsurface(ListAPIView):
+    """ Returns well subsurface info within a gemoetry or a list of wells """
+    """ This replaces WellScreen with the additional aquifer and lithology info"""
+
+    model = Well
+    serializer_class = WellSubsurfaceSerializer
+    filter_backends = (GeometryFilterBackend, RadiusFilterBackend)
+    swagger_schema = None
+
+    def get_queryset(self):
+        qs = Well.objects.all() \
+            .select_related('intended_water_use', 'aquifer', 'aquifer__material',
+                            'aquifer__subtype') \
+            .prefetch_related('screen_set')
+
+        if not self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
+            qs = qs.exclude(well_publication_status='Unpublished')
+
+        # check if a point was supplied (note: actual filtering will be by
+        # the filter_backends classes).  If so, add distances from the point.
+        point = self.request.query_params.get('point', None)
+        srid = self.request.query_params.get('srid', 4326)
+        radius = self.request.query_params.get('radius', None)
+        if point and radius:
+            try:
+                shape = GEOSGeometry(point, srid=int(srid))
+                radius = float(radius)
+                assert shape.geom_type == 'Point'
+            except (ValueError, AssertionError, GDALException, GEOSException):
+                raise ValidationError({
+                    'point': 'Invalid point geometry. Use geojson geometry or WKT. Example: {"type": "Point", "coordinates": [-123,49]}'
+                })
+            else:
+                qs = qs.annotate(
+                    distance=Cast(Distance('geom', shape), output_field=FloatField())
+                ).order_by('distance')
+
+        # can also supply a comma separated list of wells
+        wells = self.request.query_params.get('wells', None)
+
+        if wells:
+            wells = wells.split(',')
+
+            for w in wells:
+                if not w.isnumeric():
+                    raise ValidationError(detail='Invalid well')
+
+            wells = map(int, wells)
+            qs = qs.filter(well_tag_number__in=wells)
+
+        return qs
