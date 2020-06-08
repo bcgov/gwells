@@ -254,14 +254,13 @@ export class BoxZoomControl {
       this._box = null
     }
 
-    if (this._start) { // NOTE: this._start is null when vue hot reloads the map component
+    if (this._start && endPoint) { // NOTE: this._start is null when vue hot reloads the map component
       var startLngLat = this._map.unproject(this._start)
       var endLngLat = this._map.unproject(endPoint)
-
       this.onZoom(new mapboxgl.LngLatBounds(startLngLat, endLngLat))
-
-      this.endBoxZoom()
     }
+
+    this.endBoxZoom()
   }
 }
 

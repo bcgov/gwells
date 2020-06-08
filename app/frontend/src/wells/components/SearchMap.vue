@@ -349,7 +349,9 @@ export default {
         )
     },
     updateWellSearchResultsLayer (geoJSON) {
-      this.map.getSource(SEARCHED_WELLS_SOURCE_ID).setData(geoJSON)
+      if (this.map) { // map could have been unloaded by the time this function is called
+        this.map.getSource(SEARCHED_WELLS_SOURCE_ID).setData(geoJSON)
+      }
     },
     clearWellSearchResultsLayer () {
       this.updateWellSearchResultsLayer(buildWellsGeoJSON([]))
