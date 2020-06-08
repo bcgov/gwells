@@ -15,13 +15,16 @@ import csv
 import openpyxl
 from openpyxl.utils import get_column_letter
 from openpyxl.writer.excel import save_virtual_workbook
-from collections import OrderedDict
 
+from django_filters import rest_framework as restfilters
 from django.http import HttpResponse, HttpResponseRedirect, StreamingHttpResponse
 from django.core.exceptions import PermissionDenied
+from rest_framework import filters
+from rest_framework.generics import ListAPIView
 from rest_framework.decorators import api_view
 
-from gwells.roles import REGISTRIES_VIEWER_ROLE
+from registries.permissions import RegistriesEditPermissions
+from registries.models import Person
 
 from .views import person_search_qs
 
@@ -87,61 +90,103 @@ def build_row(queryset):
                     for application in applications:
                         yield build_record(person, registration, registration.organization, application)
 
-def ordered_person_search_qs(request):
-    qs = person_search_qs(request)
 
-    order_by = request.GET.get('ordering', None)
-    if order_by and order_by.strip('-') in ['surname']: # check ordering param in whitelist
-        qs = qs.order_by(order_by)
-    else:
-        qs = qs.order_by('surname')
-
-    return qs
-
-@api_view(['GET'])
-def csv_export_v2(request):
+class CSVExportV2(ListAPIView):
     """
     Export the registry as CSV. This is done in a vanilla functional Django view instead
     of DRF, because DRF doesn't have native CSV support.
     """
 
-    user_is_staff = request.user.groups.filter(name=REGISTRIES_VIEWER_ROLE).exists()
-    if not user_is_staff:
-        raise PermissionDenied()
+    swagger_schema = None
+    permission_classes = (RegistriesEditPermissions,)
 
-    # Create the HttpResponse object with the appropriate CSV header.
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="registry.csv"'
-    writer = csv.writer(response)
-    writer.writerow(REGISTRY_EXPORT_HEADER_COLUMNS)
+    # Allow searching on name fields, names of related companies, etc.
+    filter_backends = (restfilters.DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter)
+    ordering_fields = ('surname', 'registrations__organization__name')
+    ordering = ('surname',)
+    search_fields = (
+        'first_name',
+        'surname',
+        'registrations__organization__name',
+        'registrations__organization__city',
+        'registrations__registration_no'
+    )
 
-    queryset = ordered_person_search_qs(request)
-    for row in build_row(queryset):
-        writer.writerow(row)
+    # fetch related companies and registration applications (prevent duplicate database trips)
+    queryset = Person.objects.all()
 
-    return response
+    def get_queryset(self):
+        """ Returns Person queryset, removing non-active and unregistered drillers for anonymous users """
+
+        return person_search_qs(self.request)
+
+    def get(self, request, *args, **kwargs):
+        # Returns self.list - overridden for schema documentation
+        return self.list(request, *args, **kwargs)
+
+    def list(self, request, **kwargs):
+        queryset = self.get_queryset()
+        filtered_queryset = self.filter_queryset(queryset)
+
+        # Create the HttpResponse object with the appropriate CSV header.
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="registry.csv"'
+        writer = csv.writer(response)
+        writer.writerow(REGISTRY_EXPORT_HEADER_COLUMNS)
+
+        for row in build_row(filtered_queryset):
+            writer.writerow(row)
+
+        return response
 
 
-@api_view(['GET'])
-def xlsx_export_v2(request):
+class XLSXExportV2(ListAPIView):
     """
     Export the registry as XLSX.
     """
-    mime_type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    swagger_schema = None
+    permission_classes = (RegistriesEditPermissions,)
 
-    user_is_staff = request.user.groups.filter(name=REGISTRIES_VIEWER_ROLE).exists()
-    if not user_is_staff:
-        raise PermissionDenied()
+    # Allow searching on name fields, names of related companies, etc.
+    filter_backends = (restfilters.DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter)
+    ordering_fields = ('surname', 'registrations__organization__name')
+    ordering = ('surname',)
+    search_fields = (
+        'first_name',
+        'surname',
+        'registrations__organization__name',
+        'registrations__organization__city',
+        'registrations__registration_no'
+    )
 
-    wb = openpyxl.Workbook()
-    ws = wb.active
-    ws.append(REGISTRY_EXPORT_HEADER_COLUMNS)
-    for i, column_name in enumerate(REGISTRY_EXPORT_HEADER_COLUMNS):
-        col_letter = get_column_letter(i + 1)
-        ws.column_dimensions[col_letter].width = len(column_name)
-    queryset = ordered_person_search_qs(request)
-    for row in build_row(queryset):
-        ws.append([str(col) if col else '' for col in row])
-    response = HttpResponse(content=save_virtual_workbook(wb), content_type=mime_type)
-    response['Content-Disposition'] = 'attachment; filename="registry.xlsx"'
-    return response
+    # fetch related companies and registration applications (prevent duplicate database trips)
+    queryset = Person.objects.all()
+
+    def get_queryset(self):
+        """ Returns Person queryset, removing non-active and unregistered drillers for anonymous users """
+
+        return person_search_qs(self.request)
+
+    def get(self, request, *args, **kwargs):
+        # Returns self.list - overridden for schema documentation
+        return self.list(request, *args, **kwargs)
+
+    def list(self, request, **kwargs):
+        queryset = self.get_queryset()
+        filtered_queryset = self.filter_queryset(queryset)
+
+        mime_type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.append(REGISTRY_EXPORT_HEADER_COLUMNS)
+        for i, column_name in enumerate(REGISTRY_EXPORT_HEADER_COLUMNS):
+            col_letter = get_column_letter(i + 1)
+            ws.column_dimensions[col_letter].width = len(column_name)
+        for row in build_row(filtered_queryset):
+            ws.append([str(col) if col else '' for col in row])
+        response = HttpResponse(content=save_virtual_workbook(wb), content_type=mime_type)
+        response['Content-Disposition'] = 'attachment; filename="registry.xlsx"'
+        return response
