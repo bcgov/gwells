@@ -115,7 +115,7 @@ export default {
         .then((instance) => {
           if (instance.authenticated && ApiService.hasAuthHeader() && !instance.isTokenExpired(0)) {
             // We've already authenticated, have a header, and we've not expired.
-            resolve()
+            resolve(instance)
           } else {
             // Attempt to retrieve a stored token, this may avoid us having to refresh the page.
             const token = localStorage.getItem('token')
@@ -139,7 +139,7 @@ export default {
                   // Assumes that store passed in includes a 'SET_KEYCLOAK' mutation!
                   store.commit('SET_KEYCLOAK', instance)
                   this.scheduleRenewal(instance)
-                  resolve()
+                  resolve(instance)
                 }).error(() => {
                   // The refresh token is expired or was rejected
                   this.removeLocalToken()
@@ -147,13 +147,13 @@ export default {
                   // We update the store reference only after wiring up the API. (Someone might be waiting
                   // for login to complete before taking some action. )
                   store.commit('SET_KEYCLOAK', instance)
-                  resolve()
+                  resolve(instance)
                 })
               } else {
                 // We may have failed to authenticate, for many reasons, e.g. - it may be we never logged in,
                 // or have an expired token.
                 store.commit('SET_KEYCLOAK', instance)
-                resolve()
+                resolve(instance)
               }
             }).error((e) => {
               reject(e)

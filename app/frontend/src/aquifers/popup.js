@@ -94,7 +94,7 @@ export function createAquiferPopupElement (map, $router, point, aquiferLayerIds)
   container.className = 'mapbox-popup-aquifer'
   const ul = document.createElement('ul')
   ul.className = 'm-0 p-0 text-center'
-  ul.style = 'list-style: none'
+  ul.style.listStyle = 'none'
   container.appendChild(ul)
 
   aquiferFeatures(map, point, aquiferLayerIds).forEach((feature) => {
@@ -138,7 +138,7 @@ export function createAquiferTooltipElement (map, point, aquiferLayerIds) {
   container.className = 'mapbox-tooltip-aquifer'
   const ul = document.createElement('ul')
   ul.className = 'm-0 p-0 text-center'
-  ul.style = 'list-style: none'
+  ul.style.listStyle = 'none'
   container.appendChild(ul)
 
   aquiferFeatures(map, point, aquiferLayerIds).forEach((feature) => {

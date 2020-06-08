@@ -363,11 +363,13 @@ export default {
         this.$store.commit(SET_SEARCH_RESULT_COLUMNS, query.result_columns.split(','))
         delete query.result_columns
       }
-      if (query.map_centre !== undefined) {
+      if (typeof query.map_centre === 'string') {
         const latlng = query.map_centre.split(',')
-        const lat = parseFloat(latlng[0])
-        const lng = parseFloat(latlng[1])
-        this.$store.commit(SET_SEARCH_MAP_CENTRE, { lat, lng })
+        const lat = parseFloat(latlng[0]) || null
+        const lng = parseFloat(latlng[1]) || null
+        if (lat && lng) {
+          this.$store.commit(SET_SEARCH_MAP_CENTRE, { lat, lng })
+        }
         delete query.map_centre
       }
       if (query.map_zoom !== undefined) {

@@ -450,12 +450,13 @@ export default {
       // if so, set the search boxes to the query params
       if (Object.keys(query) === 0) { return }
 
-      if (query.map_centre !== undefined) {
+      if (typeof query.map_centre === 'string') {
         const latlng = query.map_centre.split(',')
-        const lat = parseFloat(latlng[0])
-        const lng = parseFloat(latlng[1])
-        // eslint-disable-next-line new-cap
-        this[SET_SEARCH_MAP_CENTRE](new mapboxgl.LngLat(lng, lat))
+        const lat = parseFloat(latlng[0]) || null
+        const lng = parseFloat(latlng[1]) || null
+        if (lat && lng) {
+          this[SET_SEARCH_MAP_CENTRE](new mapboxgl.LngLat(lng, lat))
+        }
       }
       if (query.map_zoom !== undefined) {
         this[SET_SEARCH_MAP_ZOOM](parseInt(query.map_zoom))
