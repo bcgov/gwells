@@ -19,7 +19,13 @@ from django.contrib.gis.geos import Point
 
 from gwells.utils import isPointInsideBC
 from wells.models import Well
-from aquifers.models import VerticalAquiferExtent
+from aquifers.models import VerticalAquiferExtent, Aquifer
+
+from aquifers.serializers_v2 import AquiferDetailSerializerV2
+from wells.serializers import ScreenSerializer, LithologyDescriptionSummarySerializer
+
+from aquifers.serializers import HYDRAULIC_SUBTYPES
+
 
 
 logger = logging.getLogger(__name__)
@@ -378,13 +384,50 @@ class WellExportAdminSerializerV2(WellExportSerializerV2):
         fields = WellListAdminSerializerV2.Meta.fields
 
 
-class WellListAquiferSerializerV2(serializers.ModelSerializer):
-    """Serializes aquifer info for a list of wells"""
+class WellAquiferSerializer(serializers.ModelSerializer):
+    subtype_desc = serializers.ReadOnlyField(source='subtype.description')
+    material_desc = serializers.ReadOnlyField(source='material.description')
+
+    class Meta:
+        model = Aquifer
+        fields = (
+            "aquifer_id",
+            "subtype",
+            "subtype_desc",
+            "material",
+            "material_desc",
+            "litho_stratographic_unit"
+        )
+
+
+class WellSubsurfaceSerializer(serializers.ModelSerializer):
+    screen_set = ScreenSerializer(many=True)
+    lithologydescription_set = LithologyDescriptionSummarySerializer(many=True)
+    intended_water_use = serializers.ReadOnlyField(source='intended_water_use.description')
+    distance = serializers.FloatField(required=False)
+    aquifer = WellAquiferSerializer()
 
     class Meta:
         model = Well
         fields = (
             "well_tag_number",
+            "static_water_level",
+            "screen_set",
+            "lithologydescription_set",
+            "well_yield",
+            "diameter",
             "aquifer",
+            "distance",
+            "latitude",
+            "longitude",
+            "well_yield_unit",
+            "finished_well_depth",
+            "street_address",
+            "intended_water_use",
         )
-        depth = 1
+
+    def to_representation(self, instance):
+        details = super().to_representation(instance)
+        if instance.aquifer and instance.aquifer.subtype:
+            details['aquifer_hydraulically_connected'] = instance.aquifer.subtype.code in HYDRAULIC_SUBTYPES
+        return details

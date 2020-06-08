@@ -50,15 +50,16 @@ urlpatterns = [
     url(api_path_prefix() + r'/wells/screens$',
         never_cache(views.WellScreens.as_view()), name='well-screens'),
 
+    # Well subsurface search
+    # returns information about well subsurface for a range of wells,
+    # or a list of wells provided in ?wells=123,124,125 etc.
+    url(api_path_prefix() + r'/wells/subsurface',
+        never_cache(views_v2.WellSubsurface.as_view()), name='well-subsurface'),
+
     # Well lithology search
     # returns information about well lithology for a range of wells provided in ?wells=123,124,125 etc.
     url(api_path_prefix() + r'/wells/lithology$',
         never_cache(views.WellLithology.as_view()), name='well-lithology'),
-
-    # Well aquifer search
-    # returns information about well aquifer for a range of wells provided in ?wells=123,124,125 etc.
-    url(r'api/v2/wells/aquifer$',
-        never_cache(views_v2.WellListAquifer.as_view()), name='well-aquifer'),
 
     # Well tag search
     url(r'api/v1/wells/locations$',

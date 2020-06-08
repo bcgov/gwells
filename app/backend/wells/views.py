@@ -794,6 +794,7 @@ def well_licensing(request, **kwargs):
     return HttpResponse(json.dumps(data), content_type="application/json")
 
 
+# Deprecated. Use WellSubsurface instead
 class WellScreens(ListAPIView):
     """ returns well screen info for a range of wells """
 
