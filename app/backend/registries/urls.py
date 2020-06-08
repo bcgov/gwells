@@ -63,11 +63,11 @@ urlpatterns = [
 
 
     url(r'api/v2/drillers/csv$',
-        never_cache(views_v2.csv_export_v2),
+        never_cache(views_v2.CSVExportV2.as_view()),
         name='drillers-list-csv'
         ),
     url(r'api/v2/drillers/xlsx$',
-        never_cache(views_v2.xlsx_export_v2),
+        never_cache(views_v2.XLSXExportV2.as_view()),
         name='drillers-list-xlsx'
         ),
 
