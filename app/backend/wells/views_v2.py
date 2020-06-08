@@ -508,8 +508,8 @@ class WellSubsurface(ListAPIView):
 
     def get_queryset(self):
         qs = Well.objects.all() \
-            .select_related('intended_water_use', 'aquifer', 'aquifer__subtype',
-                            'aquifer__material') \
+            .select_related('intended_water_use', 'aquifer', 'aquifer__material',
+                            'aquifer__subtype') \
             .prefetch_related('screen_set')
 
         if not self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
