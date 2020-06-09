@@ -399,7 +399,7 @@ export default {
             }
 
             if (aquiferId === AQUIFER_ID_FOR_UNCORRELATED_WELLS) {
-              warnings.push(`This Aquifer is for wells that are not correlated at the time of interpretation`)
+              warnings.push('This aquifer number is a placeholder for tracking wells that can not be correlated to a mapped aquifer unit and does not have an associated spatial extent.')
             }
 
             if (this.unpublishedWells.indexOf(wellTagNumber) !== -1) {
