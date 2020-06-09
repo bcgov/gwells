@@ -1,7 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import AuthGuard from './authGuard'
+import * as Sentry from '@sentry/browser'
+
 import authenticate from '@/common/authenticate.js'
+import AuthGuard from './authGuard'
 import { store } from './store/index.js'
 
 // Aquifers components
@@ -257,7 +259,11 @@ const router = new Router({
 
 router.beforeEach((to, from, next) => {
   if (!router.app.$keycloak) {
-    authenticate.authenticate(store).then(() => {
+    authenticate.authenticate(store).then((keycloak) => {
+      if (keycloak.authenticated) {
+        Sentry.setUser({ username: keycloak.tokenParsed.preferred_username })
+      }
+
       next()
     }).catch((e) => {
       next({ name: 'wells-home' })

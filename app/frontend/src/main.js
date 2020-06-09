@@ -38,7 +38,13 @@ const PRODUCTION_GWELLS_URL = 'https://apps.nrs.gov.bc.ca/gwells'
 if (window.location.href.substr(0, PRODUCTION_GWELLS_URL.length) === PRODUCTION_GWELLS_URL) {
   Sentry.init({
     dsn: 'https://a83809da8c9b4f39b3d7cd683b803859@sentry.io/1802823',
-    integrations: [new Integrations.Vue({ Vue, attachProps: true, logError: true })]
+    integrations: [new Integrations.Vue({ Vue, attachProps: true, logError: true })],
+    beforeSend (event) {
+      // The `msCrypto` property was only ever implemented in IE 11. Ignore logging IE 11 errors.
+      // See: https://developer.mozilla.org/en-US/docs/Web/API/Window/crypto
+      if (window.msCrypto) { return null }
+      return event
+    }
   })
 }
 

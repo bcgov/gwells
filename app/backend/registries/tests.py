@@ -759,7 +759,7 @@ class APIFilteringPaginationTests(APITestCase):
         )
 
     def test_user_cannot_see_unregistered_person_in_list(self):
-        url = reverse('person-list', kwargs={'version': 'v1'})
+        url = reverse('person-list', kwargs={'version': 'v1'}) + '?activity=DRILL'
         response = self.client.get(url, format='json')
         self.assertEqual(len(response.data['results']), 2)
         self.assertContains(response, 'Wendy')
@@ -794,7 +794,7 @@ class APIFilteringPaginationTests(APITestCase):
         logger.setLevel(previous_level)
 
     def test_search_for_name(self):
-        url = reverse('person-list', kwargs={'version': 'v1'}) + '?search=' + self.driller.first_name
+        url = reverse('person-list', kwargs={'version': 'v1'}) + '?activity=DRILL&search=' + self.driller.first_name
         response = self.client.get(url, format='json')
 
         self.assertContains(response, self.driller.first_name)
@@ -806,7 +806,7 @@ class APIFilteringPaginationTests(APITestCase):
         self.assertNotContains(response, self.partially_approved_driller.person_guid)
 
     def test_search_for_registration_number(self):
-        url = reverse('person-list', kwargs={'version': 'v1'}) + '?search=' + \
+        url = reverse('person-list', kwargs={'version': 'v1'}) + '?activity=DRILL&search=' + \
             self.registration2.registration_no
         response = self.client.get(url, format='json')
 

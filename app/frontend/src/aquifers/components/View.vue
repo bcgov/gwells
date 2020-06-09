@@ -136,7 +136,14 @@
                   <b-row>
                     <b-col cols="6" md="3" lg="6">Size (km²)</b-col>
                     <b-col cols="6" md="3" lg="6">{{record.area}}</b-col>
-                    <b-col cols="6" md="3" lg="6">Demand</b-col>
+                    <b-col cols="6" md="3" lg="6">
+                      Calculated well density
+                      <i id="calculated-demand-density-info" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+                      <b-popover
+                        target="calculated-demand-density-info"
+                        triggers="hover focus"
+                        content="Calculated based on the number of wells known to be completed in the aquifer per square kilometer. Light ≤ 4 km²; Medium 4 – 20 km²; Heavy > 20 km²"/>
+                    </b-col>
                     <b-col cols="6" md="3" lg="6">{{record.demand}}</b-col>
                   </b-row>
                 </b-col>

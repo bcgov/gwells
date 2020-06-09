@@ -18,6 +18,7 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.views.generic import TemplateView
 from django.urls import path, re_path
+
 from django.shortcuts import redirect
 from django.views.decorators.cache import never_cache
 

@@ -21,6 +21,7 @@ from drf_yasg import openapi
 
 from registries import permissions
 from . import views
+from . import views_v2
 from gwells.urls import api_path_prefix
 
 schema_view = get_schema_view(
@@ -59,6 +60,16 @@ urlpatterns = [
     url(api_path_prefix() + r'/organizations$',
         never_cache(views.OrganizationListView.as_view()),
         name='organization-list'),
+
+
+    url(r'api/v2/drillers/csv$',
+        never_cache(views_v2.CSVExportV2.as_view()),
+        name='drillers-list-csv'
+        ),
+    url(r'api/v2/drillers/xlsx$',
+        never_cache(views_v2.XLSXExportV2.as_view()),
+        name='drillers-list-xlsx'
+        ),
 
     # Document Uploading (driller records)
     url(api_path_prefix() + r'/drillers/(?P<person_guid>[-\w]+)/presigned_put_url$',

@@ -250,7 +250,7 @@ LOGGING = {
             'handlers': ['console_handler'],
             'propagate': True,
             'level': 'DEBUG'
-        }
+        },
     }
 }
 

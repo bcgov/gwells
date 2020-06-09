@@ -425,7 +425,20 @@ exports[`View Component View mode matches the snapshot 1`] = `
                     <div
                       class="col-md-3 col-lg-6 col-6"
                     >
-                      Demand
+                      
+                    Calculated well density
+                    
+                      <i
+                        class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                        id="calculated-demand-density-info"
+                        tabindex="0"
+                      />
+                       
+                      <b-popover-stub
+                        content="Calculated based on the number of wells known to be completed in the aquifer per square kilometer. Light ≤ 4 km²; Medium 4 – 20 km²; Heavy > 20 km²"
+                        target="calculated-demand-density-info"
+                        triggers="hover focus"
+                      />
                     </div>
                      
                     <div
