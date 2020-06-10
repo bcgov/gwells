@@ -452,16 +452,20 @@ class Aquifer(AuditModel):
 
     history = GenericRelation(Version)
 
+    @property
     def status_retired(self):
-        return datetime.now() > self.retire_date
+        return timezone.now() > self.retire_date
 
+    @property
     def status_draft(self):
-        return datetime.now() < self.effective_date
+        return timezone.now() < self.effective_date
 
+    @property
     def status_published(self):
-        now = datetime.now()
+        now = timezone.now()
         return now >= self.effective_date and now < self.expiry_date
 
+    @property
     def status_unpublished(self):
         return now >= self.expiry_date
 

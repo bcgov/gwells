@@ -424,6 +424,7 @@ class WellSubsurfaceSerializer(serializers.ModelSerializer):
             "finished_well_depth",
             "street_address",
             "intended_water_use",
+            "aquifer_lithology"
         )
 
     def to_representation(self, instance):

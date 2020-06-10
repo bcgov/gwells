@@ -103,7 +103,7 @@ class WellLocationListV2APIView(ListAPIView):
             if not aquifer:
                 raise NotFound(f'Unknown aquifer {intersects_aquifer_id}')
 
-            # Simplify polygon and expand it by 1km
+            # Simplify polygon and expand it by 1km in srid 3005
             aquifer_geom = aquifer.geom.simplify(40, preserve_topology=True).buffer(1000)
 
             qs = qs.exclude(geom=None)
