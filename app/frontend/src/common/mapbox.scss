@@ -58,6 +58,12 @@
     will-change: inherit !important;
     margin-bottom: -1px;
 
+    &.mapboxgl-popup-no-interaction {
+      .mapboxgl-popup-content {
+        pointer-events: none;
+      }
+    }
+
     .mapboxgl-popup-content {
       padding-bottom: 10px;
     }
