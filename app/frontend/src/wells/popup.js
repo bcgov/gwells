@@ -1,5 +1,5 @@
 import { WELLS_BASE_AND_ARTESIAN_LAYER_ID } from '../common/mapbox/layers'
-import { wireUpAnchors } from '../common/mapbox/popup'
+import { popupItems } from '../common/mapbox/popup'
 
 export function createWellPopupElement (features, map, $router, options = {}) {
   const canInteract = Boolean(options.canInteract)
@@ -15,21 +15,19 @@ export function createWellPopupElement (features, map, $router, options = {}) {
     is_published: isPublished
   } = feature.properties
 
-  const routes = {
-    wellDetail: { name: 'wells-detail', params: { id: wellTagNumber } }
-  }
-
-  const url = $router.resolve(routes.wellDetail)
-
-  const container = document.createElement('div')
-  container.className = 'mapbox-popup-well'
-  container.innerHTML = [
-    canInteract
-      ? `Well Tag Number: <a href="${url.href}" data-route-name="wellDetail">${wellTagNumber}</a>`
-      : `Well Tag Number: ${wellTagNumber}`,
+  const items = [
+    {
+      prefix: 'Well Tag Number: ',
+      route: { name: 'wells-detail', params: { id: wellTagNumber } },
+      text: wellTagNumber
+    },
     `Identification Plate Number: ${identificationPlateNumber || '—'}`,
     `Address: ${streetAddress || '—'}`,
-    isPublished === false ? '<b>unpublished</b>' : null
-  ].filter(Boolean).join('<br>')
-  return canInteract ? wireUpAnchors(container, $router, routes) : container
+    {
+      className: isPublished === false ? 'unpublished' : '',
+      text: isPublished === false ? 'unpublished' : null
+    }
+  ]
+
+  return popupItems(items, $router, { className: 'mapbox-popup-well', canInteract })
 }

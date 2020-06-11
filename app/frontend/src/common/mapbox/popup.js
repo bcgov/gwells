@@ -2,31 +2,6 @@ import mapboxgl from 'mapbox-gl'
 
 import { getLngLatOfPointFeature } from './geometry'
 
-// Add onclick handler to use vue router to route to the link for all anchors in a popup
-export function wireUpAnchors (el, $router, routes) {
-  function onClick (e) {
-    if (!e.ctrlKey) {
-      e.preventDefault()
-      const routeName = e.currentTarget.getAttribute('data-route-name')
-      if (!routeName) {
-        throw new Error('Anchor without a data-route-name')
-      }
-      const route = routes[routeName] || null
-      if (!route) {
-        throw new Error(`Route named "${routeName}" not found in routes`)
-      }
-      $router.push(route)
-    }
-  }
-
-  const anchors = el.querySelectorAll('a:not([target="_blank"])')
-  for (let i = 0; i < anchors.length; i++) {
-    anchors[i].addEventListener('click', onClick)
-  }
-
-  return el
-}
-
 export function setupFeatureTooltips (map, layers, options = {}) {
   const popup = new mapboxgl.Popup()
 
@@ -91,4 +66,82 @@ export function setupFeatureTooltips (map, layers, options = {}) {
     popup.remove()
     tooltip.remove()
   })
+}
+
+// Creates a list of popup items
+export function popupItems (items, $router, options = {}) {
+  const canInteract = Boolean(options.canInteract)
+  const ol = document.createElement('ol')
+  ol.className = (options.className || '') + ` mapbox-${canInteract ? 'popup' : 'tooltip'}`
+
+  items.forEach((item) => {
+    if (item) {
+      ol.appendChild(popupItem(item))
+    }
+  })
+
+  return ol
+}
+
+// Creates a popup item with an optional prefix and suffix and link
+export function popupItem (item, $router, options = {}) {
+  const canInteract = Boolean(options.canInteract)
+
+  const li = document.createElement('li')
+
+  if (typeof item === 'object') {
+    li.className = item.className || ''
+    if (item.prefix) {
+      const prefixEl = document.createElement('span')
+      prefixEl.className = 'mapbox-popup-prefix'
+      prefixEl.textContent = item.prefix
+      li.appendChild(prefixEl)
+    }
+    if (item.url || item.route) {
+      // { name: 'aquifers-view', params: { id: aquiferId } }
+      if (canInteract) {
+        const anchor = popupLinkToRoute(item.route, $router, item.text)
+        li.appendChild(anchor)
+      } else {
+        li.appendChild(document.createTextNode(item.text))
+      }
+    } else if (item.text) {
+      li.appendChild(document.createTextNode(item.text))
+    }
+    if (item.suffix) {
+      const suffixEl = document.createElement('span')
+      suffixEl.className = 'mapbox-popup-suffix'
+      suffixEl.textContent = item.suffix
+      li.appendChild(suffixEl)
+    }
+  } else {
+    li.innerText = item
+  }
+
+  return li
+}
+
+// Creates an HTML anchor to a Vue route
+export function popupLinkToRoute (route, $router, text) {
+  const anchor = document.createElement('a')
+  let url = route
+
+  if (typeof route === 'string') {
+    if (url && url.startsWith('http')) {
+      anchor.setAttribute('target', '_blank')
+    }
+  } else {
+    url = $router.resolve(route).href
+  }
+
+  anchor.setAttribute('href', url)
+  anchor.onclick = (e) => {
+    if (!e.ctrlKey) {
+      e.preventDefault()
+      $router.push(route)
+    }
+  }
+  anchor.textContent = text || ''
+
+  return anchor
 }

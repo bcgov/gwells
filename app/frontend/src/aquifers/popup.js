@@ -6,7 +6,7 @@ import {
   AQUIFERS_FILL_LAYER_ID,
   DATABC_ECOCAT_LAYER_ID
 } from '../common/mapbox/layers'
-import { wireUpAnchors } from '../common/mapbox/popup'
+import { popupItems, popupItem } from '../common/mapbox/popup'
 
 // Creates a <div> for the well's popup content
 export function createWellPopupElement (features, map, $router, options = {}) {
@@ -22,42 +22,42 @@ export function createWellPopupElement (features, map, $router, options = {}) {
     identification_plate_number: identificationPlateNumber,
     street_address: streetAddress,
     aquifer_id: aquiferId,
-    ems
+    ems,
+    is_published: isPublished
   } = feature.properties
-
-  const routes = {
-    wellDetail: { name: 'wells-detail', params: { id: wellTagNumber } },
-    aquiferDetail: { name: 'aquifers-view', params: { id: aquiferId } }
-  }
 
   let correlatedAquiferItem = 'Uncorrelated well'
   if (aquiferId) {
     // Only link to the correlated aquifer if the user can interact with this popup content. Or if
     // the optional `currentAquiferId` is not the same as this aquiferId
     if (canInteract && aquiferId !== currentAquiferId) {
-      const aquiferDetailsUrl = $router.resolve(routes.aquiferDetail)
-      correlatedAquiferItem = `Correlated to <a href="${aquiferDetailsUrl.href}" data-route-name="aquiferDetail">aquifer ${aquiferId}</a>`
+      correlatedAquiferItem = {
+        prefix: 'Correlated to ',
+        route: { name: 'aquifers-view', params: { id: aquiferId } },
+        text: `aquifer ${aquiferId}`
+      }
     } else {
       correlatedAquiferItem = `Correlated to aquifer ${aquiferId}`
     }
   }
 
-  const url = $router.resolve(routes.wellDetail)
-
   const items = [
-    canInteract
-      ? `Well Tag Number: <a href="${url.href}" data-route-name="wellDetail">${wellTagNumber}</a>`
-      : `Well Tag Number: ${wellTagNumber}`,
+    {
+      prefix: 'Well Tag Number: ',
+      route: { name: 'wells-detail', params: { id: wellTagNumber } },
+      text: wellTagNumber
+    },
     `Identification Plate Number: ${identificationPlateNumber || '—'}`,
     `Address: ${streetAddress || '—'}`,
     correlatedAquiferItem,
-    ems ? `EMS ID: ${ems}` : null
+    ems ? `EMS ID: ${ems}` : null,
+    {
+      className: isPublished === false ? 'unpublished' : '',
+      text: isPublished === false ? 'unpublished' : null
+    }
   ]
 
-  const container = document.createElement('div')
-  container.className = 'mapbox-popup-well'
-  container.innerHTML = items.filter(Boolean).join('<br>')
-  return canInteract ? wireUpAnchors(container, $router, routes) : container
+  return popupItems(items, $router, { className: 'mapbox-popup-well', canInteract })
 }
 
 // Creates a <div> for the aquifer's popup content
@@ -76,28 +76,27 @@ export function createAquiferPopupElement (features, map, $router, options = {})
   // Filter the features to only the aquifer layers we care about
   const onlyAquiferFeatures = features.filter((feature) => aquiferLayerIds.indexOf(feature.layer.id) !== -1)
 
-  uniqBy(onlyAquiferFeatures, 'id').forEach((feature) => {
+  uniqBy(onlyAquiferFeatures, 'id').map((feature) => {
     const {
       aquifer_id: aquiferId,
       is_retired: isRetired,
       is_published: isPublished
     } = feature.properties
-    const routes = {
-      aquiferDetail: { name: 'aquifers-view', params: { id: aquiferId } }
-    }
-    const url = $router.resolve(routes.aquiferDetail)
-    const aquiferTitle = `Aquifer ${aquiferId}`
     const linkToAquifer = canInteract && currentAquiferId !== aquiferId
-    const items = [
-      linkToAquifer ? `<a href="${url.href}" data-route-name="aquiferDetail">${aquiferTitle}</a>` : aquiferTitle,
-      isRetired ? '<b>retired</b>' : null,
-      !isPublished ? '<b>unpublished</b>' : null
-    ]
-    const li = document.createElement('li')
-    li.className = 'm-0 p-0'
-    li.innerHTML = items.filter(Boolean).join('<br>')
+
+    const item = {
+      className: `${isRetired ? 'retired' : ''} ${isPublished ? 'published' : ''}`,
+      route: linkToAquifer ? { name: 'aquifers-view', params: { id: aquiferId } } : null,
+      text: `Aquifer ${aquiferId}`,
+      suffix: [
+        isRetired ? 'retired' : null,
+        !isPublished ? 'unpublished' : null
+      ].filter(Boolean).join(' – ')
+    }
+
+    const li = popupItem(item, $router, { canInteract })
+
     if (canInteract) {
-      wireUpAnchors(li, $router, routes)
       // highlight this aquifer on mouseover of the aquifer ID in the popup
       li.onmouseenter = () => {
         toggleAquiferHover(map, aquiferId, true)
@@ -106,6 +105,7 @@ export function createAquiferPopupElement (features, map, $router, options = {})
         toggleAquiferHover(map, aquiferId, false)
       }
     }
+
     ul.appendChild(li)
   })
 
