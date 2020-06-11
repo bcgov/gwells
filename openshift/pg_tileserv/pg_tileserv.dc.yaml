@@ -140,7 +140,7 @@ objects:
                   value: ftw_reader
                 - name: DATABASE_URL
                   value: postgres://$(PG_USER):$(PG_PASSWORD)@$(DATABASE_HOST)/gwells
-              image: pramsey/pg_tileserv:${IMAGE_TAG}
+              image: docker-registry.default.svc:5000/moe-gwells-tools/pg_tileserv:${IMAGE_TAG}
               imagePullPolicy: IfNotPresent
               livenessProbe:
                 failureThreshold: 3

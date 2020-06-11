@@ -553,7 +553,7 @@ pipeline {
                             "openshift/pg_tileserv/pg_tileserv.dc.yaml",
                             "NAME_SUFFIX=-${devSuffix}-${prNumber}",
                             "DATABASE_SERVICE_NAME=gwells-pg12-${devSuffix}-${prNumber}",
-                            "IMAGE_TAG=20200427",
+                            "IMAGE_TAG=20200610",
                             "HOST=${devHost}",
                         )
 
@@ -753,7 +753,7 @@ pipeline {
                             "openshift/pg_tileserv/pg_tileserv.dc.yaml",
                             "NAME_SUFFIX=-${stagingSuffix}",
                             "DATABASE_SERVICE_NAME=gwells-pg12-${stagingSuffix}",
-                            "IMAGE_TAG=20200427",
+                            "IMAGE_TAG=20200610",
                             "HOST=${stagingHost}",
                         )
 
@@ -1060,7 +1060,7 @@ pipeline {
                             "openshift/pg_tileserv/pg_tileserv.dc.yaml",
                             "NAME_SUFFIX=-${prodSuffix}",
                             "DATABASE_SERVICE_NAME=gwells-pg12-${prodSuffix}",
-                            "IMAGE_TAG=20200427",
+                            "IMAGE_TAG=20200610",
                             "HOST=${prodHost}",
                         )
 
