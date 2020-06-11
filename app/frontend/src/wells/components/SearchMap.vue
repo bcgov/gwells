@@ -26,22 +26,12 @@ import ApiService from '@/common/services/ApiService.js'
 import {
   DATABC_ROADS_SOURCE,
   DATABC_CADASTREL_SOURCE,
-  vectorSourceConfig,
   WELLS_SOURCE_ID,
   DATABC_ROADS_SOURCE_ID,
   DATABC_CADASTREL_SOURCE_ID,
   DATABC_ROADS_LAYER,
   DATABC_CADASTREL_LAYER,
   wellsBaseAndArtesianLayer,
-  DATABC_OBSERVATION_WELLS_LAYER,
-  DATABC_WATER_LICENCES_LAYER,
-  DATABC_ECOCAT_LAYER,
-  DATABC_ECOCAT_SOURCE,
-  DATABC_WATER_LICENCES_SOURCE_ID,
-  DATABC_ECOCAT_SOURCE_ID,
-  DATABC_OBSERVATION_WELLS_SOURCE_ID,
-  DATABC_OBSERVATION_WELLS_SOURCE,
-  DATABC_WATER_LICENCES_SOURCE,
   WELLS_BASE_AND_ARTESIAN_LAYER_ID,
   searchedWellsLayer,
   SEARCHED_WELLS_SOURCE_ID,
@@ -50,7 +40,8 @@ import {
   FOCUSED_WELL_IMAGE_ID,
   FOCUSED_WELL_ARTESIAN_IMAGE_ID,
   wellLayerFilter,
-  SEARCHED_WELLS_LAYER_ID
+  SEARCHED_WELLS_LAYER_ID,
+  WELLS_SOURCE
 } from '../../common/mapbox/layers'
 import { LegendControl, BoxZoomControl, SearchOnMoveControl, ClearSearchCriteriaControl } from '../../common/mapbox/controls'
 import { createWellPopupElement } from '../popup'
@@ -240,19 +231,13 @@ export default {
         sources: {
           [DATABC_ROADS_SOURCE_ID]: DATABC_ROADS_SOURCE,
           [DATABC_CADASTREL_SOURCE_ID]: DATABC_CADASTREL_SOURCE,
-          [DATABC_ECOCAT_SOURCE_ID]: DATABC_ECOCAT_SOURCE,
-          [DATABC_WATER_LICENCES_SOURCE_ID]: DATABC_WATER_LICENCES_SOURCE,
-          [DATABC_OBSERVATION_WELLS_SOURCE_ID]: DATABC_OBSERVATION_WELLS_SOURCE,
-          [WELLS_SOURCE_ID]: vectorSourceConfig(WELLS_SOURCE_ID),
+          [WELLS_SOURCE_ID]: WELLS_SOURCE,
           [SEARCHED_WELLS_SOURCE_ID]: { type: 'geojson', data: buildWellsGeoJSON([]) },
           [FOCUSED_WELLS_SOURCE_ID]: { type: 'geojson', data: buildWellsGeoJSON([]) }
         },
         layers: [
           DATABC_ROADS_LAYER,
           DATABC_CADASTREL_LAYER,
-          DATABC_ECOCAT_LAYER,
-          DATABC_WATER_LICENCES_LAYER,
-          DATABC_OBSERVATION_WELLS_LAYER,
           wellsBaseAndArtesianLayer({ filter: wellLayerFilter(this.showUnpublished) }),
           searchedWellsLayer(),
           focusedWellsLayer()
