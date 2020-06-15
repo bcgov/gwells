@@ -58,8 +58,36 @@
     will-change: inherit !important;
     margin-bottom: -1px;
 
+    &.mapboxgl-popup-no-interaction {
+      .mapboxgl-popup-content {
+        pointer-events: none;
+      }
+    }
+
     .mapboxgl-popup-content {
       padding-bottom: 10px;
+
+      ol, li {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .mapbox-popup-aquifer {
+        .mapbox-popup-suffix {
+          font-weight: bold;
+
+          &::before {
+            content: ' – '
+          }
+        }
+      }
+
+      .mapbox-popup-well {
+        .unpublished {
+          font-weight: bold;
+        }
+      }
     }
 
     li:last-child {

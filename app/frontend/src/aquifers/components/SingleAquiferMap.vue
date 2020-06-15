@@ -59,7 +59,7 @@ import {
 } from '../../common/mapbox/layers'
 import { computeBoundsFromMultiPolygon } from '../../common/mapbox/geometry'
 import { LayersControl, LegendControl } from '../../common/mapbox/controls'
-import { setupMapTooltips, setupMapPopups } from '../popup'
+import { createAquiferPopupElement, createWellPopupElement, createEcocatPopupElement } from '../popup'
 
 import cadastralLegendSrc from '../../common/assets/images/cadastral.png'
 import ecoCatWaterLegendSrc from '../../common/assets/images/ecocat-water.svg'
@@ -72,6 +72,10 @@ import wellsAllLegendSrc from '../../common/assets/images/wells-all.svg'
 import wellsArtesianLegendSrc from '../../common/assets/images/wells-artesian.svg'
 import uncorrelatedWellsIconSrc from '../../common/assets/images/wells-uncorrelated.svg'
 import emsWellsIconSrc from '../../common/assets/images/wells-ems.svg'
+import { setupFeatureTooltips } from '../../common/mapbox/popup'
+
+const CURRENT_AQUIFER_FILL_LAYER_ID = 'cur-aquifer-fill'
+const CURRENT_AQUIFER_LINE_LAYER_ID = 'cur-aquifer-line'
 
 export default {
   name: 'SingleAquiferMap',
@@ -149,14 +153,7 @@ export default {
           imageSrc: uncorrelatedWellsIconSrc
         }
       ],
-      jumpToAquifer: true,
-      popupOptions: {
-        currentAquiferId: this.aquiferId,
-        aquiferLayerIds: [
-          AQUIFERS_FILL_LAYER_ID,
-          'cur-aquifer-fill'
-        ]
-      }
+      jumpToAquifer: true
     }
   },
   mounted () {
@@ -218,12 +215,37 @@ export default {
       this.map.addControl(this.legendControl, 'bottom-right')
 
       this.map.on('load', () => {
-        /* Setup tooltips and popups  */
-        setupMapTooltips(this.map, this.$router, this.popupOptions)
-        setupMapPopups(this.map, this.$router, this.popupOptions)
+        /* Setup tooltips  */
+        const tooltipLayers = {
+          [AQUIFERS_FILL_LAYER_ID]: {
+            createTooltipContent: this.createAquiferPopupElement
+          },
+          [CURRENT_AQUIFER_FILL_LAYER_ID]: {
+            createTooltipContent: this.createAquiferPopupElement
+          },
+          [DATABC_ECOCAT_LAYER_ID]: {
+            snapToCenter: true,
+            createTooltipContent: this.createEcocatPopupElement
+          },
+          [WELLS_BASE_AND_ARTESIAN_LAYER_ID]: {
+            snapToCenter: true,
+            createTooltipContent: this.createWellPopupElement
+          },
+          [WELLS_EMS_LAYER_ID]: {
+            snapToCenter: true,
+            createTooltipContent: this.createWellPopupElement
+          },
+          [WELLS_UNCORRELATED_LAYER_ID]: {
+            snapToCenter: true,
+            createTooltipContent: this.createWellPopupElement
+          }
+        }
+        setupFeatureTooltips(this.map, tooltipLayers)
+
+        /* Setup aquifer hover effect */
 
         setupAquiferHover(this.map, AQUIFERS_FILL_LAYER_ID)
-        setupAquiferHover(this.map, 'cur-aquifer-fill')
+        setupAquiferHover(this.map, CURRENT_AQUIFER_FILL_LAYER_ID)
 
         /* Goto Aquifer */
 
@@ -251,13 +273,13 @@ export default {
         layers: [
           DATABC_ROADS_LAYER,
           DATABC_CADASTREL_LAYER,
+          aquifersFillLayer({ filter: this.allOtherAquiferFilter() }),
+          aquifersLineLayer({ filter: this.allOtherAquiferFilter() }),
+          aquifersFillLayer({ id: CURRENT_AQUIFER_FILL_LAYER_ID, filter: this.currentAquiferFilter() }),
+          aquifersLineLayer({ id: CURRENT_AQUIFER_LINE_LAYER_ID, filter: this.currentAquiferFilter() }),
           DATABC_ECOCAT_LAYER,
           DATABC_WATER_LICENCES_LAYER,
           DATABC_OBSERVATION_WELLS_LAYER,
-          aquifersFillLayer({ filter: this.allOtherAquiferFilter() }),
-          aquifersLineLayer({ filter: this.allOtherAquiferFilter() }),
-          aquifersFillLayer({ id: 'cur-aquifer-fill', filter: this.currentAquiferFilter() }),
-          aquifersLineLayer({ id: 'cur-aquifer-line', filter: this.currentAquiferFilter() }),
           wellsBaseAndArtesianLayer(),
           wellsEmsLayer({ layout: { visibility: 'none' } }),
           wellsUncorrelatedLayer({ layout: { visibility: 'none' } })
@@ -304,13 +326,36 @@ export default {
         { source: AQUIFERS_SOURCE_ID, id: aquiferId, sourceLayer: AQUIFERS_SOURCE_ID },
         { focused }
       )
+    },
+    createAquiferPopupElement (features, { canInteract }) {
+      return createAquiferPopupElement(features, this.map, this.$router, {
+        canInteract,
+        currentAquiferId: this.aquiferId,
+        aquiferLayerIds: [ AQUIFERS_FILL_LAYER_ID, CURRENT_AQUIFER_FILL_LAYER_ID ]
+      })
+    },
+    createWellPopupElement (features, { canInteract }) {
+      return createWellPopupElement(features, this.map, this.$router, {
+        canInteract,
+        currentAquiferId: this.aquiferId,
+        wellLayerIds: [
+          WELLS_BASE_AND_ARTESIAN_LAYER_ID,
+          WELLS_UNCORRELATED_LAYER_ID,
+          WELLS_EMS_LAYER_ID
+        ]
+      })
+    },
+    createEcocatPopupElement (features, { canInteract }) {
+      return createEcocatPopupElement(features, this.map, {
+        canInteract,
+        ecocatLayerIds: [ DATABC_ECOCAT_LAYER_ID ]
+      })
     }
   },
   watch: {
     aquiferId (newAquiferId, oldAquiferId) {
       this.setSelectedAquifer(oldAquiferId, false)
       this.setSelectedAquifer(newAquiferId, true)
-      this.popupOptions.currentAquiferId = newAquiferId
     },
     geom (newGeom, oldGeom) {
       if (newGeom && newGeom !== oldGeom) {

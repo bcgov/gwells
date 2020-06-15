@@ -61,9 +61,9 @@ import {
   SearchAreaControl,
   DataBCGeocoder
 } from '../../common/mapbox/controls'
-import { setupMapTooltips, setupMapPopups } from '../popup'
 import features from '../../common/features'
 import { DEFAULT_MAP_ZOOM, CENTRE_LNG_LAT_BC } from '../../common/mapbox/geometry'
+import { createAquiferPopupElement, createWellPopupElement, createEcocatPopupElement } from '../popup'
 
 import cadastralLegendSrc from '../../common/assets/images/cadastral.png'
 import ecoCatWaterLegendSrc from '../../common/assets/images/ecocat-water.svg'
@@ -73,6 +73,7 @@ import observationWellInactiveLegendSrc from '../../common/assets/images/owells-
 import observationWellActiveLegendSrc from '../../common/assets/images/owells-active.svg'
 import wellsAllLegendSrc from '../../common/assets/images/wells-all.svg'
 import wellsArtesianLegendSrc from '../../common/assets/images/wells-artesian.svg'
+import { setupFeatureTooltips } from '../../common/mapbox/popup'
 
 export default {
   name: 'AquiferMap',
@@ -257,10 +258,24 @@ export default {
       this.listenForZoom()
 
       this.map.on('load', () => {
-        setupMapTooltips(this.map, this.$router)
+        /* Setup tooltips  */
+        const tooltipLayers = {
+          [AQUIFERS_FILL_LAYER_ID]: {
+            createTooltipContent: this.createAquiferPopupElement
+          },
+          [DATABC_ECOCAT_LAYER_ID]: {
+            snapToCenter: true,
+            createTooltipContent: this.createEcocatPopupElement
+          },
+          [WELLS_BASE_AND_ARTESIAN_LAYER_ID]: {
+            snapToCenter: true,
+            createTooltipContent: this.createWellPopupElement
+          }
+        }
 
-        setupMapPopups(this.map, this.$router)
+        setupFeatureTooltips(this.map, tooltipLayers)
 
+        /* Setup aquifer hover effect */
         setupAquiferHover(this.map, AQUIFERS_FILL_LAYER_ID)
 
         this.setHighlightedAquifers(this.highlightAquiferIds, true)
@@ -287,11 +302,11 @@ export default {
         layers: [
           DATABC_ROADS_LAYER,
           DATABC_CADASTREL_LAYER,
+          aquifersFillLayer({ filter: aquiferLayerFilter(this.showUnpublishedAquifers, this.showRetired) }),
+          aquifersLineLayer({ filter: aquiferLayerFilter(this.showUnpublishedAquifers, this.showRetired) }),
           DATABC_ECOCAT_LAYER,
           DATABC_WATER_LICENCES_LAYER,
           DATABC_OBSERVATION_WELLS_LAYER,
-          aquifersFillLayer({ filter: aquiferLayerFilter(this.showUnpublishedAquifers, this.showRetired) }),
-          aquifersLineLayer({ filter: aquiferLayerFilter(this.showUnpublishedAquifers, this.showRetired) }),
           wellsBaseAndArtesianLayer({ layout: { visibility: 'none' }, filter: wellLayerFilter(this.showUnpublishedWells) })
         ]
       }
@@ -400,6 +415,24 @@ export default {
           { source: AQUIFERS_SOURCE_ID, id: aquiferId, sourceLayer: AQUIFERS_SOURCE_ID },
           { searchResult: highlight }
         )
+      })
+    },
+    createAquiferPopupElement (features, { canInteract }) {
+      return createAquiferPopupElement(features, this.map, this.$router, {
+        canInteract,
+        aquiferLayerIds: [ AQUIFERS_FILL_LAYER_ID ]
+      })
+    },
+    createWellPopupElement (features, { canInteract }) {
+      return createWellPopupElement(features, this.map, this.$router, {
+        canInteract,
+        wellLayerIds: [ WELLS_BASE_AND_ARTESIAN_LAYER_ID ]
+      })
+    },
+    createEcocatPopupElement (features, { canInteract }) {
+      return createEcocatPopupElement(features, this.map, {
+        canInteract,
+        ecocatLayerIds: [ DATABC_ECOCAT_LAYER_ID ]
       })
     }
   },

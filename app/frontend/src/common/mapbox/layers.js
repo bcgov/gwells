@@ -57,13 +57,13 @@ export const DATABC_CADASTREL_SOURCE = {
 }
 
 export const DATABC_ECOCAT_SOURCE = {
-  type: 'raster',
+  type: 'vector',
   tiles: [
-    'https://openmaps.gov.bc.ca/geo/pub/ows?&service=WMS&request=GetMap&layers=pub%3AWHSE_FISH.ACAT_REPORT_POINT_PUB_SVW&format=image%2Fpng&transparent=true&version=1.1.1&width=256&height=256&srs=EPSG:3857&bbox={bbox-epsg-3857}'
+    'https://openmaps.gov.bc.ca/geo/pub/ows?&service=WMS&request=GetMap&layers=pub%3AWHSE_FISH.ACAT_REPORT_POINT_PUB_SVW&format=application/x-protobuf;type=mapbox-vector&version=1.1.1&width=512&height=512&srs=EPSG:3857&bbox={bbox-epsg-3857}'
   ],
   minzoom: 7,
   maxzoom: 24,
-  tileSize: 256
+  tileSize: 512
 }
 
 export const DATABC_WATER_LICENCES_SOURCE = {
@@ -99,9 +99,14 @@ export const DATABC_CADASTREL_LAYER = {
 }
 
 export const DATABC_ECOCAT_LAYER = {
-  type: 'raster',
   id: DATABC_ECOCAT_LAYER_ID,
   source: DATABC_ECOCAT_SOURCE_ID,
+  'source-layer': 'WHSE_FISH.ACAT_REPORT_POINT_PUB_SVW',
+  type: 'circle',
+  paint: {
+    'circle-color': '#000',
+    'circle-radius': 5
+  },
   layout: {
     visibility: 'none'
   }
