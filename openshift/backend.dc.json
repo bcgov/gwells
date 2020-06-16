@@ -799,7 +799,8 @@
                 "scaleTargetRef": {
                     "apiVersion": "v1",
                     "kind": "DeploymentConfig",
-                    "name": "gwells${NAME_SUFFIX}"
+                    "name": "gwells${NAME_SUFFIX}",
+                    "subresource": "scale"
                 },
                 "targetCPUUtilizationPercentage": 90
             }
