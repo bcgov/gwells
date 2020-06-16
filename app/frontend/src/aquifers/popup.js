@@ -170,13 +170,7 @@ export function createWaterLicencePopupElement (features, map, $router, options 
   // Filter to only features in water licence layers
   const licenceFeatures = features.filter((feature) => waterLicenceLayerIds.indexOf(feature.layer.id) !== -1)
   // Find similar features that have the same licence number at the same lat/lng
-  let sameLicenceFeatures = similarFeatures(licenceFeatures, ['LICENCE_NUMBER', 'LONGITUDE', 'LATITUDE'])
-  // Filter out any non-zero quantitites
-  const nonZeroLicences = sameLicenceFeatures.filter((feature) => {
-    return Number(feature.properties.QUANTITY) > 0
-  })
-  // If there are are some non-zero licences then use them - otherwise fallback to showing them all
-  sameLicenceFeatures = nonZeroLicences.length > 0 ? nonZeroLicences : sameLicenceFeatures
+  const sameLicenceFeatures = similarFeatures(licenceFeatures, ['LICENCE_NUMBER', 'LONGITUDE', 'LATITUDE'])
 
   const topFeature = sameLicenceFeatures[0]
   const {
