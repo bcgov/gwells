@@ -799,7 +799,7 @@
                 "scaleTargetRef": {
                     "apiVersion": "apps.openshift.io/v1",
                     "kind": "DeploymentConfig",
-                    "name": "gwells${NAME_SUFFIX}",
+                    "name": "gwells${NAME_SUFFIX}"
                 },
                 "metrics": {
                   "type": "Resource",
