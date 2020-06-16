@@ -797,7 +797,7 @@
                 "maxReplicas": 5,
                 "minReplicas": 2,
                 "scaleTargetRef": {
-                    "apiVersion": "v1",
+                    "apiVersion": "apps.openshift.io/v1",
                     "kind": "DeploymentConfig",
                     "name": "gwells${NAME_SUFFIX}",
                     "subresource": "scale"
