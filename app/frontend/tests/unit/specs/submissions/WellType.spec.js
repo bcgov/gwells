@@ -29,6 +29,12 @@ describe('WellType.vue', () => {
               }
             ]
           }
+        ],
+        intended_water_uses: [
+          {
+            intended_water_uses_code: 'NA',
+            description: 'Not Applicable'
+          }
         ]
       }),
       userRoles: () => ({

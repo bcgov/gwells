@@ -695,7 +695,7 @@ class Well(AuditModelStructure):
         null=True, blank=True, max_length=25, verbose_name='Telephone number')
 
     well_class = models.ForeignKey(
-        WellClassCode, null=True, db_column='well_class_code',
+        WellClassCode, db_column='well_class_code', blank=False,
         on_delete=models.PROTECT, verbose_name='Well Class',
         db_comment=('Valid classifications as defined in the Groundwater Protection Regulation of the'
                     ' Water Act. i.e. Water Supply, Monitoring, Recharge, Injection, Dewatering,'
@@ -705,7 +705,7 @@ class Well(AuditModelStructure):
                                       verbose_name='Well Subclass')
     intended_water_use = models.ForeignKey(
         IntendedWaterUseCode, db_column='intended_water_use_code',
-        on_delete=models.PROTECT, blank=True, null=True,
+        on_delete=models.PROTECT, blank=False,
         verbose_name='Intended Water Use',
         db_comment=('The intended use of the water in a water supply well as reported by the driller at'
                     ' time of work completion on the well. E.g DOM, IRR, DWS, COM'))
@@ -1309,7 +1309,7 @@ class ActivitySubmission(AuditModelStructure):
         on_delete=models.PROTECT, verbose_name='Well Publication Status',
         default='Published')
     well_class = models.ForeignKey(
-        WellClassCode, blank=True, null=True, db_column='well_class_code',
+        WellClassCode, blank=False, db_column='well_class_code',
         on_delete=models.PROTECT, verbose_name='Well Class',
         db_comment=('Valid classifications as defined in the Groundwater Protection Regulation of the'
                     ' Water Act. i.e. Water Supply, Monitoring, Recharge, Injection, Dewatering,'
@@ -1319,7 +1319,7 @@ class ActivitySubmission(AuditModelStructure):
                                       verbose_name='Well Subclass')
     intended_water_use = models.ForeignKey(
         IntendedWaterUseCode, db_column='intended_water_use_code',
-        on_delete=models.PROTECT, blank=True, null=True,
+        on_delete=models.PROTECT, blank=False,
         verbose_name='Intended Water Use',
         db_comment=('The intended use of the water in a water supply well as reported by the driller at'
                     ' time of work completion on the well. E.g DOM, IRR, DWS, COM'))

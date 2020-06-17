@@ -203,11 +203,15 @@ class StackWells():
             # If there's already a well, we update it
             return self._update_well_record(submission)
         # If there is as yet no well, we create one (basing audit information on submission)
+        # NOTE: We need to copy the submission values for well_class and intended_water_use as they
+        # are not-NULL fields on a well
         well = Well.objects.create(
             update_user=submission.update_user,
             create_user=submission.create_user,
             create_date=submission.create_date,
-            update_date=submission.update_date)
+            update_date=submission.update_date,
+            well_class=submission.well_class,
+            intended_water_use=submission.intended_water_use)
         # If there's no well as yet - then this necessarily has to be the 1st submission, so we just
         # re-query it as a collection, and call stack.
         submissions = ActivitySubmission.objects.filter(filing_number=filing_number)
