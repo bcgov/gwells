@@ -751,7 +751,6 @@ class WellDetailAdminSerializer(AuditModelSerializer):
 
 
 class WellStackerSerializer(AuditModelSerializer):
-
     casing_set = CasingStackerSerializer(many=True)
     screen_set = ScreenStackerSerializer(many=True)
     linerperforation_set = LinerPerforationStackerSerializer(many=True)

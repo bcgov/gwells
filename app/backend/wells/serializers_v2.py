@@ -167,6 +167,7 @@ class WellListSerializerV2(serializers.ModelSerializer):
             "well_class",
             "well_subclass",
             "well_status",
+            "intended_water_use",
             "licenced_status",
             "street_address",
             "city",
