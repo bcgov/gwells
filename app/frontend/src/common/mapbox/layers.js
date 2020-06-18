@@ -98,13 +98,18 @@ export const DATABC_CADASTREL_LAYER = {
   source: DATABC_CADASTREL_SOURCE_ID
 }
 
+export const ECOCAT_FW_FEATURE_CODE = 'WC00015300'
 export const DATABC_ECOCAT_LAYER = {
   id: DATABC_ECOCAT_LAYER_ID,
   source: DATABC_ECOCAT_SOURCE_ID,
   'source-layer': 'WHSE_FISH.ACAT_REPORT_POINT_PUB_SVW',
   type: 'circle',
   paint: {
-    'circle-color': '#000',
+    'circle-color': [
+      'case',
+      ['==', ['get', 'FEATURE_CODE'], ECOCAT_FW_FEATURE_CODE], '#000',
+      '#999'
+    ],
     'circle-radius': 5
   },
   layout: {

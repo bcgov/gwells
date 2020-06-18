@@ -63,6 +63,7 @@ import { createAquiferPopupElement, createWellPopupElement, createEcocatPopupEle
 
 import cadastralLegendSrc from '../../common/assets/images/cadastral.png'
 import ecoCatWaterLegendSrc from '../../common/assets/images/ecocat-water.svg'
+import ecoCatGroundWaterLegendSrc from '../../common/assets/images/ecocat-groundwater.svg'
 import groundWaterLicenceActiveLegendSrc from '../../common/assets/images/gwater-licence-active.svg'
 import groundWaterLicenceInactiveLegendSrc from '../../common/assets/images/gwater-licence-inactive.svg'
 import observationWellInactiveLegendSrc from '../../common/assets/images/owells-inactive.svg'
@@ -94,8 +95,17 @@ export default {
         {
           show: false,
           id: DATABC_ECOCAT_LAYER_ID,
-          label: 'EcoCat – water related reports',
-          imageSrc: ecoCatWaterLegendSrc
+          label: 'EcoCat',
+          legend: [
+            {
+              imageSrc: ecoCatGroundWaterLegendSrc,
+              label: 'groundwater reports'
+            },
+            {
+              imageSrc: ecoCatWaterLegendSrc,
+              label: 'water related reports'
+            }
+          ]
         },
         {
           show: false,
