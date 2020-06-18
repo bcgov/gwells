@@ -78,6 +78,7 @@ import ecoCatWaterLegendSrc from '../../common/assets/images/ecocat-water.svg'
 import surfaceWaterLicenceActiveLegendSrc from '../../common/assets/images/swater-licence-active.svg'
 import surfaceWaterLicenceInactiveLegendSrc from '../../common/assets/images/swater-licence-inactive.svg'
 import groundWaterLicenceActiveLegendSrc from '../../common/assets/images/gwater-licence.svg'
+import ecoCatGroundWaterLegendSrc from '../../common/assets/images/ecocat-groundwater.svg'
 import observationWellInactiveLegendSrc from '../../common/assets/images/owells-inactive.svg'
 import observationWellActiveLegendSrc from '../../common/assets/images/owells-active.svg'
 import wellsAllLegendSrc from '../../common/assets/images/wells-all.svg'
@@ -111,8 +112,17 @@ export default {
         {
           show: false,
           id: DATABC_ECOCAT_LAYER_ID,
-          label: 'EcoCat – water related reports',
-          imageSrc: ecoCatWaterLegendSrc
+          label: 'EcoCat',
+          legend: [
+            {
+              imageSrc: ecoCatGroundWaterLegendSrc,
+              label: 'groundwater reports'
+            },
+            {
+              imageSrc: ecoCatWaterLegendSrc,
+              label: 'water related reports'
+            }
+          ]
         },
         {
           show: false,

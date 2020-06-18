@@ -36,6 +36,8 @@ export const DATABC_GROUND_WATER_LICENCES_LAYER_ID = 'DATABC-ground-water-licenc
 export const DATABC_OBSERVATION_WELLS_SOURCE_ID = 'DATABC-obswells-source'
 export const DATABC_OBSERVATION_WELLS_LAYER_ID = 'DATABC-obswells-layer'
 
+export const ECOCAT_FW_FEATURE_CODE = 'WC00015300'
+
 export function vectorTileServerUrl (sourceLayerName) {
   return `${VECTOR_TILE_SERVER}${sourceLayerName}/{z}/{x}/{y}.pbf`
 }
@@ -192,7 +194,11 @@ export function toggleAquiferHover (map, aquiferId, hoveredState) {
 export function ecoCatLayer (options = {}) {
   const layerId = options.id || DATABC_ECOCAT_LAYER_ID
   const styles = defaultsDeep(options.styles, {
-    'circle-color': '#000',
+    'circle-color': [
+      'case',
+      ['==', ['get', 'FEATURE_CODE'], ECOCAT_FW_FEATURE_CODE], '#000',
+      '#999'
+    ],
     'circle-radius': 5
   })
 
