@@ -55,15 +55,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <b-row>
             <b-col cols="12" md="4"><span class="font-weight-bold">Well Tag Number:</span> {{ well.well_tag_number }}</b-col>
             <b-col cols="12" md="4"><span class="font-weight-bold">Well Status:</span> {{ well.well_status }}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Observation Well Number:</span>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Observation Well Number: </span>
               <a
                 v-if="well.observation_well_number"
                 id="obs_well_number"
                 :href="`https://governmentofbc.maps.arcgis.com/apps/webappviewer/index.html?id=b53cb0bf3f6848e79d66ffd09b74f00d&find=OBS%20WELL%20${well.observation_well_number}`"
                 target="_blank"
-              >
-                {{ well.observation_well_number }}
-              </a>
+              >{{ well.observation_well_number }}</a>
             </b-col>
           </b-row>
           <b-row>

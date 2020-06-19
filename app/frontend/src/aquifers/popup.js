@@ -1,10 +1,12 @@
-import { uniqBy } from 'lodash'
+import { uniqBy, pick, isEqual } from 'lodash'
 
 import {
   toggleAquiferHover,
   WELLS_BASE_AND_ARTESIAN_LAYER_ID,
   AQUIFERS_FILL_LAYER_ID,
-  DATABC_ECOCAT_LAYER_ID
+  DATABC_ECOCAT_LAYER_ID,
+  DATABC_GROUND_WATER_LICENCES_LAYER_ID,
+  DATABC_SURFACE_WATER_LICENCES_LAYER_ID
 } from '../common/mapbox/layers'
 import { popupItems, popupItem } from '../common/mapbox/popup'
 
@@ -47,10 +49,19 @@ export function createWellPopupElement (features, map, $router, options = {}) {
       route: { name: 'wells-detail', params: { id: wellTagNumber } },
       text: wellTagNumber
     },
-    `Identification Plate Number: ${identificationPlateNumber || '—'}`,
-    `Address: ${streetAddress || '—'}`,
+    {
+      prefix: 'Identification Plate Number: ',
+      text: identificationPlateNumber || '—'
+    },
+    {
+      prefix: 'Address: ',
+      text: streetAddress || '—'
+    },
+    ems ? {
+      prefix: 'EMS ID: ',
+      text: ems
+    } : null,
     correlatedAquiferItem,
-    ems ? `EMS ID: ${ems}` : null,
     {
       className: isPublished === false ? 'unpublished' : '',
       text: isPublished === false ? 'unpublished' : null
@@ -117,9 +128,6 @@ export function createEcocatPopupElement (features, map, options = {}) {
   const canInteract = Boolean(options.canInteract)
   const ecocatLayerIds = options.ecocatLayerIds || [ DATABC_ECOCAT_LAYER_ID ]
 
-  const container = document.createElement('div')
-  container.className = 'mapbox-popup-ecocat'
-
   const feature = features.filter((feature) => ecocatLayerIds.indexOf(feature.layer.id) !== -1)[0]
 
   const {
@@ -129,13 +137,112 @@ export function createEcocatPopupElement (features, map, options = {}) {
     DATE_PUBLISHED: datePublished
   } = feature.properties
 
-  const ecocatReportLink = `<a href="https://a100.gov.bc.ca/pub/acat/public/viewReport.do?reportId=${reportId}" target="_blank">${title}</a>`
+  const ecocatReportUrl = `https://a100.gov.bc.ca/pub/acat/public/viewReport.do?reportId=${reportId}`
 
-  container.innerHTML = [
-    canInteract ? ecocatReportLink : title,
-    author ? `Author: ${author}` : null,
-    datePublished ? `Published: ${datePublished}` : null
-  ].filter(Boolean).join('<br>')
+  const items = [
+    {
+      url: ecocatReportUrl,
+      text: title
+    },
+    {
+      prefix: 'Author: ',
+      text: author
+    },
+    {
+      prefix: 'Published: ',
+      text: datePublished
+    }
+  ]
 
-  return container
+  return popupItems(items, null, { className: 'mapbox-popup-ecocat', canInteract })
+}
+
+// Creates a <div> for the water licence's popup content
+export function createWaterLicencePopupElement (features, map, $router, options = {}) {
+  const canInteract = Boolean(options.canInteract)
+  // const isSurfaceWaterLicence = Boolean(options.surfaceWater)
+  // const isGroundWaterLicence = Boolean(options.groundWater)
+  const waterLicenceLayerIds = options.waterLicenceLayerIds || [ DATABC_SURFACE_WATER_LICENCES_LAYER_ID, DATABC_GROUND_WATER_LICENCES_LAYER_ID ]
+
+  const container = document.createElement('div')
+  container.className = 'mapbox-popup-water-licence'
+
+  // Filter to only features in water licence layers
+  const licenceFeatures = features.filter((feature) => waterLicenceLayerIds.indexOf(feature.layer.id) !== -1)
+  // Find similar features that have the same licence number at the same lat/lng
+  const sameLicenceFeatures = similarFeatures(licenceFeatures, ['LICENCE_NUMBER', 'LONGITUDE', 'LATITUDE'])
+
+  const topFeature = sameLicenceFeatures[0]
+  const {
+    LICENCE_NUMBER: licenceNumber,
+    LICENCE_STATUS: licenceStatus,
+    SOURCE_NAME: sourceName,
+    POD_SUBTYPE: podSubtype
+  } = topFeature.properties
+
+  const isGroundWaterLicence = podSubtype.indexOf('POD') === -1
+
+  // Create a sub-list of items by licence purpose + quantity
+  const purposeItems = sameLicenceFeatures.map((feature) => {
+    const {
+      PURPOSE_USE: purposeUse,
+      QUANTITY: quantity,
+      QUANTITY_UNITS: quantityUnits
+    } = feature.properties
+
+    const quantityByPurposeEl = document.createElement('div')
+    const purposeEl = document.createElement('span')
+    purposeEl.className = 'licence-purpose'
+    purposeEl.textContent = purposeUse
+    const quantityEl = document.createElement('span')
+    quantityEl.className = 'licence-quantity'
+    quantityEl.textContent = `${Number(quantity).toFixed(2)}\xa0${quantityUnits}`
+
+    quantityByPurposeEl.appendChild(purposeEl)
+    quantityByPurposeEl.appendChild(quantityEl)
+
+    return {
+      className: 'quantity-by-purpose',
+      el: quantityByPurposeEl
+    }
+  })
+
+  const purposeEl = popupItems(purposeItems, null, { nodeName: 'ul' })
+
+  const licenceUrl = `https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&PosseObjectDef=o_ATIS_DocumentSearch&PosseMenuName=WS_Main&Criteria_LicenceNumber=${licenceNumber}`
+
+  // If this is a groundwater licence then SOURCE_NAME should be the aquiferId
+  const aquiferId = (isGroundWaterLicence && sourceName && Number(sourceName)) || null
+
+  const items = [
+    {
+      prefix: 'Licence number: ',
+      url: licenceUrl,
+      text: licenceNumber
+    },
+    {
+      prefix: 'Status: ',
+      text: licenceStatus
+    },
+    {
+      prefix: 'Quantity per purpose:',
+      el: purposeEl
+    },
+    {
+      prefix: 'Source: ',
+      text: `${aquiferId ? 'aquifer ' : ''}${sourceName}`,
+      route: aquiferId ? { name: 'aquifers-view', params: { id: aquiferId } } : null
+    }
+  ]
+
+  return popupItems(items, $router, { className: 'mapbox-popup-water-licence', canInteract })
+}
+
+function similarFeatures (features, properties) {
+  const paths = properties.map((p) => `properties.${p}`)
+  const topFeatureProperties = pick(features[0], paths)
+
+  return features.filter((feature) => {
+    return isEqual(topFeatureProperties, pick(feature, paths))
+  })
 }

@@ -6,7 +6,8 @@ export function setupFeatureTooltips (map, layers, options = {}) {
   const popup = new mapboxgl.Popup()
 
   const tooltip = new mapboxgl.Popup({ className: 'mapboxgl-popup-no-interaction' })
-  let currentFeature = null
+  let currentLayerId = null
+  let currentFeatureId = null
 
   const layerIds = Object.keys(layers)
   layerIds.reverse()
@@ -19,10 +20,10 @@ export function setupFeatureTooltips (map, layers, options = {}) {
 
       const layer = layers[feature.layer.id]
 
-      if (feature !== currentFeature) {
+      if (layer.id !== currentLayerId && feature.id !== currentFeatureId) {
         const contentDiv = layer.createTooltipContent(features, { canInteract: false })
         tooltip.setDOMContent(contentDiv)
-        currentFeature = feature
+        currentFeatureId = feature.id
 
         // Only show tooltip when stuck popup is not open
         if (!tooltip.isOpen() && !popup.isOpen()) {
@@ -36,11 +37,10 @@ export function setupFeatureTooltips (map, layers, options = {}) {
 
       tooltip.setLngLat(lngLat)
     } else {
-      if (currentFeature !== null) {
-        currentFeature = null
-        tooltip.remove()
-        map.getCanvas().style.cursor = ''
-      }
+      currentLayerId = null
+      currentFeatureId = null
+      tooltip.remove()
+      map.getCanvas().style.cursor = ''
     }
   })
 
@@ -71,12 +71,12 @@ export function setupFeatureTooltips (map, layers, options = {}) {
 // Creates a list of popup items
 export function popupItems (items, $router, options = {}) {
   const canInteract = Boolean(options.canInteract)
-  const ol = document.createElement('ol')
-  ol.className = (options.className || '') + ` mapbox-${canInteract ? 'popup' : 'tooltip'}`
+  const ol = document.createElement(options.nodeName || 'ol')
+  ol.className = (options.className || '') + ` mapbox-${canInteract ? 'popup' : 'tooltip'}-items`
 
   items.forEach((item) => {
     if (item) {
-      ol.appendChild(popupItem(item))
+      ol.appendChild(popupItem(item, $router, options))
     }
   })
 
@@ -100,13 +100,16 @@ export function popupItem (item, $router, options = {}) {
     if (item.url || item.route) {
       // { name: 'aquifers-view', params: { id: aquiferId } }
       if (canInteract) {
-        const anchor = popupLinkToRoute(item.route, $router, item.text)
+        const anchor = popupLink(item.url || item.route, $router, item.text)
         li.appendChild(anchor)
       } else {
         li.appendChild(document.createTextNode(item.text))
       }
     } else if (item.text) {
       li.appendChild(document.createTextNode(item.text))
+    }
+    if (item.el) {
+      li.appendChild(item.el)
     }
     if (item.suffix) {
       const suffixEl = document.createElement('span')
@@ -121,8 +124,8 @@ export function popupItem (item, $router, options = {}) {
   return li
 }
 
-// Creates an HTML anchor to a Vue route
-export function popupLinkToRoute (route, $router, text) {
+// Creates an HTML anchor to a Vue route or URL
+export function popupLink (route, $router, text) {
   const anchor = document.createElement('a')
   let url = route
 
@@ -132,15 +135,15 @@ export function popupLinkToRoute (route, $router, text) {
     }
   } else {
     url = $router.resolve(route).href
+    anchor.onclick = (e) => {
+      if (!e.ctrlKey) {
+        e.preventDefault()
+        $router.push(route)
+      }
+    }
   }
 
   anchor.setAttribute('href', url)
-  anchor.onclick = (e) => {
-    if (!e.ctrlKey) {
-      e.preventDefault()
-      $router.push(route)
-    }
-  }
   anchor.textContent = text || ''
 
   return anchor
