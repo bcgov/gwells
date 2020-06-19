@@ -128,16 +128,7 @@ export default {
           show: false,
           id: DATABC_SURFACE_WATER_LICENCES_LAYER_ID,
           label: 'Surface water licences',
-          legend: [
-            {
-              imageSrc: surfaceWaterLicenceActiveLegendSrc,
-              label: 'active'
-            },
-            {
-              imageSrc: surfaceWaterLicenceInactiveLegendSrc,
-              label: 'inactive'
-            }
-          ]
+          imageSrc: surfaceWaterLicenceActiveLegendSrc
         },
         {
           show: false,
