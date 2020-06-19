@@ -245,6 +245,10 @@ export default {
             snapToCenter: true,
             createTooltipContent: this.createGroundWaterLicencePopupElement
           },
+          [WELLS_OBSERVATION_LAYER_ID]: {
+            snapToCenter: true,
+            createTooltipContent: this.createWellPopupElement
+          },
           [WELLS_BASE_AND_ARTESIAN_LAYER_ID]: {
             snapToCenter: true,
             createTooltipContent: this.createWellPopupElement
@@ -358,6 +362,7 @@ export default {
         currentAquiferId: this.aquiferId,
         wellLayerIds: [
           WELLS_BASE_AND_ARTESIAN_LAYER_ID,
+          WELLS_OBSERVATION_LAYER_ID,
           WELLS_UNCORRELATED_LAYER_ID,
           WELLS_EMS_LAYER_ID
         ]

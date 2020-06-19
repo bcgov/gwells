@@ -188,9 +188,9 @@ export function surfaceWaterLicencesLayer (options = {}) {
   const layerId = options.id || DATABC_SURFACE_WATER_LICENCES_LAYER_ID
   const styles = defaultsDeep(options.styles, {
     'circle-color': '#5ED900',
-    'circle-radius': 3,
+    'circle-radius': 4,
     'circle-stroke-color': '#000',
-    'circle-stroke-width': 1
+    'circle-stroke-width': 0.75
   })
 
   const filter = [
@@ -204,9 +204,9 @@ export function groundWaterLicencesLayer (options = {}) {
   const layerId = options.id || DATABC_GROUND_WATER_LICENCES_LAYER_ID
   const styles = defaultsDeep(options.styles, {
     'circle-color': 'yellow',
-    'circle-radius': 3,
+    'circle-radius': 4,
     'circle-stroke-color': '#000',
-    'circle-stroke-width': 1
+    'circle-stroke-width': 0.75
   })
 
   const filter = [
@@ -313,8 +313,8 @@ export function observationWellsLayer (options = {}) {
   const styles = defaultsDeep(options.styles, {
     'circle-color': [
       'case',
-      ['==', ['get', 'observation_well_status_code'], 'Active'], options.activeColour || '#D90600',
-      options.inactiveColour || '#E67D73'
+      ['==', ['get', 'observation_well_status_code'], 'Active'], options.activeColour || '#8E1919',
+      options.inactiveColour || '#DB6D6D'
     ],
     'circle-radius': 3,
     'circle-stroke-color': '#000',
