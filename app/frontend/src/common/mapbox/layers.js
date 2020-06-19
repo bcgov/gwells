@@ -187,18 +187,14 @@ export function ecoCatLayer (options = {}) {
 export function surfaceWaterLicencesLayer (options = {}) {
   const layerId = options.id || DATABC_SURFACE_WATER_LICENCES_LAYER_ID
   const styles = defaultsDeep(options.styles, {
-    'circle-color': [
-      'case',
-      ['==', ['get', 'POD_STATUS'], 'Active'], options.activeColour || '#5ED900',
-      options.inactiveColour || '#BEE8FF'
-    ],
+    'circle-color': '#5ED900',
     'circle-radius': 3,
     'circle-stroke-color': '#000',
     'circle-stroke-width': 1
   })
 
   const filter = [
-    'in', ['get', 'POD_SUBTYPE'], 'POD'
+    'all', ['in', ['get', 'POD_SUBTYPE'], 'POD'], ['==', ['get', 'POD_STATUS'], 'Active']
   ]
 
   return vectorLayerConfig(layerId, options.source || DATABC_WATER_LICENCES_SOURCE_ID, options.layerType || 'circle', styles, options.layout, filter)
@@ -207,14 +203,14 @@ export function surfaceWaterLicencesLayer (options = {}) {
 export function groundWaterLicencesLayer (options = {}) {
   const layerId = options.id || DATABC_GROUND_WATER_LICENCES_LAYER_ID
   const styles = defaultsDeep(options.styles, {
-    'circle-color': '#F1FF2C',
+    'circle-color': 'yellow',
     'circle-radius': 3,
     'circle-stroke-color': '#000',
     'circle-stroke-width': 1
   })
 
   const filter = [
-    '!', ['in', ['get', 'POD_SUBTYPE'], 'POD']
+    'all', ['!', ['in', ['get', 'POD_SUBTYPE'], 'POD']], ['==', ['get', 'POD_STATUS'], 'Active']
   ]
 
   return vectorLayerConfig(layerId, options.source || DATABC_WATER_LICENCES_SOURCE_ID, options.layerType || 'circle', styles, options.layout, filter)

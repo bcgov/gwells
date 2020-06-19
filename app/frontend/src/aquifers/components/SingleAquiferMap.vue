@@ -65,7 +65,6 @@ import { createAquiferPopupElement, createWellPopupElement, createEcocatPopupEle
 import cadastralLegendSrc from '../../common/assets/images/cadastral.png'
 import ecoCatWaterLegendSrc from '../../common/assets/images/ecocat-water.svg'
 import surfaceWaterLicenceActiveLegendSrc from '../../common/assets/images/swater-licence-active.svg'
-import surfaceWaterLicenceInactiveLegendSrc from '../../common/assets/images/swater-licence-inactive.svg'
 import groundWaterLicenceActiveLegendSrc from '../../common/assets/images/gwater-licence.svg'
 import ecoCatGroundWaterLegendSrc from '../../common/assets/images/ecocat-groundwater.svg'
 import observationWellInactiveLegendSrc from '../../common/assets/images/owells-inactive.svg'
@@ -113,16 +112,7 @@ export default {
           show: false,
           id: DATABC_SURFACE_WATER_LICENCES_LAYER_ID,
           label: 'Surface water licences',
-          legend: [
-            {
-              imageSrc: surfaceWaterLicenceActiveLegendSrc,
-              label: 'active'
-            },
-            {
-              imageSrc: surfaceWaterLicenceInactiveLegendSrc,
-              label: 'inactive'
-            }
-          ]
+          imageSrc: surfaceWaterLicenceActiveLegendSrc
         },
         {
           show: false,
