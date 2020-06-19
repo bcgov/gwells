@@ -38,12 +38,8 @@ import {
   setupAquiferHover,
   DATABC_ECOCAT_LAYER_ID,
   DATABC_SURFACE_WATER_LICENCES_LAYER_ID,
-  DATABC_OBSERVATION_WELLS_LAYER_ID,
-  DATABC_OBSERVATION_WELLS_LAYER,
   DATABC_ECOCAT_SOURCE,
   DATABC_ECOCAT_SOURCE_ID,
-  DATABC_OBSERVATION_WELLS_SOURCE_ID,
-  DATABC_OBSERVATION_WELLS_SOURCE,
   WELLS_BASE_AND_ARTESIAN_LAYER_ID,
   AQUIFERS_FILL_LAYER_ID,
   aquiferLayerFilter,
@@ -55,7 +51,9 @@ import {
   surfaceWaterLicencesLayer,
   ecoCatLayer,
   WELLS_SOURCE,
-  AQUIFERS_SOURCE
+  AQUIFERS_SOURCE,
+  observationWellsLayer,
+  WELLS_OBSERVATION_LAYER_ID
 } from '../../common/mapbox/layers'
 import {
   LayersControl,
@@ -146,22 +144,7 @@ export default {
           imageSrc: groundWaterLicenceActiveLegendSrc
         },
         {
-          show: false,
-          id: DATABC_OBSERVATION_WELLS_LAYER_ID,
-          label: 'Observation wells',
-          legend: [
-            {
-              imageSrc: observationWellActiveLegendSrc,
-              label: 'active'
-            },
-            {
-              imageSrc: observationWellInactiveLegendSrc,
-              label: 'inactive'
-            }
-          ]
-        },
-        {
-          show: false,
+          show: true,
           id: WELLS_BASE_AND_ARTESIAN_LAYER_ID,
           label: 'Wells',
           legend: [
@@ -172,6 +155,21 @@ export default {
             {
               imageSrc: wellsArtesianLegendSrc,
               label: 'artesian'
+            }
+          ]
+        },
+        {
+          show: false,
+          id: WELLS_OBSERVATION_LAYER_ID,
+          label: 'Observation wells',
+          legend: [
+            {
+              imageSrc: observationWellActiveLegendSrc,
+              label: 'active'
+            },
+            {
+              imageSrc: observationWellInactiveLegendSrc,
+              label: 'inactive'
             }
           ]
         }
@@ -328,7 +326,6 @@ export default {
           [DATABC_CADASTREL_SOURCE_ID]: DATABC_CADASTREL_SOURCE,
           [DATABC_ECOCAT_SOURCE_ID]: DATABC_ECOCAT_SOURCE,
           [DATABC_WATER_LICENCES_SOURCE_ID]: DATABC_WATER_LICENCES_SOURCE,
-          [DATABC_OBSERVATION_WELLS_SOURCE_ID]: DATABC_OBSERVATION_WELLS_SOURCE,
           [WELLS_SOURCE_ID]: WELLS_SOURCE,
           [AQUIFERS_SOURCE_ID]: AQUIFERS_SOURCE
         },
@@ -340,8 +337,8 @@ export default {
           ecoCatLayer({ layout: { visibility: 'none' } }),
           surfaceWaterLicencesLayer({ layout: { visibility: 'none' } }),
           groundWaterLicencesLayer({ layout: { visibility: 'none' } }),
-          DATABC_OBSERVATION_WELLS_LAYER,
-          wellsBaseAndArtesianLayer({ layout: { visibility: 'none' }, filter: wellLayerFilter(this.showUnpublishedWells) })
+          wellsBaseAndArtesianLayer({ layout: { visibility: 'none' }, filter: wellLayerFilter(this.showUnpublishedWells) }),
+          observationWellsLayer({ layout: { visibility: 'none' } })
         ]
       }
     },
