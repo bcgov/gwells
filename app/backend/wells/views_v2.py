@@ -16,7 +16,7 @@ import logging
 
 from django.db import transaction
 from django.utils import timezone
-from django.http import FileResponse, HttpResponse, StreamingHttpResponse
+from django.http import FileResponse, StreamingHttpResponse
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.geos import GEOSException, GEOSGeometry
 from django.contrib.gis.gdal import GDALException
@@ -27,7 +27,6 @@ from rest_framework import status, filters
 from rest_framework.generics import ListAPIView
 from rest_framework.exceptions import PermissionDenied, NotFound, ValidationError
 from rest_framework.response import Response
-
 from gwells.roles import WELLS_VIEWER_ROLE, WELLS_EDIT_ROLE
 from gwells.pagination import apiLimitedPagination, APILimitOffsetPagination
 from gwells.geojson import GeoJSONIterator
@@ -58,7 +57,6 @@ from aquifers.models import (
     VerticalAquiferExtentsHistory
 )
 from aquifers.permissions import HasAquiferEditRole
-from aquifers.serializers_v2 import ( AquiferSerializerV2 )
 
 
 logger = logging.getLogger(__name__)
@@ -138,13 +136,25 @@ class WellLocationListV2APIView(ListAPIView):
         Returns a streaming GeoJSON HTTP response of the searched wells
         """
         qs = self.get_queryset()
-
         qs = qs.exclude(geom=None)
 
+        fields = [
+            "geom",
+            "well_tag_number",
+            "identification_plate_number",
+            "street_address",
+            "city",
+            "artesian_flow",
+        ]
+
         locations = self.filter_queryset(qs)
-        locations = locations.values(
-            "geom", "well_tag_number", "identification_plate_number", "street_address", "city", "artesian_flow"
-        )
+
+        # If the user can edit wells then we can add the `is_published` property to the response
+        if self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
+            locations = locations.extra(select={'is_published': "well_publication_status_code = 'Published'"})
+            fields.append("is_published")
+
+        locations = locations.values(*fields)
         locations = list(locations[:self.MAX_LOCATION_COUNT + 1])
 
         # return a 403 response if there are too many wells to display

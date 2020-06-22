@@ -25,7 +25,6 @@ import { SEARCH_AQUIFERS } from '../store/actions.types'
 import {
   DATABC_ROADS_SOURCE,
   DATABC_CADASTREL_SOURCE,
-  vectorSourceConfig,
   WELLS_SOURCE_ID,
   AQUIFERS_SOURCE_ID,
   DATABC_ROADS_SOURCE_ID,
@@ -38,21 +37,25 @@ import {
   aquifersFillLayer,
   setupAquiferHover,
   DATABC_ECOCAT_LAYER_ID,
-  DATABC_WATER_LICENCES_LAYER_ID,
+  DATABC_SURFACE_WATER_LICENCES_LAYER_ID,
   DATABC_OBSERVATION_WELLS_LAYER_ID,
   DATABC_OBSERVATION_WELLS_LAYER,
-  DATABC_WATER_LICENCES_LAYER,
-  DATABC_ECOCAT_LAYER,
   DATABC_ECOCAT_SOURCE,
-  DATABC_WATER_LICENCES_SOURCE_ID,
   DATABC_ECOCAT_SOURCE_ID,
   DATABC_OBSERVATION_WELLS_SOURCE_ID,
   DATABC_OBSERVATION_WELLS_SOURCE,
-  DATABC_WATER_LICENCES_SOURCE,
   WELLS_BASE_AND_ARTESIAN_LAYER_ID,
   AQUIFERS_FILL_LAYER_ID,
   aquiferLayerFilter,
-  wellLayerFilter
+  wellLayerFilter,
+  DATABC_GROUND_WATER_LICENCES_LAYER_ID,
+  DATABC_WATER_LICENCES_SOURCE,
+  DATABC_WATER_LICENCES_SOURCE_ID,
+  groundWaterLicencesLayer,
+  surfaceWaterLicencesLayer,
+  ecoCatLayer,
+  WELLS_SOURCE,
+  AQUIFERS_SOURCE
 } from '../../common/mapbox/layers'
 import {
   LayersControl,
@@ -61,18 +64,26 @@ import {
   SearchAreaControl,
   DataBCGeocoder
 } from '../../common/mapbox/controls'
-import { setupMapTooltips, setupMapPopups } from '../popup'
 import features from '../../common/features'
 import { DEFAULT_MAP_ZOOM, CENTRE_LNG_LAT_BC } from '../../common/mapbox/geometry'
+import {
+  createAquiferPopupElement,
+  createWellPopupElement,
+  createEcocatPopupElement,
+  createWaterLicencePopupElement
+} from '../popup'
 
 import cadastralLegendSrc from '../../common/assets/images/cadastral.png'
 import ecoCatWaterLegendSrc from '../../common/assets/images/ecocat-water.svg'
-import groundWaterLicenceActiveLegendSrc from '../../common/assets/images/gwater-licence-active.svg'
-import groundWaterLicenceInactiveLegendSrc from '../../common/assets/images/gwater-licence-inactive.svg'
+import surfaceWaterLicenceActiveLegendSrc from '../../common/assets/images/swater-licence-active.svg'
+import surfaceWaterLicenceInactiveLegendSrc from '../../common/assets/images/swater-licence-inactive.svg'
+import groundWaterLicenceActiveLegendSrc from '../../common/assets/images/gwater-licence.svg'
+import ecoCatGroundWaterLegendSrc from '../../common/assets/images/ecocat-groundwater.svg'
 import observationWellInactiveLegendSrc from '../../common/assets/images/owells-inactive.svg'
 import observationWellActiveLegendSrc from '../../common/assets/images/owells-active.svg'
 import wellsAllLegendSrc from '../../common/assets/images/wells-all.svg'
 import wellsArtesianLegendSrc from '../../common/assets/images/wells-artesian.svg'
+import { setupFeatureTooltips } from '../../common/mapbox/popup'
 
 export default {
   name: 'AquiferMap',
@@ -101,23 +112,29 @@ export default {
         {
           show: false,
           id: DATABC_ECOCAT_LAYER_ID,
-          label: 'EcoCat – water related reports',
-          imageSrc: ecoCatWaterLegendSrc
+          label: 'EcoCat',
+          legend: [
+            {
+              imageSrc: ecoCatGroundWaterLegendSrc,
+              label: 'groundwater reports'
+            },
+            {
+              imageSrc: ecoCatWaterLegendSrc,
+              label: 'water related reports'
+            }
+          ]
         },
         {
           show: false,
-          id: DATABC_WATER_LICENCES_LAYER_ID,
-          label: 'Water licences',
-          legend: [
-            {
-              imageSrc: groundWaterLicenceActiveLegendSrc,
-              label: 'active'
-            },
-            {
-              imageSrc: groundWaterLicenceInactiveLegendSrc,
-              label: 'inactive'
-            }
-          ]
+          id: DATABC_SURFACE_WATER_LICENCES_LAYER_ID,
+          label: 'Surface water licences',
+          imageSrc: surfaceWaterLicenceActiveLegendSrc
+        },
+        {
+          show: false,
+          id: DATABC_GROUND_WATER_LICENCES_LAYER_ID,
+          label: 'Groundwater licences',
+          imageSrc: groundWaterLicenceActiveLegendSrc
         },
         {
           show: false,
@@ -257,10 +274,32 @@ export default {
       this.listenForZoom()
 
       this.map.on('load', () => {
-        setupMapTooltips(this.map, this.$router)
+        /* Setup tooltips  */
+        const tooltipLayers = {
+          [AQUIFERS_FILL_LAYER_ID]: {
+            createTooltipContent: this.createAquiferPopupElement
+          },
+          [DATABC_ECOCAT_LAYER_ID]: {
+            snapToCenter: true,
+            createTooltipContent: this.createEcocatPopupElement
+          },
+          [DATABC_SURFACE_WATER_LICENCES_LAYER_ID]: {
+            snapToCenter: true,
+            createTooltipContent: this.createSurfaceWaterLicencePopupElement
+          },
+          [DATABC_GROUND_WATER_LICENCES_LAYER_ID]: {
+            snapToCenter: true,
+            createTooltipContent: this.createGroundWaterLicencePopupElement
+          },
+          [WELLS_BASE_AND_ARTESIAN_LAYER_ID]: {
+            snapToCenter: true,
+            createTooltipContent: this.createWellPopupElement
+          }
+        }
 
-        setupMapPopups(this.map, this.$router)
+        setupFeatureTooltips(this.map, tooltipLayers)
 
+        /* Setup aquifer hover effect */
         setupAquiferHover(this.map, AQUIFERS_FILL_LAYER_ID)
 
         this.setHighlightedAquifers(this.highlightAquiferIds, true)
@@ -281,17 +320,18 @@ export default {
           [DATABC_ECOCAT_SOURCE_ID]: DATABC_ECOCAT_SOURCE,
           [DATABC_WATER_LICENCES_SOURCE_ID]: DATABC_WATER_LICENCES_SOURCE,
           [DATABC_OBSERVATION_WELLS_SOURCE_ID]: DATABC_OBSERVATION_WELLS_SOURCE,
-          [WELLS_SOURCE_ID]: vectorSourceConfig(WELLS_SOURCE_ID),
-          [AQUIFERS_SOURCE_ID]: vectorSourceConfig(AQUIFERS_SOURCE_ID, { promoteId: 'aquifer_id' })
+          [WELLS_SOURCE_ID]: WELLS_SOURCE,
+          [AQUIFERS_SOURCE_ID]: AQUIFERS_SOURCE
         },
         layers: [
           DATABC_ROADS_LAYER,
           DATABC_CADASTREL_LAYER,
-          DATABC_ECOCAT_LAYER,
-          DATABC_WATER_LICENCES_LAYER,
-          DATABC_OBSERVATION_WELLS_LAYER,
           aquifersFillLayer({ filter: aquiferLayerFilter(this.showUnpublishedAquifers, this.showRetired) }),
           aquifersLineLayer({ filter: aquiferLayerFilter(this.showUnpublishedAquifers, this.showRetired) }),
+          ecoCatLayer({ layout: { visibility: 'none' } }),
+          surfaceWaterLicencesLayer({ layout: { visibility: 'none' } }),
+          groundWaterLicencesLayer({ layout: { visibility: 'none' } }),
+          DATABC_OBSERVATION_WELLS_LAYER,
           wellsBaseAndArtesianLayer({ layout: { visibility: 'none' }, filter: wellLayerFilter(this.showUnpublishedWells) })
         ]
       }
@@ -400,6 +440,36 @@ export default {
           { source: AQUIFERS_SOURCE_ID, id: aquiferId, sourceLayer: AQUIFERS_SOURCE_ID },
           { searchResult: highlight }
         )
+      })
+    },
+    createAquiferPopupElement (features, { canInteract }) {
+      return createAquiferPopupElement(features, this.map, this.$router, {
+        canInteract,
+        aquiferLayerIds: [ AQUIFERS_FILL_LAYER_ID ]
+      })
+    },
+    createWellPopupElement (features, { canInteract }) {
+      return createWellPopupElement(features, this.map, this.$router, {
+        canInteract,
+        wellLayerIds: [ WELLS_BASE_AND_ARTESIAN_LAYER_ID ]
+      })
+    },
+    createEcocatPopupElement (features, { canInteract }) {
+      return createEcocatPopupElement(features, this.map, {
+        canInteract,
+        ecocatLayerIds: [ DATABC_ECOCAT_LAYER_ID ]
+      })
+    },
+    createSurfaceWaterLicencePopupElement (features, { canInteract }) {
+      return createWaterLicencePopupElement(features, this.map, this.$router, {
+        canInteract,
+        ecocatLayerIds: [ DATABC_ECOCAT_LAYER_ID ]
+      })
+    },
+    createGroundWaterLicencePopupElement (features, { canInteract }) {
+      return createWaterLicencePopupElement(features, this.map, this.$router, {
+        canInteract,
+        ecocatLayerIds: [ DATABC_ECOCAT_LAYER_ID ]
       })
     }
   },

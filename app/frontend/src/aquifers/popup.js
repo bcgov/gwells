@@ -1,282 +1,248 @@
-import mapboxgl from 'mapbox-gl'
-import { uniqBy } from 'lodash'
+import { uniqBy, pick, isEqual } from 'lodash'
 
-import { getLngLatOfPointFeature } from '../common/mapbox/geometry'
 import {
   toggleAquiferHover,
   WELLS_BASE_AND_ARTESIAN_LAYER_ID,
   AQUIFERS_FILL_LAYER_ID,
-  WELLS_EMS_LAYER_ID,
-  WELLS_UNCORRELATED_LAYER_ID
+  DATABC_ECOCAT_LAYER_ID,
+  DATABC_GROUND_WATER_LICENCES_LAYER_ID,
+  DATABC_SURFACE_WATER_LICENCES_LAYER_ID
 } from '../common/mapbox/layers'
-import { wireUpAnchors } from '../common/mapbox/popup'
+import { popupItems, popupItem } from '../common/mapbox/popup'
 
 // Creates a <div> for the well's popup content
-export function createWellPopupElement ($router, wellFeatureProperties, options = {}) {
+export function createWellPopupElement (features, map, $router, options = {}) {
+  const currentAquiferId = options.currentAquiferId || null
+  const canInteract = Boolean(options.canInteract)
+  const wellLayerIds = options.wellLayerIds || [ WELLS_BASE_AND_ARTESIAN_LAYER_ID ]
+
+  // Filter the features to only the well layers we care about
+  const feature = features.filter((feature) => wellLayerIds.indexOf(feature.layer.id) !== -1)[0]
+
   const {
     well_tag_number: wellTagNumber,
     identification_plate_number: identificationPlateNumber,
     street_address: streetAddress,
     aquifer_id: aquiferId,
-    ems
-  } = wellFeatureProperties
-
-  const routes = {
-    wellDetail: { name: 'wells-detail', params: { id: wellTagNumber } },
-    aquiferDetail: { name: 'aquifers-view', params: { id: aquiferId } }
-  }
+    ems,
+    is_published: isPublished
+  } = feature.properties
 
   let correlatedAquiferItem = 'Uncorrelated well'
   if (aquiferId) {
-    // well is correlated to diff aquifer = link it
-    const aquiferDetailsUrl = $router.resolve(routes.aquiferDetail)
-    correlatedAquiferItem = `Correlated to <a href="${aquiferDetailsUrl.href}" data-route-name="aquiferDetail">aquifer ${aquiferId}</a>`
-
-    // If there is an optional `currentAquiferId` check to see if this well's aquifer_id is the same
-    // as `currentAquiferId`. If it is then don't bother linking to the aquifer.
-    if (options.currentAquiferId !== undefined && aquiferId === options.currentAquiferId) {
+    // Only link to the correlated aquifer if the user can interact with this popup content. Or if
+    // the optional `currentAquiferId` is not the same as this aquiferId
+    if (canInteract && aquiferId !== currentAquiferId) {
+      correlatedAquiferItem = {
+        prefix: 'Correlated to ',
+        route: { name: 'aquifers-view', params: { id: aquiferId } },
+        text: `aquifer ${aquiferId}`
+      }
+    } else {
       correlatedAquiferItem = `Correlated to aquifer ${aquiferId}`
     }
   }
 
-  const url = $router.resolve(routes.wellDetail)
-
   const items = [
-    `Well Tag Number: <a href="${url.href}" data-route-name="wellDetail">${wellTagNumber}</a>`,
-    `Identification Plate Number: ${identificationPlateNumber || '—'}`,
-    `Address: ${streetAddress || '—'}`,
+    {
+      prefix: 'Well Tag Number: ',
+      route: { name: 'wells-detail', params: { id: wellTagNumber } },
+      text: wellTagNumber
+    },
+    {
+      prefix: 'Identification Plate Number: ',
+      text: identificationPlateNumber || '—'
+    },
+    {
+      prefix: 'Address: ',
+      text: streetAddress || '—'
+    },
+    ems ? {
+      prefix: 'EMS ID: ',
+      text: ems
+    } : null,
     correlatedAquiferItem,
-    ems ? `EMS ID: ${ems}` : null
+    {
+      className: isPublished === false ? 'unpublished' : '',
+      text: isPublished === false ? 'unpublished' : null
+    }
   ]
 
-  const container = document.createElement('div')
-  container.className = 'mapbox-popup-well'
-  container.innerHTML = items.filter(Boolean).join('<br>')
-  return wireUpAnchors(container, $router, routes)
-}
-
-// Creates a <div> for the well's tooltip content
-export function createWellTooltipElement (wellFeatureProperties, options) {
-  const {
-    well_tag_number: wellTagNumber,
-    identification_plate_number: identificationPlateNumber,
-    street_address: streetAddress,
-    aquifer_id: aquiferId,
-    ems
-  } = wellFeatureProperties
-
-  let correlatedAquiferItem = 'Uncorrelated well'
-  if (aquiferId) {
-    correlatedAquiferItem = `Correlated to aquifer ${aquiferId}`
-  }
-
-  const items = [
-    `Well Tag Number: ${wellTagNumber}`,
-    `Identification Plate Number: ${identificationPlateNumber || '—'}`,
-    `Address: ${streetAddress || '—'}`,
-    correlatedAquiferItem,
-    ems ? `EMS ID: ${ems}` : null
-  ]
-
-  const container = document.createElement('div')
-  container.className = 'mapbox-tooltip-well'
-  container.innerHTML = items.filter(Boolean).join('<br>')
-  return container
-}
-
-function aquiferFeatures (map, point, aquiferLayerIds) {
-  return uniqBy(map.queryRenderedFeatures(point, { layers: aquiferLayerIds }), 'id')
+  return popupItems(items, $router, { className: 'mapbox-popup-well', canInteract })
 }
 
 // Creates a <div> for the aquifer's popup content
-export function createAquiferPopupElement (map, $router, point, aquiferLayerIds) {
+export function createAquiferPopupElement (features, map, $router, options = {}) {
+  const currentAquiferId = options.currentAquiferId || null
+  const canInteract = Boolean(options.canInteract)
+  const aquiferLayerIds = options.aquiferLayerIds || [ AQUIFERS_FILL_LAYER_ID ]
+
   const container = document.createElement('div')
   container.className = 'mapbox-popup-aquifer'
   const ul = document.createElement('ul')
-  ul.className = 'm-0 p-0 text-center'
+  ul.className = `m-0 p-0 text-center mapbox-${canInteract ? 'popup' : 'tooltip'}`
   ul.style.listStyle = 'none'
   container.appendChild(ul)
 
-  aquiferFeatures(map, point, aquiferLayerIds).forEach((feature) => {
+  // Filter the features to only the aquifer layers we care about
+  const onlyAquiferFeatures = features.filter((feature) => aquiferLayerIds.indexOf(feature.layer.id) !== -1)
+
+  uniqBy(onlyAquiferFeatures, 'id').map((feature) => {
     const {
       aquifer_id: aquiferId,
       is_retired: isRetired,
       is_published: isPublished
     } = feature.properties
-    const route = { name: 'aquifers-view', params: { id: aquiferId } }
-    const url = $router.resolve(route)
-    const items = [
-      `<a href="${url.href}">Aquifer ${aquiferId}</a>`,
-      isRetired ? '<b>retired</b>' : null,
-      !isPublished ? '<b>unpublished</b>' : null
-    ]
-    const li = document.createElement('li')
-    li.className = 'm-0 p-0'
-    li.innerHTML = items.filter(Boolean).join('<br>')
-    const a = li.querySelector('a')
-    a.onclick = (e) => {
-      if (!e.ctrlKey) {
-        e.preventDefault()
-        $router.push(route)
+    const linkToAquifer = canInteract && currentAquiferId !== aquiferId
+
+    const item = {
+      className: `${isRetired ? 'retired' : ''} ${isPublished ? 'published' : ''}`,
+      route: linkToAquifer ? { name: 'aquifers-view', params: { id: aquiferId } } : null,
+      text: `Aquifer ${aquiferId}`,
+      suffix: [
+        isRetired ? 'retired' : null,
+        !isPublished ? 'unpublished' : null
+      ].filter(Boolean).join(' – ')
+    }
+
+    const li = popupItem(item, $router, { canInteract })
+
+    if (canInteract) {
+      // highlight this aquifer on mouseover of the aquifer ID in the popup
+      li.onmouseenter = () => {
+        toggleAquiferHover(map, aquiferId, true)
+      }
+      li.onmouseleave = () => {
+        toggleAquiferHover(map, aquiferId, false)
       }
     }
-    // highlight this aquifer on mouseover of the aquifer ID in the popup
-    li.onmouseenter = () => {
-      toggleAquiferHover(map, aquiferId, true)
-    }
-    li.onmouseleave = () => {
-      toggleAquiferHover(map, aquiferId, false)
-    }
+
     ul.appendChild(li)
   })
+
   return container
 }
 
-// Creates a <div> for the aquifer's tooltip content
-export function createAquiferTooltipElement (map, point, aquiferLayerIds) {
+// Creates a <div> for the ecocat's popup content
+export function createEcocatPopupElement (features, map, options = {}) {
+  const canInteract = Boolean(options.canInteract)
+  const ecocatLayerIds = options.ecocatLayerIds || [ DATABC_ECOCAT_LAYER_ID ]
+
+  const feature = features.filter((feature) => ecocatLayerIds.indexOf(feature.layer.id) !== -1)[0]
+
+  const {
+    REPORT_ID: reportId,
+    TITLE: title,
+    AUTHOR: author,
+    DATE_PUBLISHED: datePublished
+  } = feature.properties
+
+  const ecocatReportUrl = `https://a100.gov.bc.ca/pub/acat/public/viewReport.do?reportId=${reportId}`
+
+  const items = [
+    {
+      url: ecocatReportUrl,
+      text: title
+    },
+    {
+      prefix: 'Author: ',
+      text: author
+    },
+    {
+      prefix: 'Published: ',
+      text: datePublished
+    }
+  ]
+
+  return popupItems(items, null, { className: 'mapbox-popup-ecocat', canInteract })
+}
+
+// Creates a <div> for the water licence's popup content
+export function createWaterLicencePopupElement (features, map, $router, options = {}) {
+  const canInteract = Boolean(options.canInteract)
+  // const isSurfaceWaterLicence = Boolean(options.surfaceWater)
+  // const isGroundWaterLicence = Boolean(options.groundWater)
+  const waterLicenceLayerIds = options.waterLicenceLayerIds || [ DATABC_SURFACE_WATER_LICENCES_LAYER_ID, DATABC_GROUND_WATER_LICENCES_LAYER_ID ]
+
   const container = document.createElement('div')
-  container.className = 'mapbox-tooltip-aquifer'
-  const ul = document.createElement('ul')
-  ul.className = 'm-0 p-0 text-center'
-  ul.style.listStyle = 'none'
-  container.appendChild(ul)
+  container.className = 'mapbox-popup-water-licence'
 
-  aquiferFeatures(map, point, aquiferLayerIds).forEach((feature) => {
+  // Filter to only features in water licence layers
+  const licenceFeatures = features.filter((feature) => waterLicenceLayerIds.indexOf(feature.layer.id) !== -1)
+  // Find similar features that have the same licence number at the same lat/lng
+  const sameLicenceFeatures = similarFeatures(licenceFeatures, ['LICENCE_NUMBER', 'LONGITUDE', 'LATITUDE'])
+
+  const topFeature = sameLicenceFeatures[0]
+  const {
+    LICENCE_NUMBER: licenceNumber,
+    LICENCE_STATUS: licenceStatus,
+    SOURCE_NAME: sourceName,
+    POD_SUBTYPE: podSubtype
+  } = topFeature.properties
+
+  const isGroundWaterLicence = podSubtype.indexOf('POD') === -1
+
+  // Create a sub-list of items by licence purpose + quantity
+  const purposeItems = sameLicenceFeatures.map((feature) => {
     const {
-      aquifer_id: aquiferId,
-      is_retired: isRetired,
-      is_published: isPublished
+      PURPOSE_USE: purposeUse,
+      QUANTITY: quantity,
+      QUANTITY_UNITS: quantityUnits
     } = feature.properties
-    const items = [
-      `Aquifer ${aquiferId}`,
-      isRetired ? '<b>retired</b>' : null,
-      !isPublished ? '<b>unpublished</b>' : null
-    ]
-    const li = document.createElement('li')
-    li.className = 'm-0 p-0'
-    li.innerHTML = items.filter(Boolean).join('<br>')
-    ul.appendChild(li)
+
+    const quantityByPurposeEl = document.createElement('div')
+    const purposeEl = document.createElement('span')
+    purposeEl.className = 'licence-purpose'
+    purposeEl.textContent = purposeUse
+    const quantityEl = document.createElement('span')
+    quantityEl.className = 'licence-quantity'
+    quantityEl.textContent = `${Number(quantity).toFixed(2)}\xa0${quantityUnits}`
+
+    quantityByPurposeEl.appendChild(purposeEl)
+    quantityByPurposeEl.appendChild(quantityEl)
+
+    return {
+      className: 'quantity-by-purpose',
+      el: quantityByPurposeEl
+    }
   })
 
-  return container
+  const purposeEl = popupItems(purposeItems, null, { nodeName: 'ul' })
+
+  const licenceUrl = `https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&PosseObjectDef=o_ATIS_DocumentSearch&PosseMenuName=WS_Main&Criteria_LicenceNumber=${licenceNumber}`
+
+  // If this is a groundwater licence then SOURCE_NAME should be the aquiferId
+  const aquiferId = (isGroundWaterLicence && sourceName && Number(sourceName)) || null
+
+  const items = [
+    {
+      prefix: 'Licence number: ',
+      url: licenceUrl,
+      text: licenceNumber
+    },
+    {
+      prefix: 'Status: ',
+      text: licenceStatus
+    },
+    {
+      prefix: 'Quantity per purpose:',
+      el: purposeEl
+    },
+    {
+      prefix: 'Source: ',
+      text: `${aquiferId ? 'aquifer ' : ''}${sourceName}`,
+      route: aquiferId ? { name: 'aquifers-view', params: { id: aquiferId } } : null
+    }
+  ]
+
+  return popupItems(items, $router, { className: 'mapbox-popup-water-licence', canInteract })
 }
 
-const DEFAULT_WELL_LAYER_IDS = [
-  WELLS_BASE_AND_ARTESIAN_LAYER_ID,
-  WELLS_EMS_LAYER_ID,
-  WELLS_UNCORRELATED_LAYER_ID
-]
+function similarFeatures (features, properties) {
+  const paths = properties.map((p) => `properties.${p}`)
+  const topFeatureProperties = pick(features[0], paths)
 
-// Adds mouse event listeners to the map which will show the tooltip for an aquifer or well
-export function setupMapTooltips (map, $router, options = {}) {
-  const wellsTooltip = new mapboxgl.Popup()
-  const aquifersTooltip = new mapboxgl.Popup()
-
-  const aquiferLayerIds = options.aquiferLayerIds || [ AQUIFERS_FILL_LAYER_ID ]
-  const wellsLayerIds = options.wellsLayerIds || DEFAULT_WELL_LAYER_IDS
-
-  let overAquifer = false
-  wellsLayerIds.forEach((wellLayerId) => {
-    map.on('mousemove', wellLayerId, (e) => {
-      map.getCanvas().style.cursor = 'pointer'
-
-      aquifersTooltip.remove()
-
-      if (map.popup.isOpen()) { return }
-
-      const feature = e.features[0]
-      const contentDiv = createWellTooltipElement(feature.properties, options)
-      wellsTooltip
-        .setLngLat(getLngLatOfPointFeature(feature))
-        .setDOMContent(contentDiv)
-        .addTo(map)
-    })
-
-    map.on('mouseleave', wellLayerId, () => {
-      map.getCanvas().style.cursor = ''
-      wellsTooltip.remove()
-      if (overAquifer && !map.popup.isOpen()) {
-        aquifersTooltip.addTo(map)
-      }
-    })
-  })
-
-  aquiferLayerIds.forEach((aquiferLayerId) => {
-    map.on('mouseenter', aquiferLayerId, (e) => {
-      overAquifer = true
-      if (map.popup.isOpen() || wellsTooltip.isOpen()) { return }
-
-      const contentDiv = createAquiferTooltipElement(map, e.point, aquiferLayerIds)
-      aquifersTooltip
-        .setDOMContent(contentDiv)
-        .setLngLat(e.lngLat)
-        .addTo(map)
-    })
-
-    map.on('mousemove', aquiferLayerId, (e) => {
-      if (map.popup.isOpen() || wellsTooltip.isOpen()) { return }
-
-      const contentDiv = createAquiferTooltipElement(map, e.point, aquiferLayerIds)
-      aquifersTooltip
-        .setDOMContent(contentDiv)
-        .setLngLat(e.lngLat)
-        .addTo(map)
-    })
-
-    map.on('mouseleave', aquiferLayerId, () => {
-      aquifersTooltip.remove()
-      overAquifer = false
-    })
-  })
-
-  map.on('reset', () => {
-    wellsTooltip.remove()
-    aquifersTooltip.remove()
-  })
-}
-
-// Adds mouse event listeners to the map which will show the popup for the clicked well or aquifer
-export function setupMapPopups (map, $router, options = {}) {
-  const wellsLayerIds = options.wellsLayerIds || DEFAULT_WELL_LAYER_IDS
-  const aquiferLayerIds = options.aquiferLayerIds || [ AQUIFERS_FILL_LAYER_ID ]
-
-  let clickedOnWell = false
-  const popup = new mapboxgl.Popup()
-  popup.on('close', () => {
-    clickedOnWell = false
-  })
-  map.popup = popup
-
-  wellsLayerIds.forEach((wellLayerId) => {
-    map.on('click', wellLayerId, (e) => {
-      // Check to see if we have already clicked on a well (could be an invisible EMS layer click)
-      if (clickedOnWell) { return }
-      clickedOnWell = true
-      const feature = e.features[0]
-      const contentDiv = createWellPopupElement($router, feature.properties, options)
-      popup
-        .setLngLat(getLngLatOfPointFeature(feature))
-        .setDOMContent(contentDiv)
-        .addTo(map)
-    })
-  })
-
-  aquiferLayerIds.forEach((aquiferLayerId) => {
-    map.on('click', aquiferLayerId, (e) => {
-      if (clickedOnWell) { return }
-      if (map.hoveredAquiferId) {
-        toggleAquiferHover(map, map.hoveredAquiferId, false)
-      }
-
-      const contentDiv = createAquiferPopupElement(map, $router, e.point, aquiferLayerIds)
-      popup
-        .setLngLat(e.lngLat)
-        .setDOMContent(contentDiv)
-        .addTo(map)
-    })
-  })
-
-  map.on('reset', () => {
-    popup.remove()
+  return features.filter((feature) => {
+    return isEqual(topFeatureProperties, pick(feature, paths))
   })
 }

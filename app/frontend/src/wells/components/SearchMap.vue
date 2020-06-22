@@ -26,22 +26,12 @@ import ApiService from '@/common/services/ApiService.js'
 import {
   DATABC_ROADS_SOURCE,
   DATABC_CADASTREL_SOURCE,
-  vectorSourceConfig,
   WELLS_SOURCE_ID,
   DATABC_ROADS_SOURCE_ID,
   DATABC_CADASTREL_SOURCE_ID,
   DATABC_ROADS_LAYER,
   DATABC_CADASTREL_LAYER,
   wellsBaseAndArtesianLayer,
-  DATABC_OBSERVATION_WELLS_LAYER,
-  DATABC_WATER_LICENCES_LAYER,
-  DATABC_ECOCAT_LAYER,
-  DATABC_ECOCAT_SOURCE,
-  DATABC_WATER_LICENCES_SOURCE_ID,
-  DATABC_ECOCAT_SOURCE_ID,
-  DATABC_OBSERVATION_WELLS_SOURCE_ID,
-  DATABC_OBSERVATION_WELLS_SOURCE,
-  DATABC_WATER_LICENCES_SOURCE,
   WELLS_BASE_AND_ARTESIAN_LAYER_ID,
   searchedWellsLayer,
   SEARCHED_WELLS_SOURCE_ID,
@@ -49,10 +39,12 @@ import {
   focusedWellsLayer,
   FOCUSED_WELL_IMAGE_ID,
   FOCUSED_WELL_ARTESIAN_IMAGE_ID,
-  wellLayerFilter
+  wellLayerFilter,
+  SEARCHED_WELLS_LAYER_ID,
+  WELLS_SOURCE
 } from '../../common/mapbox/layers'
 import { LegendControl, BoxZoomControl, SearchOnMoveControl, ClearSearchCriteriaControl } from '../../common/mapbox/controls'
-import { setupMapPopups, WELL_FEATURE_PROPERTIES_FOR_POPUP } from '../popup'
+import { createWellPopupElement } from '../popup'
 import { PulsingWellImage, PulsingArtesianWellImage } from '../../common/mapbox/images'
 import { DEFAULT_MAP_ZOOM, CENTRE_LNG_LAT_BC, buildWellsGeoJSON, convertLngLatBoundsToDirectionBounds, boundsCompletelyContains } from '../../common/mapbox/geometry'
 
@@ -61,7 +53,14 @@ import { RESET_WELLS_SEARCH, SEARCH_WELLS } from '../../wells/store/actions.type
 import wellsAllLegendSrc from '../../common/assets/images/wells-all.svg'
 import wellsArtesianLegendSrc from '../../common/assets/images/wells-artesian.svg'
 import { mapGetters } from 'vuex'
+import { setupFeatureTooltips } from '../../common/mapbox/popup'
 
+const WELL_FEATURE_PROPERTIES_FOR_POPUP = [
+  'well_tag_number',
+  'identification_plate_number',
+  'street_address',
+  'is_published'
+]
 const FOCUSED_WELL_PROPERTIES = WELL_FEATURE_PROPERTIES_FOR_POPUP.concat(['artesian_flow'])
 
 export default {
@@ -202,7 +201,18 @@ export default {
         this.map.addImage(FOCUSED_WELL_ARTESIAN_IMAGE_ID, new PulsingArtesianWellImage(this.map), { pixelRatio: 2 })
         this.map.addImage(FOCUSED_WELL_IMAGE_ID, new PulsingWellImage(this.map), { pixelRatio: 2 })
 
-        setupMapPopups(this.map, this.$router)
+        const tooltipLayers = {
+          [WELLS_BASE_AND_ARTESIAN_LAYER_ID]: {
+            snapToCenter: true,
+            createTooltipContent: this.createWellPopupElement
+          },
+          [SEARCHED_WELLS_LAYER_ID]: {
+            snapToCenter: true,
+            createTooltipContent: this.createWellPopupElement
+          }
+        }
+
+        setupFeatureTooltips(this.map, tooltipLayers)
 
         this.setFocusedWells(this.focusedWells)
 
@@ -221,19 +231,13 @@ export default {
         sources: {
           [DATABC_ROADS_SOURCE_ID]: DATABC_ROADS_SOURCE,
           [DATABC_CADASTREL_SOURCE_ID]: DATABC_CADASTREL_SOURCE,
-          [DATABC_ECOCAT_SOURCE_ID]: DATABC_ECOCAT_SOURCE,
-          [DATABC_WATER_LICENCES_SOURCE_ID]: DATABC_WATER_LICENCES_SOURCE,
-          [DATABC_OBSERVATION_WELLS_SOURCE_ID]: DATABC_OBSERVATION_WELLS_SOURCE,
-          [WELLS_SOURCE_ID]: vectorSourceConfig(WELLS_SOURCE_ID),
+          [WELLS_SOURCE_ID]: WELLS_SOURCE,
           [SEARCHED_WELLS_SOURCE_ID]: { type: 'geojson', data: buildWellsGeoJSON([]) },
           [FOCUSED_WELLS_SOURCE_ID]: { type: 'geojson', data: buildWellsGeoJSON([]) }
         },
         layers: [
           DATABC_ROADS_LAYER,
           DATABC_CADASTREL_LAYER,
-          DATABC_ECOCAT_LAYER,
-          DATABC_WATER_LICENCES_LAYER,
-          DATABC_OBSERVATION_WELLS_LAYER,
           wellsBaseAndArtesianLayer({ filter: wellLayerFilter(this.showUnpublished) }),
           searchedWellsLayer(),
           focusedWellsLayer()
@@ -364,6 +368,15 @@ export default {
     },
     flyToBounds (bounds) {
       this.map.fitBounds(bounds, { duration: 1 * 1000, padding: 60 })
+    },
+    createWellPopupElement (features, { canInteract }) {
+      return createWellPopupElement(features, this.map, this.$router, {
+        canInteract,
+        wellLayerIds: [
+          WELLS_BASE_AND_ARTESIAN_LAYER_ID,
+          SEARCHED_WELLS_LAYER_ID
+        ]
+      })
     }
   },
   watch: {

@@ -58,8 +58,54 @@
     will-change: inherit !important;
     margin-bottom: -1px;
 
+    &.mapboxgl-popup-no-interaction {
+      .mapboxgl-popup-content {
+        pointer-events: none;
+      }
+    }
+
     .mapboxgl-popup-content {
       padding-bottom: 10px;
+
+      ol, ul, li {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .mapbox-popup-aquifer {
+        .mapbox-popup-suffix {
+          font-weight: bold;
+
+          &::before {
+            content: ' – '
+          }
+        }
+      }
+
+      .mapbox-popup-well {
+        .unpublished {
+          font-weight: bold;
+        }
+      }
+
+      .mapbox-popup-water-licence {
+        ul {
+          margin-left: 1.4em;
+
+          li {
+            list-style-type: disc;
+          }
+        }
+
+        .quantity-by-purpose {
+          .licence-quantity {
+            &:before {
+              content: " — ";
+            }
+          }
+        }
+      }
     }
 
     li:last-child {
@@ -95,12 +141,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    pointer-events: none;
   }
 
   .mapboxgl-ctrl-search-area {
     margin-top: 10px;
     opacity: 0;
     visibility: hidden;
+    pointer-events: auto;
 
     &.show {
       animation: fade-in 300ms ease-in forwards;
