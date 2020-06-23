@@ -40,12 +40,8 @@ import {
   setupAquiferHover,
   DATABC_ECOCAT_LAYER_ID,
   DATABC_SURFACE_WATER_LICENCES_LAYER_ID,
-  DATABC_OBSERVATION_WELLS_LAYER_ID,
-  DATABC_OBSERVATION_WELLS_LAYER,
   DATABC_ECOCAT_SOURCE,
   DATABC_ECOCAT_SOURCE_ID,
-  DATABC_OBSERVATION_WELLS_SOURCE_ID,
-  DATABC_OBSERVATION_WELLS_SOURCE,
   AQUIFERS_FILL_LAYER_ID,
   WELLS_BASE_AND_ARTESIAN_LAYER_ID,
   WELLS_EMS_LAYER_ID,
@@ -58,7 +54,9 @@ import {
   DATABC_WATER_LICENCES_SOURCE_ID,
   DATABC_WATER_LICENCES_SOURCE,
   WELLS_SOURCE,
-  AQUIFERS_SOURCE
+  AQUIFERS_SOURCE,
+  observationWellsLayer,
+  WELLS_OBSERVATION_LAYER_ID
 } from '../../common/mapbox/layers'
 import { computeBoundsFromMultiPolygon } from '../../common/mapbox/geometry'
 import { LayersControl, LegendControl } from '../../common/mapbox/controls'
@@ -123,21 +121,6 @@ export default {
           imageSrc: groundWaterLicenceActiveLegendSrc
         },
         {
-          show: false,
-          id: DATABC_OBSERVATION_WELLS_LAYER_ID,
-          label: 'Observation wells',
-          legend: [
-            {
-              imageSrc: observationWellActiveLegendSrc,
-              label: 'active'
-            },
-            {
-              imageSrc: observationWellInactiveLegendSrc,
-              label: 'inactive'
-            }
-          ]
-        },
-        {
           show: true,
           id: WELLS_BASE_AND_ARTESIAN_LAYER_ID,
           label: 'Wells',
@@ -153,11 +136,28 @@ export default {
           ]
         },
         {
+          show: false,
+          id: WELLS_OBSERVATION_LAYER_ID,
+          label: 'Observation wells',
+          legend: [
+            {
+              imageSrc: observationWellActiveLegendSrc,
+              label: 'active'
+            },
+            {
+              imageSrc: observationWellInactiveLegendSrc,
+              label: 'inactive'
+            }
+          ]
+        },
+        {
+          show: false,
           id: WELLS_EMS_LAYER_ID,
           label: 'EMS wells',
           imageSrc: emsWellsIconSrc
         },
         {
+          show: false,
           id: WELLS_UNCORRELATED_LAYER_ID,
           label: 'Uncorrelated wells',
           imageSrc: uncorrelatedWellsIconSrc
@@ -245,6 +245,10 @@ export default {
             snapToCenter: true,
             createTooltipContent: this.createGroundWaterLicencePopupElement
           },
+          [WELLS_OBSERVATION_LAYER_ID]: {
+            snapToCenter: true,
+            createTooltipContent: this.createWellPopupElement
+          },
           [WELLS_BASE_AND_ARTESIAN_LAYER_ID]: {
             snapToCenter: true,
             createTooltipContent: this.createWellPopupElement
@@ -284,7 +288,6 @@ export default {
           [DATABC_CADASTREL_SOURCE_ID]: DATABC_CADASTREL_SOURCE,
           [DATABC_ECOCAT_SOURCE_ID]: DATABC_ECOCAT_SOURCE,
           [DATABC_WATER_LICENCES_SOURCE_ID]: DATABC_WATER_LICENCES_SOURCE,
-          [DATABC_OBSERVATION_WELLS_SOURCE_ID]: DATABC_OBSERVATION_WELLS_SOURCE,
           [WELLS_SOURCE_ID]: WELLS_SOURCE,
           [AQUIFERS_SOURCE_ID]: AQUIFERS_SOURCE
         },
@@ -298,8 +301,8 @@ export default {
           ecoCatLayer({ layout: { visibility: 'none' } }),
           surfaceWaterLicencesLayer({ layout: { visibility: 'none' } }),
           groundWaterLicencesLayer({ layout: { visibility: 'none' } }),
-          DATABC_OBSERVATION_WELLS_LAYER,
           wellsBaseAndArtesianLayer(),
+          observationWellsLayer({ layout: { visibility: 'none' } }),
           wellsEmsLayer({ layout: { visibility: 'none' } }),
           wellsUncorrelatedLayer({ layout: { visibility: 'none' } })
         ]
@@ -359,6 +362,7 @@ export default {
         currentAquiferId: this.aquiferId,
         wellLayerIds: [
           WELLS_BASE_AND_ARTESIAN_LAYER_ID,
+          WELLS_OBSERVATION_LAYER_ID,
           WELLS_UNCORRELATED_LAYER_ID,
           WELLS_EMS_LAYER_ID
         ]

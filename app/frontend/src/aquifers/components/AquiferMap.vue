@@ -38,12 +38,8 @@ import {
   setupAquiferHover,
   DATABC_ECOCAT_LAYER_ID,
   DATABC_SURFACE_WATER_LICENCES_LAYER_ID,
-  DATABC_OBSERVATION_WELLS_LAYER_ID,
-  DATABC_OBSERVATION_WELLS_LAYER,
   DATABC_ECOCAT_SOURCE,
   DATABC_ECOCAT_SOURCE_ID,
-  DATABC_OBSERVATION_WELLS_SOURCE_ID,
-  DATABC_OBSERVATION_WELLS_SOURCE,
   WELLS_BASE_AND_ARTESIAN_LAYER_ID,
   AQUIFERS_FILL_LAYER_ID,
   aquiferLayerFilter,
@@ -55,7 +51,9 @@ import {
   surfaceWaterLicencesLayer,
   ecoCatLayer,
   WELLS_SOURCE,
-  AQUIFERS_SOURCE
+  AQUIFERS_SOURCE,
+  observationWellsLayer,
+  WELLS_OBSERVATION_LAYER_ID
 } from '../../common/mapbox/layers'
 import {
   LayersControl,
@@ -76,7 +74,6 @@ import {
 import cadastralLegendSrc from '../../common/assets/images/cadastral.png'
 import ecoCatWaterLegendSrc from '../../common/assets/images/ecocat-water.svg'
 import surfaceWaterLicenceActiveLegendSrc from '../../common/assets/images/swater-licence-active.svg'
-import surfaceWaterLicenceInactiveLegendSrc from '../../common/assets/images/swater-licence-inactive.svg'
 import groundWaterLicenceActiveLegendSrc from '../../common/assets/images/gwater-licence.svg'
 import ecoCatGroundWaterLegendSrc from '../../common/assets/images/ecocat-groundwater.svg'
 import observationWellInactiveLegendSrc from '../../common/assets/images/owells-inactive.svg'
@@ -138,21 +135,6 @@ export default {
         },
         {
           show: false,
-          id: DATABC_OBSERVATION_WELLS_LAYER_ID,
-          label: 'Observation wells',
-          legend: [
-            {
-              imageSrc: observationWellActiveLegendSrc,
-              label: 'active'
-            },
-            {
-              imageSrc: observationWellInactiveLegendSrc,
-              label: 'inactive'
-            }
-          ]
-        },
-        {
-          show: false,
           id: WELLS_BASE_AND_ARTESIAN_LAYER_ID,
           label: 'Wells',
           legend: [
@@ -163,6 +145,21 @@ export default {
             {
               imageSrc: wellsArtesianLegendSrc,
               label: 'artesian'
+            }
+          ]
+        },
+        {
+          show: false,
+          id: WELLS_OBSERVATION_LAYER_ID,
+          label: 'Observation wells',
+          legend: [
+            {
+              imageSrc: observationWellActiveLegendSrc,
+              label: 'active'
+            },
+            {
+              imageSrc: observationWellInactiveLegendSrc,
+              label: 'inactive'
             }
           ]
         }
@@ -291,6 +288,14 @@ export default {
             snapToCenter: true,
             createTooltipContent: this.createGroundWaterLicencePopupElement
           },
+          [DATABC_GROUND_WATER_LICENCES_LAYER_ID]: {
+            snapToCenter: true,
+            createTooltipContent: this.createGroundWaterLicencePopupElement
+          },
+          [WELLS_OBSERVATION_LAYER_ID]: {
+            snapToCenter: true,
+            createTooltipContent: this.createWellPopupElement
+          },
           [WELLS_BASE_AND_ARTESIAN_LAYER_ID]: {
             snapToCenter: true,
             createTooltipContent: this.createWellPopupElement
@@ -319,7 +324,6 @@ export default {
           [DATABC_CADASTREL_SOURCE_ID]: DATABC_CADASTREL_SOURCE,
           [DATABC_ECOCAT_SOURCE_ID]: DATABC_ECOCAT_SOURCE,
           [DATABC_WATER_LICENCES_SOURCE_ID]: DATABC_WATER_LICENCES_SOURCE,
-          [DATABC_OBSERVATION_WELLS_SOURCE_ID]: DATABC_OBSERVATION_WELLS_SOURCE,
           [WELLS_SOURCE_ID]: WELLS_SOURCE,
           [AQUIFERS_SOURCE_ID]: AQUIFERS_SOURCE
         },
@@ -331,8 +335,8 @@ export default {
           ecoCatLayer({ layout: { visibility: 'none' } }),
           surfaceWaterLicencesLayer({ layout: { visibility: 'none' } }),
           groundWaterLicencesLayer({ layout: { visibility: 'none' } }),
-          DATABC_OBSERVATION_WELLS_LAYER,
-          wellsBaseAndArtesianLayer({ layout: { visibility: 'none' }, filter: wellLayerFilter(this.showUnpublishedWells) })
+          wellsBaseAndArtesianLayer({ layout: { visibility: 'none' }, filter: wellLayerFilter(this.showUnpublishedWells) }),
+          observationWellsLayer({ layout: { visibility: 'none' } }),
         ]
       }
     },
@@ -451,7 +455,7 @@ export default {
     createWellPopupElement (features, { canInteract }) {
       return createWellPopupElement(features, this.map, this.$router, {
         canInteract,
-        wellLayerIds: [ WELLS_BASE_AND_ARTESIAN_LAYER_ID ]
+        wellLayerIds: [ WELLS_BASE_AND_ARTESIAN_LAYER_ID, WELLS_OBSERVATION_LAYER_ID ]
       })
     },
     createEcocatPopupElement (features, { canInteract }) {
