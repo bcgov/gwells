@@ -25,6 +25,8 @@ export function createWellPopupElement (features, map, $router, options = {}) {
     street_address: streetAddress,
     aquifer_id: aquiferId,
     ems,
+    observation_well_number: observationWellNumber,
+    observation_well_status_code: observationWellStatusCode,
     is_published: isPublished
   } = feature.properties
 
@@ -43,6 +45,7 @@ export function createWellPopupElement (features, map, $router, options = {}) {
     }
   }
 
+  const observationWellUrl = `https://governmentofbc.maps.arcgis.com/apps/webappviewer/index.html?id=b53cb0bf3f6848e79d66ffd09b74f00d&find=OBS%20WELL%20${observationWellNumber}`
   const items = [
     {
       prefix: 'Well Tag Number: ',
@@ -60,6 +63,11 @@ export function createWellPopupElement (features, map, $router, options = {}) {
     ems ? {
       prefix: 'EMS ID: ',
       text: ems
+    } : null,
+    observationWellNumber ? {
+      prefix: `${observationWellStatusCode} observation well number: `,
+      url: observationWellUrl,
+      text: observationWellNumber
     } : null,
     correlatedAquiferItem,
     {

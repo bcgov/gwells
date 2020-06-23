@@ -1288,7 +1288,7 @@
             "well_yield_unit": "USGPM",
             "diameter": "4.5",
             "observation_well_number": "2",
-            "observation_well_status": "Active",
+            "observation_well_status": "Inactive",
             "ems": "2",
             "utm_zone_code": "10",
             "utm_northing": 5815298,
