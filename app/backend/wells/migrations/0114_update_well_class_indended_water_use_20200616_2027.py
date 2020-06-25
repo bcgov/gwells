@@ -44,19 +44,38 @@ UPDATE_SUBMISSIONS = """
         SET well_class_code = 'UNK'
     WHERE
         well_class_code IS NULL AND
-        well_activity_code = 'CON';
+        well_activity_code IN ('CON', 'LEGACY');
 
     UPDATE activity_submission
         SET intended_water_use_code = 'NA'
     WHERE
         intended_water_use_code IS NULL AND
-        well_activity_code = 'CON';
+        well_class_code != 'WATR_SPPLY' AND
+        well_activity_code IN ('CON', 'LEGACY');
 
     UPDATE activity_submission
         SET well_class_code = 'WATR_SPPLY'
     WHERE
         intended_water_use_code IN ('DOM', 'COM', 'DWS', 'IRR', 'OP_LP_GEO') AND
         (well_class_code = 'UNK' OR well_class_code IS NULL);
+"""
+
+UPDATE_FIELDS_PROVIDED = """
+    UPDATE fields_provided AS fp
+        SET well_class = true
+    FROM activity_submission AS act
+    WHERE
+        act.filing_number = fp.filing_number AND
+        fp.well_class = false AND
+        act.well_class_code IS NOT NULL;
+
+    UPDATE fields_provided AS fp
+        SET intended_water_use = true
+    FROM activity_submission AS act
+    WHERE
+        act.filing_number = fp.filing_number AND
+        fp.intended_water_use = false AND
+        act.intended_water_use_code IS NOT NULL;
 """
 
 class Migration(migrations.Migration):
@@ -70,5 +89,6 @@ class Migration(migrations.Migration):
             ADD_NOT_APPLICABLE_INTENDED_WATER_USE_CODE,
             UPDATE_WELLS,
             UPDATE_SUBMISSIONS,
+            UPDATE_FIELDS_PROVIDED,
         ]),
     ]
