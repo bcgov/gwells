@@ -551,19 +551,28 @@ export default {
     isFormValid () {
       const errors = {}
 
-      if (!this.form.intended_water_use) {
-        errors.intended_water_use = [ 'Intended water use is required.' ]
+      let validateWellClassAndIntendedWaterUse = true
+      if ((this.activityType === 'ALT' || this.activityType === 'DEC') && this.form.well) {
+        validateWellClassAndIntendedWaterUse = false
       }
 
-      if (!this.form.well_class) {
-        errors.well_class = [ 'Well class is required.' ]
-      } else if (this.form.well_class === 'WATR_SPPLY') {
-        if (!this.form.intended_water_use || this.form.intended_water_use === 'NA') {
-          errors.intended_water_use = [ 'Intended water use is required when the well class is Water Supply.' ]
+      // Always validate well_class and intended_water_use except for ALT or DEC submissions with a
+      // well_tag_number specified
+      if (validateWellClassAndIntendedWaterUse) {
+        if (!this.form.intended_water_use) {
+          errors.intended_water_use = [ 'Intended water use is required.' ]
         }
-      } else { // all other well_class_codes
-        if (this.form.intended_water_use && this.form.intended_water_use !== 'NA') {
-          errors.intended_water_use = [ 'Intended water use only valid for a well class of Water Supply.' ]
+
+        if (!this.form.well_class) {
+          errors.well_class = [ 'Well class is required.' ]
+        } else if (this.form.well_class === 'WATR_SPPLY') {
+          if (!this.form.intended_water_use || this.form.intended_water_use === 'NA') {
+            errors.intended_water_use = [ 'Intended water use is required when the well class is Water Supply.' ]
+          }
+        } else { // all other well_class_codes
+          if (this.form.intended_water_use && this.form.intended_water_use !== 'NA') {
+            errors.intended_water_use = [ 'Intended water use only valid for a well class of Water Supply.' ]
+          }
         }
       }
 

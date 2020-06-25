@@ -88,11 +88,11 @@ describe('WellType.vue', () => {
     expect(intendedWaterUseSelectEl.element.disabled).toEqual(false)
   })
 
-  it.only('set intended water use to NA when well class is UNK', () => {
+  it('set intended water use to NA when well class is UNK', (done) => {
     const wrapper = mount(WellType, {
       localVue,
       store,
-      propsData: { wellClass: 'UNK', intendedWaterUse: null },
+      propsData: { wellClass: null, intendedWaterUse: null },
       sync: false
     })
 
@@ -102,16 +102,25 @@ describe('WellType.vue', () => {
     expect(intendedWaterUseSelectEl.element.disabled).toEqual(true)
     expect(intendedWaterUseSelectEl.element.value).toEqual('')
 
-    expect(wellClassSelectEl.element.value).toEqual('UNK')
+    wellClassSelectEl.setValue('UNK')
 
-    expect(wrapper.vm.wellClassInput).toEqual('UNK')
+    wrapper.vm.$nextTick(() => {
+      // Form inputs trigger a change event that needs the parent will catch and update the props
+      expect(wrapper.emitted()['update:wellClass']).toEqual([['UNK']])
+      wrapper.setProps({ wellClass: 'UNK' })
 
-    // Form inputs trigger a change event that needs the parent will catch and update the props
-    expect(wrapper.emitted()['update:intendedWaterUse']).toEqual([['NA']])
+      expect(wrapper.vm.wellClassInput).toEqual('UNK')
 
-    wrapper.setProps({ intendedWaterUse: 'NA' })
+      wrapper.vm.$nextTick(() => {
+        // Form inputs trigger a change event that needs the parent will catch and update the props
+        expect(wrapper.emitted()['update:intendedWaterUse']).toEqual([['NA']])
 
-    expect(wrapper.vm.intendedWaterUseInput).toEqual('NA')
-    expect(intendedWaterUseSelectEl.element.disabled).toEqual(true)
+        wrapper.setProps({ intendedWaterUse: 'NA' })
+
+        expect(wrapper.vm.intendedWaterUseInput).toEqual('NA')
+        expect(intendedWaterUseSelectEl.element.disabled).toEqual(true)
+        done()
+      })
+    })
   })
 })

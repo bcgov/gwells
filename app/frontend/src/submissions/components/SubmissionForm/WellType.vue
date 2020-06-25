@@ -279,11 +279,6 @@ export default {
       MAX_RESULTS: 50
     }
   },
-  mounted () {
-    if (this.wellClass !== null && this.wellClass !== 'WATR_SPPLY') {
-      this.intendedWaterUseInput = 'NA'
-    }
-  },
   computed: {
     subclasses () {
       if (this.codes && this.codes.well_classes && this.wellClass) {
