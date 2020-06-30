@@ -115,7 +115,7 @@ GROUP BY well_activity_code;
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('wells', '0115_not_null_well_class_and_intended_water_use_20200619_2053'),
+        ('wells', '0116_not_null_well_class_and_intended_water_use_20200619_2053'),
     ]
 
     operations = [
