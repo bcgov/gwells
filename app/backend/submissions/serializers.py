@@ -137,6 +137,14 @@ class WellSubmissionSerializerBase(AuditModelSerializer):
 
         errors = {}
 
+        if attrs.get('well_class'):
+            if attrs.get('well_class').well_class_code == 'WATR_SPPLY':
+                if not attrs.get('intended_water_use'):
+                    errors['intended_water_use'] = 'Intended water use is required when the well class is Water Supply.'
+            else:
+                if attrs.get('intended_water_use') and attrs.get('intended_water_use').intended_water_use_code != 'NA':
+                    errors['intended_water_use'] = 'Intended water use only valid for a well class of Water Supply.'
+
         # Check ground elevation fields for mutual requirement
         if 'ground_elevation' in attrs or 'ground_elevation_method' in attrs:
             if attrs.get('ground_elevation', None) is None and attrs.get('ground_elevation_method', None) is not None:
@@ -392,7 +400,7 @@ class WellConstructionSubmissionSerializer(WellSubmissionSerializerBase):
                   )
         extra_kwargs = {
             # TODO: reference appropriate serializer as above
-            'well_activity_type': {'required': False}
+            'well_activity_type': {'required': False},
         }
 
 
@@ -522,7 +530,7 @@ class WellAlterationSubmissionSerializer(WellSubmissionSerializerBase):
         )
         extra_kwargs = {
             # TODO: reference appropriate serializer as above
-            'well_activity_type': {'required': False}
+            'well_activity_type': {'required': False},
         }
 
 
@@ -764,7 +772,7 @@ class WellDecommissionSubmissionSerializer(WellSubmissionSerializerBase):
             'create_user', 'create_date',
         )
         extra_kwargs = {
-            'well_activity_type': {'required': False}
+            'well_activity_type': {'required': False},
         }
 
 

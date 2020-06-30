@@ -98,13 +98,14 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <form-input
             select
             v-model="intendedWaterUseInput"
-            :options="codes.intended_water_uses"
+            :options="intendedWaterUseOptions"
             value-field="intended_water_use_code"
             text-field="description"
             label="Intended Water Use"
             placeholder="Select intended use"
             :errors="errors['intended_water_use']"
             :loaded="fieldsLoaded['intended_water_use']"
+            :disabled="intendedWaterUseDisabled"
             id="intendedWaterUse"></form-input>
         </b-col>
       </b-row>
@@ -286,6 +287,19 @@ export default {
         return []
       }
     },
+    intendedWaterUseDisabled () {
+      return this.wellClass !== 'WATR_SPPLY'
+    },
+    intendedWaterUseOptions () {
+      if (this.wellClass === 'WATR_SPPLY') {
+        // Do not allow user to pick "Not Applicable" when well_class_code is WATR_SPPLY
+        return this.codes.intended_water_uses.filter((code) => {
+          return code.intended_water_use_code !== 'NA'
+        })
+      }
+
+      return this.codes.intended_water_uses
+    },
     ...mapGetters(['codes', 'userRoles', 'wells'])
   },
   methods: {
@@ -323,8 +337,13 @@ export default {
       this.wellTagOptions = []
     },
     wellClass (val, prev) {
-      if (val === null) {
-        this.wellSubclassInput = null
+      // Always reset wellSubClass when wellClass changes
+      this.wellSubclassInput = null
+
+      if (val !== null && val !== 'WATR_SPPLY') {
+        this.intendedWaterUseInput = 'NA'
+      } else {
+        this.intendedWaterUseInput = null
       }
     }
   }

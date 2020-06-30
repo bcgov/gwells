@@ -115,6 +115,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
 <script>
 import Vue from 'vue'
 import { mapActions, mapGetters, mapState } from 'vuex'
+import { diff } from 'deep-diff'
+import { camelCase } from 'lodash'
+import smoothScroll from 'smoothscroll'
+
 import ApiService from '@/common/services/ApiService.js'
 import { FETCH_CODES, FETCH_WELL_TAGS } from '../store/actions.types.js'
 import inputFormatMixin from '@/common/inputFormatMixin.js'
@@ -122,7 +126,6 @@ import SubmissionPreview from '@/submissions/components/SubmissionPreview/Submis
 import filterBlankRows from '@/common/filterBlankRows.js'
 import ActivitySubmissionForm from '@/submissions/components/SubmissionForm/ActivitySubmissionForm.vue'
 import parseErrors from '@/common/helpers/parseErrors.js'
-import { diff } from 'deep-diff'
 
 export default {
   name: 'SubmissionsHome',
@@ -277,6 +280,11 @@ export default {
       // Check to see if we are currently saving this form. If so - don't try to POST again
       if (this.formSubmitLoading) { return }
 
+      if (!this.isFormValid()) {
+        this.showErrorMessages()
+        return
+      }
+
       this.formSubmitLoading = true
       this.formSubmitSuccess = false
       this.formSubmitError = false
@@ -374,13 +382,8 @@ export default {
         }
 
         this.formSubmitError = true
-        let cleanErrors = parseErrors(this.errors)
-        let errTxt = cleanErrors.length > 1 ? 'Input errors.' : 'Input error.'
-        // Error notifications
-        this.$noty.error('<div class="errorTitle">' + errTxt + '</div>', { timeout: 2000, killer: true })
-        cleanErrors.forEach(e => {
-          this.$noty.error('<div aria-label="Close" class="closeBtn">x</div><div class="errorText"><b>Error: </b>' + e + '</div>', { timeout: false })
-        })
+
+        this.showErrorMessages()
       }).finally((response) => {
         this.formSubmitLoading = false
 
@@ -390,6 +393,15 @@ export default {
         if (savingNotification && !savingNotification.closed) {
           savingNotification.close()
         }
+      })
+    },
+    showErrorMessages () {
+      let cleanErrors = parseErrors(this.errors)
+      let errTxt = cleanErrors.length > 1 ? 'Input errors.' : 'Input error.'
+      // Error notifications
+      this.$noty.error('<div class="errorTitle">' + errTxt + '</div>', { timeout: 2000, killer: true })
+      cleanErrors.forEach(e => {
+        this.$noty.error('<div aria-label="Close" class="closeBtn">x</div><div class="errorText"><b>Error: </b>' + e + '</div>', { timeout: false })
       })
     },
     formChanges () {
@@ -536,7 +548,37 @@ export default {
       }
       this.componentUpdateTrigger = Date.now()
     },
+    isFormValid () {
+      const errors = {}
 
+      let validateWellClassAndIntendedWaterUse = true
+      if ((this.activityType === 'ALT' || this.activityType === 'DEC') && this.form.well) {
+        validateWellClassAndIntendedWaterUse = false
+      }
+
+      // Always validate well_class and intended_water_use except for ALT or DEC submissions with a
+      // well_tag_number specified
+      if (validateWellClassAndIntendedWaterUse) {
+        if (!this.form.intended_water_use) {
+          errors.intended_water_use = [ 'Intended water use is required.' ]
+        }
+
+        if (!this.form.well_class) {
+          errors.well_class = [ 'Well class is required.' ]
+        } else if (this.form.well_class === 'WATR_SPPLY') {
+          if (!this.form.intended_water_use || this.form.intended_water_use === 'NA') {
+            errors.intended_water_use = [ 'Intended water use is required when the well class is Water Supply.' ]
+          }
+        } else { // all other well_class_codes
+          if (this.form.intended_water_use && this.form.intended_water_use !== 'NA') {
+            errors.intended_water_use = [ 'Intended water use only valid for a well class of Water Supply.' ]
+          }
+        }
+      }
+
+      this.errors = errors
+      return Object.keys(errors).length === 0
+    },
     setWellTagNumber (well) {
       // setWellTagNumber is used to link an activity report to a well other than through the dropdown menu.
       // the dropdown menu returns an object so this method also does.
@@ -561,6 +603,14 @@ export default {
     handlePreviewButton () {
       if (!this.formChanges()) {
         this.$noty.info('<div class="errorTitle">Please add some data to your submission.</div>', { killer: true })
+        return
+      }
+
+      if (!this.isFormValid()) {
+        this.showErrorMessages()
+        const firstField = Object.keys(this.errors)[0] || 'no-field-name'
+        const el = this.$el.querySelector(`#${camelCase(firstField)}`) || null
+        if (el) { smoothScroll(el, 500) }
         return
       }
 
