@@ -21,8 +21,14 @@ export function createWellPopupElement (features, map, $router, options = {}) {
       route: { name: 'wells-detail', params: { id: wellTagNumber } },
       text: wellTagNumber
     },
-    `Identification Plate Number: ${identificationPlateNumber || '—'}`,
-    `Address: ${streetAddress || '—'}`,
+    {
+      prefix: 'Identification Plate Number: ',
+      text: identificationPlateNumber || '—'
+    },
+    {
+      prefix: 'Address: ',
+      text: streetAddress || '—'
+    },
     {
       className: isPublished === false ? 'unpublished' : '',
       text: isPublished === false ? 'unpublished' : null

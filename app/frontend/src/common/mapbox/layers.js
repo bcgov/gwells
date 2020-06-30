@@ -6,6 +6,7 @@ export const WELLS_SOURCE_ID = 'postgis_ftw.gwells_well_view'
 export const WELLS_BASE_AND_ARTESIAN_LAYER_ID = 'wells-with-artesian'
 export const WELLS_UNCORRELATED_LAYER_ID = 'wells-uncorrelated'
 export const WELLS_EMS_LAYER_ID = 'wells-ems'
+export const WELLS_OBSERVATION_LAYER_ID = 'wells-observation'
 
 export const SEARCHED_WELLS_SOURCE_ID = 'searched-wells'
 export const SEARCHED_WELLS_LAYER_ID = 'highlight-wells-with-artesian'
@@ -26,14 +27,28 @@ export const DATABC_ROADS_LAYER_ID = 'DATABC-roads-layer'
 export const DATABC_CADASTREL_SOURCE_ID = 'DATABC-cadastrels-source'
 export const DATABC_CADASTREL_LAYER_ID = 'DATABC-cadastrels-layer'
 
-export const DATABC_ECOCAT_SOURCE_ID = 'DATABC-ecocat-source'
+export const DATABC_ECOCAT_SOURCE_ID = 'WHSE_FISH.ACAT_REPORT_POINT_PUB_SVW'
 export const DATABC_ECOCAT_LAYER_ID = 'DATABC-ecocat-layer'
 
-export const DATABC_WATER_LICENCES_SOURCE_ID = 'DATABC-water-licences-source'
-export const DATABC_WATER_LICENCES_LAYER_ID = 'DATABC-water-licences-layer'
+export const DATABC_WATER_LICENCES_SOURCE_ID = 'WHSE_WATER_MANAGEMENT.WLS_WATER_RIGHTS_LICENCES_SV'
+export const DATABC_SURFACE_WATER_LICENCES_LAYER_ID = 'DATABC-surface-water-licences-layer'
+export const DATABC_GROUND_WATER_LICENCES_LAYER_ID = 'DATABC-ground-water-licences-layer'
 
-export const DATABC_OBSERVATION_WELLS_SOURCE_ID = 'DATABC-obswells-source'
-export const DATABC_OBSERVATION_WELLS_LAYER_ID = 'DATABC-obswells-layer'
+export const ECOCAT_FW_FEATURE_CODE = 'WC00015300'
+
+export function vectorTileServerUrl (sourceLayerName) {
+  return `${VECTOR_TILE_SERVER}${sourceLayerName}/{z}/{x}/{y}.pbf`
+}
+
+export function vectorSourceConfig (sourceLayerName, options = {}) {
+  return {
+    type: 'vector',
+    tiles: [ vectorTileServerUrl(sourceLayerName) ],
+    minzoom: 4,
+    maxzoom: 17,
+    ...options
+  }
+}
 
 export const DATABC_ROADS_SOURCE = {
   type: 'raster',
@@ -63,27 +78,19 @@ export const DATABC_ECOCAT_SOURCE = {
   ],
   minzoom: 7,
   maxzoom: 24,
-  tileSize: 512
+  tileSize: 512,
+  promoteId: 'REPORT_ID'
 }
 
 export const DATABC_WATER_LICENCES_SOURCE = {
-  type: 'raster',
+  type: 'vector',
   tiles: [
-    'https://openmaps.gov.bc.ca/geo/pub/ows?&service=WMS&request=GetMap&layers=pub%3AWHSE_WATER_MANAGEMENT.WLS_WATER_RIGHTS_LICENCES_SV&format=image%2Fpng&transparent=true&version=1.1.1&width=256&height=256&srs=EPSG:3857&bbox={bbox-epsg-3857}'
+    'https://openmaps.gov.bc.ca/geo/pub/ows?&service=WMS&request=GetMap&layers=pub%3AWHSE_WATER_MANAGEMENT.WLS_WATER_RIGHTS_LICENCES_SV&format=application/x-protobuf;type=mapbox-vector&version=1.1.1&width=512&height=512&srs=EPSG:3857&bbox={bbox-epsg-3857}'
   ],
-  minzoom: 6,
+  minzoom: 7,
   maxzoom: 24,
-  tileSize: 256
-}
-
-export const DATABC_OBSERVATION_WELLS_SOURCE = {
-  type: 'raster',
-  tiles: [
-    'https://openmaps.gov.bc.ca/geo/pub/ows?&service=WMS&request=GetMap&layers=pub%3AWHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW&format=image%2Fpng&transparent=true&version=1.1.1&width=256&height=256&srs=EPSG:3857&bbox={bbox-epsg-3857}&styles=7707'
-  ],
-  minzoom: 4,
-  maxzoom: 24,
-  tileSize: 256
+  tileSize: 512,
+  promoteId: 'LICENCE_NUMBER'
 }
 
 export const DATABC_ROADS_LAYER = {
@@ -98,51 +105,8 @@ export const DATABC_CADASTREL_LAYER = {
   source: DATABC_CADASTREL_SOURCE_ID
 }
 
-export const DATABC_ECOCAT_LAYER = {
-  id: DATABC_ECOCAT_LAYER_ID,
-  source: DATABC_ECOCAT_SOURCE_ID,
-  'source-layer': 'WHSE_FISH.ACAT_REPORT_POINT_PUB_SVW',
-  type: 'circle',
-  paint: {
-    'circle-color': '#000',
-    'circle-radius': 5
-  },
-  layout: {
-    visibility: 'none'
-  }
-}
-
-export const DATABC_WATER_LICENCES_LAYER = {
-  type: 'raster',
-  id: DATABC_WATER_LICENCES_LAYER_ID,
-  source: DATABC_WATER_LICENCES_SOURCE_ID,
-  layout: {
-    visibility: 'none'
-  }
-}
-
-export const DATABC_OBSERVATION_WELLS_LAYER = {
-  type: 'raster',
-  id: DATABC_OBSERVATION_WELLS_LAYER_ID,
-  source: DATABC_OBSERVATION_WELLS_SOURCE_ID,
-  layout: {
-    visibility: 'none'
-  }
-}
-
-export function vectorTileServerUrl (sourceLayerName) {
-  return `${VECTOR_TILE_SERVER}${sourceLayerName}/{z}/{x}/{y}.pbf`
-}
-
-export function vectorSourceConfig (sourceLayerName, options = {}) {
-  return {
-    type: 'vector',
-    tiles: [ vectorTileServerUrl(sourceLayerName) ],
-    minzoom: 4,
-    maxzoom: 17,
-    ...options
-  }
-}
+export const WELLS_SOURCE = vectorSourceConfig(WELLS_SOURCE_ID, { promoteId: 'well_tag_number' })
+export const AQUIFERS_SOURCE = vectorSourceConfig(AQUIFERS_SOURCE_ID, { promoteId: 'aquifer_id' })
 
 function vectorLayerConfig (id, source, painttype, paint = {}, layout = {}, filter = null) {
   const cfg = {
@@ -204,6 +168,52 @@ export function toggleAquiferHover (map, aquiferId, hoveredState) {
     { source: AQUIFERS_SOURCE_ID, id: aquiferId, sourceLayer: AQUIFERS_SOURCE_ID },
     { hover: hoveredState }
   )
+}
+
+export function ecoCatLayer (options = {}) {
+  const layerId = options.id || DATABC_ECOCAT_LAYER_ID
+  const styles = defaultsDeep(options.styles, {
+    'circle-color': [
+      'case',
+      ['==', ['get', 'FEATURE_CODE'], ECOCAT_FW_FEATURE_CODE], '#000',
+      '#999'
+    ],
+    'circle-radius': 5
+  })
+
+  return vectorLayerConfig(layerId, options.source || DATABC_ECOCAT_SOURCE_ID, options.layerType || 'circle', styles, options.layout)
+}
+
+export function surfaceWaterLicencesLayer (options = {}) {
+  const layerId = options.id || DATABC_SURFACE_WATER_LICENCES_LAYER_ID
+  const styles = defaultsDeep(options.styles, {
+    'circle-color': '#5ED900',
+    'circle-radius': 4,
+    'circle-stroke-color': '#000',
+    'circle-stroke-width': 0.75
+  })
+
+  const filter = [
+    'all', ['in', ['get', 'POD_SUBTYPE'], 'POD'], ['==', ['get', 'POD_STATUS'], 'Active']
+  ]
+
+  return vectorLayerConfig(layerId, options.source || DATABC_WATER_LICENCES_SOURCE_ID, options.layerType || 'circle', styles, options.layout, filter)
+}
+
+export function groundWaterLicencesLayer (options = {}) {
+  const layerId = options.id || DATABC_GROUND_WATER_LICENCES_LAYER_ID
+  const styles = defaultsDeep(options.styles, {
+    'circle-color': 'yellow',
+    'circle-radius': 4,
+    'circle-stroke-color': '#000',
+    'circle-stroke-width': 0.75
+  })
+
+  const filter = [
+    'all', ['!', ['in', ['get', 'POD_SUBTYPE'], 'POD']], ['==', ['get', 'POD_STATUS'], 'Active']
+  ]
+
+  return vectorLayerConfig(layerId, options.source || DATABC_WATER_LICENCES_SOURCE_ID, options.layerType || 'circle', styles, options.layout, filter)
 }
 
 // Builds MapBox layer config object for wells with artesian ones with a fuchsia outline
@@ -268,42 +278,54 @@ export function focusedWellsLayer (options = {}) {
 export function wellsUncorrelatedLayer (options = {}) {
   const layerId = options.id || WELLS_UNCORRELATED_LAYER_ID
   const styles = defaultsDeep(options.styles, {
-    'circle-color': [
-      'case',
-      ['to-boolean', ['get', 'aquifer_id']], 'transparent',
-      '#FFFFFF'
-    ],
+    'circle-color': '#FFFFFF',
     'circle-radius': 3,
     'circle-stroke-color': '#000',
-    'circle-stroke-width': [
-      'case',
-      ['to-boolean', ['get', 'aquifer_id']], 0,
-      1
-    ]
+    'circle-stroke-width': 1
   })
 
-  return vectorLayerConfig(layerId, options.source || WELLS_SOURCE_ID, options.layerType || 'circle', styles, options.layout)
+  const filter = [
+    '!', ['to-boolean', ['get', 'aquifer_id']]
+  ]
+
+  return vectorLayerConfig(layerId, options.source || WELLS_SOURCE_ID, options.layerType || 'circle', styles, options.layout, filter)
 }
 
 // Builds MapBox layer config object for wells that have EMS data
 export function wellsEmsLayer (options = {}) {
   const layerId = options.id || WELLS_EMS_LAYER_ID
   const styles = defaultsDeep(options.styles, {
+    'circle-color': '#0CA287',
+    'circle-radius': 3,
+    'circle-stroke-color': '#000',
+    'circle-stroke-width': 1
+  })
+
+  const filter = [
+    'to-boolean', ['get', 'ems']
+  ]
+
+  return vectorLayerConfig(layerId, options.source || WELLS_SOURCE_ID, options.layerType || 'circle', styles, options.layout, filter)
+}
+
+export function observationWellsLayer (options = {}) {
+  const layerId = options.id || WELLS_OBSERVATION_LAYER_ID
+  const styles = defaultsDeep(options.styles, {
     'circle-color': [
       'case',
-      ['to-boolean', ['get', 'ems']], '#0CA287',
-      'transparent'
+      ['==', ['get', 'observation_well_status_code'], 'Active'], options.activeColour || '#8E1919',
+      options.inactiveColour || '#DB6D6D'
     ],
     'circle-radius': 3,
     'circle-stroke-color': '#000',
-    'circle-stroke-width': [
-      'case',
-      ['to-boolean', ['get', 'ems']], 1,
-      0
-    ]
+    'circle-stroke-width': 1
   })
 
-  return vectorLayerConfig(layerId, options.source || WELLS_SOURCE_ID, options.layerType || 'circle', styles, options.layout)
+  const filter = [
+    'to-boolean', ['get', 'observation_well_number']
+  ]
+
+  return vectorLayerConfig(layerId, options.source || WELLS_SOURCE_ID, options.layerType || 'circle', styles, options.layout, filter)
 }
 
 // Builds MapBox layer config object for aquifer line outlines
