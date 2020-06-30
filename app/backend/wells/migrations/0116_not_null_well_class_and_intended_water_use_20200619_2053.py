@@ -7,7 +7,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('wells', '0114_update_well_class_indended_water_use_20200616_2027'),
+        ('wells', '0115_update_well_class_indended_water_use_20200616_2027'),
     ]
 
     operations = [
