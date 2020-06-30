@@ -81,7 +81,7 @@ UPDATE_FIELDS_PROVIDED = """
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('wells', '0113_update_tileserver_views_20200528_1413'),
+        ('wells', '0114_obswells_in_vector_tileserver_view_20200618_1800'),
     ]
 
     operations = [
