@@ -21,7 +21,7 @@
    "pk": 123,
    "fields": {"aquifer_id": 123,
               "backfill_depth": null,
-              "intended_water_use": null,
+              "intended_water_use": "NA",
               "owner_full_name": "John Smith",
               "utm_zone_code": null,
               "legal_section": "",

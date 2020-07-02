@@ -95,10 +95,7 @@ class TestConstruction(TestSubmissionsBase):
             ]
         }
         response = self.client.post(reverse('CON', kwargs={'version': 'v1'}), data, format='json')
-        if response.status_code != HTTPStatus.CREATED:
-            # For this test, we're expecting it to be created, so we give
-            # some useful logging information for debugging.
-            logger.warning(response)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         # Get the liner info on the submission
         liner = ActivitySubmissionLinerPerforation.objects.get(
             activity_submission__well__well_tag_number=response.data['well'])
@@ -116,10 +113,7 @@ class TestConstruction(TestSubmissionsBase):
             ]
         }
         response = self.client.post(reverse('CON', kwargs={'version': 'v1'}), data, format='json')
-        if response.status_code != HTTPStatus.CREATED:
-            # For this test, we're expecting it to be created, so we give
-            # some useful logging information for debugging.
-            logger.warning(response)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         # Get the liner info on the submission
         liner = LinerPerforation.objects.get(
             well__well_tag_number=response.data['well'])
@@ -142,6 +136,7 @@ class TestConstruction(TestSubmissionsBase):
         }
         # Post an construction submissions.
         response = self.client.post(reverse('CON', kwargs={'version': 'v1'}), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         # Get the submission back.
         submission = ActivitySubmission.objects.get(well__well_tag_number=response.data['well'])
         # Get the resultant lithology record
@@ -165,6 +160,7 @@ class TestConstruction(TestSubmissionsBase):
         }
         # Post an construction submissions.
         response = self.client.post(reverse('CON', kwargs={'version': 'v1'}), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         # Get the well back.
         well = Well.objects.get(well_tag_number=response.data['well'])
         # Get the resultant lithology record
@@ -189,9 +185,7 @@ class TestConstruction(TestSubmissionsBase):
         }
         # Post an construction submissions.
         response = self.client.post(reverse('CON', kwargs={'version': 'v1'}), data, format='json')
-        if response.status_code != status.HTTP_201_CREATED:
-            # Useful for debugging failing tests.
-            logger.warn(response)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         # Get the well back.
         well = Well.objects.get(well_tag_number=response.data['well'])
         # Get the resultant lithology record
@@ -216,9 +210,7 @@ class TestConstruction(TestSubmissionsBase):
         }
         # Post an construction submissions.
         response = self.client.post(reverse('CON', kwargs={'version': 'v1'}), data, format='json')
-        if response.status_code != status.HTTP_201_CREATED:
-            # Useful for debugging failing tests.
-            logger.warn(response)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         # Get the well back.
         well = Well.objects.get(well_tag_number=response.data['well'])
         # Get the resultant lithology record
@@ -242,9 +234,7 @@ class TestConstruction(TestSubmissionsBase):
         }
         # Post an construction submissions.
         response = self.client.post(reverse('CON', kwargs={'version': 'v1'}), data, format='json')
-        if response.status_code != status.HTTP_201_CREATED:
-            # Useful for debugging failing tests.
-            logger.warn(response)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         # Get the well back.
         well = Well.objects.get(well_tag_number=response.data['well'])
         # Get the resultant lithology record
@@ -267,7 +257,8 @@ class TestEdit(TestSubmissionsBase):
             'well': well.well_tag_number,
         }
         # Post an edit.
-        self.client.post(reverse('STAFF_EDIT', kwargs={'version': 'v1'}), data, format='json')
+        response = self.client.post(reverse('STAFF_EDIT', kwargs={'version': 'v1'}), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         # We expect the rendered well to contain the drilling methods.
         well = Well.objects.get(well_tag_number=well.well_tag_number)
         saved_well_codes = sorted(
@@ -285,7 +276,8 @@ class TestEdit(TestSubmissionsBase):
             'well': well.well_tag_number
         }
         # Post an edit
-        self.client.post(reverse('STAFF_EDIT', kwargs={'version': 'v1'}), data, format='json')
+        response = self.client.post(reverse('STAFF_EDIT', kwargs={'version': 'v1'}), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         # We expect the legacy record to contain the drilling methods.
         legacy_submission = ActivitySubmission.objects.get(
             well=well,
@@ -306,7 +298,8 @@ class TestEdit(TestSubmissionsBase):
             'well': well.well_tag_number
         }
         # Post an edit
-        self.client.post(reverse('STAFF_EDIT', kwargs={'version': 'v1'}), data, format='json')
+        response = self.client.post(reverse('STAFF_EDIT', kwargs={'version': 'v1'}), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         # We expect the well record to contain the development methods.
         well = Well.objects.get(well_tag_number=well.well_tag_number)
         saved_well_codes = [
@@ -325,7 +318,8 @@ class TestEdit(TestSubmissionsBase):
             'well': well.well_tag_number
         }
         # Post an edit
-        self.client.post(reverse('STAFF_EDIT', kwargs={'version': 'v1'}), data, format='json')
+        response = self.client.post(reverse('STAFF_EDIT', kwargs={'version': 'v1'}), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         # We expect the legacy record to contain the development methods.
         legacy_submission = ActivitySubmission.objects.get(
             well=well,
@@ -337,29 +331,31 @@ class TestEdit(TestSubmissionsBase):
 
     def test_screen_details_persist_on_well(self):
         well = Well.objects.create(create_user='A', update_user='B')
-        screen = Screen.objects.create(well=well, start=0, end=10)
-        screen = Screen.objects.create(well=well, start=10, end=20)
+        Screen.objects.create(well=well, start=0, end=10)
         # Screen HAS to be sent!
         data = {
             'well': well.well_tag_number,
             'screen_set': [
-                {'start': item.start, 'end': item.end} for item in well.screen_set.all()
+                {'start': 0, 'end': 10, 'assembly_type': 'SCREEN'},
+                {'start': 10, 'end': 20, 'assembly_type': 'SCREEN'},
             ]
         }
         # Post an edit
-        self.client.post(reverse('STAFF_EDIT', kwargs={'version': 'v1'}), data, format='json')
+        response = self.client.post(reverse('STAFF_EDIT', kwargs={'version': 'v1'}), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         well = Well.objects.get(well_tag_number=well.well_tag_number)
         self.assertEqual(well.screen_set.all().count(), 2)
 
     def test_casings_persist_on_legacy(self):
         well = Well.objects.create(create_user='A', update_user='B')
-        screen = Screen.objects.create(well=well, start=0, end=10)
-        screen = Screen.objects.create(well=well, start=10, end=20)
+        Screen.objects.create(well=well, start=0, end=10)
+        Screen.objects.create(well=well, start=10, end=20)
         data = {
             'well': well.well_tag_number
         }
         # Post an edit
-        self.client.post(reverse('STAFF_EDIT', kwargs={'version': 'v1'}), data, format='json')
+        response = self.client.post(reverse('STAFF_EDIT', kwargs={'version': 'v1'}), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         legacy_submission = ActivitySubmission.objects.get(
             well=well,
             well_activity_type=WellActivityCode.types.legacy())
@@ -372,7 +368,8 @@ class TestEdit(TestSubmissionsBase):
             'well': well.well_tag_number,
             'water_quality_characteristics': ['CLOUDY', 'FRESH', 'GAS']
         }
-        self.client.post(reverse('STAFF_EDIT', kwargs={'version': 'v1'}), data, format='json')
+        response = self.client.post(reverse('STAFF_EDIT', kwargs={'version': 'v1'}), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         well = Well.objects.get(well_tag_number=well.well_tag_number)
         self.assertEqual(well.water_quality_characteristics.count(), 3)
 
@@ -407,16 +404,15 @@ class TestEdit(TestSubmissionsBase):
             ],
             'decommission_description_set': []
         }
-        response = self.client.post(reverse('STAFF_EDIT', kwargs={'version': 'v1'}), data, format='json')
-        self.assertEqual(response.status_code,
-                         status.HTTP_201_CREATED, response.data)
+        response = response = self.client.post(reverse('STAFF_EDIT', kwargs={'version': 'v1'}), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_end_greater_than_zero_on_legacy(self):
         """ Test that if a legacy well does not have correct lithology info, it doesn't cause problems """
         # We create a pre-existing "legacy well"
         well = Well.objects.create(create_user='Blah', update_user='Blah')
         # We attached lithology to the well, that's should fail validation.
-        lithology = LithologyDescription.objects.create(
+        LithologyDescription.objects.create(
             start=0,
             end=0,
             well=well,
@@ -434,9 +430,8 @@ class TestEdit(TestSubmissionsBase):
                 }
             ]
         }
-        response = self.client.post(reverse('STAFF_EDIT', kwargs={'version': 'v1'}), data, format='json')
-        self.assertEqual(response.status_code,
-                         status.HTTP_201_CREATED, response.data)
+        response = response = self.client.post(reverse('STAFF_EDIT', kwargs={'version': 'v1'}), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_staff_edit_with_bad_lithology_in_old_well_returns_bad_request(self):
         """ Test that if a legacy well does not have correct lithology info, that it doesn't fail
@@ -450,9 +445,8 @@ class TestEdit(TestSubmissionsBase):
         data = {
             'well': well.well_tag_number
         }
-        response = self.client.post(reverse('STAFF_EDIT', kwargs={'version': 'v1'}), data, format='json')
-        self.assertEqual(response.status_code,
-                         status.HTTP_400_BAD_REQUEST, response.data)
+        response = response = self.client.post(reverse('STAFF_EDIT', kwargs={'version': 'v1'}), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_staff_edit_with_bad_lithology_in_old_well_but_edit_good_returns_ok(self):
         """ Test that if a legacy well does not have correct lithology info, but we submit
@@ -472,9 +466,8 @@ class TestEdit(TestSubmissionsBase):
                 }
             ]
         }
-        response = self.client.post(reverse('STAFF_EDIT', kwargs={'version': 'v1'}), data, format='json')
-        self.assertEqual(response.status_code,
-                         status.HTTP_201_CREATED, response.data)
+        response = response = self.client.post(reverse('STAFF_EDIT', kwargs={'version': 'v1'}), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_staff_edit_with_bad_lithology_in_old_well_but_edit_saves_new_data(self):
         """ Test that if a legacy well does not have correct lithology info, but we submit
@@ -494,7 +487,8 @@ class TestEdit(TestSubmissionsBase):
                 }
             ]
         }
-        self.client.post(reverse('STAFF_EDIT', kwargs={'version': 'v1'}), data, format='json')
+        response = self.client.post(reverse('STAFF_EDIT', kwargs={'version': 'v1'}), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         well = Well.objects.get(well_tag_number=well.well_tag_number)
         lithology = well.lithologydescription_set.all()
         self.assertAlmostEqual(lithology[0].start, 0)
@@ -516,13 +510,11 @@ class TestEdit(TestSubmissionsBase):
             'well': well.well_tag_number
         }
 
-        response = self.client.post(reverse('STAFF_EDIT', kwargs={'version': 'v1'}), data, format='json')
-        self.assertEqual(response.status_code,
-                         status.HTTP_201_CREATED, response.data)
+        response = response = self.client.post(reverse('STAFF_EDIT', kwargs={'version': 'v1'}), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         data['owner_city'] = 'Somewhere'
-        response = self.client.post(reverse('STAFF_EDIT', kwargs={'version': 'v1'}), data, format='json')
-        self.assertEqual(response.status_code,
-                         status.HTTP_201_CREATED, response.data)
+        response = response = self.client.post(reverse('STAFF_EDIT', kwargs={'version': 'v1'}), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_update_construction_dates(self):
         """ Check that altering the constructions dates on a staff edit is reflected on the well """
@@ -532,7 +524,8 @@ class TestEdit(TestSubmissionsBase):
             'construction_start_date': '1999-05-05',
             'construction_end_date': '1999-06-06'
         }
-        self.client.post(reverse('STAFF_EDIT', kwargs={'version': 'v1'}), data, format='json')
+        response = self.client.post(reverse('STAFF_EDIT', kwargs={'version': 'v1'}), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         well = Well.objects.get(well_tag_number=well.well_tag_number)
         self.assertEqual(well.construction_start_date, datetime.date(1999, 5, 5))
         self.assertEqual(well.construction_end_date, datetime.date(1999, 6, 6))
@@ -545,7 +538,8 @@ class TestEdit(TestSubmissionsBase):
             'alteration_start_date': '1999-05-05',
             'alteration_end_date': '1999-06-06'
         }
-        self.client.post(reverse('STAFF_EDIT', kwargs={'version': 'v1'}), data, format='json')
+        response = self.client.post(reverse('STAFF_EDIT', kwargs={'version': 'v1'}), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         well = Well.objects.get(well_tag_number=well.well_tag_number)
         self.assertEqual(well.alteration_start_date, datetime.date(1999, 5, 5))
         self.assertEqual(well.alteration_end_date, datetime.date(1999, 6, 6))
@@ -558,7 +552,8 @@ class TestEdit(TestSubmissionsBase):
             'decommission_start_date': '1999-05-05',
             'decommission_end_date': '1999-06-06'
         }
-        self.client.post(reverse('STAFF_EDIT', kwargs={'version': 'v1'}), data, format='json')
+        response = self.client.post(reverse('STAFF_EDIT', kwargs={'version': 'v1'}), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         well = Well.objects.get(well_tag_number=well.well_tag_number)
         self.assertEqual(well.decommission_start_date, datetime.date(1999, 5, 5))
         self.assertEqual(well.decommission_end_date, datetime.date(1999, 6, 6))
@@ -581,7 +576,8 @@ class TestEdit(TestSubmissionsBase):
             ]
         }
         # Post an edit submissions.
-        response = self.client.post(reverse('STAFF_EDIT', kwargs={'version': 'v1'}), data, format='json')
+        response = response = self.client.post(reverse('STAFF_EDIT', kwargs={'version': 'v1'}), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         # Get the submission back.
         submission = ActivitySubmission.objects.get(
             well__well_tag_number=response.data['well'],
@@ -606,7 +602,8 @@ class TestEdit(TestSubmissionsBase):
             ]
         }
         # Post an edit submissions.
-        response = self.client.post(reverse('STAFF_EDIT', kwargs={'version': 'v1'}), data, format='json')
+        response = response = self.client.post(reverse('STAFF_EDIT', kwargs={'version': 'v1'}), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         # Get the well back.
         well = Well.objects.get(well_tag_number=well.well_tag_number)
         # Get the resultant lithology record
@@ -627,7 +624,8 @@ class TestEdit(TestSubmissionsBase):
             ]
         }
         # Post an edit submissions.
-        response = self.client.post(reverse('STAFF_EDIT', kwargs={'version': 'v1'}), data, format='json')
+        response = response = self.client.post(reverse('STAFF_EDIT', kwargs={'version': 'v1'}), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         # Get the submission back.
         liner = ActivitySubmissionLinerPerforation.objects.get(
             activity_submission__well__well_tag_number=well.well_tag_number,
@@ -650,7 +648,8 @@ class TestEdit(TestSubmissionsBase):
             ]
         }
         # Post an edit submissions.
-        response = self.client.post(reverse('STAFF_EDIT', kwargs={'version': 'v1'}), data, format='json')
+        response = response = self.client.post(reverse('STAFF_EDIT', kwargs={'version': 'v1'}), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         # Get the submission back.
         liner = ActivitySubmissionLinerPerforation.objects.get(
             activity_submission__well__well_tag_number=well.well_tag_number,
@@ -672,7 +671,8 @@ class TestEdit(TestSubmissionsBase):
             ]
         }
         # Post an edit submissions.
-        response = self.client.post(reverse('STAFF_EDIT', kwargs={'version': 'v1'}), data, format='json')
+        response = response = self.client.post(reverse('STAFF_EDIT', kwargs={'version': 'v1'}), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         # Get the submission back.
         liner = LinerPerforation.objects.get(
             well__well_tag_number=well.well_tag_number
@@ -867,8 +867,7 @@ class TestAuditInformation(APITestCase):
         # When a well is created as a result of a construction submission, the create_user on the
         # well must match that of the submission.
         url = reverse('CON', kwargs={'version': 'v1'})
-        data = {
-        }
+        data = {}
         response = self.client.post(url, data, format='json')
         well = Well.objects.get(well_tag_number=response.data['well'])
         self.assertEqual(well.create_user, self.user.username)

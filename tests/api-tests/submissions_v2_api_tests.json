@@ -419,6 +419,14 @@
 											"",
 											"pm.test(\"We expect the default accuracy code to be 'H' (GPS)\", function() {",
 											"    pm.expect(jsonData.coordinate_acquisition_code).to.equal('H')",
+											"})",
+											"",
+											"pm.test(\"Well class is set to UNK\", function() {",
+											"    pm.expect(jsonData.well_class).to.equal(\"UNK\")",
+											"})",
+											"",
+											"pm.test(\"Intended water use code is set to NA\", function() {",
+											"    pm.expect(jsonData.intended_water_use).to.equal(\"NA\")",
 											"})"
 										],
 										"type": "text/javascript"
