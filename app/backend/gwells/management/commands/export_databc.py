@@ -14,7 +14,7 @@
 import logging
 import json
 import os
-from datetime import datetime
+import datetime
 from decimal import Decimal
 
 from django.core.management.base import BaseCommand
@@ -166,7 +166,13 @@ select
     SUBSTRING(aquifer.aquifer_name for 100) as name,
     SUBSTRING(aquifer.location_description for 100) as location,
     SUBSTRING(CONCAT('https://apps.nrs.gov.bc.ca/gwells/aquifers/', aquifer.aquifer_id) for 255) as detail,
-    SUBSTRING(aquifer_material_code.description for 100) as material,
+    SUBSTRING(
+        CASE WHEN aquifer_material_code.aquifer_material_code IN ('G', 'S', 'GS') THEN
+            'Sand and Gravel'
+        ELSE
+            aquifer_material_code.description
+        END
+    for 100) AS material,
     SUBSTRING(aquifer_subtype_code.description for 100) as subtype,
     SUBSTRING(aquifer_vulnerability_code.description for 100) as vulnerability,
     SUBSTRING(aquifer_productivity_code.description for 100) as productivity,
@@ -199,44 +205,50 @@ from aquifer
     order by aquifer.aquifer_id
 """)
 AQUIFERS_SQL_V2 = ("""
-select
-    ST_AsGeoJSON(ST_Transform(a.geom, 4326)) :: json as "geometry",
-    a.aquifer_id as aquifer_id,
-    SUBSTRING(a.aquifer_name for 100) as name,
-    SUBSTRING(a.location_description for 100) as location,
-    SUBSTRING(CONCAT('https://apps.nrs.gov.bc.ca/gwells/aquifers/', a.aquifer_id) for 255) as detail,
-    SUBSTRING(aquifer_material_code.description for 100) as material,
-    SUBSTRING(aquifer_subtype_code.description for 100) as subtype,
-    SUBSTRING(aquifer_vulnerability_code.description for 100) as vulnerability,
-    SUBSTRING(aquifer_productivity_code.description for 100) as productivity,
-    SUBSTRING(aquifer_demand_code.description for 100) as demand,
-    SUBSTRING(water_use_code.description for 100) as water_use,
-    SUBSTRING(quality_concern_code.description for 100) as quality_concern,
-    SUBSTRING(a.litho_stratographic_unit for 100) as litho_stratographic_unit,
+SELECT
+    ST_AsGeoJSON(ST_Transform(a.geom, 4326)) :: json AS "geometry",
+    a.aquifer_id AS aquifer_id,
+    SUBSTRING(a.aquifer_name for 100) AS name,
+    SUBSTRING(a.location_description for 100) AS location,
+    SUBSTRING(CONCAT('https://apps.nrs.gov.bc.ca/gwells/aquifers/', a.aquifer_id) for 255) AS detail,
+    SUBSTRING(
+        CASE WHEN aquifer_material_code.aquifer_material_code IN ('G', 'S', 'GS') THEN
+            'Sand and Gravel'
+        ELSE
+            aquifer_material_code.description
+        END
+    for 100) AS material,
+    SUBSTRING(aquifer_subtype_code.description for 100) AS subtype,
+    SUBSTRING(aquifer_vulnerability_code.description for 100) AS vulnerability,
+    SUBSTRING(aquifer_productivity_code.description for 100) AS productivity,
+    SUBSTRING(aquifer_demand_code.description for 100) AS demand,
+    SUBSTRING(water_use_code.description for 100) AS water_use,
+    SUBSTRING(quality_concern_code.description for 100) AS quality_concern,
+    SUBSTRING(a.litho_stratographic_unit for 100) AS litho_stratographic_unit,
     a.mapping_year,
     a.retire_date,
-    SUBSTRING(a.notes for 2000) as notes,
-from aquifer a
-    left join aquifer_material_code on
+    SUBSTRING(a.notes for 2000) AS notes
+FROM aquifer AS a
+    LEFT JOIN aquifer_material_code on
         aquifer_material_code.aquifer_material_code = a.aquifer_material_code
-    left join aquifer_subtype_code on
+    LEFT JOIN aquifer_subtype_code on
         aquifer_subtype_code.aquifer_subtype_code = a.aquifer_subtype_code
-    left join aquifer_vulnerability_code on
+    LEFT JOIN aquifer_vulnerability_code on
         aquifer_vulnerability_code.aquifer_vulnerability_code = a.aquifer_vulnerablity_code
-    left join aquifer_productivity_code on
+    LEFT JOIN aquifer_productivity_code on
         aquifer_productivity_code.aquifer_productivity_code = a.aquifer_productivity_code
-    left join aquifer_demand_code on
+    LEFT JOIN aquifer_demand_code on
         aquifer_demand_code.aquifer_demand_code = a.aquifer_demand_code
-    left join water_use_code on
+    LEFT JOIN water_use_code on
         water_use_code.water_use_code = a.water_use_code
-    left join quality_concern_code on
+    LEFT JOIN quality_concern_code on
         quality_concern_code.quality_concern_code = a.quality_concern_code
-    where
+    WHERE
         a.geom is not null AND
         a.effective_date <= NOW() AND a.expiry_date >= NOW() AND
         a.retire_date >= NOW()
         {bounds}
-    order by a.aquifer_id
+    ORDER BY a.aquifer_id
 """)
 AQUIFER_CHUNK_SIZE = 100
 
@@ -244,6 +256,8 @@ AQUIFER_CHUNK_SIZE = 100
 class LazyEncoder(json.JSONEncoder):
 
     def default(self, obj):
+        if isinstance(obj, (datetime.datetime, datetime.date)):
+            return obj.isoformat()
         if isinstance(obj, Decimal):
             return float(obj)
         return super().default(obj)
