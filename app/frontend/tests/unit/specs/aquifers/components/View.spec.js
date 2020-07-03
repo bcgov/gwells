@@ -16,6 +16,7 @@
 
 import '../../../mocks/mapbox-gl'
 import { mount, createLocalVue } from '@vue/test-utils'
+import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
 import { cloneDeep, merge, omit } from 'lodash'
@@ -141,13 +142,12 @@ describe('View Component', () => {
     axios.get.mockResolvedValue({})
   })
 
-  it('queries aquifer on load', (done) => {
-    const wrapper = component()
+  it('queries aquifer on load', async () => {
+    component()
 
-    wrapper.vm.$nextTick(() => {
-      expect(fetch).toHaveBeenCalled()
-      done()
-    })
+    await Vue.nextTick()
+
+    expect(fetch).toHaveBeenCalled()
   })
 
   describe('View mode', () => {

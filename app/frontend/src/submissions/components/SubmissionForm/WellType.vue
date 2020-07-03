@@ -288,7 +288,13 @@ export default {
       }
     },
     intendedWaterUseDisabled () {
-      return this.wellClass !== 'WATR_SPPLY'
+      // Disable intended water use dropdown whenever the well class is not Water Supply. There is
+      // an exception to this rule for wells that do not have well class set to Water Supply and
+      // have a intended water use code set to something other then NA. Then the dropdown is enabled
+      // so the user can pick the NA option. If they pick anything other then NA then the validation
+      // rules in SubmissionHome.isFormValid() will notify the user that they _have_ to pick NA or
+      // change the well class.
+      return this.wellClass !== 'WATR_SPPLY' && this.intendedWaterUseInput === 'NA'
     },
     intendedWaterUseOptions () {
       if (this.wellClass === 'WATR_SPPLY') {
@@ -342,7 +348,9 @@ export default {
 
       if (val !== null && val !== 'WATR_SPPLY') {
         this.intendedWaterUseInput = 'NA'
-      } else {
+      } else if (this.intendedWaterUse === 'NA') {
+        // When the well class is changed to WATR_SPPLY then set the intendedWaterUseInput to `null`
+        // only if the current value of intended water use code is 'NA'
         this.intendedWaterUseInput = null
       }
     }
