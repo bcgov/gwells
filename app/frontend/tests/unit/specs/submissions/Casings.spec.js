@@ -1,4 +1,5 @@
 import { mount, shallowMount, createLocalVue } from '@vue/test-utils'
+import Vue from 'vue'
 import Vuex from 'vuex'
 import Casings from '@/submissions/components/SubmissionForm/Casings.vue'
 
@@ -29,6 +30,7 @@ describe('Casings.vue', () => {
 
     expect(wrapper.vm.casingsData.length).toBe(3)
   })
+
   it('adds a new Casings row when clicking Add Row', () => {
     const wrapper = mount(Casings, {
       localVue,
@@ -41,6 +43,7 @@ describe('Casings.vue', () => {
     wrapper.find('#addCasingRowBtn').trigger('click')
     expect(wrapper.vm.casingsData.length).toBe(4)
   })
+
   it('when clicking the remove button on a row, removes that row', () => {
     const wrapper = mount(Casings, {
       localVue,
@@ -55,7 +58,8 @@ describe('Casings.vue', () => {
     wrapper.find('#removeCasingRowBtn0').trigger('click')
     expect(wrapper.vm.casingsData.length).toBe(2)
   })
-  it('Passes errors into the input components', (done) => {
+
+  it('Passes errors into the input components', async () => {
     const wrapper = mount(Casings, {
       localVue,
       store,
@@ -75,10 +79,10 @@ describe('Casings.vue', () => {
         ]
       }
     })
-    wrapper.vm.$nextTick(() => {
-      const errMsg = wrapper.find('#casingFrom_0InvalidFeedback')
-      expect(errMsg.text()).toContain('Test error for start field')
-      done()
-    })
+
+    await Vue.nextTick()
+
+    const errMsg = wrapper.find('#casingFrom_0InvalidFeedback')
+    expect(errMsg.text()).toContain('Test error for start field')
   })
 })

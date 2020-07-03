@@ -90,7 +90,6 @@ describe('WellType.vue', () => {
   })
 
   it('set intended water use to NA when well class is UNK', async () => {
-    console.log('here')
     const wrapper = mount(WellType, {
       localVue,
       store,

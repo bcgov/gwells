@@ -12,11 +12,7 @@ localVue.use(VueRouter)
 const router = new VueRouter()
 
 describe('ActivitySubmissionForm.vue', () => {
-  beforeEach(() => {
-
-  })
-
-  it('renders components based on the activity selected (Yield exists on construction report', (done) => {
+  it('renders components based on the activity selected (Yield exists on construction report', () => {
     const wrapper = shallowMount(ActivitySubmissionForm, {
       localVue,
       router,
@@ -31,12 +27,11 @@ describe('ActivitySubmissionForm.vue', () => {
         formIsFlat: true
       }
     })
-    wrapper.vm.$nextTick(() => {
-      expect(wrapper.vm.showSection('wellYield')).toBe(true)
-      done()
-    })
+
+    expect(wrapper.vm.showSection('wellYield')).toBe(true)
   })
-  it('renders components based on the activity selected (Yield does not exist on decommission report)', (done) => {
+
+  it('renders components based on the activity selected (Yield does not exist on decommission report)', () => {
     const wrapper = shallowMount(ActivitySubmissionForm, {
       localVue,
       router,
@@ -51,11 +46,10 @@ describe('ActivitySubmissionForm.vue', () => {
         formIsFlat: true
       }
     })
-    wrapper.vm.$nextTick(() => {
-      expect(wrapper.vm.showSection('wellYield')).toBe(false)
-      done()
-    })
+
+    expect(wrapper.vm.showSection('wellYield')).toBe(false)
   })
+
   it('updates lithologydescription_set when lithology table is altered on Lithology child component', () => {
     let getters = {
       codes: () => ({})
