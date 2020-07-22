@@ -232,13 +232,14 @@ Licensed under the Apache License, Version 2.0 (the "License");
             small
             bordered
             :items="filterBlankRows(form.casing_set)"
-            :fields="['from', 'to', 'casing_type', 'casing_material', 'diameter', 'wall_thickness', 'drive_shoe']"
+            :fields="['from', 'to', 'casing_type', 'casing_material', 'diameter', 'wall_thickness', 'drive_shoe_status']"
             show-empty>
 
           <template slot="from" slot-scope="data">{{data.item.start}}{{data.item.start ? ' ft' : '' }}</template>
           <template slot="to" slot-scope="data">{{data.item.end}}{{data.item.end ? ' ft' : '' }}</template>
           <template slot="casing_type" slot-scope="data">{{codeToDescription('casing_codes', data.item.casing_code)}}</template>
           <template slot="casing_material" slot-scope="data">{{codeToDescription('casing_materials', data.item.casing_material)}}</template>
+          <template slot="drive_shoe_status" slot-scope="data">{{codeToDescription('drive_shoe_status', data.item.drive_shoe_status)}}</template>
 
         </b-table>
       </div>

@@ -569,8 +569,8 @@ def aquifer_geojson_simplified_v1(request, **kwargs):
 
     sql = """
     SELECT
-           ST_AsGeoJSON((ST_GeometryN(geom_simplified, 1)), 8) :: json AS "geometry",
-           aquifer.aquifer_id                       AS id
+        ST_AsGeoJSON((ST_GeometryN(geom_simplified, 1)), 8) :: json AS "geometry",
+        aquifer.aquifer_id AS id
     FROM aquifer
     """
 

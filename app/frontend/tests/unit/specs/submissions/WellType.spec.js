@@ -1,4 +1,5 @@
 import { mount, shallowMount, createLocalVue } from '@vue/test-utils'
+import Vue from 'vue'
 import Vuex from 'vuex'
 import WellType from '@/submissions/components/SubmissionForm/WellType.vue'
 
@@ -88,7 +89,7 @@ describe('WellType.vue', () => {
     expect(intendedWaterUseSelectEl.element.disabled).toEqual(false)
   })
 
-  it('set intended water use to NA when well class is UNK', (done) => {
+  it('set intended water use to NA when well class is UNK', async () => {
     const wrapper = mount(WellType, {
       localVue,
       store,
@@ -99,28 +100,25 @@ describe('WellType.vue', () => {
     const wellClassSelectEl = wrapper.find('#wellClass select')
     const intendedWaterUseSelectEl = wrapper.find('#intendedWaterUse select')
 
-    expect(intendedWaterUseSelectEl.element.disabled).toEqual(true)
+    expect(intendedWaterUseSelectEl.element.disabled).toEqual(false)
     expect(intendedWaterUseSelectEl.element.value).toEqual('')
 
     wellClassSelectEl.setValue('UNK')
+    await Vue.nextTick()
 
-    wrapper.vm.$nextTick(() => {
-      // Form inputs trigger a change event that needs the parent will catch and update the props
-      expect(wrapper.emitted()['update:wellClass']).toEqual([['UNK']])
-      wrapper.setProps({ wellClass: 'UNK' })
+    // Form inputs trigger a change event that needs the parent will catch and update the props
+    expect(wrapper.emitted()['update:wellClass']).toEqual([['UNK']])
+    wrapper.setProps({ wellClass: 'UNK' })
+    await Vue.nextTick()
 
-      expect(wrapper.vm.wellClassInput).toEqual('UNK')
+    expect(wrapper.vm.wellClassInput).toEqual('UNK')
+    // Form inputs trigger a change event that needs the parent will catch and update the props
+    expect(wrapper.emitted()['update:intendedWaterUse']).toEqual([['NA']])
 
-      wrapper.vm.$nextTick(() => {
-        // Form inputs trigger a change event that needs the parent will catch and update the props
-        expect(wrapper.emitted()['update:intendedWaterUse']).toEqual([['NA']])
+    wrapper.setProps({ intendedWaterUse: 'NA' })
+    await Vue.nextTick()
 
-        wrapper.setProps({ intendedWaterUse: 'NA' })
-
-        expect(wrapper.vm.intendedWaterUseInput).toEqual('NA')
-        expect(intendedWaterUseSelectEl.element.disabled).toEqual(true)
-        done()
-      })
-    })
+    expect(wrapper.vm.intendedWaterUseInput).toEqual('NA')
+    expect(intendedWaterUseSelectEl.element.disabled).toEqual(true)
   })
 })

@@ -17,7 +17,7 @@ const ApiService = {
       record, params
     }
     return new Promise((resolve, reject) => {
-      resolve({data: response})
+      resolve({ data: response })
     })
   },
   __setMockResponse: function (newResponse) {
