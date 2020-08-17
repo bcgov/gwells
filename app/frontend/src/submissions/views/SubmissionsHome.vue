@@ -126,6 +126,7 @@ import SubmissionPreview from '@/submissions/components/SubmissionPreview/Submis
 import filterBlankRows from '@/common/filterBlankRows.js'
 import ActivitySubmissionForm from '@/submissions/components/SubmissionForm/ActivitySubmissionForm.vue'
 import parseErrors from '@/common/helpers/parseErrors.js'
+import { RESET_WELL_DATA } from '@/wells/store/actions.types.js'
 
 export default {
   name: 'SubmissionsHome',
@@ -209,6 +210,7 @@ export default {
       'fileUploadFail',
       'resetUploadFiles'
     ]),
+    ...mapActions([ RESET_WELL_DATA ]),
     formSubmit () {
       const data = Object.assign({}, this.form)
       const meta = data.meta
@@ -310,6 +312,7 @@ export default {
           })
           this.events.$emit('well-edited', true)
           this.fetchWellDataForStaffEdit({ reloadPage: false })
+          this[RESET_WELL_DATA]()
         } else {
           this.$nextTick(() => {
             this.$noty.success('<div aria-label="Close" class="closeBtn">x</div><div class="notifyText">Well report submitted.</div>', { killer: true })
