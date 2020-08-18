@@ -18,6 +18,7 @@ from posixpath import join as urljoin
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView
+from django.utils import timezone
 
 import rest_framework.exceptions
 from rest_framework.reverse import reverse
@@ -325,13 +326,14 @@ class SubmissionsOptions(APIView):
 
     def get(self, request, **kwargs):
         options = {}
+        now = timezone.now()
 
         province_codes = ProvinceStateCodeSerializer(
             instance=ProvinceStateCode.objects.all(), many=True)
         activity_codes = WellActivityCodeSerializer(
             instance=WellActivityCode.objects.all(), many=True)
         well_class_codes = WellClassCodeSerializer(
-            instance=WellClassCode.objects.prefetch_related("wellsubclasscode_set"), many=True)
+            instance=WellClassCode.objects.prefetch_related("wellsubclasscode_set").filter(expiry_date__gt=now), many=True)
         intended_water_use_codes = IntendedWaterUseCodeSerializer(
             instance=IntendedWaterUseCode.objects.all(), many=True)
         casing_codes = CasingCodeSerializer(

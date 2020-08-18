@@ -24,7 +24,7 @@
             "description": "Dewatering",
             "display_order": 10,
             "effective_date": "2018-05-25T07:00:00Z",
-            "expiry_date": "9999-12-31T23:59:59Z"
+            "expiry_date": "2020-07-28T23:59:59Z"
         }
     },
     {
@@ -38,7 +38,7 @@
             "description": "Drainage",
             "display_order": 18,
             "effective_date": "2018-05-25T07:00:00Z",
-            "expiry_date": "9999-12-31T23:59:59Z"
+            "expiry_date": "2020-07-28T23:59:59Z"
         }
     },
     {

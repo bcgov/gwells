@@ -761,7 +761,7 @@
             "owner_city": "",
             "owner_province_state": "BC",
             "owner_postal_code": "",
-            "well_class": "DRAINAGE",
+            "well_class": "RECHARGE",
             "well_subclass": null,
             "intended_water_use": "NA",
             "well_status": null,
