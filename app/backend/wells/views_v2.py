@@ -101,12 +101,22 @@ class WellLocationListV2APIView(ListAPIView):
             if not aquifer:
                 raise NotFound(f'Unknown aquifer {intersects_aquifer_id}')
 
-            # Simplify polygon and expand it by 1km in srid 3005
-            aquifer_geom = aquifer.geom.simplify(40, preserve_topology=True).buffer(1000)
+            if not aquifer.geom:
+                # if the aquifer has no/null geometry, it might be an aquifer
+                # that the business area has created but has not delineated an area
+                # for (for example, the special "holding" aquifer 1143).
+                qs = qs.none()
+                
+            else:
+                # Simplify polygon and expand it by 1km in srid 3005
+                aquifer_geom = aquifer.geom.simplify(40, preserve_topology=True).buffer(1000)
 
-            qs = qs.exclude(geom=None)
-            # find all wells that intersect this simplified aquifer polygon
-            qs = qs.filter(geom__intersects=aquifer_geom)
+                # Find wells that intersect this simplified aquifer polygon (excluding wells
+                # with null geom)
+                qs = qs.exclude(geom=None)
+                qs = qs.filter(geom__intersects=aquifer_geom)
+            
+
 
         well_tag_numbers = self.request.query_params.get('well_tag_numbers', '')
         if well_tag_numbers:
