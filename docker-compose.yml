@@ -65,7 +65,7 @@ services:
     hostname: tileserv
     depends_on:
       - db
-    image: pramsey/pg_tileserv:20200327
+    image: pramsey/pg_tileserv:latest
     environment:
       DATABASE_URL: postgres://ftw_reader:test1@db:5432/gwells
     ports:
