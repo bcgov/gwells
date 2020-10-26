@@ -405,7 +405,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <fieldset id="well_development_fieldset" class="my-3 detail-section">
           <legend>Well Development</legend>
           <b-row>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Developed by:</span> {{ codeToDescription('development_methods', well.development_method) }}</b-col>
+            <b-col cols="12" md="4">
+              <span class="font-weight-bold">Developed by:</span>
+              <span v-for="(method, index) in well.development_methods" :key="`developmentMethod${index}`"><span v-if="index > 0">,</span> {{ method.description }}</span>
+            </b-col>
             <b-col cols="12" md="4"><span class="font-weight-bold">Development Total Duration:</span> {{ well.development_hours }} {{ well.development_hours ? 'hours':'' }}</b-col>
           </b-row>
         </fieldset>

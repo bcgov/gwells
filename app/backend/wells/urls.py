@@ -25,7 +25,6 @@ urlpatterns = [
     url(api_path_prefix() + r'/wells/(?P<well_tag_number>[0-9]+)/edit$',
         never_cache(views.WellStaffEditDetail.as_view()), name='well-edit-details'),
 
-
     url(api_path_prefix() + r'/wells/(?P<well_id>[0-9]+)/history$',
         never_cache(views.WellHistory.as_view()), name='well-history'),
 
@@ -38,8 +37,10 @@ urlpatterns = [
         never_cache(views_v2.WellAquiferListV2APIView.as_view()), name='well-aquifers'),
 
     # Well
-    url(api_path_prefix() + r'/wells/(?P<well_tag_number>[0-9]+)$',
+    url(r'api/v1/wells/(?P<well_tag_number>[0-9]+)$',
         never_cache(views.WellDetail.as_view()), name='well-detail'),
+    url(r'api/v2/wells/(?P<well_tag_number>[0-9]+)$',
+        never_cache(views_v2.WellDetail.as_view()), name='well-detail'),
 
     # Well tag search
     url(api_path_prefix() + r'/wells/tags$',

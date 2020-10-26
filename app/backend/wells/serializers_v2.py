@@ -18,15 +18,17 @@ from rest_framework import serializers
 from django.contrib.gis.geos import Point
 
 from gwells.utils import isPointInsideBC
-from wells.models import Well
+from wells.models import Well, DevelopmentMethodCode
 from aquifers.models import VerticalAquiferExtent, Aquifer
 
 from aquifers.serializers_v2 import AquiferDetailSerializerV2
-from wells.serializers import ScreenSerializer, LithologyDescriptionSummarySerializer
+from wells.serializers import (
+    ScreenSerializer,
+    LithologyDescriptionSummarySerializer,
+    WellDetailSerializer as WellDetailSerializerV1
+)
 
 from aquifers.serializers import HYDRAULIC_SUBTYPES
-
-
 
 logger = logging.getLogger(__name__)
 
@@ -137,7 +139,6 @@ class WellVerticalAquiferExtentSerializerV2(serializers.ModelSerializer):
         return super().create(validated_data)
 
 
-
 class WellListSerializerV2(serializers.ModelSerializer):
     """Serializes a well record"""
 
@@ -187,7 +188,7 @@ class WellListSerializerV2(serializers.ModelSerializer):
             "alteration_end_date",
             "decommission_start_date",
             "decommission_end_date",
-            "drilling_company", # old name of company_of_person_responsible
+            "drilling_company",  # old name of company_of_person_responsible
             "company_of_person_responsible",
             "company_of_person_responsible_name",
             "person_responsible",
@@ -284,7 +285,6 @@ class WellListSerializerV2(serializers.ModelSerializer):
 
 
 class WellListAdminSerializerV2(WellListSerializerV2):
-
     class Meta:
         model = Well
         fields = WellListSerializerV2.Meta.fields + (
@@ -308,7 +308,8 @@ class WellExportSerializerV2(WellListSerializerV2):
     well_status = serializers.SlugRelatedField(read_only=True, slug_field='description')
     licenced_status = serializers.SlugRelatedField(read_only=True, slug_field='description')
     land_district = serializers.SlugRelatedField(read_only=True, slug_field='name')
-    drilling_company = serializers.CharField(read_only=True, source='company_of_person_responsible.name')
+    drilling_company = serializers.CharField(read_only=True,
+                                             source='company_of_person_responsible.name')
     ground_elevation_method = serializers.SlugRelatedField(read_only=True,
                                                            slug_field='description')
     surface_seal_material = serializers.SlugRelatedField(read_only=True, slug_field='description')
@@ -431,5 +432,154 @@ class WellSubsurfaceSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         details = super().to_representation(instance)
         if instance.aquifer and instance.aquifer.subtype:
-            details['aquifer_hydraulically_connected'] = instance.aquifer.subtype.code in HYDRAULIC_SUBTYPES
+            details[
+                'aquifer_hydraulically_connected'] = instance.aquifer.subtype.code in HYDRAULIC_SUBTYPES
         return details
+
+
+class DevelopmentMethodsSummarySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DevelopmentMethodCode
+        fields = ('description',)
+
+
+class WellDetailSerializer(WellDetailSerializerV1):
+    development_methods = DevelopmentMethodsSummarySerializer(many=True)
+
+    class Meta:
+        model = Well
+        fields = (
+            "well_guid",
+            "well",
+            "well_tag_number",
+            "identification_plate_number",
+            "owner_full_name",
+            "well_class",
+            "well_subclass",
+            "intended_water_use",
+            "well_status",
+            "well_publication_status",
+            "licenced_status",
+            "street_address",
+            "city",
+            "legal_lot",
+            "legal_plan",
+            "legal_district_lot",
+            "legal_block",
+            "legal_section",
+            "legal_township",
+            "legal_range",
+            "land_district",
+            "legal_pid",
+            "well_location_description",
+            "construction_start_date",
+            "construction_end_date",
+            "alteration_start_date",
+            "alteration_end_date",
+            "decommission_start_date",
+            "decommission_end_date",
+            "person_responsible",
+            "driller_name",
+            "drilling_company",  # old name for company_of_person_responsible
+            "company_of_person_responsible",
+            "consultant_name",
+            "consultant_company",
+            "well_identification_plate_attached",
+            "id_plate_attached_by",
+            "water_supply_system_name",
+            "water_supply_system_well_name",
+            "latitude",
+            "longitude",
+            "coordinate_acquisition_code",
+            "ground_elevation",
+            "ground_elevation_method",
+            "drilling_methods",
+            "well_orientation_status",
+            "surface_seal_material",
+            "surface_seal_length",
+            "surface_seal_thickness",
+            "surface_seal_method",
+            "surface_seal_depth",
+            "backfill_type",
+            "backfill_depth",
+            "liner_material",
+            "liner_diameter",
+            "liner_thickness",
+            "liner_from",
+            "liner_to",
+            "screen_intake_method",
+            "screen_type",
+            "screen_material",
+            "other_screen_material",
+            "screen_opening",
+            "screen_bottom",
+            "other_screen_bottom",
+            "screen_information",
+            "filter_pack_from",
+            "filter_pack_to",
+            "filter_pack_thickness",
+            "filter_pack_material",
+            "filter_pack_material_size",
+            "development_methods",
+            "development_hours",
+            "development_notes",
+            "water_quality_characteristics",
+            "water_quality_colour",
+            "water_quality_odour",
+            "total_depth_drilled",
+            "finished_well_depth",
+            "final_casing_stick_up",
+            "bedrock_depth",
+            "water_supply_system_name",
+            "water_supply_system_well_name",
+            "static_water_level",
+            "well_yield",
+            "artesian_flow",
+            "artesian_pressure",
+            "well_cap_type",
+            "well_disinfected_status",
+            "comments",
+            "alternative_specs_submitted",
+            "well_yield_unit",
+            "diameter",
+            "observation_well_number",
+            "observation_well_status",
+            "ems",
+            "aquifer",
+            "utm_zone_code",
+            "utm_northing",
+            "utm_easting",
+            "bcgs_id",
+            "decommission_reason",
+            "decommission_method",
+            "decommission_sealant_material",
+            "decommission_backfill_material",
+            "decommission_details",
+            "aquifer_vulnerability_index",
+            "aquifer_lithology",
+            "storativity",
+            "transmissivity",
+            "hydraulic_conductivity",
+            "specific_storage",
+            "specific_yield",
+            "testing_method",
+            "testing_duration",
+            "analytic_solution_type",
+            "boundary_effect",
+            "yield_estimation_method",
+            "yield_estimation_rate",
+            "yield_estimation_duration",
+            "well_yield_unit",
+            "static_level_before_test",
+            "drawdown",
+            "hydro_fracturing_performed",
+            "hydro_fracturing_yield_increase",
+            "recommended_pump_depth",
+            "recommended_pump_rate",
+            "casing_set",
+            "screen_set",
+            "linerperforation_set",
+            "decommission_description_set",
+            "lithologydescription_set",
+            "submission_work_dates",
+        )

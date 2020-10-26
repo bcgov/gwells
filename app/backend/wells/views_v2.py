@@ -24,8 +24,8 @@ from django.db.models import FloatField
 from django.db.models.functions import Cast
 
 from rest_framework import status, filters
-from rest_framework.generics import ListAPIView
 from rest_framework.exceptions import PermissionDenied, NotFound, ValidationError
+from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.response import Response
 from gwells.roles import WELLS_VIEWER_ROLE, WELLS_EDIT_ROLE
 from gwells.pagination import apiLimitedPagination, APILimitOffsetPagination
@@ -46,7 +46,8 @@ from wells.serializers_v2 import (
     WellListAdminSerializerV2,
     WellExportSerializerV2,
     WellExportAdminSerializerV2,
-    WellSubsurfaceSerializer
+    WellSubsurfaceSerializer,
+    WellDetailSerializer
 )
 from wells.permissions import WellsEditOrReadOnly
 from wells.renderers import WellListCSVRenderer, WellListExcelRenderer
@@ -57,7 +58,7 @@ from aquifers.models import (
     VerticalAquiferExtentsHistory
 )
 from aquifers.permissions import HasAquiferEditRole
-
+from wells.views import WellDetail as WellDetailV1
 
 logger = logging.getLogger(__name__)
 
@@ -568,3 +569,11 @@ class WellSubsurface(ListAPIView):
             qs = qs.filter(well_tag_number__in=wells)
 
         return qs
+
+
+class WellDetail(WellDetailV1):
+    """
+    Return well detail.
+    This view is open to all, and has no permissions.
+    """
+    serializer_class = WellDetailSerializer
