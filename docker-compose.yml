@@ -122,7 +122,7 @@ services:
       SESSION_COOKIE_SECURE: "False"
       SSO_AUDIENCE: gwells-test
       SSO_CLIENT: gwells-test
-      SSO_AUTH_HOST: https://sso-test.pathfinder.gov.bc.ca/auth
+      SSO_AUTH_HOST: https://test.oidc.gov.bc.ca/auth
       SSO_IDP_HINT: "undefined"
       SSO_PORT: 0
       SSO_REALM: gwells
