@@ -445,6 +445,7 @@ class DevelopmentMethodsSummarySerializer(serializers.ModelSerializer):
 
 class WellDetailSerializer(WellDetailSerializerV1):
     development_methods = DevelopmentMethodsSummarySerializer(many=True)
+    yield_estimation_method = serializers.ReadOnlyField(source='yield_estimation_method.description')
 
     class Meta:
         model = Well
