@@ -65,7 +65,7 @@ services:
     hostname: tileserv
     depends_on:
       - db
-    image: pramsey/pg_tileserv:20200327
+    image: pramsey/pg_tileserv:latest
     environment:
       DATABASE_URL: postgres://ftw_reader:test1@db:5432/gwells
     ports:
@@ -122,7 +122,7 @@ services:
       SESSION_COOKIE_SECURE: "False"
       SSO_AUDIENCE: gwells-test
       SSO_CLIENT: gwells-test
-      SSO_AUTH_HOST: https://sso-test.pathfinder.gov.bc.ca/auth
+      SSO_AUTH_HOST: https://test.oidc.gov.bc.ca/auth
       SSO_IDP_HINT: "undefined"
       SSO_PORT: 0
       SSO_REALM: gwells
