@@ -18,15 +18,17 @@ from rest_framework import serializers
 from django.contrib.gis.geos import Point
 
 from gwells.utils import isPointInsideBC
-from wells.models import Well
+from wells.models import Well, DevelopmentMethodCode
 from aquifers.models import VerticalAquiferExtent, Aquifer
 
 from aquifers.serializers_v2 import AquiferDetailSerializerV2
-from wells.serializers import ScreenSerializer, LithologyDescriptionSummarySerializer
+from wells.serializers import (
+    ScreenSerializer,
+    LithologyDescriptionSummarySerializer,
+    WellDetailSerializer as WellDetailSerializerV1
+)
 
 from aquifers.serializers import HYDRAULIC_SUBTYPES
-
-
 
 logger = logging.getLogger(__name__)
 
@@ -137,7 +139,6 @@ class WellVerticalAquiferExtentSerializerV2(serializers.ModelSerializer):
         return super().create(validated_data)
 
 
-
 class WellListSerializerV2(serializers.ModelSerializer):
     """Serializes a well record"""
 
@@ -187,7 +188,7 @@ class WellListSerializerV2(serializers.ModelSerializer):
             "alteration_end_date",
             "decommission_start_date",
             "decommission_end_date",
-            "drilling_company", # old name of company_of_person_responsible
+            "drilling_company",  # old name of company_of_person_responsible
             "company_of_person_responsible",
             "company_of_person_responsible_name",
             "person_responsible",
@@ -284,7 +285,6 @@ class WellListSerializerV2(serializers.ModelSerializer):
 
 
 class WellListAdminSerializerV2(WellListSerializerV2):
-
     class Meta:
         model = Well
         fields = WellListSerializerV2.Meta.fields + (
@@ -308,7 +308,8 @@ class WellExportSerializerV2(WellListSerializerV2):
     well_status = serializers.SlugRelatedField(read_only=True, slug_field='description')
     licenced_status = serializers.SlugRelatedField(read_only=True, slug_field='description')
     land_district = serializers.SlugRelatedField(read_only=True, slug_field='name')
-    drilling_company = serializers.CharField(read_only=True, source='company_of_person_responsible.name')
+    drilling_company = serializers.CharField(read_only=True,
+                                             source='company_of_person_responsible.name')
     ground_elevation_method = serializers.SlugRelatedField(read_only=True,
                                                            slug_field='description')
     surface_seal_material = serializers.SlugRelatedField(read_only=True, slug_field='description')
@@ -431,5 +432,20 @@ class WellSubsurfaceSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         details = super().to_representation(instance)
         if instance.aquifer and instance.aquifer.subtype:
-            details['aquifer_hydraulically_connected'] = instance.aquifer.subtype.code in HYDRAULIC_SUBTYPES
+            details[
+                'aquifer_hydraulically_connected'] = instance.aquifer.subtype.code in HYDRAULIC_SUBTYPES
         return details
+
+
+class DevelopmentMethodsSummarySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DevelopmentMethodCode
+        fields = ('description',)
+
+
+class WellDetailSerializer(WellDetailSerializerV1):
+    development_methods = DevelopmentMethodsSummarySerializer(many=True)
+    yield_estimation_method = serializers.ReadOnlyField(source='yield_estimation_method.description')
+
+    class Meta(WellDetailSerializerV1.Meta):
+        pass
