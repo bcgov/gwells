@@ -17,7 +17,7 @@ django-filter>=2.0.0,<2.1
 drf-yasg==1.15.0
 django-cors-headers==2.2.0
 django-extensions==2.0.6
-cryptography==2.3.1
+cryptography==3.2
 django-reversion==2.0.13
 openpyxl==2.5.11
 lxml==4.2.5
