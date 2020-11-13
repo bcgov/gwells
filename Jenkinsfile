@@ -6,6 +6,9 @@ import bcgov.GitHubHelper
 
 // Notify stage status and pass to Jenkins-GitHub library
 void notifyStageStatus (String name, String status) {
+
+    echo scm.getUserRemoteConfigs()[0].getUrl()
+
     GitHubHelper.createCommitStatus(
         this,
         GitHubHelper.getPullRequestLastCommitId(this),
