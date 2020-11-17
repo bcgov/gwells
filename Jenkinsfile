@@ -426,22 +426,22 @@ pipeline {
         prNumber = "${env.JOB_BASE_NAME}".toLowerCase()
 
         // toolsProject is where images are built
-        toolsProject = "moe-gwells-tools"
+        toolsProject = "${APP_TOOLS_NAMESPACE ?: "moe-gwells-tools"}"
 
         // devProject is the project where individual development environments are spun up
-        devProject = "moe-gwells-dev"
+        devProject = "${APP_DEV_NAMESPACE ?: "moe-gwells-dev"}"
         devSuffix = "dev"
         devAppName = "${appName}-${devSuffix}-${prNumber}"
         devHost = "${devAppName}.pathfinder.gov.bc.ca"
 
         // stagingProject contains the test deployment. The test image is a candidate for promotion to prod.
-        stagingProject = "moe-gwells-test"
+        stagingProject = "${APP_STAGING_NAMESPACE ?: "moe-gwells-test"}"
         stagingSuffix = "staging"
         stagingHost = "gwells-staging.pathfinder.gov.bc.ca"
 
         // prodProject is the prod deployment.
         // TODO: New production images can be deployed by tagging an existing "test" image as "prod".
-        prodProject = "moe-gwells-prod"
+        prodProject = "${APP_PROD_NAMESPACE ?: "moe-gwells-prod"}"
         prodSuffix = "production"
         prodHost = "gwells-prod.pathfinder.gov.bc.ca"
 
