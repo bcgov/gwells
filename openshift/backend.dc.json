@@ -118,23 +118,6 @@
             }
         },
         {
-            "kind": "Secret",
-            "apiVersion": "v1",
-            "type": "kubernetes.io/basic-auth",
-            "metadata": {
-                "creationTimestamp": null,
-                "name": "gwells-database-credentials${NAME_SUFFIX}",
-                "annotations": {
-                    "template.openshift.io.bcgov/create": "true"
-                }
-            },
-            "data": {
-                "password": null,
-                "postgres_admin_password": null,
-                "username": null
-            }
-        },
-        {
             "apiVersion": "v1",
             "data": {
                 "DB_REPLICATE": null,
