@@ -421,6 +421,7 @@ pipeline {
         // Project-wide settings - app name, repo
         appName = "gwells"
         repository = 'https://www.github.com/bcgov/gwells.git'
+        platformEnv = "${OCP_PLATFORM_VERSION ?: '3'}"
 
         // prNumber is the pull request number e.g. 'pr-4'
         prNumber = "${env.JOB_BASE_NAME}".toLowerCase()
@@ -486,7 +487,6 @@ pipeline {
                         //  - add docker image reference as tag in gwells-application
                         //  - create build config
                         echo "Preparing backend imagestream and buildconfig"
-                        echo " \$ oc process -f openshift/backend.bc.json -p ENV_NAME=${devSuffix} -p NAME_SUFFIX=-${devSuffix}-${prNumber} -p APP_IMAGE_TAG=${prNumber} -p SOURCE_REPOSITORY_URL=${REPOSITORY} -p SOURCE_REPOSITORY_REF=pull/${CHANGE_ID}/head | oc apply -n moe-gwells-tools -f -"
                         openshift.apply(buildtemplate)
                     }
                 }
@@ -507,7 +507,6 @@ pipeline {
                         // Select appropriate buildconfig
                         def appBuild = openshift.selector("bc", "${devAppName}")
                         echo "Building"
-                        echo " \$ oc start-build -n moe-gwells-tools ${devAppName} --wait --follow=true"
                         appBuild.startBuild("--wait").logs("-f")
                     }
                 }
@@ -574,7 +573,7 @@ pipeline {
                                 if (selector.count() == 1) {
 
                                     // create a copy of the object and add it to the new list of objects to be applied
-                                    Map copiedModel = selector.object(exportable:true)
+                                    Map copiedModel = selector.object()
                                     copiedModel.metadata.name = o.metadata.name
                                     echo "[as-copy-of] Copying ${o.kind} ${o.metadata.name}"
                                     newObjectCopies.add(copiedModel)
@@ -775,7 +774,7 @@ pipeline {
                                 def selector = openshift.selector("${o.kind}/${sourceName}")
                                 if (selector.count() == 1) {
                                     // create a copy of the object and add it to the new list of objects to be applied
-                                    Map copiedModel = selector.object(exportable:true)
+                                    Map copiedModel = selector.object()
                                     copiedModel.metadata.name = o.metadata.name
                                     echo "Copying ${o.kind} ${o.metadata.name}"
                                     newObjectCopies.add(copiedModel)
@@ -1081,7 +1080,7 @@ pipeline {
                                 if (selector.count() == 1) {
 
                                     // create a copy of the object and add it to the new list of objects to be applied
-                                    Map copiedModel = selector.object(exportable:true)
+                                    Map copiedModel = selector.object()
                                     copiedModel.metadata.name = o.metadata.name
                                     echo "Copying ${o.kind} ${o.metadata.name}"
                                     newObjectCopies.add(copiedModel)
