@@ -575,11 +575,11 @@ pipeline {
                                     // create a copy of the object and add it to the new list of objects to be applied
                                     Map copiedModel = selector.object()
                                     copiedModel.metadata.name = o.metadata.name
-                                    copiedModel.metadata.annotations["kubectl.kubernetes.io/last-applied-configuration"] = ""
-                                    copiedModel.metadata.creationTimestamp = "0001-01-01T00:00:00Z00:00"
-                                    copiedModel.metadata.resourceVersion = ""
-                                    copiedModel.metadata.selfLink = ""
-                                    copiedModel.metadata.uid = ""
+                                    copiedModel.metadata.remove('annotations')
+                                    copiedModel.metadata.remove('creationTimestamp')
+                                    copiedModel.metadata.remove('resourceVersion')
+                                    copiedModel.metadata.remove('selfLink')
+                                    copiedModel.metadata.remove('uid')
                                     echo "[as-copy-of] Copying ${o.kind} ${o.metadata.name}"
                                     newObjectCopies.add(copiedModel)
                                 }
