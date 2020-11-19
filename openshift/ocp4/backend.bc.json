@@ -53,7 +53,7 @@
                         "annotations": null,
                         "from": {
                             "kind": "DockerImage",
-                            "name": "moe-gwells-tools/gwells-python"
+                            "name": "26e83e-tools/gwells-python"
                         },
                         "importPolicy": {},
                         "referencePolicy": {
