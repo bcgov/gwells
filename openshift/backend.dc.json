@@ -252,7 +252,7 @@
                         "initContainers": [
                             {
                                 "name": "check-db",
-                                "image": "registry.access.redhat.com/rhscl/postgresql-95-rhel7@sha256:31d46b178b84cd92e1be5348f02a75f6a39867d5a57eb099b7c864deaaf02a49",
+                                "image": "crunchy-postgres-gis:centos7-12.2-4.2.2",
                                 "command": [
                                     "/bin/bash",
                                     "-c",
