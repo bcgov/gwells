@@ -575,7 +575,8 @@ pipeline {
                                     // create a copy of the object and add it to the new list of objects to be applied
                                     Map copiedModel = selector.object()
                                     copiedModel.metadata.name = o.metadata.name
-                                    copiedModel.metadata.creationTimestamp = "0000-00-00T00:00:00Z00:00"
+                                    copiedModel.metadata.annotations["kubectl.kubernetes.io/last-applied-configuration"] = ""
+                                    copiedModel.metadata.creationTimestamp = "0001-01-01T00:00:00Z00:00"
                                     copiedModel.metadata.resourceVersion = ""
                                     copiedModel.metadata.selfLink = ""
                                     copiedModel.metadata.uid = ""
