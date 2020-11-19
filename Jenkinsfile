@@ -575,7 +575,7 @@ pipeline {
                                     // create a copy of the object and add it to the new list of objects to be applied
                                     Map copiedModel = selector.object()
                                     copiedModel.metadata.name = o.metadata.name
-                                    copiedModel.metadata.annotations = {}
+                                    copiedModel.metadata.annotations = ""
                                     copiedModel.metadata.creationTimestamp = ""
                                     copiedModel.metadata.resourceVersion = ""
                                     copiedModel.metadata.selfLink = ""
