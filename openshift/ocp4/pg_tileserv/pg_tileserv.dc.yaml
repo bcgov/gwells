@@ -7,7 +7,11 @@ metadata:
   name: pgtileserv-dc
 parameters:
   - name: IMAGE_TAG
-    value: '20200610'
+    value: '20201112'
+  - name: IMAGE_REGISTRY
+    value: image-registry.openshift-image-registry.svc:5000
+  - name: IMAGE_NAMESPACE
+    value: 26e83e-tools
   - name: NAME_SUFFIX
     required: true
   - name: DATABASE_SERVICE_NAME
@@ -92,7 +96,7 @@ objects:
           volumes:
           containers:
             - name: nginx
-              image: docker-registry.default.svc:5000/moe-gwells-tools/nginx-tilecache
+              image: ${IMAGE_REGISTRY}/${IMAGE_NAMESPACE}/nginx-tilecache:latest
               imagePullPolicy: IfNotPresent
               readinessProbe:
                 failureThreshold: 3
@@ -140,7 +144,7 @@ objects:
                   value: ftw_reader
                 - name: DATABASE_URL
                   value: postgres://$(PG_USER):$(PG_PASSWORD)@$(DATABASE_HOST)/gwells
-              image: docker-registry.default.svc:5000/moe-gwells-tools/pg_tileserv:${IMAGE_TAG}
+              image: ${IMAGE_REGISTRY}/${IMAGE_NAMESPACE}/pg_tileserv:${IMAGE_TAG}
               imagePullPolicy: IfNotPresent
               livenessProbe:
                 failureThreshold: 3

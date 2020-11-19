@@ -455,6 +455,10 @@ pipeline {
         // name of the PVC where documents are stored (e.g. Minio PVC)
         // this should be the same across all environments.
         minioDataPVC = "minio-data-vol"
+
+
+        templateDir = "${OCP_PLATFORM == 4 ? 'openshift/ocp4' : 'openshift' }"
+
     }
     agent any
     stages {
@@ -475,7 +479,7 @@ pipeline {
                     _openshift(env.STAGE_NAME, toolsProject) {
                         //  - variable substitution
                         def buildtemplate = openshift.process("-f",
-                            "openshift/backend.bc.json",
+                            "${templateDir}/backend.bc.json",
                             "ENV_NAME=${devSuffix}",
                             "NAME_SUFFIX=-${devSuffix}-${prNumber}",
                             "APP_IMAGE_TAG=${prNumber}",
@@ -526,7 +530,7 @@ pipeline {
                         // Process postgres deployment config (sub in vars, create list items)
                         echo "Processing database deployment"
                         def deployDBTemplate = openshift.process("-f",
-                            "openshift/postgresql.dc.yml",
+                            "${templateDir}/postgresql.dc.yml",
                             "DATABASE_SERVICE_NAME=gwells-pg12-${devSuffix}-${prNumber}",
                             "IMAGE_STREAM_NAMESPACE=${devProject}",
                             "IMAGE_STREAM_NAME=crunchy-postgres-gis",
@@ -544,7 +548,7 @@ pipeline {
                         // Process postgres deployment config (sub in vars, create list items)
                         echo "Processing deployment config for pull request ${prNumber}"
                         def deployTemplate = openshift.process("-f",
-                            "openshift/backend.dc.json",
+                            "${templateDir}/backend.dc.json",
                             "ENV_NAME=${devSuffix}",
                             "HOST=${devHost}",
                             "NAME_SUFFIX=-${devSuffix}-${prNumber}"
@@ -552,10 +556,9 @@ pipeline {
 
                         echo "Processing deployment config for tile server"
                         def pgtileservTemplate = openshift.process("-f",
-                            "openshift/pg_tileserv/pg_tileserv.dc.yaml",
+                            "${templateDir}/pg_tileserv/pg_tileserv.dc.yaml",
                             "NAME_SUFFIX=-${devSuffix}-${prNumber}",
                             "DATABASE_SERVICE_NAME=gwells-pg12-${devSuffix}-${prNumber}",
-                            "IMAGE_TAG=20200610",
                             "HOST=${devHost}",
                         )
 
@@ -730,7 +733,7 @@ pipeline {
                         // TODO: Match docker-compose image from moe-gwells-tools
                         echo "Updating staging deployment..."
                         def deployDBTemplate = openshift.process("-f",
-                            "openshift/postgresql.dc.yml",
+                            "${templateDir}/postgresql.dc.yml",
                             "NAME_SUFFIX=-${stagingSuffix}",
                             "DATABASE_SERVICE_NAME=gwells-pg12-${stagingSuffix}",
                             "IMAGE_STREAM_NAMESPACE=${stagingProject}",
@@ -746,7 +749,7 @@ pipeline {
                         )
 
                         def deployTemplate = openshift.process("-f",
-                            "openshift/backend.dc.json",
+                            "${templateDir}/backend.dc.json",
                             "NAME_SUFFIX=-${stagingSuffix}",
                             "ENV_NAME=${stagingSuffix}",
                             "HOST=${stagingHost}",
@@ -757,7 +760,7 @@ pipeline {
 
                         echo "Processing deployment config for tile server"
                         def pgtileservTemplate = openshift.process("-f",
-                            "openshift/pg_tileserv/pg_tileserv.dc.yaml",
+                            "${templateDir}/pg_tileserv/pg_tileserv.dc.yaml",
                             "NAME_SUFFIX=-${stagingSuffix}",
                             "DATABASE_SERVICE_NAME=gwells-pg12-${stagingSuffix}",
                             "IMAGE_TAG=20200610",
@@ -849,7 +852,7 @@ pipeline {
 
                         // Create cronjob for well export
                         def exportWellCronTemplate = openshift.process("-f",
-                            "openshift/export.cj.json",
+                            "${templateDir}/export.cj.json",
                             "ENV_NAME=${stagingSuffix}",
                             "PROJECT=${stagingProject}",
                             "TAG=${stagingSuffix}",
@@ -868,7 +871,7 @@ pipeline {
 
                         // Create cronjob for licence import
                         def importLicencesCronjob = openshift.process("-f",
-                            "openshift/jobs/import-licences/import-licences.cj.json",
+                            "${templateDir}/jobs/import-licences/import-licences.cj.json",
                             "ENV_NAME=${stagingSuffix}",
                             "PROJECT=${stagingProject}",
                             "TAG=${stagingSuffix}",
@@ -887,7 +890,7 @@ pipeline {
 
                         // Create cronjob for aquifer demand calc update
                         def importUpdateAquiferCronjob = openshift.process("-f",
-                            "openshift/jobs/update-aquifer/update-aquifer.cj.json",
+                            "${templateDir}/jobs/update-aquifer/update-aquifer.cj.json",
                             "ENV_NAME=${stagingSuffix}",
                             "PROJECT=${stagingProject}",
                             "TAG=${stagingSuffix}",
@@ -906,7 +909,7 @@ pipeline {
 
                         // Create cronjob for databc export
                         def exportDataBCTemplate = openshift.process("-f",
-                            "openshift/export.cj.json",
+                            "${templateDir}/export.cj.json",
                             "ENV_NAME=${stagingSuffix}",
                             "PROJECT=${stagingProject}",
                             "TAG=${stagingSuffix}",
@@ -925,7 +928,7 @@ pipeline {
 
                         // automated minio backup
                         def docBackupCronjob = openshift.process("-f",
-                            "openshift/jobs/minio-backup/minio-backup.cj.yaml",
+                            "${templateDir}/jobs/minio-backup/minio-backup.cj.yaml",
                             "NAME_SUFFIX=${stagingSuffix}",
                             "NAMESPACE=${stagingProject}",
                             "VERSION=v1.0.0",
@@ -938,7 +941,7 @@ pipeline {
 
                         // automated database backup
                         def dbNFSBackup = openshift.process("-f",
-                            "openshift/jobs/postgres-backup-nfs/postgres-backup.cj.yaml",
+                            "${templateDir}/jobs/postgres-backup-nfs/postgres-backup.cj.yaml",
                             "NAMESPACE=${stagingProject}",
                             "TAG_NAME=v12.0.0",
                             "TARGET=gwells-pg12-staging",
@@ -1036,7 +1039,7 @@ pipeline {
                         def dbBackupResult = dbBackup (prodProject, prodSuffix)
 
                         def deployDBTemplate = openshift.process("-f",
-                            "openshift/postgresql.dc.yml",
+                            "${templateDir}/postgresql.dc.yml",
                             "NAME_SUFFIX=-${prodSuffix}",
                             "DATABASE_SERVICE_NAME=gwells-pg12-${prodSuffix}",
                             "IMAGE_STREAM_NAMESPACE=${prodProject}",
@@ -1052,7 +1055,7 @@ pipeline {
                         )
 
                         def deployTemplate = openshift.process("-f",
-                            "openshift/backend.dc.json",
+                            "${templateDir}/backend.dc.json",
                             "NAME_SUFFIX=-${prodSuffix}",
                             "ENV_NAME=${prodSuffix}",
                             "HOST=${prodHost}",
@@ -1064,7 +1067,7 @@ pipeline {
 
                         echo "Processing deployment config for tile server"
                         def pgtileservTemplate = openshift.process("-f",
-                            "openshift/pg_tileserv/pg_tileserv.dc.yaml",
+                            "${templateDir}/pg_tileserv/pg_tileserv.dc.yaml",
                             "NAME_SUFFIX=-${prodSuffix}",
                             "DATABASE_SERVICE_NAME=gwells-pg12-${prodSuffix}",
                             "IMAGE_TAG=20200610",
@@ -1159,7 +1162,7 @@ pipeline {
 
                         // Create cronjob for well export
                         def exportWellCronTemplate = openshift.process("-f",
-                            "openshift/export.cj.json",
+                            "${templateDir}/export.cj.json",
                             "ENV_NAME=${prodSuffix}",
                             "PROJECT=${prodProject}",
                             "TAG=${prodSuffix}",
@@ -1178,7 +1181,7 @@ pipeline {
 
                         // Create cronjob for databc export
                         def exportDataBCCronTemplate = openshift.process("-f",
-                            "openshift/export.cj.json",
+                            "${templateDir}/export.cj.json",
                             "ENV_NAME=${prodSuffix}",
                             "PROJECT=${prodProject}",
                             "TAG=${prodSuffix}",
@@ -1196,7 +1199,7 @@ pipeline {
                         )
 
                         def docBackupCronJob = openshift.process("-f",
-                            "openshift/jobs/minio-backup/minio-backup.cj.yaml",
+                            "${templateDir}/jobs/minio-backup/minio-backup.cj.yaml",
                             "NAME_SUFFIX=${prodSuffix}",
                             "NAMESPACE=${prodProject}",
                             "VERSION=v1.0.0",
@@ -1209,7 +1212,7 @@ pipeline {
                         openshift.apply(docBackupCronJob)
 
                         def dbNFSBackup = openshift.process("-f",
-                            "openshift/jobs/postgres-backup-nfs/postgres-backup.cj.yaml",
+                            "${templateDir}/jobs/postgres-backup-nfs/postgres-backup.cj.yaml",
                             "NAMESPACE=${prodProject}",
                             "TAG_NAME=v12.0.0",
                             "TARGET=gwells-pg12-production",
@@ -1222,7 +1225,7 @@ pipeline {
 
                         // Create cronjob for licence import
                         def importLicencesCronjob = openshift.process("-f",
-                            "openshift/jobs/import-licences/import-licences.cj.json",
+                            "${templateDir}/jobs/import-licences/import-licences.cj.json",
                             "ENV_NAME=${prodSuffix}",
                             "PROJECT=${prodProject}",
                             "TAG=${prodSuffix}",
