@@ -125,6 +125,8 @@ objects:
               configMapKeyRef:
                 name: ns-config
                 key: project.prod
+          - name: OCP_PLATFORM
+            value: '4'
           image: ' '
           imagePullPolicy: Always
           livenessProbe:

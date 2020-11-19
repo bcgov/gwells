@@ -75,6 +75,13 @@ objects:
               configMapKeyRef:
                 name: ns-config
                 key: project.prod
+          - name: APP_PROD_NAMESPACE
+            valueFrom:
+              configMapKeyRef:
+                name: ns-config
+                key: project.prod
+          - name: OCP_PLATFORM
+            value: '4'
           image: ' '
           imagePullPolicy: Always
           name: jenkins
