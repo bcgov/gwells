@@ -575,6 +575,11 @@ pipeline {
                                     // create a copy of the object and add it to the new list of objects to be applied
                                     Map copiedModel = selector.object()
                                     copiedModel.metadata.name = o.metadata.name
+                                    copiedModel.metadata.annotations = {}
+                                    copiedModel.metadata.creationTimestamp = ""
+                                    copiedModel.metadata.resourceVersion = ""
+                                    copiedModel.metadata.selfLink = ""
+                                    copiedModel.metadata.uid = ""
                                     echo "[as-copy-of] Copying ${o.kind} ${o.metadata.name}"
                                     newObjectCopies.add(copiedModel)
                                 }
