@@ -45,7 +45,7 @@
             "name": "PSQL_IMAGE",
             "description": "A psql client image (a PostgreSQL image will suffice)",
             "required": true,
-            "value": "image-registry.openshift-image-registry.svc:5000/23e83e-tools/crunchy-postgres-gis:centos7-12.4-3.0-4.5.0"
+            "value": "image-registry.openshift-image-registry.svc:5000/26e83e-tools/crunchy-postgres-gis:centos7-12.4-3.0-4.5.0"
         }
     ],
     "objects": [

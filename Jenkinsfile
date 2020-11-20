@@ -421,7 +421,7 @@ pipeline {
         // Project-wide settings - app name, repo
         appName = "gwells"
         repository = 'https://www.github.com/bcgov/gwells.git'
-        platformEnv = "${OCP_PLATFORM_VERSION ?: '3'}"
+        platformEnv = "${OCP_PLATFORM ?: '3'}"
 
         // prNumber is the pull request number e.g. 'pr-4'
         prNumber = "${env.JOB_BASE_NAME}".toLowerCase()
@@ -529,7 +529,7 @@ pipeline {
                 script {
                     _openshift(env.STAGE_NAME, devProject) {
                         // Process postgres deployment config (sub in vars, create list items)
-                        echo "Processing database deployment"
+                        echo "Processing database deployment (using folder ${templateDir}"
                         def deployDBTemplate = openshift.process("-f",
                             "${templateDir}/postgresql.dc.yml",
                             "DATABASE_SERVICE_NAME=gwells-pg12-${devSuffix}-${prNumber}",
