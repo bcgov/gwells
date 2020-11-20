@@ -457,7 +457,7 @@ pipeline {
         minioDataPVC = "minio-data-vol"
 
 
-        templateDir = "${OCP_PLATFORM == 4 ? 'openshift/ocp4' : 'openshift' }"
+        templateDir = "${OCP_PLATFORM == '4' ? 'openshift/ocp4' : 'openshift' }"
 
     }
     agent any
