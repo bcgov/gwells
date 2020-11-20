@@ -470,6 +470,7 @@ pipeline {
         stage('ALL - Prepare Templates') {
             steps {
                 script {
+                    echo "Starting deployment to OCP platform:   ${OCP_PLATFORM ?: '3'}"
                     echo "Cancelling previous builds..."
                     timeout(10) {
                         abortAllPreviousBuildInProgress(currentBuild)
@@ -534,7 +535,6 @@ pipeline {
                             "DATABASE_SERVICE_NAME=gwells-pg12-${devSuffix}-${prNumber}",
                             "IMAGE_STREAM_NAMESPACE=${devProject}",
                             "IMAGE_STREAM_NAME=crunchy-postgres-gis",
-                            "IMAGE_STREAM_VERSION=centos7-12.2-4.2.2",
                             "NAME_SUFFIX=-${devSuffix}-${prNumber}",
                             "POSTGRESQL_DATABASE=gwells",
                             "VOLUME_CAPACITY=1Gi",
