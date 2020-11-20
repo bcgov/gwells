@@ -180,7 +180,7 @@
                             "execNewPod": {
                                 "command": [
                                     "/usr/bin/container-entrypoint",
-                                    "/opt/app-root/src/scripts/pre-deploy.sh"
+                                    "/app/backend/scripts/pre-deploy.sh"
                                 ],
                                 "containerName": "gwells-app${NAME_SUFFIX}",
                                 "env": [
@@ -374,7 +374,7 @@
                                     },
                                     {
                                         "name": "APP_CONFIG",
-                                        "value": "/opt/app-root/src/backend/gunicorn.cfg"
+                                        "value": "/app/backend/gunicorn.cfg"
                                     },
                                     {
                                         "name": "DJANGO_SECRET_KEY",
