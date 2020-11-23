@@ -3,7 +3,7 @@
 
 set -xeuo pipefail
 
-APP_SOURCE_DIR=${APP_SOURCE_DIR:=$APP_ROOT}
+APP_SOURCE_DIR=$APP_ROOT
 
 while true
 do 
@@ -12,7 +12,7 @@ do
         sleep 10
 done
 
-echo ls /app
+echo ls $APP_ROOT
 
 
 cd $APP_SOURCE_DIR/src/backend/
