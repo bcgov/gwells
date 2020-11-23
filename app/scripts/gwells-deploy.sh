@@ -22,14 +22,14 @@
 #
 export PGPASSWORD=$DATABASE_PASSWORD
 
-APP_SOURCE_DIR=${APP_SOURCE_DIR:=$APP_ROOT}
+APP_SOURCE_DIR=$APP_ROOT
 
 # Halt conditions, verbosity and field separator
 #
 set -xeuo pipefail
 IFS=$'\n\t'
 
-echo ls /app
+echo ls $APP_SOURCE_DIR
 
 # Python migrate table changes
 #
