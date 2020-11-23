@@ -309,7 +309,7 @@ objects:
               - postgresql
             from:
               kind: ImageStreamTag
-              name: ${IMAGE_REGISTRY}/${IMAGE_STREAM_NAME}:${IMAGE_STREAM_VERSION}
+              name: ${IMAGE_STREAM_NAME}:${IMAGE_STREAM_VERSION}
               namespace: ${IMAGE_STREAM_NAMESPACE}
             lastTriggeredImage: ""
           type: ImageChange
