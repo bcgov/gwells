@@ -356,15 +356,6 @@
                                         "value": "public"
                                     },
                                     {
-                                        "name": "POSTGRESQL_ADMIN_PASSWORD",
-                                        "valueFrom": {
-                                            "secretKeyRef": {
-                                                "name": "gwells-database-credentials${NAME_SUFFIX}",
-                                                "key": "postgres_admin_password"
-                                            }
-                                        }
-                                    },
-                                    {
                                         "name": "APP_MODULE",
                                         "value": "wsgi:application"
                                     },
