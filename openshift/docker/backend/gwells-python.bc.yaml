@@ -16,7 +16,13 @@ spec:
       kind: ImageStreamTag
       name: gwells-python:latest
   postCommit: {}
-  resources: {}
+  resources:
+    requests:
+      memory: 1Gi
+      cpu: 1000m
+    limits:
+      memory: 4Gi
+      cpu: 2000m
   runPolicy: Serial
   source:
     contextDir: openshift/docker/backend
