@@ -10,5 +10,5 @@ do
         sleep 10
 done
 
-cd $APP_ROOT/src/backend/
+cd $HOME/backend/
 python manage.py migrate
