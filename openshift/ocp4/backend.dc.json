@@ -217,7 +217,7 @@
                                     },
                                     {
                                         "name": "APP_SOURCE_DIR",
-                                        "value": "/app"
+                                        "value": "/app/backend"
                                     }
                                 ]
                             }
@@ -302,7 +302,7 @@
                                     },
                                     {
                                         "name": "APP_SOURCE_DIR",
-                                        "value": "/app"
+                                        "value": "/app/backend"
                                     }
                                 ],
                                 "resources": {
@@ -724,7 +724,7 @@
                                     },
                                     {
                                         "name": "APP_SOURCE_DIR",
-                                        "value": "/app"
+                                        "value": "/app/backend"
                                     }
                                 ],
                                 "resources": {

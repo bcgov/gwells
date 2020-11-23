@@ -3,6 +3,7 @@
 
 set -xeuo pipefail
 
+APP_SOURCE_DIR=${$APP_SOURCE_DIR:="${APP_ROOT}/src"}
 
 while true
 do 
@@ -11,13 +12,6 @@ do
         sleep 10
 done
 
-echo "-----"
-echo "APP_ROOT"
-ls $APP_ROOT/src
-echo "-----"
-echo "/app"
-ls /app/backend
 
-
-cd $APP_ROOT/src/backend/
+cd $APP_SOURCE_DIR/backend/
 python manage.py migrate
