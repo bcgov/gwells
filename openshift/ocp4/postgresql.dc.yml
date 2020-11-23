@@ -227,21 +227,6 @@ objects:
                   value: userdata
                 - name: PGHOST
                   value: /tmp
-                - name: PG_DATABASE
-                  valueFrom:
-                    secretKeyRef:
-                        key: database-name
-                        name: ${DATABASE_SERVICE_NAME}
-                - name: PG_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                        key: database-password
-                        name: ${DATABASE_SERVICE_NAME}
-                - name: PG_USER
-                  valueFrom:
-                    secretKeyRef:
-                        key: database-user
-                        name: ${DATABASE_SERVICE_NAME}
               envFrom:
               - secretRef:
                   name: crunchy-db-credentials
