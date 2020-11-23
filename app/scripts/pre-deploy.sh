@@ -12,7 +12,12 @@ do
         sleep 10
 done
 
-echo ls $APP_ROOT
+echo "-----"
+echo "APP_ROOT"
+ls $APP_ROOT
+echo "-----"
+echo "/app"
+ls /app
 
 
 cd $APP_SOURCE_DIR/src/backend/

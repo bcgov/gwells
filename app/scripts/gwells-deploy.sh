@@ -29,7 +29,8 @@ APP_SOURCE_DIR=$APP_ROOT
 set -xeuo pipefail
 IFS=$'\n\t'
 
-echo ls $APP_SOURCE_DIR
+ls $APP_SOURCE_DIR
+ls /app
 
 # Python migrate table changes
 #
