@@ -22,8 +22,6 @@
 #
 export PGPASSWORD=$DATABASE_PASSWORD
 
-APP_SOURCE_DIR=$APP_ROOT
-
 # Halt conditions, verbosity and field separator
 #
 set -xeuo pipefail
@@ -35,7 +33,7 @@ ls /app
 # Python migrate table changes
 #
 echo "Post-Deploy: Python migration"
-cd $APP_SOURCE_DIR/src/backend/
+cd $APP_ROOT/src/backend/
 python manage.py migrate
 
 
@@ -43,7 +41,7 @@ python manage.py migrate
 #
 echo "Post-Deploy: SQL imports"
 # 2018-SEP-25 GW Aquifers CodeWithUs	
-cd $APP_SOURCE_DIR/src/database/scripts/aquifers/
+cd $APP_ROOT/src/database/scripts/aquifers/
 
 psql -X --set ON_ERROR_STOP=on -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
 DROP TABLE IF EXISTS xform_aquifers;
@@ -52,7 +50,7 @@ aquifer_id integer,mapping_year integer);
 \copy xform_aquifers FROM 'xforms-aquifers.csv' HEADER DELIMITER ',' CSV
 EOF
 
-cd $APP_SOURCE_DIR/src/database/scripts/wellsearch/
+cd $APP_ROOT/src/database/scripts/wellsearch/
 psql -X --set ON_ERROR_STOP=on -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -f \
 	post-deploy.sql
 
@@ -60,7 +58,7 @@ psql -X --set ON_ERROR_STOP=on -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $D
 # Python related portion of post-deploy
 #
 echo "Post-Deploy: Python tasks"
-cd $APP_SOURCE_DIR/src/backend/
+cd $APP_ROOT/src/backend/
 python manage.py post-deploy
 
 
