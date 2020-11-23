@@ -32,7 +32,7 @@ IFS=$'\n\t'
 # Python migrate table changes
 #
 echo "Post-Deploy: Python migration"
-cd $HOME/backend/
+cd /app/backend/
 python manage.py migrate
 
 
@@ -40,7 +40,7 @@ python manage.py migrate
 #
 echo "Post-Deploy: SQL imports"
 # 2018-SEP-25 GW Aquifers CodeWithUs	
-cd $HOME/database/scripts/aquifers/
+cd /app/database/scripts/aquifers/
 
 psql -X --set ON_ERROR_STOP=on -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER << EOF
 DROP TABLE IF EXISTS xform_aquifers;
@@ -49,7 +49,7 @@ aquifer_id integer,mapping_year integer);
 \copy xform_aquifers FROM 'xforms-aquifers.csv' HEADER DELIMITER ',' CSV
 EOF
 
-cd $HOME/database/scripts/wellsearch/
+cd /app/database/scripts/wellsearch/
 psql -X --set ON_ERROR_STOP=on -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $DATABASE_USER -f \
 	post-deploy.sql
 
@@ -57,7 +57,7 @@ psql -X --set ON_ERROR_STOP=on -h $DATABASE_SERVICE_NAME -d $DATABASE_NAME -U $D
 # Python related portion of post-deploy
 #
 echo "Post-Deploy: Python tasks"
-cd $HOME/backend/
+cd /app/backend/
 python manage.py post-deploy
 
 
