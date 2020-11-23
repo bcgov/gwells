@@ -214,6 +214,10 @@
                                     {
                                         "name": "PGHOST",
                                         "value": "gwells-pg12${NAME_SUFFIX}"
+                                    },
+                                    {
+                                        "name": "APP_SOURCE_DIR",
+                                        "value": "/app"
                                     }
                                 ]
                             }
@@ -295,6 +299,10 @@
                                     {
                                         "name": "PGHOST",
                                         "value": "gwells-pg12${NAME_SUFFIX}"
+                                    },
+                                    {
+                                        "name": "APP_SOURCE_DIR",
+                                        "value": "/app"
                                     }
                                 ],
                                 "resources": {
@@ -713,6 +721,10 @@
                                     {
                                         "name": "ENFORCE_ENV_VARIABLES",
                                         "value": "False"
+                                    },
+                                    {
+                                        "name": "APP_SOURCE_DIR",
+                                        "value": "/app"
                                     }
                                 ],
                                 "resources": {
