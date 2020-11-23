@@ -423,6 +423,8 @@ pipeline {
         repository = 'https://www.github.com/bcgov/gwells.git'
         platformEnv = "${OCP_PLATFORM ?: '3'}"
 
+        platformDomain = "${OCP_PLATFORM == '4' ? 'apps.silver.devops.gov.bc.ca' : 'pathfinder.gov.bc.ca'}"
+
         // prNumber is the pull request number e.g. 'pr-4'
         prNumber = "${env.JOB_BASE_NAME}".toLowerCase()
 
@@ -433,18 +435,19 @@ pipeline {
         devProject = "${APP_DEV_NAMESPACE ?: "moe-gwells-dev"}"
         devSuffix = "dev"
         devAppName = "${appName}-${devSuffix}-${prNumber}"
-        devHost = "${devAppName}.pathfinder.gov.bc.ca"
+        devHost = "${devAppName}.${platformDomain}"
 
         // stagingProject contains the test deployment. The test image is a candidate for promotion to prod.
         stagingProject = "${APP_STAGING_NAMESPACE ?: "moe-gwells-test"}"
         stagingSuffix = "staging"
-        stagingHost = "gwells-staging.pathfinder.gov.bc.ca"
+        stagingHost = "gwells-staging.${platformDomain}"
 
         // prodProject is the prod deployment.
         // TODO: New production images can be deployed by tagging an existing "test" image as "prod".
         prodProject = "${APP_PROD_NAMESPACE ?: "moe-gwells-prod"}"
         prodSuffix = "production"
-        prodHost = "gwells-prod.pathfinder.gov.bc.ca"
+        prodSubdomain =  "${OCP_PLATFORM == '4' ? 'gwells' : 'gwells-prod'}"
+        prodHost = "${prodSubdomain}.${platformDomain}"
 
         // name of the provisioned PVC claim for NFS backup storage
         // this will not be created during the pipeline; it must be created
