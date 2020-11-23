@@ -3,7 +3,7 @@
 
 set -xeuo pipefail
 
-APP_SOURCE_DIR=${$APP_SOURCE_DIR:="${APP_ROOT}/src"}
+APP_SOURCE_DIR=${APP_SOURCE_DIR:-"${APP_ROOT}/src"}
 
 while true
 do 

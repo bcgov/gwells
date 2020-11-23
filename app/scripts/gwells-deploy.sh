@@ -21,7 +21,7 @@
 # Sensitive, keep before 'set -x'
 #
 export PGPASSWORD=$DATABASE_PASSWORD
-APP_SOURCE_DIR=${$APP_SOURCE_DIR:="${APP_ROOT}/src"}
+APP_SOURCE_DIR=${APP_SOURCE_DIR:-"${APP_ROOT}/src"}
 
 # Halt conditions, verbosity and field separator
 #
