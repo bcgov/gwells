@@ -373,7 +373,7 @@
                                     },
                                     {
                                         "name": "APP_CONFIG",
-                                        "value": "/app/backend/gunicorn.cfg"
+                                        "value": "/app/backend/backend/gunicorn.cfg"
                                     },
                                     {
                                         "name": "DJANGO_SECRET_KEY",
