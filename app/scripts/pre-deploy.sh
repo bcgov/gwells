@@ -19,5 +19,5 @@ echo "/app"
 ls /app/backend
 
 
-cd $APP_SOURCE_DIR/backend/
+cd $APP_ROOT/src/backend/
 python manage.py migrate
