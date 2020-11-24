@@ -113,14 +113,22 @@ def unitTestDjango (String stageName, String envProject, String envSuffix) {
         def DB_pod = openshift.selector('pod', [deployment: "${DB_target}-${DB_newVersion}"])
         echo "Temporarily granting elevated DB rights"
         echo DB_target
-        def db_ocoutput_grant = openshift.exec(
-            DB_pod.objects()[0].metadata.name,
-            "--",
-            "bash -c '\
-                psql -c \"ALTER USER \\\"\${PG_USER}\\\" WITH SUPERUSER;\" \
-            '"
-        )
-        echo "Temporary DB grant results: "+ db_ocoutput_grant.actions[0].out
+
+
+
+        sh "oc rsh -n ${envProject} dc/${DB_target} bash -c ' \
+            psql -c \"ALTER USER \\\"\${PG_USER}\\\" WITH SUPERUSER;\" \
+        '"
+
+
+        // def db_ocoutput_grant = openshift.exec(
+        //     DB_pod.objects()[0].metadata.name,
+        //     "--",
+        //     "bash -c '\
+        //         psql -c \"ALTER USER \\\"\${PG_USER}\\\" WITH SUPERUSER;\" \
+        //     '"
+        // )
+        // echo "Temporary DB grant results: "+ db_ocoutput_grant.actions[0].out
 
         def target = envSuffix == "staging" ? "${appName}-${envSuffix}" : "${appName}-${envSuffix}-${prNumber}"
         def newVersion = openshift.selector("dc", "${target}").object().status.latestVersion
@@ -149,14 +157,19 @@ def unitTestDjango (String stageName, String envProject, String envSuffix) {
         echo "Django test results: "+ ocoutput.actions[0].out
 
         echo "Revoking ADMIN rights"
-        def db_ocoutput_revoke = openshift.exec(
-            DB_pod.objects()[0].metadata.name,
-            "--",
-            "bash -c '\
-                psql -c \"ALTER USER \\\"\${PG_USER}\\\" WITH NOSUPERUSER;\" \
-            '"
-        )
-        echo "DB Revocation results: "+ db_ocoutput_revoke.actions[0].out
+        sh "oc rsh -n ${envProject} dc/${DB_target} bash -c ' \
+               psql -c \"ALTER USER \\\"\${PG_USER}\\\" WITH NOSUPERUSER;\" \
+        '"
+
+
+        // def db_ocoutput_revoke = openshift.exec(
+        //     DB_pod.objects()[0].metadata.name,
+        //     "--",
+        //     "bash -c '\
+        //         psql -c \"ALTER USER \\\"\${PG_USER}\\\" WITH NOSUPERUSER;\" \
+        //     '"
+        // )
+        // echo "DB Revocation results: "+ db_ocoutput_revoke.actions[0].out
     }
 }
 
