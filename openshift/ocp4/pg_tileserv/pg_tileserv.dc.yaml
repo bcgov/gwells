@@ -133,13 +133,13 @@ objects:
                 - name: PG_DATABASE
                   valueFrom:
                     secretKeyRef:
-                        key: database-name
-                        name: ${DATABASE_SERVICE_NAME}
+                        key: PG_DATABASE
+                        name: crunchy-db-credentials
                 - name: PG_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                        key: database-password
-                        name: ${DATABASE_SERVICE_NAME}
+                        key: PG_PASSWORD
+                        name: crunchy-db-credentials
                 - name: PG_USER
                   value: ftw_reader
                 - name: DATABASE_URL
