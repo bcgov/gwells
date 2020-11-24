@@ -394,6 +394,13 @@ def zapTests (String stageName, String envUrl, String envSuffix) {
 
 // Database backup
 def dbBackup (String envProject, String envSuffix) {
+
+    // NOTE: temporarily skip pre-deployment backup for ocp4
+    if (platformEnv == '4') {
+        return
+    }
+
+
     def dcName = envSuffix == "dev" ? "${appName}-pg12-${envSuffix}-${prNumber}" : "${appName}-pg12-${envSuffix}"
     def dumpDir = "/pgdata/deployment-backups"
     def dumpName = "${envSuffix}-\$( date +%Y-%m-%d-%H%M ).dump"
