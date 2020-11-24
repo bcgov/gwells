@@ -7,7 +7,10 @@ import bcgov.GitHubHelper
 // Notify stage status and pass to Jenkins-GitHub library
 void notifyStageStatus (String name, String status) {
 
-    echo scm.getUserRemoteConfigs()[0].getUrl()
+    // NOTE: temporarily skip updating GitHub status checks for OCP4 deployments
+    if (OCP_PLATFORM == '4') {
+        return
+    }
 
     GitHubHelper.createCommitStatus(
         this,
@@ -22,7 +25,14 @@ void notifyStageStatus (String name, String status) {
 
 // Create deployment status and pass to Jenkins-GitHub library
 void createDeploymentStatus (String suffix, String status, String stageUrl) {
-    def ghDeploymentId = GitHubHelper.createDeployment(
+
+    // NOTE: temporarily skip updating GitHub status checks for OCP4 deployments
+    if (OCP_PLATFORM == '4') {
+        return
+    }
+
+
+    def ghDeploymentId = new GitHubHelper().createDeployment(
         this,
         "pull/${env.CHANGE_ID}/head",
         [
