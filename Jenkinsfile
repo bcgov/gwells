@@ -8,7 +8,7 @@ import bcgov.GitHubHelper
 void notifyStageStatus (String name, String status) {
 
     // NOTE: temporarily skip updating GitHub status checks for OCP4 deployments
-    if (OCP_PLATFORM == '4') {
+    if (platformEnv == '4') {
         return
     }
 
@@ -27,7 +27,7 @@ void notifyStageStatus (String name, String status) {
 void createDeploymentStatus (String suffix, String status, String stageUrl) {
 
     // NOTE: temporarily skip updating GitHub status checks for OCP4 deployments
-    if (OCP_PLATFORM == '4') {
+    if (platformEnv == '4') {
         return
     }
 
@@ -496,7 +496,7 @@ pipeline {
         stage('ALL - Prepare Templates') {
             steps {
                 script {
-                    echo "Starting deployment to OCP platform:   ${OCP_PLATFORM ?: '3'}"
+                    echo "Starting deployment to OCP platform:   ${platformEnv}"
                     echo "Cancelling previous builds..."
                     timeout(10) {
                         abortAllPreviousBuildInProgress(currentBuild)
