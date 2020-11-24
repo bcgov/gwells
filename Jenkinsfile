@@ -151,7 +151,7 @@ def unitTestDjango (String stageName, String envProject, String envSuffix) {
             "--",
             "bash -c '\
                 cd \${APP_SOURCE_DIR:-\"\${APP_ROOT}/src\"}/backend; \
-                python manage.py test \
+                python manage.py test --noinput \
             '"
         )
         echo "Django test results: "+ ocoutput.actions[0].out
