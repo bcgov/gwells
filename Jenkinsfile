@@ -150,7 +150,7 @@ def unitTestDjango (String stageName, String envProject, String envSuffix) {
             pods.objects()[0].metadata.name,
             "--",
             "bash -c '\
-                cd /opt/app-root/src/backend; \
+                cd \${APP_SOURCE_DIR:-\"\${APP_ROOT}/src\"}/backend; \
                 python manage.py test \
             '"
         )
