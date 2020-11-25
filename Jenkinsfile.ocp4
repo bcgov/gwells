@@ -604,7 +604,7 @@ pipeline {
                         echo "Processing Minio deployment config"
                         def minioTemplate = openshift.process("-f",
                             "${templateDir}/minio/minio.dc.yaml",
-                            "NAME=gwells-minio-${devSuffix}-${prNumber}"
+                            "NAME_SUFFIX=-${devSuffix}-${prNumber}"
                         )
 
                         // some objects need to be copied from a base secret or configmap

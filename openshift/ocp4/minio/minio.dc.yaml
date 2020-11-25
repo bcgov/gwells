@@ -5,13 +5,12 @@ metadata:
   annotations:
     description: "Minio deployment"
   labels:
-    app: "${NAME}"
-    template: "${NAME}-template"
-  name: "${NAME}"
+    app: "gwells${NAME_SUFFIX}"
+    template: "gwells-minio-template${NAME_SUFFIX}"
+  name: "gwells-minio${NAME_SUFFIX}"
 parameters:
-  - name: "NAME"
-    displayName: "App to deploy"
-    value: "minio"
+  - name: "NAME_SUFFIX"
+    required: true
   - name: "SECRETS"
     displayName: "Secret object to reference"
     value: "gwells-minio-secrets"
@@ -39,9 +38,9 @@ objects:
     metadata:
       finalizers:
       - kubernetes.io/pvc-protection
-      name: "${NAME}"
+      name: "gwells-minio${NAME_SUFFIX}"
       labels:
-        app: "${NAME}"
+        app: "gwells${NAME_SUFFIX}"
     spec:
       accessModes:
       - ${DEST_PVC_ACCESS}
@@ -53,9 +52,9 @@ objects:
     kind: DeploymentConfig
     metadata:
       labels:
-        app: "${NAME}"
-        template: "${NAME}-template"
-      name: "${NAME}"
+        app: "gwells${NAME_SUFFIX}"
+        name: "gwells-minio${NAME_SUFFIX}"
+      name: "gwells-minio${NAME_SUFFIX}"
     spec:
       replicas: 1
       strategy:
@@ -66,8 +65,7 @@ objects:
       template:
         metadata:
           labels:
-            app: "${NAME}"
-            template: "${NAME}-template"
+            app: "gwells${NAME_SUFFIX}"
         spec:
           containers:
           - env:
@@ -87,7 +85,7 @@ objects:
               value: /opt/minio/s3/config
             image: image-registry.openshift-image-registry.svc:5000/${SRC_NAMESPACE}/${SRC_IMAGE}:${SRC_TAG}
             imagePullPolicy: Always
-            name: "${NAME}"
+            name: "gwells-minio${NAME_SUFFIX}"
             ports:
             - containerPort: 9000
               protocol: TCP
@@ -106,7 +104,7 @@ objects:
           volumes:
           - name: minio-vol
             persistentVolumeClaim:
-              claimName: "${NAME}"
+              claimName: "gwells-minio${NAME_SUFFIX}"
       triggers:
       - imageChangeParams:
           containerNames:
