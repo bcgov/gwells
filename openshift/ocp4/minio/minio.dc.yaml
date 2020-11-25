@@ -16,7 +16,7 @@ parameters:
     value: "gwells-minio-secrets"
   - name: "SRC_NAMESPACE"
     displayName: "Namespace containing the deployment source"
-    value: "moe-gwells-tools"
+    value: "26e83e-tools"
   - name: "SRC_IMAGE"
     displayName: "Name of source image"
     value: "gwells-minio"
