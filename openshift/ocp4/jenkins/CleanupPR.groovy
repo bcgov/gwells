@@ -3,8 +3,8 @@
 
 import groovy.json.JsonSlurper
 
-String TOOLS_PROJECT = "moe-gwells-tools"
-String DEV_PROJECT = "moe-gwells-dev"
+String TOOLS_PROJECT = "26e83e-tools"
+String DEV_PROJECT = "26e83e-dev"
 
 def jsonSlurper = new JsonSlurper()
 
