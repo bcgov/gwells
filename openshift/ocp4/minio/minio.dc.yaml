@@ -41,6 +41,7 @@ objects:
       name: "gwells-minio${NAME_SUFFIX}"
       labels:
         app: "gwells${NAME_SUFFIX}"
+        name: gwells-minio${NAME_SUFFIX}
     spec:
       accessModes:
       - ${DEST_PVC_ACCESS}
@@ -66,6 +67,7 @@ objects:
         metadata:
           labels:
             app: "gwells${NAME_SUFFIX}"
+            name: gwells-minio${NAME_SUFFIX}
         spec:
           containers:
           - env:
@@ -108,7 +110,7 @@ objects:
       triggers:
       - imageChangeParams:
           containerNames:
-          - ${NAME}
+          - gwells-minio${NAME_SUFFIX}
           from:
             kind: ImageStreamTag
             name: ${SRC_IMAGE}:${SRC_TAG}
@@ -119,8 +121,9 @@ objects:
     kind: Service
     metadata:
       labels:
-        app: ${NAME}
-      name: ${NAME}
+        app: gwells-${NAME_SUFFIX}
+        name: gwells-minio${NAME_SUFFIX}
+      name: gwells-minio${NAME_SUFFIX}
     spec:
       ports:
       - name: 9000-tcp
