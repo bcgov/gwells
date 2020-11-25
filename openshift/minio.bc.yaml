@@ -11,9 +11,9 @@ parameters:
 - name: DEST_IMG_TAG
   value: "latest"
 - name: SRC_REPO_URL
-  value: "https://github.com/BCDevOps/minio-openshift"
+  value: "https://github.com/bcgov/gwells"
 - name: SRC_REPO_BRANCH
-  value: "master"
+  value: "release"
 objects:
 - kind: ImageStream
   apiVersion: v1
@@ -37,7 +37,7 @@ objects:
     - type: ConfigChange
     runPolicy: SerialLatestOnly
     source:
-      contextDir: "/docker"
+      contextDir: "/openshift/docker/minio"
       git:
         ref: "${SRC_REPO_BRANCH}"
         uri: "${SRC_REPO_URL}"
