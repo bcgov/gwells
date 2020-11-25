@@ -86,9 +86,8 @@ objects:
             image: image-registry.openshift-image-registry.svc:5000/${SRC_NAMESPACE}/${SRC_IMAGE}:${SRC_TAG}
             imagePullPolicy: Always
             name: "gwells-minio${NAME_SUFFIX}"
-            args:
-              - server
-              - "${MINIO_DATA_DIR}"
+            command:
+              - '/bin/sh -c /minio-entrypoint.sh server /opt/minio/s3/data'
             ports:
             - containerPort: 9000
               protocol: TCP
