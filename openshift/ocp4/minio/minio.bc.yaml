@@ -1,0 +1,50 @@
+---
+kind: Template
+apiVersion: v1
+metadata:
+  name: gwells-minio-bc
+parameters:
+- name: NAME
+  value: "gwells-minio"
+- name: DEST_IMG_NAME
+  value: "gwells-minio"
+- name: DEST_IMG_TAG
+  value: "latest"
+- name: SRC_REPO_URL
+  value: "https://github.com/bcgov/gwells"
+- name: SRC_REPO_BRANCH
+  value: "release"
+objects:
+- kind: ImageStream
+  apiVersion: v1
+  metadata:
+    name: "${DEST_IMG_NAME}"
+    labels:
+      app: "${NAME}"
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    labels:
+      app: "${NAME}"
+      name: "${NAME}"
+      template: "${NAME}"
+    name: "${NAME}"
+  spec:
+    successfulBuildsHistoryLimit: 3
+    failedBuildsHistoryLimit: 3
+    triggers:
+    - type: ImageChange
+    - type: ConfigChange
+    runPolicy: SerialLatestOnly
+    source:
+      contextDir: "/openshift/docker/minio"
+      git:
+        ref: "${SRC_REPO_BRANCH}"
+        uri: "${SRC_REPO_URL}"
+      type: Git
+    strategy:
+      type: Docker
+    output:
+      to:
+        kind: ImageStreamTag
+        name: "${DEST_IMG_NAME}:${DEST_IMG_TAG}"
