@@ -82,12 +82,13 @@ objects:
                   name: ${SECRETS}
                   key: MINIO_SECRET_KEY
             - name: MINIO_DATA_DIR
-              value: /opt/minio/s3/data
-            - name: MINIO_CONFIG_DIR
-              value: /opt/minio/s3/config
+              value: /opt/minio/data
             image: image-registry.openshift-image-registry.svc:5000/${SRC_NAMESPACE}/${SRC_IMAGE}:${SRC_TAG}
             imagePullPolicy: Always
             name: "gwells-minio${NAME_SUFFIX}"
+            args:
+              - server
+              - "${MINIO_DATA_DIR}"
             ports:
             - containerPort: 9000
               protocol: TCP
@@ -99,7 +100,7 @@ objects:
             terminationMessagePath: /dev/termination-log
             terminationMessagePolicy: File
             volumeMounts:
-            - mountPath: /opt/minio/s3
+            - mountPath: /opt/minio/data
               name: minio-vol
           restartPolicy: Always
           terminationGracePeriodSeconds: 30
