@@ -783,7 +783,6 @@ pipeline {
                             "DATABASE_SERVICE_NAME=gwells-pg12-${stagingSuffix}",
                             "IMAGE_STREAM_NAMESPACE=${stagingProject}",
                             "IMAGE_STREAM_NAME=crunchy-postgres-gis",
-                            "IMAGE_STREAM_VERSION=centos7-12.2-4.2.2",
                             "POSTGRESQL_DATABASE=gwells",
                             "VOLUME_CAPACITY=20Gi",
                             "STORAGE_CLASS=netapp-file-standard",
@@ -810,6 +809,12 @@ pipeline {
                             "DATABASE_SERVICE_NAME=gwells-pg12-${stagingSuffix}",
                             "IMAGE_TAG=20200610",
                             "HOST=${stagingHost}",
+                        )
+
+                        echo "Processing Minio deployment config"
+                        def minioTemplate = openshift.process("-f",
+                            "${templateDir}/minio/minio.dc.yaml",
+                            "NAME_SUFFIX=-${stagingSuffix}"
                         )
 
                         // some objects need to be copied from a base secret or configmap
@@ -856,6 +861,12 @@ pipeline {
                             ],
                             "--overwrite"
                         )
+
+                        openshift.apply(minioTemplate).label(
+                            ['app':"gwells-${stagingSuffix}", 'app-name':"${appName}", 'env-name':"${stagingSuffix}"],
+                            "--overwrite"
+                        )
+
 
                         openshift.apply(deployTemplate).label(
                             [
@@ -1089,7 +1100,6 @@ pipeline {
                             "DATABASE_SERVICE_NAME=gwells-pg12-${prodSuffix}",
                             "IMAGE_STREAM_NAMESPACE=${prodProject}",
                             "IMAGE_STREAM_NAME=crunchy-postgres-gis",
-                            "IMAGE_STREAM_VERSION=centos7-12.2-4.2.2",
                             "POSTGRESQL_DATABASE=gwells",
                             "STORAGE_CLASS=netapp-file-standard",
                             "VOLUME_CAPACITY=40Gi",
@@ -1118,6 +1128,13 @@ pipeline {
                             "IMAGE_TAG=20200610",
                             "HOST=${prodHost}",
                         )
+
+                        echo "Processing Minio deployment config"
+                        def minioTemplate = openshift.process("-f",
+                            "${templateDir}/minio/minio.dc.yaml",
+                            "NAME_SUFFIX=-${prodSuffix}"
+                        )
+
 
                         // some objects need to be copied from a base secret or configmap
                         // these objects have an annotation "as-copy-of" in their object spec (e.g. an object in backend.dc.json)
@@ -1162,6 +1179,13 @@ pipeline {
                             ],
                             "--overwrite"
                         )
+
+
+                        openshift.apply(minioTemplate).label(
+                            ['app':"gwells-${prodSuffix}", 'app-name':"${appName}", 'env-name':"${prodSuffix}"],
+                             "--overwrite"
+                            )
+
 
                         openshift.apply(deployTemplate).label(
                             [
