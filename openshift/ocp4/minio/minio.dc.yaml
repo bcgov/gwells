@@ -87,7 +87,10 @@ objects:
             imagePullPolicy: Always
             name: "gwells-minio${NAME_SUFFIX}"
             command:
-              - '/bin/sh -c /minio-entrypoint.sh server /opt/minio/s3/data'
+              - '/bin/sh'
+              - '-c'
+            args:
+              - '/minio-entrypoint.sh server /opt/minio/s3/data'
             ports:
             - containerPort: 9000
               protocol: TCP
