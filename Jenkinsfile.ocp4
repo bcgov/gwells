@@ -817,6 +817,14 @@ pipeline {
                             "NAME_SUFFIX=-${stagingSuffix}"
                         )
 
+
+                        echo "Processing backup volume config"
+                        def backupVolConfig = openshift.process("-f",
+                            "${templateDir}/backup.pvc.yaml",
+                            VOLUME_CAPACITY="10Gi",
+                            STORAGE_CLASS="netapp-file-backup"
+                        )
+
                         // some objects need to be copied from a base secret or configmap
                         // these objects have an annotation "as-copy-of" in their object spec (e.g. an object in backend.dc.json)
                         echo "Creating configmaps and secrets objects"
@@ -877,6 +885,15 @@ pipeline {
                             "--overwrite"
                         )
 
+                        openshift.apply(backupVolConfig).label(
+                            [
+                                'app':"gwells-${stagingSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${stagingSuffix}"
+                            ],
+                            "--overwrite"
+                        )
+
                         openshift.apply(newObjectCopies).label(
                             [
                                 'app':"gwells-${stagingSuffix}",
@@ -906,24 +923,27 @@ pipeline {
 
                         createDeploymentStatus(stagingSuffix, 'PENDING', stagingHost)
 
+
+/* TODO:  DISABLED FOR OCP4 TEST ENVIRONMENT */
+
                         // Create cronjob for well export
-                        def exportWellCronTemplate = openshift.process("-f",
-                            "${templateDir}/export.cj.json",
-                            "ENV_NAME=${stagingSuffix}",
-                            "PROJECT=${stagingProject}",
-                            "TAG=${stagingSuffix}",
-                            "NAME=export",
-                            "COMMAND=export",
-                            "SCHEDULE='30 3 * * *'"
-                        )
-                        openshift.apply(exportWellCronTemplate).label(
-                            [
-                                'app':"gwells-${stagingSuffix}",
-                                'app-name':"${appName}",
-                                'env-name':"${stagingSuffix}"
-                            ],
-                            "--overwrite"
-                        )
+                        // def exportWellCronTemplate = openshift.process("-f",
+                        //     "${templateDir}/export.cj.json",
+                        //     "ENV_NAME=${stagingSuffix}",
+                        //     "PROJECT=${stagingProject}",
+                        //     "TAG=${stagingSuffix}",
+                        //     "NAME=export",
+                        //     "COMMAND=export",
+                        //     "SCHEDULE='30 3 * * *'"
+                        // )
+                        // openshift.apply(exportWellCronTemplate).label(
+                        //     [
+                        //         'app':"gwells-${stagingSuffix}",
+                        //         'app-name':"${appName}",
+                        //         'env-name':"${stagingSuffix}"
+                        //     ],
+                        //     "--overwrite"
+                        // )
 
                         // Create cronjob for licence import
                         def importLicencesCronjob = openshift.process("-f",
@@ -963,24 +983,26 @@ pipeline {
                             "--overwrite"
                         )
 
+/* TODO:  DISABLED FOR OCP4 TEST ENVIRONMENT */
+
                         // Create cronjob for databc export
-                        def exportDataBCTemplate = openshift.process("-f",
-                            "${templateDir}/export.cj.json",
-                            "ENV_NAME=${stagingSuffix}",
-                            "PROJECT=${stagingProject}",
-                            "TAG=${stagingSuffix}",
-                            "NAME=export-databc",
-                            "COMMAND=export_databc",
-                            "SCHEDULE='0 4 * * *'"
-                        )
-                        openshift.apply(exportDataBCTemplate).label(
-                            [
-                                'app':"gwells-${stagingSuffix}",
-                                'app-name':"${appName}",
-                                'env-name':"${stagingSuffix}"
-                            ],
-                            "--overwrite"
-                        )
+                        // def exportDataBCTemplate = openshift.process("-f",
+                        //     "${templateDir}/export.cj.json",
+                        //     "ENV_NAME=${stagingSuffix}",
+                        //     "PROJECT=${stagingProject}",
+                        //     "TAG=${stagingSuffix}",
+                        //     "NAME=export-databc",
+                        //     "COMMAND=export_databc",
+                        //     "SCHEDULE='0 4 * * *'"
+                        // )
+                        // openshift.apply(exportDataBCTemplate).label(
+                        //     [
+                        //         'app':"gwells-${stagingSuffix}",
+                        //         'app-name':"${appName}",
+                        //         'env-name':"${stagingSuffix}"
+                        //     ],
+                        //     "--overwrite"
+                        // )
 
                         // automated minio backup
                         def docBackupCronjob = openshift.process("-f",
@@ -990,7 +1012,7 @@ pipeline {
                             "VERSION=v1.0.0",
                             "SCHEDULE='15 3 * * *'",
                             "DEST_PVC=gwells-pg12-backup",
-                            "SOURCE_PVC=${minioDataPVC}"
+                            "SOURCE_PVC=gwells-minio"
                         )
 
                         openshift.apply(docBackupCronjob)
@@ -1229,43 +1251,46 @@ pipeline {
 
                         createDeploymentStatus(prodSuffix, 'PENDING', prodHost)
 
-                        // Create cronjob for well export
-                        def exportWellCronTemplate = openshift.process("-f",
-                            "${templateDir}/export.cj.json",
-                            "ENV_NAME=${prodSuffix}",
-                            "PROJECT=${prodProject}",
-                            "TAG=${prodSuffix}",
-                            "NAME=export",
-                            "COMMAND=export",
-                            "SCHEDULE='30 3 * * *'"
-                        )
-                        openshift.apply(exportWellCronTemplate).label(
-                            [
-                                'app':"gwells-${prodSuffix}",
-                                'app-name':"${appName}",
-                                'env-name':"${prodSuffix}"
-                            ],
-                            "--overwrite"
-                        )
+
+/* DISABLED FOR OCP4 TEST ENVIRONMENT */
+
+                        // // Create cronjob for well export
+                        // def exportWellCronTemplate = openshift.process("-f",
+                        //     "${templateDir}/export.cj.json",
+                        //     "ENV_NAME=${prodSuffix}",
+                        //     "PROJECT=${prodProject}",
+                        //     "TAG=${prodSuffix}",
+                        //     "NAME=export",
+                        //     "COMMAND=export",
+                        //     "SCHEDULE='30 3 * * *'"
+                        // )
+                        // openshift.apply(exportWellCronTemplate).label(
+                        //     [
+                        //         'app':"gwells-${prodSuffix}",
+                        //         'app-name':"${appName}",
+                        //         'env-name':"${prodSuffix}"
+                        //     ],
+                        //     "--overwrite"
+                        // )
 
                         // Create cronjob for databc export
-                        def exportDataBCCronTemplate = openshift.process("-f",
-                            "${templateDir}/export.cj.json",
-                            "ENV_NAME=${prodSuffix}",
-                            "PROJECT=${prodProject}",
-                            "TAG=${prodSuffix}",
-                            "NAME=export-databc",
-                            "COMMAND=export_databc",
-                            "SCHEDULE='0 5 * * *'"
-                        )
-                        openshift.apply(exportDataBCCronTemplate).label(
-                            [
-                                'app':"gwells-${prodSuffix}",
-                                'app-name':"${appName}",
-                                'env-name':"${prodSuffix}"
-                            ],
-                            "--overwrite"
-                        )
+                        // def exportDataBCCronTemplate = openshift.process("-f",
+                        //     "${templateDir}/export.cj.json",
+                        //     "ENV_NAME=${prodSuffix}",
+                        //     "PROJECT=${prodProject}",
+                        //     "TAG=${prodSuffix}",
+                        //     "NAME=export-databc",
+                        //     "COMMAND=export_databc",
+                        //     "SCHEDULE='0 5 * * *'"
+                        // )
+                        // openshift.apply(exportDataBCCronTemplate).label(
+                        //     [
+                        //         'app':"gwells-${prodSuffix}",
+                        //         'app-name':"${appName}",
+                        //         'env-name':"${prodSuffix}"
+                        //     ],
+                        //     "--overwrite"
+                        // )
 
                         def docBackupCronJob = openshift.process("-f",
                             "${templateDir}/jobs/minio-backup/minio-backup.cj.yaml",

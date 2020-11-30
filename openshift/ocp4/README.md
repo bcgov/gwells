@@ -45,3 +45,16 @@ Import the pg_tileserv image into the tools repo using `oc import-image --from=p
 The dev, test and prod namespace service accounts will need image pull roles.
 Use `oc -n 26e83e-tools policy add-role-to-group system:image-puller system:serviceaccounts:26e83e-dev` (note namespace at end- repeat for test and prod).
 
+### Secrets / ConfigMaps
+
+The following secrets / configmaps need to be deployed to each environment namespace (dev/test/prod):
+| name | kind |
+| gwells-django-secrets| Secret |
+| gwells-database-secrets | Secret |
+| gwells-e-licensing-secrets| Secret |
+| gwells-minio-secrets | Secret |
+| gwells-global-config | ConfigMap |
+
+These objects hold base/default config for each namespace. The Jenkins pipeline makes copies of these as (e.g.) `gwells-django-dev-pr-1110` or `gwells-django-prod` (depending on environment).
+
+### Backup jobs
