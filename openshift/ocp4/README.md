@@ -58,3 +58,5 @@ The following secrets / configmaps need to be deployed to each environment names
 These objects hold base/default config for each namespace. The Jenkins pipeline makes copies of these as (e.g.) `gwells-django-dev-pr-1110` or `gwells-django-prod` (depending on environment).
 
 ### Backup jobs
+
+Unlike OCP3, where an NFS storage volume had to be manually provisioned, we can self-provision backup storage using the storage class `netapp-file-backup`.  The Jenkinsfile has been updated to provision a volume for the minio and postgres backups to write to.
