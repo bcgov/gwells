@@ -5,31 +5,30 @@ metadata:
   annotations:
     description: "Minio deployment"
   labels:
-    app: "${NAME}"
-    template: "${NAME}-template"
-  name: "${NAME}"
+    app: "gwells${NAME_SUFFIX}"
+    template: "gwells-minio-template${NAME_SUFFIX}"
+  name: "gwells-minio${NAME_SUFFIX}"
 parameters:
-  - name: "NAME"
-    displayName: "App to deploy"
-    value: "minio"
+  - name: "NAME_SUFFIX"
+    required: true
   - name: "SECRETS"
     displayName: "Secret object to reference"
-    value: "minio-secrets"
+    value: "gwells-minio-secrets"
   - name: "SRC_NAMESPACE"
     displayName: "Namespace containing the deployment source"
-    value: "moe-gwells-tools"
+    value: "26e83e-tools"
   - name: "SRC_IMAGE"
     displayName: "Name of source image"
-    value: "minio"
+    value: "gwells-minio"
   - name: "SRC_TAG"
     displayName: "Tag of source image"
     value: "latest"
   - name: "DEST_PVC_SIZE"
     displayName: "PVC size"
-    value: "10Gi"
+    value: "1Gi"
   - name: "DEST_PVC_CLASS"
     displayName: "PVC class"
-    value: "gluster-file"
+    value: "netapp-file-standard"
   - name: "DEST_PVC_ACCESS"
     displayName: "PVC access mode"
     value: "ReadWriteOnce"
@@ -39,24 +38,10 @@ objects:
     metadata:
       finalizers:
       - kubernetes.io/pvc-protection
-      name: "${NAME}-config-vol-v2"
+      name: "gwells-minio${NAME_SUFFIX}"
       labels:
-        app: "${NAME}"
-    spec:
-      accessModes:
-      - ${DEST_PVC_ACCESS}
-      resources:
-        requests:
-          storage: ${DEST_PVC_SIZE}
-      storageClassName: ${DEST_PVC_CLASS}
-  - apiVersion: v1
-    kind: PersistentVolumeClaim
-    metadata:
-      finalizers:
-      - kubernetes.io/pvc-protection
-      name: "${NAME}-data-vol"
-      labels:
-        app: "${NAME}"
+        app: "gwells${NAME_SUFFIX}"
+        name: gwells-minio${NAME_SUFFIX}
     spec:
       accessModes:
       - ${DEST_PVC_ACCESS}
@@ -68,9 +53,9 @@ objects:
     kind: DeploymentConfig
     metadata:
       labels:
-        app: "${NAME}"
-        template: "${NAME}-template"
-      name: "${NAME}"
+        app: "gwells${NAME_SUFFIX}"
+        name: "gwells-minio${NAME_SUFFIX}"
+      name: "gwells-minio${NAME_SUFFIX}"
     spec:
       replicas: 1
       strategy:
@@ -81,8 +66,8 @@ objects:
       template:
         metadata:
           labels:
-            app: "${NAME}"
-            template: "${NAME}-template"
+            app: "gwells${NAME_SUFFIX}"
+            name: gwells-minio${NAME_SUFFIX}
         spec:
           containers:
           - env:
@@ -98,11 +83,14 @@ objects:
                   key: MINIO_SECRET_KEY
             - name: MINIO_DATA_DIR
               value: /opt/minio/s3/data
-            - name: MINIO_CONFIG_DIR
-              value: /opt/minio/s3/config
-            image: docker-registry.default.svc:5000/${SRC_NAMESPACE}/${SRC_IMAGE}:${SRC_TAG}
+            image: image-registry.openshift-image-registry.svc:5000/${SRC_NAMESPACE}/${SRC_IMAGE}:${SRC_TAG}
             imagePullPolicy: Always
-            name: "${NAME}"
+            name: "gwells-minio${NAME_SUFFIX}"
+            command:
+              - '/bin/sh'
+              - '-c'
+            args:
+              - '/minio-entrypoint.sh server /opt/minio/s3/data'
             ports:
             - containerPort: 9000
               protocol: TCP
@@ -114,23 +102,18 @@ objects:
             terminationMessagePath: /dev/termination-log
             terminationMessagePolicy: File
             volumeMounts:
-            - mountPath: /opt/minio/s3/config
-              name: config-vol
             - mountPath: /opt/minio/s3/data
-              name: data-vol
+              name: minio-vol
           restartPolicy: Always
           terminationGracePeriodSeconds: 30
           volumes:
-          - name: config-vol
+          - name: minio-vol
             persistentVolumeClaim:
-              claimName: "${NAME}-config-vol-v2"
-          - name: data-vol
-            persistentVolumeClaim:
-              claimName: "${NAME}-data-vol"
+              claimName: "gwells-minio${NAME_SUFFIX}"
       triggers:
       - imageChangeParams:
           containerNames:
-          - ${NAME}
+          - gwells-minio${NAME_SUFFIX}
           from:
             kind: ImageStreamTag
             name: ${SRC_IMAGE}:${SRC_TAG}
@@ -141,8 +124,9 @@ objects:
     kind: Service
     metadata:
       labels:
-        app: ${NAME}
-      name: ${NAME}
+        app: gwells-${NAME_SUFFIX}
+        name: gwells-minio${NAME_SUFFIX}
+      name: gwells-minio${NAME_SUFFIX}
     spec:
       ports:
       - name: 9000-tcp
