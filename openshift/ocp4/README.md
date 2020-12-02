@@ -57,6 +57,16 @@ The following secrets / configmaps need to be deployed to each environment names
 
 These objects hold base/default config for each namespace. The Jenkins pipeline makes copies of these as (e.g.) `gwells-django-dev-pr-1110` or `gwells-django-prod` (depending on environment).
 
+### NetworkSecurityPolicies
+
+We need to create NetworkSecurityPolicy objects to define the rules for external and internal network communication.
+
+As a short term fix (for migration), there are NetworkSecurityPolicies that mimic the OCP3 cluster.
+
+```
+oc apply -f openshift/ocp4/jenkins/jenkins.nsp.yaml -p NAMESPACE=<namespace> | oc apply -n <namespace> -f -
+```
+
 ### Backup jobs
 
 Unlike OCP3, where an NFS storage volume had to be manually provisioned, we can self-provision backup storage using the storage class `netapp-file-backup`.  The Jenkinsfile has been updated to provision a volume for the minio and postgres backups to write to.
