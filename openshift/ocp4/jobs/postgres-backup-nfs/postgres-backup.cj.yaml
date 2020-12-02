@@ -227,7 +227,7 @@ objects:
                     secretKeyRef:
                       key: PG_ROOT_PASSWORD
                       name: crunchy-db-credentials
-                image: docker-registry.default.svc:5000/${IMAGE_NAMESPACE}/${SOURCE_IMAGE_NAME}:${TAG_NAME}
+                image: image-registry.openshift-image-registry.svc:5000/${IMAGE_NAMESPACE}/${SOURCE_IMAGE_NAME}:${TAG_NAME}
                 imagePullPolicy: Always
                 name: backup-cronjob
                 resources: {}

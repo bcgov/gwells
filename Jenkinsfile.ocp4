@@ -1016,7 +1016,7 @@ pipeline {
                             "NAMESPACE=${stagingProject}",
                             "VERSION=v1.0.0",
                             "SCHEDULE=15 3 * * *",
-                            "DEST_PVC=gwells-pg12-backup",
+                            "DEST_PVC=gwells-backups",
                             "SOURCE_PVC=gwells-minio"
                         )
 
@@ -1028,7 +1028,7 @@ pipeline {
                             "NAMESPACE=${stagingProject}",
                             "TAG_NAME=v12.0.0",
                             "TARGET=gwells-pg12-staging",
-                            "PVC_NAME=gwells-pg12-backup",
+                            "PVC_NAME=gwells-backups",
                             "SCHEDULE=30 2 * * *",
                             "JOB_NAME=postgres-nfs-backup",
                             "DAILY_BACKUPS=2",
