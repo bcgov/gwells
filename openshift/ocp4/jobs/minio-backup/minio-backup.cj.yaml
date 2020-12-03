@@ -18,24 +18,6 @@ parameters:
   - name: SOURCE_PVC
     required: true
 objects:
-  - apiVersion: v1
-    kind: PersistentVolumeClaim
-    metadata:
-      finalizers:
-      - kubernetes.io/pvc-protection
-      name: "gwells-documents-${NAME_SUFFIX}-backup-vol"
-      labels:
-        app: "gwells-${NAME_SUFFIX}"
-        name: "gwells-${NAME_SUFFIX}-documents-backup"
-        component: backups
-        part-of: gwells
-    spec:
-      accessModes:
-      - ReadWriteMany
-      resources:
-        requests:
-          storage: ${PVC_SIZE}
-      storageClassName: gluster-file
   - apiVersion: batch/v1beta1
     kind: CronJob
     metadata:
@@ -57,7 +39,7 @@ objects:
             spec:
               activeDeadlineSeconds: 3600
               containers:
-              - image: docker-registry.default.svc:5000/${NAMESPACE}/gwells-documents-backup:${VERSION}
+              - image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/gwells-documents-backup:${VERSION}
                 imagePullPolicy: Always
                 name: minio-backup
                 env:
@@ -85,6 +67,6 @@ objects:
                   claimName: "${DEST_PVC}"
               - name: backup
                 persistentVolumeClaim:
-                  claimName: "gwells-documents-${NAME_SUFFIX}-backup-vol"
+                  claimName: "gwells-backups"
       schedule: ${SCHEDULE}
       successfulJobsHistoryLimit: 3

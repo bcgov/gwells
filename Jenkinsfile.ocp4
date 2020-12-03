@@ -807,7 +807,7 @@ pipeline {
                             "${templateDir}/pg_tileserv/pg_tileserv.dc.yaml",
                             "NAME_SUFFIX=-${stagingSuffix}",
                             "DATABASE_SERVICE_NAME=gwells-pg12-${stagingSuffix}",
-                            "IMAGE_TAG=20200610",
+                            "IMAGE_TAG=20201112",
                             "HOST=${stagingHost}",
                         )
 
@@ -821,8 +821,8 @@ pipeline {
                         echo "Processing backup volume config"
                         def backupVolConfig = openshift.process("-f",
                             "${templateDir}/backup.pvc.yaml",
-                            VOLUME_CAPACITY="10Gi",
-                            STORAGE_CLASS="netapp-file-backup"
+                            "VOLUME_CAPACITY=10Gi",
+                            "STORAGE_CLASS=netapp-file-backup"
                         )
 
                         // some objects need to be copied from a base secret or configmap
@@ -841,6 +841,11 @@ pipeline {
                                 if (selector.count() == 1) {
                                     // create a copy of the object and add it to the new list of objects to be applied
                                     Map copiedModel = selector.object()
+                                    copiedModel.metadata.remove('annotations')
+                                    copiedModel.metadata.remove('creationTimestamp')
+                                    copiedModel.metadata.remove('resourceVersion')
+                                    copiedModel.metadata.remove('selfLink')
+                                    copiedModel.metadata.remove('uid')
                                     copiedModel.metadata.name = o.metadata.name
                                     echo "Copying ${o.kind} ${o.metadata.name}"
                                     newObjectCopies.add(copiedModel)
@@ -953,7 +958,7 @@ pipeline {
                             "TAG=${stagingSuffix}",
                             "NAME=licences",
                             "COMMAND=import_licences",
-                            "SCHEDULE='40 3 * * *'"
+                            "SCHEDULE=40 3 * * *"
                         )
                         openshift.apply(importLicencesCronjob).label(
                             [
@@ -972,7 +977,7 @@ pipeline {
                             "TAG=${stagingSuffix}",
                             "NAME=demand",
                             "COMMAND=update_demand",
-                            "SCHEDULE='50 3 * * *'"
+                            "SCHEDULE=50 3 * * *"
                         )
                         openshift.apply(importUpdateAquiferCronjob).label(
                             [
@@ -1010,8 +1015,8 @@ pipeline {
                             "NAME_SUFFIX=${stagingSuffix}",
                             "NAMESPACE=${stagingProject}",
                             "VERSION=v1.0.0",
-                            "SCHEDULE='15 3 * * *'",
-                            "DEST_PVC=gwells-pg12-backup",
+                            "SCHEDULE=15 3 * * *",
+                            "DEST_PVC=gwells-backups",
                             "SOURCE_PVC=gwells-minio"
                         )
 
@@ -1023,8 +1028,8 @@ pipeline {
                             "NAMESPACE=${stagingProject}",
                             "TAG_NAME=v12.0.0",
                             "TARGET=gwells-pg12-staging",
-                            "PVC_NAME=gwells-pg12-backup",
-                            "SCHEDULE='30 2 * * *'",
+                            "PVC_NAME=gwells-backups",
+                            "SCHEDULE=30 2 * * *",
                             "JOB_NAME=postgres-nfs-backup",
                             "DAILY_BACKUPS=2",
                             "WEEKLY_BACKUPS=1",
@@ -1147,7 +1152,7 @@ pipeline {
                             "${templateDir}/pg_tileserv/pg_tileserv.dc.yaml",
                             "NAME_SUFFIX=-${prodSuffix}",
                             "DATABASE_SERVICE_NAME=gwells-pg12-${prodSuffix}",
-                            "IMAGE_TAG=20200610",
+                            "IMAGE_TAG=20201112",
                             "HOST=${prodHost}",
                         )
 
@@ -1155,6 +1160,14 @@ pipeline {
                         def minioTemplate = openshift.process("-f",
                             "${templateDir}/minio/minio.dc.yaml",
                             "NAME_SUFFIX=-${prodSuffix}"
+                        )
+
+
+                        echo "Processing backup volume config"
+                        def backupVolConfig = openshift.process("-f",
+                            "${templateDir}/backup.pvc.yaml",
+                            "VOLUME_CAPACITY=10Gi",
+                            "STORAGE_CLASS=netapp-file-backup"
                         )
 
 
@@ -1174,6 +1187,11 @@ pipeline {
                                     // create a copy of the object and add it to the new list of objects to be applied
                                     Map copiedModel = selector.object()
                                     copiedModel.metadata.name = o.metadata.name
+                                    copiedModel.metadata.remove('annotations')
+                                    copiedModel.metadata.remove('creationTimestamp')
+                                    copiedModel.metadata.remove('resourceVersion')
+                                    copiedModel.metadata.remove('selfLink')
+                                    copiedModel.metadata.remove('uid')
                                     echo "Copying ${o.kind} ${o.metadata.name}"
                                     newObjectCopies.add(copiedModel)
                                 }
@@ -1227,6 +1245,15 @@ pipeline {
                             "--overwrite"
                         )
 
+
+                        openshift.apply(backupVolConfig).label(
+                            [
+                                'app':"gwells-${prodSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${prodSuffix}"
+                            ],
+                            "--overwrite"
+                        )
 
                         echo "Successfully applied production deployment config"
 
@@ -1297,9 +1324,9 @@ pipeline {
                             "NAME_SUFFIX=${prodSuffix}",
                             "NAMESPACE=${prodProject}",
                             "VERSION=v1.0.0",
-                            "SCHEDULE='15 4 * * *'",
+                            "SCHEDULE=15 4 * * *",
                             "DEST_PVC=${nfsProdBackupPVC}",
-                            "SOURCE_PVC=${minioDataPVC}",
+                            "SOURCE_PVC=gwells-minio",
                             "PVC_SIZE=40Gi"
                         )
 
@@ -1310,9 +1337,9 @@ pipeline {
                             "NAMESPACE=${prodProject}",
                             "TAG_NAME=v12.0.0",
                             "TARGET=gwells-pg12-production",
-                            "PVC_NAME=${nfsProdBackupPVC}",
+                            "PVC_NAME=gwells-backups",
                             "MONTHLY_BACKUPS=12",
-                            "SCHEDULE='30 1 * * *'",
+                            "SCHEDULE=30 1 * * *",
                             "JOB_NAME=postgres-nfs-backup"
                         )
                         openshift.apply(dbNFSBackup)
@@ -1325,7 +1352,7 @@ pipeline {
                             "TAG=${prodSuffix}",
                             "NAME=licences",
                             "COMMAND=import_licences",
-                            "SCHEDULE='45 11 * * *'"
+                            "SCHEDULE=45 11 * * *"
                         )
                         openshift.apply(importLicencesCronjob).label(
                             [

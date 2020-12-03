@@ -5,7 +5,7 @@ parameters:
   - name: VERSION
     value: v1.0.0
   - name: NAMESPACE
-    value: moe-gwells-tools
+    value: 26e83e-tools
 objects:
   - apiVersion: image.openshift.io/v1
     kind: ImageStream

@@ -46,7 +46,7 @@
                                 "containers": [
                                     {
                                         "name": "${NAME}",
-                                        "image": "docker-registry.default.svc:5000/${PROJECT}/gwells-${ENV_NAME}:${TAG}",
+                                        "image": "image-registry.openshift-image-registry.svc:5000/${PROJECT}/gwells-${ENV_NAME}:${TAG}",
                                         "imagePullPolicy": "Always",
                                         "command": [
                                             "python",
