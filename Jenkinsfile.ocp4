@@ -488,8 +488,8 @@ pipeline {
         // name of the provisioned PVC claim for NFS backup storage
         // this will not be created during the pipeline; it must be created
         // before running the production pipeline.
-        nfsProdBackupPVC = "bk-moe-gwells-prod-0z6f0qq0k2fz"
-        nfsStagingBackupPVC = "bk-moe-gwells-test-dcog9cfksxat"
+        nfsProdBackupPVC = "gwells-backups"
+        nfsStagingBackupPVC = "gwells-backups"
 
         // name of the PVC where documents are stored (e.g. Minio PVC)
         // this should be the same across all environments.
@@ -1017,7 +1017,7 @@ pipeline {
                             "VERSION=v1.0.0",
                             "SCHEDULE=15 3 * * *",
                             "DEST_PVC=gwells-backups",
-                            "SOURCE_PVC=gwells-minio"
+                            "SOURCE_PVC=gwells-minio-${stagingSuffix}"
                         )
 
                         openshift.apply(docBackupCronjob)
@@ -1129,7 +1129,7 @@ pipeline {
                             "IMAGE_STREAM_NAME=crunchy-postgres-gis",
                             "POSTGRESQL_DATABASE=gwells",
                             "STORAGE_CLASS=netapp-file-standard",
-                            "VOLUME_CAPACITY=40Gi",
+                            "VOLUME_CAPACITY=30Gi",
                             "REQUEST_CPU=800m",
                             "REQUEST_MEMORY=4Gi",
                             "LIMIT_CPU=2",
@@ -1319,18 +1319,18 @@ pipeline {
                         //     "--overwrite"
                         // )
 
-                        def docBackupCronJob = openshift.process("-f",
-                            "${templateDir}/jobs/minio-backup/minio-backup.cj.yaml",
-                            "NAME_SUFFIX=${prodSuffix}",
-                            "NAMESPACE=${prodProject}",
-                            "VERSION=v1.0.0",
-                            "SCHEDULE=15 4 * * *",
-                            "DEST_PVC=${nfsProdBackupPVC}",
-                            "SOURCE_PVC=gwells-minio",
-                            "PVC_SIZE=40Gi"
-                        )
+                        // def docBackupCronJob = openshift.process("-f",
+                        //     "${templateDir}/jobs/minio-backup/minio-backup.cj.yaml",
+                        //     "NAME_SUFFIX=${prodSuffix}",
+                        //     "NAMESPACE=${prodProject}",
+                        //     "VERSION=v1.0.0",
+                        //     "SCHEDULE=15 4 * * *",
+                        //     "DEST_PVC=${nfsProdBackupPVC}",
+                        //     "SOURCE_PVC=gwells-minio-${prodSuffix}",
+                        //     "PVC_SIZE=40Gi"
+                        // )
 
-                        openshift.apply(docBackupCronJob)
+                        // openshift.apply(docBackupCronJob)
 
                         def dbNFSBackup = openshift.process("-f",
                             "${templateDir}/jobs/postgres-backup-nfs/postgres-backup.cj.yaml",
