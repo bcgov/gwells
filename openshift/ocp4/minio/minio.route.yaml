@@ -1,0 +1,65 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  creationTimestamp: "2020-12-05T00:16:49Z"
+  labels:
+    app: gwells-dev-pr-1714
+    app-name: gwells
+    env-name: dev
+    name: gwells-minio-dev-pr-1714
+  managedFields:
+  - apiVersion: route.openshift.io/v1
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:metadata:
+        f:labels:
+          .: {}
+          f:app: {}
+          f:app-name: {}
+          f:env-name: {}
+          f:name: {}
+      f:spec:
+        f:host: {}
+        f:port:
+          .: {}
+          f:targetPort: {}
+        f:to:
+          f:kind: {}
+          f:name: {}
+          f:weight: {}
+        f:wildcardPolicy: {}
+    manager: oc4
+    operation: Update
+    time: "2020-12-05T00:16:49Z"
+  - apiVersion: route.openshift.io/v1
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:status:
+        f:ingress: {}
+    manager: openshift-router
+    operation: Update
+    time: "2020-12-05T00:16:49Z"
+  name: gwells-minio-dev-pr-1714
+  namespace: 26e83e-dev
+  resourceVersion: "127724971"
+  selfLink: /apis/route.openshift.io/v1/namespaces/26e83e-dev/routes/gwells-minio-dev-pr-1714
+  uid: cb5c2c39-ed7d-4635-bee3-552911c40a7a
+spec:
+  host: gwells-docs-pr-1714
+  port:
+    targetPort: 9000-tcp
+  to:
+    kind: Service
+    name: gwells-minio-dev-pr-1714
+    weight: 100
+  wildcardPolicy: None
+status:
+  ingress:
+  - conditions:
+    - lastTransitionTime: "2020-12-05T00:16:49Z"
+      status: "True"
+      type: Admitted
+    host: gwells-docs-pr-1714
+    routerCanonicalHostname: apps.silver.devops.gov.bc.ca
+    routerName: default
+    wildcardPolicy: None

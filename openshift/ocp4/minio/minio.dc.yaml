@@ -32,6 +32,9 @@ parameters:
   - name: "DEST_PVC_ACCESS"
     displayName: "PVC access mode"
     value: "ReadWriteOnce"
+  - name: "HOSTNAME"
+    displayName: "Hostname for Minio service"
+    required: true
 objects:
   - apiVersion: v1
     kind: PersistentVolumeClaim
@@ -133,3 +136,19 @@ objects:
         port: 9000
         protocol: TCP
         targetPort: 9000
+  - apiVersion: route.openshift.io/v1
+    kind: Route
+    metadata:
+      labels:
+        app: gwells-${NAME_SUFFIX}
+        name: gwells-minio${NAME_SUFFIX}
+      name: gwells-minio${NAME_SUFFIX}
+    spec:
+      host: ${HOSTNAME}
+      port:
+        targetPort: 9000-tcp
+      to:
+        kind: Service
+        name: gwells-minio${NAME_SUFFIX}
+        weight: 100
+      wildcardPolicy: None
