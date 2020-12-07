@@ -127,12 +127,12 @@ objects:
     kind: Service
     metadata:
       labels:
-        app: gwells-${NAME_SUFFIX}
+        app: gwells${NAME_SUFFIX}
         name: gwells-minio${NAME_SUFFIX}
       name: gwells-minio${NAME_SUFFIX}
     spec:
       selector:
-        app: gwells-${NAME_SUFFIX}
+        app: gwells${NAME_SUFFIX}
         name: gwells-minio${NAME_SUFFIX}
       ports:
       - name: 9000-tcp
@@ -143,7 +143,7 @@ objects:
     kind: Route
     metadata:
       labels:
-        app: gwells-${NAME_SUFFIX}
+        app: gwells${NAME_SUFFIX}
         name: gwells-minio${NAME_SUFFIX}
       name: gwells-minio${NAME_SUFFIX}
     spec:
