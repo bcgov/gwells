@@ -41,7 +41,7 @@ parameters:
     displayName: "Image Namespace"
     description: "The namespace of the OpenShift project containing the imagestream for the application."
     required: false
-    value: "moe-gwells-tools"
+    value: "26e83e-tools"
   - name: "TAG_NAME"
     displayName: "Environment TAG name"
     description: "The TAG name for this environment, e.g., dev, test, prod"

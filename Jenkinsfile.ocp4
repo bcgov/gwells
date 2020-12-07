@@ -604,7 +604,8 @@ pipeline {
                         echo "Processing Minio deployment config"
                         def minioTemplate = openshift.process("-f",
                             "${templateDir}/minio/minio.dc.yaml",
-                            "NAME_SUFFIX=-${devSuffix}-${prNumber}"
+                            "NAME_SUFFIX=-${devSuffix}-${prNumber}",
+                            "HOSTNAME=gwells-docs-${devSuffix}-${prNumber}.apps.silver.devops.gov.bc.ca"
                         )
 
                         // some objects need to be copied from a base secret or configmap
@@ -814,7 +815,8 @@ pipeline {
                         echo "Processing Minio deployment config"
                         def minioTemplate = openshift.process("-f",
                             "${templateDir}/minio/minio.dc.yaml",
-                            "NAME_SUFFIX=-${stagingSuffix}"
+                            "NAME_SUFFIX=-${stagingSuffix}",
+                            "HOSTNAME=gwells-docs-${stagingSuffix}.apps.silver.devops.gov.bc.ca"
                         )
 
 
@@ -1159,7 +1161,8 @@ pipeline {
                         echo "Processing Minio deployment config"
                         def minioTemplate = openshift.process("-f",
                             "${templateDir}/minio/minio.dc.yaml",
-                            "NAME_SUFFIX=-${prodSuffix}"
+                            "NAME_SUFFIX=-${prodSuffix}",
+                            "HOSTNAME=gwells-docs-${prodSuffix}.apps.silver.devops.gov.bc.ca"
                         )
 
 
