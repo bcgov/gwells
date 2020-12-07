@@ -131,6 +131,9 @@ objects:
         name: gwells-minio${NAME_SUFFIX}
       name: gwells-minio${NAME_SUFFIX}
     spec:
+      selector:
+        app: gwells-${NAME_SUFFIX}
+        name: gwells-minio${NAME_SUFFIX}
       ports:
       - name: 9000-tcp
         port: 9000
