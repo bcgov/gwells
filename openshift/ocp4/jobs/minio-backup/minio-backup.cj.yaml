@@ -6,6 +6,7 @@ parameters:
     required: true
   - name: NAMESPACE
     required: true
+    value: 26e83e-tools
   - name: PVC_SIZE
     value: "15Gi"
   - name: DEST_PVC
