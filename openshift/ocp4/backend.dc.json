@@ -188,8 +188,8 @@
                                         "name": "PGDATABASE",
                                         "valueFrom": {
                                             "secretKeyRef": {
-                                                "name": "crunchy-db-credentials",
-                                                "key": "PG_DATABASE"
+                                                "name": "gwells-pg12${NAME_SUFFIX}",
+                                                "key": "database-name"
                                             }
                                         }
                                     },
@@ -197,8 +197,8 @@
                                         "name": "PGUSER",
                                         "valueFrom": {
                                             "secretKeyRef": {
-                                                "name": "crunchy-db-credentials",
-                                                "key": "PG_USER"
+                                                "name": "gwells-pg12${NAME_SUFFIX}",
+                                                "key": "database-user"
                                             }
                                         }
                                     },
@@ -206,15 +206,15 @@
                                         "name": "PGPASSWORD",
                                         "valueFrom": {
                                             "secretKeyRef": {
-                                                "name": "crunchy-db-credentials",
-                                                "key": "PG_PASSWORD"
+                                                "name": "gwells-pg12${NAME_SUFFIX}",
+                                                "key": "database-password"
                                             }
                                         }
                                     },
                                     {
                                         "name": "PGHOST",
                                         "value": "gwells-pg12${NAME_SUFFIX}"
-                                    },
+                                    }
                                     {
                                         "name": "APP_SOURCE_DIR",
                                         "value": "/app/backend"
@@ -273,8 +273,8 @@
                                         "name": "PGDATABASE",
                                         "valueFrom": {
                                             "secretKeyRef": {
-                                                "name": "crunchy-db-credentials",
-                                                "key": "PG_DATABASE"
+                                                "name": "gwells-pg12${NAME_SUFFIX}",
+                                                "key": "database-name"
                                             }
                                         }
                                     },
@@ -282,8 +282,8 @@
                                         "name": "PGUSER",
                                         "valueFrom": {
                                             "secretKeyRef": {
-                                                "name": "crunchy-db-credentials",
-                                                "key": "PG_USER"
+                                                "name": "gwells-pg12${NAME_SUFFIX}",
+                                                "key": "database-user"
                                             }
                                         }
                                     },
@@ -291,15 +291,15 @@
                                         "name": "PGPASSWORD",
                                         "valueFrom": {
                                             "secretKeyRef": {
-                                                "name": "crunchy-db-credentials",
-                                                "key": "PG_PASSWORD"
+                                                "name": "gwells-pg12${NAME_SUFFIX}",
+                                                "key": "database-password"
                                             }
                                         }
                                     },
                                     {
                                         "name": "PGHOST",
                                         "value": "gwells-pg12${NAME_SUFFIX}"
-                                    },
+                                    }
                                     {
                                         "name": "APP_SOURCE_DIR",
                                         "value": "/app/backend"
@@ -336,8 +336,8 @@
                                         "name": "DATABASE_NAME",
                                         "valueFrom": {
                                             "secretKeyRef": {
-                                                "name": "crunchy-db-credentials",
-                                                "key": "PG_DATABASE"
+                                                "name": "gwells-pg12${NAME_SUFFIX}",
+                                                "key": "database-name"
                                             }
                                         }
                                     },
@@ -345,8 +345,8 @@
                                         "name": "DATABASE_USER",
                                         "valueFrom": {
                                             "secretKeyRef": {
-                                                "name": "crunchy-db-credentials",
-                                                "key": "PG_USER"
+                                                "name": "gwells-pg12${NAME_SUFFIX}",
+                                                "key": "database-user"
                                             }
                                         }
                                     },
@@ -354,8 +354,8 @@
                                         "name": "DATABASE_PASSWORD",
                                         "valueFrom": {
                                             "secretKeyRef": {
-                                                "name": "crunchy-db-credentials",
-                                                "key": "PG_PASSWORD"
+                                                "name": "gwells-pg12${NAME_SUFFIX}",
+                                                "key": "database-password"
                                             }
                                         }
                                     },
