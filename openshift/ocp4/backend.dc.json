@@ -299,7 +299,7 @@
                                     {
                                         "name": "PGHOST",
                                         "value": "gwells-pg12${NAME_SUFFIX}"
-                                    }
+                                    },
                                     {
                                         "name": "APP_SOURCE_DIR",
                                         "value": "/app/backend"
