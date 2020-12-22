@@ -113,11 +113,8 @@ class Command(BaseCommand):
                 code=row['PURPOSE_USE_CODE'].strip(),
                 description=row['PURPOSE_USE'].strip())
 
-        try:
-            # Check to see if licence already exists in DB
-            licence = WaterRightsLicence.objects.get(wrl_sysid=row['WLS_WRL_SYSID'])
-        except WaterRightsLicence.DoesNotExist:
-            licence = WaterRightsLicence(wrl_sysid=row['WLS_WRL_SYSID'])
+
+        licence = WaterRightsLicence(wrl_sysid=row['WLS_WRL_SYSID'])
 
         licence.licence_number = row['LICENCE_NUMBER'].strip()
         licence.quantity_flag = row['QUANTITY_FLAG'].strip()
