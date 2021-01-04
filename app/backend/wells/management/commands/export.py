@@ -143,11 +143,12 @@ class Command(BaseCommand):
         #######
         # WELL
         #######
-        well_sql = ("""select well_tag_number, identification_plate_number,
+        well_sql = ("""select well.well_tag_number, identification_plate_number,
  well_identification_plate_attached,
  well_status_code, well.well_class_code,
  wsc.well_subclass_code as well_subclass,
- intended_water_use_code, licenced_status_code,
+ CASE WHEN licence_q.cur_licences > 0 THEN 'LICENSED' ELSE 'UNLICENSED' END as licenced_status_code,
+ intended_water_use_code,
  observation_well_number, obs_well_status_code, water_supply_system_name,
  water_supply_system_well_name,
  well.street_address, well.city, legal_lot, legal_plan, legal_district_lot, legal_block,
@@ -209,8 +210,18 @@ class Command(BaseCommand):
  registries_person.person_guid = well.person_responsible_guid
  left join registries_organization on
  registries_organization.org_guid = well.org_of_person_responsible_guid
+
+-- WELL LICENCES: any well having at least 1 licence entry will be marked as Licensed.
+    left join (select well_tag_number, count(*) as cur_licences from well
+    join well_licences on
+    well.well_tag_number = well_licences.well_id
+    group by well_tag_number) as licence_q
+    on well.well_tag_number = licence_q.well_tag_number
+
+
  where well.well_publication_status_code = 'Published' or well.well_publication_status_code = null
  order by well_tag_number""")
+
         ###########
         # LITHOLOGY
         ###########
