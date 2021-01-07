@@ -140,9 +140,14 @@ class Command(BaseCommand):
             os.remove(csv_file)
 
     def generate_files(self, zip_filename, spreadsheet_filename):
-        #######
+        """
         # WELL
-        #######
+        
+        note on extra joins:
+        well_licences: any well having at least 1 licence entry will be marked as Licensed.
+        """
+
+
         well_sql = ("""select well.well_tag_number, identification_plate_number,
  well_identification_plate_attached,
  well_status_code, well.well_class_code,
@@ -211,12 +216,12 @@ class Command(BaseCommand):
  left join registries_organization on
  registries_organization.org_guid = well.org_of_person_responsible_guid
 
--- WELL LICENCES: any well having at least 1 licence entry will be marked as Licensed.
-    left join (select well_tag_number, count(*) as cur_licences from well
-    join well_licences on
-    well.well_tag_number = well_licences.well_id
-    group by well_tag_number) as licence_q
-    on well.well_tag_number = licence_q.well_tag_number
+
+ left join (select well_tag_number, count(*) as cur_licences from well
+ join well_licences on
+ well.well_tag_number = well_licences.well_id
+ group by well_tag_number) as licence_q
+ on well.well_tag_number = licence_q.well_tag_number
 
 
  where well.well_publication_status_code = 'Published' or well.well_publication_status_code = null

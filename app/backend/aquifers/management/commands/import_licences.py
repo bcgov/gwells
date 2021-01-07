@@ -95,10 +95,10 @@ class Command(BaseCommand):
 
         logging.info("importing licence #{}".format(row['LICENCE_NUMBER']))
 
+        # Check the Licence is for a valid Aquifer and Well
+        # the if check here allows this function to be called with a specific
+        # well or aquifer for dev/test environments.
         if not well or not aquifer:
-            # Check the Licence is for a valid Aquifer and Well
-            # the if check here allows this function to be called with a specific
-            # well or aquifer for dev/test environments.
             try:
                 aquifer = Aquifer.objects.get(pk=row['SOURCE_NAME'])
             except Aquifer.DoesNotExist:
