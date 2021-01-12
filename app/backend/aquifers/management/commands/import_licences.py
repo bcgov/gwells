@@ -89,20 +89,24 @@ class Command(BaseCommand):
             # rows with POD. POD refers to surface water which is out of scope for GWELLS)
             return
 
-        if not row['SOURCE_NAME'].strip().isdigit():
-            # Licence must be for an aquifer
-            return
-
-        if not row['WELL_TAG_NUMBER'].strip().isdigit():
-            # Licence must be for a well
+        if not row['SOURCE_NAME'].strip().isdigit() and not row['WELL_TAG_NUMBER'].strip().isdigit():
+            # Licence must be for a well or aquifer
             return
 
         logging.info("importing licence #{}".format(row['LICENCE_NUMBER']))
 
+        # Check the Licence is for a valid Aquifer and Well
+        # the if check here allows this function to be called with a specific
+        # well or aquifer for dev/test environments.
         if not well or not aquifer:
-            # Check the Licence is for a valid Aquifer and Well
-            aquifer = Aquifer.objects.get(pk=row['SOURCE_NAME'])
-            well = Well.objects.get(pk=row['WELL_TAG_NUMBER'])
+            try:
+                aquifer = Aquifer.objects.get(pk=row['SOURCE_NAME'])
+            except Aquifer.DoesNotExist:
+                aquifer = None
+            try:
+                well = Well.objects.get(pk=row['WELL_TAG_NUMBER'])
+            except Well.DoesNotExist:
+                well = None
 
         try:
             # Maintain code table with water rights purpose.
@@ -113,11 +117,7 @@ class Command(BaseCommand):
                 code=row['PURPOSE_USE_CODE'].strip(),
                 description=row['PURPOSE_USE'].strip())
 
-        try:
-            # Check to see if licence already exists in DB
-            licence = WaterRightsLicence.objects.get(wrl_sysid=row['WLS_WRL_SYSID'])
-        except WaterRightsLicence.DoesNotExist:
-            licence = WaterRightsLicence(wrl_sysid=row['WLS_WRL_SYSID'])
+        licence = WaterRightsLicence(wrl_sysid=row['WLS_WRL_SYSID'])
 
         licence.licence_number = row['LICENCE_NUMBER'].strip()
         licence.quantity_flag = row['QUANTITY_FLAG'].strip()
@@ -138,15 +138,15 @@ class Command(BaseCommand):
         licence.quantity = quantity
         licence.save()
 
-        if not well.aquifer:
+        if aquifer and not well.aquifer:
             well.aquifer = aquifer
-        if licence not in well.licences.all():
+        if well and licence not in well.licences.all():
             well.licences.add(licence)
         well.save()
 
         logging.info('assocated well={} aquifer={} licence_sysid={}'.format(
-            well.pk,
-            aquifer.pk,
+            well.pk if well else "None",
+            aquifer.pk if aquifer else "None",
             licence.pk
         ))
 
