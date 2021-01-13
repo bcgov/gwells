@@ -14,6 +14,7 @@
 import csv
 import logging
 import requests
+import random # for dev fixture testing only
 from tempfile import NamedTemporaryFile
 
 from django.core.management.base import BaseCommand
@@ -72,11 +73,11 @@ class Command(BaseCommand):
                     if counter > 100:
                         break
                     well = Well.objects.all()[counter % num_wells:][0]
-                    # We need our wells to actually have an aquifer for non-trivial testing.
-                    if not well.aquifer:
+                    # assign some wells to aquifers and leave other wells unassociated.
+                    if not well.aquifer and random.randint(0,1):
                         well.aquifer = Aquifer.objects.first()
                         well.save()
-                    aquifer = well.aquifer
+                        aquifer = well.aquifer
 
                 try:
                     self.process_row(row, use_dev_fixtures=use_dev_fixtures, well=well, aquifer=aquifer)
