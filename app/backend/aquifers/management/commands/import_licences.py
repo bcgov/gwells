@@ -72,11 +72,11 @@ class Command(BaseCommand):
                     if counter > 100:
                         break
                     well = Well.objects.all()[counter % num_wells:][0]
-                    # We need our wells to actually have an aquifer for non-trivial testing.
-                    if not well.aquifer:
+                    # assign some wells to aquifers and leave other wells unassociated.
+                    if not well.aquifer and counter % 2:
                         well.aquifer = Aquifer.objects.first()
                         well.save()
-                    aquifer = well.aquifer
+                        aquifer = well.aquifer
 
                 try:
                     self.process_row(row, use_dev_fixtures=use_dev_fixtures, well=well, aquifer=aquifer)
@@ -98,15 +98,16 @@ class Command(BaseCommand):
         # Check the Licence is for a valid Aquifer and Well
         # the if check here allows this function to be called with a specific
         # well or aquifer for dev/test environments.
-        if not well or not aquifer:
+        if not aquifer and row.get('SOURCE_NAME', '').strip().isdigit():
             try:
                 aquifer = Aquifer.objects.get(pk=row['SOURCE_NAME'])
             except Aquifer.DoesNotExist:
-                aquifer = None
+                pass
+        if not well and row.get('WELL_TAG_NUMBER', '').strip().isdigit():
             try:
                 well = Well.objects.get(pk=row['WELL_TAG_NUMBER'])
             except Well.DoesNotExist:
-                well = None
+                pass
 
         try:
             # Maintain code table with water rights purpose.
