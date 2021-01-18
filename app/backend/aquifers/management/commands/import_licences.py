@@ -14,7 +14,6 @@
 import csv
 import logging
 import requests
-import random # for dev fixture testing only
 from tempfile import NamedTemporaryFile
 
 from django.core.management.base import BaseCommand
@@ -74,7 +73,7 @@ class Command(BaseCommand):
                         break
                     well = Well.objects.all()[counter % num_wells:][0]
                     # assign some wells to aquifers and leave other wells unassociated.
-                    if not well.aquifer and random.randint(0,1):
+                    if not well.aquifer and counter % 2:
                         well.aquifer = Aquifer.objects.first()
                         well.save()
                         aquifer = well.aquifer
