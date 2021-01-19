@@ -139,7 +139,7 @@ class Command(BaseCommand):
         licence.quantity = quantity
         licence.save()
 
-        if aquifer and not well.aquifer:
+        if aquifer and well and not well.aquifer:
             well.aquifer = aquifer
         if well and licence not in well.licences.all():
             well.licences.add(licence)
