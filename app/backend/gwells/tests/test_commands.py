@@ -31,3 +31,11 @@ class DataBCTest(TestCase):
         out = StringIO()
         call_command('export_databc', stdout=out)
         self.assertIn('GeoJSON export complete.', out.getvalue())
+
+class ImportLicencesTest(TestCast):
+    """ tests functions used by `./manage.py import_licences` """
+
+    def test_import_using_fixture_file(self):
+        out = StringIO()
+        call_command('import_licences', '-d', '--filename=./import_licences_test_licences.csv', stdout=out)
+        self.assertIn('completed with %s errors.', out.getvalue())

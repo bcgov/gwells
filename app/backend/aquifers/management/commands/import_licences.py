@@ -49,6 +49,8 @@ class Command(BaseCommand):
             filename = input_file.name
             input_file.close()
 
+        error_count = 0
+
         with open(filename, newline='') as csvfile:
             reader = csv.DictReader(csvfile)
 
@@ -81,7 +83,10 @@ class Command(BaseCommand):
                 try:
                     self.process_row(row, use_dev_fixtures=use_dev_fixtures, well=well, aquifer=aquifer)
                 except:
+                    error_count += 1
                     logger.exception('Error processing CSV row WLS_WRL_SYSID=%s', row['WLS_WRL_SYSID'])
+            
+        logger.info("completed with %s errors.", error_count)
 
     def process_row(self, row, use_dev_fixtures=False, well=None, aquifer=None):
         if row['POD_SUBTYPE'].strip() not in ['PWD', 'PG']:
