@@ -33,8 +33,10 @@ class DataBCTest(TestCase):
         call_command('export_databc', stdout=out)
         self.assertIn('GeoJSON export complete.', out.getvalue())
 
+
 class ImportLicencesTest(TestCase):
     """ tests functions used by `./manage.py import_licences` """
+    fixtures = ['gwells-codetables', 'wellsearch-codetables', 'wellsearch', 'registries', 'registries-codetables']
 
     def test_import_using_fixture_file(self):
         out = StringIO()
