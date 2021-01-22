@@ -85,8 +85,8 @@ class Command(BaseCommand):
                 except:
                     error_count += 1
                     logger.exception('Error processing CSV row WLS_WRL_SYSID=%s', row['WLS_WRL_SYSID'])
-            
-        logger.info("completed with %s errors.", error_count)
+
+        self.stdout.write(self.style.SUCCESS('Licence import complete with %s errors.', error_count))
 
     def process_row(self, row, use_dev_fixtures=False, well=None, aquifer=None):
         if row['POD_SUBTYPE'].strip() not in ['PWD', 'PG']:

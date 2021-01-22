@@ -47,5 +47,4 @@ class ImportLicencesTest(TestCase):
 
         call_command('import_licences', '-d', filename=TEST_LICENCES, stdout=out)
         val = out.getvalue()
-        logger.info(val)
-        self.assertIn('completed with 0 errors.', val)
+        self.assertIn('Licence import complete with 0 errors.', val)
