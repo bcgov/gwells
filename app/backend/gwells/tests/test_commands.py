@@ -11,6 +11,7 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
+import os
 
 from io import StringIO
 from unittest.mock import patch
@@ -32,10 +33,13 @@ class DataBCTest(TestCase):
         call_command('export_databc', stdout=out)
         self.assertIn('GeoJSON export complete.', out.getvalue())
 
-class ImportLicencesTest(TestCast):
+class ImportLicencesTest(TestCase):
     """ tests functions used by `./manage.py import_licences` """
 
     def test_import_using_fixture_file(self):
         out = StringIO()
-        call_command('import_licences', '-d', '--filename=./import_licences_test_licences.csv', stdout=out)
-        self.assertIn('completed with %s errors.', out.getvalue())
+
+        TEST_LICENCES = os.path.join(os.path.dirname(__file__), 'import_licences_test_licences.csv')
+
+        call_command('import_licences', '-d', filename=TEST_LICENCES, stdout=out)
+        self.assertIn('completed with 0 errors.', out.getvalue())
