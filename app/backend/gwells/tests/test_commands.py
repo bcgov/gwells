@@ -18,6 +18,8 @@ from unittest.mock import patch
 
 from django.core.management import call_command
 from django.test import TestCase
+from logging import getLogger
+logger = getLogger("test")
 
 
 class DataBCTest(TestCase):
@@ -44,4 +46,6 @@ class ImportLicencesTest(TestCase):
         TEST_LICENCES = os.path.join(os.path.dirname(__file__), 'import_licences_test_licences.csv')
 
         call_command('import_licences', '-d', filename=TEST_LICENCES, stdout=out)
-        self.assertIn('completed with 0 errors.', out.getvalue())
+        val = out.getvalue()
+        logger.info(val)
+        self.assertIn('completed with 0 errors.', val)
