@@ -126,7 +126,6 @@ objects:
                 timeoutSeconds: 10
               ports:
                 - containerPort: 2015
-                - containerPort: 2016
               resources:
                 limits:
                   cpu: 100m
