@@ -557,6 +557,16 @@ pipeline {
                             "HOST=${devHost}",
                         )
 
+                        // proxy to reroute traffic to OCP4
+                        echo "Processing deployment config for OCP3/OCP4 proxy"
+                        def maintProxyTemplate = openshift.process("-f",
+                            "openshift/maintenance.dc.yaml",
+                            "NAME_SUFFIX=-${devSuffix}-${prNumber}",
+                            "SOURCE_HOST_NAME=gwells-${devSuffix}-${prNumber}-maintenance.pathfinder.gov.bc.ca",
+                            "DESTINATION_HOST_NAME=gwells-${devSuffix}-${prNumber}.apps.silver.devops.gov.bc.ca",
+                        )
+
+
                         // some objects need to be copied from a base secret or configmap
                         // these objects have an annotation "as-copy-of" in their object spec (e.g. an object in backend.dc.json)
                         echo "Creating configmaps and secrets objects"
@@ -584,6 +594,7 @@ pipeline {
                         // apply the templates, which will create new objects or modify existing ones as necessary.
                         // the copies of base objects (secrets, configmaps) are also applied.
                         openshift.apply(pgtileservTemplate).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
+                        openshift.apply(maintProxyTemplate).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
 
                         openshift.apply(deployTemplate).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
                         openshift.apply(deployDBTemplate).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
