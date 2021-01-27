@@ -116,7 +116,7 @@ objects:
           containers:
             - name: gwells-maintenance${NAME_SUFFIX}
               imagePullPolicy: Always
-              image: "image-registry.openshift-image-registry.svc:5000/26e83e-tools/caddy:2"
+              image: "docker-registry.default.svc:5000/moe-gwells-tools/caddy:2"
               env:
                 - name: XDG_DATA_HOME
                   value: /tmp
