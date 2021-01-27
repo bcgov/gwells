@@ -47,6 +47,7 @@ objects:
       Caddyfile: |
         :2015 {
             reverse_proxy * https://${DESTINATION_HOST_NAME} {
+                header_up Host {http.reverse_proxy.upstream.hostport}
                 header_up X-Real-IP {remote_host}
                 header_up X-Forwarded-For {remote_host}
                 header_up X-Forwarded-Proto {scheme}
