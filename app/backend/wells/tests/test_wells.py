@@ -54,6 +54,16 @@ class TestWellLocationsSearch(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
 
+    def test_filtering_licensed_wells(self):
+        # fixtures contain a licence for well 123
+        url = reverse('well-locations-v2')
+        response = self.client.get(url, {
+            'licenced_status': 'LICENSED'
+        })
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(json.loads(response.content).get('well_tag_number'), 123)
+
+
 class TestWellHistory(APITestCase):
     fixtures = ['gwells-codetables', 'wellsearch-codetables', 'wellsearch', 'registries', 'registries-codetables']
 

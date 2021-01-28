@@ -456,10 +456,21 @@ class WellListFilter(AnyOrAllFilterSet):
         ]
 
     def filter_licenced_status(self, queryset, name, value):
-        if value is 'LICENSED':
+        licence_status = None
+        try:
+            licence_status = str(value.licenced_status_code)
+        except:
+            pass
+
+
+        # If searching for status LICENSED, exclude any wells with an empty `licences` set.
+        # If searching for UNLICENSED, only return wells with an empty `licences` set.
+        if licence_status == 'LICENSED':
             return queryset.exclude(licences=None)
-        elif value is 'UNLICENSED':
+        elif licence_status == 'UNLICENSED':
             return queryset.filter(licences=None)
+
+
         return queryset
 
     def filter_well_tag_or_plate(self, queryset, name, value):

@@ -1358,5 +1358,6 @@
         "end": "144.00",
         "geom":  "POINT(-123.39371 49.36007)"
     }
-  }
+  },
+  {"model": "wells.well_licences", "pk": 1, "fields": {"well": 123, "waterrightslicence": 1}}
 ]
