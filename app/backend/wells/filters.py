@@ -470,8 +470,12 @@ class WellListFilter(AnyOrAllFilterSet):
         elif licence_status == 'UNLICENSED':
             return queryset.filter(licences=None)
 
-
-        return queryset
+        # since only LicencedStatusCode objects (either LICENSED or UNLICENSED) options are presented or accepted,
+        # the user should not reach this point unless something is changed in the filter class behavior or 
+        # additional LicencedStatusCode entries are added.
+        raise ValidationError({
+            "licenced_status": "If searching by licence status, valid statuses are LICENSED or UNLICENSED."
+        })
 
     def filter_well_tag_or_plate(self, queryset, name, value):
         return queryset.filter(Q(well_tag_number=value) |
