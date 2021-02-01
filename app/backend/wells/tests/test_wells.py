@@ -63,8 +63,15 @@ class TestWellLocationsSearch(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # there is one WellLicence fixture (see aquifer fixtures). 
-        self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0].get('well_tag_number'), 123)
+        returned_wells = Well.objects.filter(well_tag_number__in=[w.get("well_tag_number") for result in response.data])
+        licenced_wells = Well.objects.filter(licences=None)
+        self.assertQuerySetEqual(returned_wells, licenced_wells)
+
+        # ensure all wells in response are licenced.
+        for result in response.data:
+            well = Well.objects.get(result.get("well_tag_number"))
+            self.assertTrue(result.licences)
+
 
 
 class TestWellHistory(APITestCase):
