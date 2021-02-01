@@ -62,12 +62,14 @@ class TestWellLocationsSearch(APITestCase):
         })
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        returned_wells = Well.objects.filter(well_tag_number__in=[result.get("well_tag_number") for result in response.data])
+        data = json.loads(result.data)
+
+        returned_wells = Well.objects.filter(well_tag_number__in=[result.get("well_tag_number") for result in data])
         licenced_wells = Well.objects.filter(licences=None)
         self.assertQuerySetEqual(returned_wells, licenced_wells)
 
         # ensure all wells in response are licenced.
-        for result in response.data:
+        for result in data:
             well = Well.objects.get(result.get("well_tag_number"))
             self.assertTrue(result.licences)
 
