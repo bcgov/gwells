@@ -813,6 +813,7 @@ class WellListSerializerV1(serializers.ModelSerializer):
         source='company_of_person_responsible.org_guid')
     company_of_person_responsible = serializers.ReadOnlyField(
         source='company_of_person_responsible.org_guid')
+    licenced_status = serializers.SlugRelatedField(read_only=True, slug_field='description')
 
     def get_legal_pid(self, instance):
         if instance.legal_pid is None:

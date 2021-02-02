@@ -68,9 +68,23 @@ class TestWellLocationsSearch(APITestCase):
         # ensure all wells in response are licenced.
         for result in data:
             well = Well.objects.get(well_tag_number=result.get("well_tag_number"))
-            self.assertTrue(well.licences)
+            self.assertTrue(well.licences.all().exists())
 
 
+    def test_filtering_unlicensed_wells(self):
+        # fixtures contain a licence for well 123
+        url = reverse('well-locations-v2')
+        response = self.client.get(url, {
+            'licenced_status': 'UNLICENSED'
+        })
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        data = response.data.get('results')
+
+        # ensure all wells in response are licenced.
+        for result in data:
+            well = Well.objects.get(well_tag_number=result.get("well_tag_number"))
+            self.assertFalse(well.licences.all().exists())
 
 class TestWellHistory(APITestCase):
     fixtures = ['gwells-codetables', 'wellsearch-codetables', 'wellsearch', 'registries', 'registries-codetables']
