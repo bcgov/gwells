@@ -13,7 +13,7 @@
 """
 import json
 import reversion
-
+from logging import getLogger
 from django.contrib.gis.geos import Point
 from django.contrib.auth.models import Group, User
 
@@ -25,9 +25,10 @@ from gwells.settings import REST_FRAMEWORK
 from wells.models import Well
 from gwells.roles import roles_to_groups, WELLS_VIEWER_ROLE, WELLS_EDIT_ROLE
 
+logger = getLogger()
 
 class TestWellLocationsSearch(APITestCase):
-    fixtures = ['gwells-codetables', 'wellsearch-codetables', 'wellsearch', 'registries', 'registries-codetables']
+    fixtures = ['gwells-codetables', 'wellsearch-codetables', 'wellsearch', 'registries', 'registries-codetables', 'aquifers']
 
     def test_well_locations(self):
         # Basic test to ensure that the well location search returns a non-error response
@@ -42,7 +43,7 @@ class TestWellLocationsSearch(APITestCase):
             'drilling_company': 'bf5d31ea-8a5a-4363-8a5e-6c00eed03058'
         })
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
+        self.assertEqual(len(response.data), 5)
 
     def test_new_company_of_person_responsible_filter(self):
         # Make sure new company_of_person_responsible query string filtering
@@ -52,7 +53,7 @@ class TestWellLocationsSearch(APITestCase):
             'company_of_person_responsible': 'bf5d31ea-8a5a-4363-8a5e-6c00eed03058'
         })
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
+        self.assertEqual(len(response.data), 5)
 
     def test_filtering_licensed_wells(self):
         # fixtures contain a licence for well 123
@@ -62,16 +63,12 @@ class TestWellLocationsSearch(APITestCase):
         })
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        data = json.loads(response.data)
-
-        returned_wells = Well.objects.filter(well_tag_number__in=[result.get("well_tag_number") for result in data])
-        licenced_wells = Well.objects.filter(licences=None)
-        self.assertQuerySetEqual(returned_wells, licenced_wells)
+        data = response.data.get('results')
 
         # ensure all wells in response are licenced.
         for result in data:
-            well = Well.objects.get(result.get("well_tag_number"))
-            self.assertTrue(result.licences)
+            well = Well.objects.get(well_tag_number=result.get("well_tag_number"))
+            self.assertTrue(well.licences)
 
 
 
