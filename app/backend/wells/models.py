@@ -722,12 +722,6 @@ class Well(AuditModelStructure):
                                                 verbose_name='Well Publication Status',
                                                 default='Published')
     licences = models.ManyToManyField('aquifers.WaterRightsLicence')
-    licenced_status = models.ForeignKey(
-        LicencedStatusCode, db_column='licenced_status_code',
-        on_delete=models.PROTECT, default='UNLICENSED',
-        verbose_name='Licensed Status',
-        db_comment=('Valid licensing options granted to a well under the Water Water Sustainability Act.'
-                    ' This information comes from eLicensing. i.e. Unlicensed, Licensed, Historical.'))
 
     street_address = models.CharField(
         max_length=100, blank=True, null=True, verbose_name='Street Address',
@@ -1125,12 +1119,19 @@ class Well(AuditModelStructure):
             "well_tag_number": self.well_tag_number
         }
 
+    @property
+    def licenced_status(self):
+        return LicencedStatusCode.objects.get(licenced_status_code='LICENSED') if self.licences.all().exists() \
+            else LicencedStatusCode.objects.get(licenced_status_code='UNLICENSED')
+
+    @property
     def latitude(self):
         if self.geom:
             return self.geom.y
         else:
             return None
 
+    @property
     def longitude(self):
         if self.geom:
             return self.geom.x

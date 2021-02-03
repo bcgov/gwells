@@ -152,6 +152,7 @@ class WellListSerializerV2(serializers.ModelSerializer):
     person_responsible = serializers.ReadOnlyField(
         source='person_responsible.person_guid')
     person_responsible_name = serializers.ReadOnlyField(source='person_responsible.name')
+    licenced_status = serializers.ReadOnlyField(source='licenced_status.licenced_status_code')
 
     def get_legal_pid(self, instance):
         if instance.legal_pid is None:

@@ -31,6 +31,7 @@ from rest_framework.request import clone_request
 
 from gwells.roles import WELLS_VIEWER_ROLE
 from wells.models import (
+    LicencedStatusCode,
     DevelopmentMethodCode,
     DrillingMethodCode,
     WellOrientationCode,
@@ -319,6 +320,12 @@ class WellListFilter(AnyOrAllFilterSet):
                                                  method='filter_person_responsible_name',
                                                  label='Person responsible')
 
+
+    licenced_status = filters.ModelChoiceFilter(queryset=LicencedStatusCode.objects.all(),
+        method='filter_licenced_status',
+        label='Licence status'
+    )
+
     class Meta:
         model = Well
         fields = [
@@ -447,6 +454,28 @@ class WellListFilter(AnyOrAllFilterSet):
             'yield_estimation_method',
             'yield_estimation_rate',
         ]
+
+    def filter_licenced_status(self, queryset, name, value):
+        licence_status = None
+        try:
+            licence_status = str(value.licenced_status_code)
+        except:
+            pass
+
+
+        # If searching for status LICENSED, exclude any wells with an empty `licences` set.
+        # If searching for UNLICENSED, only return wells with an empty `licences` set.
+        if licence_status == 'LICENSED':
+            return queryset.exclude(licences=None)
+        elif licence_status == 'UNLICENSED':
+            return queryset.filter(licences=None)
+
+        # since only LicencedStatusCode objects (either LICENSED or UNLICENSED) options are presented or accepted,
+        # the user should not reach this point unless something is changed in the filter class behavior or 
+        # additional LicencedStatusCode entries are added.
+        raise ValidationError({
+            "licenced_status": "If searching by licence status, valid statuses are LICENSED or UNLICENSED."
+        })
 
     def filter_well_tag_or_plate(self, queryset, name, value):
         return queryset.filter(Q(well_tag_number=value) |
