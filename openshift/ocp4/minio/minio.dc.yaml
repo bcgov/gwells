@@ -31,7 +31,7 @@ parameters:
     value: "netapp-file-standard"
   - name: "DEST_PVC_ACCESS"
     displayName: "PVC access mode"
-    value: "ReadWriteOnce"
+    value: "ReadWriteMany"
   - name: "HOSTNAME"
     displayName: "Hostname for Minio service"
     required: true
