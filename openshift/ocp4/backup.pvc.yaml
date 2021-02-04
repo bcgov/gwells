@@ -23,7 +23,7 @@ objects:
         template.openshift.io.bcgov/create: "true"
     spec:
       accessModes:
-        - ReadWriteOnce
+        - ReadWriteMany
       resources:
         requests:
           storage: ${VOLUME_CAPACITY}

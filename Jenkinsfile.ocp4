@@ -1161,6 +1161,7 @@ pipeline {
                         def minioTemplate = openshift.process("-f",
                             "${templateDir}/minio/minio.dc.yaml",
                             "NAME_SUFFIX=-${prodSuffix}",
+                            "DEST_PVC_SIZE=15Gi",
                             "HOSTNAME=gwells-docs-${prodSuffix}.apps.silver.devops.gov.bc.ca"
                         )
 
@@ -1168,7 +1169,7 @@ pipeline {
                         echo "Processing backup volume config"
                         def backupVolConfig = openshift.process("-f",
                             "${templateDir}/backup.pvc.yaml",
-                            "VOLUME_CAPACITY=10Gi",
+                            "VOLUME_CAPACITY=30Gi",
                             "STORAGE_CLASS=netapp-file-backup"
                         )
 
