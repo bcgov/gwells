@@ -639,10 +639,10 @@ pipeline {
 
                         // apply the templates, which will create new objects or modify existing ones as necessary.
                         // the copies of base objects (secrets, configmaps) are also applied.
-                        openshift.apply(pgtileservTemplate).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
-                        openshift.apply(minioTemplate).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
-                        openshift.apply(deployTemplate).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
-                        openshift.apply(deployDBTemplate).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
+                        def pgtileserv = openshift.apply(pgtileservTemplate).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
+                        def minio = openshift.apply(minioTemplate).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
+                        def backend = openshift.apply(deployTemplate).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
+                        def database = openshift.apply(deployDBTemplate).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
                         openshift.apply(newObjectCopies).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
                         echo "Successfully applied deployment configs for ${prNumber}"
 
@@ -652,6 +652,12 @@ pipeline {
 
                         // post a notification to Github that this pull request is being deployed
                         createDeploymentStatus(devSuffix, 'PENDING', devHost)
+                        
+                        // wait for any deployments to finish updating.
+                        pgtileserv.narrow('dc').rollout().status()
+                        minio.narrow('dc').rollout().status()
+                        backend.narrow('dc').rollout().status()
+                        database.narrow('dc').rollout().status()
 
                         // monitor the deployment status and wait until deployment is successful
                         echo "Waiting for deployment to dev..."
@@ -678,8 +684,6 @@ pipeline {
                                 }
                             }
                         }
-
-
 
                         // Report a pass to GitHub
                         createDeploymentStatus(devSuffix, 'SUCCESS', devHost)
