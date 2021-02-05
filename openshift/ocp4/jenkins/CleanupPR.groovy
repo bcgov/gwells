@@ -59,7 +59,7 @@ if (ghEventType == 'pull_request' && payload['action'] == 'closed' && prNum) {
     // untag the images tagged with this PR number
     sout = new StringBuilder()
     serr = new StringBuilder()
-    def untagImages = "oc tag -d gwells-application:pr-${prNum}".execute()
+    def untagImages = "oc tag -n ${TOOLS_PROJECT} -d gwells-application:pr-${prNum}".execute()
     untagImages.consumeProcessOutput(sout, serr)
     untagImages.waitForOrKill(25000)
     println "out> $sout err> $serr"
