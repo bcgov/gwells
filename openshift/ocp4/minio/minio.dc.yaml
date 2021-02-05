@@ -25,7 +25,7 @@ parameters:
     value: "latest"
   - name: "DEST_PVC_SIZE"
     displayName: "PVC size"
-    value: "1Gi"
+    value: "10Gi"
   - name: "DEST_PVC_CLASS"
     displayName: "PVC class"
     value: "netapp-file-standard"
