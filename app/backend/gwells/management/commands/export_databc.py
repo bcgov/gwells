@@ -51,7 +51,7 @@ select
     well.well_tag_number,
     well.identification_plate_number,
     SUBSTRING(well_status_code.description for 255) as well_status,
-    SUBSTRING(licenced_status_code.description for 255) as licence_status,
+    CASE WHEN licence_q.cur_licences > 0 THEN 'Licensed' ELSE 'Unlicensed' END as licence_status,
     SUBSTRING(CONCAT('https://apps.nrs.gov.bc.ca/gwells/well/', well.well_tag_number) for 255) as detail,
     well.artesian_flow,
     SUBSTRING('usGPM' for 255) as artesian_flow_units,
@@ -70,8 +70,6 @@ select
     well.obs_well_status_code
 from well
     left join well_status_code on well_status_code.well_status_code = well.well_status_code
-    left join licenced_status_code on
-        licenced_status_code.licenced_status_code = well.licenced_status_code
     left join well_class_code on well_class_code.well_class_code = well.well_class_code
     left join intended_water_use_code on
         intended_water_use_code.intended_water_use_code = well.intended_water_use_code
@@ -82,6 +80,11 @@ from well
             select casing.casing_guid from casing
             where casing.well_tag_number = well.well_tag_number
             order by casing.diameter asc limit 1)
+    left join (select well_tag_number, count(*) as cur_licences from well
+        join well_licences on
+        well.well_tag_number = well_licences.well_id
+        group by well_tag_number) as licence_q
+        on well.well_tag_number = licence_q.well_tag_number
     where
         (well.well_publication_status_code = 'Published' or well.well_publication_status_code = null)
         and well.geom is not null
@@ -100,7 +103,7 @@ select
     well.well_tag_number,
     identification_plate_number,
     SUBSTRING(well_status_code.description for 255) as well_status,
-    SUBSTRING(licenced_status_code.description for 255) as licence_status,
+    CASE WHEN licence_q.cur_licences > 0 THEN 'Licensed' ELSE 'Unlicensed' END as licence_status,
     SUBSTRING(CONCAT('https://apps.nrs.gov.bc.ca/gwells/well/', well.well_tag_number) for 255) as detail,
     lithology_description.lithology_from as from,
     lithology_description.lithology_to as to,
@@ -125,8 +128,6 @@ from well
         lithology_description.well_tag_number = well.well_tag_number
     left join well_status_code on
         well_status_code.well_status_code = well.well_status_code
-    left join licenced_status_code on
-        licenced_status_code.licenced_status_code = well.licenced_status_code
     left join lithology_material_code on
         lithology_material_code.lithology_material_code =
             lithology_description.lithology_material_code
@@ -148,6 +149,11 @@ from well
             select casing.casing_guid from casing
             where casing.well_tag_number = well.well_tag_number
             order by casing.diameter asc limit 1)
+    left join (select well_tag_number, count(*) as cur_licences from well
+        join well_licences on
+        well.well_tag_number = well_licences.well_id
+        group by well_tag_number) as licence_q
+        on well.well_tag_number = licence_q.well_tag_number
     where
         (well.well_publication_status_code = 'Published' or well.well_publication_status_code = null)
         and well.geom is not null
