@@ -56,7 +56,7 @@ objects:
           volumes:
             - name: cli-db-volume
               persistentVolumeClaim:
-                claimName: migrator-volume
+                claimName: ${NAME}
           containers:
             - name: ${NAME}
               image: >-
