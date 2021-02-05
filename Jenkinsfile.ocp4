@@ -933,24 +933,24 @@ pipeline {
 
 /* TODO:  DISABLED FOR OCP4 TEST ENVIRONMENT */
 
-                        // Create cronjob for well export
-                        // def exportWellCronTemplate = openshift.process("-f",
-                        //     "${templateDir}/export.cj.json",
-                        //     "ENV_NAME=${stagingSuffix}",
-                        //     "PROJECT=${stagingProject}",
-                        //     "TAG=${stagingSuffix}",
-                        //     "NAME=export",
-                        //     "COMMAND=export",
-                        //     "SCHEDULE='30 3 * * *'"
-                        // )
-                        // openshift.apply(exportWellCronTemplate).label(
-                        //     [
-                        //         'app':"gwells-${stagingSuffix}",
-                        //         'app-name':"${appName}",
-                        //         'env-name':"${stagingSuffix}"
-                        //     ],
-                        //     "--overwrite"
-                        // )
+                        Create cronjob for well export
+                        def exportWellCronTemplate = openshift.process("-f",
+                            "${templateDir}/export.cj.json",
+                            "ENV_NAME=${stagingSuffix}",
+                            "PROJECT=${stagingProject}",
+                            "TAG=${stagingSuffix}",
+                            "NAME=export",
+                            "COMMAND=export",
+                            "SCHEDULE='30 3 * * *'"
+                        )
+                        openshift.apply(exportWellCronTemplate).label(
+                            [
+                                'app':"gwells-${stagingSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${stagingSuffix}"
+                            ],
+                            "--overwrite"
+                        )
 
                         // Create cronjob for licence import
                         def importLicencesCronjob = openshift.process("-f",
@@ -992,24 +992,24 @@ pipeline {
 
 /* TODO:  DISABLED FOR OCP4 TEST ENVIRONMENT */
 
-                        // Create cronjob for databc export
-                        // def exportDataBCTemplate = openshift.process("-f",
-                        //     "${templateDir}/export.cj.json",
-                        //     "ENV_NAME=${stagingSuffix}",
-                        //     "PROJECT=${stagingProject}",
-                        //     "TAG=${stagingSuffix}",
-                        //     "NAME=export-databc",
-                        //     "COMMAND=export_databc",
-                        //     "SCHEDULE='0 4 * * *'"
-                        // )
-                        // openshift.apply(exportDataBCTemplate).label(
-                        //     [
-                        //         'app':"gwells-${stagingSuffix}",
-                        //         'app-name':"${appName}",
-                        //         'env-name':"${stagingSuffix}"
-                        //     ],
-                        //     "--overwrite"
-                        // )
+                        Create cronjob for databc export
+                        def exportDataBCTemplate = openshift.process("-f",
+                            "${templateDir}/export.cj.json",
+                            "ENV_NAME=${stagingSuffix}",
+                            "PROJECT=${stagingProject}",
+                            "TAG=${stagingSuffix}",
+                            "NAME=export-databc",
+                            "COMMAND=export_databc",
+                            "SCHEDULE='0 4 * * *'"
+                        )
+                        openshift.apply(exportDataBCTemplate).label(
+                            [
+                                'app':"gwells-${stagingSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${stagingSuffix}"
+                            ],
+                            "--overwrite"
+                        )
 
                         // automated minio backup
                         def docBackupCronjob = openshift.process("-f",
@@ -1322,17 +1322,17 @@ pipeline {
                         //     "--overwrite"
                         // )
 
-                        // def docBackupCronJob = openshift.process("-f",
-                        //     "${templateDir}/jobs/minio-backup/minio-backup.cj.yaml",
-                        //     "NAME_SUFFIX=${prodSuffix}",
-                        //     "VERSION=v1.0.0",
-                        //     "SCHEDULE=15 4 * * *",
-                        //     "DEST_PVC=${nfsProdBackupPVC}",
-                        //     "SOURCE_PVC=gwells-minio-${prodSuffix}",
-                        //     "PVC_SIZE=40Gi"
-                        // )
+                        def docBackupCronJob = openshift.process("-f",
+                            "${templateDir}/jobs/minio-backup/minio-backup.cj.yaml",
+                            "NAME_SUFFIX=${prodSuffix}",
+                            "VERSION=v1.0.0",
+                            "SCHEDULE=15 4 * * *",
+                            "DEST_PVC=${nfsProdBackupPVC}",
+                            "SOURCE_PVC=gwells-minio-${prodSuffix}",
+                            "PVC_SIZE=40Gi"
+                        )
 
-                        // openshift.apply(docBackupCronJob)
+                        openshift.apply(docBackupCronJob)
 
                         def dbNFSBackup = openshift.process("-f",
                             "${templateDir}/jobs/postgres-backup-nfs/postgres-backup.cj.yaml",
