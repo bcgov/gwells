@@ -29,13 +29,7 @@ objects:
         task: migration
     spec:
       strategy:
-        type: Rolling
-        rollingParams:
-          updatePeriodSeconds: 1
-          intervalSeconds: 1
-          timeoutSeconds: 600
-          maxUnavailable: 25%
-          maxSurge: 25%
+        type: Recreate
         resources: {}
         activeDeadlineSeconds: 21600
       triggers:
