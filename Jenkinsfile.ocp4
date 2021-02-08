@@ -933,7 +933,7 @@ pipeline {
 
 /* TODO:  DISABLED FOR OCP4 TEST ENVIRONMENT */
 
-                        Create cronjob for well export
+                        // Create cronjob for well export
                         def exportWellCronTemplate = openshift.process("-f",
                             "${templateDir}/export.cj.json",
                             "ENV_NAME=${stagingSuffix}",
@@ -992,7 +992,7 @@ pipeline {
 
 /* TODO:  DISABLED FOR OCP4 TEST ENVIRONMENT */
 
-                        Create cronjob for databc export
+                        // Create cronjob for databc export
                         def exportDataBCTemplate = openshift.process("-f",
                             "${templateDir}/export.cj.json",
                             "ENV_NAME=${stagingSuffix}",
