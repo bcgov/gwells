@@ -1018,6 +1018,7 @@ pipeline {
                             "VERSION=v1.0.0",
                             "SCHEDULE=15 3 * * *",
                             "DEST_PVC=gwells-backups",
+                            "PVC_SIZE=1Gi",
                             "SOURCE_PVC=gwells-minio-${stagingSuffix}"
                         )
 
