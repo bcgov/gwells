@@ -9,7 +9,7 @@ You need:
 - [ ] Migrator CLI Deployment Config
    - Used to migrate the database (gwells and tileserver views)
 - [ ] Minio mirror `mc mirror` setup from Silver to Pathfinder
-   - Make sure we have enough storage in Silver, and turn on `mc mirror` to rsync/mirror the files continuously until migration day 
+   - Make sure we have enough storage in Silver, and turn on `mc mirror` to rsync/mirror the files continuously until migration day
 
 ### Migration checklist 
 - [ ] Make sure all services are down to prevent users from entering data and uploading documents
@@ -22,7 +22,7 @@ You need:
 
 ### Next Steps
 - [ ] Create a ticket with INFRA to change their reverse proxy for `apps.nrs.gov.bc.ca/gwells` from Pathfinder to Silver
-- [ ] Remove forward proxy on Pathfinder to Silver and convert into a redirect. This will make it noticeable to anyone who uses the pathfinder URLs (APIs), and give them a chance to update their URLs.
+- [ ] Remove reverse proxy on Pathfinder to Silver and convert into a redirect. This will make it noticeable to anyone who uses the pathfinder URLs (APIs), and give them a chance to update their URLs.
 
 ## Migration tools
 
