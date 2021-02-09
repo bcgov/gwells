@@ -3,15 +3,20 @@
 read -r -p "Enter OCP3 auth token: " AUTH_TOKEN
 oc --kubeconfig=/tmp/KUBECONFIG login https://console.pathfinder.gov.bc.ca:8443 --token="$AUTH_TOKEN"
 
-NAMESPACE='moe-gwells-test'
-GWELLS_DB_POD=$(oc --kubeconfig=/tmp/KUBECONFIG get pods -n "$NAMESPACE" | grep gwells-pg12-staging | head -1 | awk '{print $1}')
+NAMESPACE="moe-gwells-$1"
+POD_NAME='staging'
+if [ "$1" == 'prod' ]; then
+  POD_NAME='prod'
+fi
+
+GWELLS_DB_POD=$(oc --kubeconfig=/tmp/KUBECONFIG get pods -n "$NAMESPACE" | grep "gwells-pg12-$POD_NAME" | head -1 | awk '{print $1}')
 echo "------------------------------------------------------------------------------"
 echo "Found pod $GWELLS_DB_POD on $NAMESPACE"
 echo "Starting database dump..."
 echo "------------------------------------------------------------------------------"
 
 # On ocp3 - dump db
-DB_DUMPFILE="/tmp/gwells-prod-db-latest"
+DB_DUMPFILE="/tmp/gwells-$1-db-latest"
 SECONDS=0
 oc --kubeconfig=/tmp/KUBECONFIG exec -n "$NAMESPACE" "$GWELLS_DB_POD" -- bash -c "pg_dump -Fc gwells > $DB_DUMPFILE"
 duration=$SECONDS
