@@ -30,6 +30,7 @@ EOF
 # switch to service gwells-maintenance-staging / gwells-maintenance-production ; target port: 2015-tcp
 
 oc --kubeconfig=/tmp/KUBECONFIG -n "$NAMESPACE" patch "route/gwells-$ENV_NAME" -p "$ROUTE_PATCH"
+oc --kubeconfig=/tmp/KUBECONFIG -n "$NAMESPACE" patch "route/pgtileserv-$ENV_NAME" -p "$ROUTE_PATCH"
 
 echo
 echo "route/gwells-$ENV_NAME patched to direct traffic to OCP4 proxy"
