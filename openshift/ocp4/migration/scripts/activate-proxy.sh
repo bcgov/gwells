@@ -1,4 +1,5 @@
 #!/bin/bash
+# Usage:  ./activate-proxy.sh <test|prod>
 
 NAMESPACE="moe-gwells-$1"
 ENV_NAME="staging"
