@@ -4,7 +4,7 @@ NAMESPACE="moe-gwells-$1"
 ENV_NAME="staging"
 
 if [ "$1" == 'prod' ]; then
-    ENV_NAME='prod'
+    ENV_NAME='production'
 fi
 echo
 echo "Scaling down on Pathfinder ($NAMESPACE ; env: $ENV_NAME)"
