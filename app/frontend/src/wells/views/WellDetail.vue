@@ -586,11 +586,6 @@ export default {
     },
     ...mapGetters(['userRoles', 'config', 'well', 'wellLicence', 'storedWellId'])
   },
-  // filters: {
-  //   excludeZeroDecimals (value) {
-  //     return value != null ? Number(value) : value
-  //   }
-  // },
   methods: {
     handlePrint () {
       if (window.ga) {
