@@ -72,12 +72,6 @@ objects:
               terminationMessagePath: /dev/termination-log
               terminationMessagePolicy: File
               imagePullPolicy: Always
-              env:
-                - name: MIGRATOR_AUTH_TOKEN
-                  valueFrom:
-                    secretKeyRef:
-                      name: migrator-auth-token
-                      key: migrator-auth-token
           restartPolicy: Always
           terminationGracePeriodSeconds: 30
           dnsPolicy: ClusterFirst

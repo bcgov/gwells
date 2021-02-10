@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# We need to login to ocp4. Ask for auth token
-read -r -p "Enter OCP4 auth token: " AUTH_TOKEN
+# We need to login to Silver. Ask for auth token
+read -r -p "Enter Silver auth token: " AUTH_TOKEN
 oc --kubeconfig=/tmp/KUBECONFIGSILVER login --token="$AUTH_TOKEN" --server=https://api.silver.devops.gov.bc.ca:6443
 
 NAMESPACE4="26e83e-$1"

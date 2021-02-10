@@ -7,7 +7,7 @@ read -r -p 'Namespace [test/prod] :' ENVIRONMENT
 ls -alh /tmp/backup
 
 echo "------------------------------------------------------------------------------"
-echo "Copy from ocp3 successful. Copying to the db pod and restoring the database..."
+echo "Copy from Pathfinder successful. Copying to the db pod and restoring the database..."
 echo "------------------------------------------------------------------------------"
 
 . ./copy_and_load_db.sh "$ENVIRONMENT"

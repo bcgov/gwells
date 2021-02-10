@@ -1,6 +1,6 @@
 #!/bin/bash
-# We need to login to ocp3. Ask for auth token
-read -r -p "Enter OCP3 auth token: " AUTH_TOKEN
+# We need to login to Pathfinder. Ask for auth token
+read -r -p "Enter Pathfinder auth token: " AUTH_TOKEN
 oc --kubeconfig=/tmp/KUBECONFIG login https://console.pathfinder.gov.bc.ca:8443 --token="$AUTH_TOKEN"
 
 NAMESPACE="moe-gwells-$1"
@@ -15,18 +15,18 @@ echo "Found pod $GWELLS_DB_POD on $NAMESPACE"
 echo "Starting database dump..."
 echo "------------------------------------------------------------------------------"
 
-# On ocp3 - dump db
+# On Pathfinder - dump db
 DB_DUMPFILE="/tmp/gwells-$1-db-latest"
 SECONDS=0
 oc --kubeconfig=/tmp/KUBECONFIG exec -n "$NAMESPACE" "$GWELLS_DB_POD" -- bash -c "pg_dump -Fc gwells > $DB_DUMPFILE"
 duration=$SECONDS
 echo "------------------------------------------------------------------------------"
 echo "Dump took $((duration / 60)) minutes and $((duration % 60)) seconds."
-echo "Starting to copy dumpfile from ocp3 to this pod's volume..."
+echo "Starting to copy dumpfile from Pathfinder to this pod's volume..."
 echo "------------------------------------------------------------------------------"
 
 
-# On ocp4 - copy file from ocp3
+# On ocp4 - copy file from Pathfinder
 mkdir /tmp/backup
 SECONDS=0
 oc --kubeconfig=/tmp/KUBECONFIG rsync -n "$NAMESPACE" "$GWELLS_DB_POD":"$DB_DUMPFILE" /tmp/backup/
@@ -35,7 +35,10 @@ echo "--------------------------------------------------------------------------
 echo "Rsync took $((duration / 60)) minutes and $((duration % 60)) seconds."
 
 # delete dump from source
-echo "Cleanup - deleting dump from ocp3"
+echo "Cleanup - deleting dump from Pathfinder"
 echo "------------------------------------------------------------------------------"
 
-oc --kubeconfig=/tmp/KUBECONFIG exec -n "$NAMESPACE" "$GWELLS_DB_POD" -- rm -f $DB_DUMPFILE
+oc --kubeconfig=/tmp/KUBECONFIG exec -n "$NAMESPACE" "$GWELLS_DB_POD" -- rm -f "$DB_DUMPFILE"
+
+# Scale down the pathfinder database DC
+oc --kubeconfig=/tmp/KUBECONFIG -n "$NAMESPACE" scale --replicas=0 dc/gwells-pg12-production
