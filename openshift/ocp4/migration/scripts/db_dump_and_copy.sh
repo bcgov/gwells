@@ -1,13 +1,13 @@
 #!/bin/bash
 # We need to login to Pathfinder. Ask for auth token
-read -r -p "Enter Pathfinder auth token: " AUTH_TOKEN
-oc --kubeconfig=/tmp/KUBECONFIG login https://console.pathfinder.gov.bc.ca:8443 --token="$AUTH_TOKEN"
-
-NAMESPACE="moe-gwells-$1"
-POD_NAME='staging'
-if [ "$1" == 'prod' ]; then
-  POD_NAME='production'
-fi
+#read -r -p "Enter Pathfinder auth token: " AUTH_TOKEN
+#oc --kubeconfig=/tmp/KUBECONFIG login https://console.pathfinder.gov.bc.ca:8443 --token="$AUTH_TOKEN"
+#
+#NAMESPACE="moe-gwells-$1"
+#POD_NAME='staging'
+#if [ "$1" == 'prod' ]; then
+#  POD_NAME='production'
+#fi
 
 GWELLS_DB_POD=$(oc --kubeconfig=/tmp/KUBECONFIG get pods -n "$NAMESPACE" | grep "gwells-pg12-$POD_NAME" | head -1 | awk '{print $1}')
 echo "------------------------------------------------------------------------------"

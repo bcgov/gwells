@@ -1,15 +1,15 @@
 #!/bin/bash
 
 # We need to login to Silver. Ask for auth token
-read -r -p "Enter Silver auth token: " AUTH_TOKEN
-oc --kubeconfig=/tmp/KUBECONFIGSILVER login --token="$AUTH_TOKEN" --server=https://api.silver.devops.gov.bc.ca:6443
-
-NAMESPACE4="26e83e-$1"
-
-POD_NAME='staging'
-if [ "$1" == 'prod' ]; then
-  POD_NAME='production'
-fi
+#read -r -p "Enter Silver auth token: " AUTH_TOKEN
+#oc --kubeconfig=/tmp/KUBECONFIGSILVER login --token="$AUTH_TOKEN" --server=https://api.silver.devops.gov.bc.ca:6443
+#
+#NAMESPACE4="26e83e-$1"
+#
+#POD_NAME='staging'
+#if [ "$1" == 'prod' ]; then
+#  POD_NAME='production'
+#fi
 
 GWELLS4_DB_POD=$(oc --kubeconfig=/tmp/KUBECONFIGSILVER get pods -n "$NAMESPACE4" | grep "gwells-pg12-$POD_NAME" | grep Running | head -1 | awk '{print $1}')
 
