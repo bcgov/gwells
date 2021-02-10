@@ -2,17 +2,15 @@
 # Usage:  ./activate-proxy.sh <test|prod>
 # add --revert to end (after test/prod argument) to switch the routes back to OCP3 services.
 
+# Get variables from previous scripts or params
+ENVIRONMENT=${ENVIRONMENT:-$1}
+. ./params.sh "$ENVIRONMENT"
+. ./require_pathfinder_auth.sh
 
 set -euo pipefail
 
-NAMESPACE="moe-gwells-$1"
-ENV_NAME="staging"
-
-if [ "$1" == 'prod' ]; then
-    ENV_NAME='production'
-fi
 echo
-echo "Switching main GWELLS route to forward requests to OCP4  ($NAMESPACE ; env: $ENV_NAME)"
+echo "Switching main GWELLS route to forward requests to OCP4  ($NAMESPACE ; env: $POD_SUFFIX)"
 echo
 
 
@@ -24,7 +22,7 @@ ROUTE_PATCH=$(cat <<-EOF
 		},
 		"to": {
 			"kind": "Service",
-			"name": "gwells-maintenance-${ENV_NAME}"
+			"name": "gwells-maintenance-${POD_SUFFIX}"
 		}
 	}
 }
@@ -39,7 +37,7 @@ REVERT_ROUTE_PATCH_GWELLS=$(cat <<-EOF
 		},
 		"to": {
 			"kind": "Service",
-			"name": "gwells-${ENV_NAME}"
+			"name": "gwells-${POD_SUFFIX}"
 		}
 	}
 }
@@ -54,7 +52,7 @@ REVERT_ROUTE_PATCH_TILESERV=$(cat <<-EOF
 		},
 		"to": {
 			"kind": "Service",
-			"name": "pgtileserv-${ENV_NAME}"
+			"name": "pgtileserv-${POD_SUFFIX}"
 		}
 	}
 }
@@ -64,17 +62,17 @@ EOF
 if echo $* | grep -e "--revert" -q
 then
 	# use revert script
-	oc --kubeconfig=/tmp/KUBECONFIG -n "$NAMESPACE" patch "route/gwells-$ENV_NAME" -p "$REVERT_ROUTE_PATCH_GWELLS"
-	oc --kubeconfig=/tmp/KUBECONFIG -n "$NAMESPACE" patch "route/pgtileserv-$ENV_NAME" -p "$REVERT_ROUTE_PATCH_TILESERV"
+	oc --kubeconfig="$KUBECONFIG" -n "$NAMESPACE" patch "route/gwells-$POD_SUFFIX" -p "$REVERT_ROUTE_PATCH_GWELLS"
+	oc --kubeconfig="$KUBECONFIG" -n "$NAMESPACE" patch "route/pgtileserv-$POD_SUFFIX" -p "$REVERT_ROUTE_PATCH_TILESERV"
 	echo
-	echo "route/gwells-$ENV_NAME patched to direct traffic to OCP3 services (proxy to ocp4 disabled)"
+	echo "route/gwells-$POD_SUFFIX patched to direct traffic to OCP3 services (proxy to ocp4 disabled)"
 	echo
 else
-	oc --kubeconfig=/tmp/KUBECONFIG -n "$NAMESPACE" patch "route/gwells-$ENV_NAME" -p "$ROUTE_PATCH"
-	oc --kubeconfig=/tmp/KUBECONFIG -n "$NAMESPACE" patch "route/pgtileserv-$ENV_NAME" -p "$ROUTE_PATCH"
+	oc --kubeconfig="$KUBECONFIG" -n "$NAMESPACE" patch "route/gwells-$POD_SUFFIX" -p "$ROUTE_PATCH"
+	oc --kubeconfig="$KUBECONFIG" -n "$NAMESPACE" patch "route/pgtileserv-$POD_SUFFIX" -p "$ROUTE_PATCH"
 
 	echo
-	echo "route/gwells-$ENV_NAME patched to direct traffic to OCP4 proxy"
+	echo "route/gwells-$POD_SUFFIX patched to direct traffic to OCP4 proxy"
 	echo
 fi
 

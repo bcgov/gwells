@@ -1,24 +1,10 @@
 #!/bin/bash
+# This script copies the dump from the migrator-cli volume to the db volume and restores the database using pg_restore
 
 # Get variables from previous scripts or params
-NAMESPACE4=${NAMESPACE4:-$1}
-POD_SUFFIX=${POD_SUFFIX:-$2}
-KUBECONFIGSILVER=${KUBECONFIGSILVER:-'/tmp/KUBECONFIGSILVER'}
-
-if [[ -z "$NAMESPACE4" ]]; then
-  echo "Namespace not set, exiting... (input param1 26e83e-[test/prod])"
-  exit 1
-fi
-
-if [[ -z "$POD_SUFFIX" ]]; then
-  echo "Pod suffix not set, exiting... (input param2 [staging/prod])"
-  exit 1
-fi
-
-if [ ! -f "$KUBECONFIGSILVER" ]; then
-  read -r -p "Enter Silver auth token: " AUTH_TOKEN
-  oc --kubeconfig="$KUBECONFIGSILVER" login --token="$AUTH_TOKEN" --server=https://api.silver.devops.gov.bc.ca:6443
-fi
+ENVIRONMENT=${ENVIRONMENT:-$1}
+. ./params.sh "$ENVIRONMENT"
+. ./require_silver_auth.sh
 
 # Start copy to db pod and restore
 GWELLS4_DB_POD=$(oc --kubeconfig="$KUBECONFIGSILVER" get pods -n "$NAMESPACE4" | grep "gwells-pg12-$POD_SUFFIX" | grep Running | head -1 | awk '{print $1}')

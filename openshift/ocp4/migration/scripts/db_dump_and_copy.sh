@@ -1,24 +1,10 @@
 #!/bin/bash
+# This script dumps the old database and copies it to the migrator-cli's volume
 
 # Get variables from previous scripts or params
-NAMESPACE=${NAMESPACE:-$1}
-POD_SUFFIX=${POD_SUFFIX:-$2}
-KUBECONFIG=${KUBECONFIG:-'/tmp/KUBECONFIG'}
-
-if [[ -z "$NAMESPACE" ]]; then
-  echo "Namespace not set, exiting... (input param1 moe-gwells-[test/prod])"
-  exit 1
-fi
-
-if [[ -z "$POD_SUFFIX" ]]; then
-  echo "Pod suffix not set, exiting... (input param2 [staging/prod])"
-  exit 1
-fi
-
-if [ ! -f "$KUBECONFIG" ]; then
-  read -r -p "Enter Pathfinder auth token: " AUTH_TOKEN
-  oc --kubeconfig="$KUBECONFIG" login https://console.pathfinder.gov.bc.ca:8443 --token="$AUTH_TOKEN"
-fi
+ENVIRONMENT=${ENVIRONMENT:-$1}
+. ./params.sh "$ENVIRONMENT"
+. ./require_pathfinder_auth.sh
 
 # Start dump and copy
 GWELLS_DB_POD=$(oc --kubeconfig="$KUBECONFIG" get pods -n "$NAMESPACE" | grep "gwells-pg12-$POD_SUFFIX" | head -1 | awk '{print $1}')
@@ -53,4 +39,4 @@ echo "--------------------------------------------------------------------------
 oc --kubeconfig="$KUBECONFIG" exec -n "$NAMESPACE" "$GWELLS_DB_POD" -- rm -f "$DB_DUMPFILE"
 
 # Scale down the pathfinder database DC
-oc --kubeconfig="$KUBECONFIG" -n "$NAMESPACE" scale --replicas=0 dc/gwells-pg12-production
+#oc --kubeconfig="$KUBECONFIG" -n "$NAMESPACE" scale --replicas=0 "dc/gwells-pg12-$POD_SUFFIX"
