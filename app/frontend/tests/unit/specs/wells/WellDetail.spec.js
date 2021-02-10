@@ -67,15 +67,13 @@ describe('WellDetail.vue', () => {
     })
   }
 
-  it('the page renders', async () => {
+  it('the page renders', () => {
     const wrapper = component()
-
     expect(wrapper.find('#summary_fieldset > legend > span').text()).toBe('Well Summary')
   })
 
-  it('should have proper values', () => {
+  it('should match snapshot', () => {
     const wrapper = component()
-
-    // TODO:// need to check individual blocks for proper values
+    expect(wrapper.element).toMatchSnapshot()
   })
 })
