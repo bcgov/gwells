@@ -8,7 +8,7 @@ NAMESPACE4="26e83e-$1"
 
 POD_NAME='staging'
 if [ "$1" == 'prod' ]; then
-  POD_NAME='prod'
+  POD_NAME='production'
 fi
 
 GWELLS4_DB_POD=$(oc --kubeconfig=/tmp/KUBECONFIGSILVER get pods -n "$NAMESPACE4" | grep "gwells-pg12-$POD_NAME" | grep Running | head -1 | awk '{print $1}')
