@@ -19,6 +19,24 @@ parameters:
   - name: SOURCE_PVC
     required: true
 objects:
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      finalizers:
+      - kubernetes.io/pvc-protection
+      labels:
+        app: "gwells-${NAME_SUFFIX}"
+        name: "gwells-documents-${NAME_SUFFIX}-backup"
+        component: backups
+        part-of: gwells
+      name: gwells-documents-${NAME_SUFFIX}-backup
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: ${PVC_SIZE}
+      storageClassName: netapp-file-backup
   - apiVersion: batch/v1beta1
     kind: CronJob
     metadata:
@@ -31,7 +49,7 @@ objects:
         metadata:
           labels:
             app: "gwells-${NAME_SUFFIX}"
-            name: "gwells-${NAME_SUFFIX}-documents-backup"
+            name: "gwells-documents-${NAME_SUFFIX}-backup"
             component: backups
             part-of: gwells
         spec:
@@ -68,6 +86,6 @@ objects:
                   claimName: "${DEST_PVC}"
               - name: backup
                 persistentVolumeClaim:
-                  claimName: "gwells-backups"
+                  claimName: "gwells-documents-${NAME_SUFFIX}-backup"
       schedule: ${SCHEDULE}
       successfulJobsHistoryLimit: 3
