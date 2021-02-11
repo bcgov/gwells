@@ -14,7 +14,7 @@ echo "Starting database dump..."
 echo "------------------------------------------------------------------------------"
 
 # On Pathfinder - dump db
-DB_DUMPFILE="/tmp/gwells-$NAMESPACE-db-latest"
+DB_DUMPFILE="/tmp/gwells-$ENVIRONMENT-db-latest"
 SECONDS=0
 oc --kubeconfig="$KUBECONFIG" exec -n "$NAMESPACE" "$GWELLS_DB_POD" -- bash -c "pg_dump -Fc gwells > $DB_DUMPFILE"
 duration=$SECONDS

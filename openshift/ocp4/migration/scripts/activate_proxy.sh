@@ -1,6 +1,7 @@
 #!/bin/bash
 # Usage:  ./activate-proxy.sh <test|prod>
 # add --revert to end (after test/prod argument) to switch the routes back to OCP3 services.
+# i.e. ./activate_proxy.sh test --revert
 
 # Get variables from previous scripts or params
 ENVIRONMENT=${ENVIRONMENT:-$1}

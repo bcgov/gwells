@@ -1,13 +1,14 @@
 #!/bin/bash
+# Scales down the gwells application on Pathfinder
 # add --revert to end (after test/prod) to scale back to 2 on Pathfinder.
-
-set -euo pipefail
+# i.e. ./scale_down.sh test --revert
 
 # Get variables from previous scripts or params
 ENVIRONMENT=${ENVIRONMENT:-$1}
 . ./params.sh "$ENVIRONMENT"
 . ./require_pathfinder_auth.sh
 
+set -euo pipefail
 if echo $* | grep -e "--revert" -q
 then
 	# revert to 2 replicas

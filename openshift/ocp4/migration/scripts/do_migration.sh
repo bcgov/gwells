@@ -1,4 +1,5 @@
 #!/bin/bash
+# Usage ./do_migration.sh | tee migration.log
 # ---------------------------------------------------------------------------------
 # Require all needed input/params for migration
 # ---------------------------------------------------------------------------------
@@ -10,14 +11,17 @@
 . ./require_pathfinder_auth.sh
 . ./require_silver_auth.sh
 
-# scale down
+# Scale down the gwells application on Pathfinder
+. ./scale_down.sh
 
-# ---------------------------------------------------------------------------------
 # Migrate the database
-# ---------------------------------------------------------------------------------
 . ./migrate_database.sh
 
-# ---------------------------------------------------------------------------------
 # Mirror minio data
-# ---------------------------------------------------------------------------------
 . ./migrate_minio.sh
+
+# Scale up the gwells application on Silver
+. ./scale_up.sh
+
+# Activate the proxy
+. ./activate_proxy.sh

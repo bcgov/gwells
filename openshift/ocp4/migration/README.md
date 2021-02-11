@@ -17,6 +17,8 @@ You need:
 - [ ] Turn off `mc mirror` on Pathfinder and make sure the settings for minio on Silver work
 - [ ] Make sure the settings for AWS (public documents) on Silver are working
 - [ ] Change or copy `gwells-maintenance` reverse proxy config to gwells on Pathfinder
+- [ ] Stop all scheduled jobs on pathfinder
+- [ ] Activate minio backups 
 - [ ] Double check everything on Silver.
 - [ ] Make sure no traffic is getting processed in Pathfinder.
 

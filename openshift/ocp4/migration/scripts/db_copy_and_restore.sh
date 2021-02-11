@@ -25,7 +25,7 @@ echo "--------------------------------------------------------------------------
 
 
 # Reload database
-PG_DUMPFILE="/pgdata/backup/gwells-$1-db-latest"
+PG_DUMPFILE="/pgdata/backup/gwells-$ENVIRONMENT-db-latest"
 SECONDS=0
 oc --kubeconfig="$KUBECONFIGSILVER" exec -n "$NAMESPACE4" "$GWELLS4_DB_POD" -c postgresql -- bash -c "pg_restore -c -d gwells $PG_DUMPFILE"
 duration=$SECONDS
