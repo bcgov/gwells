@@ -256,7 +256,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             <b-col cols="12" md="4"><span class="font-weight-bold">Well Cap:</span> {{ well.well_cap_type }}</b-col>
           </b-row>
           <b-row>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Finished Well Depth:</span> {{ well.finished_well_depth | excludeZeroDecimals }} {{ well.finished_well_depth ? 'feet':''}}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Finished Well Depth:</span> {{ well.finished_well_depth | excludeZeroDecimals }} {{ well.finished_well_depth ? 'ft bgl':''}}</b-col>
             <b-col cols="12" md="4"><span class="font-weight-bold">Estimated Well Yield:</span> {{ well.well_yield | excludeZeroDecimals }} {{ well.well_yield ? 'USgpm':'' }}</b-col>
             <b-col cols="12" md="4"><span class="font-weight-bold">Well Disinfected Status:</span> {{ well.well_disinfected_status }}</b-col>
           </b-row>
@@ -269,8 +269,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
             </b-col>
           </b-row>
           <b-row>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Depth to Bedrock:</span> {{ well.bedrock_depth | excludeZeroDecimals }} {{ well.bedrock_depth ? 'feet':''}}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Artesian Pressure:</span> {{ well.artesian_pressure | excludeZeroDecimals }} {{ well.artesian_pressure ? 'inches': ''}}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Depth to Bedrock:</span> {{ well.bedrock_depth | excludeZeroDecimals }} {{ well.bedrock_depth ? 'feet bgl':''}}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Artesian Pressure:</span> {{ well.artesian_pressure | excludeZeroDecimals }} {{ well.artesian_pressure ? 'feet': ''}}</b-col>
             <b-col cols="12" md="4"><span class="font-weight-bold">Orientation of Well:</span> {{ well.well_orientation_status }}</b-col>
           </b-row>
           <b-row>
@@ -306,9 +306,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 show-empty>
 
               <template slot="from" slot-scope="data">{{ data.item.start | excludeZeroDecimals }}</template>
-              <template slot="HEAD_from" slot-scope="data">{{ data.label }} (ft btoc)</template>
+              <template slot="HEAD_from" slot-scope="data">{{ data.label }} (ft bgl)</template>
               <template slot="to" slot-scope="data">{{ data.item.end | excludeZeroDecimals }}</template>
-              <template slot="HEAD_to" slot-scope="data">{{ data.label }} (ft btoc)</template>
+              <template slot="HEAD_to" slot-scope="data">{{ data.label }} (ft bgl)</template>
               <template slot="casing_type" slot-scope="data">{{codeToDescription('casing_codes', data.item.casing_code)}}</template>
               <template slot="casing_material" slot-scope="data">{{codeToDescription('casing_materials', data.item.casing_material)}}</template>
               <template slot="HEAD_diameter" slot-scope="data">{{ data.label }} (in)</template>
@@ -403,9 +403,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   :fields="['from', 'to', 'diameter', 'assembly_type', 'slot_size']"
                   show-empty
                   >
-                <template slot="HEAD_from" slot-scope="data">{{data.label}} (ft btoc)</template>
+                <template slot="HEAD_from" slot-scope="data">{{data.label}} (ft bgl)</template>
                 <template slot="from" slot-scope="data">{{data.item.start}}</template>
-                <template slot="HEAD_to" slot-scope="data">{{data.label}} (ft btoc)</template>
+                <template slot="HEAD_to" slot-scope="data">{{data.label}} (ft bgl)</template>
                 <template slot="to" slot-scope="data">{{data.item.end}}</template>
                 <template slot="HEAD_diameter" slot-scope="data">{{data.label}} (in)</template>
                 <template slot="diameter" slot-scope="data">{{data.item.diameter}}</template>
