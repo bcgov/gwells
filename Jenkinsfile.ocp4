@@ -935,7 +935,7 @@ pipeline {
 
                         // Create cronjob for well export
                         def exportWellCronTemplate = openshift.process("-f",
-                            "${templateDir}/export.cj.json",
+                            "${templateDir}/jobs/export-databc/export.cj.json",
                             "ENV_NAME=${stagingSuffix}",
                             "PROJECT=${stagingProject}",
                             "TAG=${stagingSuffix}",
@@ -994,7 +994,7 @@ pipeline {
 
                         // Create cronjob for databc export
                         def exportDataBCTemplate = openshift.process("-f",
-                            "${templateDir}/export.cj.json",
+                            "${templateDir}/jobs/export-databc/export.cj.json",
                             "ENV_NAME=${stagingSuffix}",
                             "PROJECT=${stagingProject}",
                             "TAG=${stagingSuffix}",
@@ -1287,7 +1287,7 @@ pipeline {
 
                         // // Create cronjob for well export
                         // def exportWellCronTemplate = openshift.process("-f",
-                        //     "${templateDir}/export.cj.json",
+                        //     "${templateDir}/jobs/export-databc/export.cj.json",
                         //     "ENV_NAME=${prodSuffix}",
                         //     "PROJECT=${prodProject}",
                         //     "TAG=${prodSuffix}",
@@ -1306,7 +1306,7 @@ pipeline {
 
                         // Create cronjob for databc export
                         // def exportDataBCCronTemplate = openshift.process("-f",
-                        //     "${templateDir}/export.cj.json",
+                        //     "${templateDir}/jobs/export-databc/export.cj.json",
                         //     "ENV_NAME=${prodSuffix}",
                         //     "PROJECT=${prodProject}",
                         //     "TAG=${prodSuffix}",
