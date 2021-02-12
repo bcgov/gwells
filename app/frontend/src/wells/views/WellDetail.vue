@@ -99,7 +99,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               <b-col cols="12" md="4">
                 <div><a class="jump_link" href="#casing_fieldset">Casing Details</a></div>
                 <div><a class="jump_link" href="#surface_seal_fieldset">Surface Seal and Backfill Details</a></div>
-                <div><a class="jump_link" href="#perforations_fieldset">Liner Details</a></div>
+                <div><a class="jump_link" href="#liner_details_fieldset">Liner Details</a></div>
                 <div><a class="jump_link" href="#screen_details_fieldset">Screen Details</a></div>
                 <div><a class="jump_link" href="#well_development_fieldset">Well Development</a></div>
               </b-col>
