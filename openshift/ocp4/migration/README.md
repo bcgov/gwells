@@ -143,3 +143,46 @@ mc: <ERROR> Unable to create bucket at `silver/.minio.sys`. Bucket name contains
 
 You may have to move the .minio.sys folder that's in `/opt/minio/s3/data/.minio.sys`. This is just metadata so you can also delete it.
 The script *does* check for this file and moves it, so you may not encounter this issue.
+
+`./migrate_minio.sh` also does an `mc diff` as a sanity check. Normally, you won't see any outputs between the lines below:
+```bash
+------------------------------------------------------------------------------
+Found pod gwells-minio-4-djptd on moe-gwells-test
+Starting minio client (mc) mirror...
+------------------------------------------------------------------------------
+------------------------------------------------------------------------------
+Minio mirror took 0 minutes and 18 seconds.
+Please check the mc diff result (/tmp/mc_diff.log)
+------------------------------------------------------------------------------
+```
+
+BUT if you encounter discrepancies with the data...like the example below. You may need to investigate further.
+```bash
+------------------------------------------------------------------------------
+Found pod gwells-minio-4-djptd on moe-gwells-test
+Starting minio client (mc) mirror...
+------------------------------------------------------------------------------
+`/opt/minio/s3/data/gwells-export-test/api/v1/gis/wells.json` -> `silver/gwells-export-test/api/v1/gis/wells.json`
+`/opt/minio/s3/data/gwells-export-test/api/v1/gis/lithology.json` -> `silver/gwells-export-test/api/v1/gis/lithology.json`
+Total: 0 B, Transferred: 960.46 MiB, Speed: 112.39 MiB/s
+command terminated with exit code 1
+! https://gwells-docs-staging.apps.silver.devops.gov.bc.ca/gwells-export-test/api/v1/gis/lithology.json
+! https://gwells-docs-staging.apps.silver.devops.gov.bc.ca/gwells-export-test/api/v1/gis/wells.json
+------------------------------------------------------------------------------
+Minio mirror took 0 minutes and 18 seconds.
+Please check the mc diff result (/tmp/mc_diff.log)
+
+```
+
+Here is the `mc diff` legend
+```
+LEGEND:
+    < - object is only in source.
+    > - object is only in destination.
+    ! - newer object is in source.
+```
+
+If you encounter `!`, you may need to run `mc cp` like the following:
+```bash
+/opt/minio/mc -C /opt/minio/.mc cp /opt/minio/s3/data/gwells-export-test/api/v1/gis/wells.json silver/gwells-export-test/api/v1/gis/wells.json
+```
