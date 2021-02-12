@@ -941,7 +941,7 @@ pipeline {
                             "TAG=${stagingSuffix}",
                             "NAME=export",
                             "COMMAND=export",
-                            "SCHEDULE='30 3 * * *'"
+                            "SCHEDULE=30 3 * * *"
                         )
                         openshift.apply(exportWellCronTemplate).label(
                             [
@@ -1000,7 +1000,7 @@ pipeline {
                             "TAG=${stagingSuffix}",
                             "NAME=export-databc",
                             "COMMAND=export_databc",
-                            "SCHEDULE='0 4 * * *'"
+                            "SCHEDULE=0 4 * * *"
                         )
                         openshift.apply(exportDataBCTemplate).label(
                             [
@@ -1293,7 +1293,7 @@ pipeline {
                         //     "TAG=${prodSuffix}",
                         //     "NAME=export",
                         //     "COMMAND=export",
-                        //     "SCHEDULE='30 3 * * *'"
+                        //     "SCHEDULE=30 3 * * *"
                         // )
                         // openshift.apply(exportWellCronTemplate).label(
                         //     [
@@ -1312,7 +1312,7 @@ pipeline {
                         //     "TAG=${prodSuffix}",
                         //     "NAME=export-databc",
                         //     "COMMAND=export_databc",
-                        //     "SCHEDULE='0 5 * * *'"
+                        //     "SCHEDULE=0 5 * * *"
                         // )
                         // openshift.apply(exportDataBCCronTemplate).label(
                         //     [
