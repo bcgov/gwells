@@ -1,4 +1,6 @@
 #!/bin/bash
+# Usage: ./db_dump_and_copy.sh [test/prod]
+
 # This script dumps the old database and copies it to the migrator-cli's volume
 
 # Get variables from previous scripts or params
@@ -25,7 +27,7 @@ echo "--------------------------------------------------------------------------
 
 
 # On ocp4 - copy file from Pathfinder
-mkdir /tmp/backup
+mkdir -p /tmp/backup
 SECONDS=0
 oc --kubeconfig="$KUBECONFIG" rsync -n "$NAMESPACE" "$GWELLS_DB_POD":"$DB_DUMPFILE" /tmp/backup/
 duration=$SECONDS

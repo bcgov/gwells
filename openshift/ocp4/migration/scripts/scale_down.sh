@@ -1,7 +1,9 @@
 #!/bin/bash
+# Usage: ./scale_down.sh [test/prod]
+
 # Scales down the gwells application on Pathfinder
 # add --revert to end (after test/prod) to scale back to 2 on Pathfinder.
-# i.e. ./scale_down.sh test --revert
+# i.e. ./scale_down.sh [test/prod] --revert
 
 # Get variables from previous scripts or params
 ENVIRONMENT=${ENVIRONMENT:-$1}

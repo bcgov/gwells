@@ -1,4 +1,6 @@
 #!/bin/bash
+# Usage: ./migrate_minio.sh [test/prod]
+
 # This script connects to minio on pathfinder and runs `mc mirror` to the silver minio alias
 
 # Get variables from previous scripts or params
@@ -17,7 +19,11 @@ echo "--------------------------------------------------------------------------
 # Run mc mirror
 # Note: The options --remove and --overwrite are there so we can be sure we copy the right data
 SECONDS=0
-oc --kubeconfig="$KUBECONFIG" exec -n "$NAMESPACE" "$GWELLS_MINIO_POD" -- bash -c "/opt/minio/mc -C /opt/minio/.mc mirror --remove --overwrite /opt/minio/s3/data/ silver/"
+# The .minio.sys folder causes issues when doing mc mirror, so let's temporarily move it and move it back when we're done.
+# I believe you can also just delete that folder and it won't affect  your data.
+oc --kubeconfig="$KUBECONFIG" exec -n "$NAMESPACE" "$GWELLS_MINIO_POD" -- bash -c "[ -d /opt/minio/s3/data/.minio.sys ] && mv /opt/minio/s3/data/.minio.sys /opt/minio/s3/.tmp.minio.sys/"
+oc --kubeconfig="$KUBECONFIG" exec -n "$NAMESPACE" "$GWELLS_MINIO_POD" -- bash -c "/opt/minio/mc -C /opt/minio/.mc mirror --exclude .minio.sys --remove --overwrite /opt/minio/s3/data/ silver/"
+oc --kubeconfig="$KUBECONFIG" exec -n "$NAMESPACE" "$GWELLS_MINIO_POD" -- bash -c "[ -d /opt/minio/s3/.tmp.minio.sys ] && mv /opt/minio/s3/.minio.sys /opt/minio/s3/data/.minio.sys/"
 duration=$SECONDS
 # Sanity check
 oc --kubeconfig="$KUBECONFIG" exec -n "$NAMESPACE" "$GWELLS_MINIO_POD" -- bash -c "/opt/minio/mc -C /opt/minio/.mc diff /opt/minio/s3/data/ silver/" |& tee /tmp/mc_diff.log

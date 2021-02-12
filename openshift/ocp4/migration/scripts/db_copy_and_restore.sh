@@ -1,4 +1,5 @@
 #!/bin/bash
+# Usage: ./db_copy_and_restore.sh [test/prod]
 # This script copies the dump from the migrator-cli volume to the db volume and restores the database using pg_restore
 
 # Get variables from previous scripts or params
@@ -27,9 +28,12 @@ echo "--------------------------------------------------------------------------
 # Reload database
 PG_DUMPFILE="/pgdata/backup/gwells-$ENVIRONMENT-db-latest"
 SECONDS=0
-oc --kubeconfig="$KUBECONFIGSILVER" exec -n "$NAMESPACE4" "$GWELLS4_DB_POD" -c postgresql -- bash -c "pg_restore -c -d gwells $PG_DUMPFILE"
+# -c Clean (drop)
+# --if-exists Use conditional commands (i.e., add an IF EXISTS clause) to drop
+#             database objects specified. Only works with --clean -c
+oc --kubeconfig="$KUBECONFIGSILVER" exec -n "$NAMESPACE4" "$GWELLS4_DB_POD" -c postgresql -- bash -c "pg_restore -c --if-exists -d gwells $PG_DUMPFILE"
 duration=$SECONDS
 echo "------------------------------------------------------------------------------"
 echo "Reload took $((duration / 60)) minutes and $((duration % 60)) seconds."
-echo "Migration done. Please check the database."
+echo "Database migration done. Please check the database."
 echo "------------------------------------------------------------------------------"

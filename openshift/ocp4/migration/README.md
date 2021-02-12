@@ -45,7 +45,7 @@ oc -n $NAMESPACE4 create configmap migration-scripts \
 oc process -f importer.dc.yaml -p NAMESPACE=$NAMESPACE4 | oc apply -f -
 ```
 
-### Running the database migration script
+### Running the migration script
 **NOTE:** You need your Pathfinder auth token and Silver auth token. Have it handy beforehand.
 
 Inside the `migrator-cli` pod:
@@ -53,5 +53,93 @@ Inside the `migrator-cli` pod:
 cd scripts
 
 # Run the script
+# This script does all the migration steps. 
+# If it fails, you may run one of the smaller migration scripts it calls and continue from there.
+# It doesn't accept environment as a first param; instead it asks for it
+./do_migration.sh |& tee /tmp/migration.log
+```
+
+#### Smaller migration scripts
+**`migrate_database.sh`**
+```bash
+# This simply calls the two db migration scripts
+#   db_dump_and_copy.sh and db_copy_and_restore.sh
+# It doesn't accept environment as a first param; instead it asks for it
 ./migrate_database.sh
 ```
+
+**`db_dump_and_copy.sh`**
+```bash
+# Run `pg_dump` (custom postgres format) on Silver, and copy the file on this volume
+./db_dump_and_copy.sh [test/prod]
+```
+
+**`db_copy_and_restore.sh`**
+```bash
+# Copy the dump file from this volume onto the postgres pod volume
+# Run `pg_restore` on postgres pod
+./db_copy_and_restore.sh [test/prod]
+```
+
+**`migrate_minio.sh`**
+```bash
+# Run `mc mirror` on Pathfinder to copy all the buckets and files/objects to Silver.
+# Also runs an `mc diff` to check if there are discrepancies
+./migrate_minio.sh [test/prod]
+```
+
+**`activate_proxy.sh`**
+```bash
+# Switch the `gwells-staging` routes on Pathfinder to proxy pass to Silver 
+./activate_proxy.sh [test/prod]
+
+# To switch them back, add `--revert` at the end
+./activate_proxy.sh [test/prod] --revert
+```
+
+**`scale_down.sh`**
+```bash
+# Scales down the `gwells-staging` application on Silver 
+./activate_proxy.sh [test/prod]
+
+# To scale it up, add `--revert` at the end
+./activate_proxy.sh [test/prod] --revert
+```
+
+**`scale_up.sh`**
+```bash
+# Scales up the `gwells-staging` application on Silver 
+./activate_proxy.sh [test/prod]
+
+# To scale it up, add `--revert` at the end
+./activate_proxy.sh [test/prod] --revert
+```
+
+#### Issues, tips and tricks
+**Login to the migrator-cli pod terminal quickly**
+I use a helper script named `rsh_migrator_cli.sh`
+
+```bash
+# Make it executable
+chmod +x rsh_migrator_cli.sh 
+```
+
+```bash
+# RSH into migrator-cli pod, first param is your namespace
+./rsh_migrator_cli.sh 26e83e-test
+```
+
+**If you run into authorization issues while running one of the smaller migration scripts**  q
+```bash
+# Sample unauthorized message
+error: You must be logged in to the server (Unauthorized)
+```
+Just delete the kubeconfig files `/tmp/KUBECONFIG` and `/tmp/KUBECONFIGSILVER`
+
+**Minio issues**  
+```bash
+mc: <ERROR> Unable to create bucket at `silver/.minio.sys`. Bucket name contains invalid characters
+```
+
+You may have to move the .minio.sys folder that's in `/opt/minio/s3/data/.minio.sys`. This is just metadata so you can also delete it.
+The script *does* check for this file and moves it, so you may not encounter this issue.

@@ -1,4 +1,5 @@
 #!/bin/bash
+# Usage: ./db_dump_and_copy.sh
 
 # Run the database migration scripts
 

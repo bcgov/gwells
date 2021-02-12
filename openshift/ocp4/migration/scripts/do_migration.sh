@@ -1,5 +1,6 @@
 #!/bin/bash
-# Usage ./do_migration.sh | tee migration.log
+# Usage ./do_migration.sh |& tee /tmp/migration.log
+
 # ---------------------------------------------------------------------------------
 # Require all needed input/params for migration
 # ---------------------------------------------------------------------------------

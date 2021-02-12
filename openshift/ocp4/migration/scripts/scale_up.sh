@@ -1,7 +1,7 @@
 #!/bin/bash
 # This script scales up the gwells application on Silver
 # add --revert to end (after test/prod) to scale back to 2 on Pathfinder.
-# i.e. ./scale_up.sh test --revert
+# i.e. ./scale_up.sh [test/prod] --revert
 
 ENVIRONMENT=${ENVIRONMENT:-$1}
 . ./params.sh "$ENVIRONMENT"
