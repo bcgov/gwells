@@ -15,6 +15,7 @@ import logging
 
 from django.db import transaction
 from django.db.models import OneToOneField
+from django.utils import timezone
 from rest_framework import serializers
 from django.contrib.gis.geos import Point
 
@@ -795,8 +796,8 @@ class WellSubclassCodeSerializer(serializers.ModelSerializer):
 class WellClassCodeSerializer(serializers.ModelSerializer):
     """Serializes well class codes"""
 
-    wellsubclasscode_set = WellSubclassCodeSerializer(
-        many=True, read_only=True)
+    now = timezone.now()
+    wellsubclasscode_set = WellSubclassCodeSerializer(source='all_well_subclass_codes', many=True, read_only=True)
 
     class Meta:
         model = WellClassCode
