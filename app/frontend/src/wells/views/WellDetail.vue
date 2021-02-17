@@ -99,7 +99,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               <b-col cols="12" md="4">
                 <div><a class="jump_link" href="#casing_fieldset">Casing Details</a></div>
                 <div><a class="jump_link" href="#surface_seal_fieldset">Surface Seal and Backfill Details</a></div>
-                <div><a class="jump_link" href="#perforations_fieldset">Liner Details</a></div>
+                <div><a class="jump_link" href="#liner_details_fieldset">Liner Details</a></div>
                 <div><a class="jump_link" href="#screen_details_fieldset">Screen Details</a></div>
                 <div><a class="jump_link" href="#well_development_fieldset">Well Development</a></div>
               </b-col>
@@ -251,30 +251,30 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <fieldset id="well_completion_data_fieldset" class="my-3 detail-section">
           <legend>Well Completion Data</legend>
           <b-row>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Total Depth Drilled:</span> {{ well.total_depth_drilled }} {{ well.total_depth_drilled ? 'feet':''}}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Static Water Level (BTOC):</span> {{ well.static_water_level }} {{ well.static_water_level ? 'feet': ''}}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Total Depth Drilled:</span> {{ well.total_depth_drilled | excludeZeroDecimals }} {{ well.total_depth_drilled ? 'feet':''}}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Static Water Level:</span> {{ well.static_water_level | excludeZeroDecimals }} {{ well.static_water_level ? 'feet btoc': ''}}</b-col>
             <b-col cols="12" md="4"><span class="font-weight-bold">Well Cap:</span> {{ well.well_cap_type }}</b-col>
           </b-row>
           <b-row>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Finished Well Depth:</span> {{ well.finished_well_depth }} {{ well.finished_well_depth ? 'feet':''}}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Estimated Well Yield:</span> {{ well.well_yield }} {{ well.well_yield ? 'USGPM': ''}}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Finished Well Depth:</span> {{ well.finished_well_depth | excludeZeroDecimals }} {{ well.finished_well_depth ? 'ft bgl':''}}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Estimated Well Yield:</span> {{ well.well_yield | excludeZeroDecimals }} {{ well.well_yield ? 'USgpm':'' }}</b-col>
             <b-col cols="12" md="4"><span class="font-weight-bold">Well Disinfected Status:</span> {{ well.well_disinfected_status }}</b-col>
           </b-row>
           <b-row>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Final Casing Stick Up:</span> {{ well.final_casing_stick_up }} {{ well.final_casing_stick_up ? 'inches':''}}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Artesian Flow:</span> {{ well.artesian_flow }} {{ well.artesian_flow ? 'USGPM': ''}}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Final Casing Stick Up:</span> {{ well.final_casing_stick_up | excludeZeroDecimals }} {{ well.final_casing_stick_up ? 'inches':''}}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Artesian Flow:</span> {{ well.artesian_flow | excludeZeroDecimals }} {{ well.artesian_flow ? 'USgpm':'' }}</b-col>
             <b-col cols="12" md="4">
               <span class="font-weight-bold">Drilling Method<span v-if="well.drilling_methods && well.drilling_methods.length > 1">s</span>:</span>
               <span v-for="(method, index) in well.drilling_methods" :key="`drillingMethod${index}`"><span v-if="index > 0">,</span> {{ method.description }}</span>
             </b-col>
           </b-row>
           <b-row>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Depth to Bedrock:</span> {{ well.bedrock_depth }} {{ well.bedrock_depth ? 'feet':''}}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Artesian Pressure:</span> {{ well.artesian_pressure }} {{ well.artesian_pressure ? 'feet': ''}}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Depth to Bedrock:</span> {{ well.bedrock_depth | excludeZeroDecimals }} {{ well.bedrock_depth ? 'feet bgl':''}}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Artesian Pressure:</span> {{ well.artesian_pressure | excludeZeroDecimals }} {{ well.artesian_pressure ? 'feet': ''}}</b-col>
             <b-col cols="12" md="4"><span class="font-weight-bold">Orientation of Well:</span> {{ well.well_orientation_status }}</b-col>
           </b-row>
           <b-row>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Ground elevation:</span> {{ well.ground_elevation }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Ground elevation:</span> {{ well.ground_elevation | excludeZeroDecimals }} {{ well.ground_elevation ? 'feet':'' }}</b-col>
             <b-col cols="12" md="4"><span class="font-weight-bold">Method of determining elevation:</span> {{ well.ground_elevation_method }}</b-col>
           </b-row>
         </fieldset>
@@ -287,8 +287,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
             bordered
             :items="well.lithologydescription_set"
             show-empty
-            :fields="lithology_fields"
-          ></b-table>
+            :fields="lithology_fields">
+            <template slot="start" slot-scope="data">{{ data.item.start | excludeZeroDecimals }}</template>
+            <template slot="end" slot-scope="data">{{ data.item.end | excludeZeroDecimals }}</template>
+            <template slot="water_bearing_estimated_flow" slot-scope="data">{{ data.item.water_bearing_estimated_flow | excludeZeroDecimals }}</template>
+          </b-table>
         </fieldset>
 
         <fieldset id="casing_fieldset" class="my-3 detail-section">
@@ -302,12 +305,16 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 :fields="['from', 'to', 'casing_type', 'casing_material', 'diameter', 'wall_thickness', 'drive_shoe']"
                 show-empty>
 
-              <template slot="from" slot-scope="data">{{data.item.start}}</template>
-              <template slot="HEAD_from" slot-scope="data">{{ data.label }} (ft)</template>
-              <template slot="to" slot-scope="data">{{data.item.end}}</template>
-              <template slot="HEAD_to" slot-scope="data">{{ data.label }} (ft)</template>
+              <template slot="from" slot-scope="data">{{ data.item.start | excludeZeroDecimals }}</template>
+              <template slot="HEAD_from" slot-scope="data">{{ data.label }} (ft bgl)</template>
+              <template slot="to" slot-scope="data">{{ data.item.end | excludeZeroDecimals }}</template>
+              <template slot="HEAD_to" slot-scope="data">{{ data.label }} (ft bgl)</template>
               <template slot="casing_type" slot-scope="data">{{codeToDescription('casing_codes', data.item.casing_code)}}</template>
               <template slot="casing_material" slot-scope="data">{{codeToDescription('casing_materials', data.item.casing_material)}}</template>
+              <template slot="HEAD_diameter" slot-scope="data">{{ data.label }} (in)</template>
+              <template slot="diameter" slot-scope="data">{{ data.item.diameter | excludeZeroDecimals }}</template>
+              <template slot="HEAD_wall_thickness" slot-scope="data">{{ data.label }} (in)</template>
+              <template slot="wall_thickness" slot-scope="data">{{ data.item.wall_thickness | excludeZeroDecimals }}</template>
               <template slot="drive_shoe" slot-scope="data">{{codeToDescription('drive_shoe', data.item.drive_shoe_status)}}</template>
             </b-table>
           </div>
@@ -321,13 +328,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </b-row>
           <b-row>
             <b-col cols="12" md="4"><span class="font-weight-bold">Surface Seal Installation Method:</span> {{ codeToDescription('surface_seal_methods', well.surface_seal_method) }}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Backfill Depth:</span> {{ well.backfill_depth }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Backfill Depth:</span> {{ well.backfill_depth | excludeZeroDecimals }} {{ well.backfill_depth ? 'feet':'' }}</b-col>
           </b-row>
           <b-row>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Surface Seal Thickness:</span> {{ well.surface_seal_thickness }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Surface Seal Thickness:</span> {{ well.surface_seal_thickness | excludeZeroDecimals }} {{ well.surface_seal_thickness ? 'inches':'' }}</b-col>
           </b-row>
           <b-row>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Surface Seal Depth:</span> {{ well.surface_seal_depth }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Surface Seal Depth:</span> {{ well.surface_seal_depth | excludeZeroDecimals }} {{ well.surface_seal_depth ? 'feet':''}}</b-col>
           </b-row>
         </fieldset>
 
@@ -339,12 +346,12 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 <b-col cols="12" md="6"><span class="font-weight-bold">Liner Material:</span> {{ codeToDescription('liner_materials', well.liner_material) }}</b-col>
               </b-row>
               <b-row>
-                <b-col cols="12" md="6"><span class="font-weight-bold">Liner Diameter:</span> {{ well.liner_diameter }}</b-col>
-                <b-col cols="12" md="6"><span class="font-weight-bold">Liner Thickness:</span> {{ well.liner_thickness }}</b-col>
+                <b-col cols="12" md="6"><span class="font-weight-bold">Liner Diameter:</span> {{ well.liner_diameter | excludeZeroDecimals }} {{ well.liner_diameter ? 'inches':'' }}</b-col>
+                <b-col cols="12" md="6"><span class="font-weight-bold">Liner Thickness:</span> {{ well.liner_thickness | excludeZeroDecimals }} {{ well.liner_thickness ? 'inches':'' }}</b-col>
               </b-row>
               <b-row>
-                <b-col cols="12" md="6"><span class="font-weight-bold">Liner from:</span> {{ well.liner_from }}</b-col>
-                <b-col cols="12" md="6"><span class="font-weight-bold">Liner to:</span> {{ well.liner_to }}</b-col>
+                <b-col cols="12" md="6"><span class="font-weight-bold">Liner from:</span> {{ well.liner_from | excludeZeroDecimals }} {{ well.liner_from ? '(ft bgl)':'' }}</b-col>
+                <b-col cols="12" md="6"><span class="font-weight-bold">Liner to:</span> {{ well.liner_to | excludeZeroDecimals }} {{ well.liner_to ? '(ft bgl)':'' }}</b-col>
               </b-row>
             </b-col>
             <b-col cols="12" md="6">
@@ -357,8 +364,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   :fields="['from', 'to']"
                   show-empty
               >
-                <template slot="from" slot-scope="data">{{data.item.start}} ft</template>
-                <template slot="to" slot-scope="data">{{data.item.end}} ft</template>
+                <template slot="HEAD_from" slot-scope="data">{{data.label}} (ft bgl)</template>
+                <template slot="from" slot-scope="data">{{ data.item.start | excludeZeroDecimals }}</template>
+                <template slot="HEAD_to" slot-scope="data">{{data.label}} (ft bgl)</template>
+                <template slot="to" slot-scope="data">{{ data.item.end | excludeZeroDecimals }}</template>
               </b-table>
             </b-col>
           </b-row>
@@ -394,8 +403,12 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   :fields="['from', 'to', 'diameter', 'assembly_type', 'slot_size']"
                   show-empty
                   >
-                <template slot="from" slot-scope="data">{{data.item.start}} ft</template>
-                <template slot="to" slot-scope="data">{{data.item.end}} ft</template>
+                <template slot="HEAD_from" slot-scope="data">{{data.label}} (ft bgl)</template>
+                <template slot="from" slot-scope="data">{{data.item.start}}</template>
+                <template slot="HEAD_to" slot-scope="data">{{data.label}} (ft bgl)</template>
+                <template slot="to" slot-scope="data">{{data.item.end}}</template>
+                <template slot="HEAD_diameter" slot-scope="data">{{data.label}} (in)</template>
+                <template slot="diameter" slot-scope="data">{{data.item.diameter}}</template>
                 <template slot="assembly_type" slot-scope="data">{{codeToDescription('screen_assemblies', data.item.assembly_type)}}</template>
               </b-table>
             </b-col>
@@ -409,7 +422,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               <span class="font-weight-bold">Developed by:</span>
               <span v-for="(method, index) in well.development_methods" :key="`developmentMethod${index}`"><span v-if="index > 0">,</span> {{ method.description }}</span>
             </b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Development Total Duration:</span> {{ well.development_hours }} {{ well.development_hours ? 'hours':'' }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Development Total Duration:</span> {{ well.development_hours | excludeZeroDecimals }} {{ well.development_hours ? 'hours':'' }}</b-col>
           </b-row>
         </fieldset>
 
@@ -418,16 +431,16 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
           <b-row>
             <b-col cols="12" md="4"><span class="font-weight-bold">Estimation Method:</span> {{codeToDescription('yield_estimation_methods', well.yield_estimation_method)}} </b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Estimation Rate:</span> {{well.yield_estimation_rate}} </b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Estimation Duration:</span> {{well.yield_estimation_duration}}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Estimation Rate:</span> {{ well.yield_estimation_rate | excludeZeroDecimals }} {{ well.yield_estimation_rate ? 'USgpm':'' }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Estimation Duration:</span> {{ well.yield_estimation_duration | excludeZeroDecimals }} {{ well.yield_estimation_duration ? 'hours':'' }}</b-col>
           </b-row>
           <b-row>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Static Water Level Before Test:</span> {{well.static_level_before_test}}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Drawdown:</span> {{well.drawdown}}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Static Water Level Before Test:</span> {{ well.static_level_before_test | excludeZeroDecimals }} {{well.static_level_before_test ? 'ft (btoc)':'' }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Drawdown:</span> {{ well.drawdown | excludeZeroDecimals }} {{ well.drawdown ? 'ft (btoc)':'' }}</b-col>
           </b-row>
           <b-row>
             <b-col cols="12" md="4"><span class="font-weight-bold">Hydrofracturing Performed:</span> {{well.hydro_fracturing_performed === true ? 'Yes' : 'No'}}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Increase in Yield Due to Hydrofracturing:</span> {{well.hydro_fracturing_yield_increase}}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Increase in Yield Due to Hydrofracturing:</span> {{ well.hydro_fracturing_yield_increase | excludeZeroDecimals }} {{ well.hydro_fracturing_yield_increase ? 'USgpm':'' }}</b-col>
           </b-row>
         </fieldset>
 
