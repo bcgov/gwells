@@ -345,7 +345,7 @@ exports[`WellDetail.vue should match snapshot 1`] = `
             <div>
               <a
                 class="jump_link"
-                href="#perforations_fieldset"
+                href="#liner_details_fieldset"
               >
                 Liner Details
               </a>
