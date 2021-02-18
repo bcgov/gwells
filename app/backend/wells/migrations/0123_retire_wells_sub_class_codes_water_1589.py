@@ -9,8 +9,6 @@ from django.db import migrations
 #       well_subclass_code = 'DOMESTIC' AND well_class_code = 'WATR_SPPLY'
 #       well_subclass_code = 'NON_DOMEST' AND well_class_code = 'WATR_SPPLY'
 #       by altering the expiry_date to pgsql now()
-#   - update the activity_submission records where well_subclass_code is SPECIAL and class code is GEOTECH to CLS_LP_GEO/NA
-#   - update the well records where well_subclass_code is SPECIAL and class code is GEOTECH to CLS_LP_GEO/NA
 #   - update the activity_submission records where well_subclass_code is DOMESTIC OR NON_DOMEST and class code is WATR_SPPLY to WATR_SPPLY/NA
 #   - update the well records where well_subclass_code is DOMESTIC OR NON_DOMEST and class code is WATR_SPPLY to WATR_SPPLY/NA
 #
@@ -208,28 +206,6 @@ UPDATE_RETIRE_WELL_SUBCLASS_CODES = f"""
         OR (well_subclass_code = 'NON_DOMEST' AND well_class_code = 'WATR_SPPLY');
 """
 
-# update the submission records for retired subclass code GEOTECH/SPECIAL
-UPDATE_SUBMISSIONS_RETIRE_SUBCLASS_CODE_GEOTECH_SPECIAL = f"""
-    UPDATE activity_submission
-    SET well_subclass_guid = (SELECT well_subclass_guid FROM well_subclass_code WHERE well_subclass_code = 'NA' AND well_class_code = 'CLS_LP_GEO' LIMIT 1),
-        well_class_code = 'CLS_LP_GEO',
-        update_user = '{USER}',
-        update_date = now()
-    WHERE well_subclass_guid in (SELECT well_subclass_guid FROM well_subclass_code
-        WHERE (well_subclass_code = 'SPECIAL' AND well_class_code = 'GEOTECH'));
-"""
-
-# update the well records for retired subclass code GEOTECH/SPECIAL
-UPDATE_WELLS_RETIRE_SUBCLASS_CODE_GEOTECH_SPECIAL = f"""
-    UPDATE well
-    SET well_subclass_guid = (SELECT well_subclass_guid FROM well_subclass_code WHERE well_subclass_code = 'NA' AND well_class_code = 'CLS_LP_GEO' LIMIT 1),
-        well_class_code = 'CLS_LP_GEO',
-        update_user = '{USER}',
-        update_date = now()
-    WHERE well_subclass_guid in (SELECT well_subclass_guid FROM well_subclass_code
-        WHERE (well_subclass_code = 'SPECIAL' AND well_class_code = 'GEOTECH'));
-"""
-
 # update the submission records for retired subclass code WATR_SPPLY/DOMESTIC and WATR_SPPLY/NON_DOMEST, setting them to our new WATR_SPPLY/NA code
 UPDATE_SUBMISSIONS_RETIRE_SUBCLASS_CODES_DOM_NON_WATR_SPPLY = f"""
     UPDATE activity_submission
@@ -266,8 +242,6 @@ class Migration(migrations.Migration):
         migrations.RunSQL(CREATE_IF_NOT_EXISTS_WELL_SUBCLASS_CODES),
         migrations.RunSQL(CREATE_NA_WATR_SPPLY_WELL_SUBCLASS_CODE),
         migrations.RunSQL(UPDATE_RETIRE_WELL_SUBCLASS_CODES),
-        migrations.RunSQL(UPDATE_SUBMISSIONS_RETIRE_SUBCLASS_CODE_GEOTECH_SPECIAL),
-        migrations.RunSQL(UPDATE_WELLS_RETIRE_SUBCLASS_CODE_GEOTECH_SPECIAL),
         migrations.RunSQL(UPDATE_SUBMISSIONS_RETIRE_SUBCLASS_CODES_DOM_NON_WATR_SPPLY),
         migrations.RunSQL(UPDATE_WELLS_RETIRE_SUBCLASS_CODES_DOM_NON_WATR_SPPLY)
     ]
