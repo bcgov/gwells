@@ -317,6 +317,123 @@ def apiTest (String stageName, String stageUrl, String envSuffix) {
     return true
 }
 
+def deployToDev() {
+                        // Process postgres deployment config (sub in vars, create list items)
+                        echo "Processing database deployment (using folder ${templateDir}"
+                        def deployDBTemplate = openshift.process("-f",
+                            "${templateDir}/postgresql.dc.yml",
+                            "DATABASE_SERVICE_NAME=gwells-pg12-${devSuffix}-${prNumber}",
+                            "IMAGE_STREAM_NAMESPACE=${devProject}",
+                            "IMAGE_STREAM_NAME=crunchy-postgres-gis",
+                            "NAME_SUFFIX=-${devSuffix}-${prNumber}",
+                            "POSTGRESQL_DATABASE=gwells",
+                            "VOLUME_CAPACITY=1Gi",
+                            "STORAGE_CLASS=netapp-file-standard",
+                            "REQUEST_CPU=200m",
+                            "REQUEST_MEMORY=512Mi",
+                            "LIMIT_CPU=500m",
+                            "LIMIT_MEMORY=1Gi"
+                        )
+
+                        // Process postgres deployment config (sub in vars, create list items)
+                        echo "Processing deployment config for pull request ${prNumber}"
+                        def deployTemplate = openshift.process("-f",
+                            "${templateDir}/backend.dc.json",
+                            "ENV_NAME=${devSuffix}",
+                            "HOST=${devHost}",
+                            "NAME_SUFFIX=-${devSuffix}-${prNumber}"
+                        )
+
+                        echo "Processing deployment config for tile server"
+                        def pgtileservTemplate = openshift.process("-f",
+                            "${templateDir}/pg_tileserv/pg_tileserv.dc.yaml",
+                            "NAME_SUFFIX=-${devSuffix}-${prNumber}",
+                            "DATABASE_SERVICE_NAME=gwells-pg12-${devSuffix}-${prNumber}",
+                            "HOST=${devHost}",
+                        )
+
+                        echo "Processing Minio deployment config"
+                        def minioTemplate = openshift.process("-f",
+                            "${templateDir}/minio/minio.dc.yaml",
+                            "NAME_SUFFIX=-${devSuffix}-${prNumber}",
+                            "HOSTNAME=gwells-docs-${devSuffix}-${prNumber}.apps.silver.devops.gov.bc.ca"
+                        )
+
+                        // some objects need to be copied from a base secret or configmap
+                        // these objects have an annotation "as-copy-of" in their object spec (e.g. an object in backend.dc.json)
+                        echo "Creating configmaps and secrets objects"
+                        List newObjectCopies = []
+
+                        for (o in (deployTemplate + deployDBTemplate)) {
+
+                            // only perform this operation on objects with 'as-copy-of'
+                            def sourceName = o.metadata && o.metadata.annotations && o.metadata.annotations['as-copy-of']
+                            if (sourceName && sourceName.length() > 0) {
+                                def selector = openshift.selector("${o.kind}/${sourceName}")
+                                if (selector.count() == 1) {
+
+                                    // create a copy of the object and add it to the new list of objects to be applied
+                                    Map copiedModel = selector.object()
+                                    copiedModel.metadata.name = o.metadata.name
+                                    copiedModel.metadata.remove('annotations')
+                                    copiedModel.metadata.remove('creationTimestamp')
+                                    copiedModel.metadata.remove('resourceVersion')
+                                    copiedModel.metadata.remove('selfLink')
+                                    copiedModel.metadata.remove('uid')
+                                    echo "[as-copy-of] Copying ${o.kind} ${o.metadata.name}"
+                                    newObjectCopies.add(copiedModel)
+                                }
+                            }
+                        }
+
+                        echo "Applying deployment configs for pull request ${prNumber} on ${devProject}"
+
+                        // apply the templates, which will create new objects or modify existing ones as necessary.
+                        // the copies of base objects (secrets, configmaps) are also applied.
+                        openshift.apply(pgtileservTemplate).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
+                        openshift.apply(minioTemplate).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
+                        openshift.apply(deployTemplate).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
+                        openshift.apply(deployDBTemplate).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
+                        openshift.apply(newObjectCopies).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
+                        echo "Successfully applied deployment configs for ${prNumber}"
+
+                        // promote the newly built image to DEV
+                        echo "Tagging new image to DEV imagestream."
+                        openshift.tag("${toolsProject}/gwells-application:${prNumber}", "${devProject}/${devAppName}:dev")  // todo: clean up labels/tags
+
+                        // post a notification to Github that this pull request is being deployed
+                        createDeploymentStatus(devSuffix, 'PENDING', devHost)
+
+                        // monitor the deployment status and wait until deployment is successful
+                        echo "Waiting for deployment to dev..."
+                        def newVersion = openshift.selector("dc", "${devAppName}").object().status.latestVersion
+                        def pods = openshift.selector('pod', [deployment: "${devAppName}-${newVersion}"])
+
+                        // wait until each container in this deployment's pod reports as ready
+                        timeout(15) {
+                            pods.untilEach(2) {
+                                return it.object().status.containerStatuses.every {
+                                    it.ready
+                                }
+                            }
+                        }
+
+                        def pgtileservVersion = openshift.selector("dc", "pgtileserv-${devSuffix}-${prNumber}").object().status.latestVersion
+                        def pgtileservPods = openshift.selector('pod', [deployment: "pgtileserv-${devSuffix}-${prNumber}-${newVersion}"])
+
+                        // wait until each container in this deployment's pod reports as ready
+                        timeout(15) {
+                            pods.untilEach(2) {
+                                return it.object().status.containerStatuses.every {
+                                    it.ready
+                                }
+                            }
+                        }
+                        // Report a pass to GitHub
+                        createDeploymentStatus(devSuffix, 'SUCCESS', devHost)
+                    }
+                }
+}
 
 def loadFixtures(String appName) {
                         def newVersion = openshift.selector("dc", "${appName}").object().status.latestVersion
@@ -556,119 +673,7 @@ pipeline {
             steps {
                 script {
                     _openshift(env.STAGE_NAME, devProject) {
-                        // Process postgres deployment config (sub in vars, create list items)
-                        echo "Processing database deployment (using folder ${templateDir}"
-                        def deployDBTemplate = openshift.process("-f",
-                            "${templateDir}/postgresql.dc.yml",
-                            "DATABASE_SERVICE_NAME=gwells-pg12-${devSuffix}-${prNumber}",
-                            "IMAGE_STREAM_NAMESPACE=${devProject}",
-                            "IMAGE_STREAM_NAME=crunchy-postgres-gis",
-                            "NAME_SUFFIX=-${devSuffix}-${prNumber}",
-                            "POSTGRESQL_DATABASE=gwells",
-                            "VOLUME_CAPACITY=1Gi",
-                            "STORAGE_CLASS=netapp-file-standard",
-                            "REQUEST_CPU=200m",
-                            "REQUEST_MEMORY=512Mi",
-                            "LIMIT_CPU=500m",
-                            "LIMIT_MEMORY=1Gi"
-                        )
-
-                        // Process postgres deployment config (sub in vars, create list items)
-                        echo "Processing deployment config for pull request ${prNumber}"
-                        def deployTemplate = openshift.process("-f",
-                            "${templateDir}/backend.dc.json",
-                            "ENV_NAME=${devSuffix}",
-                            "HOST=${devHost}",
-                            "NAME_SUFFIX=-${devSuffix}-${prNumber}"
-                        )
-
-                        echo "Processing deployment config for tile server"
-                        def pgtileservTemplate = openshift.process("-f",
-                            "${templateDir}/pg_tileserv/pg_tileserv.dc.yaml",
-                            "NAME_SUFFIX=-${devSuffix}-${prNumber}",
-                            "DATABASE_SERVICE_NAME=gwells-pg12-${devSuffix}-${prNumber}",
-                            "HOST=${devHost}",
-                        )
-
-                        echo "Processing Minio deployment config"
-                        def minioTemplate = openshift.process("-f",
-                            "${templateDir}/minio/minio.dc.yaml",
-                            "NAME_SUFFIX=-${devSuffix}-${prNumber}",
-                            "HOSTNAME=gwells-docs-${devSuffix}-${prNumber}.apps.silver.devops.gov.bc.ca"
-                        )
-
-                        // some objects need to be copied from a base secret or configmap
-                        // these objects have an annotation "as-copy-of" in their object spec (e.g. an object in backend.dc.json)
-                        echo "Creating configmaps and secrets objects"
-                        List newObjectCopies = []
-
-                        for (o in (deployTemplate + deployDBTemplate)) {
-
-                            // only perform this operation on objects with 'as-copy-of'
-                            def sourceName = o.metadata && o.metadata.annotations && o.metadata.annotations['as-copy-of']
-                            if (sourceName && sourceName.length() > 0) {
-                                def selector = openshift.selector("${o.kind}/${sourceName}")
-                                if (selector.count() == 1) {
-
-                                    // create a copy of the object and add it to the new list of objects to be applied
-                                    Map copiedModel = selector.object()
-                                    copiedModel.metadata.name = o.metadata.name
-                                    copiedModel.metadata.remove('annotations')
-                                    copiedModel.metadata.remove('creationTimestamp')
-                                    copiedModel.metadata.remove('resourceVersion')
-                                    copiedModel.metadata.remove('selfLink')
-                                    copiedModel.metadata.remove('uid')
-                                    echo "[as-copy-of] Copying ${o.kind} ${o.metadata.name}"
-                                    newObjectCopies.add(copiedModel)
-                                }
-                            }
-                        }
-
-                        echo "Applying deployment configs for pull request ${prNumber} on ${devProject}"
-
-                        // apply the templates, which will create new objects or modify existing ones as necessary.
-                        // the copies of base objects (secrets, configmaps) are also applied.
-                        openshift.apply(pgtileservTemplate).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
-                        openshift.apply(minioTemplate).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
-                        openshift.apply(deployTemplate).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
-                        openshift.apply(deployDBTemplate).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
-                        openshift.apply(newObjectCopies).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
-                        echo "Successfully applied deployment configs for ${prNumber}"
-
-                        // promote the newly built image to DEV
-                        echo "Tagging new image to DEV imagestream."
-                        openshift.tag("${toolsProject}/gwells-application:${prNumber}", "${devProject}/${devAppName}:dev")  // todo: clean up labels/tags
-
-                        // post a notification to Github that this pull request is being deployed
-                        createDeploymentStatus(devSuffix, 'PENDING', devHost)
-
-                        // monitor the deployment status and wait until deployment is successful
-                        echo "Waiting for deployment to dev..."
-                        def newVersion = openshift.selector("dc", "${devAppName}").object().status.latestVersion
-                        def pods = openshift.selector('pod', [deployment: "${devAppName}-${newVersion}"])
-
-                        // wait until each container in this deployment's pod reports as ready
-                        timeout(15) {
-                            pods.untilEach(2) {
-                                return it.object().status.containerStatuses.every {
-                                    it.ready
-                                }
-                            }
-                        }
-
-                        def pgtileservVersion = openshift.selector("dc", "pgtileserv-${devSuffix}-${prNumber}").object().status.latestVersion
-                        def pgtileservPods = openshift.selector('pod', [deployment: "pgtileserv-${devSuffix}-${prNumber}-${newVersion}"])
-
-                        // wait until each container in this deployment's pod reports as ready
-                        timeout(15) {
-                            pods.untilEach(2) {
-                                return it.object().status.containerStatuses.every {
-                                    it.ready
-                                }
-                            }
-                        }
-                        // Report a pass to GitHub
-                        createDeploymentStatus(devSuffix, 'SUCCESS', devHost)
+                        deployToDev()
                     }
                 }
             }
