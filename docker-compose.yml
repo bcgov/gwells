@@ -56,7 +56,7 @@ services:
       TILESERVER_USER: ftw_reader
       TILESERVER_PASSWORD: test1
     ports:
-      - "5432:5432"
+    - "5432:5432"
     volumes:
       - pgdata-volume:/pgdata:z
       - type: bind
