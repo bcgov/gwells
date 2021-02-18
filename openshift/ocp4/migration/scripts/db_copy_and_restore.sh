@@ -31,7 +31,9 @@ SECONDS=0
 # -c Clean (drop)
 # --if-exists Use conditional commands (i.e., add an IF EXISTS clause) to drop
 #             database objects specified. Only works with --clean -c
-oc --kubeconfig="$KUBECONFIGSILVER" exec -n "$NAMESPACE4" "$GWELLS4_DB_POD" -c postgresql -- bash -c "pg_restore -c --if-exists -d gwells $PG_DUMPFILE"
+oc --kubeconfig="$KUBECONFIGSILVER" exec -n "$NAMESPACE4" "$GWELLS4_DB_POD" -c postgresql -- bash -c "dropdb gwells"
+oc --kubeconfig="$KUBECONFIGSILVER" exec -n "$NAMESPACE4" "$GWELLS4_DB_POD" -c postgresql -- bash -c "createdb --owner=\$PG_USER gwells"
+oc --kubeconfig="$KUBECONFIGSILVER" exec -n "$NAMESPACE4" "$GWELLS4_DB_POD" -c postgresql -- bash -c "pg_restore -d gwells $PG_DUMPFILE"
 duration=$SECONDS
 echo "------------------------------------------------------------------------------"
 echo "Reload took $((duration / 60)) minutes and $((duration % 60)) seconds."
