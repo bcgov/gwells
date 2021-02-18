@@ -701,7 +701,6 @@ pipeline {
             }
         }
 
-
         stage('DEV - Load Fixtures') {
             when {
                 expression { env.CHANGE_TARGET != 'master' }
@@ -736,7 +735,6 @@ pipeline {
             }
         }
 
-
         stage('DEV - API Tests') {
             when {
                 expression { env.CHANGE_TARGET != 'master' }
@@ -747,8 +745,6 @@ pipeline {
                 }
             }
         }
-
-
 
         stage('STAGING - Backup') {
             when {
@@ -882,7 +878,6 @@ pipeline {
                             "--overwrite"
                         )
 
-
                         openshift.apply(deployTemplate).label(
                             [
                                 'app':"gwells-${stagingSuffix}",
@@ -929,9 +924,6 @@ pipeline {
                         )  // todo: clean up labels/tags
 
                         createDeploymentStatus(stagingSuffix, 'PENDING', stagingHost)
-
-
-/* TODO:  DISABLED FOR OCP4 TEST ENVIRONMENT */
 
                         // Create cronjob for well export
                         def exportWellCronTemplate = openshift.process("-f",
@@ -1273,28 +1265,21 @@ pipeline {
                         )
 
                         echo "Successfully applied production deployment config"
-
                         // promote the newly built image to DEV
                         echo "Tagging new image to production imagestream."
-
                         // Application/database images are tagged in the tools imagestream as the new prod image
                         openshift.tag(
                             "${toolsProject}/gwells-application:${prNumber}",
                             "${toolsProject}/gwells-application:${prodSuffix}"
-                        )  // todo: clean up labels/tags
-
-                        // TODO: determine best way to manage database images (at the moment they never change, but we don't want an unforeseen change to impact prod)
-                        // openshift.tag("${toolsProject}/gwells-postgresql:prod", "${toolsProject}/gwells-postgresql:${prodSuffix}")
+                        )
 
                         // Images are then tagged into the target environment namespace (prod)
                         openshift.tag(
                             "${toolsProject}/gwells-application:${prodSuffix}",
                             "${prodProject}/gwells-${prodSuffix}:${prodSuffix}"
-                        )  // todo: clean up labels/tags
-
+                        )
 
                         createDeploymentStatus(prodSuffix, 'PENDING', prodHost)
-
 
                         // Create cronjob for well export
                         def exportWellCronTemplate = openshift.process("-f",
@@ -1372,7 +1357,6 @@ pipeline {
                             ],
                             "--overwrite"
                         )
-
 
                         // Create cronjob for licence import
                         def importLicencesCronjob = openshift.process("-f",
