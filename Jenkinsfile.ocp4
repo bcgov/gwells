@@ -120,16 +120,6 @@ def unitTestDjango (String stageName, String envProject, String envSuffix) {
             psql -c \"ALTER USER \\\"\${PG_USER}\\\" WITH SUPERUSER;\" \
         '"
 
-
-        // def db_ocoutput_grant = openshift.exec(
-        //     DB_pod.objects()[0].metadata.name,
-        //     "--",
-        //     "bash -c '\
-        //         psql -c \"ALTER USER \\\"\${PG_USER}\\\" WITH SUPERUSER;\" \
-        //     '"
-        // )
-        // echo "Temporary DB grant results: "+ db_ocoutput_grant.actions[0].out
-
         def target = envSuffix == "staging" ? "${appName}-${envSuffix}" : "${appName}-${envSuffix}-${prNumber}"
         def newVersion = openshift.selector("dc", "${target}").object().status.latestVersion
         def pods = openshift.selector('pod', [deployment: "${target}-${newVersion}"])
@@ -160,16 +150,6 @@ def unitTestDjango (String stageName, String envProject, String envSuffix) {
         sh "oc rsh -n ${envProject} dc/${DB_target} bash -c ' \
                psql -c \"ALTER USER \\\"\${PG_USER}\\\" WITH NOSUPERUSER;\" \
         '"
-
-
-        // def db_ocoutput_revoke = openshift.exec(
-        //     DB_pod.objects()[0].metadata.name,
-        //     "--",
-        //     "bash -c '\
-        //         psql -c \"ALTER USER \\\"\${PG_USER}\\\" WITH NOSUPERUSER;\" \
-        //     '"
-        // )
-        // echo "DB Revocation results: "+ db_ocoutput_revoke.actions[0].out
     }
 }
 
@@ -422,21 +402,6 @@ def dbBackup (String envProject, String envSuffix) {
     )
     assert sizeAtLeast1M == 1
 
-    // Restore (schema only, w/ extensions) to temporary db
-    // note: command needs to be updated.
-    // See Jira ticket WATER-1163.
-    // sh """
-    //     oc rsh -n ${envProject} dc/${dcName} bash -c ' \
-    //         set -e; \
-    //         psql -c "DROP DATABASE IF EXISTS db_verify"; \
-    //         createdb db_verify; \
-    //         psql -d db_verify -c "CREATE EXTENSION IF NOT EXISTS postgis;"; \
-    //         psql -d db_verify -c "COMMIT;"; \
-    //         pg_restore -U postgres -d db_verify -e --schema-only ${dumpTemp}; \
-    //         psql -c "DROP DATABASE IF EXISTS db_verify"
-    //     '
-    // """
-
     // Store verified dump
     sh "oc rsh -n ${envProject} dc/${dcName} bash -c ' \
         mkdir -p ${dumpDir}; \
@@ -536,7 +501,6 @@ pipeline {
                 }
             }
         }
-
 
         // the Build stage builds files; an image will be outputted to the app's imagestream,
         // using the source-to-image (s2i) strategy. See /app/.s2i/assemble for image build script
@@ -678,9 +642,6 @@ pipeline {
                                 }
                             }
                         }
-
-
-
                         // Report a pass to GitHub
                         createDeploymentStatus(devSuffix, 'SUCCESS', devHost)
                     }
@@ -760,7 +721,6 @@ pipeline {
 
         // the Promote to Test stage allows approving the tagging of the newly built image into the test environment,
         // which will trigger an automatic deployment of that image.
-        // The deployment configs in the openshift folder are applied first in case there are any changes to the templates.
         // this stage should only occur when the pull request is being made against the master branch.
         stage('STAGING - Deploy') {
             when {
@@ -914,8 +874,7 @@ pipeline {
                         openshift.tag(
                             "${toolsProject}/gwells-application:${prNumber}",
                             "${toolsProject}/gwells-application:${stagingSuffix}"
-                        )  // todo: clean up labels/tags
-                        // openshift.tag("${toolsProject}/gwells-postgresql:staging", "${toolsProject}/gwells-postgresql:${stagingSuffix}")
+                        )
 
                         // Images are then tagged into the target environment namespace (test or prod)
                         openshift.tag(
