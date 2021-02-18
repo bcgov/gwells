@@ -19,7 +19,6 @@ import uuid
 #       This causes issues cause our code table data for well class codes and well subclass codes isn't present
 #   3 well subclass codes have orphaned parent well class code records (ie. there's no well class code for these and its null)
 
-
 USER = 'WATER-1589'
 ETL_USER = 'ETL_USER'
 WELLS_USER = 'WELLS_USER'
@@ -220,14 +219,12 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunSQL([
-            CREATE_IF_NOT_EXISTS_WELL_CODES,
-            CREATE_IF_NOT_EXISTS_WELL_SUBCLASS_CODES,
-            CREATE_NA_WATR_SPPLY_WELL_SUBCLASS_CODE,
-            UPDATE_RETIRE_WELL_SUBCLASS_CODES,
-            UPDATE_SUBMISSIONS_RETIRE_SUBCLASS_CODE_GEOTECH_SPECIAL,
-            UPDATE_WELLS_RETIRE_SUBCLASS_CODE_GEOTECH_SPECIAL,
-            UPDATE_SUBMISSIONS_RETIRE_SUBCLASS_CODES_DOM_NON_WATR_SPPLY,
-            UPDATE_WELLS_RETIRE_SUBCLASS_CODES_DOM_NON_WATR_SPPLY
-        ])
+        migrations.RunSQL(CREATE_IF_NOT_EXISTS_WELL_CODES),
+        migrations.RunSQL(CREATE_IF_NOT_EXISTS_WELL_SUBCLASS_CODES),
+        migrations.RunSQL(CREATE_NA_WATR_SPPLY_WELL_SUBCLASS_CODE),
+        migrations.RunSQL(UPDATE_RETIRE_WELL_SUBCLASS_CODES),
+        migrations.RunSQL(UPDATE_SUBMISSIONS_RETIRE_SUBCLASS_CODE_GEOTECH_SPECIAL),
+        migrations.RunSQL(UPDATE_WELLS_RETIRE_SUBCLASS_CODE_GEOTECH_SPECIAL),
+        migrations.RunSQL(UPDATE_SUBMISSIONS_RETIRE_SUBCLASS_CODES_DOM_NON_WATR_SPPLY),
+        migrations.RunSQL(UPDATE_WELLS_RETIRE_SUBCLASS_CODES_DOM_NON_WATR_SPPLY)
     ]
