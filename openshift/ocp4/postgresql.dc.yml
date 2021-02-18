@@ -94,6 +94,8 @@ objects:
 
         create user "PG_PRIMARY_USER" with REPLICATION  PASSWORD 'PG_PRIMARY_PASSWORD';
         create user "PG_USER" with password 'PG_PASSWORD';
+
+        -- read only account for generating tiles
         create user ftw_reader with password 'PG_PASSWORD';
 
         create table primarytable (key varchar(20), value varchar(20));
@@ -116,25 +118,16 @@ objects:
 
         \c "PG_DATABASE" "PG_USER";
 
-        create schema "PG_USER";
-
-
-
-        create table "PG_USER".testtable (
+        create table testtable (
           name varchar(30) primary key,
           value varchar(50) not null,
           updatedt timestamp not null
         );
 
+        insert into testtable (name, value, updatedt) values ('CPU', '256', now());
+        insert into testtable (name, value, updatedt) values ('MEM', '512m', now());
 
-
-        insert into "PG_USER".testtable (name, value, updatedt) values ('CPU', '256', now());
-        insert into "PG_USER".testtable (name, value, updatedt) values ('MEM', '512m', now());
-
-        grant all on "PG_USER".testtable to "PG_PRIMARY_USER";
-
-
-        -- read only account for generating tiles
+        grant all on testtable to "PG_PRIMARY_USER";
 
         create schema postgis_ftw;
         grant usage on schema postgis_ftw to ftw_reader;
