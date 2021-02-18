@@ -1022,7 +1022,14 @@ pipeline {
                             "SOURCE_PVC=gwells-minio-${stagingSuffix}"
                         )
 
-                        openshift.apply(docBackupCronjob)
+                        openshift.apply(docBackupCronjob).label(
+                            [
+                                'app':"gwells-${stagingSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${stagingSuffix}"
+                            ],
+                            "--overwrite"
+                        )
 
                         // automated database backup
                         def dbNFSBackup = openshift.process("-f",
@@ -1037,7 +1044,14 @@ pipeline {
                             "WEEKLY_BACKUPS=1",
                             "MONTHLY_BACKUPS=1"
                         )
-                        openshift.apply(dbNFSBackup)
+                        openshift.apply(dbNFSBackup).label(
+                            [
+                                'app':"gwells-${stagingSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${stagingSuffix}"
+                            ],
+                            "--overwrite"
+                        )
 
                         // monitor the deployment status and wait until deployment is successful
                         echo "Waiting for deployment to STAGING..."
@@ -1285,43 +1299,43 @@ pipeline {
 
 /* DISABLED FOR OCP4 TEST ENVIRONMENT */
 
-                        // // Create cronjob for well export
-                        // def exportWellCronTemplate = openshift.process("-f",
-                        //     "${templateDir}/jobs/export-databc/export.cj.json",
-                        //     "ENV_NAME=${prodSuffix}",
-                        //     "PROJECT=${prodProject}",
-                        //     "TAG=${prodSuffix}",
-                        //     "NAME=export",
-                        //     "COMMAND=export",
-                        //     "SCHEDULE='30 3 * * *'"
-                        // )
-                        // openshift.apply(exportWellCronTemplate).label(
-                        //     [
-                        //         'app':"gwells-${prodSuffix}",
-                        //         'app-name':"${appName}",
-                        //         'env-name':"${prodSuffix}"
-                        //     ],
-                        //     "--overwrite"
-                        // )
+                        // Create cronjob for well export
+                        def exportWellCronTemplate = openshift.process("-f",
+                            "${templateDir}/jobs/export-databc/export.cj.json",
+                            "ENV_NAME=${prodSuffix}",
+                            "PROJECT=${prodProject}",
+                            "TAG=${prodSuffix}",
+                            "NAME=export",
+                            "COMMAND=export",
+                            "SCHEDULE=30 3 * * *"
+                        )
+                        openshift.apply(exportWellCronTemplate).label(
+                            [
+                                'app':"gwells-${prodSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${prodSuffix}"
+                            ],
+                            "--overwrite"
+                        )
 
-                        // Create cronjob for databc export
-                        // def exportDataBCCronTemplate = openshift.process("-f",
-                        //     "${templateDir}/jobs/export-databc/export.cj.json",
-                        //     "ENV_NAME=${prodSuffix}",
-                        //     "PROJECT=${prodProject}",
-                        //     "TAG=${prodSuffix}",
-                        //     "NAME=export-databc",
-                        //     "COMMAND=export_databc",
-                        //     "SCHEDULE='0 5 * * *'"
-                        // )
-                        // openshift.apply(exportDataBCCronTemplate).label(
-                        //     [
-                        //         'app':"gwells-${prodSuffix}",
-                        //         'app-name':"${appName}",
-                        //         'env-name':"${prodSuffix}"
-                        //     ],
-                        //     "--overwrite"
-                        // )
+                        Create cronjob for databc export
+                        def exportDataBCCronTemplate = openshift.process("-f",
+                            "${templateDir}/jobs/export-databc/export.cj.json",
+                            "ENV_NAME=${prodSuffix}",
+                            "PROJECT=${prodProject}",
+                            "TAG=${prodSuffix}",
+                            "NAME=export-databc",
+                            "COMMAND=export_databc",
+                            "SCHEDULE=0 5 * * *"
+                        )
+                        openshift.apply(exportDataBCCronTemplate).label(
+                            [
+                                'app':"gwells-${prodSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${prodSuffix}"
+                            ],
+                            "--overwrite"
+                        )
 
                         def docBackupCronJob = openshift.process("-f",
                             "${templateDir}/jobs/minio-backup/minio-backup.cj.yaml",
@@ -1333,7 +1347,14 @@ pipeline {
                             "PVC_SIZE=40Gi"
                         )
 
-                        openshift.apply(docBackupCronJob)
+                        openshift.apply(docBackupCronJob).label(
+                            [
+                                'app':"gwells-${prodSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${prodSuffix}"
+                            ],
+                            "--overwrite"
+                        )
 
                         def dbNFSBackup = openshift.process("-f",
                             "${templateDir}/jobs/postgres-backup-nfs/postgres-backup.cj.yaml",
@@ -1345,7 +1366,14 @@ pipeline {
                             "SCHEDULE=30 1 * * *",
                             "JOB_NAME=postgres-nfs-backup"
                         )
-                        openshift.apply(dbNFSBackup)
+                        openshift.apply(dbNFSBackup).label(
+                            [
+                                'app':"gwells-${prodSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${prodSuffix}"
+                            ],
+                            "--overwrite"
+                        )
 
                         // Create cronjob for licence import
                         def importLicencesCronjob = openshift.process("-f",
