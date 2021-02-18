@@ -318,6 +318,31 @@ def apiTest (String stageName, String stageUrl, String envSuffix) {
 }
 
 
+def loadFixtures(String appName) {
+                        def newVersion = openshift.selector("dc", "${appName}").object().status.latestVersion
+                        def pods = openshift.selector('pod', [deployment: "${appName}-${newVersion}"])
+
+                        echo "Loading fixtures"
+                        def ocoutput = openshift.exec(
+                            pods.objects()[0].metadata.name,
+                            "--",
+                            "bash -c '\
+                                cd \${APP_SOURCE_DIR:-\"\${APP_ROOT}/src\"}/backend; \
+                                ./load_fixtures.sh all \
+                            '"
+                        )
+                        echo "Load Fixtures results: "+ ocoutput.actions[0].out
+
+                        openshift.exec(
+                            pods.objects()[0].metadata.name,
+                            "--",
+                            "bash -c '\
+                                cd \${APP_SOURCE_DIR:-\"\${APP_ROOT}/src\"}/backend; \
+                                python manage.py createinitialrevisions \
+                            '"
+                        )
+}
+
 def zapTests (String stageName, String envUrl, String envSuffix) {
     _openshift(env.STAGE_NAME, toolsProject) {
         def podName = envSuffix == "dev" ? "zap-${envSuffix}-${prNumber}" : "zap-${envSuffix}"
@@ -669,28 +694,7 @@ pipeline {
             steps {
                 script {
                     _openshift(env.STAGE_NAME, devProject) {
-                        def newVersion = openshift.selector("dc", "${devAppName}").object().status.latestVersion
-                        def pods = openshift.selector('pod', [deployment: "${devAppName}-${newVersion}"])
-
-                        echo "Loading fixtures"
-                        def ocoutput = openshift.exec(
-                            pods.objects()[0].metadata.name,
-                            "--",
-                            "bash -c '\
-                                cd \${APP_SOURCE_DIR:-\"\${APP_ROOT}/src\"}/backend; \
-                                ./load_fixtures.sh all \
-                            '"
-                        )
-                        echo "Load Fixtures results: "+ ocoutput.actions[0].out
-
-                        openshift.exec(
-                            pods.objects()[0].metadata.name,
-                            "--",
-                            "bash -c '\
-                                cd \${APP_SOURCE_DIR:-\"\${APP_ROOT}/src\"}/backend; \
-                                python manage.py createinitialrevisions \
-                            '"
-                        )
+                        loadFixtures(devAppName)
                     }
                 }
             }
@@ -1072,7 +1076,6 @@ pipeline {
             }
         }
 
-
         stage('PROD - Deploy') {
             when {
                 expression { env.CHANGE_TARGET == 'master' }
@@ -1130,15 +1133,12 @@ pipeline {
                             "HOSTNAME=gwells-docs-${prodSuffix}.apps.silver.devops.gov.bc.ca"
                         )
 
-
                         echo "Processing backup volume config"
                         def backupVolConfig = openshift.process("-f",
                             "${templateDir}/backup.pvc.yaml",
                             "VOLUME_CAPACITY=30Gi",
                             "STORAGE_CLASS=netapp-file-backup"
                         )
-
-
                         // some objects need to be copied from a base secret or configmap
                         // these objects have an annotation "as-copy-of" in their object spec (e.g. an object in backend.dc.json)
                         echo "Creating configmaps and secrets objects"
@@ -1188,12 +1188,10 @@ pipeline {
                             "--overwrite"
                         )
 
-
                         openshift.apply(minioTemplate).label(
                             ['app':"gwells-${prodSuffix}", 'app-name':"${appName}", 'env-name':"${prodSuffix}"],
                              "--overwrite"
                             )
-
 
                         openshift.apply(deployTemplate).label(
                             [
