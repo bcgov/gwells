@@ -14,17 +14,16 @@ import uuid
 #   - update the well records where well_subclass_code is SPECIAL and class code is GEOTECH to CLS_LP_GEO/NA
 #   - update the activity_submission records where well_subclass_code is DOMESTIC OR NON_DOMEST and class code is WATR_SPPLY to WATR_SPPLY/NA
 #   - update the well records where well_subclass_code is DOMESTIC OR NON_DOMEST and class code is WATR_SPPLY to WATR_SPPLY/NA
-
-# ISSUE:
+#
 #   While running this migration I found that the fixtures run after the migration
 #       This causes issues cause our code table data for well class codes and well subclass codes isn't present
-#   I've added the missing code table insert statements to this!
+#   3 well subclass codes have orphaned parent well class code records (ie. there's no well class code for these and its null)
+
 
 USER = 'WATER-1589'
 ETL_USER = 'ETL_USER'
 WELLS_USER = 'WELLS_USER'
-BLANK_WELL_CLASS_CODE = ''
-NA_WATR_SPPLY_WELL_SUBCLASS_CODE_UUID = str(uuid.uuid4())
+NA_WATR_SPPLY_WELL_SUBCLASS_CODE_UUID = 'ce97445a-664e-44f1-a096-95c97ffd084e'
 DEFAULT_NEVER_EXPIRES_DATE = '9999-12-31 23:59:59.999999+00'
 
 # insert missing well class codes
@@ -71,23 +70,22 @@ CREATE_IF_NOT_EXISTS_WELL_CODES = f"""
     
     INSERT INTO well_class_code(create_user, create_date, update_user, update_date, well_class_code, description, display_order, effective_date, expiry_date)
         SELECT '{ETL_USER}', '2017-07-01 08:00:00+00', '{ETL_USER}', '2017-07-01 08:00:00+00', 'DRAINAGE', 'Drainage', 10, '2018-05-17 00:00:00+00', '2020-07-28 00:00:00+00'
-    WHERE NOT EXISTS (SELECT 1 FROM well_class_code WHERE well_class_code = 'DRAINAGE');
+    WHERE NOT EXISTS (SELECT 1 FROM well_class_code WHERE well_class_code = 'DRAINAGE');    
 """
 
-# NOTE:// question before going live, some of these have an empty well_class_code, is this an empty string (cause we're taking that for granted here)?
 # insert missing well subclass codes
 CREATE_IF_NOT_EXISTS_WELL_SUBCLASS_CODES = f"""
     INSERT INTO well_subclass_code(create_user, create_date, update_user, update_date, well_subclass_guid, well_subclass_code, description, display_order, effective_date, expiry_date, well_class_code)
-        SELECT '{ETL_USER}', '2017-07-01 08:00:00+00', '{ETL_USER}', '2017-07-01 08:00:00+00', '5a3152c8-47e7-11e7-a919-92ebcb67fe33', 'BOREHOLE', 'Borehole', 100, '2018-05-17 00:00:00+00', '{DEFAULT_NEVER_EXPIRES_DATE}', '{BLANK_WELL_CLASS_CODE}'
-    WHERE NOT EXISTS (SELECT 1 FROM well_subclass_code WHERE well_subclass_code = 'BOREHOLE' AND well_class_code = '{BLANK_WELL_CLASS_CODE}');
+        SELECT '{ETL_USER}', '2017-07-01 08:00:00+00', '{ETL_USER}', '2017-07-01 08:00:00+00', '5a3152c8-47e7-11e7-a919-92ebcb67fe33', 'BOREHOLE', 'Borehole', 100, '2018-05-17 00:00:00+00', '{DEFAULT_NEVER_EXPIRES_DATE}', NULL
+    WHERE NOT EXISTS (SELECT 1 FROM well_subclass_code WHERE well_subclass_code = 'BOREHOLE' AND well_class_code IS NULL);
     
     INSERT INTO well_subclass_code(create_user, create_date, update_user, update_date, well_subclass_guid, well_subclass_code, description, display_order, effective_date, expiry_date, well_class_code)
-        SELECT '{ETL_USER}', '2017-07-01 08:00:00+00', '{ETL_USER}', '2017-07-01 08:00:00+00', '5a315476-47e7-11e7-a919-92ebcb67fe33', 'DOMESTIC', 'Domestic', 100, '2018-05-17 00:00:00+00', '{DEFAULT_NEVER_EXPIRES_DATE}', '{BLANK_WELL_CLASS_CODE}'
-    WHERE NOT EXISTS (SELECT 1 FROM well_subclass_code WHERE well_subclass_code = 'DOMESTIC' AND well_class_code = '{BLANK_WELL_CLASS_CODE}');
+        SELECT '{ETL_USER}', '2017-07-01 08:00:00+00', '{ETL_USER}', '2017-07-01 08:00:00+00', '5a315476-47e7-11e7-a919-92ebcb67fe33', 'DOMESTIC', 'Domestic', 100, '2018-05-17 00:00:00+00', '{DEFAULT_NEVER_EXPIRES_DATE}', NULL
+    WHERE NOT EXISTS (SELECT 1 FROM well_subclass_code WHERE well_subclass_code = 'DOMESTIC' AND well_class_code IS NULL);
     
     INSERT INTO well_subclass_code(create_user, create_date, update_user, update_date, well_subclass_guid, well_subclass_code, description, display_order, effective_date, expiry_date, well_class_code)
-        SELECT '{ETL_USER}', '2017-07-01 08:00:00+00', '{ETL_USER}', '2017-07-01 08:00:00+00', '5a31562e-47e7-11e7-a919-92ebcb67fe33', 'TEST_PIT', 'Test Pit', 100, '2018-05-17 00:00:00+00', '{DEFAULT_NEVER_EXPIRES_DATE}', '{BLANK_WELL_CLASS_CODE}'
-    WHERE NOT EXISTS (SELECT 1 FROM well_subclass_code WHERE well_subclass_code = 'TEST_PIT' AND well_class_code = '{BLANK_WELL_CLASS_CODE}');
+        SELECT '{ETL_USER}', '2017-07-01 08:00:00+00', '{ETL_USER}', '2017-07-01 08:00:00+00', '5a31562e-47e7-11e7-a919-92ebcb67fe33', 'TEST_PIT', 'Test Pit', 100, '2018-05-17 00:00:00+00', '{DEFAULT_NEVER_EXPIRES_DATE}', NULL
+    WHERE NOT EXISTS (SELECT 1 FROM well_subclass_code WHERE well_subclass_code = 'TEST_PIT' AND well_class_code IS NULL);
 
     INSERT INTO well_subclass_code(create_user, create_date, update_user, update_date, well_subclass_guid, well_subclass_code, description, display_order, effective_date, expiry_date, well_class_code)
         SELECT '{ETL_USER}', '2017-07-01 08:00:00+00', '{ETL_USER}', '2017-07-01 08:00:00+00', '5a31460c-47e7-11e7-a919-92ebcb67fe33', 'TEMPORARY', 'Temporary', 100, '2018-05-17 00:00:00+00', '{DEFAULT_NEVER_EXPIRES_DATE}', 'MONITOR'
@@ -96,6 +94,58 @@ CREATE_IF_NOT_EXISTS_WELL_SUBCLASS_CODES = f"""
     INSERT INTO well_subclass_code(create_user, create_date, update_user, update_date, well_subclass_guid, well_subclass_code, description, display_order, effective_date, expiry_date, well_class_code)
         SELECT '{ETL_USER}', '2017-07-01 08:00:00+00', '{ETL_USER}', '2017-07-01 08:00:00+00', '930540ee-4802-11e7-a919-92ebcb67fe33', 'PERMANENT', 'Permanent', 100, '2018-05-17 00:00:00+00', '{DEFAULT_NEVER_EXPIRES_DATE}', 'MONITOR'
     WHERE NOT EXISTS (SELECT 1 FROM well_subclass_code WHERE well_subclass_code = 'PERMANENT' AND well_class_code = 'MONITOR');
+    
+    INSERT INTO well_subclass_code(create_user, create_date, update_user, update_date, well_subclass_guid, well_subclass_code, description, display_order, effective_date, expiry_date, well_class_code)
+        SELECT '{ETL_USER}', '2017-07-01 08:00:00+00', '{ETL_USER}', '2017-07-01 08:00:00+00', '5a315106-47e7-11e7-a919-92ebcb67fe33', 'BOREHOLE', 'Borehole', 100, '2018-05-17 00:00:00+00', '{DEFAULT_NEVER_EXPIRES_DATE}', 'GEOTECH'
+    WHERE NOT EXISTS (SELECT 1 FROM well_subclass_code WHERE well_subclass_code = 'BOREHOLE' AND well_class_code = 'GEOTECH');
+    
+    INSERT INTO well_subclass_code(create_user, create_date, update_user, update_date, well_subclass_guid, well_subclass_code, description, display_order, effective_date, expiry_date, well_class_code)
+        SELECT '{ETL_USER}', '2017-07-01 08:00:00+00', '{ETL_USER}', '2017-07-01 08:00:00+00', '93053fd6-4802-11e7-a919-92ebcb67fe33', 'TEST_PIT', 'Test Pit', 100, '2018-05-17 00:00:00+00', '{DEFAULT_NEVER_EXPIRES_DATE}', 'GEOTECH'
+    WHERE NOT EXISTS (SELECT 1 FROM well_subclass_code WHERE well_subclass_code = 'TEST_PIT' AND well_class_code = 'GEOTECH');
+    
+    INSERT INTO well_subclass_code(create_user, create_date, update_user, update_date, well_subclass_guid, well_subclass_code, description, display_order, effective_date, expiry_date, well_class_code)
+        SELECT '{ETL_USER}', '2017-07-01 08:00:00+00', '{ETL_USER}', '2017-07-01 08:00:00+00', '5a3147d8-47e7-11e7-a919-92ebcb67fe33', 'SPECIAL', 'Special', 100, '2018-05-17 00:00:00+00', '{DEFAULT_NEVER_EXPIRES_DATE}', 'GEOTECH'
+    WHERE NOT EXISTS (SELECT 1 FROM well_subclass_code WHERE well_subclass_code = 'SPECIAL' AND well_class_code = 'GEOTECH');
+    
+    INSERT INTO well_subclass_code(create_user, create_date, update_user, update_date, well_subclass_guid, well_subclass_code, description, display_order, effective_date, expiry_date, well_class_code)
+        SELECT '{ETL_USER}', '2017-07-01 08:00:00+00', '{ETL_USER}', '2017-07-01 08:00:00+00', '5a313ffe-47e7-11e7-a919-92ebcb67fe33', 'DOMESTIC', 'Domestic', 100, '2018-05-17 00:00:00+00', '{DEFAULT_NEVER_EXPIRES_DATE}', 'WATR_SPPLY'
+    WHERE NOT EXISTS (SELECT 1 FROM well_subclass_code WHERE well_subclass_code = 'DOMESTIC' AND well_class_code = 'WATR_SPPLY');
+    
+    INSERT INTO well_subclass_code(create_user, create_date, update_user, update_date, well_subclass_guid, well_subclass_code, description, display_order, effective_date, expiry_date, well_class_code)
+        SELECT '{ETL_USER}', '2017-07-01 08:00:00+00', '{ETL_USER}', '2017-07-01 08:00:00+00', '5a3141c0-47e7-11e7-a919-92ebcb67fe33', 'NON_DOMEST', 'Non Domestic', 100, '2018-05-17 00:00:00+00', '{DEFAULT_NEVER_EXPIRES_DATE}', 'WATR_SPPLY'
+    WHERE NOT EXISTS (SELECT 1 FROM well_subclass_code WHERE well_subclass_code = 'NON_DOMEST' AND well_class_code = 'WATR_SPPLY');
+    
+    INSERT INTO well_subclass_code(create_user, create_date, update_user, update_date, well_subclass_guid, well_subclass_code, description, display_order, effective_date, expiry_date, well_class_code)
+        SELECT '{ETL_USER}', '2017-07-01 08:00:00+00', '{ETL_USER}', '2017-07-01 08:00:00+00', '93053cc0-4802-11e7-a919-92ebcb67fe33', 'PERMANENT', 'Permanent', 100, '2018-05-17 00:00:00+00', '{DEFAULT_NEVER_EXPIRES_DATE}', 'INJECTION'
+    WHERE NOT EXISTS (SELECT 1 FROM well_subclass_code WHERE well_subclass_code = 'PERMANENT' AND well_class_code = 'INJECTION');
+    
+    INSERT INTO well_subclass_code(create_user, create_date, update_user, update_date, well_subclass_guid, well_subclass_code, description, display_order, effective_date, expiry_date, well_class_code)
+        SELECT '{ETL_USER}', '2017-07-01 08:00:00+00', '{ETL_USER}', '2017-07-01 08:00:00+00', '5a314404-47e7-11e7-a919-92ebcb67fe33', 'TEMPORARY', 'Temporary', 100, '2018-05-17 00:00:00+00', '{DEFAULT_NEVER_EXPIRES_DATE}', 'DEWATERING'
+    WHERE NOT EXISTS (SELECT 1 FROM well_subclass_code WHERE well_subclass_code = 'TEMPORARY' AND well_class_code = 'DEWATERING');
+    
+    INSERT INTO well_subclass_code(create_user, create_date, update_user, update_date, well_subclass_guid, well_subclass_code, description, display_order, effective_date, expiry_date, well_class_code)
+        SELECT '{ETL_USER}', '2017-07-01 08:00:00+00', '{ETL_USER}', '2017-07-01 08:00:00+00', '5a314ee0-47e7-11e7-a919-92ebcb67fe33', 'PERMANENT', 'Permanent', 100, '2018-05-17 00:00:00+00', '{DEFAULT_NEVER_EXPIRES_DATE}', 'DEWATERING'
+    WHERE NOT EXISTS (SELECT 1 FROM well_subclass_code WHERE well_subclass_code = 'PERMANENT' AND well_class_code = 'DEWATERING');
+    
+    INSERT INTO well_subclass_code(create_user, create_date, update_user, update_date, well_subclass_guid, well_subclass_code, description, display_order, effective_date, expiry_date, well_class_code)
+        SELECT '{ETL_USER}', '2017-07-01 08:00:00+00', '{ETL_USER}', '2017-07-01 08:00:00+00', '3fa278b0-4ca1-11e7-b114-b2f933d5fe66', 'PERMANENT', 'Permanent', 100, '2018-05-17 00:00:00+00', '{DEFAULT_NEVER_EXPIRES_DATE}', 'REMEDIATE'
+    WHERE NOT EXISTS (SELECT 1 FROM well_subclass_code WHERE well_subclass_code = 'PERMANENT' AND well_class_code = 'REMEDIATE');
+    
+    INSERT INTO well_subclass_code(create_user, create_date, update_user, update_date, well_subclass_guid, well_subclass_code, description, display_order, effective_date, expiry_date, well_class_code)
+        SELECT '{ETL_USER}', '2017-07-01 08:00:00+00', '{ETL_USER}', '2017-07-01 08:00:00+00', '3fa27b8a-4ca1-11e7-b114-b2f933d5fe66', 'PERMANENT', 'Permanent', 100, '2018-05-17 00:00:00+00', '{DEFAULT_NEVER_EXPIRES_DATE}', 'DRAINAGE'
+    WHERE NOT EXISTS (SELECT 1 FROM well_subclass_code WHERE well_subclass_code = 'PERMANENT' AND well_class_code = 'DRAINAGE');
+    
+    INSERT INTO well_subclass_code(create_user, create_date, update_user, update_date, well_subclass_guid, well_subclass_code, description, display_order, effective_date, expiry_date, well_class_code)
+        SELECT '{ETL_USER}', '2017-07-01 08:00:00+00', '{ETL_USER}', '2017-07-01 08:00:00+00', '3fa27c98-4ca1-11e7-b114-b2f933d5fe66', 'NA', 'Not Applicable', 100, '2018-05-17 00:00:00+00', '{DEFAULT_NEVER_EXPIRES_DATE}', 'CLS_LP_GEO'
+    WHERE NOT EXISTS (SELECT 1 FROM well_subclass_code WHERE well_subclass_code = 'NA' AND well_class_code = 'CLS_LP_GEO');
+
+    INSERT INTO well_subclass_code(create_user, create_date, update_user, update_date, well_subclass_guid, well_subclass_code, description, display_order, effective_date, expiry_date, well_class_code)
+        SELECT '{WELLS_USER}', '2017-07-01 08:00:00+00', '{ETL_USER}', '2017-07-01 08:00:00+00', '46300f40-fc6b-4c77-a58e-74472cd69f5d', 'PERMANENT', 'Permanent', 100, '2020-01-01 00:00:00+00', '{DEFAULT_NEVER_EXPIRES_DATE}', 'DEW_DRA'
+    WHERE NOT EXISTS (SELECT 1 FROM well_subclass_code WHERE well_subclass_code = 'PERMANENT' AND well_class_code = 'DEW_DRA');
+    
+    INSERT INTO well_subclass_code(create_user, create_date, update_user, update_date, well_subclass_guid, well_subclass_code, description, display_order, effective_date, expiry_date, well_class_code)
+        SELECT '{WELLS_USER}', '2017-07-01 08:00:00+00', '{ETL_USER}', '2017-07-01 08:00:00+00', '6f124222-ab9e-43c7-89e4-a2b8673611cf', 'TEMPORARY', 'Temporary', 100, '2020-01-01 00:00:00+00', '{DEFAULT_NEVER_EXPIRES_DATE}', 'DEW_DRA'
+    WHERE NOT EXISTS (SELECT 1 FROM well_subclass_code WHERE well_subclass_code = 'TEMPORARY' AND well_class_code = 'DEW_DRA');    
 """
 
 # create our new well sublcass code named NA for WATR_SPPLY
