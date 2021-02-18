@@ -432,8 +432,6 @@ def deployToDev() {
                         // Report a pass to GitHub
                         createDeploymentStatus(devSuffix, 'SUCCESS', devHost)
                     }
-                }
-}
 
 def loadFixtures(String appName) {
                         def newVersion = openshift.selector("dc", "${appName}").object().status.latestVersion
