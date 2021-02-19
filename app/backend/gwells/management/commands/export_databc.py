@@ -344,12 +344,12 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         """Entry point for Django Command."""
-        files = ('wells.json', 'aquifers.json', 'lithology.json')
+        files = ('/tmp/wells.json', '/tmp/aquifers.json', '/tmp/lithology.json')
         logger.info('Starting GeoJSON export.')
         try:
-            self.generate_wells('wells.json')
-            self.generate_lithology('lithology.json')
-            self.generate_aquifers('aquifers.json')
+            self.generate_wells('/tmp/wells.json')
+            self.generate_lithology('/tmp/lithology.json')
+            self.generate_aquifers('/tmp/aquifers.json')
             if options['upload'] == 1:
                 self.upload_files(files)
         finally:

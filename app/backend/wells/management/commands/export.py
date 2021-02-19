@@ -49,8 +49,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         logger.info('starting export')
-        zip_filename = 'gwells.zip'
-        spreadsheet_filename = 'gwells.xlsx'
+        zip_filename = '/tmp/gwells.zip'
+        spreadsheet_filename = '/tmp/gwells.xlsx'
         self.generate_files(zip_filename, spreadsheet_filename)
         if options['upload'] == 1:
             self.upload_files(zip_filename, spreadsheet_filename)
@@ -142,11 +142,10 @@ class Command(BaseCommand):
     def generate_files(self, zip_filename, spreadsheet_filename):
         """
         # WELL
-        
+
         note on extra joins:
         well_licences: any well having at least 1 licence entry will be marked as Licensed.
         """
-
 
         well_sql = ("""select well.well_tag_number, identification_plate_number,
  well_identification_plate_attached,
