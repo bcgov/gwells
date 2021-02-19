@@ -136,6 +136,20 @@ error: You must be logged in to the server (Unauthorized)
 ```
 Just delete the kubeconfig files `/tmp/KUBECONFIG` and `/tmp/KUBECONFIGSILVER`
 
+**Database issues**  
+If there is an existing session in the database, the migration script could fail with the following messages:
+```bash
+dropdb: error: database removal failed: ERROR:  database "gwells" is being accessed by other users
+DETAIL:  There is 1 other session using the database.
+
+createdb: error: database creation failed: ERROR:  database "gwells" already exists
+```
+
+You may have to terminate all connections and re-run `./db_copy_and_restore.sh`
+```sql
+select pg_terminate_backend(pid) from pg_stat_activity where datname='gwells';
+```
+
 **Minio issues**  
 ```bash
 mc: <ERROR> Unable to create bucket at `silver/.minio.sys`. Bucket name contains invalid characters
