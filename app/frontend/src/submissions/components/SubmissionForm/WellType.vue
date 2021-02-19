@@ -81,7 +81,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 :options="subclasses"
                 value-field="well_subclass_guid"
                 text-field="description"
-                :disabled="!subclasses.length"
+                :disabled="wellSubclassDisabled"
                 :state="errors['well_subclass'] ? false : null">
               <template slot="first">
                 <option :value="null">Select subclass</option>
@@ -98,7 +98,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <form-input
             select
             v-model="intendedWaterUseInput"
-            :options="intendedWaterUseOptions"
+            :options="codes.intended_water_uses"
             value-field="intended_water_use_code"
             text-field="description"
             label="Intended Water Use"
@@ -296,15 +296,9 @@ export default {
       // change the well class.
       return this.wellClass !== 'WATR_SPPLY' && this.intendedWaterUseInput === 'NA'
     },
-    intendedWaterUseOptions () {
-      if (this.wellClass === 'WATR_SPPLY') {
-        // Do not allow user to pick "Not Applicable" when well_class_code is WATR_SPPLY
-        return this.codes.intended_water_uses.filter((code) => {
-          return code.intended_water_use_code !== 'NA'
-        })
-      }
-
-      return this.codes.intended_water_uses
+    wellSubclassDisabled () {
+      // WATER-1589, we disable the subclass dropdown for well classes of WATR_SPPLY and CLS_LP_GEO
+      return this.subclasses && (this.wellClass === 'WATR_SPPLY' || this.wellClass === 'CLS_LP_GEO')
     },
     ...mapGetters(['codes', 'userRoles', 'wells'])
   },
@@ -343,8 +337,13 @@ export default {
       this.wellTagOptions = []
     },
     wellClass (val, prev) {
-      // Always reset wellSubClass when wellClass changes
-      this.wellSubclassInput = null
+      // WATER-1589, now that watr_spply and cls lp geo only have retired subclass codes we always default to NA
+      if (val !== null && (val === 'WATR_SPPLY' || val === 'CLS_LP_GEO')) {
+        this.wellSubclassInput = this.subclasses.find(c => c.well_subclass_code === 'NA').well_subclass_guid
+      } else {
+        // reset wellSubClass when wellClass changes
+        this.wellSubclassInput = null
+      }
 
       if (val !== null && val !== 'WATR_SPPLY') {
         this.intendedWaterUseInput = 'NA'
