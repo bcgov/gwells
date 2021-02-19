@@ -120,16 +120,6 @@ def unitTestDjango (String stageName, String envProject, String envSuffix) {
             psql -c \"ALTER USER \\\"\${PG_USER}\\\" WITH SUPERUSER;\" \
         '"
 
-
-        // def db_ocoutput_grant = openshift.exec(
-        //     DB_pod.objects()[0].metadata.name,
-        //     "--",
-        //     "bash -c '\
-        //         psql -c \"ALTER USER \\\"\${PG_USER}\\\" WITH SUPERUSER;\" \
-        //     '"
-        // )
-        // echo "Temporary DB grant results: "+ db_ocoutput_grant.actions[0].out
-
         def target = envSuffix == "staging" ? "${appName}-${envSuffix}" : "${appName}-${envSuffix}-${prNumber}"
         def newVersion = openshift.selector("dc", "${target}").object().status.latestVersion
         def pods = openshift.selector('pod', [deployment: "${target}-${newVersion}"])
@@ -160,16 +150,6 @@ def unitTestDjango (String stageName, String envProject, String envSuffix) {
         sh "oc rsh -n ${envProject} dc/${DB_target} bash -c ' \
                psql -c \"ALTER USER \\\"\${PG_USER}\\\" WITH NOSUPERUSER;\" \
         '"
-
-
-        // def db_ocoutput_revoke = openshift.exec(
-        //     DB_pod.objects()[0].metadata.name,
-        //     "--",
-        //     "bash -c '\
-        //         psql -c \"ALTER USER \\\"\${PG_USER}\\\" WITH NOSUPERUSER;\" \
-        //     '"
-        // )
-        // echo "DB Revocation results: "+ db_ocoutput_revoke.actions[0].out
     }
 }
 
@@ -337,236 +317,7 @@ def apiTest (String stageName, String stageUrl, String envSuffix) {
     return true
 }
 
-
-def zapTests (String stageName, String envUrl, String envSuffix) {
-    _openshift(env.STAGE_NAME, toolsProject) {
-        def podName = envSuffix == "dev" ? "zap-${envSuffix}-${prNumber}" : "zap-${envSuffix}"
-        podTemplate(
-            label: "${podName}",
-            name: "${podName}",
-            serviceAccount: "jenkins",
-            cloud: "openshift",
-            containers: [
-                containerTemplate(
-                    name: 'jnlp',
-                    image: 'docker-registry.default.svc:5000/openshift/jenkins-slave-zap',
-                    resourceRequestCpu: '1',
-                    resourceLimitCpu: '1',
-                    resourceRequestMemory: '2Gi',
-                    resourceLimitMemory: '2Gi',
-                    activeDeadlineSeconds: '600',
-                    workingDir: '/home/jenkins',
-                    command: '',
-                    args: '${computer.jnlpmac} ${computer.name}',
-                    envVars: [
-                        envVar(
-                            key:'BASE_URL',
-                            value: "https://${envUrl}/gwells"
-                        )
-                    ]
-                )
-            ]
-        ) {
-            node("${podName}") {
-                checkout scm
-                sh (
-                    script: "/zap/zap-baseline.py -r index.html -t $BASE_URL",
-                    returnStatus: true
-                )
-
-                publishHTML(
-                    target: [
-                        allowMissing: false,
-                        alwaysLinkToLastBuild: false,
-                        keepAll: true,
-                        reportDir: '/zap/wrk',
-                        reportFiles: 'index.html',
-                        reportName: 'ZAP Baseline Scan',
-                        reportTitles: 'ZAP Baseline Scan'
-                    ]
-                )
-            }
-        }
-    }
-    return true
-}
-
-
-// Database backup
-def dbBackup (String envProject, String envSuffix) {
-
-    // NOTE: temporarily skip pre-deployment backup for ocp4
-    if (platformEnv == '4') {
-        return
-    }
-
-
-    def dcName = envSuffix == "dev" ? "${appName}-pg12-${envSuffix}-${prNumber}" : "${appName}-pg12-${envSuffix}"
-    def dumpDir = "/pgdata/deployment-backups"
-    def dumpName = "${envSuffix}-\$( date +%Y-%m-%d-%H%M ).dump"
-    def dumpOpts = "--no-privileges --no-tablespaces --schema=public --exclude-table=spatial_ref_sys"
-    def dumpTemp = "/tmp/unverified.dump"
-    int maxBackups = 10
-
-    // Dump to temporary file
-    sh "oc rsh -n ${envProject} dc/${dcName} bash -c ' \
-        pg_dump -U \${PG_USER} -d \${PG_DATABASE} -Fc -f ${dumpTemp} ${dumpOpts} \
-    '"
-
-    // Verify dump size is at least 1M
-    int sizeAtLeast1M = sh (
-        script: "oc rsh -n ${envProject} dc/${dcName} bash -c ' \
-            du --threshold=1M ${dumpTemp} | wc -l \
-        '",
-        returnStdout: true
-    )
-    assert sizeAtLeast1M == 1
-
-    // Restore (schema only, w/ extensions) to temporary db
-    // note: command needs to be updated.
-    // See Jira ticket WATER-1163.
-    // sh """
-    //     oc rsh -n ${envProject} dc/${dcName} bash -c ' \
-    //         set -e; \
-    //         psql -c "DROP DATABASE IF EXISTS db_verify"; \
-    //         createdb db_verify; \
-    //         psql -d db_verify -c "CREATE EXTENSION IF NOT EXISTS postgis;"; \
-    //         psql -d db_verify -c "COMMIT;"; \
-    //         pg_restore -U postgres -d db_verify -e --schema-only ${dumpTemp}; \
-    //         psql -c "DROP DATABASE IF EXISTS db_verify"
-    //     '
-    // """
-
-    // Store verified dump
-    sh "oc rsh -n ${envProject} dc/${dcName} bash -c ' \
-        mkdir -p ${dumpDir}; \
-        mv ${dumpTemp} ${dumpDir}/${dumpName}; \
-        ls -lh ${dumpDir} \
-    '"
-
-    // Database purge
-    sh "oc rsh -n ${envProject} dc/${dcName} bash -c \" \
-            find ${dumpDir} -name *.dump -printf '%Ts\t%p\n' \
-                | sort -nr | cut -f2 | tail -n +${maxBackups} | xargs rm 2>/dev/null \
-                || echo 'No extra backups to remove' \
-    \""
-}
-
-pipeline {
-    environment {
-        // Project-wide settings - app name, repo
-        appName = "gwells"
-        repository = 'https://www.github.com/bcgov/gwells.git'
-        platformEnv = "${OCP_PLATFORM ?: '3'}"
-
-        platformDomain = "${OCP_PLATFORM == '4' ? 'apps.silver.devops.gov.bc.ca' : 'pathfinder.gov.bc.ca'}"
-
-        // prNumber is the pull request number e.g. 'pr-4'
-        prNumber = "${env.JOB_BASE_NAME}".toLowerCase()
-
-        // toolsProject is where images are built
-        toolsProject = "${APP_TOOLS_NAMESPACE ?: "moe-gwells-tools"}"
-
-        // devProject is the project where individual development environments are spun up
-        devProject = "${APP_DEV_NAMESPACE ?: "moe-gwells-dev"}"
-        devSuffix = "dev"
-        devAppName = "${appName}-${devSuffix}-${prNumber}"
-        devHost = "${devAppName}.${platformDomain}"
-
-        // stagingProject contains the test deployment. The test image is a candidate for promotion to prod.
-        stagingProject = "${APP_STAGING_NAMESPACE ?: "moe-gwells-test"}"
-        stagingSuffix = "staging"
-        stagingHost = "gwells-staging.${platformDomain}"
-
-        // prodProject is the prod deployment.
-        // TODO: New production images can be deployed by tagging an existing "test" image as "prod".
-        prodProject = "${APP_PROD_NAMESPACE ?: "moe-gwells-prod"}"
-        prodSuffix = "production"
-        prodSubdomain =  "${OCP_PLATFORM == '4' ? 'gwells' : 'gwells-prod'}"
-        prodHost = "${prodSubdomain}.${platformDomain}"
-
-        // name of the provisioned PVC claim for NFS backup storage
-        // this will not be created during the pipeline; it must be created
-        // before running the production pipeline.
-        nfsProdBackupPVC = "gwells-backups"
-        nfsStagingBackupPVC = "gwells-backups"
-
-        // name of the PVC where documents are stored (e.g. Minio PVC)
-        // this should be the same across all environments.
-        minioDataPVC = "minio-data-vol"
-
-
-        templateDir = "${OCP_PLATFORM == '4' ? 'openshift/ocp4' : 'openshift' }"
-
-    }
-    agent any
-    stages {
-        // the Start Pipeline stage will process and apply OpenShift build templates which will create
-        // buildconfigs and an imagestream for built images.
-        // each pull request gets its own buildconfig but all new builds are pushed to a single imagestream,
-        // to be tagged with the pull request number.
-        // e.g.:  gwells-app:pr-999
-        stage('ALL - Prepare Templates') {
-            steps {
-                script {
-                    echo "Starting deployment to OCP platform:   ${platformEnv}"
-                    echo "Cancelling previous builds..."
-                    timeout(10) {
-                        abortAllPreviousBuildInProgress(currentBuild)
-                    }
-                    echo "Previous builds cancelled"
-
-                    _openshift(env.STAGE_NAME, toolsProject) {
-                        //  - variable substitution
-                        def buildtemplate = openshift.process("-f",
-                            "${templateDir}/backend.bc.json",
-                            "ENV_NAME=${devSuffix}",
-                            "NAME_SUFFIX=-${devSuffix}-${prNumber}",
-                            "APP_IMAGE_TAG=${prNumber}",
-                            "SOURCE_REPOSITORY_URL=${repository}",
-                            "SOURCE_REPOSITORY_REF=pull/${CHANGE_ID}/head"
-                        )
-
-                        // Apply oc list objects
-                        //  - add docker image reference as tag in gwells-application
-                        //  - create build config
-                        echo "Preparing backend imagestream and buildconfig"
-                        openshift.apply(buildtemplate)
-                    }
-                }
-            }
-        }
-
-
-        // the Build stage builds files; an image will be outputted to the app's imagestream,
-        // using the source-to-image (s2i) strategy. See /app/.s2i/assemble for image build script
-        stage('ALL - Build') {
-            steps {
-                script {
-                    _openshift(env.STAGE_NAME, toolsProject) {
-                        echo "Running unit tests and building images..."
-                        echo "This may take several minutes. Logs are not forwarded to Jenkins by default (at this time)."
-                        echo "Additional logs can be found by monitoring builds in ${toolsProject}"
-
-                        // Select appropriate buildconfig
-                        def appBuild = openshift.selector("bc", "${devAppName}")
-                        echo "Building"
-                        appBuild.startBuild("--wait").logs("-f")
-                    }
-                }
-            }
-        }
-
-        // the Deploy to Dev stage creates a new dev environment for the pull request (if necessary), tagging
-        // the newly built application image into that environment.  This stage monitors the newest deployment
-        // for pods/containers to report back as ready.
-        stage('DEV - Deploy') {
-            when {
-                expression { env.CHANGE_TARGET != 'master' }
-            }
-            steps {
-                script {
-                    _openshift(env.STAGE_NAME, devProject) {
+def deployToDev() {
                         // Process postgres deployment config (sub in vars, create list items)
                         echo "Processing database deployment (using folder ${templateDir}"
                         def deployDBTemplate = openshift.process("-f",
@@ -678,39 +429,13 @@ pipeline {
                                 }
                             }
                         }
-
-
-
                         // Report a pass to GitHub
                         createDeploymentStatus(devSuffix, 'SUCCESS', devHost)
                     }
-                }
-            }
-        }
 
-        // the Django Unit Tests stage runs backend unit tests using a test DB that is
-        // created and destroyed afterwards.
-        stage('DEV - Django Unit Tests') {
-            when {
-                expression { env.CHANGE_TARGET != 'master' }
-            }
-            steps {
-                script {
-                    def result = unitTestDjango (env.STAGE_NAME, devProject, devSuffix)
-                }
-            }
-        }
-
-
-        stage('DEV - Load Fixtures') {
-            when {
-                expression { env.CHANGE_TARGET != 'master' }
-            }
-            steps {
-                script {
-                    _openshift(env.STAGE_NAME, devProject) {
-                        def newVersion = openshift.selector("dc", "${devAppName}").object().status.latestVersion
-                        def pods = openshift.selector('pod', [deployment: "${devAppName}-${newVersion}"])
+def loadFixtures(String appName) {
+                        def newVersion = openshift.selector("dc", "${appName}").object().status.latestVersion
+                        def pods = openshift.selector('pod', [deployment: "${appName}-${newVersion}"])
 
                         echo "Loading fixtures"
                         def ocoutput = openshift.exec(
@@ -731,11 +456,252 @@ pipeline {
                                 python manage.py createinitialrevisions \
                             '"
                         )
+}
+
+def zapTests (String stageName, String envUrl, String envSuffix) {
+    _openshift(env.STAGE_NAME, toolsProject) {
+        def podName = envSuffix == "dev" ? "zap-${envSuffix}-${prNumber}" : "zap-${envSuffix}"
+        podTemplate(
+            label: "${podName}",
+            name: "${podName}",
+            serviceAccount: "jenkins",
+            cloud: "openshift",
+            containers: [
+                containerTemplate(
+                    name: 'jnlp',
+                    image: 'docker-registry.default.svc:5000/openshift/jenkins-slave-zap',
+                    resourceRequestCpu: '1',
+                    resourceLimitCpu: '1',
+                    resourceRequestMemory: '2Gi',
+                    resourceLimitMemory: '2Gi',
+                    activeDeadlineSeconds: '600',
+                    workingDir: '/home/jenkins',
+                    command: '',
+                    args: '${computer.jnlpmac} ${computer.name}',
+                    envVars: [
+                        envVar(
+                            key:'BASE_URL',
+                            value: "https://${envUrl}/gwells"
+                        )
+                    ]
+                )
+            ]
+        ) {
+            node("${podName}") {
+                checkout scm
+                sh (
+                    script: "/zap/zap-baseline.py -r index.html -t $BASE_URL",
+                    returnStatus: true
+                )
+
+                publishHTML(
+                    target: [
+                        allowMissing: false,
+                        alwaysLinkToLastBuild: false,
+                        keepAll: true,
+                        reportDir: '/zap/wrk',
+                        reportFiles: 'index.html',
+                        reportName: 'ZAP Baseline Scan',
+                        reportTitles: 'ZAP Baseline Scan'
+                    ]
+                )
+            }
+        }
+    }
+    return true
+}
+
+
+// Database backup
+def dbBackup (String envProject, String envSuffix) {
+
+    // NOTE: temporarily skip pre-deployment backup for ocp4
+    if (platformEnv == '4') {
+        return
+    }
+
+
+    def dcName = envSuffix == "dev" ? "${appName}-pg12-${envSuffix}-${prNumber}" : "${appName}-pg12-${envSuffix}"
+    def dumpDir = "/pgdata/deployment-backups"
+    def dumpName = "${envSuffix}-\$( date +%Y-%m-%d-%H%M ).dump"
+    def dumpOpts = "--no-privileges --no-tablespaces --schema=public --exclude-table=spatial_ref_sys"
+    def dumpTemp = "/tmp/unverified.dump"
+    int maxBackups = 10
+
+    // Dump to temporary file
+    sh "oc rsh -n ${envProject} dc/${dcName} bash -c ' \
+        pg_dump -U \${PG_USER} -d \${PG_DATABASE} -Fc -f ${dumpTemp} ${dumpOpts} \
+    '"
+
+    // Verify dump size is at least 1M
+    int sizeAtLeast1M = sh (
+        script: "oc rsh -n ${envProject} dc/${dcName} bash -c ' \
+            du --threshold=1M ${dumpTemp} | wc -l \
+        '",
+        returnStdout: true
+    )
+    assert sizeAtLeast1M == 1
+
+    // Store verified dump
+    sh "oc rsh -n ${envProject} dc/${dcName} bash -c ' \
+        mkdir -p ${dumpDir}; \
+        mv ${dumpTemp} ${dumpDir}/${dumpName}; \
+        ls -lh ${dumpDir} \
+    '"
+
+    // Database purge
+    sh "oc rsh -n ${envProject} dc/${dcName} bash -c \" \
+            find ${dumpDir} -name *.dump -printf '%Ts\t%p\n' \
+                | sort -nr | cut -f2 | tail -n +${maxBackups} | xargs rm 2>/dev/null \
+                || echo 'No extra backups to remove' \
+    \""
+}
+
+pipeline {
+    environment {
+        // Project-wide settings - app name, repo
+        appName = "gwells"
+        repository = 'https://www.github.com/bcgov/gwells.git'
+        platformEnv = "${OCP_PLATFORM ?: '3'}"
+
+        platformDomain = "${OCP_PLATFORM == '4' ? 'apps.silver.devops.gov.bc.ca' : 'pathfinder.gov.bc.ca'}"
+
+        // prNumber is the pull request number e.g. 'pr-4'
+        prNumber = "${env.JOB_BASE_NAME}".toLowerCase()
+
+        // toolsProject is where images are built
+        toolsProject = "${APP_TOOLS_NAMESPACE ?: "moe-gwells-tools"}"
+
+        // devProject is the project where individual development environments are spun up
+        devProject = "${APP_DEV_NAMESPACE ?: "moe-gwells-dev"}"
+        devSuffix = "dev"
+        devAppName = "${appName}-${devSuffix}-${prNumber}"
+        devHost = "${devAppName}.${platformDomain}"
+
+        // stagingProject contains the test deployment. The test image is a candidate for promotion to prod.
+        stagingProject = "${APP_STAGING_NAMESPACE ?: "moe-gwells-test"}"
+        stagingSuffix = "staging"
+        stagingHost = "gwells-staging.${platformDomain}"
+
+        // prodProject is the prod deployment.
+        // TODO: New production images can be deployed by tagging an existing "test" image as "prod".
+        prodProject = "${APP_PROD_NAMESPACE ?: "moe-gwells-prod"}"
+        prodSuffix = "production"
+        prodSubdomain =  "${OCP_PLATFORM == '4' ? 'gwells' : 'gwells-prod'}"
+        prodHost = "${prodSubdomain}.${platformDomain}"
+
+        // name of the provisioned PVC claim for NFS backup storage
+        // this will not be created during the pipeline; it must be created
+        // before running the production pipeline.
+        nfsProdBackupPVC = "gwells-backups"
+        nfsStagingBackupPVC = "gwells-backups"
+
+        // name of the PVC where documents are stored (e.g. Minio PVC)
+        // this should be the same across all environments.
+        minioDataPVC = "minio-data-vol"
+
+
+        templateDir = "${OCP_PLATFORM == '4' ? 'openshift/ocp4' : 'openshift' }"
+
+    }
+    agent any
+    stages {
+        // the Start Pipeline stage will process and apply OpenShift build templates which will create
+        // buildconfigs and an imagestream for built images.
+        // each pull request gets its own buildconfig but all new builds are pushed to a single imagestream,
+        // to be tagged with the pull request number.
+        // e.g.:  gwells-app:pr-999
+        stage('ALL - Prepare Templates') {
+            steps {
+                script {
+                    echo "Starting deployment to OCP platform:   ${platformEnv}"
+                    echo "Cancelling previous builds..."
+                    timeout(10) {
+                        abortAllPreviousBuildInProgress(currentBuild)
+                    }
+                    echo "Previous builds cancelled"
+
+                    _openshift(env.STAGE_NAME, toolsProject) {
+                        //  - variable substitution
+                        def buildtemplate = openshift.process("-f",
+                            "${templateDir}/backend.bc.json",
+                            "ENV_NAME=${devSuffix}",
+                            "NAME_SUFFIX=-${devSuffix}-${prNumber}",
+                            "APP_IMAGE_TAG=${prNumber}",
+                            "SOURCE_REPOSITORY_URL=${repository}",
+                            "SOURCE_REPOSITORY_REF=pull/${CHANGE_ID}/head"
+                        )
+
+                        // Apply oc list objects
+                        //  - add docker image reference as tag in gwells-application
+                        //  - create build config
+                        echo "Preparing backend imagestream and buildconfig"
+                        openshift.apply(buildtemplate)
                     }
                 }
             }
         }
 
+        // the Build stage builds files; an image will be outputted to the app's imagestream,
+        // using the source-to-image (s2i) strategy. See /app/.s2i/assemble for image build script
+        stage('ALL - Build') {
+            steps {
+                script {
+                    _openshift(env.STAGE_NAME, toolsProject) {
+                        echo "Running unit tests and building images..."
+                        echo "This may take several minutes. Logs are not forwarded to Jenkins by default (at this time)."
+                        echo "Additional logs can be found by monitoring builds in ${toolsProject}"
+
+                        // Select appropriate buildconfig
+                        def appBuild = openshift.selector("bc", "${devAppName}")
+                        echo "Building"
+                        appBuild.startBuild("--wait").logs("-f")
+                    }
+                }
+            }
+        }
+
+        // the Deploy to Dev stage creates a new dev environment for the pull request (if necessary), tagging
+        // the newly built application image into that environment.  This stage monitors the newest deployment
+        // for pods/containers to report back as ready.
+        stage('DEV - Deploy') {
+            when {
+                expression { env.CHANGE_TARGET != 'master' }
+            }
+            steps {
+                script {
+                    _openshift(env.STAGE_NAME, devProject) {
+                        deployToDev()
+                    }
+                }
+            }
+        }
+
+        // the Django Unit Tests stage runs backend unit tests using a test DB that is
+        // created and destroyed afterwards.
+        stage('DEV - Django Unit Tests') {
+            when {
+                expression { env.CHANGE_TARGET != 'master' }
+            }
+            steps {
+                script {
+                    def result = unitTestDjango (env.STAGE_NAME, devProject, devSuffix)
+                }
+            }
+        }
+
+        stage('DEV - Load Fixtures') {
+            when {
+                expression { env.CHANGE_TARGET != 'master' }
+            }
+            steps {
+                script {
+                    _openshift(env.STAGE_NAME, devProject) {
+                        loadFixtures(devAppName)
+                    }
+                }
+            }
+        }
 
         stage('DEV - API Tests') {
             when {
@@ -747,8 +713,6 @@ pipeline {
                 }
             }
         }
-
-
 
         stage('STAGING - Backup') {
             when {
@@ -764,7 +728,6 @@ pipeline {
 
         // the Promote to Test stage allows approving the tagging of the newly built image into the test environment,
         // which will trigger an automatic deployment of that image.
-        // The deployment configs in the openshift folder are applied first in case there are any changes to the templates.
         // this stage should only occur when the pull request is being made against the master branch.
         stage('STAGING - Deploy') {
             when {
@@ -816,6 +779,7 @@ pipeline {
                         def minioTemplate = openshift.process("-f",
                             "${templateDir}/minio/minio.dc.yaml",
                             "NAME_SUFFIX=-${stagingSuffix}",
+                            "DEST_PVC_SIZE=10Gi",
                             "HOSTNAME=gwells-docs-${stagingSuffix}.apps.silver.devops.gov.bc.ca"
                         )
 
@@ -882,7 +846,6 @@ pipeline {
                             "--overwrite"
                         )
 
-
                         openshift.apply(deployTemplate).label(
                             [
                                 'app':"gwells-${stagingSuffix}",
@@ -919,8 +882,7 @@ pipeline {
                         openshift.tag(
                             "${toolsProject}/gwells-application:${prNumber}",
                             "${toolsProject}/gwells-application:${stagingSuffix}"
-                        )  // todo: clean up labels/tags
-                        // openshift.tag("${toolsProject}/gwells-postgresql:staging", "${toolsProject}/gwells-postgresql:${stagingSuffix}")
+                        )
 
                         // Images are then tagged into the target environment namespace (test or prod)
                         openshift.tag(
@@ -929,9 +891,6 @@ pipeline {
                         )  // todo: clean up labels/tags
 
                         createDeploymentStatus(stagingSuffix, 'PENDING', stagingHost)
-
-
-/* TODO:  DISABLED FOR OCP4 TEST ENVIRONMENT */
 
                         // Create cronjob for well export
                         def exportWellCronTemplate = openshift.process("-f",
@@ -990,7 +949,6 @@ pipeline {
                             "--overwrite"
                         )
 
-/* TODO:  DISABLED FOR OCP4 TEST ENVIRONMENT */
 
                         // Create cronjob for databc export
                         def exportDataBCTemplate = openshift.process("-f",
@@ -1015,14 +973,22 @@ pipeline {
                         def docBackupCronjob = openshift.process("-f",
                             "${templateDir}/jobs/minio-backup/minio-backup.cj.yaml",
                             "NAME_SUFFIX=${stagingSuffix}",
+                            "NAMESPACE=${stagingProject}",
                             "VERSION=v1.0.0",
                             "SCHEDULE=15 3 * * *",
                             "DEST_PVC=gwells-backups",
-                            "PVC_SIZE=1Gi",
+                            "PVC_SIZE=10Gi",
                             "SOURCE_PVC=gwells-minio-${stagingSuffix}"
                         )
 
-                        openshift.apply(docBackupCronjob)
+                        openshift.apply(docBackupCronjob).label(
+                            [
+                                'app':"gwells-${stagingSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${stagingSuffix}"
+                            ],
+                            "--overwrite"
+                        )
 
                         // automated database backup
                         def dbNFSBackup = openshift.process("-f",
@@ -1037,7 +1003,14 @@ pipeline {
                             "WEEKLY_BACKUPS=1",
                             "MONTHLY_BACKUPS=1"
                         )
-                        openshift.apply(dbNFSBackup)
+                        openshift.apply(dbNFSBackup).label(
+                            [
+                                'app':"gwells-${stagingSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${stagingSuffix}"
+                            ],
+                            "--overwrite"
+                        )
 
                         // monitor the deployment status and wait until deployment is successful
                         echo "Waiting for deployment to STAGING..."
@@ -1108,7 +1081,6 @@ pipeline {
             }
         }
 
-
         stage('PROD - Deploy') {
             when {
                 expression { env.CHANGE_TARGET == 'master' }
@@ -1166,15 +1138,12 @@ pipeline {
                             "HOSTNAME=gwells-docs-${prodSuffix}.apps.silver.devops.gov.bc.ca"
                         )
 
-
                         echo "Processing backup volume config"
                         def backupVolConfig = openshift.process("-f",
                             "${templateDir}/backup.pvc.yaml",
                             "VOLUME_CAPACITY=30Gi",
                             "STORAGE_CLASS=netapp-file-backup"
                         )
-
-
                         // some objects need to be copied from a base secret or configmap
                         // these objects have an annotation "as-copy-of" in their object spec (e.g. an object in backend.dc.json)
                         echo "Creating configmaps and secrets objects"
@@ -1224,12 +1193,10 @@ pipeline {
                             "--overwrite"
                         )
 
-
                         openshift.apply(minioTemplate).label(
                             ['app':"gwells-${prodSuffix}", 'app-name':"${appName}", 'env-name':"${prodSuffix}"],
                              "--overwrite"
                             )
-
 
                         openshift.apply(deployTemplate).label(
                             [
@@ -1260,72 +1227,64 @@ pipeline {
                         )
 
                         echo "Successfully applied production deployment config"
-
                         // promote the newly built image to DEV
                         echo "Tagging new image to production imagestream."
-
                         // Application/database images are tagged in the tools imagestream as the new prod image
                         openshift.tag(
                             "${toolsProject}/gwells-application:${prNumber}",
                             "${toolsProject}/gwells-application:${prodSuffix}"
-                        )  // todo: clean up labels/tags
-
-                        // TODO: determine best way to manage database images (at the moment they never change, but we don't want an unforeseen change to impact prod)
-                        // openshift.tag("${toolsProject}/gwells-postgresql:prod", "${toolsProject}/gwells-postgresql:${prodSuffix}")
+                        )
 
                         // Images are then tagged into the target environment namespace (prod)
                         openshift.tag(
                             "${toolsProject}/gwells-application:${prodSuffix}",
                             "${prodProject}/gwells-${prodSuffix}:${prodSuffix}"
-                        )  // todo: clean up labels/tags
-
+                        )
 
                         createDeploymentStatus(prodSuffix, 'PENDING', prodHost)
 
-
-/* DISABLED FOR OCP4 TEST ENVIRONMENT */
-
-                        // // Create cronjob for well export
-                        // def exportWellCronTemplate = openshift.process("-f",
-                        //     "${templateDir}/jobs/export-databc/export.cj.json",
-                        //     "ENV_NAME=${prodSuffix}",
-                        //     "PROJECT=${prodProject}",
-                        //     "TAG=${prodSuffix}",
-                        //     "NAME=export",
-                        //     "COMMAND=export",
-                        //     "SCHEDULE=30 3 * * *"
-                        // )
-                        // openshift.apply(exportWellCronTemplate).label(
-                        //     [
-                        //         'app':"gwells-${prodSuffix}",
-                        //         'app-name':"${appName}",
-                        //         'env-name':"${prodSuffix}"
-                        //     ],
-                        //     "--overwrite"
-                        // )
+                        // Create cronjob for well export
+                        def exportWellCronTemplate = openshift.process("-f",
+                            "${templateDir}/jobs/export-databc/export.cj.json",
+                            "ENV_NAME=${prodSuffix}",
+                            "PROJECT=${prodProject}",
+                            "TAG=${prodSuffix}",
+                            "NAME=export",
+                            "COMMAND=export",
+                            "SCHEDULE=30 3 * * *"
+                        )
+                        openshift.apply(exportWellCronTemplate).label(
+                            [
+                                'app':"gwells-${prodSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${prodSuffix}"
+                            ],
+                            "--overwrite"
+                        )
 
                         // Create cronjob for databc export
-                        // def exportDataBCCronTemplate = openshift.process("-f",
-                        //     "${templateDir}/jobs/export-databc/export.cj.json",
-                        //     "ENV_NAME=${prodSuffix}",
-                        //     "PROJECT=${prodProject}",
-                        //     "TAG=${prodSuffix}",
-                        //     "NAME=export-databc",
-                        //     "COMMAND=export_databc",
-                        //     "SCHEDULE=0 5 * * *"
-                        // )
-                        // openshift.apply(exportDataBCCronTemplate).label(
-                        //     [
-                        //         'app':"gwells-${prodSuffix}",
-                        //         'app-name':"${appName}",
-                        //         'env-name':"${prodSuffix}"
-                        //     ],
-                        //     "--overwrite"
-                        // )
+                        def exportDataBCCronTemplate = openshift.process("-f",
+                            "${templateDir}/jobs/export-databc/export.cj.json",
+                            "ENV_NAME=${prodSuffix}",
+                            "PROJECT=${prodProject}",
+                            "TAG=${prodSuffix}",
+                            "NAME=export-databc",
+                            "COMMAND=export_databc",
+                            "SCHEDULE=0 5 * * *"
+                        )
+                        openshift.apply(exportDataBCCronTemplate).label(
+                            [
+                                'app':"gwells-${prodSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${prodSuffix}"
+                            ],
+                            "--overwrite"
+                        )
 
                         def docBackupCronJob = openshift.process("-f",
                             "${templateDir}/jobs/minio-backup/minio-backup.cj.yaml",
                             "NAME_SUFFIX=${prodSuffix}",
+                            "NAMESPACE=${prodProject}",
                             "VERSION=v1.0.0",
                             "SCHEDULE=15 4 * * *",
                             "DEST_PVC=${nfsProdBackupPVC}",
@@ -1333,7 +1292,15 @@ pipeline {
                             "PVC_SIZE=40Gi"
                         )
 
-                        openshift.apply(docBackupCronJob)
+                        openshift.apply(docBackupCronJob).label(
+                            [
+                                'app':"gwells-${prodSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${prodSuffix}"
+                            ],
+                            "--overwrite"
+                        )
+
 
                         def dbNFSBackup = openshift.process("-f",
                             "${templateDir}/jobs/postgres-backup-nfs/postgres-backup.cj.yaml",
@@ -1345,7 +1312,14 @@ pipeline {
                             "SCHEDULE=30 1 * * *",
                             "JOB_NAME=postgres-nfs-backup"
                         )
-                        openshift.apply(dbNFSBackup)
+                        openshift.apply(dbNFSBackup).label(
+                            [
+                                'app':"gwells-${prodSuffix}",
+                                'app-name':"${appName}",
+                                'env-name':"${prodSuffix}"
+                            ],
+                            "--overwrite"
+                        )
 
                         // Create cronjob for licence import
                         def importLicencesCronjob = openshift.process("-f",
