@@ -12,8 +12,10 @@
 . ./require_pathfinder_auth.sh
 . ./require_silver_auth.sh
 
-# Scale down the gwells application on Pathfinder
-. ./scale_down.sh
+if [ "$TEST_RUN" == 0 ]; then
+  # Scale down the gwells application on Pathfinder
+  . ./scale_down.sh
+fi
 
 # Migrate the database
 . ./migrate_database.sh
@@ -21,8 +23,10 @@
 # Mirror minio data
 . ./migrate_minio.sh
 
+if [ "$TEST_RUN" == 0 ]; then
 # Scale up the gwells application on Silver
-. ./scale_up.sh
+  . ./scale_up.sh
 
-# Activate the proxy
-. ./activate_proxy.sh
+  # Activate the proxy
+  . ./activate_proxy.sh
+fi
