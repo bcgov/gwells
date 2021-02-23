@@ -25,6 +25,7 @@ You need:
 ### Next Steps
 - [ ] Create a ticket with INFRA to change their reverse proxy for `apps.nrs.gov.bc.ca/gwells` from Pathfinder to Silver
 - [ ] Remove reverse proxy on Pathfinder to Silver and convert into a redirect. This will make it noticeable to anyone who uses the pathfinder URLs (APIs), and give them a chance to update their URLs.
+- [ ] [Remove the extra db user if needed](#remove-extra-user)
 
 ## Migration tools
 
@@ -199,4 +200,12 @@ LEGEND:
 If you encounter `!`, you may need to run `mc cp` like the following:
 ```bash
 /opt/minio/mc -C /opt/minio/.mc cp /opt/minio/s3/data/gwells-export-test/api/v1/gis/wells.json silver/gwells-export-test/api/v1/gis/wells.json
+```
+
+### Remove extra user
+If you have two users in the database, remove the extra one by reassigning its privileges to the primary user. Double check which user is the primary one.
+```sql
+REASSIGN OWNED BY <olduser> TO <newuser>
+DROP OWNED BY <olduser>
+DROP USER <olduser>
 ```
