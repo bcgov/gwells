@@ -49,8 +49,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         logger.info('starting export')
-        zip_filename = '/tmp/gwells.zip'
-        spreadsheet_filename = '/tmp/gwells.xlsx'
+        zip_filename = 'gwells.zip'
+        spreadsheet_filename = 'gwells.xlsx'
         self.generate_files(zip_filename, spreadsheet_filename)
         if options['upload'] == 1:
             self.upload_files(zip_filename, spreadsheet_filename)

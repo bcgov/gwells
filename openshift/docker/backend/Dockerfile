@@ -59,4 +59,9 @@ RUN echo "/usr/local/lib/" >> /etc/ld.so.conf && \
 # Set working directory and user
 #
 WORKDIR /app/backend
+RUN chgrp -R 0 /app/backend && \
+    chmod -R g=u /app/backend 
+
 USER 1001
+
+
