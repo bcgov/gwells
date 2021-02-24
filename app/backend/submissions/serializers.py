@@ -795,8 +795,7 @@ class WellSubclassCodeSerializer(serializers.ModelSerializer):
 class WellClassCodeSerializer(serializers.ModelSerializer):
     """Serializes well class codes"""
 
-    wellsubclasscode_set = WellSubclassCodeSerializer(
-        many=True, read_only=True)
+    wellsubclasscode_set = WellSubclassCodeSerializer(source='all_well_subclass_codes', many=True, read_only=True)
 
     class Meta:
         model = WellClassCode

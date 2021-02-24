@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "6a0a6d2b-1912-481a-b676-97fd7fdb1f3e",
+		"_postman_id": "a3faeaab-6a11-427c-b0aa-3535a05fc5c0",
 		"name": "Well List API filters",
 		"description": "Well List API endpoint filters required for advanced search options.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -15,7 +15,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+								"id": "af696e7d-e526-4a97-b78c-0e43b5f68986",
 								"exec": [
 									"pm.test(\"Well tag number matches filter\", function () {",
 									"  const wellParam = parseInt(pm.request.url.query.get(\"search\"));",
@@ -31,10 +31,6 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/wells?search=216265",
 							"host": [
@@ -61,7 +57,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+								"id": "3033b5cf-a07b-41d9-8f3a-9cd50e3fbd01",
 								"exec": [
 									"pm.test(\"Only matches one well\", function () {",
 									"    pm.expect(pm.response.json().results.length).to.equal(1);",
@@ -75,10 +71,6 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/wells?well_tag_number=123",
 							"host": [
@@ -105,7 +97,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+								"id": "be69c3b0-7151-4d98-9988-50dd6f8aa529",
 								"exec": [
 									"pm.test(\"Well id plate matches filter\", function () {",
 									"  const wellParam = parseInt(pm.request.url.query.get(\"search\"));",
@@ -121,10 +113,6 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/wells?search=55555",
 							"host": [
@@ -151,7 +139,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+								"id": "1ad72faa-6c03-4760-9bdb-381873b9df6b",
 								"exec": [
 									"pm.test(\"Street address matches filter\", function () {",
 									"  const streetAddress = pm.request.url.query.get(\"search\").toLowerCase();",
@@ -167,10 +155,6 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/wells?search=1234 Main",
 							"host": [
@@ -197,7 +181,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+								"id": "dfd783c6-2f3a-4702-a501-5641a47dc027",
 								"exec": [
 									"pm.test(\"City matches filter\", function () {",
 									"  const city = pm.request.url.query.get(\"search\").toLowerCase();",
@@ -213,10 +197,6 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/wells?search=vancouver",
 							"host": [
@@ -243,7 +223,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+								"id": "26d03534-6b74-46a6-9c6d-2e50bfb0ed7e",
 								"exec": [
 									"pm.test(\"Owner matches filter\", function () {",
 									"  const ownerFullName = pm.request.url.query.get(\"search\").toLowerCase();",
@@ -259,10 +239,6 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/wells?search=Alice S",
 							"host": [
@@ -288,7 +264,7 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "4836e08d-af4c-4af0-80ea-ca5c49ba6f5e",
+						"id": "4af95bc5-8996-46c1-b0e5-696a4b8f1b49",
 						"type": "text/javascript",
 						"exec": [
 							""
@@ -298,7 +274,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "cfd20e05-db81-4565-82c0-15ff3c0519eb",
+						"id": "2ba29d24-1b3a-4179-989b-6f38a09d6773",
 						"type": "text/javascript",
 						"exec": [
 							"pm.test(\"Response status ok\", function () {",
@@ -310,7 +286,8 @@
 						]
 					}
 				}
-			]
+			],
+			"protocolProfileBehavior": {}
 		},
 		{
 			"name": "Filters",
@@ -324,7 +301,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "9eea95a7-84a4-4a36-820f-5f02ac01c912",
 										"exec": [
 											"pm.test(\"Well tag number matches filter\", function () {",
 											"  const wellParam = parseInt(pm.request.url.query.get(\"well\"));",
@@ -340,10 +317,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?well=216265",
 									"host": [
@@ -370,7 +343,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "fdbecec6-4f8d-4fa8-8bb1-753db93d086b",
 										"exec": [
 											"pm.test(\"Well id plate matches filter\", function () {",
 											"  const wellParam = parseInt(pm.request.url.query.get(\"well\"));",
@@ -386,10 +359,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?well=55555",
 									"host": [
@@ -416,7 +385,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "eccab8ca-931b-4a21-a986-23150b1cf343",
 										"exec": [
 											"pm.test(\"Street address matches filter\", function () {",
 											"  const streetAddress = pm.request.url.query.get(\"street_address_or_city\").toLowerCase();",
@@ -432,10 +401,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?street_address_or_city=1234 Main",
 									"host": [
@@ -462,7 +427,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "2f750458-10b1-4e50-acc5-d0b5f61bee51",
 										"exec": [
 											"pm.test(\"City matches filter\", function () {",
 											"  const city = pm.request.url.query.get(\"street_address_or_city\").toLowerCase();",
@@ -478,10 +443,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?street_address_or_city=vancouver",
 									"host": [
@@ -508,7 +469,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "cf9df490-869d-4703-ad73-102d0246cde4",
 										"exec": [
 											"pm.test(\"Construction start date field matches filter\", function () {",
 											"  const dateOfWorkBefore = new Date(pm.request.url.query.get(\"date_of_work_before\"));",
@@ -526,10 +487,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?date_of_work_before=1975-12-31",
 									"host": [
@@ -556,7 +513,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "8bbbb22d-8471-4e87-82cf-8d116cfb18da",
 										"exec": [
 											"pm.test(\"Decommission end date field matches filter\", function () {",
 											"  const dateOfWorkAfter = new Date(pm.request.url.query.get(\"date_of_work_after\"));",
@@ -574,10 +531,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?date_of_work_after=2019-02-07",
 									"host": [
@@ -604,7 +557,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "af219ed0-77d3-4852-84df-e36f5cf77826",
 										"exec": [
 											"pm.test(\"Finished well depth matches filter\", function () {",
 											"  const wellDepthMin = parseInt(pm.request.url.query.get(\"well_depth_min\"));",
@@ -621,10 +574,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?well_depth_min=100&well_depth_max=185",
 									"host": [
@@ -655,7 +604,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "a041af66-bec2-4887-8d43-182b798a586b",
 										"exec": [
 											"pm.test(\"Finished well depth matches filter\", function () {",
 											"  const wellDepthMax = parseInt(pm.request.url.query.get(\"well_depth_max\"));",
@@ -671,10 +620,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?well_depth_max=185",
 									"host": [
@@ -701,7 +646,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "518aae8c-4435-4651-bf65-3ccf9eaba090",
 										"exec": [
 											"pm.test(\"Legal lot matches filter\", function () {",
 											"  const legalLot = pm.request.url.query.get(\"legal\");",
@@ -718,10 +663,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?legal=1Q",
 									"host": [
@@ -748,7 +689,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "9ab0aff7-a21c-4343-b0ee-0322c50415ea",
 										"exec": [
 											"pm.test(\"Legal PID matches filter\", function () {",
 											"  const legalPID = pm.request.url.query.get(\"legal\");",
@@ -765,10 +706,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?legal=555555",
 									"host": [
@@ -795,7 +732,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "38a07f32-d36f-4c9a-928c-fc9b6e3a732d",
+								"id": "9be23d70-8af0-47ce-be5b-9a924e27bdee",
 								"type": "text/javascript",
 								"exec": [
 									""
@@ -805,7 +742,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "73823139-d38a-4c9c-89b4-12d2a4d97924",
+								"id": "bb2849a6-428d-4b83-99a1-9856e4fcdd02",
 								"type": "text/javascript",
 								"exec": [
 									"pm.test(\"Response status ok\", function () {",
@@ -818,6 +755,7 @@
 							}
 						}
 					],
+					"protocolProfileBehavior": {},
 					"_postman_isSubFolder": true
 				},
 				{
@@ -829,7 +767,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "6244a33b-9889-4501-ae11-565566b71743",
 										"exec": [
 											"pm.test(\"Well tag number matches filter\", function () {",
 											"  const wellTagNumber = parseInt(pm.request.url.query.get(\"well_tag_number\"));",
@@ -845,10 +783,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?well_tag_number=216265",
 									"host": [
@@ -875,7 +809,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "51def689-8afa-413f-9473-4c4b486cbc2e",
 										"exec": [
 											"pm.test(\"Well id plate matches filter\", function () {",
 											"  const idPlateNumber = parseInt(pm.request.url.query.get(\"identification_plate_number\"));",
@@ -891,10 +825,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?identification_plate_number=55555",
 									"host": [
@@ -921,7 +851,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "039b6ea8-650e-44fd-a0b5-c072498d5f8c",
 										"exec": [
 											"pm.test(\"Legal lot matches filter\", function () {",
 											"  const legalLot = pm.request.url.query.get(\"legal_lot\");",
@@ -938,10 +868,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?legal_lot=1Q",
 									"host": [
@@ -968,7 +894,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "7bfc4839-8769-4e29-a0e3-0ccd9ad4f497",
 										"exec": [
 											"pm.test(\"Legal plan matches filter\", function () {",
 											"  const legalPlan = pm.request.url.query.get(\"legal_plan\");",
@@ -985,10 +911,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?legal_plan=555",
 									"host": [
@@ -1015,7 +937,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "4e6e29c0-5765-44f5-a94c-7af09c6866ba",
 										"exec": [
 											"pm.test(\"Legal district lot matches filter\", function () {",
 											"  const legalDistrictLot = pm.request.url.query.get(\"legal_district_lot\");",
@@ -1032,10 +954,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?legal_district_lot=20000",
 									"host": [
@@ -1062,7 +980,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "a2153eda-9e95-45a6-9858-91afd4f5e2cd",
 										"exec": [
 											"pm.test(\"Land district matches filter\", function () {",
 											"  const landDistrict = pm.request.url.query.get(\"land_district\");",
@@ -1079,10 +997,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?land_district=36",
 									"host": [
@@ -1109,7 +1023,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "e7ddb7c0-8c7d-4782-b599-d991294b619e",
 										"exec": [
 											"pm.test(\"Legal PID matches filter\", function () {",
 											"  const legalPID = pm.request.url.query.get(\"legal_pid\");",
@@ -1126,10 +1040,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?legal_pid=555555",
 									"host": [
@@ -1156,7 +1066,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "0592d229-d678-4991-a524-5600660f6d63",
 										"exec": [
 											"pm.test(\"Well status matches filter\", function () {",
 											"  const wellStatus = pm.request.url.query.get(\"well_status\");",
@@ -1173,10 +1083,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?well_status=OTHER",
 									"host": [
@@ -1203,7 +1109,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "b78565dd-05dc-4cb1-8df4-251fdbca630e",
 										"exec": [
 											"pm.test(\"Licenced status matches filter\", function () {",
 											"  const licencedStatus = pm.request.url.query.get(\"licenced_status\");",
@@ -1220,10 +1126,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?licenced_status=LICENSED",
 									"host": [
@@ -1250,7 +1152,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "24351f25-3daa-46c4-ba9c-04eee1d32b04",
 										"exec": [
 											"pm.test(\"Well class matches filter\", function () {",
 											"  const wellClass = pm.request.url.query.get(\"well_class\");",
@@ -1266,10 +1168,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?well_class=WATR_SPPLY",
 									"host": [
@@ -1296,7 +1194,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "8a377e41-82ef-4f0d-a8de-57af142e99d4",
 										"exec": [
 											"pm.test(\"Well subclass matches filter\", function () {",
 											"  const wellSubclass = pm.request.url.query.get(\"well_subclass\");",
@@ -1312,12 +1210,8 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?well_subclass=5a313ffe-47e7-11e7-a919-92ebcb67fe33",
+									"raw": "{{base_url}}/api/v1/wells?well_subclass=ce97445a-664e-44f1-a096-95c97ffd084e",
 									"host": [
 										"{{base_url}}"
 									],
@@ -1329,7 +1223,7 @@
 									"query": [
 										{
 											"key": "well_subclass",
-											"value": "5a313ffe-47e7-11e7-a919-92ebcb67fe33"
+											"value": "ce97445a-664e-44f1-a096-95c97ffd084e"
 										}
 									]
 								}
@@ -1342,7 +1236,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "db4131eb-f4cf-4128-954f-fe3ab7958aca",
 										"exec": [
 											"pm.test(\"Legal block matches filter\", function () {",
 											"  const legalBlock = pm.request.url.query.get(\"legal_block\");",
@@ -1358,10 +1252,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?legal_block=block",
 									"host": [
@@ -1388,7 +1278,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "d0893e48-c480-473f-9fa2-5f807377303d",
 										"exec": [
 											"pm.test(\"Legal township matches filter\", function () {",
 											"  const legalTownship = pm.request.url.query.get(\"legal_township\");",
@@ -1404,10 +1294,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?legal_township=township",
 									"host": [
@@ -1434,7 +1320,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "7440104b-79a2-41d8-adfb-98072006fc33",
 										"exec": [
 											"pm.test(\"Legal range matches filter\", function () {",
 											"  const legalRange = pm.request.url.query.get(\"legal_range\");",
@@ -1450,10 +1336,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?legal_range=3",
 									"host": [
@@ -1480,7 +1362,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "e0dc1513-b3ec-4a25-bc2b-bfbd3ef11bef",
 										"exec": [
 											"pm.test(\"Drilling company matches filter\", function () {",
 											"  const drillingCompany = pm.request.url.query.get(\"drilling_company\");",
@@ -1496,10 +1378,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?drilling_company=f606669c-a60c-422d-859a-fdc54278d9b0",
 									"host": [
@@ -1526,7 +1404,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "8f6a962f-b265-470a-9b34-24cb61c35cf6",
 										"exec": [
 											"pm.test(\"Coordinate acquisition code matches filter\", function () {",
 											"  const coordinateAcquisitionCode = pm.request.url.query.get(\"coordinate_acquisition_code\");",
@@ -1542,10 +1420,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?coordinate_acquisition_code=H",
 									"host": [
@@ -1572,7 +1446,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "72f51984-6291-448c-8ddd-4e8b58bc35ea",
 										"exec": [
 											"pm.test(\"Ground elevation method matches filter\", function () {",
 											"  const groundElevationMethod = pm.request.url.query.get(\"ground_elevation_method\");",
@@ -1589,10 +1463,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?ground_elevation_method=GPS",
 									"host": [
@@ -1619,7 +1489,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "c98e9ab0-d44b-49cd-9886-141c512aac18",
 										"exec": [
 											"pm.test(\"Surface seal material matches filter\", function () {",
 											"  const surfaceSealMaterial = pm.request.url.query.get(\"surface_seal_material\");",
@@ -1636,10 +1506,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?surface_seal_material=SND_CMT_GT",
 									"host": [
@@ -1665,7 +1531,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "20e30eb4-2393-49e8-b606-be718fa1c6b5",
+								"id": "6f32d067-4272-40a0-beaa-6b5170e1bfab",
 								"type": "text/javascript",
 								"exec": [
 									""
@@ -1675,7 +1541,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "0f8c39f1-546a-4879-9797-2c96ee885536",
+								"id": "d31ea845-e3cd-483b-af3a-7c674021cbd2",
 								"type": "text/javascript",
 								"exec": [
 									"pm.test(\"Response status ok\", function () {",
@@ -1688,6 +1554,7 @@
 							}
 						}
 					],
+					"protocolProfileBehavior": {},
 					"_postman_isSubFolder": true
 				},
 				{
@@ -1699,7 +1566,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "27bcffa0-cb8e-4b0a-8b68-4a4eb25877cf",
 										"exec": [
 											"pm.test(\"Construction start date matches filter\", function () {",
 											"  const constructionStartBefore = new Date(pm.request.url.query.get(\"construction_start_date_before\"));",
@@ -1717,10 +1584,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?construction_start_date_before=1975-12-31",
 									"host": [
@@ -1747,7 +1610,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "3a3fd4e8-fdd0-4189-827f-f48d30dfd84d",
 										"exec": [
 											"pm.test(\"Construction start date matches filter\", function () {",
 											"  const constructionStartAfter = new Date(pm.request.url.query.get(\"construction_start_date_after\"));",
@@ -1765,10 +1628,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?construction_start_date_after=1975-01-01",
 									"host": [
@@ -1795,7 +1654,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "3c98a455-063d-4a9c-bccc-b2985bf8278f",
 										"exec": [
 											"pm.test(\"Construction end date matches filter\", function () {",
 											"  const constructionEndBefore = new Date(pm.request.url.query.get(\"construction_end_date_before\"));",
@@ -1813,10 +1672,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?construction_end_date_before=1976-12-31",
 									"host": [
@@ -1843,7 +1698,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "9cebca4c-8a81-4721-838d-ff4e207f9409",
 										"exec": [
 											"pm.test(\"Construction end date matches filter\", function () {",
 											"  const constructionEndAfter = new Date(pm.request.url.query.get(\"construction_end_date_after\"));",
@@ -1861,10 +1716,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?construction_end_date_after=1976-01-01",
 									"host": [
@@ -1891,7 +1742,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "d46c0e4c-06b3-4e46-951a-e6969f1466d0",
 										"exec": [
 											"pm.test(\"Alteration start date matches filter\", function () {",
 											"  const alterationStartBefore = new Date(pm.request.url.query.get(\"alteration_start_date_before\"));",
@@ -1909,10 +1760,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?alteration_start_date_before=2014-12-31",
 									"host": [
@@ -1939,7 +1786,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "bd8ba8f0-67a0-4832-9de8-2f217ead74bd",
 										"exec": [
 											"pm.test(\"Alteration start date matches filter\", function () {",
 											"  const alterationStartAfter = new Date(pm.request.url.query.get(\"alteration_start_date_after\"));",
@@ -1957,10 +1804,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?alteration_start_date_after=2014-01-01",
 									"host": [
@@ -1987,7 +1830,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "d2d521a6-02e7-4c1f-80d1-b8034c137be5",
 										"exec": [
 											"pm.test(\"Alteration end date matches filter\", function () {",
 											"  const alterationEndBefore = new Date(pm.request.url.query.get(\"alteration_end_date_before\"));",
@@ -2005,10 +1848,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?alteration_end_date_before=2019-01-01",
 									"host": [
@@ -2035,7 +1874,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "caed6591-2f20-410a-a425-9e3a891730d6",
 										"exec": [
 											"pm.test(\"Alteration end date matches filter\", function () {",
 											"  const alterationEndAfter = new Date(pm.request.url.query.get(\"alteration_end_date_after\"));",
@@ -2053,10 +1892,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?alteration_end_date_after=2018-12-30",
 									"host": [
@@ -2083,7 +1918,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "fd7c2448-bf19-400c-a9f5-ad02c24243f8",
 										"exec": [
 											"pm.test(\"Decommission end date matches filter\", function () {",
 											"  const decommissionStartBefore = new Date(pm.request.url.query.get(\"decommission_start_date_before\"));",
@@ -2101,10 +1936,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?decommission_start_date_before=2019-02-03",
 									"host": [
@@ -2131,7 +1962,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "fd2b0207-72f3-4055-bbca-be813e04189d",
 										"exec": [
 											"pm.test(\"Decommission end date matches filter\", function () {",
 											"  const decommissionStartAfter = new Date(pm.request.url.query.get(\"decommission_start_date_after\"));",
@@ -2149,10 +1980,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?decommission_start_date_after=2019-02-01",
 									"host": [
@@ -2179,7 +2006,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "42a6de0b-f377-4c51-a9ee-88c457df2eaf",
 										"exec": [
 											"pm.test(\"Decommission end date matches filter\", function () {",
 											"  const decommissionEndBefore = new Date(pm.request.url.query.get(\"decommission_end_date_before\"));",
@@ -2197,10 +2024,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?decommission_end_date_before=2019-02-09",
 									"host": [
@@ -2227,7 +2050,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "252ddb5c-ae60-49f6-a58e-0f661b887d90",
 										"exec": [
 											"pm.test(\"Decommission end date matches filter\", function () {",
 											"  const decommissionEndAfter = new Date(pm.request.url.query.get(\"decommission_end_date_after\"));",
@@ -2245,10 +2068,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?decommission_end_date_after=2019-02-07",
 									"host": [
@@ -2274,7 +2093,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "4e83bc7e-9776-4973-b75f-98525319da24",
+								"id": "b403bdc2-af40-441f-8ab5-50e696961574",
 								"type": "text/javascript",
 								"exec": [
 									""
@@ -2284,7 +2103,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "8d6bb995-6356-434e-9573-7f78f8e812be",
+								"id": "31dbe388-5f8a-4ba7-9a74-d804c2a07947",
 								"type": "text/javascript",
 								"exec": [
 									"pm.test(\"Response status ok\", function () {",
@@ -2297,6 +2116,7 @@
 							}
 						}
 					],
+					"protocolProfileBehavior": {},
 					"_postman_isSubFolder": true
 				},
 				{
@@ -2308,7 +2128,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "dcd7cfdd-31e1-4bee-8149-9a7d3ac7e059",
 										"exec": [
 											"pm.test(\"Liner diameter matches filter\", function () {",
 											"  const linerDiameter = parseFloat(pm.request.url.query.get(\"liner_diameter_min\"));",
@@ -2327,10 +2147,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?liner_diameter_min=1.3",
 									"host": [
@@ -2357,7 +2173,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "3cd1e802-4476-474f-8b25-029172940f5e",
 										"exec": [
 											"pm.test(\"Liner diameter matches filter\", function () {",
 											"  const linerDiameter = parseFloat(pm.request.url.query.get(\"liner_diameter_max\"));",
@@ -2376,10 +2192,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?liner_diameter_max=1.6",
 									"host": [
@@ -2405,7 +2217,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "081d1206-8782-4784-9078-b6c0b5b915ba",
+								"id": "622ced25-efc0-4013-a372-33178dc1328c",
 								"type": "text/javascript",
 								"exec": [
 									""
@@ -2415,7 +2227,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "5d8f186c-7c77-4a07-8d18-854fd7886e61",
+								"id": "e63b8882-05f1-4fcc-acb5-103f0146f7d8",
 								"type": "text/javascript",
 								"exec": [
 									"pm.test(\"Response status ok\", function () {",
@@ -2428,6 +2240,7 @@
 							}
 						}
 					],
+					"protocolProfileBehavior": {},
 					"_postman_isSubFolder": true
 				},
 				{
@@ -2437,7 +2250,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "8aa83863-3424-454d-b02e-03d2077b9b48",
+								"id": "b37c2292-e84a-4018-89ca-dbfb8aa73faf",
 								"type": "text/javascript",
 								"exec": [
 									""
@@ -2447,7 +2260,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "716dd774-8ca7-4377-afa1-06796ba9fa76",
+								"id": "1ed0e040-720d-4525-a1ef-1be97727e421",
 								"type": "text/javascript",
 								"exec": [
 									"pm.test(\"Response status ok\", function () {",
@@ -2460,6 +2273,7 @@
 							}
 						}
 					],
+					"protocolProfileBehavior": {},
 					"_postman_isSubFolder": true
 				},
 				{
@@ -2471,7 +2285,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "44496d4a-28fd-43e7-b110-44fb9a00d878",
 										"exec": [
 											"pm.test(\"Street address matches filter\", function () {",
 											"  const streetAddress = pm.request.url.query.get(\"street_address\").toLowerCase();",
@@ -2488,10 +2302,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?street_address=Main st",
 									"host": [
@@ -2518,7 +2328,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "cbd69e06-8d75-4062-a406-c69a11d7bc89",
 										"exec": [
 											"pm.test(\"Owner matches filter\", function () {",
 											"  const ownerFullName = pm.request.url.query.get(\"owner_full_name\").toLowerCase();",
@@ -2534,10 +2344,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?owner_full_name=Alice",
 									"host": [
@@ -2564,7 +2370,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "893e5214-f9d9-4737-ab03-2b3fe67fedd4",
 										"exec": [
 											"pm.test(\"Well location description matches filter\", function () {",
 											"  const wellLocationDesc = pm.request.url.query.get(\"well_location_description\");",
@@ -2580,10 +2386,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?well_location_description=highway 95",
 									"host": [
@@ -2610,7 +2412,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "cd46c0fb-6ef5-44e4-972d-c1a0a678c3e0",
 										"exec": [
 											"pm.test(\"Well identification plate attached matches filter\", function () {",
 											"  const wellIdPlateAttached = pm.request.url.query.get(\"well_identification_plate_attached\");",
@@ -2627,10 +2429,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?well_identification_plate_attached=casing",
 									"host": [
@@ -2657,7 +2455,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "e24fc6e8-cf8a-48ed-b731-d73527c9c05b",
 										"exec": [
 											"pm.test(\"Water supply system name matches filter\", function () {",
 											"  const waterSupplySystemName = pm.request.url.query.get(\"water_supply_system_name\");",
@@ -2674,10 +2472,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?water_supply_system_name=test",
 									"host": [
@@ -2704,7 +2498,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "71c3687c-0f36-40ec-83ba-2932c771b2e9",
 										"exec": [
 											"pm.test(\"Water supply system well name matches filter\", function () {",
 											"  const waterSupplySystemWellName = pm.request.url.query.get(\"water_supply_system_well_name\");",
@@ -2721,10 +2515,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?water_supply_system_well_name=test",
 									"host": [
@@ -2751,7 +2541,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "7b9dd171-effb-4d2c-8685-834961415d6a",
+								"id": "4131f812-b9e4-44ff-bc48-d1ab0ec6baec",
 								"type": "text/javascript",
 								"exec": [
 									""
@@ -2761,7 +2551,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "71dc461d-95ac-46ff-80ff-72ba2053df07",
+								"id": "49f961b8-668f-4301-867f-35c01f14cf5f",
 								"type": "text/javascript",
 								"exec": [
 									"pm.test(\"Response status ok\", function () {",
@@ -2774,6 +2564,7 @@
 							}
 						}
 					],
+					"protocolProfileBehavior": {},
 					"_postman_isSubFolder": true
 				},
 				{
@@ -2785,7 +2576,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "ca2d9c99-5e4d-4861-9f37-e376eccd94dc",
+										"id": "6c3d0ae8-d000-4691-b18e-3c34da75a062",
 										"exec": [
 											"pm.test(\"Water quality characteristics matches filter\", () => {",
 											"  const waterQualityCharacteristics = ['CLOUDY', 'SALTY'];",
@@ -2803,10 +2594,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?water_quality_characteristics=SALTY&water_quality_characteristics=CLOUDY",
 									"host": [
@@ -2837,7 +2624,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "15026f5c-e2c7-4d9d-a4e3-148281fde94d",
 										"exec": [
 											"pm.test(\"Drilling method matches filter\", function () {",
 											"  const drillingMethod = pm.request.url.query.get(\"drilling_methods\");",
@@ -2854,10 +2641,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?drilling_methods=DUGOUT",
 									"host": [
@@ -2883,7 +2666,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "d2a1ad34-bb98-4b02-b341-047338fc4fe1",
+								"id": "639c1abc-b98b-40b7-9a2f-da2d1c4cbcd0",
 								"type": "text/javascript",
 								"exec": [
 									""
@@ -2893,7 +2676,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "0869bfa7-9392-4b7c-be3c-909241c29234",
+								"id": "8f41cda6-05bf-40e4-984b-624585b9bfa1",
 								"type": "text/javascript",
 								"exec": [
 									"pm.test(\"Response status ok\", function () {",
@@ -2906,6 +2689,7 @@
 							}
 						}
 					],
+					"protocolProfileBehavior": {},
 					"_postman_isSubFolder": true
 				},
 				{
@@ -2917,7 +2701,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "11f7946c-15e1-41ea-bcc8-ed7d121f5761",
+										"id": "c7ee5611-1545-4e2f-8ed9-8c56f9fbcc92",
 										"exec": [
 											"pm.test(\"Response status ok\", function () {",
 											"  pm.response.to.be.ok;",
@@ -2933,10 +2717,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?sw_long=-122.60&sw_lat=49.24&ne_long=-122.58&ne_lat=49.26",
 									"host": [
@@ -2975,7 +2755,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "11f7946c-15e1-41ea-bcc8-ed7d121f5761",
+										"id": "326311e6-b40c-425c-b7e4-06a7973bf494",
 										"exec": [
 											"pm.test(\"Response status ok\", function () {",
 											"  pm.response.to.be.ok;",
@@ -2991,10 +2771,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?sw_long=-122.60&sw_lat=49.24&ne_long=-122.58",
 									"host": [
@@ -3029,7 +2805,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "19dcd02f-9e31-4876-9102-fe274f4d678e",
+										"id": "3ce0ed3e-3ffe-44e7-9582-7d3f20dfe1fe",
 										"exec": [
 											"pm.test(\"Response status ok\", function () {",
 											"  pm.response.to.be.ok;",
@@ -3045,10 +2821,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?sw_lat=bar&sw_long=foo&ne_long=test&ne_lat=avalue",
 									"host": [
@@ -3086,7 +2858,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "9ec0a743-32fa-41cc-bde9-490baab9459a",
+								"id": "271d72e5-f00d-4778-bf3e-57457bd1ee3d",
 								"type": "text/javascript",
 								"exec": [
 									""
@@ -3096,7 +2868,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "62d9d922-c2e8-4c93-abbd-a4a3aa409a69",
+								"id": "48d6bfa6-35aa-498a-af02-968ee92d6684",
 								"type": "text/javascript",
 								"exec": [
 									""
@@ -3104,6 +2876,7 @@
 							}
 						}
 					],
+					"protocolProfileBehavior": {},
 					"_postman_isSubFolder": true
 				},
 				{
@@ -3115,7 +2888,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "bf88a61b-60ea-4359-9309-2c1378fdf864",
 										"exec": [
 											""
 										],
@@ -3126,10 +2899,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?well_orientation=False&well_status=OTHER&match_any=false&filter_group={\"owner_full_name\": \"Smith\", \"match_any\": false}",
 									"host": [
@@ -3168,7 +2937,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+										"id": "fdf55740-6dd2-4698-bb18-fd8044d6e276",
 										"exec": [
 											""
 										],
@@ -3179,10 +2948,6 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
 								"url": {
 									"raw": "{{base_url}}/api/v1/wells?well_orientation=True&well_status=OTHER&match_any=true&filter_group={\"surface_seal_material\": \"BNTITE_CLY\"}&filter_group={\"owner_full_name\": \"MOUNTED\", \"match_any\": true}",
 									"host": [
@@ -3220,6 +2985,7 @@
 							"response": []
 						}
 					],
+					"protocolProfileBehavior": {},
 					"_postman_isSubFolder": true
 				}
 			],
@@ -3227,7 +2993,7 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "e31e5df7-1aa3-482a-98ab-7805868da3cf",
+						"id": "5f9fcf81-9573-4244-8c75-e77313fc8b54",
 						"type": "text/javascript",
 						"exec": [
 							""
@@ -3237,14 +3003,15 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "e1590f10-c38c-4fb2-9ce6-93ba9fd3c5eb",
+						"id": "bf27256e-ea55-4400-9555-2ddbdb4dd710",
 						"type": "text/javascript",
 						"exec": [
 							""
 						]
 					}
 				}
-			]
+			],
+			"protocolProfileBehavior": {}
 		},
 		{
 			"name": "Ordering",
@@ -3255,7 +3022,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+								"id": "95e085d3-20fb-4a72-962f-79f613dcffe7",
 								"exec": [
 									"const ascResultSort = (a, b) => {",
 									"  if (a === null){",
@@ -3290,10 +3057,6 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/wells?ordering=identification_plate_number",
 							"host": [
@@ -3320,7 +3083,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+								"id": "cd3a0377-79c3-4ccd-a73d-7c07dffcf13d",
 								"exec": [
 									"const ascResultSort = (a, b) => {",
 									"  if (a === null){",
@@ -3355,10 +3118,6 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/wells?ordering=construction_start_date",
 							"host": [
@@ -3385,7 +3144,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+								"id": "c79b20e3-2d0c-4d0c-8a32-f8e7c4427670",
 								"exec": [
 									"const descResultSort = (a, b) => {",
 									"",
@@ -3421,10 +3180,6 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/wells?ordering=-owner_full_name",
 							"host": [
@@ -3451,7 +3206,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+								"id": "3b5d98ac-89df-4ed0-b81e-74476ce9da81",
 								"exec": [
 									"const ascResultSort = (a, b) => {",
 									"  if (a === null){",
@@ -3492,10 +3247,6 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/wells?ordering=drilling_methods&limit=10",
 							"host": [
@@ -3526,7 +3277,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+								"id": "9b7d2cd9-dcfc-4ee1-8aa5-8347152bb215",
 								"exec": [
 									"const ascResultSort = (a, b) => {",
 									"  if (a === null){",
@@ -3562,10 +3313,6 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/wells?ordering=surface_seal_method",
 							"host": [
@@ -3592,7 +3339,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "4b92002d-dd3d-4b42-98ff-f11008badceb",
+								"id": "2ab84064-9f66-4c49-8793-1ecd711d66ac",
 								"exec": [
 									"const descResultSort = (a, b) => {",
 									"",
@@ -3629,10 +3376,6 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
 							"raw": "{{base_url}}/api/v1/wells?ordering=-well_class",
 							"host": [
@@ -3658,7 +3401,7 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "489ea538-6706-436a-a3c6-1a7afa02b212",
+						"id": "6dfc370a-dc1f-4f3b-a44c-742b4385e45c",
 						"type": "text/javascript",
 						"exec": [
 							""
@@ -3668,7 +3411,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "e815af75-b06c-4767-bf96-ed635dbff9be",
+						"id": "a6073aa8-9488-4bbf-a330-c18c75f4e1e3",
 						"type": "text/javascript",
 						"exec": [
 							"pm.test(\"Response status ok\", function () {",
@@ -3680,14 +3423,15 @@
 						]
 					}
 				}
-			]
+			],
+			"protocolProfileBehavior": {}
 		}
 	],
 	"event": [
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "d7a0a824-1538-46a8-b89a-2ffadc41428f",
+				"id": "59b58a99-bfee-41a8-b1c7-fa981010a023",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -3697,7 +3441,7 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "d0c5ca05-8884-48bf-88d3-9dc425dd6ba5",
+				"id": "0501b807-c1e0-448b-bef0-4cf09d8f6dfc",
 				"type": "text/javascript",
 				"exec": [
 					"pm.test(\"Response is valid JSON\", function () {",
@@ -3708,5 +3452,6 @@
 				]
 			}
 		}
-	]
+	],
+	"protocolProfileBehavior": {}
 }
