@@ -39,7 +39,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
             </a>
           </p>
         </b-alert>
-
+        <b-alert show v-if="isUnpublished" variant="warning">
+          This well is unpublished and will be hidden from DataBC, iMapBC, GWELLS Well Search, and the CSV/XLS export
+        </b-alert>
         <!-- SUMMARY -->
         <fieldset id="summary_fieldset" class="detail-section mb-3">
           <legend>
@@ -583,6 +585,10 @@ export default {
           active: true
         }
       ]
+    },
+    isUnpublished () {
+      // TODO:// finish me
+      return true
     },
     ...mapGetters(['userRoles', 'config', 'well', 'wellLicence', 'storedWellId'])
   },

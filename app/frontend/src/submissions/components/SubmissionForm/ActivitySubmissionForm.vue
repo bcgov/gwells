@@ -41,6 +41,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </b-row>
     </div>
     <div v-else>
+      <div>
+        <b-card class="container container-wide card-container p-0 pb-5 main-card" style="border: 0; background-color:rgb(255, 255, 255)">
+          <b-alert show variant="warning">
+            This well is unpublished and will be hidden from DataBC, iMapBC, GWELLS Well Search, and the CSV/XLS export
+          </b-alert>
+        </b-card>
+      </div>
       <b-row v-if="isStaffEdit">
           <b-col lg="3" v-for="step in stepCodes" :key='step'>
             <a :href="`#${step}`" @click.prevent="anchorLinkHandler(step)">{{formStepDescriptions[step] ? formStepDescriptions[step] : step}}</a>
