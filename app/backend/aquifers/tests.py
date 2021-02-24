@@ -11,9 +11,11 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
+from django.contrib.gis.geos import GEOSGeometry
 from django.test import TestCase
+from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User, Group
-
+from django.utils import timezone
 from rest_framework.test import APITestCase
 from rest_framework import status
 from rest_framework.reverse import reverse
@@ -23,6 +25,26 @@ from gwells.settings import REST_FRAMEWORK
 from gwells.roles import roles_to_groups, AQUIFERS_EDIT_ROLE, AQUIFERS_VIEWER_ROLE
 
 # Create your tests here.
+
+
+class TestAquiferMappingYearDynamicMaxValueValidator(APITestCase):
+    dummy_geom = GEOSGeometry(
+        'MULTIPOLYGON(((-5.86333200   8.14347501,   -6.70445600   7.47862301,   -3.44929601   6.28074401,   -3.08375301   3.08165901,   -1.71378401   3.10939901,   -5.86333200   8.14347501)))')
+    dummy_aquifer = {'create_user': 'TEST_GWELLS', 'update_user': 'TEST_GWELLS', 'geom': dummy_geom, 'geom_simplified': dummy_geom, 'mapping_year': None }
+
+    def test_create_proper_dated_mapping_year_aquifer(self):
+        aquifer = Aquifer.objects.create(**TestAquiferMappingYearDynamicMaxValueValidator.dummy_aquifer)
+        aquifer.mapping_year = timezone.now().year
+        aquifer.area = 124.5
+        aquifer.full_clean()
+
+    def test_create_postdated_mapping_year_aquifer(self):
+        with self.assertRaises(ValidationError):
+            aquifer = Aquifer.objects.create(**TestAquiferMappingYearDynamicMaxValueValidator.dummy_aquifer)
+            aquifer.mapping_year = timezone.now().year + 1
+            aquifer.area = 124.5
+            aquifer.full_clean()
+
 
 class TestPostNotAuthenticated(APITestCase):
     def test_not_authenticated_attempts_patch(self):
