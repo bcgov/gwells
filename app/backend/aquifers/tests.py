@@ -37,7 +37,6 @@ class TestAquiferMappingYearDynamicMaxValueValidator(APITestCase):
         aquifer.mapping_year = timezone.now().year
         aquifer.area = 124.5
         aquifer.full_clean()
-        pass
 
     def test_create_postdated_mapping_year_aquifer(self):
         with self.assertRaises(ValidationError):
