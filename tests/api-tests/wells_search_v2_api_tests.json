@@ -1211,7 +1211,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?well_subclass=5a313ffe-47e7-11e7-a919-92ebcb67fe33",
+									"raw": "{{base_url}}/api/v2/wells?well_subclass=ce97445a-664e-44f1-a096-95c97ffd084e",
 									"host": [
 										"{{base_url}}"
 									],
@@ -1223,7 +1223,7 @@
 									"query": [
 										{
 											"key": "well_subclass",
-											"value": "5a313ffe-47e7-11e7-a919-92ebcb67fe33"
+											"value": "ce97445a-664e-44f1-a096-95c97ffd084e"
 										}
 									]
 								}
