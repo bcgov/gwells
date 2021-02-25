@@ -37,6 +37,8 @@ exports[`WellDetail.vue should match snapshot 1`] = `
       titletag="h4"
     >
        
+      <!---->
+       
       <fieldset
         class="detail-section mb-3"
         id="summary_fieldset"

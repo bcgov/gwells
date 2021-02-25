@@ -587,7 +587,7 @@ export default {
       ]
     },
     isUnpublished () {
-      return this.well.well_publication_status.includes('unpublished')
+      return (this.well != null && this.well.well_publication_status != null && this.well.well_publication_status.includes('unpublished'))
     },
     ...mapGetters(['userRoles', 'config', 'well', 'wellLicence', 'storedWellId'])
   },
