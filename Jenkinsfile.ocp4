@@ -157,11 +157,6 @@ def unitTestDjango (String stageName, String envProject, String envSuffix) {
 // API test function
 def apiTest (String stageName, String stageUrl, String envSuffix) {
 
-    // NOTE: temporarily skip due to use of podTemplate
-    if (platformEnv == '4') {
-        return true
-    }
-
     _openshift(env.STAGE_NAME, toolsProject) {
         podTemplate(
             label: "nodejs-${appName}-${envSuffix}-${prNumber}",
