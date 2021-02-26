@@ -612,6 +612,10 @@ export default {
     submissionsHistory: {
       type: Array,
       default: () => ([])
+    },
+    isPublished: {
+      type: Boolean,
+      isInput: false
     }
   },
   components: {
@@ -736,7 +740,7 @@ export default {
       return this.formSubmitLoading || !this.formValueChanged
     },
     isUnpublished () {
-      return (this.form != null && this.form.well_publication_status != null && this.form.well_publication_status.includes('unpublished'))
+      return !this.isPublished
     }
   },
   methods: {

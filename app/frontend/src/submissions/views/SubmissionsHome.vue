@@ -64,6 +64,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 :form="form"
                 :events="events"
                 :submissionsHistory="submissionsHistory"
+                :isPublished="isPublished"
                 :activityType.sync="activityType"
                 :sections="displayFormSection"
                 :formSteps="formSteps"
@@ -713,6 +714,9 @@ export default {
         // store the number of submissions already associated with this well
         this.submissionsHistory = res.data.submission_reports || []
 
+        // store the is published flag for this well
+        this.isPublished = res.data.is_published
+
         // Wait for the form update we just did to fire off change events.
         this.$nextTick(() => {
           this.form.meta.valueChanged = {}
@@ -766,6 +770,7 @@ function initialState () {
     errors: {},
     form: {},
     submissionsHistory: [], // historical submissions for each well (comes into play for staff edits)
+    isPublished: false,
     formOptions: {},
     surveys: {
       submissions: [],
