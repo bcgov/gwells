@@ -375,8 +375,17 @@ def deployToDev() {
                                     copiedModel.metadata.remove('resourceVersion')
                                     copiedModel.metadata.remove('selfLink')
                                     copiedModel.metadata.remove('uid')
+
+                                    // set Minio host for dev environments
+                                    if (sourceName == 'gwells-global-config') {
+                                        copiedModel.data['S3_PRIVATE_HOST'] = "gwells-docs-${devSuffix}-${prNumber}.apps.silver.devops.gov.bc.ca"
+                                    }
+                                    
                                     echo "[as-copy-of] Copying ${o.kind} ${o.metadata.name}"
                                     newObjectCopies.add(copiedModel)
+
+
+
                                 }
                             }
                         }
