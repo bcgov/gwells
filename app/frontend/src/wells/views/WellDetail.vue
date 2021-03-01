@@ -40,7 +40,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </p>
         </b-alert>
         <b-alert show v-if="show.edit && isUnpublished" variant="warning">
-          This well is unpublished and will be hidden from DataBC, iMapBC, GWELLS Well Search, and the CSV/XLS export
+          This well is unpublished and will be hidden from DataBC, iMapBC, GWELLS Well Search, and the CSV/XLS export.
         </b-alert>
         <!-- SUMMARY -->
         <fieldset id="summary_fieldset" class="detail-section mb-3">
