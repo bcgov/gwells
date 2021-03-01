@@ -49,7 +49,7 @@
                 },
                 "tags":[
                     {
-                        "name": "v3",
+                        "name": "latest",
                         "annotations": null,
                         "from": {
                             "kind": "DockerImage",
@@ -121,7 +121,7 @@
                     "sourceStrategy": {
                         "from": {
                             "kind": "ImageStreamTag",
-                            "name": "gwells-python:v2"
+                            "name": "gwells-python:v3"
                         },
                         "env": [
                             {
