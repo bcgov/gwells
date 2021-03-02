@@ -96,30 +96,64 @@ Licensed under the Apache License, Version 2.0 (the "License");
         </form-input>
       </b-col>
     </b-row>
+
     <b-row>
       <b-col cols="12" md="6" lg="4">
-        <form-input
-            id="artesianFlow"
-            label="Artesian Flow"
-            v-model="artesianFlowInput"
-            hint="USgpm"
-            type="number"
-            :errors="errors['artesian_flow']"
-            :loaded="fieldsLoaded['artesian_flow']">
-        </form-input>
+<!--        <form-input-->
+<!--            id="artesianConditions"-->
+<!--            label="Artesian Well"-->
+<!--            v-model="artesianConditionsInput"-->
+<!--            type="number"-->
+<!--            :errors="errors['artesian_conditions']"-->
+<!--            :loaded="fieldsLoaded['artesian_conditions']">-->
+<!--        </form-input>-->
+        <b-form-group label="Artesian Well">
+          <b-form-radio-group id="artesianConditionsRadio" class="mt-1" v-model="artesianConditionsInput">
+            <b-form-radio
+              v-for="(method, index) in codes.decommission_methods"
+              :key="`decommissionMethodOption${index}`"
+              :value="method.decommission_method_code">{{method.description}}</b-form-radio>
+          </b-form-radio-group>
+        </b-form-group>
       </b-col>
       <b-col cols="12" md="6" lg="4">
         <form-input
-            id="artesianPressure"
-            label="Artesian Pressure"
-            v-model="artesianPressureInput"
-            hint="ft"
-            type="number"
-            :errors="errors['artesian_pressure']"
-            :loaded="fieldsLoaded['artesian_pressure']">
+          id="artesianFlow"
+          label="Artesian Flow"
+          v-model="artesianFlowInput"
+          hint="USgpm"
+          type="number"
+          :errors="errors['artesian_flow']"
+          :loaded="fieldsLoaded['artesian_flow']">
         </form-input>
       </b-col>
     </b-row>
+
+    <b-row>
+      <b-col cols="12" md="6" lg="4">
+        <form-input
+          id="artesianFlow"
+          label="Artesian Flow"
+          v-model="artesianFlowInput"
+          hint="USgpm"
+          type="number"
+          :errors="errors['artesian_flow']"
+          :loaded="fieldsLoaded['artesian_flow']">
+        </form-input>
+      </b-col>
+      <b-col cols="12" md="6" lg="4">
+        <form-input
+          id="artesianPressure"
+          label="Artesian Pressure"
+          v-model="artesianPressureInput"
+          hint="ft"
+          type="number"
+          :errors="errors['artesian_pressure']"
+          :loaded="fieldsLoaded['artesian_pressure']">
+        </form-input>
+      </b-col>
+    </b-row>
+
     <b-row>
       <b-col cols="12" md="6" lg="4">
         <form-input
@@ -167,6 +201,7 @@ export default {
     wellYield: String,
     artesianFlow: String,
     artesianPressure: String,
+    artesianConditions: Boolean,
     wellCapType: String,
     wellDisinfected: null,
     errors: {
@@ -198,6 +233,7 @@ export default {
     staticWaterLevelInput: 'staticWaterLevel',
     wellYieldInput: 'wellYield',
     artesianFlowInput: 'artesianFlow',
+    artesianConditionsInput: 'artesianConditions',
     artesianPressureInput: 'artesianPressure',
     wellCapTypeInput: 'wellCapType',
     wellDisinfectedInput: 'wellDisinfected'
