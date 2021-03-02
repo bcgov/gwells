@@ -49,13 +49,10 @@ class DynamicMaxValueValidator(MaxValueValidator):
     """
     def __call__(self, value):
         cleaned = self.clean(value)
-        params = {'limit_value': self.limit_value(), 'show_value': cleaned}
-        if self.compare(cleaned, self.limit_value()):
-            raise ValidationError(
-                self.message % params,
-                code=self.code,
-                params=params,
-                )
+        limit_value = self.limit_value() if callable(self.limit_value) else self.limit_value
+        params = {'limit_value': limit_value, 'show_value': cleaned, 'value': value}
+        if self.compare(cleaned, limit_value):
+            raise ValidationError(self.message, code=self.code, params=params)
 
 
 def get_current_year() -> int:
@@ -444,7 +441,7 @@ class Aquifer(AuditModel):
     mapping_year = models.PositiveIntegerField(
         validators=[
             MinValueValidator(1990),
-            DynamicMaxValueValidator(get_current_year)],
+            DynamicMaxValueValidator(get_current_year())],
         blank=True,
         null=True,
         verbose_name="Date of Mapping",
