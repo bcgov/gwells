@@ -214,7 +214,7 @@
                                     {
                                         "name": "PGHOST",
                                         "value": "gwells-pg12${NAME_SUFFIX}"
-                                    },
+                                    }
                                 ]
                             }
                         }
@@ -295,7 +295,7 @@
                                     {
                                         "name": "PGHOST",
                                         "value": "gwells-pg12${NAME_SUFFIX}"
-                                    },
+                                    }
                                 ],
                                 "resources": {
                                     "limits": {
