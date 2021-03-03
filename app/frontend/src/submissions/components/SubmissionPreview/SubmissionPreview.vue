@@ -397,26 +397,27 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <b-col cols="12" lg="6"><span class="font-weight-bold">EMS ID:</span> {{ form.ems }}</b-col>
       </b-row>
     </fieldset>
-
     <fieldset class="my-3 detail-section" v-if="sections.wellCompletion">
       <legend>Well Completion Data</legend>
       <b-row>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Total Depth Drilled:</span> {{ form.total_depth_drilled }} {{ form.total_depth_drilled ? 'feet':''}}</b-col>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Static Water Level (BTOC):</span> {{ form.static_water_level }} {{ form.static_water_level ? 'feet': ''}}</b-col>
-        <b-col cols="12" lg="4"><span class="font-weight-bold">Well Cap:</span> {{ form.well_cap_type }}</b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Artesian Pressure (head):</span> {{ form.artesian_pressure }}</b-col>
       </b-row>
       <b-row>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Finished Well Depth:</span> {{ form.finished_well_depth }} {{ form.finished_well_depth ? 'feet':''}}</b-col>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Estimated Well Yield:</span> {{ form.well_yield }} {{ form.well_yield ? 'USGPM': ''}}</b-col>
-        <b-col cols="12" lg="4"><span class="font-weight-bold">Well Disinfected:</span> {{ form.well_disinfected_status }}</b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Artesian Pressure (PSI):</span> {{ form.artesian_pressure }}</b-col>
       </b-row>
       <b-row>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Final Casing Stick Up:</span> {{ form.final_casing_stick_up }} {{ form.final_casing_stick_up ? 'inches':''}}</b-col>
-        <b-col cols="12" lg="4"><span class="font-weight-bold">Artesian Flow:</span> {{ form.artesian_flow }} {{ form.artesian_flow ? 'USGPM': ''}}</b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Artesian Condition:</span> {{ form.artesian_conditions }} </b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Well Cap:</span> {{ form.well_cap_type }}</b-col>
       </b-row>
       <b-row>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Depth to Bedrock:</span> {{ form.bedrock_depth }} {{ form.bedrock_depth ? 'feet':''}}</b-col>
-        <b-col cols="12" lg="4"><span class="font-weight-bold">Artesian Pressure:</span> {{ form.artesian_pressure }} {{ form.artesian_pressure ? 'feet': ''}}</b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Artesian Flow:</span> {{ form.artesian_flow }} {{ form.artesian_flow ? 'USGPM': ''}}</b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Well Disinfected:</span> {{ form.well_disinfected_status }}</b-col>
       </b-row>
     </fieldset>
 

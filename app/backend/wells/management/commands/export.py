@@ -208,7 +208,8 @@ class Command(BaseCommand):
  testing_duration,
  analytic_solution_type,
  boundary_effect_code,
- aquifer_lithology_code
+ aquifer_lithology_code,
+ artesian_conditions
  from well
  left join well_subclass_code as wsc on wsc.well_subclass_guid = well.well_subclass_guid
  left join registries_person on

@@ -295,6 +295,10 @@ class WellListFilter(AnyOrAllFilterSet):
     artesian_pressure_has_value = filters.BooleanFilter(field_name='artesian_pressure',
                                                         method='filter_has_value',
                                                         label='Any value for artesian pressure')
+    artesian_conditions = filters.BooleanFilter()
+    artesian_conditions_has_value = filters.BooleanFilter(field_name='artesian_conditions',
+                                                          method='filter_has_value',
+                                                          label='Any value for artesian conditions')
     well_cap_type = filters.CharFilter(lookup_expr='icontains')
     comments = filters.CharFilter(lookup_expr='icontains')
     ems_has_value = filters.BooleanFilter(field_name='ems',
@@ -338,6 +342,7 @@ class WellListFilter(AnyOrAllFilterSet):
             'aquifer_vulnerability_index',
             'artesian_flow',
             'artesian_pressure',
+            'artesian_conditions',
             'backfill_depth',
             'backfill_type',
             'bcgs_id',
