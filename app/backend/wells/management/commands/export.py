@@ -142,11 +142,10 @@ class Command(BaseCommand):
     def generate_files(self, zip_filename, spreadsheet_filename):
         """
         # WELL
-        
+
         note on extra joins:
         well_licences: any well having at least 1 licence entry will be marked as Licensed.
         """
-
 
         well_sql = ("""select well.well_tag_number, identification_plate_number,
  well_identification_plate_attached,
