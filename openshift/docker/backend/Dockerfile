@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi8/python-36:1
+FROM registry.access.redhat.com/rhscl/python-36-rhel7:1
 
 
 # Switch to root user
@@ -59,9 +59,8 @@ RUN echo "/usr/local/lib/" >> /etc/ld.so.conf && \
 # Set working directory and user
 #
 WORKDIR /app/backend
-RUN chgrp -R 0 /app/backend && \
+RUN chmod u+w /app/backend && \
+    chgrp -R 0 /app/backend && \
     chmod -R g=u /app/backend 
 
 USER 1001
-
-
