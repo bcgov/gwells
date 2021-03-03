@@ -180,7 +180,7 @@
                             "execNewPod": {
                                 "command": [
                                     "/usr/bin/container-entrypoint",
-                                    "/app/backend/scripts/pre-deploy.sh"
+                                    "/opt/app-root/src/scripts/pre-deploy.sh"
                                 ],
                                 "containerName": "gwells-app${NAME_SUFFIX}",
                                 "env": [
@@ -215,10 +215,6 @@
                                         "name": "PGHOST",
                                         "value": "gwells-pg12${NAME_SUFFIX}"
                                     },
-                                    {
-                                        "name": "APP_SOURCE_DIR",
-                                        "value": "/app/backend"
-                                    }
                                 ]
                             }
                         }
@@ -300,10 +296,6 @@
                                         "name": "PGHOST",
                                         "value": "gwells-pg12${NAME_SUFFIX}"
                                     },
-                                    {
-                                        "name": "APP_SOURCE_DIR",
-                                        "value": "/app/backend"
-                                    }
                                 ],
                                 "resources": {
                                     "limits": {
@@ -373,7 +365,7 @@
                                     },
                                     {
                                         "name": "APP_CONFIG",
-                                        "value": "/app/backend/backend/gunicorn.ocp4.cfg"
+                                        "value": "/opt/app-root/src/backend/gunicorn.ocp4.cfg"
                                     },
                                     {
                                         "name": "DJANGO_SECRET_KEY",
@@ -721,10 +713,6 @@
                                     {
                                         "name": "ENFORCE_ENV_VARIABLES",
                                         "value": "False"
-                                    },
-                                    {
-                                        "name": "APP_SOURCE_DIR",
-                                        "value": "/app/backend"
                                     }
                                 ],
                                 "resources": {
