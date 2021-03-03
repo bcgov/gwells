@@ -324,10 +324,9 @@ class WellListFilter(AnyOrAllFilterSet):
                                                  method='filter_person_responsible_name',
                                                  label='Person responsible')
 
-
     licenced_status = filters.ModelChoiceFilter(queryset=LicencedStatusCode.objects.all(),
-        method='filter_licenced_status',
-        label='Licence status'
+                                                method='filter_licenced_status',
+                                                label='Licence status'
     )
 
     class Meta:
