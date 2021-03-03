@@ -157,11 +157,6 @@ def unitTestDjango (String stageName, String envProject, String envSuffix) {
 // API test function
 def apiTest (String stageName, String stageUrl, String envSuffix) {
 
-    // NOTE: temporarily skip due to use of podTemplate
-    if (platformEnv == '4') {
-        return true
-    }
-
     _openshift(env.STAGE_NAME, toolsProject) {
         podTemplate(
             label: "nodejs-${appName}-${envSuffix}-${prNumber}",
@@ -380,8 +375,17 @@ def deployToDev() {
                                     copiedModel.metadata.remove('resourceVersion')
                                     copiedModel.metadata.remove('selfLink')
                                     copiedModel.metadata.remove('uid')
+
+                                    // set Minio host for dev environments
+                                    if (sourceName == 'gwells-global-config') {
+                                        copiedModel.data['S3_PRIVATE_HOST'] = "gwells-docs-${devSuffix}-${prNumber}.apps.silver.devops.gov.bc.ca"
+                                    }
+                                    
                                     echo "[as-copy-of] Copying ${o.kind} ${o.metadata.name}"
                                     newObjectCopies.add(copiedModel)
+
+
+
                                 }
                             }
                         }
