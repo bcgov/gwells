@@ -1293,7 +1293,7 @@ pipeline {
                             "SCHEDULE=15 4 * * *",
                             "DEST_PVC=${nfsProdBackupPVC}",
                             "SOURCE_PVC=gwells-minio-${prodSuffix}",
-                            "PVC_SIZE=40Gi"
+                            "PVC_SIZE=20Gi"
                         )
 
                         openshift.apply(docBackupCronJob).label(
