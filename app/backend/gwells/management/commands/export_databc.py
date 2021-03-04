@@ -68,6 +68,7 @@ select
     well.aquifer_id as aquifer_id,
     well.observation_well_number,
     well.obs_well_status_code,
+    well.artesian_pressure_head,
     well.artesian_conditions
 from well
     left join well_status_code on well_status_code.well_status_code = well.well_status_code

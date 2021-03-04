@@ -927,6 +927,10 @@ class Well(AuditModelStructure):
         max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Artesian Pressure',
         db_comment=('Pressure of the water coming out of an artesian well as measured at the time of '
                     'construction. Measured in PSI (pounds per square inch).'))
+    artesian_pressure_head = models.DecimalField(
+        max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Artesian Pressure head',
+        db_comment=('Pressure of the water coming out of an artesian well as measured at the time of '
+                    'construction. Measured in ft agl (feet above ground level).'))
     artesian_conditions = models.BooleanField(
         default=False, null=False, verbose_name='Artesian Conditions?', choices=((False, 'No'), (True, 'Yes')),
         db_comment=('Artesian conditions arise when there is a movement of groundwater from a recharge '
@@ -1151,6 +1155,8 @@ class Well(AuditModelStructure):
         "alternative_specs_submitted":"Indicates if an alternative specification was used for siting of a water supply well or a permanent dewatering well, or if an alternative specification was used for decommissioning a well.",
         "aquifer_id":"System generated sequential number assigned to each aquifer. It is widely used by groundwater staff as it is the only consistent unique identifier for a mapped aquifer. It is also commonly referred to as Aquifer Number.",
         "artesian_flow":"Measurement of the artesian well's water flow that occurs naturally due to inherent water pressure in the well. Pressure within the aquifer forces the groundwater to rise above the land surface naturally without using a pump. Flowing artesian wells can flow on an intermittent or continuous basis. Recorded in US Gallons Per Minute.",
+        "artesian_pressure":"Pressure of the water coming out of an artesian well as measured at the time of construction. Measured in PSI (pounds per square inch).",
+        "artesian_pressure_head":"Pressure of the water coming out of an artesian well as measured at the time of construction. Measured in ft agl (feet above ground level).",
         "artesian_conditions":"Artesian conditions arise when there is a movement of groundwater from a recharge area under a confining formation to a point of discharge at a lower elevation. An example of this is a natural spring, or in the example of the drilling industry, a flowing water well.",
         "bcgs_id":"TO BE DELETED?",
         "boundary_effect_code":"Valid codes for the boundaries observed in pumping test analysis. i.e. CH, NF.",
@@ -1589,6 +1595,10 @@ class ActivitySubmission(AuditModelStructure):
         max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Artesian Pressure',
         db_comment=('Pressure of the water coming out of an artesian well as measured at the time of'
                     ' construction. Measured in PSI (pounds per square inch).'))
+    artesian_pressure_head = models.DecimalField(
+        max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Artesian Pressure head',
+        db_comment=('Pressure of the water coming out of an artesian well as measured at the time of '
+                    'construction. Measured in ft agl (feet above ground level).'))
     artesian_conditions = models.BooleanField(
         default=False, null=False, verbose_name='Artesian Conditions?', choices=((False, 'No'), (True, 'Yes')),
         db_comment=('Artesian conditions arise when there is a movement of groundwater from a recharge '
@@ -1934,6 +1944,7 @@ class FieldsProvided(models.Model):
     well_yield = models.BooleanField(default=False)
     artesian_flow = models.BooleanField(default=False)
     artesian_pressure = models.BooleanField(default=False)
+    artesian_pressure_head = models.BooleanField(default=False)
     artesian_conditions = models.BooleanField(default=False)
     well_cap_type = models.BooleanField(default=False)
     well_disinfected = models.BooleanField(default=False)

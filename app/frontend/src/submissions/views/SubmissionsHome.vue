@@ -519,6 +519,7 @@ export default {
         well_yield: '',
         artesian_flow: '',
         artesian_pressure: '',
+        artesian_pressure_head: '',
         artesian_conditions: false,
         well_cap_type: '',
         well_disinfected_status: '',

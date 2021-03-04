@@ -102,10 +102,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <b-form-radio-group
             id="artesianConditionsRadio"
             class="mt-1"
-            v-model="artesianConditionsInput"
-          >
-            <b-form-radio :value="false">No</b-form-radio>
-            <b-form-radio :value="true">Yes</b-form-radio>
+            v-model="artesianConditionsInput">
+              <b-form-radio :value="false">No</b-form-radio>
+              <b-form-radio :value="true">Yes</b-form-radio>
           </b-form-radio-group>
         </b-form-group>
       </b-col>
@@ -129,15 +128,15 @@ Licensed under the Apache License, Version 2.0 (the "License");
           v-model="artesianPressureHeadInput"
           hint="ft (agl)"
           type="number"
-          :errors="errors['artesian_flow']"
-          :loaded="fieldsLoaded['artesian_flow']">
+          :errors="errors['artesian_pressure_head']"
+          :loaded="fieldsLoaded['artesian_pressure_head']">
         </form-input>
       </b-col>
       <b-col cols="12" md="6" lg="4">
         <form-input
-          id="artesianPressurePSI"
+          id="artesianPressure"
           label="Artesian Pressure (PSI)"
-          v-model="artesianPressurePSIInput"
+          v-model="artesianPressureInput"
           hint="PSI"
           type="number"
           :errors="errors['artesian_pressure']"
@@ -192,6 +191,7 @@ export default {
     wellYield: String,
     artesianFlow: String,
     artesianPressure: String,
+    artesianPressureHead: String,
     artesianConditions: Boolean,
     wellCapType: String,
     wellDisinfected: null,
@@ -225,8 +225,7 @@ export default {
     wellYieldInput: 'wellYield',
     artesianFlowInput: 'artesianFlow',
     artesianConditionsInput: 'artesianConditions',
-    artesianPressureHeadInput: 'artesianPressure',
-    artesianPressurePSIInput: 'artesianPressure',
+    artesianPressureHeadInput: 'artesianPressureHead',
     artesianPressureInput: 'artesianPressure',
     wellCapTypeInput: 'wellCapType',
     wellDisinfectedInput: 'wellDisinfected'

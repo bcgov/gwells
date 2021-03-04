@@ -18,9 +18,11 @@ UPDATE_WELL_ARTESIAN_CONDITIONS = UPDATE_ARTESIAN_CONDITIONS_BASE.substitute(tab
 class Migration(migrations.Migration):
     """
     JIRA Ticket WATER-639
-        Introduce a new column named artesian_conditions, not nullable, defaults to false
-        if a well/activity submission has a value > 0 for artesian_flow or artesian_pressure then
-        update this new column to true for that record
+        - Introduce a new column named artesian_conditions, not nullable, defaults to false
+            if a well/activity submission has a value > 0 for artesian_flow or artesian_pressure then
+            update this new column to true for that record
+        - Introduce a new column named artesian_pressure_head, nullable none
+            This allows us to track whether a well artesian pressure was measured using psi OR head.
     Testing locally:
         You cannot test this locally without running something manually (at least from what I can tell).
         Migrations run before fixture data is loaded, so if you blow away your docker volume and run this you'll wind up with strange issues such as all false artesian_conditions in well table where they should not be.
@@ -57,7 +59,24 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='fieldsprovided',
             name='artesian_conditions',
-            field=models.BooleanField(default=False),
+            field=models.BooleanField(default=False)
+        ),
+        migrations.AddField(
+            model_name='activitysubmission',
+            name='artesian_pressure_head',
+            field=models.DecimalField(blank=True, null=True, db_column='artesian_pressure_head',
+                                      verbose_name='Artesian Pressure head', decimal_places=2, max_digits=7)
+        ),
+        migrations.AddField(
+            model_name='well',
+            name='artesian_pressure_head',
+            field=models.DecimalField(blank=True, null=True, db_column='artesian_pressure_head',
+                                      verbose_name='Artesian Pressure head', decimal_places=2, max_digits=7)
+        ),
+        migrations.AddField(
+            model_name='fieldsprovided',
+            name='artesian_pressure_head',
+            field=models.BooleanField(default=False)
         ),
         migrations.RunSQL(UPDATE_ACTIVITY_SUBMISSION_ARTESIAN_CONDITIONS),
         migrations.RunSQL(UPDATE_WELL_ARTESIAN_CONDITIONS)

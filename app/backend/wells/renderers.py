@@ -137,6 +137,7 @@ COLUMN_LABELS = {
     "well_cap_type": "Well Cap",
     "well_disinfected_status": "Well Disinfected Code",
     "static_water_level": "Static Water Level (BTOC)",
+    "artesian_pressure_head": "Artesian Pressure head",
     "artesian_conditions": "Artesian Conditions",
 }
 

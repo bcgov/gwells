@@ -280,6 +280,7 @@ class WellListSerializerV2(serializers.ModelSerializer):
             "bedrock_depth",
             "artesian_flow",
             "artesian_pressure",
+            "artesian_pressure_head",
             "artesian_conditions",
             "well_cap_type",
             "well_disinfected_status",
