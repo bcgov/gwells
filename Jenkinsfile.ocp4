@@ -6,12 +6,6 @@ import bcgov.GitHubHelper
 
 // Notify stage status and pass to Jenkins-GitHub library
 void notifyStageStatus (String name, String status) {
-
-    // NOTE: temporarily skip updating GitHub status checks for OCP4 deployments
-    if (platformEnv == '4') {
-        return
-    }
-
     GitHubHelper.createCommitStatus(
         this,
         GitHubHelper.getPullRequestLastCommitId(this),
@@ -25,12 +19,6 @@ void notifyStageStatus (String name, String status) {
 
 // Create deployment status and pass to Jenkins-GitHub library
 void createDeploymentStatus (String suffix, String status, String stageUrl) {
-
-    // NOTE: temporarily skip updating GitHub status checks for OCP4 deployments
-    if (platformEnv == '4') {
-        return
-    }
-
 
     def ghDeploymentId = new GitHubHelper().createDeployment(
         this,
@@ -518,11 +506,6 @@ def zapTests (String stageName, String envUrl, String envSuffix) {
 
 // Database backup
 def dbBackup (String envProject, String envSuffix) {
-
-    // NOTE: temporarily skip pre-deployment backup for ocp4
-    if (platformEnv == '4') {
-        return
-    }
 
 
     def dcName = envSuffix == "dev" ? "${appName}-pg12-${envSuffix}-${prNumber}" : "${appName}-pg12-${envSuffix}"
