@@ -61,6 +61,7 @@ class Migration(migrations.Migration):
             name='artesian_conditions',
             field=models.BooleanField(default=False)
         ),
+
         migrations.AddField(
             model_name='activitysubmission',
             name='artesian_pressure_head',

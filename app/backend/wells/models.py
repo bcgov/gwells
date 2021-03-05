@@ -931,11 +931,12 @@ class Well(AuditModelStructure):
         max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Artesian Pressure head',
         db_comment=('Pressure of the water coming out of an artesian well as measured at the time of '
                     'construction. Measured in ft agl (feet above ground level).'))
-    artesian_conditions = models.BooleanField(
-        default=False, null=False, verbose_name='Artesian Conditions?', choices=((False, 'No'), (True, 'Yes')),
-        db_comment=('Artesian conditions arise when there is a movement of groundwater from a recharge '
-                    'area under a confining formation to a point of discharge at a lower elevation. An example '
-                    'of this is a natural spring, or in the example of the drilling industry, a flowing water well.'))
+    artesian_conditions = models.BooleanField(default=False, verbose_name='Artesian Conditions',
+                                              db_comment=('Artesian conditions arise when there is a movement of '
+                                                          'groundwater from a recharge area under a confining '
+                                                          'formation to a point of discharge at a lower elevation. '
+                                                          'An example of this is a natural spring, or in the '
+                                                          'example of the drilling industry, a flowing water well.'))
     well_cap_type = models.CharField(
         max_length=40, blank=True, null=True, verbose_name='Well Cap')
     well_disinfected = models.BooleanField(
@@ -1592,18 +1593,19 @@ class ActivitySubmission(AuditModelStructure):
                     ' artesian wells can flow on an intermittent or continuous basis. Measured in US'
                     ' Gallons/minute.'))
     artesian_pressure = models.DecimalField(
-        max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Artesian Pressure',
+        max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Artesian Pressure',
         db_comment=('Pressure of the water coming out of an artesian well as measured at the time of'
                     ' construction. Measured in PSI (pounds per square inch).'))
     artesian_pressure_head = models.DecimalField(
         max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Artesian Pressure head',
         db_comment=('Pressure of the water coming out of an artesian well as measured at the time of '
                     'construction. Measured in ft agl (feet above ground level).'))
-    artesian_conditions = models.BooleanField(
-        default=False, null=False, verbose_name='Artesian Conditions?', choices=((False, 'No'), (True, 'Yes')),
-        db_comment=('Artesian conditions arise when there is a movement of groundwater from a recharge '
-                    'area under a confining formation to a point of discharge at a lower elevation. An example '
-                    'of this is a natural spring, or in the example of the drilling industry, a flowing water well.'))
+    artesian_conditions = models.BooleanField(default=False, verbose_name='Artesian Conditions',
+                                              db_comment=('Artesian conditions arise when there is a movement of '
+                                                          'groundwater from a recharge area under a confining '
+                                                          'formation to a point of discharge at a lower elevation. '
+                                                          'An example of this is a natural spring, or in the '
+                                                          'example of the drilling industry, a flowing water well.'))
     well_cap_type = models.CharField(
         max_length=40, blank=True, null=True, verbose_name='Well Cap Type')
     well_disinfected = models.BooleanField(

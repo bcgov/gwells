@@ -298,7 +298,7 @@ export default {
       // Depending on the type of submission (construction/decommission/alteration/edit) we post to
       // different endpoints.
       const PATH = this.codes.activity_types.find((item) => item.code === this.activityType).path
-
+console.log(`--> ABOUT TO POST: ${JSON.stringify(data)}`)
       ApiService.post(PATH, data).then((response) => {
         this.formSubmitSuccess = true
         this.formSubmitSuccessWellTag = response.data.well
@@ -711,7 +711,8 @@ export default {
         if (this.form.person_responsible && this.form.person_responsible.name === this.form.driller_name) {
           this.form.meta.drillerSameAsPersonResponsible = true
         }
-
+console.log(`--> RETRIEVED FROM SERVER: ${JSON.stringify(['artesian_conditions', 'artesian_pressure', 'artesian_pressure_head', 'artesian_flow'].reduce((o, k) => ({ ...o, [k]: res.data[k] }), {}))}`)
+console.log(`--> SET TO FORM: ${JSON.stringify(['artesian_conditions', 'artesian_pressure', 'artesian_pressure_head', 'artesian_flow'].reduce((o, k) => ({ ...o, [k]: this.form[k] }), {}))}`)
         // store the number of submissions already associated with this well
         this.submissionsHistory = res.data.submission_reports || []
 
