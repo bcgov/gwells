@@ -1947,7 +1947,7 @@ class FieldsProvided(models.Model):
     artesian_flow = models.BooleanField(default=False)
     artesian_pressure = models.BooleanField(default=False)
     artesian_pressure_head = models.BooleanField(default=False)
-    artesian_conditions = models.BooleanField(null=True)
+    artesian_conditions = models.BooleanField(default=False)
     well_cap_type = models.BooleanField(default=False)
     well_disinfected = models.BooleanField(default=False)
     well_disinfected_status = models.BooleanField(default=False)

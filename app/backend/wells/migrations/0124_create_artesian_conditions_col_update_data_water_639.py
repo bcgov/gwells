@@ -59,7 +59,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='fieldsprovided',
             name='artesian_conditions',
-            field=models.BooleanField(null=True)
+            field=models.BooleanField(default=False)
         ),
 
         migrations.AddField(
