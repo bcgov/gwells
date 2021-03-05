@@ -1600,7 +1600,7 @@ class ActivitySubmission(AuditModelStructure):
         max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Artesian Pressure head',
         db_comment=('Pressure of the water coming out of an artesian well as measured at the time of '
                     'construction. Measured in ft agl (feet above ground level).'))
-    artesian_conditions = models.BooleanField(default=False, verbose_name='Artesian Conditions',
+    artesian_conditions = models.BooleanField(null=True, verbose_name='Artesian Conditions',
                                               db_comment=('Artesian conditions arise when there is a movement of '
                                                           'groundwater from a recharge area under a confining '
                                                           'formation to a point of discharge at a lower elevation. '
@@ -1947,7 +1947,7 @@ class FieldsProvided(models.Model):
     artesian_flow = models.BooleanField(default=False)
     artesian_pressure = models.BooleanField(default=False)
     artesian_pressure_head = models.BooleanField(default=False)
-    artesian_conditions = models.BooleanField(default=False)
+    artesian_conditions = models.BooleanField(null=True)
     well_cap_type = models.BooleanField(default=False)
     well_disinfected = models.BooleanField(default=False)
     well_disinfected_status = models.BooleanField(default=False)

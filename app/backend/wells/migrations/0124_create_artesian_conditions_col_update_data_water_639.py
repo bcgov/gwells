@@ -47,7 +47,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='activitysubmission',
             name='artesian_conditions',
-            field=models.BooleanField(default=False, null=False, db_column='artesian_conditions',
+            field=models.BooleanField(null=True, db_column='artesian_conditions',
                                       verbose_name='Artesian Conditions?', choices=[(False, 'No'), (True, 'Yes')])
         ),
         migrations.AddField(
@@ -59,7 +59,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='fieldsprovided',
             name='artesian_conditions',
-            field=models.BooleanField(default=False)
+            field=models.BooleanField(null=True)
         ),
 
         migrations.AddField(
