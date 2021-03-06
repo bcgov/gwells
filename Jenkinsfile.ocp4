@@ -27,19 +27,21 @@ void createDeploymentStatus (String suffix, String status, String stageUrl) {
             'task':"deploy:pull:${env.CHANGE_ID}"
         ]
     )
-    echo "created new GitHub Deployment ID: ${ghDeploymentId}"
-    new GitHubHelper().createDeploymentStatus(
-        this,
-        ghDeploymentId,
-        "${status}",
-        ['targetUrl':"https://${stageUrl}/gwells"]
-    )
 
-    if ('SUCCESS'.equalsIgnoreCase("${status}")) {
-        echo "${suffix} deployment successful!"
-    } else if ('PENDING'.equalsIgnoreCase("${status}")){
-        echo "${suffix} deployment pending."
-    }
+    // TODO: this function in GitHubHelper no longer works.
+
+    // new GitHubHelper().createDeploymentStatus(
+    //     this,
+    //     ghDeploymentId,
+    //     "${status}",
+    //     ['targetUrl':"https://${stageUrl}/gwells"]
+    // )
+
+    // if ('SUCCESS'.equalsIgnoreCase("${status}")) {
+    //     echo "${suffix} deployment successful!"
+    // } else if ('PENDING'.equalsIgnoreCase("${status}")){
+    //     echo "${suffix} deployment pending."
+    // }
 }
 
 
