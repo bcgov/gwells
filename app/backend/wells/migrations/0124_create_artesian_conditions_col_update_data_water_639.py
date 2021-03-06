@@ -10,9 +10,21 @@ UPDATE_ARTESIAN_CONDITIONS_BASE = Template("""UPDATE $table_name
         update_user = '$update_user',
         update_date = now()
     WHERE artesian_flow > 0 OR artesian_pressure > 0""")
+UPDATE_ACTIVITY_SUBMISSION_ARTESIAN_CONDITIONS = UPDATE_ARTESIAN_CONDITIONS_BASE.substitute(table_name='activity_submission',
+                                                                                            update_user=WATER_639_USER)
+UPDATE_WELL_ARTESIAN_CONDITIONS = UPDATE_ARTESIAN_CONDITIONS_BASE.substitute(table_name='well',
+                                                                             update_user=WATER_639_USER)
 
-UPDATE_ACTIVITY_SUBMISSION_ARTESIAN_CONDITIONS = UPDATE_ARTESIAN_CONDITIONS_BASE.substitute(table_name='activity_submission', update_user=WATER_639_USER)
-UPDATE_WELL_ARTESIAN_CONDITIONS = UPDATE_ARTESIAN_CONDITIONS_BASE.substitute(table_name='well', update_user=WATER_639_USER)
+UPDATE_ARTESIAN_FLOW_DUMMY_BASE = Template("""UPDATE $table_name
+    SET artesian_flow = NULL,
+        update_user = '$update_user',
+        update_date = now()
+    WHERE artesian_flow = 0.01;
+""")
+UPDATE_ACTIVITY_SUBMISSION_ARTESIAN_FLOW_DUMMY = UPDATE_ARTESIAN_FLOW_DUMMY_BASE.substitute(table_name='activity_submission',
+                                                                                            update_user=WATER_639_USER)
+UPDATE_WELL_ARTESIAN_FLOW_DUMMY = UPDATE_ARTESIAN_FLOW_DUMMY_BASE.substitute(table_name='well',
+                                                                             update_user=WATER_639_USER)
 
 
 class Migration(migrations.Migration):
@@ -21,6 +33,7 @@ class Migration(migrations.Migration):
         - Introduce a new column named artesian_conditions, not nullable, defaults to false
             if a well/activity submission has a value > 0 for artesian_flow or artesian_pressure then
             update this new column to true for that record
+        - Remove dummy values for artesian_flow (value of 0.01), if those exist then set them to NULL
         - Introduce a new column named artesian_pressure_head, nullable none
             This allows us to track whether a well artesian pressure was measured using psi OR head.
     Testing locally:
@@ -29,13 +42,15 @@ class Migration(migrations.Migration):
         To get your dev system into this state you need to open a terminal shell (bash, zsh, sh) and run: docker-compose down && docker volume rm gwells_pgdata-volume
 
         The best way to bypass this is to manually run the sql statements above on the well database table on your local dev.
+        Note that some fixtures have been altered to allow us to get into these scenarios
             - Query your local dev database to obtain the number of records (SELECT COUNT(*) FROM well;) (10 total)
             - Query your local dev database to determine how many records should be affected (SELECT COUNT(*) FROM well WHERE artesian_flow > 0 OR artesian_pressure > 0;) (5 total)
             - Open a python console
-            - Copy lines 7 - 15 above
+            - Copy lines 13, 15, 24, 26
             - Run them in your database, I use DataGrip so open a new console, paste, cmd+enter (5 rows affected!)
             - Double check that those are the records that should be updated have been (5 rows) = SELECT COUNT(*) FROM well WHERE artesian_conditions is true AND update_user = 'WATER-639' AND (artesian_flow > 0 OR artesian_pressure > 0);,
                 and that those records that should NOT be updated are NOT (5 rows) = SELECT COUNT(*) FROM well WHERE (artesian_flow <= 0 AND artesian_pressure <= 0) OR (artesian_flow IS NULL AND artesian_pressure IS NULL);
+            - Double check that well 117042 has a dummy value for artesian_flow set to NULL (1 row) (SELECT COUNT(*) FROM well WHERE update_user = 'WATER-639' and artesian_flow is NULL;)
             - Note that there are NO activity_submission records in the dev database
     """
 
@@ -80,5 +95,7 @@ class Migration(migrations.Migration):
             field=models.BooleanField(default=False)
         ),
         migrations.RunSQL(UPDATE_ACTIVITY_SUBMISSION_ARTESIAN_CONDITIONS),
-        migrations.RunSQL(UPDATE_WELL_ARTESIAN_CONDITIONS)
+        migrations.RunSQL(UPDATE_WELL_ARTESIAN_CONDITIONS),
+        migrations.RunSQL(UPDATE_ACTIVITY_SUBMISSION_ARTESIAN_FLOW_DUMMY),
+        migrations.RunSQL(UPDATE_WELL_ARTESIAN_FLOW_DUMMY),
     ]
