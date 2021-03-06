@@ -28,7 +28,10 @@ void createDeploymentStatus (String suffix, String status, String stageUrl) {
         ]
     )
 
-    // TODO: this function in GitHubHelper no longer works.
+    // NOTE: this function in GitHubHelper no longer works.
+    // https://github.com/BCDevOps/jenkins-pipeline-shared-lib/issues/6
+    // TODO: convert to use GitHub REST API
+    // https://docs.github.com/en/rest/reference/repos#deployments
 
     // new GitHubHelper().createDeploymentStatus(
     //     this,
