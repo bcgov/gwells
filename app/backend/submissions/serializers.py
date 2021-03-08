@@ -115,7 +115,7 @@ class WellSubmissionListSerializer(serializers.ModelSerializer):
 
 
 class WellSubmissionSerializerBase(AuditModelSerializer):
-    """ Bass class for well submission serialisation. """
+    """ Base class for well submission serialisation. """
 
     create_user = serializers.ReadOnlyField()
     create_date = serializers.ReadOnlyField()
@@ -1485,12 +1485,16 @@ class LegacyWellDisplaySerializer(serializers.ModelSerializer):
         source='decommission_sealant_material.description')
     decommission_backfill_material = serializers.ReadOnlyField(
         source='decommission_backfill_material.description')
+    artesian_conditions = serializers.SerializerMethodField()
 
     def get_hydro_fracturing_performed(self, obj):
         return "Yes" if obj.hydro_fracturing_performed else "No"
 
     def get_alternative_specs_submitted(self, obj):
         return "Yes" if obj.alternative_specs_submitted else "No"
+
+    def get_artesian_conditions(self, obj):
+        return "Yes" if obj.artesian_conditions else "No"
 
     class Meta:
         model = ActivitySubmission

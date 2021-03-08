@@ -580,6 +580,12 @@ export default {
         }
       }
 
+      // Validate the Artesian Well radio button, if flow, pressure head or pressure psi has a value then we
+      //  ask the user to set the value of Artesian Well to Yes
+      if (!this.form.artesian_conditions && (this.form.artesian_flow > 0 || this.form.artesian_pressure > 0 || this.form.artesian_pressure_head > 0)) {
+        errors.artesian_conditions = [ 'Set Artesian Well to Yes for positive flow or pressure.' ]
+      }
+
       this.errors = errors
       return Object.keys(errors).length === 0
     },

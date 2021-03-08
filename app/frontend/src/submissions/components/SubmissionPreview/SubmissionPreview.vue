@@ -411,7 +411,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </b-row>
       <b-row>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Final Casing Stick Up:</span> {{ form.final_casing_stick_up }} {{ form.final_casing_stick_up ? 'inches':''}}</b-col>
-        <b-col cols="12" lg="4"><span class="font-weight-bold">Artesian Condition:</span> {{ form.artesian_conditions }} </b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Artesian Condition:</span> {{ form.artesian_conditions === true ? "Yes" : "No" }} </b-col>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Well Cap:</span> {{ form.well_cap_type }}</b-col>
       </b-row>
       <b-row>
