@@ -372,6 +372,9 @@ def deployToDev() {
                                     if (sourceName == 'gwells-global-config') {
                                         copiedModel.data['S3_PRIVATE_HOST'] = "gwells-docs-${devSuffix}-${prNumber}.apps.silver.devops.gov.bc.ca"
                                     }
+                                    if (sourceName == 'gwells-minio-secrets') {
+                                        copiedModel.data['S3_HOST'] = "gwells-docs-${devSuffix}-${prNumber}.apps.silver.devops.gov.bc.ca"
+                                    }
                                     
                                     echo "[as-copy-of] Copying ${o.kind} ${o.metadata.name}"
                                     newObjectCopies.add(copiedModel)
