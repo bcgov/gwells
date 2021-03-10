@@ -374,6 +374,7 @@ def deployToDev() {
                                     }
                                     if (sourceName == 'gwells-minio-secrets') {
                                         copiedModel.data.remove('S3_HOST')
+                                        copiedModel.stringData = [:]
                                         copiedModel.stringData['S3_HOST'] = "gwells-docs-${devSuffix}-${prNumber}.apps.silver.devops.gov.bc.ca"
                                     }
                                     
