@@ -373,7 +373,8 @@ def deployToDev() {
                                         copiedModel.data['S3_PRIVATE_HOST'] = "gwells-docs-${devSuffix}-${prNumber}.apps.silver.devops.gov.bc.ca"
                                     }
                                     if (sourceName == 'gwells-minio-secrets') {
-                                        copiedModel.data['S3_HOST'] = "gwells-docs-${devSuffix}-${prNumber}.apps.silver.devops.gov.bc.ca".bytes.encodeBase64().toString()
+                                        copiedModel.data.remove('S3_HOST')
+                                        copiedModel.stringData['S3_HOST'] = "gwells-docs-${devSuffix}-${prNumber}.apps.silver.devops.gov.bc.ca"
                                     }
                                     
                                     echo "[as-copy-of] Copying ${o.kind} ${o.metadata.name}"
