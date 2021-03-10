@@ -284,10 +284,10 @@ export default {
       this.resetArtesianPressure()
     },
     calculateArtesianPressureHead (psi) {
-      return String(Math.round((psi = null || psi === 0 ? 0 : psi * 2.31) * 100) / 100)
+      return String(Math.round((psi == null || psi === 0 ? 0 : psi * 2.31) * 100) / 100)
     },
     calculateArtesianPressurePSI (head) {
-      return String(Math.round((head = null || head === 0 ? 0 : head / 2.31) * 100) / 100)
+      return String(Math.round((head == null || head === 0 ? 0 : head / 2.31) * 100) / 100)
     },
     resetArtesianPressure () {
       if (this.artesianPressure.psi == null || this.artesianPressure.head == null) {
