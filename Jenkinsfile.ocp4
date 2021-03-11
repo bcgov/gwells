@@ -343,7 +343,8 @@ def deployToDev() {
                         def minioTemplate = openshift.process("-f",
                             "${templateDir}/minio/minio.dc.yaml",
                             "NAME_SUFFIX=-${devSuffix}-${prNumber}",
-                            "HOSTNAME=gwells-docs-${devSuffix}-${prNumber}.apps.silver.devops.gov.bc.ca"
+                            "HOSTNAME=gwells-docs-${devSuffix}-${prNumber}.apps.silver.devops.gov.bc.ca",
+                            "SRC_TAG=dev"
                         )
 
                         // some objects need to be copied from a base secret or configmap
@@ -371,6 +372,11 @@ def deployToDev() {
                                     // set Minio host for dev environments
                                     if (sourceName == 'gwells-global-config') {
                                         copiedModel.data['S3_PRIVATE_HOST'] = "gwells-docs-${devSuffix}-${prNumber}.apps.silver.devops.gov.bc.ca"
+                                    }
+                                    if (sourceName == 'gwells-minio-secrets') {
+                                        copiedModel.data.remove('S3_HOST')
+                                        copiedModel.stringData = [:]
+                                        copiedModel.stringData['S3_HOST'] = "gwells-docs-${devSuffix}-${prNumber}.apps.silver.devops.gov.bc.ca"
                                     }
                                     
                                     echo "[as-copy-of] Copying ${o.kind} ${o.metadata.name}"
