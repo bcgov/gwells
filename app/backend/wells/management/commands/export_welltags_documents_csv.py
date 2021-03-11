@@ -90,8 +90,8 @@ class Command(BaseCommand):
                                    'document_url': f'{self.gwells_s3_prefix}{get_env_variable("S3_WELL_BUCKET")}/{o.object_name.replace(" ", "%20")}'
                                    }
                     wells.append(well_output)
-            except:
-                pass
+            except Exception as exc:
+                logger.info(f'encountered error {exc} on object_named: {o.object_name}')
 
         # write our wells out to a unique welltag per row!
         for well in wells:
