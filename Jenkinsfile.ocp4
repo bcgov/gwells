@@ -343,7 +343,8 @@ def deployToDev() {
                         def minioTemplate = openshift.process("-f",
                             "${templateDir}/minio/minio.dc.yaml",
                             "NAME_SUFFIX=-${devSuffix}-${prNumber}",
-                            "HOSTNAME=gwells-docs-${devSuffix}-${prNumber}.apps.silver.devops.gov.bc.ca"
+                            "HOSTNAME=gwells-docs-${devSuffix}-${prNumber}.apps.silver.devops.gov.bc.ca",
+                            "SRC_TAG=dev"
                         )
 
                         // some objects need to be copied from a base secret or configmap
