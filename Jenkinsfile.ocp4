@@ -6,12 +6,6 @@ import bcgov.GitHubHelper
 
 // Notify stage status and pass to Jenkins-GitHub library
 void notifyStageStatus (String name, String status) {
-
-    // NOTE: temporarily skip updating GitHub status checks for OCP4 deployments
-    if (platformEnv == '4') {
-        return
-    }
-
     GitHubHelper.createCommitStatus(
         this,
         GitHubHelper.getPullRequestLastCommitId(this),
@@ -25,13 +19,6 @@ void notifyStageStatus (String name, String status) {
 
 // Create deployment status and pass to Jenkins-GitHub library
 void createDeploymentStatus (String suffix, String status, String stageUrl) {
-
-    // NOTE: temporarily skip updating GitHub status checks for OCP4 deployments
-    if (platformEnv == '4') {
-        return
-    }
-
-
     def ghDeploymentId = new GitHubHelper().createDeployment(
         this,
         "pull/${env.CHANGE_ID}/head",
@@ -41,18 +28,23 @@ void createDeploymentStatus (String suffix, String status, String stageUrl) {
         ]
     )
 
-    GitHubHelper.createDeploymentStatus(
-        this,
-        ghDeploymentId,
-        "${status}",
-        ['targetUrl':"https://${stageUrl}/gwells"]
-    )
+    // NOTE: this function in GitHubHelper no longer works.
+    // https://github.com/BCDevOps/jenkins-pipeline-shared-lib/issues/6
+    // TODO: convert to use GitHub REST API
+    // https://docs.github.com/en/rest/reference/repos#deployments
 
-    if ('SUCCESS'.equalsIgnoreCase("${status}")) {
-        echo "${suffix} deployment successful!"
-    } else if ('PENDING'.equalsIgnoreCase("${status}")){
-        echo "${suffix} deployment pending."
-    }
+    // new GitHubHelper().createDeploymentStatus(
+    //     this,
+    //     ghDeploymentId,
+    //     "${status}",
+    //     ['targetUrl':"https://${stageUrl}/gwells"]
+    // )
+
+    // if ('SUCCESS'.equalsIgnoreCase("${status}")) {
+    //     echo "${suffix} deployment successful!"
+    // } else if ('PENDING'.equalsIgnoreCase("${status}")){
+    //     echo "${suffix} deployment pending."
+    // }
 }
 
 
@@ -156,11 +148,6 @@ def unitTestDjango (String stageName, String envProject, String envSuffix) {
 
 // API test function
 def apiTest (String stageName, String stageUrl, String envSuffix) {
-
-    // NOTE: temporarily skip due to use of podTemplate
-    if (platformEnv == '4') {
-        return true
-    }
 
     _openshift(env.STAGE_NAME, toolsProject) {
         podTemplate(
@@ -356,7 +343,8 @@ def deployToDev() {
                         def minioTemplate = openshift.process("-f",
                             "${templateDir}/minio/minio.dc.yaml",
                             "NAME_SUFFIX=-${devSuffix}-${prNumber}",
-                            "HOSTNAME=gwells-docs-${devSuffix}-${prNumber}.apps.silver.devops.gov.bc.ca"
+                            "HOSTNAME=gwells-docs-${devSuffix}-${prNumber}.apps.silver.devops.gov.bc.ca",
+                            "SRC_TAG=dev"
                         )
 
                         // some objects need to be copied from a base secret or configmap
@@ -380,8 +368,22 @@ def deployToDev() {
                                     copiedModel.metadata.remove('resourceVersion')
                                     copiedModel.metadata.remove('selfLink')
                                     copiedModel.metadata.remove('uid')
+
+                                    // set Minio host for dev environments
+                                    if (sourceName == 'gwells-global-config') {
+                                        copiedModel.data['S3_PRIVATE_HOST'] = "gwells-docs-${devSuffix}-${prNumber}.apps.silver.devops.gov.bc.ca"
+                                    }
+                                    if (sourceName == 'gwells-minio-secrets') {
+                                        copiedModel.data.remove('S3_HOST')
+                                        copiedModel.stringData = [:]
+                                        copiedModel.stringData['S3_HOST'] = "gwells-docs-${devSuffix}-${prNumber}.apps.silver.devops.gov.bc.ca"
+                                    }
+                                    
                                     echo "[as-copy-of] Copying ${o.kind} ${o.metadata.name}"
                                     newObjectCopies.add(copiedModel)
+
+
+
                                 }
                             }
                         }
@@ -514,11 +516,6 @@ def zapTests (String stageName, String envUrl, String envSuffix) {
 
 // Database backup
 def dbBackup (String envProject, String envSuffix) {
-
-    // NOTE: temporarily skip pre-deployment backup for ocp4
-    if (platformEnv == '4') {
-        return
-    }
 
 
     def dcName = envSuffix == "dev" ? "${appName}-pg12-${envSuffix}-${prNumber}" : "${appName}-pg12-${envSuffix}"
@@ -1289,7 +1286,7 @@ pipeline {
                             "SCHEDULE=15 4 * * *",
                             "DEST_PVC=${nfsProdBackupPVC}",
                             "SOURCE_PVC=gwells-minio-${prodSuffix}",
-                            "PVC_SIZE=40Gi"
+                            "PVC_SIZE=20Gi"
                         )
 
                         openshift.apply(docBackupCronJob).label(

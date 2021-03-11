@@ -114,6 +114,8 @@ class Command(BaseCommand):
             except Well.DoesNotExist:
                 pass
 
+        well_updated = False
+
         try:
             # Maintain code table with water rights purpose.
             purpose = WaterRightsPurpose.objects.get(
@@ -146,9 +148,13 @@ class Command(BaseCommand):
 
         if aquifer and well and not well.aquifer:
             well.aquifer = aquifer
+            well_updated = True
         if well and licence not in well.licences.all():
             well.licences.add(licence)
-        well.save()
+            well_updated = True
+
+        if well_updated:
+            well.save()
 
         logging.info('assocated well={} aquifer={} licence_sysid={}'.format(
             well.pk if well else "None",
