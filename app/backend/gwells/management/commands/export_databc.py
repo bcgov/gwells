@@ -99,7 +99,6 @@ select
     well.surface_seal_length,
     well.surface_seal_depth,
     well.surface_seal_thickness,
-    well.yield_estimation_rate,
     well.decommission_reason,
     well.comments,
     well.ems,
@@ -110,17 +109,15 @@ select
     well.aquifer_lithology_code,
     
     --(select lin.waterrightslicence_id from well_licences lin where lin.well_id = well.well_tag_number) license_no
-    -- well.license_url
     -- TODO:// make this licence_url right!
-    
-    SUBSTRING(CONCAT('https://apps.nrs.gov.bc.ca/gwells/licence/', well.well_tag_number) for 255) as licence_url,
+    SUBSTRING(CONCAT('https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&PosseObjectDef=o_ATIS_DocumentSearch&PosseMenuName=WS_Main&Criteria_LicenceNumber=C119787', well.well_tag_number) for 255) as licence_url,
     
     -- well.region,
     
     ST_Y(ST_Transform(geom, 4326)) as latitude,
     ST_X(ST_Transform(geom, 4326)) as longitude,
     well.artesian_pressure_head,
-    CASE WHEN well.artesian_conditions is true THEN 'Y' ELSE 'N' END as artesian_conditions    
+    well.artesian_conditions    
 from well
     left join well_status_code on well_status_code.well_status_code = well.well_status_code
     left join well_class_code on well_class_code.well_class_code = well.well_class_code
