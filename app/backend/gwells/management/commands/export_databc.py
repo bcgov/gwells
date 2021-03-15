@@ -69,10 +69,7 @@ select
     well.observation_well_number,
     well.obs_well_status_code,
     well.artesian_pressure_head,
-    well.artesian_conditions,
-    well.aquifer_lithology_code,
-    well.construction_start_date,
-    well.owner_full_name
+    well.artesian_conditions    
 from well
     left join well_status_code on well_status_code.well_status_code = well.well_status_code
     left join well_class_code on well_class_code.well_class_code = well.well_class_code
