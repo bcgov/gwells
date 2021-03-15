@@ -68,11 +68,59 @@ select
     well.aquifer_id as aquifer_id,
     well.observation_well_number,
     well.obs_well_status_code,
-    well.artesian_pressure_head,
-    well.artesian_conditions,
-    well.aquifer_lithology_code,
+    
+    -- TODO:// should this inner select be a join?
+    (select wsc.well_subclass_code from gwells.well_subclass_code wsc where wsc.well_subclass_guid = well.well_subclass_guid limit 1) as well_subclass,
+    
+    well.water_supply_system_name,
+    well.water_supply_system_well_name,
+    well.city,
+    well.legal_lot,
+    well.legal_plan,
+    well.legal_district_lot,
+    well.legal_pid,
+    well.well_location_description,
+    well.utm_zone_code,
+    well.utm_northing,
+    well.utm_easting,
+    well.coordinate_acquisition_code,
     well.construction_start_date,
-    well.owner_full_name
+    well.construction_end_date,
+    well.alteration_start_date,
+    well.alteration_end_date,
+    well.decommission_start_date,
+    well.decommission_end_date,
+    well.driller_name,
+    well.diameter,
+    well.total_depth_drilled,
+    well.final_casing_stick_up,
+    well.ground_elevation,
+    well.ground_elevation_method_code,
+    well.surface_seal_length,
+    well.surface_seal_depth,
+    well.surface_seal_thickness,
+    well.yield_estimation_rate,
+    well.decommission_reason,
+    well.comments,
+    well.ems,
+    
+    -- TODO:// should this inner select be a join?
+    (select reo.name from registries_organization reo where reo.org_guid = well.org_of_person_responsible_guid limit 1) as company_of_person_responsible,
+    
+    well.aquifer_lithology_code,
+    
+    --(select lin.waterrightslicence_id from well_licences lin where lin.well_id = well.well_tag_number) license_no
+    -- well.license_url
+    -- TODO:// make this licence_url right!
+    
+    SUBSTRING(CONCAT('https://apps.nrs.gov.bc.ca/gwells/licence/', well.well_tag_number) for 255) as licence_url,
+    
+    -- well.region,
+    
+    ST_Y(ST_Transform(geom, 4326)) as latitude,
+    ST_X(ST_Transform(geom, 4326)) as longitude,
+    well.artesian_pressure_head,
+    CASE WHEN well.artesian_conditions is true THEN 'Y' ELSE 'N' END as artesian_conditions    
 from well
     left join well_status_code on well_status_code.well_status_code = well.well_status_code
     left join well_class_code on well_class_code.well_class_code = well.well_class_code
