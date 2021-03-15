@@ -21,17 +21,51 @@ from minio import Minio
 
 from gwells.settings.base import get_env_variable
 
-# Run from command line :
-# python manage.py export_welltags_documents_csv
-#
-# For development/debugging, it's useful to skip upload and cleanup
-# python manage.py export_welltags_documents_csv --cleanup=0 --upload=0
+
+"""
+:Example:
+Run from command line:
+export WATER_1651_GWELLS_URL_PREFIX=https://gwells-staging.pathfinder.gov.bc.ca/gwells/well/
+export WATER_1651_GWELLS_S3_PREFIX=https://gwells-docs-staging.apps.silver.devops.gov.bc.ca/
+export S3_HOST=gwells-docs-staging.apps.silver.devops.gov.bc.ca
+export S3_PUBLIC_ACCESS_KEY=REDACTED
+export S3_PUBLIC_SECRET_KEY=REDACTED
+export S3_WELL_BUCKET=gwells-docs-test
+
+python manage.py export_wtn_documents_csv --cleanup=1 --upload=1
+
+For development/debugging, it's useful to skip upload and cleanup
+    python manage.py export_wtn_documents_csv --cleanup=0 --upload=0
+"""
 
 logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
-
+    """
+    Environment Variables:
+        WATER_1651_GWELLS_URL_PREFIX
+        WATER_1651_GWELLS_S3_PREFIX
+        S3_HOST
+        S3_PUBLIC_ACCESS_KEY
+        S3_PUBLIC_SECRET_KEY
+        S3_WELL_BUCKET
+    Command Line Arguments:
+        - Running this command with the argument --cleanup will cause the
+            generated file to be removed after the process is completed
+        - Running this command with the argument --upload will cause the output file to be
+            uploaded to S3: $S3_HOST/$S3_WELL_BUCKET/export/self.output_filename
+    Command Line Example: See Above rst example
+    Description:
+        This django command will find all well S3 documents by WTN (well tag number) and create a csv file
+            with the columns: [well_tag, well_url, document_url...] where document_url can be 0..*
+        The well_url and document_url prefixes come from the environment variables WATER_1651_GWELLS_URL_PREFIX and
+            WATER_1651_GWELLS_S3_PREFIX.
+        This command was created with the intention to be used just once for our clients contractor.
+    Output:
+        If the argument --upload is set, an output file will be
+            uploaded to $S3_HOST/$S3_WELL_BUCKET/export/self.output_filename
+    """
     def __init__(self):
         """
         define our custom variables class wide
@@ -39,11 +73,11 @@ class Command(BaseCommand):
         super().__init__()
         self.gwells_url_prefix = get_env_variable('WATER_1651_GWELLS_URL_PREFIX')
         self.gwells_s3_prefix = get_env_variable('WATER_1651_GWELLS_S3_PREFIX')
-        self.output_filename = 'gwells_export_welltags_documents.csv'
+        self.output_filename = 'export_wtn_documents.csv'
 
     def add_arguments(self, parser):
         # Arguments added for debugging purposes.
-        # e.g. don't cleanup, don't upload: python manage.py export_welltags_documents_csv --cleanup=0 --upload=0
+        # e.g. don't cleanup, don't upload: python manage.py export_wtn_documents_csv --cleanup=0 --upload=0
         parser.add_argument('--cleanup', type=int, nargs='?', help='If 1, remove file when done', default=1)
         parser.add_argument('--upload', type=int, nargs='?', help='If 1, upload the file', default=1)
 
@@ -51,7 +85,7 @@ class Command(BaseCommand):
         """
         primary entrypoint
         """
-        logger.info('starting export_welltags_documents_csv')
+        logger.info('starting export_wtn_documents_csv')
         self.export(self.output_filename)
 
         if options['upload'] == 1:
@@ -61,8 +95,8 @@ class Command(BaseCommand):
             if os.path.exists(self.output_filename):
                 os.remove(self.output_filename)
 
-        logger.info('export_welltags_documents_csv complete')
-        self.stdout.write(self.style.SUCCESS('export_welltags_documents_csv complete'))
+        logger.info('export_wtn_documents_csv complete')
+        self.stdout.write(self.style.SUCCESS('export_wtn_documents_csv complete'))
 
     def export(self, filename):
         """
