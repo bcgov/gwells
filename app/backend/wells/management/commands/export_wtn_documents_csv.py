@@ -58,7 +58,7 @@ class Command(BaseCommand):
     Command Line Example: See Above rst example
     Description:
         This django command will find all well S3 documents by WTN (well tag number) and create a csv file
-            with the columns: [well_tag, well_url, document_url...] where document_url can be 0..*
+            with the columns: [wtn, well_url, document_url...] where document_url can be 0..*
         The well_url and document_url prefixes come from the environment variables WATER_1651_GWELLS_URL_PREFIX and
             WATER_1651_GWELLS_S3_PREFIX.
         This command was created with the intention to be used just once for our clients contractor.
@@ -102,8 +102,8 @@ class Command(BaseCommand):
         """
         using the minio client, list all objects in the S3_WELL_BUCKET recursively
         place the values into a dict
-        take those values from the dict and place them into a defaultdict(list) to get unique well tags per row
-            and multiple document urls for that unique well tag
+        take those values from the dict and place them into a defaultdict(list) to get unique wtn per row
+            and multiple document urls for that unique wtn
         """
         if os.path.exists(filename):
             os.remove(filename)
@@ -117,27 +117,27 @@ class Command(BaseCommand):
         unique_well_dict = defaultdict(list)
         for o in objects:
             try:
-                well_tag = o.object_name[o.object_name.find('/WTN '):o.object_name.find('_')].replace('/WTN ', '')
-                if well_tag is not None and well_tag != '':
-                    well_output = {'well_tag': well_tag,
-                                   'well_url': f'{self.gwells_url_prefix}{well_tag}',
+                wtn = o.object_name[o.object_name.find('/WTN '):o.object_name.find('_')].replace('/WTN ', '')
+                if wtn is not None and wtn != '':
+                    well_output = {'wtn': wtn,
+                                   'well_url': f'{self.gwells_url_prefix}{wtn}',
                                    'document_url': f'{self.gwells_s3_prefix}{get_env_variable("S3_WELL_BUCKET")}/{o.object_name.replace(" ", "%20")}'
                                    }
                     wells.append(well_output)
             except Exception as exc:
                 logger.info(f'encountered error {exc} on object_named: {o.object_name}')
 
-        # write our wells out to a unique welltag per row!
+        # write our wells out to a unique wtn per row!
         for well in wells:
-            if well['well_url'] not in unique_well_dict[well['well_tag']]:
-                unique_well_dict[well['well_tag']].append(well['well_url'])
-            unique_well_dict[well['well_tag']].append(well['document_url'])
+            if well['well_url'] not in unique_well_dict[well['wtn']]:
+                unique_well_dict[well['wtn']].append(well['well_url'])
+            unique_well_dict[well['wtn']].append(well['document_url'])
 
-        # write our well tags and their child array items to csvfile
+        # write our wtn's and their child array items to csvfile
         with open(filename, 'w') as csvfile:
-            for well_tag in unique_well_dict:
-                csvfile.write(f'{well_tag},')
-                for array_item in unique_well_dict[well_tag]:
+            for wtn in unique_well_dict:
+                csvfile.write(f'{wtn},')
+                for array_item in unique_well_dict[wtn]:
                     csvfile.write(f'{array_item},')
                 csvfile.write('\n')
 
