@@ -85,6 +85,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
             </b-col>
             <b-col cols="12" md="4"><span class="font-weight-bold">Alternative specs submitted:</span> {{ well.alternative_specs_submitted }}</b-col>
           </b-row>
+          <b-row>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Artesian Condition:</span> {{ well.artesian_conditions  === true ? "Yes" : "No" }}</b-col>
+          </b-row>
         </fieldset>
 
         <!-- LINKS -->
@@ -254,30 +257,31 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <legend>Well Completion Data</legend>
           <b-row>
             <b-col cols="12" md="4"><span class="font-weight-bold">Total Depth Drilled:</span> {{ well.total_depth_drilled | excludeZeroDecimals }} {{ well.total_depth_drilled ? 'feet':''}}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Static Water Level:</span> {{ well.static_water_level | excludeZeroDecimals }} {{ well.static_water_level ? 'feet btoc': ''}}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Well Cap:</span> {{ well.well_cap_type }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Estimated Well Yield:</span> {{ well.well_yield | excludeZeroDecimals }} {{ well.well_yield ? 'USgpm':'' }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Static Water Level (BTOC):</span> {{ well.static_water_level | excludeZeroDecimals }} {{ well.static_water_level ? 'feet btoc': ''}}</b-col>
           </b-row>
           <b-row>
             <b-col cols="12" md="4"><span class="font-weight-bold">Finished Well Depth:</span> {{ well.finished_well_depth | excludeZeroDecimals }} {{ well.finished_well_depth ? 'ft bgl':''}}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Estimated Well Yield:</span> {{ well.well_yield | excludeZeroDecimals }} {{ well.well_yield ? 'USgpm':'' }}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Well Disinfected Status:</span> {{ well.well_disinfected_status }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Well Cap:</span> {{ well.well_cap_type }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Artesian Flow:</span> {{ well.artesian_flow | excludeZeroDecimals }} {{ well.artesian_flow ? 'USgpm':'' }}</b-col>
           </b-row>
           <b-row>
             <b-col cols="12" md="4"><span class="font-weight-bold">Final Casing Stick Up:</span> {{ well.final_casing_stick_up | excludeZeroDecimals }} {{ well.final_casing_stick_up ? 'inches':''}}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Artesian Flow:</span> {{ well.artesian_flow | excludeZeroDecimals }} {{ well.artesian_flow ? 'USgpm':'' }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Well Disinfected Status:</span> {{ well.well_disinfected_status }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Artesian Pressure (head):</span> {{ well.artesian_pressure_head | excludeZeroDecimals }}</b-col>
+          </b-row>
+          <b-row>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Depth to Bedrock:</span> {{ well.bedrock_depth | excludeZeroDecimals }} {{ well.bedrock_depth ? 'feet bgl':''}}</b-col>
             <b-col cols="12" md="4">
               <span class="font-weight-bold">Drilling Method<span v-if="well.drilling_methods && well.drilling_methods.length > 1">s</span>:</span>
               <span v-for="(method, index) in well.drilling_methods" :key="`drillingMethod${index}`"><span v-if="index > 0">,</span> {{ method.description }}</span>
             </b-col>
-          </b-row>
-          <b-row>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Depth to Bedrock:</span> {{ well.bedrock_depth | excludeZeroDecimals }} {{ well.bedrock_depth ? 'feet bgl':''}}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Artesian Pressure:</span> {{ well.artesian_pressure | excludeZeroDecimals }} {{ well.artesian_pressure ? 'feet': ''}}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Orientation of Well:</span> {{ well.well_orientation_status }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Artesian Pressure (PSI):</span> {{ well.artesian_pressure | excludeZeroDecimals }}</b-col>
           </b-row>
           <b-row>
             <b-col cols="12" md="4"><span class="font-weight-bold">Ground elevation:</span> {{ well.ground_elevation | excludeZeroDecimals }} {{ well.ground_elevation ? 'feet':'' }}</b-col>
             <b-col cols="12" md="4"><span class="font-weight-bold">Method of determining elevation:</span> {{ well.ground_elevation_method }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Orientation of Well:</span> {{ well.well_orientation_status }}</b-col>
           </b-row>
         </fieldset>
 

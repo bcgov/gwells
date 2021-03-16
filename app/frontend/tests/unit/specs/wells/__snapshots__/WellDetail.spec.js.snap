@@ -257,6 +257,23 @@ exports[`WellDetail.vue should match snapshot 1`] = `
              
           </b-col-stub>
         </b-row-stub>
+         
+        <b-row-stub
+          tag="div"
+        >
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Artesian Condition:
+            </span>
+             No
+          </b-col-stub>
+        </b-row-stub>
       </fieldset>
        
       <fieldset
@@ -871,7 +888,7 @@ exports[`WellDetail.vue should match snapshot 1`] = `
             <span
               class="font-weight-bold"
             >
-              Static Water Level:
+              Estimated Well Yield:
             </span>
               
           </b-col-stub>
@@ -884,9 +901,9 @@ exports[`WellDetail.vue should match snapshot 1`] = `
             <span
               class="font-weight-bold"
             >
-              Well Cap:
+              Static Water Level (BTOC):
             </span>
-             
+              
           </b-col-stub>
         </b-row-stub>
          
@@ -914,9 +931,9 @@ exports[`WellDetail.vue should match snapshot 1`] = `
             <span
               class="font-weight-bold"
             >
-              Estimated Well Yield:
+              Well Cap:
             </span>
-              
+             
           </b-col-stub>
            
           <b-col-stub
@@ -927,9 +944,9 @@ exports[`WellDetail.vue should match snapshot 1`] = `
             <span
               class="font-weight-bold"
             >
-              Well Disinfected Status:
+              Artesian Flow:
             </span>
-             
+              
           </b-col-stub>
         </b-row-stub>
          
@@ -957,9 +974,9 @@ exports[`WellDetail.vue should match snapshot 1`] = `
             <span
               class="font-weight-bold"
             >
-              Artesian Flow:
+              Well Disinfected Status:
             </span>
-              
+             
           </b-col-stub>
            
           <b-col-stub
@@ -970,9 +987,7 @@ exports[`WellDetail.vue should match snapshot 1`] = `
             <span
               class="font-weight-bold"
             >
-              Drilling Method
-              <!---->
-              :
+              Artesian Pressure (head):
             </span>
              
           </b-col-stub>
@@ -1002,9 +1017,11 @@ exports[`WellDetail.vue should match snapshot 1`] = `
             <span
               class="font-weight-bold"
             >
-              Artesian Pressure:
+              Drilling Method
+              <!---->
+              :
             </span>
-              
+             
           </b-col-stub>
            
           <b-col-stub
@@ -1015,7 +1032,7 @@ exports[`WellDetail.vue should match snapshot 1`] = `
             <span
               class="font-weight-bold"
             >
-              Orientation of Well:
+              Artesian Pressure (PSI):
             </span>
              
           </b-col-stub>
@@ -1046,6 +1063,19 @@ exports[`WellDetail.vue should match snapshot 1`] = `
               class="font-weight-bold"
             >
               Method of determining elevation:
+            </span>
+             
+          </b-col-stub>
+           
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Orientation of Well:
             </span>
              
           </b-col-stub>

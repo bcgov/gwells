@@ -53,9 +53,7 @@ class WellLocationSerializerV2(serializers.ModelSerializer):
         )
 
     def get_artesian(self, obj):
-        if obj.artesian_flow is not None and obj.artesian_flow > 0:
-            return True
-        return False
+        return obj.artesian_conditions
 
 
 class WellVerticalAquiferExtentSerializerV2(serializers.ModelSerializer):
@@ -279,6 +277,8 @@ class WellListSerializerV2(serializers.ModelSerializer):
             "bedrock_depth",
             "artesian_flow",
             "artesian_pressure",
+            "artesian_pressure_head",
+            "artesian_conditions",
             "well_cap_type",
             "well_disinfected_status",
             "static_water_level",

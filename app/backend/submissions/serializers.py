@@ -115,7 +115,7 @@ class WellSubmissionListSerializer(serializers.ModelSerializer):
 
 
 class WellSubmissionSerializerBase(AuditModelSerializer):
-    """ Bass class for well submission serialisation. """
+    """ Base class for well submission serialisation. """
 
     create_user = serializers.ReadOnlyField()
     create_date = serializers.ReadOnlyField()
@@ -392,7 +392,8 @@ class WellConstructionSubmissionSerializer(WellSubmissionSerializerBase):
                   'water_quality_characteristics',
                   'water_quality_colour', 'water_quality_odour', 'ems', 'total_depth_drilled',
                   'finished_well_depth', 'final_casing_stick_up', 'bedrock_depth', 'static_water_level',
-                  'well_yield', 'artesian_flow', 'artesian_pressure', 'well_cap_type', 'well_disinfected_status',
+                  'well_yield', 'artesian_flow', 'artesian_pressure', 'artesian_pressure_head', 'artesian_conditions',
+                  'well_cap_type', 'well_disinfected_status',
                   'comments', 'internal_comments', 'alternative_specs_submitted', 'consultant_company', 'consultant_name',
                   'driller_name', 'person_responsible', 'company_of_person_responsible',
                   'coordinate_acquisition_code',
@@ -521,6 +522,8 @@ class WellAlterationSubmissionSerializer(WellSubmissionSerializerBase):
             'well_yield',
             'artesian_flow',
             'artesian_pressure',
+            'artesian_pressure_head',
+            'artesian_conditions',
             'well_cap_type',
             'well_disinfected_status',
             'comments',
@@ -678,6 +681,8 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
             'well_yield',
             'artesian_flow',
             'artesian_pressure',
+            'artesian_pressure_head',
+            'artesian_conditions',
             'well_cap_type',
             'well_disinfected_status',
             'comments',
@@ -1175,7 +1180,8 @@ class ConstructionSubmissionDisplaySerializer(serializers.ModelSerializer):
             'water_quality_characteristics',
             'water_quality_colour', 'water_quality_odour', 'ems', 'total_depth_drilled',
             'finished_well_depth', 'final_casing_stick_up', 'bedrock_depth', 'static_water_level',
-            'well_yield', 'artesian_flow', 'artesian_pressure', 'well_cap_type', 'well_disinfected_status',
+            'well_yield', 'artesian_flow', 'artesian_pressure', 'artesian_pressure_head', 'artesian_conditions',
+            'well_cap_type', 'well_disinfected_status',
             'comments', 'alternative_specs_submitted', 'consultant_company', 'consultant_name',
             'driller_name', 'person_responsible', 'company_of_person_responsible',
             'coordinate_acquisition_code',
@@ -1330,6 +1336,8 @@ class AlterationSubmissionDisplaySerializer(serializers.ModelSerializer):
             'well_yield',
             'artesian_flow',
             'artesian_pressure',
+            'artesian_pressure_head',
+            'artesian_conditions',
             'well_cap_type',
             'well_disinfected_status',
             'comments',
@@ -1477,12 +1485,16 @@ class LegacyWellDisplaySerializer(serializers.ModelSerializer):
         source='decommission_sealant_material.description')
     decommission_backfill_material = serializers.ReadOnlyField(
         source='decommission_backfill_material.description')
+    artesian_conditions = serializers.SerializerMethodField()
 
     def get_hydro_fracturing_performed(self, obj):
         return "Yes" if obj.hydro_fracturing_performed else "No"
 
     def get_alternative_specs_submitted(self, obj):
         return "Yes" if obj.alternative_specs_submitted else "No"
+
+    def get_artesian_conditions(self, obj):
+        return "Yes" if obj.artesian_conditions else "No"
 
     class Meta:
         model = ActivitySubmission
@@ -1590,6 +1602,8 @@ class LegacyWellDisplaySerializer(serializers.ModelSerializer):
             'well_yield',
             'artesian_flow',
             'artesian_pressure',
+            'artesian_pressure_head',
+            'artesian_conditions',
             'well_cap_type',
             'well_disinfected_status',
             'comments',
