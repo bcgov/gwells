@@ -45,6 +45,7 @@ logger = logging.getLogger(__name__)
 # stable!
 # Casing diameter: For now, grab the smallest diameter (should be using type, but we don't have
 # date right now.)
+# UPDATED FOR WATER-833, explicitly labelled column names (keeping older ones intact)
 WELLS_SQL = ("""
 select
     ST_AsGeoJSON(ST_Transform(geom, 4326)) :: json as "geometry",
@@ -59,6 +60,7 @@ select
     well.artesian_pressure_head as artesian_pressure_head,
     well.artesian_conditions as artesian_conditions,
     SUBSTRING(well_class_code.description for 100) as well_class,
+    well_subclass_code.well_subclass_code as well_subclass,
     SUBSTRING(intended_water_use_code.description for 100) as intended_water_use,
     SUBSTRING(well.street_address for 100) as street_address,
     well.finished_well_depth as finished_well_depth,
@@ -71,8 +73,6 @@ select
     well.observation_well_number as observation_well_number,
     well.obs_well_status_code as obs_well_status_code,
     well.well_identification_plate_attached as well_identification_plate_attached,
-    -- should this be a join?
-    (select well_subclass_code from well_subclass_code wsc where wsc.well_subclass_guid = well.well_subclass_guid limit 1) as well_subclass,
     well.water_supply_system_name as water_supply_system_name,
     well.water_supply_system_well_name as water_supply_system_well_name,
     well.city as city,
@@ -156,12 +156,8 @@ select
     well.decommission_backfill_material as decommission_backfill_material,
     well.comments as comments,
     well.ems as ems,
-    -- TODO:// finish me
-    -- well.person_responsible
-    '' as person_responsible,
-    -- TODO:// should this inner select be a join?
-    '' as company_of_person_responsible,
-    -- (select reo.name from registries_organization reo where reo.org_guid = well.org_of_person_responsible_guid limit 1) as company_of_person_responsible,
+    SUBSTRING(CONCAT(registries_person.first_name, ' ', registries_person.surname) for 255) as person_responsible,
+    registries_organization.name as company_of_person_responsible,
     well.aquifer_id as aquifer_id,
     well.aquifer_vulnerability_index as avi,
     well.storativity as storativity,
@@ -174,16 +170,23 @@ select
     well.analytic_solution_type as analytic_solution_type,
     well.boundary_effect_code as boundary_effect_code,
     well.aquifer_lithology_code as aquifer_lithology_code,
-    -- TODO:// finish me
-    --(select lin.waterrightslicence_id from well_licences lin where lin.well_id = well.well_tag_number) license_no
-    '' as license_no,
-    -- TODO:// make this licence_url right!
-    '' as licence_url,
-    -- SUBSTRING(CONCAT('https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&PosseObjectDef=o_ATIS_DocumentSearch&PosseMenuName=WS_Main&Criteria_LicenceNumber=C119787', well.well_tag_number) for 255) as licence_url,
-       '' as region
+    well_licences.waterrightslicence_id as license_no,
+    CASE WHEN well_licences.waterrightslicence_id IS NULL 
+        THEN ''
+        ELSE SUBSTRING(CONCAT('https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&PosseObjectDef=o_ATIS_DocumentSearch&PosseMenuName=WS_Main&Criteria_LicenceNumber=C', 
+            well_licences.waterrightslicence_id) for 512)
+    END as licence_url,
+    '' as region
 from well
     left join well_status_code on well_status_code.well_status_code = well.well_status_code
     left join well_class_code on well_class_code.well_class_code = well.well_class_code
+    left join well_subclass_code on well_subclass_code.well_subclass_guid = well.well_subclass_guid
+    left join registries_person on registries_person.person_guid = well.person_responsible_guid
+    left join registries_organization on registries_organization.org_guid = well.org_of_person_responsible_guid
+    left join well_licences on well_licences.well_id = well.well_tag_number and well_licences.waterrightslicence_id = (
+        select well_licences.waterrightslicence_id from well_licences
+        where well_licences.well_id = well.well_tag_number
+        order by well_licences.waterrightslicence_id desc limit 1)    
     left join intended_water_use_code on
         intended_water_use_code.intended_water_use_code = well.intended_water_use_code
     left join well_yield_unit_code on
@@ -205,56 +208,6 @@ from well
     order by well.well_tag_number
 """)
 WELL_CHUNK_SIZE = 10000
-
-DELETE_ME_ORIGINAL_WELLS_SQL = ("""
-   
-select
-    ST_AsGeoJSON(ST_Transform(geom, 4326)) :: json as "geometry",
-    well.well_tag_number,
-    well.identification_plate_number,
-    SUBSTRING(well_status_code.description for 255) as well_status,
-    CASE WHEN licence_q.cur_licences > 0 THEN 'Licensed' ELSE 'Unlicensed' END as licence_status,
-    SUBSTRING(CONCAT('https://apps.nrs.gov.bc.ca/gwells/well/', well.well_tag_number) for 255) as detail,
-    well.artesian_flow,
-    SUBSTRING('usGPM' for 255) as artesian_flow_units,
-    well.artesian_pressure,
-    SUBSTRING(well_class_code.description for 100) as well_class,
-    SUBSTRING(intended_water_use_code.description for 100) as intended_water_use,
-    SUBSTRING(well.street_address for 100) as street_address,
-    well.finished_well_depth,
-    casing.diameter,
-    well.static_water_level,
-    well.bedrock_depth,
-    well.well_yield as yield,
-    SUBSTRING(well_yield_unit_code.description for 100) as yield_unit,
-    well.aquifer_id as aquifer_id,
-    well.observation_well_number,
-    well.obs_well_status_code,
-    well.artesian_pressure_head,
-    well.artesian_conditions    
-from well
-    left join well_status_code on well_status_code.well_status_code = well.well_status_code
-    left join well_class_code on well_class_code.well_class_code = well.well_class_code
-    left join intended_water_use_code on
-        intended_water_use_code.intended_water_use_code = well.intended_water_use_code
-    left join well_yield_unit_code on
-        well_yield_unit_code.well_yield_unit_code = well.well_yield_unit_code
-    left join casing on
-        casing.well_tag_number = well.well_tag_number and casing.casing_guid = (
-            select casing.casing_guid from casing
-            where casing.well_tag_number = well.well_tag_number
-            order by casing.diameter asc limit 1)
-    left join (select well_tag_number, count(*) as cur_licences from well
-        join well_licences on
-        well.well_tag_number = well_licences.well_id
-        group by well_tag_number) as licence_q
-        on well.well_tag_number = licence_q.well_tag_number
-    where
-        (well.well_publication_status_code = 'Published' or well.well_publication_status_code = null)
-        and well.geom is not null
-        {bounds}
-    order by well.well_tag_number
-""")
 
 
 # IMPORTANT: If the underlying data structure changes (e.g. column name changes etc.), the
