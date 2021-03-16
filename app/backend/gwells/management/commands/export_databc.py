@@ -46,6 +46,8 @@ logger = logging.getLogger(__name__)
 # Casing diameter: For now, grab the smallest diameter (should be using type, but we don't have
 # date right now.)
 # UPDATED FOR WATER-833, explicitly labelled column names (keeping older ones intact)
+#   region was added to the export interface but is purposefully left empty, a new ticket will eventually
+#   contain the added data
 WELLS_SQL = ("""
 select
     ST_AsGeoJSON(ST_Transform(geom, 4326)) :: json as "geometry",
@@ -142,8 +144,8 @@ select
     well.development_notes as development_notes,
     well.water_quality_colour as water_quality_colour,
     well.water_quality_odour as water_quality_odour,
-    -- TODO:// should this be done?
-    -- well.water_quality_characteristics
+    (select string_agg(wwq.waterqualitycharacteristic_id::text, ',') 
+        from well_water_quality wwq where wwq.well_id = well.well_tag_number) as water_quality_characteristics,
     well.yield_estimation_method_code as yield_estimation_method_code,
     well.yield_estimation_duration as yield_estimation_duration,
     well.drawdown as drawdown,
@@ -171,9 +173,9 @@ select
     well.boundary_effect_code as boundary_effect_code,
     well.aquifer_lithology_code as aquifer_lithology_code,
     well_licences.waterrightslicence_id as license_no,
-    CASE WHEN well_licences.waterrightslicence_id IS NULL 
-        THEN ''
-        ELSE SUBSTRING(CONCAT('https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&PosseObjectDef=o_ATIS_DocumentSearch&PosseMenuName=WS_Main&Criteria_LicenceNumber=C', 
+    CASE WHEN well_licences.waterrightslicence_id IS NULL
+        THEN NULL
+        ELSE SUBSTRING(CONCAT('https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&PosseObjectDef=o_ATIS_DocumentSearch&PosseMenuName=WS_Main&Criteria_LicenceNumber=C',
             well_licences.waterrightslicence_id) for 512)
     END as licence_url,
     '' as region
@@ -186,7 +188,8 @@ from well
     left join well_licences on well_licences.well_id = well.well_tag_number and well_licences.waterrightslicence_id = (
         select well_licences.waterrightslicence_id from well_licences
         where well_licences.well_id = well.well_tag_number
-        order by well_licences.waterrightslicence_id desc limit 1)    
+        and well_licences.waterrightslicence_id is not null
+        order by well_licences.waterrightslicence_id desc limit 1)
     left join intended_water_use_code on
         intended_water_use_code.intended_water_use_code = well.intended_water_use_code
     left join well_yield_unit_code on
@@ -203,7 +206,7 @@ from well
         on well.well_tag_number = licence_q.well_tag_number
     where
         (well.well_publication_status_code = 'Published' or well.well_publication_status_code = null)
-        and well.geom is not null    
+        and well.geom is not null
         {bounds}
     order by well.well_tag_number
 """)
