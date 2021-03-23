@@ -176,12 +176,12 @@
                 </li>
                 <li>
                   <dt>
-                    Number of wells potentially located within the aquifer
+                    Number of uncorrelated wells within mapped aquifer extent
                     <i id="uncorrelated-wells-count" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
                     <b-popover
                       target="uncorrelated-wells-count"
                       triggers="hover focus"
-                      content="Count of wells that potentially fall within the aquifer polygon; however, they are not necessarily screened within the aquifer of interest."/>
+                      content="The total number of wells that fall within the aquifer polygon but have not been correlated to any aquifer. These wells may potentially be located within this aquifer or may be completed within an aquitard or within another aquifer located at a different depth."/>
                   </dt>
                   <dd class="m-0">
                     {{ uncorrelatedWells.length }}

@@ -15,5 +15,6 @@ mkdir -p $MINIO_DATA_DIR/aquifer-docs
 mkdir -p $MINIO_DATA_DIR/driller-docs
 mkdir -p $MINIO_DATA_DIR/gwells
 mkdir -p $MINIO_DATA_DIR/well-docs
+mkdir -p $MINIO_DATA_DIR/gwells-docs
 
 /usr/bin/docker-entrypoint.sh $@

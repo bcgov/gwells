@@ -64,6 +64,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 :form="form"
                 :events="events"
                 :submissionsHistory="submissionsHistory"
+                :isPublished="isPublished"
                 :activityType.sync="activityType"
                 :sections="displayFormSection"
                 :formSteps="formSteps"
@@ -298,7 +299,6 @@ export default {
       // Depending on the type of submission (construction/decommission/alteration/edit) we post to
       // different endpoints.
       const PATH = this.codes.activity_types.find((item) => item.code === this.activityType).path
-
       ApiService.post(PATH, data).then((response) => {
         this.formSubmitSuccess = true
         this.formSubmitSuccessWellTag = response.data.well
@@ -519,6 +519,8 @@ export default {
         well_yield: '',
         artesian_flow: '',
         artesian_pressure: '',
+        artesian_pressure_head: '',
+        artesian_conditions: false,
         well_cap_type: '',
         well_disinfected_status: '',
         comments: '',
@@ -577,6 +579,12 @@ export default {
             errors.intended_water_use = [ 'Intended water use only valid for a well class of Water Supply.' ]
           }
         }
+      }
+
+      // Validate the Artesian Well radio button, if flow, pressure head or pressure psi has a value then we
+      //  ask the user to set the value of Artesian Well to Yes
+      if (!this.form.artesian_conditions && (this.form.artesian_flow > 0 || this.form.artesian_pressure > 0 || this.form.artesian_pressure_head > 0)) {
+        errors.artesian_conditions = [ 'Set Artesian Well to Yes for positive flow or pressure.' ]
       }
 
       this.errors = errors
@@ -713,6 +721,9 @@ export default {
         // store the number of submissions already associated with this well
         this.submissionsHistory = res.data.submission_reports || []
 
+        // store the is published flag for this well
+        this.isPublished = res.data.is_published
+
         // Wait for the form update we just did to fire off change events.
         this.$nextTick(() => {
           this.form.meta.valueChanged = {}
@@ -766,6 +777,7 @@ function initialState () {
     errors: {},
     form: {},
     submissionsHistory: [], // historical submissions for each well (comes into play for staff edits)
+    isPublished: false,
     formOptions: {},
     surveys: {
       submissions: [],

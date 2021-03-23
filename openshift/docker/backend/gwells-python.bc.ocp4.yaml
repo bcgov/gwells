@@ -14,15 +14,15 @@ spec:
   output:
     to:
       kind: ImageStreamTag
-      name: gwells-python:latest
+      name: gwells-python:v3
   postCommit: {}
   resources:
     requests:
       memory: 1Gi
       cpu: 1000m
     limits:
-      memory: 4Gi
-      cpu: 4000m
+      memory: 6Gi
+      cpu: 6000m
   runPolicy: Serial
   source:
     contextDir: openshift/docker/backend
@@ -33,8 +33,9 @@ spec:
   strategy:
     dockerStrategy:
       from:
-        kind: DockerImage
-        name: registry.access.redhat.com/ubi8/python-36:1
+        kind: ImageStreamTag
+        name: 'python-36-rhel7:v1'
+        namespace: 26e83e-tools
     type: Docker
   successfulBuildsHistoryLimit: 5
   triggers:
