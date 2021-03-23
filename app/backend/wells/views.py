@@ -140,7 +140,7 @@ class ListExtracts(APIView):
                                 'S3_PUBLIC_SECRET_KEY'),
                             secure=use_secure)
         objects = minioClient.list_objects(
-            get_env_variable('S3_WELL_EXPORT_BUCKET'), 'export/')
+            get_env_variable('S3_WELL_EXPORT_BUCKET'), 'export/v2/')
         urls = list(
             map(
                 lambda document: {
