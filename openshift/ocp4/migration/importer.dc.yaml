@@ -51,18 +51,24 @@ objects:
             - name: cli-db-volume
               persistentVolumeClaim:
                 claimName: ${NAME}
+            - name: migration-scripts
+              configMap:
+                name: migration-scripts
+                defaultMode: 0777
           containers:
             - name: ${NAME}
               image: >-
                 image-registry.openshift-image-registry.svc:5000/openshift/cli@sha256:cc4eaab57638fe0b20e449dcc94ae5325dfd9cb69dc631b28420be85deb32e60
               command:
-                - /bin/sh
+                - /bin/bash
                 - '-c'
                 - 'trap : TERM INT; sleep 7d & wait'
               resources: {}
               volumeMounts:
                 - name: cli-db-volume
                   mountPath: /mnt
+                - name: migration-scripts
+                  mountPath: /scripts
               terminationMessagePath: /dev/termination-log
               terminationMessagePolicy: File
               imagePullPolicy: Always

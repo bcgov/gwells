@@ -1298,7 +1298,6 @@ pipeline {
                             "--overwrite"
                         )
 
-
                         def dbNFSBackup = openshift.process("-f",
                             "${templateDir}/jobs/postgres-backup-nfs/postgres-backup.cj.yaml",
                             "NAMESPACE=${prodProject}",
