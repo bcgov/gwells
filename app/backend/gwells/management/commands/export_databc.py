@@ -453,6 +453,19 @@ class GeoJSONIterator():
 
 class Command(BaseCommand):
 
+    def __init__(self):
+        """
+        declare our class variables
+        versions and output file names
+        """
+        super().__init__()
+        self.version1 = 'v1'
+        self.version2 = 'v2'
+        self.versions = [self.version1, self.version2]
+        self.wells_filename = 'wells.json'
+        self.aquifers_filename = 'aquifers.json'
+        self.lithology_filename = 'lithology.json'
+
     def add_arguments(self, parser):
         # Arguments added for debugging purposes.
         # e.g. don't cleanup, don't upload: python manage.py export_databc --cleanup=0 --upload=0
@@ -460,20 +473,37 @@ class Command(BaseCommand):
         parser.add_argument('--upload', type=int, nargs='?', help='If 1, upload the file', default=1)
 
     def handle(self, *args, **options):
-        """Entry point for Django Command."""
-        files = ('wells.json', 'aquifers.json', 'lithology.json')
-        logger.info('Starting GeoJSON export.')
-        try:
-            self.generate_wells('wells.json')
-            self.generate_lithology('lithology.json')
-            self.generate_aquifers('aquifers.json')
+        """
+        Entry point for Django Command.
+        for each version (v1, v2), generate our outputs,
+            upload our files if option is set,
+            cleanup our filesystem if option is set
+        """
+        files = (self.wells_filename, self.aquifers_filename, self.lithology_filename)
+
+        for version in self.versions:
+            self.generate_by_version(version)
             if options['upload'] == 1:
-                self.upload_files(files)
-        finally:
-            if options['cleanup'] == 1:
-                self.cleanup(files)
+                self.upload_files(files, version)
+
+        if options['cleanup'] == 1:
+            self.cleanup(files)
+
         logger.info('GeoJSON export complete.')
         self.stdout.write(self.style.SUCCESS('GeoJSON export complete.'))
+
+    def generate_by_version(self, version):
+        """
+        generate outputs for each version.
+        wells and lithology are the same outputs for both version1 and version2
+        aquifer outputs differ between versions so always output
+        :param version: the version number of the file to generate data for
+        """
+        logger.info(f'Starting GeoJSON {version} export.')
+        if version == self.version1:
+            self.generate_wells(self.wells_filename)
+            self.generate_lithology(self.lithology_filename)
+        self.generate_aquifers(self.aquifers_filename, version)
 
     def cleanup(self, files):
         """Delete all local files GeoJSON files."""
@@ -481,20 +511,18 @@ class Command(BaseCommand):
             if os.path.exists(filename):
                 os.remove(filename)
 
-    def upload_files(self, files):
+    def upload_files(self, files, version):
         """Upload files to S3 bucket."""
         is_secure = get_env_variable('S3_USE_SECURE', '1', warn=False) is '1'
         minioClient = Minio(get_env_variable('S3_HOST'),
-                            access_key=get_env_variable(
-                                'S3_PUBLIC_ACCESS_KEY'),
-                            secret_key=get_env_variable(
-                                'S3_PUBLIC_SECRET_KEY'),
+                            access_key=get_env_variable('S3_PUBLIC_ACCESS_KEY'),
+                            secret_key=get_env_variable('S3_PUBLIC_SECRET_KEY'),
                             secure=is_secure)
         for filename in files:
             logger.info('uploading {}'.format(filename))
             with open(filename, 'rb') as file_data:
                 file_stat = os.stat(filename)
-                target = 'api/v1/gis/{}'.format(filename)
+                target = f'api/{version}/gis/{filename}'
                 bucket = get_env_variable('S3_WELL_EXPORT_BUCKET')
                 logger.debug(
                     'uploading {} to {}/{}'.format(filename, bucket, target))
@@ -514,13 +542,28 @@ class Command(BaseCommand):
                     f.write('{}\n'.format(item))
                     count += 1
 
-    def generate_lithology(self, target):
-        self.generate_geojson_chunks(
-            LITHOLOGY_SQL.format(bounds=''), target, LITHOLOGY_CHUNK_SIZE)
+    def generate_lithology(self, filename):
+        self.generate_geojson_chunks(LITHOLOGY_SQL.format(bounds=''),
+                                     filename,
+                                     LITHOLOGY_CHUNK_SIZE)
 
-    def generate_aquifers(self, filename):
-        self.generate_geojson_chunks(
-            AQUIFERS_SQL_V1.format(bounds=''), filename, AQUIFER_CHUNK_SIZE)
+    def generate_aquifers(self, filename, version):
+        """
+        based on version, use the applicable sql statement version to
+            generate our geojson chunks in a file
+        :param filename: the filename to generate our geojson chunk into
+        :param version: the version number of the sql statement to use
+        """
+        if version == self.version2:
+            self.generate_geojson_chunks(AQUIFERS_SQL_V2.format(bounds=''),
+                                         filename,
+                                         AQUIFER_CHUNK_SIZE)
+        else:
+            self.generate_geojson_chunks(AQUIFERS_SQL_V1.format(bounds=''),
+                                         filename,
+                                         AQUIFER_CHUNK_SIZE)
 
     def generate_wells(self, filename):
-        self.generate_geojson_chunks(WELLS_SQL.format(bounds=''), filename, WELL_CHUNK_SIZE)
+        self.generate_geojson_chunks(WELLS_SQL.format(bounds=''),
+                                     filename,
+                                     WELL_CHUNK_SIZE)
