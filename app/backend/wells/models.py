@@ -1619,7 +1619,7 @@ class ActivitySubmission(AuditModelStructure):
         max_length=3000, blank=True, null=True)
 
     alternative_specs_submitted = models.BooleanField(
-        default=False,
+        null=True,
         verbose_name='Alternative specs submitted (if required)', choices=((False, 'No'), (True, 'Yes')))
 
     well_yield_unit = models.ForeignKey(
@@ -1718,7 +1718,8 @@ class ActivitySubmission(AuditModelStructure):
         max_digits=7, decimal_places=2, blank=True, null=True,
         validators=[MinValueValidator(Decimal('0.00'))])
     hydro_fracturing_performed = models.BooleanField(
-        default=False, verbose_name='Hydro-fracturing Performed?',
+        null=True,
+        verbose_name='Hydro-fracturing Performed?',
         choices=((False, 'No'), (True, 'Yes')))
     hydro_fracturing_yield_increase = models.DecimalField(
         max_digits=7, decimal_places=2,
