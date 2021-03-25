@@ -471,7 +471,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             {{ well.comments ? well.comments : 'No comments submitted' }}
           </p>
           <p>
-            <span class="font-weight-bold">Alternative Specs Submitted:</span> {{ well.alternative_specs_submitted === true ? "Yes" : "No" }}
+            <span class="font-weight-bold">Alternative Specs Submitted:</span> {{ well.alternative_specs_submitted }}
           </p>
         </fieldset>
 
