@@ -271,7 +271,7 @@ exports[`WellDetail.vue should match snapshot 1`] = `
             >
               Artesian Condition:
             </span>
-             No
+             
           </b-col-stub>
         </b-row-stub>
       </fieldset>
@@ -1648,7 +1648,7 @@ exports[`WellDetail.vue should match snapshot 1`] = `
             >
               Hydrofracturing Performed:
             </span>
-             No
+             
           </b-col-stub>
            
           <b-col-stub
@@ -1772,7 +1772,7 @@ exports[`WellDetail.vue should match snapshot 1`] = `
           >
             Alternative Specs Submitted:
           </span>
-           No
+           
         
         </p>
       </fieldset>
