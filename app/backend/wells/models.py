@@ -1043,7 +1043,7 @@ class Well(AuditModelStructure):
     storativity = models.DecimalField(
         max_digits=8, decimal_places=7, blank=True, null=True, verbose_name='Storativity')
     transmissivity = models.DecimalField(
-        max_digits=10, decimal_places=0, blank=True, null=True, verbose_name='Transmissivity')
+        max_digits=8, decimal_places=6, blank=True, null=True, verbose_name='Transmissivity')
     hydraulic_conductivity = models.TextField(
         max_length=100,
         blank=True,
@@ -1669,7 +1669,7 @@ class ActivitySubmission(AuditModelStructure):
     storativity = models.DecimalField(
         max_digits=8, decimal_places=7, blank=True, null=True, verbose_name='Storativity')
     transmissivity = models.DecimalField(
-        max_digits=10, decimal_places=0, blank=True, null=True, verbose_name='Transmissivity')
+        max_digits=8, decimal_places=6, blank=True, null=True, verbose_name='Transmissivity')
     hydraulic_conductivity = models.TextField(
         max_length=100,
         blank=True,
@@ -2336,7 +2336,7 @@ class HydraulicProperty(AuditModel):
     storativity = models.DecimalField(
         max_digits=8, decimal_places=7, blank=True, null=True, verbose_name='Storativity')
     transmissivity = models.DecimalField(
-        max_digits=10, decimal_places=0, blank=True, null=True, verbose_name='Transmissivity')
+        max_digits=8, decimal_places=6, blank=True, null=True, verbose_name='Transmissivity')
     hydraulic_conductivity = models.TextField(
         max_length=100,
         blank=True,
