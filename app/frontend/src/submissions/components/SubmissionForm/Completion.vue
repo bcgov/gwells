@@ -31,7 +31,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             label="Total Depth Drilled"
             v-model="totalDepthDrilledInput"
             type="number"
-            hint="ft"
+            hint="ft (bgl)"
             :errors="errors['total_depth_drilled']"
             :loaded="fieldsLoaded['total_depth_drilled']">
         </form-input>
