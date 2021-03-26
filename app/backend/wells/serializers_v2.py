@@ -449,4 +449,4 @@ class WellDetailSerializer(WellDetailSerializerV1):
     yield_estimation_method = serializers.ReadOnlyField(source='yield_estimation_method.description')
 
     class Meta(WellDetailSerializerV1.Meta):
-        pass
+        ref_name = "well_detail_v2"

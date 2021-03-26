@@ -540,6 +540,7 @@ class WellDetailSerializer(AuditModelSerializer):
         return instance.well_publication_status.well_publication_status_code == 'Published'
 
     class Meta:
+        ref_name = "well_detail_v1"
         model = Well
         fields = (
             "well_guid",
