@@ -54,7 +54,7 @@
                       </div>
                     </div>
                     <div v-else>
-                      {{ key | readable }} changed from {{ version.prev[key] | formatValue }} to {{ value | formatValue }}
+                      {{ key | readable }} changed from {{ version.prev[key] | booleanToYesNo | formatValue }} to {{ value | booleanToYesNo | formatValue }}
                     </div>
                   </div>
                 </div>

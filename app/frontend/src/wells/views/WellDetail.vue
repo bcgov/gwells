@@ -86,7 +86,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             <b-col cols="12" md="4"><span class="font-weight-bold">Alternative specs submitted:</span> {{ well.alternative_specs_submitted }}</b-col>
           </b-row>
           <b-row>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Artesian Condition:</span> {{ well.artesian_conditions  === true ? "Yes" : "No" }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Artesian Condition:</span> {{ well.artesian_conditions | nullBooleanToYesNo }}</b-col>
           </b-row>
         </fieldset>
 
@@ -445,7 +445,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             <b-col cols="12" md="4"><span class="font-weight-bold">Drawdown:</span> {{ well.drawdown | excludeZeroDecimals }} {{ well.drawdown ? 'ft (btoc)':'' }}</b-col>
           </b-row>
           <b-row>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Hydrofracturing Performed:</span> {{well.hydro_fracturing_performed === true ? 'Yes' : 'No'}}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Hydrofracturing Performed:</span> {{well.hydro_fracturing_performed | nullBooleanToYesNo}}</b-col>
             <b-col cols="12" md="4"><span class="font-weight-bold">Increase in Yield Due to Hydrofracturing:</span> {{ well.hydro_fracturing_yield_increase | excludeZeroDecimals }} {{ well.hydro_fracturing_yield_increase ? 'USgpm':'' }}</b-col>
           </b-row>
         </fieldset>
@@ -471,7 +471,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             {{ well.comments ? well.comments : 'No comments submitted' }}
           </p>
           <p>
-            <span class="font-weight-bold">Alternative Specs Submitted:</span> {{ well.alternative_specs_submitted }}
+            <span class="font-weight-bold">Alternative Specs Submitted:</span> {{ well.alternative_specs_submitted | nullBooleanToYesNo }}
           </p>
         </fieldset>
 
