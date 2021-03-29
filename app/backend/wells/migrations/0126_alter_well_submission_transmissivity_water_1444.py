@@ -13,8 +13,8 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='activitysubmission',
             name='transmissivity',
-            field=models.DecimalField(max_digits=8,
-                                      decimal_places=6,
+            field=models.DecimalField(max_digits=30,
+                                      decimal_places=10,
                                       blank=True,
                                       null=True,
                                       verbose_name='Transmissivity')
@@ -22,8 +22,8 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='well',
             name='transmissivity',
-            field=models.DecimalField(max_digits=8,
-                                      decimal_places=6,
+            field=models.DecimalField(max_digits=30,
+                                      decimal_places=10,
                                       blank=True,
                                       null=True,
                                       verbose_name='Transmissivity')
@@ -31,8 +31,8 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='hydraulicproperty',
             name='transmissivity',
-            field=models.DecimalField(max_digits=8,
-                                      decimal_places=6,
+            field=models.DecimalField(max_digits=30,
+                                      decimal_places=10,
                                       blank=True,
                                       null=True,
                                       verbose_name='Transmissivity')
