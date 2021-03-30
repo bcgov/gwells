@@ -200,8 +200,8 @@ def get_well_submission_history(well_tag_number):
                 "prev": prev_value,
                 "type": field_name,
                 "action": action_type(cur_value, prev_value),
-                "user": submission.update_user,
-                "date": submission.update_date
+                "user": submission.create_user,
+                "date": submission.create_date
             }
 
             history_item.append(item)
