@@ -59,6 +59,7 @@ COLUMN_LABELS = {
     "coordinate_acquisition_code": "Location Accuracy Code",
     "ground_elevation": "Ground Elevation",
     "ground_elevation_method": "Elevation Determined By",
+    "intended_water_use": "Intended Water Use",
     "drilling_methods": "Drilling Methods",
     "well_orientation_status": "Orientation of Well",
     "surface_seal_material": "Surface Seal Material",
