@@ -234,7 +234,6 @@ class WellListFilter(AnyOrAllFilterSet):
     consultant_name = filters.CharFilter(lookup_expr='icontains')
     consultant_company = filters.CharFilter(lookup_expr='icontains')
     ground_elevation = filters.RangeFilter()
-    surface_seal_length = filters.RangeFilter()
     surface_seal_thickness = filters.RangeFilter()
     surface_seal_depth = filters.RangeFilter()
     backfill_type = filters.CharFilter(lookup_expr='icontains')
@@ -425,7 +424,6 @@ class WellListFilter(AnyOrAllFilterSet):
             'street_address',
             'street_address_or_city',
             'surface_seal_depth',
-            'surface_seal_length',
             'surface_seal_material',
             'surface_seal_method',
             'surface_seal_thickness',

@@ -803,8 +803,6 @@ class Well(AuditModelStructure):
     surface_seal_material = models.ForeignKey(SurfaceSealMaterialCode, db_column='surface_seal_material_code',
                                               on_delete=models.PROTECT, blank=True, null=True,
                                               verbose_name='Surface Seal Material')
-    surface_seal_length = models.DecimalField(
-        max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Surface Seal Length')
     surface_seal_depth = models.DecimalField(
         max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Surface Seal Depth')
     surface_seal_thickness = models.DecimalField(
@@ -1218,7 +1216,6 @@ class Well(AuditModelStructure):
         "static_level_before_test":"Resting static water level prior to pumping, measured in feet below ground level or feet below top of the production casing.",
         "storativity":"The storativity (or storage coefficient ) is the amount of water stored or released per unit area of aquifer given unit change in head.  ",
         "surface_seal_depth":"The depth at the bottom of the surface seal, measured in feet.",
-        "surface_seal_length":"The length of the the surface seal, measured in feet.",
         "surface_seal_material_code":"Valid materials used for creating the surface seal for a well. A surface seal is a plug that prevents surface runoff from getting into the aquifer or well and contaminating the water. E.g. Bentonite clay, Concrete grout, Sand cement grout, Other.",
         "surface_seal_method_code":"Valid methods used to create the surface seal for a well. i.e. Poured, Pumped, Other.",
         "surface_seal_thickness":"The thickness of the surface sealant placed in the annular space around the outside of the outermost well casing, measured in inches.",
