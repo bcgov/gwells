@@ -659,7 +659,7 @@ class Command(BaseCommand):
         logger.info(f'Starting GeoJSON {version} export.')
         if version == self.version1:
             self.generate_lithology(self.lithology_filename)
-        self.generate_wells(self.wells_filename)
+        self.generate_wells(self.wells_filename, version)
         self.generate_aquifers(self.aquifers_filename, version)
 
     def cleanup(self, files):
