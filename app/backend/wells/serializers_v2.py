@@ -205,7 +205,6 @@ class WellListSerializerV2(serializers.ModelSerializer):
             "drilling_methods",
             "well_orientation_status",
             "surface_seal_material",
-            "surface_seal_length",
             "surface_seal_thickness",
             "surface_seal_method",
             "surface_seal_depth",

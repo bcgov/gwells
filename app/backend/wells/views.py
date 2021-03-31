@@ -46,7 +46,7 @@ from gwells.pagination import APILimitOffsetPagination
 from gwells.settings.base import get_env_variable
 from gwells.open_api import (
     get_geojson_schema, get_model_feature_schema, GEO_JSON_302_MESSAGE, GEO_JSON_PARAMS)
-from gwells.management.commands.export_databc import (WELLS_SQL, LITHOLOGY_SQL, GeoJSONIterator,
+from gwells.management.commands.export_databc import (WELLS_SQL_V1, LITHOLOGY_SQL, GeoJSONIterator,
                                                       LITHOLOGY_CHUNK_SIZE, WELL_CHUNK_SIZE)
 
 from submissions.serializers import WellSubmissionListSerializer
@@ -658,7 +658,7 @@ def well_geojson(request, **kwargs):
             bounds = (sw_long, sw_lat, ne_long, ne_lat)
 
         iterator = GeoJSONIterator(
-            WELLS_SQL.format(bounds=bounds_sql), WELL_CHUNK_SIZE, connection.cursor(), bounds)
+            WELLS_SQL_V1.format(bounds=bounds_sql), WELL_CHUNK_SIZE, connection.cursor(), bounds)
         response = StreamingHttpResponse((item for item in iterator),
                                          content_type='application/json')
         response['Content-Disposition'] = 'attachment; filename="well.json"'

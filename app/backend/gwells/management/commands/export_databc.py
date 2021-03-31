@@ -23,7 +23,6 @@ from django.db import connection
 from minio import Minio
 
 from gwells.settings.base import get_env_variable
-from wells.models import Well
 from gwells.management.commands import ResultIter
 
 """
@@ -36,9 +35,7 @@ python manage.py export_databc --cleanup=0 --upload=0
 This command runs in an OpenShift cronjob, defined in export.cj.json
 """
 
-
 logger = logging.getLogger(__name__)
-
 
 # IMPORTANT: If the underlying data structure changes (e.g. column name changes etc.), the
 # property names have to stay the same! This endpoint is consumed by DataBC and must remain
@@ -48,7 +45,7 @@ logger = logging.getLogger(__name__)
 # UPDATED FOR WATER-833, explicitly labelled column names (keeping older ones intact)
 #   region was added to the export interface but is purposefully left empty, a new ticket will eventually
 #   contain the added data
-WELLS_SQL = ("""
+WELLS_SQL_V1 = ("""
 select
     ST_AsGeoJSON(ST_Transform(geom, 4326)) :: json as "geometry",
     well.well_tag_number as well_tag_number,
@@ -116,7 +113,167 @@ select
     well.alternative_specs_submitted as alternative_specs_submitted,
     well.surface_seal_material_code as surface_seal_material_code,
     well.surface_seal_method_code as surface_seal_method_code,
-    well.surface_seal_length as surface_seal_length,
+    null as surface_seal_length,
+    well.surface_seal_depth as surface_seal_depth,
+    well.surface_seal_thickness as surface_seal_thickness,
+    well.backfill_type as backfill_type,
+    well.backfill_depth as backfill_depth,
+    well.liner_material_code as liner_material_code,
+    well.liner_diameter as liner_diameter,
+    well.liner_thickness as liner_thickness,
+    well.liner_from as liner_from,
+    well.liner_to as liner_to,
+    well.screen_intake_method_code as screen_intake_method_code,
+    well.screen_type_code as screen_type_code,
+    well.screen_material_code as screen_material_code,
+    well.other_screen_material as other_screen_material,
+    well.screen_information as screen_information,
+    well.screen_opening_code as screen_opening_code,
+    well.screen_bottom_code as screen_bottom_code,
+    well.other_screen_bottom as other_screen_bottom,
+    well.filter_pack_from as filter_pack_from,
+    well.filter_pack_to as filter_pack_to,
+    well.filter_pack_material_code as filter_pack_material_code,
+    well.filter_pack_thickness as filter_pack_thickness,
+    well.filter_pack_material_size_code as filter_pack_material_size_code,
+    well.development_hours as development_hours,
+    well.development_notes as development_notes,
+    well.water_quality_colour as water_quality_colour,
+    well.water_quality_odour as water_quality_odour,
+    (select string_agg(wwq.waterqualitycharacteristic_id::text, ',') 
+        from well_water_quality wwq where wwq.well_id = well.well_tag_number) as water_quality_characteristics,
+    well.yield_estimation_method_code as yield_estimation_method_code,
+    well.yield_estimation_duration as yield_estimation_duration,
+    well.drawdown as drawdown,
+    well.hydro_fracturing_performed as hydro_fracturing_performed,
+    well.hydro_fracturing_yield_increase as hydro_fracturing_yield_increase,
+    well.decommission_reason as decommission_reason,
+    well.decommission_method_code as decommission_method_code,
+    well.decommission_details as decommission_details,
+    well.decommission_sealant_material as decommission_sealant_material,
+    well.decommission_backfill_material as decommission_backfill_material,
+    well.comments as comments,
+    well.ems as ems,
+    SUBSTRING(CONCAT(registries_person.first_name, ' ', registries_person.surname) for 255) as person_responsible,
+    registries_organization.name as company_of_person_responsible,
+    well.aquifer_vulnerability_index as avi,
+    well.storativity as storativity,
+    well.transmissivity as transmissivity,
+    well.hydraulic_conductivity as hydraulic_conductivity,
+    well.specific_storage as specific_storage,
+    well.specific_yield as specific_yield,
+    well.testing_method as testing_method,
+    well.testing_duration as testing_duration,
+    well.analytic_solution_type as analytic_solution_type,
+    well.boundary_effect_code as boundary_effect_code,
+    well.aquifer_lithology_code as aquifer_lithology_code,
+    well_licences.waterrightslicence_id as license_no,
+    CASE WHEN well_licences.waterrightslicence_id IS NULL
+        THEN NULL
+        ELSE SUBSTRING(CONCAT('https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&PosseObjectDef=o_ATIS_DocumentSearch&PosseMenuName=WS_Main&Criteria_LicenceNumber=C',
+            well_licences.waterrightslicence_id) for 512)
+    END as licence_url,
+    '' as region
+from well
+    left join well_status_code on well_status_code.well_status_code = well.well_status_code
+    left join well_class_code on well_class_code.well_class_code = well.well_class_code
+    left join well_subclass_code on well_subclass_code.well_subclass_guid = well.well_subclass_guid
+    left join registries_person on registries_person.person_guid = well.person_responsible_guid
+    left join registries_organization on registries_organization.org_guid = well.org_of_person_responsible_guid
+    left join well_licences on well_licences.well_id = well.well_tag_number and well_licences.waterrightslicence_id = (
+        select well_licences.waterrightslicence_id from well_licences
+        where well_licences.well_id = well.well_tag_number
+        and well_licences.waterrightslicence_id is not null
+        order by well_licences.waterrightslicence_id desc limit 1)
+    left join intended_water_use_code on
+        intended_water_use_code.intended_water_use_code = well.intended_water_use_code
+    left join well_yield_unit_code on
+        well_yield_unit_code.well_yield_unit_code = well.well_yield_unit_code
+    left join casing on
+        casing.well_tag_number = well.well_tag_number and casing.casing_guid = (
+            select casing.casing_guid from casing
+            where casing.well_tag_number = well.well_tag_number
+            order by casing.diameter asc limit 1)
+    left join (select well_tag_number, count(*) as cur_licences from well
+        join well_licences on
+        well.well_tag_number = well_licences.well_id
+        group by well_tag_number) as licence_q
+        on well.well_tag_number = licence_q.well_tag_number
+    where
+        (well.well_publication_status_code = 'Published' or well.well_publication_status_code = null)
+        and well.geom is not null
+        {bounds}
+    order by well.well_tag_number
+""")
+
+WELLS_SQL_V2 = ("""
+select
+    ST_AsGeoJSON(ST_Transform(geom, 4326)) :: json as "geometry",
+    well.well_tag_number as well_tag_number,
+    well.identification_plate_number as identification_plate_number,
+    SUBSTRING(well_status_code.description for 255) as well_status,
+    CASE WHEN licence_q.cur_licences > 0 THEN 'Licensed' ELSE 'Unlicensed' END as licence_status,
+    SUBSTRING(CONCAT('https://apps.nrs.gov.bc.ca/gwells/well/', well.well_tag_number) for 255) as detail,
+    well.artesian_flow as artesian_flow,
+    SUBSTRING('usGPM' for 255) as artesian_flow_units,
+    well.artesian_pressure as artesian_pressure,
+    well.artesian_pressure_head as artesian_pressure_head,
+    well.artesian_conditions as artesian_conditions,
+    SUBSTRING(well_class_code.description for 100) as well_class,
+    well_subclass_code.description as well_subclass,
+    SUBSTRING(intended_water_use_code.description for 100) as intended_water_use,
+    SUBSTRING(well.street_address for 100) as street_address,
+    well.finished_well_depth as finished_well_depth,
+    casing.diameter as diameter,
+    well.static_water_level as static_water_level,
+    well.bedrock_depth as bedrock_depth,
+    well.well_yield as yield,
+    SUBSTRING(well_yield_unit_code.description for 100) as yield_unit,
+    well.aquifer_id as aquifer_id,
+    well.observation_well_number as observation_well_number,
+    well.obs_well_status_code as obs_well_status_code,
+    well.well_identification_plate_attached as well_identification_plate_attached,
+    well.water_supply_system_name as water_supply_system_name,
+    well.water_supply_system_well_name as water_supply_system_well_name,
+    well.city as city,
+    well.legal_lot as legal_lot,
+    well.legal_plan as legal_plan,
+    well.legal_district_lot as legal_district_lot,
+    well.legal_block as legal_block,
+    well.legal_section as legal_section,
+    well.legal_township as legal_township,
+    well.legal_range as legal_range,
+    well.land_district_code as land_district_code,
+    well.legal_pid as legal_pid,
+    well.well_location_description as well_location_description,
+    ST_Y(ST_Transform(well.geom, 4326)) as latitude,
+    ST_X(ST_Transform(well.geom, 4326)) as longitude,
+    well.utm_zone_code as utm_zone_code,
+    well.utm_northing as utm_northing,
+    well.utm_easting as utm_easting,
+    well.coordinate_acquisition_code as coordinate_acquisition_code,
+    well.construction_start_date as construction_start_date,
+    well.construction_end_date as construction_end_date,
+    well.alteration_start_date as alteration_start_date,
+    well.alteration_end_date as alteration_end_date,
+    well.decommission_start_date as decommission_start_date,
+    well.decommission_end_date as decommission_end_date,
+    well.driller_name as driller_name,
+    well.consultant_name as consultant_name,
+    well.consultant_company as consultant_company,
+    well.diameter as well_diameter,
+    well.total_depth_drilled as total_depth_drilled,
+    well.final_casing_stick_up as final_casing_stick_up,
+    well.ground_elevation as ground_elevation,
+    well.ground_elevation_method_code as ground_elevation_method_code,    
+    well.well_yield as well_yield,
+    well.well_yield_unit_code as well_yield_unit_code,
+    well.well_cap_type as well_cap_type,
+    well.well_disinfected_code as well_disinfected_code,
+    well.well_orientation_code as well_orientation_code,
+    well.alternative_specs_submitted as alternative_specs_submitted,
+    well.surface_seal_material_code as surface_seal_material_code,
+    well.surface_seal_method_code as surface_seal_method_code,    
     well.surface_seal_depth as surface_seal_depth,
     well.surface_seal_thickness as surface_seal_thickness,
     well.backfill_type as backfill_type,
@@ -209,7 +366,6 @@ from well
     order by well.well_tag_number
 """)
 WELL_CHUNK_SIZE = 10000
-
 
 # IMPORTANT: If the underlying data structure changes (e.g. column name changes etc.), the
 # property names have to stay the same! This endpoint is consumed by DataBC and must remain
@@ -327,6 +483,7 @@ from aquifer
         {bounds}
     order by aquifer.aquifer_id
 """)
+
 AQUIFERS_SQL_V2 = ("""
 SELECT
     ST_AsGeoJSON(ST_Transform(a.geom, 4326)) :: json AS "geometry",
@@ -420,8 +577,8 @@ class GeoJSONIterator():
     def get_fields(self, cursor):
         fields = []
         for index, field in enumerate(cursor.description):
-            fieldName = field[0]
-            fields.append(fieldName)
+            field_name = field[0]
+            fields.append(field_name)
         return fields
 
     def __iter__(self):
@@ -501,8 +658,8 @@ class Command(BaseCommand):
         """
         logger.info(f'Starting GeoJSON {version} export.')
         if version == self.version1:
-            self.generate_wells(self.wells_filename)
             self.generate_lithology(self.lithology_filename)
+        self.generate_wells(self.wells_filename)
         self.generate_aquifers(self.aquifers_filename, version)
 
     def cleanup(self, files):
@@ -514,10 +671,10 @@ class Command(BaseCommand):
     def upload_files(self, files, version):
         """Upload files to S3 bucket."""
         is_secure = get_env_variable('S3_USE_SECURE', '1', warn=False) is '1'
-        minioClient = Minio(get_env_variable('S3_HOST'),
-                            access_key=get_env_variable('S3_PUBLIC_ACCESS_KEY'),
-                            secret_key=get_env_variable('S3_PUBLIC_SECRET_KEY'),
-                            secure=is_secure)
+        minio_client = Minio(get_env_variable('S3_HOST'),
+                             access_key=get_env_variable('S3_PUBLIC_ACCESS_KEY'),
+                             secret_key=get_env_variable('S3_PUBLIC_SECRET_KEY'),
+                             secure=is_secure)
         for filename in files:
             logger.info('uploading {}'.format(filename))
             with open(filename, 'rb') as file_data:
@@ -526,10 +683,10 @@ class Command(BaseCommand):
                 bucket = get_env_variable('S3_WELL_EXPORT_BUCKET')
                 logger.debug(
                     'uploading {} to {}/{}'.format(filename, bucket, target))
-                minioClient.put_object(bucket,
-                                       target,
-                                       file_data,
-                                       file_stat.st_size)
+                minio_client.put_object(bucket,
+                                        target,
+                                        file_data,
+                                        file_stat.st_size)
 
     def generate_geojson_chunks(self, sql, target, chunk_size):
         logger.info('Generating GeoJSON for {}'.format(target))
@@ -563,7 +720,18 @@ class Command(BaseCommand):
                                          filename,
                                          AQUIFER_CHUNK_SIZE)
 
-    def generate_wells(self, filename):
-        self.generate_geojson_chunks(WELLS_SQL.format(bounds=''),
-                                     filename,
-                                     WELL_CHUNK_SIZE)
+    def generate_wells(self, filename, version):
+        """
+        based on version, use the applicable sql statement version to
+            generate our geojson chunks in a file
+        :param filename: the filename to generate our geojson chunk into
+        :param version: the version number of the sql statement to use
+        """
+        if version == self.version2:
+            self.generate_geojson_chunks(WELLS_SQL_V2.format(bounds=''),
+                                         filename,
+                                         AQUIFER_CHUNK_SIZE)
+        else:
+            self.generate_geojson_chunks(WELLS_SQL_V1.format(bounds=''),
+                                         filename,
+                                         WELL_CHUNK_SIZE)

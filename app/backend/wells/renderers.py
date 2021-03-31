@@ -63,7 +63,6 @@ COLUMN_LABELS = {
     "drilling_methods": "Drilling Methods",
     "well_orientation_status": "Orientation of Well",
     "surface_seal_material": "Surface Seal Material",
-    "surface_seal_length": "Surface Seal Length",
     "surface_seal_thickness": "Surface Seal Thickness",
     "surface_seal_method": "Surface Seal Installation Method",
     "surface_seal_depth": "Surface Seal Depth",
