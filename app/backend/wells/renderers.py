@@ -139,6 +139,7 @@ COLUMN_LABELS = {
     "static_water_level": "Static Water Level (BTOC)",
     "artesian_pressure_head": "Artesian Pressure head",
     "artesian_conditions": "Artesian Conditions",
+    "alternative_specs_submitted": "Alt specs submitted",
 }
 
 
