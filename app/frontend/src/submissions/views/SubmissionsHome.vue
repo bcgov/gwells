@@ -741,6 +741,22 @@ export default {
       }).finally(() => {
         this.loading = false
       })
+    },
+    confirmLeavePage () {
+      // prompt the user to confirm whether they want to leave the page or not
+      return window.confirm('Your changes are not saved!\nAre you sure you want to discard your changes?')
+    },
+    confirmStayOnPage () {
+      return this.formChanges() && !this.confirmLeavePage()
+    },
+    beforeWindowUnload (e) {
+      // should we allow the browser to navigate us away?
+      if (this.confirmStayOnPage()) {
+        // cancel the event
+        e.preventDefault()
+        // some browsers want returnValue to be set
+        e.returnValue = ''
+      }
     }
   },
   watch: {
@@ -757,6 +773,22 @@ export default {
   created () {
     this.setupPage()
     this.fetchSurveys()
+    // connect our before window unload event listener
+    window.addEventListener('beforeunload', this.beforeWindowUnload)
+  },
+  beforeRouteLeave (to, from, next) {
+    // should we allow the router to navigate us away?
+    if (this.confirmStayOnPage()) {
+      // don't navigate away
+      next(false)
+    } else {
+      // allow navigation
+      next()
+    }
+  },
+  beforeDestroy () {
+    // disconnect our before window unload event listener
+    window.removeEventListener('beforeunload', this.beforeWindowUnload)
   }
 }
 
