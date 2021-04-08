@@ -61,7 +61,7 @@ const WELL_FEATURE_PROPERTIES_FOR_POPUP = [
   'street_address',
   'is_published'
 ]
-const FOCUSED_WELL_PROPERTIES = WELL_FEATURE_PROPERTIES_FOR_POPUP.concat(['artesian_flow'])
+const FOCUSED_WELL_PROPERTIES = WELL_FEATURE_PROPERTIES_FOR_POPUP.concat(['artesian_conditions'])
 
 export default {
   name: 'SearchMap',
