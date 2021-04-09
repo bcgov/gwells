@@ -25,7 +25,7 @@ from django.db.models.functions import Cast
 
 from rest_framework import status, filters
 from rest_framework.exceptions import PermissionDenied, NotFound, ValidationError
-from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from gwells.roles import WELLS_VIEWER_ROLE, WELLS_EDIT_ROLE
 from gwells.pagination import apiLimitedPagination, APILimitOffsetPagination
@@ -114,8 +114,6 @@ class WellLocationListV2APIView(ListAPIView):
                 qs = qs.exclude(geom=None)
                 qs = qs.filter(geom__intersects=aquifer.geom)
 
-
-
         well_tag_numbers = self.request.query_params.get('well_tag_numbers', '')
         if well_tag_numbers:
             well_tag_numbers = well_tag_numbers.split(',')
@@ -152,7 +150,7 @@ class WellLocationListV2APIView(ListAPIView):
             "identification_plate_number",
             "street_address",
             "city",
-            "artesian_flow",
+            "artesian_conditions",
         ]
 
         locations = self.filter_queryset(qs)
@@ -218,12 +216,12 @@ class WellAquiferListV2APIView(ListAPIView):
         items = []
         errors = []
         has_errors = False
-        for item in request.data: # go through each vertical aquifer extent
+        for item in request.data:  # go through each vertical aquifer extent
             item['well_tag_number'] = well.well_tag_number
 
             vertical_aquifer_extent = None
             vae_id = item.get('id', None)
-            if vae_id: # has an id - then it must be an existing one
+            if vae_id:  # has an id - then it must be an existing one
                 vertical_aquifer_extent = VerticalAquiferExtent.objects.get(pk=vae_id)
 
             serializer = WellVerticalAquiferExtentSerializerV2(instance=vertical_aquifer_extent,
@@ -257,7 +255,7 @@ class WellAquiferListV2APIView(ListAPIView):
 
                 max_depth = vertical_aquifer_extent.end
 
-            errors.append(serializer_errors) # always add to keep the index correct for web app
+            errors.append(serializer_errors)  # always add to keep the index correct for web app
 
         # roll back on errors and undo any changes
         if has_errors:
@@ -273,7 +271,7 @@ class WellAquiferListV2APIView(ListAPIView):
         well_tag_number = int(self.kwargs['well_tag_number'])
         try:
             return Well.objects.get(pk=well_tag_number)
-        except:
+        except Exception:
             raise NotFound(f'Well {well_tag_number} could not be found')
 
     def has_changed(self, existing_vertical_aquifer_extent, new_data):

@@ -190,7 +190,7 @@
                 <li>
                   <dt>Artesian wells</dt>
                   <dd class="m-0">
-                    <router-link :to="{ name: 'wells-home', query: {'match_any':false, 'aquifer': id, 'artesian_flow_has_value':true}, hash: '#advanced'}">
+                    <router-link :to="{ name: 'wells-home', query: {'match_any':false, 'aquifer': id, 'artesian_conditions':true}, hash: '#advanced'}">
                       {{ licenceDetails.num_artesian_wells }} artesian wells in aquifer
                     </router-link>
                   </dd>
