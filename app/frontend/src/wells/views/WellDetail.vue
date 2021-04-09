@@ -256,7 +256,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <fieldset id="well_completion_data_fieldset" class="my-3 detail-section">
           <legend>Well Completion Data</legend>
           <b-row>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Total Depth Drilled:</span> {{ well.total_depth_drilled | excludeZeroDecimals }} {{ well.total_depth_drilled ? 'feet':''}}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Total Depth Drilled:</span> {{ well.total_depth_drilled | excludeZeroDecimals }} {{ well.total_depth_drilled ? 'ft bgl':''}}</b-col>
             <b-col cols="12" md="4"><span class="font-weight-bold">Estimated Well Yield:</span> {{ well.well_yield | excludeZeroDecimals }} {{ well.well_yield ? 'USgpm':'' }}</b-col>
             <b-col cols="12" md="4"><span class="font-weight-bold">Static Water Level (BTOC):</span> {{ well.static_water_level | excludeZeroDecimals }} {{ well.static_water_level ? 'feet btoc': ''}}</b-col>
           </b-row>
