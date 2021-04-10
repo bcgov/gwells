@@ -306,7 +306,7 @@ def apiTest (String stageName, String stageUrl, String envSuffix) {
 
 def deployToDev() {
                         // Process postgres deployment config (sub in vars, create list items)
-                        echo "Processing database deployment (using folder ${templateDir}"
+                        echo "Processing database deployment (using folder ${templateDir})"
                         def deployDBTemplate = openshift.process("-f",
                             "${templateDir}/postgresql.dc.yml",
                             "DATABASE_SERVICE_NAME=gwells-pg12-${devSuffix}-${prNumber}",
@@ -838,7 +838,7 @@ pipeline {
                             "--overwrite"
                         )
 
-                        openshift.apply(minioTemplate).label(
+                        def minio = openshift.apply(minioTemplate).label(
                             ['app':"gwells-${stagingSuffix}", 'app-name':"${appName}", 'env-name':"${stagingSuffix}"],
                             "--overwrite"
                         )
@@ -888,6 +888,9 @@ pipeline {
                         )  // todo: clean up labels/tags
 
                         createDeploymentStatus(stagingSuffix, 'PENDING', stagingHost)
+
+                        def minioRolloutStatus = minio.narrow('dc').rollout().status()
+                        echo "DEBUG - Minio rollout status ${minioRolloutStatus}"
 
                         // Create cronjob for well export
                         def exportWellCronTemplate = openshift.process("-f",
