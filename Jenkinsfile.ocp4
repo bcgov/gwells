@@ -393,10 +393,13 @@ def deployToDev() {
                         // apply the templates, which will create new objects or modify existing ones as necessary.
                         // the copies of base objects (secrets, configmaps) are also applied.
                         openshift.apply(pgtileservTemplate).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
-                        openshift.apply(minioTemplate).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
+                        def minioDeploy = openshift.apply(minioTemplate).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
                         openshift.apply(deployTemplate).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
                         openshift.apply(deployDBTemplate).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
                         openshift.apply(newObjectCopies).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
+
+                        def minioRolloutStatus = minioDeploy.narrow('dc').rollout().status()
+                        echo "DEBUG - Minio rollout status ${minioRolloutStatus}"
                         echo "Successfully applied deployment configs for ${prNumber}"
 
                         // promote the newly built image to DEV
@@ -838,7 +841,7 @@ pipeline {
                             "--overwrite"
                         )
 
-                        def minio = openshift.apply(minioTemplate).label(
+                        openshift.apply(minioTemplate).label(
                             ['app':"gwells-${stagingSuffix}", 'app-name':"${appName}", 'env-name':"${stagingSuffix}"],
                             "--overwrite"
                         )
@@ -888,9 +891,6 @@ pipeline {
                         )  // todo: clean up labels/tags
 
                         createDeploymentStatus(stagingSuffix, 'PENDING', stagingHost)
-
-                        def minioRolloutStatus = minio.narrow('dc').rollout().status()
-                        echo "DEBUG - Minio rollout status ${minioRolloutStatus}"
 
                         // Create cronjob for well export
                         def exportWellCronTemplate = openshift.process("-f",
