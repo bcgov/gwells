@@ -128,14 +128,6 @@ objects:
             persistentVolumeClaim:
               claimName: "${NAME}-data-vol"
       triggers:
-      - imageChangeParams:
-          containerNames:
-          - ${NAME}
-          from:
-            kind: ImageStreamTag
-            name: ${SRC_IMAGE}:${SRC_TAG}
-            namespace: ${SRC_NAMESPACE}
-        type: ImageChange
       - type: ConfigChange
   - apiVersion: v1
     kind: Service
