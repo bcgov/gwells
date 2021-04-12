@@ -306,6 +306,7 @@ def apiTest (String stageName, String stageUrl, String envSuffix) {
 
 def deployToDev() {
                         // Process postgres deployment config (sub in vars, create list items)
+                        echo "Processing database deployment (using folder ${templateDir}"
                         def deployDBTemplate = openshift.process("-f",
                             "${templateDir}/postgresql.dc.yml",
                             "DATABASE_SERVICE_NAME=gwells-pg12-${devSuffix}-${prNumber}",
@@ -396,7 +397,6 @@ def deployToDev() {
                         openshift.apply(deployTemplate).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
                         openshift.apply(deployDBTemplate).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
                         openshift.apply(newObjectCopies).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
-
                         echo "Successfully applied deployment configs for ${prNumber}"
 
                         // promote the newly built image to DEV
