@@ -306,7 +306,6 @@ def apiTest (String stageName, String stageUrl, String envSuffix) {
 
 def deployToDev() {
                         // Process postgres deployment config (sub in vars, create list items)
-                        echo "Processing database deployment (using folder ${templateDir})"
                         def deployDBTemplate = openshift.process("-f",
                             "${templateDir}/postgresql.dc.yml",
                             "DATABASE_SERVICE_NAME=gwells-pg12-${devSuffix}-${prNumber}",
@@ -393,13 +392,11 @@ def deployToDev() {
                         // apply the templates, which will create new objects or modify existing ones as necessary.
                         // the copies of base objects (secrets, configmaps) are also applied.
                         openshift.apply(pgtileservTemplate).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
-                        def minioDeploy = openshift.apply(minioTemplate).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
+                        openshift.apply(minioTemplate).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
                         openshift.apply(deployTemplate).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
                         openshift.apply(deployDBTemplate).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
                         openshift.apply(newObjectCopies).label(['app':"${devAppName}", 'app-name':"${appName}", 'env-name':"${devSuffix}"], "--overwrite")
 
-                        def minioRolloutStatus = minioDeploy.narrow('dc').rollout().status()
-                        echo "DEBUG - Minio rollout status ${minioRolloutStatus}"
                         echo "Successfully applied deployment configs for ${prNumber}"
 
                         // promote the newly built image to DEV
