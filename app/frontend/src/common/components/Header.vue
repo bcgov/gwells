@@ -73,9 +73,10 @@ export default {
     getEnvironmentMessage () {
       /**
        * return a message based on the current url location,
-       * if gwells-staging in url then return ' - STAGING' otherwise ''
+       * if gwells-staging or testapps.nrs.gov.bc.ca in url then return ' - STAGING' otherwise ''
        */
-      return window.location.href.indexOf('gwells-staging') > -1 ? ' - STAGING' : ''
+      return (window.location.href.indexOf('gwells-staging') > -1 ||
+        window.location.href.indexOf('testapps.nrs.gov.bc.ca') > -1) ? ' - STAGING' : ''
     },
     show () {
       const adminMeta = document.head.querySelector('meta[name="show.admin"]')
