@@ -1307,7 +1307,7 @@ class ActivitySubmission(AuditModelStructure):
                     'Wells and Aquifers application.'))
     well_activity_type = models.ForeignKey(
         'submissions.WellActivityCode', db_column='well_activity_code', on_delete=models.PROTECT,
-        verbose_name='Type of Work')
+        null=True, verbose_name='Type of Work')
     well_status = models.ForeignKey(
         WellStatusCode, db_column='well_status_code',
         on_delete=models.PROTECT, blank=True, null=True,
@@ -1318,7 +1318,7 @@ class ActivitySubmission(AuditModelStructure):
     well_publication_status = models.ForeignKey(
         WellPublicationStatusCode, db_column='well_publication_status_code',
         on_delete=models.PROTECT, verbose_name='Well Publication Status',
-        default='Published')
+        null=True, default='Published')
     well_class = models.ForeignKey(
         WellClassCode, blank=True, null=True, db_column='well_class_code',
         on_delete=models.PROTECT, verbose_name='Well Class',
@@ -1455,7 +1455,7 @@ class ActivitySubmission(AuditModelStructure):
                                                 verbose_name='Elevation Determined By')
     drilling_methods = models.ManyToManyField(DrillingMethodCode, verbose_name='Drilling Methods',
                                               blank=True)
-    well_orientation = models.BooleanField(default=True, verbose_name='Orientation of Well', choices=(
+    well_orientation = models.BooleanField(null=True, verbose_name='Orientation of Well', choices=(
         (True, 'vertical'), (False, 'horizontal')))
     well_orientation_status = models.ForeignKey(WellOrientationCode, db_column='well_orientation_code',
                                                 on_delete=models.PROTECT, blank=True, null=True,
@@ -1605,8 +1605,8 @@ class ActivitySubmission(AuditModelStructure):
                                                           'example of the drilling industry, a flowing water well.'))
     well_cap_type = models.CharField(
         max_length=40, blank=True, null=True, verbose_name='Well Cap Type')
-    well_disinfected = models.BooleanField(
-        default=False, verbose_name='Well Disinfected?', choices=((False, 'No'), (True, 'Yes')))
+    well_disinfected = models.BooleanField(null=True, verbose_name='Well Disinfected?',
+                                           choices=((False, 'No'), (True, 'Yes')))
     well_disinfected_status = models.ForeignKey(WellDisinfectedCode, db_column='well_disinfected_code',
                                                 on_delete=models.PROTECT, blank=True, null=True,
                                                 verbose_name='Well Disinfected Code')
