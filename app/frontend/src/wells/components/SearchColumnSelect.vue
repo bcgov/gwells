@@ -64,6 +64,8 @@
 <script>
 import { mapGetters } from 'vuex'
 import { SET_SEARCH_RESULT_COLUMNS } from '@/wells/store/mutations.types.js'
+import { RESET_WELLS_SEARCH } from '@/wells/store/actions.types.js'
+import { DEFAULT_COLUMNS } from '@/wells/store'
 
 const RESULT_COLUMNS = [
   'wellTagNumber',
@@ -224,6 +226,10 @@ export default {
     }
   },
   methods: {
+    handleReset () {
+      this.$emit('reset')
+      this.localSelectedColumnIds = [...DEFAULT_COLUMNS]
+    },
     showModal () {
       this.$refs['column-select-modal'].show()
     },
@@ -278,6 +284,13 @@ export default {
   created () {
     this.localSelectedColumnIds = [...this.selectedColumnIds]
     this.initColumnOrders()
+
+    // listen for reset wells search so we can adjust our selected search columns
+    this.$store.subscribeAction((action, state) => {
+      if (action.type === RESET_WELLS_SEARCH) {
+        this.$nextTick(() => { this.handleReset() })
+      }
+    })
   }
 }
 </script>
