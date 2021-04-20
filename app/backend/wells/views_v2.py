@@ -382,7 +382,6 @@ class WellExportListAPIViewV2(ListAPIView):
         'well_class',
         'well_subclass',
         'well_status',
-        'licenced_status',
         'land_district',
         'company_of_person_responsible',
         'ground_elevation_method',
