@@ -163,6 +163,8 @@ class Command(BaseCommand):
             }
         ]
 
+        self.worksheet_styles = [{'worksheet_name': 'stats', 'column_name': 'disclaimer_txt', 'column_width': 240}]
+
     def add_arguments(self, parser):
         """
         Arguments added for debugging purposes.
@@ -259,7 +261,18 @@ class Command(BaseCommand):
             columns = len(values)
 
             for index, value in enumerate(values):
-                worksheet.column_dimensions[get_column_letter(index + 1)].width = len(value) + 2
+                # style modifications can be applied to outputs (haven't been able to get wrap_text working), feels
+                #   like it's being overwritten by the value output section below (Write the values).
+                # For now this is a decent solution, we can apply style modifications to a given column
+                #   based on our provided configuration
+                style_applied = False
+                for worksheet_style in self.worksheet_styles:
+                    if worksheet_name == worksheet_style['worksheet_name'] and value == worksheet_style['column_name']:
+                        worksheet.column_dimensions[get_column_letter(index + 1)].width = worksheet_style['column_width']
+                        style_applied = True
+                        break
+                if not style_applied:
+                    worksheet.column_dimensions[get_column_letter(index + 1)].width = len(value) + 2
 
             worksheet.append(cells)
             csvwriter.writerow(values)
