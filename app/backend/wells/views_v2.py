@@ -59,6 +59,7 @@ from aquifers.models import (
 )
 from aquifers.permissions import HasAquiferEditRole
 from wells.views import WellDetail as WellDetailV1
+from wells.constants import MAX_EXPORT_COUNT, MAX_LOCATION_COUNT
 
 logger = logging.getLogger(__name__)
 
@@ -69,10 +70,9 @@ class WellLocationListV2APIView(ListAPIView):
         get: returns a list of wells with locations only
     """
     swagger_schema = None
-    MAX_LOCATION_COUNT = 5000
     permission_classes = (WellsEditOrReadOnly,)
     model = Well
-    pagination_class = apiLimitedPagination(5000)
+    pagination_class = apiLimitedPagination(MAX_LOCATION_COUNT)
 
     # Allow searching on name fields, names of related companies, etc.
     filter_backends = (WellListFilterBackend, BoundingBoxFilterBackend,
@@ -161,10 +161,10 @@ class WellLocationListV2APIView(ListAPIView):
             fields.append("is_published")
 
         locations = locations.values(*fields)
-        locations = list(locations[:self.MAX_LOCATION_COUNT + 1])
+        locations = list(locations[:MAX_LOCATION_COUNT + 1])
 
         # return a 403 response if there are too many wells to display
-        if len(locations) > self.MAX_LOCATION_COUNT:
+        if len(locations) > MAX_LOCATION_COUNT:
             raise PermissionDenied(self.TOO_MANY_ERROR_MESSAGE)
 
         # turn the list of locations into a generator so the GeoJSONIterator can use it
@@ -376,7 +376,6 @@ class WellExportListAPIViewV2(ListAPIView):
     search_fields = ('well_tag_number', 'identification_plate_number',
                      'street_address', 'city', 'owner_full_name')
     renderer_classes = (WellListCSVRenderer, WellListExcelRenderer)
-    MAX_EXPORT_COUNT = 5000
 
     SELECT_RELATED_OPTIONS = [
         'well_class',
@@ -489,7 +488,7 @@ class WellExportListAPIViewV2(ListAPIView):
         queryset = self.filter_queryset(self.get_queryset())
         count = queryset.count()
         # return an empty response if there are too many wells to display
-        if count > self.MAX_EXPORT_COUNT:
+        if count > MAX_EXPORT_COUNT:
             raise PermissionDenied(
                 'Too many wells to export. Please change your search criteria.'
             )
