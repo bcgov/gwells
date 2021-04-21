@@ -187,7 +187,7 @@ import Papa from 'papaparse'
 import ApiService from '@/common/services/ApiService.js'
 import APIErrorMessage from '@/common/components/APIErrorMessage'
 
-import { AQUIFER_ID_FOR_UNCORRELATED_WELLS } from '@/common/contants'
+import { AQUIFER_ID_FOR_UNCORRELATED_WELLS } from '@/common/constants'
 
 const MAX_NUMBER_OF_ROWS = 4000
 
