@@ -35,7 +35,7 @@ objects:
   metadata:
     annotations:
       volume.beta.kubernetes.io/storage-class: netapp-file-standard
-    name: ${NAME}
+    name: ${NAME}${SUFFIX}
   spec:
     accessModes:
     - ReadWriteOnce
@@ -46,40 +46,30 @@ objects:
   kind: ServiceAccount
   metadata:
     annotations:
-      serviceaccounts.openshift.io/oauth-redirectreference.jenkins: '{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"${NAME}"}}'
-    name: ${NAME}
+      serviceaccounts.openshift.io/oauth-redirectreference.jenkins: '{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"${NAME}${SUFFIX}"}}'
+    name: ${NAME}${SUFFIX}
 - apiVersion: v1
   groupNames: null
   kind: RoleBinding
   metadata:
-    name: ${NAME}_edit
-  roleRef:
-    name: edit
-  subjects:
-  - kind: ServiceAccount
-    name: ${NAME}
-- apiVersion: v1
-  groupNames: null
-  kind: RoleBinding
-  metadata:
-    name: ${NAME}_admin
+    name: ${NAME}${SUFFIX}_admin
   roleRef:
     name: admin
   subjects:
   - kind: ServiceAccount
-    name: ${NAME}
+    name: ${NAME}${SUFFIX}
 - apiVersion: v1
   kind: DeploymentConfig
   metadata:
     annotations:
       template.alpha.openshift.io/wait-for-ready: "true"
     creationTimestamp: null
-    name: ${NAME}
+    name: ${NAME}${SUFFIX}
   spec:
     replicas: 1
     revisionHistoryLimit: 10
     selector:
-      deploymentconfig: ${NAME}
+      deploymentconfig: ${NAME}${SUFFIX}
     strategy:
       activeDeadlineSeconds: 21600
       recreateParams:
@@ -90,7 +80,7 @@ objects:
       metadata:
         creationTimestamp: null
         labels:
-          deploymentconfig: ${NAME}
+          deploymentconfig: ${NAME}${SUFFIX}
       spec:
         containers:
         - command:
@@ -100,7 +90,7 @@ objects:
           - name: USE_JAVA_DIAGNOSTICS
             value: "true"
           - name: JENKINS_URL
-            value: https://${ROUTE_HOST}${ROUTE_PATH}
+            value: "https://gwells-${NAME}${SUFFIX}.${ROUTE_HOST_SUFFIX}${ROUTE_PATH}"
           - name: ENV_NAME
             value: ${ENV_NAME}
           - name: ENV_ID
@@ -180,13 +170,13 @@ objects:
         restartPolicy: Always
         schedulerName: default-scheduler
         securityContext: {}
-        serviceAccount: ${NAME}
-        serviceAccountName: ${NAME}
+        serviceAccount: ${NAME}${SUFFIX}
+        serviceAccountName: ${NAME}${SUFFIX}
         terminationGracePeriodSeconds: 30
         volumes:
         - name: jenkins-jobs
           persistentVolumeClaim:
-            claimName: ${NAME}
+            claimName: ${NAME}${SUFFIX}
         - downwardAPI:
             items:
             - fieldRef:
@@ -230,14 +220,158 @@ objects:
         - jenkins
         from:
           kind: ImageStreamTag
-          name: jenkins-basic:${VERSION}
+          name: ${JENKINS_IMAGE_STREAM_NAME}
+      type: ImageChange
+    - type: ConfigChange
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    creationTimestamp: null
+    name: ${NAME}-agent${SUFFIX}
+  spec:
+    replicas: "${{AGENT_REPLICAS}}"
+    revisionHistoryLimit: 10
+    selector:
+      deploymentconfig: ${NAME}-agent${SUFFIX}
+    strategy:
+      activeDeadlineSeconds: 21600
+      recreateParams:
+        timeoutSeconds: 600
+      resources: {}
+      type: Recreate
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          deploymentconfig: ${NAME}-agent${SUFFIX}
+      spec:
+        containers:
+        - command:
+          - bash
+          - -c
+          - cd $HOME && java -XshowSettings:vm -version && exec java -jar /usr/lib/jenkins/swarm-client.jar
+            -name "$(cat /etc/hostname)" -deleteExistingClients -fsroot "$JENKINS_HOME/$(cat
+            /etc/hostname)" -master http://$JENKINS_MASTER_SERVICE:8080 -disableSslVerification
+            -username  "$(cat /var/run/secrets/jenkins-slave-user/username)" -passwordFile
+            /var/run/secrets/jenkins-slave-user/password -description "$(cat /etc/hostname)"
+            -executors ${AGENT_EXECUTORS} -labels '${AGENT_LABELS}' -mode
+            'normal' -retry 10 -tunnel $JENKINS_MASTER_SERVICE:50000 -disableClientsUniqueId
+          env:
+          - name: JENKINS_MASTER_SERVICE
+            value: ${NAME}${SUFFIX}
+          - name: JAVA_TOOL_OPTIONS
+            value: -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap
+              -XX:MaxRAMFraction=5 -XX:MaxHeapFreeRatio=20 -XX:MinHeapFreeRatio=10
+              -XX:+UseParallelGC -XX:ParallelGCThreads=2
+          - name: ENV_NAME
+            value: ${ENV_NAME}
+          - name: ENV_ID
+            value: ${ENV_ID}
+          - name: APP_TOOLS_NAMESPACE
+            valueFrom:
+              configMapKeyRef:
+                name: ns-config
+                key: project.tools
+          - name: APP_DEV_NAMESPACE
+            valueFrom:
+              configMapKeyRef:
+                name: ns-config
+                key: project.dev
+          - name: APP_STAGING_NAMESPACE
+            valueFrom:
+              configMapKeyRef:
+                name: ns-config
+                key: project.test
+          - name: APP_PROD_NAMESPACE
+            valueFrom:
+              configMapKeyRef:
+                name: ns-config
+                key: project.prod
+          - name: APP_PROD_NAMESPACE
+            valueFrom:
+              configMapKeyRef:
+                name: ns-config
+                key: project.prod
+          - name: OCP_PLATFORM
+            value: '4'
+          image: ' '
+          imagePullPolicy: Always
+          name: jenkins
+          ports:
+          - containerPort: 50000
+            protocol: TCP
+          - containerPort: 8080
+            protocol: TCP
+          resources:
+            limits:
+              cpu: ${CPU_LIMIT}
+              memory: ${MEMORY_LIMIT}
+            requests:
+              cpu: ${CPU_REQUEST}
+              memory: ${MEMORY_REQUEST}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /var/run/pod
+            name: pod-metadata
+          - mountPath: /run/secrets/jenkins-slave-user
+            name: jenkins-slave-user
+            readOnly: true
+          - mountPath: /run/secrets/github
+            name: github
+            readOnly: true
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: ${NAME}${SUFFIX}
+        serviceAccountName: ${NAME}${SUFFIX}
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - downwardAPI:
+            items:
+            - fieldRef:
+                fieldPath: metadata.name
+              name: name
+              path: name
+            - fieldRef:
+                fieldPath: metadata.namespace
+              name: namespace
+              path: namespace
+            - fieldRef:
+                fieldPath: metadata.labels
+              name: labels
+              path: labels
+            - fieldRef:
+                fieldPath: metadata.annotations
+              name: annotations
+              path: annotations
+          name: pod-metadata
+        - name: jenkins-slave-user
+          secret:
+            defaultMode: 420
+            secretName: ${NAME}-slave-user
+        - name: github
+          secret:
+            defaultMode: 420
+            secretName: ${NAME}-github
+    test: false
+    triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+          - jenkins
+          - init
+        from:
+          kind: ImageStreamTag
+          name: ${JENKINS_IMAGE_STREAM_NAME}
       type: ImageChange
     - type: ConfigChange
 - apiVersion: v1
   kind: Service
   metadata:
     creationTimestamp: null
-    name: ${NAME}
+    name: ${NAME}${SUFFIX}
   spec:
     ports:
     - name: 8080-tcp
@@ -249,16 +383,16 @@ objects:
       protocol: TCP
       targetPort: 50000
     selector:
-      deploymentconfig: ${NAME}
+      deploymentconfig: ${NAME}${SUFFIX}
     sessionAffinity: None
     type: ClusterIP
 - apiVersion: v1
   kind: Route
   metadata:
     creationTimestamp: null
-    name: ${NAME}
+    name: ${NAME}${SUFFIX}
   spec:
-    host: ${ROUTE_HOST}
+    host: "gwells-${NAME}${SUFFIX}.${ROUTE_HOST_SUFFIX}"
     path: ${ROUTE_PATH}
     port:
       targetPort: 8080-tcp
@@ -266,7 +400,7 @@ objects:
       termination: edge
     to:
       kind: Service
-      name: ${NAME}
+      name: ${NAME}${SUFFIX}
       weight: 100
     wildcardPolicy: None
 parameters:
@@ -274,16 +408,17 @@ parameters:
   displayName: Name
   name: NAME
   required: true
+- name: SUFFIX
 - description: A version used for the image tags
   displayName: version
-  name: VERSION
+  name: JENKINS_IMAGE_STREAM_NAME
   required: true
-  value: v1.0.0
-- description: ROUTE_HOST
-  displayName: ROUTE_HOST
-  name: ROUTE_HOST
+  value: "jenkins-main:v2-latest"
+- description: ROUTE_HOST_SUFFIX
+  displayName: ROUTE_HOST_SUFFIX
+  name: ROUTE_HOST_SUFFIX
   required: true
-  value: "gwells-jenkins.apps.silver.devops.gov.bc.ca"
+  value: "apps.silver.devops.gov.bc.ca"
 - description: ROUTE_PATH
   displayName: ROUTE_PATH
   name: ROUTE_PATH
@@ -329,3 +464,9 @@ parameters:
   description: Maximum amount of memory allowed to use
   displayName: Memory Limit
   value: 4Gi
+- name: AGENT_REPLICAS
+  value: "2"
+- name: AGENT_EXECUTORS
+  value: "3"
+- name: AGENT_LABELS
+  value: "Linux rhel rhel7 main build test deploy light"
