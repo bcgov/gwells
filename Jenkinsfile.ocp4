@@ -33,18 +33,18 @@ void createDeploymentStatus (String suffix, String status, String stageUrl) {
     // TODO: convert to use GitHub REST API
     // https://docs.github.com/en/rest/reference/repos#deployments
 
-    // new GitHubHelper().createDeploymentStatus(
-    //     this,
-    //     ghDeploymentId,
-    //     "${status}",
-    //     ['targetUrl':"https://${stageUrl}/gwells"]
-    // )
+    new GitHubHelper().createDeploymentStatus(
+        this,
+        ghDeploymentId,
+        "${status}",
+        ['targetUrl':"https://${stageUrl}/gwells"]
+    )
 
-    // if ('SUCCESS'.equalsIgnoreCase("${status}")) {
-    //     echo "${suffix} deployment successful!"
-    // } else if ('PENDING'.equalsIgnoreCase("${status}")){
-    //     echo "${suffix} deployment pending."
-    // }
+    if ('SUCCESS'.equalsIgnoreCase("${status}")) {
+        echo "${suffix} deployment successful!"
+    } else if ('PENDING'.equalsIgnoreCase("${status}")){
+        echo "${suffix} deployment pending."
+    }
 }
 
 
