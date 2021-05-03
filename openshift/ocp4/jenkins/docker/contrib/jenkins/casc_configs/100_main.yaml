@@ -12,6 +12,9 @@ jenkins:
   clouds:
   - kubernetes:
       containerCap: 10
+      containerCapStr: "10"
+      jenkinsTunnel: "${JENKINS_TUNNEL}"
+      jenkinsUrl: "${JENKINS_URL}"
       name: "openshift"
   securityRealm: "openShiftOAuth2"
 security:
