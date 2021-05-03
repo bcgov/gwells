@@ -91,6 +91,8 @@ objects:
             value: "true"
           - name: JENKINS_URL
             value: "https://gwells-${NAME}${SUFFIX}.${ROUTE_HOST_SUFFIX}${ROUTE_PATH}"
+          - name: JENKINS_TUNNEL
+            value: "${NAME}${SUFFIX}:50000"
           - name: ENV_NAME
             value: ${ENV_NAME}
           - name: ENV_ID
@@ -117,6 +119,8 @@ objects:
                 key: project.prod
           - name: OCP_PLATFORM
             value: '4'
+          - name: JENKINS_DATA
+            value: '/var/jenkins-data'
           image: ' '
           imagePullPolicy: Always
           livenessProbe:
@@ -150,7 +154,7 @@ objects:
           terminationMessagePolicy: File
           volumeMounts:
           - mountPath: /var/jenkins-data
-            name: jenkins-jobs
+            name: jenkins-data
             readOnly: false
           - mountPath: /var/run/pod
             name: pod-metadata
@@ -174,7 +178,7 @@ objects:
         serviceAccountName: ${NAME}${SUFFIX}
         terminationGracePeriodSeconds: 30
         volumes:
-        - name: jenkins-jobs
+        - name: jenkins-data
           persistentVolumeClaim:
             claimName: ${NAME}${SUFFIX}
         - downwardAPI:
