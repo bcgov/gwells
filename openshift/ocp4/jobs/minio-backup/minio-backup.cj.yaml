@@ -56,7 +56,7 @@ objects:
           backoffLimit: 10
           template:
             spec:
-              activeDeadlineSeconds: 3600
+              activeDeadlineSeconds: 10800
               containers:
               - image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/gwells-documents-backup:${VERSION}
                 imagePullPolicy: Always
