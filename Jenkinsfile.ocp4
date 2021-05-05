@@ -1131,7 +1131,7 @@ pipeline {
                         def minioTemplate = openshift.process("-f",
                             "${templateDir}/minio/minio.dc.yaml",
                             "NAME_SUFFIX=-${prodSuffix}",
-                            "DEST_PVC_SIZE=15Gi",
+                            "DEST_PVC_SIZE=20Gi",
                             "HOSTNAME=gwells-docs-${prodSuffix}.apps.silver.devops.gov.bc.ca"
                         )
 
