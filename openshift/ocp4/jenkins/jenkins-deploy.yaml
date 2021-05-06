@@ -46,7 +46,7 @@ objects:
   kind: ServiceAccount
   metadata:
     annotations:
-      serviceaccounts.openshift.io/oauth-redirectreference.jenkins: '{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"${NAME}${SUFFIX}"}}'
+      serviceaccounts.openshift.io/oauth-redirectreference.jenkins: '{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"${NAME}-controller${SUFFIX}"}}'
     name: ${NAME}${SUFFIX}
 - apiVersion: v1
   groupNames: null
@@ -64,12 +64,12 @@ objects:
     annotations:
       template.alpha.openshift.io/wait-for-ready: "true"
     creationTimestamp: null
-    name: ${NAME}${SUFFIX}
+    name: ${NAME}-controller${SUFFIX}
   spec:
     replicas: 1
     revisionHistoryLimit: 10
     selector:
-      deploymentconfig: ${NAME}${SUFFIX}
+      deploymentconfig: ${NAME}-controller${SUFFIX}
     strategy:
       activeDeadlineSeconds: 21600
       recreateParams:
@@ -80,7 +80,7 @@ objects:
       metadata:
         creationTimestamp: null
         labels:
-          deploymentconfig: ${NAME}${SUFFIX}
+          deploymentconfig: ${NAME}-controller${SUFFIX}
       spec:
         containers:
         - command:
@@ -92,7 +92,7 @@ objects:
           - name: JENKINS_URL
             value: "https://gwells-${NAME}${SUFFIX}.${ROUTE_HOST_SUFFIX}${ROUTE_PATH}"
           - name: JENKINS_TUNNEL
-            value: "${NAME}${SUFFIX}:50000"
+            value: "${NAME}-controller${SUFFIX}:50000"
           - name: ENV_NAME
             value: ${ENV_NAME}
           - name: ENV_ID
@@ -262,7 +262,7 @@ objects:
             'normal' -retry 10 -tunnel $JENKINS_MASTER_SERVICE:50000 -disableClientsUniqueId
           env:
           - name: JENKINS_MASTER_SERVICE
-            value: ${NAME}${SUFFIX}
+            value: ${NAME}-controller${SUFFIX}
           - name: JAVA_TOOL_OPTIONS
             value: -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap
               -XX:MaxRAMFraction=5 -XX:MaxHeapFreeRatio=20 -XX:MinHeapFreeRatio=10
@@ -375,7 +375,7 @@ objects:
   kind: Service
   metadata:
     creationTimestamp: null
-    name: ${NAME}${SUFFIX}
+    name: ${NAME}-controller${SUFFIX}
   spec:
     ports:
     - name: 8080-tcp
@@ -387,14 +387,14 @@ objects:
       protocol: TCP
       targetPort: 50000
     selector:
-      deploymentconfig: ${NAME}${SUFFIX}
+      deploymentconfig: ${NAME}-controller${SUFFIX}
     sessionAffinity: None
     type: ClusterIP
 - apiVersion: v1
   kind: Route
   metadata:
     creationTimestamp: null
-    name: ${NAME}${SUFFIX}
+    name: ${NAME}-controller${SUFFIX}
   spec:
     host: "gwells-${NAME}${SUFFIX}.${ROUTE_HOST_SUFFIX}"
     path: ${ROUTE_PATH}
@@ -404,7 +404,7 @@ objects:
       termination: edge
     to:
       kind: Service
-      name: ${NAME}${SUFFIX}
+      name: ${NAME}-controller${SUFFIX}
       weight: 100
     wildcardPolicy: None
 parameters:
