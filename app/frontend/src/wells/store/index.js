@@ -72,7 +72,7 @@ function buildSearchParams (state) {
   return params
 }
 
-const DEFAULT_COLUMNS = [
+export const DEFAULT_COLUMNS = [
   'wellTagNumber',
   'identificationPlateNumber',
   'ownerName',
@@ -105,7 +105,7 @@ const wellsStore = {
     searchOffset: 0,
     searchOrdering: DEFAULT_ORDERING,
     searchParams: {},
-    searchResultColumns: [...DEFAULT_COLUMNS],
+    searchResultColumns: DEFAULT_COLUMNS,
     // searchResultFilters provides a second level of filtering.
     searchResultFilters: {},
     searchResults: null,
@@ -253,7 +253,7 @@ const wellsStore = {
       commit(SET_SEARCH_RESULTS, null)
       commit(SET_SEARCH_RESULT_COUNT, 0)
       commit(SET_LOCATION_SEARCH_RESULTS, [])
-      commit(SET_SEARCH_RESULT_COLUMNS, [...DEFAULT_COLUMNS])
+      commit(SET_SEARCH_RESULT_COLUMNS, DEFAULT_COLUMNS)
       commit(SET_SEARCH_RESULT_FILTERS, {})
       commit(SET_SEARCH_MAP_CENTRE, null)
       commit(SET_SEARCH_MAP_ZOOM, null)

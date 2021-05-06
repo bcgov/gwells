@@ -20,13 +20,8 @@ describe('WellType.vue', () => {
             wellsubclasscode_set: [
               {
                 well_subclass_guid: '123abc',
-                well_subclass_code: 'DOMESTIC',
-                description: 'Domestic'
-              },
-              {
-                well_subclass_guid: '321xyz',
-                well_subclass_code: 'NON_DOMEST',
-                description: 'Non Domestic'
+                well_subclass_code: 'NA',
+                description: 'Not Applicable'
               }
             ]
           },
@@ -70,8 +65,8 @@ describe('WellType.vue', () => {
       sync: false
     })
 
-    expect(wrapper.vm.subclasses.length).toBe(2)
-    expect(wrapper.vm.subclasses[0].well_subclass_code).toBe('DOMESTIC')
+    expect(wrapper.vm.subclasses.length).toBe(1)
+    expect(wrapper.vm.subclasses[0].well_subclass_code).toBe('NA')
   })
 
   it('removes NA from intended water use dropdown when well class is WATR_SPPLY', () => {

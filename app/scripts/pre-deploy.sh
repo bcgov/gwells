@@ -3,6 +3,8 @@
 
 set -xeuo pipefail
 
+APP_SOURCE_DIR=${APP_SOURCE_DIR:-"${APP_ROOT}/src"}
+
 while true
 do 
         # wait here for database to be available
@@ -10,5 +12,6 @@ do
         sleep 10
 done
 
-cd $APP_ROOT/src/backend/
+
+cd $APP_SOURCE_DIR/backend/
 python manage.py migrate

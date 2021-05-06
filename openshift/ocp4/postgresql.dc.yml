@@ -1,0 +1,327 @@
+apiVersion: v1
+kind: Template
+labels:
+  template: postgresql-persistent-template
+metadata:
+  creationTimestamp: null
+  name: gwells-postgresql-dc
+parameters:
+  - description: The OpenShift ImageStream name.
+    displayName: IMAGE_STREAM_NAME
+    name: IMAGE_STREAM_NAME
+    value: crunchy-postgres-gis
+  - description: The OpenShift Namespace where the ImageStream resides.
+    displayName: Namespace
+    name: IMAGE_STREAM_NAMESPACE
+    value: 26e83e-tools
+  - description: The image registry for the container image or ImageStream.
+    displayName: Image Registry
+    name: IMAGE_REGISTRY
+    value: image-registry.openshift-image-registry.svc:5000
+  - description: The name of the OpenShift Service exposed for the database.
+    displayName: Database Service Name
+    name: DATABASE_SERVICE_NAME
+    required: true
+    value: postgresql
+  - description: Username for PostgreSQL user that will be used for accessing the database.
+    displayName: PostgreSQL Connection Username
+    from: user[A-Z0-9]{3}
+    generate: expression
+    name: POSTGRESQL_USER
+    required: true
+  - description: Password for the PostgreSQL connection user.
+    displayName: PostgreSQL Connection Password
+    from: "[a-zA-Z0-9]{16}"
+    generate: expression
+    name: POSTGRESQL_PASSWORD
+    required: true
+  - description: Name of the PostgreSQL database accessed.
+    displayName: PostgreSQL Database Name
+    name: POSTGRESQL_DATABASE
+    required: true
+    value: sampledb
+  - description: Volume space available for data, e.g. 512Mi, 2Gi.
+    displayName: Volume Capacity
+    name: VOLUME_CAPACITY
+    required: true
+    value: 1Gi
+  - description: Request for CPU resources measured in cpu units, e.g. 200m
+    displayName: CPU resource request
+    name: REQUEST_CPU
+    required: false
+    value: 100m
+  - description: Request for memory resources measured in bytes, e.g. 512Mi, 1Gi.
+    displayName: Memory resource request
+    name: REQUEST_MEMORY
+    required: false
+    value: 512Mi
+  - description: Limit for CPU resources measured in cpu units, e.g. 200m
+    displayName: CPU resource limit
+    name: LIMIT_CPU
+    required: false
+    value: 200m
+  - description: Limit for memory resources measured in bytes, e.g. 512Mi, 1Gi.
+    displayName: Memory resource limit
+    name: LIMIT_MEMORY
+    required: false
+    value: 1Gi
+  - description: Version of PostgreSQL image to be used (9.5 or 9.6).
+    displayName: Version of PostgreSQL Image
+    name: IMAGE_STREAM_VERSION
+    required: true
+    value: centos7-12.4-3.0-4.5.0
+  - name: NAME_SUFFIX
+    required: true
+  - description: Storage class for PVCs.
+    displayName: Storage class for PVCs.
+    name: STORAGE_CLASS
+    value: gluster-file-db
+objects:
+  - apiVersion: v1
+    data:
+      setup.sql: |-
+        SET application_name="container_setup";
+
+        create extension postgis;
+        create extension postgis_topology;
+        create extension fuzzystrmatch;
+        create extension postgis_tiger_geocoder;
+        create extension pg_stat_statements;
+        create extension pgaudit;
+        create extension plr;
+
+        alter user postgres password 'PG_ROOT_PASSWORD'; -- these values are automatically replaced by secrets
+
+        create user "PG_PRIMARY_USER" with REPLICATION  PASSWORD 'PG_PRIMARY_PASSWORD';
+        create user "PG_USER" with password 'PG_PASSWORD';
+
+        -- read only account for generating tiles
+        create user ftw_reader with password 'PG_PASSWORD';
+
+        create table primarytable (key varchar(20), value varchar(20));
+        grant all on primarytable to "PG_PRIMARY_USER";
+
+        create database "PG_DATABASE";
+
+        grant all privileges on database "PG_DATABASE" to "PG_USER";
+
+
+        \c "PG_DATABASE"
+
+        create extension postgis;
+        create extension postgis_topology;
+        create extension fuzzystrmatch;
+        create extension postgis_tiger_geocoder;
+        create extension pg_stat_statements;
+        create extension pgaudit;
+        create extension plr;
+
+        \c "PG_DATABASE" "PG_USER";
+
+        create table testtable (
+          name varchar(30) primary key,
+          value varchar(50) not null,
+          updatedt timestamp not null
+        );
+
+        insert into testtable (name, value, updatedt) values ('CPU', '256', now());
+        insert into testtable (name, value, updatedt) values ('MEM', '512m', now());
+
+        grant all on testtable to "PG_PRIMARY_USER";
+
+        create schema postgis_ftw;
+        grant usage on schema postgis_ftw to ftw_reader;
+        ALTER DEFAULT PRIVILEGES IN SCHEMA postgis_ftw GRANT SELECT ON TABLES TO ftw_reader;
+
+    kind: ConfigMap
+    metadata:
+      labels:
+        app: gwells${NAME_SUFFIX}
+        name: ${DATABASE_SERVICE_NAME}-setupcfg
+        appver: gwells${NAME_SUFFIX}
+      name: ${DATABASE_SERVICE_NAME}-setupcfg
+  - apiVersion: v1
+    kind: Secret
+    metadata:
+      annotations:
+        template.openshift.io/expose-database_name: "{.data['database-name']}"
+        template.openshift.io/expose-password: "{.data['database-password']}"
+        template.openshift.io/expose-username: "{.data['database-user']}"
+        as-copy-of: gwells-database-secrets
+      name: ${DATABASE_SERVICE_NAME}
+    stringData:
+      database-name: ${POSTGRESQL_DATABASE}
+      database-password: ${POSTGRESQL_PASSWORD}
+      database-user: ${POSTGRESQL_USER}
+      fdw-database-user: null
+      fdw-database-password: null
+      fdw-database-server: null
+      fdw-database-schema: null
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+        template.openshift.io/expose-uri: postgres://{.spec.clusterIP}:{.spec.ports[?(.name=="postgresql")].port}
+      name: ${DATABASE_SERVICE_NAME}
+    spec:
+      ports:
+        - name: postgresql
+          nodePort: 0
+          port: 5432
+          protocol: TCP
+          targetPort: 5432
+      selector:
+        name: ${DATABASE_SERVICE_NAME}
+      sessionAffinity: None
+      type: ClusterIP
+    status:
+      loadBalancer: {}
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      name: ${DATABASE_SERVICE_NAME}
+      annotations:
+        template.openshift.io.bcgov/create: "true"
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: ${VOLUME_CAPACITY}
+      storageClassName: ${STORAGE_CLASS}
+  - apiVersion: v1
+    kind: DeploymentConfig
+    metadata:
+      annotations:
+        template.alpha.openshift.io/wait-for-ready: "true"
+      name: ${DATABASE_SERVICE_NAME}
+    spec:
+      replicas: 1
+      selector:
+        name: ${DATABASE_SERVICE_NAME}
+      strategy:
+        type: Recreate
+      template:
+        metadata:
+          labels:
+            name: ${DATABASE_SERVICE_NAME}
+            appver: gwells${NAME_SUFFIX}
+        spec:
+          containers:
+            - capabilities: {}
+              env:
+                - name: PG_PRIMARY_PORT
+                  value: "5432"
+                - name: CONTAINER_NAME
+                  value: postgresql
+                - name: PG_PRIMARY_HOST
+                  value: ${DATABASE_SERVICE_NAME}
+                - name: PGDATA_PATH_OVERRIDE
+                  value: userdata
+                - name: PGHOST
+                  value: /tmp
+                - name: PG_DATABASE
+                  valueFrom:
+                    secretKeyRef:
+                        key: database-name
+                        name: ${DATABASE_SERVICE_NAME}
+                - name: PG_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                        key: database-password
+                        name: ${DATABASE_SERVICE_NAME}
+                - name: PG_USER
+                  valueFrom:
+                    secretKeyRef:
+                        key: database-user
+                        name: ${DATABASE_SERVICE_NAME}
+                - name: PG_MODE
+                  valueFrom:
+                    secretKeyRef:
+                        key: PG_MODE
+                        name: crunchy-db-credentials
+                - name: PG_PRIMARY_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                        key: PG_PRIMARY_PASSWORD
+                        name: crunchy-db-credentials
+                - name: PG_PRIMARY_USER
+                  valueFrom:
+                    secretKeyRef:
+                        key: PG_PRIMARY_USER
+                        name: crunchy-db-credentials
+                - name: PG_ROOT_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                        key: PG_ROOT_PASSWORD
+                        name: crunchy-db-credentials
+              image: " "
+              imagePullPolicy: IfNotPresent
+              livenessProbe:
+                failureThreshold: 3
+                initialDelaySeconds: 30
+                periodSeconds: 10
+                successThreshold: 1
+                tcpSocket:
+                  port: 5432
+                timeoutSeconds: 1
+              name: postgresql
+              ports:
+                - containerPort: 5432
+                  protocol: TCP
+              readinessProbe:
+                exec:
+                  command:
+                    - /usr/bin/env
+                    - bash
+                    - '-c'
+                    - >-
+                      psql -q -d
+                      $PG_DATABASE -c 'SELECT 1'
+                failureThreshold: 5
+                initialDelaySeconds: 30
+                periodSeconds: 15
+                successThreshold: 1
+                timeoutSeconds: 1
+              resources:
+                requests:
+                  cpu: ${REQUEST_CPU}
+                  memory: ${REQUEST_MEMORY}
+                limits:
+                  cpu: ${LIMIT_CPU}
+                  memory: ${LIMIT_MEMORY}
+              securityContext:
+                capabilities: {}
+                privileged: false
+              terminationMessagePath: /dev/termination-log
+              volumeMounts:
+                - mountPath: /pgdata
+                  name: ${DATABASE_SERVICE_NAME}-data
+                - mountPath: /var/run/postgresql
+                  name: ${DATABASE_SERVICE_NAME}-run
+                - mountPath: /pgconf
+                  name: ${DATABASE_SERVICE_NAME}-setupcfg
+          dnsPolicy: ClusterFirst
+          restartPolicy: Always
+          volumes:
+            - name: ${DATABASE_SERVICE_NAME}-data
+              persistentVolumeClaim:
+                claimName: ${DATABASE_SERVICE_NAME}
+            - name: ${DATABASE_SERVICE_NAME}-run
+              emptyDir: {}
+            - configMap:
+                name: ${DATABASE_SERVICE_NAME}-setupcfg
+              name: ${DATABASE_SERVICE_NAME}-setupcfg
+      triggers:
+        - imageChangeParams:
+            automatic: true
+            containerNames:
+              - postgresql
+            from:
+              kind: ImageStreamTag
+              name: ${IMAGE_STREAM_NAME}:${IMAGE_STREAM_VERSION}
+              namespace: ${IMAGE_STREAM_NAMESPACE}
+            lastTriggeredImage: ""
+          type: ImageChange
+        - type: ConfigChange
+    status: {}

@@ -60,3 +60,15 @@ Private object storage is provided by a minio service, but minio is not currentl
 #### Minio backup 
 
 A backup cronjob is deployed by the pipeline, but the BuildConfig needs to be created once before running the pipeline.  Please see `openshift/jobs/minio-backup`. Apply the BuildConfig template and then `oc tag` the resulting image to the project where backups will run. This only needs to be done once.
+
+
+## Data migration
+
+Data will have to be migrated to the database running on OCP4.
+
+
+The following was tested for staging:
+* ensure `ftw_reader` user is in place (for tile server).  Must have connect privileges.
+* `pg_dump -d gwells -Fp -c -C -f /tmp/backup/staging-20201208.sql --exclude-table=spatial_ref_sys`
+* rsync to OCP4 (todo: automate this step)
+* `psql -x -v ON_ERROR_STOP=1 2>&1 < staging-20201208.sql`

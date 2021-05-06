@@ -517,6 +517,8 @@ class WellDetailSerializer(AuditModelSerializer):
 
     legal_pid = serializers.SerializerMethodField()
 
+    is_published = serializers.SerializerMethodField()
+
     def get_legal_pid(self, instance):
         if instance.legal_pid is None:
             return instance.legal_pid
@@ -534,7 +536,11 @@ class WellDetailSerializer(AuditModelSerializer):
 
         return SubmissionWorkDatesByWellSerializer(records, many=True).data
 
+    def get_is_published(self, instance):
+        return instance.well_publication_status.well_publication_status_code == 'Published'
+
     class Meta:
+        ref_name = "well_detail_v1"
         model = Well
         fields = (
             "well_guid",
@@ -588,7 +594,6 @@ class WellDetailSerializer(AuditModelSerializer):
             "drilling_methods",
             "well_orientation_status",
             "surface_seal_material",
-            "surface_seal_length",
             "surface_seal_thickness",
             "surface_seal_method",
             "surface_seal_depth",
@@ -628,6 +633,8 @@ class WellDetailSerializer(AuditModelSerializer):
             "well_yield",
             "artesian_flow",
             "artesian_pressure",
+            "artesian_pressure_head",
+            "artesian_conditions",
             "well_cap_type",
             "well_disinfected_status",
             "comments",
@@ -674,6 +681,7 @@ class WellDetailSerializer(AuditModelSerializer):
             "decommission_description_set",
             "lithologydescription_set",
             "submission_work_dates",
+            "is_published",
         )
 
 
@@ -718,6 +726,8 @@ class WellDetailAdminSerializer(AuditModelSerializer):
 
     legal_pid = serializers.SerializerMethodField()
 
+    is_published = serializers.SerializerMethodField()
+
     class Meta:
         model = Well
         fields = '__all__'
@@ -748,6 +758,9 @@ class WellDetailAdminSerializer(AuditModelSerializer):
                           record.create_date), reverse=True)
 
         return SubmissionReportsByWellSerializer(records, many=True).data
+
+    def get_is_published(self, instance):
+        return instance.well_publication_status.well_publication_status_code == 'Published'
 
 
 class WellStackerSerializer(AuditModelSerializer):
@@ -813,6 +826,7 @@ class WellListSerializerV1(serializers.ModelSerializer):
         source='company_of_person_responsible.org_guid')
     company_of_person_responsible = serializers.ReadOnlyField(
         source='company_of_person_responsible.org_guid')
+    licenced_status = serializers.ReadOnlyField(source='licenced_status.licenced_status_code')
 
     def get_legal_pid(self, instance):
         if instance.legal_pid is None:
@@ -862,7 +876,6 @@ class WellListSerializerV1(serializers.ModelSerializer):
             "drilling_methods",
             "well_orientation_status",
             "surface_seal_material",
-            "surface_seal_length",
             "surface_seal_thickness",
             "surface_seal_method",
             "surface_seal_depth",
@@ -934,6 +947,8 @@ class WellListSerializerV1(serializers.ModelSerializer):
             "bedrock_depth",
             "artesian_flow",
             "artesian_pressure",
+            "artesian_pressure_head",
+            "artesian_conditions",
             "well_cap_type",
             "well_disinfected_status",
             "static_water_level",

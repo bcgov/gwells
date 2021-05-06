@@ -46,7 +46,7 @@ from gwells.pagination import APILimitOffsetPagination
 from gwells.settings.base import get_env_variable
 from gwells.open_api import (
     get_geojson_schema, get_model_feature_schema, GEO_JSON_302_MESSAGE, GEO_JSON_PARAMS)
-from gwells.management.commands.export_databc import (WELLS_SQL, LITHOLOGY_SQL, GeoJSONIterator,
+from gwells.management.commands.export_databc import (WELLS_SQL_V1, LITHOLOGY_SQL, GeoJSONIterator,
                                                       LITHOLOGY_CHUNK_SIZE, WELL_CHUNK_SIZE)
 
 from submissions.serializers import WellSubmissionListSerializer
@@ -89,6 +89,7 @@ from wells.serializers import (
     WellLithologySerializer,
 )
 from wells.permissions import WellsEditPermissions, WellsEditOrReadOnly
+from wells.constants import MAX_EXPORT_COUNT, MAX_LOCATION_COUNT
 
 
 logger = logging.getLogger(__name__)
@@ -140,7 +141,7 @@ class ListExtracts(APIView):
                                 'S3_PUBLIC_SECRET_KEY'),
                             secure=use_secure)
         objects = minioClient.list_objects(
-            get_env_variable('S3_WELL_EXPORT_BUCKET'), 'export/')
+            get_env_variable('S3_WELL_EXPORT_BUCKET'), 'export/v2/')
         urls = list(
             map(
                 lambda document: {
@@ -314,7 +315,6 @@ class WellLocationListAPIViewV1(ListAPIView):
 
         get: returns a list of wells with locations only
     """
-    MAX_LOCATION_COUNT = 5000
     permission_classes = (WellsEditOrReadOnly,)
     model = Well
     serializer_class = WellLocationSerializerV1
@@ -344,7 +344,7 @@ class WellLocationListAPIViewV1(ListAPIView):
         locations = self.filter_queryset(qs)
         count = locations.count()
         # return an empty response if there are too many wells to display
-        if count > self.MAX_LOCATION_COUNT:
+        if count > MAX_LOCATION_COUNT:
             raise PermissionDenied('Too many wells to display on map. '
                                    'Please zoom in or change your search criteria.')
 
@@ -369,7 +369,6 @@ class WellExportListAPIViewV1(ListAPIView):
     search_fields = ('well_tag_number', 'identification_plate_number',
                      'street_address', 'city', 'owner_full_name')
     renderer_classes = (WellListCSVRenderer, WellListExcelRenderer)
-    MAX_EXPORT_COUNT = 5000
 
     SELECT_RELATED_OPTIONS = [
         'well_class',
@@ -483,7 +482,7 @@ class WellExportListAPIViewV1(ListAPIView):
         queryset = self.filter_queryset(self.get_queryset())
         count = queryset.count()
         # return an empty response if there are too many wells to display
-        if count > self.MAX_EXPORT_COUNT:
+        if count > MAX_EXPORT_COUNT:
             raise PermissionDenied(
                 'Too many wells to export. Please change your search criteria.'
             )
@@ -658,7 +657,7 @@ def well_geojson(request, **kwargs):
             bounds = (sw_long, sw_lat, ne_long, ne_lat)
 
         iterator = GeoJSONIterator(
-            WELLS_SQL.format(bounds=bounds_sql), WELL_CHUNK_SIZE, connection.cursor(), bounds)
+            WELLS_SQL_V1.format(bounds=bounds_sql), WELL_CHUNK_SIZE, connection.cursor(), bounds)
         response = StreamingHttpResponse((item for item in iterator),
                                          content_type='application/json')
         response['Content-Disposition'] = 'attachment; filename="well.json"'

@@ -56,8 +56,8 @@
                 </div>
                 <div class="mt-2" v-else>
                   {{ item.type | formatKey | readable }}
-                  {{ item.action == 'Added' ? 'set' : 'changed'}} to {{ item.diff | formatValue }}
-                  <span v-if="item.action != 'Added'">from {{ item.prev | formatValue }}</span>
+                  {{ item.action == 'Added' ? 'set' : 'changed'}} to {{ item.diff | booleanToYesNo | formatValue }}
+                  <span v-if="item.action != 'Added'">from {{ item.prev | booleanToYesNo | formatValue }}</span>
                 </div>
               </div>
             </div>

@@ -463,17 +463,11 @@ const SEARCH_FIELDS = {
     label: 'Estimated well yield',
     type: 'range'
   },
-  artesianFlow: {
-    param: 'artesian_flow',
-    label: 'Artesian flow',
-    type: 'range',
-    anyValueBoolean: true
-  },
-  artesianPressure: {
-    param: 'artesian_pressure',
-    label: 'Artesian pressure',
-    type: 'range',
-    anyValueBoolean: true
+  artesianConditions: {
+    param: 'artesian_conditions',
+    label: 'Artesian Condition',
+    type: 'radio',
+    options: [{ text: 'Yes', value: 'true' }, { text: 'No', value: 'false' }]
   },
   wellCapType: { param: 'well_cap_type', label: 'Well cap type', type: 'text' },
   observationWellNumber: {

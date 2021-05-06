@@ -1,0 +1,97 @@
+---
+apiVersion: template.openshift.io/v1
+kind: Template
+labels:
+  template: quickstart-network-security-policy
+metadata:
+  name: quickstart-network-security-policy
+objects:
+  - kind: NetworkPolicy
+    apiVersion: networking.k8s.io/v1
+    metadata:
+      name: deny-by-default
+      namespace: ${NAMESPACE}
+    spec:
+      # The default posture for a security first namespace is to
+      # deny all traffic. If not added this rule will be added
+      # by Platform Services during environment cut-over.
+      podSelector: {}
+      ingress: []
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      name: allow-from-openshift-ingress
+      namespace: ${NAMESPACE}
+    spec:
+      # This policy allows any pod with a route & service combination
+      # to accept traffic from the OpenShift router pods. This is
+      # required for things outside of OpenShift (like the Internet)
+      # to reach your pods.
+      ingress:
+        - from:
+            - namespaceSelector:
+                matchLabels:
+                  network.openshift.io/policy-group: ingress
+      podSelector: {}
+      policyTypes:
+        - Ingress
+  - kind: NetworkPolicy
+    apiVersion: networking.k8s.io/v1
+    metadata:
+      name: allow-same-namespace
+      namespace: ${NAMESPACE}
+    spec:
+      # Allow all pods within the current namespace to communicate
+      # to one another.
+      podSelector:
+      ingress:
+      - from:
+        - podSelector: {}
+  - kind: NetworkPolicy
+    apiVersion: networking.k8s.io/v1
+    metadata:
+      name: allow-jenkins
+      namespace: ${NAMESPACE}
+    spec:
+      # Allow all pods within the current namespace to communicate
+      # to one another.
+      podSelector:
+      ingress:
+      - from:
+        - namespaceSelector:
+            matchLabels:
+              environment: tools
+              name: 26e83e
+          podSelector:
+            matchLabels:
+              app: jenkins
+  - apiVersion: security.devops.gov.bc.ca/v1alpha1
+    kind: NetworkSecurityPolicy
+    metadata:
+      name: any-to-any
+      namespace: ${NAMESPACE}
+    spec:
+      description: |
+        allow all pods to communicate
+      source:
+        - - "$namespace=${NAMESPACE}"
+      destination:
+        - - "$namespace=*"
+  - apiVersion: security.devops.gov.bc.ca/v1alpha1
+    kind: NetworkSecurityPolicy
+    metadata:
+      name: any-to-external
+      namespace: ${NAMESPACE}
+    spec:
+      description: |
+        Allow all pods to talk to external systems
+      source:
+        - - "$namespace=${NAMESPACE}"
+      destination:
+        - - "ext:network=any"
+parameters:
+  - name: NAMESPACE
+    displayName: Namespace
+    description: |
+      The namespace this policy is being deployed to;
+    required: true

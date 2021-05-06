@@ -53,9 +53,7 @@ class WellLocationSerializerV2(serializers.ModelSerializer):
         )
 
     def get_artesian(self, obj):
-        if obj.artesian_flow is not None and obj.artesian_flow > 0:
-            return True
-        return False
+        return obj.artesian_conditions
 
 
 class WellVerticalAquiferExtentSerializerV2(serializers.ModelSerializer):
@@ -152,6 +150,7 @@ class WellListSerializerV2(serializers.ModelSerializer):
     person_responsible = serializers.ReadOnlyField(
         source='person_responsible.person_guid')
     person_responsible_name = serializers.ReadOnlyField(source='person_responsible.name')
+    licenced_status = serializers.ReadOnlyField(source='licenced_status.licenced_status_code')
 
     def get_legal_pid(self, instance):
         if instance.legal_pid is None:
@@ -206,7 +205,6 @@ class WellListSerializerV2(serializers.ModelSerializer):
             "drilling_methods",
             "well_orientation_status",
             "surface_seal_material",
-            "surface_seal_length",
             "surface_seal_thickness",
             "surface_seal_method",
             "surface_seal_depth",
@@ -278,9 +276,12 @@ class WellListSerializerV2(serializers.ModelSerializer):
             "bedrock_depth",
             "artesian_flow",
             "artesian_pressure",
+            "artesian_pressure_head",
+            "artesian_conditions",
             "well_cap_type",
             "well_disinfected_status",
             "static_water_level",
+            "alternative_specs_submitted",
         )
 
 
@@ -448,4 +449,4 @@ class WellDetailSerializer(WellDetailSerializerV1):
     yield_estimation_method = serializers.ReadOnlyField(source='yield_estimation_method.description')
 
     class Meta(WellDetailSerializerV1.Meta):
-        pass
+        ref_name = "well_detail_v2"

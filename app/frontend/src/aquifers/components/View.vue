@@ -176,12 +176,12 @@
                 </li>
                 <li>
                   <dt>
-                    Number of wells potentially located within the aquifer
+                    Number of uncorrelated wells within mapped aquifer extent
                     <i id="uncorrelated-wells-count" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
                     <b-popover
                       target="uncorrelated-wells-count"
                       triggers="hover focus"
-                      content="Count of wells that potentially fall within the aquifer polygon; however, they are not necessarily screened within the aquifer of interest."/>
+                      content="The total number of wells that fall within the aquifer polygon but have not been correlated to any aquifer. These wells may potentially be located within this aquifer or may be completed within an aquitard or within another aquifer located at a different depth."/>
                   </dt>
                   <dd class="m-0">
                     {{ uncorrelatedWells.length }}
@@ -190,7 +190,7 @@
                 <li>
                   <dt>Artesian wells</dt>
                   <dd class="m-0">
-                    <router-link :to="{ name: 'wells-home', query: {'match_any':false, 'aquifer': id, 'artesian_flow_has_value':true}, hash: '#advanced'}">
+                    <router-link :to="{ name: 'wells-home', query: {'match_any':false, 'aquifer': id, 'artesian_conditions':true}, hash: '#advanced'}">
                       {{ licenceDetails.num_artesian_wells }} artesian wells in aquifer
                     </router-link>
                   </dd>
@@ -390,6 +390,7 @@ import Documents from './Documents.vue'
 import SingleAquiferMap from './SingleAquiferMap.vue'
 import PieChart from './PieChart.vue'
 import ObservationWell from './ObservationWell.vue'
+import { MAX_API_RESULT_AND_EXPORT_COUNT } from '@/common/constants'
 
 const ONE_MILLION = 1 * 1000 * 1000
 
@@ -770,7 +771,7 @@ export default {
         })
     },
     fetchWells (id = this.id) {
-      const maxResults = 5000 // 5000 is the API max
+      const maxResults = MAX_API_RESULT_AND_EXPORT_COUNT // the API max
       const params = { intersects_aquifer_id: id, limit: maxResults }
       return ApiService.query('wells/locations', params)
         .then((response) => {

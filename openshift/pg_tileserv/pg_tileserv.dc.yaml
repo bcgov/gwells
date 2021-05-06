@@ -7,7 +7,7 @@ metadata:
   name: pgtileserv-dc
 parameters:
   - name: IMAGE_TAG
-    value: latest
+    value: '20200610'
   - name: NAME_SUFFIX
     required: true
   - name: DATABASE_SERVICE_NAME

@@ -174,8 +174,7 @@ const ADDITIONAL_FILTER_SECTIONS = [
        'bedrockDepth',
        'staticWaterLevel',
        'wellYield',
-       'artesianFlow',
-       'artesianPressure',
+       'artesianConditions',
        'wellCapType',
        'wellDisinfectedStatus' ] },
   { header: 'Observation well information',
@@ -331,7 +330,7 @@ export default {
     this.initFilterParams()
     this.initSelectedFilterIds()
 
-    // On reset or basic search, clear local params
+    // On reset, clear local params
     this.$store.subscribeAction((action, state) => {
       if (action.type === RESET_WELLS_SEARCH ||
           (action.type === SEARCH_WELLS && state.wellsStore.searchParams.search !== undefined && state.wellsStore.searchParams.search !== null)) {

@@ -31,6 +31,7 @@
 import querystring from 'querystring'
 
 import { mapGetters } from 'vuex'
+import { MAX_API_RESULT_AND_EXPORT_COUNT } from '@/common/constants'
 
 export default {
   props: {
@@ -39,7 +40,7 @@ export default {
   data () {
     return {
       exportBaseUrl: `${process.env.VUE_APP_AXIOS_BASE_URL}wells/export`,
-      maxExportSize: 5000
+      maxExportSize: MAX_API_RESULT_AND_EXPORT_COUNT
     }
   },
   computed: {

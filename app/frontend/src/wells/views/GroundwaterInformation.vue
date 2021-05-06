@@ -2,7 +2,7 @@
   <b-card class="container p-1">
     <h1 class="card-title">Groundwater Information</h1>
     <p>
-      Learn more about <a href="http://www2.gov.bc.ca/gov/content/environment/air-land-water/water/groundwater-wells">groundwater wells in B.C.</a>:
+      Learn more about <a href="https://www2.gov.bc.ca/gov/content/environment/air-land-water/water/groundwater-wells-aquifers/groundwater-wells">groundwater wells in B.C.</a>:
     </p>
       <div>
         <ul>

@@ -22,7 +22,7 @@
               alt="B.C. Government Logo">
         </a>
         <b-navbar-nav>
-          <li class="bc-nav-title d-none d-md-block">Groundwater Wells and Aquifers</li>
+          <li class="bc-nav-title d-none d-md-block">Groundwater Wells and Aquifers{{getEnvironmentMessage}}</li>
         </b-navbar-nav>
         <b-navbar-nav class="ml-auto">
           <li>
@@ -69,6 +69,14 @@ export default {
     ...mapGetters(['userRoles', 'config']),
     hasConfig () {
       return Boolean(this.config)
+    },
+    getEnvironmentMessage () {
+      /**
+       * return a message based on the current url location,
+       * if gwells-staging or testapps.nrs.gov.bc.ca in url then return ' - STAGING' otherwise ''
+       */
+      return (window.location.href.indexOf('gwells-staging') > -1 ||
+        window.location.href.indexOf('testapps.nrs.gov.bc.ca') > -1) ? ' - STAGING' : ''
     },
     show () {
       const adminMeta = document.head.querySelector('meta[name="show.admin"]')

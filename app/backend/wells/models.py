@@ -722,12 +722,6 @@ class Well(AuditModelStructure):
                                                 verbose_name='Well Publication Status',
                                                 default='Published')
     licences = models.ManyToManyField('aquifers.WaterRightsLicence')
-    licenced_status = models.ForeignKey(
-        LicencedStatusCode, db_column='licenced_status_code',
-        on_delete=models.PROTECT, default='UNLICENSED',
-        verbose_name='Licensed Status',
-        db_comment=('Valid licensing options granted to a well under the Water Water Sustainability Act.'
-                    ' This information comes from eLicensing. i.e. Unlicensed, Licensed, Historical.'))
 
     street_address = models.CharField(
         max_length=100, blank=True, null=True, verbose_name='Street Address',
@@ -809,8 +803,6 @@ class Well(AuditModelStructure):
     surface_seal_material = models.ForeignKey(SurfaceSealMaterialCode, db_column='surface_seal_material_code',
                                               on_delete=models.PROTECT, blank=True, null=True,
                                               verbose_name='Surface Seal Material')
-    surface_seal_length = models.DecimalField(
-        max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Surface Seal Length')
     surface_seal_depth = models.DecimalField(
         max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Surface Seal Depth')
     surface_seal_thickness = models.DecimalField(
@@ -933,6 +925,16 @@ class Well(AuditModelStructure):
         max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Artesian Pressure',
         db_comment=('Pressure of the water coming out of an artesian well as measured at the time of '
                     'construction. Measured in PSI (pounds per square inch).'))
+    artesian_pressure_head = models.DecimalField(
+        max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Artesian Pressure head',
+        db_comment=('Pressure of the water coming out of an artesian well as measured at the time of '
+                    'construction. Measured in ft agl (feet above ground level).'))
+    artesian_conditions = models.BooleanField(default=False, verbose_name='Artesian Conditions',
+                                              db_comment=('Artesian conditions arise when there is a movement of '
+                                                          'groundwater from a recharge area under a confining '
+                                                          'formation to a point of discharge at a lower elevation. '
+                                                          'An example of this is a natural spring, or in the '
+                                                          'example of the drilling industry, a flowing water well.'))
     well_cap_type = models.CharField(
         max_length=40, blank=True, null=True, verbose_name='Well Cap')
     well_disinfected = models.BooleanField(
@@ -1039,7 +1041,7 @@ class Well(AuditModelStructure):
     storativity = models.DecimalField(
         max_digits=8, decimal_places=7, blank=True, null=True, verbose_name='Storativity')
     transmissivity = models.DecimalField(
-        max_digits=10, decimal_places=0, blank=True, null=True, verbose_name='Transmissivity')
+        max_digits=30, decimal_places=10, blank=True, null=True, verbose_name='Transmissivity')
     hydraulic_conductivity = models.TextField(
         max_length=100,
         blank=True,
@@ -1125,12 +1127,19 @@ class Well(AuditModelStructure):
             "well_tag_number": self.well_tag_number
         }
 
+    @property
+    def licenced_status(self):
+        return LicencedStatusCode.objects.get(licenced_status_code='LICENSED') if self.licences.all().exists() \
+            else LicencedStatusCode.objects.get(licenced_status_code='UNLICENSED')
+
+    @property
     def latitude(self):
         if self.geom:
             return self.geom.y
         else:
             return None
 
+    @property
     def longitude(self):
         if self.geom:
             return self.geom.x
@@ -1145,6 +1154,9 @@ class Well(AuditModelStructure):
         "alternative_specs_submitted":"Indicates if an alternative specification was used for siting of a water supply well or a permanent dewatering well, or if an alternative specification was used for decommissioning a well.",
         "aquifer_id":"System generated sequential number assigned to each aquifer. It is widely used by groundwater staff as it is the only consistent unique identifier for a mapped aquifer. It is also commonly referred to as Aquifer Number.",
         "artesian_flow":"Measurement of the artesian well's water flow that occurs naturally due to inherent water pressure in the well. Pressure within the aquifer forces the groundwater to rise above the land surface naturally without using a pump. Flowing artesian wells can flow on an intermittent or continuous basis. Recorded in US Gallons Per Minute.",
+        "artesian_pressure":"Pressure of the water coming out of an artesian well as measured at the time of construction. Measured in PSI (pounds per square inch).",
+        "artesian_pressure_head":"Pressure of the water coming out of an artesian well as measured at the time of construction. Measured in ft agl (feet above ground level).",
+        "artesian_conditions":"Artesian conditions arise when there is a movement of groundwater from a recharge area under a confining formation to a point of discharge at a lower elevation. An example of this is a natural spring, or in the example of the drilling industry, a flowing water well.",
         "bcgs_id":"TO BE DELETED?",
         "boundary_effect_code":"Valid codes for the boundaries observed in pumping test analysis. i.e. CH, NF.",
         "decommission_backfill_material":"Backfill material used to decommission a well.  ",
@@ -1204,7 +1216,6 @@ class Well(AuditModelStructure):
         "static_level_before_test":"Resting static water level prior to pumping, measured in feet below ground level or feet below top of the production casing.",
         "storativity":"The storativity (or storage coefficient ) is the amount of water stored or released per unit area of aquifer given unit change in head.  ",
         "surface_seal_depth":"The depth at the bottom of the surface seal, measured in feet.",
-        "surface_seal_length":"The length of the the surface seal, measured in feet.",
         "surface_seal_material_code":"Valid materials used for creating the surface seal for a well. A surface seal is a plug that prevents surface runoff from getting into the aquifer or well and contaminating the water. E.g. Bentonite clay, Concrete grout, Sand cement grout, Other.",
         "surface_seal_method_code":"Valid methods used to create the surface seal for a well. i.e. Poured, Pumped, Other.",
         "surface_seal_thickness":"The thickness of the surface sealant placed in the annular space around the outside of the outermost well casing, measured in inches.",
@@ -1296,7 +1307,7 @@ class ActivitySubmission(AuditModelStructure):
                     'Wells and Aquifers application.'))
     well_activity_type = models.ForeignKey(
         'submissions.WellActivityCode', db_column='well_activity_code', on_delete=models.PROTECT,
-        verbose_name='Type of Work')
+        null=True, verbose_name='Type of Work')
     well_status = models.ForeignKey(
         WellStatusCode, db_column='well_status_code',
         on_delete=models.PROTECT, blank=True, null=True,
@@ -1307,7 +1318,7 @@ class ActivitySubmission(AuditModelStructure):
     well_publication_status = models.ForeignKey(
         WellPublicationStatusCode, db_column='well_publication_status_code',
         on_delete=models.PROTECT, verbose_name='Well Publication Status',
-        default='Published')
+        null=True, default='Published')
     well_class = models.ForeignKey(
         WellClassCode, blank=True, null=True, db_column='well_class_code',
         on_delete=models.PROTECT, verbose_name='Well Class',
@@ -1444,7 +1455,7 @@ class ActivitySubmission(AuditModelStructure):
                                                 verbose_name='Elevation Determined By')
     drilling_methods = models.ManyToManyField(DrillingMethodCode, verbose_name='Drilling Methods',
                                               blank=True)
-    well_orientation = models.BooleanField(default=True, verbose_name='Orientation of Well', choices=(
+    well_orientation = models.BooleanField(null=True, verbose_name='Orientation of Well', choices=(
         (True, 'vertical'), (False, 'horizontal')))
     well_orientation_status = models.ForeignKey(WellOrientationCode, db_column='well_orientation_code',
                                                 on_delete=models.PROTECT, blank=True, null=True,
@@ -1579,13 +1590,23 @@ class ActivitySubmission(AuditModelStructure):
                     ' artesian wells can flow on an intermittent or continuous basis. Measured in US'
                     ' Gallons/minute.'))
     artesian_pressure = models.DecimalField(
-        max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Artesian Pressure',
+        max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Artesian Pressure',
         db_comment=('Pressure of the water coming out of an artesian well as measured at the time of'
                     ' construction. Measured in PSI (pounds per square inch).'))
+    artesian_pressure_head = models.DecimalField(
+        max_digits=7, decimal_places=2, blank=True, null=True, verbose_name='Artesian Pressure head',
+        db_comment=('Pressure of the water coming out of an artesian well as measured at the time of '
+                    'construction. Measured in ft agl (feet above ground level).'))
+    artesian_conditions = models.BooleanField(null=True, verbose_name='Artesian Conditions',
+                                              db_comment=('Artesian conditions arise when there is a movement of '
+                                                          'groundwater from a recharge area under a confining '
+                                                          'formation to a point of discharge at a lower elevation. '
+                                                          'An example of this is a natural spring, or in the '
+                                                          'example of the drilling industry, a flowing water well.'))
     well_cap_type = models.CharField(
         max_length=40, blank=True, null=True, verbose_name='Well Cap Type')
-    well_disinfected = models.BooleanField(
-        default=False, verbose_name='Well Disinfected?', choices=((False, 'No'), (True, 'Yes')))
+    well_disinfected = models.BooleanField(null=True, verbose_name='Well Disinfected?',
+                                           choices=((False, 'No'), (True, 'Yes')))
     well_disinfected_status = models.ForeignKey(WellDisinfectedCode, db_column='well_disinfected_code',
                                                 on_delete=models.PROTECT, blank=True, null=True,
                                                 verbose_name='Well Disinfected Code')
@@ -1595,7 +1616,7 @@ class ActivitySubmission(AuditModelStructure):
         max_length=3000, blank=True, null=True)
 
     alternative_specs_submitted = models.BooleanField(
-        default=False,
+        null=True,
         verbose_name='Alternative specs submitted (if required)', choices=((False, 'No'), (True, 'Yes')))
 
     well_yield_unit = models.ForeignKey(
@@ -1645,7 +1666,7 @@ class ActivitySubmission(AuditModelStructure):
     storativity = models.DecimalField(
         max_digits=8, decimal_places=7, blank=True, null=True, verbose_name='Storativity')
     transmissivity = models.DecimalField(
-        max_digits=10, decimal_places=0, blank=True, null=True, verbose_name='Transmissivity')
+        max_digits=30, decimal_places=10, blank=True, null=True, verbose_name='Transmissivity')
     hydraulic_conductivity = models.TextField(
         max_length=100,
         blank=True,
@@ -1694,7 +1715,8 @@ class ActivitySubmission(AuditModelStructure):
         max_digits=7, decimal_places=2, blank=True, null=True,
         validators=[MinValueValidator(Decimal('0.00'))])
     hydro_fracturing_performed = models.BooleanField(
-        default=False, verbose_name='Hydro-fracturing Performed?',
+        null=True,
+        verbose_name='Hydro-fracturing Performed?',
         choices=((False, 'No'), (True, 'Yes')))
     hydro_fracturing_yield_increase = models.DecimalField(
         max_digits=7, decimal_places=2,
@@ -1716,6 +1738,7 @@ class ActivitySubmission(AuditModelStructure):
         "alternative_specs_submitted":"Indicates if an alternative specification was used for siting of a water supply well, or a permanent dewatering well, or for the method used for decommissioning a well.",
         "analytic_solution_type":"Mathematical formulation used to estimate hydraulic parameters.",
         "aquifer_id":"System generated sequential number assigned to each aquifer. It is widely used by groundwater staff as it is the only consistent unique identifier for a mapped aquifer. It is also commonly referred to as Aquifer Number.",
+        "artesian_conditions": "Artesian conditions arise when there is a movement of groundwater from a recharge area under a confining formation to a point of discharge at a lower elevation. An example of this is a natural spring, or in the example of the drilling industry, a flowing water well.",
         "aquifer_lithology_code":"Valid codes for the type of material an aquifer consists of. i.e., Unconsolidated, Bedrock, Unknown.",
         "aquifer_vulnerability_index":"Valid codes that Indicate the aquifer’s relative intrinsic vulnerability to impacts from human activities at the land surface. Vulnerability is based on: the type, thickness, and extent of geologic materials above the aquifer, depth to water table (or to top of confined aquifer), and type of aquifer materials. E.g. H, L, M",
         "bedrock_depth":"Depth below ground level at which bedrock starts, measured in feet.",
@@ -1921,6 +1944,8 @@ class FieldsProvided(models.Model):
     well_yield = models.BooleanField(default=False)
     artesian_flow = models.BooleanField(default=False)
     artesian_pressure = models.BooleanField(default=False)
+    artesian_pressure_head = models.BooleanField(default=False)
+    artesian_conditions = models.BooleanField(default=False)
     well_cap_type = models.BooleanField(default=False)
     well_disinfected = models.BooleanField(default=False)
     well_disinfected_status = models.BooleanField(default=False)
@@ -2308,7 +2333,7 @@ class HydraulicProperty(AuditModel):
     storativity = models.DecimalField(
         max_digits=8, decimal_places=7, blank=True, null=True, verbose_name='Storativity')
     transmissivity = models.DecimalField(
-        max_digits=10, decimal_places=0, blank=True, null=True, verbose_name='Transmissivity')
+        max_digits=30, decimal_places=10, blank=True, null=True, verbose_name='Transmissivity')
     hydraulic_conductivity = models.TextField(
         max_length=100,
         blank=True,

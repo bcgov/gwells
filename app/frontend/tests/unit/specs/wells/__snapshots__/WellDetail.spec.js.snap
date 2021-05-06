@@ -1,0 +1,1810 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`WellDetail.vue should match snapshot 1`] = `
+<div
+  class="well-detail"
+>
+  <div>
+    <b-card-stub
+      bodytag="div"
+      class="mb-3 container d-print-none"
+      footertag="div"
+      headertag="div"
+      nobody="true"
+      subtitle=""
+      subtitletag="h6"
+      subtitletextvariant="muted"
+      tag="div"
+      title=""
+      titletag="h4"
+    >
+      <b-breadcrumb-stub
+        class="py-0 my-2"
+        items="[object Object],[object Object]"
+      />
+    </b-card-stub>
+     
+    <b-card-stub
+      bodytag="div"
+      class="container p-1"
+      footertag="div"
+      headertag="div"
+      subtitle=""
+      subtitletag="h6"
+      subtitletextvariant="muted"
+      tag="div"
+      title=""
+      titletag="h4"
+    >
+       
+      <!---->
+       
+      <fieldset
+        class="detail-section mb-3"
+        id="summary_fieldset"
+      >
+        <legend>
+          <span
+            class="h2"
+          >
+            Well Summary
+          </span>
+           
+          <div
+            class="float-right d-print-none"
+          >
+            <!---->
+             
+            <span
+              class="print-notice"
+            >
+              For best print results, use the Chrome browser
+            </span>
+             
+            <b-btn-stub
+              aria-label="Print"
+              class="mb-1"
+              event="click"
+              routertag="a"
+              tag="button"
+              target="_self"
+              type="button"
+              variant="light"
+            >
+              <i
+                class="fa fa-lg fa-print"
+              />
+            </b-btn-stub>
+          </div>
+        </legend>
+         
+        <b-row-stub
+          tag="div"
+        >
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Well Tag Number:
+            </span>
+             
+          </b-col-stub>
+           
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Well Status:
+            </span>
+             
+          </b-col-stub>
+           
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Observation Well Number: 
+            </span>
+             
+            <!---->
+          </b-col-stub>
+        </b-row-stub>
+         
+        <b-row-stub
+          tag="div"
+        >
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Well Identification Plate Number:
+            </span>
+             
+          </b-col-stub>
+           
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Well Class:
+            </span>
+             
+          </b-col-stub>
+           
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Observation Well Status:
+            </span>
+             
+          </b-col-stub>
+        </b-row-stub>
+         
+        <b-row-stub
+          tag="div"
+        >
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Owner Name:
+            </span>
+             
+          </b-col-stub>
+           
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Well Subclass:
+            </span>
+             
+          </b-col-stub>
+           
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Environmental Monitoring System (EMS) ID:
+            </span>
+             
+          </b-col-stub>
+        </b-row-stub>
+         
+        <b-row-stub
+          tag="div"
+        >
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Intended Water Use:
+            </span>
+             
+          </b-col-stub>
+           
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Aquifer Number: 
+            </span>
+             
+            <router-link-stub
+              to="[object Object]"
+            >
+              
+              
+            
+            </router-link-stub>
+          </b-col-stub>
+           
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Alternative specs submitted:
+            </span>
+             
+          </b-col-stub>
+        </b-row-stub>
+         
+        <b-row-stub
+          tag="div"
+        >
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Artesian Condition:
+            </span>
+             
+          </b-col-stub>
+        </b-row-stub>
+      </fieldset>
+       
+      <fieldset
+        class="d-print-none detail-section my-3"
+        id="jump_links_fieldset"
+      >
+        <legend>
+          Sections
+        </legend>
+         
+        <b-row-stub
+          tag="div"
+        >
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <div>
+              <a
+                class="jump_link"
+                href="#location_information_fieldset"
+              >
+                Location Information
+              </a>
+            </div>
+             
+            <div>
+              <a
+                class="jump_link"
+                href="#well_activity_fieldset"
+              >
+                Well Activity
+              </a>
+            </div>
+             
+            <div>
+              <a
+                class="jump_link"
+                href="#well_work_dates_fieldset"
+              >
+                Well Work Dates
+              </a>
+            </div>
+             
+            <div>
+              <a
+                class="jump_link"
+                href="#well_completion_data_fieldset"
+              >
+                Well Completion Data and Artesian Flow
+              </a>
+            </div>
+             
+            <div>
+              <a
+                class="jump_link"
+                href="#lithology_fieldset"
+              >
+                Lithology
+              </a>
+            </div>
+          </b-col-stub>
+           
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <div>
+              <a
+                class="jump_link"
+                href="#casing_fieldset"
+              >
+                Casing Details
+              </a>
+            </div>
+             
+            <div>
+              <a
+                class="jump_link"
+                href="#surface_seal_fieldset"
+              >
+                Surface Seal and Backfill Details
+              </a>
+            </div>
+             
+            <div>
+              <a
+                class="jump_link"
+                href="#liner_details_fieldset"
+              >
+                Liner Details
+              </a>
+            </div>
+             
+            <div>
+              <a
+                class="jump_link"
+                href="#screen_details_fieldset"
+              >
+                Screen Details
+              </a>
+            </div>
+             
+            <div>
+              <a
+                class="jump_link"
+                href="#well_development_fieldset"
+              >
+                Well Development
+              </a>
+            </div>
+          </b-col-stub>
+           
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <div>
+              <a
+                class="jump_link"
+                href="#well_yield_fieldset"
+              >
+                Well Yield
+              </a>
+            </div>
+             
+            <div>
+              <a
+                class="jump_link"
+                href="#well_decommissioning_fieldset"
+              >
+                Well Decommissioning
+              </a>
+            </div>
+             
+            <div>
+              <a
+                class="jump_link"
+                href="#well_comments_fieldset"
+              >
+                Comments
+              </a>
+            </div>
+             
+            <!---->
+             
+            <div>
+              <a
+                class="jump_link"
+                href="#disclaimer_fieldset"
+              >
+                Disclaimer
+              </a>
+            </div>
+          </b-col-stub>
+        </b-row-stub>
+      </fieldset>
+       
+      <fieldset
+        class="my-3 detail-section"
+        id="well_licensing_fieldset"
+      >
+        <legend>
+          Licensing Information
+        </legend>
+         
+        <b-row-stub
+          tag="div"
+        >
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Licensed Status:
+            </span>
+             
+          </b-col-stub>
+           
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Licence Number:
+            </span>
+             
+            
+            <a
+              href="https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&PosseObjectDef=o_ATIS_DocumentSearch&PosseMenuName=WS_Main&Criteria_LicenceNumber="
+              target="_blank"
+            >
+              
+              
+            
+            </a>
+          </b-col-stub>
+           
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          />
+        </b-row-stub>
+      </fieldset>
+       
+      <fieldset
+        class="my-3 detail-section"
+        id="location_information_fieldset"
+      >
+        <legend>
+          Location Information
+        </legend>
+         
+        <b-row-stub
+          tag="div"
+        >
+          <b-col-stub
+            cols="12"
+            md="6"
+            tag="div"
+            xl="5"
+          >
+            <b-row-stub
+              tag="div"
+            >
+              <b-col-stub
+                tag="div"
+              >
+                <span
+                  class="font-weight-bold"
+                >
+                  Street Address:
+                </span>
+                 
+              </b-col-stub>
+            </b-row-stub>
+             
+            <b-row-stub
+              tag="div"
+            >
+              <b-col-stub
+                tag="div"
+              >
+                <span
+                  class="font-weight-bold"
+                >
+                  Town/City:
+                </span>
+                 
+              </b-col-stub>
+            </b-row-stub>
+             
+            <b-row-stub
+              tag="div"
+            >
+              <b-col-stub
+                tag="div"
+              >
+                <div
+                  class="my-3"
+                >
+                  <span
+                    class="font-weight-bold"
+                  >
+                    Legal Description:
+                  </span>
+                </div>
+                 
+                <div
+                  class="table-responsive"
+                >
+                  <table
+                    class="table table-sm table-striped table-bordered"
+                  >
+                    <tbody>
+                      <tr>
+                        <th
+                          class="w-50"
+                        >
+                          Lot
+                        </th>
+                         
+                        <td>
+                          
+                        </td>
+                      </tr>
+                       
+                      <tr>
+                        <th
+                          class="w-50"
+                        >
+                          Plan
+                        </th>
+                         
+                        <td>
+                          
+                        </td>
+                      </tr>
+                       
+                      <tr>
+                        <th
+                          class="w-50"
+                        >
+                          District Lot
+                        </th>
+                         
+                        <td>
+                          
+                        </td>
+                      </tr>
+                       
+                      <tr>
+                        <th
+                          class="w-50"
+                        >
+                          Block
+                        </th>
+                         
+                        <td>
+                          
+                        </td>
+                      </tr>
+                       
+                      <tr>
+                        <th
+                          class="w-50"
+                        >
+                          Section
+                        </th>
+                         
+                        <td>
+                          
+                        </td>
+                      </tr>
+                       
+                      <tr>
+                        <th
+                          class="w-50"
+                        >
+                          Township
+                        </th>
+                         
+                        <td>
+                          
+                        </td>
+                      </tr>
+                       
+                      <tr>
+                        <th
+                          class="w-50"
+                        >
+                          Range
+                        </th>
+                         
+                        <td>
+                          
+                        </td>
+                      </tr>
+                       
+                      <tr>
+                        <th
+                          class="w-50"
+                        >
+                          Land District
+                        </th>
+                         
+                        <td>
+                          
+                        </td>
+                      </tr>
+                       
+                      <tr>
+                        <th
+                          class="w-50"
+                        >
+                          Property Identification Description (PID)
+                        </th>
+                         
+                        <td>
+                          
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                   
+                  <div>
+                    <span
+                      class="font-weight-bold"
+                    >
+                      Description of Well Location:
+                    </span>
+                     
+                  
+                  </div>
+                </div>
+              </b-col-stub>
+            </b-row-stub>
+          </b-col-stub>
+           
+          <b-col-stub
+            cols="12"
+            md="6"
+            offsetxl="1"
+            tag="div"
+            xl="6"
+          >
+            <single-well-map-stub />
+             
+            <div
+              class="font-weight-bold mt-5"
+            >
+              
+              Geographic Coordinates - North American Datum of 1983 (NAD 83)
+            
+            </div>
+             
+            <b-row-stub
+              tag="div"
+            >
+              <b-col-stub
+                cols="12"
+                md="4"
+                tag="div"
+              >
+                <span
+                  class="font-weight-bold"
+                >
+                  Latitude:
+                </span>
+                 
+              </b-col-stub>
+               
+              <b-col-stub
+                cols="12"
+                md="6"
+                tag="div"
+              >
+                <span
+                  class="font-weight-bold"
+                >
+                  Longitude:
+                </span>
+                 
+              </b-col-stub>
+            </b-row-stub>
+             
+            <b-row-stub
+              tag="div"
+            >
+              <b-col-stub
+                cols="12"
+                md="4"
+                tag="div"
+              >
+                <span
+                  class="font-weight-bold"
+                >
+                  UTM Easting:
+                </span>
+                 
+              </b-col-stub>
+               
+              <b-col-stub
+                cols="12"
+                md="6"
+                tag="div"
+              >
+                <span
+                  class="font-weight-bold"
+                >
+                  UTM Northing:
+                </span>
+                 
+              </b-col-stub>
+            </b-row-stub>
+             
+            <b-row-stub
+              tag="div"
+            >
+              <b-col-stub
+                cols="12"
+                md="4"
+                tag="div"
+              >
+                <span
+                  class="font-weight-bold"
+                >
+                  Zone:
+                </span>
+                 
+              </b-col-stub>
+               
+              <b-col-stub
+                cols="12"
+                md="6"
+                tag="div"
+              >
+                <span
+                  class="font-weight-bold"
+                >
+                  Coordinate Acquisition Code:
+                </span>
+                 
+              </b-col-stub>
+            </b-row-stub>
+          </b-col-stub>
+        </b-row-stub>
+      </fieldset>
+       
+      <fieldset
+        class="my-3 detail-section"
+        id="well_activity_fieldset"
+      >
+        <legend>
+          Well Activity
+        </legend>
+         
+        <b-table-stub
+          apiurl=""
+          bordered="true"
+          currentpage="1"
+          emptyfilteredtext="There are no records matching your request"
+          emptytext="There has been no activity related to this well."
+          fields="[object Object]"
+          id="submissionActivityTable"
+          items=""
+          labelsortasc="Click to sort Ascending"
+          labelsortclear="Click to clear sorting"
+          labelsortdesc="Click to sort Descending"
+          perpage="5"
+          responsive="true"
+          selectedvariant="primary"
+          selectmode="multi"
+          showempty="true"
+          small="true"
+          sortdirection="asc"
+          striped="true"
+          value=""
+        />
+         
+        <!---->
+      </fieldset>
+       
+      <fieldset
+        class="my-3 detail-section"
+        id="well_work_dates_fieldset"
+      >
+        <legend>
+          Well Work Dates
+        </legend>
+         
+        <b-table-stub
+          apiurl=""
+          bordered="true"
+          currentpage="1"
+          emptyfilteredtext="There are no records matching your request"
+          emptytext="There are no records to show"
+          fields="[object Object]"
+          id="wellWorkDatesTable"
+          items="[object Object]"
+          labelsortasc="Click to sort Ascending"
+          labelsortclear="Click to clear sorting"
+          labelsortdesc="Click to sort Descending"
+          perpage="0"
+          selectedvariant="primary"
+          selectmode="multi"
+          sortdirection="asc"
+          striped="true"
+          value=""
+        />
+      </fieldset>
+       
+      <fieldset
+        class="my-3 detail-section"
+        id="well_completion_data_fieldset"
+      >
+        <legend>
+          Well Completion Data
+        </legend>
+         
+        <b-row-stub
+          tag="div"
+        >
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Total Depth Drilled:
+            </span>
+              
+          </b-col-stub>
+           
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Estimated Well Yield:
+            </span>
+              
+          </b-col-stub>
+           
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Static Water Level (BTOC):
+            </span>
+              
+          </b-col-stub>
+        </b-row-stub>
+         
+        <b-row-stub
+          tag="div"
+        >
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Finished Well Depth:
+            </span>
+              
+          </b-col-stub>
+           
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Well Cap:
+            </span>
+             
+          </b-col-stub>
+           
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Artesian Flow:
+            </span>
+              
+          </b-col-stub>
+        </b-row-stub>
+         
+        <b-row-stub
+          tag="div"
+        >
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Final Casing Stick Up:
+            </span>
+              
+          </b-col-stub>
+           
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Well Disinfected Status:
+            </span>
+             
+          </b-col-stub>
+           
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Artesian Pressure (head):
+            </span>
+             
+          </b-col-stub>
+        </b-row-stub>
+         
+        <b-row-stub
+          tag="div"
+        >
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Depth to Bedrock:
+            </span>
+              
+          </b-col-stub>
+           
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Drilling Method
+              <!---->
+              :
+            </span>
+             
+          </b-col-stub>
+           
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Artesian Pressure (PSI):
+            </span>
+             
+          </b-col-stub>
+        </b-row-stub>
+         
+        <b-row-stub
+          tag="div"
+        >
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Ground elevation:
+            </span>
+              
+          </b-col-stub>
+           
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Method of determining elevation:
+            </span>
+             
+          </b-col-stub>
+           
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Orientation of Well:
+            </span>
+             
+          </b-col-stub>
+        </b-row-stub>
+      </fieldset>
+       
+      <fieldset
+        class="my-3 detail-section"
+        id="lithology_fieldset"
+      >
+        <legend>
+          Lithology
+        </legend>
+         
+        <b-table-stub
+          apiurl=""
+          bordered="true"
+          currentpage="1"
+          emptyfilteredtext="There are no records matching your request"
+          emptytext="There are no records to show"
+          fields="[object Object]"
+          items=""
+          labelsortasc="Click to sort Ascending"
+          labelsortclear="Click to clear sorting"
+          labelsortdesc="Click to sort Descending"
+          perpage="0"
+          selectedvariant="primary"
+          selectmode="multi"
+          showempty="true"
+          small="true"
+          sortdirection="asc"
+          striped="true"
+          value=""
+        />
+      </fieldset>
+       
+      <fieldset
+        class="my-3 detail-section"
+        id="casing_fieldset"
+      >
+        <legend>
+          Casing Details
+        </legend>
+         
+        <div
+          class="table-responsive"
+        >
+          <b-table-stub
+            apiurl=""
+            bordered="true"
+            currentpage="1"
+            emptyfilteredtext="There are no records matching your request"
+            emptytext="There are no records to show"
+            fields="from,to,casing_type,casing_material,diameter,wall_thickness,drive_shoe"
+            items=""
+            labelsortasc="Click to sort Ascending"
+            labelsortclear="Click to clear sorting"
+            labelsortdesc="Click to sort Descending"
+            perpage="0"
+            selectedvariant="primary"
+            selectmode="multi"
+            showempty="true"
+            small="true"
+            sortdirection="asc"
+            striped="true"
+            value=""
+          />
+        </div>
+      </fieldset>
+       
+      <fieldset
+        class="my-3 detail-section"
+        id="surface_seal_fieldset"
+      >
+        <legend>
+          Surface Seal and Backfill Details
+        </legend>
+         
+        <b-row-stub
+          tag="div"
+        >
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Surface Seal Material:
+            </span>
+             
+          </b-col-stub>
+           
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Backfill Material Above Surface Seal:
+            </span>
+             
+          </b-col-stub>
+        </b-row-stub>
+         
+        <b-row-stub
+          tag="div"
+        >
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Surface Seal Installation Method:
+            </span>
+             
+          </b-col-stub>
+           
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Backfill Depth:
+            </span>
+              
+          </b-col-stub>
+        </b-row-stub>
+         
+        <b-row-stub
+          tag="div"
+        >
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Surface Seal Thickness:
+            </span>
+              
+          </b-col-stub>
+        </b-row-stub>
+         
+        <b-row-stub
+          tag="div"
+        >
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Surface Seal Depth:
+            </span>
+              
+          </b-col-stub>
+        </b-row-stub>
+      </fieldset>
+       
+      <fieldset
+        class="my-3 detail-section"
+        id="liner_details_fieldset"
+      >
+        <legend>
+          Liner Details
+        </legend>
+         
+        <b-row-stub
+          tag="div"
+        >
+          <b-col-stub
+            cols="12"
+            md="6"
+            tag="div"
+          >
+            <b-row-stub
+              tag="div"
+            >
+              <b-col-stub
+                cols="12"
+                md="6"
+                tag="div"
+              >
+                <span
+                  class="font-weight-bold"
+                >
+                  Liner Material:
+                </span>
+                 
+              </b-col-stub>
+            </b-row-stub>
+             
+            <b-row-stub
+              tag="div"
+            >
+              <b-col-stub
+                cols="12"
+                md="6"
+                tag="div"
+              >
+                <span
+                  class="font-weight-bold"
+                >
+                  Liner Diameter:
+                </span>
+                  
+              </b-col-stub>
+               
+              <b-col-stub
+                cols="12"
+                md="6"
+                tag="div"
+              >
+                <span
+                  class="font-weight-bold"
+                >
+                  Liner Thickness:
+                </span>
+                  
+              </b-col-stub>
+            </b-row-stub>
+             
+            <b-row-stub
+              tag="div"
+            >
+              <b-col-stub
+                cols="12"
+                md="6"
+                tag="div"
+              >
+                <span
+                  class="font-weight-bold"
+                >
+                  Liner from:
+                </span>
+                  
+              </b-col-stub>
+               
+              <b-col-stub
+                cols="12"
+                md="6"
+                tag="div"
+              >
+                <span
+                  class="font-weight-bold"
+                >
+                  Liner to:
+                </span>
+                  
+              </b-col-stub>
+            </b-row-stub>
+          </b-col-stub>
+           
+          <b-col-stub
+            cols="12"
+            md="6"
+            tag="div"
+          >
+            <div
+              class="font-weight-bold"
+            >
+              Liner perforations
+            </div>
+             
+            <b-table-stub
+              apiurl=""
+              bordered="true"
+              currentpage="1"
+              emptyfilteredtext="There are no records matching your request"
+              emptytext="There are no records to show"
+              fields="from,to"
+              items=""
+              labelsortasc="Click to sort Ascending"
+              labelsortclear="Click to clear sorting"
+              labelsortdesc="Click to sort Descending"
+              perpage="0"
+              selectedvariant="primary"
+              selectmode="multi"
+              showempty="true"
+              small="true"
+              sortdirection="asc"
+              striped="true"
+              value=""
+            />
+          </b-col-stub>
+        </b-row-stub>
+      </fieldset>
+       
+      <fieldset
+        class="my-3 detail-section"
+        id="screen_details_fieldset"
+      >
+        <legend>
+          Screen Details
+        </legend>
+         
+        <b-row-stub
+          tag="div"
+        >
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <b-row-stub
+              tag="div"
+            >
+              <b-col-stub
+                cols="12"
+                md="6"
+                tag="div"
+              >
+                <span
+                  class="font-weight-bold"
+                >
+                  Intake Method:
+                </span>
+                 
+              </b-col-stub>
+            </b-row-stub>
+             
+            <b-row-stub
+              tag="div"
+            >
+              <b-col-stub
+                cols="12"
+                md="6"
+                tag="div"
+              >
+                <span
+                  class="font-weight-bold"
+                >
+                  Type:
+                </span>
+                 
+              </b-col-stub>
+            </b-row-stub>
+             
+            <b-row-stub
+              tag="div"
+            >
+              <b-col-stub
+                cols="12"
+                md="6"
+                tag="div"
+              >
+                <span
+                  class="font-weight-bold"
+                >
+                  Material:
+                </span>
+                 
+              </b-col-stub>
+            </b-row-stub>
+             
+            <b-row-stub
+              tag="div"
+            >
+              <b-col-stub
+                cols="12"
+                md="6"
+                tag="div"
+              >
+                <span
+                  class="font-weight-bold"
+                >
+                  Opening:
+                </span>
+                 
+              </b-col-stub>
+            </b-row-stub>
+             
+            <b-row-stub
+              tag="div"
+            >
+              <b-col-stub
+                cols="12"
+                md="6"
+                tag="div"
+              >
+                <span
+                  class="font-weight-bold"
+                >
+                  Bottom:
+                </span>
+                 
+              </b-col-stub>
+            </b-row-stub>
+          </b-col-stub>
+           
+          <b-col-stub
+            cols="12"
+            md="8"
+            tag="div"
+          >
+            <div
+              class="font-weight-bold"
+            >
+              Installed Screens
+            </div>
+             
+            <b-table-stub
+              apiurl=""
+              bordered="true"
+              currentpage="1"
+              emptyfilteredtext="There are no records matching your request"
+              emptytext="There are no records to show"
+              fields="from,to,diameter,assembly_type,slot_size"
+              items=""
+              labelsortasc="Click to sort Ascending"
+              labelsortclear="Click to clear sorting"
+              labelsortdesc="Click to sort Descending"
+              perpage="0"
+              selectedvariant="primary"
+              selectmode="multi"
+              showempty="true"
+              small="true"
+              sortdirection="asc"
+              striped="true"
+              value=""
+            />
+          </b-col-stub>
+        </b-row-stub>
+      </fieldset>
+       
+      <fieldset
+        class="my-3 detail-section"
+        id="well_development_fieldset"
+      >
+        <legend>
+          Well Development
+        </legend>
+         
+        <b-row-stub
+          tag="div"
+        >
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Developed by:
+            </span>
+             
+          </b-col-stub>
+           
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Development Total Duration:
+            </span>
+              
+          </b-col-stub>
+        </b-row-stub>
+      </fieldset>
+       
+      <fieldset
+        class="my-3 detail-section"
+        id="well_yield_fieldset"
+      >
+        <legend>
+          Well Yield
+        </legend>
+         
+        <b-row-stub
+          tag="div"
+        >
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Estimation Method:
+            </span>
+              
+          </b-col-stub>
+           
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Estimation Rate:
+            </span>
+              
+          </b-col-stub>
+           
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Estimation Duration:
+            </span>
+              
+          </b-col-stub>
+        </b-row-stub>
+         
+        <b-row-stub
+          tag="div"
+        >
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Static Water Level Before Test:
+            </span>
+              
+          </b-col-stub>
+           
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Drawdown:
+            </span>
+              
+          </b-col-stub>
+        </b-row-stub>
+         
+        <b-row-stub
+          tag="div"
+        >
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Hydrofracturing Performed:
+            </span>
+             
+          </b-col-stub>
+           
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Increase in Yield Due to Hydrofracturing:
+            </span>
+              
+          </b-col-stub>
+        </b-row-stub>
+      </fieldset>
+       
+      <fieldset
+        class="my-3 detail-section"
+        id="well_decommissioning_fieldset"
+      >
+        <legend>
+          Well Decommission Information
+        </legend>
+         
+        <b-row-stub
+          tag="div"
+        >
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Reason for Decommission:
+            </span>
+             
+          </b-col-stub>
+           
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Method of Decommission:
+            </span>
+             
+          </b-col-stub>
+        </b-row-stub>
+         
+        <b-row-stub
+          tag="div"
+        >
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Sealant Material:
+            </span>
+             
+          </b-col-stub>
+           
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Backfill Material:
+            </span>
+             
+          </b-col-stub>
+        </b-row-stub>
+         
+        <b-row-stub
+          tag="div"
+        >
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Decommission Details:
+            </span>
+             
+          </b-col-stub>
+        </b-row-stub>
+      </fieldset>
+       
+      <fieldset
+        class="my-3 detail-section"
+        id="well_comments_fieldset"
+      >
+        <legend>
+          Comments
+        </legend>
+         
+        <p>
+          
+          No comments submitted
+        
+        </p>
+         
+        <p>
+          <span
+            class="font-weight-bold"
+          >
+            Alternative Specs Submitted:
+          </span>
+           
+        
+        </p>
+      </fieldset>
+       
+      <fieldset
+        class="detail-section my-3"
+        id="documents_fieldset"
+      >
+        <legend>
+          Documents
+        </legend>
+         
+        <documents-stub
+          well="113169"
+        />
+      </fieldset>
+       
+      <fieldset
+        class="detail-section my-3"
+        id="disclaimer_fieldset"
+      >
+        <legend>
+          Disclaimer
+        </legend>
+         
+        <p>
+          
+          The information provided should not be used as a basis for making financial or any other commitments. The Government of British Columbia accepts no liability for the accuracy, availability, suitability, reliability, usability, completeness or timeliness of the data or graphical depictions rendered from the data.
+        
+        </p>
+      </fieldset>
+    </b-card-stub>
+  </div>
+</div>
+`;

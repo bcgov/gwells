@@ -11,9 +11,10 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 
-mkdir -p /data/aquifer-docs
-mkdir -p /data/driller-docs
-mkdir -p /data/gwells
-mkdir -p /data/well-docs
+mkdir -p $MINIO_DATA_DIR/aquifer-docs
+mkdir -p $MINIO_DATA_DIR/driller-docs
+mkdir -p $MINIO_DATA_DIR/gwells
+mkdir -p $MINIO_DATA_DIR/well-docs
+mkdir -p $MINIO_DATA_DIR/gwells-docs
 
 /usr/bin/docker-entrypoint.sh $@
