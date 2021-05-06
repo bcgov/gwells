@@ -3,10 +3,11 @@ oc -n 26e83e-tools process -f https://raw.githubusercontent.com/BCDevOps/openshi
 
 oc -n 26e83e-tools start-build jenkins-basic-cv --wait=true
 
+# Build Final image
 
 oc -n 26e83e-tools process -f jenkins-main-build.yaml SUFFIX=-cv SOURCE_IMAGE_STREAM_TAG=jenkins-basic:v2-cv VERSION=v2-latest | jq 'del(.items[] | select(.kind == "BuildConfig") | .spec.triggers)' | oc -n 26e83e-tools create -f -
 
 (cd "$(git rev-parse --show-toplevel)" && oc -n 26e83e-tools start-build jenkins-main-cv --wait=true --from-repo=.)
 
-
-oc -n 26e83e-tools process -f jenkins-deploy.yaml NAME=jenkins SUFFIX=-cv GH_USERNAME=blah GH_PASSWORD=blah | jq 'del(.items[] | select (.kind == "Secret"))' | oc -n 26e83e-tools create -f -
+# Deploy
+oc -n 26e83e-tools process -f jenkins-deploy.yaml NAME=jenkins SUFFIX=-cv GH_USERNAME=blah GH_PASSWORD=blah | jq 'del(.items[] | select (.kind == "Secret"))' | oc -n 26e83e-tools apply -f -
