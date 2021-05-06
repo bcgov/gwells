@@ -436,12 +436,16 @@ def deployToDev() {
                     }
 
 def loadFixtures(String appName) {
-                        def newVersion = openshift.selector("dc", "${appName}").object().status.latestVersion
-                        def pods = openshift.selector('pod', [deployment: "${appName}-${newVersion}"])
-
-                        echo "Loading fixtures"
+                        // wait for deployment config to finish rolling out 
+                        openshift.selector("dc", "${appName}").rollout().status()
+                        def pods = openshift.selector("dc", "${appName}").related("pods")
+                        def podName = pods.objects()[0].metadata.name
+                        echo "Loading fixtures using pod/${podName}"
+                        // the dc rollout status above should be enough!
+                        def waitStatus = openshift.raw('wait', '--for=condition=Ready', "pod/${podName}", '--timeout=300s')
+                        echo "Wait for pod/${podName}: ${waitStatus.out}"                        
                         def ocoutput = openshift.exec(
-                            pods.objects()[0].metadata.name,
+                            podName,
                             "--",
                             "bash -c '\
                                 cd \${APP_SOURCE_DIR:-\"\${APP_ROOT}/src\"}/backend; \
@@ -451,7 +455,7 @@ def loadFixtures(String appName) {
                         echo "Load Fixtures results: "+ ocoutput.actions[0].out
 
                         openshift.exec(
-                            pods.objects()[0].metadata.name,
+                            podName,
                             "--",
                             "bash -c '\
                                 cd \${APP_SOURCE_DIR:-\"\${APP_ROOT}/src\"}/backend; \
