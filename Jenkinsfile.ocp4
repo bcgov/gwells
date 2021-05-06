@@ -561,7 +561,7 @@ pipeline {
         repository = 'https://www.github.com/bcgov/gwells.git'
         platformEnv = "${env.OCP_PLATFORM ?: '3'}"
 
-        platformDomain = "${OCP_PLATFORM == '4' ? 'apps.silver.devops.gov.bc.ca' : 'pathfinder.gov.bc.ca'}"
+        platformDomain = "${env.OCP_PLATFORM == '4' ? 'apps.silver.devops.gov.bc.ca' : 'pathfinder.gov.bc.ca'}"
 
         // prNumber is the pull request number e.g. 'pr-4'
         prNumber = "${env.JOB_BASE_NAME}".toLowerCase()
@@ -584,7 +584,7 @@ pipeline {
         // TODO: New production images can be deployed by tagging an existing "test" image as "prod".
         prodProject = "${APP_PROD_NAMESPACE ?: "26e83e-prod"}"
         prodSuffix = "production"
-        prodSubdomain =  "${OCP_PLATFORM == '4' ? 'gwells' : 'gwells-prod'}"
+        prodSubdomain =  "${env.OCP_PLATFORM == '4' ? 'gwells' : 'gwells-prod'}"
         prodHost = "${prodSubdomain}.${platformDomain}"
 
         // name of the provisioned PVC claim for NFS backup storage
@@ -598,7 +598,7 @@ pipeline {
         minioDataPVC = "minio-data-vol"
 
 
-        templateDir = "${OCP_PLATFORM == '4' ? 'openshift/ocp4' : 'openshift' }"
+        templateDir = "${env.OCP_PLATFORM == '4' ? 'openshift/ocp4' : 'openshift' }"
 
     }
     agent none
@@ -612,7 +612,7 @@ pipeline {
             agent { label 'build' }
             steps {
                 script {
-                    echo "Starting deployment to OCP platform:   ${platformEnv} / ${env.OCP_PLATFORM}"
+                    echo "Starting deployment to OCP platform:   ${platformEnv}"
                     echo "Cancelling previous builds..."
                     timeout(10) {
                         abortAllPreviousBuildInProgress(currentBuild)
