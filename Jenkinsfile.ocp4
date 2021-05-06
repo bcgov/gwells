@@ -559,9 +559,9 @@ pipeline {
         // Project-wide settings - app name, repo
         appName = "gwells"
         repository = 'https://www.github.com/bcgov/gwells.git'
-        platformEnv = "${env.OCP_PLATFORM ?: '3'}"
+        platformEnv = "4"
 
-        platformDomain = "${env.OCP_PLATFORM == '4' ? 'apps.silver.devops.gov.bc.ca' : 'pathfinder.gov.bc.ca'}"
+        platformDomain = "${platformEnv == '4' ? 'apps.silver.devops.gov.bc.ca' : 'pathfinder.gov.bc.ca'}"
 
         // prNumber is the pull request number e.g. 'pr-4'
         prNumber = "${env.JOB_BASE_NAME}".toLowerCase()
@@ -584,7 +584,7 @@ pipeline {
         // TODO: New production images can be deployed by tagging an existing "test" image as "prod".
         prodProject = "${APP_PROD_NAMESPACE ?: "26e83e-prod"}"
         prodSuffix = "production"
-        prodSubdomain =  "${env.OCP_PLATFORM == '4' ? 'gwells' : 'gwells-prod'}"
+        prodSubdomain =  "${platformEnv == '4' ? 'gwells' : 'gwells-prod'}"
         prodHost = "${prodSubdomain}.${platformDomain}"
 
         // name of the provisioned PVC claim for NFS backup storage
@@ -598,7 +598,7 @@ pipeline {
         minioDataPVC = "minio-data-vol"
 
 
-        templateDir = "${env.OCP_PLATFORM == '4' ? 'openshift/ocp4' : 'openshift' }"
+        templateDir = "${platformEnv == '4' ? 'openshift/ocp4' : 'openshift' }"
 
     }
     agent none
