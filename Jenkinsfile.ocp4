@@ -653,8 +653,14 @@ pipeline {
 
                         // Select appropriate buildconfig
                         def appBuild = openshift.selector("bc", "${devAppName}")
+                        echo "Canceling builds"
+                        appBuild.cancelBuild()
                         echo "Building"
-                        appBuild.startBuild("--wait").logs("-f")
+                        def newBuildSelector = appBuild.startBuild()
+                        newBuildSelector.logs("-f")
+                        if (newBuildSelector.object().status.phase != "Complete") {
+                            error("Build ${newBuildSelector.names()} has failed!")
+                        }
                     }
                 }
             }
