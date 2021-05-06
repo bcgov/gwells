@@ -601,7 +601,7 @@ pipeline {
         templateDir = "${OCP_PLATFORM == '4' ? 'openshift/ocp4' : 'openshift' }"
 
     }
-    agent any
+    agent none
     stages {
         // the Start Pipeline stage will process and apply OpenShift build templates which will create
         // buildconfigs and an imagestream for built images.
@@ -609,6 +609,7 @@ pipeline {
         // to be tagged with the pull request number.
         // e.g.:  gwells-app:pr-999
         stage('ALL - Prepare Templates') {
+            agent { label 'build' }
             steps {
                 script {
                     echo "Starting deployment to OCP platform:   ${platformEnv}"
@@ -642,6 +643,7 @@ pipeline {
         // the Build stage builds files; an image will be outputted to the app's imagestream,
         // using the source-to-image (s2i) strategy. See /app/.s2i/assemble for image build script
         stage('ALL - Build') {
+            agent { label 'build' }
             steps {
                 script {
                     _openshift(env.STAGE_NAME, toolsProject) {
@@ -662,7 +664,9 @@ pipeline {
         // the newly built application image into that environment.  This stage monitors the newest deployment
         // for pods/containers to report back as ready.
         stage('DEV - Deploy') {
+            agent { label 'deploy' }
             when {
+                beforeAgent true
                 expression { env.CHANGE_TARGET != 'master' }
             }
             steps {
@@ -677,7 +681,9 @@ pipeline {
         // the Django Unit Tests stage runs backend unit tests using a test DB that is
         // created and destroyed afterwards.
         stage('DEV - Django Unit Tests') {
+            agent { label 'test' }
             when {
+                beforeAgent true
                 expression { env.CHANGE_TARGET != 'master' }
             }
             steps {
@@ -688,7 +694,9 @@ pipeline {
         }
 
         stage('DEV - Load Fixtures') {
+            agent { label 'test' }
             when {
+                beforeAgent true
                 expression { env.CHANGE_TARGET != 'master' }
             }
             steps {
@@ -701,7 +709,9 @@ pipeline {
         }
 
         stage('DEV - API Tests') {
+            agent { label 'test' }
             when {
+                beforeAgent true
                 expression { env.CHANGE_TARGET != 'master' }
             }
             steps {
@@ -712,7 +722,9 @@ pipeline {
         }
 
         stage('STAGING - Backup') {
+            agent { label 'deploy' }
             when {
+                beforeAgent true
                 expression { env.CHANGE_TARGET == 'master' }
             }
             steps {
@@ -727,7 +739,9 @@ pipeline {
         // which will trigger an automatic deployment of that image.
         // this stage should only occur when the pull request is being made against the master branch.
         stage('STAGING - Deploy') {
+            agent { label 'deploy' }
             when {
+                beforeAgent true
                 expression { env.CHANGE_TARGET == 'master' }
             }
             steps {
@@ -1045,7 +1059,9 @@ pipeline {
         // the Django Unit Tests stage runs backend unit tests using a test DB that is
         // created and destroyed afterwards.
         stage('Staging - Django Unit Tests') {
+            agent { label 'test' }
             when {
+                beforeAgent true
                 expression { env.CHANGE_TARGET == 'master' }
             }
             steps {
@@ -1057,7 +1073,9 @@ pipeline {
 
 
         stage('STAGING - API Tests') {
+            agent { label 'test' }
             when {
+                beforeAgent true
                 expression { env.CHANGE_TARGET == 'master' }
             }
             steps {
@@ -1068,7 +1086,9 @@ pipeline {
         }
 
         stage('PROD - Backup') {
+            agent { label 'deploy' }
             when {
+                beforeAgent true
                 expression { env.CHANGE_TARGET == 'master' }
             }
             steps {
@@ -1078,13 +1098,22 @@ pipeline {
             }
         }
 
-        stage('PROD - Deploy') {
+        stage('PROD - Approval') {
+            agent none
             when {
+                expression { env.CHANGE_TARGET == 'master' }
+            }
+            input "Deploy to production?"
+        }
+
+        stage('PROD - Deploy') {
+            agent { label 'deploy' }
+            when {
+                beforeAgent true
                 expression { env.CHANGE_TARGET == 'master' }
             }
             steps {
                 script {
-                    input "Deploy to production?"
                     echo "Updating production deployment..."
 
                     _openshift(env.STAGE_NAME, prodProject) {
