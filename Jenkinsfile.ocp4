@@ -1108,6 +1108,9 @@ pipeline {
                 ok "Yes, deploy to production."
                 submitter "authenticated"
             }
+            steps {
+                echo "Approved!"
+            }
         }
 
         stage('PROD - Deploy') {
