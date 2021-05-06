@@ -1103,7 +1103,11 @@ pipeline {
             when {
                 expression { env.CHANGE_TARGET == 'master' }
             }
-            input "Deploy to production?"
+            input {
+                message "Deploy to production?"
+                ok "Yes, deploy to production."
+                submitter "authenticated"
+            }
         }
 
         stage('PROD - Deploy') {
