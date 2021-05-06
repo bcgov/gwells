@@ -567,22 +567,22 @@ pipeline {
         prNumber = "${env.JOB_BASE_NAME}".toLowerCase()
 
         // toolsProject is where images are built
-        toolsProject = "${APP_TOOLS_NAMESPACE ?: "moe-gwells-tools"}"
+        toolsProject = "${APP_TOOLS_NAMESPACE ?: "26e83e-tools"}"
 
         // devProject is the project where individual development environments are spun up
-        devProject = "${APP_DEV_NAMESPACE ?: "moe-gwells-dev"}"
+        devProject = "${APP_DEV_NAMESPACE ?: "26e83e-dev"}"
         devSuffix = "dev"
         devAppName = "${appName}-${devSuffix}-${prNumber}"
         devHost = "${devAppName}.${platformDomain}"
 
         // stagingProject contains the test deployment. The test image is a candidate for promotion to prod.
-        stagingProject = "${APP_STAGING_NAMESPACE ?: "moe-gwells-test"}"
+        stagingProject = "${APP_STAGING_NAMESPACE ?: "26e83e-test"}"
         stagingSuffix = "staging"
         stagingHost = "gwells-staging.${platformDomain}"
 
         // prodProject is the prod deployment.
         // TODO: New production images can be deployed by tagging an existing "test" image as "prod".
-        prodProject = "${APP_PROD_NAMESPACE ?: "moe-gwells-prod"}"
+        prodProject = "${APP_PROD_NAMESPACE ?: "26e83e-prod"}"
         prodSuffix = "production"
         prodSubdomain =  "${OCP_PLATFORM == '4' ? 'gwells' : 'gwells-prod'}"
         prodHost = "${prodSubdomain}.${platformDomain}"
@@ -750,7 +750,7 @@ pipeline {
                         echo "Preparing..."
 
                         // Process db and app template into list objects
-                        // TODO: Match docker-compose image from moe-gwells-tools
+                        // TODO: Match docker-compose image from 26e83e-tools
                         echo "Updating staging deployment..."
                         def deployDBTemplate = openshift.process("-f",
                             "${templateDir}/postgresql.dc.yml",
