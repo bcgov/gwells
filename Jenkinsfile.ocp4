@@ -618,7 +618,7 @@ pipeline {
                         abortAllPreviousBuildInProgress(currentBuild)
                     }
                     echo "Previous builds cancelled"
-
+                    echo "Processing/applying template: ${templateDir}/backend.bc.json"
                     _openshift(env.STAGE_NAME, toolsProject) {
                         //  - variable substitution
                         def buildtemplate = openshift.process("-f",
