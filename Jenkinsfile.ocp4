@@ -408,28 +408,11 @@ def deployToDev() {
 
                         // monitor the deployment status and wait until deployment is successful
                         echo "Waiting for deployment to dev..."
-                        def newVersion = openshift.selector("dc", "${devAppName}").object().status.latestVersion
-                        def pods = openshift.selector('pod', [deployment: "${devAppName}-${newVersion}"])
 
                         // wait until each container in this deployment's pod reports as ready
                         timeout(15) {
-                            pods.untilEach(2) {
-                                return it.object().status.containerStatuses.every {
-                                    it.ready
-                                }
-                            }
-                        }
-
-                        def pgtileservVersion = openshift.selector("dc", "pgtileserv-${devSuffix}-${prNumber}").object().status.latestVersion
-                        def pgtileservPods = openshift.selector('pod', [deployment: "pgtileserv-${devSuffix}-${prNumber}-${newVersion}"])
-
-                        // wait until each container in this deployment's pod reports as ready
-                        timeout(15) {
-                            pods.untilEach(2) {
-                                return it.object().status.containerStatuses.every {
-                                    it.ready
-                                }
-                            }
+                            openshift.selector("dc", "${devAppName}").rollout().status()
+                            openshift.selector("dc", "pgtileserv-${devSuffix}-${prNumber}").rollout().status()
                         }
                         // Report a pass to GitHub
                         createDeploymentStatus(devSuffix, 'SUCCESS', devHost)
@@ -559,6 +542,10 @@ def dbBackup (String envProject, String envSuffix) {
 }
 
 pipeline {
+    options {
+        timestamps()
+        ansiColor('xterm')
+    }
     environment {
         // Project-wide settings - app name, repo
         appName = "gwells"
