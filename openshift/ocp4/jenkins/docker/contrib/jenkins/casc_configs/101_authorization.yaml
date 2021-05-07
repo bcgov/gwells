@@ -1,0 +1,5 @@
+jenkins:
+  authorizationStrategy:
+    projectMatrix:
+      permissions:
+      - "Overall/Read:authenticated"

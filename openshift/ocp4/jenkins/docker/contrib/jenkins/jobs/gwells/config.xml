@@ -1,0 +1,63 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject plugin="workflow-multibranch@2.22">
+  <actions/>
+  <description>Groundwater Wells and Aquifers application for the Ministry of Environment</description>
+  <displayName>GWELLS</displayName>
+  <properties>
+    <org.jenkinsci.plugins.docker.workflow.declarative.FolderConfig plugin="docker-workflow@1.24">
+      <dockerLabel></dockerLabel>
+      <registry plugin="docker-commons@1.17"/>
+    </org.jenkinsci.plugins.docker.workflow.declarative.FolderConfig>
+    <org.csanchez.jenkins.plugins.kubernetes.KubernetesFolderProperty plugin="kubernetes@1.26.4">
+      <permittedClouds/>
+    </org.csanchez.jenkins.plugins.kubernetes.KubernetesFolderProperty>
+  </properties>
+  <folderViews class="jenkins.branch.MultiBranchProjectViewHolder" plugin="branch-api@2.5.9">
+    <owner class="org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject" reference="../.."/>
+  </folderViews>
+  <healthMetrics>
+    <com.cloudbees.hudson.plugins.folder.health.WorstChildHealthMetric plugin="cloudbees-folder@6.14">
+      <nonRecursive>false</nonRecursive>
+    </com.cloudbees.hudson.plugins.folder.health.WorstChildHealthMetric>
+  </healthMetrics>
+  <icon class="jenkins.branch.MetadataActionFolderIcon" plugin="branch-api@2.5.9">
+    <owner class="org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject" reference="../.."/>
+  </icon>
+  <orphanedItemStrategy class="com.cloudbees.hudson.plugins.folder.computed.DefaultOrphanedItemStrategy" plugin="cloudbees-folder@6.14">
+    <pruneDeadBranches>true</pruneDeadBranches>
+    <daysToKeep>1</daysToKeep>
+    <numToKeep>1</numToKeep>
+  </orphanedItemStrategy>
+  <triggers/>
+  <disabled>false</disabled>
+  <sources class="jenkins.branch.MultiBranchProject$BranchSourceList" plugin="branch-api@2.5.9">
+    <data>
+      <jenkins.branch.BranchSource>
+        <source class="org.jenkinsci.plugins.github_branch_source.GitHubSCMSource" plugin="github-branch-source@2.8.3">
+          <id>e7d5a06d-b84c-4b3a-b71a-aa75b10fb83f</id>
+          <apiUri>https://api.github.com</apiUri>
+          <credentialsId>github-account</credentialsId>
+          <repoOwner>bcgov</repoOwner>
+          <repository>gwells</repository>
+          <repositoryUrl>https://github.com/bcgov/gwells.git</repositoryUrl>
+          <traits>
+            <org.jenkinsci.plugins.github__branch__source.OriginPullRequestDiscoveryTrait>
+              <strategyId>1</strategyId>
+            </org.jenkinsci.plugins.github__branch__source.OriginPullRequestDiscoveryTrait>
+            <jenkins.plugins.git.traits.PruneStaleBranchTrait plugin="git@4.3.0">
+              <extension class="hudson.plugins.git.extensions.impl.PruneStaleBranch"/>
+            </jenkins.plugins.git.traits.PruneStaleBranchTrait>
+          </traits>
+        </source>
+        <strategy class="jenkins.branch.DefaultBranchPropertyStrategy">
+          <properties class="empty-list"/>
+        </strategy>
+      </jenkins.branch.BranchSource>
+    </data>
+    <owner class="org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject" reference="../.."/>
+  </sources>
+  <factory class="org.jenkinsci.plugins.workflow.multibranch.WorkflowBranchProjectFactory">
+    <owner class="org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject" reference="../.."/>
+    <scriptPath>Jenkinsfile.ocp4</scriptPath>
+  </factory>
+</org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject>
