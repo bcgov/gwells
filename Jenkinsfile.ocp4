@@ -210,6 +210,8 @@ def apiTest (String stageName, String stageUrl, String envSuffix) {
                     try {
                         sh """
                             newman run ./registries_api_tests.json \
+                                --color on \
+                                --disable-unicode \
                                 --global-var test_user=\$GWELLS_API_TEST_USER \
                                 --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
                                 --global-var base_url=\$BASE_URL \
