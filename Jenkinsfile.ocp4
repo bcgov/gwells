@@ -1102,6 +1102,7 @@ pipeline {
         stage('PROD - Approval') {
             agent none
             when {
+                beforeInput true
                 expression { env.CHANGE_TARGET == 'master' }
             }
             input {
