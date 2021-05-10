@@ -99,14 +99,6 @@
             "spec": {
                 "successfulBuildsHistoryLimit": 3,
                 "failedBuildsHistoryLimit": 3,
-                "triggers": [
-                    {
-                        "type": "ImageChange"
-                    },
-                    {
-                        "type": "ConfigChange"
-                    }
-                ],
                 "runPolicy": "SerialLatestOnly",
                 "source": {
                     "type": "Git",

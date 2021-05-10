@@ -33,18 +33,18 @@ void createDeploymentStatus (String suffix, String status, String stageUrl) {
     // TODO: convert to use GitHub REST API
     // https://docs.github.com/en/rest/reference/repos#deployments
 
-    // new GitHubHelper().createDeploymentStatus(
-    //     this,
-    //     ghDeploymentId,
-    //     "${status}",
-    //     ['targetUrl':"https://${stageUrl}/gwells"]
-    // )
+    new GitHubHelper().createDeploymentStatus(
+        this,
+        ghDeploymentId,
+        "${status}",
+        ['targetUrl':"https://${stageUrl}/gwells"]
+    )
 
-    // if ('SUCCESS'.equalsIgnoreCase("${status}")) {
-    //     echo "${suffix} deployment successful!"
-    // } else if ('PENDING'.equalsIgnoreCase("${status}")){
-    //     echo "${suffix} deployment pending."
-    // }
+    if ('SUCCESS'.equalsIgnoreCase("${status}")) {
+        echo "${suffix} deployment successful!"
+    } else if ('PENDING'.equalsIgnoreCase("${status}")){
+        echo "${suffix} deployment pending."
+    }
 }
 
 
@@ -210,6 +210,8 @@ def apiTest (String stageName, String stageUrl, String envSuffix) {
                     try {
                         sh """
                             newman run ./registries_api_tests.json \
+                                --color on \
+                                --disable-unicode \
                                 --global-var test_user=\$GWELLS_API_TEST_USER \
                                 --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
                                 --global-var base_url=\$BASE_URL \
@@ -408,40 +410,27 @@ def deployToDev() {
 
                         // monitor the deployment status and wait until deployment is successful
                         echo "Waiting for deployment to dev..."
-                        def newVersion = openshift.selector("dc", "${devAppName}").object().status.latestVersion
-                        def pods = openshift.selector('pod', [deployment: "${devAppName}-${newVersion}"])
 
                         // wait until each container in this deployment's pod reports as ready
                         timeout(15) {
-                            pods.untilEach(2) {
-                                return it.object().status.containerStatuses.every {
-                                    it.ready
-                                }
-                            }
-                        }
-
-                        def pgtileservVersion = openshift.selector("dc", "pgtileserv-${devSuffix}-${prNumber}").object().status.latestVersion
-                        def pgtileservPods = openshift.selector('pod', [deployment: "pgtileserv-${devSuffix}-${prNumber}-${newVersion}"])
-
-                        // wait until each container in this deployment's pod reports as ready
-                        timeout(15) {
-                            pods.untilEach(2) {
-                                return it.object().status.containerStatuses.every {
-                                    it.ready
-                                }
-                            }
+                            openshift.selector("dc", "${devAppName}").rollout().status()
+                            openshift.selector("dc", "pgtileserv-${devSuffix}-${prNumber}").rollout().status()
                         }
                         // Report a pass to GitHub
                         createDeploymentStatus(devSuffix, 'SUCCESS', devHost)
                     }
 
 def loadFixtures(String appName) {
-                        def newVersion = openshift.selector("dc", "${appName}").object().status.latestVersion
-                        def pods = openshift.selector('pod', [deployment: "${appName}-${newVersion}"])
-
-                        echo "Loading fixtures"
+                        // wait for deployment config to finish rolling out 
+                        openshift.selector("dc", "${appName}").rollout().status()
+                        def pods = openshift.selector("dc", "${appName}").related("pods")
+                        def podName = pods.objects()[0].metadata.name
+                        echo "Loading fixtures using pod/${podName}"
+                        // the dc rollout status above should be enough!
+                        def waitStatus = openshift.raw('wait', '--for=condition=Ready', "pod/${podName}", '--timeout=300s')
+                        echo "Wait for pod/${podName}: ${waitStatus.out}"                        
                         def ocoutput = openshift.exec(
-                            pods.objects()[0].metadata.name,
+                            podName,
                             "--",
                             "bash -c '\
                                 cd \${APP_SOURCE_DIR:-\"\${APP_ROOT}/src\"}/backend; \
@@ -451,7 +440,7 @@ def loadFixtures(String appName) {
                         echo "Load Fixtures results: "+ ocoutput.actions[0].out
 
                         openshift.exec(
-                            pods.objects()[0].metadata.name,
+                            podName,
                             "--",
                             "bash -c '\
                                 cd \${APP_SOURCE_DIR:-\"\${APP_ROOT}/src\"}/backend; \
@@ -555,36 +544,40 @@ def dbBackup (String envProject, String envSuffix) {
 }
 
 pipeline {
+    options {
+        timestamps()
+        ansiColor('xterm')
+    }
     environment {
         // Project-wide settings - app name, repo
         appName = "gwells"
         repository = 'https://www.github.com/bcgov/gwells.git'
-        platformEnv = "${OCP_PLATFORM ?: '3'}"
+        platformEnv = "4"
 
-        platformDomain = "${OCP_PLATFORM == '4' ? 'apps.silver.devops.gov.bc.ca' : 'pathfinder.gov.bc.ca'}"
+        platformDomain = "${platformEnv == '4' ? 'apps.silver.devops.gov.bc.ca' : 'pathfinder.gov.bc.ca'}"
 
         // prNumber is the pull request number e.g. 'pr-4'
         prNumber = "${env.JOB_BASE_NAME}".toLowerCase()
 
         // toolsProject is where images are built
-        toolsProject = "${APP_TOOLS_NAMESPACE ?: "moe-gwells-tools"}"
+        toolsProject = "${APP_TOOLS_NAMESPACE ?: "26e83e-tools"}"
 
         // devProject is the project where individual development environments are spun up
-        devProject = "${APP_DEV_NAMESPACE ?: "moe-gwells-dev"}"
+        devProject = "${APP_DEV_NAMESPACE ?: "26e83e-dev"}"
         devSuffix = "dev"
         devAppName = "${appName}-${devSuffix}-${prNumber}"
         devHost = "${devAppName}.${platformDomain}"
 
         // stagingProject contains the test deployment. The test image is a candidate for promotion to prod.
-        stagingProject = "${APP_STAGING_NAMESPACE ?: "moe-gwells-test"}"
+        stagingProject = "${APP_STAGING_NAMESPACE ?: "26e83e-test"}"
         stagingSuffix = "staging"
         stagingHost = "gwells-staging.${platformDomain}"
 
         // prodProject is the prod deployment.
         // TODO: New production images can be deployed by tagging an existing "test" image as "prod".
-        prodProject = "${APP_PROD_NAMESPACE ?: "moe-gwells-prod"}"
+        prodProject = "${APP_PROD_NAMESPACE ?: "26e83e-prod"}"
         prodSuffix = "production"
-        prodSubdomain =  "${OCP_PLATFORM == '4' ? 'gwells' : 'gwells-prod'}"
+        prodSubdomain =  "${platformEnv == '4' ? 'gwells' : 'gwells-prod'}"
         prodHost = "${prodSubdomain}.${platformDomain}"
 
         // name of the provisioned PVC claim for NFS backup storage
@@ -598,10 +591,10 @@ pipeline {
         minioDataPVC = "minio-data-vol"
 
 
-        templateDir = "${OCP_PLATFORM == '4' ? 'openshift/ocp4' : 'openshift' }"
+        templateDir = "${platformEnv == '4' ? 'openshift/ocp4' : 'openshift' }"
 
     }
-    agent any
+    agent none
     stages {
         // the Start Pipeline stage will process and apply OpenShift build templates which will create
         // buildconfigs and an imagestream for built images.
@@ -609,6 +602,7 @@ pipeline {
         // to be tagged with the pull request number.
         // e.g.:  gwells-app:pr-999
         stage('ALL - Prepare Templates') {
+            agent { label 'build' }
             steps {
                 script {
                     echo "Starting deployment to OCP platform:   ${platformEnv}"
@@ -617,7 +611,7 @@ pipeline {
                         abortAllPreviousBuildInProgress(currentBuild)
                     }
                     echo "Previous builds cancelled"
-
+                    echo "Processing/applying template: ${templateDir}/backend.bc.json"
                     _openshift(env.STAGE_NAME, toolsProject) {
                         //  - variable substitution
                         def buildtemplate = openshift.process("-f",
@@ -642,17 +636,26 @@ pipeline {
         // the Build stage builds files; an image will be outputted to the app's imagestream,
         // using the source-to-image (s2i) strategy. See /app/.s2i/assemble for image build script
         stage('ALL - Build') {
+            agent { label 'build' }
             steps {
                 script {
                     _openshift(env.STAGE_NAME, toolsProject) {
                         echo "Running unit tests and building images..."
                         echo "This may take several minutes. Logs are not forwarded to Jenkins by default (at this time)."
-                        echo "Additional logs can be found by monitoring builds in ${toolsProject}"
+                        echo "Additional logs can be found by monitoring bc/${devAppName} in ${toolsProject}"
 
                         // Select appropriate buildconfig
                         def appBuild = openshift.selector("bc", "${devAppName}")
-                        echo "Building"
-                        appBuild.startBuild("--wait").logs("-f")
+                        echo "Canceling all existing/running builds"
+                        appBuild.cancelBuild()
+                        echo "Starting a new build"
+                        def newBuildSelector = appBuild.startBuild()
+                        echo "Build Started: ${newBuildSelector.names()}"
+                        newBuildSelector.logs("-f")
+                        echo "Build Ended: ${newBuildSelector.names()}"
+                        if (newBuildSelector.object().status.phase != "Complete") {
+                            error("Build ${newBuildSelector.names()} has failed!")
+                        }
                     }
                 }
             }
@@ -662,7 +665,9 @@ pipeline {
         // the newly built application image into that environment.  This stage monitors the newest deployment
         // for pods/containers to report back as ready.
         stage('DEV - Deploy') {
+            agent { label 'deploy' }
             when {
+                beforeAgent true
                 expression { env.CHANGE_TARGET != 'master' }
             }
             steps {
@@ -677,7 +682,9 @@ pipeline {
         // the Django Unit Tests stage runs backend unit tests using a test DB that is
         // created and destroyed afterwards.
         stage('DEV - Django Unit Tests') {
+            agent { label 'test' }
             when {
+                beforeAgent true
                 expression { env.CHANGE_TARGET != 'master' }
             }
             steps {
@@ -688,7 +695,9 @@ pipeline {
         }
 
         stage('DEV - Load Fixtures') {
+            agent { label 'test' }
             when {
+                beforeAgent true
                 expression { env.CHANGE_TARGET != 'master' }
             }
             steps {
@@ -701,7 +710,9 @@ pipeline {
         }
 
         stage('DEV - API Tests') {
+            agent { label 'test' }
             when {
+                beforeAgent true
                 expression { env.CHANGE_TARGET != 'master' }
             }
             steps {
@@ -712,7 +723,9 @@ pipeline {
         }
 
         stage('STAGING - Backup') {
+            agent { label 'deploy' }
             when {
+                beforeAgent true
                 expression { env.CHANGE_TARGET == 'master' }
             }
             steps {
@@ -727,7 +740,9 @@ pipeline {
         // which will trigger an automatic deployment of that image.
         // this stage should only occur when the pull request is being made against the master branch.
         stage('STAGING - Deploy') {
+            agent { label 'deploy' }
             when {
+                beforeAgent true
                 expression { env.CHANGE_TARGET == 'master' }
             }
             steps {
@@ -736,7 +751,7 @@ pipeline {
                         echo "Preparing..."
 
                         // Process db and app template into list objects
-                        // TODO: Match docker-compose image from moe-gwells-tools
+                        // TODO: Match docker-compose image from 26e83e-tools
                         echo "Updating staging deployment..."
                         def deployDBTemplate = openshift.process("-f",
                             "${templateDir}/postgresql.dc.yml",
@@ -1045,7 +1060,9 @@ pipeline {
         // the Django Unit Tests stage runs backend unit tests using a test DB that is
         // created and destroyed afterwards.
         stage('Staging - Django Unit Tests') {
+            agent { label 'test' }
             when {
+                beforeAgent true
                 expression { env.CHANGE_TARGET == 'master' }
             }
             steps {
@@ -1057,7 +1074,9 @@ pipeline {
 
 
         stage('STAGING - API Tests') {
+            agent { label 'test' }
             when {
+                beforeAgent true
                 expression { env.CHANGE_TARGET == 'master' }
             }
             steps {
@@ -1068,7 +1087,9 @@ pipeline {
         }
 
         stage('PROD - Backup') {
+            agent { label 'deploy' }
             when {
+                beforeAgent true
                 expression { env.CHANGE_TARGET == 'master' }
             }
             steps {
@@ -1078,13 +1099,30 @@ pipeline {
             }
         }
 
-        stage('PROD - Deploy') {
+        stage('PROD - Approval') {
+            agent none
             when {
+                beforeInput true
+                expression { env.CHANGE_TARGET == 'master' }
+            }
+            input {
+                message "Deploy to production?"
+                ok "Yes, deploy to production."
+                submitter "authenticated"
+            }
+            steps {
+                echo "Approved!"
+            }
+        }
+
+        stage('PROD - Deploy') {
+            agent { label 'deploy' }
+            when {
+                beforeAgent true
                 expression { env.CHANGE_TARGET == 'master' }
             }
             steps {
                 script {
-                    input "Deploy to production?"
                     echo "Updating production deployment..."
 
                     _openshift(env.STAGE_NAME, prodProject) {

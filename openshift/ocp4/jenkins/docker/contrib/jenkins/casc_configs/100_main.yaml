@@ -1,0 +1,65 @@
+jenkins:
+  mode: EXCLUSIVE
+  numExecutors: 0
+  slaveAgentPort: 50000
+  agentProtocols:
+  - "JNLP4-connect"
+  - "Ping"
+  disabledAdministrativeMonitors:
+  - "jenkins.security.QueueItemAuthenticatorMonitor"
+  remotingSecurity:
+    enabled: true
+  clouds:
+  - kubernetes:
+      containerCap: 10
+      containerCapStr: "10"
+      jenkinsTunnel: "${JENKINS_TUNNEL}"
+      jenkinsUrl: "${JENKINS_URL}"
+      name: "openshift"
+  securityRealm: "openShiftOAuth2"
+security:
+  apiToken:
+    creationOfLegacyTokenEnabled: false
+    tokenGenerationOnCreationEnabled: false
+    usageStatisticsEnabled: true
+  queueItemAuthenticator:
+    authenticators:
+    - global:
+        strategy: "systemAuthorizationStrategy"
+  sSHD:
+    port: -1
+  scriptApproval:
+    approvedSignatures:
+    - "method hudson.model.Run delete"
+    - "method hudson.model.Run getCauses"
+    - "method org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper getRawBuild"
+unclassified:
+  gitHubPluginConfig:
+    configs:
+    - clientCacheSize: 21
+      credentialsId: "github-access-token"
+      name: "GitHub"
+    hookUrl: "${JENKINS_URL}/github-webhook/"
+  globalLibraries:
+    libraries:
+    - defaultVersion: "master"
+      implicit: true
+      name: "bcdevops-jenkins-shared-library"
+      retriever:
+        modernSCM:
+          scm:
+            git:
+              credentialsId: "github-account"
+              id: "fd48bed5-56bd-4fa0-b477-acfce5bc4929"
+              remote: "https://github.com/BCDevOps/jenkins-pipeline-shared-lib.git"
+              traits:
+              - "gitBranchDiscovery"
+              - "gitTagDiscovery"
+  location:
+    adminAddress: "address not configured yet <nobody@nowhere>"
+    url: "${JENKINS_URL}"
+tool:
+  git:
+    installations:
+      - name: git
+        home: /usr/bin/git
