@@ -49,7 +49,7 @@ objects:
         git:
           uri: https://github.com/bcgov/gwells.git
           ref: steve/backups
-        contextDir: openshift/jobs/minio-backup
+        contextDir: openshift/ocp4/jobs/minio-backup
         dockerfile: |
           FROM alpine:latest
           USER root
