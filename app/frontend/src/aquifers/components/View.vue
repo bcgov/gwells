@@ -390,6 +390,7 @@ import Documents from './Documents.vue'
 import SingleAquiferMap from './SingleAquiferMap.vue'
 import PieChart from './PieChart.vue'
 import ObservationWell from './ObservationWell.vue'
+import { MAX_API_RESULT_AND_EXPORT_COUNT } from '@/common/constants'
 
 const ONE_MILLION = 1 * 1000 * 1000
 
@@ -770,7 +771,7 @@ export default {
         })
     },
     fetchWells (id = this.id) {
-      const maxResults = 5000 // 5000 is the API max
+      const maxResults = MAX_API_RESULT_AND_EXPORT_COUNT // the API max
       const params = { intersects_aquifer_id: id, limit: maxResults }
       return ApiService.query('wells/locations', params)
         .then((response) => {

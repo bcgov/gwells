@@ -313,7 +313,7 @@ export default {
       this.totalSearchResultsInBC = 0
       this.bcSearchResults = []
 
-      // this.$store.dispatch(RESET_WELLS_SEARCH)
+      this.$store.dispatch(RESET_WELLS_SEARCH)
       // when the URL query is set to null the `handleRouteChange()` method will be triggered
       this.$router.replace({ query: null })
     },

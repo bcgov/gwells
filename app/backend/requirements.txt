@@ -7,14 +7,14 @@ whitenoise>=4.1.2
 django-crispy-forms>=1.6.1
 django-formtools>=2.0
 django-settings-export>=1.2.1
-djangorestframework>=3.9,<3.10
+djangorestframework>=3.11.2,<3.12
 djangorestframework-jwt==1.11.0
 django-rest-multiple-models==2.1.0
 requests==2.21.0
 minio>=4.0.16
 coverage>=4.4.2
 django-filter>=2.0.0,<2.1
-drf-yasg==1.15.0
+drf-yasg==1.20.0
 django-cors-headers==2.2.0
 django-extensions==2.0.6
 cryptography==3.3.2

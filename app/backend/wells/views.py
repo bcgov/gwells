@@ -89,6 +89,7 @@ from wells.serializers import (
     WellLithologySerializer,
 )
 from wells.permissions import WellsEditPermissions, WellsEditOrReadOnly
+from wells.constants import MAX_EXPORT_COUNT, MAX_LOCATION_COUNT
 
 
 logger = logging.getLogger(__name__)
@@ -314,7 +315,6 @@ class WellLocationListAPIViewV1(ListAPIView):
 
         get: returns a list of wells with locations only
     """
-    MAX_LOCATION_COUNT = 5000
     permission_classes = (WellsEditOrReadOnly,)
     model = Well
     serializer_class = WellLocationSerializerV1
@@ -344,7 +344,7 @@ class WellLocationListAPIViewV1(ListAPIView):
         locations = self.filter_queryset(qs)
         count = locations.count()
         # return an empty response if there are too many wells to display
-        if count > self.MAX_LOCATION_COUNT:
+        if count > MAX_LOCATION_COUNT:
             raise PermissionDenied('Too many wells to display on map. '
                                    'Please zoom in or change your search criteria.')
 
@@ -369,7 +369,6 @@ class WellExportListAPIViewV1(ListAPIView):
     search_fields = ('well_tag_number', 'identification_plate_number',
                      'street_address', 'city', 'owner_full_name')
     renderer_classes = (WellListCSVRenderer, WellListExcelRenderer)
-    MAX_EXPORT_COUNT = 5000
 
     SELECT_RELATED_OPTIONS = [
         'well_class',
@@ -483,7 +482,7 @@ class WellExportListAPIViewV1(ListAPIView):
         queryset = self.filter_queryset(self.get_queryset())
         count = queryset.count()
         # return an empty response if there are too many wells to display
-        if count > self.MAX_EXPORT_COUNT:
+        if count > MAX_EXPORT_COUNT:
             raise PermissionDenied(
                 'Too many wells to export. Please change your search criteria.'
             )

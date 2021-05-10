@@ -114,14 +114,6 @@ objects:
             persistentVolumeClaim:
               claimName: "gwells-minio${NAME_SUFFIX}"
       triggers:
-      - imageChangeParams:
-          containerNames:
-          - gwells-minio${NAME_SUFFIX}
-          from:
-            kind: ImageStreamTag
-            name: ${SRC_IMAGE}:${SRC_TAG}
-            namespace: ${SRC_NAMESPACE}
-        type: ImageChange
       - type: ConfigChange
   - apiVersion: v1
     kind: Service
