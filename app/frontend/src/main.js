@@ -19,6 +19,7 @@ import Vuex, { mapActions } from 'vuex'
 import VueNoty from 'vuejs-noty'
 import BootstrapVue from 'bootstrap-vue'
 import VueAnalytics from 'vue-analytics'
+import VueMatomo from 'vue-matomo'
 import App from './App'
 import router from './router.js'
 import { store } from './store'
@@ -34,8 +35,8 @@ import { FETCH_CONFIG } from '@/common/store/config.js'
 import ApiService from '@/common/services/ApiService.js'
 
 const PRODUCTION_GWELLS_URL = 'https://apps.nrs.gov.bc.ca/gwells'
-
-if (window.location.href.substr(0, PRODUCTION_GWELLS_URL.length) === PRODUCTION_GWELLS_URL) {
+const isProduction = () => (window.location.href.substr(0, PRODUCTION_GWELLS_URL.length) === PRODUCTION_GWELLS_URL)
+if (isProduction()) {
   Sentry.init({
     dsn: 'https://a83809da8c9b4f39b3d7cd683b803859@sentry.io/1802823',
     integrations: [new Integrations.Vue({ Vue, attachProps: true, logError: true })],
@@ -71,6 +72,16 @@ Vue.use(VueAnalytics, {
     return response.data.enable_google_analytics !== true
   })
 })
+
+
+if (isProduction()) {
+  Vue.use(VueMatomo, {
+    host: 'https://water-matomo.apps.silver.devops.gov.bc.ca/',
+    siteId: 2,
+    router: router,
+    domains: '*.silver.devops.gov.bc.ca'
+  })
+}
 
 Vue.config.productionTip = false
 Vue.config.devtools = process.env.NODE_ENV !== 'production'
