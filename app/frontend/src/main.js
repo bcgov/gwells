@@ -79,7 +79,7 @@ if (isProduction()) {
     host: 'https://water-matomo.apps.silver.devops.gov.bc.ca/',
     siteId: 2,
     router: router,
-    domains: '*.silver.devops.gov.bc.ca'
+    domains: 'apps.nrs.gov.bc.ca'
   })
 }
 
