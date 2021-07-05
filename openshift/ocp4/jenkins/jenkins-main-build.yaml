@@ -1,0 +1,78 @@
+---
+apiVersion: template.openshift.io/v1
+kind: Template
+labels:
+  app: jenkins
+metadata:
+  creationTimestamp: null
+  name: jenkins
+objects:
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    creationTimestamp: null
+    labels:
+      shared: "true"
+    name: ${NAME}-main
+  spec:
+    lookupPolicy:
+      local: false
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    creationTimestamp: null
+    name: ${NAME}-main${SUFFIX}
+  spec:
+    completionDeadlineSeconds: 600
+    failedBuildsHistoryLimit: 3
+    successfulBuildsHistoryLimit: 3
+    output:
+      to:
+        kind: ImageStreamTag
+        name: ${NAME}-main:${VERSION}
+    postCommit: {}
+    resources:
+      limits:
+        cpu: 2000m
+        memory: 2Gi
+      requests:
+        cpu: 1000m
+        memory: 1Gi
+    runPolicy: SerialLatestOnly
+    source:
+      contextDir: openshift/ocp4/jenkins/docker
+      git:
+        ref: ${SOURCE_REPOSITORY_REF}
+        uri: ${SOURCE_REPOSITORY_URL}
+      type: Git
+    strategy:
+      dockerStrategy:
+        from:
+          kind: ImageStreamTag
+          name: ${SOURCE_IMAGE_STREAM_TAG}
+          namespace: ${SOURCE_IMAGE_STREAM_NAMESPACE}
+      type: Docker
+  triggers:
+    - imageChange: {}
+      type: ImageChange
+parameters:
+- name: NAME
+  description: A name used for all objects
+  displayName: Name
+  required: true
+  value: jenkins
+- name: SUFFIX
+- name: VERSION
+  description: A version used for the image tags
+  displayName: version
+  required: true
+  value: v1.0.0
+- name: SOURCE_IMAGE_STREAM_NAMESPACE
+  value: "26e83e-tools"
+- name: SOURCE_IMAGE_STREAM_TAG
+  required: true
+  value: "jenkins-basic:v2-latest"
+- name: SOURCE_REPOSITORY_URL
+  value: https://github.com/bcgov/gwells.git
+- name: SOURCE_REPOSITORY_REF
+  value: release

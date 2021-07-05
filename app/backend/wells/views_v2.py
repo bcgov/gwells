@@ -25,7 +25,7 @@ from django.db.models.functions import Cast
 
 from rest_framework import status, filters
 from rest_framework.exceptions import PermissionDenied, NotFound, ValidationError
-from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from gwells.roles import WELLS_VIEWER_ROLE, WELLS_EDIT_ROLE
 from gwells.pagination import apiLimitedPagination, APILimitOffsetPagination
@@ -59,6 +59,7 @@ from aquifers.models import (
 )
 from aquifers.permissions import HasAquiferEditRole
 from wells.views import WellDetail as WellDetailV1
+from wells.constants import MAX_EXPORT_COUNT, MAX_LOCATION_COUNT
 
 logger = logging.getLogger(__name__)
 
@@ -69,10 +70,9 @@ class WellLocationListV2APIView(ListAPIView):
         get: returns a list of wells with locations only
     """
     swagger_schema = None
-    MAX_LOCATION_COUNT = 5000
     permission_classes = (WellsEditOrReadOnly,)
     model = Well
-    pagination_class = apiLimitedPagination(5000)
+    pagination_class = apiLimitedPagination(MAX_LOCATION_COUNT)
 
     # Allow searching on name fields, names of related companies, etc.
     filter_backends = (WellListFilterBackend, BoundingBoxFilterBackend,
@@ -109,15 +109,10 @@ class WellLocationListV2APIView(ListAPIView):
                 qs = qs.none()
                 
             else:
-                # Simplify polygon and expand it by 1km in srid 3005
-                aquifer_geom = aquifer.geom.simplify(40, preserve_topology=True).buffer(1000)
-
                 # Find wells that intersect this simplified aquifer polygon (excluding wells
                 # with null geom)
                 qs = qs.exclude(geom=None)
-                qs = qs.filter(geom__intersects=aquifer_geom)
-            
-
+                qs = qs.filter(geom__intersects=aquifer.geom)
 
         well_tag_numbers = self.request.query_params.get('well_tag_numbers', '')
         if well_tag_numbers:
@@ -155,7 +150,7 @@ class WellLocationListV2APIView(ListAPIView):
             "identification_plate_number",
             "street_address",
             "city",
-            "artesian_flow",
+            "artesian_conditions",
         ]
 
         locations = self.filter_queryset(qs)
@@ -166,10 +161,10 @@ class WellLocationListV2APIView(ListAPIView):
             fields.append("is_published")
 
         locations = locations.values(*fields)
-        locations = list(locations[:self.MAX_LOCATION_COUNT + 1])
+        locations = list(locations[:MAX_LOCATION_COUNT + 1])
 
         # return a 403 response if there are too many wells to display
-        if len(locations) > self.MAX_LOCATION_COUNT:
+        if len(locations) > MAX_LOCATION_COUNT:
             raise PermissionDenied(self.TOO_MANY_ERROR_MESSAGE)
 
         # turn the list of locations into a generator so the GeoJSONIterator can use it
@@ -221,12 +216,12 @@ class WellAquiferListV2APIView(ListAPIView):
         items = []
         errors = []
         has_errors = False
-        for item in request.data: # go through each vertical aquifer extent
+        for item in request.data:  # go through each vertical aquifer extent
             item['well_tag_number'] = well.well_tag_number
 
             vertical_aquifer_extent = None
             vae_id = item.get('id', None)
-            if vae_id: # has an id - then it must be an existing one
+            if vae_id:  # has an id - then it must be an existing one
                 vertical_aquifer_extent = VerticalAquiferExtent.objects.get(pk=vae_id)
 
             serializer = WellVerticalAquiferExtentSerializerV2(instance=vertical_aquifer_extent,
@@ -260,7 +255,7 @@ class WellAquiferListV2APIView(ListAPIView):
 
                 max_depth = vertical_aquifer_extent.end
 
-            errors.append(serializer_errors) # always add to keep the index correct for web app
+            errors.append(serializer_errors)  # always add to keep the index correct for web app
 
         # roll back on errors and undo any changes
         if has_errors:
@@ -276,7 +271,7 @@ class WellAquiferListV2APIView(ListAPIView):
         well_tag_number = int(self.kwargs['well_tag_number'])
         try:
             return Well.objects.get(pk=well_tag_number)
-        except:
+        except Exception:
             raise NotFound(f'Well {well_tag_number} could not be found')
 
     def has_changed(self, existing_vertical_aquifer_extent, new_data):
@@ -381,13 +376,11 @@ class WellExportListAPIViewV2(ListAPIView):
     search_fields = ('well_tag_number', 'identification_plate_number',
                      'street_address', 'city', 'owner_full_name')
     renderer_classes = (WellListCSVRenderer, WellListExcelRenderer)
-    MAX_EXPORT_COUNT = 5000
 
     SELECT_RELATED_OPTIONS = [
         'well_class',
         'well_subclass',
         'well_status',
-        'licenced_status',
         'land_district',
         'company_of_person_responsible',
         'ground_elevation_method',
@@ -495,7 +488,7 @@ class WellExportListAPIViewV2(ListAPIView):
         queryset = self.filter_queryset(self.get_queryset())
         count = queryset.count()
         # return an empty response if there are too many wells to display
-        if count > self.MAX_EXPORT_COUNT:
+        if count > MAX_EXPORT_COUNT:
             raise PermissionDenied(
                 'Too many wells to export. Please change your search criteria.'
             )

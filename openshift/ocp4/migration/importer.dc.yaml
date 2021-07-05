@@ -1,0 +1,91 @@
+apiVersion: v1
+kind: Template
+labels:
+  template: migrator-cli
+metadata:
+  creationTimestamp: null
+  name: migrator-cli
+parameters:
+  - name: NAMESPACE
+    required: true
+  - name: NAME
+    value: migrator-cli
+  - description: Storage class for PVCs.
+    displayName: Storage class for PVCs.
+    name: STORAGE_CLASS
+    value: netapp-file-standard
+  - description: Size of volume.
+    displayName: Size of volume.
+    name: VOLUME_CAPACITY
+    value: 10Gi
+objects:
+  - kind: DeploymentConfig
+    apiVersion: apps.openshift.io/v1
+    metadata:
+      name: ${NAME}
+      namespace: ${NAMESPACE}
+      labels:
+        app: ${NAME}
+        task: migration
+    spec:
+      strategy:
+        type: Recreate
+        resources: {}
+        activeDeadlineSeconds: 21600
+      triggers:
+        - type: ConfigChange
+      replicas: 1
+      revisionHistoryLimit: 10
+      selector:
+          app: ${NAME}
+          deploymentconfig: ${NAME}
+          task: migration
+      template:
+        metadata:
+          labels:
+            app: ${NAME}
+            deploymentconfig: ${NAME}
+            task: migration
+        spec:
+          volumes:
+            - name: cli-db-volume
+              persistentVolumeClaim:
+                claimName: ${NAME}
+            - name: migration-scripts
+              configMap:
+                name: migration-scripts
+                defaultMode: 0777
+          containers:
+            - name: ${NAME}
+              image: >-
+                image-registry.openshift-image-registry.svc:5000/openshift/cli@sha256:cc4eaab57638fe0b20e449dcc94ae5325dfd9cb69dc631b28420be85deb32e60
+              command:
+                - /bin/bash
+                - '-c'
+                - 'trap : TERM INT; sleep 7d & wait'
+              resources: {}
+              volumeMounts:
+                - name: cli-db-volume
+                  mountPath: /mnt
+                - name: migration-scripts
+                  mountPath: /scripts
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+              imagePullPolicy: Always
+          restartPolicy: Always
+          terminationGracePeriodSeconds: 30
+          dnsPolicy: ClusterFirst
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      name: ${NAME}
+      labels:
+        app: ${NAME}
+        task: migration
+    spec:
+      accessModes:
+        - ReadWriteMany
+      resources:
+        requests:
+          storage: ${VOLUME_CAPACITY}
+      storageClassName: ${STORAGE_CLASS}

@@ -11,16 +11,16 @@ metadata:
 parameters:
   - name: "NAME"
     displayName: "App to deploy"
-    value: "gwells-minio"
+    value: "minio"
   - name: "SECRETS"
     displayName: "Secret object to reference"
-    value: "gwells-minio-secrets"
+    value: "minio-secrets"
   - name: "SRC_NAMESPACE"
     displayName: "Namespace containing the deployment source"
     value: "moe-gwells-tools"
   - name: "SRC_IMAGE"
     displayName: "Name of source image"
-    value: "gwells-minio"
+    value: "minio"
   - name: "SRC_TAG"
     displayName: "Tag of source image"
     value: "latest"
@@ -128,14 +128,6 @@ objects:
             persistentVolumeClaim:
               claimName: "${NAME}-data-vol"
       triggers:
-      - imageChangeParams:
-          containerNames:
-          - ${NAME}
-          from:
-            kind: ImageStreamTag
-            name: ${SRC_IMAGE}:${SRC_TAG}
-            namespace: ${SRC_NAMESPACE}
-        type: ImageChange
       - type: ConfigChange
   - apiVersion: v1
     kind: Service

@@ -9,14 +9,15 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "test:unit": "vue-cli-service test:unit"
+    "test:unit": "vue-cli-service test:unit",
+    "test:unit:update": "vue-cli-service test:unit -u"
   },
   "dependencies": {
     "@geolonia/mbgl-gesture-handling": "^1.0.13",
     "@mapbox/mapbox-gl-geocoder": "^4.5.1",
     "@sentry/browser": "^5.7.1",
     "@sentry/integrations": "^5.7.1",
-    "axios": "^0.19.1",
+    "axios": "^0.21.1",
     "bootstrap-vue": "^2.0.0-rc.2",
     "browser-update": "^3.3.8",
     "chart.js": "^2.9.4",

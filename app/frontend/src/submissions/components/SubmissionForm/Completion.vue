@@ -31,7 +31,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             label="Total Depth Drilled"
             v-model="totalDepthDrilledInput"
             type="number"
-            hint="ft"
+            hint="ft (bgl)"
             :errors="errors['total_depth_drilled']"
             :loaded="fieldsLoaded['total_depth_drilled']">
         </form-input>
@@ -98,25 +98,51 @@ Licensed under the Apache License, Version 2.0 (the "License");
     </b-row>
     <b-row>
       <b-col cols="12" md="6" lg="4">
+        <b-form-group label="Artesian Well">
+          <b-form-radio-group
+            id="artesianConditionsRadio"
+            class="mt-1"
+            v-model="artesianConditionsInput">
+              <b-form-radio :value="false">No</b-form-radio>
+              <b-form-radio :value="true">Yes</b-form-radio>
+          </b-form-radio-group>
+        </b-form-group>
+      </b-col>
+      <b-col cols="12" md="6" lg="4">
         <form-input
-            id="artesianFlow"
-            label="Artesian Flow"
-            v-model="artesianFlowInput"
-            hint="USgpm"
-            type="number"
-            :errors="errors['artesian_flow']"
-            :loaded="fieldsLoaded['artesian_flow']">
+          id="artesianFlow"
+          label="Artesian Flow"
+          v-model="artesianFlowInput"
+          hint="USgpm"
+          type="number"
+          :errors="errors['artesian_flow']"
+          :loaded="fieldsLoaded['artesian_flow']">
+        </form-input>
+      </b-col>
+    </b-row>
+    <b-row>
+      <b-col cols="12" md="6" lg="4">
+        <form-input
+          id="artesianPressureHead"
+          label="Artesian Pressure (head)"
+          @input="handleArtesianPressureHeadChange"
+          v-model="artesianPressure.head"
+          hint="ft (agl)"
+          type="number"
+          :errors="errors['artesian_pressure_head']"
+          :loaded="fieldsLoaded['artesian_pressure_head']">
         </form-input>
       </b-col>
       <b-col cols="12" md="6" lg="4">
         <form-input
-            id="artesianPressure"
-            label="Artesian Pressure"
-            v-model="artesianPressureInput"
-            hint="ft"
-            type="number"
-            :errors="errors['artesian_pressure']"
-            :loaded="fieldsLoaded['artesian_pressure']">
+          id="artesianPressurePSI"
+          label="Artesian Pressure (PSI)"
+          @input="handleArtesianPressurePSIChange"
+          v-model="artesianPressure.psi"
+          hint="PSI"
+          type="number"
+          :errors="errors['artesian_pressure']"
+          :loaded="fieldsLoaded['artesian_pressure']">
         </form-input>
       </b-col>
     </b-row>
@@ -166,7 +192,9 @@ export default {
     staticWaterLevel: String,
     wellYield: String,
     artesianFlow: String,
-    artesianPressure: String,
+    artesianPressurePSI: String,
+    artesianPressureHead: String,
+    artesianConditions: Boolean,
     wellCapType: String,
     wellDisinfected: null,
     errors: {
@@ -198,12 +226,26 @@ export default {
     staticWaterLevelInput: 'staticWaterLevel',
     wellYieldInput: 'wellYield',
     artesianFlowInput: 'artesianFlow',
-    artesianPressureInput: 'artesianPressure',
+    artesianPressurePSIInput: 'artesianPressurePSI',
+    artesianPressureHeadInput: 'artesianPressureHead',
+    artesianConditionsInput: 'artesianConditions',
     wellCapTypeInput: 'wellCapType',
     wellDisinfectedInput: 'wellDisinfected'
   },
   data () {
-    return {}
+    return {
+      artesianPressure: {
+        head: null,
+        psi: null
+      }
+    }
+  },
+  created () {
+    this.artesianPressure.psi = this.artesianPressurePSI
+    this.artesianPressure.head = this.artesianPressureHead
+    if (this.artesianPressurePSI || this.artesianPressureHead) {
+      this.updateArtesianPressure(null, this.artesianPressurePSI)
+    }
   },
   methods: {
     disinfected_codes () { // make the unknown selection disabled for users
@@ -216,6 +258,43 @@ export default {
           }
         })
         return this.codes.well_disinfected_codes
+      }
+    },
+    handleArtesianPressureHeadChange () {
+      this.updateArtesianPressure(this.artesianPressure.head, null)
+    },
+    handleArtesianPressurePSIChange () {
+      this.updateArtesianPressure(null, this.artesianPressure.psi)
+    },
+    updateArtesianPressure (head, psi) {
+      if (head != null) {
+        const newPsi = this.calculateArtesianPressurePSI(head)
+        this.artesianPressurePSIInput = newPsi
+        this.artesianPressure.psi = newPsi
+        this.artesianPressureHeadInput = head
+        this.artesianPressure.head = head
+      }
+      if (psi != null) {
+        const newHead = this.calculateArtesianPressureHead(psi)
+        this.artesianPressureHeadInput = newHead
+        this.artesianPressure.head = newHead
+        this.artesianPressurePSIInput = psi
+        this.artesianPressure.psi = psi
+      }
+      this.resetArtesianPressure()
+    },
+    calculateArtesianPressureHead (psi) {
+      return String(Math.round((psi == null || psi === 0 ? 0 : psi * 2.31) * 100) / 100)
+    },
+    calculateArtesianPressurePSI (head) {
+      return String(Math.round((head == null || head === 0 ? 0 : head / 2.31) * 100) / 100)
+    },
+    resetArtesianPressure () {
+      if (this.artesianPressure.psi == null || this.artesianPressure.head == null) {
+        this.artesianPressureHeadInput = null
+        this.artesianPressure.head = null
+        this.artesianPressurePSIInput = null
+        this.artesianPressure.psi = null
       }
     }
   },

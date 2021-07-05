@@ -59,10 +59,10 @@ COLUMN_LABELS = {
     "coordinate_acquisition_code": "Location Accuracy Code",
     "ground_elevation": "Ground Elevation",
     "ground_elevation_method": "Elevation Determined By",
+    "intended_water_use": "Intended Water Use",
     "drilling_methods": "Drilling Methods",
     "well_orientation_status": "Orientation of Well",
     "surface_seal_material": "Surface Seal Material",
-    "surface_seal_length": "Surface Seal Length",
     "surface_seal_thickness": "Surface Seal Thickness",
     "surface_seal_method": "Surface Seal Installation Method",
     "surface_seal_depth": "Surface Seal Depth",
@@ -137,6 +137,9 @@ COLUMN_LABELS = {
     "well_cap_type": "Well Cap",
     "well_disinfected_status": "Well Disinfected Code",
     "static_water_level": "Static Water Level (BTOC)",
+    "artesian_pressure_head": "Artesian Pressure head",
+    "artesian_conditions": "Artesian Conditions",
+    "alternative_specs_submitted": "Alt specs submitted",
 }
 
 

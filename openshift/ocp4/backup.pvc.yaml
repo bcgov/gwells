@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Template
+labels:
+  template: gwells-backup-pvc-template
+metadata:
+  creationTimestamp: null
+  name: gwells-backup-pvc-template
+parameters:
+  - description: Storage class for PVCs.
+    displayName: Storage class for PVCs.
+    name: STORAGE_CLASS
+    value: netapp-file-backup
+  - description: Size of volume.
+    displayName: Size of volume.
+    name: VOLUME_CAPACITY
+    value: 10Gi
+objects:
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      name: gwells-backups
+      annotations:
+        template.openshift.io.bcgov/create: "true"
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: ${VOLUME_CAPACITY}
+      storageClassName: ${STORAGE_CLASS}

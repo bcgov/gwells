@@ -11,12 +11,15 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
+import os
 
 from io import StringIO
 from unittest.mock import patch
 
 from django.core.management import call_command
 from django.test import TestCase
+from logging import getLogger
+logger = getLogger("test")
 
 
 class DataBCTest(TestCase):
@@ -31,3 +34,17 @@ class DataBCTest(TestCase):
         out = StringIO()
         call_command('export_databc', stdout=out)
         self.assertIn('GeoJSON export complete.', out.getvalue())
+
+
+class ImportLicencesTest(TestCase):
+    """ tests functions used by `./manage.py import_licences` """
+    fixtures = ['gwells-codetables', 'wellsearch-codetables', 'wellsearch', 'registries', 'registries-codetables']
+
+    def test_import_using_fixture_file(self):
+        out = StringIO()
+
+        TEST_LICENCES = os.path.join(os.path.dirname(__file__), 'import_licences_test_licences.csv')
+
+        call_command('import_licences', '-d', filename=TEST_LICENCES, stdout=out)
+        val = out.getvalue()
+        self.assertIn('Licence import complete with 0 errors.', val)

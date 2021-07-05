@@ -13,6 +13,8 @@
 """
 import os
 
+import debug_toolbar
+
 from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
@@ -49,6 +51,7 @@ def api_path_prefix():
 
 
 urlpatterns = [
+    url(r'^__debug__/', include(debug_toolbar.urls)),
     url(r'^' + app_root_slash, include('submissions.urls')),
 
     url(r'^' + app_root_slash + 'robots\.txt$',
@@ -103,10 +106,3 @@ urlpatterns = [
     # Catch all other cases and push it to the SPA
     re_path(r'' + app_root_slash + '*', index, name='spa'),
 ]
-
-
-if settings.DEBUG:
-    import debug_toolbar
-    urlpatterns = [
-        url(r'^__debug__/', include(debug_toolbar.urls)),
-    ] + urlpatterns

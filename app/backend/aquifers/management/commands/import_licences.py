@@ -49,6 +49,8 @@ class Command(BaseCommand):
             filename = input_file.name
             input_file.close()
 
+        error_count = 0
+
         with open(filename, newline='') as csvfile:
             reader = csv.DictReader(csvfile)
 
@@ -72,16 +74,19 @@ class Command(BaseCommand):
                     if counter > 100:
                         break
                     well = Well.objects.all()[counter % num_wells:][0]
-                    # We need our wells to actually have an aquifer for non-trivial testing.
-                    if not well.aquifer:
+                    # assign some wells to aquifers and leave other wells unassociated.
+                    if not well.aquifer and counter % 2:
                         well.aquifer = Aquifer.objects.first()
                         well.save()
-                    aquifer = well.aquifer
+                        aquifer = well.aquifer
 
                 try:
                     self.process_row(row, use_dev_fixtures=use_dev_fixtures, well=well, aquifer=aquifer)
                 except:
+                    error_count += 1
                     logger.exception('Error processing CSV row WLS_WRL_SYSID=%s', row['WLS_WRL_SYSID'])
+
+        self.stdout.write(self.style.SUCCESS(f'Licence import complete with {error_count} errors.'))
 
     def process_row(self, row, use_dev_fixtures=False, well=None, aquifer=None):
         if row['POD_SUBTYPE'].strip() not in ['PWD', 'PG']:
@@ -89,20 +94,27 @@ class Command(BaseCommand):
             # rows with POD. POD refers to surface water which is out of scope for GWELLS)
             return
 
-        if not row['SOURCE_NAME'].strip().isdigit():
-            # Licence must be for an aquifer
-            return
-
-        if not row['WELL_TAG_NUMBER'].strip().isdigit():
-            # Licence must be for a well
+        if not row['SOURCE_NAME'].strip().isdigit() and not row['WELL_TAG_NUMBER'].strip().isdigit():
+            # Licence must be for a well or aquifer
             return
 
         logging.info("importing licence #{}".format(row['LICENCE_NUMBER']))
 
-        if not well or not aquifer:
-            # Check the Licence is for a valid Aquifer and Well
-            aquifer = Aquifer.objects.get(pk=row['SOURCE_NAME'])
-            well = Well.objects.get(pk=row['WELL_TAG_NUMBER'])
+        # Check the Licence is for a valid Aquifer and Well
+        # the if check here allows this function to be called with a specific
+        # well or aquifer for dev/test environments.
+        if not aquifer and row.get('SOURCE_NAME', '').strip().isdigit():
+            try:
+                aquifer = Aquifer.objects.get(pk=row['SOURCE_NAME'])
+            except Aquifer.DoesNotExist:
+                pass
+        if not well and row.get('WELL_TAG_NUMBER', '').strip().isdigit():
+            try:
+                well = Well.objects.get(pk=row['WELL_TAG_NUMBER'])
+            except Well.DoesNotExist:
+                pass
+
+        well_updated = False
 
         try:
             # Maintain code table with water rights purpose.
@@ -113,11 +125,7 @@ class Command(BaseCommand):
                 code=row['PURPOSE_USE_CODE'].strip(),
                 description=row['PURPOSE_USE'].strip())
 
-        try:
-            # Check to see if licence already exists in DB
-            licence = WaterRightsLicence.objects.get(wrl_sysid=row['WLS_WRL_SYSID'])
-        except WaterRightsLicence.DoesNotExist:
-            licence = WaterRightsLicence(wrl_sysid=row['WLS_WRL_SYSID'])
+        licence = WaterRightsLicence(wrl_sysid=row['WLS_WRL_SYSID'])
 
         licence.licence_number = row['LICENCE_NUMBER'].strip()
         licence.quantity_flag = row['QUANTITY_FLAG'].strip()
@@ -138,15 +146,19 @@ class Command(BaseCommand):
         licence.quantity = quantity
         licence.save()
 
-        if not well.aquifer:
+        if aquifer and well and not well.aquifer:
             well.aquifer = aquifer
-        if licence not in well.licences.all():
+            well_updated = True
+        if well and licence not in well.licences.all():
             well.licences.add(licence)
-        well.save()
+            well_updated = True
+
+        if well_updated:
+            well.save()
 
         logging.info('assocated well={} aquifer={} licence_sysid={}'.format(
-            well.pk,
-            aquifer.pk,
+            well.pk if well else "None",
+            aquifer.pk if aquifer else "None",
             licence.pk
         ))
 
