@@ -269,6 +269,7 @@ class WellTagSearchAPIView(ListAPIView):
     pagination_class = None
     serializer_class = WellTagSearchSerializer
     lookup_field = 'well_tag_number'
+    swagger_schema = None
 
     filter_backends = (filters.SearchFilter, filters.OrderingFilter)
     ordering_fields = ('well_tag_number',)
@@ -318,6 +319,7 @@ class WellLocationListAPIViewV1(ListAPIView):
     permission_classes = (WellsEditOrReadOnly,)
     model = Well
     serializer_class = WellLocationSerializerV1
+    swagger_schema = None
 
     # Allow searching on name fields, names of related companies, etc.
     filter_backends = (WellListFilterBackend, BoundingBoxFilterBackend,
@@ -631,15 +633,8 @@ WELL_PROPERTIES = openapi.Schema(
 
 
 @swagger_auto_schema(
-    operation_description=('Get GeoJSON (see https://tools.ietf.org/html/rfc7946) dump of wells.'),
-    method='get',
-    manual_parameters=GEO_JSON_PARAMS,
-    responses={
-        302: openapi.Response(GEO_JSON_302_MESSAGE),
-        200: openapi.Response(
-            'GeoJSON data for well.',
-            get_geojson_schema(WELL_PROPERTIES, 'Point'))
-    }
+    method="GET",
+    auto_schema=None
 )
 @api_view(['GET'])
 def well_geojson(request, **kwargs):
@@ -710,16 +705,8 @@ LITHOLOGY_PROPERTIES = openapi.Schema(
 
 
 @swagger_auto_schema(
-    operation_description=('Get GeoJSON (see https://tools.ietf.org/html/rfc7946) dump of well '
-                           'lithology.'),
-    method='get',
-    manual_parameters=GEO_JSON_PARAMS,
-    responses={
-        302: openapi.Response(GEO_JSON_302_MESSAGE),
-        200: openapi.Response(
-            'GeoJSON data for well lithology.',
-            get_geojson_schema(LITHOLOGY_PROPERTIES, 'Point'))
-    }
+    method="GET",
+    auto_schema=None
 )
 @api_view(['GET'])
 def lithology_geojson(request, **kwargs):
@@ -751,7 +738,7 @@ def lithology_geojson(request, **kwargs):
             'api/v1/gis/lithology.json')
         return HttpResponseRedirect(url)
 
-
+@swagger_auto_schema(method='GET', auto_schema=None)
 @api_view(['GET'])
 def well_licensing(request, **kwargs):
     tag = request.GET.get('well_tag_number')

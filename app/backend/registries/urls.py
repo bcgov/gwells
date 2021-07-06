@@ -36,6 +36,7 @@ schema_view = get_schema_view(
         license=openapi.License(name="Open Government License - British Columbia",
                                 url="https://www2.gov.bc.ca/gov/content?id=A519A56BC2BF44E4A008B33FCF527F61"),
     ),
+    url='https://apps.nrs.gov.bc.ca/gwells/',
     public=False,
     permission_classes=(permissions.RegistriesEditOrReadOnly,)
 )
@@ -128,6 +129,6 @@ urlpatterns = [
         name='city-list-installers'),
 
     # Swagger documentation endpoint
-    url(r'^api/$', schema_view.with_ui('redoc', cache_timeout=None), name='api-docs'),
+    url(r'^api/$', schema_view.with_ui('swagger', cache_timeout=None), name='api-docs'),
 
 ]

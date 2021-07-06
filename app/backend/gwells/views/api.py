@@ -1,7 +1,7 @@
 import requests
 import geojson
 from geojson import Feature, FeatureCollection, Point
-
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.http import JsonResponse, HttpResponse
@@ -44,6 +44,8 @@ class GeneralConfig(APIView):
 class AnalyticsConfig(APIView):
     """ serves analytics config """
 
+    swagger_schema = None
+    
     def get(self, request, **kwargs):
         config = {
             "enable_google_analytics": get_env_variable("ENABLE_GOOGLE_ANALYTICS") == "True"
@@ -53,7 +55,9 @@ class AnalyticsConfig(APIView):
 
 class InsideBC(APIView):
     """ Check if a given point is inside BC """
-
+    
+    swagger_schema = None
+    
     def get(self, request, **kwargs):
         latitude = request.query_params.get('latitude')
         longitude = request.query_params.get('longitude')
@@ -65,7 +69,8 @@ class InsideBC(APIView):
 
 class DataBCGeocoder(APIView):
     """ Looks up address using DataBC's geocoder """
-
+    swagger_schema = None
+    
     def get(self, request, **kwargs):
         query = kwargs['query']
 

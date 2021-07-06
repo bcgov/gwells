@@ -343,7 +343,7 @@ class AquiferNameList(ListAPIView):
     serializer_class = serializers.AquiferSerializerBasic
     model = Aquifer
     pagination_class = None
-
+    swagger_schema = None
     filter_backends = (filters.SearchFilter,)
     ordering = ('aquifer_id',)
     search_fields = (
@@ -513,16 +513,9 @@ AQUIFER_PROPERTIES = openapi.Schema(
 
 
 @swagger_auto_schema(
-    operation_description=(
-        'Get GeoJSON (see https://tools.ietf.org/html/rfc7946) dump of aquifers.'),
-    method='get',
-    manual_parameters=GEO_JSON_PARAMS,
-    responses={
-        302: openapi.Response(GEO_JSON_302_MESSAGE),
-        200: openapi.Response(
-            'GeoJSON data for aquifers.',
-            get_geojson_schema(AQUIFER_PROPERTIES, 'Polygon'))
-    })
+    method="GET",
+    auto_schema=None
+)
 @api_view(['GET'])
 def aquifer_geojson_v1(request, **kwargs):
     realtime = request.GET.get('realtime') in ('True', 'true')
@@ -557,7 +550,7 @@ def aquifer_geojson_v1(request, **kwargs):
             'api/v1/gis/aquifers.json')
         return HttpResponseRedirect(url)
 
-
+@swagger_auto_schema(method='GET', auto_schema=None)
 @api_view(['GET'])
 @cache_page(60*15)
 def aquifer_geojson_simplified_v1(request, **kwargs):
