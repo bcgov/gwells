@@ -36,7 +36,11 @@ import filters from '@/common/filters'
 import ApiService from '@/common/services/ApiService.js'
 
 const PRODUCTION_GWELLS_URL = 'https://apps.nrs.gov.bc.ca/gwells'
+const STAGING_GWELLS_URLS = ['testapps.nrs.gov.bc.ca', 'gwells-staging.apps.silver.devops.gov.bc.ca']
 const isProduction = () => (window.location.href.substr(0, PRODUCTION_GWELLS_URL.length) === PRODUCTION_GWELLS_URL)
+const isStaging = () => (
+  window.location.pathname === '/gwells/' && STAGING_GWELLS_URLS.includes(window.location.hostname)
+)
 if (isProduction()) {
   Sentry.init({
     dsn: 'https://a83809da8c9b4f39b3d7cd683b803859@sentry.io/1802823',
@@ -82,6 +86,15 @@ if (isProduction()) {
     siteId: 2,
     router: router,
     domains: 'apps.nrs.gov.bc.ca'
+  })
+}
+
+if (isStaging()) {
+  Vue.use(VueMatomo, {
+    host: 'https://water-matomo.apps.silver.devops.gov.bc.ca/',
+    siteId: 4,
+    router: router,
+    domains: STAGING_GWELLS_URLS
   })
 }
 
