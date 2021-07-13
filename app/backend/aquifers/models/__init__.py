@@ -26,6 +26,7 @@ from django.dispatch import receiver
 
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.exceptions import ValidationError
 from django.contrib.gis.gdal import DataSource
 from django.contrib.gis.geos import GEOSGeometry, MultiPolygon
 from django.contrib.gis.geos.prototypes.io import wkt_w
@@ -37,6 +38,25 @@ from gwells.db_comments.patch_fields import patch_fields
 from .vertical_aquifer_extents import *
 
 patch_fields()
+
+
+class DynamicMaxValueValidator(MaxValueValidator):
+    """
+    MaxValueValidator cannot validate using a fn, so we created this class to allow that
+        Now we can set a models validators to include a DynamicMaxValueValidator that accepts a fn
+        (such as) get_current_year is passed into this validator allowing us to validate by current year
+        rather than the constant value of current year
+    """
+    def __call__(self, value):
+        cleaned = self.clean(value)
+        limit_value = self.limit_value() if callable(self.limit_value) else self.limit_value
+        params = {'limit_value': limit_value, 'show_value': cleaned, 'value': value}
+        if self.compare(cleaned, limit_value):
+            raise ValidationError(self.message, code=self.code, params=params)
+
+
+def get_current_year() -> int:
+    return timezone.now().year
 
 
 class WaterRightsPurpose(AuditModel):
@@ -421,7 +441,7 @@ class Aquifer(AuditModel):
     mapping_year = models.PositiveIntegerField(
         validators=[
             MinValueValidator(1990),
-            MaxValueValidator(timezone.now().year)],
+            DynamicMaxValueValidator(get_current_year())],
         blank=True,
         null=True,
         verbose_name="Date of Mapping",
@@ -467,6 +487,7 @@ class Aquifer(AuditModel):
 
     @property
     def status_unpublished(self):
+        now = timezone.now()
         return now >= self.expiry_date
 
     def load_shapefile(self, f):

@@ -245,13 +245,13 @@ export function searchedWellsLayer (options = {}) {
   const styles = defaultsDeep(options.styles, {
     'circle-color': [
       'case',
-      ['>', ['to-number', ['get', 'artesian_flow']], 0], '#1099FE',
+      ['to-boolean', ['get', 'artesian_conditions']], '#1099FE',
       '#0162FE'
     ],
     'circle-radius': 5,
     'circle-stroke-color': [
       'case',
-      ['>', ['to-number', ['get', 'artesian_flow']], 0], '#EE14CA',
+      ['to-boolean', ['get', 'artesian_conditions']], '#EE14CA',
       'black'
     ],
     'circle-stroke-width': 2
@@ -266,7 +266,7 @@ export function focusedWellsLayer (options = {}) {
   const layout = defaultsDeep(options.layout, {
     'icon-image': [
       'case',
-      ['>', ['to-number', ['get', 'artesian_flow']], 0], FOCUSED_WELL_ARTESIAN_IMAGE_ID,
+      ['to-boolean', ['get', 'artesian_conditions']], FOCUSED_WELL_ARTESIAN_IMAGE_ID,
       FOCUSED_WELL_IMAGE_ID
     ]
   })

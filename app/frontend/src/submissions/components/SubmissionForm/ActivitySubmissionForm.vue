@@ -41,6 +41,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </b-row>
     </div>
     <div v-else>
+      <b-alert show v-if="isStaffEdit && isUnpublished" variant="info">
+        This well is unpublished and will be hidden from DataBC, iMapBC, GWELLS Well Search, and the CSV/XLS export.
+      </b-alert>
       <b-row v-if="isStaffEdit">
           <b-col lg="3" v-for="step in stepCodes" :key='step'>
             <a :href="`#${step}`" @click.prevent="anchorLinkHandler(step)">{{formStepDescriptions[step] ? formStepDescriptions[step] : step}}</a>
@@ -373,8 +376,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
         :bedrockDepth.sync="form.bedrock_depth"
         :staticWaterLevel.sync="form.static_water_level"
         :wellYield.sync="form.well_yield"
+        :artesianConditions.sync="form.artesian_conditions"
         :artesianFlow.sync="form.artesian_flow"
-        :artesianPressure.sync="form.artesian_pressure"
+        :artesianPressureHead.sync="form.artesian_pressure_head"
+        :artesianPressurePSI.sync="form.artesian_pressure"
         :wellCapType.sync="form.well_cap_type"
         :wellDisinfected.sync="form.well_disinfected_status"
         :errors="errors"
@@ -609,6 +614,10 @@ export default {
     submissionsHistory: {
       type: Array,
       default: () => ([])
+    },
+    isPublished: {
+      type: Boolean,
+      isInput: false
     }
   },
   components: {
@@ -731,6 +740,9 @@ export default {
     },
     editSaveDisabled () {
       return this.formSubmitLoading || !this.formValueChanged
+    },
+    isUnpublished () {
+      return !this.isPublished
     }
   },
   methods: {

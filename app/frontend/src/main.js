@@ -19,6 +19,7 @@ import Vuex, { mapActions } from 'vuex'
 import VueNoty from 'vuejs-noty'
 import BootstrapVue from 'bootstrap-vue'
 import VueAnalytics from 'vue-analytics'
+import VueMatomo from 'vue-matomo'
 import App from './App'
 import router from './router.js'
 import { store } from './store'
@@ -29,13 +30,18 @@ import 'vue-select/dist/vue-select.css'
 import VueMoment from 'vue-moment'
 import FormInput from '@/common/components/FormInput.vue'
 import { FETCH_CONFIG } from '@/common/store/config.js'
+import filters from '@/common/filters'
 
 // GWELLS js API library (helper methods for working with API)
 import ApiService from '@/common/services/ApiService.js'
 
 const PRODUCTION_GWELLS_URL = 'https://apps.nrs.gov.bc.ca/gwells'
-
-if (window.location.href.substr(0, PRODUCTION_GWELLS_URL.length) === PRODUCTION_GWELLS_URL) {
+const STAGING_GWELLS_URLS = ['testapps.nrs.gov.bc.ca', 'gwells-staging.apps.silver.devops.gov.bc.ca']
+const isProduction = () => (window.location.href.substr(0, PRODUCTION_GWELLS_URL.length) === PRODUCTION_GWELLS_URL)
+const isStaging = () => (
+  window.location.pathname === '/gwells/' && STAGING_GWELLS_URLS.includes(window.location.hostname)
+)
+if (isProduction()) {
   Sentry.init({
     dsn: 'https://a83809da8c9b4f39b3d7cd683b803859@sentry.io/1802823',
     integrations: [new Integrations.Vue({ Vue, attachProps: true, logError: true })],
@@ -56,6 +62,7 @@ Vue.use(VueNoty, {
 })
 Vue.use(BootstrapVue)
 Vue.use(VueMoment)
+Vue.use(filters)
 Vue.component('v-select', vSelect)
 Vue.component('form-input', FormInput)
 
@@ -71,6 +78,25 @@ Vue.use(VueAnalytics, {
     return response.data.enable_google_analytics !== true
   })
 })
+
+
+if (isProduction()) {
+  Vue.use(VueMatomo, {
+    host: 'https://water-matomo.apps.silver.devops.gov.bc.ca/',
+    siteId: 2,
+    router: router,
+    domains: 'apps.nrs.gov.bc.ca'
+  })
+}
+
+if (isStaging()) {
+  Vue.use(VueMatomo, {
+    host: 'https://water-matomo.apps.silver.devops.gov.bc.ca/',
+    siteId: 4,
+    router: router,
+    domains: STAGING_GWELLS_URLS
+  })
+}
 
 Vue.config.productionTip = false
 Vue.config.devtools = process.env.NODE_ENV !== 'production'

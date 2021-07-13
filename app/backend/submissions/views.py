@@ -19,7 +19,7 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView
 from django.utils import timezone
-
+from django.db.models import Prefetch
 import rest_framework.exceptions
 from rest_framework.reverse import reverse
 from rest_framework.response import Response
@@ -333,7 +333,9 @@ class SubmissionsOptions(APIView):
         activity_codes = WellActivityCodeSerializer(
             instance=WellActivityCode.objects.all(), many=True)
         well_class_codes = WellClassCodeSerializer(
-            instance=WellClassCode.objects.prefetch_related("wellsubclasscode_set").filter(expiry_date__gt=now), many=True)
+            instance=WellClassCode.objects.prefetch_related(Prefetch('wellsubclasscode_set',
+                                                                     queryset=WellSubclassCode.objects.filter(expiry_date__gt=now),
+                                                                     to_attr='all_well_subclass_codes')).filter(expiry_date__gt=now), many=True)
         intended_water_use_codes = IntendedWaterUseCodeSerializer(
             instance=IntendedWaterUseCode.objects.all(), many=True)
         casing_codes = CasingCodeSerializer(
