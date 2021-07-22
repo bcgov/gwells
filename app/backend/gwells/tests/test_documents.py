@@ -17,7 +17,7 @@ class DocumentsTestCase(TestCase):
         test_document = MockObject("test_bucket", "test key")
         test_url = minio_client.create_url(test_document, "example.com", test_document.bucket_name)
 
-        self.assertEqual(test_url, quote("https://example.com/test_bucket/test key"))
+        self.assertEqual(test_url, "https://example.com/" + quote("test_bucket/test key"))
 
     def test_document_url_with_plus(self):
         """ test creating a URL from an object key containing a plus sign """
@@ -30,7 +30,7 @@ class DocumentsTestCase(TestCase):
 
         test_url = minio_client.create_url(test_document, "example.com", test_document.bucket_name)
 
-        self.assertEqual(test_url, quote("https://example.com/test_bucket/test key"))
+        self.assertEqual(test_url, "https://example.com/" + quote("test_bucket/test key"))
 
 
     def test_document_url_with_encoded_plus(self):
@@ -44,4 +44,4 @@ class DocumentsTestCase(TestCase):
 
         test_url = minio_client.create_url(test_document, "example.com", test_document.bucket_name)
 
-        self.assertEqual(test_url, quote("https://example.com/test_bucket/test+key"))
+        self.assertEqual(test_url, "https://example.com/" + quote("test_bucket/test+key"))
