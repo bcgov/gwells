@@ -92,7 +92,7 @@ class MinioClient():
         """ Generates a link to a private document with name "object_name" (name includes prefixes) """
         return self.private_client.presigned_get_object(
             bucket_name,
-            quote(unquote_plus(object_name)),
+            unquote_plus(object_name),
             expires=timedelta(minutes=12))
 
     def create_url(self, obj, host, bucket_name, private=False):
