@@ -254,7 +254,7 @@
 									"    var jsonData = pm.response.json()",
 									"    pm.expect(jsonData.url).to.not.eql(null)",
 									"    pm.expect(jsonData.url).to.include(\"X-Amz-Signature\")",
-									"    pm.expect(jsonData.url).to.include(\"file with space.pdf\")",
+									"    pm.expect(jsonData.url).to.include(\"file%20with%20space.pdf\")",
 									"})",
 									""
 								],
