@@ -2093,7 +2093,7 @@ class LithologyDescription(AuditModel):
 
     class Meta:
         db_table = 'lithology_description'
-        ordering = ["lithology_sequence_number"]
+        ordering = ["start", "end"]
 
     db_table_comment = ('Describes the different lithologic qualities, characteristics, and materials found '
                         'at different depths while drilling.')
