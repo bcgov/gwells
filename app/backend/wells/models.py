@@ -1042,11 +1042,8 @@ class Well(AuditModelStructure):
         max_digits=8, decimal_places=7, blank=True, null=True, verbose_name='Storativity')
     transmissivity = models.DecimalField(
         max_digits=30, decimal_places=10, blank=True, null=True, verbose_name='Transmissivity')
-    hydraulic_conductivity = models.TextField(
-        max_length=100,
-        blank=True,
-        null=True,
-        verbose_name='Hydraulic Conductivity')
+    hydraulic_conductivity = models.DecimalField(
+        max_digits=10, decimal_places=9, blank=True, null=True, verbose_name='Hydraulic Conductivity')
     specific_storage = models.TextField(
         max_length=100,
         blank=True,
@@ -1667,11 +1664,8 @@ class ActivitySubmission(AuditModelStructure):
         max_digits=8, decimal_places=7, blank=True, null=True, verbose_name='Storativity')
     transmissivity = models.DecimalField(
         max_digits=30, decimal_places=10, blank=True, null=True, verbose_name='Transmissivity')
-    hydraulic_conductivity = models.TextField(
-        max_length=100,
-        blank=True,
-        null=True,
-        verbose_name='Hydraulic Conductivity')
+    hydraulic_conductivity = models.DecimalField(
+        max_digits=10, decimal_places=9, blank=True, null=True, verbose_name='Hydraulic Conductivity')
     specific_storage = models.TextField(
         max_length=100,
         blank=True,
@@ -2334,11 +2328,8 @@ class HydraulicProperty(AuditModel):
         max_digits=8, decimal_places=7, blank=True, null=True, verbose_name='Storativity')
     transmissivity = models.DecimalField(
         max_digits=30, decimal_places=10, blank=True, null=True, verbose_name='Transmissivity')
-    hydraulic_conductivity = models.TextField(
-        max_length=100,
-        blank=True,
-        null=True,
-        verbose_name='Hydraulic Conductivity')
+    hydraulic_conductivity = models.DecimalField(
+        max_digits=10, decimal_places=9, blank=True, null=True, verbose_name='Hydraulic Conductivity')
     specific_storage = models.TextField(
         max_length=100,
         blank=True,

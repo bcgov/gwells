@@ -277,7 +277,7 @@ class WellListFilter(AnyOrAllFilterSet):
     aquifer_vulnerability_index = filters.RangeFilter()
     storativity = filters.RangeFilter()
     transmissivity = filters.RangeFilter()
-    hydraulic_conductivity = filters.CharFilter(lookup_expr='icontains')
+    hydraulic_conductivity = filters.RangeFilter()
     specific_storage = filters.CharFilter(lookup_expr='icontains')
     specific_yield = filters.RangeFilter()
     testing_method = filters.CharFilter(lookup_expr='icontains')

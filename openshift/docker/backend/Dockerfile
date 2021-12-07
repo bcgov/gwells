@@ -10,7 +10,7 @@ USER root
 # Install and configure GEOS
 #
 
-RUN cd /tmp && wget https://download.osgeo.org/geos/geos-3.7.1.tar.bz2 && \
+RUN cd /tmp && wget https://download.osgeo.org/geos/geos-3.7.1.tar.bz2 --no-check-certificate && \
     tar xjf geos-3.7.1.tar.bz2 && \
     cd geos-3.7.1/ && \
     ./configure --prefix=/usr/local && \
@@ -24,8 +24,8 @@ RUN cd /tmp && wget https://download.osgeo.org/geos/geos-3.7.1.tar.bz2 && \
 # Install and configure PROJ.4
 #
 
-RUN cd /tmp && wget https://download.osgeo.org/proj/proj-5.2.0.tar.gz && \
-    wget https://download.osgeo.org/proj/proj-datumgrid-north-america-1.1.tar.gz && \
+RUN cd /tmp && wget https://download.osgeo.org/proj/proj-5.2.0.tar.gz --no-check-certificate && \
+    wget https://download.osgeo.org/proj/proj-datumgrid-north-america-1.1.tar.gz --no-check-certificate && \
     tar xzf proj-5.2.0.tar.gz && \
     cd proj-5.2.0/nad && \
     tar xzf ../../proj-datumgrid-north-america-1.1.tar.gz && \
@@ -41,7 +41,7 @@ RUN cd /tmp && wget https://download.osgeo.org/proj/proj-5.2.0.tar.gz && \
 # (without SFCGAL as we aren't using "CREATE EXTENSION postgis_sfcgal;")
 #
 
-RUN cd /tmp && wget http://download.osgeo.org/gdal/2.4.0/gdal-2.4.0.tar.gz && \
+RUN cd /tmp && wget http://download.osgeo.org/gdal/2.4.0/gdal-2.4.0.tar.gz --no-check-certificate && \
     tar zxvf gdal-2.4.0.tar.gz && cd gdal-2.4.0/ && \
     ./configure --prefix=/usr/local --with-python --with-sfcgal=no && \
     make -j4 && \

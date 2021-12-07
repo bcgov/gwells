@@ -550,7 +550,7 @@ const SEARCH_FIELDS = {
   hydraulicConductivity: {
     param: 'hydraulic_conductivity',
     label: 'Hydraulic Conductivity',
-    type: 'text'
+    type: 'range'
   },
   specificStorage: {
     param: 'specific_storage',

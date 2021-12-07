@@ -94,7 +94,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             id="hydraulicConductivityInput"
             label="Hydraulic Conductivity"
             hint="m/s"
-            type="text"
+            type="number"
             v-model="hydraulicConductivityInput"
             :errors="errors['hydraulic_conductivity']"
             :loaded="fieldsLoaded['hydraulic_conductivity']"
