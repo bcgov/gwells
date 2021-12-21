@@ -119,7 +119,7 @@ def unitTestDjango (String stageName, String envProject, String envSuffix) {
         // Wait here and make sure the app pods are ready before running unit tests.
         // We wait for both pods to be ready so that we can execute the test command
         // on either one, without having to check which one was ready first.
-        timeout(15) {
+        timeout(60) {
             pods.untilEach(2) {
                 return it.object().status.containerStatuses.every {
                     it.ready
