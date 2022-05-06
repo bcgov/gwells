@@ -14,7 +14,10 @@ A clear and concise description of what the bug is.
 A clear and concise description of what you expected to happen.
 
 **Actual Behaviour**
-A clear and concise description of what you expected to happen.
+A clear and concise description of what actually happens.
+
+**Implications**
+A clear and concise description of any implications.
 
 ** Steps To Reproduce**
 Steps to reproduce the behaviour:
