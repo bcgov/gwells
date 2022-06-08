@@ -10,7 +10,7 @@ USER root
 # Install and configure GEOS
 #
 
-RUN cd /tmp && wget https://download.osgeo.org/geos/geos-3.7.1.tar.bz2 && \
+RUN cd /tmp && wget http://download.osgeo.org/geos/geos-3.7.1.tar.bz2 && \
     tar xjf geos-3.7.1.tar.bz2 && \
     cd geos-3.7.1/ && \
     ./configure --prefix=/usr/local && \
@@ -24,8 +24,8 @@ RUN cd /tmp && wget https://download.osgeo.org/geos/geos-3.7.1.tar.bz2 && \
 # Install and configure PROJ.4
 #
 
-RUN cd /tmp && wget https://download.osgeo.org/proj/proj-5.2.0.tar.gz && \
-    wget https://download.osgeo.org/proj/proj-datumgrid-north-america-1.1.tar.gz && \
+RUN cd /tmp && wget http://download.osgeo.org/proj/proj-5.2.0.tar.gz && \
+    wget http://download.osgeo.org/proj/proj-datumgrid-north-america-1.1.tar.gz && \
     tar xzf proj-5.2.0.tar.gz && \
     cd proj-5.2.0/nad && \
     tar xzf ../../proj-datumgrid-north-america-1.1.tar.gz && \
