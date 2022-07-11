@@ -6,6 +6,7 @@ import logging
 from django.http import HttpResponseBadRequest
 from django.utils.deprecation import MiddlewareMixin
 from django.http import HttpResponse
+from markupsafe import Markup
 
 from gwells.settings.base import get_env_variable
 
@@ -40,5 +41,6 @@ class GWellsRequestParsingMiddleware(MiddlewareMixin):
             elif _method.upper() == 'DELETE':
                 self.delete(request)
             else:
+                _method = Markup.escape(_method)
                 message = 'Unsupported _method: ' + _method
                 return HttpResponse(message, status=500)
