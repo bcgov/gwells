@@ -651,8 +651,10 @@ pipeline {
                         echo "Starting a new build"
                         def newBuildSelector = appBuild.startBuild()
                         echo "Build Started: ${newBuildSelector.names()}"
+                        echo "Build Status event1: ${newBuildSelector.object().status.phase}"
                         newBuildSelector.logs("-f")
                         echo "Build Ended: ${newBuildSelector.names()}"
+                        echo "Build Status event2: ${newBuildSelector.object().status.phase}"
                         if (newBuildSelector.object().status.phase != "Complete") {
                             error("Build ${newBuildSelector.names()} has failed!")
                         }
