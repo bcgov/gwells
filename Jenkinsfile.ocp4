@@ -117,12 +117,12 @@ def unitTestDjango (String stageName, String envProject, String envSuffix) {
         def pods = openshift.selector('pod', [deployment: "${target}-${newVersion}"])
 
         
-        def podCount = pods.objects().count()
+        def podCount = pods.objects().size()
         echo "Pod count: ${podCount}"
         def pod1 = pods.objects()[0]
         echo "Pod1: ${pod1.metadata.name}"
         echo "Pod1 status: ${pod1.status}"
-        
+
         // Wait here and make sure the app pods are ready before running unit tests.
         // We wait for both pods to be ready so that we can execute the test command
         // on either one, without having to check which one was ready first.
