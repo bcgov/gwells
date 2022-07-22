@@ -126,6 +126,11 @@ def unitTestDjango (String stageName, String envProject, String envSuffix) {
                 }
             }
         }
+        def podCount = pods.objects().count()
+        echo "Pod count: ${podCount}"
+        def pod1 = pods.objects()[0]
+        echo "Pod1: ${pod1.metadata.name}"
+        echo "Pod1 status: ${pod1.status}"
 
         echo "Running Django unit tests"
         def ocoutput = openshift.exec(
@@ -653,9 +658,19 @@ pipeline {
                         echo "Build Started: ${newBuildSelector.names()}"
                         newBuildSelector.logs("-f")
                         echo "Build Ended: ${newBuildSelector.names()}"
-                        echo "Build Status event1: ${newBuildSelector.object().status.phase}"
-                        sleep(300)
-                        echo "Build Status event2: ${newBuildSelector.object().status.phase}"
+                        def buildStatus = ""
+                        def count = 0
+                        while(true){
+                            buildStatus = newBuildSelector.object().status.phase
+
+                            echo "Build Status: ${buildStatus}"
+                            if(buildStatus == "Complete" || count > 300){
+                                break
+                            }
+                            count++
+                            sleep(1)
+                            echo "Waiting build to finish for ${count} seconds"
+                        }
                         if (newBuildSelector.object().status.phase != "Complete") {
                             error("Build ${newBuildSelector.names()} has failed!")
                         }
