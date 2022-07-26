@@ -116,18 +116,11 @@ def unitTestDjango (String stageName, String envProject, String envSuffix) {
         def newVersion = openshift.selector("dc", "${target}").object().status.latestVersion
         def pods = openshift.selector('pod', [deployment: "${target}-${newVersion}"])
 
-        
-        def podCount = pods.objects().size()
-        echo "Pod count: ${podCount}"
-        def pod1 = pods.objects()[0]
-        echo "Pod1: ${pod1.metadata.name}"
-        echo "Pod1 status: ${pod1.status}"
-
         // Wait here and make sure the app pods are ready before running unit tests.
         // We wait for both pods to be ready so that we can execute the test command
         // on either one, without having to check which one was ready first.
         timeout(15) {
-            pods.untilEach(1) {
+            pods.untilEach(2) {
                 return it.object().status.containerStatuses.every {
                     it.ready
                 }
@@ -661,19 +654,16 @@ pipeline {
                         echo "Build Started: ${newBuildSelector.names()}"
                         newBuildSelector.logs("-f")
                         echo "Build Ended: ${newBuildSelector.names()}"
+                        
                         def buildStatus = ""
-                        def count = 0
-                        while(true){
-                            buildStatus = newBuildSelector.object().status.phase
-
-                            echo "Build Status: ${buildStatus}"
-                            if(buildStatus == "Complete" || count > 300){
-                                break
+                        timeout(1) {
+                            waitUntil {
+                                buildStatus = newBuildSelector.object().status.phase
+                                echo "Build Status: ${buildStatus}"
+                                return buildStatus != "Running"
                             }
-                            count++
-                            sleep(1)
-                            echo "Waiting build to finish for ${count} seconds"
                         }
+                        
                         if (newBuildSelector.object().status.phase != "Complete") {
                             error("Build ${newBuildSelector.names()} has failed!")
                         }
