@@ -126,6 +126,7 @@ def unitTestDjango (String stageName, String envProject, String envSuffix) {
                 }
             }
         }
+        
 
         echo "Running Django unit tests"
         def ocoutput = openshift.exec(
@@ -653,6 +654,16 @@ pipeline {
                         echo "Build Started: ${newBuildSelector.names()}"
                         newBuildSelector.logs("-f")
                         echo "Build Ended: ${newBuildSelector.names()}"
+                        
+                        def buildStatus = ""
+                        timeout(1) {
+                            waitUntil {
+                                buildStatus = newBuildSelector.object().status.phase
+                                echo "Build Status: ${buildStatus}"
+                                return buildStatus != "Running"
+                            }
+                        }
+                        
                         if (newBuildSelector.object().status.phase != "Complete") {
                             error("Build ${newBuildSelector.names()} has failed!")
                         }
