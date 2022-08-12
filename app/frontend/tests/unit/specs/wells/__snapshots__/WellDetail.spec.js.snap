@@ -1765,7 +1765,6 @@ exports[`WellDetail.vue should match snapshot 1`] = `
           No comments submitted
         
         </p>
-         
       </fieldset>
        
       <fieldset
