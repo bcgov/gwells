@@ -1765,16 +1765,6 @@ exports[`WellDetail.vue should match snapshot 1`] = `
           No comments submitted
         
         </p>
-         
-        <p>
-          <span
-            class="font-weight-bold"
-          >
-            Alternative Specs Submitted:
-          </span>
-           
-        
-        </p>
       </fieldset>
        
       <fieldset
