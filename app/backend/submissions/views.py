@@ -416,7 +416,7 @@ class SubmissionsOptions(APIView):
         root = urljoin('/', app_root, 'api/v2/')
         for item in activity_codes.data:
             if item['code'] not in ('LEGACY'):
-                item['path'] = reverse(item['code'], request=request)[len(root):]
+                item['path'] = reverse(item['code'], kwargs={'version': 'v2'})[len(root):]
 
         options["province_codes"] = province_codes.data
         options["activity_types"] = activity_codes.data
