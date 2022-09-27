@@ -61,7 +61,13 @@ If a new field(s) are needed for export, this export_databc.py has raw sql queri
 
 ### Running the GWELLS application locally
 
-[Clone the GWELLS repository](https://help.github.com/en/articles/cloning-a-repository) and run the application with [Docker](https://store.docker.com/search?type=edition&offering=community):
+[Clone the GWELLS repository](https://help.github.com/en/articles/cloning-a-repository), and build the [Docker](https://store.docker.com/search?type=edition&offering=community) image for the backend:
+```sh
+cd gwells/openshift/docker/backend
+docker build . --tag=gwells/backend
+```
+
+Then, run the application with Docker:
 ```sh
 cd gwells
 docker-compose up

@@ -470,9 +470,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <p>
             {{ well.comments ? well.comments : 'No comments submitted' }}
           </p>
-          <p>
-            <span class="font-weight-bold">Alternative Specs Submitted:</span> {{ well.alternative_specs_submitted | nullBooleanToYesNo }}
-          </p>
         </fieldset>
 
         <fieldset id="documents_fieldset" class="detail-section my-3">

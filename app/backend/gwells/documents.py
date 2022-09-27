@@ -16,7 +16,7 @@ import os
 import logging
 from datetime import timedelta
 from django.urls import reverse
-from urllib.parse import quote
+from urllib.parse import quote, unquote_plus
 from minio import Minio
 from gwells.settings.base import get_env_variable
 
@@ -92,7 +92,7 @@ class MinioClient():
         """ Generates a link to a private document with name "object_name" (name includes prefixes) """
         return self.private_client.presigned_get_object(
             bucket_name,
-            object_name,
+            unquote_plus(object_name),
             expires=timedelta(minutes=12))
 
     def create_url(self, obj, host, bucket_name, private=False):
@@ -111,7 +111,7 @@ class MinioClient():
         return 'https://{}/{}/{}'.format(
             host,
             quote(obj.bucket_name),
-            quote(obj.object_name)
+            quote(unquote_plus(obj.object_name))
         )
 
     def create_url_list(self, objects, host, bucket_name, private=False):
@@ -122,7 +122,7 @@ class MinioClient():
                     'url': self.create_url(document, host, bucket_name, private),
 
                     # split on last occurrence of '/' and return last item (supports any or no prefixes)
-                    'name': document.object_name.rsplit('/', 1)[-1]
+                    'name': unquote_plus(document.object_name).rsplit('/', 1)[-1]
                 }, objects)
         )
         return urls

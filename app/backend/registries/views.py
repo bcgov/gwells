@@ -324,7 +324,6 @@ class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     permission_classes = (RegistriesEditOrReadOnly,)
     serializer_class = PersonAdminSerializer
     pagination_class = APILimitOffsetPagination
-
     # Allow searching on name fields, names of related companies, etc.
     filter_backends = (restfilters.DjangoFilterBackend,
                        filters.SearchFilter, filters.OrderingFilter)
@@ -577,6 +576,7 @@ class OrganizationNameListView(ListAPIView):
         .select_related('province_state')
     pagination_class = None
     lookup_field = 'organization_guid'
+    swagger_schema = None
 
     def get_queryset(self):
         return self.queryset.filter(expiry_date__gt=timezone.now())
@@ -769,6 +769,7 @@ class PersonNameSearch(ListAPIView):
     serializer_class = PersonNameSerializer
     pagination_class = None
     lookup_field = 'person_guid'
+    swagger_schema = None
 
     ordering = ('surname',)
 
@@ -780,29 +781,13 @@ class PersonNameSearch(ListAPIView):
 
 class ListFiles(APIView):
     """
-    List documents associated with an aquifer
+    List documents associated with a person in the Registry
 
-    get: list files found for the aquifer identified in the uri
+    get: list files found for the person identified in the uri
     """
 
-    @swagger_auto_schema(responses={200: openapi.Response('OK',
-        openapi.Schema(type=openapi.TYPE_OBJECT, properties={
-            'public': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
-                type=openapi.TYPE_OBJECT,
-                properties={
-                    'url': openapi.Schema(type=openapi.TYPE_STRING),
-                    'name': openapi.Schema(type=openapi.TYPE_STRING)
-                }
-            )),
-            'private': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
-                type=openapi.TYPE_OBJECT,
-                properties={
-                    'url': openapi.Schema(type=openapi.TYPE_STRING),
-                    'name': openapi.Schema(type=openapi.TYPE_STRING)
-                }
-            ))
-        })
-    )})
+    swagger_schema = None
+
     def get(self, request, person_guid, **kwargs):
         user_is_staff = self.request.user.groups.filter(
             Q(name=REGISTRIES_EDIT_ROLE) | Q(name=REGISTRIES_VIEWER_ROLE)).exists()
@@ -825,8 +810,8 @@ class PreSignedDocumentKey(APIView):
 
     queryset = Person.objects.all()
     permission_classes = (RegistriesEditPermissions,)
+    swagger_schema = None
 
-    @swagger_auto_schema(auto_schema=None)
     def get(self, request, person_guid, **kwargs):
         person = get_object_or_404(self.queryset, pk=person_guid)
         client = MinioClient(
@@ -852,8 +837,8 @@ class DeleteDrillerDocument(APIView):
 
     queryset = Person.objects.all()
     permission_classes = (RegistriesEditPermissions,)
+    swagger_schema = None
 
-    @swagger_auto_schema(auto_schema=None)
     def delete(self, request, person_guid, **kwargs):
         person = get_object_or_404(self.queryset, pk=person_guid)
         client = MinioClient(
