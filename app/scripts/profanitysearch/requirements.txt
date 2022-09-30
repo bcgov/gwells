@@ -1,5 +1,5 @@
 inflection==0.5.0
-joblib==0.15.1
+joblib==1.2.0
 numpy==1.18.5
 profanity-check==1.0.3
 profanityfilter==2.0.6
