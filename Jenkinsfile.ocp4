@@ -2,6 +2,7 @@
 
 import groovy.json.JsonOutput
 import bcgov.GitHubHelper
+import com.cloudbees.groovy.cps.NonCPS
 
 
 // Notify stage status and pass to Jenkins-GitHub library
