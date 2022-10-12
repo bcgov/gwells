@@ -2,7 +2,7 @@
 name: Bug
 about: An undesirable behaviour that needs correction
 title: ''
-labels: Bug
+labels: ''
 assignees: ''
 
 ---
