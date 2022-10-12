@@ -73,6 +73,11 @@ cd gwells
 docker-compose up
 ```
 
+For gwells to interact with your local instance of Min.IO add the appropriate settings to your local machines HOSTS file:
+```
+127.0.0.1 minio-public
+```
+
 Visit the following links to browse the API and frontend applications:
 
 * Django REST API development server: http://localhost:8000/gwells/api/
