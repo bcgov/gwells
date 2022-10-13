@@ -49,7 +49,7 @@ void createDeploymentStatus (String suffix, String status, String stageUrl) {
 
 
 // Print stack trace of error
-//@NonCPS
+@NonCPS
 private static String stackTraceAsString(Throwable t) {
     StringWriter sw = new StringWriter();
     t.printStackTrace(new PrintWriter(sw));
