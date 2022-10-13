@@ -2,7 +2,6 @@
 
 import groovy.json.JsonOutput
 import bcgov.GitHubHelper
-import com.cloudbees.groovy.cps.NonCPS
 
 
 // Notify stage status and pass to Jenkins-GitHub library
@@ -50,7 +49,7 @@ void createDeploymentStatus (String suffix, String status, String stageUrl) {
 
 
 // Print stack trace of error
-@NonCPS
+//@NonCPS
 private static String stackTraceAsString(Throwable t) {
     StringWriter sw = new StringWriter();
     t.printStackTrace(new PrintWriter(sw));
