@@ -559,7 +559,7 @@ pipeline {
 
         // prNumber is the pull request number e.g. 'pr-4'
         prNumberTemp = "${env.JOB_BASE_NAME}".toLowerCase()
-        prNumber = "${prNumberTemp == 'gwells daily' ? '1865' : prNumberTemp}"
+        prNumber = "1865"
 
         // toolsProject is where images are built
         toolsProject = "${APP_TOOLS_NAMESPACE ?: "26e83e-tools"}"
