@@ -558,7 +558,16 @@ pipeline {
         platformDomain = "${platformEnv == '4' ? 'apps.silver.devops.gov.bc.ca' : 'pathfinder.gov.bc.ca'}"
 
         // prNumber is the pull request number e.g. 'pr-4'
-        prNumber = "${env.JOB_BASE_NAME}".toLowerCase()
+        
+        jobBaseName = "${env.JOB_BASE_NAME}"
+        echo "JOB_BASE_NAME=${jobBaseName}"
+
+        if (jobBaseName?.trim()) {
+            prNumber = "1865"
+        } 
+        else {
+            prNumber = "${env.JOB_BASE_NAME}".toLowerCase()
+        }
 
         // toolsProject is where images are built
         toolsProject = "${APP_TOOLS_NAMESPACE ?: "26e83e-tools"}"
@@ -615,6 +624,7 @@ pipeline {
                     echo "Processing/applying template: ${templateDir}/backend.bc.json"
                     _openshift(env.STAGE_NAME, toolsProject) {
                         //  - variable substitution
+
                         def buildtemplate = openshift.process("-f",
                             "${templateDir}/backend.bc.json",
                             "ENV_NAME=${devSuffix}",
