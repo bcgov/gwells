@@ -560,7 +560,8 @@ pipeline {
         // prNumber is the pull request number e.g. 'pr-4'
         
         jobBaseName = "${env.JOB_BASE_NAME}"
-        echo "JOB_BASE_NAME=${jobBaseName}"
+        echo "JOB_BASE_NAME="
+        echo ${jobBaseName}
 
         if (jobBaseName?.trim()) {
             prNumber = "1865"
