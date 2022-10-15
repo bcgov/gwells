@@ -613,6 +613,10 @@ pipeline {
                         abortAllPreviousBuildInProgress(currentBuild)
                     }
                     echo "Previous builds cancelled"
+                    echo "Pr: ${prNumber}"
+                    echo "Template Dir: ${templateDir}"
+                    echo "End output"
+
                     echo "Processing/applying template: ${templateDir}/backend.bc.json"
                     _openshift(env.STAGE_NAME, toolsProject) {
                         //  - variable substitution
