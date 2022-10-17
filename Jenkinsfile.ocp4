@@ -604,10 +604,10 @@ pipeline {
         // e.g.:  gwells-app:pr-999
         stage('ALL - Prepare Templates') {
             agent { label 'build' }
-            triggers {
-                cron(env.BRANCH_NAME == 'PR-1882' ? '45 8 * * 1' : '')
-            }
             steps {
+                triggers {
+                    cron(env.BRANCH_NAME == 'PR-1882' ? '45 8 * * 1' : '')
+                }
                 script {
                     echo "Branch: ${env.BRANCH_NAME}"
                     echo "Starting deployment to OCP platform:   ${platformEnv}"
