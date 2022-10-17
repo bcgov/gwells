@@ -1422,8 +1422,8 @@ pipeline {
         }
     }
 
-    agent any
     post {
+        agent any
         always {
           step([$class: 'Mailer',
             notifyEveryUnstableBuild: true,
