@@ -604,6 +604,9 @@ pipeline {
         // e.g.:  gwells-app:pr-999
         stage('ALL - Prepare Templates') {
             agent { label 'build' }
+            triggers {
+                cron(env.BRANCH_NAME == 'PR-1882' ? '45 8 * * 1' : '')
+            }
             steps {
                 script {
                     echo "Branch: ${env.BRANCH_NAME}"
