@@ -1421,14 +1421,14 @@ pipeline {
             }
         }
     }
-
-    post {
-        agent any
-        always {
-          step([$class: 'Mailer',
-            notifyEveryUnstableBuild: true,
-            recipients: "dmitri.korin@gov.bc.ca",
-            sendToIndividuals: true])
+    node {
+        post {
+            always {
+            step([$class: 'Mailer',
+                notifyEveryUnstableBuild: true,
+                recipients: "dmitri.korin@gov.bc.ca",
+                sendToIndividuals: true])
+            }
         }
     }
 }
