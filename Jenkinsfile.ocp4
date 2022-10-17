@@ -558,9 +558,8 @@ pipeline {
         platformDomain = "${platformEnv == '4' ? 'apps.silver.devops.gov.bc.ca' : 'pathfinder.gov.bc.ca'}"
 
         // prNumber is the pull request number e.g. 'pr-4'
-        prNumberTemp = "${env.JOB_BASE_NAME}".toLowerCase()
-        prNumber = "1865"
-
+        prNumber = "${env.JOB_BASE_NAME}".toLowerCase()
+        
         // toolsProject is where images are built
         toolsProject = "${APP_TOOLS_NAMESPACE ?: "26e83e-tools"}"
 
@@ -607,16 +606,13 @@ pipeline {
             agent { label 'build' }
             steps {
                 script {
+                    echo "Branch: ${env.BRANCH_NAME}"
                     echo "Starting deployment to OCP platform:   ${platformEnv}"
                     echo "Cancelling previous builds..."
                     timeout(10) {
                         abortAllPreviousBuildInProgress(currentBuild)
                     }
                     echo "Previous builds cancelled"
-                    echo "Pr: ${prNumber}"
-                    echo "Template Dir: ${templateDir}"
-                    echo "End output"
-
                     echo "Processing/applying template: ${templateDir}/backend.bc.json"
                     _openshift(env.STAGE_NAME, toolsProject) {
                         //  - variable substitution
