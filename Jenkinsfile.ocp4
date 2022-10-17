@@ -609,6 +609,7 @@ pipeline {
             agent { label 'build' }
             steps {
                 script {
+                    currentBuild.result = 'SUCCESS'
                     echo "Starting deployment to OCP platform:   ${platformEnv}"
                     echo "Cancelling previous builds..."
                     timeout(10) {
@@ -1418,6 +1419,14 @@ pipeline {
                     }
                 }
             }
+        }
+    }
+    post {
+        always {
+          step([$class: 'Mailer',
+            notifyEveryUnstableBuild: true,
+            recipients: "dmitri.korin@gov.bc.ca",
+            sendToIndividuals: true])
         }
     }
 }
