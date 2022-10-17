@@ -1421,6 +1421,8 @@ pipeline {
             }
         }
     }
+
+    agent any
     post {
         always {
           step([$class: 'Mailer',
