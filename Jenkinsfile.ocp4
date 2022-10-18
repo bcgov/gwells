@@ -546,7 +546,7 @@ def dbBackup (String envProject, String envSuffix) {
 
 pipeline {
     triggers {
-        cron(env.BRANCH_NAME == 'PR-1800' ? ((env.BRANCH_NAME == 'PR-1883') ? '30 10 * * 1-5' : '') : '0 11 * * 1-5')
+        cron(env.BRANCH_NAME == 'PR-1883' ? '30 12 * * 1-5' : '')
     }
     options {
         timestamps()
@@ -687,7 +687,7 @@ pipeline {
                             it.getClass().getName().tokenize('.').last() 
                     }
                     echo "Build Cause: ${buildCause}"
-                    env.CHANGE_TARGET != 'master' 
+                    env.CHANGE_TARGET != 'master' && buildCause == '[TimerTrigger$TimerTriggerCause]'
                 }
             }
             steps {
@@ -709,6 +709,7 @@ pipeline {
             }
             steps {
                 script {
+                    error("Test conditional deploy")
                     def result = unitTestDjango (env.STAGE_NAME, devProject, devSuffix)
                 }
             }
