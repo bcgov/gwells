@@ -546,7 +546,7 @@ def dbBackup (String envProject, String envSuffix) {
 
 pipeline {
     triggers {
-        cron(env.BRANCH_NAME == 'PR-1883' ? '30 14 * * 1-5' : '')
+        cron(env.BRANCH_NAME == 'PR-1800' ? '0 7 * * 1-5' : '')
     }
     options {
         timestamps()
@@ -682,19 +682,9 @@ pipeline {
             agent { label 'deploy' }
             when {
                 beforeAgent true
-                beforeInput true
                 expression { 
-                    def buildCause = currentBuild.rawBuild.getCauses().collect { 
-                            it.getClass().getName().tokenize('.').last() 
-                    }
-                    echo "Build Cause: ${buildCause}"
-                    env.CHANGE_TARGET != 'master' && buildCause.toString() != '[TimerTrigger$TimerTriggerCause]'
+                    env.CHANGE_TARGET != 'master'
                 }
-            }
-            input {
-                    message "Proceed?"
-                    ok "Yes, do proceed."
-                    submitter "authenticated"
             }
             steps {
                 script {
@@ -715,7 +705,6 @@ pipeline {
             }
             steps {
                 script {
-                    error("Test conditional deploy")
                     def result = unitTestDjango (env.STAGE_NAME, devProject, devSuffix)
                 }
             }
@@ -1130,7 +1119,13 @@ pipeline {
             agent none
             when {
                 beforeInput true
-                expression { env.CHANGE_TARGET == 'master' }
+                expression { 
+                    def buildCause = currentBuild.rawBuild.getCauses().collect { 
+                            it.getClass().getName().tokenize('.').last() 
+                    }                    
+                    echo "Build Cause: ${buildCause}"
+                    env.CHANGE_TARGET == 'master' && buildCause.toString() != '[TimerTrigger$TimerTriggerCause]'
+                }
             }
             input {
                 message "Deploy to production?"
@@ -1146,7 +1141,13 @@ pipeline {
             agent { label 'deploy' }
             when {
                 beforeAgent true
-                expression { env.CHANGE_TARGET == 'master' }
+                expression { 
+                    def buildCause = currentBuild.rawBuild.getCauses().collect { 
+                            it.getClass().getName().tokenize('.').last() 
+                    }    
+                    echo "Build Cause: ${buildCause}"                                    
+                    env.CHANGE_TARGET == 'master' && buildCause.toString() != '[TimerTrigger$TimerTriggerCause]'
+                }
             }
             steps {
                 script {
@@ -1438,7 +1439,7 @@ pipeline {
             node('build') {
                 step([$class: 'Mailer',
                     notifyEveryUnstableBuild: true,
-                    recipients: "dmitri.korin@gov.bc.ca",
+                    recipients: "Sustainment.Team@gov.bc.ca",
                     sendToIndividuals: true])
             }
         }
