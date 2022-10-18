@@ -1438,7 +1438,7 @@ pipeline {
             node('build') {
                 step([$class: 'Mailer',
                     notifyEveryUnstableBuild: true,
-                    recipients: "Sustainment.Team@gov.bc.ca",
+                    recipients: "dmitri.korin@gov.bc.ca",
                     sendToIndividuals: true])
             }
         }
