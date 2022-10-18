@@ -1423,7 +1423,7 @@ pipeline {
     }
     post {
         always {
-            node('master') {
+            node('build') {
                 step([$class: 'Mailer',
                     notifyEveryUnstableBuild: true,
                     recipients: "dmitri.korin@gov.bc.ca",
