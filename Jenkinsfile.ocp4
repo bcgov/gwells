@@ -610,7 +610,7 @@ pipeline {
             steps {
                 script {
                     def buildCause = currentBuild.rawBuild.getCauses().collect { 
-                            it.getClass().getCanonicalName().tokenize('.').last() 
+                            it.getClass().getName().tokenize('.').last() 
                     }
                     echo "Build Cause: ${buildCause}"
                     //currentBuild.result = 'SUCCESS'
