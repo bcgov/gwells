@@ -546,7 +546,7 @@ def dbBackup (String envProject, String envSuffix) {
 
 pipeline {
     triggers {
-        cron(env.BRANCH_NAME == 'PR-1800' ? ((env.BRANCH_NAME == 'PR-1883') ? :'50 8 * * 1-5' : '') : '0 11 * * 1-5')
+        cron(env.BRANCH_NAME == 'PR-1800' ? ((env.BRANCH_NAME == 'PR-1883') ? '50 8 * * 1-5' : '') : '0 11 * * 1-5')
     }
     options {
         timestamps()
