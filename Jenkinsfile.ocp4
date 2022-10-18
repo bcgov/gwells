@@ -546,7 +546,7 @@ def dbBackup (String envProject, String envSuffix) {
 
 pipeline {
     triggers {
-        cron(env.BRANCH_NAME == 'PR-1883' ? '30 13 * * 1-5' : '')
+        cron(env.BRANCH_NAME == 'PR-1883' ? '30 14 * * 1-5' : '')
     }
     options {
         timestamps()
@@ -682,12 +682,18 @@ pipeline {
             agent { label 'deploy' }
             when {
                 beforeAgent true
+                beforeInput true
                 expression { 
                     def buildCause = currentBuild.rawBuild.getCauses().collect { 
                             it.getClass().getName().tokenize('.').last() 
                     }
                     echo "Build Cause: ${buildCause}"
-                    env.CHANGE_TARGET != 'master' && buildCause.toString() == '[TimerTrigger$TimerTriggerCause]'
+                    env.CHANGE_TARGET != 'master' && buildCause.toString() != '[TimerTrigger$TimerTriggerCause]'
+                }
+                input {
+                    message "Proceed?"
+                    ok "Yes, do proceed."
+                    submitter "authenticated"
                 }
             }
             steps {
