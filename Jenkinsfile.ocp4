@@ -545,6 +545,9 @@ def dbBackup (String envProject, String envSuffix) {
 }
 
 pipeline {
+    triggers {
+        cron(env.BRANCH_NAME == 'PR-1800' ? '0 7 * * 1-5' : '')
+    }
     options {
         timestamps()
         ansiColor('xterm')
@@ -1114,7 +1117,13 @@ pipeline {
             agent none
             when {
                 beforeInput true
-                expression { env.CHANGE_TARGET == 'master' }
+                expression { 
+                    def buildCause = currentBuild.rawBuild.getCauses().collect { 
+                            it.getClass().getName().tokenize('.').last() 
+                    }                    
+                    echo "Build Cause: ${buildCause}"
+                    env.CHANGE_TARGET == 'master' && buildCause.toString() != '[TimerTrigger$TimerTriggerCause]'
+                }
             }
             input {
                 message "Deploy to production?"
@@ -1130,7 +1139,13 @@ pipeline {
             agent { label 'deploy' }
             when {
                 beforeAgent true
-                expression { env.CHANGE_TARGET == 'master' }
+                expression { 
+                    def buildCause = currentBuild.rawBuild.getCauses().collect { 
+                            it.getClass().getName().tokenize('.').last() 
+                    }    
+                    echo "Build Cause: ${buildCause}"                                    
+                    env.CHANGE_TARGET == 'master' && buildCause.toString() != '[TimerTrigger$TimerTriggerCause]'
+                }
             }
             steps {
                 script {
@@ -1414,6 +1429,16 @@ pipeline {
                         createDeploymentStatus(prodSuffix, 'SUCCESS', prodHost)
                     }
                 }
+            }
+        }
+    }
+    post {
+        always {
+            node('build') {
+                step([$class: 'Mailer',
+                    notifyEveryUnstableBuild: true,
+                    recipients: "dmitri.korin@gov.bc.ca,Julian.Foreman@gov.bc.ca,Christopher.Walsh@gov.bc.ca,Norris.Ng@gov.bc.ca",
+                    sendToIndividuals: true])
             }
         }
     }
