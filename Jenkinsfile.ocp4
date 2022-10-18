@@ -609,6 +609,7 @@ pipeline {
             agent { label 'build' }
             steps {
                 script {
+                    error("Simulate build failure to test email")
                     echo "Starting deployment to OCP platform:   ${platformEnv}"
                     echo "Cancelling previous builds..."
                     timeout(10) {
@@ -682,9 +683,7 @@ pipeline {
             agent { label 'deploy' }
             when {
                 beforeAgent true
-                expression { 
-                    env.CHANGE_TARGET != 'master'
-                }
+                expression { env.CHANGE_TARGET != 'master' }
             }
             steps {
                 script {
