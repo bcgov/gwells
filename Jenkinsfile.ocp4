@@ -545,9 +545,9 @@ def dbBackup (String envProject, String envSuffix) {
 }
 
 pipeline {
-    //triggers {
-    //    cron(env.BRANCH_NAME == 'PR-1800' ? ((env.BRANCH_NAME == 'PR-1883') ? :'50 8 * * 1-5' : '') : '0 11 * * 1-5')
-    //}
+    triggers {
+        cron(env.BRANCH_NAME == 'PR-1800' ? ((env.BRANCH_NAME == 'PR-1883') ? :'50 8 * * 1-5' : '') : '0 11 * * 1-5')
+    }
     options {
         timestamps()
         ansiColor('xterm')
@@ -596,10 +596,6 @@ pipeline {
 
 
         templateDir = "${platformEnv == '4' ? 'openshift/ocp4' : 'openshift' }"
-        
-        buildCause = currentBuild.rawBuild.getCauses().collect { 
-                            it.getClass().getName().tokenize('.').last() 
-                    }
 
     }
     agent none
@@ -613,7 +609,6 @@ pipeline {
             agent { label 'build' }
             steps {
                 script {
-                    echo "Build Cause: ${buildCause}"
                     echo "Starting deployment to OCP platform:   ${platformEnv}"
                     echo "Cancelling previous builds..."
                     timeout(10) {
@@ -687,7 +682,16 @@ pipeline {
             agent { label 'deploy' }
             when {
                 beforeAgent true
-                expression { env.CHANGE_TARGET != 'master' }
+                expression { 
+                    def buildCause = currentBuild.rawBuild.getCauses().collect { 
+                            it.getClass().getName().tokenize('.').last() 
+                    }
+                    echo "Build Cause: ${buildCause}"
+                    if(buildCause === '[BranchEventCause]'){
+                        echo "Source Code Change"
+                    }
+                    env.CHANGE_TARGET != 'master' 
+                }
             }
             steps {
                 script {
