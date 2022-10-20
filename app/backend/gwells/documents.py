@@ -183,9 +183,9 @@ class MinioClient():
                     self.public_client.list_objects(
                         public_bucket, prefix=prefix, recursive=True),
                     self.public_host, public_bucket)
-            except Exception:
+            except Exception as e:
                 logger.error(
-                    "Could not retrieve files from public file server", exc_info=True)
+                    "Could not retrieve files from public file server", e)
 
             objects['public'] = pub_objects
 
