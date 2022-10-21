@@ -161,7 +161,7 @@ class MinioClient():
 
     def get_documents(self, document_id: int, resource='well', include_private=False):
         """Retrieves a list of available documents for a well or aquifer"""
-
+        logger.info('Get Documents for: document_id:%s, resource: %s, include_private: %s ', document_id, resource, include_private)
         # prefix well tag numbers with a 6 digit "folder" id
         # e.g. WTA 23456 goes into prefix 020000/
         prefix = self.get_prefix(document_id, resource)
