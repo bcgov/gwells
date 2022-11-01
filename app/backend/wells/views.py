@@ -196,28 +196,23 @@ class ListFiles(APIView):
 
     @swagger_auto_schema(responses={200: openapi.Response('OK', LIST_FILES_OK)})
     def get(self, request, tag, **kwargs):
-        try:
-            well = get_object_or_404(Well, pk=tag)
+        well = get_object_or_404(Well, pk=tag)
 
-            if well.well_publication_status\
-                    .well_publication_status_code == 'Unpublished':
-                if not self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
-                    return HttpResponseNotFound()
+        if well.well_publication_status\
+                .well_publication_status_code == 'Unpublished':
+            if not self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
+                return HttpResponseNotFound()
 
-            user_is_staff = self.request.user.groups.filter(
-                name=WELLS_VIEWER_ROLE).exists()
+        user_is_staff = self.request.user.groups.filter(
+            name=WELLS_VIEWER_ROLE).exists()
 
-            client = MinioClient(
-                request=request, disable_private=(not user_is_staff))
+        client = MinioClient(
+            request=request, disable_private=(not user_is_staff))
 
-            documents = client.get_documents(
-                int(tag), resource="well", include_private=user_is_staff)
+        documents = client.get_documents(
+            int(tag), resource="well", include_private=user_is_staff)
 
-            return Response(documents)
-
-        except Exception as e:
-                logger.error(
-                    "Get documents failed at call", exc_info=e)
+        return Response(documents)
 
 class WellListAPIViewV1(ListAPIView):
     """List and create wells
