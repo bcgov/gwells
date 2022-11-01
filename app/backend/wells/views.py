@@ -212,6 +212,7 @@ class ListFiles(APIView):
 
             documents = client.get_documents(
                 int(tag), resource="well", include_private=user_is_staff)
+
             return Response(documents)
 
         except Exception as e:
