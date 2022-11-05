@@ -256,11 +256,7 @@ exports[`WellDetail.vue should match snapshot 1`] = `
             </span>
              
           </b-col-stub>
-        </b-row-stub>
-         
-        <b-row-stub
-          tag="div"
-        >
+           
           <b-col-stub
             cols="12"
             md="4"
@@ -273,7 +269,33 @@ exports[`WellDetail.vue should match snapshot 1`] = `
             </span>
              
           </b-col-stub>
+           
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Technical Report:
+            </span>
+             
+            <a
+              class="jump_link"
+              href="https://www2.gov.bc.ca/gov/content/governments/about-the-bc-government/open-government/open-information/freedom-of-information/submit-a-general-freedom-of-information-request"
+              target="_blank"
+            >
+              
+          Report Available
+          
+            </a>
+          </b-col-stub>
         </b-row-stub>
+         
+        <b-row-stub
+          tag="div"
+        />
       </fieldset>
        
       <fieldset

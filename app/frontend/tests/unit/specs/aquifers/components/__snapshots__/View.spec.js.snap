@@ -485,6 +485,18 @@ exports[`View Component View mode matches the snapshot 1`] = `
                 <li>
                   <dt>
                     Number of wells correlated to the aquifer
+                
+                    <i
+                      class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                      id="correlated-wells-count"
+                      tabindex="0"
+                    />
+                     
+                    <b-popover-stub
+                      content="Text."
+                      target="correlated-wells-count"
+                      triggers="hover focus"
+                    />
                   </dt>
                    
                   <dd
@@ -530,6 +542,18 @@ exports[`View Component View mode matches the snapshot 1`] = `
                 <li>
                   <dt>
                     Artesian wells
+                
+                    <i
+                      class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                      id="artesian-wells"
+                      tabindex="0"
+                    />
+                     
+                    <b-popover-stub
+                      content="Text."
+                      target="artesian-wells"
+                      triggers="hover focus"
+                    />
                   </dt>
                    
                   <dd
@@ -579,8 +603,10 @@ exports[`View Component View mode matches the snapshot 1`] = `
               <div>
                 <p>
                   
-                The licensing summaries should be considered estimates. Due to complexities in the structure
-                of the licensing data, reported values should be confirmed through the
+              The licensing summaries should be considered estimates. Total volume is likely more
+              than what is indicated in charts due to domestic use and unprocessed licence applications.
+              Due to complexities in the structure of the licensing data,
+              reported values should be confirmed through the
                 
                   <a
                     class="d-print-url"
@@ -605,6 +631,18 @@ exports[`View Component View mode matches the snapshot 1`] = `
                 <li>
                   <dt>
                     Number of groundwater licences
+                
+                    <i
+                      class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                      id="groundwater-licences-count"
+                      tabindex="0"
+                    />
+                     
+                    <b-popover-stub
+                      content="Text."
+                      target="groundwater-licences-count"
+                      triggers="hover focus"
+                    />
                   </dt>
                    
                   <dd
@@ -617,6 +655,18 @@ exports[`View Component View mode matches the snapshot 1`] = `
                 <li>
                   <dt>
                     Water withdrawal volume (annual)
+                
+                    <i
+                      class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                      id="water-withdrawal-volume"
+                      tabindex="0"
+                    />
+                     
+                    <b-popover-stub
+                      content="Text."
+                      target="water-withdrawal-volume"
+                      triggers="hover focus"
+                    />
                   </dt>
                    
                   <dd
@@ -638,6 +688,18 @@ exports[`View Component View mode matches the snapshot 1`] = `
                       class="pie-chart-title"
                     >
                       Licensed volume by purpose (millions of cubic meters)
+                  
+                      <i
+                        class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                        id="licensed-volume-by-purpose"
+                        tabindex="0"
+                      />
+                       
+                      <b-popover-stub
+                        content="Text."
+                        target="licensed-volume-by-purpose"
+                        triggers="hover focus"
+                      />
                     </h5>
                      
                     <pie-chart-stub
@@ -660,6 +722,18 @@ exports[`View Component View mode matches the snapshot 1`] = `
                       class="pie-chart-title"
                     >
                       Number of licences by purpose
+                  
+                      <i
+                        class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                        id="licences-by-purpose-count"
+                        tabindex="0"
+                      />
+                       
+                      <b-popover-stub
+                        content="Text."
+                        target="licences-by-purpose-count"
+                        triggers="hover focus"
+                      />
                     </h5>
                      
                     <pie-chart-stub
@@ -959,7 +1033,19 @@ exports[`View Component View mode matches the snapshot 1`] = `
                     <dt
                       class="text-right"
                     >
-                      Artesian advisory
+                      Drilling and operation advisory
+                  
+                      <i
+                        class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                        id="aquifer-drilling-operation-advisory"
+                        tabindex="0"
+                      />
+                       
+                      <b-popover-stub
+                        content="Text."
+                        target="aquifer-drilling-operation-advisory"
+                        triggers="hover focus"
+                      />
                     </dt>
                      
                     <dd
@@ -982,6 +1068,18 @@ exports[`View Component View mode matches the snapshot 1`] = `
                       class="text-right"
                     >
                       Observation wells
+                  
+                      <i
+                        class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                        id="aquifer-observation-wells"
+                        tabindex="0"
+                      />
+                       
+                      <b-popover-stub
+                        content="Text."
+                        target="aquifer-observation-wells"
+                        triggers="hover focus"
+                      />
                     </dt>
                      
                     <dd
@@ -1054,6 +1152,18 @@ exports[`View Component View mode matches the snapshot 1`] = `
                       class="text-right"
                     >
                       Numerical model
+                  
+                      <i
+                        class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                        id="aquifer-numerical-model"
+                        tabindex="0"
+                      />
+                       
+                      <b-popover-stub
+                        content="Text."
+                        target="aquifer-numerical-model"
+                        triggers="hover focus"
+                      />
                     </dt>
                      
                     <dd
@@ -1074,6 +1184,18 @@ exports[`View Component View mode matches the snapshot 1`] = `
                       class="text-right"
                     >
                       Pumping stress index
+                  
+                      <i
+                        class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                        id="aquifer-pumping-stress-index"
+                        tabindex="0"
+                      />
+                       
+                      <b-popover-stub
+                        content="Text."
+                        target="aquifer-pumping-stress-index"
+                        triggers="hover focus"
+                      />
                     </dt>
                      
                     <dd
@@ -1094,6 +1216,18 @@ exports[`View Component View mode matches the snapshot 1`] = `
                       class="text-right"
                     >
                       Water budget
+                  
+                      <i
+                        class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                        id="aquifer-water-budget"
+                        tabindex="0"
+                      />
+                       
+                      <b-popover-stub
+                        content="Text."
+                        target="aquifer-water-budget"
+                        triggers="hover focus"
+                      />
                     </dt>
                      
                     <dd
@@ -1116,6 +1250,18 @@ exports[`View Component View mode matches the snapshot 1`] = `
                       class="text-right"
                     >
                       Water quality information
+                  
+                      <i
+                        class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                        id="aquifer-water-quality-information"
+                        tabindex="0"
+                      />
+                       
+                      <b-popover-stub
+                        content="Text."
+                        target="aquifer-water-quality-information"
+                        triggers="hover focus"
+                      />
                     </dt>
                      
                     <dd
@@ -1156,7 +1302,15 @@ exports[`View Component View mode matches the snapshot 1`] = `
                     <dd
                       class="m-0"
                     >
-                      More likely
+                      <a
+                        class="d-print-url"
+                        href="http://a100.gov.bc.ca/appsdata/acat/documents/r50832/HydraulicConnectMW3_1474311684426_4310694949.pdf"
+                        target="_blank"
+                      >
+                        
+                  See Guidance on Determining Likelihood of Hydraulic Connection
+                  
+                      </a>
                     </dd>
                   </div>
                 </li>
@@ -1166,6 +1320,18 @@ exports[`View Component View mode matches the snapshot 1`] = `
                       class="text-right"
                     >
                       Groundwater Surface Water Interactions
+                  
+                      <i
+                        class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                        id="aquifer-groundwater-surfacewater-interactions"
+                        tabindex="0"
+                      />
+                       
+                      <b-popover-stub
+                        content="Text."
+                        target="aquifer-groundwater-surfacewater-interactions"
+                        triggers="hover focus"
+                      />
                     </dt>
                      
                     <dd
@@ -1186,6 +1352,12 @@ exports[`View Component View mode matches the snapshot 1`] = `
                       class="text-right"
                     >
                       Other information
+                  
+                      <!---->
+                       
+                      <b-popover-stub
+                        triggers="hover focus"
+                      />
                     </dt>
                      
                     <dd

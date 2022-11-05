@@ -84,9 +84,15 @@ Licensed under the Apache License, Version 2.0 (the "License");
               </router-link>
             </b-col>
             <b-col cols="12" md="4"><span class="font-weight-bold">Alternative specs submitted:</span> {{ well.alternative_specs_submitted }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Artesian Condition:</span> {{ well.artesian_conditions | nullBooleanToYesNo }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Technical Report:</span>
+            <!--TODO:  Later to check with API if report can be obtained or not-->
+            <a class="jump_link" target="_blank" href="https://www2.gov.bc.ca/gov/content/governments/about-the-bc-government/open-government/open-information/freedom-of-information/submit-a-general-freedom-of-information-request">
+            Report Available
+            </a>
+            </b-col>
           </b-row>
           <b-row>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Artesian Condition:</span> {{ well.artesian_conditions | nullBooleanToYesNo }}</b-col>
           </b-row>
         </fieldset>
 

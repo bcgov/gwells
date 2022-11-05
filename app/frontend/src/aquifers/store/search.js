@@ -37,7 +37,6 @@ import {
   SET_SEARCH_MAP_ZOOM
 } from './mutations.types.js'
 
-const HYDRAULICALLY_CONNECTED_CODE = 'Hydra'
 
 Vue.use(Vuex)
 
@@ -181,9 +180,6 @@ const aquiferSearchStore = {
       }
 
       const codes = state.selectedSections.filter((s) => {
-        if (s === HYDRAULICALLY_CONNECTED_CODE) {
-          return false
-        }
         return true
       })
       if (codes.length > 0) {
@@ -192,10 +188,6 @@ const aquiferSearchStore = {
 
       if (state.searchMatchAny) {
         params.match_any = String(state.searchMatchAny)
-      }
-
-      if (state.selectedSections.find((o) => o === HYDRAULICALLY_CONNECTED_CODE)) {
-        params.hydraulically_connected = 'yes'
       }
 
       if (state.searchMapCentre) {

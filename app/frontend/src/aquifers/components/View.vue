@@ -167,7 +167,13 @@
               <ul class="ml-0 mr-0 mt-4 mb-0 p-0 aquifer-information-list">
                 <div class="aquifer-information-list-divider"></div>
                 <li>
-                  <dt>Number of wells correlated to the aquifer</dt>
+                  <dt>Number of wells correlated to the aquifer
+                  <i id="correlated-wells-count" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+                  <b-popover
+                  target="correlated-wells-count"
+                  triggers="hover focus"
+                  content="Text."/>
+                  </dt>
                   <dd class="m-0">
                     <router-link :to="{ name: 'wells-home', query: {'match_any':false, 'aquifer': id, 'search':'', 'well':''}, hash: '#advanced'}">
                       {{ licenceDetails.num_wells }}
@@ -188,7 +194,13 @@
                   </dd>
                 </li>
                 <li>
-                  <dt>Artesian wells</dt>
+                  <dt>Artesian wells
+                  <i id="artesian-wells" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+                  <b-popover
+                  target="artesian-wells"
+                  triggers="hover focus"
+                  content="Text."/>
+                  </dt>
                   <dd class="m-0">
                     <router-link :to="{ name: 'wells-home', query: {'match_any':false, 'aquifer': id, 'artesian_conditions':true}, hash: '#advanced'}">
                       {{ licenceDetails.num_artesian_wells }} artesian wells in aquifer
@@ -214,8 +226,10 @@
               <h5 class="mt-3 border-bottom pb-4 main-title">Licensing Information</h5>
               <div>
                 <p>
-                  The licensing summaries should be considered estimates. Due to complexities in the structure
-                  of the licensing data, reported values should be confirmed through the
+                The licensing summaries should be considered estimates. Total volume is likely more
+                than what is indicated in charts due to domestic use and unprocessed licence applications.
+                Due to complexities in the structure of the licensing data,
+                reported values should be confirmed through the
                   <a href="https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&amp;PosseObjectDef=o_ATIS_DocumentSearch&amp;PosseMenuName=WS_Main" target="_blank" class="d-print-url">
                     e&#8209;licensing portal</a>.
                 </p>
@@ -223,11 +237,23 @@
               <ul class="ml-0 mr-0 mt-4 mb-0 p-0 aquifer-information-list">
                 <div class="aquifer-information-list-divider"></div>
                 <li>
-                  <dt>Number of groundwater licences</dt>
+                  <dt>Number of groundwater licences
+                  <i id="groundwater-licences-count" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+                  <b-popover
+                  target="groundwater-licences-count"
+                  triggers="hover focus"
+                  content="Text."/>
+                  </dt>
                   <dd class="m-0">{{ licenceDetails.licence_count }}</dd>
                 </li>
                 <li>
-                  <dt>Water withdrawal volume (annual)</dt>
+                  <dt>Water withdrawal volume (annual)
+                  <i id="water-withdrawal-volume" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+                  <b-popover
+                  target="water-withdrawal-volume"
+                  triggers="hover focus"
+                  content="Text."/>
+                  </dt>
                   <dd class="m-0" v-if="waterWithdrawlVolume">{{ waterWithdrawlVolume | unitWaterVolume}}</dd>
                   <dd class="m-0" v-else>No information available.</dd>
                 </li>
@@ -235,7 +261,13 @@
               <div v-if="licenceDetails.lic_qty.length > 0">
                 <b-row class="pt-5">
                   <b-col cols="12" md="6" lg="12" class="pb-5">
-                    <h5 class="pie-chart-title">Licensed volume by purpose (millions of cubic meters)</h5>
+                    <h5 class="pie-chart-title">Licensed volume by purpose (millions of cubic meters)
+                    <i id="licensed-volume-by-purpose" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+                    <b-popover
+                    target="licensed-volume-by-purpose"
+                    triggers="hover focus"
+                    content="Text."/>
+                    </h5>
                     <pie-chart
                       :data="licenceUsageChartData"
                       :labels="licenceUsageChartLabels"
@@ -243,7 +275,13 @@
                       class="mt-3"/>
                   </b-col>
                   <b-col cols="12" md="6" lg="12" class="pb-5">
-                    <h5 class="pie-chart-title">Number of licences by purpose</h5>
+                    <h5 class="pie-chart-title">Number of licences by purpose
+                    <i id="licences-by-purpose-count" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+                    <b-popover
+                    target="licences-by-purpose-count"
+                    triggers="hover focus"
+                    content="Text."/>
+                    </h5>
                     <pie-chart
                       :data="licenceQuantityChartData"
                       :labels="licenceQuantityChartLabels"
@@ -303,7 +341,13 @@
                     </dd>
                   </div>
                   <div class="observational-wells" v-else-if="section.key === 'obs-wells'">
-                    <dt class="text-right">Observation wells</dt>
+                    <dt class="text-right">Observation wells
+                    <i id="aquifer-observation-wells" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+                    <b-popover
+                    target="aquifer-observation-wells"
+                    triggers="hover focus"
+                    content="Text."/>
+                    </dt>
                     <dd class="m-0">
                       <div v-if="activeObsWells.length > 0">
                         <h6 class="border-bottom">Active</h6>
@@ -339,7 +383,13 @@
                     </dd>
                   </div>
                   <div class="water-quality-information" v-else-if="section.key === 'water-quality'">
-                    <dt class="text-right">Water quality information</dt>
+                    <dt class="text-right">Water quality information
+                    <i id="aquifer-water-quality-information" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+                    <b-popover
+                    target="aquifer-water-quality-information"
+                    triggers="hover focus"
+                    content="Text."/>
+                    </dt>
                     <dd class="m-0">
                       <router-link :to="{ name: 'wells-home', query: {'match_any':false, 'ems_has_value':true, 'aquifer': id}, hash: '#advanced'}">
                         {{ licenceDetails['num_wells_with_ems'] }} wells with an EMS ID
@@ -354,10 +404,19 @@
                         triggers="hover focus"
                         content="Inferred based on aquifer subtype - not field verified."/>
                     </dt>
-                    <dd class="m-0">{{ licenceDetails['hydraulically_connected'] ? "More likely" : "Less likely"}}</dd>
+                  <dd class="m-0"><a href="http://a100.gov.bc.ca/appsdata/acat/documents/r50832/HydraulicConnectMW3_1474311684426_4310694949.pdf" target="_blank" class="d-print-url">
+                    See Guidance on Determining Likelihood of Hydraulic Connection
+                    </a>
+                  </dd>
                   </div>
                   <div v-else>
-                    <dt class="text-right">{{ section.name }}</dt>
+                    <dt class="text-right">{{ section.name }}
+                    <i v-if="section.id" :id="section.id" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+                    <b-popover
+                    :target="section.id"
+                    triggers="hover focus"
+                    :content="section.text"/>
+                    </dt>
                     <dd class="m-0">
                       <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
                         <li><a :href="resource.url" @click="handleExternalResourceClicks" target="_blank" class="d-print-url">{{ resource.name }}</a></li>
@@ -430,14 +489,14 @@ export default {
       showSaveSuccess: false,
       aquifer_resource_sections: [
         { code: 'M', name: 'Advanced mapping' },
-        { code: 'A', name: 'Artesian advisory' },
-        { key: 'obs-wells', name: 'Oberservation Wells' },
-        { code: 'N', name: 'Numerical model' },
-        { code: 'P', name: 'Pumping stress index' },
-        { code: 'W', name: 'Water budget' },
-        { key: 'water-quality', name: 'Water quality information' },
+        { code: 'A', name: 'Drilling and operation advisory', id: 'aquifer-drilling-operation-advisory', text: 'Text.' },
+        { key: 'obs-wells', name: 'Oberservation Wells', id: 'aquifer-observation-wells', text: 'Text.' },
+        { code: 'N', name: 'Numerical model', id: 'aquifer-numerical-model', text: 'Text.' },
+        { code: 'P', name: 'Pumping stress index', id: 'aquifer-pumping-stress-index', text: 'Text.' },
+        { code: 'W', name: 'Water budget', id: 'aquifer-water-budget', text: 'Text.' },
+        { key: 'water-quality', name: 'Water quality information', id: 'aquifer-water-quality-information', text: 'Text.' },
         { key: 'aquifer-connected', name: 'Hydraulically connected (screening level)' },
-        { code: 'G', name: 'Groundwater Surface Water Interactions' },
+        { code: 'G', name: 'Groundwater Surface Water Interactions', id: 'aquifer-groundwater-surfacewater-interactions', text: 'Text.' },
         { code: 'I', name: 'Other information' }
       ],
       waterWithdrawlVolume: '',
