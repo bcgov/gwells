@@ -62,6 +62,7 @@
 <script>
 import ApiService from '@/common/services/ApiService.js'
 import { mapActions, mapGetters } from 'vuex'
+var retryAttempt = 1
 
 export default {
   props: {
@@ -97,6 +98,11 @@ export default {
       }).catch((e) => {
         console.error(e)
         this.error = 'Unable to retrieve file list.'
+        if (retryAttempt < 5) {
+          retryAttempt += 1
+          console.log('Load Files Retry: ' + retryAttempt)
+          this.loadFiles()
+        }
       }).finally(() => {
         this.loading = false
       })
