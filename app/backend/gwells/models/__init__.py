@@ -44,6 +44,7 @@ class Profile(models.Model, DBComments):
         primary_key=True, default=uuid.uuid4, editable=False)
     username = models.CharField(max_length=100, blank=True, null=True)
     name = models.CharField(max_length=100, blank=True, null=True)
+    silver_keycloak_id = models.CharField(max_length=150, unique=True, blank=True, null=True)
 
     db_table_comment = ('Additional user information that cannot be stored on the django auth_user table.')
 
