@@ -29,9 +29,9 @@ class JwtOidcAuthentication(JSONWebTokenAuthentication):
 
     def authenticate_credentials(self, payload):
         User = get_user_model()
-        # Get keycloak ID from JWT token
-        username = payload.get('sub')
-        if username is None:
+        # Get keycloak ID (if Silver) or {guid}@{idp} (if Gold) from JWT token
+        realm_user_id = payload.get('sub')
+        if realm_user_id is None:
             raise exceptions.AuthenticationFailed(
                 'JWT did not contain a "sub" attribute')
 
@@ -66,16 +66,25 @@ class JwtOidcAuthentication(JSONWebTokenAuthentication):
         if auth_time:
             auth_time = datetime.fromtimestamp(auth_time, tz=timezone.utc)
 
-        # NOTE: We assume that as part of the user migration process (yet to be provided/announced by the SSO team),
-        #         we'll be overwriting the User.username field (in the auth_user table) with the GUID.
-        #       The Silver Keycloak ID is preserved under Profile.silver_keycloak_id.
-        #       If we've switched over to Gold but haven't done this,
-        #         we'll end up with duplicate users whenever we call get_or_create().
-        #       (one with the GUID as the username, the other with the Keycloak ID)
-        #
-        # Get or create a user with the keycloak ID.
+        # Get or create a user with the keycloak ID (if Silver) or {guid}@{idp} (if Gold).
         try:
-            user, update = User.objects.get_or_create(username=username)
+            if self.is_gold_shared_realm(payload):
+                user, update = User.objects.get_or_create(username=realm_user_id)
+            else:
+                # During the Gold migration process, we'll be overwriting User.username with the GUID.
+                #   Prior to this, it would otherwise store the Keycloak ID.
+                # But if we're still in Silver but already overwrote it, how can we retrieve users with only the KID?
+                # Solution:
+                #   First grab the Profile using the KID,
+                #   then use profile.user_id to retrieve the User (joining on Profile.user_id = User.id).
+                try:
+                    profile = Profile.objects.get(silver_keycloak_id=realm_user_id)
+                    user = User.objects.get(id=profile.user_id)
+                    update = False
+                except Profile.DoesNotExist:
+                    # Provided Keycloak ID doesn't exist, so go ahead and create a new user as usual
+                    user = User.objects.create(username=realm_user_id)
+                    update = True
         except:
             raise exceptions.AuthenticationFailed(
                 'Failed to retrieve or create user')
@@ -114,10 +123,10 @@ class JwtOidcAuthentication(JSONWebTokenAuthentication):
         if self.is_gold_shared_realm(payload):
             identity_provider = payload.get('identity_provider')
             if identity_provider == 'idir':
-                username = payload.get('idir_username')
+                idp_username = payload.get('idir_username')
             else:
-                username = payload.get('bceid_username')
-            setattr(profile, 'username', f'{username}@{identity_provider}'.upper())
+                idp_username = payload.get('bceid_username')
+            profile.username = f'{idp_username}@{identity_provider}'.upper()
         if not profile.name and profile.username:
             # When the name of the user isn't available, fallback to the username
             profile.name = profile.username
