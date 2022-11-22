@@ -92,16 +92,25 @@ export default {
     ...mapGetters(['userRoles', 'keycloak'])
   },
   methods: {
+    // If file download is unsuccessful will retry up to 5 times or untill successful
+    // and refresh component with the response
     loadFiles () {
       ApiService.query('wells/' + this.well + '/files').then((response) => {
         this.files = response.data
       }).catch((e) => {
         console.error(e)
-        this.error = 'Unable to retrieve file list.'
-        if (retryAttempt < 5) {
-          retryAttempt += 1
-          console.log('Load Files Retry: ' + retryAttempt)
-          this.loadFiles()
+        this.error = 'Error: Refreshing document download'
+        while (this.error && retryAttempt < 5) {
+          console.log('attempting retry: ' + retryAttempt)
+          this.error = null
+          retryAttempt++
+          ApiService.query('wells/' + this.well + '/files').then((response) => {
+            this.files = response.data
+          }).catch((e) => {
+            this.error = 'Unable to retrieve files'
+            console.error(e)
+          }).finally(() => {
+          })
         }
       }).finally(() => {
         this.loading = false
