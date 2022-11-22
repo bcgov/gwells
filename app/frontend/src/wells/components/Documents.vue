@@ -109,7 +109,6 @@ export default {
           }).catch((e) => {
             this.error = 'Unable to retrieve files'
             console.error(e)
-          }).finally(() => {
           })
         }
       }).finally(() => {
