@@ -613,7 +613,7 @@ export default {
     formatDate: function (value) {
       if (!value) return ''
       value = new Date(value)
-      return value.getMonth() + '/' + value.getDate() + '/' + value.getFullYear()
+      return ((value.getMonth() + 1) + '/' + value.getDate() + '/' + value.getFullYear())
     }
   },
   methods: {

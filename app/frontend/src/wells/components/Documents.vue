@@ -62,8 +62,6 @@
 <script>
 import ApiService from '@/common/services/ApiService.js'
 import { mapActions, mapGetters } from 'vuex'
-var retryAttempt = 1
-
 export default {
   props: {
     well: {
@@ -94,27 +92,29 @@ export default {
   methods: {
     // If file download is unsuccessful will retry up to 5 times or untill successful
     // and refresh component with the response
-    loadFiles () {
-      ApiService.query('wells/' + this.well + '/files').then((response) => {
-        this.files = response.data
-      }).catch((e) => {
-        console.error(e)
-        this.error = 'Error: Refreshing document download'
-        while (this.error && retryAttempt < 5) {
-          console.log('attempting retry: ' + retryAttempt)
-          this.error = null
-          retryAttempt++
-          ApiService.query('wells/' + this.well + '/files').then((response) => {
+    async loadFiles () {
+      let response
+      let retryAttempt
+      for (retryAttempt = 0; retryAttempt < 5; retryAttempt++) {
+        try {
+          response = await ApiService.query('wells/' + this.well + '/files')
+          if (response) {
             this.files = response.data
-          }).catch((e) => {
-            this.error = 'Unable to retrieve files'
-            console.error(e)
-          })
+            this.error = null
+            break
+          }
+        } catch (e) {
+          console.log(`Attempting retry: ${retryAttempt + 1}`)
+          this.error = 'Document download failure. Attempting Retry'
+          console.error(e)
         }
-      }).finally(() => {
-        this.loading = false
-      })
+      }
+      if (retryAttempt === 5) {
+        this.error = 'Unable to retrieve files'
+      }
+      this.loading = false
     },
+
     ...mapActions('documentState',
       ['removeFileFromStore']
     ),
