@@ -214,8 +214,9 @@
               <h5 class="mt-3 border-bottom pb-4 main-title">Licensing Information</h5>
               <div>
                 <p>
-                  The licensing summaries should be considered estimates. Due to complexities in the structure
-                  of the licensing data, reported values should be confirmed through the
+                  The licensing summaries should be considered estimates. Total volume is likely more than what is indicated in charts due to
+                  domestic use and unprocessed licence applications. Due to complexities in the structure of the licensing data,
+                  reported values should be confirmed through the
                   <a href="https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&amp;PosseObjectDef=o_ATIS_DocumentSearch&amp;PosseMenuName=WS_Main" target="_blank" class="d-print-url">
                     e&#8209;licensing portal</a>.
                 </p>
