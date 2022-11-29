@@ -197,7 +197,6 @@ import features from '../../common/features'
 import { BC_LAT_LNG_BOUNDS, containsBounds } from '../../common/mapbox/geometry'
 
 const SEARCH_RESULTS_PER_PAGE = 10
-const HYDRAULICALLY_CONNECTED_CODE = 'Hydra'
 const URL_QS_SEARCH_KEYS = ['constrain', 'resources__section__code', 'match_any', 'search']
 
 const RESULTS_TABLE_FIELDS = [
@@ -223,9 +222,6 @@ export default {
     let query = this.$route.query
 
     let selectedSections = query.resources__section__code ? query.resources__section__code.split(',') : []
-    if (query.hydraulically_connected) {
-      selectedSections.push(HYDRAULICALLY_CONNECTED_CODE)
-    }
 
     return {
       sortBy: 'id',
@@ -360,10 +356,6 @@ export default {
     fetchResourceSections () {
       ApiService.query('aquifers/sections').then((response) => {
         let sections = (response.data || {}).results || []
-        sections.splice(2, 0, {
-          name: 'Hydraulically connected',
-          code: HYDRAULICALLY_CONNECTED_CODE
-        })
         this.addSections(sections)
       })
     },
