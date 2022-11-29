@@ -430,7 +430,7 @@ export default {
       showSaveSuccess: false,
       aquifer_resource_sections: [
         { code: 'M', name: 'Advanced mapping' },
-        { code: 'A', name: 'Artesian advisory' },
+        { code: 'A', name: 'Drilling and operation advisory' },
         { key: 'obs-wells', name: 'Oberservation Wells' },
         { code: 'N', name: 'Numerical model' },
         { code: 'P', name: 'Pumping stress index' },
