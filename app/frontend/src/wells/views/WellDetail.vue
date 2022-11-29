@@ -87,6 +87,17 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </b-row>
           <b-row>
             <b-col cols="12" md="4"><span class="font-weight-bold">Artesian Condition:</span> {{ well.artesian_conditions | nullBooleanToYesNo }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Technical Report:</span>
+              <!-- TODO update the if statements with efn report existing bool -->
+              <a
+                v-if="true"
+                id="technical_report"
+                href='https://www2.gov.bc.ca/gov/content/governments/about-the-bc-government/open-government/open-information/freedom-of-information/submit-a-general-freedom-of-information-request'
+                target="_blank"
+                rel="noopener noreferrer"
+              >Report Available</a>
+              <span v-if="!true"> N/A</span>
+            </b-col>
           </b-row>
         </fieldset>
 
