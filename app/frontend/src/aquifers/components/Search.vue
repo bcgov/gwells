@@ -364,6 +364,12 @@ export default {
           name: 'Hydraulically connected',
           code: HYDRAULICALLY_CONNECTED_CODE
         })
+        // remove pumping stress index option
+        const idx = sections.findIndex(s => s.code === 'P')
+        if(idx > -1) {
+          sections.splice(idx, 1);
+        }
+        // add sections to aquifers store
         this.addSections(sections)
       })
     },
