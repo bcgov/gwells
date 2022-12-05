@@ -49,7 +49,10 @@ class WellLocationSerializerV2(serializers.ModelSerializer):
             'city',
             'ems',
             'artesian',
-            'aquifer_id'
+            'aquifer_id',
+            'storativity',
+            'transmissivity',
+            'hydraulic_conductivity'
         )
 
     def get_artesian(self, obj):

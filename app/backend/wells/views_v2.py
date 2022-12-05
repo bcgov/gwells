@@ -151,6 +151,9 @@ class WellLocationListV2APIView(ListAPIView):
             "street_address",
             "city",
             "artesian_conditions",
+            "storativity",
+            "transmissivity",
+            "hydraulic_conductivity"
         ]
 
         locations = self.filter_queryset(qs)
