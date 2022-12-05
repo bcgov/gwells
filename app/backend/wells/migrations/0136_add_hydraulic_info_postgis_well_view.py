@@ -26,7 +26,12 @@ UPDATE_GWELLS_WELLS_VIEW_SQL = """
 """
 
 class Migration(migrations.Migration):
-
+    """
+    This migration adds the field 'has_hydraulic_info' to the gwells_well_view
+    under the postgis_ftw schema in the gwells database. The purpose of this field
+    is to check whether there is legacy pump test data for a well, and then display
+    a different well icon on the well search map if this data exists.
+    """
     dependencies = [
         ('wells', '0135_auto_20210804_2205'),
     ]
