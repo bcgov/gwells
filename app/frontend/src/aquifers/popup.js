@@ -84,6 +84,7 @@ export function createAquiferPopupElement (features, map, $router, options = {})
   const currentAquiferId = options.currentAquiferId || null
   const canInteract = Boolean(options.canInteract)
   const aquiferLayerIds = options.aquiferLayerIds || [ AQUIFERS_FILL_LAYER_ID ]
+  const aquiferNotations = options.aquiferNotations || ''
 
   const container = document.createElement('div')
   container.className = 'mapbox-popup-aquifer'
@@ -106,7 +107,7 @@ export function createAquiferPopupElement (features, map, $router, options = {})
     const item = {
       className: `${isRetired ? 'retired' : ''} ${isPublished ? 'published' : ''}`,
       route: linkToAquifer ? { name: 'aquifers-view', params: { id: aquiferId } } : null,
-      text: `Aquifer ${aquiferId}`,
+      text: `Aquifer ${aquiferId} -- Notations: ${aquiferNotations}`,
       suffix: [
         isRetired ? 'retired' : null,
         !isPublished ? 'unpublished' : null

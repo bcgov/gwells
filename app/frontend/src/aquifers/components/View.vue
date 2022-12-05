@@ -156,6 +156,7 @@
                 :aquifer-id="id"
                 :geom="record.geom"
                 :key="mapKey"
+                :aquifer-notations="aquiferNotations"
                 @mapLoading="loadingMap = true"
                 @mapLoaded="loadingMap = false"/>
             </b-col>
@@ -356,6 +357,16 @@
                     </dt>
                     <dd class="m-0">{{ licenceDetails['hydraulically_connected'] ? "More likely" : "Less likely"}}</dd>
                   </div>
+                  <div class="aquifer-notations" v-else-if="section.key === 'aquifer-notations'">
+                    <dt class="text-right">Aquifer notations
+                      <!-- <i id="aquiferNotations" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+                      <b-popover
+                        target="aquiferNotations"
+                        triggers="hover focus"
+                        content="Aquifer notations sourced from DataBC."/> -->
+                    </dt>
+                    <dd class="m-0">{{ aquiferNotations }}</dd>
+                  </div>
                   <div v-else>
                     <dt class="text-right">{{ section.name }}</dt>
                     <dd class="m-0">
@@ -434,6 +445,7 @@ export default {
         { key: 'obs-wells', name: 'Oberservation Wells' },
         { code: 'N', name: 'Numerical model' },
         { code: 'P', name: 'Pumping stress index' },
+        { key: 'aquifer-notations', name: 'Aquifer notations' },
         { code: 'W', name: 'Water budget' },
         { key: 'water-quality', name: 'Water quality information' },
         { key: 'aquifer-connected', name: 'Hydraulically connected (screening level)' },
@@ -476,7 +488,8 @@ export default {
     ...mapState('aquiferStore/view', [
       'record',
       'aquiferFiles',
-      'aquiferWells'
+      'aquiferWells',
+      'aquiferNotations'
     ]),
     ...mapState('aquiferStore/view', {
       storedId: 'id'
@@ -631,7 +644,8 @@ export default {
     ...mapMutations('aquiferStore/view', [
       'setAquiferRecord',
       'setAquiferFiles',
-      'setAquiferWells'
+      'setAquiferWells',
+      'setAquiferNotations'
     ]),
     loadForm () {
       this.loadingForm = true
@@ -732,6 +746,7 @@ export default {
       this.fetchAquifer()
       this.fetchWells()
       this.fetchFiles()
+      this.fetchAquiferNotations()
     },
     fetchAquifer (id = this.id) {
       this.loadingAquifer = true
@@ -769,6 +784,23 @@ export default {
           this.setAquiferFiles(response.data)
           this.loadingFiles = false
         })
+    },
+    fetchAquiferNotations (id = this.id) {
+      // fetch aquifer notations from DataBC
+      const url = "https://openmaps.gov.bc.ca/geo/pub/wfs?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature" +
+        "&outputFormat=json&srsName=epsg:4326&typeNames=WHSE_WATER_MANAGEMENT.WLS_WATER_NOTATION_AQUIFERS_SP" +
+          "&propertyName=AQUIFER_ID,NOTATION_ID,NOTATION_DESCRIPTION&CQL_FILTER=AQUIFER_ID=" + id
+      ApiService.query(url).then((response) => {
+        const data = response.data
+        // console.log(data)
+        if(data.features) {
+          const notations = data.features.map(f => f.properties.NOTATION_DESCRIPTION)
+          // console.log(notations)
+          this.setAquiferNotations(notations)
+        } else {
+          this.setAquiferNotations([])
+        }
+      }).catch(error => console.log(error))
     },
     fetchWells (id = this.id) {
       const maxResults = MAX_API_RESULT_AND_EXPORT_COUNT // the API max

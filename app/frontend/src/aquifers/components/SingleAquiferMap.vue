@@ -81,7 +81,7 @@ const CURRENT_AQUIFER_LINE_LAYER_ID = 'cur-aquifer-line'
 
 export default {
   name: 'SingleAquiferMap',
-  props: ['aquifer-id', 'geom'],
+  props: ['aquifer-id', 'geom', 'aquifer-notations'],
   data () {
     return {
       map: null,
@@ -353,7 +353,8 @@ export default {
       return createAquiferPopupElement(features, this.map, this.$router, {
         canInteract,
         currentAquiferId: this.aquiferId,
-        aquiferLayerIds: [ AQUIFERS_FILL_LAYER_ID, CURRENT_AQUIFER_FILL_LAYER_ID ]
+        aquiferLayerIds: [ AQUIFERS_FILL_LAYER_ID, CURRENT_AQUIFER_FILL_LAYER_ID ],
+        aquiferNotations: this.aquiferNotations
       })
     },
     createWellPopupElement (features, { canInteract }) {
