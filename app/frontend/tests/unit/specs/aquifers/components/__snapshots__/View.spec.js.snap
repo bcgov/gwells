@@ -1073,26 +1073,6 @@ exports[`View Component View mode matches the snapshot 1`] = `
                     <dt
                       class="text-right"
                     >
-                      Pumping stress index
-                    </dt>
-                     
-                    <dd
-                      class="m-0"
-                    >
-                       
-                      <p
-                        class="m-0"
-                      >
-                        No information available.
-                      </p>
-                    </dd>
-                  </div>
-                </li>
-                <li>
-                  <div>
-                    <dt
-                      class="text-right"
-                    >
                       Water budget
                     </dt>
                      
