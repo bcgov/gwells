@@ -1156,7 +1156,13 @@ exports[`View Component View mode matches the snapshot 1`] = `
                     <dd
                       class="m-0"
                     >
-                      More likely
+                      <a
+                        href="http://a100.gov.bc.ca/appsdata/acat/documents/r50832/HydraulicConnectMW3_1474311684426_4310694949.pdf"
+                        rel="noopener noreferrer"
+                        target="_blank"
+                      >
+                        See Guidance on Determining Likelihood of Hydraulic Connection
+                      </a>
                     </dd>
                   </div>
                 </li>
