@@ -579,8 +579,9 @@ exports[`View Component View mode matches the snapshot 1`] = `
               <div>
                 <p>
                   
-                The licensing summaries should be considered estimates. Due to complexities in the structure
-                of the licensing data, reported values should be confirmed through the
+                The licensing summaries should be considered estimates. Total volume is likely more than what is indicated in charts due to
+                domestic use and unprocessed licence applications. Due to complexities in the structure of the licensing data,
+                reported values should be confirmed through the
                 
                   <a
                     class="d-print-url"
