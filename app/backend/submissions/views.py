@@ -163,6 +163,64 @@ def get_submission_queryset(qs):
             ) \
             .order_by("filing_number")
 
+def propagate_submission_comments(request, separator="."):
+    """  
+    This method modifies the values of two attributes in the given request 
+    object ('comments' and 'internal comments').
+    For both attributes the new value is set to be the concatenation of a 
+    previous value (from an earlier Submission) with the value provided in 
+    the request parameter.
+    The following rules are used to decide which previous Submission to 
+    propagate from:
+     - Use the most recent Submission with activity code "STAFF_EDIT", 
+       or if no such records exist then...
+     - Use the original Submission (i.e. the oldest Submission)
+    If no previous submission matches either of the above criteria, 
+    then the request object isn't modified.
+    :param request: The Django request object to modify  
+    :return: Nothing (but the 'request' parameter object may be modified) 
+    """
+
+    # no well tag number specified, so do nothing
+    if not "well" in request.data:
+        return
+
+    attributes_to_propagate = ["comments", "internal_comments"]
+    well_tag_number = request.data['well']
+
+    # get a list of previous "STAFF_EDIT" Submissions (newest to oldest)
+    submissions = ActivitySubmission.objects\
+        .filter(
+            well=well_tag_number,
+            well_activity_type=WellActivityCode.types.staff_edit().code)\
+        .order_by('-create_date')
+    if not len(submissions):
+        # if no previous "STAFF_EDIT" Submissions, then get a list of *all*
+        # previous Submissions (oldest to newest)
+        submissions = ActivitySubmission.objects\
+            .filter(well=well_tag_number)\
+            .order_by('create_date')
+
+    submission_to_copy_from = submissions[0] if len(submissions) else None
+
+    # If found a previous Submission to propagate attribute values from,
+    # then set the values of the target attributes in the request object
+    # to the concatenation of [previous value] + [separator] + [new value]
+    if submission_to_copy_from:
+        # iterate over all the attributes that will be copied from the previous
+        # submission
+        for attr_name in attributes_to_propagate:
+            attr_value = getattr(submission_to_copy_from, attr_name)
+            if attr_value:
+                updated_value = attr_value.strip()
+                if attr_name in request.data and request.data[attr_name]:
+                    # concacatenate [previous value] + [separator] + [new value]
+                    if not updated_value.endswith(separator):
+                        updated_value += f"{separator}"
+                    updated_value += f" {request.data[attr_name]}"
+                # update the attribute value in the request object
+                request.data[attr_name] = updated_value
+
 
 class SubmissionGetAPIView(RetrieveAPIView):
     """Get a submission"""
@@ -282,6 +340,13 @@ class SubmissionAlterationAPIView(SubmissionBase):
     permission_classes = (WellsSubmissionPermissions,)
     queryset = ActivitySubmission.objects.all()
 
+    def post(self, request, *args, **kwargs):
+        # modify the request: copy the values of 'comments' and 'internal_comments'
+        # from the previous Submission into the current Submission (plus add any
+        # newly submitted comments).
+        propagate_submission_comments(request)
+        return super().post(request, *args, **kwargs)
+
     def get_queryset(self):
         return get_submission_queryset(self.queryset)\
             .filter(well_activity_type=WellActivityCode.types.alteration())
@@ -294,6 +359,13 @@ class SubmissionDecommissionAPIView(SubmissionBase):
     serializer_class = WellDecommissionSubmissionSerializer
     permission_classes = (WellsSubmissionPermissions,)
     queryset = ActivitySubmission.objects.all()
+
+    def post(self, request, *args, **kwargs):
+        # modify the request: copy the values of 'comments' and 'internal_comments'
+        # from the previous Submission into the current Submission (plus add any
+        # newly submitted comments).
+        propagate_submission_comments(request)
+        return super().post(request, *args, **kwargs)
 
     def get_queryset(self):
         return get_submission_queryset(self.queryset)\
