@@ -177,7 +177,9 @@ def propagate_submission_comments(request, separator="."):
      - Use the original Submission (i.e. the oldest Submission)
     If no previous submission matches either of the above criteria, 
     then the request object isn't modified.
-    :param request: The Django request object to modify  
+    :param request: The Django request object to modify 
+    :param separator: A string to insert between the previous value 
+    and the provided value.
     :return: Nothing (but the 'request' parameter object may be modified) 
     """
 
@@ -187,7 +189,7 @@ def propagate_submission_comments(request, separator="."):
 
     attributes_to_propagate = ["comments", "internal_comments"]
     well_tag_number = request.data['well']
-
+    
     # get a list of previous "STAFF_EDIT" Submissions (newest to oldest)
     submissions = ActivitySubmission.objects\
         .filter(
@@ -207,6 +209,7 @@ def propagate_submission_comments(request, separator="."):
     # then set the values of the target attributes in the request object
     # to the concatenation of [previous value] + [separator] + [new value]
     if submission_to_copy_from:
+        separator_ends_with_whitespace = separator != separator.rstrip()
         # iterate over all the attributes that will be copied from the previous
         # submission
         for attr_name in attributes_to_propagate:
@@ -214,10 +217,13 @@ def propagate_submission_comments(request, separator="."):
             if attr_value:
                 updated_value = attr_value.strip()
                 if attr_name in request.data and request.data[attr_name]:
-                    # concacatenate [previous value] + [separator] + [new value]
+                    # concacatenate [previous value] + [separator] + 
+                    #   [space] + [new value]
                     if not updated_value.endswith(separator):
                         updated_value += f"{separator}"
-                    updated_value += f" {request.data[attr_name]}"
+                    if not separator_ends_with_whitespace:
+                        updated_value += " "
+                    updated_value += request.data[attr_name]
                 # update the attribute value in the request object
                 request.data[attr_name] = updated_value
 
