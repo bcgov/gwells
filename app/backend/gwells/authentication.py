@@ -82,9 +82,8 @@ class JwtOidcAuthentication(JSONWebTokenAuthentication):
                     user = User.objects.get(id=profile.user_id)
                     update = False
                 except Profile.DoesNotExist:
-                    # Provided Keycloak ID doesn't exist, so go ahead and create a new user as usual
-                    user = User.objects.create(username=realm_user_id)
-                    update = True
+                    # Profile (and therefore User) doesn't exist, so go ahead and create a new user as usual
+                    user, update = User.objects.get_or_create(username=realm_user_id)
         except:
             raise exceptions.AuthenticationFailed(
                 'Failed to retrieve or create user')
