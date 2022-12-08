@@ -62,7 +62,6 @@
 <script>
 import ApiService from '@/common/services/ApiService.js'
 import { mapActions, mapGetters } from 'vuex'
-
 export default {
   props: {
     well: {
@@ -91,16 +90,31 @@ export default {
     ...mapGetters(['userRoles', 'keycloak'])
   },
   methods: {
-    loadFiles () {
-      ApiService.query('wells/' + this.well + '/files').then((response) => {
-        this.files = response.data
-      }).catch((e) => {
-        console.error(e)
-        this.error = 'Unable to retrieve file list.'
-      }).finally(() => {
-        this.loading = false
-      })
+    // If file download is unsuccessful will retry up to 5 times or untill successful
+    // and refresh component with the response
+    async loadFiles () {
+      let response
+      let retryAttempt
+      for (retryAttempt = 0; retryAttempt < 5; retryAttempt++) {
+        try {
+          response = await ApiService.query('wells/' + this.well + '/files')
+          if (response) {
+            this.files = response.data
+            this.error = null
+            break
+          }
+        } catch (e) {
+          console.log(`Attempting retry: ${retryAttempt + 1}`)
+          this.error = 'Document download failure. Attempting Retry'
+          console.error(e)
+        }
+      }
+      if (retryAttempt === 5) {
+        this.error = 'Unable to retrieve files'
+      }
+      this.loading = false
     },
+
     ...mapActions('documentState',
       ['removeFileFromStore']
     ),
