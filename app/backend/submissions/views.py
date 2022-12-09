@@ -168,13 +168,15 @@ def propagate_submission_comments(request, separator="."):
     This method modifies the values of two attributes in the given request 
     object ('comments' and 'internal comments').
     For both attributes the new value is set to be the concatenation of a 
-    previous value (from an earlier Submission) with the value provided in 
-    the request parameter.
-    The following rules are used to decide which previous Submission to 
-    propagate from:
+    previous value (from an earlier Submission or from the Well record) 
+    with the value provided in the request parameter.
+    The following rules are used to decide which previous Submission or 
+    Well record to propagate from:
      - Use the most recent Submission with activity code "STAFF_EDIT", 
-       or if no such records exist then...
-     - Use the original Submission (i.e. the oldest Submission)
+       or if no such record exists then...
+     - Use the oldest Submission, or if there is no existing Submission 
+       then...
+     - Use the well record
     If no previous submission matches either of the above criteria, 
     then the request object isn't modified.
     :param request: The Django request object to modify 
@@ -189,7 +191,8 @@ def propagate_submission_comments(request, separator="."):
 
     attributes_to_propagate = ["comments", "internal_comments"]
     well_tag_number = request.data['well']
-    
+    record_to_copy_from = None #may be ActivitySubmission model or Well model
+
     # get a list of previous "STAFF_EDIT" Submissions (newest to oldest)
     submissions = ActivitySubmission.objects\
         .filter(
@@ -197,23 +200,31 @@ def propagate_submission_comments(request, separator="."):
             well_activity_type=WellActivityCode.types.staff_edit().code)\
         .order_by('-create_date')
     if not len(submissions):
-        # if no previous "STAFF_EDIT" Submissions, then get a list of *all*
+        # no previous "STAFF_EDIT" Submissions, so get a list of *all*
         # previous Submissions (oldest to newest)
         submissions = ActivitySubmission.objects\
             .filter(well=well_tag_number)\
             .order_by('create_date')
 
-    submission_to_copy_from = submissions[0] if len(submissions) else None
+    if not len(submissions):
+        # if no previous Submisions are available to copy from, use the
+        # Well record
+        record_to_copy_from = Well.objects\
+            .get(well_tag_number=well_tag_number)      
+    else:
+        record_to_copy_from = submissions[0]
+        
 
-    # If found a previous Submission to propagate attribute values from,
-    # then set the values of the target attributes in the request object
-    # to the concatenation of [previous value] + [separator] + [new value]
-    if submission_to_copy_from:
+    # If found a previous Submission or Well to propagate attribute values from,
+    # then override the values of the target attributes in the request object
+    # to be the concatenation of [previous value] + [separator] + [space] 
+    #  + [new value]
+    if record_to_copy_from:
         separator_ends_with_whitespace = separator != separator.rstrip()
         # iterate over all the attributes that will be copied from the previous
         # submission
         for attr_name in attributes_to_propagate:
-            attr_value = getattr(submission_to_copy_from, attr_name)
+            attr_value = getattr(record_to_copy_from, attr_name)
             if attr_value:
                 updated_value = attr_value.strip()
                 if attr_name in request.data and request.data[attr_name]:
