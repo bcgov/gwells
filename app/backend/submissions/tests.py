@@ -754,14 +754,10 @@ class TestAlteration(TestSubmissionsBase):
         """
         Tests that the 'comments' and 'internal_comments' submitted with 
         an alteration report are concatenated onto pre-existing values
-        from an earlier submission.
-        Note: The rules to determine which previous submission to copy 
-        'comments' from are:
-        - copy from the newest STAFF_EDIT submission.  
-        - if no STAFF_EDIT submissions, copy from the oldest submission 
-          (the legacy submission or the construction submission). 
-        - if no submissions at all, copy from the well record.           
-        This test triggers the second rule (copy from a construction submission). 
+        from the previous submission (or from the well record if no previous
+        submission exists).                  
+        In this test, comments from a previous construction report
+        are included in the following alteration report.
         """
         # submit a construction report
         construction_data = {
@@ -803,14 +799,10 @@ class TestAlteration(TestSubmissionsBase):
         """
         Tests that the 'comments' and 'internal_comments' submitted with 
         an alteration report are concatenated onto pre-existing values
-        from an earlier submission.
-        Note: The rules to determine which previous submission to copy 
-        'comments' from are:
-        - copy from the newest STAFF_EDIT submission.  
-        - if no STAFF_EDIT submissions, copy from the oldest submission 
-          (the legacy submission or the construction submission).
-        - if no submissions at all, copy from the well record. 
-        This test triggers the third rule (copy from the well record). 
+        from an earlier submission (or from the well record if no previous
+        submission exists).        
+        In this test, no previous submission exists, so comments are copied
+        from the well record.
         """
         well = Well.objects.create(
             create_user=self.user.username,
@@ -846,6 +838,78 @@ class TestAlteration(TestSubmissionsBase):
         self.assertTrue(alteration.internal_comments.endswith(
             alteration_data.get("internal_comments")))            
 
+    def test_comments_propagated_with_alteration_3(self):
+        """
+        Tests that the 'comments' and 'internal_comments' submitted with 
+        an alteration report are concatenated onto pre-existing values
+        from an earlier submission (or from the well record if no previous
+        submission exists).        
+        In this test, there is an original well record and two alteration 
+        reports.  Comments from the original record should be copied to the first
+        alteration report, and comments from both the original record and the first
+        alteration report should be present in the second report.
+        """
+        well = Well.objects.create(
+            create_user=self.user.username,
+            update_user=self.user.username,
+            comments="original comments",
+            internal_comments="original internal comments"
+        )
+        well_tag_number = well.well_tag_number
+
+        # submit alteration report #1
+        alteration_data_1 = {
+            'well': well_tag_number,
+            'comments': 'alteration comments 1',
+            'internal_comments': 'alteration internal comments 1'
+        }
+        alteration_response_1 = self.client.post(
+            reverse(WELL_ACTIVITY_CODE_ALTERATION, kwargs={'version': 'v1'}), alteration_data_1, format='json')
+        self.assertEqual(alteration_response_1.status_code,
+                         status.HTTP_201_CREATED)
+
+        # confirm that the comments in the first alteration report are correct
+        alteration_1 = ActivitySubmission.objects.get(
+            filing_number=alteration_response_1.data['filing_number'])
+
+        self.assertTrue(alteration_1.comments.startswith(
+            "original comments"))
+        self.assertTrue(alteration_1.comments.endswith(
+            alteration_data_1.get("comments")))
+        self.assertTrue(alteration_1.internal_comments.startswith(
+            "original internal comments"))
+        self.assertTrue(alteration_1.internal_comments.endswith(
+            alteration_data_1.get("internal_comments")))   
+
+        print(f"alteration 1 comments: {alteration_1.comments}")
+        print(f"alteration 1 internal comments: {alteration_1.internal_comments}")
+
+        # submit alteration report #2
+        alteration_data_2 = {
+            'well': well_tag_number,
+            'comments': 'alteration comments 2',
+            'internal_comments': 'alteration internal comments 2'
+        }
+        alteration_response_2 = self.client.post(
+            reverse(WELL_ACTIVITY_CODE_ALTERATION, kwargs={'version': 'v1'}), alteration_data_2, format='json')
+        self.assertEqual(alteration_response_2.status_code,
+                         status.HTTP_201_CREATED)
+ 
+        # confirm that the comments in the second alteration report are correct
+        alteration_2 = ActivitySubmission.objects.get(
+            filing_number=alteration_response_2.data['filing_number'])
+        print(f"alteration 2 comments: {alteration_2.comments}")
+        print(f"alteration 2 internal comments: {alteration_2.internal_comments}")
+
+        self.assertTrue(alteration_2.comments.startswith(
+            alteration_1.comments))
+        self.assertTrue(alteration_2.comments.endswith(
+            alteration_data_2.get("comments")))
+        self.assertTrue(alteration_2.internal_comments.startswith(
+            alteration_1.internal_comments))
+        self.assertTrue(alteration_2.internal_comments.endswith(
+            alteration_data_2.get("internal_comments")))   
+
     def test_no_comments_propagated_with_alteration_of_unknown_well(self):
         """
         Tests that an alteration report with no well_tag_number
@@ -876,14 +940,10 @@ class TestAlteration(TestSubmissionsBase):
         """
         Tests that the 'comments' and 'internal_comments' submitted with 
         a decommission report are concatenated onto pre-existing values
-        from an earlier submission.
-        Note: The rules to determine which previous submission to copy 
-        'comments' from are:
-        - copy from the newest STAFF_EDIT submission.  
-        - if no STAFF_EDIT submissions, copy from the oldest submission 
-          (the legacy submission or the construction submission). 
-        - if no submissions at all, copy from the well record.           
-        This test triggers the first rule (copy from the STAFF_EDIT). 
+        from an earlier submission (or from the well record if no previous
+        submission exists).        
+        In this test, comments from a previous staff edit
+        are included in the following decommission report.
         """
         well = Well.objects.create(
             create_user=self.user.username,

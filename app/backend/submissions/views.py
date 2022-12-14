@@ -168,17 +168,9 @@ def propagate_submission_comments(request, separator="."):
     This method modifies the values of two attributes in the given request 
     object ('comments' and 'internal comments').
     For both attributes the new value is set to be the concatenation of a 
-    previous value (from an earlier Submission or from the Well record) 
-    with the value provided in the request parameter.
-    The following rules are used to decide which previous Submission or 
-    Well record to propagate from:
-     - Use the most recent Submission with activity code "STAFF_EDIT", 
-       or if no such record exists then...
-     - Use the oldest Submission, or if there is no existing Submission 
-       then...
-     - Use the well record
-    If no previous submission matches either of the above criteria, 
-    then the request object isn't modified.
+    previous value (from the previous Submission, if there is one, 
+    or from the Well record) with the value provided in the request 
+    parameter.
     :param request: The Django request object to modify 
     :param separator: A string to insert between the previous value 
     and the provided value.
@@ -193,26 +185,20 @@ def propagate_submission_comments(request, separator="."):
     well_tag_number = request.data['well']
     record_to_copy_from = None #may be ActivitySubmission model or Well model
 
-    # get a list of previous "STAFF_EDIT" Submissions (newest to oldest)
+    # get a list of previous Submissions (newest to oldest)
     submissions = ActivitySubmission.objects\
-        .filter(
-            well=well_tag_number,
-            well_activity_type=WellActivityCode.types.staff_edit().code)\
+        .filter(well=well_tag_number)\
         .order_by('-create_date')
-    if not len(submissions):
-        # no previous "STAFF_EDIT" Submissions, so get a list of *all*
-        # previous Submissions (oldest to newest)
-        submissions = ActivitySubmission.objects\
-            .filter(well=well_tag_number)\
-            .order_by('create_date')
 
-    if not len(submissions):
+    if len(submissions):
+        #select the newest Submission
+        record_to_copy_from = submissions[0]
+    else:
         # if no previous Submisions are available to copy from, use the
         # Well record
         record_to_copy_from = Well.objects\
             .get(well_tag_number=well_tag_number)      
-    else:
-        record_to_copy_from = submissions[0]
+        
         
 
     # If found a previous Submission or Well to propagate attribute values from,
