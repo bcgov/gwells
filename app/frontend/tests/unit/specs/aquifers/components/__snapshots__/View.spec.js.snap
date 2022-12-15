@@ -341,7 +341,20 @@ exports[`View Component View mode matches the snapshot 1`] = `
                     <div
                       class="col-md-3 col-lg-6 col-6"
                     >
-                      Vulnerability
+                      
+                    Vulnerability
+                    
+                      <i
+                        class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                        id="vulnerability-info"
+                        tabindex="0"
+                      />
+                       
+                      <b-popover-stub
+                        content="The susceptibility of an aquifer to contamination from surface sources. Three vulnerability categories are used: high, moderate, or low. Vulnerability is based on hydrogeology alone and does not consider the existing type of land use or nature of the potential contaminants."
+                        target="vulnerability-info"
+                        triggers="hover focus"
+                      />
                     </div>
                      
                     <div
@@ -369,7 +382,32 @@ exports[`View Component View mode matches the snapshot 1`] = `
                     <div
                       class="col-md-3 col-lg-6 col-6"
                     >
-                      Subtype
+                      
+                    Subtype
+                    
+                      <i
+                        class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                        id="aquifer-subtype-info"
+                        tabindex="0"
+                      />
+                       
+                      <b-popover-stub
+                        target="aquifer-subtype-info"
+                        triggers="hover focus"
+                      >
+                        
+                      There are different types of aquifers, depending on the geologic materials in which they occur. Subtype descriptions can be
+                      
+                        <a
+                          class="d-print-url"
+                          href="https://www2.gov.bc.ca/gov/content/environment/air-land-water/water/groundwater-wells-aquifers/understanding-aquifers/aquifer-subtype-code-description"
+                          target="_blank"
+                        >
+                          found here
+                        </a>
+                        .
+                    
+                      </b-popover-stub>
                     </div>
                      
                     <div
@@ -385,7 +423,32 @@ exports[`View Component View mode matches the snapshot 1`] = `
                     <div
                       class="col-md-3 col-lg-6 col-6"
                     >
-                      Quality concerns
+                      
+                    Quality concerns
+                    
+                      <i
+                        class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                        id="aquifer-quality-concerns"
+                        tabindex="0"
+                      />
+                       
+                      <b-popover-stub
+                        target="aquifer-quality-concerns"
+                        triggers="hover focus"
+                      >
+                        
+                      Classified as unknown/none, isolated, local, or regional. For details see page 16 of the Guide to Using the
+                      
+                        <a
+                          class="d-print-url"
+                          href="https://www2.gov.bc.ca/assets/gov/environment/air-land-water/water/science-data/aquifer_maps_guide.pdf"
+                          target="_blank"
+                        >
+                          BC Aquifer Classification System
+                        </a>
+                        .
+                    
+                      </b-popover-stub>
                     </div>
                      
                     <div
@@ -397,7 +460,20 @@ exports[`View Component View mode matches the snapshot 1`] = `
                     <div
                       class="col-md-3 col-lg-6 col-6"
                     >
-                      Productivity
+                      
+                    Productivity
+                    
+                      <i
+                        class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                        id="productivity-info"
+                        tabindex="0"
+                      />
+                       
+                      <b-popover-stub
+                        content="Productivity describes the rate of groundwater flow from wells and springs and the abundance of groundwater in an aquifer. Classified as low, medium, or high."
+                        target="productivity-info"
+                        triggers="hover focus"
+                      />
                     </div>
                      
                     <div
@@ -485,6 +561,18 @@ exports[`View Component View mode matches the snapshot 1`] = `
                 <li>
                   <dt>
                     Number of wells correlated to the aquifer
+                  
+                    <i
+                      class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                      id="correlated-wells-count"
+                      tabindex="0"
+                    />
+                     
+                    <b-popover-stub
+                      content="The total number of wells that fall within the aquifer boundaries and, based on depth and lithology, are believed to withdraw water from that aquifer."
+                      target="correlated-wells-count"
+                      triggers="hover focus"
+                    />
                   </dt>
                    
                   <dd
@@ -530,6 +618,18 @@ exports[`View Component View mode matches the snapshot 1`] = `
                 <li>
                   <dt>
                     Artesian wells
+                  
+                    <i
+                      class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                      id="artesian-wells"
+                      tabindex="0"
+                    />
+                     
+                    <b-popover-stub
+                      content="A flowing artesian well is one that has been drilled into an aquifer where the pressure within the aquifer forces the groundwater to rise above the land surface naturally without using a pump."
+                      target="artesian-wells"
+                      triggers="hover focus"
+                    />
                   </dt>
                    
                   <dd
@@ -982,6 +1082,18 @@ exports[`View Component View mode matches the snapshot 1`] = `
                       class="text-right"
                     >
                       Observation wells
+                    
+                      <i
+                        class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                        id="aquifer-observation-wells"
+                        tabindex="0"
+                      />
+                       
+                      <b-popover-stub
+                        content="Groundwater Observation Wells are used to monitor aquifer groundwater levels and chemistry over time."
+                        target="aquifer-observation-wells"
+                        triggers="hover focus"
+                      />
                     </dt>
                      
                     <dd
@@ -1049,11 +1161,25 @@ exports[`View Component View mode matches the snapshot 1`] = `
                   </div>
                 </li>
                 <li>
-                  <div>
+                  <div
+                    class="aquifer-numerical-model"
+                  >
                     <dt
                       class="text-right"
                     >
-                      Numerical model
+                      Numerical Model
+                    
+                      <i
+                        class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                        id="aquiferNumericalModel"
+                        tabindex="0"
+                      />
+                       
+                      <b-popover-stub
+                        content="Numerical groundwater flow models are mathematical representations of groundwater flow in an aquifer and the interactions with adjacent surface water bodies."
+                        target="aquiferNumericalModel"
+                        triggers="hover focus"
+                      />
                     </dt>
                      
                     <dd
@@ -1089,11 +1215,25 @@ exports[`View Component View mode matches the snapshot 1`] = `
                   </div>
                 </li>
                 <li>
-                  <div>
+                  <div
+                    class="aquifer-water-budget"
+                  >
                     <dt
                       class="text-right"
                     >
-                      Water budget
+                      Water Budget
+                    
+                      <i
+                        class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                        id="aquiferWaterBudget"
+                        tabindex="0"
+                      />
+                       
+                      <b-popover-stub
+                        content="Water budget studies are an accounting of all the water flowing into and out of an aquifer and/or a watershed over a specified time."
+                        target="aquiferWaterBudget"
+                        triggers="hover focus"
+                      />
                     </dt>
                      
                     <dd
@@ -1116,6 +1256,18 @@ exports[`View Component View mode matches the snapshot 1`] = `
                       class="text-right"
                     >
                       Water quality information
+                    
+                      <i
+                        class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                        id="aquiferWaterQualityInformation"
+                        tabindex="0"
+                      />
+                       
+                      <b-popover-stub
+                        content="Indicates there are wells correlated to the aquifer with water quality information in the Environmental Monitoring System (EMS) database."
+                        target="aquiferWaterQualityInformation"
+                        triggers="hover focus"
+                      />
                     </dt>
                      
                     <dd
@@ -1147,7 +1299,7 @@ exports[`View Component View mode matches the snapshot 1`] = `
                       />
                        
                       <b-popover-stub
-                        content="Inferred based on aquifer subtype - not field verified."
+                        content="Likelihood of hydraulic connection between groundwater and surface water requires aquifer specific assessment and professional judgement. "
                         target="aquiferConnectedInfo"
                         triggers="hover focus"
                       />
@@ -1161,11 +1313,25 @@ exports[`View Component View mode matches the snapshot 1`] = `
                   </div>
                 </li>
                 <li>
-                  <div>
+                  <div
+                    class="aquifer-groundwater-surface-interactions"
+                  >
                     <dt
                       class="text-right"
                     >
-                      Groundwater Surface Water Interactions
+                      Water Budget
+                    
+                      <i
+                        class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                        id="aquiferGroundwaterSurfaceInteractions"
+                        tabindex="0"
+                      />
+                       
+                      <b-popover-stub
+                        content="Studies that characterize the exchange of water and/or chemicals between the land surface and the subsurface."
+                        target="aquiferGroundwaterSurfaceInteractions"
+                        triggers="hover focus"
+                      />
                     </dt>
                      
                     <dd
