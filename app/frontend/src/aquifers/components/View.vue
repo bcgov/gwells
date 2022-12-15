@@ -228,7 +228,7 @@
                   </dd>
                 </li>
                 <li>
-                  <dt>Artesian wells
+                  <dt>Flowing artesian wells
                     <i id="artesian-wells" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
                     <b-popover
                       target="artesian-wells"
