@@ -91,7 +91,7 @@ export default {
             },
             {
               imageSrc: wellsHydraulicLegendSrc,
-              label: 'c.s.t.'
+              label: 'K.S.T.'
             }
           ]
         }
