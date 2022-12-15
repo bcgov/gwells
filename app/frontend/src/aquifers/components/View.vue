@@ -359,11 +359,11 @@
                   </div>
                   <div class="aquifer-notations" v-else-if="section.key === 'aquifer-notations'">
                     <dt class="text-right">Aquifer notations
-                      <!-- <i id="aquiferNotations" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+                      <i id="aquiferNotations" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
                       <b-popover
                         target="aquiferNotations"
                         triggers="hover focus"
-                        content="Aquifer notations sourced from DataBC."/> -->
+                        content="Water allocation notations are a water management tool that indicates a potential lack of water availability/quality in a source."/>
                     </dt>
                     <dd class="m-0">{{ aquiferNotations }}</dd>
                   </div>
