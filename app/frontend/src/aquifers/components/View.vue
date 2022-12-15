@@ -459,6 +459,21 @@
                       <p class="m-0" v-if="!bySection(record.resources, section).length">No information available.</p>
                     </dd>
                   </div>
+                  <div class="aquifer-artesian-advisory" v-else-if="section.code === 'A'">
+                    <dt class="text-right">Drilling and operation advisory
+                      <i id="aquiferArtesianAdvisory" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+                      <b-popover
+                        target="aquiferArtesianAdvisory"
+                        triggers="hover focus"
+                        content="Advisories highlighting regional concerns about water availability, water quality, and flowing artesian conditions."/>
+                    </dt>
+                    <dd class="m-0">
+                      <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
+                        <li><a :href="resource.url" @click="handleExternalResourceClicks" target="_blank" class="d-print-url">{{ resource.name }}</a></li>
+                      </ul>
+                      <p class="m-0" v-if="!bySection(record.resources, section).length">No information available.</p>
+                    </dd>
+                  </div>
                   <div v-else>
                     <dt class="text-right">{{ section.name }}</dt>
                     <dd class="m-0">
