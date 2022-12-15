@@ -617,7 +617,7 @@ exports[`View Component View mode matches the snapshot 1`] = `
                  
                 <li>
                   <dt>
-                    Artesian wells
+                    Flowing artesian wells
                   
                     <i
                       class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
@@ -1055,11 +1055,25 @@ exports[`View Component View mode matches the snapshot 1`] = `
                   </div>
                 </li>
                 <li>
-                  <div>
+                  <div
+                    class="aquifer-artesian-advisory"
+                  >
                     <dt
                       class="text-right"
                     >
-                      Artesian advisory
+                      Drilling and operation advisory
+                    
+                      <i
+                        class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                        id="aquiferArtesianAdvisory"
+                        tabindex="0"
+                      />
+                       
+                      <b-popover-stub
+                        content="Advisories highlighting regional concerns about water availability, water quality, and flowing artesian conditions."
+                        target="aquiferArtesianAdvisory"
+                        triggers="hover focus"
+                      />
                     </dt>
                      
                     <dd
