@@ -639,6 +639,7 @@ class WellDetailSerializer(AuditModelSerializer):
             "well_disinfected_status",
             "comments",
             "alternative_specs_submitted",
+            "technical_report",
             "well_yield_unit",
             "diameter",
             "observation_well_number",

@@ -282,6 +282,7 @@ class WellListSerializerV2(serializers.ModelSerializer):
             "well_disinfected_status",
             "static_water_level",
             "alternative_specs_submitted",
+            "technical_report",
         )
 
 

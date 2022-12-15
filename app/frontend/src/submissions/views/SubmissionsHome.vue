@@ -526,6 +526,7 @@ export default {
         comments: '',
         internal_comments: '',
         alternative_specs_submitted: false,
+        technical_report: false,
         decommission_description_set: [],
         decommission_reason: '',
         decommission_method: '',
