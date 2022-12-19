@@ -401,7 +401,10 @@ import Documents from './Documents.vue'
 import SingleAquiferMap from './SingleAquiferMap.vue'
 import PieChart from './PieChart.vue'
 import ObservationWell from './ObservationWell.vue'
-import { MAX_API_RESULT_AND_EXPORT_COUNT } from '@/common/constants'
+import {
+  MAX_API_RESULT_AND_EXPORT_COUNT,
+  AQUIFER_NOTATION_CODES
+} from '@/common/constants'
 
 const ONE_MILLION = 1 * 1000 * 1000
 
@@ -792,15 +795,25 @@ export default {
           "&propertyName=AQUIFER_ID,NOTATION_ID,NOTATION_DESCRIPTION&CQL_FILTER=AQUIFER_ID=" + id
       ApiService.query(url).then((response) => {
         const data = response.data
-        // console.log(data)
-        if(data.features) {
+        if (data.features) {
           const notations = data.features.map(f => f.properties.NOTATION_DESCRIPTION)
-          // console.log(notations)
-          this.setAquiferNotations(notations)
+          const notationLongNames = this.filterAquiferNotations(notations)
+          this.setAquiferNotations(notationLongNames)
         } else {
           this.setAquiferNotations([])
         }
       }).catch(error => console.log(error))
+    },
+    filterAquiferNotations (notations) {
+      let descriptions = ''
+      notations.forEach(notation => {
+        for (const [key, value] of Object.entries(AQUIFER_NOTATION_CODES)) {
+          if (notation.includes(key)) {
+            descriptions = descriptions + value + ''
+          }
+        }
+      })
+      return descriptions
     },
     fetchWells (id = this.id) {
       const maxResults = MAX_API_RESULT_AND_EXPORT_COUNT // the API max
