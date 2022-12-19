@@ -459,6 +459,7 @@ exports[`View Component View mode matches the snapshot 1`] = `
                
               <single-aquifer-map-stub
                 aquiferid="4"
+                aquifernotations=""
               />
             </div>
           </div>
@@ -1085,6 +1086,35 @@ exports[`View Component View mode matches the snapshot 1`] = `
                       >
                         No information available.
                       </p>
+                    </dd>
+                  </div>
+                </li>
+                <li>
+                  <div
+                    class="aquifer-notations"
+                  >
+                    <dt
+                      class="text-right"
+                    >
+                      Aquifer notations
+                    
+                      <i
+                        class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                        id="aquiferNotations"
+                        tabindex="0"
+                      />
+                       
+                      <b-popover-stub
+                        content="Water allocation notations are a water management tool that indicates a potential lack of water availability/quality in a source."
+                        target="aquiferNotations"
+                        triggers="hover focus"
+                      />
+                    </dt>
+                     
+                    <dd
+                      class="m-0"
+                    >
+                      []
                     </dd>
                   </div>
                 </li>

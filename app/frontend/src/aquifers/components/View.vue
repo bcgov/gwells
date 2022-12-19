@@ -365,7 +365,7 @@
                         triggers="hover focus"
                         content="Water allocation notations are a water management tool that indicates a potential lack of water availability/quality in a source."/>
                     </dt>
-                    <dd class="m-0">{{ aquiferNotations || 'No notation currently assigned.'}}</dd>
+                    <dd class="m-0">{{ aquiferNotations || 'No notation currently assigned.' }}</dd>
                   </div>
                   <div v-else>
                     <dt class="text-right">{{ section.name }}</dt>
