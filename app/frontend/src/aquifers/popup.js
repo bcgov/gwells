@@ -107,7 +107,7 @@ export function createAquiferPopupElement (features, map, $router, options = {})
     const item = {
       className: `${isRetired ? 'retired' : ''} ${isPublished ? 'published' : ''}`,
       route: linkToAquifer ? { name: 'aquifers-view', params: { id: aquiferId } } : null,
-      text: `Aquifer ${aquiferId} -- Notations: ${aquiferNotations}`,
+      text: `Aquifer ${aquiferId} ${aquiferNotations ? '-- ' : ''}${aquiferNotations}`,
       suffix: [
         isRetired ? 'retired' : null,
         !isPublished ? 'unpublished' : null
