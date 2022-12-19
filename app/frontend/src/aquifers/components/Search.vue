@@ -198,6 +198,7 @@ import { BC_LAT_LNG_BOUNDS, containsBounds } from '../../common/mapbox/geometry'
 
 const SEARCH_RESULTS_PER_PAGE = 10
 const HYDRAULICALLY_CONNECTED_CODE = 'Hydra'
+const AQUIFER_NOTATION_CODE = 'Notations'
 const URL_QS_SEARCH_KEYS = ['constrain', 'resources__section__code', 'match_any', 'search']
 
 const RESULTS_TABLE_FIELDS = [
@@ -225,6 +226,9 @@ export default {
     let selectedSections = query.resources__section__code ? query.resources__section__code.split(',') : []
     if (query.hydraulically_connected) {
       selectedSections.push(HYDRAULICALLY_CONNECTED_CODE)
+    }
+    if (query.aquifer_notations) {
+      selectedSections.push(AQUIFER_NOTATION_CODE)
     }
 
     return {
@@ -363,6 +367,10 @@ export default {
         sections.splice(2, 0, {
           name: 'Hydraulically connected',
           code: HYDRAULICALLY_CONNECTED_CODE
+        })
+        sections.splice(3, 0, {
+          name: 'Aquifer notations',
+          code: AQUIFER_NOTATION_CODE
         })
         this.addSections(sections)
       })

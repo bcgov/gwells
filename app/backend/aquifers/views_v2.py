@@ -15,6 +15,7 @@ import logging
 import csv
 import openpyxl
 from openpyxl.writer.excel import save_virtual_workbook
+import requests
 
 from django_filters import rest_framework as djfilters
 from django.http import HttpResponse, HttpResponseRedirect, StreamingHttpResponse
@@ -107,6 +108,7 @@ def _aquifer_qs(request):
     qs = Aquifer.objects.all()
     resources__section__code = query.get("resources__section__code")
     hydraulic = query.get('hydraulically_connected')
+    notations = query.get('aquifer_notations')
     search = query.get('search')
 
     # V2 changes to `and`-ing the filters by default unless "match_any" is explicitly set to 'true'
@@ -117,6 +119,21 @@ def _aquifer_qs(request):
     filters = []
     if hydraulic:
         filters.append(Q(subtype__code__in=serializers.HYDRAULIC_SUBTYPES))
+
+    if notations:
+        # Get list of aquifers from DataBC that have notations
+        url = "https://openmaps.gov.bc.ca/geo/pub/wfs?SERVICE=WFS&VERSION=2.0.0" + \
+          "&REQUEST=GetFeature&outputFormat=json&srsName=epsg:4326" + \
+          "&typeNames=WHSE_WATER_MANAGEMENT.WLS_WATER_NOTATION_AQUIFERS_SP" + \
+          "&propertyName=AQUIFER_ID"
+        try:
+            resp = requests.get(url)
+            data = resp.json()
+            properties = [feature["properties"] for feature in data["features"]]
+            aquifer_ids = [prop["AQUIFER_ID"] for prop in properties]
+            filters.append(Q(aquifer_id__in=aquifer_ids))
+        except:
+            print("Cannot get aquifer notations, call to DataBC failed.")
 
     # ignore missing and empty string for resources__section__code qs param
     if resources__section__code:
