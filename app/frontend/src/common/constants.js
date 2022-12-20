@@ -4,11 +4,3 @@ export const AQUIFER_ID_FOR_UNCORRELATED_WELLS = 1143
 
 // See task: https://apps.nrs.gov.bc.ca/int/jira/browse/WATER-1775
 export const MAX_API_RESULT_AND_EXPORT_COUNT = 999999
-
-export const AQUIFER_NOTATION_CODES = {
-  'AR': 'Application Refused',
-  'PWS': 'Possible Water Shortage',
-  'FR': 'Fully Recorded',
-  'FR-EXC': 'Fully Recorded Except',
-  'OR': 'Office Reserve'
-}

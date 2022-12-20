@@ -86,7 +86,7 @@ export default {
       notations.forEach(notation => {
         for (const [key, value] of Object.entries(state.aquiferNotationCodes)) {
           if (notation.properties.NOTATION_DESCRIPTION.includes(key)) {
-            description = description + value + ''
+            description = description + value + ' '
           }
         }
       })

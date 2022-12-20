@@ -1114,7 +1114,7 @@ exports[`View Component View mode matches the snapshot 1`] = `
                     <dd
                       class="m-0"
                     >
-                      []
+                      No notation currently assigned.
                     </dd>
                   </div>
                 </li>
