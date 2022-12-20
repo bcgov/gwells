@@ -168,8 +168,7 @@ def propagate_submission_comments(request, separator="."):
     This method modifies the values of two attributes in the given request 
     object ('comments' and 'internal comments').
     For both attributes the new value is set to be the concatenation of a 
-    previous value (from the previous Submission, if there is one, 
-    or from the Well record) with the value provided in the request 
+    previous value (from the well record) with the value provided in the request 
     parameter.
     :param request: The Django request object to modify 
     :param separator: A string to insert between the previous value 
@@ -183,25 +182,17 @@ def propagate_submission_comments(request, separator="."):
 
     attributes_to_propagate = ["comments", "internal_comments"]
     well_tag_number = request.data['well']
-    record_to_copy_from = None #may be ActivitySubmission model or Well model
-
-    # get a list of previous Submissions (newest to oldest)
-    submissions = ActivitySubmission.objects\
-        .filter(well=well_tag_number)\
-        .order_by('-create_date')
-
-    if len(submissions):
-        #select the newest Submission
-        record_to_copy_from = submissions[0]
-    else:
-        # if no previous Submisions are available to copy from, use the
-        # Well record
+    
+    # Lookup an existing well record to copy attribute values from
+    record_to_copy_from = None
+    try:
         record_to_copy_from = Well.objects\
-            .get(well_tag_number=well_tag_number)      
-        
-        
+            .get(well_tag_number=well_tag_number)  
+    except Well.DoesNotExist:
+        #no well found.
+        pass
 
-    # If found a previous Submission or Well to propagate attribute values from,
+    # If found a Well record to propagate attribute values from,
     # then override the values of the target attributes in the request object
     # to be the concatenation of [previous value] + [separator] + [space] 
     #  + [new value]
