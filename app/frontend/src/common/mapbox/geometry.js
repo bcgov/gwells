@@ -2,6 +2,7 @@ import mapboxgl from 'mapbox-gl'
 import { pick } from 'lodash'
 
 import ApiService from '@/common/services/ApiService.js'
+import intersect from '@turf/intersect'
 
 export const CENTRE_LNG_LAT_BC = new mapboxgl.LngLat(-126.495, 54.459)
 export const DEFAULT_MAP_ZOOM = 4
@@ -123,4 +124,9 @@ export function checkCoordsAreTheSame (lngLat1, lngLat2, precision = 0.00001) {
   const { lng: lng1, lat: lat1 } = lngLat1
   const { lng: lng2, lat: lat2 } = lngLat2
   return Math.abs(lat1 - lat2) <= precision && Math.abs(lng1 - lng2) <= precision
+}
+
+export function doPolygonsIntersect (f1, f2) {
+  var intersection = intersect(f1, f2)
+  return (intersection !== null)
 }

@@ -21,8 +21,7 @@ export default {
       public: [],
       private: []
     },
-    aquiferWells: [],
-    aquiferNotations: []
+    aquiferWells: []
   },
   mutations: {
     setAquiferRecord (state, payload) {
@@ -34,9 +33,6 @@ export default {
     },
     setAquiferWells (state, payload) {
       state.aquiferWells = payload
-    },
-    setAquiferNotations (state, payload) {
-      state.aquiferNotations = payload
     }
   },
   actions: {
@@ -46,8 +42,7 @@ export default {
         public: [],
         private: []
       })
-      commit('setAquiferWells', []),
-      commit('setAquiferNotations', [])
+      commit('setAquiferWells', [])
     }
   },
   getters: {

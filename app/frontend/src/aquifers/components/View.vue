@@ -401,10 +401,7 @@ import Documents from './Documents.vue'
 import SingleAquiferMap from './SingleAquiferMap.vue'
 import PieChart from './PieChart.vue'
 import ObservationWell from './ObservationWell.vue'
-import {
-  MAX_API_RESULT_AND_EXPORT_COUNT,
-  AQUIFER_NOTATION_CODES
-} from '@/common/constants'
+import { MAX_API_RESULT_AND_EXPORT_COUNT } from '@/common/constants'
 
 const ONE_MILLION = 1 * 1000 * 1000
 
@@ -478,6 +475,9 @@ export default {
     ...mapGetters('aquiferStore/view', {
       uncorrelatedWells: 'wellsWithoutAquiferCorrelation'
     }),
+    ...mapGetters('aquiferStore/notations', [
+      'getAquiferNotationsById'
+    ]),
     ...mapState('documentState', [
       'files_uploading',
       'file_upload_error',
@@ -491,8 +491,7 @@ export default {
     ...mapState('aquiferStore/view', [
       'record',
       'aquiferFiles',
-      'aquiferWells',
-      'aquiferNotations'
+      'aquiferWells'
     ]),
     ...mapState('aquiferStore/view', {
       storedId: 'id'
@@ -605,6 +604,9 @@ export default {
       }
 
       return false
+    },
+    aquiferNotations () {
+      return this.getAquiferNotationsById(this.id, this.record.geom)
     }
   },
   watch: {
@@ -647,8 +649,7 @@ export default {
     ...mapMutations('aquiferStore/view', [
       'setAquiferRecord',
       'setAquiferFiles',
-      'setAquiferWells',
-      'setAquiferNotations'
+      'setAquiferWells'
     ]),
     loadForm () {
       this.loadingForm = true
@@ -749,14 +750,12 @@ export default {
       this.fetchAquifer()
       this.fetchWells()
       this.fetchFiles()
-      this.fetchAquiferNotations()
     },
     fetchAquifer (id = this.id) {
       this.loadingAquifer = true
       return ApiService.query(`aquifers/${id}`)
         .then((response) => {
           const responseData = response.data || {}
-
           if (responseData.licence_details.wells_by_licence) {
             responseData.licence_details.wells_by_licence.forEach((licence) => {
               if (licence.well_tag_numbers_in_licence) {
@@ -787,33 +786,6 @@ export default {
           this.setAquiferFiles(response.data)
           this.loadingFiles = false
         })
-    },
-    fetchAquiferNotations (id = this.id) {
-      // fetch aquifer notations from DataBC
-      const url = "https://openmaps.gov.bc.ca/geo/pub/wfs?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature" +
-        "&outputFormat=json&srsName=epsg:4326&typeNames=WHSE_WATER_MANAGEMENT.WLS_WATER_NOTATION_AQUIFERS_SP" +
-          "&propertyName=AQUIFER_ID,NOTATION_ID,NOTATION_DESCRIPTION&CQL_FILTER=AQUIFER_ID=" + id
-      ApiService.query(url).then((response) => {
-        const data = response.data
-        if (data.features) {
-          const notations = data.features.map(f => f.properties.NOTATION_DESCRIPTION)
-          const notationLongNames = this.filterAquiferNotations(notations)
-          this.setAquiferNotations(notationLongNames)
-        } else {
-          this.setAquiferNotations([])
-        }
-      }).catch(error => console.log(error))
-    },
-    filterAquiferNotations (notations) {
-      let descriptions = ''
-      notations.forEach(notation => {
-        for (const [key, value] of Object.entries(AQUIFER_NOTATION_CODES)) {
-          if (notation.includes(key)) {
-            descriptions = descriptions + value + ''
-          }
-        }
-      })
-      return descriptions
     },
     fetchWells (id = this.id) {
       const maxResults = MAX_API_RESULT_AND_EXPORT_COUNT // the API max
