@@ -355,7 +355,10 @@
                         triggers="hover focus"
                         content="Inferred based on aquifer subtype - not field verified."/>
                     </dt>
-                    <dd class="m-0">{{ licenceDetails['hydraulically_connected'] ? "More likely" : "Less likely"}}</dd>
+                    <dd class="m-0">
+                      <a href="http://a100.gov.bc.ca/appsdata/acat/documents/r50832/HydraulicConnectMW3_1474311684426_4310694949.pdf"
+                        target="_blank" rel="noopener noreferrer">See Guidance on Determining Likelihood of Hydraulic Connection</a>
+                    </dd>
                   </div>
                   <div v-else>
                     <dt class="text-right">{{ section.name }}</dt>
