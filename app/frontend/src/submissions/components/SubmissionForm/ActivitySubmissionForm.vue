@@ -435,6 +435,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         :comments.sync="form.comments"
         :internalComments.sync="form.internal_comments"
         :alternativeSpecsSubmitted.sync="form.alternative_specs_submitted"
+        :technicalReport.sync="form.technical_report"
         :errors="errors"
         :isStaffEdit="isStaffEdit"
         :saveDisabled="editSaveDisabled"

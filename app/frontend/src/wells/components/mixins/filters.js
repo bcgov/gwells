@@ -523,6 +523,12 @@ const SEARCH_FIELDS = {
     type: 'radio',
     options: [{ text: 'Yes', value: 'true' }, { text: 'No', value: 'false' }]
   },
+  technicalReport: {
+    param: 'technical_report',
+    label: 'Technical Report',
+    type: 'radio',
+    options: [{ text: 'Yes', value: 'true' }, { text: 'No', value: 'false' }]
+  },
   internalComments: {
     param: 'internal_comments',
     authenticated: true,
