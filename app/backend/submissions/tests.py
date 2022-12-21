@@ -754,8 +754,7 @@ class TestAlteration(TestSubmissionsBase):
         """
         Tests that the 'comments' and 'internal_comments' submitted with 
         an alteration report are concatenated onto pre-existing values
-        from the previous submission (or from the well record if no previous
-        submission exists).                  
+        from the well record.                  
         In this test, comments from a previous construction report
         are included in the following alteration report.
         """
@@ -799,10 +798,7 @@ class TestAlteration(TestSubmissionsBase):
         """
         Tests that the 'comments' and 'internal_comments' submitted with 
         an alteration report are concatenated onto pre-existing values
-        from an earlier submission (or from the well record if no previous
-        submission exists).        
-        In this test, no previous submission exists, so comments are copied
-        from the well record.
+        from the well record.        
         """
         well = Well.objects.create(
             create_user=self.user.username,
@@ -842,8 +838,7 @@ class TestAlteration(TestSubmissionsBase):
         """
         Tests that the 'comments' and 'internal_comments' submitted with 
         an alteration report are concatenated onto pre-existing values
-        from an earlier submission (or from the well record if no previous
-        submission exists).        
+        from the well record.        
         In this test, there is an original well record and two alteration 
         reports.  Comments from the original record should be copied to the first
         alteration report, and comments from both the original record and the first
@@ -881,9 +876,6 @@ class TestAlteration(TestSubmissionsBase):
         self.assertTrue(alteration_1.internal_comments.endswith(
             alteration_data_1.get("internal_comments")))   
 
-        print(f"alteration 1 comments: {alteration_1.comments}")
-        print(f"alteration 1 internal comments: {alteration_1.internal_comments}")
-
         # submit alteration report #2
         alteration_data_2 = {
             'well': well_tag_number,
@@ -898,8 +890,6 @@ class TestAlteration(TestSubmissionsBase):
         # confirm that the comments in the second alteration report are correct
         alteration_2 = ActivitySubmission.objects.get(
             filing_number=alteration_response_2.data['filing_number'])
-        print(f"alteration 2 comments: {alteration_2.comments}")
-        print(f"alteration 2 internal comments: {alteration_2.internal_comments}")
 
         self.assertTrue(alteration_2.comments.startswith(
             alteration_1.comments))
