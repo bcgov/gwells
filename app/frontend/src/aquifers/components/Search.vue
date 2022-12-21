@@ -360,6 +360,12 @@ export default {
     fetchResourceSections () {
       ApiService.query('aquifers/sections').then((response) => {
         let sections = (response.data || {}).results || []
+        // remove pumping stress index option
+        const idx = sections.findIndex(s => s.code === 'P')
+        if (idx > -1) {
+          sections.splice(idx, 1)
+        }
+        // add aquifer notations to search options
         sections.splice(3, 0, {
           name: 'Aquifer notations',
           code: AQUIFER_NOTATION_CODE
