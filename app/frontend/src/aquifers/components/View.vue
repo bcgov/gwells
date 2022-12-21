@@ -190,6 +190,7 @@
                 :aquifer-id="id"
                 :geom="record.geom"
                 :key="mapKey"
+                :aquifer-notations="aquiferNotations"
                 @mapLoading="loadingMap = true"
                 @mapLoaded="loadingMap = false"/>
             </b-col>
@@ -478,6 +479,16 @@
                       <p class="m-0" v-if="!bySection(record.resources, section).length">No information available.</p>
                     </dd>
                   </div>
+                  <div class="aquifer-notations" v-else-if="section.key === 'aquifer-notations'">
+                    <dt class="text-right">Aquifer notations
+                      <i id="aquiferNotations" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+                      <b-popover
+                        target="aquiferNotations"
+                        triggers="hover focus"
+                        content="Water allocation notations are a water management tool that indicates a potential lack of water availability/quality in a source."/>
+                    </dt>
+                    <dd class="m-0">{{ aquiferNotations || 'No notation currently assigned.' }}</dd>
+                  </div>
                   <div v-else>
                     <dt class="text-right">{{ section.name }}</dt>
                     <dd class="m-0">
@@ -555,6 +566,7 @@ export default {
         { code: 'A', name: 'Drilling and operation advisory' },
         { key: 'obs-wells', name: 'Oberservation Wells' },
         { code: 'N', name: 'Numerical model' },
+        { key: 'aquifer-notations', name: 'Aquifer notations' },
         { code: 'W', name: 'Water budget' },
         { key: 'water-quality', name: 'Water quality information' },
         { key: 'aquifer-connected', name: 'Hydraulically connected (screening level)' },
@@ -584,6 +596,9 @@ export default {
     ...mapGetters('aquiferStore/view', {
       uncorrelatedWells: 'wellsWithoutAquiferCorrelation'
     }),
+    ...mapGetters('aquiferStore/notations', [
+      'getAquiferNotationsById'
+    ]),
     ...mapState('documentState', [
       'files_uploading',
       'file_upload_error',
@@ -710,6 +725,9 @@ export default {
       }
 
       return false
+    },
+    aquiferNotations () {
+      return this.getAquiferNotationsById(this.id, this.record.geom)
     }
   },
   watch: {
@@ -859,7 +877,6 @@ export default {
       return ApiService.query(`aquifers/${id}`)
         .then((response) => {
           const responseData = response.data || {}
-
           if (responseData.licence_details.wells_by_licence) {
             responseData.licence_details.wells_by_licence.forEach((licence) => {
               if (licence.well_tag_numbers_in_licence) {
