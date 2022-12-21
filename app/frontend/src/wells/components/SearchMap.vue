@@ -52,6 +52,7 @@ import { RESET_WELLS_SEARCH, SEARCH_WELLS } from '../../wells/store/actions.type
 
 import wellsAllLegendSrc from '../../common/assets/images/wells-all.svg'
 import wellsArtesianLegendSrc from '../../common/assets/images/wells-artesian.svg'
+import wellsHydraulicLegendSrc from '../../common/assets/images/wells-hydraulic.svg'
 import { mapGetters } from 'vuex'
 import { setupFeatureTooltips } from '../../common/mapbox/popup'
 
@@ -87,6 +88,10 @@ export default {
             {
               imageSrc: wellsArtesianLegendSrc,
               label: 'artesian'
+            },
+            {
+              imageSrc: wellsHydraulicLegendSrc,
+              label: 'K.S.T.'
             }
           ]
         }
