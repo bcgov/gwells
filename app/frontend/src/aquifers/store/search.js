@@ -37,6 +37,8 @@ import {
   SET_SEARCH_MAP_ZOOM
 } from './mutations.types.js'
 
+const AQUIFER_NOTATION_CODE = 'Notations'
+
 Vue.use(Vuex)
 
 const aquiferSearchStore = {
@@ -178,13 +180,23 @@ const aquiferSearchStore = {
         params.search = state.searchQuery
       }
 
-      const codes = state.selectedSections
+      const codes = state.selectedSections.filter((s) => {
+        if (s === AQUIFER_NOTATION_CODE) {
+          return false
+        }
+        return true
+      })
+
       if (codes.length > 0) {
         params.resources__section__code = codes.join(',')
       }
 
       if (state.searchMatchAny) {
         params.match_any = String(state.searchMatchAny)
+      }
+
+      if (state.selectedSections.find((o) => o === AQUIFER_NOTATION_CODE)) {
+        params.aquifer_notations = 'yes'
       }
 
       if (state.searchMapCentre) {

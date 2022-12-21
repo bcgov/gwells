@@ -197,6 +197,7 @@ import features from '../../common/features'
 import { BC_LAT_LNG_BOUNDS, containsBounds } from '../../common/mapbox/geometry'
 
 const SEARCH_RESULTS_PER_PAGE = 10
+const AQUIFER_NOTATION_CODE = 'Notations'
 const URL_QS_SEARCH_KEYS = ['constrain', 'resources__section__code', 'match_any', 'search']
 
 const RESULTS_TABLE_FIELDS = [
@@ -222,6 +223,9 @@ export default {
     let query = this.$route.query
 
     let selectedSections = query.resources__section__code ? query.resources__section__code.split(',') : []
+    if (query.aquifer_notations) {
+      selectedSections.push(AQUIFER_NOTATION_CODE)
+    }
 
     return {
       sortBy: 'id',
@@ -356,12 +360,10 @@ export default {
     fetchResourceSections () {
       ApiService.query('aquifers/sections').then((response) => {
         let sections = (response.data || {}).results || []
-        // remove pumping stress index option
-        const idx = sections.findIndex(s => s.code === 'P')
-        if (idx > -1) {
-          sections.splice(idx, 1)
-        }
-        // add sections to aquifers store
+        sections.splice(3, 0, {
+          name: 'Aquifer notations',
+          code: AQUIFER_NOTATION_CODE
+        })
         this.addSections(sections)
       })
     },
