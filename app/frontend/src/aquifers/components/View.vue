@@ -118,19 +118,53 @@
                   <b-row>
                     <b-col cols="6" md="3" lg="6">Descriptive location</b-col>
                     <b-col cols="6" md="3" lg="6">{{record.location_description}}</b-col>
-                    <b-col cols="6" md="3" lg="6">Vulnerability</b-col>
+                    <b-col cols="6" md="3" lg="6">
+                      Vulnerability
+                      <i id="vulnerability-info" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+                      <b-popover
+                        target="vulnerability-info"
+                        triggers="hover focus"
+                        content="The susceptibility of an aquifer to contamination from surface sources. Three vulnerability categories are used: high, moderate, or low. Vulnerability is based on hydrogeology alone and does not consider the existing type of land use or nature of the potential contaminants."/>
+                    </b-col>
                     <b-col cols="6" md="3" lg="6">{{record.vulnerability}}</b-col>
                   </b-row>
                   <b-row>
                     <b-col cols="6" md="3" lg="6">Material type</b-col>
                     <b-col cols="6" md="3" lg="6">{{record.material}}</b-col>
-                    <b-col cols="6" md="3" lg="6">Subtype</b-col>
+                    <b-col cols="6" md="3" lg="6">
+                      Subtype
+                      <i id="aquifer-subtype-info" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+                      <b-popover
+                        target="aquifer-subtype-info"
+                        triggers="hover focus"
+                      >
+                        There are different types of aquifers, depending on the geologic materials in which they occur. Subtype descriptions can be
+                        <a href='https://www2.gov.bc.ca/gov/content/environment/air-land-water/water/groundwater-wells-aquifers/understanding-aquifers/aquifer-subtype-code-description' target='_blank' class='d-print-url'>found here</a>.
+                      </b-popover>
+                    </b-col>
                     <b-col cols="6" md="3" lg="6">{{record.subtype}}</b-col>
                   </b-row>
                   <b-row>
-                    <b-col cols="6" md="3" lg="6">Quality concerns</b-col>
+                    <b-col cols="6" md="3" lg="6">
+                      Quality concerns
+                      <i id="aquifer-quality-concerns" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+                      <b-popover
+                        target="aquifer-quality-concerns"
+                        triggers="hover focus"
+                      >
+                        Classified as unknown/none, isolated, local, or regional. For details see page 16 of the Guide to Using the
+                        <a href='https://www2.gov.bc.ca/assets/gov/environment/air-land-water/water/science-data/aquifer_maps_guide.pdf' target='_blank' class='d-print-url'>BC Aquifer Classification System</a>.
+                      </b-popover>
+                    </b-col>
                     <b-col cols="6" md="3" lg="6">{{record.quality_concern}}</b-col>
-                    <b-col cols="6" md="3" lg="6">Productivity</b-col>
+                    <b-col cols="6" md="3" lg="6">
+                      Productivity
+                      <i id="productivity-info" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+                      <b-popover
+                        target="productivity-info"
+                        triggers="hover focus"
+                        content="Productivity describes the rate of groundwater flow from wells and springs and the abundance of groundwater in an aquifer. Classified as low, medium, or high."/>
+                    </b-col>
                     <b-col cols="6" md="3" lg="6">{{record.productivity}}</b-col>
                   </b-row>
                   <b-row>
@@ -167,7 +201,13 @@
               <ul class="ml-0 mr-0 mt-4 mb-0 p-0 aquifer-information-list">
                 <div class="aquifer-information-list-divider"></div>
                 <li>
-                  <dt>Number of wells correlated to the aquifer</dt>
+                  <dt>Number of wells correlated to the aquifer
+                    <i id="correlated-wells-count" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+                    <b-popover
+                      target="correlated-wells-count"
+                      triggers="hover focus"
+                      content="The total number of wells that fall within the aquifer boundaries and, based on depth and lithology, are believed to withdraw water from that aquifer."/>
+                  </dt>
                   <dd class="m-0">
                     <router-link :to="{ name: 'wells-home', query: {'match_any':false, 'aquifer': id, 'search':'', 'well':''}, hash: '#advanced'}">
                       {{ licenceDetails.num_wells }}
@@ -188,7 +228,13 @@
                   </dd>
                 </li>
                 <li>
-                  <dt>Artesian wells</dt>
+                  <dt>Flowing artesian wells
+                    <i id="artesian-wells" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+                    <b-popover
+                      target="artesian-wells"
+                      triggers="hover focus"
+                      content="A flowing artesian well is one that has been drilled into an aquifer where the pressure within the aquifer forces the groundwater to rise above the land surface naturally without using a pump."/>
+                  </dt>
                   <dd class="m-0">
                     <router-link :to="{ name: 'wells-home', query: {'match_any':false, 'aquifer': id, 'artesian_conditions':true}, hash: '#advanced'}">
                       {{ licenceDetails.num_artesian_wells }} artesian wells in aquifer
@@ -304,7 +350,13 @@
                     </dd>
                   </div>
                   <div class="observational-wells" v-else-if="section.key === 'obs-wells'">
-                    <dt class="text-right">Observation wells</dt>
+                    <dt class="text-right">Observation wells
+                      <i id="aquifer-observation-wells" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+                      <b-popover
+                        target="aquifer-observation-wells"
+                        triggers="hover focus"
+                        content="Groundwater Observation Wells are used to monitor aquifer groundwater levels and chemistry over time."/>
+                    </dt>
                     <dd class="m-0">
                       <div v-if="activeObsWells.length > 0">
                         <h6 class="border-bottom">Active</h6>
@@ -340,7 +392,13 @@
                     </dd>
                   </div>
                   <div class="water-quality-information" v-else-if="section.key === 'water-quality'">
-                    <dt class="text-right">Water quality information</dt>
+                    <dt class="text-right">Water quality information
+                      <i id="aquiferWaterQualityInformation" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+                      <b-popover
+                        target="aquiferWaterQualityInformation"
+                        triggers="hover focus"
+                        content="Indicates there are wells correlated to the aquifer with water quality information in the Environmental Monitoring System (EMS) database."/>
+                    </dt>
                     <dd class="m-0">
                       <router-link :to="{ name: 'wells-home', query: {'match_any':false, 'ems_has_value':true, 'aquifer': id}, hash: '#advanced'}">
                         {{ licenceDetails['num_wells_with_ems'] }} wells with an EMS ID
@@ -353,11 +411,71 @@
                       <b-popover
                         target="aquiferConnectedInfo"
                         triggers="hover focus"
-                        content="Inferred based on aquifer subtype - not field verified."/>
+                        content="Likelihood of hydraulic connection between groundwater and surface water requires aquifer specific assessment and professional judgement. "/>
                     </dt>
                     <dd class="m-0">
                       <a href="http://a100.gov.bc.ca/appsdata/acat/documents/r50832/HydraulicConnectMW3_1474311684426_4310694949.pdf"
                         target="_blank" rel="noopener noreferrer">See Guidance on Determining Likelihood of Hydraulic Connection</a>
+                    </dd>
+                  </div>
+                  <div class="aquifer-numerical-model" v-else-if="section.code === 'N'">
+                    <dt class="text-right">Numerical Model
+                      <i id="aquiferNumericalModel" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+                      <b-popover
+                        target="aquiferNumericalModel"
+                        triggers="hover focus"
+                        content="Numerical groundwater flow models are mathematical representations of groundwater flow in an aquifer and the interactions with adjacent surface water bodies."/>
+                    </dt>
+                    <dd class="m-0">
+                      <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
+                        <li><a :href="resource.url" @click="handleExternalResourceClicks" target="_blank" class="d-print-url">{{ resource.name }}</a></li>
+                      </ul>
+                      <p class="m-0" v-if="!bySection(record.resources, section).length">No information available.</p>
+                    </dd>
+                  </div>
+                  <div class="aquifer-water-budget" v-else-if="section.code === 'W'">
+                    <dt class="text-right">Water Budget
+                      <i id="aquiferWaterBudget" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+                      <b-popover
+                        target="aquiferWaterBudget"
+                        triggers="hover focus"
+                        content="Water budget studies are an accounting of all the water flowing into and out of an aquifer and/or a watershed over a specified time."/>
+                    </dt>
+                    <dd class="m-0">
+                      <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
+                        <li><a :href="resource.url" @click="handleExternalResourceClicks" target="_blank" class="d-print-url">{{ resource.name }}</a></li>
+                      </ul>
+                      <p class="m-0" v-if="!bySection(record.resources, section).length">No information available.</p>
+                    </dd>
+                  </div>
+                  <div class="aquifer-groundwater-surface-interactions" v-else-if="section.code === 'G'">
+                    <dt class="text-right">Water Budget
+                      <i id="aquiferGroundwaterSurfaceInteractions" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+                      <b-popover
+                        target="aquiferGroundwaterSurfaceInteractions"
+                        triggers="hover focus"
+                        content="Studies that characterize the exchange of water and/or chemicals between the land surface and the subsurface."/>
+                    </dt>
+                    <dd class="m-0">
+                      <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
+                        <li><a :href="resource.url" @click="handleExternalResourceClicks" target="_blank" class="d-print-url">{{ resource.name }}</a></li>
+                      </ul>
+                      <p class="m-0" v-if="!bySection(record.resources, section).length">No information available.</p>
+                    </dd>
+                  </div>
+                  <div class="aquifer-artesian-advisory" v-else-if="section.code === 'A'">
+                    <dt class="text-right">Drilling and operation advisory
+                      <i id="aquiferArtesianAdvisory" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+                      <b-popover
+                        target="aquiferArtesianAdvisory"
+                        triggers="hover focus"
+                        content="Advisories highlighting regional concerns about water availability, water quality, and flowing artesian conditions."/>
+                    </dt>
+                    <dd class="m-0">
+                      <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
+                        <li><a :href="resource.url" @click="handleExternalResourceClicks" target="_blank" class="d-print-url">{{ resource.name }}</a></li>
+                      </ul>
+                      <p class="m-0" v-if="!bySection(record.resources, section).length">No information available.</p>
                     </dd>
                   </div>
                   <div v-else>
