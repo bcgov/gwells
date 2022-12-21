@@ -210,7 +210,7 @@ const RESULTS_TABLE_FIELDS = [
   { key: 'area', label: 'Size\u2011km²', sortable: true },
   { key: 'productivity', label: 'Productivity', sortable: true },
   { key: 'demand', label: 'Demand', sortable: true },
-  { key: 'mapping_year', label: 'Year\xa0of\xa0mapping', sortable: true },
+  { key: 'mapping_year', label: 'Year\xa0of\xa0mapping', sortable: true }
 ]
 
 export default {
@@ -356,6 +356,12 @@ export default {
     fetchResourceSections () {
       ApiService.query('aquifers/sections').then((response) => {
         let sections = (response.data || {}).results || []
+        // remove pumping stress index option
+        const idx = sections.findIndex(s => s.code === 'P')
+        if (idx > -1) {
+          sections.splice(idx, 1)
+        }
+        // add sections to aquifers store
         this.addSections(sections)
       })
     },

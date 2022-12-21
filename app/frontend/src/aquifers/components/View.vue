@@ -555,7 +555,6 @@ export default {
         { code: 'A', name: 'Drilling and operation advisory' },
         { key: 'obs-wells', name: 'Oberservation Wells' },
         { code: 'N', name: 'Numerical model' },
-        { code: 'P', name: 'Pumping stress index' },
         { code: 'W', name: 'Water budget' },
         { key: 'water-quality', name: 'Water quality information' },
         { key: 'aquifer-connected', name: 'Hydraulically connected (screening level)' },
