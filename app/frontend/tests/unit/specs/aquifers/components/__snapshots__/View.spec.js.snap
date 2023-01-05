@@ -1350,7 +1350,7 @@ exports[`View Component View mode matches the snapshot 1`] = `
                     <dt
                       class="text-right"
                     >
-                      Water Budget
+                      Groundwater Surface Water Interactions
                     
                       <i
                         class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
