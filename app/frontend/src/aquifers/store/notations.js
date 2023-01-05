@@ -69,7 +69,8 @@ export default {
   },
   getters: {
     getAquiferNotationsById: (state, getters) => (id, geom) => {
-      const aquiferNotations = state.aquiferNotations.filter(a => a.properties.AQUIFER_ID === id)
+      const aquiferNotations = state.aquiferNotations
+        .filter(a => a.properties.AQUIFER_ID.toString() === id.toString())
       if (aquiferNotations) {
         const description = getters.getAquiferNotationDescription(aquiferNotations)
         if (description.includes('Possible Water Shortage')) {

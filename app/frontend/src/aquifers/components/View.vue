@@ -450,7 +450,7 @@
                     </dd>
                   </div>
                   <div class="aquifer-groundwater-surface-interactions" v-else-if="section.code === 'G'">
-                    <dt class="text-right">Water Budget
+                    <dt class="text-right">Groundwater Surface Water Interactions
                       <i id="aquiferGroundwaterSurfaceInteractions" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
                       <b-popover
                         target="aquiferGroundwaterSurfaceInteractions"
