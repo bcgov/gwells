@@ -74,12 +74,16 @@ class DataBCGeocoder(APIView):
     def get(self, request, **kwargs):
         query = kwargs['query']
 
+        #default params
         params = {
             "addressString": query,
             "autoComplete": "true",
             "maxResults": 5,
             "brief": "true"
         }
+
+        #override default params with values from request
+        params.update(request.query_params.dict())
 
         search_url = "https://geocoder.api.gov.bc.ca/addresses.json"
 
