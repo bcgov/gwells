@@ -232,7 +232,7 @@ export default {
     ])
   },
   computed: {
-    ...mapGetters([
+    ...mapGetters('registriesStore', [
       'loading',
       'drillerOptions'
     ]),

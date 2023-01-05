@@ -212,7 +212,7 @@ export default {
         contact_email: (this.fieldErrors.contact_email && this.fieldErrors.contact_email.length) ? false : null
       }
     },
-    ...mapGetters([
+    ...mapGetters('registriesStore', [
       'error',
       'currentDriller'
     ])

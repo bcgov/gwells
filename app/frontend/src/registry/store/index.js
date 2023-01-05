@@ -9,12 +9,16 @@
   See the License for the specific language governing permissions and
   limitations under the License.
  */
+import Vue from 'vue'
+import Vuex from 'vuex'
 import ApiService from '@/common/services/ApiService.js'
 import {
   FETCH_CITY_LIST,
   FETCH_DRILLER,
-  FETCH_DRILLER_LIST,
-  FETCH_DRILLER_OPTIONS} from './actions.types.js'
+  SEARCH,
+  FETCH_DRILLER_OPTIONS,
+  REQUEST_MAP_POSITION
+} from './actions.types.js'
 import {
   SET_ERROR,
   SET_LOADING,
@@ -22,24 +26,60 @@ import {
   SET_USER,
   SET_CITY_LIST,
   SET_DRILLER,
-  SET_DRILLER_LIST,
+  SET_SEARCH_RESPONSE,
   SET_DRILLER_OPTIONS,
-  SET_LAST_SEARCHED_ACTIVITY } from './mutations.types.js'
+  SET_LAST_SEARCHED_ACTIVITY,
+  SET_HAS_SEARCHED,
+  SET_SEARCH_PARAMS,
+  SET_REQUESTED_MAP_POSITION,
+  RESET_SEARCH
+} from './mutations.types.js'
+import {
+  DEFAULT_MAP_ZOOM,
+  CENTRE_LNG_LAT_BC
+} from '../../common/mapbox/geometry'
+
+Vue.use(Vuex)
+
+export const DEFAULT_SEARCH_PARAMS = {
+  search: '',
+  city: [''],
+  activity: 'DRILL',
+  status: 'A',
+  limit: '10',
+  ordering: ''
+}
+
+export const DEFAULT_MAP_POSITION = {
+  centre: CENTRE_LNG_LAT_BC,
+  zoom: DEFAULT_MAP_ZOOM
+}
 
 const registriesStore = {
+  namespaced: true,
   state: {
+    searchParams: Object.assign({}, DEFAULT_SEARCH_PARAMS),
+    hasSearched: false,
     user: null,
     loading: false,
     error: null,
     listError: null,
     cityList: {},
-    drillerList: [],
+    searchResponse: [],
     currentDriller: {},
     drillerOptions: null,
-    lastSearchedActivity: 'DRILL'
+    lastSearchedActivity: 'DRILL',
+    requestedMapPosition: null, 
   },
   mutations: {
-    [SET_LOADING] (state, payload) {
+    [SET_SEARCH_PARAMS](state, payload) {      
+      const params = Object.assign({}, DEFAULT_SEARCH_PARAMS, payload)
+      state.searchParams = payload
+    },    
+    [SET_HAS_SEARCHED] (state, payload) {
+      state.hasSearched = payload
+    },
+    [SET_LOADING](state, payload) {
       state.loading = payload
     },
     [SET_ERROR] (state, payload) {
@@ -57,18 +97,50 @@ const registriesStore = {
     [SET_DRILLER] (state, payload) {
       state.currentDriller = payload
     },
-    [SET_DRILLER_LIST] (state, payload) {
-      state.drillerList = payload
+    [SET_SEARCH_RESPONSE] (state, payload) {
+      state.searchResponse = payload
     },
     [SET_DRILLER_OPTIONS] (state, payload) {
       state.drillerOptions = payload
     },
     [SET_LAST_SEARCHED_ACTIVITY] (state, payload) {
       state.lastSearchedActivity = payload
-    }
+    }, 
+    [SET_REQUESTED_MAP_POSITION](state, payload) {  
+      if (payload.hasOwnProperty("centre") && !payload.hasOwnProperty("zoom")) {
+        payload.zoom = 10;
+      }
+      if (payload.hasOwnProperty("bounds") && !payload.hasOwnProperty("maxZoom")) {
+        payload.maxZoom = 10;
+      }
+      if (payload && !payload.hasOwnProperty("centre") && !payload.hasOwnProperty("bounds")) {
+        throw("Must specify either the 'centre' or the 'bounds' parameter")
+      }
+      state.requestedMapPosition = payload;
+    },
   },
   actions: {
-    [FETCH_CITY_LIST] ({commit}, activity) {
+    [RESET_SEARCH]({ commit, state }, options = {}) {
+      const searchParams = Object.assign({}, state.searchParams)
+      searchParams.search = DEFAULT_SEARCH_PARAMS.search
+      searchParams.city = DEFAULT_SEARCH_PARAMS.city
+      searchParams.status = DEFAULT_SEARCH_PARAMS.status
+      searchParams.ordering = DEFAULT_SEARCH_PARAMS.ordering
+      if (!options.keepSearchResults) {
+        //searchParams.hasSearched = false
+        commit(SET_HAS_SEARCHED, false)
+        commit(SET_SEARCH_RESPONSE, [])
+      }
+      if (!options.keepActivity) {
+        searchParams.activity = DEFAULT_SEARCH_PARAMS.activity
+      }
+      if (!options.keepLimit) {
+        searchParams.limit = DEFAULT_SEARCH_PARAMS.limit
+      }
+      commit(SET_SEARCH_PARAMS, searchParams)
+      commit(SET_REQUESTED_MAP_POSITION, Object.assign({},DEFAULT_MAP_POSITION))
+    },
+    [FETCH_CITY_LIST]({ commit }, activity) {
       ApiService.query('cities/' + activity)
         .then((response) => {
           const list = Object.assign({}, this.state.cityList)
@@ -126,14 +198,16 @@ const registriesStore = {
           commit(SET_ERROR, error.response)
         })
     },
-    [FETCH_DRILLER_LIST] ({commit}, params) {
+    [SEARCH]({ commit }, params) {
+      
       return new Promise((resolve, reject) => {
+        commit(SET_HAS_SEARCHED, true)
         commit(SET_LOADING, true)
         ApiService.query('drillers', params)
-          .then((response) => {
+          .then((response) => {            
             commit(SET_LOADING, false)
             commit(SET_LIST_ERROR, null)
-            commit(SET_DRILLER_LIST, response.data)
+            commit(SET_SEARCH_RESPONSE, response.data)
             resolve()
           })
           .catch((error) => {
@@ -159,13 +233,32 @@ const registriesStore = {
             })
         })
       }
+    },
+    /* param mapPosition  is an object of the form 
+      {centre: ..., zoom: ... }, or
+      {bounds: ...}
+    */
+    [REQUEST_MAP_POSITION]({ commit }, mapPosition) {        
+      commit(SET_REQUESTED_MAP_POSITION, mapPosition) 
     }
   },
   getters: {
-    loading (state) {
+    loading(state) {
       return state.loading
     },
-    error (state) {
+    hasSearched(state) {
+      return state.hasSearched
+    },
+    searchParams(state) {
+      return state.searchParams
+    },
+    searchMapCentre(state) {
+      return state.searchMapCentre
+    },
+    searchMapZoom(state) {
+      return state.searchMapZoom
+    },
+    error(state) {
       return state.error
     },
     listError (state) {
@@ -177,14 +270,17 @@ const registriesStore = {
     cityList (state) {
       return state.cityList
     },
-    drillers (state) {
-      return state.drillerList
+    searchResponse (state) {
+      return state.searchResponse
     },
     currentDriller (state) {
       return state.currentDriller
     },
     drillerOptions (state) {
       return state.drillerOptions
+    },
+    requestedMapPosition(state) {
+      return state.requestedMapPosition;
     },
     activity (state) {
       /**
@@ -202,6 +298,7 @@ const registriesStore = {
       return options
     }
   }
+    
 }
 
 export default registriesStore

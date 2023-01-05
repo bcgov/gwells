@@ -234,7 +234,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions([
+    ...mapActions('registriesStore', [
       FETCH_DRILLER_OPTIONS
     ]),
     applicationReset () {
@@ -352,12 +352,14 @@ export default {
       return this.application ? this.application.removal_reason : null
     },
     ...mapGetters([
+      'userRoles'
+    ]),
+    ...mapGetters('registriesStore', [
       'loading',
       'error',
       'currentDriller',
       'drillerOptions',
-      'userRoles'
-    ])
+    ]),
   },
   created () {
     this.FETCH_DRILLER_OPTIONS()

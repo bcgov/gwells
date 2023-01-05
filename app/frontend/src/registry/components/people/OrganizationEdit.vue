@@ -304,7 +304,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import ApiService from '@/common/services/ApiService.js'
 import OrganizationAdd from '@/registry/components/people/OrganizationAdd.vue'
 import Notes from '@/registry/components/people/Notes.vue'
@@ -394,7 +394,7 @@ export default {
       // returns true or false if any of the fields changed. Uses fieldsChanged() method above
       return (Object.keys(this.fieldsChanged).map(x => this.fieldsChanged[x]).includes(true))
     },
-    ...mapGetters(['provinceStateOptions'])
+    ...mapGetters('registriesStore', ['provinceStateOptions'])
   },
   watch: {
     selectedCompany (val) {
@@ -519,11 +519,14 @@ export default {
       }).catch((e) => {
         this.companyDeleteError = e.response.data
       })
-    }
+    },
+    ...mapActions('registriesStore', [      
+      FETCH_DRILLER_OPTIONS
+    ]),
   },
   created () {
     this.loadCompanies()
-    this.$store.dispatch(FETCH_DRILLER_OPTIONS)
+    this.FETCH_DRILLER_OPTIONS()
   }
 }
 </script>
