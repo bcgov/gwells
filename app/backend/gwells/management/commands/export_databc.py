@@ -440,7 +440,7 @@ LITHOLOGY_CHUNK_SIZE = 10000
 # stable!
 AQUIFERS_SQL_V1 = ("""
 select
-    ST_AsGeoJSON(ST_Transform(ST_GeometryN(well.geom, 1), 4326)) :: json as "geometry",
+    ST_AsGeoJSON(ST_Transform(ST_GeometryN(geom, 1), 4326)) :: json as "geometry",
     aquifer.aquifer_id as aquifer_id,
     SUBSTRING(aquifer.aquifer_name for 100) as name,
     SUBSTRING(aquifer.location_description for 100) as location,
