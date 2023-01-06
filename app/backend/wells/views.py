@@ -646,7 +646,7 @@ def well_geojson(request, **kwargs):
         bounds_sql = ''
 
         if sw_long and sw_lat and ne_long and ne_lat:
-            bounds_sql = 'and geom @ ST_MakeEnvelope(%s, %s, %s, %s, 4326)'
+            bounds_sql = 'and well.geom @ ST_MakeEnvelope(%s, %s, %s, %s, 4326)'
             bounds = (sw_long, sw_lat, ne_long, ne_lat)
 
         iterator = GeoJSONIterator(
@@ -718,7 +718,7 @@ def lithology_geojson(request, **kwargs):
         bounds_sql = ''
 
         if sw_long and sw_lat and ne_long and ne_lat:
-            bounds_sql = 'and geom @ ST_MakeEnvelope(%s, %s, %s, %s, 4326)'
+            bounds_sql = 'and well.geom @ ST_MakeEnvelope(%s, %s, %s, %s, 4326)'
             bounds = (sw_long, sw_lat, ne_long, ne_lat)
 
         iterator = GeoJSONIterator(
