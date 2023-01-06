@@ -68,14 +68,14 @@ export default {
     this.map = null
   },
   computed: {
-    ...mapGetters(['userRoles', 'searchQueryParams']),
+    ...mapGetters(['userRoles']),
     ...mapGetters('registriesStore', [
       'requestedMapPosition',
       'searchResponse'
     ]),
-    hasSearchParams(state) {
-      return Object.keys(this.searchQueryParams).length > 0
-    },
+    //hasSearchParams(state) {
+    //  return Object.keys(this.searchQueryParams).length > 0
+    //},
     showUnpublished () {
       return Boolean(this.userRoles.wells.edit)
     },
@@ -282,10 +282,10 @@ export default {
     searchInProgress (isLoading) {
       this.searchOnMoveControl.loading(isLoading)
     },
-    hasSearchParams (hasSearchParams) {
-      this.searchOnMoveControl.toggleShow(hasSearchParams)
-      this.clearSearchCriteriaControl.toggleShow(hasSearchParams)
-    },
+    //hasSearchParams (hasSearchParams) {
+    //  this.searchOnMoveControl.toggleShow(hasSearchParams)
+    //  this.clearSearchCriteriaControl.toggleShow(hasSearchParams)
+    //},
     searchResponse(searchResponse) {
       const results = searchResponse && searchResponse.results ?
         searchResponse.results :
