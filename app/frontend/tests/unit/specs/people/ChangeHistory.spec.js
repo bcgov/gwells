@@ -10,20 +10,32 @@ localVue.use(VueMoment)
 
 describe('Notes.vue', () => {
   let store
-  let getters
-  let mutations
-  let actions
+
 
   beforeEach(() => {
     moxios.install()
-    getters = {
-      loading: () => false,
-      error: () => null,
-      user: () => null,
-      drillers: () => [],
-      userRoles: () => ({ registry: { edit: true, view: true, approve: true } })
-    }
-    store = new Vuex.Store({ getters, actions, mutations })
+    store = new Vuex.Store({
+      modules: {
+        auth: {
+          getters: {
+            user: () => null,
+            userRoles: () => ({ registry: { edit: true, view: true, approve: true } })
+          }
+        },
+        registriesStore: {
+          namespaced: true,
+          getters: {
+            loading: () => false,
+            error: () => null,
+            searchResponse: () => [],
+          },
+          actions: {             
+          },
+          mutations:{        
+          }
+        }        
+      }  
+    })
   })
 
   afterEach(() => {

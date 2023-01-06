@@ -13,30 +13,44 @@ const localVue = createLocalVue()
 localVue.use(Vuex)
 localVue.use(VueMoment)
 
+const GET_DEFAULT_STORE_MODULES = () => {
+  return {
+    documentState,
+    auth: {
+      getters: {
+        user: () => null,
+        userRoles: () => ({ registry: { edit: true, view: true, approve: true } })
+      }
+    },
+    registriesStore: {
+      namespaced: true,
+      getters: {
+        loading: () => false,
+        error: () => null,      
+        currentDriller: jest.fn().mockReturnValue(fakePerson),
+        searchResponse: () => [],
+      },
+      actions: {
+        [FETCH_DRILLER]: jest.fn(),
+        [FETCH_DRILLER_OPTIONS]: jest.fn()
+      },
+      mutations:{
+        [SET_DRILLER]: jest.fn()
+      }
+    }        
+  }  
+}
+
 describe('PersonDetail.vue', () => {
   let store
-  let getters
-  let mutations
-  let actions
+  let modules
 
   beforeEach(() => {
     moxios.install()
-    getters = {
-      loading: () => false,
-      error: () => null,
-      user: () => null,
-      currentDriller: jest.fn().mockReturnValue(fakePerson),
-      drillers: () => [],
-      userRoles: () => ({ registry: { edit: true, view: true, approve: true } })
-    }
-    mutations = {
-      [SET_DRILLER]: jest.fn()
-    }
-    actions = {
-      [FETCH_DRILLER]: jest.fn(),
-      [FETCH_DRILLER_OPTIONS]: jest.fn()
-    }
-    store = new Vuex.Store({ getters, actions, mutations, modules: { documentState } })
+    modules = GET_DEFAULT_STORE_MODULES()
+    store = new Vuex.Store({
+      modules: modules
+    })
   })
 
   afterEach(() => {
@@ -52,20 +66,23 @@ describe('PersonDetail.vue', () => {
         $route: {params: {person_guid: 'aaaa-4444-bbbb-1111'}}
       }
     })
-    expect(actions.FETCH_DRILLER).toHaveBeenCalled()
+    expect(modules.registriesStore.actions.FETCH_DRILLER).toHaveBeenCalled()
   })
   it('loads the error component if there is an error', () => {
-    getters = {
+    modules.registriesStore.getters = Object.assign({}, modules.registriesStore.getters, {
       loading: () => false,
-      user: () => null,
       error: () => {
         return { status: '400', statusText: 'error!' }
       },
       currentDriller: jest.fn().mockReturnValue(fakePerson),
-      drillers: () => [],
+      searchResponse: () => [],
+    })
+    modules.auth.getters = Object.assign({}, modules.registriesStore.getters, {
+      user: () => null,
       userRoles: () => ({ registry: { edit: true, view: true, approve: true } })
-    }
-    const storeError = new Vuex.Store({ getters, actions, mutations, modules: { documentState } })
+    })
+    
+    const storeError = new Vuex.Store({ modules: modules })
     const wrapper = mount(PersonDetail, {
       store: storeError,
       localVue,

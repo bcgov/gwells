@@ -7,7 +7,7 @@ import Vuex from 'vuex'
 import VueRouter from 'vue-router'
 import SearchTable from '@/registry/components/search/SearchTable'
 import {
-  FETCH_DRILLER_LIST
+  SEARCH
 } from '@/registry/store/actions.types'
 import fakePersonList from '../fakePersonList.js'
 
@@ -15,25 +15,36 @@ const localVue = createLocalVue()
 localVue.use(Vuex)
 localVue.use(VueRouter)
 
+const DEFAULT_AUTH_STORE_GETTERS = () => {
+  return {
+    userRoles: () => ({ registry: { edit: false, view: false, approve: false } }),
+  }
+}
+const DEFAULT_REGISTRIES_STORE_GETTERS = () => {
+  return {
+    loading: () => false,
+    listError: () => null,
+    searchResponse: jest.fn().mockReturnValue(fakePersonList),
+    activity: () => 'DRILL'
+  }
+}
+const DEFAULT_REGISTRIES_STORE_ACTIONS = () => {
+  return {
+    [SEARCH]: jest.fn()
+  }
+}
+
 describe('SearchTable.vue', () => {
   let store
-  let getters
-  let actions
+  let modules
 
-  beforeEach(() => {
-    getters = {
-      loading: () => false,
-      listError: () => null,
-      drillers: jest.fn().mockReturnValue(fakePersonList),
-      userRoles: () => ({ registry: { edit: false, view: false, approve: false } }),
-      activity: () => 'DRILL'
-    }
-    actions = {
-      [FETCH_DRILLER_LIST]: jest.fn()
+  beforeEach(() => {    
+    modules = {
+      auth: { getters: DEFAULT_AUTH_STORE_GETTERS() },
+      registriesStore: { namespaced: true, getters: DEFAULT_REGISTRIES_STORE_GETTERS(), actions: DEFAULT_REGISTRIES_STORE_ACTIONS() }
     }
     store = new Vuex.Store({
-      getters,
-      actions
+     modules 
     })
   })
 
@@ -83,16 +94,17 @@ describe('SearchTable.vue', () => {
   it('shows the paganation button disabled for previous page when no previous link is present in payload', () => {
     let fakePersonListCopy = Object.assign({}, fakePersonList)
     fakePersonListCopy.previous = null
-    getters = {
+    const registriesStoreGetters = Object.assign({}, DEFAULT_REGISTRIES_STORE_GETTERS(), {
       loading: () => false,
       listError: () => null,
-      drillers: jest.fn().mockReturnValue(fakePersonListCopy),
-      userRoles: () => ({ registry: { edit: false, view: false, approve: false } }),
+      searchResponse: jest.fn().mockReturnValue(fakePersonListCopy),
       activity: () => 'DRILL'
-    }
+    })
     store = new Vuex.Store({
-      getters,
-      actions
+      modules: {
+        auth: { getters: DEFAULT_AUTH_STORE_GETTERS() },
+        registriesStore: { namespaced: true, getters: registriesStoreGetters, actions: DEFAULT_REGISTRIES_STORE_ACTIONS() }
+      }
     })
     const wrapper = shallowMount(SearchTable, {
       store,
@@ -104,16 +116,17 @@ describe('SearchTable.vue', () => {
   it('shows the paganation button disabled for next page when no next link is present in payload', () => {
     let fakePersonListCopy = Object.assign({}, fakePersonList)
     fakePersonListCopy.next = null
-    getters = {
+    const registriesStoreGetters = Object.assign({}, DEFAULT_REGISTRIES_STORE_GETTERS(), {
       loading: () => false,
       listError: () => null,
-      drillers: jest.fn().mockReturnValue(fakePersonListCopy),
-      userRoles: () => ({ registry: { edit: false, view: false, approve: false } }),
+      searchResponse: jest.fn().mockReturnValue(fakePersonListCopy),
       activity: () => 'DRILL'
-    }
+    })
     store = new Vuex.Store({
-      getters,
-      actions
+      modules: {
+        auth: { getters: DEFAULT_AUTH_STORE_GETTERS() },
+        registriesStore: { namespaced: true, getters: registriesStoreGetters, actions: DEFAULT_REGISTRIES_STORE_ACTIONS() }
+      }
     })
     const wrapper = shallowMount(SearchTable, {
       store,
@@ -144,14 +157,14 @@ describe('SearchTable.vue', () => {
     expect(spy).toBeCalledWith('limit=30&offset=0')
     spy.mockRestore()
   })
-  it('should dispatch fetch driller when getPage is called', () => {
+  it('should dispatch search when getPage is called', () => {
     const wrapper = shallowMount(SearchTable, {
       store,
       localVue,
       stubs: ['router-link', 'router-view']
     })
     wrapper.vm.getPage('limit=30&offset=0')
-    expect(actions.FETCH_DRILLER_LIST.mock.calls[0][1]).toEqual({
+    expect(modules.registriesStore.actions.SEARCH.mock.calls[0][1]).toEqual({
       limit: '30',
       offset: '0'
     })
@@ -197,17 +210,18 @@ describe('SearchTable.vue', () => {
     }
   })
   it('has the right columns when searching for well pump installers', () => {
-    getters = {
+    const registriesStoreGetters = Object.assign({}, DEFAULT_REGISTRIES_STORE_GETTERS(), {
       user: () => 'user',
       loading: () => false,
       listError: () => null,
-      drillers: jest.fn().mockReturnValue(fakePersonList),
-      userRoles: () => ({ registry: { edit: true, view: true, approve: true } }),
+      searchResponse: jest.fn().mockReturnValue(fakePersonList),
       activity: () => 'PUMP'
-    }
+    })
     store = new Vuex.Store({
-      getters,
-      actions
+      modules: {
+        auth: { getters: DEFAULT_AUTH_STORE_GETTERS() },
+        registriesStore: { namespaced: true, getters: registriesStoreGetters, actions: DEFAULT_REGISTRIES_STORE_ACTIONS() }
+      }
     })
     const wrapper = shallowMount(SearchTable, {
       store,
@@ -282,17 +296,21 @@ describe('SearchTable.vue', () => {
     expect(personCertAuth).toContain('BC')
   })
   it('shows the driller\'s registration status', () => {
-    getters = {
-      user: () => 'user',
+    const registriesStoreGetters = Object.assign({}, DEFAULT_REGISTRIES_STORE_GETTERS(), {      
       loading: () => false,
       listError: () => null,
-      drillers: jest.fn().mockReturnValue(fakePersonList),
-      userRoles: () => ({ registry: { edit: true, view: true, approve: true } }),
+      searchResponse: jest.fn().mockReturnValue(fakePersonList),
       activity: () => 'DRILL'
-    }
+    })
+    const authGetters =  Object.assign({}, DEFAULT_AUTH_STORE_GETTERS(), {
+      user: () => 'user',
+      userRoles: () => ({ registry: { edit: true, view: true, approve: true } }),
+    })
     store = new Vuex.Store({
-      getters,
-      actions
+      modules: {
+        auth: { getters: authGetters },
+        registriesStore: { namespaced: true, getters: registriesStoreGetters, actions: DEFAULT_REGISTRIES_STORE_ACTIONS() }
+      }
     })
     const wrapper = mount(SearchTable, {
       store,
