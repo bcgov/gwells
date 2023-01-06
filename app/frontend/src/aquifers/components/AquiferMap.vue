@@ -80,6 +80,7 @@ import observationWellInactiveLegendSrc from '../../common/assets/images/owells-
 import observationWellActiveLegendSrc from '../../common/assets/images/owells-active.svg'
 import wellsAllLegendSrc from '../../common/assets/images/wells-all.svg'
 import wellsArtesianLegendSrc from '../../common/assets/images/wells-artesian.svg'
+import wellsHydraulicLegendSrc from '../../common/assets/images/wells-hydraulic.svg'
 import { setupFeatureTooltips } from '../../common/mapbox/popup'
 
 export default {
@@ -145,6 +146,10 @@ export default {
             {
               imageSrc: wellsArtesianLegendSrc,
               label: 'artesian'
+            },
+            {
+              imageSrc: wellsHydraulicLegendSrc,
+              label: 'k.s.t.'
             }
           ]
         },

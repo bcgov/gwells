@@ -69,6 +69,7 @@ import groundWaterLicenceActiveLegendSrc from '../../common/assets/images/gwater
 import ecoCatGroundWaterLegendSrc from '../../common/assets/images/ecocat-groundwater.svg'
 import observationWellInactiveLegendSrc from '../../common/assets/images/owells-inactive.svg'
 import observationWellActiveLegendSrc from '../../common/assets/images/owells-active.svg'
+import wellsHydraulicLegendSrc from '../../common/assets/images/wells-hydraulic.svg'
 
 import wellsAllLegendSrc from '../../common/assets/images/wells-all.svg'
 import wellsArtesianLegendSrc from '../../common/assets/images/wells-artesian.svg'
@@ -132,6 +133,10 @@ export default {
             {
               imageSrc: wellsArtesianLegendSrc,
               label: 'artesian'
+            },
+            {
+              imageSrc: wellsHydraulicLegendSrc,
+              label: 'k.s.t.'
             }
           ]
         },

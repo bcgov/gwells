@@ -465,7 +465,7 @@
                     </dd>
                   </div>
                   <div class="aquifer-artesian-advisory" v-else-if="section.code === 'A'">
-                    <dt class="text-right">Drilling and operation advisory
+                    <dt class="text-right">Drilling & operation advisory
                       <i id="aquiferArtesianAdvisory" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
                       <b-popover
                         target="aquiferArtesianAdvisory"
