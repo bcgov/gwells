@@ -16,6 +16,7 @@ import {
   FETCH_CITY_LIST,
   FETCH_DRILLER,
   SEARCH,
+  RESET_SEARCH,
   FETCH_DRILLER_OPTIONS,
   REQUEST_MAP_POSITION
 } from './actions.types.js'
@@ -31,15 +32,14 @@ import {
   SET_LAST_SEARCHED_ACTIVITY,
   SET_HAS_SEARCHED,
   SET_SEARCH_PARAMS,
-  SET_REQUESTED_MAP_POSITION,
-  RESET_SEARCH
+  SET_REQUESTED_MAP_POSITION  
 } from './mutations.types.js'
 import {
   DEFAULT_MAP_ZOOM,
   CENTRE_LNG_LAT_BC
 } from '../../common/mapbox/geometry'
 
-Vue.use(Vuex)
+//Vue.use(Vuex)
 
 export const DEFAULT_SEARCH_PARAMS = {
   search: '',
@@ -251,12 +251,6 @@ const registriesStore = {
     },
     searchParams(state) {
       return state.searchParams
-    },
-    searchMapCentre(state) {
-      return state.searchMapCentre
-    },
-    searchMapZoom(state) {
-      return state.searchMapZoom
     },
     error(state) {
       return state.error
