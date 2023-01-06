@@ -149,9 +149,7 @@
           <!-- search map -->
           <b-col>
             <registry-map
-              ref="registryMap"
-              :initialCentre="searchMapCentre"
-              :initialZoom="searchMapZoom" 
+              ref="registryMap"              
               @search="handleMapSearch"                         
               />              
           </b-col>
@@ -218,14 +216,14 @@ import APIErrorMessage from '@/common/components/APIErrorMessage.vue'
 import {
   FETCH_CITY_LIST,
   SEARCH,
+  RESET_SEARCH,
   FETCH_DRILLER_OPTIONS,
   REQUEST_MAP_POSITION
 } from '@/registry/store/actions.types'
 import {
   SET_LOADING,
   SET_HAS_SEARCHED,
-  SET_LAST_SEARCHED_ACTIVITY,
-  RESET_SEARCH
+  SET_LAST_SEARCHED_ACTIVITY  
 } from '@/registry/store/mutations.types'
 
 export default {
@@ -306,8 +304,6 @@ export default {
       'searchResponse',
       'activity',
       'searchParams',
-      'searchMapCentre',
-      'searchMapZoom',
       'hasSearched'     
     ])
 
@@ -381,7 +377,6 @@ export default {
           if (resp.data.features.length) {
             const feature = resp.data.features[0]
             lngLats.push(new mapboxgl.LngLat(feature.geometry.coordinates[0], feature.geometry.coordinates[1]))
-              //{ lng: , lat:  })   
           }          
           checkAllGeocodesComplete();        
         }
