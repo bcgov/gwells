@@ -191,9 +191,9 @@ export function searchedRegistriesLayer (options = {}) {
   const layerId = options.id || SEARCHED_REGISTRIES_LAYER_ID
   const styles = defaultsDeep(options.styles, {
     'circle-color': '#ff0000',
-    'circle-radius': 4,
+    'circle-radius': 5,
     'circle-stroke-color': '#000000',
-    'circle-stroke-width': 0.75
+    'circle-stroke-width': 1
   })
 
   return layerConfig(layerId, options.source || SEARCHED_REGISTRIES_SOURCE_ID, options.layerType || 'circle', styles, options.layout)
