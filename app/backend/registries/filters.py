@@ -12,28 +12,29 @@
     limitations under the License.
 """
 
-from django.contrib.gis.geos import GEOSGeometry, GEOSException
+from django.contrib.gis.geos import Polygon, GEOSException
 from django.contrib.gis.db.models.functions import Transform
 from rest_framework.exceptions import ValidationError
 from rest_framework.filters import BaseFilterBackend
 
-class GeometryFilterBackend(BaseFilterBackend):
+class BoundingBoxFilterBackend(BaseFilterBackend):
     """
-    Filter that allows geographic filtering on a geometry/shape using `?within=<geojson geometry>`
+    Filter that allows geographic filtering with a bounding box.
     """
 
-    def filter_queryset(self, request, queryset, view):
-        within = request.query_params.get('within', None)
-        srid = request.query_params.get('srid', 4326)
+    def filter_queryset(self, request, queryset, _view):
+        sw_long = request.query_params.get('sw_long')
+        sw_lat = request.query_params.get('sw_lat')
+        ne_long = request.query_params.get('ne_long')
+        ne_lat = request.query_params.get('ne_lat')
 
-        if within:
+        if sw_long and sw_lat and ne_long and ne_lat:
             try:
-                shape = GEOSGeometry(within, srid=int(srid))
+                bbox = Polygon.from_bbox((sw_long, sw_lat, ne_long, ne_lat))
+                bbox.srid = 4326
             except (ValueError, GEOSException):
-                raise ValidationError({
-                    'within': 'Invalid geometry. Use a geojson geometry or WKT representing a polygon. Example: &within={"type": "Polygon", "coordinates": [...]}'
-                })
+                pass
             else:
-                queryset = queryset.filter(registrations__organization__geom__intersects=shape)
-                
+                queryset = queryset.filter(registrations__organization__geom__bboverlaps=bbox)
+
         return queryset

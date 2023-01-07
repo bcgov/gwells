@@ -657,23 +657,17 @@ class APIPersonTests(AuthenticatedAPITestCase):
             registration_no="F62232",
         )
         
-        # Search for drillers near Victoria.  expect one result.
-        geo_json = {
-          "type": "Polygon", 
-          "coordinates": [
-            [
-              [-123.40253945033623,48.40057269436966],
-              [-123.26195857741126,48.40057269436966],
-              [-123.26195857741126,48.47868009861898],
-              [-123.40253945033623,48.47868009861898],
-              [-123.40253945033623,48.40057269436966]
-            ]
-          ]
-        }      
-        url = reverse('person-list', kwargs={'version': 'v1'}) + \
-          f'?within={json.dumps(geo_json)}&srid=4326'
 
-        response = self.client.get(url, format='json')
+
+        # Search for drillers near Victoria.  expect one result.
+        url = reverse('person-list', kwargs={'version': 'v1'})
+        search_params = {
+          'sw_long': -123.40253945033623,
+          'sw_lat': 48.40057269436966,
+          'ne_long': -123.26195857741126,
+          'ne_lat': 48.47868009861898              
+          }
+        response = self.client.get(url, search_params, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         
         results = response.data.get("results")
