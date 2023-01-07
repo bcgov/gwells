@@ -158,7 +158,10 @@ const registriesStore = {
         searchParams.limit = DEFAULT_SEARCH_PARAMS.limit
       }
       commit(SET_SEARCH_PARAMS, searchParams)
-      commit(SET_REQUESTED_MAP_POSITION, Object.assign({},DEFAULT_MAP_POSITION))
+      commit(SET_LIMIT_SEARCH_TO_CURRENT_MAP_BOUNDS, false)
+      commit(SET_DO_SEARCH_ON_BOUNDS_CHANGE, false)
+      commit(SET_REQUESTED_MAP_POSITION, Object.assign({}, DEFAULT_MAP_POSITION))
+      
     },
     [FETCH_CITY_LIST]({ commit }, activity) {
       ApiService.query('cities/' + activity)
