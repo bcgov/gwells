@@ -36,8 +36,12 @@ import {
 } from '../../../common/mapbox/layers'
 import { LegendControl, BoxZoomControl, SearchOnMoveControl, ClearSearchCriteriaControl } from '../../../common/mapbox/controls'
 import { DEFAULT_MAP_ZOOM, CENTRE_LNG_LAT_BC, peopleToGeoJSON, convertLngLatBoundsToDirectionBounds, boundsCompletelyContains } from '../../../common/mapbox/geometry'
-import { REQUEST_MAP_POSITION } from '../../store/actions.types'
-import { mapGetters, mapActions } from 'vuex'
+import {
+  REQUEST_MAP_POSITION,
+  SEARCH_AGAIN
+} from '../../store/actions.types'
+import { SET_CURRENT_MAP_BOUNDS } from '../../store/mutations.types'
+import { mapGetters, mapActions, mapMutations } from 'vuex'
 import { setupFeatureTooltips } from '../../../common/mapbox/popup'
 import { createRegistrySearchResultPopupElement } from '../../popup'
 
@@ -71,7 +75,10 @@ export default {
     ...mapGetters(['userRoles']),
     ...mapGetters('registriesStore', [
       'requestedMapPosition',
-      'searchResponse'
+      'searchResponse',
+      'currentMapBounds',
+      'doSearchOnBoundsChange',
+      'snapMapToSearchResults'
     ]),
     //hasSearchParams(state) {
     //  return Object.keys(this.searchQueryParams).length > 0
@@ -155,7 +162,6 @@ export default {
       }      
 
       this.map.on("click", this.onMapClick)
-
       this.map.on('load', () => {
 
         const tooltipLayers = {
@@ -172,19 +178,31 @@ export default {
 
         this.$emit('mapLoaded', mapBounds)
 
+      });
+
+      //listen to map move/zoom events      
+      ['zoomend', 'moveend', 'resize'].forEach(eventName => {
+        this.map.on(eventName, debounce(e => {
+          const bounds = this.map.getBounds()
+          this.SET_CURRENT_MAP_BOUNDS(bounds)
+          if (this.doSearchOnBoundsChange) {
+            this.SEARCH_AGAIN()
+          }
+        }, 500))
       })
+      
     },
     buildMapStyle() {
       return {
         version: 8,
         sources: {
           [DATABC_ROADS_SOURCE_ID]: DATABC_ROADS_SOURCE,
-          [DATABC_CADASTREL_SOURCE_ID]: DATABC_CADASTREL_SOURCE,
+          //[DATABC_CADASTREL_SOURCE_ID]: DATABC_CADASTREL_SOURCE,
           [SEARCHED_REGISTRIES_SOURCE_ID]: { type: 'geojson', data: peopleToGeoJSON([]) }
         },
         layers: [
           DATABC_ROADS_LAYER,
-          DATABC_CADASTREL_LAYER,
+          //DATABC_CADASTREL_LAYER,
           searchedRegistriesLayer(),
         ]
       }
@@ -250,6 +268,17 @@ export default {
         }    
       }
     },
+    geoJsonToBounds(geoJson) {
+      if (!geoJson.features.length) {
+        return null
+      }
+      const bounds = new mapboxgl.LngLatBounds()
+      geoJson.features.forEach((f) => {
+        const g = f.geometry
+        bounds.extend(new mapboxgl.LngLat(g.coordinates[0], g.coordinates[1]))
+      })
+      return bounds;
+    },
     createRegistrySearchResultPopupElement(features, { canInteract }) {
       return createRegistrySearchResultPopupElement(features, this.map, this.$router, {
         pageSize: 1,
@@ -260,8 +289,12 @@ export default {
       })
     },
     ...mapActions('registriesStore', [
-      REQUEST_MAP_POSITION
+      REQUEST_MAP_POSITION,
+      SEARCH_AGAIN
     ]),
+    ...mapMutations('registriesStore', [
+      SET_CURRENT_MAP_BOUNDS
+    ])
   },
   watch: {
     requestedMapPosition (requestedMapPosition) {
@@ -290,7 +323,14 @@ export default {
       const results = searchResponse && searchResponse.results ?
         searchResponse.results :
         [];
-      this.updateSearchResultsLayer(peopleToGeoJSON(searchResponse.results))
+      const geoJson = peopleToGeoJSON(searchResponse.results);
+      this.updateSearchResultsLayer(geoJson)
+      if (this.snapMapToSearchResults) {
+        const bounds = this.geoJsonToBounds(geoJson)
+        if (bounds) {
+          this.flyToBounds(bounds, { maxZoom: 12 });
+        }
+      }
     },
     userRoles () {
       this.map.setStyle(this.buildMapStyle())

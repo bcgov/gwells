@@ -131,6 +131,22 @@
                 </b-col>
               </b-form-row>
               <b-form-row>
+                <b-col cols="12">
+                  <b-form-group label="Map options:">                    
+                    <b-form-radio-group v-model="limitSearchToCurrentMapBounds" name="limitSearchToCurrentMapBounds">
+                      <b-form-radio v-bind:value="false" id="dontLimitSearchToMap">Snap map to search results</b-form-radio><br/>
+                      <b-form-radio v-bind:value="true" id="limitSearchToMap">Limit search to map area</b-form-radio>                                            
+                    </b-form-radio-group>
+                    <b-form-checkbox 
+                      class="ml-4" 
+                      v-model="refreshOnMapChange" 
+                      id="refreshOnMapChange"
+                      :disabled="!limitSearchToCurrentMapBounds">
+                        Refresh search results when map area changes</b-form-checkbox>                      
+                  </b-form-group>
+                </b-col>
+              </b-form-row>
+              <b-form-row>
                 <b-col>
                   <b-form-group>
                     <button
@@ -150,7 +166,6 @@
           <b-col>
             <registry-map
               ref="registryMap"              
-              @search="handleMapSearch"                         
               />              
           </b-col>
         </b-row>
@@ -204,7 +219,7 @@
 <script>
 import querystring from 'querystring'
 import mapboxgl from 'mapbox-gl'
-import { mapGetters, mapActions, mapMutations } from 'vuex'
+import { mapGetters, mapActions, mapMutations, mapState } from 'vuex'
 import smoothScroll from 'smoothscroll'
 import { omit } from 'lodash'
 
@@ -223,7 +238,9 @@ import {
 import {
   SET_LOADING,
   SET_HAS_SEARCHED,
-  SET_LAST_SEARCHED_ACTIVITY  
+  SET_LAST_SEARCHED_ACTIVITY  ,
+  SET_LIMIT_SEARCH_TO_CURRENT_MAP_BOUNDS,
+  SET_DO_SEARCH_ON_BOUNDS_CHANGE
 } from '@/registry/store/mutations.types'
 
 export default {
@@ -282,7 +299,7 @@ export default {
       return {
         search: this.searchParams.search,
         // prov: this.searchParams.city.split(',')[1],
-        city: this.searchParams.city.join(),
+        city: this.searchParams.city,
         status: this.searchParams.status,
         limit: this.searchParams.limit,
         activity: this.searchParams.activity,
@@ -294,7 +311,19 @@ export default {
     },
     hasResults () {
       return this.searchResponse.results && this.searchResponse.results.length > 0
+    },    
+    refreshOnMapChange: {
+      get() { return this.doSearchOnBoundsChangeFromStore },
+      set(value) { this[SET_DO_SEARCH_ON_BOUNDS_CHANGE](value) }
     },
+    limitSearchToCurrentMapBounds: {
+      get() { return this.limitSearchToCurrentMapBoundsFromStore },
+      set(value) { this[SET_LIMIT_SEARCH_TO_CURRENT_MAP_BOUNDS](value) }
+    },
+    ...mapState('registriesStore', {
+      limitSearchToCurrentMapBoundsFromStore: 'limitSearchToCurrentMapBounds',
+      doSearchOnBoundsChangeFromStore: 'doSearchOnBoundsChange'
+    }),
     ...mapGetters(['userRoles']),
     ...mapGetters('registriesStore', [      
       'drillerOptions',
@@ -304,9 +333,8 @@ export default {
       'searchResponse',
       'activity',
       'searchParams',
-      'hasSearched'     
-    ])
-
+      'hasSearched',         
+    ])    
   },
   watch: {
     'searchParams.activity': function () {      
@@ -320,7 +348,7 @@ export default {
     user: function () {
       // reset search when user changes (this happens every login or logout)
       this.resetSearch()
-    },
+    }
   },
   methods: {
     drillerSearch() {
@@ -344,12 +372,11 @@ export default {
         smoothScroll(this.$el.querySelector('#search-results-table'), 100)
 
         //reset some of the form fields, but not the search results
-        this[RESET_SEARCH]({ keepActivity: true, keepLimit: true, keepSearchResults: true })
-
-        //this[SET_LOADING](false) //not needed because this is handled in the store
+        //this[RESET_SEARCH]({ keepActivity: true, keepLimit: true, keepSearchResults: true })
+        
         this.lastSearchedParams = Object.assign({}, params)
       }).catch(() => {
-        //this[SET_LOADING](false) //not needed because this is handled in the store
+        
       })
     },
     sortTable (sortCode) {
@@ -364,10 +391,7 @@ export default {
       if (!e.ctrlKey) {
         ApiService.download(e.currentTarget.getAttribute('href'))
       }
-    },    
-    handleMapSearch(params) {
-      console.log("handle map search")
-    },
+    },        
     zoomToSelectedCities(selectedCities) {
       if (selectedCities && selectedCities != "") {
         const lngLats = []; //a list of {lat:..., lng:...} objects
@@ -417,11 +441,13 @@ export default {
     },
     resetSearch() {
       this[RESET_SEARCH]();
-    },
+    },    
     ...mapMutations('registriesStore', [
       SET_LAST_SEARCHED_ACTIVITY,
       SET_HAS_SEARCHED,
-      SET_LOADING
+      SET_LOADING,
+      SET_LIMIT_SEARCH_TO_CURRENT_MAP_BOUNDS,
+      SET_DO_SEARCH_ON_BOUNDS_CHANGE    
     ]),
     ...mapActions('registriesStore', [
       FETCH_DRILLER_OPTIONS,

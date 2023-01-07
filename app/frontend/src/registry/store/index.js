@@ -16,6 +16,7 @@ import {
   FETCH_CITY_LIST,
   FETCH_DRILLER,
   SEARCH,
+  SEARCH_AGAIN,
   RESET_SEARCH,
   FETCH_DRILLER_OPTIONS,
   REQUEST_MAP_POSITION
@@ -32,11 +33,15 @@ import {
   SET_LAST_SEARCHED_ACTIVITY,
   SET_HAS_SEARCHED,
   SET_SEARCH_PARAMS,
-  SET_REQUESTED_MAP_POSITION  
+  SET_REQUESTED_MAP_POSITION  ,
+  SET_CURRENT_MAP_BOUNDS,
+  SET_DO_SEARCH_ON_BOUNDS_CHANGE,
+  SET_LIMIT_SEARCH_TO_CURRENT_MAP_BOUNDS
 } from './mutations.types.js'
 import {
   DEFAULT_MAP_ZOOM,
-  CENTRE_LNG_LAT_BC
+  CENTRE_LNG_LAT_BC,
+  convertLngLatBoundsToDirectionBounds
 } from '../../common/mapbox/geometry'
 
 //Vue.use(Vuex)
@@ -70,6 +75,13 @@ const registriesStore = {
     drillerOptions: null,
     lastSearchedActivity: 'DRILL',
     requestedMapPosition: null, 
+    currentMapBounds: null,
+    doSearchOnBoundsChange: false,
+
+    //this is a dual-purpopse property: 
+    // when false, the implied property 'snapMapToSearchResults' is true
+    // and when true, the 'snapMapToSearchResults' is false
+    limitSearchToCurrentMapBounds: false
   },
   mutations: {
     [SET_SEARCH_PARAMS](state, payload) {      
@@ -118,6 +130,15 @@ const registriesStore = {
       }
       state.requestedMapPosition = payload;
     },
+    [SET_CURRENT_MAP_BOUNDS] (state, payload) {
+      state.currentMapBounds = payload
+    }, 
+    [SET_DO_SEARCH_ON_BOUNDS_CHANGE] (state, payload) {
+      state.doSearchOnBoundsChange = payload
+    }, 
+    [SET_LIMIT_SEARCH_TO_CURRENT_MAP_BOUNDS] (state, payload) {
+      state.limitSearchToCurrentMapBounds = payload
+    }, 
   },
   actions: {
     [RESET_SEARCH]({ commit, state }, options = {}) {
@@ -127,7 +148,6 @@ const registriesStore = {
       searchParams.status = DEFAULT_SEARCH_PARAMS.status
       searchParams.ordering = DEFAULT_SEARCH_PARAMS.ordering
       if (!options.keepSearchResults) {
-        //searchParams.hasSearched = false
         commit(SET_HAS_SEARCHED, false)
         commit(SET_SEARCH_RESPONSE, [])
       }
@@ -198,9 +218,23 @@ const registriesStore = {
           commit(SET_ERROR, error.response)
         })
     },
-    [SEARCH]({ commit }, params) {
-      
+    [SEARCH]({ commit, state }, params) {
+      // Search using the given parameters
+
+      // If the 'limitSearchToCurrentMapBounds' property is set, 
+      // add additional parameters to the search
+      // to restrict by the current map bounds
+      if (state.limitSearchToCurrentMapBounds && state.currentMapBounds) {
+        params = Object.assign({}, params, convertLngLatBoundsToDirectionBounds(state.currentMapBounds))
+        params.srid = 4326
+      }
+      else {
+        params = Object.assign({}, params, {sw_lat: null, sw_long: null, ne_lat: null, ne_long: null})
+        params.srid = null
+      }
+
       return new Promise((resolve, reject) => {
+        commit(SET_SEARCH_PARAMS, params)
         commit(SET_HAS_SEARCHED, true)
         commit(SET_LOADING, true)
         ApiService.query('drillers', params)
@@ -216,6 +250,13 @@ const registriesStore = {
             reject(error)
           })
       })
+    },
+    [SEARCH_AGAIN]({ dispatch, state }) {
+      //repeat the last search using the saved
+      //search params
+      if (state.searchParams){
+        dispatch(SEARCH, state.searchParams)
+      }
     },
     [FETCH_DRILLER_OPTIONS] ({commit}, params) {
       // We only fetch driller options if we don't already have a copy cached
@@ -275,6 +316,18 @@ const registriesStore = {
     },
     requestedMapPosition(state) {
       return state.requestedMapPosition;
+    },
+    currentMapBounds(state) {
+      return state.currentMapBounds;
+    },
+    doSearchOnBoundsChange(state) {
+      return state.doSearchOnBoundsChange;
+    },
+    limitSearchToCurrentMapBounds(state) {
+      return state.limitSearchToCurrentMapBounds;
+    },
+    snapMapToSearchResults(state) {
+      return !state.limitSearchToCurrentMapBounds;
     },
     activity (state) {
       /**
