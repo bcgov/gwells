@@ -14,6 +14,7 @@
 import uuid
 import logging
 import os
+import json
 from unittest.mock import patch
 
 from django.test import TestCase
@@ -615,6 +616,72 @@ class APIPersonTests(AuthenticatedAPITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(created_guid), 36)
         self.assertContains(response, created_guid)
+
+    def test_list_people_within_bbox(self):
+        """
+        Tests that the "within" parameter causes the backend to limit results to
+        within the specified GeoJSON geometry
+        """
+        
+        surname_of_person_in_victoria = "One"
+
+        #register one person and their organization
+        activity = ActivityCode.objects.get(registries_activity_code="DRILL")
+        person_1 = Person.objects.create(
+            first_name='Person', surname=surname_of_person_in_victoria)
+        org_1 = Organization.objects.create(
+            name="Victoria Drilling Company",
+            province_state=self.prov,
+            geom=GEOSGeometry(f'POINT(-123.35948 48.4268161)', srid=4326) #near Victoria, BC
+        )
+        registration = Register.objects.create(
+            person=person_1,
+            organization=org_1,
+            registries_activity=activity,
+            registration_no="F54321",
+        )
+
+        #register another person and their organization
+        activity = ActivityCode.objects.get(registries_activity_code="DRILL")
+        person_2 = Person.objects.create(
+            first_name='Person', surname="Two")
+        org_2 = Organization.objects.create(
+            name="Kelowna Drilling Company",
+            province_state=self.prov,
+            geom=GEOSGeometry(f'POINT(-119.47901 49.882042)', srid=4326) #near Kelowna, BC
+        )
+        registration = Register.objects.create(
+            person=person_2,
+            organization=org_2,
+            registries_activity=activity,
+            registration_no="F62232",
+        )
+        
+        # Search for drillers near Victoria.  expect one result.
+        geo_json = {
+          "type": "Polygon", 
+          "coordinates": [
+            [
+              [-123.40253945033623,48.40057269436966],
+              [-123.26195857741126,48.40057269436966],
+              [-123.26195857741126,48.47868009861898],
+              [-123.40253945033623,48.47868009861898],
+              [-123.40253945033623,48.40057269436966]
+            ]
+          ]
+        }      
+        url = reverse('person-list', kwargs={'version': 'v1'}) + \
+          f'?within={json.dumps(geo_json)}&srid=4326'
+
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
+        results = response.data.get("results")
+        self.assertEqual(len(results), 1)
+
+        surname = results[0].get("surname")
+        self.assertEqual(surname, surname_of_person_in_victoria)
+        
 
     def test_list_people_includes_org_coords(self):
         """

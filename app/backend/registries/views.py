@@ -74,7 +74,7 @@ from registries.serializers import (
     PersonNameSerializer)
 from gwells.change_history import generate_history_diff
 from gwells.views import AuditCreateMixin, AuditUpdateMixin
-
+from registries.filters import GeometryFilterBackend
 
 class OrganizationListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     """
@@ -326,7 +326,11 @@ class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     pagination_class = APILimitOffsetPagination
     # Allow searching on name fields, names of related companies, etc.
     filter_backends = (restfilters.DjangoFilterBackend,
-                       filters.SearchFilter, filters.OrderingFilter)
+                       filters.SearchFilter, 
+                       filters.OrderingFilter,
+                       GeometryFilterBackend)
+
+                       
     ordering_fields = ('surname', 'registrations__organization__name')
     ordering = ('surname',)
     search_fields = (
