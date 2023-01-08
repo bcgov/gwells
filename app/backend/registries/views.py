@@ -74,7 +74,9 @@ from registries.serializers import (
     PersonNameSerializer)
 from gwells.change_history import generate_history_diff
 from gwells.views import AuditCreateMixin, AuditUpdateMixin
-from registries.filters import BoundingBoxFilterBackend
+from registries.filters import (
+  BoundingBoxFilterBackend
+)
 
 class OrganizationListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     """
@@ -309,6 +311,13 @@ def person_search_qs(request):
             Prefetch('registrations', queryset=registrations_qs)
         )
 
+    #Subactivities param comes as a csv list
+    subactivities = query.get('subactivities')
+    if subactivities:      
+      subactivities = subactivities.split(",")
+      qs = qs.filter(
+          registrations__applications__subactivity__registries_subactivity_code__in=subactivities)
+
     return qs.distinct()
 
 
@@ -328,7 +337,8 @@ class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     filter_backends = (restfilters.DjangoFilterBackend,
                        filters.SearchFilter, 
                        filters.OrderingFilter,
-                       BoundingBoxFilterBackend)
+                       BoundingBoxFilterBackend
+                       )
 
                        
     ordering_fields = ('surname', 'registrations__organization__name')

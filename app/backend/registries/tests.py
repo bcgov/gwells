@@ -634,7 +634,7 @@ class APIPersonTests(AuthenticatedAPITestCase):
             province_state=self.prov,
             geom=GEOSGeometry(f'POINT(-123.35948 48.4268161)', srid=4326) #near Victoria, BC
         )
-        registration = Register.objects.create(
+        registration_1 = Register.objects.create(
             person=person_1,
             organization=org_1,
             registries_activity=activity,
@@ -642,7 +642,6 @@ class APIPersonTests(AuthenticatedAPITestCase):
         )
 
         #register another person and their organization
-        activity = ActivityCode.objects.get(registries_activity_code="DRILL")
         person_2 = Person.objects.create(
             first_name='Person', surname="Two")
         org_2 = Organization.objects.create(
@@ -650,7 +649,7 @@ class APIPersonTests(AuthenticatedAPITestCase):
             province_state=self.prov,
             geom=GEOSGeometry(f'POINT(-119.47901 49.882042)', srid=4326) #near Kelowna, BC
         )
-        registration = Register.objects.create(
+        registration_2 = Register.objects.create(
             person=person_2,
             organization=org_2,
             registries_activity=activity,
@@ -675,6 +674,72 @@ class APIPersonTests(AuthenticatedAPITestCase):
 
         surname = results[0].get("surname")
         self.assertEqual(surname, surname_of_person_in_victoria)
+
+    def test_list_people_filtered_by_subactivity(self):
+        """
+        Tests that the "subactivities" query string param causes search results to 
+        be limited to people registered only for those subactivities
+        """
+        
+        proof_of_age = ProofOfAgeCode.objects.create(
+            code="TESTING",
+            description="Testing",
+            display_order="1")
+
+        #register one person and their organization
+        activity = ActivityCode.objects.get(registries_activity_code="DRILL")
+        person_1 = Person.objects.create(
+            first_name='Person', surname="One")
+        org_1 = Organization.objects.create(
+            name="Drilling Company A",
+            province_state=self.prov
+        )
+        registration_1 = Register.objects.create(
+            person=person_1,
+            organization=org_1,
+            registries_activity=activity,
+            registration_no="F54321",
+        )
+        application_1 = RegistriesApplication.objects.create(
+            registration=registration_1,
+            proof_of_age=proof_of_age,
+            subactivity=SubactivityCode.objects.get(registries_subactivity_code='WATER')
+        )
+
+        #register another person and their organization
+        person_2 = Person.objects.create(
+            first_name='Person', surname="Two")
+        org_2 = Organization.objects.create(
+            name="Drilling Company B",
+            province_state=self.prov
+        )
+        registration_2 = Register.objects.create(
+            person=person_2,
+            organization=org_2,
+            registries_activity=activity,
+            registration_no="F62232",
+        )
+        application_2 = RegistriesApplication.objects.create(
+            registration=registration_2,
+            proof_of_age=proof_of_age,
+            subactivity=SubactivityCode.objects.get(registries_subactivity_code='GEOTECH')
+        )
+        
+
+        # Search for drillers with subactivity 'GEOTECH'
+        url = reverse('person-list', kwargs={'version': 'v1'})
+        search_params = {
+          'subactivities': "GEOTECH"    
+          }
+        response = self.client.get(url, search_params, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
+        results = response.data.get("results")
+        self.assertEqual(len(results), 1)
+
+
+        subactivity = results[0].get("registrations")[0].get("applications")[0].get("subactivity")
+        self.assertEqual(subactivity.get("registries_subactivity_code"), "GEOTECH")        
         
 
     def test_list_people_includes_org_coords(self):
