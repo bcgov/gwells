@@ -50,6 +50,7 @@ export const DEFAULT_SEARCH_PARAMS = {
   search: '',
   city: [''],
   activity: 'DRILL',
+  subactivities: null, //null for "all", empty array for "none".
   status: 'A',
   limit: '10',
   ordering: ''
@@ -236,11 +237,21 @@ const registriesStore = {
         params.srid = null
       }
 
+      //prepare a slightly modified parameters object that will be sent
+      //to the API.
+      // - convert all array parameters into CSV strings
+      const paramsForApi = Object.assign({}, params)
+      for (const [key, value] of Object.entries(paramsForApi)) {
+        if (Array.isArray(value)) {
+          paramsForApi[key] = value.join(",")
+        }
+      }
+
       return new Promise((resolve, reject) => {
         commit(SET_SEARCH_PARAMS, params)
         commit(SET_HAS_SEARCHED, true)
         commit(SET_LOADING, true)
-        ApiService.query('drillers', params)
+        ApiService.query('drillers', paramsForApi)
           .then((response) => {            
             commit(SET_LOADING, false)
             commit(SET_LIST_ERROR, null)

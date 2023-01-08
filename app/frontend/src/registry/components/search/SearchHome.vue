@@ -60,7 +60,7 @@
             <div class="mb-3">
               Use the search form below to locate registered well drillers and pump installers.  
               The map can be used to narrow down search results by geographic area. 
-              (The map will only show wells drillers and pump installers that have known geographic positions and are in BC.)
+              (The map will only show well drillers and pump installers that have known geographic positions and are in BC.)
               Registered well drillers and pump installers that do not have known geographic locations or are not in BC 
               can be located using the search form below.
             </div>
@@ -72,6 +72,16 @@
                       <b-form-radio value="DRILL" id="activityDriller">Well Driller</b-form-radio>
                       <b-form-radio value="PUMP" id="activityInstaller">Well Pump Installer</b-form-radio>
                     </b-form-radio-group>
+                  </b-form-group>
+                </b-col>
+              </b-form-row>
+              <b-form-row v-if="subactivities && subactivities.length > 1">
+                <b-col md="12">
+                  <b-form-group label="Choose classification(s):">
+                    <b-form-checkbox-group name="subactivitySelector"
+                      class="fixed-width font-weight-normal pt-2" 
+                      :options="subactivities"                       
+                      v-model="searchParams.subactivities"></b-form-checkbox-group>
                   </b-form-group>
                 </b-col>
               </b-form-row>
@@ -97,7 +107,7 @@
                   </b-form-group>
                 </b-col>
                 <b-col cols="12" md="6" v-if="userRoles.registry.view" class="md-5">
-                  <b-form-group label="Registration status" label-for="registrationStatusSelect">
+                  <b-form-group label="Registration status:" label-for="registrationStatusSelect">
                     <b-form-select
                         :options="regStatusOptions"
                         v-model="searchParams.status"
@@ -108,7 +118,7 @@
               </b-form-row>
               <b-form-row>
                 <b-col cols="12" md="6">
-                  <b-form-group label="Individual, company, or registration number" label-for="regTypeInput">
+                  <b-form-group label="Individual, company, or registration number:" label-for="regTypeInput">
                     <b-form-input
                         type="text"
                         class="form-control"
@@ -294,18 +304,26 @@ export default {
       }
       return ''
     },
+    subactivities() {
+      if (!this.drillerOptions) {
+        return []
+      }
+      return this.drillerOptions[this.searchParams.activity].subactivity_codes.map((item) => { return { 'text': item.description, 'value': item.registries_subactivity_code } })
+    },
+    /*
     apiSearchParams () {
       // bundles searchParams into fields compatible with API
       return {
         search: this.searchParams.search,
-        // prov: this.searchParams.city.split(',')[1],
         city: this.searchParams.city,
         status: this.searchParams.status,
         limit: this.searchParams.limit,
         activity: this.searchParams.activity,
+        subactivities: this.searchParams.subactivities,
         ordering: this.searchParams.ordering
-      }
+      }    
     },
+    */
     downloadLinkQS () {
       return querystring.stringify(omit(this.lastSearchedParams, 'limit'))
     },
@@ -337,10 +355,16 @@ export default {
     ])    
   },
   watch: {
-    'searchParams.activity': function () {      
+    'searchParams.activity': function (activity) {      
       // get new city list when user changes activity (well driller or well pump installer)
       this.searchParams.city = ['']
+      this.resetSelectedSubactivities(this.subactivities)
       this.FETCH_CITY_LIST(this.formatActivityForCityList)
+    },
+    subactivities: function (subactivities) {  
+      if (!this.searchParams.subactivities || !this.searchParams.subactivities.length) {
+        this.resetSelectedSubactivities(subactivities)
+      }
     },
     'searchParams.city': function (selectedCities) {
       this.zoomToSelectedCities(selectedCities)
@@ -351,8 +375,13 @@ export default {
     }
   },
   methods: {
+    resetSelectedSubactivities(subactivities) {
+      this.searchParams.subactivities = subactivities ?
+        subactivities.map(item => item.value) :
+        [];
+    },
     drillerSearch() {
-      const params = this.apiSearchParams
+      const params = this.searchParams
 
       // save the last searched activity in the store for reference by table components
       // (e.g. for formatting table for pump installer searches)
@@ -379,6 +408,10 @@ export default {
         
       })
     },
+    //subactivityChanged(value) {      
+      //const match = this.subactivities.filter(item => item.registries_subactivity_code === value)[0]
+      //this.searchParams.subactivities = match.qualification_set.map(item => item.well_class)
+    //},
     sortTable (sortCode) {
       if (this.lastSearchedParams.ordering[0] !== '-') {
         this.lastSearchedParams['ordering'] = `-${sortCode}`
