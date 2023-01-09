@@ -15,11 +15,12 @@
 import reversion
 from collections import OrderedDict
 
-from django.db.models import Q, Prefetch
+from django.db.models import Q, Prefetch, Count
 from django.http import HttpResponse, Http404, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.views.generic import TemplateView
+from django.contrib.gis.geos import Polygon, GEOSException
 from django_filters import rest_framework as restfilters
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
@@ -74,9 +75,6 @@ from registries.serializers import (
     PersonNameSerializer)
 from gwells.change_history import generate_history_diff
 from gwells.views import AuditCreateMixin, AuditUpdateMixin
-from registries.filters import (
-  BoundingBoxFilterBackend
-)
 
 class OrganizationListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     """
@@ -224,6 +222,29 @@ def person_search_qs(request):
         registrations_qs = registrations_qs.filter(
             organization__city__in=cities)
 
+    #bbox
+    sw_long = query.get('sw_long')
+    sw_lat = query.get('sw_lat')
+    ne_long = query.get('ne_long')
+    ne_lat = query.get('ne_lat')
+    if sw_long and sw_lat and ne_long and ne_lat:
+        try:
+            bbox = Polygon.from_bbox((sw_long, sw_lat, ne_long, ne_lat))
+            bbox.srid = 4326
+            qs = qs.filter(registrations__organization__geom__bboverlaps=bbox)
+            registrations_qs = registrations_qs.filter(organization__geom__bboverlaps=bbox)
+        except (ValueError, GEOSException):
+            pass
+
+    #Subactivities param comes as a csv list
+    subactivities = query.get('subactivities')
+    if subactivities:      
+      subactivities = subactivities.split(",")
+      qs = qs.filter(
+          registrations__applications__subactivity__registries_subactivity_code__in=subactivities)
+      registrations_qs = registrations_qs.filter(
+          applications__subactivity__registries_subactivity_code__in=subactivities)
+
     activity = query.get('activity', None)
     status = query.get('status', None)
 
@@ -292,7 +313,7 @@ def person_search_qs(request):
         .prefetch_related(
             'subactivity__qualification_set',
             'subactivity__qualification_set__well_class'
-        ).distinct()
+        ).distinct()    
 
     # generate registrations queryset, inserting filtered applications queryset defined above
     registrations_qs = registrations_qs \
@@ -303,20 +324,13 @@ def person_search_qs(request):
         ) \
         .prefetch_related(
             Prefetch('applications', queryset=applications_qs)
-        ).distinct()
+        ).distinct()            
 
     # insert filtered registrations set
     qs = qs \
         .prefetch_related(
             Prefetch('registrations', queryset=registrations_qs)
         )
-
-    #Subactivities param comes as a csv list
-    subactivities = query.get('subactivities')
-    if subactivities:      
-      subactivities = subactivities.split(",")
-      qs = qs.filter(
-          registrations__applications__subactivity__registries_subactivity_code__in=subactivities)
 
     return qs.distinct()
 
@@ -337,7 +351,7 @@ class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     filter_backends = (restfilters.DjangoFilterBackend,
                        filters.SearchFilter, 
                        filters.OrderingFilter,
-                       BoundingBoxFilterBackend
+                       #BoundingBoxFilterBackend
                        )
 
                        
@@ -368,6 +382,19 @@ class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
         """ List response using serializer with reduced number of fields """
         queryset = self.get_queryset()
         filtered_queryset = self.filter_queryset(queryset)
+
+        # Omit results that have no registrations (but only when the request asks 
+        # us to limit to *Registered* well drillers and pump installers.
+        # Implementation note: Ideally we would rely on the queryset for this
+        # filtering, but the queryset is very complex, and it relies on
+        # multiple 'prefetches' (extra database queries).  It is most efficient to handle 
+        # the filtering post database query.
+        # Also note this filtering is only needed for situations in
+        # which a person is registered with multiple organizations but for
+        # different qualifications with each org AND additional filters further limit
+        # the search so that some of the registrations must be excluded from results.
+        if request.GET.get('status') == 'A': #The code 'A' means 'Registered'
+            filtered_queryset = [f for f in filtered_queryset if len(f.registrations.all()) > 0] 
 
         page = self.paginate_queryset(filtered_queryset)
         if page is not None:
