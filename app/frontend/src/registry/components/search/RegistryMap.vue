@@ -78,6 +78,7 @@ export default {
       'searchResponse',
       'currentMapBounds',
       'doSearchOnBoundsChange',
+      'limitSearchToCurrentMapBounds',
       'snapMapToSearchResults'
     ]),
     //hasSearchParams(state) {
@@ -185,7 +186,7 @@ export default {
         this.map.on(eventName, debounce(e => {
           const bounds = this.map.getBounds()
           this.SET_CURRENT_MAP_BOUNDS(bounds)
-          if (this.doSearchOnBoundsChange) {
+          if (this.limitSearchToCurrentMapBounds && this.doSearchOnBoundsChange) {
             this.SEARCH_AGAIN()
           }
         }, 500))
