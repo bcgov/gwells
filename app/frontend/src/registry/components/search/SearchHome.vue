@@ -103,8 +103,16 @@
                         >
                           <option v-for="city in prov.cities" :key="`${city} ${prov.prov}`" :value="city">{{ city }}</option>
                         </optgroup>
-                    </b-form-select>
-                  </b-form-group>
+                    </b-form-select>                    
+                    <b-alert
+                      show
+                      variant="warning"
+                      class="container mb-3"
+                      v-if="limitSearchToCurrentMapBounds && isCommunitySelected">
+                    Caution: Your are filtering the search by community ({{searchParams.city.filter(c => c).join(", ")}}) <i>and</i> by the map area.  Ensure 
+                    these two selections are consistent, or you won't get any search results.
+                  </b-alert>
+                  </b-form-group>                  
                 </b-col>
                 <b-col cols="12" md="6" v-if="userRoles.registry.view" class="md-5">
                   <b-form-group label="Registration status:" label-for="registrationStatusSelect">
@@ -310,6 +318,9 @@ export default {
       }
       return this.drillerOptions[this.searchParams.activity].subactivity_codes.map((item) => { return { 'text': item.description, 'value': item.registries_subactivity_code } })
     },
+    isCommunitySelected() {
+      return this.searchParams && this.searchParams.city && this.searchParams.city.filter(c => c != "").length > 0
+    },
     /*
     apiSearchParams () {
       // bundles searchParams into fields compatible with API
@@ -467,7 +478,10 @@ export default {
           ApiService.query(
             `geocoding/v5/mapbox.places/${city}.json`,
             { maxResults: 1, provinceCode: "BC", localities: city, matchPrecision: "locality" }
-          ).then(onGeocodeSuccess)
+          ).then(
+            onGeocodeSuccess,
+            onGeocodeError
+          )
         }
         
       }
