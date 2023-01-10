@@ -398,7 +398,7 @@ export default {
         })
       }
       this.SEARCH(params).then(() => {
-        smoothScroll(this.$el.querySelector('#search-results-table'), 100)
+        //smoothScroll(this.$el.querySelector('#search-results-table'), 100)
 
         //reset some of the form fields, but not the search results
         //this[RESET_SEARCH]({ keepActivity: true, keepLimit: true, keepSearchResults: true })
