@@ -285,6 +285,9 @@ def person_search_qs(request):
                     qs = qs.filter(
                         Q(registrations__applications__current_status__code=status),
                         Q(registrations__applications__removal_date__isnull=True))
+                    registrations_qs = registrations_qs.filter(
+                        Q(applications__current_status__code=status),
+                        Q(applications__removal_date__isnull=True))
     else:
         # User is not logged in
         # Only show active drillers to non-admin users and public
