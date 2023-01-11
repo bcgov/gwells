@@ -281,6 +281,9 @@ def person_search_qs(request):
                                     Q(registrations__isnull=True) |
                                     Q(registrations__applications__isnull=True),
                                     Q(registrations__applications__removal_date__isnull=True))
+                    registrations_qs = registrations_qs.filter(Q(applications__current_status__code=status) |                                    
+                                    Q(applications__isnull=True),
+                                    Q(applications__removal_date__isnull=True))
                 else:
                     qs = qs.filter(
                         Q(registrations__applications__current_status__code=status),
@@ -337,21 +340,28 @@ def person_search_qs(request):
 
     return qs.distinct()
 
-def exclude_persons_without_registrations(request, filtered_queryset, statuses=['A', 'P']):
+def exclude_persons_without_registrations(request, filtered_queryset, statuses_that_disallow_empty_registrations=['A']):
     """
-    Omit results that have no registrations but only when the request asks 
-    us to limit to *Registered* ('A') or *Pending* ('P') well drillers and pump installers.
+    In the following cases perform additional filtering on the 'filtered_queryset'
+    to remove persons that have no registrations:
+    1. when the request asked for status of *Registered* ('A')
+    2. when the request asked to filter by bounding box (geographic area)
+    3. when the request asked to filter by city
     Implementation note: Ideally we would rely on the queryset for this
     filtering, but the queryset is very complex, and it relies on
     multiple 'prefetches' (extra database queries).  It is most efficient to handle 
-    the filtering post database query.
-    Also note this filtering is only needed for situations in
-    which a person is registered with multiple organizations but for
-    different qualifications with each org AND additional filters further limit
-    the search so that some of the registrations must be excluded from results.
+    this filtering post database query.    
     Returns an updated filtered_queryset
     """
-    if request.GET.get('status') in statuses: 
+    status_disallows_people_with_no_registrations = \
+        request.GET.get('status') in statuses_that_disallow_empty_registrations 
+    is_filtered_by_bbox = request.GET.get('sw_long') != None \
+        and request.GET.get('sw_lat') != None \
+        and request.GET.get('ne_long') != None\
+        and request.GET.get('ne_lat') != None
+    is_filtered_by_city = request.GET.get('city', "") != ""
+    if is_filtered_by_bbox or is_filtered_by_city or \
+        status_disallows_people_with_no_registrations:
         filtered_queryset = [f for f in filtered_queryset if len(f.registrations.all()) > 0]
     return filtered_queryset
 
