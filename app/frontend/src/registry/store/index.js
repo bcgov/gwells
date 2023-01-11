@@ -37,7 +37,8 @@ import {
   SET_CURRENT_MAP_BOUNDS,
   SET_DO_SEARCH_ON_BOUNDS_CHANGE,
   SET_LIMIT_SEARCH_TO_CURRENT_MAP_BOUNDS,
-  SET_IS_SEARCH_IN_PROGRESS
+  SET_IS_SEARCH_IN_PROGRESS,
+  SET_LAST_SEARCHED_PARAMS
 } from './mutations.types.js'
 import {
   DEFAULT_MAP_ZOOM,
@@ -76,6 +77,7 @@ const registriesStore = {
     currentDriller: {},
     drillerOptions: null,
     lastSearchedActivity: 'DRILL',
+    lastSearchedParams: null,
     requestedMapPosition: null, 
     currentMapBounds: null,
     doSearchOnBoundsChange: false,
@@ -123,6 +125,13 @@ const registriesStore = {
     },
     [SET_LAST_SEARCHED_ACTIVITY] (state, payload) {
       state.lastSearchedActivity = payload
+    }, 
+    [SET_LAST_SEARCHED_PARAMS] (state, payload) {
+      if (payload != null &&
+        (!payload.hasOwnProperty("raw") || !payload.hasOwnProperty("api"))) {
+        throw("Must specify parameter in the format of: {'raw': {...}, 'api': {...}}")
+      }
+      state.lastSearchedParams = payload
     }, 
     [SET_REQUESTED_MAP_POSITION](state, payload) {  
       if (payload.hasOwnProperty("centre") && !payload.hasOwnProperty("zoom")) {
@@ -172,6 +181,7 @@ const registriesStore = {
         searchParams.limit = DEFAULT_SEARCH_PARAMS.limit
       }
       commit(SET_SEARCH_PARAMS, searchParams)
+      commit(SET_LAST_SEARCHED_PARAMS, null)
       commit(SET_LIMIT_SEARCH_TO_CURRENT_MAP_BOUNDS, false)
       commit(SET_DO_SEARCH_ON_BOUNDS_CHANGE, false)
       commit(SET_REQUESTED_MAP_POSITION, Object.assign({}, DEFAULT_MAP_POSITION))
@@ -259,6 +269,8 @@ const registriesStore = {
           paramsForApi[key] = value.join(",")
         }
       }
+
+      commit(SET_LAST_SEARCHED_PARAMS, { raw: params, api: paramsForApi })
 
       return new Promise((resolve, reject) => {
         commit(SET_SEARCH_PARAMS, params)
@@ -364,6 +376,9 @@ const registriesStore = {
     },
     isSearchInProgress(state) {
       return state.isSearchInProgress
+    },
+    lastSearchedParams(state) {
+      return state.lastSearchedParams
     },
     provinceStateOptions (state) {
       const options = []

@@ -275,7 +275,6 @@ export default {
         username: null,
         password: null
       },
-      lastSearchedParams: {},
       surveys: [],
     }
   },
@@ -335,7 +334,7 @@ export default {
     },
     */
     downloadLinkQS () {
-      return querystring.stringify(omit(this.lastSearchedParams, 'limit'))
+      return querystring.stringify(omit(this.lastSearchedParams.api, 'limit'))
     },
     hasResults () {
       return this.searchResponse.results && this.searchResponse.results.length > 0
@@ -362,7 +361,8 @@ export default {
       'activity',
       'searchParams',
       'hasSearched', 
-      'isSearchInProgress'       
+      'isSearchInProgress',
+      'lastSearchedParams'
     ])    
   },
   watch: {
@@ -406,19 +406,15 @@ export default {
           eventLabel: querystring.stringify(params)
         })
       }
-      this.SEARCH(params).then(() => {
-        this.lastSearchedParams = Object.assign({}, params)
-      }).catch(() => {
-        
-      })
+      this.SEARCH(params)
     },
     sortTable (sortCode) {
-      if (this.lastSearchedParams.ordering[0] !== '-') {
-        this.lastSearchedParams['ordering'] = `-${sortCode}`
+      if (this.lastSearchedParams.raw.ordering[0] !== '-') {
+        this.lastSearchedParams.raw['ordering'] = `-${sortCode}`
       } else {
-        this.lastSearchedParams['ordering'] = `${sortCode}`
+        this.lastSearchedParams.raw['ordering'] = `${sortCode}`
       }
-      this.SEARCH(this.lastSearchedParams)
+      this.SEARCH(this.lastSearchedParams.raw)
     },
     downloadFile (e) {
       if (!e.ctrlKey) {
