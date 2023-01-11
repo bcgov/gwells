@@ -58,11 +58,9 @@
           <!-- Search form -->
           <b-col cols="12" lg="6" xl="5">
             <div class="mb-3">
-              Use the search form below to locate registered well drillers and pump installers.  
-              The map can be used to narrow down search results by geographic area. 
-              (The map will only show well drillers and pump installers that have known geographic positions and are in BC.)
-              Registered well drillers and pump installers that do not have known geographic locations or are not in BC 
-              can be located using the search form below.
+              Use the search form below to define your search criteria. 
+              Please note: The map only shows registered well drillers and well pump installers whose base operation and address are within B.C. 
+              For a complete list refer to the results table below.
             </div>
             <b-form @submit.prevent="drillerSearch" @reset.prevent="resetSearch({clearDrillers: true})" id="drillerSearchForm">
               <b-form-row>
