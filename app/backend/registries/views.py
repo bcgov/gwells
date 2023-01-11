@@ -396,7 +396,7 @@ class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
         # which a person is registered with multiple organizations but for
         # different qualifications with each org AND additional filters further limit
         # the search so that some of the registrations must be excluded from results.
-        if request.GET.get('status') == 'A': #The code 'A' means 'Registered'
+        if request.GET.get('status') in ['A', 'P']: #'A'=Registered, 'P'=Pending
             filtered_queryset = [f for f in filtered_queryset if len(f.registrations.all()) > 0] 
 
         page = self.paginate_queryset(filtered_queryset)
