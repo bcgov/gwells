@@ -58,7 +58,7 @@
           <!-- Search form -->
           <b-col cols="12" lg="6" xl="5">
             <div class="mb-3">
-              Use the search form below to define your search criteria. 
+              Use the search function below to define your search criteria. 
               Please note: The map only shows registered well drillers and well pump installers whose base operation and address are within B.C. 
               For a complete list refer to the results table below.
             </div>
