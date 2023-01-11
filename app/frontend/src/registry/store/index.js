@@ -36,7 +36,8 @@ import {
   SET_REQUESTED_MAP_POSITION  ,
   SET_CURRENT_MAP_BOUNDS,
   SET_DO_SEARCH_ON_BOUNDS_CHANGE,
-  SET_LIMIT_SEARCH_TO_CURRENT_MAP_BOUNDS
+  SET_LIMIT_SEARCH_TO_CURRENT_MAP_BOUNDS,
+  SET_IS_SEARCH_IN_PROGRESS
 } from './mutations.types.js'
 import {
   DEFAULT_MAP_ZOOM,
@@ -78,6 +79,7 @@ const registriesStore = {
     requestedMapPosition: null, 
     currentMapBounds: null,
     doSearchOnBoundsChange: false,
+    isSearchInProgress: false,
 
     //this is a dual-purpopse property: 
     // when false, the implied property 'snapMapToSearchResults' is true
@@ -91,6 +93,9 @@ const registriesStore = {
     },    
     [SET_HAS_SEARCHED] (state, payload) {
       state.hasSearched = payload
+    },
+    [SET_IS_SEARCH_IN_PROGRESS] (state, payload) {
+      state.isSearchInProgress = payload
     },
     [SET_LOADING](state, payload) {
       state.loading = payload
@@ -129,9 +134,17 @@ const registriesStore = {
       if (payload && !payload.hasOwnProperty("centre") && !payload.hasOwnProperty("bounds")) {
         throw("Must specify either the 'centre' or the 'bounds' parameter")
       }
+      if (JSON.stringify(state.requestedMapPosition) == JSON.stringify(payload)) {
+        //no change
+        return;
+      }
       state.requestedMapPosition = payload;
     },
-    [SET_CURRENT_MAP_BOUNDS] (state, payload) {
+    [SET_CURRENT_MAP_BOUNDS](state, payload) {
+      if (JSON.stringify(state.currentMapBounds) == JSON.stringify(payload)) {
+        //no change
+        return;
+      }
       state.currentMapBounds = payload
     }, 
     [SET_DO_SEARCH_ON_BOUNDS_CHANGE] (state, payload) {
@@ -250,16 +263,16 @@ const registriesStore = {
       return new Promise((resolve, reject) => {
         commit(SET_SEARCH_PARAMS, params)
         commit(SET_HAS_SEARCHED, true)
-        commit(SET_LOADING, true)
+        commit(SET_IS_SEARCH_IN_PROGRESS, true)
         ApiService.query('drillers', paramsForApi)
           .then((response) => {            
-            commit(SET_LOADING, false)
+            commit(SET_IS_SEARCH_IN_PROGRESS, false)
             commit(SET_LIST_ERROR, null)
             commit(SET_SEARCH_RESPONSE, response.data)
             resolve()
           })
           .catch((error) => {
-            commit(SET_LOADING, false)
+            commit(SET_IS_SEARCH_IN_PROGRESS, false)
             commit(SET_LIST_ERROR, error.response)
             reject(error)
           })
@@ -348,6 +361,9 @@ const registriesStore = {
        * last searched activity, exposed to components as "activity"
        */
       return state.lastSearchedActivity
+    },
+    isSearchInProgress(state) {
+      return state.isSearchInProgress
     },
     provinceStateOptions (state) {
       const options = []

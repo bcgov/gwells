@@ -168,8 +168,9 @@
                     <button
                       type="submit"
                       class="btn btn-primary registries-search-btn mr-md-1"
-                      :disabled="loading">
+                      :disabled="loading || isSearchInProgress">
                       Search
+                      <i v-if="isSearchInProgress" class="fa fa-circle-o-notch fa-spin ml-1"/>
                     </button>
                     <button type="reset" class="btn btn-default">Reset</button>
                   </b-form-group>
@@ -198,7 +199,7 @@
 
       <!-- Search results table -->
       <div id="search-results-table">
-        <template v-if="!loading">
+        <template v-if="!loading && !isSearchInProgress">
           <b-row>
             <b-col cols="12" v-if="!hasResults && hasSearched">
               No results were found.
@@ -360,7 +361,8 @@ export default {
       'searchResponse',
       'activity',
       'searchParams',
-      'hasSearched',         
+      'hasSearched', 
+      'isSearchInProgress'       
     ])    
   },
   watch: {
@@ -396,8 +398,6 @@ export default {
       // (e.g. for formatting table for pump installer searches)
       this[SET_LAST_SEARCHED_ACTIVITY](this.searchParams.activity || 'DRILL')
 
-      //this[SET_LOADING](true)
-      //this[SET_HAS_SEARCHED](true)
       if (window.ga) {
         window.ga('send', {
           hitType: 'event',
@@ -407,20 +407,11 @@ export default {
         })
       }
       this.SEARCH(params).then(() => {
-        //smoothScroll(this.$el.querySelector('#search-results-table'), 100)
-
-        //reset some of the form fields, but not the search results
-        //this[RESET_SEARCH]({ keepActivity: true, keepLimit: true, keepSearchResults: true })
-        
         this.lastSearchedParams = Object.assign({}, params)
       }).catch(() => {
         
       })
     },
-    //subactivityChanged(value) {      
-      //const match = this.subactivities.filter(item => item.registries_subactivity_code === value)[0]
-      //this.searchParams.subactivities = match.qualification_set.map(item => item.well_class)
-    //},
     sortTable (sortCode) {
       if (this.lastSearchedParams.ordering[0] !== '-') {
         this.lastSearchedParams['ordering'] = `-${sortCode}`

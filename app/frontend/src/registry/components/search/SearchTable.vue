@@ -1,6 +1,6 @@
 <template>
   <div class="registry-search-table">
-    <div class="registry-search-table-loading" v-if="loading">
+    <div class="registry-search-table-loading" v-if="loading || isSearchInProgress">
       <b-spinner/>
     </div>
     <div class="table-responsive">
@@ -174,6 +174,7 @@ export default {
     ...mapGetters(['userRoles']),
     ...mapGetters('registriesStore', [
       'loading',
+      'isSearchInProgress',
       'listError',      
       'searchResponse',
       'activity'
@@ -181,9 +182,9 @@ export default {
   },
   watch: {
     // When drillers has a new state, scroll to the top of the searchTable.
-    searchResponse () {
-      this.scrollToTableTop()
-    }
+    //searchResponse () {
+    //  this.scrollToTableTop()
+    //}
   },
   methods: {
     /**
