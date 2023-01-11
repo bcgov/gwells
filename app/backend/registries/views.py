@@ -337,6 +337,23 @@ def person_search_qs(request):
 
     return qs.distinct()
 
+def exclude_persons_without_registrations(request, filtered_queryset, statuses=['A', 'P']):
+    """
+    Omit results that have no registrations but only when the request asks 
+    us to limit to *Registered* ('A') or *Pending* ('P') well drillers and pump installers.
+    Implementation note: Ideally we would rely on the queryset for this
+    filtering, but the queryset is very complex, and it relies on
+    multiple 'prefetches' (extra database queries).  It is most efficient to handle 
+    the filtering post database query.
+    Also note this filtering is only needed for situations in
+    which a person is registered with multiple organizations but for
+    different qualifications with each org AND additional filters further limit
+    the search so that some of the registrations must be excluded from results.
+    Returns an updated filtered_queryset
+    """
+    if request.GET.get('status') in statuses: 
+        filtered_queryset = [f for f in filtered_queryset if len(f.registrations.all()) > 0]
+    return filtered_queryset
 
 class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     """
@@ -385,19 +402,7 @@ class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
         """ List response using serializer with reduced number of fields """
         queryset = self.get_queryset()
         filtered_queryset = self.filter_queryset(queryset)
-
-        # Omit results that have no registrations (but only when the request asks 
-        # us to limit to *Registered* well drillers and pump installers.
-        # Implementation note: Ideally we would rely on the queryset for this
-        # filtering, but the queryset is very complex, and it relies on
-        # multiple 'prefetches' (extra database queries).  It is most efficient to handle 
-        # the filtering post database query.
-        # Also note this filtering is only needed for situations in
-        # which a person is registered with multiple organizations but for
-        # different qualifications with each org AND additional filters further limit
-        # the search so that some of the registrations must be excluded from results.
-        if request.GET.get('status') in ['A', 'P']: #'A'=Registered, 'P'=Pending
-            filtered_queryset = [f for f in filtered_queryset if len(f.registrations.all()) > 0] 
+        filtered_queryset = exclude_persons_without_registrations(request, filtered_queryset) 
 
         page = self.paginate_queryset(filtered_queryset)
         if page is not None:
