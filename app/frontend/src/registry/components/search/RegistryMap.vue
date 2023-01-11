@@ -178,6 +178,7 @@ export default {
         const mapBounds = this.map.getBounds()
 
         this.$emit('mapLoaded', mapBounds)
+        this.SET_CURRENT_MAP_BOUNDS(mapBounds)
 
       });
 
