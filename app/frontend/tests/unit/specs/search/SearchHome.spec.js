@@ -14,7 +14,7 @@ import {
   SEARCH,
   RESET_SEARCH
 } from '@/registry/store/actions.types'
-import { SET_SEARCH_RESPONSE } from '@/registry/store/mutations.types'
+import { SET_SEARCH_RESPONSE, SET_LAST_SEARCHED_PARAMS } from '@/registry/store/mutations.types'
 import fakePersonList from '../fakePersonList.js'
 
 
@@ -90,6 +90,20 @@ const DEFAULT_REGISTRIES_STORE_GETTERS = {
       ordering: ''
     }
   },
+  isSearchInProgress: () => false,
+  lastSearchedParams: () => {
+    return {
+      raw: {
+        search: '',
+        city: [''],
+        activity: 'DRILL',
+        status: 'A',
+        limit: '10',
+        ordering: 'surname'
+      },
+      api: {}
+    }
+  },
   requestedMapPosition:() => null,
   hasSearched: () => false
 }
@@ -101,7 +115,8 @@ const DEFAULT_REGISTRIES_STORE_ACTIONS = {
   [RESET_SEARCH]: jest.fn()
 }
 const DEFAULT_REGISTIES_STORE_MUTATIONS = {
-  [SET_SEARCH_RESPONSE]: jest.fn()
+  [SET_SEARCH_RESPONSE]: jest.fn(),
+  [SET_LAST_SEARCHED_PARAMS]: jest.fn()
 }
 
 describe('SearchHome.vue', () => {
@@ -175,9 +190,11 @@ describe('SearchHome.vue', () => {
       localVue
     })
     const table = wrapper.find(SearchTable)
-    wrapper.vm.lastSearchedParams = wrapper.vm.searchParams
-    table.vm.$emit('sort', 'surname')
-    expect(wrapper.vm.lastSearchedParams.ordering).toEqual('-surname')
+    let spy = jest.spyOn(wrapper.vm, 'sortTable')
+    wrapper.setMethods({ sortTable: spy });
+    table.vm.$emit('sort', '-surname')
+    expect(spy).toHaveBeenCalledWith("-surname")
+    spy.mockRestore()
   })
   it('has a list of cities for drillers', () => {
     const wrapper = shallowMount(SearchHome, {

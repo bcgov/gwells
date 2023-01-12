@@ -9,6 +9,9 @@ import SearchTable from '@/registry/components/search/SearchTable'
 import {
   SEARCH
 } from '@/registry/store/actions.types'
+import {
+  SET_LAST_SEARCHED_PARAMS
+} from '@/registry/store/mutations.types'
 import fakePersonList from '../fakePersonList.js'
 
 const localVue = createLocalVue()
@@ -23,6 +26,8 @@ const DEFAULT_AUTH_STORE_GETTERS = () => {
 const DEFAULT_REGISTRIES_STORE_GETTERS = () => {
   return {
     loading: () => false,
+    isSearchInProgress: () => false,
+    lastSearchedParams: () => { return { raw: {}, api: {} } },
     listError: () => null,
     searchResponse: jest.fn().mockReturnValue(fakePersonList),
     activity: () => 'DRILL'
@@ -33,6 +38,11 @@ const DEFAULT_REGISTRIES_STORE_ACTIONS = () => {
     [SEARCH]: jest.fn()
   }
 }
+const DEFAULT_REGISTRIES_STORE_MUTATIONS = () => {
+  return {
+    [SET_LAST_SEARCHED_PARAMS]: jest.fn()
+  }
+}
 
 describe('SearchTable.vue', () => {
   let store
@@ -41,7 +51,7 @@ describe('SearchTable.vue', () => {
   beforeEach(() => {    
     modules = {
       auth: { getters: DEFAULT_AUTH_STORE_GETTERS() },
-      registriesStore: { namespaced: true, getters: DEFAULT_REGISTRIES_STORE_GETTERS(), actions: DEFAULT_REGISTRIES_STORE_ACTIONS() }
+      registriesStore: { namespaced: true, getters: DEFAULT_REGISTRIES_STORE_GETTERS(), actions: DEFAULT_REGISTRIES_STORE_ACTIONS(), mutations: DEFAULT_REGISTRIES_STORE_MUTATIONS() }
     }
     store = new Vuex.Store({
      modules 
@@ -103,7 +113,7 @@ describe('SearchTable.vue', () => {
     store = new Vuex.Store({
       modules: {
         auth: { getters: DEFAULT_AUTH_STORE_GETTERS() },
-        registriesStore: { namespaced: true, getters: registriesStoreGetters, actions: DEFAULT_REGISTRIES_STORE_ACTIONS() }
+        registriesStore: { namespaced: true, getters: registriesStoreGetters, actions: DEFAULT_REGISTRIES_STORE_ACTIONS(), mutations: DEFAULT_REGISTRIES_STORE_MUTATIONS() }
       }
     })
     const wrapper = shallowMount(SearchTable, {
@@ -125,7 +135,7 @@ describe('SearchTable.vue', () => {
     store = new Vuex.Store({
       modules: {
         auth: { getters: DEFAULT_AUTH_STORE_GETTERS() },
-        registriesStore: { namespaced: true, getters: registriesStoreGetters, actions: DEFAULT_REGISTRIES_STORE_ACTIONS() }
+        registriesStore: { namespaced: true, getters: registriesStoreGetters, actions: DEFAULT_REGISTRIES_STORE_ACTIONS(), mutations: DEFAULT_REGISTRIES_STORE_MUTATIONS() }
       }
     })
     const wrapper = shallowMount(SearchTable, {
@@ -220,7 +230,7 @@ describe('SearchTable.vue', () => {
     store = new Vuex.Store({
       modules: {
         auth: { getters: DEFAULT_AUTH_STORE_GETTERS() },
-        registriesStore: { namespaced: true, getters: registriesStoreGetters, actions: DEFAULT_REGISTRIES_STORE_ACTIONS() }
+        registriesStore: { namespaced: true, getters: registriesStoreGetters, actions: DEFAULT_REGISTRIES_STORE_ACTIONS(), mutations: DEFAULT_REGISTRIES_STORE_MUTATIONS() }
       }
     })
     const wrapper = shallowMount(SearchTable, {
