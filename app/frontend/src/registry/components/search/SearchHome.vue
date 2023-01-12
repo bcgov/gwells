@@ -408,7 +408,10 @@ export default {
       }
       this.SEARCH(params)
     },
-    sortTable (sortCode) {
+    sortTable(sortCode) {
+      if (!this.lastSearchedParams) {
+        return
+      }      
       if (this.lastSearchedParams.raw.ordering[0] !== '-') {
         this.lastSearchedParams.raw['ordering'] = `-${sortCode}`
       } else {
