@@ -238,7 +238,7 @@ def person_search_qs(request):
 
     #Subactivities param comes as a csv list
     subactivities = query.get('subactivities')
-    if subactivities:      
+    if subactivities is not None:      
       subactivities = subactivities.split(",")
       qs = qs.filter(
           registrations__applications__subactivity__registries_subactivity_code__in=subactivities)

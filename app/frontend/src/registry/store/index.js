@@ -260,6 +260,10 @@ const registriesStore = {
         params.srid = null
       }
 
+      if (!params.subactivities.length) {
+        params.subactivities = [""]
+      }
+      
       //prepare a slightly modified parameters object that will be sent
       //to the API.
       // - convert all array parameters into CSV strings
