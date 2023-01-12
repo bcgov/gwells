@@ -351,7 +351,7 @@
                     </dt>
                     <dd class="m-0">
                       <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
-                        <li><a :href="this.$sanitize(resource.url)" @click="handleExternalResourceClicks" target="_blank" rel="noopener noreferrer" class="d-print-url">{{ resource.name }}</a></li>
+                        <li><a :href="sanitizeUrl(resource.url)" @click="handleExternalResourceClicks" target="_blank" rel="noopener noreferrer" class="d-print-url">{{ resource.name }}</a></li>
                       </ul>
                       <p class="m-0" v-if="!bySection(record.resources, section).length">No information available.</p>
                     </dd>
@@ -442,7 +442,7 @@
                       </dt>
                       <dd class="m-0">
                         <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
-                          <li><a :href="this.$sanitize(resource.url)" @click="handleExternalResourceClicks" target="_blank" rel="noopener noreferrer" class="d-print-url">{{ resource.name }}</a></li>
+                          <li><a :href="sanitizeUrl(resource.url)" @click="handleExternalResourceClicks" target="_blank" rel="noopener noreferrer" class="d-print-url">{{ resource.name }}</a></li>
                         </ul>
                         <p class="m-0" v-if="!bySection(record.resources, section).length">No information available.</p>
                       </dd>
@@ -459,7 +459,7 @@
                       </dt>
                       <dd class="m-0">
                         <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
-                          <li><a :href="this.$sanitize(resource.url)" @click="handleExternalResourceClicks" target="_blank" rel="noopener noreferrer" class="d-print-url">{{ resource.name }}</a></li>
+                          <li><a :href="sanitizeUrl(resource.url)" @click="handleExternalResourceClicks" target="_blank" rel="noopener noreferrer" class="d-print-url">{{ resource.name }}</a></li>
                         </ul>
                         <p class="m-0" v-if="!bySection(record.resources, section).length">No information available.</p>
                       </dd>
@@ -476,7 +476,7 @@
                       </dt>
                       <dd class="m-0">
                         <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
-                          <li><a :href="this.$sanitize(resource.url)" @click="handleExternalResourceClicks" target="_blank" rel="noopener noreferrer" class="d-print-url">{{ resource.name }}</a></li>
+                          <li><a :href="sanitizeUrl(resource.url)" @click="handleExternalResourceClicks" target="_blank" rel="noopener noreferrer" class="d-print-url">{{ resource.name }}</a></li>
                         </ul>
                         <p class="m-0" v-if="!bySection(record.resources, section).length">No information available.</p>
                       </dd>
@@ -493,7 +493,7 @@
                       </dt>
                       <dd class="m-0">
                         <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
-                          <li><a :href="this.$sanitize(resource.url)" @click="handleExternalResourceClicks" target="_blank" rel="noopener noreferrer" class="d-print-url">{{ resource.name }}</a></li>
+                          <li><a :href="sanitizeUrl(resource.url)" @click="handleExternalResourceClicks" target="_blank" rel="noopener noreferrer" class="d-print-url">{{ resource.name }}</a></li>
                         </ul>
                         <p class="m-0" v-if="!bySection(record.resources, section).length">No information available.</p>
                       </dd>
@@ -515,7 +515,7 @@
                     <dt class="text-right">{{ section.name }}</dt>
                     <dd class="m-0">
                       <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
-                        <li><a :href="this.$sanitize(resource.url)" @click="handleExternalResourceClicks" target="_blank" rel="noopener noreferrer" class="d-print-url">{{ resource.name }}</a></li>
+                        <li><a :href="sanitizeUrl(resource.url)" @click="handleExternalResourceClicks" target="_blank" rel="noopener noreferrer" class="d-print-url">{{ resource.name }}</a></li>
                       </ul>
                       <p class="m-0" v-if="!bySection(record.resources, section).length">No information available.</p>
                     </dd>
@@ -546,6 +546,7 @@ import SingleAquiferMap from './SingleAquiferMap.vue'
 import PieChart from './PieChart.vue'
 import ObservationWell from './ObservationWell.vue'
 import { MAX_API_RESULT_AND_EXPORT_COUNT } from '@/common/constants'
+import sanitizeUrl from '@braintree/sanitize-url'
 
 const ONE_MILLION = 1 * 1000 * 1000
 
@@ -1001,6 +1002,9 @@ export default {
           eventLabel: 'Aquifer Factsheet'
         })
       }
+    },
+    sanitizeUrl (url) {
+      return sanitizeUrl(url)
     }
   }
 }
