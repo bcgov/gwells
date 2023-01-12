@@ -20,6 +20,7 @@ import VueNoty from 'vuejs-noty'
 import BootstrapVue from 'bootstrap-vue'
 import VueAnalytics from 'vue-analytics'
 import VueMatomo from 'vue-matomo'
+import VueSanitize from 'vue-sanitize'
 import App from './App'
 import router from './router.js'
 import { store } from './store'
@@ -62,6 +63,7 @@ Vue.use(VueNoty, {
 })
 Vue.use(BootstrapVue)
 Vue.use(VueMoment)
+Vue.use(VueSanitize)
 Vue.use(filters)
 Vue.component('v-select', vSelect)
 Vue.component('form-input', FormInput)

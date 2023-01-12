@@ -134,7 +134,6 @@ def _aquifer_qs(request):
             filters.append(Q(aquifer_id__in=aquifer_ids))
         except Exception as e:
             print("Cannot get aquifer notations, call to DataBC failed: " + e)
-            pass
 
     # ignore missing and empty string for resources__section__code qs param
     if resources__section__code:

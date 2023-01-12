@@ -1104,86 +1104,88 @@ exports[`View Component View mode matches the snapshot 1`] = `
                   <div
                     class="observational-wells"
                   >
-                    <dt
-                      class="text-right"
-                    >
-                      Observation wells
-                    
-                      <i
-                        class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
-                        id="aquifer-observation-wells"
-                        tabindex="0"
-                      />
-                       
-                      <b-popover-stub
-                        content="Groundwater Observation Wells are used to monitor aquifer groundwater levels and chemistry over time."
-                        target="aquifer-observation-wells"
-                        triggers="hover focus"
-                      />
-                    </dt>
-                     
-                    <dd
-                      class="m-0"
-                    >
-                      <div>
-                        <h6
-                          class="border-bottom"
-                        >
-                          Active
-                        </h6>
+                    <dl>
+                      <dt
+                        class="text-right"
+                      >
+                        Observation wells
+                      
+                        <i
+                          class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                          id="aquifer-observation-wells"
+                          tabindex="0"
+                        />
                          
-                        <ul
-                          class="p-0 m-0"
-                        >
-                          <li
-                            class=""
+                        <b-popover-stub
+                          content="Groundwater Observation Wells are used to monitor aquifer groundwater levels and chemistry over time."
+                          target="aquifer-observation-wells"
+                          triggers="hover focus"
+                        />
+                      </dt>
+                       
+                      <dd
+                        class="m-0"
+                      >
+                        <div>
+                          <h6
+                            class="border-bottom"
                           >
-                            <span
-                              class="observation-well"
+                            Active
+                          </h6>
+                           
+                          <ul
+                            class="p-0 m-0"
+                          >
+                            <li
+                              class=""
                             >
-                              <a
-                                class="d-print-url"
-                                href="https://governmentofbc.maps.arcgis.com/apps/webappviewer/index.html?id=b53cb0bf3f6848e79d66ffd09b74f00d&find=OBS WELL 2"
-                                target="_blank"
+                              <span
+                                class="observation-well"
                               >
-                                
+                                <a
+                                  class="d-print-url"
+                                  href="https://governmentofbc.maps.arcgis.com/apps/webappviewer/index.html?id=b53cb0bf3f6848e79d66ffd09b74f00d&find=OBS WELL 2"
+                                  target="_blank"
+                                >
+                                  
     2
   
-                              </a>
-                               
-                              <!---->
-                               
-                              <!---->
-                            </span>
-                          </li>
-                          <li
-                            class=""
-                          >
-                            <span
-                              class="observation-well"
+                                </a>
+                                 
+                                <!---->
+                                 
+                                <!---->
+                              </span>
+                            </li>
+                            <li
+                              class=""
                             >
-                              <a
-                                class="d-print-url"
-                                href="https://governmentofbc.maps.arcgis.com/apps/webappviewer/index.html?id=b53cb0bf3f6848e79d66ffd09b74f00d&find=OBS WELL 2"
-                                target="_blank"
+                              <span
+                                class="observation-well"
                               >
-                                
+                                <a
+                                  class="d-print-url"
+                                  href="https://governmentofbc.maps.arcgis.com/apps/webappviewer/index.html?id=b53cb0bf3f6848e79d66ffd09b74f00d&find=OBS WELL 2"
+                                  target="_blank"
+                                >
+                                  
     2
   
-                              </a>
-                               
-                              <!---->
-                               
-                              <!---->
-                            </span>
-                          </li>
-                        </ul>
-                      </div>
-                       
-                      <!---->
-                       
-                      <!---->
-                    </dd>
+                                </a>
+                                 
+                                <!---->
+                                 
+                                <!---->
+                              </span>
+                            </li>
+                          </ul>
+                        </div>
+                         
+                        <!---->
+                         
+                        <!---->
+                      </dd>
+                    </dl>
                   </div>
                 </li>
                 <li>

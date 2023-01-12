@@ -351,52 +351,54 @@
                     </dt>
                     <dd class="m-0">
                       <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
-                        <li><a :href="resource.url" @click="handleExternalResourceClicks" target="_blank" class="d-print-url">{{ resource.name }}</a></li>
+                        <li><a :href="this.$sanitize(resource.url)" @click="handleExternalResourceClicks" target="_blank" rel="noopener noreferrer" class="d-print-url">{{ resource.name }}</a></li>
                       </ul>
                       <p class="m-0" v-if="!bySection(record.resources, section).length">No information available.</p>
                     </dd>
                   </div>
                   <div class="observational-wells" v-else-if="section.key === 'obs-wells'">
-                    <dt class="text-right">Observation wells
-                      <i id="aquifer-observation-wells" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
-                      <b-popover
-                        target="aquifer-observation-wells"
-                        triggers="hover focus"
-                        content="Groundwater Observation Wells are used to monitor aquifer groundwater levels and chemistry over time."/>
-                    </dt>
-                    <dd class="m-0">
-                      <div v-if="activeObsWells.length > 0">
-                        <h6 class="border-bottom">Active</h6>
-                        <ul class="p-0 m-0">
-                          <li v-for="owell in activeObsWells" :key="owell.well_tag_number" :data-water-level="owell.waterLevels" :class="{error: owell.errorFetching}">
-                            <observation-well
-                              :observationWell="owell"
-                              @reload="getWaterLevels"/>
-                          </li>
-                        </ul>
-                      </div>
-                      <div v-if="inactiveObsWellsWithWaterLevel.length > 0 || inativeObsWellsWithOutWaterLevel.length > 0">
-                        <h6 class="border-bottom mt-2">Inactive<br><small>(data may not be available)</small></h6>
-                        <ul class="p-0 m-0">
-                          <li v-for="owell in inactiveObsWellsWithWaterLevel" :key="owell.well_tag_number" :data-water-level="owell.waterLevels" :class="{error: owell.errorFetching}">
-                            <observation-well
-                              :observationWell="owell"
-                              @reload="getWaterLevels"/>
-                          </li>
-                          <li v-if="inativeObsWellsWithOutWaterLevel.length > 0" class="obs-wells-wo-well-level">
-                            No Water Level Analysis:
-                            <observation-well
-                              v-for="owell in inativeObsWellsWithOutWaterLevel"
-                              :key="owell.observation_well_number"
-                              :observationWell="owell"
-                              @reload="getWaterLevels"/>
-                          </li>
-                        </ul>
-                      </div>
-                      <div v-if="noObsWells">
-                        No information available.
-                      </div>
-                    </dd>
+                    <dl>
+                      <dt class="text-right">Observation wells
+                        <i id="aquifer-observation-wells" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+                        <b-popover
+                          target="aquifer-observation-wells"
+                          triggers="hover focus"
+                          content="Groundwater Observation Wells are used to monitor aquifer groundwater levels and chemistry over time."/>
+                      </dt>
+                      <dd class="m-0">
+                        <div v-if="activeObsWells.length > 0">
+                          <h6 class="border-bottom">Active</h6>
+                          <ul class="p-0 m-0">
+                            <li v-for="owell in activeObsWells" :key="owell.well_tag_number" :data-water-level="owell.waterLevels" :class="{error: owell.errorFetching}">
+                              <observation-well
+                                :observationWell="owell"
+                                @reload="getWaterLevels"/>
+                            </li>
+                          </ul>
+                        </div>
+                        <div v-if="inactiveObsWellsWithWaterLevel.length > 0 || inativeObsWellsWithOutWaterLevel.length > 0">
+                          <h6 class="border-bottom mt-2">Inactive<br><small>(data may not be available)</small></h6>
+                          <ul class="p-0 m-0">
+                            <li v-for="owell in inactiveObsWellsWithWaterLevel" :key="owell.well_tag_number" :data-water-level="owell.waterLevels" :class="{error: owell.errorFetching}">
+                              <observation-well
+                                :observationWell="owell"
+                                @reload="getWaterLevels"/>
+                            </li>
+                            <li v-if="inativeObsWellsWithOutWaterLevel.length > 0" class="obs-wells-wo-well-level">
+                              No Water Level Analysis:
+                              <observation-well
+                                v-for="owell in inativeObsWellsWithOutWaterLevel"
+                                :key="owell.observation_well_number"
+                                :observationWell="owell"
+                                @reload="getWaterLevels"/>
+                            </li>
+                          </ul>
+                        </div>
+                        <div v-if="noObsWells">
+                          No information available.
+                        </div>
+                      </dd>
+                    </dl>
                   </div>
                   <div class="water-quality-information" v-else-if="section.key === 'water-quality'">
                     <dl>
@@ -440,7 +442,7 @@
                       </dt>
                       <dd class="m-0">
                         <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
-                          <li><a :href="resource.url" @click="handleExternalResourceClicks" target="_blank" class="d-print-url">{{ resource.name }}</a></li>
+                          <li><a :href="this.$sanitize(resource.url)" @click="handleExternalResourceClicks" target="_blank" rel="noopener noreferrer" class="d-print-url">{{ resource.name }}</a></li>
                         </ul>
                         <p class="m-0" v-if="!bySection(record.resources, section).length">No information available.</p>
                       </dd>
@@ -457,7 +459,7 @@
                       </dt>
                       <dd class="m-0">
                         <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
-                          <li><a :href="resource.url" @click="handleExternalResourceClicks" target="_blank" class="d-print-url">{{ resource.name }}</a></li>
+                          <li><a :href="this.$sanitize(resource.url)" @click="handleExternalResourceClicks" target="_blank" rel="noopener noreferrer" class="d-print-url">{{ resource.name }}</a></li>
                         </ul>
                         <p class="m-0" v-if="!bySection(record.resources, section).length">No information available.</p>
                       </dd>
@@ -474,7 +476,7 @@
                       </dt>
                       <dd class="m-0">
                         <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
-                          <li><a :href="resource.url" @click="handleExternalResourceClicks" target="_blank" class="d-print-url">{{ resource.name }}</a></li>
+                          <li><a :href="this.$sanitize(resource.url)" @click="handleExternalResourceClicks" target="_blank" rel="noopener noreferrer" class="d-print-url">{{ resource.name }}</a></li>
                         </ul>
                         <p class="m-0" v-if="!bySection(record.resources, section).length">No information available.</p>
                       </dd>
@@ -491,7 +493,7 @@
                       </dt>
                       <dd class="m-0">
                         <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
-                          <li><a :href="resource.url" @click="handleExternalResourceClicks" target="_blank" class="d-print-url">{{ resource.name }}</a></li>
+                          <li><a :href="this.$sanitize(resource.url)" @click="handleExternalResourceClicks" target="_blank" rel="noopener noreferrer" class="d-print-url">{{ resource.name }}</a></li>
                         </ul>
                         <p class="m-0" v-if="!bySection(record.resources, section).length">No information available.</p>
                       </dd>
@@ -513,7 +515,7 @@
                     <dt class="text-right">{{ section.name }}</dt>
                     <dd class="m-0">
                       <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
-                        <li><a :href="resource.url" @click="handleExternalResourceClicks" target="_blank" class="d-print-url">{{ resource.name }}</a></li>
+                        <li><a :href="this.$sanitize(resource.url)" @click="handleExternalResourceClicks" target="_blank" rel="noopener noreferrer" class="d-print-url">{{ resource.name }}</a></li>
                       </ul>
                       <p class="m-0" v-if="!bySection(record.resources, section).length">No information available.</p>
                     </dd>
