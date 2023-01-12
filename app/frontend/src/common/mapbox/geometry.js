@@ -127,6 +127,6 @@ export function checkCoordsAreTheSame (lngLat1, lngLat2, precision = 0.00001) {
 }
 
 export function doPolygonsIntersect (f1, f2) {
-  var intersection = intersect(f1, f2)
+  const intersection = intersect(f1, f2)
   return (intersection !== null)
 }

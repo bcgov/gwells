@@ -132,8 +132,9 @@ def _aquifer_qs(request):
             properties = [feature["properties"] for feature in data["features"]]
             aquifer_ids = [prop["AQUIFER_ID"] for prop in properties]
             filters.append(Q(aquifer_id__in=aquifer_ids))
-        except:
-            print("Cannot get aquifer notations, call to DataBC failed.")
+        except Exception as e:
+            print("Cannot get aquifer notations, call to DataBC failed: " + e)
+            pass
 
     # ignore missing and empty string for resources__section__code qs param
     if resources__section__code:

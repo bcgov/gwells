@@ -94,8 +94,7 @@ export default {
       return description
     },
     filterAquiferNotationsByRegion: (state) => (description, geom) => {
-      for (let idx = 0; idx < state.naturalResourceRegions.length; idx++) {
-        const feature = state.naturalResourceRegions[idx]
+      for (let feature of state.naturalResourceRegions) {
         const intersection = doPolygonsIntersect(feature, geom)
         if (intersection) {
           description = description.replace('Possible Water Shortage', 'Possible Water Shortage and/or Saline Intrusion Issues')
