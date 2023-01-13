@@ -243,11 +243,12 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
             'province_state': 'BC'
         }
 
-    def test_create_organization(self):
+    @patch('registries.serializers.geocode_bc_location')
+    def test_create_organization(self, mock_geocode_bc_location):
         """
         Create a new organization object.
         """
-
+        mock_geocode_bc_location.return_value = None
         url = reverse('organization-list', kwargs={'version': 'v1'})
         count_before = Organization.objects.count()
 
@@ -256,7 +257,9 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Organization.objects.count(), count_before + 1)
 
-    def test_list_organization(self):
+    @patch('registries.serializers.geocode_bc_location')
+    def test_list_organization(self, mock_geocode_bc_location):
+        mock_geocode_bc_location.return_value = None
         url = reverse('organization-list', kwargs={'version': 'v1'})
         new_object = self.client.post(url, self.initial_data, format='json')
         created_guid = new_object.data['org_guid']
@@ -267,7 +270,9 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
         self.assertEqual(len(created_guid), 36)
         self.assertContains(response, created_guid)
 
-    def test_retrieve_organization(self):
+    @patch('registries.serializers.geocode_bc_location')
+    def test_retrieve_organization(self, mock_geocode_bc_location):
+        mock_geocode_bc_location.return_value = None
         create_url = reverse('organization-list', kwargs={'version': 'v1'})
         new_object = self.client.post(
             create_url, self.initial_data, format='json')
@@ -281,7 +286,9 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
         self.assertEqual(response.data['name'], self.initial_data['name'])
         self.assertEqual(response.data['city'], self.initial_data['city'])
 
-    def test_patch_organization(self):
+    @patch('registries.serializers.geocode_bc_location')
+    def test_patch_organization(self, mock_geocode_bc_location):
+        mock_geocode_bc_location.return_value = None
         new_data = {
             'city': 'Duncan'
         }
@@ -303,7 +310,9 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
         self.assertEqual(response.data['name'], self.initial_data['name'])
         self.assertEqual(response.data['city'], new_data['city'])
 
-    def test_put_organization(self):
+    @patch('registries.serializers.geocode_bc_location')
+    def test_put_organization(self, mock_geocode_bc_location):
+        mock_geocode_bc_location.return_value = None
         new_data = {
             'name': 'Betty\'s Drilling',
             'city': 'Duncan',
@@ -327,7 +336,9 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
         self.assertEqual(response.data['name'], new_data['name'])
         self.assertEqual(response.data['city'], new_data['city'])
 
-    def test_delete_organization(self):
+    @patch('registries.serializers.geocode_bc_location')
+    def test_delete_organization(self, mock_geocode_bc_location):
+        mock_geocode_bc_location.return_value = None
         # setup
         logger = logging.getLogger('django.request')
         previous_level = logger.getEffectiveLevel()
@@ -360,12 +371,13 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
         # teardown
         logger.setLevel(previous_level)
 
-    def test_organization_audit_fields(self):
+    @patch('registries.serializers.geocode_bc_location')
+    def test_organization_audit_fields(self, mock_geocode_bc_location):
         """
         Test that AuditModel fields (create_user, create_date etc.)
         are updated when Organization objects are created.
         """
-
+        mock_geocode_bc_location.return_value = None
         create_url = reverse('organization-list', kwargs={'version': 'v1'})
         new_object = self.client.post(
             create_url, self.initial_data, format='json')
@@ -380,10 +392,12 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
         # TODO: When authentication is enforced, this line will need to change
         self.assertEqual(response.data['create_user'], self.user.username)
 
-    def test_create_org_not_authenticated(self):
+    @patch('registries.serializers.geocode_bc_location')
+    def test_create_org_not_authenticated(self, mock_geocode_bc_location):
         """
         Ensure that users who are not authenticated cannot create Organization objects
         """
+        mock_geocode_bc_location.return_value = None
         self.client.force_authenticate(user=None)
         url = reverse('organization-list', kwargs={'version': 'v1'})
         data = {'name': 'Big Time Drilling Co'}
@@ -392,11 +406,14 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_unsafe_methods_by_unauthorized_users(self):
+    @patch('registries.serializers.geocode_bc_location')
+    def test_unsafe_methods_by_unauthorized_users(self, mock_geocode_bc_location):
         """
         Ensure that users who are not authenticated cannot perform "unsafe" actions
         like UPDATE, PUT, DELETE on an object that is already in database
         """
+        mock_geocode_bc_location.return_value = None
+
         self.client.force_authenticate(user=None)
         org_object = Organization.objects.create(
             name='Big Time Drilling Co', province_state=self.province)
@@ -422,17 +439,17 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
         self.assertEqual(delete_response.status_code,
                          status.HTTP_401_UNAUTHORIZED)
     
-    @patch('registries.serializers.geocode_bc_address')
-    def test_create_org_no_geom(self, mock_geocode_bc_address):
+    @patch('registries.serializers.geocode_bc_location')
+    def test_create_org_no_geom(self, mock_geocode_bc_location):
         """
         When a new Organization is created without an address, the
         geom attribute is not populated
         """
   
-        # Note: we use a mock version of geocode_bc_address(..) just in
+        # Note: we use a mock version of mock_geocode_bc_location(..) just in
         # case the create org implementation makes a call to it.  We don't
         # want this test to depend on a remote API.
-        mock_geocode_bc_address.return_value = None
+        mock_geocode_bc_location.return_value = None
 
         # Create an organization with an initial address
         org_data = {
@@ -463,12 +480,12 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
         geometry should be automatically updated too.
         """
     
-        with patch('registries.serializers.geocode_bc_address') as mock_geocode_bc_address_1:
+        with patch('registries.serializers.geocode_bc_location') as mock_geocode_bc_location_1:
 
           #create an organization with an initial address
           mock_lon_1 = -124
           mock_lat_1 = 50
-          mock_geocode_bc_address_1.return_value = \
+          mock_geocode_bc_location_1.return_value = \
               GEOSGeometry(f'POINT({mock_lon_1} {mock_lat_1})', srid=4326)
 
           url_1 = reverse('organization-list', kwargs={'version': 'v1'})        
@@ -476,7 +493,7 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
 
           # check that the mock geocode function was used instead of the 
           # real version
-          mock_geocode_bc_address_1.assert_called_once()
+          mock_geocode_bc_location_1.assert_called_once()
 
           # check that the response includes the geographic coordinates
           self.assertEquals(response_1.data.get("longitude"), mock_lon_1)
@@ -490,24 +507,21 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
           self.assertTrue(organization != None)
           self.assertTrue(organization.geom != None)
 
-        with patch('registries.serializers.geocode_bc_address') as mock_geocode_bc_address_2:
+        with patch('registries.serializers.geocode_bc_location') as mock_geocode_bc_location_2:
 
           # update the organization with a new address
           mock_lon_2 = -123
           mock_lat_2 = 51
-          mock_geocode_bc_address_2.return_value = \
+          mock_geocode_bc_location_2.return_value = \
               GEOSGeometry(f'POINT({mock_lon_2} {mock_lat_2})', srid=4326)
           
           url_2 = reverse('organization-detail',
               kwargs={'org_guid': response_1.data['org_guid'], 'version': 'v1'})
           response_2 = self.client.patch(url_2, {"street_address": "101 NewAddress Ave."}, format='json')
           
-          print(response_2.data)
-
           updated_org = Organization.objects.get(
               org_guid=response_1.data['org_guid'])
 
-          print(f"{updated_org.latitude, updated_org.longitude}") 
           # check that the response includes new geographic coordinates
           self.assertEquals(response_2.data.get("longitude"), mock_lon_2)
           self.assertEquals(response_2.data.get("latitude"), mock_lat_2)
@@ -524,12 +538,12 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
         the geometry should be reset to None
         """
     
-        with patch('registries.serializers.geocode_bc_address') as mock_geocode_bc_address_1:
+        with patch('registries.serializers.geocode_bc_location') as mock_geocode_bc_location_1:
 
           #create an organization with an initial address
           mock_lon_1 = -124
           mock_lat_1 = 50
-          mock_geocode_bc_address_1.return_value = \
+          mock_geocode_bc_location_1.return_value = \
               GEOSGeometry(f'POINT({mock_lon_1} {mock_lat_1})', srid=4326)
 
           url_1 = reverse('organization-list', kwargs={'version': 'v1'})        
@@ -537,7 +551,7 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
 
           # check that the mock geocode function was used instead of the 
           # real version
-          mock_geocode_bc_address_1.assert_called_once()
+          mock_geocode_bc_location_1.assert_called_once()
 
           # check that the response includes the geographic coordinates
           self.assertEquals(response_1.data.get("longitude"), mock_lon_1)
@@ -551,14 +565,14 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
           self.assertTrue(organization != None)
           self.assertTrue(organization.geom != None)
 
-        with patch('registries.serializers.geocode_bc_address') as mock_geocode_bc_address_2:
+        with patch('registries.serializers.geocode_bc_location') as mock_geocode_bc_location_2:
 
           # update the organization to unset the 'city'.  
-          # Note: use a mock version of the geocode_bc_address(...) function 
+          # Note: use a mock version of the mock_geocode_bc_location(...) function 
           # just in case the the update causes a call to that function 
           # (it may not, but we just want to be sure this test 
           # doesn't depend on a remote API call).
-          mock_geocode_bc_address_2.return_value = None
+          mock_geocode_bc_location_2.return_value = None
           
           url_2 = reverse('organization-detail',
               kwargs={'org_guid': response_1.data['org_guid'], 'version': 'v1'})

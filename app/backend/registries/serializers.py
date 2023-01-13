@@ -17,7 +17,7 @@ from django.db import transaction
 import logging
 from requests.exceptions import HTTPError
 from rest_framework import serializers
-from gwells.utils import geocode_bc_address
+from gwells.utils import geocode_bc_location
 from gwells.models import ProvinceStateCode
 from gwells.serializers import AuditModelSerializer, ProvinceStateCodeSerializer
 from registries.models import (
@@ -187,9 +187,11 @@ class OrganizationUpdateMixin():
 
     def populate_geom_from_address(self, instance, validated_data):
         """
-        Geocodes the 'street_address' and 'city' properties to determine the 
-        geographic coordinates.  injects these coordinates into the 'geom' property
+        Geocodes the 'street_address' and/or 'city' properties to determine the 
+        geographic coordinates.  Injects these coordinates into the 'geom' property
         of validated_data.
+        If both 'street_address' and 'city' are provided, geocodes both.  If only 'city' 
+        is provided (but not 'street_address') then geocodes only the city.
         :param instance: An existing instance of Organization (optional.  May be None.)
         :param validated_data: The 'geom' property of this parameter is modified
         """
@@ -208,13 +210,27 @@ class OrganizationUpdateMixin():
             None
 
         point = None
+
+        #try to geocode street_address + city
         if street_address and city and prov_state and \
-            prov_state.province_state_code== "BC":
+            prov_state.province_state_code == "BC":
             try:
-                point = geocode_bc_address(
-                  street_address, 
-                  locality_name=city
-                )
+                point = geocode_bc_location({                        
+                  "addressString": street_address, 
+                  "localityName": city
+                })
+            except (HTTPError, ValueError) as e:
+                #silently ignore the failed geocode
+                pass       
+        
+        #try to geocode the city only 
+        if point == None and city and prov_state and \
+            prov_state.province_state_code == "BC":
+            try:
+                point = geocode_bc_location({                        
+                  "localityName": city,
+                  "matchPrecision": "LOCALITY"
+                })
             except (HTTPError, ValueError) as e:
                 #silently ignore the failed geocode
                 pass
@@ -227,7 +243,6 @@ class OrganizationListSerializer(AuditModelSerializer, OrganizationUpdateMixin):
     """
 
     def create(self, validated_data):
-        print("OrganizationListSerializer.create()")
         self.populate_geom_from_address(None, validated_data)
         return super().create(validated_data)
 

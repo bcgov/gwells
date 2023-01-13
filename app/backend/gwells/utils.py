@@ -20,35 +20,37 @@ def isPointInsideBC(latitude, longitude):
     return False
 
 
-def geocode_bc_address(address_string, locality_name=None, target_srid=4326, min_score=65):
+def geocode_bc_location(options={}):
     """
-    Converts a BC address string into a geographic coordinate 
-    with the specified srid (defaults to 4326, which lat/lon,WGS84).  
-    The implementation makes an HTTP call to the BC Physical Address Geocoder API
-    (https://www2.gov.bc.ca/gov/content/data/geographic-data-services/location-services/geocoder).
+    Makes an HTTP call to the BC Physical Address Geocoder API
+    (https://www2.gov.bc.ca/gov/content/data/geographic-data-services/location-services/geocoder)
+    using any options provided as query string parameters. (the 'options'
+    parameter supports any query string parameter supported by the "addresses.json" 
+    endpoint.
     If the address is successfully geocoded then this method returns a 
-    django.contrib.gis.geos.Point object.  If a HTTP error occurs during 
+    django.contrib.gis.geos.Point object corresponding to the first result.  
+    If a HTTP error occurs during 
     communication with the remote API then an HTTPError exception is 
     raised.  If the API call succeeds but does not find a coordinate 
     matching the given address_string, then a ValueError is raised.
-    :param address_string: an address, such as "101 main st."
-    :param locality_name: the name of the city or municipality of the address
-    :param target_srid: the EPSG code identifying the spatial reference system of
-    the response
-    :param min_score: a number 0-100 indicating the minimum level of confidence to
-    accept from the geocoder API.
+    :param options: typical options are:
+      {
+        "addressString": "101 main st.",
+        "localityName": "Kelowna"
+      }
     """
-    url = "https://geocoder.api.gov.bc.ca/addresses.json"
-    params = {
-      "addressString": address_string,
-      "maxResults": 1,
+    default_options = {
       "provinceCode": "BC",
-      "outputSRS": target_srid,
-      "minScore": min_score
+      "outputSRS": 4326,
+      "maxResults": 1,
+      "minScore": 65
     }
-    if locality_name:
-      params["localityName"] = locality_name
-    
+    params = {}
+    params.update(default_options)
+    params.update(options)
+
+    url = "https://geocoder.api.gov.bc.ca/addresses.json"
+        
     try:
         resp = requests.get(url, params=params, timeout=10)
         resp.raise_for_status()
