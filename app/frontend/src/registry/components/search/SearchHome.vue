@@ -60,6 +60,7 @@
             <div class="mb-3">
               Use the search function below to define your search criteria. 
               Please note: The map only shows registered well drillers and well pump installers whose base operation and address are within B.C. 
+              Some well drillers and well pump installers may operate in multiple areas throughout B.C. 
               For a complete list refer to the results table below.
             </div>
             <b-form @submit.prevent="drillerSearch" @reset.prevent="resetSearch({clearDrillers: true})" id="drillerSearchForm">
