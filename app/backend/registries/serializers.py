@@ -217,7 +217,8 @@ class OrganizationUpdateMixin():
             try:
                 point = geocode_bc_location({                        
                   "addressString": street_address, 
-                  "localityName": city
+                  "localityName": city,
+                  "localities": city
                 })
             except (HTTPError, ValueError) as e:
                 #silently ignore the failed geocode
@@ -229,6 +230,7 @@ class OrganizationUpdateMixin():
             try:
                 point = geocode_bc_location({                        
                   "localityName": city,
+                  "localities": city,
                   "matchPrecision": "LOCALITY"
                 })
             except (HTTPError, ValueError) as e:
