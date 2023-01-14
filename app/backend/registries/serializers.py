@@ -187,7 +187,7 @@ class OrganizationUpdateMixin():
 
     def populate_geom_from_address(self, instance, validated_data):
         """
-        Geocodes the 'street_address' and/or 'city' properties to determine the 
+        Geocodes the 'street_address' and/or 'city' to determine the 
         geographic coordinates.  Injects these coordinates into the 'geom' property
         of validated_data.
         If both 'street_address' and 'city' are provided, geocodes both.  If only 'city' 
