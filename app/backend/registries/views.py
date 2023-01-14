@@ -287,10 +287,14 @@ def person_search_qs(request):
                 else:
                     qs = qs.filter(
                         Q(registrations__applications__current_status__code=status),
-                        Q(registrations__applications__removal_date__isnull=True))
+                        Q(registrations__applications__removal_date__isnull=True),
+                        Q(registrations__registries_activity__registries_activity_code=activity) if activity else Q(True)
+                        )
                     registrations_qs = registrations_qs.filter(
                         Q(applications__current_status__code=status),
-                        Q(applications__removal_date__isnull=True))
+                        Q(applications__removal_date__isnull=True),
+                        Q(registries_activity__registries_activity_code=activity) if activity else Q(True)
+                        )
     else:
         # User is not logged in
         # Only show active drillers to non-admin users and public
