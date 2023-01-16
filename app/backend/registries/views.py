@@ -209,6 +209,10 @@ def person_search_qs(request):
     query = request.GET
     qs = Person.objects.filter(expiry_date__gt=timezone.now())
 
+    activity = query.get('activity', None)
+    status = query.get('status', None)
+    user_is_staff = request.user.groups.filter(name=REGISTRIES_VIEWER_ROLE).exists()
+
     # base registration and application querysets
     registrations_qs = Register.objects.all()
     applications_qs = RegistriesApplication.objects.all()
@@ -241,15 +245,16 @@ def person_search_qs(request):
     if subactivities is not None:      
       subactivities = subactivities.split(",")
       qs = qs.filter(
-          registrations__applications__subactivity__registries_subactivity_code__in=subactivities)
+          Q(registrations__applications__subactivity__registries_subactivity_code__in=subactivities),
+          Q(registrations__applications__current_status__code=status) if user_is_staff and status else Q(),
+          Q(registrations__applications__current_status__code='A') if not user_is_staff else Q()
+          )
       registrations_qs = registrations_qs.filter(
-          applications__subactivity__registries_subactivity_code__in=subactivities)
-
-    activity = query.get('activity', None)
-    status = query.get('status', None)
-
-    user_is_staff = request.user.groups.filter(name=REGISTRIES_VIEWER_ROLE).exists()
-
+          Q(applications__subactivity__registries_subactivity_code__in=subactivities),
+          Q(applications__current_status__code=status) if user_is_staff and status else Q(),
+          Q(applications__current_status__code='A') if not user_is_staff else Q()
+          )
+    
     if activity:
         if (status == 'P' or not status) and user_is_staff:
             # We only allow staff to filter on status
