@@ -345,7 +345,18 @@ def person_search_qs_old(request):
     return qs.distinct()
 
 def person_search_qs(request):
-    """ Returns Person queryset, removing non-active and unregistered drillers for anonymous users """
+    """ 
+    Returns Person queryset, removing non-active and unregistered 
+    drillers for anonymous users 
+    Implementation note: The returned queryset is actually three related 
+    querysets.  The first is the primary query set and is is a join 
+    across several tables.  The other two querysets are 
+    used to pre-fetch collections of related information (registrations 
+    and applications).  
+    Various filters can be requested (filter by 'activity', 'subactivity', 
+    'geographic area', etc). In general, when a filter is needed, it is applied
+    to each of the three querysets (or sometimes only two of them). 
+    """
     query = request.GET
     qs = Person.objects.filter(expiry_date__gt=timezone.now())
 
