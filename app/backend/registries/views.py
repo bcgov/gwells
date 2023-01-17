@@ -423,7 +423,7 @@ def person_search_qs(request):
                     Q(registrations__applications__removal_date__isnull=False)
                 reg_filters = reg_filters & \
                     Q(applications__removal_date__isnull=False)
-                appl_filters = reg_filters & \
+                appl_filters = appl_filters & \
                     Q(removal_date__isnull=False)
             else:
                 if status == 'P':
@@ -449,7 +449,6 @@ def person_search_qs(request):
                         ) & \
                         Q(removal_date__isnull=True)                      
                 else:
-                    print(f"STATUS: {status}")
                     person_filters = person_filters & \
                         (
                             Q(registrations__applications__current_status__code=status) &
