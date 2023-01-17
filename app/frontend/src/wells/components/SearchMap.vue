@@ -91,7 +91,7 @@ export default {
             },
             {
               imageSrc: wellsHydraulicLegendSrc,
-              label: 'k.s.t.'
+              label: `aquifer <br/> <div class='float-right'>parameters</div>`
             }
           ]
         }

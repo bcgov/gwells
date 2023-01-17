@@ -149,7 +149,7 @@ export default {
             },
             {
               imageSrc: wellsHydraulicLegendSrc,
-              label: 'k.s.t.'
+              label: 'aquifer parameters'
             }
           ]
         },
