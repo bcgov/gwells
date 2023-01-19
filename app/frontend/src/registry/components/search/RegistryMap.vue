@@ -137,24 +137,6 @@ export default {
         customAttribution: 'MapBox | Government of British Columbia, DataBC, GeoBC '
       }))
 
-      /*
-      this.searchOnMoveControl = new SearchOnMoveControl({
-        show: this.hasSearchParams,
-        searchOnMapMove: this.searchOnMapMove,
-        onSearchThisArea: () => this.triggerSearchMapArea(),
-        onSearchAsIMove: (e) => (this.searchOnMapMove = e.checked)
-      })
-      this.map.addControl(this.searchOnMoveControl, 'top-right')
-      */
-
-      /*
-      this.clearSearchCriteriaControl = new ClearSearchCriteriaControl({
-        show: this.hasSearchParams,
-        onClearClick: this.clearSearch
-      })
-      this.map.addControl(this.clearSearchCriteriaControl, 'bottom-right')
-      */
-
       if (this.legendLayers.length) {
         this.legendControl = new LegendControl({
           layers: this.legendLayers
@@ -220,14 +202,6 @@ export default {
       }
     },
     onMapClick(e) {
-      // Zoom to the clicked point.  
-      // This is currently disabled because it is less convinent than first hoped,
-      // and actually harms the usre experience.
-      //if (e.hasOwnProperty("lngLat")) {
-      //  const clickedLngLat = e.lngLat;
-      //  const zoom = 9;
-      //  this.REQUEST_MAP_POSITION({ centre: clickedLngLat, zoom: zoom })
-      //}
     },
     triggerSearchMapArea() {
       this.$emit('search', this.map.getBounds(), { showLoadingSpinner: true })
@@ -317,10 +291,6 @@ export default {
     searchInProgress (isLoading) {
       this.searchOnMoveControl.loading(isLoading)
     },
-    //hasSearchParams (hasSearchParams) {
-    //  this.searchOnMoveControl.toggleShow(hasSearchParams)
-    //  this.clearSearchCriteriaControl.toggleShow(hasSearchParams)
-    //},
     searchResponse(searchResponse) {
       const results = searchResponse && searchResponse.results ?
         searchResponse.results :

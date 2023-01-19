@@ -181,10 +181,6 @@ export default {
     ])
   },
   watch: {
-    // When drillers has a new state, scroll to the top of the searchTable.
-    //searchResponse () {
-    //  this.scrollToTableTop()
-    //}
   },
   methods: {
     /**
@@ -212,7 +208,6 @@ export default {
       if (!query) {
         throw new Error('query parameter is required.')
       }
-      //this.$store.dispatch(SEARCH, querystring.parse(query))
       this.SEARCH(querystring.parse(query))
     },
     fieldSortable (field) {

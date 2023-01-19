@@ -434,8 +434,7 @@ class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     # Allow searching on name fields, names of related companies, etc.
     filter_backends = (restfilters.DjangoFilterBackend,
                        filters.SearchFilter, 
-                       filters.OrderingFilter,
-                       #BoundingBoxFilterBackend
+                       filters.OrderingFilter
                        )
 
                        
