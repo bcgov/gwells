@@ -163,6 +163,58 @@ def get_submission_queryset(qs):
             ) \
             .order_by("filing_number")
 
+def propagate_submission_comments(request, separator="."):
+    """  
+    This method modifies the values of two attributes in the given request 
+    object ('comments' and 'internal comments').
+    For both attributes the new value is set to be the concatenation of a 
+    previous value (from the well record) with the value provided in the request 
+    parameter.
+    :param request: The Django request object to modify 
+    :param separator: A string to insert between the previous value 
+    and the provided value.
+    :return: Nothing (but the 'request' parameter object may be modified) 
+    """
+
+    # no well tag number specified, so do nothing
+    if not "well" in request.data:
+        return
+
+    attributes_to_propagate = ["comments", "internal_comments"]
+    well_tag_number = request.data['well']
+    
+    # Lookup an existing well record to copy attribute values from
+    record_to_copy_from = None
+    try:
+        record_to_copy_from = Well.objects\
+            .get(well_tag_number=well_tag_number)  
+    except Well.DoesNotExist:
+        #no well found.
+        pass
+
+    # If found a Well record to propagate attribute values from,
+    # then override the values of the target attributes in the request object
+    # to be the concatenation of [previous value] + [separator] + [space] 
+    #  + [new value]
+    if record_to_copy_from:
+        separator_ends_with_whitespace = separator != separator.rstrip()
+        # iterate over all the attributes that will be copied from the previous
+        # submission
+        for attr_name in attributes_to_propagate:
+            attr_value = getattr(record_to_copy_from, attr_name)
+            if attr_value:
+                updated_value = attr_value.strip()
+                if attr_name in request.data and request.data[attr_name]:
+                    # concacatenate [previous value] + [separator] + 
+                    #   [space] + [new value]
+                    if not updated_value.endswith(separator):
+                        updated_value += f"{separator}"
+                    if not separator_ends_with_whitespace:
+                        updated_value += " "
+                    updated_value += request.data[attr_name]
+                # update the attribute value in the request object
+                request.data[attr_name] = updated_value
+
 
 class SubmissionGetAPIView(RetrieveAPIView):
     """Get a submission"""
@@ -282,6 +334,13 @@ class SubmissionAlterationAPIView(SubmissionBase):
     permission_classes = (WellsSubmissionPermissions,)
     queryset = ActivitySubmission.objects.all()
 
+    def post(self, request, *args, **kwargs):
+        # modify the request: copy the values of 'comments' and 'internal_comments'
+        # from the previous Submission into the current Submission (plus add any
+        # newly submitted comments).
+        propagate_submission_comments(request)
+        return super().post(request, *args, **kwargs)
+
     def get_queryset(self):
         return get_submission_queryset(self.queryset)\
             .filter(well_activity_type=WellActivityCode.types.alteration())
@@ -294,6 +353,13 @@ class SubmissionDecommissionAPIView(SubmissionBase):
     serializer_class = WellDecommissionSubmissionSerializer
     permission_classes = (WellsSubmissionPermissions,)
     queryset = ActivitySubmission.objects.all()
+
+    def post(self, request, *args, **kwargs):
+        # modify the request: copy the values of 'comments' and 'internal_comments'
+        # from the previous Submission into the current Submission (plus add any
+        # newly submitted comments).
+        propagate_submission_comments(request)
+        return super().post(request, *args, **kwargs)
 
     def get_queryset(self):
         return get_submission_queryset(self.queryset)\
