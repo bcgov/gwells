@@ -8,6 +8,12 @@ UPDATE_AQUIFER_RESOURCE_SECTION = """
     WHERE name = 'Artesian advisory';
 """
 
+REVERSE_UPDATE_AQUIFER_RESOURCE_SECTION = """
+    UPDATE aquifer_resource_section_code
+    SET name = 'Artesian advisory'
+    WHERE name = 'Drilling and operation advisory';
+"""
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -15,5 +21,8 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunSQL(UPDATE_AQUIFER_RESOURCE_SECTION)
+        migrations.RunSQL(
+          UPDATE_AQUIFER_RESOURCE_SECTION,
+          REVERSE_UPDATE_AQUIFER_RESOURCE_SECTION
+        )
     ]

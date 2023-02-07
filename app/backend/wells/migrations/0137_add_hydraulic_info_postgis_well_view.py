@@ -25,6 +25,25 @@ UPDATE_GWELLS_WELLS_VIEW_SQL = """
         GRANT SELECT ON postgis_ftw.gwells_well_view TO ftw_reader;
 """
 
+REVERSE_UPDATE_GWELLS_WELLS_VIEW_SQL = """
+    DROP VIEW postgis_ftw.gwells_well_view;
+    CREATE VIEW postgis_ftw.gwells_well_view AS
+        SELECT
+            well_tag_number,
+            aquifer_id,
+            artesian_conditions AS artesian,
+            street_address,
+            identification_plate_number,
+            observation_well_number,
+            obs_well_status_code AS observation_well_status_code,
+            ems,
+            well_publication_status_code = 'Published' AS is_published,
+            geom
+        FROM well
+        WHERE geom IS NOT NULL;
+        GRANT SELECT ON postgis_ftw.gwells_well_view TO ftw_reader;
+"""
+
 class Migration(migrations.Migration):
     """
     This migration adds the field 'has_hydraulic_info' to the gwells_well_view
@@ -37,5 +56,8 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunSQL(UPDATE_GWELLS_WELLS_VIEW_SQL)
+        migrations.RunSQL(
+          UPDATE_GWELLS_WELLS_VIEW_SQL,
+          REVERSE_UPDATE_GWELLS_WELLS_VIEW_SQL
+        )
     ]
