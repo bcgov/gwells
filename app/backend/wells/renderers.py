@@ -140,6 +140,7 @@ COLUMN_LABELS = {
     "artesian_pressure_head": "Artesian Pressure head",
     "artesian_conditions": "Artesian Conditions",
     "alternative_specs_submitted": "Alt specs submitted",
+    "technical_report": "Technical Report",
 }
 
 

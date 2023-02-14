@@ -444,6 +444,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <p>
         <span class="font-weight-bold">Alternative Specs Submitted:</span> {{ form.alternative_specs_submitted | nullBooleanToYesNo }}
       </p>
+      <p>
+        <span class="font-weight-bold">Technical Report:</span> {{ form.technical_report | nullBooleanToYesNo }}
+      </p>
     </fieldset>
 
     <fieldset v-if="upload_files && upload_files.length > 0">

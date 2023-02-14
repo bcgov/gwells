@@ -273,6 +273,24 @@ exports[`WellDetail.vue should match snapshot 1`] = `
             </span>
              
           </b-col-stub>
+           
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Technical Report:
+            </span>
+             
+            <!---->
+             
+            <span>
+               N/A
+            </span>
+          </b-col-stub>
         </b-row-stub>
       </fieldset>
        

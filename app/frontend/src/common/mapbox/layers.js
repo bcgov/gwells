@@ -228,6 +228,7 @@ export function wellsBaseAndArtesianLayer (options = {}) {
     'circle-radius': 3,
     'circle-stroke-color': [
       'case',
+      ['boolean', ['get', 'has_hydraulic_info']], '#04E762',
       ['to-boolean', ['get', 'artesian']], '#EE14CA',
       'transparent'
     ],
@@ -251,6 +252,9 @@ export function searchedWellsLayer (options = {}) {
     'circle-radius': 5,
     'circle-stroke-color': [
       'case',
+      ['to-boolean', ['get', 'storativity']], '#04E762',
+      ['to-boolean', ['get', 'transmissivity']], '#04E762',
+      ['to-boolean', ['get', 'hydraulic_conductivity']], '#04E762',
       ['to-boolean', ['get', 'artesian_conditions']], '#EE14CA',
       'black'
     ],

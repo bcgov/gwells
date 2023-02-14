@@ -20,7 +20,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 <script>
 import mapboxgl from 'mapbox-gl'
 import GestureHandling from '@geolonia/mbgl-gesture-handling'
-import { mapGetters } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 
 import {
   DATABC_ROADS_SOURCE,
@@ -69,6 +69,7 @@ import groundWaterLicenceActiveLegendSrc from '../../common/assets/images/gwater
 import ecoCatGroundWaterLegendSrc from '../../common/assets/images/ecocat-groundwater.svg'
 import observationWellInactiveLegendSrc from '../../common/assets/images/owells-inactive.svg'
 import observationWellActiveLegendSrc from '../../common/assets/images/owells-active.svg'
+import wellsHydraulicLegendSrc from '../../common/assets/images/wells-hydraulic.svg'
 
 import wellsAllLegendSrc from '../../common/assets/images/wells-all.svg'
 import wellsArtesianLegendSrc from '../../common/assets/images/wells-artesian.svg'
@@ -81,7 +82,7 @@ const CURRENT_AQUIFER_LINE_LAYER_ID = 'cur-aquifer-line'
 
 export default {
   name: 'SingleAquiferMap',
-  props: ['aquifer-id', 'geom'],
+  props: ['aquifer-id', 'geom', 'aquifer-notations'],
   data () {
     return {
       map: null,
@@ -132,6 +133,10 @@ export default {
             {
               imageSrc: wellsArtesianLegendSrc,
               label: 'artesian'
+            },
+            {
+              imageSrc: wellsHydraulicLegendSrc,
+              label: 'aquifer parameters'
             }
           ]
         },
@@ -177,12 +182,20 @@ export default {
   },
   computed: {
     ...mapGetters(['userRoles']),
+    ...mapGetters('aquiferStore/notations', [
+      'getAquiferNotationsById'
+    ]),
     showUnpublished () {
       return Boolean(this.userRoles.aquifers.edit)
     }
   },
   methods: {
+    ...mapActions('aquiferStore/notations', [
+      'fetchNotationsFromDataBC'
+    ]),
     initMapBox () {
+      this.fetchNotationsFromDataBC()
+
       if (!mapboxgl.supported()) {
         this.browserUnsupported = true
         return
@@ -353,7 +366,8 @@ export default {
       return createAquiferPopupElement(features, this.map, this.$router, {
         canInteract,
         currentAquiferId: this.aquiferId,
-        aquiferLayerIds: [ AQUIFERS_FILL_LAYER_ID, CURRENT_AQUIFER_FILL_LAYER_ID ]
+        aquiferLayerIds: [ AQUIFERS_FILL_LAYER_ID, CURRENT_AQUIFER_FILL_LAYER_ID ],
+        getAquiferNotationsById: this.getAquiferNotationsById
       })
     },
     createWellPopupElement (features, { canInteract }) {
