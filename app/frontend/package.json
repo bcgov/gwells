@@ -54,7 +54,7 @@
     "jest-transform-stub": "^2.0.0",
     "jquery": "^3.4.1",
     "moxios": "^0.4.0",
-    "node-sass": "^4.9.0",
+    "node-sass": "^7.0.0",
     "sass-loader": "^7.1.0",
     "vue-template-compiler": "^2.5.21"
   },
