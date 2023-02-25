@@ -374,10 +374,12 @@ export default {
           name: 'Aquifer notations',
           code: AQUIFER_NOTATION_CODE
         })
-        sections.push({
-          name: 'Unpublished aquifers',
-          code: UNPUBLISHED_AQUIFERS
-        })
+        if (this.userRoles.aquifers.edit) {
+          sections.push({
+            name: 'Unpublished aquifers',
+            code: UNPUBLISHED_AQUIFERS
+          })
+        }
         this.addSections(sections)
       })
     },
