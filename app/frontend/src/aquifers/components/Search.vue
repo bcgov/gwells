@@ -198,6 +198,7 @@ import { BC_LAT_LNG_BOUNDS, containsBounds } from '../../common/mapbox/geometry'
 
 const SEARCH_RESULTS_PER_PAGE = 10
 const AQUIFER_NOTATION_CODE = 'Notations'
+const UNPUBLISHED_AQUIFERS = 'Unpublished'
 const URL_QS_SEARCH_KEYS = ['constrain', 'resources__section__code', 'match_any', 'search']
 
 const RESULTS_TABLE_FIELDS = [
@@ -225,6 +226,9 @@ export default {
     let selectedSections = query.resources__section__code ? query.resources__section__code.split(',') : []
     if (query.aquifer_notations) {
       selectedSections.push(AQUIFER_NOTATION_CODE)
+    }
+    if (query.unpublished) {
+      selectedSections.push(UNPUBLISHED_AQUIFERS)
     }
 
     return {
@@ -369,6 +373,10 @@ export default {
         sections.splice(1, 0, {
           name: 'Aquifer notations',
           code: AQUIFER_NOTATION_CODE
+        })
+        sections.push({
+          name: 'Unpublished aquifers',
+          code: UNPUBLISHED_AQUIFERS
         })
         this.addSections(sections)
       })

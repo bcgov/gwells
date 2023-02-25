@@ -109,6 +109,7 @@ def _aquifer_qs(request):
     resources__section__code = query.get("resources__section__code")
     hydraulic = query.get('hydraulically_connected')
     notations = query.get('aquifer_notations')
+    unpublished = query.get('unpublished')
     search = query.get('search')
 
     # V2 changes to `and`-ing the filters by default unless "match_any" is explicitly set to 'true'
@@ -119,6 +120,10 @@ def _aquifer_qs(request):
     filters = []
     if hydraulic:
         filters.append(Q(subtype__code__in=serializers.HYDRAULIC_SUBTYPES))
+
+    if unpublished:
+        now = timezone.now()
+        filters.append(Q(expiry_date__lt=now))
 
     if notations:
         # Get list of aquifers from DataBC that have notations
