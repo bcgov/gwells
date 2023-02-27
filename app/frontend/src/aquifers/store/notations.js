@@ -11,7 +11,7 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-import ApiService from '@/common/services/ApiService.js'
+import axios from 'axios'
 import { doPolygonsIntersect } from '../../common/mapbox/geometry'
 import { SET_NATURAL_RESOURCE_REGIONS, SET_AQUIFER_NOTATIONS } from './mutations.types'
 
@@ -48,7 +48,11 @@ export default {
       const url = 'https://openmaps.gov.bc.ca/geo/pub/wfs?SERVICE=WFS&VERSION=2.0.0' +
         '&REQUEST=GetFeature&outputFormat=json&srsName=epsg:4326&typeNames=WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONS_SPG' +
         "&CQL_FILTER=REGION_NAME IN('South Coast Natural Resource Region','West Coast Natural Resource Region')"
-      ApiService.query(url).then((response) => {
+      axios.get(url, { transformRequest: (data, headers) => {
+        delete headers.common['Authorization']
+        return data
+      }
+      }).then((response) => {
         const data = response.data
         if (data.features) {
           commit(SET_NATURAL_RESOURCE_REGIONS, data.features)
@@ -59,7 +63,11 @@ export default {
       const url = 'https://openmaps.gov.bc.ca/geo/pub/wfs?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature' +
         '&outputFormat=json&srsName=epsg:4326&typeNames=WHSE_WATER_MANAGEMENT.WLS_WATER_NOTATION_AQUIFERS_SP' +
           '&propertyName=AQUIFER_ID,NOTATION_DESCRIPTION'
-      ApiService.query(url).then((response) => {
+      axios.get(url, { transformRequest: (data, headers) => {
+        delete headers.common['Authorization']
+        return data
+      }
+      }).then((response) => {
         const data = response.data
         if (data.features) {
           commit(SET_AQUIFER_NOTATIONS, data.features)
@@ -87,10 +95,11 @@ export default {
       notations.forEach(notation => {
         for (const [key, value] of Object.entries(state.aquiferNotationCodes)) {
           if (notation.properties.NOTATION_DESCRIPTION.includes(key)) {
-            description = description + value + ' '
+            description = description + value + ', '
           }
         }
       })
+      description = description.replace(/,\s*$/, '')
       return description
     },
     filterAquiferNotationsByRegion: (state) => (description, geom) => {

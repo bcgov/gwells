@@ -366,7 +366,7 @@ export default {
           sections.splice(idx, 1)
         }
         // add aquifer notations to search options
-        sections.splice(3, 0, {
+        sections.splice(1, 0, {
           name: 'Aquifer notations',
           code: AQUIFER_NOTATION_CODE
         })
