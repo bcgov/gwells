@@ -379,7 +379,7 @@ export default {
         this.setPrivate(value)
       }
     },
-    ...mapGetters([
+    ...mapGetters('registriesStore', [
       'loading',
       'error'
     ]),

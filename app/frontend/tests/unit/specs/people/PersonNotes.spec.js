@@ -8,22 +8,39 @@ const localVue = createLocalVue()
 localVue.use(Vuex)
 localVue.use(VueMoment)
 
+const GET_DEFAULT_STORE_MODULES = () => {
+  return {
+    auth: {
+      getters: {
+        user: () => null,
+        userRoles: () => ({ registry: { edit: true, view: true, approve: true } })
+      }
+    },
+    registriesStore: {
+      namespaced: true,
+      getters: {
+        loading: () => false,
+        error: () => null,
+        currentDriller: jest.fn().mockReturnValue(fakePerson),
+        searchResponse: () => [],
+      },
+      actions: {        
+      },
+      mutations:{        
+      }
+    }        
+  }  
+}
+
 describe('PersonNotes.vue', () => {
   let store
-  let getters
-  let mutations
-  let actions
+  let modules
 
   beforeEach(() => {
-    getters = {
-      loading: () => false,
-      error: () => null,
-      user: () => null,
-      currentDriller: jest.fn().mockReturnValue(fakePerson),
-      drillers: () => [],
-      userRoles: () => ({ registry: { edit: true, view: true, approve: true } })
-    }
-    store = new Vuex.Store({ getters, actions, mutations })
+    modules = GET_DEFAULT_STORE_MODULES()
+    store = new Vuex.Store({
+      modules: modules
+    })
   })
 
   it('renders and has a title', () => {

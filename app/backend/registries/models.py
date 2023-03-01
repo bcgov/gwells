@@ -201,6 +201,10 @@ class Organization(AuditModel):
         blank=True, null=True, verbose_name="Email adddress",
         db_comment=('The email address for a company, this is different from the email for the individual '
                     'who is a registered driller or pump installer.'))
+    geom = models.PointField(
+        blank=True, null=True, 
+        srid=4326,
+        db_comment='Geo-referenced location of the address')
 
     history = GenericRelation(Version)
 
@@ -233,6 +237,21 @@ class Organization(AuditModel):
             self.postal_code,
         ]
         return ", ".join([part for part in address if part])
+
+    @property
+    def latitude(self):
+        if self.geom:
+            return self.geom.y
+        else:
+            return None
+
+    @property
+    def longitude(self):
+        if self.geom:
+            return self.geom.x
+        else:
+            return None
+
 
 @reversion.register()
 class Person(AuditModel):

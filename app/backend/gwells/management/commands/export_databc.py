@@ -47,7 +47,7 @@ logger = logging.getLogger(__name__)
 #   contain the added data
 WELLS_SQL_V1 = ("""
 select
-    ST_AsGeoJSON(ST_Transform(geom, 4326)) :: json as "geometry",
+    ST_AsGeoJSON(ST_Transform(well.geom, 4326)) :: json as "geometry",
     well.well_tag_number as well_tag_number,
     well.identification_plate_number as identification_plate_number,
     SUBSTRING(well_status_code.description for 255) as well_status,
@@ -208,7 +208,7 @@ from well
 
 WELLS_SQL_V2 = ("""
 select
-    ST_AsGeoJSON(ST_Transform(geom, 4326)) :: json as "geometry",
+    ST_AsGeoJSON(ST_Transform(well.geom, 4326)) :: json as "geometry",
     well.well_tag_number as well_tag_number,
     well.identification_plate_number as identification_plate_number,
     SUBSTRING(well_status_code.description for 255) as well_status,
@@ -372,7 +372,7 @@ WELL_CHUNK_SIZE = 10000
 # stable!
 LITHOLOGY_SQL = ("""
 select
-    ST_AsGeoJSON(ST_Transform(geom, 4326)) :: json as "geometry",
+    ST_AsGeoJSON(ST_Transform(well.geom, 4326)) :: json as "geometry",
     well.well_tag_number,
     identification_plate_number,
     SUBSTRING(well_status_code.description for 255) as well_status,
