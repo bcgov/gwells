@@ -16,26 +16,19 @@
 </template>
 
 <script>
-import axios from 'axios'
 import mapboxgl from 'mapbox-gl'
 import GestureHandling from '@geolonia/mbgl-gesture-handling'
 import { debounce } from 'lodash'
-
-import ApiService from '@/common/services/ApiService.js'
-
 import {
   DATABC_ROADS_SOURCE,
-  DATABC_CADASTREL_SOURCE,
   DATABC_ROADS_SOURCE_ID,
-  DATABC_CADASTREL_SOURCE_ID,
   DATABC_ROADS_LAYER,
-  DATABC_CADASTREL_LAYER,
   SEARCHED_REGISTRIES_SOURCE_ID,
   SEARCHED_REGISTRIES_LAYER_ID,
   searchedRegistriesLayer,
 } from '../../../common/mapbox/layers'
-import { LegendControl, BoxZoomControl, SearchOnMoveControl, ClearSearchCriteriaControl } from '../../../common/mapbox/controls'
-import { DEFAULT_MAP_ZOOM, CENTRE_LNG_LAT_BC, peopleToGeoJSON, convertLngLatBoundsToDirectionBounds, boundsCompletelyContains } from '../../../common/mapbox/geometry'
+import { LegendControl, BoxZoomControl } from '../../../common/mapbox/controls'
+import { DEFAULT_MAP_ZOOM, CENTRE_LNG_LAT_BC, peopleToGeoJSON } from '../../../common/mapbox/geometry'
 import {
   REQUEST_MAP_POSITION,
   SEARCH_AGAIN
@@ -98,7 +91,7 @@ export default {
       const zoom = this.initialZoom || DEFAULT_MAP_ZOOM
       const centre = this.initialCentre ? this.initialCentre : CENTRE_LNG_LAT_BC
 
-      var mapConfig = {
+      const mapConfig = {
         container: this.$el,
         zoom,
         minZoom: 4,
@@ -292,9 +285,6 @@ export default {
       this.searchOnMoveControl.loading(isLoading)
     },
     searchResponse(searchResponse) {
-      const results = searchResponse && searchResponse.results ?
-        searchResponse.results :
-        [];
       const geoJson = peopleToGeoJSON(searchResponse.results);
       this.updateSearchResultsLayer(geoJson)
       if (this.snapMapToSearchResults) {

@@ -41,8 +41,6 @@ from registries.models import (
 from registries.views import PersonListView, PersonDetailView
 from gwells.roles import (roles_to_groups, REGISTRIES_VIEWER_ROLE, REGISTRIES_EDIT_ROLE)
 
-from registries.data_migrations import populate_empty_geometries #TODO remote this temporary import
-
 # Note: see postman/newman for more API tests.
 # Postman API tests include making requests with incomplete data, missing required fields etc.
 # They are located at {base-dir}/api-tests/
@@ -646,9 +644,9 @@ class APIPersonTests(AuthenticatedAPITestCase):
         org_1 = Organization.objects.create(
             name="Victoria Drilling Company",
             province_state=self.prov,
-            geom=GEOSGeometry(f'POINT(-123.35948 48.4268161)', srid=4326) #near Victoria, BC
+            geom=GEOSGeometry('POINT(-123.35948 48.4268161)', srid=4326) #near Victoria, BC
         )
-        registration_1 = Register.objects.create(
+        Register.objects.create(
             person=person_1,
             organization=org_1,
             registries_activity=activity,
@@ -661,9 +659,9 @@ class APIPersonTests(AuthenticatedAPITestCase):
         org_2 = Organization.objects.create(
             name="Kelowna Drilling Company",
             province_state=self.prov,
-            geom=GEOSGeometry(f'POINT(-119.47901 49.882042)', srid=4326) #near Kelowna, BC
+            geom=GEOSGeometry('POINT(-119.47901 49.882042)', srid=4326) #near Kelowna, BC
         )
-        registration_2 = Register.objects.create(
+        Register.objects.create(
             person=person_2,
             organization=org_2,
             registries_activity=activity,
@@ -714,7 +712,7 @@ class APIPersonTests(AuthenticatedAPITestCase):
             registries_activity=activity,
             registration_no="F54321",
         )
-        application_1 = RegistriesApplication.objects.create(
+        RegistriesApplication.objects.create(
             registration=registration_1,
             proof_of_age=proof_of_age,
             subactivity=SubactivityCode.objects.get(registries_subactivity_code='WATER')
@@ -733,7 +731,7 @@ class APIPersonTests(AuthenticatedAPITestCase):
             registries_activity=activity,
             registration_no="F62232",
         )
-        application_2 = RegistriesApplication.objects.create(
+        RegistriesApplication.objects.create(
             registration=registration_2,
             proof_of_age=proof_of_age,
             subactivity=SubactivityCode.objects.get(registries_subactivity_code='GEOTECH')
@@ -770,7 +768,7 @@ class APIPersonTests(AuthenticatedAPITestCase):
             name="Big Time Drilling Company",
             province_state=self.prov
         )
-        registration = Register.objects.create(
+        Register.objects.create(
             person=driller,
             organization=org,
             registries_activity=activity,

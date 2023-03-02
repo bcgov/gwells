@@ -1,9 +1,4 @@
-import { uniqBy, pick, isEqual } from 'lodash'
-
-import {
-  SEARCHED_REGISTRIES_LAYER_ID,
-} from '../common/mapbox/layers'
-import { popupItems, popupItem } from '../common/mapbox/popup'
+import { popupItems } from '../common/mapbox/popup'
 
 export function createRegistrySearchResultPopupElement (features, map, $router, options = {pageSize: 1}) {
   // Creates a DOM element that will hold the popup content for 

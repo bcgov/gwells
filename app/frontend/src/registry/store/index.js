@@ -9,8 +9,6 @@
   See the License for the specific language governing permissions and
   limitations under the License.
  */
-import Vue from 'vue'
-import Vuex from 'vuex'
 import ApiService from '@/common/services/ApiService.js'
 import {
   FETCH_CITY_LIST,
@@ -90,7 +88,6 @@ const registriesStore = {
   },
   mutations: {
     [SET_SEARCH_PARAMS](state, payload) {      
-      const params = Object.assign({}, DEFAULT_SEARCH_PARAMS, payload)
       state.searchParams = payload
     },    
     [SET_HAS_SEARCHED] (state, payload) {
@@ -129,7 +126,7 @@ const registriesStore = {
     [SET_LAST_SEARCHED_PARAMS] (state, payload) {
       if (payload != null &&
         (!payload.hasOwnProperty("raw") || !payload.hasOwnProperty("api"))) {
-        throw("Must specify parameter in the format of: {'raw': {...}, 'api': {...}}")
+        throw(new Error("Must specify parameter in the format of: {'raw': {...}, 'api': {...}}"))
       }
       state.lastSearchedParams = payload
     }, 
@@ -141,7 +138,7 @@ const registriesStore = {
         payload.maxZoom = 10;
       }
       if (payload && !payload.hasOwnProperty("centre") && !payload.hasOwnProperty("bounds")) {
-        throw("Must specify either the 'centre' or the 'bounds' parameter")
+        throw(new Error("Must specify either the 'centre' or the 'bounds' parameter"))
       }
       if (JSON.stringify(state.requestedMapPosition) == JSON.stringify(payload)) {
         //no change

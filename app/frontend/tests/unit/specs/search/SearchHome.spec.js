@@ -8,7 +8,6 @@ import APIErrorMessage from '@/common/components/APIErrorMessage'
 import fakeDrillerOptions from '../fakeDrillerOptions'
 import {
   FETCH_CITY_LIST,
-  FETCH_DRILLER_LIST,
   FETCH_DRILLER_OPTIONS,
   REQUEST_MAP_POSITION,
   SEARCH,

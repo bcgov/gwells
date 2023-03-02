@@ -238,7 +238,6 @@
 import querystring from 'querystring'
 import mapboxgl from 'mapbox-gl'
 import { mapGetters, mapActions, mapMutations, mapState } from 'vuex'
-import smoothScroll from 'smoothscroll'
 import { omit } from 'lodash'
 
 import ApiService from '@/common/services/ApiService.js'
@@ -449,7 +448,6 @@ export default {
             else if (lngLats.length > 1) {
               // Build a LngLatBounds object that contains the
               // geocoded points representing all the selected cities
-              const firstLngLat = lngLats[0];
               const bounds = new mapboxgl.LngLatBounds()
               lngLats.forEach((lngLats) => {
                 bounds.extend(lngLats)
