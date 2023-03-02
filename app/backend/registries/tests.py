@@ -481,8 +481,8 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
         with patch('registries.serializers.geocode_bc_location') as mock_geocode_bc_location_1:
 
           #create an organization with an initial address
-          mock_lon_1 = -124
-          mock_lat_1 = 50
+          mock_lon_1 = -124.2
+          mock_lat_1 = 50.1
           mock_geocode_bc_location_1.return_value = \
               GEOSGeometry(f'POINT({mock_lon_1} {mock_lat_1})', srid=4326)
 
@@ -508,8 +508,8 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
         with patch('registries.serializers.geocode_bc_location') as mock_geocode_bc_location_2:
 
           # update the organization with a new address
-          mock_lon_2 = -123
-          mock_lat_2 = 51
+          mock_lon_2 = -123.9
+          mock_lat_2 = 51.3
           mock_geocode_bc_location_2.return_value = \
               GEOSGeometry(f'POINT({mock_lon_2} {mock_lat_2})', srid=4326)
           
@@ -539,24 +539,24 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
         with patch('registries.serializers.geocode_bc_location') as mock_geocode_bc_location_1:
 
           #create an organization with an initial address
-          mock_lon_1 = -124
-          mock_lat_1 = 50
+          mock_lon_1 = -124.6
+          mock_lat_1 = 50.8
           mock_geocode_bc_location_1.return_value = \
               GEOSGeometry(f'POINT({mock_lon_1} {mock_lat_1})', srid=4326)
 
           url_1 = reverse('organization-list', kwargs={'version': 'v1'})        
-          response_1 = self.client.post(url_1, self.initial_data, format='json')
+          resp_1 = self.client.post(url_1, self.initial_data, format='json')
 
           # check that the mock geocode function was used instead of the 
           # real version
           mock_geocode_bc_location_1.assert_called_once()
 
           # check that the response includes the geographic coordinates
-          self.assertEquals(response_1.data.get("longitude"), mock_lon_1)
-          self.assertEquals(response_1.data.get("latitude"), mock_lat_1)
+          self.assertEquals(resp_1.data.get("longitude"), mock_lon_1)
+          self.assertEquals(resp_1.data.get("latitude"), mock_lat_1)
 
           organization = Organization.objects.get(
-              org_guid=response_1.data['org_guid'])
+              org_guid=resp_1.data['org_guid'])
     
           # check that the organization was created and that is has a value
           # in the geom attribute
@@ -573,20 +573,20 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
           mock_geocode_bc_location_2.return_value = None
           
           url_2 = reverse('organization-detail',
-              kwargs={'org_guid': response_1.data['org_guid'], 'version': 'v1'})
-          response_2 = self.client.patch(url_2, {"street_address": ""}, format='json')
+              kwargs={'org_guid': resp_1.data['org_guid'], 'version': 'v1'})
+          resp_2 = self.client.patch(url_2, {"street_address": ""}, format='json')
 
-          updated_org = Organization.objects.get(
-              org_guid=response_1.data['org_guid'])
+          updated_organization = Organization.objects.get(
+              org_guid=resp_1.data['org_guid'])
          
           # check that the response shows that the lat/lon have been cleared
-          self.assertEquals(response_2.data.get("longitude"), None)
-          self.assertEquals(response_2.data.get("latitude"), None)
+          self.assertEquals(resp_2.data.get("longitude"), None)
+          self.assertEquals(resp_2.data.get("latitude"), None)
 
           # check that the updated organization has no geometry
-          self.assertEquals(updated_org.latitude, None)
-          self.assertEquals(updated_org.longitude, None)
-          self.assertEquals(updated_org.geom, None)
+          self.assertEquals(updated_organization.latitude, None)
+          self.assertEquals(updated_organization.longitude, None)
+          self.assertEquals(updated_organization.geom, None)
 
 class APIPersonTests(AuthenticatedAPITestCase):
     """
