@@ -19,7 +19,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 import mapboxgl from 'mapbox-gl'
 import GestureHandling from '@geolonia/mbgl-gesture-handling'
 import { difference, uniq } from 'lodash'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 
 import { SEARCH_AQUIFERS } from '../store/actions.types'
 import {
@@ -80,6 +80,7 @@ import observationWellInactiveLegendSrc from '../../common/assets/images/owells-
 import observationWellActiveLegendSrc from '../../common/assets/images/owells-active.svg'
 import wellsAllLegendSrc from '../../common/assets/images/wells-all.svg'
 import wellsArtesianLegendSrc from '../../common/assets/images/wells-artesian.svg'
+import wellsHydraulicLegendSrc from '../../common/assets/images/wells-hydraulic.svg'
 import { setupFeatureTooltips } from '../../common/mapbox/popup'
 
 export default {
@@ -145,6 +146,10 @@ export default {
             {
               imageSrc: wellsArtesianLegendSrc,
               label: 'artesian'
+            },
+            {
+              imageSrc: wellsHydraulicLegendSrc,
+              label: 'aquifer parameters'
             }
           ]
         },
@@ -188,6 +193,9 @@ export default {
   },
   computed: {
     ...mapGetters(['userRoles']),
+    ...mapGetters('aquiferStore/notations', [
+      'getAquiferNotationsById'
+    ]),
     highlightIdsMap () {
       return this.highlightAquiferIds.reduce((obj, aquiferId) => {
         obj[aquiferId] = aquiferId
@@ -202,7 +210,12 @@ export default {
     }
   },
   methods: {
+    ...mapActions('aquiferStore/notations', [
+      'fetchNotationsFromDataBC'
+    ]),
     initMapBox () {
+      this.fetchNotationsFromDataBC()
+
       if (!mapboxgl.supported()) {
         this.browserUnsupported = true
         return
@@ -336,7 +349,7 @@ export default {
           surfaceWaterLicencesLayer({ layout: { visibility: 'none' } }),
           groundWaterLicencesLayer({ layout: { visibility: 'none' } }),
           wellsBaseAndArtesianLayer({ layout: { visibility: 'none' }, filter: wellLayerFilter(this.showUnpublishedWells) }),
-          observationWellsLayer({ layout: { visibility: 'none' } }),
+          observationWellsLayer({ layout: { visibility: 'none' } })
         ]
       }
     },
@@ -449,7 +462,8 @@ export default {
     createAquiferPopupElement (features, { canInteract }) {
       return createAquiferPopupElement(features, this.map, this.$router, {
         canInteract,
-        aquiferLayerIds: [ AQUIFERS_FILL_LAYER_ID ]
+        aquiferLayerIds: [ AQUIFERS_FILL_LAYER_ID ],
+        getAquiferNotationsById: this.getAquiferNotationsById
       })
     },
     createWellPopupElement (features, { canInteract }) {

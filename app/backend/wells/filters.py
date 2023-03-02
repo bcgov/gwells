@@ -309,6 +309,7 @@ class WellListFilter(AnyOrAllFilterSet):
 
     well_orientation_status = filters.ModelChoiceFilter(queryset=WellOrientationCode.objects.all())
     alternative_specs_submitted = filters.BooleanFilter(widget=BooleanWidget)
+    technical_report = filters.BooleanFilter(widget=BooleanWidget)
     hydro_fracturing_performed = filters.BooleanFilter(widget=BooleanWidget)
 
     company_of_person_responsible = filters.UUIDFilter(field_name='company_of_person_responsible')
@@ -334,6 +335,7 @@ class WellListFilter(AnyOrAllFilterSet):
             'alteration_end_date',
             'alteration_start_date',
             'alternative_specs_submitted',
+            'technical_report',
             'analytic_solution_type',
             'aquifer',
             'aquifer_lithology',

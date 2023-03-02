@@ -61,6 +61,20 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </b-form-group>
     </b-col>
     </b-row>
+    <b-row class="mt-3">
+      <b-col cols="12" sm="6">
+        <b-form-group label="Technical Report">
+        <b-form-radio-group
+          id="technicalReportCheckbox"
+          class="mt-1"
+          v-model="technicalReportInput"
+        >
+          <b-form-radio :value="false">No</b-form-radio>
+          <b-form-radio :value="true">Yes</b-form-radio>
+        </b-form-radio-group>
+      </b-form-group>
+    </b-col>
+    </b-row>
   </fieldset>
 </template>
 
@@ -80,6 +94,7 @@ export default {
     comments: String,
     internalComments: String,
     alternativeSpecsSubmitted: null,
+    technicalReport: null,
     errors: {
       type: Object,
       default: () => ({})
@@ -104,7 +119,8 @@ export default {
   fields: {
     commentsInput: 'comments',
     internalCommentsInput: 'internalComments',
-    alternativeSpecsSubmittedInput: 'alternativeSpecsSubmitted'
+    alternativeSpecsSubmittedInput: 'alternativeSpecsSubmitted',
+    technicalReportInput: 'technicalReport'
   },
   data () {
     return {
