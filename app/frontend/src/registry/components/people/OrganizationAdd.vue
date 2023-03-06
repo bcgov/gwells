@@ -164,7 +164,7 @@
 
 <script>
 import ApiService from '@/common/services/ApiService.js'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import inputFormatMixin from '@/common/inputFormatMixin.js'
 import { FETCH_DRILLER_OPTIONS } from '@/registry/store/actions.types'
 
@@ -200,7 +200,8 @@ export default {
         email: (this.fieldErrors.email && this.fieldErrors.email.length) ? false : null
       }
     },
-    ...mapGetters(['error', 'provinceStateOptions'])
+    ...mapGetters('registriesStore', ['error']),
+    ...mapGetters('registriesStore', ['provinceStateOptions'])
   },
   methods: {
     onFormSubmit () {
@@ -251,11 +252,14 @@ export default {
         website_url: [],
         email: []
       }
-    }
+    },
+    ...mapActions('registriesStore', [
+      FETCH_DRILLER_OPTIONS
+    ])
   },
   created () {
     this.resetFieldErrors()
-    this.$store.dispatch(FETCH_DRILLER_OPTIONS)
+    this.FETCH_DRILLER_OPTIONS()
   }
 }
 </script>

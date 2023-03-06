@@ -15,11 +15,12 @@
 import reversion
 from collections import OrderedDict
 
-from django.db.models import Q, Prefetch
+from django.db.models import Q, Prefetch, Count
 from django.http import HttpResponse, Http404, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.views.generic import TemplateView
+from django.contrib.gis.geos import Polygon, GEOSException
 from django_filters import rest_framework as restfilters
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
@@ -74,7 +75,6 @@ from registries.serializers import (
     PersonNameSerializer)
 from gwells.change_history import generate_history_diff
 from gwells.views import AuditCreateMixin, AuditUpdateMixin
-
 
 class OrganizationListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     """
@@ -204,8 +204,20 @@ class PersonOptionsView(APIView):
         return Response(result)
 
 
+
 def person_search_qs(request):
-    """ Returns Person queryset, removing non-active and unregistered drillers for anonymous users """
+    """ 
+    Returns Person queryset, removing non-active and unregistered 
+    drillers for anonymous users 
+    Implementation note: The returned queryset is actually three related 
+    querysets.  The first is the primary query set and is is a join 
+    across several tables.  The other two querysets are 
+    used to pre-fetch collections of related information (registrations 
+    and applications).  
+    Various filters can be requested (filter by 'activity', 'subactivity', 
+    'geographic area', etc). In general, when a filter is needed, it is applied
+    to each of the three querysets (or sometimes only two of them). 
+    """
     query = request.GET
     qs = Person.objects.filter(expiry_date__gt=timezone.now())
 
@@ -213,34 +225,65 @@ def person_search_qs(request):
     registrations_qs = Register.objects.all()
     applications_qs = RegistriesApplication.objects.all()
 
+    person_filters = Q()
+    reg_filters = Q()
+    appl_filters = Q()
+
+
     # Search for cities (split list and return all matches)
     # search comes in as a comma-separated querystring param e.g: ?city=Atlin,Lake Windermere,Duncan
     cities = query.get('city', None)
     if cities:
         cities = cities.split(',')
-        qs = qs.filter(registrations__organization__city__in=cities)
-        registrations_qs = registrations_qs.filter(
-            organization__city__in=cities)
+        person_filters = person_filters & Q(registrations__organization__city__in=cities)
+        reg_filters = reg_filters & Q(organization__city__in=cities)
+        
+    #bbox
+    sw_long = query.get('sw_long')
+    sw_lat = query.get('sw_lat')
+    ne_long = query.get('ne_long')
+    ne_lat = query.get('ne_lat')
+    if sw_long and sw_lat and ne_long and ne_lat:
+        try:
+            bbox = Polygon.from_bbox((sw_long, sw_lat, ne_long, ne_lat))
+            bbox.srid = 4326
+            person_filters = person_filters & Q(registrations__organization__geom__bboverlaps=bbox)
+            reg_filters = reg_filters & Q(organization__geom__bboverlaps=bbox)
+        except (ValueError, GEOSException):
+            pass
+
+    #Subactivities param comes as a csv list
+    subactivities = query.get('subactivities')
+    if subactivities is not None:      
+      subactivities = subactivities.split(",")
+      person_filters = person_filters & \
+            Q(registrations__applications__subactivity__registries_subactivity_code__in=subactivities)
+      reg_filters = reg_filters & \
+          Q(applications__subactivity__registries_subactivity_code__in=subactivities)
+      appl_filters = appl_filters & \
+          Q(subactivity__registries_subactivity_code__in=subactivities)
 
     activity = query.get('activity', None)
     status = query.get('status', None)
-
     user_is_staff = request.user.groups.filter(name=REGISTRIES_VIEWER_ROLE).exists()
 
     if activity:
         if (status == 'P' or not status) and user_is_staff:
             # We only allow staff to filter on status
             # For pending, or all, we also return search where there is no registration.
-            qs = qs.filter(Q(registrations__registries_activity__registries_activity_code=activity) |
-                            Q(registrations__isnull=True))
-            registrations_qs = registrations_qs.filter(
-                registries_activity__registries_activity_code=activity)
+            person_filters = person_filters & \
+                (
+                    Q(registrations__registries_activity__registries_activity_code=activity) |
+                    Q(registrations__isnull=True)
+                )
+            reg_filters = reg_filters & \
+                Q(registries_activity__registries_activity_code=activity)
         else:
             # For all other searches, we strictly filter on activity.
-            qs = qs.filter(
-                registrations__registries_activity__registries_activity_code=activity)
-            registrations_qs = registrations_qs.filter(
-                registries_activity__registries_activity_code=activity)
+            person_filters = person_filters & \
+                Q(registrations__registries_activity__registries_activity_code=activity)
+            reg_filters = reg_filters & \
+                Q(registries_activity__registries_activity_code=activity)
 
     if user_is_staff:
         # User is logged in
@@ -248,36 +291,76 @@ def person_search_qs(request):
             if status == 'Removed':
                 # Things are a bit more complicated if we're looking for removed, as the current
                 # status doesn't come in to play.
-                qs = qs.filter(
-                    registrations__applications__removal_date__isnull=False)
+                person_filters = person_filters & \
+                    Q(registrations__applications__removal_date__isnull=False)
+                reg_filters = reg_filters & \
+                    Q(applications__removal_date__isnull=False)
+                appl_filters = appl_filters & \
+                    Q(removal_date__isnull=False)
             else:
                 if status == 'P':
                     # If the status is pending, we also pull in any people without registrations
                     # or applications.
-                    qs = qs.filter(Q(registrations__applications__current_status__code=status) |
-                                    Q(registrations__isnull=True) |
-                                    Q(registrations__applications__isnull=True),
-                                    Q(registrations__applications__removal_date__isnull=True))
+                    person_filters = person_filters & \
+                        (
+                            Q(registrations__applications__current_status__code=status) |
+                            Q(registrations__isnull=True) |
+                            Q(registrations__applications__isnull=True)                            
+                        ) & \
+                        Q(registrations__applications__removal_date__isnull=True)
+                    reg_filters = reg_filters & \
+                        (
+                            Q(applications__current_status__code=status) |                                    
+                            Q(applications__isnull=True)                            
+                        ) & \
+                        Q(applications__removal_date__isnull=True)   
+                    appl_filters = appl_filters & \
+                        (
+                            Q(current_status__code=status)                                     
+                            #Q(isnull=True)                            
+                        ) & \
+                        Q(removal_date__isnull=True)                      
                 else:
-                    qs = qs.filter(
-                        Q(registrations__applications__current_status__code=status),
-                        Q(registrations__applications__removal_date__isnull=True))
+                    person_filters = person_filters & \
+                        (
+                            Q(registrations__applications__current_status__code=status) &
+                            Q(registrations__applications__removal_date__isnull=True)
+                        )
+                    reg_filters = reg_filters & \
+                        (
+                            Q(applications__current_status__code=status) &
+                            Q(applications__removal_date__isnull=True)
+                        )
+                    appl_filters = appl_filters & \
+                        (
+                            Q(current_status__code=status) &
+                            Q(removal_date__isnull=True)
+                        )
     else:
         # User is not logged in
         # Only show active drillers to non-admin users and public
-        qs = qs.filter(
-            Q(registrations__applications__current_status__code='A',
-                registrations__registries_activity=activity),
-            Q(registrations__applications__removal_date__isnull=True),
-            Q()
-        )
+        person_filters = person_filters & \
+            (
+              Q(registrations__applications__current_status__code='A') &
+              Q(registrations__applications__removal_date__isnull=True)
+            )
 
-        registrations_qs = registrations_qs.filter(
-            Q(applications__current_status__code='A'),
-            Q(applications__removal_date__isnull=True))
+        reg_filters = reg_filters & \
+            (
+                Q(applications__current_status__code='A') &
+                Q(applications__removal_date__isnull=True)
+            )
+        appl_filters= appl_filters & \
+            (
+                Q(current_status='A') & 
+                Q(removal_date__isnull=True)
+            )
 
-        applications_qs = applications_qs.filter(
-            current_status='A', removal_date__isnull=True)
+    #apply all the "main" and "registration" filters that were chosen above
+    qs = qs.filter(person_filters)
+    registrations_qs = registrations_qs.filter(reg_filters)
+    applications_qs = applications_qs.filter(appl_filters)
+
 
     # generate applications queryset
     applications_qs = applications_qs \
@@ -290,7 +373,7 @@ def person_search_qs(request):
         .prefetch_related(
             'subactivity__qualification_set',
             'subactivity__qualification_set__well_class'
-        ).distinct()
+        ).distinct()    
 
     # generate registrations queryset, inserting filtered applications queryset defined above
     registrations_qs = registrations_qs \
@@ -301,7 +384,7 @@ def person_search_qs(request):
         ) \
         .prefetch_related(
             Prefetch('applications', queryset=applications_qs)
-        ).distinct()
+        ).distinct()            
 
     # insert filtered registrations set
     qs = qs \
@@ -311,6 +394,30 @@ def person_search_qs(request):
 
     return qs.distinct()
 
+def exclude_persons_without_registrations(request, filtered_queryset, statuses_that_disallow_empty_registrations=['A']):
+    """
+    In the following cases perform additional filtering on the 'filtered_queryset'
+    to remove persons that have no registrations:
+    1. when the request asked for status of *Registered* ('A')
+    2. when the request asked to filter by bounding box (geographic area)
+    3. when the request asked to filter by city
+    Implementation note: Ideally we would rely on the queryset for this
+    filtering, but the queryset is very complex, and it relies on
+    multiple 'prefetches' (extra database queries).  It is most efficient to handle 
+    this filtering post database query.    
+    Returns an updated filtered_queryset
+    """
+    status_disallows_people_with_no_registrations = \
+        request.GET.get('status') in statuses_that_disallow_empty_registrations 
+    is_filtered_by_bbox = request.GET.get('sw_long') != None \
+        and request.GET.get('sw_lat') != None \
+        and request.GET.get('ne_long') != None\
+        and request.GET.get('ne_lat') != None
+    is_filtered_by_city = request.GET.get('city', "") != ""
+    if is_filtered_by_bbox or is_filtered_by_city or \
+        status_disallows_people_with_no_registrations:
+        filtered_queryset = [f for f in filtered_queryset if len(f.registrations.all()) > 0]
+    return filtered_queryset
 
 class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     """
@@ -326,7 +433,11 @@ class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     pagination_class = APILimitOffsetPagination
     # Allow searching on name fields, names of related companies, etc.
     filter_backends = (restfilters.DjangoFilterBackend,
-                       filters.SearchFilter, filters.OrderingFilter)
+                       filters.SearchFilter, 
+                       filters.OrderingFilter
+                       )
+
+                       
     ordering_fields = ('surname', 'registrations__organization__name')
     ordering = ('surname',)
     search_fields = (
@@ -354,6 +465,7 @@ class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
         """ List response using serializer with reduced number of fields """
         queryset = self.get_queryset()
         filtered_queryset = self.filter_queryset(queryset)
+        filtered_queryset = exclude_persons_without_registrations(request, filtered_queryset) 
 
         page = self.paginate_queryset(filtered_queryset)
         if page is not None:

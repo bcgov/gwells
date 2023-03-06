@@ -17,6 +17,9 @@ export const FOCUSED_WELLS_ARTESIAN_LAYER_ID = 'focused-wells-artesian'
 export const FOCUSED_WELL_IMAGE_ID = 'focused-well-image'
 export const FOCUSED_WELL_ARTESIAN_IMAGE_ID = 'focused-artesian-well-image'
 
+export const SEARCHED_REGISTRIES_SOURCE_ID = 'searched-registries-source'
+export const SEARCHED_REGISTRIES_LAYER_ID = 'searched-registries-layer'
+
 export const AQUIFERS_SOURCE_ID = 'postgis_ftw.gwells_aquifer_view'
 export const AQUIFERS_LINE_LAYER_ID = 'aquifer-line'
 export const AQUIFERS_FILL_LAYER_ID = 'aquifer-fill'
@@ -182,6 +185,18 @@ export function ecoCatLayer (options = {}) {
   })
 
   return vectorLayerConfig(layerId, options.source || DATABC_ECOCAT_SOURCE_ID, options.layerType || 'circle', styles, options.layout)
+}
+
+export function searchedRegistriesLayer (options = {}) {
+  const layerId = options.id || SEARCHED_REGISTRIES_LAYER_ID
+  const styles = defaultsDeep(options.styles, {
+    'circle-color': '#ff0000',
+    'circle-radius': 5,
+    'circle-stroke-color': '#000000',
+    'circle-stroke-width': 1
+  })
+
+  return layerConfig(layerId, options.source || SEARCHED_REGISTRIES_SOURCE_ID, options.layerType || 'circle', styles, options.layout)
 }
 
 export function surfaceWaterLicencesLayer (options = {}) {

@@ -26,7 +26,7 @@ from rest_framework.decorators import api_view
 from registries.permissions import RegistriesEditPermissions
 from registries.models import Person
 
-from .views import person_search_qs
+from .views import (person_search_qs, exclude_persons_without_registrations)
 
 REGISTRY_EXPORT_HEADER_COLUMNS = [
     'person_name',
@@ -128,6 +128,7 @@ class CSVExportV2(ListAPIView):
     def list(self, request, **kwargs):
         queryset = self.get_queryset()
         filtered_queryset = self.filter_queryset(queryset)
+        filtered_queryset = exclude_persons_without_registrations(request, filtered_queryset) 
 
         # Create the HttpResponse object with the appropriate CSV header.
         response = HttpResponse(content_type='text/csv')
@@ -176,6 +177,7 @@ class XLSXExportV2(ListAPIView):
     def list(self, request, **kwargs):
         queryset = self.get_queryset()
         filtered_queryset = self.filter_queryset(queryset)
+        filtered_queryset = exclude_persons_without_registrations(request, filtered_queryset) 
 
         mime_type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 

@@ -13,9 +13,10 @@
 """
 
 import os
-
+from django.utils import timezone
 from gwells.codes import CodeFixture
-
+from registries.models import Organization
+from registries.serializers import OrganizationAdminSerializer
 
 def insert_remove_reasons(apps, schema_editor):
     data = {
@@ -74,3 +75,30 @@ def load_subactivity_codes(apps, schema_editor):
 
 def unload_subactivity_codes(apps, schema_editor):
     return subactivity_codes().unload_fixture(apps, schema_editor)
+
+def populate_empty_geometries(apps, schema_editor):
+    """
+    Populate the geom field for all Organizations that meet the following
+    criteria:
+    1. 'geom' is currently null
+    2. Either 'street_address' and 'city' are not null, or just 'city' is not null
+    3. 'province_state' is BC
+    4. The Organization's database record isn't expired
+    The 'geom' field is populated by executing a no-change update 
+    on the organization serializer.  This triggers the serializer to 
+    attempt to populate the geometry by geocoding the street address
+    and/or city.
+    """
+    orgs_to_update = \
+        Organization.objects.filter(
+            geom__isnull=True, 
+            city__isnull=False,
+            province_state__exact="BC",
+            expiry_date__gt=timezone.now()
+            )
+    for org in orgs_to_update:
+        serializer = OrganizationAdminSerializer(org)
+        validated_data = {
+            "city": org.city #no change
+        }
+        serializer.update(org, validated_data)
