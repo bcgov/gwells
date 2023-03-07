@@ -394,6 +394,13 @@ export default {
     drillerSearch() {
       const params = this.searchParams
 
+      // If the search parameters specify a page offset, disregard it.
+      // (This method always performs a fresh search and results should
+      // start at page 1.)
+      if (params.hasOwnProperty("offset")) {
+        delete params.offset;
+      }
+
       // save the last searched activity in the store for reference by table components
       // (e.g. for formatting table for pump installer searches)
       this[SET_LAST_SEARCHED_ACTIVITY](this.searchParams.activity || 'DRILL')
