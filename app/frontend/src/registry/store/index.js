@@ -9,6 +9,8 @@
   See the License for the specific language governing permissions and
   limitations under the License.
  */
+import Vue from 'vue'
+import Vuex from 'vuex'
 import ApiService from '@/common/services/ApiService.js'
 import {
   FETCH_CITY_LIST,

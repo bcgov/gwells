@@ -393,6 +393,7 @@ export default {
     },
     drillerSearch() {
       const params = this.searchParams
+<<<<<<< HEAD
 
       // If the search parameters specify a page offset, disregard it.
       // (This method always performs a fresh search and results should
@@ -400,6 +401,8 @@ export default {
       if (params.hasOwnProperty("offset")) {
         delete params.offset;
       }
+=======
+>>>>>>> upstream/banders/registry_organization_geom
 
       // save the last searched activity in the store for reference by table components
       // (e.g. for formatting table for pump installer searches)
