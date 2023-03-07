@@ -545,11 +545,7 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
               GEOSGeometry(f'POINT({mock_lon_1} {mock_lat_1})', srid=4326)
 
           url_1 = reverse('organization-list', kwargs={'version': 'v1'})        
-<<<<<<< HEAD
           resp_1 = self.client.post(url_1, self.initial_data, format='json')
-=======
-          response_1 = self.client.post(url_1, self.initial_data, format='json')
->>>>>>> upstream/banders/registry_organization_geom
 
           # check that the mock geocode function was used instead of the 
           # real version
