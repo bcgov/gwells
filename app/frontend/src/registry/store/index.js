@@ -260,6 +260,17 @@ const registriesStore = {
       if (!params.subactivities.length) {
         params.subactivities = [""]
       }
+      //be flexible with the input format of the any parameter that allows 
+      //multiple choices.  In such cases allow the value to be either a csv 
+      //string or an array, but before further processing standardize the format 
+      //internally into an array (which is easier for the UI to work with)
+      const arrayParams = ["subactivities", "city"]
+      arrayParams.forEach(p => {
+        if (params.hasOwnProperty(p) && typeof params[p] === 'string') {
+          params[p] = params[p].split(",");
+        }
+      });
+      
       
       //prepare a slightly modified parameters object that will be sent
       //to the API.
