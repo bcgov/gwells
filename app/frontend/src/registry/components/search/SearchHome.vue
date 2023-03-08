@@ -239,6 +239,7 @@ import querystring from 'querystring'
 import mapboxgl from 'mapbox-gl'
 import { mapGetters, mapActions, mapMutations, mapState } from 'vuex'
 import { omit } from 'lodash'
+import axios from 'axios'
 
 import ApiService from '@/common/services/ApiService.js'
 import RegistryMap from '@/registry/components/search/RegistryMap.vue'
@@ -430,15 +431,28 @@ export default {
       if (!e.ctrlKey) {
         ApiService.download(e.currentTarget.getAttribute('href'))
       }
-    },        
+    },  
+    //returns a promise with results from BC Physical Address Geocoder API
+    geocodeCity(city) {
+      return axios.get(
+        "https://geocoder.api.gov.bc.ca/addresses.json", 
+        { params: { maxResults: 1, provinceCode: "BC", localities: city, matchPrecision: "locality", addressString: city } }
+      )
+    },      
     zoomToSelectedCities(selectedCities) {
       if (selectedCities && selectedCities != "") {
         const lngLats = []; //a list of {lat:..., lng:...} objects
         var numResponses = 0;
         const onGeocodeSuccess = (resp) => {
           numResponses++;
-          if (resp.data.features.length) {
-            const feature = resp.data.features[0]
+          //Although we can ask the geocoder to return only locations in BC, it doesn't
+          //respect this request.  We work around this limitation by filtering out non-BC
+          //feature from the response.
+          const featuresInBc = resp.data.features.filter(
+            f => f.properties.provinceCode == "BC"
+          )
+          if (featuresInBc.length) {            
+            const feature = featuresInBc[0]
             lngLats.push(new mapboxgl.LngLat(feature.geometry.coordinates[0], feature.geometry.coordinates[1]))
           }          
           checkAllGeocodesComplete();        
@@ -468,16 +482,12 @@ export default {
           }
         }
         for (var i = 0; i < selectedCities.length; i++) {
-          const city = selectedCities[i];
-          ApiService.query(
-            `geocoding/v5/mapbox.places/${city}.json`,
-            { maxResults: 1, provinceCode: "BC", localities: city, matchPrecision: "locality" }
-          ).then(
+          const city = selectedCities[i];          
+          this.geocodeCity(city).then(
             onGeocodeSuccess,
             onGeocodeError
           )
-        }
-        
+        }        
       }
     },
     resetSearch() {
