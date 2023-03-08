@@ -957,6 +957,10 @@ class Well(AuditModelStructure):
         db_comment=('Indicates if an alternative specification was used for siting of a water supply'
                     ' well, or a permanent dewatering well, or for the method used for decommissioning a'
                     ' well.'))
+    
+    technical_report = models.BooleanField(default=False, verbose_name='Technical Report',
+                                          db_comment=('Highlights the existence of a technical assessment '
+                                                      'or Environmental Flow Needs report.'))
 
     well_yield_unit = models.ForeignKey(
         WellYieldUnitCode, db_column='well_yield_unit_code', on_delete=models.PROTECT, blank=True, null=True)
@@ -1152,6 +1156,7 @@ class Well(AuditModelStructure):
 
     db_column_supplemental_comments = {
         "alternative_specs_submitted":"Indicates if an alternative specification was used for siting of a water supply well or a permanent dewatering well, or if an alternative specification was used for decommissioning a well.",
+        "technical_report":"Highlights the existence of a technical assessment or Environmental Flow Needs report.",
         "aquifer_id":"System generated sequential number assigned to each aquifer. It is widely used by groundwater staff as it is the only consistent unique identifier for a mapped aquifer. It is also commonly referred to as Aquifer Number.",
         "artesian_flow":"Measurement of the artesian well's water flow that occurs naturally due to inherent water pressure in the well. Pressure within the aquifer forces the groundwater to rise above the land surface naturally without using a pump. Flowing artesian wells can flow on an intermittent or continuous basis. Recorded in US Gallons Per Minute.",
         "artesian_pressure":"Pressure of the water coming out of an artesian well as measured at the time of construction. Measured in PSI (pounds per square inch).",
@@ -1619,6 +1624,10 @@ class ActivitySubmission(AuditModelStructure):
         null=True,
         verbose_name='Alternative specs submitted (if required)', choices=((False, 'No'), (True, 'Yes')))
 
+    technical_report = models.BooleanField(default=False, verbose_name='Technical Report',
+                                          db_comment=('Highlights the existence of a technical assessment '
+                                                      'or Environmental Flow Needs report.'))
+
     well_yield_unit = models.ForeignKey(
         WellYieldUnitCode, db_column='well_yield_unit_code', on_delete=models.PROTECT, blank=True, null=True)
     # want to be integer in future
@@ -1736,6 +1745,7 @@ class ActivitySubmission(AuditModelStructure):
     db_table_comment = 'Submission of data and information related to a groundwater wells.'
     db_column_supplemental_comments = {
         "alternative_specs_submitted":"Indicates if an alternative specification was used for siting of a water supply well, or a permanent dewatering well, or for the method used for decommissioning a well.",
+        "technical_report":"Highlights the existence of a technical assessment or Environmental Flow Needs report.",
         "analytic_solution_type":"Mathematical formulation used to estimate hydraulic parameters.",
         "aquifer_id":"System generated sequential number assigned to each aquifer. It is widely used by groundwater staff as it is the only consistent unique identifier for a mapped aquifer. It is also commonly referred to as Aquifer Number.",
         "artesian_conditions": "Artesian conditions arise when there is a movement of groundwater from a recharge area under a confining formation to a point of discharge at a lower elevation. An example of this is a natural spring, or in the example of the drilling industry, a flowing water well.",
@@ -1952,6 +1962,7 @@ class FieldsProvided(models.Model):
     comments = models.BooleanField(default=False)
     internal_comments = models.BooleanField(default=False)
     alternative_specs_submitted = models.BooleanField(default=False)
+    technical_report = models.BooleanField(default=False)
     well_yield_unit = models.BooleanField(default=False)
     diameter = models.BooleanField(default=False)
     ems = models.BooleanField(default=False)

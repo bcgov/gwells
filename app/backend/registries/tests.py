@@ -41,8 +41,6 @@ from registries.models import (
 from registries.views import PersonListView, PersonDetailView
 from gwells.roles import (roles_to_groups, REGISTRIES_VIEWER_ROLE, REGISTRIES_EDIT_ROLE)
 
-from registries.data_migrations import populate_empty_geometries #TODO remote this temporary import
-
 # Note: see postman/newman for more API tests.
 # Postman API tests include making requests with incomplete data, missing required fields etc.
 # They are located at {base-dir}/api-tests/
@@ -483,8 +481,8 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
         with patch('registries.serializers.geocode_bc_location') as mock_geocode_bc_location_1:
 
           #create an organization with an initial address
-          mock_lon_1 = -124
-          mock_lat_1 = 50
+          mock_lon_1 = -124.2
+          mock_lat_1 = 50.1
           mock_geocode_bc_location_1.return_value = \
               GEOSGeometry(f'POINT({mock_lon_1} {mock_lat_1})', srid=4326)
 
@@ -510,8 +508,8 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
         with patch('registries.serializers.geocode_bc_location') as mock_geocode_bc_location_2:
 
           # update the organization with a new address
-          mock_lon_2 = -123
-          mock_lat_2 = 51
+          mock_lon_2 = -123.9
+          mock_lat_2 = 51.3
           mock_geocode_bc_location_2.return_value = \
               GEOSGeometry(f'POINT({mock_lon_2} {mock_lat_2})', srid=4326)
           
@@ -541,24 +539,24 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
         with patch('registries.serializers.geocode_bc_location') as mock_geocode_bc_location_1:
 
           #create an organization with an initial address
-          mock_lon_1 = -124
-          mock_lat_1 = 50
+          mock_lon_1 = -124.6
+          mock_lat_1 = 50.8
           mock_geocode_bc_location_1.return_value = \
               GEOSGeometry(f'POINT({mock_lon_1} {mock_lat_1})', srid=4326)
 
           url_1 = reverse('organization-list', kwargs={'version': 'v1'})        
-          response_1 = self.client.post(url_1, self.initial_data, format='json')
+          resp_1 = self.client.post(url_1, self.initial_data, format='json')
 
           # check that the mock geocode function was used instead of the 
           # real version
           mock_geocode_bc_location_1.assert_called_once()
 
           # check that the response includes the geographic coordinates
-          self.assertEquals(response_1.data.get("longitude"), mock_lon_1)
-          self.assertEquals(response_1.data.get("latitude"), mock_lat_1)
+          self.assertEquals(resp_1.data.get("longitude"), mock_lon_1)
+          self.assertEquals(resp_1.data.get("latitude"), mock_lat_1)
 
           organization = Organization.objects.get(
-              org_guid=response_1.data['org_guid'])
+              org_guid=resp_1.data['org_guid'])
     
           # check that the organization was created and that is has a value
           # in the geom attribute
@@ -575,20 +573,20 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
           mock_geocode_bc_location_2.return_value = None
           
           url_2 = reverse('organization-detail',
-              kwargs={'org_guid': response_1.data['org_guid'], 'version': 'v1'})
-          response_2 = self.client.patch(url_2, {"street_address": ""}, format='json')
+              kwargs={'org_guid': resp_1.data['org_guid'], 'version': 'v1'})
+          resp_2 = self.client.patch(url_2, {"street_address": ""}, format='json')
 
-          updated_org = Organization.objects.get(
-              org_guid=response_1.data['org_guid'])
+          updated_organization = Organization.objects.get(
+              org_guid=resp_1.data['org_guid'])
          
           # check that the response shows that the lat/lon have been cleared
-          self.assertEquals(response_2.data.get("longitude"), None)
-          self.assertEquals(response_2.data.get("latitude"), None)
+          self.assertEquals(resp_2.data.get("longitude"), None)
+          self.assertEquals(resp_2.data.get("latitude"), None)
 
           # check that the updated organization has no geometry
-          self.assertEquals(updated_org.latitude, None)
-          self.assertEquals(updated_org.longitude, None)
-          self.assertEquals(updated_org.geom, None)
+          self.assertEquals(updated_organization.latitude, None)
+          self.assertEquals(updated_organization.longitude, None)
+          self.assertEquals(updated_organization.geom, None)
 
 class APIPersonTests(AuthenticatedAPITestCase):
     """
@@ -646,9 +644,9 @@ class APIPersonTests(AuthenticatedAPITestCase):
         org_1 = Organization.objects.create(
             name="Victoria Drilling Company",
             province_state=self.prov,
-            geom=GEOSGeometry(f'POINT(-123.35948 48.4268161)', srid=4326) #near Victoria, BC
+            geom=GEOSGeometry('POINT(-123.35948 48.4268161)', srid=4326) #near Victoria, BC
         )
-        registration_1 = Register.objects.create(
+        Register.objects.create(
             person=person_1,
             organization=org_1,
             registries_activity=activity,
@@ -661,9 +659,9 @@ class APIPersonTests(AuthenticatedAPITestCase):
         org_2 = Organization.objects.create(
             name="Kelowna Drilling Company",
             province_state=self.prov,
-            geom=GEOSGeometry(f'POINT(-119.47901 49.882042)', srid=4326) #near Kelowna, BC
+            geom=GEOSGeometry('POINT(-119.47901 49.882042)', srid=4326) #near Kelowna, BC
         )
-        registration_2 = Register.objects.create(
+        Register.objects.create(
             person=person_2,
             organization=org_2,
             registries_activity=activity,
@@ -714,7 +712,7 @@ class APIPersonTests(AuthenticatedAPITestCase):
             registries_activity=activity,
             registration_no="F54321",
         )
-        application_1 = RegistriesApplication.objects.create(
+        RegistriesApplication.objects.create(
             registration=registration_1,
             proof_of_age=proof_of_age,
             subactivity=SubactivityCode.objects.get(registries_subactivity_code='WATER')
@@ -733,7 +731,7 @@ class APIPersonTests(AuthenticatedAPITestCase):
             registries_activity=activity,
             registration_no="F62232",
         )
-        application_2 = RegistriesApplication.objects.create(
+        RegistriesApplication.objects.create(
             registration=registration_2,
             proof_of_age=proof_of_age,
             subactivity=SubactivityCode.objects.get(registries_subactivity_code='GEOTECH')
@@ -770,7 +768,7 @@ class APIPersonTests(AuthenticatedAPITestCase):
             name="Big Time Drilling Company",
             province_state=self.prov
         )
-        registration = Register.objects.create(
+        Register.objects.create(
             person=driller,
             organization=org,
             registries_activity=activity,

@@ -394,8 +394,8 @@ class WellConstructionSubmissionSerializer(WellSubmissionSerializerBase):
                   'finished_well_depth', 'final_casing_stick_up', 'bedrock_depth', 'static_water_level',
                   'well_yield', 'artesian_flow', 'artesian_pressure', 'artesian_pressure_head', 'artesian_conditions',
                   'well_cap_type', 'well_disinfected_status',
-                  'comments', 'internal_comments', 'alternative_specs_submitted', 'consultant_company', 'consultant_name',
-                  'driller_name', 'person_responsible', 'company_of_person_responsible',
+                  'comments', 'internal_comments', 'alternative_specs_submitted', 'technical_report', 'consultant_company',
+                  'consultant_name', 'driller_name', 'person_responsible', 'company_of_person_responsible',
                   'coordinate_acquisition_code',
                   'create_user', 'create_date',
                   )
@@ -529,6 +529,7 @@ class WellAlterationSubmissionSerializer(WellSubmissionSerializerBase):
             'comments',
             'internal_comments',
             'alternative_specs_submitted',
+            'technical_report',
             'create_user', 'create_date',
         )
         extra_kwargs = {
@@ -688,6 +689,7 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
             'comments',
             'internal_comments',
             'alternative_specs_submitted',
+            'technical_report',
             'decommission_description_set',
             'observation_well_number',
             'observation_well_status',
@@ -774,6 +776,7 @@ class WellDecommissionSubmissionSerializer(WellSubmissionSerializerBase):
             'comments',
             'internal_comments',
             'alternative_specs_submitted',
+            'technical_report',
             'create_user', 'create_date',
         )
         extra_kwargs = {
@@ -1182,7 +1185,7 @@ class ConstructionSubmissionDisplaySerializer(serializers.ModelSerializer):
             'finished_well_depth', 'final_casing_stick_up', 'bedrock_depth', 'static_water_level',
             'well_yield', 'artesian_flow', 'artesian_pressure', 'artesian_pressure_head', 'artesian_conditions',
             'well_cap_type', 'well_disinfected_status',
-            'comments', 'alternative_specs_submitted', 'consultant_company', 'consultant_name',
+            'comments', 'alternative_specs_submitted', 'technical_report', 'consultant_company', 'consultant_name',
             'driller_name', 'person_responsible', 'company_of_person_responsible',
             'coordinate_acquisition_code',
             'create_user', 'create_date',
@@ -1342,6 +1345,7 @@ class AlterationSubmissionDisplaySerializer(serializers.ModelSerializer):
             'well_disinfected_status',
             'comments',
             'alternative_specs_submitted',
+            'technical_report',
             'create_user', 'create_date',
         )
 
@@ -1419,6 +1423,7 @@ class DecommissionSubmissionDisplaySerializer(serializers.ModelSerializer):
             'decommission_description_set',
             'comments',
             'alternative_specs_submitted',
+            'technical_report',
             'create_user', 'create_date',
         )
 
@@ -1609,6 +1614,7 @@ class LegacyWellDisplaySerializer(serializers.ModelSerializer):
             'comments',
             'internal_comments',
             'alternative_specs_submitted',
+            'technical_report',
             'decommission_description_set',
             'observation_well_number',
             'observation_well_status',

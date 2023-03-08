@@ -78,7 +78,7 @@ class UtilsTestCase(TestCase):
         mock_requests_get.side_effect = HTTPError(Mock(status=500), 'not found')
 
         with self.assertRaises(HTTPError):        
-            response = geocode_bc_location({"addressString": "101 main st.", "localityName": "vancouver"})        
+            geocode_bc_location({"addressString": "101 main st.", "localityName": "vancouver"})        
                 
         # Confirm that a mock API call was used instead of a real API call
         mock_requests_get.assert_called_once()
@@ -95,7 +95,7 @@ class UtilsTestCase(TestCase):
             Mock(status_code=200, json=lambda : mock_geocode_api_response)
 
         with self.assertRaises(ValueError) as context_manager:        
-            response = geocode_bc_location({"addressString": "101 main st.", "localityName": "vancouver"})            
+            geocode_bc_location({"addressString": "101 main st.", "localityName": "vancouver"})            
                 
         print(context_manager.exception)
 

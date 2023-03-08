@@ -220,7 +220,7 @@ class OrganizationUpdateMixin():
                   "localityName": city,
                   "localities": city
                 })
-            except (HTTPError, ValueError) as e:
+            except (HTTPError, ValueError):
                 #silently ignore the failed geocode
                 pass       
         
@@ -233,7 +233,7 @@ class OrganizationUpdateMixin():
                   "localities": city,
                   "matchPrecision": "LOCALITY"
                 })
-            except (HTTPError, ValueError) as e:
+            except (HTTPError, ValueError):
                 #silently ignore the failed geocode
                 pass
 

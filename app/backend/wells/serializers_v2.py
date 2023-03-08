@@ -49,7 +49,10 @@ class WellLocationSerializerV2(serializers.ModelSerializer):
             'city',
             'ems',
             'artesian',
-            'aquifer_id'
+            'aquifer_id',
+            'storativity',
+            'transmissivity',
+            'hydraulic_conductivity'
         )
 
     def get_artesian(self, obj):
@@ -282,6 +285,7 @@ class WellListSerializerV2(serializers.ModelSerializer):
             "well_disinfected_status",
             "static_water_level",
             "alternative_specs_submitted",
+            "technical_report",
         )
 
 
