@@ -226,6 +226,14 @@ export default {
       this.map.fitBounds(bounds, options)
     },
     flyToPoint(centre, zoom) {
+      const existingCentre = this.map.getCenter()
+      const existingZoom = this.map.getZoom();
+      //don't adjust the map if the requested position is the same as 
+      //(or within 1 metre of) the existing position (this avoids a 
+      //cascade of map moved events)
+      if (centre.distanceTo(existingCentre) < 1 && zoom == existingZoom) {
+        return;
+      }
       this.map.flyTo({ center: centre, zoom: zoom, duration: 200 })
     },
     clearPopups() {
