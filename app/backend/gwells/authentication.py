@@ -156,8 +156,8 @@ class JwtOidcAuthentication(JSONWebTokenAuthentication):
         preferred_username = payload.get('preferred_username')
 
         if payload.get('iss').endswith(KEYCLOAK_GOLD_REALM_URL):
-            identity_provider = payload.get('identity_provider')
-            return '@idir' in identity_provider or '@bceid' in identity_provider\
+            identity_provider = payload.get('identity_provider').lower()
+            return identity_provider == 'idir' or identity_provider == 'bceidboth' \
                 or preferred_username == 'testuser'
         else:
             return 'idir\\' in preferred_username or 'bceid\\' in preferred_username\
