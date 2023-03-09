@@ -256,7 +256,6 @@ import {
 import {
   SET_LOADING,
   SET_HAS_SEARCHED,
-  SET_LAST_SEARCHED_ACTIVITY  ,
   SET_LIMIT_SEARCH_TO_CURRENT_MAP_BOUNDS,
   SET_DO_SEARCH_ON_BOUNDS_CHANGE
 } from '@/registry/store/mutations.types'
@@ -402,10 +401,6 @@ export default {
         delete params.offset;
       }
 
-      // save the last searched activity in the store for reference by table components
-      // (e.g. for formatting table for pump installer searches)
-      this[SET_LAST_SEARCHED_ACTIVITY](this.searchParams.activity || 'DRILL')
-
       if (window.ga) {
         window.ga('send', {
           hitType: 'event',
@@ -494,7 +489,6 @@ export default {
       this[RESET_SEARCH]();
     },    
     ...mapMutations('registriesStore', [
-      SET_LAST_SEARCHED_ACTIVITY,
       SET_HAS_SEARCHED,
       SET_LOADING,
       SET_LIMIT_SEARCH_TO_CURRENT_MAP_BOUNDS,

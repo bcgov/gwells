@@ -285,7 +285,7 @@ const registriesStore = {
         }
       }
 
-      commit(SET_LAST_SEARCHED_PARAMS, { raw: params, api: paramsForApi })
+      commit(SET_LAST_SEARCHED_PARAMS, { raw: Object.assign({}, params), api: paramsForApi })
 
       return new Promise((resolve, reject) => {
         commit(SET_SEARCH_PARAMS, params)
@@ -387,7 +387,7 @@ const registriesStore = {
       /**
        * last searched activity, exposed to components as "activity"
        */
-      return state.lastSearchedActivity
+      return state.lastSearchedParams ? state.lastSearchedParams.raw.activity : null;
     },
     isSearchInProgress(state) {
       return state.isSearchInProgress
