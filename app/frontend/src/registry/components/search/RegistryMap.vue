@@ -158,14 +158,18 @@ export default {
       });
 
       //listen to map move/zoom events      
-      ['zoomend', 'moveend', 'resize'].forEach(eventName => {
-        this.map.on(eventName, debounce(e => {
+      const mapChangedHandler = debounce(
+        e => {
           const bounds = this.map.getBounds()
           this.SET_CURRENT_MAP_BOUNDS(bounds)
           if (this.limitSearchToCurrentMapBounds && this.doSearchOnBoundsChange) {
             this.SEARCH_AGAIN()
           }
-        }, 500))
+        },
+        200
+      );
+      ['zoomend', 'moveend', 'resize'].forEach(eventName => {
+        this.map.on(eventName, mapChangedHandler)
       })
       
     },
