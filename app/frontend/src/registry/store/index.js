@@ -177,6 +177,7 @@ const registriesStore = {
       }
       if (!options.keepActivity) {
         searchParams.activity = DEFAULT_SEARCH_PARAMS.activity
+        searchParams.subactivities = DEFAULT_SEARCH_PARAMS.subactivities
       }
       if (!options.keepLimit) {
         searchParams.limit = DEFAULT_SEARCH_PARAMS.limit
