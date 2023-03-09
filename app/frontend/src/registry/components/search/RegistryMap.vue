@@ -178,12 +178,10 @@ export default {
         version: 8,
         sources: {
           [DATABC_ROADS_SOURCE_ID]: DATABC_ROADS_SOURCE,
-          //[DATABC_CADASTREL_SOURCE_ID]: DATABC_CADASTREL_SOURCE,
           [SEARCHED_REGISTRIES_SOURCE_ID]: { type: 'geojson', data: peopleToGeoJSON([]) }
         },
         layers: [
           DATABC_ROADS_LAYER,
-          //DATABC_CADASTREL_LAYER,
           searchedRegistriesLayer(),
         ]
       }
