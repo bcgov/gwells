@@ -158,14 +158,18 @@ export default {
       });
 
       //listen to map move/zoom events      
-      ['zoomend', 'moveend', 'resize'].forEach(eventName => {
-        this.map.on(eventName, debounce(e => {
+      const mapChangedHandler = debounce(
+        e => {
           const bounds = this.map.getBounds()
           this.SET_CURRENT_MAP_BOUNDS(bounds)
           if (this.limitSearchToCurrentMapBounds && this.doSearchOnBoundsChange) {
             this.SEARCH_AGAIN()
           }
-        }, 500))
+        },
+        200
+      );
+      ['zoomend', 'moveend', 'resize'].forEach(eventName => {
+        this.map.on(eventName, mapChangedHandler)
       })
       
     },
@@ -174,12 +178,10 @@ export default {
         version: 8,
         sources: {
           [DATABC_ROADS_SOURCE_ID]: DATABC_ROADS_SOURCE,
-          //[DATABC_CADASTREL_SOURCE_ID]: DATABC_CADASTREL_SOURCE,
           [SEARCHED_REGISTRIES_SOURCE_ID]: { type: 'geojson', data: peopleToGeoJSON([]) }
         },
         layers: [
           DATABC_ROADS_LAYER,
-          //DATABC_CADASTREL_LAYER,
           searchedRegistriesLayer(),
         ]
       }

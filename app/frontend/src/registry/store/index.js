@@ -177,6 +177,7 @@ const registriesStore = {
       }
       if (!options.keepActivity) {
         searchParams.activity = DEFAULT_SEARCH_PARAMS.activity
+        searchParams.subactivities = DEFAULT_SEARCH_PARAMS.subactivities
       }
       if (!options.keepLimit) {
         searchParams.limit = DEFAULT_SEARCH_PARAMS.limit
@@ -288,7 +289,6 @@ const registriesStore = {
       commit(SET_LAST_SEARCHED_PARAMS, { raw: Object.assign({}, params), api: paramsForApi })
 
       return new Promise((resolve, reject) => {
-        commit(SET_SEARCH_PARAMS, params)
         commit(SET_HAS_SEARCHED, true)
         commit(SET_IS_SEARCH_IN_PROGRESS, true)
         ApiService.query('drillers', paramsForApi)
