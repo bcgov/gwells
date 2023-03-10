@@ -486,16 +486,28 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <legend>General Disclaimer</legend>
       <b-row>
         <b-col cols="12" lg="9">
-          This information is collected by the Ministry of Environment and Climate Change Strategy under section 26
-          (c) of the Freedom of Information and Protection of Privacy Act.<br><br>
-          Information, including personal information, will be used to determine well location and confirm that the
-          construction, alteration, or decommission of a well has been done in accordance with the Water Sustainability
-          Act (WSA) and Groundwater Protection Regulation (GWPR). Well reports submitted to the Comptroller, or
-          retained by the person responsible, as required under Sec 57 the WSA and Part 10 of the GWPR, shall be
-          considered part of the Provincial Government records. Documents or images uploaded as part of submission
-          and that contain personal information not covered under this legislation will be deleted.<br><br>
+          This information is collected by the Ministry of Water, Land and Resource Stewardship under section 26 (c)
+          of the Freedom of Information and Protection of Privacy Act and section 117 (1) of the
+          Water Sustainability Act (WSA).
+          <br><br>
+          The groundwater information (e.g. any notes and comments that are included in well reports
+          filed under WSA and its regulations) will be made available to the public by the government
+          in accordance with the Open Government License-British Columba (OGL-BC) which grants the
+          public a worldwide, royalty-free, perpetual, non-exclusive license to make use of the reports,
+          including for commercial purposes, but subject to the terms described in the OGL-BC:
+          <a href="https://www2.gov.bc.ca/gov/content/data/open-data/open-government-licence-bc" target="_blank" rel="noopener noreferrer">
+            https://www2.gov.bc.ca/gov/content/data/open-data/open-government-licence-bc.
+          </a>
+          <br><br>
+          Information, including personal information, will be used to determine well location and confirm
+          that the construction, alteration, or decommission of a well has been done in accordance with the
+          WSA and Groundwater Protection Regulation (GWPR). Well reports submitted to the Comptroller, or
+          retained by the person responsible, as required under section 57 of the WSA and Part 10 of the GWPR,
+          shall be considered part of the Provincial Government records. Documents or images included as part
+          of submission and that contain personal information not covered under this legislation will be deleted.
+          <br><br>
           Should you have any questions about the collection or use of this information, please contact the
-          Groundwater Data Specialist: <br>phone: 778-698-4867 <br>email: groundwater@gov.bc.ca
+          Groundwater Data Specialist, email: <a href = "mailto: groundwater@gov.bc.ca">groundwater@gov.bc.ca.</a>
         </b-col>
       </b-row>
     </fieldset>
