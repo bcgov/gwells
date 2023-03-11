@@ -2431,3 +2431,97 @@ class DecommissionDescription(AuditModel):
     db_table_comment = ('A cross refernce table maintaining the list of wells that have been decomissioned'
                         ' and the materials used to fill the well when decomissioned. E.g. Bentonite chips,'
                         ' Native sand or gravel, Commercial gravel/pea gravel.')
+
+
+class AquiferParameters(AuditModel):
+    """
+    Aquifer Parameter information from well pumping tests
+
+    There can be many pumping tests done for a well so there may be many aquifer parameter records per well
+    """
+    aquifer_parameters_guid = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False)
+    
+    activity_submission = models.ForeignKey(ActivitySubmission, db_column='filing_number',
+                                            on_delete=models.PROTECT, blank=True, null=True,
+                                            related_name='aquifer_parameters_set')
+    well = models.ForeignKey(
+        Well, db_column='well_tag_number', on_delete=models.PROTECT,
+        blank=True, null=True,
+        related_name='aquifer_parameters_set',
+        db_comment=('The file number assigned to a particular well in the in the province\'s Groundwater '
+                    'Wells and Aquifers application.'))
+    
+    storativity = models.DecimalField(
+        max_digits=8, decimal_places=7, blank=True, null=True, verbose_name='Storativity')
+    
+    transmissivity = models.DecimalField(
+        max_digits=30, decimal_places=10, blank=True, null=True, verbose_name='Transmissivity')
+    
+    hydraulic_conductivity = models.TextField(
+        max_length=100,
+        blank=True,
+        null=True,
+        verbose_name='Hydraulic Conductivity')
+    
+    specific_yield = models.DecimalField(
+        max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Specific Yield')
+    
+    analytic_solution_type = models.TextField(
+         max_length=100,
+        blank=True,
+        null=True,
+        verbose_name='Analytic Solution Type',
+        db_comment='Mathematical formulation used to estimate hydraulic parameters.')
+
+    testing_method = models.TextField(
+        max_length=100,
+        blank=True,
+        null=True,
+        verbose_name='Testing Method')
+    
+    testing_duration = models.PositiveIntegerField(blank=True, null=True)
+
+    testing_comments = models.TextField(
+        max_length=350,
+        blank=True,
+        null=True,
+        verbose_name='Testing Comments')
+    
+    testing_date = models.DateField(
+        null=True, verbose_name='Date of test',
+        db_comment='The date when the analysis tooke place.')
+
+    class Meta:
+        ordering = ["start", "end"]
+        db_table = 'aquifer_parameters'
+
+    db_table_comment = ('Aquifer parameter testing results from well pumping tests.')
+
+    # db_column_supplemental_comments = {
+    #     "casing_code":"Describes the casing component (piping or tubing installed in a well) as either production casing, surface casing (outer casing), or open hole.",
+    #     "casing_from":"The depth below ground level at which the casing begins.  Measured in feet below ground level.",
+    #     "casing_to":"The depth below ground level at which the casing ends.  Measured in feet below ground level.",
+    #     "diameter":"The diameter of the casing measured in inches. There can be multiple casings in a well, e.g. surface casing, and production casing. Diameter of casing made available to the public is generally the production casing.",
+    #     "drive_shoe_code":"Indicates Y or N if a drive shoe was used in the installation of the casing.  A drive shoe is attached to the end of a casing and it helps protect it during installation.",
+    #     "wall_thickness":"The thickness of the casing wall, measured in inches.",
+    #     "well_tag_number":"System generated sequential number assigned to each well. It is widely used by groundwater staff as it is the only consistent unique identifier for each well. It is different from a well ID plate number.",
+    # }
+
+    # def __str__(self):
+    #     if self.activity_submission:
+    #         return 'activity_submission {} {} {}'.format(self.activity_submission, self.start, self.end)
+    #     else:
+    #         return 'well {} {} {}'.format(self.well, self.start, self.end)
+
+    # def as_dict(self):
+    #     return {
+    #         "start": self.start,
+    #         "end": self.end,
+    #         "casing_guid": self.casing_guid,
+    #         "well_tag_number": self.well_tag_number,
+    #         "diameter": self.diameter,
+    #         "wall_thickness": self.wall_thickness,
+    #         "casing_material": self.casing_material,
+    #         "drive_shoe_status": self.drive_shoe_status
+    #     }

@@ -34,7 +34,8 @@ from wells.models import (
     LinerPerforation,
     LithologyDescription,
     Screen,
-    Well
+    Well,
+    AquiferParameters
 )
 from submissions.models import WellActivityCode
 
@@ -182,7 +183,6 @@ class LegacyCasingSerializer(serializers.ModelSerializer):
             'drive_shoe_status': {'required': False, 'allow_null': True},
             'wall_thickness': {'required': False}
         }
-
 
 class DecommissionDescriptionSerializer(serializers.ModelSerializer):
     """Serializes Decommission Descriptions"""
@@ -479,6 +479,7 @@ class DrillingMethodSummarySerializer(serializers.ModelSerializer):
 
 
 class WellDetailSerializer(AuditModelSerializer):
+    aquifer_parameters_set = CasingSummarySerializer(many=True)
     casing_set = CasingSummarySerializer(many=True)
     screen_set = ScreenSerializer(many=True)
     linerperforation_set = LinerPerforationSerializer(many=True)
@@ -1118,3 +1119,21 @@ class WellLithologySerializer(serializers.ModelSerializer):
                 "longitude",
                 "lithologydescription_set"
             )
+
+
+class AquiferParametersSummarySerializer(serializers.ModelSerializer):
+    """Serializes aquifer parameters for well summary"""
+
+    class Meta:
+        model = AquiferParameters
+        fields = (
+            'storativity',
+            'transmissivity',
+            'hydraulic_conductivity',
+            'specific_yield',
+            'analytic_solution_type',
+            'testing_method',
+            'testing_duration',
+            'testing_comments',
+            'testing_date'
+        )

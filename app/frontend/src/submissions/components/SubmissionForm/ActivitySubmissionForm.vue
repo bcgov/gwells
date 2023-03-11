@@ -250,6 +250,19 @@ Licensed under the Apache License, Version 2.0 (the "License");
         :saveDisabled="editSaveDisabled"
         v-on:save="$emit('submit_edit')"
       />
+      
+      <!-- Aquifer Parameters -->
+      <aquifer-parameters class="my-5"
+        :key="`aquiferParametersComponent${componentUpdateTrigger}`"
+        v-if="showSection('aquiferParameters')"
+        id="aquiferParameters"
+        :aquiferParameters.sync="form.aquifer_parameters_set"
+        :errors="errors"
+        :fieldsLoaded="fieldsLoaded"
+        :isStaffEdit="isStaffEdit"
+        :saveDisabled="editSaveDisabled"
+        v-on:save="$emit('submit_edit')"
+      />
 
       <!-- Surface Seal / Backfill Material -->
       <backfill class="my-5"
@@ -559,6 +572,7 @@ import SubmissionHistory from './SubmissionHistory.vue'
 import EditHistory from './EditHistory.vue'
 import WorkDates from './WorkDates.vue'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
+import AquiferParameters from './AquiferParameters.vue'
 
 export default {
   name: 'SubmissionsForm',
@@ -649,7 +663,8 @@ export default {
     DecommissionInformation,
     ObservationWellInfo,
     SubmissionHistory,
-    EditHistory
+    EditHistory,
+    AquiferParameters
   },
   data () {
     return {
@@ -677,6 +692,7 @@ export default {
         'closureDescription': 'Decommission description',
         'lithology': 'Lithology',
         'casings': 'Casing details',
+        'aquiferParameters': 'Aquifer Parameters details',
         'backfill': 'Surface seal and backfill information',
         'liner': 'Liner information',
         'screens': 'Screen information',
