@@ -9,6 +9,8 @@
   See the License for the specific language governing permissions and
   limitations under the License.
  */
+import Vue from 'vue'
+import Vuex from 'vuex'
 import ApiService from '@/common/services/ApiService.js'
 import {
   FETCH_CITY_LIST,
@@ -140,10 +142,6 @@ const registriesStore = {
       if (payload && !payload.hasOwnProperty("centre") && !payload.hasOwnProperty("bounds")) {
         throw(new Error("Must specify either the 'centre' or the 'bounds' parameter"))
       }
-      if (JSON.stringify(state.requestedMapPosition) == JSON.stringify(payload)) {
-        //no change
-        return;
-      }
       state.requestedMapPosition = payload;
     },
     [SET_CURRENT_MAP_BOUNDS](state, payload) {
@@ -167,12 +165,19 @@ const registriesStore = {
       searchParams.city = DEFAULT_SEARCH_PARAMS.city
       searchParams.status = DEFAULT_SEARCH_PARAMS.status
       searchParams.ordering = DEFAULT_SEARCH_PARAMS.ordering
+      const propertiesToClear = ["ne_lat", "ne_long", "sw_lat", "sw_long", "offset"];
+      propertiesToClear.forEach(p => {
+        if (searchParams.hasOwnProperty(p)) {
+          delete searchParams[p];
+        }
+      })      
       if (!options.keepSearchResults) {
         commit(SET_HAS_SEARCHED, false)
         commit(SET_SEARCH_RESPONSE, [])
       }
       if (!options.keepActivity) {
         searchParams.activity = DEFAULT_SEARCH_PARAMS.activity
+        searchParams.subactivities = DEFAULT_SEARCH_PARAMS.subactivities
       }
       if (!options.keepLimit) {
         searchParams.limit = DEFAULT_SEARCH_PARAMS.limit
@@ -181,8 +186,7 @@ const registriesStore = {
       commit(SET_LAST_SEARCHED_PARAMS, null)
       commit(SET_LIMIT_SEARCH_TO_CURRENT_MAP_BOUNDS, false)
       commit(SET_DO_SEARCH_ON_BOUNDS_CHANGE, false)
-      commit(SET_REQUESTED_MAP_POSITION, Object.assign({}, DEFAULT_MAP_POSITION))
-      
+      commit(SET_REQUESTED_MAP_POSITION, Object.assign({}, DEFAULT_MAP_POSITION))      
     },
     [FETCH_CITY_LIST]({ commit }, activity) {
       ApiService.query('cities/' + activity)
@@ -260,6 +264,17 @@ const registriesStore = {
       if (!params.subactivities.length) {
         params.subactivities = [""]
       }
+      //be flexible with the input format of the any parameter that allows 
+      //multiple choices.  In such cases allow the value to be either a csv 
+      //string or an array, but before further processing standardize the format 
+      //internally into an array (which is easier for the UI to work with)
+      const arrayParams = ["subactivities", "city"]
+      arrayParams.forEach(p => {
+        if (params.hasOwnProperty(p) && typeof params[p] === 'string') {
+          params[p] = params[p].split(",");
+        }
+      });
+      
       
       //prepare a slightly modified parameters object that will be sent
       //to the API.
@@ -271,10 +286,9 @@ const registriesStore = {
         }
       }
 
-      commit(SET_LAST_SEARCHED_PARAMS, { raw: params, api: paramsForApi })
+      commit(SET_LAST_SEARCHED_PARAMS, { raw: Object.assign({}, params), api: paramsForApi })
 
       return new Promise((resolve, reject) => {
-        commit(SET_SEARCH_PARAMS, params)
         commit(SET_HAS_SEARCHED, true)
         commit(SET_IS_SEARCH_IN_PROGRESS, true)
         ApiService.query('drillers', paramsForApi)
@@ -373,7 +387,7 @@ const registriesStore = {
       /**
        * last searched activity, exposed to components as "activity"
        */
-      return state.lastSearchedActivity
+      return state.lastSearchedParams ? state.lastSearchedParams.raw.activity : null;
     },
     isSearchInProgress(state) {
       return state.isSearchInProgress
