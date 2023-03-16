@@ -1,0 +1,56 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<hudson>
+  <disabledAdministrativeMonitors>
+    <string>hudson.diagnosis.TooManyJobsButNoView</string>
+    <string>GitHubHookRegisterProblemMonitor</string>
+    <string>jenkins.security.QueueItemAuthenticatorMonitor</string>
+    <string>jenkins.security.ResourceDomainRecommendation</string>
+  </disabledAdministrativeMonitors>
+  <version>2.235.5</version>
+  <installStateName>RUNNING</installStateName>
+  <numExecutors>0</numExecutors>
+  <mode>EXCLUSIVE</mode>
+  <useSecurity>true</useSecurity>
+  <authorizationStrategy class="hudson.security.GlobalMatrixAuthorizationStrategy">
+  </authorizationStrategy>
+  <securityRealm class="org.openshift.jenkins.plugins.openshiftlogin.OpenShiftOAuth2SecurityRealm" plugin="openshift-login@1.0.24">
+    <defaultedServiceAccountDirectory>/run/secrets/kubernetes.io/serviceaccount</defaultedServiceAccountDirectory>
+    <defaultedServiceAccountName>jenkins</defaultedServiceAccountName>
+    <defaultedServerPrefix>https://openshift.default.svc</defaultedServerPrefix>
+    <namespace></namespace>
+  </securityRealm>
+  <disableRememberMe>true</disableRememberMe>
+  <projectNamingStrategy class="jenkins.model.ProjectNamingStrategy$DefaultProjectNamingStrategy"/>
+  <workspaceDir>${JENKINS_HOME}/workspace/${ITEM_FULL_NAME}</workspaceDir>
+  <buildsDir>${JENKINS_HOME}/builds/${ITEM_FULL_NAME}</buildsDir>
+  <markupFormatter class="hudson.markup.EscapedMarkupFormatter"/>
+  <jdks/>
+  <viewsTabBar class="hudson.views.DefaultViewsTabBar"/>
+  <myViewsTabBar class="hudson.views.DefaultMyViewsTabBar"/>
+  <clouds/>
+  <quietPeriod>5</quietPeriod>
+  <scmCheckoutRetryCount>0</scmCheckoutRetryCount>
+  <views>
+    <hudson.model.AllView>
+      <owner class="hudson" reference="../../.."/>
+      <name>all</name>
+      <filterExecutors>false</filterExecutors>
+      <filterQueue>false</filterQueue>
+      <properties class="hudson.model.View$PropertyList"/>
+    </hudson.model.AllView>
+  </views>
+  <primaryView>all</primaryView>
+  <slaveAgentPort>50000</slaveAgentPort>
+  <disabledAgentProtocols>
+    <string>JNLP-connect</string>
+    <string>JNLP2-connect</string>
+    <string>JNLP3-connect</string>
+  </disabledAgentProtocols>
+  <label></label>
+  <crumbIssuer class="hudson.security.csrf.DefaultCrumbIssuer">
+    <excludeClientIPFromCrumb>true</excludeClientIPFromCrumb>
+  </crumbIssuer>
+  <nodeProperties/>
+  <globalNodeProperties/>
+  <noUsageStatistics>true</noUsageStatistics>
+</hudson>

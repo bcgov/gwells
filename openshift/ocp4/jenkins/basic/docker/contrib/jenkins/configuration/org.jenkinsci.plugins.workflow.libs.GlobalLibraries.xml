@@ -1,0 +1,23 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<org.jenkinsci.plugins.workflow.libs.GlobalLibraries plugin="workflow-cps-global-lib@2.17">
+  <libraries>
+    <org.jenkinsci.plugins.workflow.libs.LibraryConfiguration>
+      <name>bcdevops-jenkins-shared-library</name>
+      <retriever class="org.jenkinsci.plugins.workflow.libs.SCMSourceRetriever">
+        <scm class="jenkins.plugins.git.GitSCMSource" plugin="git@4.3.0">
+          <id>fd48bed5-56bd-4fa0-b477-acfce5bc4929</id>
+          <remote>https://github.com/BCDevOps/jenkins-pipeline-shared-lib.git</remote>
+          <credentialsId>github-account</credentialsId>
+          <traits>
+            <jenkins.plugins.git.traits.BranchDiscoveryTrait/>
+            <jenkins.plugins.git.traits.TagDiscoveryTrait/>
+          </traits>
+        </scm>
+      </retriever>
+      <defaultVersion>cvarjao/develop</defaultVersion>
+      <implicit>true</implicit>
+      <allowVersionOverride>true</allowVersionOverride>
+      <includeInChangesets>true</includeInChangesets>
+    </org.jenkinsci.plugins.workflow.libs.LibraryConfiguration>
+  </libraries>
+</org.jenkinsci.plugins.workflow.libs.GlobalLibraries>

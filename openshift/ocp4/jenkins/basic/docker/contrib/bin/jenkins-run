@@ -1,0 +1,128 @@
+#!/bin/sh
+
+source /usr/local/bin/jenkins-util-lib.sh
+
+generate_passwd_file
+
+JENKINS_WAR="/usr/lib/jenkins/jenkins.war"
+JENKINS_PORT="8080"
+JENKINS_DEBUG_LEVEL="5"
+JENKINS_HANDLER_MAX="100"
+JENKINS_HANDLER_IDLE="20"
+JENKINS_USER="jenkins"
+
+#JENKINS_CONFIG=/etc/sysconfig/jenkins
+#[ -f "$JENKINS_CONFIG" ] && . "$JENKINS_CONFIG"
+
+JENKINS_JAVA_CMD="/usr/bin/java"
+CONTAINER_MEMORY_IN_BYTES=$(cat /sys/fs/cgroup/memory/memory.limit_in_bytes)
+CONTAINER_MEMORY_IN_MB=$((CONTAINER_MEMORY_IN_BYTES/2**20))
+
+#Container Memory Limit - 5 Megabytes
+JENKINS_MAX_METASPACE_SIZE=$(awk '{ printf "%d", (($1 / 1024) - (1024*5)) }' < /sys/fs/cgroup/memory/memory.limit_in_bytes)
+
+# jstat -gc 1
+
+if [[ -z "${JAVA_TOOL_OPTIONS}" ]]; then
+  # these options will automatically be picked up by any JVM process but can
+  # be overridden on that process' command line.
+  JAVA_TOOL_OPTIONS="-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -Dsun.zip.disableMemoryMapping=true"
+  export JAVA_TOOL_OPTIONS
+fi
+
+# -XX:MetaspaceSize=<NNN>
+# -XX:MaxMetaspaceSize=<NNN>
+
+if [[ -z "$JENKINS_MEM_OPTS" ]]; then
+  JENKINS_MEM_OPTS="-XX:MaxRAMFraction=2 -XX:MaxMetaspaceSize=${JENKINS_MAX_METASPACE_SIZE}k"
+fi
+JENKINS_MEM_OPTS="${JENKINS_MEM_OPTS} ${JENKINS_MEM_OPTS_APPEND}"
+
+if [[ -z "$JAVA_GC_OPTS" ]]; then
+  # See https://developers.redhat.com/blog/2014/07/22/dude-wheres-my-paas-memory-tuning-javas-footprint-in-openshift-part-2/ .
+  # The values are aggressively set with the intention of relaxing GC CPU time
+  # restrictions to enable it to free as much as possible, as well as
+  # encouraging the GC to free unused heap memory back to the OS.
+  JAVA_GC_OPTS="-XshowSettings:vm -XX:+PrintFlagsFinal -XX:NativeMemoryTracking=summary -XX:+UseParallelGC -XX:MinHeapFreeRatio=5 -XX:MaxHeapFreeRatio=19 -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -XX:ParallelGCThreads=2"
+fi
+JAVA_GC_OPTS="${JAVA_GC_OPTS} ${JAVA_GC_OPTSAPPEND}"
+
+if [[ "${USE_JAVA_DIAGNOSTICS}" ]]; then
+  JAVA_DIAGNOSTICS="-XX:+PrintGC -XX:+PrintGCDateStamps -XX:+PrintGCTimeStamps -XX:+PrintGCDetails -XX:+UnlockDiagnosticVMOptions -Xloggc:/var/log/jenkins/gc.log -XX:+UseGCLogFileRotation -XX:NumberOfGCLogFiles=5 -XX:GCLogFileSize=100M"
+  JAVA_DIAGNOSTICS="${JAVA_DIAGNOSTICS} ${JAVA_DIAGNOSTICS_APPEND}"
+fi
+
+if [[ -z "${JENKINS_OPTIONS}" ]]; then
+  JENKINS_OPTIONS="-Djava.awt.headless=true -Duser.timezone=America/Vancouver -Dhudson.model.DirectoryBrowserSupport.CSP= -Dhudson.model.UpdateCenter.never=true -Dhudson.Util.noSymLink=true -Djenkins.model.Jenkins.buildsDir=\${JENKINS_HOME}/builds/\${ITEM_FULL_NAME}"
+  
+fi
+
+JENKINS_OPTIONS="${JENKINS_OPTIONS} ${JENKINS_OPTIONS_APPEND}"
+
+if [[ -z "${JENKINS_JAVA_OPTIONS}" ]]; then
+    JENKINS_JAVA_OPTIONS="$JENKINS_MEM_OPTS $JAVA_GC_OPTS $JAVA_DIAGNOSTICS -Dfile.encoding=UTF8 -Djavamelody.displayed-counters=log,error -XX:ErrorFile=/var/lib/jenkins/logs/jvm.error.log -showversion $JENKINS_OPTIONS"
+fi
+
+JENKINS_JAVA_OPTIONS="${JENKINS_JAVA_OPTIONS} ${JENKINS_JAVA_OPTIONS_APPEND}"
+
+echo "JAVA_GC_OPTS=${JAVA_GC_OPTS}"
+echo "JAVA_DIAGNOSTICS=${JAVA_DIAGNOSTICS}"
+echo "JENKINS_OPTIONS=${JENKINS_OPTIONS}"
+echo "JENKINS_JAVA_OPTIONS=${JENKINS_JAVA_OPTIONS}"
+
+#JENKINS_JAVA_OPTIONS="${JENKINS_JAVA_OPTIONS:--XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=2  -XX:MaxHeapFreeRatio=20 -XX:MinHeapFreeRatio=10}"
+
+
+#"${JENKINS_JAVA_CMD}" $JENKINS_JAVA_OPTIONS -XshowSettings:vm -version
+echo "Preparing persistent folder structure"
+mkdir -p $JENKINS_DATA/jobs
+mkdir -p $JENKINS_DATA/logs
+mkdir -p $JENKINS_DATA/builds
+
+ln -sf $JENKINS_DATA/jobs $JENKINS_HOME/jobs
+ln -sf $JENKINS_DATA/logs $JENKINS_HOME/logs
+ln -sf $JENKINS_DATA/builds $JENKINS_HOME/builds
+
+#Copy all configuration files to JENKINS_HOME
+rsync -av --no-o --no-g --no-perms --keep-dirlinks --no-acls --no-xattrs --no-super --omit-dir-times $JENKINS_REF_HOME/ $JENKINS_HOME/
+
+export JENKINS_WEBROOT_DIR='/var/cache/jenkins/war--daemon'
+
+#Extract jenkins war file
+unzip -qo $JENKINS_WAR -d $JENKINS_WEBROOT_DIR
+
+#https://unix.stackexchange.com/questions/34325/sorting-the-output-of-find
+
+echo "Running Jenkins System Installer(s)"
+[ -d "$JENKINS_HOME/install.d" ] && find $JENKINS_HOME/install.d/ -maxdepth 1 -type f -print0 | sort -z | xargs -t -r0 -I '{}' bash '{}'
+
+GROOVY_ALL_JAR="$(find /var/cache/jenkins/war--daemon/WEB-INF/lib/ -name '*groovy-all*.jar' -print0)"
+
+echo "Running Jenkins System Installer(s)"
+[ -d "$JENKINS_HOME/install.groovy.d" ] && find $JENKINS_HOME/install.groovy.d/ -maxdepth 1 -type f -print0 | sort -z | xargs -t -r0 -I '{}' java -cp "${GROOVY_ALL_JAR}" groovy.lang.GroovyShell '{}' '{}'
+
+echo "Running Jenkins Job Installer(s)"
+[ -d "$JENKINS_HOME/jobs" ] && find $JENKINS_HOME/jobs/  -type f -name '*.install.groovy' -print0 | sort -z | xargs -t -r0 -I '{}' java -cp "${GROOVY_ALL_JAR}" groovy.lang.GroovyShell '{}' '{}'
+
+
+JAVA_CMD="$JENKINS_JAVA_CMD $JENKINS_JAVA_OPTIONS -Djenkins.install.runSetupWizard=false -DJENKINS_HOME=$JENKINS_HOME -jar $JENKINS_WAR"
+PARAMS="--webroot=$JENKINS_WEBROOT_DIR"
+
+#--logfile=/var/log/jenkins/jenkins.log
+[ -n "$JENKINS_PORT" ] && PARAMS="$PARAMS --httpPort=$JENKINS_PORT"
+[ -n "$JENKINS_LISTEN_ADDRESS" ] && PARAMS="$PARAMS --httpListenAddress=$JENKINS_LISTEN_ADDRESS"
+[ -n "$JENKINS_HTTPS_PORT" ] && PARAMS="$PARAMS --httpsPort=$JENKINS_HTTPS_PORT"
+[ -n "$JENKINS_HTTPS_KEYSTORE" ] && PARAMS="$PARAMS --httpsKeyStore=$JENKINS_HTTPS_KEYSTORE"
+[ -n "$JENKINS_HTTPS_KEYSTORE_PASSWORD" ] && PARAMS="$PARAMS --httpsKeyStorePassword='$JENKINS_HTTPS_KEYSTORE_PASSWORD'"
+[ -n "$JENKINS_HTTPS_LISTEN_ADDRESS" ] && PARAMS="$PARAMS --httpsListenAddress=$JENKINS_HTTPS_LISTEN_ADDRESS"
+[ -n "$JENKINS_DEBUG_LEVEL" ] && PARAMS="$PARAMS --debug=$JENKINS_DEBUG_LEVEL"
+[ -n "$JENKINS_HANDLER_STARTUP" ] && PARAMS="$PARAMS --handlerCountStartup=$JENKINS_HANDLER_STARTUP"
+[ -n "$JENKINS_HANDLER_MAX" ] && PARAMS="$PARAMS --handlerCountMax=$JENKINS_HANDLER_MAX"
+[ -n "$JENKINS_HANDLER_IDLE" ] && PARAMS="$PARAMS --handlerCountMaxIdle=$JENKINS_HANDLER_IDLE"
+[ -n "$JENKINS_ARGS" ] && PARAMS="$PARAMS $JENKINS_ARGS"
+
+if [ "$JENKINS_ENABLE_ACCESS_LOG" = "yes" ]; then
+    PARAMS="$PARAMS --accessLoggerClassName=winstone.accesslog.SimpleAccessLogger --simpleAccessLogger.format=combined --simpleAccessLogger.file=/var/log/jenkins/access_log"
+fi
+set -x
+exec $JAVA_CMD $PARAMS
