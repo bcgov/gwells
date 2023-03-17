@@ -112,3 +112,6 @@ blueocean-events:1.23.2
 blueocean-git-pipeline:1.23.2
 blueocean-github-pipeline:1.23.2
 blueocean:1.23.2
+configuration-as-code:1.47
+role-strategy:3.1
+oic-auth:1.8

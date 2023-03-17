@@ -1,141 +1,67 @@
-import groovy.json.*
+// note: a copy of this file lives in Jenkins config. We need a way to update the Jenkins config 
+// when changes are made to this file.
 
-class OnGhEvent extends Script {
+import groovy.json.JsonSlurper
 
-static Map exec(List args, File workingDirectory=null, Appendable stdout=null, Appendable stderr=null, Closure stdin=null){
-    ProcessBuilder builder = new ProcessBuilder(args as String[])
-    if (stderr ==null){
-        builder.redirectErrorStream(true)
-    }
-    if (workingDirectory!=null){
-        builder.directory(workingDirectory)
-    }
-    def proc = builder.start()
+String TOOLS_PROJECT = "26e83e-tools"
+String DEV_PROJECT = "26e83e-dev"
 
-    if (stdin!=null) {
-        OutputStream out = proc.getOutputStream();
-        stdin(out)
-        out.flush();
-        out.close();
-    }
+def jsonSlurper = new JsonSlurper()
 
-    if (stdout == null ){
-        stdout = new StringBuffer()
-    }
-
-    proc.waitForProcessOutput(stdout, stderr)
-    int exitValue= proc.exitValue()
-
-    Map ret = ['out': stdout, 'err': stderr, 'status':exitValue, 'cmd':args]
-
-    return ret
-}
-
-    def run() {
-        String ghPayload = build.buildVariableResolver.resolve("payload")
-        String ghEventType = build.buildVariableResolver.resolve("x_github_event")
-        String buildNumber = build.getNumber()
-        String fullName = build.getProject().getFullName()
-
-        //println "ghEventType:"
-        //println "${ghEventType}"
-
-        //println "ghPayload:"
-        //println "${ghPayload}"
-
-        //binding.variables.each{ 
-        //  println "${it.key}:${it.value}"
-        //}
-        File workDir = new File("/tmp/jenkins/on-gh-event/${fullName}/${buildNumber}")
-        try{
-            if ("pull_request" == ghEventType){
-                def payload = new JsonSlurper().parseText(ghPayload)
-                if ("closed" == payload.action){
-                    File gitWorkDir = workDir
-                    String cloneUrl = payload.repository.clone_url
-                    def ghPrUser = payload.pull_request.user.login
-                    def ghRepo=com.cloudbees.jenkins.GitHubRepositoryName.create(cloneUrl).resolveOne()
-                    def ghPrUserPermission = ghRepo.getPermission(ghPrUser)
-                    boolean isFromCollaborator = ghPrUserPermission == org.kohsuke.github.GHPermissionType.WRITE || ghPrUserPermission == org.kohsuke.github.GHPermissionType.ADMIN
-                    
-                    String sourceBranch = isFromCollaborator?"refs/pull/${payload.number}/head":"refs/heads/${payload.pull_request.base.ref}"
-                    println "Is Collaborator:${isFromCollaborator} (${ghPrUser})"
-                    println "Clone Url:${cloneUrl}"
-                    println "Checkout Branch:${sourceBranch}"
-
-                    println exec(['mkdir', '-p', gitWorkDir.getAbsolutePath()])
-                    println exec(['rm', '-rf', gitWorkDir.getAbsolutePath()])
-                    println exec(['git', 'init', gitWorkDir.getAbsolutePath()])
-                    println exec(['git', 'remote', 'add', 'origin', payload.repository.clone_url], gitWorkDir)
-                    println exec(['git', 'fetch', '--no-tags', payload.repository.clone_url, "+${sourceBranch}:PR-${payload.number}"], gitWorkDir)
-                    println exec(['git', 'checkout', "PR-${payload.number}"] , gitWorkDir)
-
-                    ///Users/cvarjao/Documents/GitHub/mds/
-                    exec(['sh', '-c', "pipeline/gradlew --no-build-cache --console=plain --no-daemon -b pipeline/build.gradle cd-clean -Pargs.--config=pipeline/config.groovy -Pargs.--pr=${payload.number}"] , gitWorkDir, binding.variables.out)
-                }
-            }else if ("issue_comment" == ghEventType){
-                def payload = new JsonSlurper().parseText(ghPayload)
-                if ("created" == payload.action && payload.issue.pull_request !=null ){
-                    String comment = payload.comment.body.trim()
-
-                    //OWNER or COLLABORATOR
-                    //https://developer.github.com/v4/enum/commentauthorassociation/
-                    String commentAuthorAssociation = payload.comment.author_association
-                    if (comment.charAt(0) == '/'){
-                        println "command: ${comment}"
-                        String jobName= payload.repository.name
-                        String jobPRName =  payload.repository.full_name
-
-                        List projects = jenkins.model.Jenkins.instance.getAllItems(org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject.class).findAll {
-                            def scmSource=it.getSCMSources()[0]
-                            return payload.repository.owner.login.equalsIgnoreCase(scmSource.getRepoOwner()) && payload.repository.name.equalsIgnoreCase(scmSource.getRepository())
-                        }
-                        List branchProjects = []
-                        projects.each {
-                            def branchProject = it.getItem("PR-${payload.issue.number}")
-                            if (branchProject!=null){
-                                branchProjects.add(branchProject)
-                            }
-                        }
-
-                        if (comment == '/restart' && (commentAuthorAssociation == 'OWNER' || commentAuthorAssociation == 'COLLABORATOR')){
-                            //
-                            branchProjects.each {
-                                def targetProject=it
-                                def cause = new hudson.model.Cause.RemoteCause('github.com', "Pull Request Command By '${payload.comment.user.login}'")
-                                targetProject.scheduleBuild(0, cause)
-                            }
-                        }else if (comment == '/approve' && (commentAuthorAssociation == 'OWNER' || commentAuthorAssociation == 'COLLABORATOR')){
-                            if (branchProjects.size() > 0){
-                                branchProjects.each { targetJob ->
-                                    if (targetJob.getLastBuild()){
-                                        hudson.security.ACL.impersonate(hudson.security.ACL.SYSTEM, {
-                                            for (org.jenkinsci.plugins.workflow.support.steps.input.InputAction inputAction : targetJob.getLastBuild().getActions(org.jenkinsci.plugins.workflow.support.steps.input.InputAction.class)){
-                                                for (org.jenkinsci.plugins.workflow.support.steps.input.InputStepExecution inputStep:inputAction.getExecutions()){
-                                                    if (!inputStep.isSettled()){
-                                                        println inputStep.proceed(null)
-                                                    }
-                                                }
-                                            }
-                                        } as Runnable )
-                                    }
-                                }
-                            }else{
-                                println "There is no project or build associated with ${payload.issue.pull_request.html_url}"
-                            }
-                        }
-                    }
-                }
-            }
-        }finally{
-            exec(['rm', '-rf', workDir.getAbsolutePath()])
-        }
+// the webhook trigger comes from GitHub as a POST request with a "payload" object in the body
+String ghEventType = build.buildVariableResolver.resolve("x_github_event")
+def payload = jsonSlurper.parseText(build.buildVariableResolver.resolve("payload"))
+def prNum = payload['number']
 
 
-        return null;
-    } //end run
+// this script is triggered on all events, but we are specifically interested in pull requests that are closed
+// pull requests come with actions like "opened", "closed".  Merged and closed are the same event (there is an
+// additional "merged: true" property)
+if (ghEventType == 'pull_request' && payload['action'] == 'closed' && prNum) {
+
+    def sout = new StringBuilder(), serr = new StringBuilder()
+
+    // delete all the objects in the DEV namespace labeled with this PR number
+    // todo: there are several labels that need to be targeted and hardcoding them is fragile.
+    // a future task should focus on creating a label that applies to all resources associated with one pull request.
+
+    // these objects were created as part of deploying an app (e.g. replication controller)
+    def deleteAllAppObjects = "oc delete all,pvc,secret,configmap -n ${DEV_PROJECT} -l app=gwells-dev-pr-${prNum}".execute()
+    deleteAllAppObjects.consumeProcessOutput(sout, serr)
+    deleteAllAppObjects.waitForOrKill(25000)
+    println "out> $sout err> $serr"
+
+    // these objects were created by our templates during the pipeline runs
+    sout = new StringBuilder()
+    serr = new StringBuilder()
+    def deleteCreatedObjects = "oc delete all,pvc,secret,configmap -n ${DEV_PROJECT} -l appver=gwells-dev-pr-${prNum}".execute()
+    deleteCreatedObjects.consumeProcessOutput(sout, serr)
+    deleteCreatedObjects.waitForOrKill(25000)
+    println "out> $sout err> $serr"
+
+    // these objects were generated by openshift for PVC provisioning
+    sout = new StringBuilder()
+    serr = new StringBuilder()
+    def deleteGeneratedObjects = "oc delete all,pvc,secret,configmap -n ${DEV_PROJECT} -l gluster.kubernetes.io/provisioned-for-pvc=gwells-pg12-dev-pr-${prNum}".execute()
+    deleteGeneratedObjects.consumeProcessOutput(sout, serr)
+    deleteGeneratedObjects.waitForOrKill(25000)
+    println "out> $sout err> $serr"
+
+    // delete the objects in the tools project (this is primarly the build configs,
+    // the imagestream is not unique to each pull request).
+    sout = new StringBuilder()
+    serr = new StringBuilder()
+    def deleteAllBuilds = "oc delete all -n ${TOOLS_PROJECT} -l appver=gwells-dev-pr-${prNum}".execute()
+    deleteAllBuilds.consumeProcessOutput(sout, serr)
+    deleteAllBuilds.waitForOrKill(25000)
+    println "out> $sout err> $serr"
+
+    // untag the images tagged with this PR number
+    sout = new StringBuilder()
+    serr = new StringBuilder()
+    def untagImages = "oc tag -n ${TOOLS_PROJECT} -d gwells-application:pr-${prNum}".execute()
+    untagImages.consumeProcessOutput(sout, serr)
+    untagImages.waitForOrKill(25000)
+    println "out> $sout err> $serr"
     
-    static void main(String[] args) {
-        org.codehaus.groovy.runtime.InvokerHelper.runScript(OnGhEvent, args)     
-    }
 }

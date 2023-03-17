@@ -5,16 +5,6 @@ metadata:
   name: jenkins-basic
 objects:
 - apiVersion: v1
-  kind: ImageStream
-  metadata:
-    creationTimestamp: null
-    name: ${NAME}
-    labels:
-        shared: 'true'
-  spec:
-    lookupPolicy:
-      local: false
-- apiVersion: v1
   kind: BuildConfig
   metadata:
     creationTimestamp: null
@@ -44,7 +34,7 @@ objects:
       dockerStrategy:
         from:
           kind: DockerImage
-          name: registry.redhat.io/ubi8/ubi:8.2
+          name: registry.redhat.io/ubi8/ubi:8.7
       type: Docker
     successfulBuildsHistoryLimit: 2
     triggers:

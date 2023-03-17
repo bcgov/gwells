@@ -73,23 +73,41 @@ echo "JENKINS_JAVA_OPTIONS=${JENKINS_JAVA_OPTIONS}"
 #JENKINS_JAVA_OPTIONS="${JENKINS_JAVA_OPTIONS:--XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=2  -XX:MaxHeapFreeRatio=20 -XX:MinHeapFreeRatio=10}"
 
 
-#"${JENKINS_JAVA_CMD}" $JENKINS_JAVA_OPTIONS -XshowSettings:vm -version
-echo "Preparing persistent folder structure"
-mkdir -p $JENKINS_DATA/jobs
-mkdir -p $JENKINS_DATA/logs
-mkdir -p $JENKINS_DATA/builds
+if [ ! -z "${JENKINS_DATA}" ]; then
+  #"${JENKINS_JAVA_CMD}" $JENKINS_JAVA_OPTIONS -XshowSettings:vm -version
+  echo "Preparing persistent folder structure"
+  mkdir -p $JENKINS_DATA/jobs
+  mkdir -p $JENKINS_DATA/logs
+  mkdir -p $JENKINS_DATA/builds
+  mkdir -p $JENKINS_DATA/secrets
+  mkdir -p $JENKINS_DATA/users
 
-ln -sf $JENKINS_DATA/jobs $JENKINS_HOME/jobs
-ln -sf $JENKINS_DATA/logs $JENKINS_HOME/logs
-ln -sf $JENKINS_DATA/builds $JENKINS_HOME/builds
+  ln -sf $JENKINS_DATA/jobs $JENKINS_HOME/jobs
+  ln -sf $JENKINS_DATA/logs $JENKINS_HOME/logs
+  ln -sf $JENKINS_DATA/builds $JENKINS_HOME/builds
+  ln -sf $JENKINS_DATA/secrets $JENKINS_HOME/secrets
+  ln -sf $JENKINS_DATA/users $JENKINS_HOME/users
+
+  # touch $JENKINS_DATA/secret.key
+  ln -sf $JENKINS_DATA/secret.key $JENKINS_HOME/secret.key
+  # touch $JENKINS_DATA/credentials.xml
+  ln -sf $JENKINS_DATA/credentials.xml $JENKINS_HOME/credentials.xml
+  # touch $JENKINS_DATA/queue.xml
+  ln -sf $JENKINS_DATA/queue.xml $JENKINS_HOME/queue.xml
+fi
 
 #Copy all configuration files to JENKINS_HOME
-rsync -av --no-o --no-g --no-perms --keep-dirlinks --no-acls --no-xattrs --no-super --omit-dir-times $JENKINS_REF_HOME/ $JENKINS_HOME/
+rsync -av --no-o --no-g --no-perms --keep-dirlinks --no-acls --no-xattrs --no-super --omit-dir-times --exclude 'plugins' $JENKINS_REF_HOME/ $JENKINS_HOME/
+chmod -R g+rw $JENKINS_HOME
 
-export JENKINS_WEBROOT_DIR='/var/cache/jenkins/war--daemon'
+# if file/directoryy exists, and it is not a syymbolic link, delete it
+[[ -e "$JENKINS_HOME/plugins" && ! -L "$JENKINS_HOME/plugins" ]] &&  rm -rf $JENKINS_HOME/plugins
+# if symbolic link exists
+[[ -L "$JENKINS_HOME/plugins" ]] &&  unlink $JENKINS_HOME/plugins
+# if a symbolic link does not exists, create it
+[[ ! -L "$JENKINS_HOME/plugins" ]] && ln -sf $JENKINS_REF_HOME/plugins $JENKINS_HOME/plugins
 
-#Extract jenkins war file
-unzip -qo $JENKINS_WAR -d $JENKINS_WEBROOT_DIR
+
 
 #https://unix.stackexchange.com/questions/34325/sorting-the-output-of-find
 
