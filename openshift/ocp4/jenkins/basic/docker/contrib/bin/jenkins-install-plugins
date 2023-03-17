@@ -403,7 +403,8 @@ main() {
 
     echo -e "\nAnalyzing war..."
     bundledPlugins="$(bundledPlugins)"
-    
+    echo -e "\nDone Analyzing war..."
+
     # Check if there's a version-specific update center, which is the case for LTS versions
     jenkinsVersion="$(jenkinsMajorMinorVersion)"
     if curl -fsL -o /dev/null "$JENKINS_UC/$jenkinsVersion"; then
