@@ -21,7 +21,7 @@ ARG SWARM_CLIENT_VERSION=3.39
 RUN set -x && yum -h && \
     curl -so /etc/yum.repos.d/jenkins.repo http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo && \
     rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key && \
-    yum -y --disableplugin=subscription-manager --enablerepo=ubi-8-appstream --enablerepo=jenkins install which gpg java-17-openjdk-devel shadow-utils "jenkins-$JENKINS_VERSION" zip unzip bzip2 rsync elfutils git --nodocs && \
+    yum -y --disableplugin=subscription-manager --enablerepo=ubi-8-appstream-rpms --enablerepo=jenkins install which gpg java-17-openjdk-devel shadow-utils "jenkins-$JENKINS_VERSION" zip unzip bzip2 rsync elfutils git --nodocs && \
     yum clean all && \
     echo "unset BASH_ENV PROMPT_COMMAND ENV" > /usr/local/bin/scl_enable && \
     echo "source scl_source enable rh-git29" >> /usr/local/bin/scl_enable && \
