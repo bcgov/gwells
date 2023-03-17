@@ -11,7 +11,7 @@ ENV JENKINS_VERSION=2.361.1 \
     LANG=en_US.UTF-8 \
     LC_ALL=en_US.UTF-8
 
-ARG JAVA_TOOL_OPTIONS="-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=2"
+ARG JAVA_TOOL_OPTIONS="-XX:+UnlockExperimentalVMOptions -XX:+UseContainerSupport -XX:MaxRAMFraction=2"
 ARG OC_VERSION=4.10.9
 ARG OC_QUALIFIER=0cbc58b-linux-64bit
 ARG TINI_VERSION=v0.18.0
