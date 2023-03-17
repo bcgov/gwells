@@ -166,6 +166,7 @@ function getArchiveFilename() {
 }
 
 function download() {
+    echo "${FUNCNAME[0]} start"
     local plugin originalPlugin version lock ignoreLockFile
     plugin="$1"
     version="${2:-latest}"
@@ -193,6 +194,7 @@ function download() {
 
         resolveDependencies "$plugin"
     fi
+    echo "${FUNCNAME[0]} end"
 }
 
 function doDownload() {
@@ -327,6 +329,7 @@ function resolveDependencies() {
 }
 
 function bundledPlugins() {
+    echo "${FUNCNAME[0]} start"
     if [ -f $JENKINS_WAR ]
     then
         TEMP_PLUGIN_DIR=/tmp/plugintemp.$$
@@ -344,6 +347,7 @@ function bundledPlugins() {
         echo "ERROR file not found: $JENKINS_WAR"
         exit 1
     fi
+    echo "${FUNCNAME[0]} end"
 }
 
 function versionFromPlugin() {
@@ -363,6 +367,7 @@ function installedPlugins() {
 }
 
 function jenkinsMajorMinorVersion() {
+    echo "${FUNCNAME[0]} start"
     if [[ -f "$JENKINS_WAR" ]]; then
         local version major minor
         version="$(/etc/alternatives/java -jar $JENKINS_WAR --version)"
@@ -373,6 +378,7 @@ function jenkinsMajorMinorVersion() {
         echo "ERROR file not found: $JENKINS_WAR"
         return 1
     fi
+    echo "${FUNCNAME[0]} end"
 }
 
 main() {
