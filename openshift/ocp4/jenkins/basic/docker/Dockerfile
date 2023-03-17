@@ -61,12 +61,12 @@ RUN curl -fsSL https://github.com/krallin/tini/releases/download/${TINI_VERSION}
   && chmod +x /sbin/tini
 
 RUN set -x && \
-    curl -sLo /usr/lib/jenkins/swarm-client.jar https://repo.jenkins-ci.org/releases/org/jenkins-ci/plugins/swarm-client/${SWARM_CLIENT_VERSION}/swarm-client-${SWARM_CLIENT_VERSION}.jar && \
-    chmod 644 /usr/lib/jenkins/swarm-client.jar
-
-RUN set -x && \
     curl -sLo /usr/lib/jenkins/password-encoder.jar https://github.com/openshift/jenkins/raw/f080514d4370c64260e2301e76f30061c5dcc636/2/contrib/openshift/password-encoder.jar && \
     chmod 644 /usr/lib/jenkins/password-encoder.jar
+
+RUN set -x && \
+    curl -sLo /usr/lib/jenkins/swarm-client.jar https://repo.jenkins-ci.org/releases/org/jenkins-ci/plugins/swarm-client/${SWARM_CLIENT_VERSION}/swarm-client-${SWARM_CLIENT_VERSION}.jar && \
+    chmod 644 /usr/lib/jenkins/swarm-client.jar
 
 #RUN set -x && \
 #    curl -sLo /usr/local/bin/jenkins-install-plugins https://raw.githubusercontent.com/openshift/jenkins/master/2/contrib/jenkins/install-plugins.sh && \
