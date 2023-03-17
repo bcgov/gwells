@@ -19,7 +19,7 @@ ARG TINI_QUALIFIER=amd64
 ARG SWARM_CLIENT_VERSION=3.39
 
 RUN set -x && yum -h && \
-    curl -so /etc/yum.repos.d/jenkins.repo http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo && \
+    curl -so /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo && \
     rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key && \
     yum -y --disableplugin=subscription-manager --enablerepo=ubi-8-appstream-rpms --enablerepo=jenkins install which gpg java-17-openjdk-devel shadow-utils "jenkins-$JENKINS_VERSION" zip unzip bzip2 rsync elfutils git --nodocs && \
     yum clean all && \
