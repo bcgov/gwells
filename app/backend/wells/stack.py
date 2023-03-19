@@ -26,11 +26,11 @@ import submissions.serializers
 from wells.models import Well, ActivitySubmission, ActivitySubmissionLinerPerforation, FieldsProvided, \
     WellStatusCode, WELL_STATUS_CODE_CONSTRUCTION,\
     WELL_STATUS_CODE_DECOMMISSION, WELL_STATUS_CODE_ALTERATION, WELL_STATUS_CODE_OTHER, LithologyDescription,\
-    Casing, Screen, LinerPerforation, DecommissionDescription, LithologyDescription
+    Casing, Screen, LinerPerforation, DecommissionDescription, LithologyDescription, AquiferParameters
 
 from wells.serializers import WellStackerSerializer, CasingStackerSerializer, ScreenStackerSerializer,\
     LinerPerforationStackerSerializer, DecommissionDescriptionStackerSerializer,\
-    LithologyDescriptionStackerSerializer
+    LithologyDescriptionStackerSerializer, AquiferParametersStackerSerializer
 
 import reversion
 
@@ -69,6 +69,7 @@ WELL_STATUS_MAP = {
 # define this relationship.
 FOREIGN_KEY_MODEL_LOOKUP = {
     'casing_set': Casing,
+    'aquifer_parameters_set': AquiferParameters,
     'screen_set': Screen,
     'linerperforation_set': ActivitySubmissionLinerPerforation,
     'decommission_description_set': DecommissionDescription,
@@ -79,6 +80,7 @@ FOREIGN_KEY_MODEL_LOOKUP = {
 # define this relationship.
 FOREIGN_KEY_SERIALIZER_LOOKUP = {
     'casing_set': CasingStackerSerializer,
+    'aquifer_parameters_set': AquiferParametersStackerSerializer,
     'screen_set': ScreenStackerSerializer,
     'linerperforation_set': LinerPerforationStackerSerializer,
     'decommission_description_set': DecommissionDescriptionStackerSerializer,

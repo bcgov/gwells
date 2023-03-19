@@ -273,7 +273,8 @@ export default {
         this.stripBlankStrings(data, skipKeys)
       }
 
-      const sets = ['linerperforation_set', 'lithologydescription_set', 'screen_set', 'casing_set', 'decommission_description_set']
+      const sets = ['linerperforation_set', 'lithologydescription_set', 'screen_set',
+        'casing_set', 'aquifer_parameters_set', 'decommission_description_set']
       sets.forEach((key) => {
         if (key in data) {
           data[key] = this.filterBlankRows(data[key])
@@ -480,6 +481,7 @@ export default {
         backfill_type: '',
         backfill_depth: '',
         casing_set: [],
+        aquifer_parameters_set: [],
         screen_intake_method: '',
         screen_type: '',
         screen_material: '',
@@ -899,7 +901,8 @@ function initialState () {
         'decommissionInformation',
         'comments',
         'documents',
-        'aquiferData',
+        // 'aquiferData',
+        'aquiferParameters',
         'editHistory'
       ]
     }

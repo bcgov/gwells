@@ -275,14 +275,23 @@ class WellListFilter(AnyOrAllFilterSet):
     decommission_backfill_material = filters.CharFilter(lookup_expr='icontains')
     decommission_details = filters.CharFilter(lookup_expr='icontains')
     aquifer_vulnerability_index = filters.RangeFilter()
-    storativity = filters.RangeFilter()
-    transmissivity = filters.RangeFilter()
-    hydraulic_conductivity = filters.CharFilter(lookup_expr='icontains')
     specific_storage = filters.CharFilter(lookup_expr='icontains')
-    specific_yield = filters.RangeFilter()
-    testing_method = filters.CharFilter(lookup_expr='icontains')
-    testing_duration = filters.RangeFilter()
-    analytic_solution_type = filters.RangeFilter()
+
+    storativity = filters.RangeFilter(field_name='aquifer_parameters_set__storativity')
+    transmissivity = filters.RangeFilter(field_name='aquifer_parameters_set__transmissivity')
+    hydraulic_conductivity = filters.CharFilter(lookup_expr='icontains', 
+                                                field_name='aquifer_parameters_set__hydraulic_conductivity')
+    specific_yield = filters.RangeFilter(field_name='aquifer_parameters_set__specific_yield')
+    analytic_solution_type = filters.CharFilter(lookup_expr='icontains', 
+                                                field_name='aquifer_parameters_set__analytic_solution_type')
+    testing_method = filters.CharFilter(lookup_expr='icontains', 
+                                        field_name='aquifer_parameters_set__testing_method')
+    testing_duration = filters.RangeFilter(field_name='aquifer_parameters_set__testing_duration')
+    testing_comments = filters.CharFilter(lookup_expr='icontains', 
+                                          field_name='aquifer_parameters_set__testing_comments')
+    testing_date = filters.DateFromToRangeFilter(label='Pumping Test Date', 
+                                                 field_name='aquifer_parameters_set__testing_date')
+    
     final_casing_stick_up = filters.RangeFilter()
     bedrock_depth = filters.RangeFilter()
     static_water_level = filters.RangeFilter()

@@ -113,12 +113,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
               </b-col>
               <b-col cols="12" md="4">
                 <div><a class="jump_link" href="#casing_fieldset">Casing Details</a></div>
+                <div><a class="jump_link" href="#aquifer_parameters_fieldset">Aquifer Parameters</a></div>
                 <div><a class="jump_link" href="#surface_seal_fieldset">Surface Seal and Backfill Details</a></div>
                 <div><a class="jump_link" href="#liner_details_fieldset">Liner Details</a></div>
                 <div><a class="jump_link" href="#screen_details_fieldset">Screen Details</a></div>
-                <div><a class="jump_link" href="#well_development_fieldset">Well Development</a></div>
               </b-col>
               <b-col cols="12" md="4">
+                <div><a class="jump_link" href="#well_development_fieldset">Well Development</a></div>
                 <div><a class="jump_link" href="#well_yield_fieldset">Well Yield</a></div>
                 <div><a class="jump_link" href="#well_decommissioning_fieldset">Well Decommissioning</a></div>
                 <div><a class="jump_link" href="#well_comments_fieldset">Comments</a></div>
@@ -332,6 +333,24 @@ Licensed under the Apache License, Version 2.0 (the "License");
               <template slot="HEAD_wall_thickness" slot-scope="data">{{ data.label }} (in)</template>
               <template slot="wall_thickness" slot-scope="data">{{ data.item.wall_thickness | excludeZeroDecimals }}</template>
               <template slot="drive_shoe" slot-scope="data">{{codeToDescription('drive_shoe', data.item.drive_shoe_status)}}</template>
+            </b-table>
+          </div>
+        </fieldset>
+
+        <fieldset id="aquifer_parameters_fieldset" class="my-3 detail-section">
+          <legend>Aquifer Parameters Details</legend>
+          <div class="table-responsive">
+            <b-table
+                striped
+                small
+                bordered
+                :items="well.aquifer_parameters_set"
+                :fields="[
+                  'storativity', 'transmissivity', 'hydraulic_conductivity',
+                  'specific_yield', 'analytic_solution_type', 'testing_method', 'testing_duration',
+                  'testing_comments', 'testing_date'
+                ]"
+                show-empty>
             </b-table>
           </div>
         </fieldset>

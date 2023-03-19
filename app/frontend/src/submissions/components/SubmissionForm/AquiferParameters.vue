@@ -24,7 +24,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         </div>
       </b-col>
     </b-row>
-    <div class="table-responsive" id="casingTable">
+    <div class="table-responsive" id="aquiferParametersTable">
       <table class="table table-sm">
         <thead>
           <tr>
@@ -32,127 +32,108 @@ Licensed under the Apache License, Version 2.0 (the "License");
             <th class="font-weight-normal">Transmissivity</th>
             <th class="font-weight-normal">Hydraulic Conductivity</th>
             <th class="font-weight-normal">Specific Yield</th>
-            <th class="font-weight-normal">Analytical Solution</th>
+            <th class="font-weight-normal">Analytical Solution Type</th>
             <th class="font-weight-normal">Testing Method</th>
+            <th class="font-weight-normal">Testing Duration</th>
             <th class="font-weight-normal">Well Testing comments</th>
             <th class="font-weight-normal">Date of Test</th>
             <th></th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(aquiferParameters, index) in aquiferParametersData" :key="aquiferParameters.id">
-            <td>
-              <b-form-checkbox
-                :checked="!casing.length_required"
-                inline
-                class="mr-0 mt-2"
-                @change="toggleCasingLengthRequired(index)"/>
+          <tr v-for="(aquiferParameter, index) in aquiferParametersData" :key="aquiferParameter.id">
+            <td class="input-width-small">
+              <form-input
+                group-class="mt-1 mb-0"
+                :id="'aquiferParameter_storativity_' + index"
+                type="number"
+                v-model="aquiferParameter.storativity"
+                :errors="getAquiferParametersError(index).storativity"
+                :loaded="getFieldsLoaded(index).storativity"/>
+            </td>
+            <td class="input-width-small">
+              <form-input
+                group-class="mt-1 mb-0"
+                :id="'aquiferParameter_transmissivity_' + index"
+                type="number"
+                v-model="aquiferParameter.transmissivity"
+                :errors="getAquiferParametersError(index).transmissivity"
+                :loaded="getFieldsLoaded(index).transmissivity"/>
             </td>
             <td>
               <form-input
                 group-class="mt-1 mb-0"
-                :id="'casingFrom_' + index"
+                :id="'aquiferParameter_hydraulicConductivity_' + index"
+                type="text"
+                v-model="aquiferParameter.hydraulic_conductivity"
+                :errors="getAquiferParametersError(index).hydraulic_conductivity"
+                :loaded="getFieldsLoaded(index).hydraulic_conductivity"/>
+            </td>
+            <td class="input-width-small">
+              <form-input
+                group-class="mt-1 mb-0"
+                :id="'aquiferParameter_specificYield_' + index"
                 type="number"
-                v-model="casing.start"
-                :disabled="!casing.length_required"
-                :errors="getCasingError(index).start"
-                :loaded="getFieldsLoaded(index).start"/>
+                v-model="aquiferParameter.specific_yield"
+                :errors="getAquiferParametersError(index).specific_yield"
+                :loaded="getFieldsLoaded(index).specific_yield"/>
             </td>
             <td>
               <form-input
                 group-class="mt-1 mb-0"
-                :id="'casingTo_' + index"
-                type="number"
-                v-model="casing.end"
-                :disabled="!casing.length_required"
-                :errors="getCasingError(index).end"
-                :loaded="getFieldsLoaded(index).end"/>
-            </td>
-            <td>
-              <b-form-group
-                :id="'casingCode_' + index"
-                class="mt-1 mb-0"
-                :aria-describedby="`casingCodeInvalidFeedback${index}`">
-                <b-form-select
-                    v-model="casing.casing_code"
-                    :options="codes.casing_codes"
-                    value-field="code"
-                    text-field="description"
-                    :state="getCasingError(index).casing_code ? false : null">
-                  <template slot="first">
-                    <option :value="null">Select a type</option>
-                  </template>
-                </b-form-select>
-                <b-form-invalid-feedback :id="`casingCodeInvalidFeedback${index}`">
-                  <div v-for="(error, error_index) in getCasingError(index).casing_code" :key="`Casing type input error ${error_index}`">
-                    {{ error }}
-                  </div>
-                </b-form-invalid-feedback>
-              </b-form-group>
-            </td>
-            <td>
-              <b-form-group
-                :id="'casingMaterial_' + index"
-                class="mt-1 mb-0"
-                :aria-describedby="`casingMaterialInvalidFeedback${index}`">
-                <b-form-select
-                    v-model="casing.casing_material"
-                    :options="codes.casing_materials"
-                    value-field="code"
-                    text-field="description"
-                    :state="getCasingError(index).casing_material ? false : null">
-                  <template slot="first">
-                    <option :value="null" enabled>Select a material</option>
-                  </template>
-                </b-form-select>
-                <b-form-invalid-feedback :id="`casingCodeInvalidFeedback${index}`">
-                  <div v-for="(error, error_index) in getCasingError(index).casing_material" :key="`Material input error ${error_index}`">
-                    {{ error }}
-                  </div>
-                </b-form-invalid-feedback>
-              </b-form-group>
+                :id="'aquiferParameter_analyticSolutionType_' + index"
+                type="text"
+                v-model="aquiferParameter.analytic_solution_type"
+                :errors="getAquiferParametersError(index).analytic_solution_type"
+                :loaded="getFieldsLoaded(index).analytic_solution_type"/>
             </td>
             <td>
               <form-input
                 group-class="mt-1 mb-0"
-                :id="'casingDiameter_' + index"
+                :id="'aquiferParameter_testingMethod_' + index"
+                type="text"
+                v-model="aquiferParameter.testing_method"
+                :errors="getAquiferParametersError(index).testing_method"
+                :loaded="getFieldsLoaded(index).testing_method"/>
+            </td>
+            <td class="input-width-small">
+              <form-input
+                group-class="mt-1 mb-0"
+                :id="'aquiferParameter_testingDuration_' + index"
                 type="number"
-                v-model="casing.diameter"
-                :errors="getCasingError(index).diameter"
-                :loaded="getFieldsLoaded(index).diameter"/>
+                v-model="aquiferParameter.testing_duration"
+                :errors="getAquiferParametersError(index).testing_duration"
+                :loaded="getFieldsLoaded(index).testing_duration"/>
             </td>
             <td>
               <form-input
                 group-class="mt-1 mb-0"
-                :id="'casingWallThickness_' + index"
-                type="number"
-                v-model="casing.wall_thickness"
-                :errors="getCasingError(index).wall_thickness"
-                :loaded="getFieldsLoaded(index).wall_thickness"/>
+                :id="'aquiferParameter_testingComments_' + index"
+                type="text"
+                v-model="aquiferParameter.testing_comments"
+                :errors="getAquiferParametersError(index).testing_comments"
+                :loaded="getFieldsLoaded(index).testing_comments"/>
             </td>
             <td>
-              <b-form-group :id="'casingDriveShoe_' + index" class="mt-1 mb-0">
-                <b-form-select
-                  v-model="casing.drive_shoe_status"
-                  value-field="drive_shoe_code"
-                  text-field="drive_shoe_code"
-                  :options="codes.drive_shoe_codes"
-                  :errors="errors['drive_shoe_status']"
-                  :loaded="fieldsLoaded['drive_shoe_status']">
-                  <template slot="first">
-                    <option :value="null" enabled>Select drive shoe</option>
-                  </template>
-                </b-form-select>
-              </b-form-group>
+              <form-input
+                group-class="mt-1 mb-0"
+                :id="'aquiferParameter_testingDate_' + index"
+                type="date"
+                placeholder="YYYY-MM-DD"
+                v-model="aquiferParameter.testing_date"
+                :errors="getAquiferParametersError(index).testing_date"
+                :loaded="getFieldsLoaded(index).testing_date"/>
+                <b-col cols="6" md="6">
+      </b-col>
             </td>
             <td class="pt-1 py-0">
-              <b-btn size="sm" variant="primary" :id="`removeCasingRowBtn${index}`" @click="removeRowIfOk(casing)" class="mt-2 float-right"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
+              <b-btn size="sm" variant="primary" :id="`removeAquiferParameterRowBtn${index}`" @click="removeRowIfOk(aquiferParameter)" class="mt-2 float-right"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
-    <b-btn size="sm" id="addCasingRowBtn" variant="primary" @click="addRow"><i class="fa fa-plus-square-o"></i> Add row</b-btn>
+    <b-btn size="sm" id="addAquiferParameterRowBtn" variant="primary" @click="addRow"><i class="fa fa-plus-square-o"></i> Add row</b-btn>
     <b-modal
         v-model="confirmRemoveModal"
         centered
@@ -181,7 +162,7 @@ import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 import BackToTopLink from '@/common/components/BackToTopLink.vue'
 
 export default {
-  name: 'PumpingTests',
+  name: 'AquiferParameters',
   mixins: [inputBindingsMixin],
   components: {
     BackToTopLink
@@ -222,41 +203,44 @@ export default {
     },
     emptyObject () {
       return {
-        start: null,
-        end: null,
-        casing_code: null,
-        casing_material: null,
-        drive_shoe_status: null,
-        length_required: true
+        storativity: null,
+        transmissivity: null,
+        hydraulic_conductivity: null,
+        specific_yield: null,
+        analytic_solution_type: null,
+        testing_method: null,
+        testing_duration: null,
+        testing_comments: null,
+        testing_date: null
       }
     },
     removeRowByIndex (index) {
-      this.casingsData.splice(index, 1)
+      this.aquiferParametersData.splice(index, 1)
       this.rowIndexToRemove = null
     },
     removeRowIfOk (instance) {
-      const index = this.casingsData.findIndex(item => item === instance)
-      if (this.rowHasValues(this.casingsData[index])) {
+      const index = this.aquiferParametersData.findIndex(item => item === instance)
+      if (this.rowHasValues(this.aquiferParametersData[index])) {
         this.rowIndexToRemove = index
         this.confirmRemoveModal = true
       } else {
         this.removeRowByIndex(index)
       }
     },
-    toggleCasingLengthRequired (index) {
-      const instance = this.casingsData[index]
+    toggleAquiferParametersLengthRequired (index) {
+      const instance = this.aquiferParametersData[index]
       instance.length_required = !instance.length_required
-      Vue.set(this.casingsData, index, instance)
+      Vue.set(this.aquiferParametersData, index, instance)
     },
-    getCasingError (index) {
-      if (this.errors && 'casing_set' in this.errors && index in this.errors['casing_set']) {
-        return this.errors['casing_set'][index]
+    getAquiferParametersError (index) {
+      if (this.errors && 'aquifer_parameters_set' in this.errors && index in this.errors['aquifer_parameters_set']) {
+        return this.errors['aquifer_parameters_set'][index]
       }
       return {}
     },
     getFieldsLoaded (index) {
-      if (this.fieldsLoaded && 'casing_set' in this.fieldsLoaded && index in this.fieldsLoaded['casing_set']) {
-        return this.fieldsLoaded['casing_set'][index]
+      if (this.fieldsLoaded && 'aquifer_parameters_set' in this.fieldsLoaded && index in this.fieldsLoaded['aquifer_parameters_set']) {
+        return this.fieldsLoaded['aquifer_parameters_set'][index]
       }
       return {}
     },
@@ -264,41 +248,41 @@ export default {
       let keys = Object.keys(row)
       if (keys.length === 0) return false
       // Check that all fields are not empty.
-      return !this.casingIsEmpty(row)
+      return !this.aquiferParametersIsEmpty(row)
     },
     focusRemoveModal () {
       // Focus the "cancel" button in the confirm remove popup.
       this.$refs.cancelRemoveBtn.focus()
     },
-    casingIsEmpty (casing) {
-      const fieldsToTest = omit(casing, 'length_required')
+    aquiferParametersIsEmpty (aquiferParameters) {
+      const fieldsToTest = omit(aquiferParameters, 'length_required')
       return Object.values(fieldsToTest).every((x) => !x)
     }
   },
   computed: {
     ...mapGetters(['codes']),
-    computedCasings () {
-      return [...this.casingsData]
+    computedAquiferParameters () {
+      return [...this.aquiferParametersData]
     }
   },
   watch: {
-    computedCasings: {
+    computedAquiferParameters: {
       deep: true,
       handler: function (n, o) {
-        const casings = this.casingsData.filter((d) => !this.casingIsEmpty(d))
-        this.$emit('update:casings', casings)
+        const aquiferParameters = this.aquiferParametersData.filter((d) => !this.aquiferParametersIsEmpty(d))
+        this.$emit('update:aquiferParameters', aquiferParameters)
       }
     }
   },
   created () {
-    // When component created, add an initial row of casings.
-    if (!this.casings.length) {
+    // When component created, add an initial row of aquiferParameters.
+    if (!this.aquiferParameters.length) {
       for (let i = 0; i < 3; i++) {
         this.addRow()
       }
     } else {
-      this.casings.forEach((casing) => {
-        this.casingsData.push({ ...casing })
+      this.aquiferParameters.forEach((parameters) => {
+        this.aquiferParametersData.push({ ...parameters })
       })
       this.addRow()
     }

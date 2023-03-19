@@ -1996,6 +1996,7 @@ class FieldsProvided(models.Model):
     recommended_pump_rate = models.BooleanField(default=False)
     lithologydescription_set = models.BooleanField(default=False)
     casing_set = models.BooleanField(default=False)
+    aquifer_parameters_set = models.BooleanField(default=False)
     decommission_description_set = models.BooleanField(default=False)
     screen_set = models.BooleanField(default=False)
     linerperforation_set = models.BooleanField(default=False)
@@ -2493,35 +2494,40 @@ class AquiferParameters(AuditModel):
         db_comment='The date when the analysis tooke place.')
 
     class Meta:
-        ordering = ["start", "end"]
+        ordering = ["testing_date"]
         db_table = 'aquifer_parameters'
 
-    db_table_comment = ('Aquifer parameter testing results from well pumping tests.')
+    db_table_comment = ('Aquifer parameter testing stats from well pumping tests.')
 
-    # db_column_supplemental_comments = {
-    #     "casing_code":"Describes the casing component (piping or tubing installed in a well) as either production casing, surface casing (outer casing), or open hole.",
-    #     "casing_from":"The depth below ground level at which the casing begins.  Measured in feet below ground level.",
-    #     "casing_to":"The depth below ground level at which the casing ends.  Measured in feet below ground level.",
-    #     "diameter":"The diameter of the casing measured in inches. There can be multiple casings in a well, e.g. surface casing, and production casing. Diameter of casing made available to the public is generally the production casing.",
-    #     "drive_shoe_code":"Indicates Y or N if a drive shoe was used in the installation of the casing.  A drive shoe is attached to the end of a casing and it helps protect it during installation.",
-    #     "wall_thickness":"The thickness of the casing wall, measured in inches.",
-    #     "well_tag_number":"System generated sequential number assigned to each well. It is widely used by groundwater staff as it is the only consistent unique identifier for each well. It is different from a well ID plate number.",
-    # }
+    db_column_supplemental_comments = {
+        "well_tag_number":"System generated sequential number assigned to each well. It is widely used by groundwater staff as it is the only consistent unique identifier for each well. It is different from a well ID plate number.",
+        "storativity":"Storativity estimated from hydraulic testing (dimensionless).",
+        "transmissivity":"Transmissivity estimated from hydraulic testing.",
+        "hydraulic_conductivity":"Hydraulic conductivity estimated from hydraulic testing in metres per second.",
+        "specific_yield":"Specific Yield estimated from hydraulic testing (dimensionless).",
+        "analytic_solution_type":"The mathematical solution to the groundwater flow equation used to fit the observational data and estimate hydraulic parameters e.g. Theis 1935",
+        "testing_method":"Identification of the testing method (e.g.basic pumping test, pumping test with monitoring wells, single-well-response/slug test, constant head).",
+        "testing_duration":"The duration of the hydraulic testing period.  For consistency, do not include the recovery period.",
+        "testing_comments":"Any additional comments about the pumping test.",
+        "testing_date":"Date of the pumping test.",
+    }
 
-    # def __str__(self):
-    #     if self.activity_submission:
-    #         return 'activity_submission {} {} {}'.format(self.activity_submission, self.start, self.end)
-    #     else:
-    #         return 'well {} {} {}'.format(self.well, self.start, self.end)
+    def __str__(self):
+        if self.activity_submission:
+            return 'activity_submission {} {}'.format(self.activity_submission, self.aquifer_parameters_guid)
+        else:
+            return 'well {} {}'.format(self.well, self.aquifer_parameters_guid)
 
-    # def as_dict(self):
-    #     return {
-    #         "start": self.start,
-    #         "end": self.end,
-    #         "casing_guid": self.casing_guid,
-    #         "well_tag_number": self.well_tag_number,
-    #         "diameter": self.diameter,
-    #         "wall_thickness": self.wall_thickness,
-    #         "casing_material": self.casing_material,
-    #         "drive_shoe_status": self.drive_shoe_status
-    #     }
+    def as_dict(self):
+        return {
+            "well_tag_number": self.well_tag_number,
+            "storativity": self.storativity,
+            "transmissivity": self.transmissivity,
+            "hydraulic_conductivity": self.hydraulic_conductivity,
+            "specific_yield": self.specific_yield,
+            "analytic_solution_type": self.analytic_solution_type,
+            "testing_method": self.testing_method,
+            "testing_duration": self.testing_duration,
+            "testing_comments": self.testing_comments,
+            "testing_date": self.testing_date
+        }

@@ -157,6 +157,7 @@ def get_submission_queryset(qs):
                 "lithologydescription_set",
                 "linerperforation_set",
                 "casing_set",
+                "aquifer_parameters_set",
                 "screen_set",
                 "decommission_description_set",
                 "drilling_methods"

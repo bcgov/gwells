@@ -250,7 +250,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         :saveDisabled="editSaveDisabled"
         v-on:save="$emit('submit_edit')"
       />
-      
+
       <!-- Aquifer Parameters -->
       <aquifer-parameters class="my-5"
         :key="`aquiferParametersComponent${componentUpdateTrigger}`"
@@ -470,28 +470,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-on:fetchFiles="fetchFiles"
       />
 
-      <!-- aquifer -->
-      <aquifer-data class="my-5"
-        v-if="showSection('aquiferData')"
-        id="aquiferData"
-        :aquifer.sync="form.aquifer"
-        :aquiferVulnerabilityIndex.sync="form.aquifer_vulnerability_index"
-        :storativity.sync="form.storativity"
-        :transmissivity.sync="form.transmissivity"
-        :hydraulicConductivity.sync="form.hydraulic_conductivity"
-        :specificStorage.sync="form.specific_storage"
-        :specificYield.sync="form.specific_yield"
-        :testingMethod.sync="form.testing_method"
-        :testingDuration.sync="form.testing_duration"
-        :analyticSolutionType.sync="form.analytic_solution_type"
-        :boundaryEffect.sync="form.boundary_effect"
-        :aquiferLithology.sync="form.aquifer_lithology"
-        :errors="errors"
-        :isStaffEdit="isStaffEdit"
-        :saveDisabled="editSaveDisabled"
-        v-on:save="$emit('submit_edit')"
-      />
-
       <vertical-aquifer-extents class="my-5"
         v-if="showSection('aquiferData')"
         id="aquiferData"
@@ -638,7 +616,6 @@ export default {
   components: {
     WorkDates,
     ActivityType,
-    AquiferData,
     VerticalAquiferExtents,
     WellType,
     PublicationStatus,
@@ -681,7 +658,6 @@ export default {
       fieldsLoaded: {},
       formStepDescriptions: {
         'activityType': 'Type of work',
-        'aquiferData': 'Well testing and aquifer details',
         'wellType': 'Well class',
         'wellPublicationStatus': 'Well publication status',
         'wellOwner': 'Well owner',
@@ -692,7 +668,7 @@ export default {
         'closureDescription': 'Decommission description',
         'lithology': 'Lithology',
         'casings': 'Casing details',
-        'aquiferParameters': 'Aquifer Parameters details',
+        'aquiferParameters': 'Aquifer parameters details',
         'backfill': 'Surface seal and backfill information',
         'liner': 'Liner information',
         'screens': 'Screen information',
