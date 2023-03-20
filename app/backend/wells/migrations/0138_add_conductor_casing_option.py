@@ -3,6 +3,10 @@
 from django.db import migrations
 
 INSERT_CONDUCTOR_CASING_CODE = """
+    UPDATE casing_code
+    SET display_order = 4
+    WHERE casing_code = 'OPEN';
+
     INSERT INTO casing_Code (
         casing_code,
         create_user,
@@ -23,13 +27,17 @@ INSERT_CONDUCTOR_CASING_CODE = """
         '1970-01-01T08:00:00Z',
         '9999-12-31T23:59:59Z',
         'Conductor casing',
-        4
-    )
+        2
+    );
 """
 
 REMOVE_CONDUCTOR_CASING_CODE = """
     DELETE FROM casing_code
     WHERE casing_code = 'CONDUCTOR';
+
+    UPDATE casing_code
+    SET display_order = 2
+    WHERE casing_code = 'OPEN';
 """
 
 class Migration(migrations.Migration):
