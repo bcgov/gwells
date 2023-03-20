@@ -24,7 +24,7 @@ INSERT_CONDUCTOR_CASING_CODE = """
         '2020-01-01T08:00:00Z',
         'DATALOAD_USER',
         '2020-01-01T08:00:00Z',
-        '1970-01-01T08:00:00Z',
+        '2020-01-01T08:00:00Z',
         '9999-12-31T23:59:59Z',
         'Conductor casing',
         2
