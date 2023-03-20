@@ -153,7 +153,7 @@ copy_reference_file() {
 REF_DIR=${REF:-/opt/openshift/plugins}
 FAILED="$REF_DIR/failed-plugins.txt"
 
-JENKINS_WAR=/usr/lib/jenkins/jenkins.war
+JENKINS_WAR=/usr/share/java/jenkins.war
 
 INCREMENTAL_BUILD_ARTIFACTS_DIR="/tmp/artifacts"
 

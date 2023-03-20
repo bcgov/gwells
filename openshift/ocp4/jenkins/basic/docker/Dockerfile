@@ -9,7 +9,9 @@ ENV JENKINS_VERSION=2.361.1 \
     JENKINS_UC=https://updates.jenkins.io \
     OPENSHIFT_JENKINS_IMAGE_VERSION=4.10 \
     LANG=en_US.UTF-8 \
-    LC_ALL=en_US.UTF-8
+    LC_ALL=en_US.UTF-8 \
+    JENKINS_WEBROOT_DIR=/var/cache/jenkins/war--daemon \
+    JENKINS_WAR=/usr/share/java/jenkins.war 
 
 ARG JAVA_TOOL_OPTIONS="-XX:+UnlockExperimentalVMOptions -XX:+UseContainerSupport -XX:MaxRAMFraction=2"
 ARG OC_VERSION=4.10.9
@@ -107,8 +109,8 @@ RUN set -x && \
     chmod -R g+rx /usr/local/bin && \
     chgrp -R 0 $JENKINS_REF_HOME && \
     chmod -R 644 $JENKINS_REF_HOME && \
-    chmod -R g+rwX $JENKINS_REF_HOME 
-    # && \ (export REF=$JENKINS_REF_HOME/plugins; /usr/local/bin/jenkins-install-plugins $JENKINS_REF_HOME/plugins.txt)
+    chmod -R g+rwX $JENKINS_REF_HOME && \ 
+    (export REF=$JENKINS_REF_HOME/plugins JENKINS_WAR=/usr/share/java/jenkins.war; /usr/local/bin/jenkins-install-plugins $JENKINS_REF_HOME/plugins.txt)
 
 VOLUME ["${JENKINS_DATA}"]
 
