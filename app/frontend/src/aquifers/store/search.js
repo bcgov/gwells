@@ -38,6 +38,7 @@ import {
 } from './mutations.types.js'
 
 const AQUIFER_NOTATION_CODE = 'Notations'
+const UNPUBLISHED_AQUIFERS = 'Unpublished'
 
 Vue.use(Vuex)
 
@@ -181,7 +182,8 @@ const aquiferSearchStore = {
       }
 
       const codes = state.selectedSections.filter((s) => {
-        if (s === AQUIFER_NOTATION_CODE) {
+        if (s === AQUIFER_NOTATION_CODE ||
+              s === UNPUBLISHED_AQUIFERS) {
           return false
         }
         return true
@@ -197,6 +199,10 @@ const aquiferSearchStore = {
 
       if (state.selectedSections.find((o) => o === AQUIFER_NOTATION_CODE)) {
         params.aquifer_notations = 'yes'
+      }
+
+      if (state.selectedSections.find((o) => o === UNPUBLISHED_AQUIFERS)) {
+        params.unpublished = 'yes'
       }
 
       if (state.searchMapCentre) {
