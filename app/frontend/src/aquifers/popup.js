@@ -84,6 +84,8 @@ export function createAquiferPopupElement (features, map, $router, options = {})
   const currentAquiferId = options.currentAquiferId || null
   const canInteract = Boolean(options.canInteract)
   const aquiferLayerIds = options.aquiferLayerIds || [ AQUIFERS_FILL_LAYER_ID ]
+  // aquifer notations removed by request from business area, left for future reference
+  // const getAquiferNotationsById = options.getAquiferNotationsById
 
   const container = document.createElement('div')
   container.className = 'mapbox-popup-aquifer'
@@ -99,16 +101,15 @@ export function createAquiferPopupElement (features, map, $router, options = {})
     const {
       aquifer_id: aquiferId,
       is_retired: isRetired,
-      is_published: isPublished,
-      material_type: materialType,
-      subtype: subType
+      is_published: isPublished
     } = feature.properties
     const linkToAquifer = canInteract && currentAquiferId !== aquiferId
+    // const aquiferNotation = getAquiferNotationsById(aquiferId.toString(), feature.geometry)
 
     const item = {
       className: `${isRetired ? 'retired' : ''} ${isPublished ? 'published' : ''}`,
       route: linkToAquifer ? { name: 'aquifers-view', params: { id: aquiferId } } : null,
-      text: `Aquifer ${aquiferId} (${materialType}, ${subType})`,
+      text: `Aquifer ${aquiferId}`, // ${aquiferNotation ? '-- ' : ''}${aquiferNotation}`,
       suffix: [
         isRetired ? 'retired' : null,
         !isPublished ? 'unpublished' : null

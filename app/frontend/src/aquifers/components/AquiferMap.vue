@@ -462,7 +462,8 @@ export default {
     createAquiferPopupElement (features, { canInteract }) {
       return createAquiferPopupElement(features, this.map, this.$router, {
         canInteract,
-        aquiferLayerIds: [ AQUIFERS_FILL_LAYER_ID ]
+        aquiferLayerIds: [ AQUIFERS_FILL_LAYER_ID ],
+        getAquiferNotationsById: this.getAquiferNotationsById
       })
     },
     createWellPopupElement (features, { canInteract }) {
