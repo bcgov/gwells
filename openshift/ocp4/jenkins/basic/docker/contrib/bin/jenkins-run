@@ -26,7 +26,7 @@ JENKINS_MAX_METASPACE_SIZE=$(awk '{ printf "%d", (($1 / 1024) - (1024*5)) }' < /
 if [[ -z "${JAVA_TOOL_OPTIONS}" ]]; then
   # these options will automatically be picked up by any JVM process but can
   # be overridden on that process' command line.
-  JAVA_TOOL_OPTIONS="-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -Dsun.zip.disableMemoryMapping=true"
+  JAVA_TOOL_OPTIONS="-XX:+UnlockExperimentalVMOptions -XX:+UseContainerSupport -Dsun.zip.disableMemoryMapping=true"
   export JAVA_TOOL_OPTIONS
 fi
 
@@ -70,7 +70,7 @@ echo "JAVA_DIAGNOSTICS=${JAVA_DIAGNOSTICS}"
 echo "JENKINS_OPTIONS=${JENKINS_OPTIONS}"
 echo "JENKINS_JAVA_OPTIONS=${JENKINS_JAVA_OPTIONS}"
 
-#JENKINS_JAVA_OPTIONS="${JENKINS_JAVA_OPTIONS:--XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=2  -XX:MaxHeapFreeRatio=20 -XX:MinHeapFreeRatio=10}"
+#JENKINS_JAVA_OPTIONS="${JENKINS_JAVA_OPTIONS:--XX:+UnlockExperimentalVMOptions -XX:+UseContainerSupport -XX:MaxRAMFraction=2  -XX:MaxHeapFreeRatio=20 -XX:MinHeapFreeRatio=10}"
 
 
 if [ ! -z "${JENKINS_DATA}" ]; then
