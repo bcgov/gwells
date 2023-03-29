@@ -107,7 +107,9 @@ chmod -R g+rw $JENKINS_HOME
 # if a symbolic link does not exists, create it
 [[ ! -L "$JENKINS_HOME/plugins" ]] && ln -sf $JENKINS_REF_HOME/plugins $JENKINS_HOME/plugins
 
+export JENKINS_WEBROOT_DIR='/var/cache/jenkins/war--daemon'
 
+unzip -qo $JENKINS_WAR -d $JENKINS_WEBROOT_DIR
 
 #https://unix.stackexchange.com/questions/34325/sorting-the-output-of-find
 
