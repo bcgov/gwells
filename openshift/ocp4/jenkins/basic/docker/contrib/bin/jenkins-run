@@ -48,7 +48,7 @@ fi
 JAVA_GC_OPTS="${JAVA_GC_OPTS} ${JAVA_GC_OPTSAPPEND}"
 
 if [[ "${USE_JAVA_DIAGNOSTICS}" ]]; then
-  JAVA_DIAGNOSTICS="-XX:+PrintGC -XX:+PrintGCDateStamps -XX:+PrintGCTimeStamps -XX:+PrintGCDetails -XX:+UnlockDiagnosticVMOptions -Xloggc:/var/log/jenkins/gc.log -XX:+UseGCLogFileRotation -XX:NumberOfGCLogFiles=5 -XX:GCLogFileSize=100M"
+  JAVA_DIAGNOSTICS="-XX:+IgnoreUnrecognizedVMOptions -XX:+PrintGC -XX:+PrintGCDateStamps -XX:+PrintGCTimeStamps -XX:+PrintGCDetails -XX:+UnlockDiagnosticVMOptions -Xloggc:/var/log/jenkins/gc.log -XX:+UseGCLogFileRotation -XX:NumberOfGCLogFiles=5 -XX:GCLogFileSize=100M"
   JAVA_DIAGNOSTICS="${JAVA_DIAGNOSTICS} ${JAVA_DIAGNOSTICS_APPEND}"
 fi
 
