@@ -525,8 +525,6 @@ export default {
           this.record.retire_date = now
           break
       }
-
-      console.log(this.record)
     },
     setStatus (record) {
       if (!this.hasFormData) { return }
