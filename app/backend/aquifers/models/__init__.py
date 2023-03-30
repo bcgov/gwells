@@ -21,7 +21,6 @@ from reversion.models import Version
 
 from django.utils import timezone
 from django.contrib.gis.db import models
-from django.db import connection
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 
@@ -548,7 +547,6 @@ class Aquifer(AuditModel):
             raise Aquifer.BadShapefileException("Bad geometry type: {}, skipping.".format(geos_geom.__class__))
 
         self.geom = geos_geom_out
-    
 
     class Meta:
         db_table = 'aquifer'
