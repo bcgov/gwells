@@ -21,6 +21,7 @@ from reversion.models import Version
 
 from django.utils import timezone
 from django.contrib.gis.db import models
+from django.db import connection
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 
@@ -547,6 +548,31 @@ class Aquifer(AuditModel):
             raise Aquifer.BadShapefileException("Bad geometry type: {}, skipping.".format(geos_geom.__class__))
 
         self.geom = geos_geom_out
+    
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.update_aquifer_map_view()
+
+    def update_aquifer_map_view(self):
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                DROP VIEW postgis_ftw.gwells_aquifer_view;
+                CREATE VIEW postgis_ftw.gwells_aquifer_view AS
+                    SELECT
+                        aquifer_id,
+                        aquifer_name,
+                        area,
+                        retire_date <= NOW() AS is_retired,
+                        aquifer.effective_date <= NOW() AND aquifer.expiry_date >= NOW() AS is_published,
+                        geom,
+                        aquifer_material_code.description as material_type,
+                        aquifer_subtype_code as subtype
+                    FROM aquifer
+                    JOIN aquifer_material_code
+                    ON aquifer_material_code.aquifer_material_code = aquifer.aquifer_material_code
+                    WHERE geom IS NOT NULL;
+                    GRANT SELECT ON postgis_ftw.gwells_aquifer_view TO ftw_reader;
+            """)
 
     class Meta:
         db_table = 'aquifer'
