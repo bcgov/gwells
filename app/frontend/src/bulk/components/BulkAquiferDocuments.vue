@@ -127,7 +127,7 @@
                       <ul>
                         <li>Do not include aquifer number in file name, it is added to the file name automatically when the aquifer number is selected from the search bar.</li>
                         <li>No spaces in the name – use underscores.</li>
-                        <li>If name is identical to older version, older version will be overwritten. (Please check spelling)</li>
+                        <li>If name is identical to older version, older version will be overwritten (please check spelling).</li>
                         <li>Name must be as succinct but as clear as possible as to what the attachment includes.</li>
                       </ul>
                     </li>
@@ -270,9 +270,9 @@
                       If file name does not fit one of the standards above, consider the following when creating a file name:
                       <ul>
                         <li>No spaces in the name – use underscores.</li>
-                        <li>If name is identical to older version, older version will be overwritten. (Please check spelling)</li>
+                        <li>If name is identical to older version, older version will be overwritten (please check spelling).</li>
                         <li>Name must be as succinct but as clear as possible as to what the attachment includes.</li>
-                        <li>Add aquifer number as 4 digits in front of the file type to let application know what aquifer to assign the attachment,
+                        <li>Add aquifer number as 4 digits in front of the file type to let application know what aquifer to assign the attachment,<br/>
                           E.g., Aquifer_Factsheet_0001.pdf or Aquifer_Mapping_Report_0456.pdf
                           <ul><li>It will automatically be renamed. E.g., “AQ_0001_Aquifer_Factsheet.pdf” or “AQ_0456_ Aquifer_Mapping_Report.pdf”</li></ul>
                         </li>
