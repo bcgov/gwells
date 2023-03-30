@@ -57,7 +57,7 @@ REVERSE_MIGRATE_HYDRAULIC_TABLE_INFO = """
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('wells', '0137_add_hydraulic_info_postgis_well_view'),
+        ('wells', '0138_add_conductor_casing_option'),
     ]
 
     operations = [
