@@ -14,17 +14,15 @@ jest.mock('mapbox-gl', () => {
   LngLatBounds.prototype.getNorthEast = () => ({ lat: 0, lng: 0 })
   LngLatBounds.prototype.getNorthEast = () => ({ lat: 0, lng: 0 })
 
-  function Map(options = {}) { }
+  function Map (options = {}) { } // NOSONAR
   Map.prototype.addControl = () => { }
   Map.prototype.on = () => {}
-  
-  function NavigationControl(options = {}) { }
-  function GeolocateControl(options = {}) { }
-  function ScaleControl(options = {}) { }
-  function AttributionControl(options = {}) { }
+
+  function NavigationControl (options = {}) { }
+  function GeolocateControl (options = {}) { }
+  function ScaleControl (options = {}) { }
+  function AttributionControl (options = {}) { }
   function supported () { return true }
-
-
 
   return {
     LngLat,
@@ -40,7 +38,8 @@ jest.mock('mapbox-gl', () => {
 
 jest.mock('@geolonia/mbgl-gesture-handling', () => {
   class GestureHandling {
-    constructor(options = {}) { }
+    // eslint-disable-next-line
+    constructor (options = {}) { }
     addTo = (map) => { }
   }
   return GestureHandling

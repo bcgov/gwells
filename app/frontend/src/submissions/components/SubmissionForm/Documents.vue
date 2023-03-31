@@ -214,10 +214,6 @@ export default {
         isPrivate = true
       }
 
-      console.log(this.form)
-      console.log(this.form.well)
-      console.log(this.form.well.well_tag_number)
-
       let tag = this.form.well && isNaN(this.form.well) ? this.form.well.well_tag_number : this.form.well
 
       ApiService.deleteFile(`wells/${tag}/delete_document?filename=${this.file}&private=${isPrivate}`)

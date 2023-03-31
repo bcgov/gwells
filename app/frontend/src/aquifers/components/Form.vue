@@ -382,6 +382,11 @@ export default {
       aquiferStatusOptions.push({ value: 'retired', text: 'Retired' })
     }
 
+    // set default status on new aquifers to unpublished
+    if (this.isNew) {
+      this.statusChanged('unpublished')
+    }
+
     return {
       recordCopy: this.hasFormData ? cloneDeep(this.record) : {}, // keep a copy of the record
       status: this.isNew ? 'unpublished' : null,
@@ -520,8 +525,6 @@ export default {
           this.record.retire_date = now
           break
       }
-
-      console.log(this.record)
     },
     setStatus (record) {
       if (!this.hasFormData) { return }
