@@ -7,8 +7,6 @@ import gwells.db_comments.model_mixins
 import uuid
 
 MIGRATE_HYDRAULIC_TABLE_INFO = """
-    CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
     INSERT INTO aquifer_parameters (
         aquifer_parameters_guid,
         well_tag_number,
