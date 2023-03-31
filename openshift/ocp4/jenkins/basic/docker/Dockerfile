@@ -1,7 +1,7 @@
 FROM registry.access.redhat.com/ubi8/ubi:8.7
 
 # https://blog.csanchez.org/2017/05/31/running-a-jvm-in-a-container-without-getting-killed/
-ENV JENKINS_VERSION=2.361.1 \
+ENV JENKINS_VERSION=2.361.4 \
     HOME=/var/lib/jenkins \
     JENKINS_REF_HOME=/opt/jenkins \
     JENKINS_HOME=/var/lib/jenkins \
@@ -110,7 +110,8 @@ RUN set -x && \
     chgrp -R 0 $JENKINS_REF_HOME && \
     chmod -R 644 $JENKINS_REF_HOME && \
     chmod -R g+rwX $JENKINS_REF_HOME && \ 
-    (export REF=$JENKINS_REF_HOME/plugins JENKINS_WAR=/usr/share/java/jenkins.war; /usr/local/bin/jenkins-install-plugins $JENKINS_REF_HOME/plugins.txt)
+    (export REF=$JENKINS_REF_HOME/plugins JENKINS_WAR=/usr/share/java/jenkins.war; /usr/local/bin/jenkins-install-plugins $JENKINS_REF_HOME/plugins.txt) && \
+    chmod -R 777 $JENKINS_REF_HOME/plugins
 
 VOLUME ["${JENKINS_DATA}"]
 
