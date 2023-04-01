@@ -55,7 +55,7 @@ matrix-auth:2.6.2
 matrix-project:785.v06b_7f47b_c631
 mercurial:1260.vdfb_723cdcc81
 momentjs:1.1.1
-openshift-login:1.0.38
+openshift-login:1.0.29
 pipeline-build-step:487.va_823138eee8b_
 pipeline-input-step:466.v6d0a_5df34f81
 pipeline-milestone-step:111.v449306f708b_7
