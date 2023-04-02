@@ -15,7 +15,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
   <fieldset>
     <b-row>
       <b-col cols="12" lg="6">
-        <legend :id="id">Aquifer Parameters</legend>
+        <legend :id="id">Pumping Test Information and Aquifer Parameters</legend>
       </b-col>
       <b-col cols="12" lg="6">
         <div class="float-right">
@@ -28,21 +28,69 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <table class="table table-sm">
         <thead>
           <tr>
-            <th class="font-weight-normal">Storativity</th>
-            <th class="font-weight-normal">Transmissivity</th>
-            <th class="font-weight-normal">Hydraulic Conductivity</th>
-            <th class="font-weight-normal">Specific Yield</th>
-            <th class="font-weight-normal">Analytical Solution Type</th>
-            <th class="font-weight-normal">Testing Method</th>
-            <th class="font-weight-normal">Testing Duration</th>
-            <th class="font-weight-normal">Well Testing comments</th>
             <th class="font-weight-normal">Date of Test</th>
+            <th class="font-weight-normal">Testing Type</th>
+            <th class="font-weight-normal">Testing Duration (hours)</th>
+            <th class="font-weight-normal">Boundary Effect</th>
+            <th class="font-weight-normal">Analytical Solution Type</th>
+            <th class="font-weight-normal">Storativity</th>
+            <th class="font-weight-normal">Transmissivity (m²/s)</th>
+            <th class="font-weight-normal">Hydraulic Conductivity (m/s)</th>
+            <th class="font-weight-normal">Specific Yield</th>
+            <th class="font-weight-normal">Specific Capacity</th>
+            <th class="font-weight-normal">Comments</th>
             <th></th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(aquiferParameter, index) in aquiferParametersData" :key="aquiferParameter.id">
-            <td class="input-width-small">
+            <td>
+              <form-input
+                group-class="mt-1 mb-0"
+                :id="'aquiferParameter_datePumpingTest_' + index"
+                type="date"
+                placeholder="YYYY-MM-DD"
+                v-model="aquiferParameter.date_pumping_test"
+                :errors="getAquiferParametersError(index).date_pumping_test"
+                :loaded="getFieldsLoaded(index).date_pumping_test"/>
+            </td>
+            <td>
+              <form-input
+                id="testingType"
+                group-class="mt-1 mb-0"
+                select
+                v-model="aquiferParameter.testing_type"
+                :options="codes.testing_type_codes"
+                placeholder="Select Testing Type"
+                text-field="description"
+                value-field="testing_type_code"
+                :errors="errors['testing_type']"
+                :loaded="fieldsLoaded['testing_type']"/>
+            </td>
+            <td>
+              <form-input
+                group-class="mt-1 mb-0"
+                :id="'aquiferParameter_testingDurationHours_' + index"
+                type="number"
+                v-model="aquiferParameter.testing_duration_hours"
+                :errors="getAquiferParametersError(index).testing_duration_hours"
+                :loaded="getFieldsLoaded(index).testing_duration_hours"
+                :min="1"/>
+            </td>
+            <td>
+              <form-input
+                id="boundaryEffect"
+                group-class="mt-1 mb-0"
+                select
+                v-model="aquiferParameter.boundary_effect"
+                :options="codes.boundary_effect_codes"
+                placeholder="Select Boundary effect"
+                text-field="description"
+                value-field="boundary_effect_code"
+                :errors="errors['boundary_effect']"
+                :loaded="fieldsLoaded['boundary_effect']"/>
+            </td>
+            <td>
               <form-input
                 group-class="mt-1 mb-0"
                 :id="'aquiferParameter_storativity_' + index"
@@ -51,8 +99,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 :errors="getAquiferParametersError(index).storativity"
                 :loaded="getFieldsLoaded(index).storativity"/>
             </td>
-            <td class="input-width-small">
+            <td>
               <form-input
+                class="input-width-sm"
                 group-class="mt-1 mb-0"
                 :id="'aquiferParameter_transmissivity_' + index"
                 type="number"
@@ -69,7 +118,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 :errors="getAquiferParametersError(index).hydraulic_conductivity"
                 :loaded="getFieldsLoaded(index).hydraulic_conductivity"/>
             </td>
-            <td class="input-width-small">
+            <td>
               <form-input
                 group-class="mt-1 mb-0"
                 :id="'aquiferParameter_specificYield_' + index"
@@ -77,6 +126,15 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 v-model="aquiferParameter.specific_yield"
                 :errors="getAquiferParametersError(index).specific_yield"
                 :loaded="getFieldsLoaded(index).specific_yield"/>
+            </td>
+            <td>
+              <form-input
+                group-class="mt-1 mb-0"
+                :id="'aquiferParameter_specificCapacity_' + index"
+                type="number"
+                v-model="aquiferParameter.specific_capacity"
+                :errors="getAquiferParametersError(index).specific_capacity"
+                :loaded="getFieldsLoaded(index).specific_capacity"/>
             </td>
             <td>
               <form-input
@@ -90,41 +148,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
             <td>
               <form-input
                 group-class="mt-1 mb-0"
-                :id="'aquiferParameter_testingMethod_' + index"
+                :id="'aquiferParameter_comments_' + index"
                 type="text"
-                v-model="aquiferParameter.testing_method"
-                :errors="getAquiferParametersError(index).testing_method"
-                :loaded="getFieldsLoaded(index).testing_method"/>
-            </td>
-            <td class="input-width-small">
-              <form-input
-                group-class="mt-1 mb-0"
-                :id="'aquiferParameter_testingDuration_' + index"
-                type="number"
-                v-model="aquiferParameter.testing_duration"
-                :errors="getAquiferParametersError(index).testing_duration"
-                :loaded="getFieldsLoaded(index).testing_duration"/>
-            </td>
-            <td>
-              <form-input
-                group-class="mt-1 mb-0"
-                :id="'aquiferParameter_testingComments_' + index"
-                type="text"
-                v-model="aquiferParameter.testing_comments"
-                :errors="getAquiferParametersError(index).testing_comments"
-                :loaded="getFieldsLoaded(index).testing_comments"/>
-            </td>
-            <td>
-              <form-input
-                group-class="mt-1 mb-0"
-                :id="'aquiferParameter_testingDate_' + index"
-                type="date"
-                placeholder="YYYY-MM-DD"
-                v-model="aquiferParameter.testing_date"
-                :errors="getAquiferParametersError(index).testing_date"
-                :loaded="getFieldsLoaded(index).testing_date"/>
-                <b-col cols="6" md="6">
-      </b-col>
+                v-model="aquiferParameter.comments"
+                :errors="getAquiferParametersError(index).comments"
+                :loaded="getFieldsLoaded(index).comments"/>
             </td>
             <td class="pt-1 py-0">
               <b-btn size="sm" variant="primary" :id="`removeAquiferParameterRowBtn${index}`" @click="removeRowIfOk(aquiferParameter)" class="mt-2 float-right"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
@@ -203,15 +231,17 @@ export default {
     },
     emptyObject () {
       return {
+        date_pumping_test: null,
+        testing_type: null,
+        testing_duration_hours: null,
+        boundary_effect: null,
         storativity: null,
         transmissivity: null,
         hydraulic_conductivity: null,
         specific_yield: null,
+        specific_capacity: null,
         analytic_solution_type: null,
-        testing_method: null,
-        testing_duration: null,
-        testing_comments: null,
-        testing_date: null
+        comments: null
       }
     },
     removeRowByIndex (index) {
@@ -291,5 +321,13 @@ export default {
 </script>
 
 <style>
-
+  .input-width-sm {
+    max-width: 50px;
+  }
+  .input-width-md {
+    max-width: 100px;
+  }
+  .input-width-lg {
+    max-width: 200px;
+  }
 </style>

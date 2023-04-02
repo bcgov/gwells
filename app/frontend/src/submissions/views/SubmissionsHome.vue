@@ -951,6 +951,9 @@ function initialState () {
   .input-width-medium {
     max-width: 6rem;
   }
+  .input-width-large {
+    max-width: 8rem;
+  }
   .loader {
     border: 5px solid #f3f3f3;
     border-top: 5px solid #5b7b9c;

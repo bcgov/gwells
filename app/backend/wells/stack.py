@@ -100,6 +100,7 @@ MANY_TO_MANY_LOOKUP = {
 KEY_VALUE_LOOKUP = {
     'well_publication_status': 'well_publication_status_code',
     'boundary_effect': 'boundary_effect_code',
+    'testing_type': 'testing_type_code',
     'well_disinfected_status': 'well_disinfected_code',
     'well_orientation_status': 'well_orientation_code',
     'drive_shoe_status': 'drive_shoe_code',

@@ -251,19 +251,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-on:save="$emit('submit_edit')"
       />
 
-      <!-- Aquifer Parameters -->
-      <aquifer-parameters class="my-5"
-        :key="`aquiferParametersComponent${componentUpdateTrigger}`"
-        v-if="showSection('aquiferParameters')"
-        id="aquiferParameters"
-        :aquiferParameters.sync="form.aquifer_parameters_set"
-        :errors="errors"
-        :fieldsLoaded="fieldsLoaded"
-        :isStaffEdit="isStaffEdit"
-        :saveDisabled="editSaveDisabled"
-        v-on:save="$emit('submit_edit')"
-      />
-
       <!-- Surface Seal / Backfill Material -->
       <backfill class="my-5"
         v-if="showSection('backfill')"
@@ -470,9 +457,22 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-on:fetchFiles="fetchFiles"
       />
 
+      <!-- Aquifer Parameters -->
+      <aquifer-parameters class="my-5"
+        :key="`aquiferParametersComponent${componentUpdateTrigger}`"
+        v-if="showSection('aquiferParameters')"
+        id="aquiferParameters"
+        :aquiferParameters.sync="form.aquifer_parameters_set"
+        :errors="errors"
+        :fieldsLoaded="fieldsLoaded"
+        :isStaffEdit="isStaffEdit"
+        :saveDisabled="editSaveDisabled"
+        v-on:save="$emit('submit_edit')"
+      />
+
       <vertical-aquifer-extents class="my-5"
-        v-if="showSection('aquiferData')"
-        id="aquiferData"
+        v-if="showSection('aquiferParameters')"
+        id="vertical-aquifer-extents"
         :wellTagNumber="wellTagNumber"
       />
 
@@ -522,7 +522,6 @@ import Vue from 'vue'
 import smoothScroll from 'smoothscroll'
 
 import ActivityType from './ActivityType.vue'
-import AquiferData from './AquiferData.vue'
 import VerticalAquiferExtents from './VerticalAquiferExtents.vue'
 import WellType from './WellType.vue'
 import PublicationStatus from './PublicationStatus.vue'

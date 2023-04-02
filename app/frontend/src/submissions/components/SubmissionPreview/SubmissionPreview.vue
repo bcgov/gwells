@@ -254,9 +254,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
             bordered
             :items="filterBlankRows(form.aquifer_parameters_set)"
             :fields="[
-              'storativity', 'transmissivity', 'hydraulic_conductivity',
-              'specific_yield', 'analytic_solution_type', 'testing_method', 'testing_duration',
-              'testing_comments', 'testing_date'
+              'testing_number', 'date_pumping_test', 'testing_type',
+              'testing_duration_hours', 'boundary_effect', 'storativity', 'transmissivity',
+              'hydraulic_conductivity', 'specific_yield', 'specific_capacity', 'analytic_solution_type',
+              'comments'
             ]"
             show-empty>
         </b-table>

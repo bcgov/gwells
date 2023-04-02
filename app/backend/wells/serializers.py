@@ -191,15 +191,19 @@ class AquiferParametersSerializer(serializers.ModelSerializer):
     class Meta:
         model = AquiferParameters
         fields = (
+            'testing_number',
+            'well',
+            'date_pumping_test',
+            'testing_type',
+            'testing_duration_hours',
+            'boundary_effect',
             'storativity',
             'transmissivity',
             'hydraulic_conductivity',
             'specific_yield',
+            'specific_capacity',
             'analytic_solution_type',
-            'testing_method',
-            'testing_duration',
-            'testing_comments',
-            'testing_date'
+            'comments'
         )
 
 
@@ -209,30 +213,38 @@ class AquiferParametersSummarySerializer(serializers.ModelSerializer):
     class Meta:
         model = AquiferParameters
         fields = (
+            'testing_number',
+            'well',
+            'date_pumping_test',
+            'testing_type',
+            'testing_duration_hours',
+            'boundary_effect',
             'storativity',
             'transmissivity',
             'hydraulic_conductivity',
             'specific_yield',
+            'specific_capacity',
             'analytic_solution_type',
-            'testing_method',
-            'testing_duration',
-            'testing_comments',
-            'testing_date'
+            'comments'
         )
 
 class AquiferParametersStackerSerializer(serializers.ModelSerializer):
     class Meta:
         model = AquiferParameters
         fields = (
+            'testing_number',
+            'well',
+            'date_pumping_test',
+            'testing_type',
+            'testing_duration_hours',
+            'boundary_effect',
             'storativity',
             'transmissivity',
             'hydraulic_conductivity',
             'specific_yield',
+            'specific_capacity',
             'analytic_solution_type',
-            'testing_method',
-            'testing_duration',
-            'testing_comments',
-            'testing_date',
+            'comments',
             'create_user',
             'update_user'
         )

@@ -50,6 +50,7 @@ from wells.models import (
     WellDisinfectedCode,
     WellOrientationCode,
     BoundaryEffectCode,
+    TestingTypeCode,
     DriveShoeCode,
     FilterPackMaterialCode,
     FilterPackMaterialSizeCode,
@@ -95,6 +96,7 @@ from submissions.serializers import (
     WellDisinfectedCodeSerializer,
     WellOrientationCodeSerializer,
     BoundaryEffectCodeSerializer,
+    TestingTypeCodeSerializer,
     DriveShoeCodeSerializer,
     FilterPackMaterialCodeSerializer,
     FilterPackMaterialSizeCodeSerializer,
@@ -132,7 +134,7 @@ from submissions.serializers import (
     YieldEstimationMethodCodeSerializer,
     WellStaffEditSubmissionSerializer,
     AquiferLithologySerializer,
-    LicencedStatusCodeSerializer,
+    LicencedStatusCodeSerializer
 )
 
 
@@ -419,6 +421,8 @@ class SubmissionsOptions(APIView):
             instance=WellOrientationCode.objects.all(), many=True)
         boundary_effect_codes = BoundaryEffectCodeSerializer(
             instance=BoundaryEffectCode.objects.all(), many=True)
+        testing_type_codes = TestingTypeCodeSerializer(
+            instance=TestingTypeCode.objects.all(), many=True)
         drive_shoe_codes = DriveShoeCodeSerializer(
             instance=DriveShoeCode.objects.all(), many=True)
         filter_pack_material = FilterPackMaterialCodeSerializer(
@@ -497,6 +501,7 @@ class SubmissionsOptions(APIView):
         options["well_disinfected_codes"] = well_disinfected_codes.data
         options["well_orientation_codes"] = well_orientation_codes.data
         options["boundary_effect_codes"] = boundary_effect_codes.data
+        options["testing_type_codes"] = testing_type_codes.data
         options["drive_shoe_codes"] = drive_shoe_codes.data
         options["filter_pack_material"] = filter_pack_material.data
         options["filter_pack_material_size"] = filter_pack_material_size.data
