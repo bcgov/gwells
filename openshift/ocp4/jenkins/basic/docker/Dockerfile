@@ -1,7 +1,7 @@
 FROM registry.access.redhat.com/ubi8/ubi:8.7
 
 # https://blog.csanchez.org/2017/05/31/running-a-jvm-in-a-container-without-getting-killed/
-ENV JENKINS_VERSION=2.361.4 \
+ENV JENKINS_VERSION=2.387.1 \
     HOME=/var/lib/jenkins \
     JENKINS_REF_HOME=/opt/jenkins \
     JENKINS_HOME=/var/lib/jenkins \
