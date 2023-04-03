@@ -106,7 +106,7 @@ pipeline-model-definition:1.7.1
 workflow-aggregator:2.6
 blueocean-pipeline-api-impl:1.23.2
 blueocean-pipeline-editor:1.23.2
-kubernetes:1.26.4
+kubernetes:3900.va_dce992317b_4
 blueocean-bitbucket-pipeline:1.23.2
 blueocean-events:1.23.2
 blueocean-git-pipeline:1.23.2

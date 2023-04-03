@@ -356,10 +356,8 @@ def deployToDev() {
                         List newObjectCopies = []
 
                         for (o in (deployTemplate + deployDBTemplate)) {
-                            echo "deployTemplate, deployDBTemplate= ${o}"
                             // only perform this operation on objects with 'as-copy-of'
                             def sourceName = (o.metadata && o.metadata.annotations && o.metadata.annotations['as-copy-of']) ? o.metadata.annotations['as-copy-of'] : false
-                            echo "sourceName= ${sourceName}"
                             if (sourceName && sourceName.length() > 0) {
                                 def selector = openshift.selector("${o.kind}/${sourceName}")
                                 if (selector.count() == 1) {
