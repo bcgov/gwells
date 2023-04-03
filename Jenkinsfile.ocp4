@@ -356,7 +356,7 @@ def deployToDev() {
                         List newObjectCopies = []
 
                         for (o in (deployTemplate + deployDBTemplate)) {
-                            
+                            echo "deployTemplate, deployDBTemplate= ${o}"
                             // only perform this operation on objects with 'as-copy-of'
                             def sourceName = o.metadata && o.metadata.annotations && o.metadata.annotations['as-copy-of']
                             echo "sourceName= ${sourceName}"
