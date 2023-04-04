@@ -735,6 +735,20 @@ pipeline {
             }
         }
 
+        stage('DEV - Backup') {
+            agent { label 'deploy' }
+            when {
+                beforeAgent true
+                expression { env.CHANGE_TARGET != 'master' }
+            }
+            steps {
+                script {
+                    echo "backing up staging environment before deploying"
+                    dbBackup (devProject, devSuffix)
+                }
+            }
+        }
+
         stage('STAGING - Backup') {
             agent { label 'deploy' }
             when {
