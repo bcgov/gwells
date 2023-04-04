@@ -514,12 +514,12 @@ def dbBackup (String envProject, String envSuffix) {
     def dumpTemp = "/tmp/unverified.dump"
     int maxBackups = 10
 
-    echo "//Dump to temporary file"
+    //Dump to temporary file
     sh "oc rsh -n ${envProject} dc/${dcName} bash -c ' \
         pg_dump -U \${PG_USER} -d \${PG_DATABASE} -Fc -f ${dumpTemp} ${dumpOpts} \
     '"
 
-    echo "// Verify dump size is at least 1M"
+    // Verify dump size is at least 1M
     String sizeAtLeast1M = sh (
         script: "oc rsh -n ${envProject} dc/${dcName} bash -c ' \
             du --threshold=1M ${dumpTemp} | wc -l \
@@ -528,14 +528,14 @@ def dbBackup (String envProject, String envSuffix) {
     )
     assert sizeAtLeast1M.toInteger() == 1
 
-    echo "// Store verified dump"
+    // Store verified dump
     sh "oc rsh -n ${envProject} dc/${dcName} bash -c ' \
         mkdir -p ${dumpDir}; \
         mv ${dumpTemp} ${dumpDir}/${dumpName}; \
         ls -lh ${dumpDir} \
     '"
 
-    echo "// Database purge"
+    // Database purge
     sh "oc rsh -n ${envProject} dc/${dcName} bash -c \" \
             find ${dumpDir} -name *.dump -printf '%Ts\t%p\n' \
                 | sort -nr | cut -f2 | tail -n +${maxBackups} | xargs rm 2>/dev/null \
@@ -731,20 +731,6 @@ pipeline {
             steps {
                 script {
                     def result = apiTest ('DEV - API Tests', devHost, devSuffix)
-                }
-            }
-        }
-
-        stage('DEV - Backup') {
-            agent { label 'deploy' }
-            when {
-                beforeAgent true
-                expression { env.CHANGE_TARGET != 'master' }
-            }
-            steps {
-                script {
-                    echo "backing up staging environment before deploying"
-                    dbBackup (devProject, devSuffix)
                 }
             }
         }
