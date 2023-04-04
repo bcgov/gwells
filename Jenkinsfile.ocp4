@@ -520,13 +520,13 @@ def dbBackup (String envProject, String envSuffix) {
     '"
 
     echo "// Verify dump size is at least 1M"
-    int sizeAtLeast1M = sh (
+    String sizeAtLeast1M = sh (
         script: "oc rsh -n ${envProject} dc/${dcName} bash -c ' \
             du --threshold=1M ${dumpTemp} | wc -l \
         '",
         returnStdout: true
     )
-    assert sizeAtLeast1M == 1
+    assert sizeAtLeast1M.toInteger() == 1
 
     echo "// Store verified dump"
     sh "oc rsh -n ${envProject} dc/${dcName} bash -c ' \
