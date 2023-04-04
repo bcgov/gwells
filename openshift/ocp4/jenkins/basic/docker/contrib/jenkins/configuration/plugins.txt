@@ -51,7 +51,7 @@ jquery-detached:1.2.1
 jsch:0.1.55.61.va_e9ee26616e7
 junit:1189.v1b_e593637fa_e
 kubernetes-client-api:6.4.1-215.v2ed17097a_8e9
-matrix-auth:2.6.2
+matrix-auth:3.1.6
 matrix-project:785.v06b_7f47b_c631
 mercurial:1260.vdfb_723cdcc81
 momentjs:1.1.1
@@ -80,7 +80,6 @@ lockable-resources:1131.vb_7c3d377e723
 startup-trigger-plugin:2.9.3
 workflow-basic-steps:2.20
 workflow-cps:3653.v07ea_433c90b_4
-workflow-cps-global-lib:2.17
 workflow-multibranch:733.v109046189126
 basic-branch-build-strategies:71.vc1421f89888e
 blueocean-display-url:2.4.1
@@ -111,7 +110,7 @@ blueocean-bitbucket-pipeline:1.23.2
 blueocean-events:1.23.2
 blueocean-git-pipeline:1.23.2
 blueocean-github-pipeline:1.23.2
-blueocean:1.23.2
+blueocean:1.27.3
 configuration-as-code:1616.v11393eccf675
 role-strategy:587.588.v850a_20a_30162
 oic-auth:2.5
