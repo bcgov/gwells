@@ -81,13 +81,13 @@ RUN set -x && \
     java -version && \
     mkdir -p ${JENKINS_REF_HOME} && \
     mkdir -p $JENKINS_HOME && \
-    chmod -R 666 $JENKINS_HOME && \
+    chmod -R 664 $JENKINS_HOME && \
     chgrp -R 0 $JENKINS_HOME && \
     chmod -R g+rwX $JENKINS_HOME && \
     chmod 664 /etc/passwd && \
-    chmod -R 666 /etc/sysconfig/jenkins && \
+    chmod -R 664 /etc/sysconfig/jenkins && \
     chgrp -R 0 /var/log/jenkins && \
-    chmod -R 666 /var/log/jenkins && \
+    chmod -R 664 /var/log/jenkins && \
     chgrp -R 0 /usr/local/bin && \
     chmod -R g+rx /usr/local/bin && \
     chgrp -R 0 /var/log && \
@@ -111,7 +111,7 @@ RUN set -x && \
     chmod -R 644 $JENKINS_REF_HOME && \
     chmod -R g+rwX $JENKINS_REF_HOME && \ 
     (export REF=$JENKINS_REF_HOME/plugins JENKINS_WAR=/usr/share/java/jenkins.war; /usr/local/bin/jenkins-install-plugins $JENKINS_REF_HOME/plugins.txt) && \
-    chmod -R 777 $JENKINS_REF_HOME/plugins
+    chmod -R 774 $JENKINS_REF_HOME/plugins
 
 VOLUME ["${JENKINS_DATA}"]
 
