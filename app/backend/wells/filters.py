@@ -37,7 +37,7 @@ from wells.models import (
     WellOrientationCode,
     WaterQualityCharacteristic,
     Well,
-    TestingTypeCode,
+    PumpingTestTypeCode,
     BoundaryEffectCode
 )
 
@@ -282,8 +282,8 @@ class WellListFilter(AnyOrAllFilterSet):
     testing_number = filters.RangeFilter(field_name='aquifer_parameters_set__testing_number')
     date_pumping_test = filters.DateFromToRangeFilter(label='Pumping Test Date', 
                                                  field_name='aquifer_parameters_set__date_pumping_test')
-    testing_type = filters.ModelChoiceFilter(
-        queryset=TestingTypeCode.objects.all(), field_name='aquifer_parameters_set__testing_type')
+    pumping_test_type = filters.ModelChoiceFilter(
+        queryset=PumpingTestTypeCode.objects.all(), field_name='aquifer_parameters_set__pumping_test_type')
     testing_duration_hours = filters.RangeFilter(field_name='aquifer_parameters_set__testing_duration')
     boundary_effect = filters.ModelChoiceFilter(
         queryset=BoundaryEffectCode.objects.all(), field_name='aquifer_parameters_set__boundary_effect')
@@ -293,8 +293,8 @@ class WellListFilter(AnyOrAllFilterSet):
                                                 field_name='aquifer_parameters_set__hydraulic_conductivity')
     specific_yield = filters.RangeFilter(field_name='aquifer_parameters_set__specific_yield')
     specific_capacity = filters.RangeFilter(field_name='aquifer_parameters_set__specific_capacity')
-    analytic_solution_type = filters.CharFilter(lookup_expr='icontains', 
-                                                field_name='aquifer_parameters_set__analytic_solution_type')
+    analysis_type = filters.CharFilter(lookup_expr='icontains', 
+                                                field_name='aquifer_parameters_set__analysis_type')
     comments = filters.CharFilter(lookup_expr='icontains', 
                                           field_name='aquifer_parameters_set__comments')
     final_casing_stick_up = filters.RangeFilter()
@@ -362,7 +362,7 @@ class WellListFilter(AnyOrAllFilterSet):
             'bcgs_id',
             'bedrock_depth',
             'boundary_effect',
-            'testing_type',
+            'pumping_test_type',
             'city',
             'comments',
             'construction_end_date',

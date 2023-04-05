@@ -222,19 +222,19 @@ def unload_boundary_effect_codes(apps, schema_editor):
     return boundary_effect_code_fixture().unload_fixture(apps, schema_editor)
 
 
-def testing_type_codes_fixture():
-    fixture = 'migrations/testing_type_codes.json'
+def pumping_test_type_codes_fixture():
+    fixture = 'migrations/pumping_test_type_codes.json'
     fixture_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), fixture)
 
     return CodeFixture(fixture_path)
 
 
-def load_testing_type_codes(apps, schema_editor):
-    return testing_type_codes_fixture().load_fixture(apps, schema_editor)
+def load_pumping_test_type_codes(apps, schema_editor):
+    return pumping_test_type_codes_fixture().load_fixture(apps, schema_editor)
 
 
-def unload_testing_type_codes(apps, schema_editor):
-    return testing_type_codes_fixture().unload_fixture(apps, schema_editor)
+def unload_pumping_test_type_codes(apps, schema_editor):
+    return pumping_test_type_codes_fixture().unload_fixture(apps, schema_editor)
 
 
 def drive_shoe_code_fixture():

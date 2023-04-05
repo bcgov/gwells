@@ -667,7 +667,7 @@ export default {
         'closureDescription': 'Decommission description',
         'lithology': 'Lithology',
         'casings': 'Casing details',
-        'aquiferParameters': 'Aquifer parameters details',
+        'aquiferParameters': 'Pumping Test Information and Aquifer Parameters',
         'backfill': 'Surface seal and backfill information',
         'liner': 'Liner information',
         'screens': 'Screen information',

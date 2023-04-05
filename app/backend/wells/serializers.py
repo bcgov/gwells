@@ -188,13 +188,15 @@ class LegacyCasingSerializer(serializers.ModelSerializer):
 class AquiferParametersSerializer(serializers.ModelSerializer):
     """Serializes aquifer parameters for well"""
 
+    pumping_test_type = serializers.ReadOnlyField(source='pumping_test_type_code.description')
+
     class Meta:
         model = AquiferParameters
         fields = (
             'testing_number',
             'well',
             'date_pumping_test',
-            'testing_type',
+            'pumping_test_type',
             'testing_duration_hours',
             'boundary_effect',
             'storativity',
@@ -202,7 +204,7 @@ class AquiferParametersSerializer(serializers.ModelSerializer):
             'hydraulic_conductivity',
             'specific_yield',
             'specific_capacity',
-            'analytic_solution_type',
+            'analysis_type',
             'comments'
         )
 
@@ -210,13 +212,15 @@ class AquiferParametersSerializer(serializers.ModelSerializer):
 class AquiferParametersSummarySerializer(serializers.ModelSerializer):
     """Serializes aquifer parameters for well summary"""
 
+    pumping_test_type = serializers.ReadOnlyField(source='pumping_test_type_code.description')
+    
     class Meta:
         model = AquiferParameters
         fields = (
             'testing_number',
             'well',
             'date_pumping_test',
-            'testing_type',
+            'pumping_test_type',
             'testing_duration_hours',
             'boundary_effect',
             'storativity',
@@ -224,7 +228,7 @@ class AquiferParametersSummarySerializer(serializers.ModelSerializer):
             'hydraulic_conductivity',
             'specific_yield',
             'specific_capacity',
-            'analytic_solution_type',
+            'analysis_type',
             'comments'
         )
 
@@ -235,7 +239,7 @@ class AquiferParametersStackerSerializer(serializers.ModelSerializer):
             'testing_number',
             'well',
             'date_pumping_test',
-            'testing_type',
+            'pumping_test_type',
             'testing_duration_hours',
             'boundary_effect',
             'storativity',
@@ -243,7 +247,7 @@ class AquiferParametersStackerSerializer(serializers.ModelSerializer):
             'hydraulic_conductivity',
             'specific_yield',
             'specific_capacity',
-            'analytic_solution_type',
+            'analysis_type',
             'comments',
             'create_user',
             'update_user'

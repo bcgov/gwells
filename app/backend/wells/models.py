@@ -198,15 +198,15 @@ class BoundaryEffectCode(CodeTableModel):
         return self.description
 
 
-class TestingTypeCode(CodeTableModel):
+class PumpingTestTypeCode(CodeTableModel):
     """
      The pumping test method type in aquifer pumping tests.
     """
-    testing_type_code = models.CharField(primary_key=True, max_length=10, editable=False)
+    pumping_test_type_code = models.CharField(primary_key=True, max_length=10, editable=False)
     description = models.CharField(max_length=100)
 
     class Meta:
-        db_table = 'testing_type_code'
+        db_table = 'pumping_test_type_code'
         ordering = ['display_order', 'description']
 
     db_table_comment = ('Type of the pumping test method used for aquifer pumping tests.')
@@ -2478,7 +2478,7 @@ class AquiferParameters(AuditModel):
         null=True, verbose_name='Date of pumping test',
         db_comment='The date when the analysis tooke place.')
     
-    testing_type = models.ForeignKey(TestingTypeCode, db_column='testing_type_code',
+    pumping_test_type = models.ForeignKey(PumpingTestTypeCode, db_column='pumping_test_type_code',
                                     on_delete=models.PROTECT, blank=True, null=True,
                                     verbose_name='Testing Type',
                                     db_comment='Valid codes for the testing types used in '
@@ -2510,11 +2510,11 @@ class AquiferParameters(AuditModel):
     specific_capacity = models.DecimalField(
         max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Specific Yield')
     
-    analytic_solution_type = models.TextField(
+    analysis_type = models.TextField(
          max_length=100,
         blank=True,
         null=True,
-        verbose_name='Analytic Solution Type',
+        verbose_name='Analysis Type',
         db_comment='Mathematical formulation used to estimate hydraulic parameters.')
 
     comments = models.TextField(
@@ -2534,7 +2534,7 @@ class AquiferParameters(AuditModel):
         "aquifer_parameters_guid":"System generated unique guid assigned to each pumping test record.",
         "well_tag_number":"System generated sequential number assigned to each well. It is widely used by groundwater staff as it is the only consistent unique identifier for each well. It is different from a well ID plate number.",
         "date_pumping_test":"Date of the pumping test.",
-        "testing_type_code":"Identification of the testing method (e.g.basic pumping test, pumping test with monitoring wells, single-well-response/slug test, constant head).",
+        "pumping_test_type_code":"Identification of the testing method (e.g.basic pumping test, pumping test with monitoring wells, single-well-response/slug test, constant head).",
         "testing_duration_hours":"The duration of the hydraulic testing period.  For consistency, do not include the recovery period.",
         "boundary_effect_code":"Valid codes for the boundaries observed in pumping test analysis. i.e. CH, NF.",
         "storativity":"Storativity estimated from hydraulic testing (dimensionless).",
@@ -2542,7 +2542,7 @@ class AquiferParameters(AuditModel):
         "hydraulic_conductivity":"Hydraulic conductivity estimated from hydraulic testing in metres per second.",
         "specific_yield":"Specific Yield estimated from hydraulic testing (dimensionless).",
         "specific_capacity":"Specific Capacity.",
-        "analytic_solution_type":"The mathematical solution to the groundwater flow equation used to fit the observational data and estimate hydraulic parameters e.g. Theis 1935",
+        "analysis_type":"The mathematical solution to the groundwater flow equation used to fit the observational data and estimate hydraulic parameters e.g. Theis 1935",
         "comments":"Any additional comments about the pumping test.",
     }
 
@@ -2558,13 +2558,13 @@ class AquiferParameters(AuditModel):
             "aquifer_parameters_guid": self.aquifer_parameters_guid,
             "well_tag_number": self.well,
             "date_pumping_test": self.date_pumping_test,
-            "testing_type_code": self.testing_type,
+            "pumping_test_type_code": self.pumping_test_type,
             "testing_duration_hours": self.testing_duration_hours,
             "storativity": self.storativity,
             "transmissivity": self.transmissivity,
             "hydraulic_conductivity": self.hydraulic_conductivity,
             "specific_yield": self.specific_yield,
             "specific_capacity": self.specific_capacity,
-            "analytic_solution_type": self.analytic_solution_type,
+            "analysis_type": self.analysis_type,
             "comments": self.comments
         }

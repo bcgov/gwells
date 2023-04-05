@@ -1,5 +1,5 @@
 [{
-    "model": "wells.testingtypecode",
+    "model": "wells.PumpingTestTypeCode",
     "pk": "ST",
     "fields": {
         "create_user": "DATALOAD_USER",
@@ -13,7 +13,7 @@
     }
 },
 {
-  "model": "wells.testingtypecode",
+  "model": "wells.PumpingTestTypeCode",
   "pk": "PTPW",
   "fields": {
       "create_user": "DATALOAD_USER",
@@ -27,7 +27,7 @@
     }
   },
   {
-    "model": "wells.testingtypecode",
+    "model": "wells.PumpingTestTypeCode",
     "pk": "PTOW",
     "fields": {
         "create_user": "DATALOAD_USER",
@@ -41,7 +41,7 @@
     }
   },
   {
-    "model": "wells.testingtypecode",
+    "model": "wells.PumpingTestTypeCode",
     "pk": "RT",
     "fields": {
         "create_user": "DATALOAD_USER",
@@ -55,7 +55,7 @@
     }
   },
   {
-    "model": "wells.testingtypecode",
+    "model": "wells.PumpingTestTypeCode",
     "pk": "OTHER",
     "fields": {
         "create_user": "DATALOAD_USER",

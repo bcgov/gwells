@@ -245,25 +245,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </div>
     </fieldset>
 
-    <fieldset class="my-3 detail-section">
-      <legend>Aquifer Parameters Details</legend>
-      <div class="table-responsive">
-        <b-table
-            striped
-            small
-            bordered
-            :items="filterBlankRows(form.aquifer_parameters_set)"
-            :fields="[
-              'testing_number', 'date_pumping_test', 'testing_type',
-              'testing_duration_hours', 'boundary_effect', 'storativity', 'transmissivity',
-              'hydraulic_conductivity', 'specific_yield', 'specific_capacity', 'analytic_solution_type',
-              'comments'
-            ]"
-            show-empty>
-        </b-table>
-      </div>
-    </fieldset>
-
     <fieldset class="my-3 detail-section" v-if="sections.backfill">
       <legend>Surface Seal and Backfill Details</legend>
       <b-row>
@@ -453,6 +434,25 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <b-row>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Decommission Details:</span> {{ form.decommission_details }}</b-col>
       </b-row>
+    </fieldset>
+
+    <fieldset class="my-3 detail-section">
+      <legend>Pumping Test Information and Aquifer Parameters</legend>
+      <div class="table-responsive">
+        <b-table
+            striped
+            small
+            bordered
+            :items="filterBlankRows(form.aquifer_parameters_set)"
+            :fields="[
+              'testing_number', 'date_pumping_test', 'pumping_test_type',
+              'testing_duration_hours', 'boundary_effect', 'storativity', 'transmissivity',
+              'hydraulic_conductivity', 'specific_yield', 'specific_capacity', 'analysis_type',
+              'comments'
+            ]"
+            show-empty>
+        </b-table>
+      </div>
     </fieldset>
 
     <fieldset class="my-3 detail-section">

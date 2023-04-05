@@ -32,12 +32,12 @@ Licensed under the Apache License, Version 2.0 (the "License");
             <th class="font-weight-normal">Testing Type</th>
             <th class="font-weight-normal">Testing Duration (hours)</th>
             <th class="font-weight-normal">Boundary Effect</th>
-            <th class="font-weight-normal">Analytical Solution Type</th>
             <th class="font-weight-normal">Storativity</th>
             <th class="font-weight-normal">Transmissivity (m²/s)</th>
             <th class="font-weight-normal">Hydraulic Conductivity (m/s)</th>
             <th class="font-weight-normal">Specific Yield</th>
             <th class="font-weight-normal">Specific Capacity</th>
+            <th class="font-weight-normal">Analysis Type</th>
             <th class="font-weight-normal">Comments</th>
             <th></th>
           </tr>
@@ -59,13 +59,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 id="testingType"
                 group-class="mt-1 mb-0"
                 select
-                v-model="aquiferParameter.testing_type"
-                :options="codes.testing_type_codes"
+                v-model="aquiferParameter.pumping_test_type"
+                :options="codes.pumping_test_type_codes"
                 placeholder="Select Testing Type"
                 text-field="description"
-                value-field="testing_type_code"
-                :errors="errors['testing_type']"
-                :loaded="fieldsLoaded['testing_type']"/>
+                value-field="pumping_test_type_code"
+                :errors="errors['pumping_test_type']"
+                :loaded="fieldsLoaded['pumping_test_type']"/>
             </td>
             <td>
               <form-input
@@ -101,7 +101,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
             </td>
             <td>
               <form-input
-                class="input-width-sm"
                 group-class="mt-1 mb-0"
                 :id="'aquiferParameter_transmissivity_' + index"
                 type="number"
@@ -139,11 +138,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
             <td>
               <form-input
                 group-class="mt-1 mb-0"
-                :id="'aquiferParameter_analyticSolutionType_' + index"
+                :id="'aquiferParameter_analysisType_' + index"
                 type="text"
-                v-model="aquiferParameter.analytic_solution_type"
-                :errors="getAquiferParametersError(index).analytic_solution_type"
-                :loaded="getFieldsLoaded(index).analytic_solution_type"/>
+                v-model="aquiferParameter.analysis_type"
+                :errors="getAquiferParametersError(index).analysis_type"
+                :loaded="getFieldsLoaded(index).analysis_type"/>
             </td>
             <td>
               <form-input
@@ -232,7 +231,7 @@ export default {
     emptyObject () {
       return {
         date_pumping_test: null,
-        testing_type: null,
+        pumping_test_type: null,
         testing_duration_hours: null,
         boundary_effect: null,
         storativity: null,
@@ -240,7 +239,7 @@ export default {
         hydraulic_conductivity: null,
         specific_yield: null,
         specific_capacity: null,
-        analytic_solution_type: null,
+        analysis_type: null,
         comments: null
       }
     },

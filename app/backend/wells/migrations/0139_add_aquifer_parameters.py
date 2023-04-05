@@ -17,7 +17,7 @@ MIGRATE_HYDRAULIC_TABLE_INFO = """
         transmissivity,
         hydraulic_conductivity,
         specific_yield,
-        analytic_solution_type,
+        analysis_type,
         testing_duration_hours,
         comments,
         create_user,
@@ -32,7 +32,7 @@ MIGRATE_HYDRAULIC_TABLE_INFO = """
         w.transmissivity,
         w.hydraulic_conductivity,
         w.specific_yield,
-        CAST(w.analytic_solution_type AS varchar) AS analytic_solution_type,
+        CAST(w.analytic_solution_type AS varchar) AS analysis_type,
         w.testing_duration,
         w.testing_method,
         'WELLS',
@@ -53,7 +53,7 @@ MIGRATE_HYDRAULIC_TABLE_INFO = """
 
 REVERSE_MIGRATE_HYDRAULIC_TABLE_INFO = """
     DROP TABLE aquifer_parameters;
-    DROP TABLE testing_type_code;
+    DROP TABLE pumping_test_type_code;
 """
 
 CREATE_EXPORT_AQUIFER_PARAMETERS_VIEW_V1_SQL = """
@@ -63,7 +63,7 @@ SELECT
   ap.well_tag_number,
   ap.testing_number,
   ap.date_pumping_test,
-  tt.description AS testing_type,
+  tt.description AS pumping_test_type,
   ap.testing_duration_hours,
   be.description AS boundary_effect,
   ap.storativity,
@@ -71,12 +71,12 @@ SELECT
   ap.hydraulic_conductivity,
   ap.specific_yield,
   ap.specific_capacity,
-  ap.analytic_solution_type,
+  ap.analysis_type,
   ap.comments
 FROM
   aquifer_parameters AS ap
 LEFT JOIN
-  testing_type_code AS tt ON ap.testing_type_code = tt.testing_type_code
+  pumping_test_type_code AS tt ON ap.pumping_test_type_code = tt.pumping_test_type_code
 LEFT JOIN
   boundary_effect_code AS be ON ap.boundary_effect_code = be.boundary_effect_code
 INNER JOIN
@@ -99,7 +99,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='TestingTypeCode',
+            name='PumpingTestTypeCode',
             fields=[
                 ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(default=django.utils.timezone.now)),
@@ -108,11 +108,11 @@ class Migration(migrations.Migration):
                 ('display_order', models.PositiveIntegerField()),
                 ('effective_date', models.DateTimeField(default=django.utils.timezone.now)),
                 ('expiry_date', models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc))),
-                ('testing_type_code', models.CharField(db_column='testing_type_code', editable=False, max_length=50, primary_key=True, serialize=False)),
+                ('pumping_test_type_code', models.CharField(db_column='pumping_test_type_code', editable=False, max_length=50, primary_key=True, serialize=False)),
                 ('description', models.CharField(max_length=100)),
             ],
             options={
-                'db_table': 'testing_type_code',
+                'db_table': 'pumping_test_type_code',
                 'ordering': ['display_order', 'description'],
             },
             bases=(models.Model, gwells.db_comments.model_mixins.DBComments),
@@ -125,7 +125,7 @@ class Migration(migrations.Migration):
                 ('activity_submission', models.ForeignKey(blank=True, db_column='filing_number', null=True, on_delete=django.db.models.deletion.PROTECT, related_name='aquifer_parameters_set', to='wells.ActivitySubmission')),
                 ('well', models.ForeignKey(blank=True, db_column='well_tag_number', null=True, on_delete=django.db.models.deletion.PROTECT, related_name='aquifer_parameters_set', to='wells.Well')),
                 ('date_pumping_test', models.DateField(null=True, verbose_name='Date of test')),
-                ('testing_type', models.ForeignKey(blank=True, db_column='testing_type_code', null='True', on_delete=django.db.models.deletion.PROTECT, to='wells.TestingTypeCode', verbose_name='Testing Type')),
+                ('pumping_test_type', models.ForeignKey(blank=True, db_column='pumping_test_type_code', null='True', on_delete=django.db.models.deletion.PROTECT, to='wells.PumpingTestTypeCode', verbose_name='Testing Type')),
                 ('testing_duration_hours', models.PositiveIntegerField(blank=True, null=True)),
                 ('boundary_effect', models.ForeignKey(blank=True, db_column='boundary_effect_code', null=True, on_delete=django.db.models.deletion.PROTECT, to='wells.BoundaryEffectCode', verbose_name='Boundary Effect')),
                 ('storativity', models.DecimalField(blank=True, decimal_places=7, max_digits=8, null=True, verbose_name='Storativity')),
@@ -133,7 +133,7 @@ class Migration(migrations.Migration):
                 ('hydraulic_conductivity', models.TextField(blank=True, max_length=100, null=True, verbose_name='Hydraulic Conductivity')),
                 ('specific_yield', models.DecimalField(blank=True, decimal_places=2, max_digits=5, null=True, verbose_name='Specific Yield')),
                 ('specific_capacity', models.DecimalField(blank=True, decimal_places=2, max_digits=5, null=True, verbose_name='Specific Yield')),
-                ('analytic_solution_type', models.TextField(blank=True, max_length=100, null=True, verbose_name='Analytic Solution Type')),
+                ('analysis_type', models.TextField(blank=True, max_length=100, null=True, verbose_name='Analysis Type')),
                 ('comments', models.TextField(blank=True, max_length=350, null=True, verbose_name='Testing Comments')),
                 ('create_user', models.CharField(max_length=60)),
                 ('create_date', models.DateTimeField(default=django.utils.timezone.now)),
@@ -156,8 +156,8 @@ class Migration(migrations.Migration):
           REVERSE_MIGRATE_HYDRAULIC_TABLE_INFO
         ),
         migrations.RunPython(
-            code=wells.data_migrations.load_testing_type_codes,
-            reverse_code=wells.data_migrations.unload_testing_type_codes
+            code=wells.data_migrations.load_pumping_test_type_codes,
+            reverse_code=wells.data_migrations.unload_pumping_test_type_codes
         ),
         migrations.RunSQL(
           CREATE_EXPORT_AQUIFER_PARAMETERS_VIEW_V1_SQL,

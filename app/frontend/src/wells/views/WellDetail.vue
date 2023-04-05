@@ -337,25 +337,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </div>
         </fieldset>
 
-        <fieldset id="aquifer_parameters_fieldset" class="my-3 detail-section">
-          <legend>Aquifer Parameters Details</legend>
-          <div class="table-responsive">
-            <b-table
-                striped
-                small
-                bordered
-                :items="well.aquifer_parameters_set"
-                :fields="[
-                  'testing_number', 'date_pumping_test', 'testing_type',
-                  'testing_duration_hours', 'boundary_effect', 'storativity', 'transmissivity',
-                  'hydraulic_conductivity', 'specific_yield', 'specific_capacity', 'analytic_solution_type',
-                  'comments'
-                ]"
-                show-empty>
-            </b-table>
-          </div>
-        </fieldset>
-
         <fieldset id="surface_seal_fieldset" class="my-3 detail-section">
           <legend>Surface Seal and Backfill Details</legend>
           <b-row>
@@ -493,6 +474,25 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <b-row>
             <b-col cols="12" md="4"><span class="font-weight-bold">Decommission Details:</span> {{ well.decommission_details }}</b-col>
           </b-row>
+        </fieldset>
+
+        <fieldset id="aquifer_parameters_fieldset" class="my-3 detail-section">
+          <legend>Pumping Test Information and Aquifer Parameters</legend>
+          <div class="table-responsive">
+            <b-table
+                striped
+                small
+                bordered
+                :items="well.aquifer_parameters_set"
+                :fields="[
+                  'testing_number', 'date_pumping_test', 'pumping_test_type',
+                  'testing_duration_hours', 'boundary_effect', 'storativity', 'transmissivity',
+                  'hydraulic_conductivity', 'specific_yield', 'specific_capacity', 'analysis_type',
+                  'comments'
+                ]"
+                show-empty>
+            </b-table>
+          </div>
         </fieldset>
 
         <fieldset id="well_comments_fieldset" class="my-3 detail-section">
