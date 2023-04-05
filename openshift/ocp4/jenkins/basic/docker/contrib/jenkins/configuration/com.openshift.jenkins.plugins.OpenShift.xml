@@ -1,5 +1,0 @@
-<?xml version='1.1' encoding='UTF-8'?>
-<com.openshift.jenkins.plugins.OpenShift_-DescriptorImpl plugin="openshift-client@1.0.34">
-  <configVersion>1</configVersion>
-  <ocTool>oc</ocTool>
-</com.openshift.jenkins.plugins.OpenShift_-DescriptorImpl>

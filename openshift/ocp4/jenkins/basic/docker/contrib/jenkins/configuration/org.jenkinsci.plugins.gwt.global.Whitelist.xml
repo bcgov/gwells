@@ -1,5 +1,0 @@
-<?xml version='1.1' encoding='UTF-8'?>
-<org.jenkinsci.plugins.gwt.global.Whitelist plugin="generic-webhook-trigger@1.67">
-  <enabled>false</enabled>
-  <whitelistItems/>
-</org.jenkinsci.plugins.gwt.global.Whitelist>
