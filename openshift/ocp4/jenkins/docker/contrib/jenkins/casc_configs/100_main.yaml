@@ -7,8 +7,6 @@ jenkins:
   - "Ping"
   disabledAdministrativeMonitors:
   - "jenkins.security.QueueItemAuthenticatorMonitor"
-  remotingSecurity:
-    enabled: true
   clouds:
   - kubernetes:
       containerCap: 10
