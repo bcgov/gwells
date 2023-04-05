@@ -1,5 +1,0 @@
-<?xml version='1.1' encoding='UTF-8'?>
-<jenkins.model.JenkinsLocationConfiguration>
-  <adminAddress>Sustainment.Team@gov.bc.ca</adminAddress>
-  <jenkinsUrl>https://gwells-jenkins.apps.silver.devops.gov.bc.ca/</jenkinsUrl>
-</jenkins.model.JenkinsLocationConfiguration>
