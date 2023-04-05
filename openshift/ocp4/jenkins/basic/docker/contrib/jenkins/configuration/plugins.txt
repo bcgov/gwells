@@ -45,7 +45,6 @@ credentials-binding:523.vd859a_4b_122e6
 generic-webhook-trigger:1.86.2
 pipeline-groovy-lib:629.vb_5627b_ee2104
 groovy:453.vcdb_a_c5c99890
-groovy-events-listener-plugin:1.017
 handy-uri-templates-2-api:2.1.8-22.v77d5b_75e6953
 jsch:0.1.55.61.va_e9ee26616e7
 junit:1189.v1b_e593637fa_e
