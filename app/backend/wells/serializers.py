@@ -187,9 +187,6 @@ class LegacyCasingSerializer(serializers.ModelSerializer):
 
 class AquiferParametersSerializer(serializers.ModelSerializer):
     """Serializes aquifer parameters for well"""
-
-    pumping_test_type = serializers.ReadOnlyField(source='pumping_test_type_code.description')
-
     class Meta:
         model = AquiferParameters
         fields = (
@@ -211,9 +208,6 @@ class AquiferParametersSerializer(serializers.ModelSerializer):
 
 class AquiferParametersSummarySerializer(serializers.ModelSerializer):
     """Serializes aquifer parameters for well summary"""
-
-    pumping_test_type = serializers.ReadOnlyField(source='pumping_test_type_code.description')
-    
     class Meta:
         model = AquiferParameters
         fields = (

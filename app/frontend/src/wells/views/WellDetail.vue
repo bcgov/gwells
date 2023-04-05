@@ -491,6 +491,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   'comments'
                 ]"
                 show-empty>
+                <template slot="pumping_test_type" slot-scope="data">{{codeToDescription('pumping_test_type_codes', data.item.pumping_test_type)}}</template>
+                <template slot="boundary_effect" slot-scope="data">{{codeToDescription('boundary_effect_codes', data.item.boundary_effect)}}</template>
             </b-table>
           </div>
         </fieldset>
@@ -620,7 +622,7 @@ export default {
     isUnpublished () {
       return !this.well.is_published
     },
-    ...mapGetters(['userRoles', 'config', 'well', 'wellLicence', 'storedWellId'])
+    ...mapGetters(['userRoles', 'config', 'well', 'wellLicence', 'storedWellId', 'codes'])
   },
   methods: {
     handlePrint () {

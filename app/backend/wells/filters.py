@@ -362,7 +362,6 @@ class WellListFilter(AnyOrAllFilterSet):
             'bcgs_id',
             'bedrock_depth',
             'boundary_effect',
-            'pumping_test_type',
             'city',
             'comments',
             'construction_end_date',
