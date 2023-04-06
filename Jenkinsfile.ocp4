@@ -356,9 +356,8 @@ def deployToDev() {
                         List newObjectCopies = []
 
                         for (o in (deployTemplate + deployDBTemplate)) {
-
                             // only perform this operation on objects with 'as-copy-of'
-                            def sourceName = o.metadata && o.metadata.annotations && o.metadata.annotations['as-copy-of']
+                            def sourceName = (o.metadata && o.metadata.annotations && o.metadata.annotations['as-copy-of']) ? o.metadata.annotations['as-copy-of'] : false
                             if (sourceName && sourceName.length() > 0) {
                                 def selector = openshift.selector("${o.kind}/${sourceName}")
                                 if (selector.count() == 1) {
@@ -515,19 +514,19 @@ def dbBackup (String envProject, String envSuffix) {
     def dumpTemp = "/tmp/unverified.dump"
     int maxBackups = 10
 
-    // Dump to temporary file
+    //Dump to temporary file
     sh "oc rsh -n ${envProject} dc/${dcName} bash -c ' \
         pg_dump -U \${PG_USER} -d \${PG_DATABASE} -Fc -f ${dumpTemp} ${dumpOpts} \
     '"
 
     // Verify dump size is at least 1M
-    int sizeAtLeast1M = sh (
+    String sizeAtLeast1M = sh (
         script: "oc rsh -n ${envProject} dc/${dcName} bash -c ' \
             du --threshold=1M ${dumpTemp} | wc -l \
         '",
         returnStdout: true
     )
-    assert sizeAtLeast1M == 1
+    assert sizeAtLeast1M.toInteger() == 1
 
     // Store verified dump
     sh "oc rsh -n ${envProject} dc/${dcName} bash -c ' \

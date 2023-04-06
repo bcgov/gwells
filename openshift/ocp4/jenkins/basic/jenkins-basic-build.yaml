@@ -1,0 +1,65 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: jenkins-basic
+objects:
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    creationTimestamp: null
+    name: ${NAME}${SUFFIX}
+  spec:
+    failedBuildsHistoryLimit: 2
+    output:
+      to:
+        kind: ImageStreamTag
+        name: ${NAME}:${VERSION}
+    postCommit: {}
+    resources:
+      limits:
+        cpu: "2"
+        memory: 2Gi
+      requests:
+        cpu: "1"
+        memory: 1Gi
+    runPolicy: SerialLatestOnly
+    source:
+      contextDir: openshift/ocp4/jenkins/basic/docker
+      git:
+        ref: ${SOURCE_REPOSITORY_REF}
+        uri: ${SOURCE_REPOSITORY_URL}
+      type: Git
+    strategy:
+      dockerStrategy:
+        from:
+          kind: DockerImage
+          name: registry.redhat.io/ubi8/ubi:8.7
+      type: Docker
+    successfulBuildsHistoryLimit: 2
+    triggers:
+    - type: ConfigChange
+    - imageChange: {}
+      type: ImageChange
+parameters:
+- description: A name used for all objects
+  displayName: Name
+  name: NAME
+  required: true
+  value: jenkins-basic
+- description: A name suffix used for all objects
+  displayName: Suffix
+  name: SUFFIX
+  required: false
+  value: ""
+- description: A version used for the image tags
+  displayName: version
+  name: VERSION
+  required: true
+  value: v2-latest
+- name: SOURCE_REPOSITORY_URL
+  required: true
+  value: https://github.com/bcgov/gwells.git
+- name: SOURCE_REPOSITORY_REF
+  required: false
+  value: master

@@ -1,6 +1,6 @@
 FROM BuildConfig
-ARG NODE_VERSION=v10.16.0
-ARG SONAR_VERSION=3.3.0.1492
+ARG NODE_VERSION=v18.15.0
+ARG SONAR_VERSION=4.8.0.2856
 USER 0
 RUN fix_permission() { while [[ $# > 0 ]] ; do chgrp -R 0 "$1" && chmod -R g=u "$1"; shift; done } && \
     set -x && \

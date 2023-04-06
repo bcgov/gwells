@@ -1,0 +1,68 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>x_github_event</name>
+          <description></description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>payload</name>
+          <description></description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <scm class="hudson.scm.NullSCM"/>
+  <assignedNode>master</assignedNode>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers>
+    <org.jenkinsci.plugins.gwt.GenericTrigger plugin="generic-webhook-trigger@1.40">
+      <spec></spec>
+      <regexpFilterText></regexpFilterText>
+      <regexpFilterExpression></regexpFilterExpression>
+      <genericRequestVariables>
+        <org.jenkinsci.plugins.gwt.GenericRequestVariable>
+          <key>payload</key>
+          <regexpFilter></regexpFilter>
+        </org.jenkinsci.plugins.gwt.GenericRequestVariable>
+      </genericRequestVariables>
+      <genericHeaderVariables>
+        <org.jenkinsci.plugins.gwt.GenericHeaderVariable>
+          <key>X-GitHub-Event</key>
+          <regexpFilter></regexpFilter>
+        </org.jenkinsci.plugins.gwt.GenericHeaderVariable>
+      </genericHeaderVariables>
+      <printPostContent>false</printPostContent>
+      <printContributedVariables>false</printContributedVariables>
+      <causeString>Generic Cause</causeString>
+      <token>#{TOKEN}</token>
+    </org.jenkinsci.plugins.gwt.GenericTrigger>
+  </triggers>
+  <concurrentBuild>true</concurrentBuild>
+  <builders>
+    <hudson.plugins.groovy.SystemGroovy plugin="groovy@2.0">
+      <source class="hudson.plugins.groovy.StringSystemScriptSource">
+        <script plugin="script-security@1.44">
+          <script>evaluate(new File(System.getenv()[&apos;JENKINS_HOME&apos;], &apos;scripts.groovy.d/on-gh-event.groovy&apos;))</script>
+          <sandbox>false</sandbox>
+        </script>
+      </source>
+    </hudson.plugins.groovy.SystemGroovy>
+  </builders>
+  <publishers/>
+  <buildWrappers>
+    <hudson.plugins.ansicolor.AnsiColorBuildWrapper plugin="ansicolor@0.5.2">
+      <colorMapName>xterm</colorMapName>
+    </hudson.plugins.ansicolor.AnsiColorBuildWrapper>
+  </buildWrappers>
+</project>
