@@ -825,7 +825,7 @@ pipeline {
                         for (o in (deployTemplate + deployDBTemplate)) {
 
                             // only perform this operation on objects with 'as-copy-of'
-                            def sourceName = o.metadata && o.metadata.annotations && o.metadata.annotations['as-copy-of']
+                            def sourceName = (o.metadata && o.metadata.annotations && o.metadata.annotations['as-copy-of']) ? o.metadata.annotations['as-copy-of'] : false
                             if (sourceName && sourceName.length() > 0) {
 
                                 def selector = openshift.selector("${o.kind}/${sourceName}")
@@ -1212,7 +1212,7 @@ pipeline {
                         for (o in (deployTemplate + deployDBTemplate)) {
 
                             // only perform this operation on objects with 'as-copy-of'
-                            def sourceName = o.metadata && o.metadata.annotations && o.metadata.annotations['as-copy-of']
+                            def sourceName = (o.metadata && o.metadata.annotations && o.metadata.annotations['as-copy-of']) ? o.metadata.annotations['as-copy-of'] : false 
                             if (sourceName && sourceName.length() > 0) {
                                 def selector = openshift.selector("${o.kind}/${sourceName}")
                                 if (selector.count() == 1) {
@@ -1436,7 +1436,7 @@ pipeline {
             node('build') {
                 step([$class: 'Mailer',
                     notifyEveryUnstableBuild: true,
-                    recipients: "dmitri.korin@gov.bc.ca,Julian.Foreman@gov.bc.ca,Christopher.Walsh@gov.bc.ca,Norris.Ng@gov.bc.ca",
+                    recipients: "dmitri.korin@gov.bc.ca,David.Claveau@gov.bc.ca,Christopher.Walsh@gov.bc.ca,Norris.Ng@gov.bc.ca",
                     sendToIndividuals: true])
             }
         }
