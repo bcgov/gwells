@@ -91,7 +91,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               <a
                 v-if="well.technical_report"
                 id="technical_report"
-                href='https://www2.gov.bc.ca/gov/content/governments/about-the-bc-government/open-government/open-information/freedom-of-information/submit-a-general-freedom-of-information-request'
+                href='https://foirequestform.gov.bc.ca/?general='
                 target="_blank"
                 rel="noopener noreferrer"
               > Report Available</a>
