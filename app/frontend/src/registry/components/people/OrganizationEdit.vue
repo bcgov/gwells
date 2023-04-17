@@ -520,9 +520,9 @@ export default {
         this.companyDeleteError = e.response.data
       })
     },
-    ...mapActions('registriesStore', [      
+    ...mapActions('registriesStore', [
       FETCH_DRILLER_OPTIONS
-    ]),
+    ])
   },
   created () {
     this.loadCompanies()

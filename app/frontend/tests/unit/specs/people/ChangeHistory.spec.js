@@ -11,7 +11,6 @@ localVue.use(VueMoment)
 describe('Notes.vue', () => {
   let store
 
-
   beforeEach(() => {
     moxios.install()
     store = new Vuex.Store({
@@ -27,14 +26,14 @@ describe('Notes.vue', () => {
           getters: {
             loading: () => false,
             error: () => null,
-            searchResponse: () => [],
+            searchResponse: () => []
           },
-          actions: {             
+          actions: {
           },
-          mutations:{        
+          mutations: {
           }
-        }        
-      }  
+        }
+      }
     })
   })
 
@@ -48,7 +47,7 @@ describe('Notes.vue', () => {
       localVue,
       stubs: ['router-link', 'router-view'],
       mocks: {
-        $route: {params: {person_guid: 'aaaa-4444-bbbb-1111'}}
+        $route: { params: { person_guid: 'aaaa-4444-bbbb-1111' } }
       }
     })
     expect(wrapper.find('#changeHistoryTitle').text()).toContain('History')

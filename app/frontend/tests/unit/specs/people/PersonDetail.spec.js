@@ -26,19 +26,19 @@ const GET_DEFAULT_STORE_MODULES = () => {
       namespaced: true,
       getters: {
         loading: () => false,
-        error: () => null,      
+        error: () => null,
         currentDriller: jest.fn().mockReturnValue(fakePerson),
-        searchResponse: () => [],
+        searchResponse: () => []
       },
       actions: {
         [FETCH_DRILLER]: jest.fn(),
         [FETCH_DRILLER_OPTIONS]: jest.fn()
       },
-      mutations:{
+      mutations: {
         [SET_DRILLER]: jest.fn()
       }
-    }        
-  }  
+    }
+  }
 }
 
 describe('PersonDetail.vue', () => {
@@ -63,7 +63,7 @@ describe('PersonDetail.vue', () => {
       localVue,
       stubs: ['router-link', 'router-view'],
       mocks: {
-        $route: {params: {person_guid: 'aaaa-4444-bbbb-1111'}}
+        $route: { params: { person_guid: 'aaaa-4444-bbbb-1111' } }
       }
     })
     expect(modules.registriesStore.actions.FETCH_DRILLER).toHaveBeenCalled()
@@ -75,20 +75,20 @@ describe('PersonDetail.vue', () => {
         return { status: '400', statusText: 'error!' }
       },
       currentDriller: jest.fn().mockReturnValue(fakePerson),
-      searchResponse: () => [],
+      searchResponse: () => []
     })
     modules.auth.getters = Object.assign({}, modules.registriesStore.getters, {
       user: () => null,
       userRoles: () => ({ registry: { edit: true, view: true, approve: true } })
     })
-    
+
     const storeError = new Vuex.Store({ modules: modules })
     const wrapper = mount(PersonDetail, {
       store: storeError,
       localVue,
       stubs: ['router-link', 'router-view'],
       mocks: {
-        $route: {params: {person_guid: 'aaaa-4444-bbbb-1111'}}
+        $route: { params: { person_guid: 'aaaa-4444-bbbb-1111' } }
       }
     })
     expect(wrapper.findAll(APIErrorMessage).length).toEqual(1)
@@ -99,7 +99,7 @@ describe('PersonDetail.vue', () => {
       localVue,
       stubs: ['router-link', 'router-view'],
       mocks: {
-        $route: {params: {person_guid: 'aaaa-4444-bbbb-1111'}}
+        $route: { params: { person_guid: 'aaaa-4444-bbbb-1111' } }
       }
     })
     expect(wrapper.findAll(APIErrorMessage).length).toEqual(0)
@@ -110,7 +110,7 @@ describe('PersonDetail.vue', () => {
       localVue,
       stubs: ['router-link', 'router-view'],
       mocks: {
-        $route: {params: {person_guid: 'aaaa-4444-bbbb-1111'}}
+        $route: { params: { person_guid: 'aaaa-4444-bbbb-1111' } }
       }
     })
     expect(wrapper.vm.classifications.length).toEqual(2)

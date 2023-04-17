@@ -11,6 +11,7 @@ import uuid
 import json
 import os
 
+
 def import_regional_areas(apps, schema_editor):
     # Extract the GeoJSON file from the ZIP archive
     with zipfile.ZipFile(os.path.join(os.path.dirname(__file__), '../fixtures/regional_areas.zip'), 'r') as zip_file:
@@ -27,22 +28,27 @@ def import_regional_areas(apps, schema_editor):
             create_user='DATALOAD_USER',
             update_user='DATALOAD_USER')
 
+
 def reverse_import_regional_areas(apps, schema_editor):
     RegionalArea.objects.all().delete()
+
 
 CREATE_REGISTRIES_REGIONAL_AREAS_VIEW_SQL = """
     CREATE VIEW postgis_ftw.registries_regional_areas_view AS
         SELECT
             name,
             geom,
+            regional_area_guid
         FROM regional_area
         WHERE geom IS NOT NULL;
         GRANT SELECT ON postgis_ftw.registries_regional_areas_view TO ftw_reader;
 """
 
+
 REVERSE_REGISTRIES_REGIONAL_AREAS_VIEW_SQL = """
-    DROP VIEW postgis_ftw.registries_regional_areas_view;
+    DROP VIEW IF EXISTS postgis_ftw.registries_regional_areas_view;
 """
+
 
 class Migration(migrations.Migration):
 

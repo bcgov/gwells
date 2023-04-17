@@ -233,7 +233,7 @@ export default {
   },
   methods: {
     updateParamValue (param, value) {
-      this.$emit('input', {...this.value, [param]: value})
+      this.$emit('input', { ...this.value, [param]: value })
     },
     updateAnyValueCheckbox (value) {
       if (!this.anyValueCheckbox) {
@@ -241,7 +241,7 @@ export default {
       }
 
       if (value === true) {
-        this.$emit('input', {[this.anyValueParam]: true})
+        this.$emit('input', { [this.anyValueParam]: true })
       } else {
         this.$emit('input', {})
       }

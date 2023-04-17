@@ -24,15 +24,14 @@ describe('OrganizationEdit.vue', () => {
             drillerOptions: jest.fn().mockReturnValue(fakeOptions),
             provinceStateOptions: () => ['BC', 'AB']
           },
-          actions: { 
+          actions: {
             [FETCH_DRILLER_OPTIONS]: jest.fn()
           },
-          mutations:{        
+          mutations: {
           }
-        }        
-      }  
+        }
+      }
     })
-    
   })
 
   afterEach(() => {

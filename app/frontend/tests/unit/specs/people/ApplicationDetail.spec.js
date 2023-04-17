@@ -25,18 +25,18 @@ const GET_DEFAULT_STORE_MODULES = () => {
       namespaced: true,
       getters: {
         loading: () => false,
-        error: () => null,        
+        error: () => null,
         currentDriller: jest.fn().mockReturnValue(fakePerson),
         searchResponse: () => [],
-        drillerOptions: () => jest.fn().mockReturnValue(fakeDrillerOptions),
+        drillerOptions: () => jest.fn().mockReturnValue(fakeDrillerOptions)
       },
-      actions: { 
+      actions: {
         [FETCH_DRILLER_OPTIONS]: jest.fn()
       },
-      mutations:{        
+      mutations: {
       }
-    }        
-  }  
+    }
+  }
 }
 
 describe('ApplicationDetail.vue', () => {
@@ -89,10 +89,10 @@ describe('ApplicationDetail.vue', () => {
     modules = GET_DEFAULT_STORE_MODULES()
     modules.registriesStore.getters = Object.assign({}, modules.registriesStore.getters, {
       loading: () => false,
-      error: () => null,      
+      error: () => null,
       currentDriller: jest.fn().mockReturnValue(fakePerson),
       drillerOptions: jest.fn().mockReturnValue(fakeDrillerOptions),
-      drillers: () => [],
+      drillers: () => []
     })
     modules.auth.getters = Object.assign({}, modules.registriesStore.getters, {
       user: () => null,
@@ -148,15 +148,15 @@ describe('ApplicationDetail.vue', () => {
     modules = GET_DEFAULT_STORE_MODULES()
     modules.registriesStore.getters = Object.assign({}, modules.registriesStore.getters, {
       loading: () => false,
-      error: () => null,      
+      error: () => null,
       currentDriller: jest.fn().mockReturnValue(fakePerson),
       drillerOptions: jest.fn().mockReturnValue(fakeDrillerOptions),
-      drillers: () => [],      
+      drillers: () => []
     })
     modules.auth.getters = Object.assign({}, modules.registriesStore.getters, {
       user: () => null,
       userRoles: () => ({ registry: { edit: false, view: true, approve: false } })
-    })    
+    })
 
     let store = new Vuex.Store({ modules: modules })
     const wrapper = shallowMount(ApplicationDetail, {

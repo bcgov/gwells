@@ -97,8 +97,8 @@ export default {
     ]),
     ...mapGetters('registriesStore', [
       'currentDriller'
-    ]),
-    
+    ])
+
   },
   methods: {
     noteSubmit () {

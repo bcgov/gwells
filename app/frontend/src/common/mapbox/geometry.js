@@ -48,35 +48,33 @@ export function containsBounds (containerBounds, testBounds) {
   return true
 }
 
-export function peopleToGeoJSON(people = []) {
+export function peopleToGeoJSON (people = []) {
   // Converts a list of people from a search of registered well drillers
   // and pump installers into a GeoJSON feature collection.
   // If a person is registered with multiple organizations, it will
-  // result in multiple features (because in the source data 
-  // geospatial location is associated with the organization, not the 
+  // result in multiple features (because in the source data
+  // geospatial location is associated with the organization, not the
   // person)
-  
-  const personFeatures = [];
+
+  const personFeatures = []
   people.forEach(person => {
     person.registrations.forEach(reg => {
-    
       const feature = personOrganizationToGeoJSON(person, reg.organization)
       if (feature.geometry) {
         personFeatures.push(feature)
       }
-    
-    })    
+    })
   })
 
   return { type: 'FeatureCollection', features: personFeatures }
 }
 
-export function personOrganizationToGeoJSON(person, org) { 
-  // Combines a person and an organization into a single 
-  // GeoJSON Feature.  (Properties come from the person, 
+export function personOrganizationToGeoJSON (person, org) {
+  // Combines a person and an organization into a single
+  // GeoJSON Feature.  (Properties come from the person,
   // geometry comes from the organization.)
   const feature = Object.assign({
-    type: "Feature",
+    type: 'Feature',
     properties: Object.assign({}, person),
     geometry: null
   })
@@ -84,10 +82,10 @@ export function personOrganizationToGeoJSON(person, org) {
   if (org && org.longitude && org.latitude) {
     feature.geometry = {
       coordinates: [org.longitude, org.latitude],
-      type: "Point"
+      type: 'Point'
     }
   }
-  return feature;
+  return feature
 }
 
 export function buildWellsGeoJSON (wells = [], properties = []) {
