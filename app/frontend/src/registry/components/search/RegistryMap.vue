@@ -238,25 +238,12 @@ export default {
       }
     },
     onMapClick (e) {
-      console.log(e)
       const features = this.map.queryRenderedFeatures(e.point, {
         layers: [CURRENT_REGISTRY_FILL_LAYER_ID]
       })
-
       if (features.length > 0) {
         const clickedPolygon = features[0]
-        console.log(clickedPolygon)
-
         this.SEARCH_REGION([clickedPolygon.properties.regional_area_guid])
-        // Convert VectorTileFeature to GeoJSON feature
-        // const geojsonFeature = clickedPolygon.toGeoJSON()
-
-        // // Calculate the bounding box using Turf.js
-        // const bbox = turfBBox(geojsonFeature)
-        // console.log(bbox)
-        // this.flyToBounds(bbox, { maxZoom: 12 })
-      } else {
-        console.log('No polygon was clicked.')
       }
     },
     triggerSearchMapArea () {
