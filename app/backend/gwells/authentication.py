@@ -35,7 +35,8 @@ class JwtOidcAuthentication(JSONWebTokenAuthentication):
             raise exceptions.AuthenticationFailed(
                 'JWT did not contain a "sub" attribute')
 
-        # Make sure the user is coming from a known sso authority
+        # Make sure the preferred username contains either idir\ or bceid\
+        # so we know that the user is coming from a known sso authority
         if not self.known_sso_authority(payload):
             raise exceptions.AuthenticationFailed(
                 'Preferred username is invalid.')
@@ -153,14 +154,11 @@ class JwtOidcAuthentication(JSONWebTokenAuthentication):
     @staticmethod
     def known_sso_authority(payload):
         preferred_username = payload.get('preferred_username')
-        
-        # Keycloak Gold has a dedicated IDP field that we can check...
+
         if payload.get('iss').endswith(KEYCLOAK_GOLD_REALM_URL):
-            identity_provider = payload.get('identity_provider').lower()
-            return identity_provider == 'idir' or identity_provider == 'bceidboth' \
+            identity_provider = payload.get('identity_provider')
+            return '@idir' in identity_provider or '@bceid' in identity_provider\
                 or preferred_username == 'testuser'
-        # ...but Silver doesn't, so have to instead look at the preferred username, 
-        # which comes in the format "{idp}\{username}"
         else:
             return 'idir\\' in preferred_username or 'bceid\\' in preferred_username\
                 or preferred_username == 'testuser'
