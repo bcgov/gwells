@@ -457,31 +457,22 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-on:fetchFiles="fetchFiles"
       />
 
-      <!-- aquifer -->
-      <aquifer-data class="my-5"
-        v-if="showSection('aquiferData')"
-        id="aquiferData"
-        :aquifer.sync="form.aquifer"
-        :aquiferVulnerabilityIndex.sync="form.aquifer_vulnerability_index"
-        :storativity.sync="form.storativity"
-        :transmissivity.sync="form.transmissivity"
-        :hydraulicConductivity.sync="form.hydraulic_conductivity"
-        :specificStorage.sync="form.specific_storage"
-        :specificYield.sync="form.specific_yield"
-        :testingMethod.sync="form.testing_method"
-        :testingDuration.sync="form.testing_duration"
-        :analyticSolutionType.sync="form.analytic_solution_type"
-        :boundaryEffect.sync="form.boundary_effect"
-        :aquiferLithology.sync="form.aquifer_lithology"
+      <!-- Aquifer Parameters -->
+      <aquifer-parameters class="my-5"
+        :key="`aquiferParametersComponent${componentUpdateTrigger}`"
+        v-if="showSection('aquiferParameters')"
+        id="aquiferParameters"
+        :aquiferParameters.sync="form.aquifer_parameters_set"
         :errors="errors"
+        :fieldsLoaded="fieldsLoaded"
         :isStaffEdit="isStaffEdit"
         :saveDisabled="editSaveDisabled"
         v-on:save="$emit('submit_edit')"
       />
 
       <vertical-aquifer-extents class="my-5"
-        v-if="showSection('aquiferData')"
-        id="aquiferData"
+        v-if="showSection('aquiferParameters')"
+        id="vertical-aquifer-extents"
         :wellTagNumber="wellTagNumber"
       />
 
@@ -531,7 +522,6 @@ import Vue from 'vue'
 import smoothScroll from 'smoothscroll'
 
 import ActivityType from './ActivityType.vue'
-import AquiferData from './AquiferData.vue'
 import VerticalAquiferExtents from './VerticalAquiferExtents.vue'
 import WellType from './WellType.vue'
 import PublicationStatus from './PublicationStatus.vue'
@@ -559,6 +549,7 @@ import SubmissionHistory from './SubmissionHistory.vue'
 import EditHistory from './EditHistory.vue'
 import WorkDates from './WorkDates.vue'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
+import AquiferParameters from './AquiferParameters.vue'
 
 export default {
   name: 'SubmissionsForm',
@@ -624,7 +615,6 @@ export default {
   components: {
     WorkDates,
     ActivityType,
-    AquiferData,
     VerticalAquiferExtents,
     WellType,
     PublicationStatus,
@@ -649,7 +639,8 @@ export default {
     DecommissionInformation,
     ObservationWellInfo,
     SubmissionHistory,
-    EditHistory
+    EditHistory,
+    AquiferParameters
   },
   data () {
     return {
@@ -666,7 +657,6 @@ export default {
       fieldsLoaded: {},
       formStepDescriptions: {
         'activityType': 'Type of work',
-        'aquiferData': 'Well testing and aquifer details',
         'wellType': 'Well class',
         'wellPublicationStatus': 'Well publication status',
         'wellOwner': 'Well owner',
@@ -677,6 +667,7 @@ export default {
         'closureDescription': 'Decommission description',
         'lithology': 'Lithology',
         'casings': 'Casing details',
+        'aquiferParameters': 'Pumping Test Information and Aquifer Parameters',
         'backfill': 'Surface seal and backfill information',
         'liner': 'Liner information',
         'screens': 'Screen information',

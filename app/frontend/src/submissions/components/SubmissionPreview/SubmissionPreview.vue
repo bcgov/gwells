@@ -437,6 +437,27 @@ Licensed under the Apache License, Version 2.0 (the "License");
     </fieldset>
 
     <fieldset class="my-3 detail-section">
+      <legend>Pumping Test Information and Aquifer Parameters</legend>
+      <div class="table-responsive">
+        <b-table
+            striped
+            small
+            bordered
+            :items="filterBlankRows(form.aquifer_parameters_set)"
+            :fields="[
+              'testing_number', 'date_pumping_test', 'pumping_test_type',
+              'testing_duration_hours', 'boundary_effect', 'storativity', 'transmissivity',
+              'hydraulic_conductivity', 'specific_yield', 'specific_capacity', 'analysis_type',
+              'comments'
+            ]"
+            show-empty>
+            <template slot="pumping_test_type" slot-scope="data">{{codeToDescription('pumping_test_type_codes', data.item.pumping_test_type)}}</template>
+            <template slot="boundary_effect" slot-scope="data">{{codeToDescription('boundary_effect_codes', data.item.boundary_effect)}}</template>
+        </b-table>
+      </div>
+    </fieldset>
+
+    <fieldset class="my-3 detail-section">
       <legend>Comments</legend>
       <p>
         {{ form.comments ? form.comments : 'No comments submitted' }}

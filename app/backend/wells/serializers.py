@@ -34,7 +34,8 @@ from wells.models import (
     LinerPerforation,
     LithologyDescription,
     Screen,
-    Well
+    Well,
+    AquiferParameters
 )
 from submissions.models import WellActivityCode
 
@@ -183,6 +184,72 @@ class LegacyCasingSerializer(serializers.ModelSerializer):
             'wall_thickness': {'required': False}
         }
 
+
+class AquiferParametersSerializer(serializers.ModelSerializer):
+    """Serializes aquifer parameters for well"""
+    class Meta:
+        model = AquiferParameters
+        fields = (
+            'testing_number',
+            'well',
+            'date_pumping_test',
+            'pumping_test_type',
+            'testing_duration_hours',
+            'boundary_effect',
+            'storativity',
+            'transmissivity',
+            'hydraulic_conductivity',
+            'specific_yield',
+            'specific_capacity',
+            'analysis_type',
+            'comments'
+        )
+
+
+class AquiferParametersSummarySerializer(serializers.ModelSerializer):
+    """Serializes aquifer parameters for well summary"""
+    class Meta:
+        model = AquiferParameters
+        fields = (
+            'testing_number',
+            'well',
+            'date_pumping_test',
+            'pumping_test_type',
+            'testing_duration_hours',
+            'boundary_effect',
+            'storativity',
+            'transmissivity',
+            'hydraulic_conductivity',
+            'specific_yield',
+            'specific_capacity',
+            'analysis_type',
+            'comments'
+        )
+
+class AquiferParametersStackerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AquiferParameters
+        fields = (
+            'testing_number',
+            'well',
+            'date_pumping_test',
+            'pumping_test_type',
+            'testing_duration_hours',
+            'boundary_effect',
+            'storativity',
+            'transmissivity',
+            'hydraulic_conductivity',
+            'specific_yield',
+            'specific_capacity',
+            'analysis_type',
+            'comments',
+            'create_user',
+            'update_user'
+        )
+        extra_kwargs = {
+            'create_user': {'required': True},
+            'update_user': {'required': True}
+        }
 
 class DecommissionDescriptionSerializer(serializers.ModelSerializer):
     """Serializes Decommission Descriptions"""
@@ -480,6 +547,7 @@ class DrillingMethodSummarySerializer(serializers.ModelSerializer):
 
 class WellDetailSerializer(AuditModelSerializer):
     casing_set = CasingSummarySerializer(many=True)
+    aquifer_parameters_set = AquiferParametersSummarySerializer(many=True)
     screen_set = ScreenSerializer(many=True)
     linerperforation_set = LinerPerforationSerializer(many=True)
     decommission_description_set = DecommissionDescriptionSerializer(many=True)
@@ -677,6 +745,7 @@ class WellDetailSerializer(AuditModelSerializer):
             "recommended_pump_depth",
             "recommended_pump_rate",
             "casing_set",
+            "aquifer_parameters_set",
             "screen_set",
             "linerperforation_set",
             "decommission_description_set",
@@ -714,6 +783,7 @@ class SubmissionWorkDatesByWellSerializer(serializers.ModelSerializer):
 
 class WellDetailAdminSerializer(AuditModelSerializer):
     casing_set = CasingSerializer(many=True)
+    aquifer_parameters_set = AquiferParametersSerializer(many=True)
     screen_set = ScreenSerializer(many=True)
     linerperforation_set = LinerPerforationSerializer(many=True)
     decommission_description_set = DecommissionDescriptionSerializer(many=True)
@@ -766,6 +836,7 @@ class WellDetailAdminSerializer(AuditModelSerializer):
 
 class WellStackerSerializer(AuditModelSerializer):
     casing_set = CasingStackerSerializer(many=True)
+    aquifer_parameters_set = AquiferParametersStackerSerializer(many=True)
     screen_set = ScreenStackerSerializer(many=True)
     linerperforation_set = LinerPerforationStackerSerializer(many=True)
     decommission_description_set = DecommissionDescriptionStackerSerializer(many=True)
@@ -787,6 +858,7 @@ class WellStackerSerializer(AuditModelSerializer):
         # of this section. The composite section is responsible for that.
         FOREIGN_KEYS = {
             'casing_set': Casing,
+            'aquifer_parameters_set': AquiferParameters,
             'screen_set': Screen,
             'linerperforation_set': LinerPerforation,
             'decommission_description_set': DecommissionDescription,
