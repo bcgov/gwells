@@ -21,7 +21,8 @@ from wells.serializers import (
     ScreenSerializer,
     LinerPerforationSerializer,
     DecommissionDescriptionSerializer,
-    LithologyDescriptionSummarySerializer
+    LithologyDescriptionSummarySerializer,
+    AquiferParametersSummarySerializer
 )
 from wells.stack import MANY_TO_MANY_LOOKUP, merge_series
 from submissions.models import WELL_ACTIVITY_CODE_LEGACY, WELL_ACTIVITY_CODE_STAFF_EDIT
@@ -72,7 +73,8 @@ FOREIGN_KEY_SERIALIZER_LOOKUP = {
     'screen_set': ScreenSerializer,
     'linerperforation_set': LinerPerforationSerializer,
     'decommission_description_set': DecommissionDescriptionSerializer,
-    'lithologydescription_set': LithologyDescriptionSummarySerializer
+    'lithologydescription_set': LithologyDescriptionSummarySerializer,
+    'aquifer_parameters_set': AquiferParametersSummarySerializer,
 }
 ALL_SUBMISSION_FOREIGN_KEY = [
     "well_activity_type",
@@ -116,6 +118,7 @@ ALL_SUBMISSION_MANY_TO_MANY_RELATIONS = [
     "lithologydescription_set",
     "linerperforation_set",
     "casing_set",
+    "aquifer_parameters_set",
     "screen_set",
     "decommission_description_set",
 ]
