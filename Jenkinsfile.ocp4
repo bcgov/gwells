@@ -197,7 +197,7 @@ def apiTest (String stageName, String stageUrl, String envSuffix) {
             node("nodejs-${appName}-${envSuffix}-${prNumber}") {
                 checkout scm
                 dir('tests/api-tests') {
-                    sh 'npm install -g newman@5.3.2'
+                    sh 'npm install -g newman@4.6.1'
                     try {
                         sh """
                             newman run ./registries_api_tests.json \

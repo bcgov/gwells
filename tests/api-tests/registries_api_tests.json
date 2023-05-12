@@ -96,6 +96,7 @@
 										"id": "2ce89229-b4af-45c3-8645-ef507a84011c",
 										"exec": [
 											"( function() {",
+											"    console.log(pm.response.text());",
 											"    pm.test(\"Successful POST request\", function () {",
 											"        pm.expect(pm.response.code, \"response code not 201\").to.be.oneOf([201,202]);",
 											"    });",
@@ -224,6 +225,7 @@
 										"id": "5410792d-f57e-4e98-914d-53d126c2ee76",
 										"exec": [
 											"( function() {",
+											"    console.log(pm.response.text());",
 											"    pm.test(\"Status code is 200\", function () {",
 											"        pm.response.to.have.status(200);",
 											"    });",
@@ -293,6 +295,7 @@
 										"exec": [
 											"( function() {",
 											"    \"use strict\";",
+											"    console.log(pm.response.text());",
 											"    pm.test(\"Status code is 200\", function () {",
 											"        pm.response.to.have.status(200);",
 											"    });",
@@ -340,6 +343,7 @@
 										"id": "dae82277-ba57-4c35-a10c-71fa9a94ae1b",
 										"exec": [
 											"( function() {",
+											"    console.log(pm.response.text());",
 											"    pm.test(\"Successful request (201 CREATED)\", function () {",
 											"        pm.expect(pm.response.code).to.eql(201);",
 											"    });",
@@ -414,6 +418,7 @@
 										"id": "efcb250a-4507-4256-b866-114ec0c7f8b5",
 										"exec": [
 											"( function() {",
+											"    console.log(pm.response.text());",
 											"    pm.test(\"Status code is 200\", function () {",
 											"        pm.response.to.have.status(200);",
 											"    });",
@@ -484,6 +489,7 @@
 										"id": "02f44562-7656-4a7a-a6fa-67a7ee6a1c73",
 										"exec": [
 											"( function() {",
+											"    console.log(pm.response.text());",
 											"    pm.test(\"Successful request (200 OK)\", function () {",
 											"        pm.expect(pm.response.code).to.eql(200);",
 											"    });",
@@ -556,6 +562,7 @@
 										"id": "ce7ad4d6-a09e-4a43-8dc4-05d02e58c305",
 										"exec": [
 											"( function() {",
+											"    console.log(pm.response.text());",
 											"    pm.test(\"Status code is 200\", function () {",
 											"        pm.response.to.have.status(200);",
 											"    });",
@@ -618,6 +625,7 @@
 										"id": "665ae006-e823-4f1b-b0d5-17de55f96cd1",
 										"exec": [
 											"( function() {",
+											"    console.log(pm.response.text());",
 											"    pm.test(\"Status code is 200\", function () {",
 											"        pm.response.to.have.status(200);",
 											"    });",
@@ -682,6 +690,7 @@
 										"id": "378cdf34-1e23-4ed1-b845-b0aeaa4c184f",
 										"exec": [
 											"( function() {",
+											"    console.log(pm.response.text());",
 											"    pm.test(\"Status code is 200\", function () {",
 											"        pm.response.to.have.status(200);",
 											"    });",
@@ -742,6 +751,7 @@
 										"id": "53ca138a-1672-42d7-9d31-db1e281f2a41",
 										"exec": [
 											"( function() {",
+											"    console.log(pm.response.text());",
 											"    pm.test(\"Successful POST request\", function () {",
 											"        pm.expect(pm.response.code).to.be.oneOf([201,202]);",
 											"    });",
@@ -868,6 +878,7 @@
 										"id": "8dcc8f03-3e7c-47e7-80c0-3e0d1cab7377",
 										"exec": [
 											"( function() {",
+											"    console.log(pm.response.text());",
 											"    pm.test(\"Successful GET request (200 OK)\", function () {",
 											"        pm.response.to.have.status(200);",
 											"    });",
@@ -936,6 +947,7 @@
 										"id": "0d1b13bb-0660-48c8-9023-8b5ba1884e3e",
 										"exec": [
 											"( function() {",
+											"    console.log(pm.response.text());",
 											"    pm.test(\"Request with missing required input should return 400 Bad Request\", function () {",
 											"        pm.response.to.have.status(400);",
 											"    });",
@@ -1059,6 +1071,7 @@
 										"id": "0831e40b-ed31-4044-b114-87f148e2764e",
 										"exec": [
 											"( function() {",
+											"    console.log(pm.response.text());",
 											"    pm.test(\"Successful GET request\", function () {",
 											"        pm.expect(pm.response.code).to.eql(200);",
 											"    });",
@@ -1133,6 +1146,7 @@
 										"id": "a3a60ebd-f4a3-40b6-9fa4-876b1e71f95d",
 										"exec": [
 											"( function() {",
+											"    console.log(pm.response.text());",
 											"    pm.test(\"Successful POST request\", function () {",
 											"        pm.expect(pm.response.code).to.be.oneOf([201,202]);",
 											"    });",
@@ -1284,6 +1298,7 @@
 										"id": "05a0005d-cae7-447a-b666-63de221afd22",
 										"exec": [
 											"( function() {",
+											"    console.log(pm.response.text());",
 											"    pm.test(\"Successful POST request\", function () {",
 											"        pm.expect(pm.response.code).to.be.oneOf([201,202]);",
 											"    });",
@@ -1368,6 +1383,7 @@
 										"id": "d42608d8-fa0e-40ea-974e-3eb2b4cae7ad",
 										"exec": [
 											"( function() {",
+											"    console.log(pm.response.text());",
 											"    pm.test(\"Status code is 200\", function () {",
 											"        pm.response.to.have.status(200);",
 											"    });",
@@ -1442,6 +1458,7 @@
 										"id": "166b3bf2-247f-45ab-b5b1-4f726c9e6ffd",
 										"exec": [
 											"( function() {",
+											"    console.log(pm.response.text());",
 											"    pm.test(\"Status code is 200\", function () {",
 											"        pm.response.to.have.status(200);",
 											"    });",
@@ -1513,6 +1530,7 @@
 										"id": "166b3bf2-247f-45ab-b5b1-4f726c9e6ffd",
 										"exec": [
 											"( function() {",
+											"    console.log(pm.response.text());",
 											"    pm.test(\"Status code is 200\", function () {",
 											"        pm.response.to.have.status(200);",
 											"    });",
@@ -1584,6 +1602,7 @@
 										"id": "faa0b48b-bc98-4828-8f2f-48edffca38b6",
 										"exec": [
 											"( function() {",
+											"    console.log(pm.response.text());",
 											"    pm.test(\"Status code is 200\", function () {",
 											"        pm.response.to.have.status(200);",
 											"    });",
@@ -1652,6 +1671,7 @@
 										"id": "faa0b48b-bc98-4828-8f2f-48edffca38b6",
 										"exec": [
 											"( function() {",
+											"    console.log(pm.response.text());",
 											"    pm.test(\"Status code is 200\", function () {",
 											"        pm.response.to.have.status(200);",
 											"    });",
@@ -1720,6 +1740,7 @@
 										"id": "df2f2a93-db21-480d-baee-d1f71b9c474c",
 										"exec": [
 											"( function() {",
+											"    console.log(pm.response.text());",
 											"    pm.test(\"Successful request (200 OK)\", function () {",
 											"        pm.expect(pm.response.code).to.eql(200);",
 											"    });",
@@ -1793,6 +1814,7 @@
 										"id": "c474786d-b0e0-4ffa-8f79-8048fa042b7e",
 										"exec": [
 											"( function() {",
+											"    console.log(pm.response.text());",
 											"    pm.test(\"Status code is 200\", function () {",
 											"        pm.response.to.have.status(200);",
 											"    });",
@@ -1853,6 +1875,7 @@
 										"id": "dae82277-ba57-4c35-a10c-71fa9a94ae1b",
 										"exec": [
 											"( function() {",
+											"    console.log(pm.response.text());",
 											"    pm.test(\"Successful request (201 CREATED)\", function () {",
 											"        pm.expect(pm.response.code).to.eql(201);",
 											"    });",
@@ -1927,6 +1950,7 @@
 										"id": "90c1a570-0bd4-40da-8017-b2adf4277172",
 										"exec": [
 											"( function() {",
+											"    console.log(pm.response.text());",
 											"    pm.test(\"Status code is 200\", function () {",
 											"        pm.response.to.have.status(200);",
 											"    });",
@@ -1995,6 +2019,7 @@
 										"id": "c2d15b29-740b-45c2-b0d1-372297c05a9b",
 										"exec": [
 											"( function() {",
+											"    console.log(pm.response.text());",
 											"    pm.test(\"Successful request (200 OK)\", function () {",
 											"        pm.expect(pm.response.code).to.eql(200);",
 											"    });",
@@ -2138,6 +2163,7 @@
 										"id": "6caabd10-a649-4a56-96c3-e1b4bffc917c",
 										"exec": [
 											"( function() {",
+											"    console.log(pm.response.text());",
 											"    pm.test(\"Status code is 200\", function () {",
 											"        pm.response.to.have.status(200);",
 											"    });",
@@ -2202,6 +2228,7 @@
 										"id": "378cdf34-1e23-4ed1-b845-b0aeaa4c184f",
 										"exec": [
 											"( function() {",
+											"    console.log(pm.response.text());",
 											"    pm.test(\"Status code is 200\", function () {",
 											"        pm.response.to.have.status(200);",
 											"    });",
@@ -2364,6 +2391,7 @@
 										"id": "43017ea1-1f15-4963-9766-15549447a5be",
 										"exec": [
 											"( function() {",
+											"    console.log(pm.response.text());",
 											"    pm.test(\"Status code is 200\", function () {",
 											"        pm.response.to.have.status(200);",
 											"    });",
@@ -2425,6 +2453,7 @@
 										"id": "d6a004fb-bf4e-4bf7-a966-8252283716b4",
 										"exec": [
 											"( function() {",
+											"    console.log(pm.response.text());",
 											"    pm.test(\"Status code is 404\", function () {",
 											"        pm.response.to.have.status(404);",
 											"    });",
@@ -2477,6 +2506,7 @@
 										"id": "d6a004fb-bf4e-4bf7-a966-8252283716b4",
 										"exec": [
 											"( function() {",
+											"    console.log(pm.response.text());",
 											"    pm.test(\"Status code is 404\", function () {",
 											"        pm.response.to.have.status(404);",
 											"    });",
@@ -2529,6 +2559,7 @@
 										"id": "811923c8-0326-4495-93c3-a88386c39178",
 										"exec": [
 											"( function() {",
+											"    console.log(pm.response.text());",
 											"    pm.test(\"Status code is 200\", function () {",
 											"        pm.response.to.have.status(200);",
 											"    });",
@@ -2590,6 +2621,7 @@
 										"id": "0d1b13bb-0660-48c8-9023-8b5ba1884e3e",
 										"exec": [
 											"( function() {",
+											"    console.log(pm.response.text());",
 											"    pm.test(\"Request with missing required input should return 400 Bad Request\", function () {",
 											"        pm.response.to.have.status(400);",
 											"    });",
@@ -2657,6 +2689,7 @@
 										"id": "05a0005d-cae7-447a-b666-63de221afd22",
 										"exec": [
 											"( function() {",
+											"    console.log(pm.response.text());",
 											"    pm.test(\"Successful POST request\", function () {",
 											"        pm.expect(pm.response.code).to.be.oneOf([201,202]);",
 											"    });",
@@ -2748,6 +2781,7 @@
 										"id": "e5244e01-168a-4ad5-8716-d4a63559d55e",
 										"exec": [
 											"( function() {",
+											"    console.log(pm.response.text());",
 											"    pm.test(\"Successful POST request\", function () {",
 											"        pm.expect(pm.response.code, \"response code not 201\").to.be.oneOf([201,202]);",
 											"    });",
@@ -2834,6 +2868,7 @@
 										"id": "2d48d1ed-c85e-414b-b644-394fb538720c",
 										"exec": [
 											"( function() {",
+											"    console.log(pm.response.text());",
 											"    pm.test(\"Successful POST request\", function () {",
 											"        pm.expect(pm.response.code, \"response code not 201\").to.be.oneOf([201,202]);",
 											"    });",
@@ -2952,6 +2987,7 @@
 										"id": "2d004a6a-680b-4ee1-b678-6468b609eabd",
 										"exec": [
 											"( function() {",
+											"    console.log(pm.response.text());",
 											"    pm.test(\"Successful POST request\", function () {",
 											"        pm.expect(pm.response.code, \"response code not 200\").to.eql(200);",
 											"    });",
@@ -3029,6 +3065,7 @@
 										"id": "6caabd10-a649-4a56-96c3-e1b4bffc917c",
 										"exec": [
 											"( function() {",
+											"    console.log(pm.response.text());",
 											"    pm.test(\"Status code is 200\", function () {",
 											"        pm.response.to.have.status(200);",
 											"    });",
@@ -3093,6 +3130,7 @@
 										"id": "378cdf34-1e23-4ed1-b845-b0aeaa4c184f",
 										"exec": [
 											"( function() {",
+											"    console.log(pm.response.text());",
 											"    pm.test(\"Status code is 200\", function () {",
 											"        pm.response.to.have.status(200);",
 											"    });",
@@ -3153,6 +3191,7 @@
 										"id": "16535aba-50f2-4758-a288-46fe0fc9c939",
 										"exec": [
 											"( function() {",
+											"    console.log(pm.response.text());",
 											"    pm.test(\"Status code is 200\", function () {",
 											"        pm.response.to.have.status(200);",
 											"    });",
@@ -3217,6 +3256,7 @@
 										"id": "057a38f0-186d-4185-8756-817da5e2860c",
 										"exec": [
 											"( function() {",
+											"    console.log(pm.response.text());",
 											"    pm.test(\"Successful POST request\", function () {",
 											"        pm.expect(pm.response.code, \"response code not 201\").to.be.oneOf([201,202]);",
 											"    });",
@@ -3296,6 +3336,7 @@
 										"id": "0830db16-5679-4af2-9fe5-13912c8122d2",
 										"exec": [
 											"( function() {",
+											"    console.log(pm.response.text());",
 											"    pm.test(\"Successful POST request\", function () {",
 											"        pm.expect(pm.response.code, \"response code not 200\").to.eql(200);",
 											"    });",
@@ -3365,6 +3406,7 @@
 										"id": "24086669-1849-4506-99cb-5d6f095d79bf",
 										"exec": [
 											"( function() {",
+											"    console.log(pm.response.text());",
 											"    pm.test(\"Successful POST request\", function () {",
 											"        pm.expect(pm.response.code, \"response code not 200\").to.eql(200);",
 											"    });",
@@ -3434,6 +3476,7 @@
 										"id": "28c548a6-75c6-481f-bfba-b93de721d3e6",
 										"exec": [
 											"( function() {",
+											"    console.log(pm.response.text());",
 											"    pm.test(\"Successful POST request\", function () {",
 											"        pm.expect(pm.response.code, \"response code not 200\").to.eql(200);",
 											"    });",
@@ -3512,6 +3555,7 @@
 										"id": "0b7800e7-0118-4d99-ad80-53504e81245a",
 										"exec": [
 											"( function() {",
+											"    console.log(pm.response.text());",
 											"    pm.test(\"Successful POST request\", function () {",
 											"        pm.expect(pm.response.code, \"response code not 200\").to.eql(200);",
 											"    });",
@@ -3610,6 +3654,7 @@
 										"id": "6286180b-7d36-4867-accf-2ab0183dd146",
 										"exec": [
 											"( function() {",
+											"    console.log(pm.response.text());",
 											"    pm.test(\"Successful POST request\", function () {",
 											"        pm.expect(pm.response.code, \"response code not 200\").to.eql(200);",
 											"    });",
@@ -3708,6 +3753,7 @@
 										"id": "ba74aa9a-9a61-4f39-8238-255246e63f7f",
 										"exec": [
 											"( function() {",
+											"    console.log(pm.response.text());",
 											"    pm.test(\"Successful GET request\", function () {",
 											"        pm.expect(pm.response.code, \"response code not 200\").to.eql(200);",
 											"    });",
@@ -3771,6 +3817,7 @@
 										"id": "337686ad-df95-478d-86ee-3a224ae76602",
 										"exec": [
 											"( function() {",
+											"    console.log(pm.response.text());",
 											"    pm.test(\"Successful GET request\", function () {",
 											"        pm.expect(pm.response.code, \"response code not 200\").to.eql(200);",
 											"    });",
