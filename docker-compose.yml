@@ -130,8 +130,8 @@ services:
       SSO_AUTH_HOST: https://test.loginproxy.gov.bc.ca/auth
       SSO_IDP_HINT: "undefined"
       SSO_PORT: 0
-      SSO_REALM: standard
-      SSO_PUBKEY: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAiFdv9GA83uHuy8Eu9yiZHGGF9j6J8t7FkbcpaN81GDjwbjsIJ0OJO9dKRAx6BAtTC4ubJTBJMPvQER5ikOhIeBi4o25fg61jpgsU6oRZHkCXc9gX6mrjMjbsPaf3/bjjYxP5jicBDJQeD1oRa24+tiGggoQ7k6gDEN+cRYqqNpzC/GQbkUPk8YsgroncEgu8ChMh/3ERsLV2zorchMANUq76max16mHrhtWIQxrb/STpSt4JuSlUzzBV/dcXjJe5gywZHe0jAutFhNqjHzHdgyaC4RAd3eYQo+Kl/JOgy2AZrnx+CiPmvOJKe9tAW4k4H087ng8aVE40v4HW/FEbnwIDAQAB
+      SSO_REALM: gwells
+      SSO_PUBKEY: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAh+5Hc4w/PKN04avW1LX/orSyXsJ7nJiEbErMyQqCvYAEKmQUeok7Yy+r6sVuJSyQQMCExk37NY3fUQOK92J83oC/9WGij7bvlWHew810edIisechoKpLuQbw63xlj/5ifQfJ977NM1n1RQgXF4hr4MDuhGbV+PAkQGdSPfufjEFleCwj8mvjUwTFnSwE9I+Rf78DVJzCHZbpFMq9skvrpCzeNsLNNoz+k1DENQ6MKnVnbUYskG+j5NZ3g+kxfkRf2G0tw2KisLYtxUSdfwutieT2Zxglk/kZeMWS7khXWzhwjvWf5a1qM5ebreVVYNhra7MjcrkXSh0v5IBcW+122wIDAQAB
       S3_HOST: minio-public:9000
       S3_PRIVATE_HOST: minio-private:9001
       S3_PRIVATE_BUCKET: gwells

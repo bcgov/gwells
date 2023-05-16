@@ -122,7 +122,6 @@ export default {
             const refreshToken = localStorage.getItem('refreshToken')
             const idToken = localStorage.getItem('idToken')
             instance.init({
-              pkceMethod: 'S256',
               onLoad: 'check-sso',
               checkLoginIframe: true,
               timeSkew: 10, // Allow for some deviation

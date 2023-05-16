@@ -28,7 +28,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <b-row>
       <b-col cols="12">
         <div class="table-responsive">
-          <table class="table table-sm">
+          <table class="table table-sm" aria-describedby="decommissionDescriptions">
             <thead>
               <tr>
                 <th>From</th>

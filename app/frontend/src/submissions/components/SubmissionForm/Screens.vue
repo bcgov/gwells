@@ -103,7 +103,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     </b-row>
     <p class="mt-3 mb-2">Screen Details</p>
     <div class="table-responsive">
-      <table class="table table-sm">
+      <table class="table table-sm" aria-describedby="screenDetails">
         <thead>
           <th class="font-weight-normal">
             <div>From ft (bgl)</div>

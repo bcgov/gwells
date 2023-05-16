@@ -73,6 +73,7 @@ from wells.models import (
     WellClassCode,
     WellYieldUnitCode,
     WellStatusCode,
+    AquiferParameters,
 )
 from wells.change_history import get_well_history
 from wells.renderers import WellListCSVRenderer, WellListExcelRenderer
