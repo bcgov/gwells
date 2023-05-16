@@ -19,6 +19,7 @@ from rest_framework import exceptions
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from gwells.models import Profile
 from gwells.roles import roles_to_groups
+from gwells.settings.base import get_env_variable
 
 KEYCLOAK_GOLD_REALM_URL = 'loginproxy.gov.bc.ca/auth/realms/standard'
 
@@ -34,6 +35,12 @@ class JwtOidcAuthentication(JSONWebTokenAuthentication):
         if realm_user_id is None:
             raise exceptions.AuthenticationFailed(
                 'JWT did not contain a "sub" attribute')
+
+        # Make sure the user is coming from the same Keycloak Gold integration
+        sso_audience = payload.get('aud')
+        if not self.is_valid_integration(payload):
+            raise exceptions.AuthenticationFailed(
+                'OAuth2 audience is invalid. This can be caused by a mismatch in the SSO integration.')
 
         # Make sure the user is coming from a known sso authority
         if not self.known_sso_authority(payload):
@@ -61,9 +68,12 @@ class JwtOidcAuthentication(JSONWebTokenAuthentication):
         # We map auth_time to user.last_login ; this is true depending on your point of view. It's the
         # last time the user logged into sso, which may not co-incide with the last time the user
         # logged into gwells.
-        auth_time = payload.get('auth_time')
-        if auth_time:
-            auth_time = datetime.fromtimestamp(auth_time, tz=timezone.utc)
+        if self.is_test_integration(payload):
+            auth_time = None
+        else:
+            auth_time = payload.get('auth_time')
+            if auth_time:
+                auth_time = datetime.fromtimestamp(auth_time, tz=timezone.utc)
 
         # Get or create a user with the keycloak ID (if Silver) or {guid}@{idp} (if Gold).
         try:
@@ -119,12 +129,18 @@ class JwtOidcAuthentication(JSONWebTokenAuthentication):
                 setattr(profile, target, value)
         # Manually combining IDP/username allows us to preserve the existing table structure meant for Silver
         if self.is_gold_shared_realm(payload):
-            identity_provider = payload.get('identity_provider')
-            if identity_provider == 'idir':
-                idp_username = payload.get('idir_username')
+            if self.is_test_integration(payload):
+                profile.username = 'TESTUSER'
             else:
-                idp_username = payload.get('bceid_username')
-            profile.username = f'{idp_username}@{identity_provider}'.upper()
+                identity_provider = payload.get('identity_provider')
+                if identity_provider == 'idir':
+                    idp_username = payload.get('idir_username')
+                elif identity_provider == 'bceidboth':
+                    idp_username = payload.get('bceid_username')
+                else:
+                    # Fallback to {guid}@{idp} if it isn't IDIR or BCeID for some bizarre reason
+                    profile.username = payload.get('preferred_username')
+                profile.username = f'{idp_username}@{identity_provider}'.upper()
         if not profile.name and profile.username:
             # When the name of the user isn't available, fallback to the username
             profile.name = profile.username
@@ -149,6 +165,15 @@ class JwtOidcAuthentication(JSONWebTokenAuthentication):
     @staticmethod
     def is_gold_shared_realm(payload):
         return payload.get('iss').endswith(KEYCLOAK_GOLD_REALM_URL)
+
+    @staticmethod
+    def is_valid_integration(payload):
+        return payload.get('aud') == get_env_variable('SSO_AUDIENCE') or \
+               payload.get('aud') == get_env_variable('SSO_TEST_AUDIENCE')
+
+    @staticmethod
+    def is_test_integration(payload):
+        return payload.get('aud') == get_env_variable('SSO_TEST_AUDIENCE')
 
     @staticmethod
     def known_sso_authority(payload):
