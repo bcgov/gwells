@@ -26,7 +26,7 @@ MIGRATE_HYDRAULIC_TABLE_INFO = """
         update_date
     )
     SELECT
-        uuid_generate_v4() AS aquifer_parameters_guid,
+        public.uuid_generate_v4() AS aquifer_parameters_guid,
         w.well_tag_number,
         w.storativity,
         w.transmissivity,
