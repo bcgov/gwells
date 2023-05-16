@@ -125,6 +125,8 @@ services:
       SESSION_COOKIE_SECURE: "False"
       SSO_AUDIENCE: gwells-4121
       SSO_CLIENT: gwells-4121
+      SSO_TEST_AUDIENCE: gwells-api-tests-4820
+      SSO_TEST_CLIENT: gwells-api-tests-4820
       SSO_AUTH_HOST: https://test.loginproxy.gov.bc.ca/auth
       SSO_IDP_HINT: "undefined"
       SSO_PORT: 0
