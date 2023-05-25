@@ -190,16 +190,19 @@ const ADDITIONAL_FILTER_SECTIONS = [
   { header: 'Comments',
     fields:
      [ 'comments', 'alternativeSpecsSubmitted', 'internalComments' ] },
-  { header: 'Aquifer Parameters',
+  { header: 'Well testing and aquifer details',
     fields:
-     [ 'storativity',
+     [ 'aquiferLithology',
+       'aquiferVulnerabilityIndex',
+       'storativity',
        'transmissivity',
        'hydraulicConductivity',
+       'specificStorage',
        'specificYield',
-       'analyticSolutionType',
        'testingMethod',
        'testingDuration',
-       'testingDate' ] },
+       'analyticSolutionType',
+       'boundaryEffect' ] },
   { header: 'Record maintenance',
     authenticated: true,
     fields: [ 'createUser', 'createDate', 'updateUser', 'updateDate' ] } ]

@@ -25,7 +25,6 @@ const fieldMap = {
   'lithology_observation': 'observations',
   'decommission_description_set': 'Decommission descriptions',
   'casing_set': 'Casings',
-  'aquifer_parameters_set': 'Aquifer Parameters',
   'screen_set': 'Screens',
   'linerperforation_set': 'Liner perforations'
 }

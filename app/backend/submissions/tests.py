@@ -28,8 +28,7 @@ from wells.models import (
     LithologyDescription,
     Screen,
     Well,
-    WellStatusCode,
-    AquiferParameters
+    WellStatusCode
 )
 from submissions.models import (
     WellActivityCode,
@@ -219,30 +218,6 @@ class TestConstruction(TestSubmissionsBase):
         casing = well.casing_set.all()[0]
         self.assertEqual(casing.create_user, self.user.username)
         self.assertEqual(casing.update_user, self.user.username)
-
-    def test_aquifer_parameters_well_create_user_update_user(self):
-        """
-        Test that the well created by a construction submission, has aquifer parameters records with the
-        create user and update user set correctly.
-        """
-        # Data for the construction submission.
-        data = {
-            'aquifer_parameters_set': [
-                {
-                    'storativity': 0.25,
-                    'testing_comments': 'Test comment for aquifer parameters.'
-                }
-            ]
-        }
-        # Post an construction submissions.
-        response = self.client.post(reverse('CON', kwargs={'version': 'v1'}), data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        # Get the well back.
-        well = Well.objects.get(well_tag_number=response.data['well'])
-        # Get the resultant lithology record
-        aquifer_parameters = well.aquifer_parameters_set.all()[0]
-        self.assertEqual(aquifer_parameters.create_user, self.user.username)
-        self.assertEqual(aquifer_parameters.update_user, self.user.username)
 
     def test_perforations_create_user_update_user(self):
         """
