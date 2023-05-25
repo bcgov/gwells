@@ -37,7 +37,6 @@ class JwtOidcAuthentication(JSONWebTokenAuthentication):
                 'JWT did not contain a "sub" attribute')
 
         # Make sure the user is coming from the same Keycloak Gold integration
-        sso_audience = payload.get('aud')
         if not self.is_valid_integration(payload):
             raise exceptions.AuthenticationFailed(
                 'OAuth2 audience is invalid. This can be caused by a mismatch in the SSO integration.')

@@ -56,7 +56,7 @@ class CssApi:
             self.token_url = token_url
         else:
             self.token_url = 'https://loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/token'
-        self.CSS_API_ROOT = f'https://api.loginproxy.gov.bc.ca/api/v1/integrations'
+        self.CSS_API_ROOT = 'https://api.loginproxy.gov.bc.ca/api/v1/integrations'
         self.client_id = client_id
         self.client_secret = client_secret
         self.token = CssApi._get_token(self.token_url, self.client_id, self.client_secret)
@@ -175,7 +175,7 @@ print(f'{len(all_composite_roles)} composite roles found:')
 for parent_role in all_composite_roles:
     children = api.get_child_roles(GWELLS_INTEGRATION_ID, 'test', parent_role)
     print(f' * {parent_role}: {children}')
-    print(f'     Adding...', end='')
+    print('     Adding...', end='')
     api.add_as_composite(GWELLS_TESTS_INTEGRATION_ID, 'test', parent_role, children)
     print('ok.')
 
