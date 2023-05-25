@@ -1,4 +1,4 @@
-# Docker Images 
+# Docker Images  
 
 Dockerfiles that are the source of GWELLS custom images.
 
