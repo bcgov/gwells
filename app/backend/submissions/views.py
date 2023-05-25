@@ -50,7 +50,6 @@ from wells.models import (
     WellDisinfectedCode,
     WellOrientationCode,
     BoundaryEffectCode,
-    PumpingTestTypeCode,
     DriveShoeCode,
     FilterPackMaterialCode,
     FilterPackMaterialSizeCode,
@@ -96,7 +95,6 @@ from submissions.serializers import (
     WellDisinfectedCodeSerializer,
     WellOrientationCodeSerializer,
     BoundaryEffectCodeSerializer,
-    PumpingTestTypeCodeSerializer,
     DriveShoeCodeSerializer,
     FilterPackMaterialCodeSerializer,
     FilterPackMaterialSizeCodeSerializer,
@@ -134,7 +132,7 @@ from submissions.serializers import (
     YieldEstimationMethodCodeSerializer,
     WellStaffEditSubmissionSerializer,
     AquiferLithologySerializer,
-    LicencedStatusCodeSerializer
+    LicencedStatusCodeSerializer,
 )
 
 
@@ -159,7 +157,6 @@ def get_submission_queryset(qs):
                 "lithologydescription_set",
                 "linerperforation_set",
                 "casing_set",
-                "aquifer_parameters_set",
                 "screen_set",
                 "decommission_description_set",
                 "drilling_methods"
@@ -421,8 +418,6 @@ class SubmissionsOptions(APIView):
             instance=WellOrientationCode.objects.all(), many=True)
         boundary_effect_codes = BoundaryEffectCodeSerializer(
             instance=BoundaryEffectCode.objects.all(), many=True)
-        pumping_test_type_codes = PumpingTestTypeCodeSerializer(
-            instance=PumpingTestTypeCode.objects.all(), many=True)
         drive_shoe_codes = DriveShoeCodeSerializer(
             instance=DriveShoeCode.objects.all(), many=True)
         filter_pack_material = FilterPackMaterialCodeSerializer(
@@ -501,7 +496,6 @@ class SubmissionsOptions(APIView):
         options["well_disinfected_codes"] = well_disinfected_codes.data
         options["well_orientation_codes"] = well_orientation_codes.data
         options["boundary_effect_codes"] = boundary_effect_codes.data
-        options["pumping_test_type_codes"] = pumping_test_type_codes.data
         options["drive_shoe_codes"] = drive_shoe_codes.data
         options["filter_pack_material"] = filter_pack_material.data
         options["filter_pack_material_size"] = filter_pack_material_size.data

@@ -7,7 +7,6 @@ create extension postgis_tiger_geocoder;
 create extension pg_stat_statements;
 create extension pgaudit;
 create extension plr;
-create extension "uuid-ossp";
 
 alter user postgres password 'PG_ROOT_PASSWORD';
 
@@ -32,7 +31,6 @@ create extension postgis_tiger_geocoder;
 create extension pg_stat_statements;
 create extension pgaudit;
 create extension plr;
-create extension "uuid-ossp";
 
 \c "PG_DATABASE" "PG_USER";
 

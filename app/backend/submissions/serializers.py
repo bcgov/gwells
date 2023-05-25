@@ -43,7 +43,6 @@ from wells.serializers import (
     LinerPerforationSerializer,
     LithologyDescriptionSerializer,
     ScreenSerializer,
-    AquiferParametersSerializer
 )
 from wells.models import (
     ActivitySubmission,
@@ -58,7 +57,6 @@ from wells.models import (
     WellDisinfectedCode,
     WellOrientationCode,
     BoundaryEffectCode,
-    PumpingTestTypeCode,
     DriveShoeCode,
     FilterPackMaterialCode,
     FilterPackMaterialSizeCode,
@@ -89,7 +87,6 @@ from wells.models import (
     YieldEstimationMethodCode,
     ObsWellStatusCode,
     AquiferLithologyCode,
-    AquiferParameters,
 )
 
 from .models import WellActivityCode
@@ -110,8 +107,6 @@ class WellSubmissionListSerializer(serializers.ModelSerializer):
     linerperforation_set = LinerPerforationSerializer(
         many=True, required=False)
     lithologydescription_set = LithologyDescriptionSerializer(
-        many=True, required=False)
-    aquifer_parameters_set = AquiferParametersSerializer(
         many=True, required=False)
 
     class Meta:
@@ -349,8 +344,6 @@ class WellConstructionSubmissionSerializer(WellSubmissionSerializerBase):
         many=True, required=False)
     lithologydescription_set = LithologyDescriptionSerializer(
         many=True, required=False)
-    aquifer_parameters_set = AquiferParametersSerializer(
-        many=True, required=False)
 
     coordinate_acquisition_code = serializers.PrimaryKeyRelatedField(
         queryset=CoordinateAcquisitionCode.objects.all(),
@@ -368,7 +361,6 @@ class WellConstructionSubmissionSerializer(WellSubmissionSerializerBase):
             'screen_set': Screen,
             'linerperforation_set': ActivitySubmissionLinerPerforation,
             'lithologydescription_set': LithologyDescription,
-            'aquifer_parameters_set': AquiferParameters,
         }
 
     def get_well_activity_type(self):
@@ -384,7 +376,7 @@ class WellConstructionSubmissionSerializer(WellSubmissionSerializerBase):
                   'legal_lot', 'legal_plan', 'legal_district_lot', 'legal_block', 'legal_section',
                   'legal_township', 'legal_range', 'land_district', 'legal_pid', 'well_location_description',
                   'latitude', 'longitude', 'ground_elevation', 'ground_elevation_method', 'drilling_methods',
-                  'well_orientation_status', 'lithologydescription_set', 'casing_set', 'aquifer_parameters_set',
+                  'well_orientation_status', 'lithologydescription_set', 'casing_set',
                   'surface_seal_material', 'surface_seal_depth', 'surface_seal_thickness',
                   'surface_seal_method', 'backfill_type', 'backfill_depth',
                   'liner_material', 'liner_diameter', 'liner_thickness', 'liner_from', 'liner_to',
@@ -422,8 +414,6 @@ class WellAlterationSubmissionSerializer(WellSubmissionSerializerBase):
         many=True, required=False)
     lithologydescription_set = LithologyDescriptionSerializer(
         many=True, required=False)
-    aquifer_parameters_set = AquiferParametersSerializer(
-        many=True, required=False)
 
     def get_foreign_key_sets(self):
         return {
@@ -431,7 +421,6 @@ class WellAlterationSubmissionSerializer(WellSubmissionSerializerBase):
             'screen_set': Screen,
             'linerperforation_set': ActivitySubmissionLinerPerforation,
             'lithologydescription_set': LithologyDescription,
-            'aquifer_parameters_set': AquiferParameters,
         }
 
     def get_well_activity_type(self):
@@ -482,7 +471,6 @@ class WellAlterationSubmissionSerializer(WellSubmissionSerializerBase):
             'well_orientation_status',
             'lithologydescription_set',
             'casing_set',
-            'aquifer_parameters_set',
             'surface_seal_material',
             'surface_seal_depth',
             'surface_seal_thickness',
@@ -561,8 +549,6 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
         many=True, required=False)
     lithologydescription_set = LithologyDescriptionSerializer(
         many=True, required=False)
-    aquifer_parameters_set = AquiferParametersSerializer(
-        many=True, required=False)
 
     # Sets person_responsible and company_of back to object, otherwise client view only gets guid
     def to_representation(self, instance):
@@ -581,8 +567,7 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
             'screen_set': Screen,
             'linerperforation_set': ActivitySubmissionLinerPerforation,
             'lithologydescription_set': LithologyDescription,
-            'decommission_description_set': DecommissionDescription,
-            'aquifer_parameters_set': AquiferParameters,
+            'decommission_description_set': DecommissionDescription
         }
 
     class Meta:
@@ -640,7 +625,6 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
             'well_orientation_status',
             'lithologydescription_set',
             'casing_set',
-            'aquifer_parameters_set',
             'surface_seal_material',
             'surface_seal_depth',
             'surface_seal_thickness',
@@ -730,8 +714,6 @@ class WellDecommissionSubmissionSerializer(WellSubmissionSerializerBase):
     casing_set = CasingSerializer(many=True, required=False)
     decommission_description_set = DecommissionDescriptionSerializer(
         many=True, required=False)
-    aquifer_parameters_set = AquiferParametersSerializer(
-        many=True, required=False)
 
     def get_well_activity_type(self):
         return WellActivityCode.types.decommission()
@@ -740,7 +722,6 @@ class WellDecommissionSubmissionSerializer(WellSubmissionSerializerBase):
         return {
             'casing_set': Casing,
             'decommission_description_set': DecommissionDescription,
-            'aquifer_parameters_set': AquiferParameters,
         }
 
     class Meta:
@@ -791,7 +772,6 @@ class WellDecommissionSubmissionSerializer(WellSubmissionSerializerBase):
             'decommission_backfill_material',
             'decommission_details',
             'casing_set',
-            'aquifer_parameters_set',
             'decommission_description_set',
             'comments',
             'internal_comments',
@@ -852,14 +832,6 @@ class BoundaryEffectCodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = BoundaryEffectCode
         fields = ('boundary_effect_code', 'description')
-
-
-class PumpingTestTypeCodeSerializer(serializers.ModelSerializer):
-    """Serializes Aquifer Testing Type Codes/descriptions"""
-
-    class Meta:
-        model = PumpingTestTypeCode
-        fields = ('pumping_test_type_code', 'description')
 
 
 class DriveShoeCodeSerializer(serializers.ModelSerializer):
@@ -1196,7 +1168,7 @@ class ConstructionSubmissionDisplaySerializer(serializers.ModelSerializer):
             'legal_lot', 'legal_plan', 'legal_district_lot', 'legal_block', 'legal_section',
             'legal_township', 'legal_range', 'land_district', 'legal_pid', 'well_location_description',
             'latitude', 'longitude', 'ground_elevation', 'ground_elevation_method', 'drilling_methods',
-            'well_orientation_status', 'lithologydescription_set', 'casing_set', 'aquifer_parameters_set',
+            'well_orientation_status', 'lithologydescription_set', 'casing_set',
             'surface_seal_material', 'surface_seal_depth', 'surface_seal_thickness',
             'surface_seal_method', 'backfill_type', 'backfill_depth',
             'liner_material', 'liner_diameter', 'liner_thickness', 'liner_from', 'liner_to',
@@ -1316,7 +1288,6 @@ class AlterationSubmissionDisplaySerializer(serializers.ModelSerializer):
             'well_orientation_status',
             'lithologydescription_set',
             'casing_set',
-            'aquifer_parameters_set',
             'surface_seal_material',
             'surface_seal_depth',
             'surface_seal_thickness',
@@ -1449,7 +1420,6 @@ class DecommissionSubmissionDisplaySerializer(serializers.ModelSerializer):
             'decommission_backfill_material',
             'decommission_details',
             'casing_set',
-            'aquifer_parameters_set',
             'decommission_description_set',
             'comments',
             'alternative_specs_submitted',
