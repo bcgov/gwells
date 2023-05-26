@@ -129,7 +129,7 @@ class JwtOidcAuthentication(JSONWebTokenAuthentication):
         # Manually combining IDP/username allows us to preserve the existing table structure meant for Silver
         if self.is_gold_shared_realm(payload):
             if self.is_test_integration(payload):
-                profile.username = 'TESTUSER'
+                profile.username = 'testuser'
             else:
                 identity_provider = payload.get('identity_provider')
                 if identity_provider == 'idir':
@@ -176,15 +176,19 @@ class JwtOidcAuthentication(JSONWebTokenAuthentication):
 
     @staticmethod
     def known_sso_authority(payload):
-        preferred_username = payload.get('preferred_username')
         
         # Keycloak Gold has a dedicated IDP field that we can check...
         if payload.get('iss').endswith(KEYCLOAK_GOLD_REALM_URL):
-            identity_provider = payload.get('identity_provider').lower()
-            return identity_provider == 'idir' or identity_provider == 'bceidboth' \
-                or preferred_username == 'testuser'
+            preferred_username = payload.get('preferred_username')
+
+            if JwtOidcAuthentication.is_test_integration(payload):
+                return True
+            else:
+                identity_provider = payload.get('identity_provider').lower()
+                return identity_provider == 'idir' or identity_provider == 'bceidboth'
         # ...but Silver doesn't, so have to instead look at the preferred username, 
         # which comes in the format "{idp}\{username}"
         else:
+            preferred_username = payload.get('preferred_username')
             return 'idir\\' in preferred_username or 'bceid\\' in preferred_username\
                 or preferred_username == 'testuser'
