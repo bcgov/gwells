@@ -11,6 +11,9 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
+import jwt
+import traceback
+
 from datetime import datetime
 
 from django.contrib.auth import get_user_model
@@ -20,6 +23,10 @@ from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from gwells.models import Profile
 from gwells.roles import roles_to_groups
 from gwells.settings.base import get_env_variable
+from rest_framework_jwt.settings import api_settings
+from django.utils.translation import ugettext as _
+
+jwt_decode_handler = api_settings.JWT_DECODE_HANDLER
 
 KEYCLOAK_GOLD_REALM_URL = 'loginproxy.gov.bc.ca/auth/realms/standard'
 
@@ -27,6 +34,34 @@ class JwtOidcAuthentication(JSONWebTokenAuthentication):
     """
     Authenticate users who provide a JSON Web Token in the request headers (e.g. Authorization: JWT xxxxxxxxx)
     """
+
+    def authenticate(self, payload):
+        """
+        (taken directly from BaseJSONWebTokenAuthentication.authenticate)
+
+        Returns a two-tuple of `User` and token if a valid signature has been
+        supplied using JWT-based authentication.  Otherwise returns `None`.
+        """
+        jwt_value = self.get_jwt_value(payload)
+        if jwt_value is None:
+            return None
+
+        try:
+            payload = jwt_decode_handler(jwt_value)
+        except jwt.ExpiredSignature:
+            msg = _('Signature has expired.')
+            raise exceptions.AuthenticationFailed(msg)
+        except jwt.DecodeError:
+            print(traceback.format_exc())
+            msg = _('Error decoding signature.')
+            
+            raise exceptions.AuthenticationFailed(msg)
+        except jwt.InvalidTokenError:
+            raise exceptions.AuthenticationFailed()
+
+        user = self.authenticate_credentials(payload)
+
+        return (user, jwt_value)
 
     def authenticate_credentials(self, payload):
         User = get_user_model()
