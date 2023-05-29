@@ -270,7 +270,7 @@ JWT_AUTH = {
                        public_key +
                        "\n-----END PUBLIC KEY-----"),
     'JWT_ALGORITHM': 'RS256',
-    'JWT_AUDIENCE': get_env_variable('SSO_TEST_AUDIENCE')
+    'JWT_AUDIENCE': get_env_variable('SSO_AUDIENCE')
 }
 
 
