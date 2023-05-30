@@ -35,34 +35,6 @@ class JwtOidcAuthentication(JSONWebTokenAuthentication):
     Authenticate users who provide a JSON Web Token in the request headers (e.g. Authorization: JWT xxxxxxxxx)
     """
 
-    def authenticate(self, payload):
-        """
-        (taken directly from BaseJSONWebTokenAuthentication.authenticate)
-
-        Returns a two-tuple of `User` and token if a valid signature has been
-        supplied using JWT-based authentication.  Otherwise returns `None`.
-        """
-        jwt_value = self.get_jwt_value(payload)
-        if jwt_value is None:
-            return None
-
-        try:
-            payload = jwt_decode_handler(jwt_value)
-        except jwt.ExpiredSignature:
-            msg = _('Signature has expired.')
-            raise exceptions.AuthenticationFailed(msg)
-        except jwt.DecodeError:
-            print(traceback.format_exc())
-            msg = _('Error decoding signature.')
-            
-            raise exceptions.AuthenticationFailed(msg)
-        except jwt.InvalidTokenError:
-            raise exceptions.AuthenticationFailed()
-
-        user = self.authenticate_credentials(payload)
-
-        return (user, jwt_value)
-
     def authenticate_credentials(self, payload):
         User = get_user_model()
         # Get keycloak ID (if Silver) or {guid}@{idp} (if Gold) from JWT token

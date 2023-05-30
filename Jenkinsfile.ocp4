@@ -201,7 +201,6 @@ def apiTest (String stageName, String stageUrl, String envSuffix) {
                     try {
                         sh """
                             newman run ./registries_api_tests.json \
-                                --verbose \
                                 --color on \
                                 --disable-unicode \
                                 --global-var base_url=\$BASE_URL \
@@ -210,21 +209,18 @@ def apiTest (String stageName, String stageUrl, String envSuffix) {
                                 --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
                                 -r cli,junit,html
                             newman run ./registries_v2_api_tests.json \
-                                --verbose \
                                 --global-var base_url=\$BASE_URL \
                                 --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
                                 --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
                                 --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
                                 -r cli,junit,html
                             newman run ./wells_api_tests.json \
-                                --verbose \
                                 --global-var base_url=\$BASE_URL \
                                 --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
                                 --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
                                 --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
                                 -r cli,junit,html
                             newman run ./wells_v2_api_tests.json \
-                                --verbose \
                                 --global-var base_url=\$BASE_URL \
                                 --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
                                 --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
