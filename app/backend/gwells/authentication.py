@@ -12,31 +12,46 @@
     limitations under the License.
 """
 import jwt
-import traceback
 
 from datetime import datetime
 
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 from rest_framework import exceptions
+from rest_framework.request import Request
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
+from rest_framework_simplejwt.authentication import JWTTokenUserAuthentication
 from gwells.models import Profile
 from gwells.roles import roles_to_groups
 from gwells.settings.base import get_env_variable
-from rest_framework_jwt.settings import api_settings
-from django.utils.translation import ugettext as _
-
-jwt_decode_handler = api_settings.JWT_DECODE_HANDLER
 
 KEYCLOAK_GOLD_REALM_URL = 'loginproxy.gov.bc.ca/auth/realms/standard'
 
-class JwtOidcAuthentication(JSONWebTokenAuthentication):
+class JwtOidcAuthentication(JWTTokenUserAuthentication):
     """
     Authenticate users who provide a JSON Web Token in the request headers (e.g. Authorization: JWT xxxxxxxxx)
     """
 
-    def authenticate_credentials(self, payload):
+    def authenticate(self, request: Request):
+
         User = get_user_model()
+
+        header = self.get_header(request)
+        if header is None:
+            return None
+
+        raw_token = self.get_raw_token(header)
+        if raw_token is None:
+            return None
+
+        jwt_string = bytes.decode(raw_token)
+        payload = jwt.decode(jwt_string,
+                             "-----BEGIN PUBLIC KEY-----\n" +
+                             get_env_variable('SSO_PUBKEY') +
+                             "\n-----END PUBLIC KEY-----",
+                             algorithms=['RS256'],
+                             audience=[get_env_variable('SSO_AUDIENCE'), get_env_variable('SSO_TEST_AUDIENCE')])
+
         # Get keycloak ID (if Silver) or {guid}@{idp} (if Gold) from JWT token
         realm_user_id = payload.get('sub')
         if realm_user_id is None:
@@ -166,7 +181,7 @@ class JwtOidcAuthentication(JSONWebTokenAuthentication):
         # Put user in groups based on role.
         roles_to_groups(user, roles)
 
-        return user
+        return user, jwt_string
 
     @staticmethod
     def is_gold_shared_realm(payload):

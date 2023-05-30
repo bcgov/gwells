@@ -273,6 +273,17 @@ JWT_AUTH = {
     'JWT_AUDIENCE': get_env_variable('SSO_AUDIENCE')
 }
 
+SIMPLE_JWT = {
+    'ALGORITHM': 'RS256',
+    'VERIFYING_KEY': ("-----BEGIN PUBLIC KEY-----\n" +
+                      public_key +
+                      "\n-----END PUBLIC KEY-----"),
+    'AUDIENCE': None,
+    'AUTH_HEADER_TYPES': ('JWT',),
+    'USER_ID_FIELD': 'username',
+    'USER_ID_CLAIM': 'preferred_username',
+}
+
 
 DRF_RENDERERS = ['rest_framework.renderers.JSONRenderer', ]
 # Turn on browsable API if "DEBUG" set
