@@ -19,7 +19,6 @@ from django.contrib.auth import get_user_model
 from django.utils import timezone
 from rest_framework import exceptions
 from rest_framework.request import Request
-from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework_simplejwt.authentication import JWTTokenUserAuthentication
 from gwells.models import Profile
 from gwells.roles import roles_to_groups
