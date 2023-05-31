@@ -37,7 +37,7 @@ objects:
         requests:
           storage: ${PVC_SIZE}
       storageClassName: netapp-file-backup
-  - apiVersion: batch/v1beta1
+  - apiVersion: batch/v1
     kind: CronJob
     metadata:
       name: gwells-documents-${NAME_SUFFIX}-backup
