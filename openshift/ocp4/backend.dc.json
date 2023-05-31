@@ -141,6 +141,8 @@
                 "SSO_PORT": null,
                 "SSO_PUBKEY": null,
                 "SSO_REALM": null,
+                "SSO_TEST_AUDIENCE": null,
+                "SSO_TEST_CLIENT": null,
                 "GDAL_LIBRARY_PATH": null,
                 "GEOS_LIBRARY_PATH": null
             },
@@ -569,6 +571,24 @@
                                         "valueFrom": {
                                             "configMapKeyRef": {
                                                 "key": "SSO_PORT",
+                                                "name": "gwells-global-config${NAME_SUFFIX}"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "SSO_TEST_CLIENT",
+                                        "valueFrom": {
+                                            "configMapKeyRef": {
+                                                "key": "SSO_TEST_CLIENT",
+                                                "name": "gwells-global-config${NAME_SUFFIX}"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "SSO_TEST_AUDIENCE",
+                                        "valueFrom": {
+                                            "configMapKeyRef": {
+                                                "key": "SSO_TEST_AUDIENCE",
                                                 "name": "gwells-global-config${NAME_SUFFIX}"
                                             }
                                         }
