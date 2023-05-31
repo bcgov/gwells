@@ -265,14 +265,6 @@ except:
     public_key = get_env_variable('SSO_PUBKEY', "")
 
 
-JWT_AUTH = {
-    'JWT_PUBLIC_KEY': ("-----BEGIN PUBLIC KEY-----\n" +
-                       public_key +
-                       "\n-----END PUBLIC KEY-----"),
-    'JWT_ALGORITHM': 'RS256',
-    'JWT_AUDIENCE': get_env_variable('SSO_AUDIENCE')
-}
-
 SIMPLE_JWT = {
     'ALGORITHM': 'RS256',
     'VERIFYING_KEY': ("-----BEGIN PUBLIC KEY-----\n" +
