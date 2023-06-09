@@ -62,10 +62,17 @@ If a new field(s) are needed for export, this export_databc.py has raw sql queri
 ### Running the GWELLS application locally
 
 [Clone the GWELLS repository](https://help.github.com/en/articles/cloning-a-repository), and build the [Docker](https://store.docker.com/search?type=edition&offering=community) image for the backend:
-```sh
-cd gwells/openshift/docker/backend
-docker build . --tag=gwells/backend
-```
+* If using x86 (e.g. Intel-based Mac):
+    ```sh
+    cd gwells/openshift/docker/backend
+    docker build . --tag=gwells/backend
+    ```
+* If using ARM (e.g. Apple Silicon):
+    ```sh
+    cd gwells/openshift/docker/backend
+    docker buildx build --platform=linux/amd64 . --tag=gwells/backend
+    ```
+    *Note:* you'll have to first enable experimental features in Docker Desktop (**Settings** > **Features in development** > **Experimental features** > **Access experimental features**).
 
 Then, run the application with Docker:
 ```sh
