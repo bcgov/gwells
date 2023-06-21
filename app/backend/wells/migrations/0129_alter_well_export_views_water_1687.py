@@ -262,7 +262,7 @@ select
     specific_storage as "specific_storage_1/m",
     specific_yield as specific_yield,
     testing_method as testing_method,
-    testing_duration as testing_duration_hours,
+    testing_duration as test_duration,
     analytic_solution_type as analytic_solution_type,
     boundary_effect_code as boundary_effect_code,
     aquifer_lithology_code as aquifer_lithology_code,

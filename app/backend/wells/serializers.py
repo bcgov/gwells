@@ -192,16 +192,16 @@ class AquiferParametersSerializer(serializers.ModelSerializer):
         fields = (
             'testing_number',
             'well',
-            'date_pumping_test',
-            'pumping_test_type',
-            'testing_duration_hours',
+            'start_date_pumping_test',
+            'pumping_test_description',
+            'test_duration',
             'boundary_effect',
             'storativity',
             'transmissivity',
             'hydraulic_conductivity',
             'specific_yield',
             'specific_capacity',
-            'analysis_type',
+            'analysis_method',
             'comments'
         )
 
@@ -213,16 +213,16 @@ class AquiferParametersSummarySerializer(serializers.ModelSerializer):
         fields = (
             'testing_number',
             'well',
-            'date_pumping_test',
-            'pumping_test_type',
-            'testing_duration_hours',
+            'start_date_pumping_test',
+            'pumping_test_description',
+            'test_duration',
             'boundary_effect',
             'storativity',
             'transmissivity',
             'hydraulic_conductivity',
             'specific_yield',
             'specific_capacity',
-            'analysis_type',
+            'analysis_method',
             'comments'
         )
 
@@ -232,16 +232,16 @@ class AquiferParametersStackerSerializer(serializers.ModelSerializer):
         fields = (
             'testing_number',
             'well',
-            'date_pumping_test',
-            'pumping_test_type',
-            'testing_duration_hours',
+            'start_date_pumping_test',
+            'pumping_test_description',
+            'test_duration',
             'boundary_effect',
             'storativity',
             'transmissivity',
             'hydraulic_conductivity',
             'specific_yield',
             'specific_capacity',
-            'analysis_type',
+            'analysis_method',
             'comments',
             'create_user',
             'update_user'

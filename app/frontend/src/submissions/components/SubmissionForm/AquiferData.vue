@@ -135,13 +135,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </b-col>
       <b-col cols="12" md="4">
         <form-input
-            id="testingDuration"
-            label="Testing duration"
+            id="testDuration"
+            label="Test duration"
             hint="hours"
             type="number"
-            v-model="testingDurationInput"
-            :errors="errors['testing_duration']"
-            :loaded="fieldsLoaded['testing_duration']"
+            v-model="testDurationInput"
+            :errors="errors['test_duration']"
+            :loaded="fieldsLoaded['test_duration']"
         ></form-input>
       </b-col>
       <b-col cols="12" md="4">
@@ -214,7 +214,7 @@ export default {
     specificStorage: null,
     specificYield: null,
     testingMethod: null,
-    testingDuration: null,
+    testDuration: null,
     analyticSolutionType: null,
     boundaryEffect: null,
     aquiferLithology: null,
@@ -248,7 +248,7 @@ export default {
     specificStorageInput: 'specificStorage',
     specificYieldInput: 'specificYield',
     testingMethodInput: 'testingMethod',
-    testingDurationInput: 'testingDuration',
+    testDurationInput: 'testDuration',
     analyticSolutionInput: 'analyticSolutionType',
     boundaryEffectInput: 'boundaryEffect',
     aquiferLithologyInput: 'aquiferLithology'

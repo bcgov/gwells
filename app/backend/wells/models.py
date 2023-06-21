@@ -198,18 +198,35 @@ class BoundaryEffectCode(CodeTableModel):
         return self.description
 
 
-class PumpingTestTypeCode(CodeTableModel):
+class PumpingTestDescriptionCode(CodeTableModel):
     """
-     The pumping test method type in aquifer pumping tests.
+     The pumping test method description in aquifer pumping tests.
     """
-    pumping_test_type_code = models.CharField(primary_key=True, max_length=10, editable=False)
+    pumping_test_description_code = models.CharField(primary_key=True, max_length=10, editable=False)
     description = models.CharField(max_length=100)
 
     class Meta:
-        db_table = 'pumping_test_type_code'
+        db_table = 'pumping_test_description_code'
         ordering = ['display_order', 'description']
 
     db_table_comment = ('Type of the pumping test method used for aquifer pumping tests.')
+
+    def __str__(self):
+        return self.description
+
+
+class AnalysisMethodCode(CodeTableModel):
+    """
+     The analysis method used in aquifer pumping tests.
+    """
+    analysis_method_code = models.CharField(primary_key=True, max_length=10, editable=False)
+    description = models.CharField(max_length=100)
+
+    class Meta:
+        db_table = 'analysis_method_code'
+        ordering = ['display_order', 'description']
+
+    db_table_comment = ('The analysis method used in aquifer pumping tests.')
 
     def __str__(self):
         return self.description
@@ -2474,17 +2491,17 @@ class AquiferParameters(AuditModel):
         db_comment=('The file number assigned to a particular well in the in the province\'s Groundwater '
                     'Wells and Aquifers application.'))
     
-    date_pumping_test = models.DateField(
-        null=True, verbose_name='Date of pumping test',
-        db_comment='The date when the analysis tooke place.')
+    start_date_pumping_test = models.DateField(
+        null=True, verbose_name='Start date of pumping test',
+        db_comment='The date when the analysis started.')
     
-    pumping_test_type = models.ForeignKey(PumpingTestTypeCode, db_column='pumping_test_type_code',
+    pumping_test_description = models.ForeignKey(PumpingTestDescriptionCode, db_column='pumping_test_description_code',
                                     on_delete=models.PROTECT, blank=True, null=True,
                                     verbose_name='Testing Type',
                                     db_comment='Valid codes for the testing types used in '
                                                 'pumping test analysis. i.e. ST, PTPW, PTOW, RT, OTHER')
     
-    testing_duration_hours = models.PositiveIntegerField(blank=True, null=True)
+    test_duration = models.PositiveIntegerField(blank=True, null=True)
 
     boundary_effect = models.ForeignKey(BoundaryEffectCode, db_column='boundary_effect_code',
                                 on_delete=models.PROTECT, blank=True, null=True,
@@ -2509,14 +2526,13 @@ class AquiferParameters(AuditModel):
     
     specific_capacity = models.DecimalField(
         max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Specific Yield')
+   
+    analysis_method = models.ForeignKey(AnalysisMethodCode, db_column='analysis_method_code',
+                                    on_delete=models.PROTECT, blank=True, null=True,
+                                    verbose_name='Analysis Method',
+                                    db_comment='Valid codes for the analysis methods used in '
+                                                'pumping test analysis. i.e. TH, CJ, HJ, N, B, PC, OTHER')
     
-    analysis_type = models.TextField(
-         max_length=100,
-        blank=True,
-        null=True,
-        verbose_name='Analysis Type',
-        db_comment='Mathematical formulation used to estimate hydraulic parameters.')
-
     comments = models.TextField(
         max_length=350,
         blank=True,
@@ -2524,7 +2540,7 @@ class AquiferParameters(AuditModel):
         verbose_name='Testing Comments')
 
     class Meta:
-        ordering = ["date_pumping_test"]
+        ordering = ["start_date_pumping_test"]
         db_table = 'aquifer_parameters'
 
     db_table_comment = ('Aquifer parameter testing stats from well pumping tests.')
@@ -2533,16 +2549,16 @@ class AquiferParameters(AuditModel):
         "testing_number":"System generated sequential number assigned to each pumping test record.",
         "aquifer_parameters_guid":"System generated unique guid assigned to each pumping test record.",
         "well_tag_number":"System generated sequential number assigned to each well. It is widely used by groundwater staff as it is the only consistent unique identifier for each well. It is different from a well ID plate number.",
-        "date_pumping_test":"Date of the pumping test.",
-        "pumping_test_type_code":"Identification of the testing method (e.g.basic pumping test, pumping test with monitoring wells, single-well-response/slug test, constant head).",
-        "testing_duration_hours":"The duration of the hydraulic testing period.  For consistency, do not include the recovery period.",
+        "start_date_pumping_test":"Start date of the pumping test.",
+        "pumping_test_description_code":"Identification of the testing method (e.g.basic pumping test, pumping test with monitoring wells, single-well-response/slug test, constant head).",
+        "test_duration":"The duration of the hydraulic testing period.  For consistency, do not include the recovery period.",
         "boundary_effect_code":"Valid codes for the boundaries observed in pumping test analysis. i.e. CH, NF.",
         "storativity":"Storativity estimated from hydraulic testing (dimensionless).",
         "transmissivity":"Transmissivity estimated from hydraulic testing.",
         "hydraulic_conductivity":"Hydraulic conductivity estimated from hydraulic testing in metres per second.",
         "specific_yield":"Specific Yield estimated from hydraulic testing (dimensionless).",
         "specific_capacity":"Specific Capacity.",
-        "analysis_type":"The mathematical solution to the groundwater flow equation used to fit the observational data and estimate hydraulic parameters e.g. Theis 1935",
+        "analysis_method_code":"The mathematical solution to the groundwater flow equation used to fit the observational data and estimate hydraulic parameters e.g. Theis 1935",
         "comments":"Any additional comments about the pumping test.",
     }
 
@@ -2557,14 +2573,14 @@ class AquiferParameters(AuditModel):
             "testing_number": self.testing_number,
             "aquifer_parameters_guid": self.aquifer_parameters_guid,
             "well_tag_number": self.well,
-            "date_pumping_test": self.date_pumping_test,
-            "pumping_test_type_code": self.pumping_test_type,
-            "testing_duration_hours": self.testing_duration_hours,
+            "start_date_pumping_test": self.start_date_pumping_test,
+            "pumping_test_description_code": self.pumping_test_description,
+            "test_duration": self.test_duration,
             "storativity": self.storativity,
             "transmissivity": self.transmissivity,
             "hydraulic_conductivity": self.hydraulic_conductivity,
             "specific_yield": self.specific_yield,
             "specific_capacity": self.specific_capacity,
-            "analysis_type": self.analysis_type,
+            "analysis_method": self.analysis_method,
             "comments": self.comments
         }

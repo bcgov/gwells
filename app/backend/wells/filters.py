@@ -37,8 +37,9 @@ from wells.models import (
     WellOrientationCode,
     WaterQualityCharacteristic,
     Well,
-    PumpingTestTypeCode,
-    BoundaryEffectCode
+    PumpingTestDescriptionCode,
+    BoundaryEffectCode,
+    AnalysisMethodCode
 )
 
 logger = logging.getLogger('wells_filters')
@@ -280,11 +281,11 @@ class WellListFilter(AnyOrAllFilterSet):
     specific_storage = filters.CharFilter(lookup_expr='icontains')
 
     testing_number = filters.RangeFilter(field_name='aquifer_parameters_set__testing_number')
-    date_pumping_test = filters.DateFromToRangeFilter(label='Pumping Test Date', 
-                                                 field_name='aquifer_parameters_set__date_pumping_test')
-    pumping_test_type = filters.ModelChoiceFilter(
-        queryset=PumpingTestTypeCode.objects.all(), field_name='aquifer_parameters_set__pumping_test_type')
-    testing_duration_hours = filters.RangeFilter(field_name='aquifer_parameters_set__testing_duration')
+    start_date_pumping_test = filters.DateFromToRangeFilter(label='Pumping Test Date', 
+                                                 field_name='aquifer_parameters_set__start_date_pumping_test')
+    pumping_test_description = filters.ModelChoiceFilter(
+        queryset=PumpingTestDescriptionCode.objects.all(), field_name='aquifer_parameters_set__pumping_test_description')
+    test_duration = filters.RangeFilter(field_name='aquifer_parameters_set__test_duration')
     boundary_effect = filters.ModelChoiceFilter(
         queryset=BoundaryEffectCode.objects.all(), field_name='aquifer_parameters_set__boundary_effect')
     storativity = filters.RangeFilter(field_name='aquifer_parameters_set__storativity')
@@ -293,8 +294,8 @@ class WellListFilter(AnyOrAllFilterSet):
                                                 field_name='aquifer_parameters_set__hydraulic_conductivity')
     specific_yield = filters.RangeFilter(field_name='aquifer_parameters_set__specific_yield')
     specific_capacity = filters.RangeFilter(field_name='aquifer_parameters_set__specific_capacity')
-    analysis_type = filters.CharFilter(lookup_expr='icontains', 
-                                                field_name='aquifer_parameters_set__analysis_type')
+    analysis_method = filters.ModelChoiceFilter(
+        queryset=AnalysisMethodCode.objects.all(), field_name='aquifer_parameters_set__analysis_method')
     comments = filters.CharFilter(lookup_expr='icontains', 
                                           field_name='aquifer_parameters_set__comments')
     final_casing_stick_up = filters.RangeFilter()

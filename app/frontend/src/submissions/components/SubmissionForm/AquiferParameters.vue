@@ -25,138 +25,156 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </b-col>
     </b-row>
     <div class="table-responsive" id="aquiferParametersTable">
-      <table class="table table-sm" aria-describedby="aquiferParameters">
+      <table class="table" aria-describedby="aquiferParameters">
         <thead>
-          <tr>
-            <th class="font-weight-normal">Date of Test</th>
-            <th class="font-weight-normal">Testing Type</th>
-            <th class="font-weight-normal">Testing Duration (hours)</th>
-            <th class="font-weight-normal">Boundary Effect</th>
-            <th class="font-weight-normal">Storativity</th>
-            <th class="font-weight-normal">Transmissivity (m²/s)</th>
-            <th class="font-weight-normal">Hydraulic Conductivity (m/s)</th>
-            <th class="font-weight-normal">Specific Yield</th>
-            <th class="font-weight-normal">Specific Capacity</th>
-            <th class="font-weight-normal">Analysis Type</th>
-            <th class="font-weight-normal">Comments</th>
-            <th></th>
-          </tr>
         </thead>
         <tbody>
-          <tr v-for="(aquiferParameter, index) in aquiferParametersData" :key="aquiferParameter.id">
-            <td>
-              <form-input
-                group-class="mt-1 mb-0"
-                :id="'aquiferParameter_datePumpingTest_' + index"
-                type="date"
-                placeholder="YYYY-MM-DD"
-                v-model="aquiferParameter.date_pumping_test"
-                :errors="getAquiferParametersError(index).date_pumping_test"
-                :loaded="getFieldsLoaded(index).date_pumping_test"/>
-            </td>
-            <td>
-              <form-input
-                id="testingType"
-                group-class="mt-1 mb-0"
-                select
-                v-model="aquiferParameter.pumping_test_type"
-                :options="codes.pumping_test_type_codes"
-                placeholder="Select Testing Type"
-                text-field="description"
-                value-field="pumping_test_type_code"
-                :errors="errors['pumping_test_type']"
-                :loaded="fieldsLoaded['pumping_test_type']"/>
-            </td>
-            <td>
-              <form-input
-                group-class="mt-1 mb-0"
-                :id="'aquiferParameter_testingDurationHours_' + index"
-                type="number"
-                v-model="aquiferParameter.testing_duration_hours"
-                :errors="getAquiferParametersError(index).testing_duration_hours"
-                :loaded="getFieldsLoaded(index).testing_duration_hours"
-                :min="1"/>
-            </td>
-            <td>
-              <form-input
-                id="boundaryEffect"
-                group-class="mt-1 mb-0"
-                select
-                v-model="aquiferParameter.boundary_effect"
-                :options="codes.boundary_effect_codes"
-                placeholder="Select Boundary effect"
-                text-field="description"
-                value-field="boundary_effect_code"
-                :errors="errors['boundary_effect']"
-                :loaded="fieldsLoaded['boundary_effect']"/>
-            </td>
-            <td>
-              <form-input
-                group-class="mt-1 mb-0"
-                :id="'aquiferParameter_storativity_' + index"
-                type="number"
-                v-model="aquiferParameter.storativity"
-                :errors="getAquiferParametersError(index).storativity"
-                :loaded="getFieldsLoaded(index).storativity"/>
-            </td>
-            <td>
-              <form-input
-                group-class="mt-1 mb-0"
-                :id="'aquiferParameter_transmissivity_' + index"
-                type="number"
-                v-model="aquiferParameter.transmissivity"
-                :errors="getAquiferParametersError(index).transmissivity"
-                :loaded="getFieldsLoaded(index).transmissivity"/>
-            </td>
-            <td>
-              <form-input
-                group-class="mt-1 mb-0"
-                :id="'aquiferParameter_hydraulicConductivity_' + index"
-                type="text"
-                v-model="aquiferParameter.hydraulic_conductivity"
-                :errors="getAquiferParametersError(index).hydraulic_conductivity"
-                :loaded="getFieldsLoaded(index).hydraulic_conductivity"/>
-            </td>
-            <td>
-              <form-input
-                group-class="mt-1 mb-0"
-                :id="'aquiferParameter_specificYield_' + index"
-                type="number"
-                v-model="aquiferParameter.specific_yield"
-                :errors="getAquiferParametersError(index).specific_yield"
-                :loaded="getFieldsLoaded(index).specific_yield"/>
-            </td>
-            <td>
-              <form-input
-                group-class="mt-1 mb-0"
-                :id="'aquiferParameter_specificCapacity_' + index"
-                type="number"
-                v-model="aquiferParameter.specific_capacity"
-                :errors="getAquiferParametersError(index).specific_capacity"
-                :loaded="getFieldsLoaded(index).specific_capacity"/>
-            </td>
-            <td>
-              <form-input
-                group-class="mt-1 mb-0"
-                :id="'aquiferParameter_analysisType_' + index"
-                type="text"
-                v-model="aquiferParameter.analysis_type"
-                :errors="getAquiferParametersError(index).analysis_type"
-                :loaded="getFieldsLoaded(index).analysis_type"/>
-            </td>
-            <td>
-              <form-input
-                group-class="mt-1 mb-0"
-                :id="'aquiferParameter_comments_' + index"
-                type="text"
-                v-model="aquiferParameter.comments"
-                :errors="getAquiferParametersError(index).comments"
-                :loaded="getFieldsLoaded(index).comments"/>
-            </td>
-            <td class="pt-1 py-0">
-              <b-btn size="sm" variant="primary" :id="`removeAquiferParameterRowBtn${index}`" @click="removeRowIfOk(aquiferParameter)" class="mt-2 float-right"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
-            </td>
-          </tr>
+          <template v-for="(aquiferParameter, index) in aquiferParametersData">
+            <div class="bordered-table">
+              <tr>
+                <th class="font-weight-normal top-row-no-border">Start Date of Test</th>
+                <th class="font-weight-normal top-row-no-border">Test Description</th>
+                <th class="font-weight-normal top-row-no-border">Test Duration (min)</th>
+                <th class="font-weight-normal top-row-no-border">Boundary Effect</th>
+              </tr>
+              <tr>
+                <td>
+                  <form-input
+                    group-class="mt-1 mb-0"
+                    :id="'aquiferParameter_startDatePumpingTest_' + index"
+                    type="date"
+                    placeholder="YYYY-MM-DD"
+                    v-model="aquiferParameter.start_date_pumping_test"
+                    :errors="getAquiferParametersError(index).start_date_pumping_test"
+                    :loaded="getFieldsLoaded(index).start_date_pumping_test"/>
+                </td>
+                <td>
+                  <form-input
+                    id="testDescription"
+                    group-class="mt-1 mb-0"
+                    select
+                    v-model="aquiferParameter.pumping_test_description"
+                    :options="codes.pumping_test_description_codes"
+                    placeholder="Select Testing Description"
+                    text-field="description"
+                    value-field="pumping_test_description_code"
+                    :errors="errors['pumping_test_description']"
+                    :loaded="fieldsLoaded['pumping_test_description']"/>
+                </td>
+                <td>
+                  <form-input
+                    group-class="mt-1 mb-0"
+                    :id="'aquiferParameter_testDuration_' + index"
+                    type="number"
+                    v-model="aquiferParameter.test_duration"
+                    :errors="getAquiferParametersError(index).test_duration"
+                    :loaded="getFieldsLoaded(index).test_duration"
+                    :min="1"/>
+                </td>
+                <td>
+                  <form-input
+                    id="boundaryEffect"
+                    group-class="mt-1 mb-0"
+                    select
+                    v-model="aquiferParameter.boundary_effect"
+                    :options="codes.boundary_effect_codes"
+                    placeholder="Select Boundary effect"
+                    text-field="description"
+                    value-field="boundary_effect_code"
+                    :errors="errors['boundary_effect']"
+                    :loaded="fieldsLoaded['boundary_effect']"/>
+                </td>
+              </tr>
+              <tr>
+                <th class="font-weight-normal">Analysis Method</th>
+                <th class="font-weight-normal">Transmissivity (m²/day)</th>
+                <th class="font-weight-normal">Conductivity (m/day)</th>
+                <th class="font-weight-normal">Storativity</th>
+                <th class="font-weight-normal">Specific Yield</th>
+                <th class="font-weight-normal">Specific Capacity (L/s/m)</th>
+              </tr>
+              <tr>
+                <td>
+                  <form-input
+                    id="analysisMethod"
+                    group-class="mt-1 mb-0"
+                    select
+                    v-model="aquiferParameter.analysis_method"
+                    :options="codes.analysis_method_codes"
+                    placeholder="Select Analysis Method"
+                    text-field="description"
+                    value-field="analysis_method_code"
+                    :errors="errors['analysis_method_code']"
+                    :loaded="fieldsLoaded['analysis_method_code']"/>
+                </td>
+                <td>
+                  <form-input
+                    group-class="mt-1 mb-0"
+                    :id="'aquiferParameter_transmissivity_' + index"
+                    type="number"
+                    v-model="aquiferParameter.transmissivity"
+                    :errors="getAquiferParametersError(index).transmissivity"
+                    :loaded="getFieldsLoaded(index).transmissivity"/>
+                </td>
+                <td>
+                  <form-input
+                    group-class="mt-1 mb-0"
+                    :id="'aquiferParameter_hydraulicConductivity_' + index"
+                    type="text"
+                    v-model="aquiferParameter.hydraulic_conductivity"
+                    :errors="getAquiferParametersError(index).hydraulic_conductivity"
+                    :loaded="getFieldsLoaded(index).hydraulic_conductivity"/>
+                </td>
+                <td>
+                  <form-input
+                    group-class="mt-1 mb-0"
+                    :id="'aquiferParameter_storativity_' + index"
+                    type="number"
+                    v-model="aquiferParameter.storativity"
+                    :errors="getAquiferParametersError(index).storativity"
+                    :loaded="getFieldsLoaded(index).storativity"/>
+                </td>
+                <td>
+                  <form-input
+                    group-class="mt-1 mb-0"
+                    :id="'aquiferParameter_specificYield_' + index"
+                    type="number"
+                    v-model="aquiferParameter.specific_yield"
+                    :errors="getAquiferParametersError(index).specific_yield"
+                    :loaded="getFieldsLoaded(index).specific_yield"/>
+                </td>
+                <td>
+                  <form-input
+                    group-class="mt-1 mb-0"
+                    :id="'aquiferParameter_specificCapacity_' + index"
+                    type="number"
+                    v-model="aquiferParameter.specific_capacity"
+                    :errors="getAquiferParametersError(index).specific_capacity"
+                    :loaded="getFieldsLoaded(index).specific_capacity"/>
+                </td>
+              </tr>
+              <tr>
+                <th class="font-weight-normal">Comments</th>
+                <th></th>
+              </tr>
+              <tr>
+                <td colspan="6">
+                  <form-input
+                    group-class="mt-1 mb-0"
+                    :id="'aquiferParameter_comments_' + index"
+                    type="text"
+                    v-model="aquiferParameter.comments"
+                    :errors="getAquiferParametersError(index).comments"
+                    :loaded="getFieldsLoaded(index).comments"/>
+                </td>
+              </tr>
+              <tr>
+                <td class="pt-2 pb-3">
+                  <b-btn size="sm" variant="primary" :id="`removeAquiferParameterRowBtn${index}`" @click="removeRowIfOk(aquiferParameter)" class="mt-2"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
+                </td>
+              </tr>
+            </div>
+          </template>
         </tbody>
       </table>
     </div>
@@ -230,16 +248,16 @@ export default {
     },
     emptyObject () {
       return {
-        date_pumping_test: null,
-        pumping_test_type: null,
-        testing_duration_hours: null,
+        start_date_pumping_test: null,
+        pumping_test_description: null,
+        test_duration: null,
         boundary_effect: null,
         storativity: null,
         transmissivity: null,
         hydraulic_conductivity: null,
         specific_yield: null,
         specific_capacity: null,
-        analysis_type: null,
+        analysis_method: null,
         comments: null
       }
     },
@@ -306,7 +324,7 @@ export default {
   created () {
     // When component created, add an initial row of aquiferParameters.
     if (!this.aquiferParameters.length) {
-      for (let i = 0; i < 3; i++) {
+      for (let i = 0; i < 1; i++) {
         this.addRow()
       }
     } else {
@@ -328,5 +346,24 @@ export default {
   }
   .input-width-lg {
     max-width: 200px;
+  }
+  .bordered-table {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-top: 4px;
+  }
+  .top-row-no-border {
+    border-top: none !important;
+  }
+  /* For Firefox */
+  input[type='number'] {
+    -moz-appearance: textfield;
+  }
+
+  /* For Chrome, Safari, Edge, Opera */
+  input[type='number']::-webkit-inner-spin-button,
+  input[type='number']::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
   }
 </style>

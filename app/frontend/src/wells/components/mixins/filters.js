@@ -548,6 +548,11 @@ const SEARCH_FIELDS = {
     type: 'range'
   },
   storativity: { param: 'storativity', label: 'Storativity', type: 'range' },
+  startDatePumpingTest: {
+    param: 'start_date_pumping_test',
+    label: 'Start Date Pumping Test',
+    type: 'dateRange'
+  },
   transmissivity: {
     param: 'transmissivity',
     label: 'Transmissivity',
@@ -568,15 +573,17 @@ const SEARCH_FIELDS = {
     label: 'Specific Yield',
     type: 'range'
   },
-  testingMethod: {
-    param: 'testing_method',
-    label: 'Testing method',
-    type: 'text'
-  },
-  testingDuration: {
-    param: 'testing_duration',
-    label: 'Testing duration',
+  specificCapacity: {
+    param: 'specific_capacity',
+    label: 'Specific Capacity',
     type: 'range'
+  },
+  pumpingTestDescription: {
+    param: 'pumping_test_description',
+    label: 'Pumping Test Description',
+    type: 'select',
+    textField: 'description',
+    valueField: 'pumping_test_description_code'
   },
   analyticSolutionType: {
     param: 'analytic_solution_type',
@@ -756,6 +763,7 @@ export default {
         groundElevationMethod: this.codes.ground_elevation_methods || [],
         intendedWaterUse: this.codes.intended_water_uses || [],
         boundaryEffect: this.codes.boundary_effect_codes || [],
+        pumpingTestDescription: this.codes.pumping_test_description_codes || [],
         landDistrict: this.landDistrictOptions,
         licencedStatus: this.codes.licenced_status_codes || [],
         linerMaterial: this.codes.liner_material_codes || [],

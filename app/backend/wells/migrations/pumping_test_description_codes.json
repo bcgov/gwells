@@ -1,5 +1,5 @@
 [{
-    "model": "wells.PumpingTestTypeCode",
+    "model": "wells.PumpingTestDescriptionCode",
     "pk": "ST",
     "fields": {
         "create_user": "DATALOAD_USER",
@@ -13,7 +13,7 @@
     }
 },
 {
-  "model": "wells.PumpingTestTypeCode",
+  "model": "wells.PumpingTestDescriptionCode",
   "pk": "PTPW",
   "fields": {
       "create_user": "DATALOAD_USER",
@@ -27,7 +27,7 @@
     }
   },
   {
-    "model": "wells.PumpingTestTypeCode",
+    "model": "wells.PumpingTestDescriptionCode",
     "pk": "PTOW",
     "fields": {
         "create_user": "DATALOAD_USER",
@@ -41,21 +41,35 @@
     }
   },
   {
-    "model": "wells.PumpingTestTypeCode",
-    "pk": "RT",
+    "model": "wells.PumpingTestDescriptionCode",
+    "pk": "RTPW",
     "fields": {
         "create_user": "DATALOAD_USER",
         "create_date": "2023-03-31T17:42:52.421Z",
         "update_user": "DATALOAD_USER",
         "update_date": "2023-03-31T17:42:52.421Z",
-        "description": "Recovery Test",
+        "description": "Recovery test - pumping well",
         "display_order": 3,
         "effective_date": "2013-11-07T05:28:00.402Z",
         "expiry_date": "9999-12-31T23:59:59Z"
     }
   },
   {
-    "model": "wells.PumpingTestTypeCode",
+    "model": "wells.PumpingTestDescriptionCode",
+    "pk": "RTOW",
+    "fields": {
+        "create_user": "DATALOAD_USER",
+        "create_date": "2023-03-31T17:42:52.421Z",
+        "update_user": "DATALOAD_USER",
+        "update_date": "2023-03-31T17:42:52.421Z",
+        "description": "Recovery test - observation well",
+        "display_order": 4,
+        "effective_date": "2013-11-07T05:28:00.402Z",
+        "expiry_date": "9999-12-31T23:59:59Z"
+    }
+  },
+  {
+    "model": "wells.PumpingTestDescriptionCode",
     "pk": "OTHER",
     "fields": {
         "create_user": "DATALOAD_USER",
@@ -63,7 +77,7 @@
         "update_user": "DATALOAD_USER",
         "update_date": "2023-03-31T17:42:52.421Z",
         "description": "Other - Please use comments field",
-        "display_order": 4,
+        "display_order": 5,
         "effective_date": "2013-11-07T05:28:00.402Z",
         "expiry_date": "9999-12-31T23:59:59Z"
     }

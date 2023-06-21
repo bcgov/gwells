@@ -196,10 +196,10 @@ const ADDITIONAL_FILTER_SECTIONS = [
        'transmissivity',
        'hydraulicConductivity',
        'specificYield',
+       'specificCapacity',
        'analyticSolutionType',
-       'testingMethod',
-       'testingDuration',
-       'testingDate' ] },
+       'pumpingTestDescription',
+       'startDatePumpingTest' ] },
   { header: 'Record maintenance',
     authenticated: true,
     fields: [ 'createUser', 'createDate', 'updateUser', 'updateDate' ] } ]
