@@ -20,7 +20,7 @@ localVue.use(VueRouter)
 
 const DEFAULT_AUTH_STORE_GETTERS = () => {
   return {
-    userRoles: () => ({ registry: { edit: false, view: false, approve: false } }),
+    userRoles: () => ({ registry: { edit: false, view: false, approve: false } })
   }
 }
 const DEFAULT_REGISTRIES_STORE_GETTERS = () => {
@@ -48,13 +48,13 @@ describe('SearchTable.vue', () => {
   let store
   let modules
 
-  beforeEach(() => {    
+  beforeEach(() => {
     modules = {
       auth: { getters: DEFAULT_AUTH_STORE_GETTERS() },
       registriesStore: { namespaced: true, getters: DEFAULT_REGISTRIES_STORE_GETTERS(), actions: DEFAULT_REGISTRIES_STORE_ACTIONS(), mutations: DEFAULT_REGISTRIES_STORE_MUTATIONS() }
     }
     store = new Vuex.Store({
-     modules 
+      modules
     })
   })
 
@@ -306,15 +306,15 @@ describe('SearchTable.vue', () => {
     expect(personCertAuth).toContain('BC')
   })
   it('shows the driller\'s registration status', () => {
-    const registriesStoreGetters = Object.assign({}, DEFAULT_REGISTRIES_STORE_GETTERS(), {      
+    const registriesStoreGetters = Object.assign({}, DEFAULT_REGISTRIES_STORE_GETTERS(), {
       loading: () => false,
       listError: () => null,
       searchResponse: jest.fn().mockReturnValue(fakePersonList),
       activity: () => 'DRILL'
     })
-    const authGetters =  Object.assign({}, DEFAULT_AUTH_STORE_GETTERS(), {
+    const authGetters = Object.assign({}, DEFAULT_AUTH_STORE_GETTERS(), {
       user: () => 'user',
-      userRoles: () => ({ registry: { edit: true, view: true, approve: true } }),
+      userRoles: () => ({ registry: { edit: true, view: true, approve: true } })
     })
     store = new Vuex.Store({
       modules: {

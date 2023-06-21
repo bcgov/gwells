@@ -22,14 +22,14 @@ const GET_DEFAULT_STORE_MODULES = () => {
         loading: () => false,
         error: () => null,
         currentDriller: jest.fn().mockReturnValue(fakePerson),
-        searchResponse: () => [],
+        searchResponse: () => []
       },
-      actions: {        
+      actions: {
       },
-      mutations:{        
+      mutations: {
       }
-    }        
-  }  
+    }
+  }
 }
 
 describe('PersonNotes.vue', () => {
@@ -49,7 +49,7 @@ describe('PersonNotes.vue', () => {
       localVue,
       stubs: ['router-link', 'router-view'],
       mocks: {
-        $route: {params: {person_guid: 'aaaa-4444-bbbb-1111'}}
+        $route: { params: { person_guid: 'aaaa-4444-bbbb-1111' } }
       }
     })
     expect(wrapper.find('#notesSectionTitle').text()).toEqual('Notes')
@@ -61,7 +61,7 @@ describe('PersonNotes.vue', () => {
       localVue,
       stubs: ['router-link', 'router-view'],
       mocks: {
-        $route: {params: {person_guid: 'aaaa-4444-bbbb-1111'}}
+        $route: { params: { person_guid: 'aaaa-4444-bbbb-1111' } }
       }
     })
     expect(wrapper.find('#person-note-0').text()).toContain('A new note')

@@ -287,7 +287,7 @@ export default {
           this.applicationReset()
         }).catch((error) => {
           this.applicationSaving = false
-          this.$store.commit(SET_ERROR, {status: 'Error saving application'})
+          this.$store.commit(SET_ERROR, { status: 'Error saving application' })
           console.error(error)
         })
       }
@@ -309,7 +309,7 @@ export default {
     },
     qualificationOptions () {
       if (this.drillerOptions && this.activity in this.drillerOptions) {
-        return this.drillerOptions[this.activity].well_class_codes.map((item) => { return {'text': item.description, 'value': item.registries_well_class_code} })
+        return this.drillerOptions[this.activity].well_class_codes.map((item) => { return { 'text': item.description, 'value': item.registries_well_class_code } })
       }
       return []
     },
@@ -358,8 +358,8 @@ export default {
       'loading',
       'error',
       'currentDriller',
-      'drillerOptions',
-    ]),
+      'drillerOptions'
+    ])
   },
   created () {
     this.FETCH_DRILLER_OPTIONS()

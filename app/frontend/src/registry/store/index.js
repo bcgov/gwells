@@ -19,7 +19,8 @@ import {
   SEARCH_AGAIN,
   RESET_SEARCH,
   FETCH_DRILLER_OPTIONS,
-  REQUEST_MAP_POSITION
+  REQUEST_MAP_POSITION,
+  SEARCH_REGION
 } from './actions.types.js'
 import {
   SET_ERROR,
@@ -33,7 +34,7 @@ import {
   SET_LAST_SEARCHED_ACTIVITY,
   SET_HAS_SEARCHED,
   SET_SEARCH_PARAMS,
-  SET_REQUESTED_MAP_POSITION  ,
+  SET_REQUESTED_MAP_POSITION,
   SET_CURRENT_MAP_BOUNDS,
   SET_DO_SEARCH_ON_BOUNDS_CHANGE,
   SET_LIMIT_SEARCH_TO_CURRENT_MAP_BOUNDS,
@@ -46,13 +47,14 @@ import {
   convertLngLatBoundsToDirectionBounds
 } from '../../common/mapbox/geometry'
 
-//Vue.use(Vuex)
+// Vue.use(Vuex)
 
 export const DEFAULT_SEARCH_PARAMS = {
   search: '',
   city: [''],
+  region: [],
   activity: 'DRILL',
-  subactivities: null, //null for "all", empty array for "none".
+  subactivities: null, // null for "all", empty array for "none".
   status: 'A',
   limit: '10',
   ordering: ''
@@ -78,27 +80,27 @@ const registriesStore = {
     drillerOptions: null,
     lastSearchedActivity: 'DRILL',
     lastSearchedParams: null,
-    requestedMapPosition: null, 
+    requestedMapPosition: null,
     currentMapBounds: null,
     doSearchOnBoundsChange: false,
     isSearchInProgress: false,
 
-    //this is a dual-purpopse property: 
+    // this is a dual-purpopse property:
     // when false, the implied property 'snapMapToSearchResults' is true
     // and when true, the 'snapMapToSearchResults' is false
     limitSearchToCurrentMapBounds: false
   },
   mutations: {
-    [SET_SEARCH_PARAMS](state, payload) {      
+    [SET_SEARCH_PARAMS] (state, payload) {
       state.searchParams = payload
-    },    
+    },
     [SET_HAS_SEARCHED] (state, payload) {
       state.hasSearched = payload
     },
     [SET_IS_SEARCH_IN_PROGRESS] (state, payload) {
       state.isSearchInProgress = payload
     },
-    [SET_LOADING](state, payload) {
+    [SET_LOADING] (state, payload) {
       state.loading = payload
     },
     [SET_ERROR] (state, payload) {
@@ -124,53 +126,54 @@ const registriesStore = {
     },
     [SET_LAST_SEARCHED_ACTIVITY] (state, payload) {
       state.lastSearchedActivity = payload
-    }, 
+    },
     [SET_LAST_SEARCHED_PARAMS] (state, payload) {
       if (payload != null &&
-        (!payload.hasOwnProperty("raw") || !payload.hasOwnProperty("api"))) {
-        throw(new Error("Must specify parameter in the format of: {'raw': {...}, 'api': {...}}"))
+        (!payload.hasOwnProperty('raw') || !payload.hasOwnProperty('api'))) {
+        throw (new Error("Must specify parameter in the format of: {'raw': {...}, 'api': {...}}"))
       }
       state.lastSearchedParams = payload
-    }, 
-    [SET_REQUESTED_MAP_POSITION](state, payload) {  
-      if (payload.hasOwnProperty("centre") && !payload.hasOwnProperty("zoom")) {
-        payload.zoom = 10;
-      }
-      if (payload.hasOwnProperty("bounds") && !payload.hasOwnProperty("maxZoom")) {
-        payload.maxZoom = 10;
-      }
-      if (payload && !payload.hasOwnProperty("centre") && !payload.hasOwnProperty("bounds")) {
-        throw(new Error("Must specify either the 'centre' or the 'bounds' parameter"))
-      }
-      state.requestedMapPosition = payload;
     },
-    [SET_CURRENT_MAP_BOUNDS](state, payload) {
-      if (JSON.stringify(state.currentMapBounds) == JSON.stringify(payload)) {
-        //no change
-        return;
+    [SET_REQUESTED_MAP_POSITION] (state, payload) {
+      if (payload.hasOwnProperty('centre') && !payload.hasOwnProperty('zoom')) {
+        payload.zoom = 10
+      }
+      if (payload.hasOwnProperty('bounds') && !payload.hasOwnProperty('maxZoom')) {
+        payload.maxZoom = 10
+      }
+      if (payload && !payload.hasOwnProperty('centre') && !payload.hasOwnProperty('bounds')) {
+        throw (new Error("Must specify either the 'centre' or the 'bounds' parameter"))
+      }
+      state.requestedMapPosition = payload
+    },
+    [SET_CURRENT_MAP_BOUNDS] (state, payload) {
+      if (JSON.stringify(state.currentMapBounds) === JSON.stringify(payload)) {
+        // no change
+        return
       }
       state.currentMapBounds = payload
-    }, 
-    [SET_DO_SEARCH_ON_BOUNDS_CHANGE] (state, payload) {
+    },
+    [SET_DO_SEARCH_ON_BOUNDS_CHANGE] ({ commit, state }, payload) {
       state.doSearchOnBoundsChange = payload
-    }, 
+    },
     [SET_LIMIT_SEARCH_TO_CURRENT_MAP_BOUNDS] (state, payload) {
       state.limitSearchToCurrentMapBounds = payload
-    }, 
+    }
   },
   actions: {
-    [RESET_SEARCH]({ commit, state }, options = {}) {
+    [RESET_SEARCH] ({ commit, state }, options = {}) {
       const searchParams = Object.assign({}, state.searchParams)
       searchParams.search = DEFAULT_SEARCH_PARAMS.search
       searchParams.city = DEFAULT_SEARCH_PARAMS.city
+      searchParams.region = DEFAULT_SEARCH_PARAMS.region
       searchParams.status = DEFAULT_SEARCH_PARAMS.status
       searchParams.ordering = DEFAULT_SEARCH_PARAMS.ordering
-      const propertiesToClear = ["ne_lat", "ne_long", "sw_lat", "sw_long", "offset"];
+      const propertiesToClear = ['ne_lat', 'ne_long', 'sw_lat', 'sw_long', 'offset']
       propertiesToClear.forEach(p => {
         if (searchParams.hasOwnProperty(p)) {
-          delete searchParams[p];
+          delete searchParams[p]
         }
-      })      
+      })
       if (!options.keepSearchResults) {
         commit(SET_HAS_SEARCHED, false)
         commit(SET_SEARCH_RESPONSE, [])
@@ -186,9 +189,9 @@ const registriesStore = {
       commit(SET_LAST_SEARCHED_PARAMS, null)
       commit(SET_LIMIT_SEARCH_TO_CURRENT_MAP_BOUNDS, false)
       commit(SET_DO_SEARCH_ON_BOUNDS_CHANGE, false)
-      commit(SET_REQUESTED_MAP_POSITION, Object.assign({}, DEFAULT_MAP_POSITION))      
+      commit(SET_REQUESTED_MAP_POSITION, Object.assign({}, DEFAULT_MAP_POSITION))
     },
-    [FETCH_CITY_LIST]({ commit }, activity) {
+    [FETCH_CITY_LIST] ({ commit }, activity) {
       ApiService.query('cities/' + activity)
         .then((response) => {
           const list = Object.assign({}, this.state.cityList)
@@ -233,7 +236,7 @@ const registriesStore = {
           commit(SET_ERROR, error.response)
         })
     },
-    [FETCH_DRILLER] ({commit}, guid) {
+    [FETCH_DRILLER] ({ commit }, guid) {
       commit(SET_LOADING, true)
       ApiService.get('drillers', guid)
         .then((response) => {
@@ -246,43 +249,41 @@ const registriesStore = {
           commit(SET_ERROR, error.response)
         })
     },
-    [SEARCH]({ commit, state }, params) {
+    [SEARCH] ({ commit, state }, params) {
       // Search using the given parameters
 
-      // If the 'limitSearchToCurrentMapBounds' property is set, 
+      // If the 'limitSearchToCurrentMapBounds' property is set,
       // add additional parameters to the search
       // to restrict by the current map bounds
       if (state.limitSearchToCurrentMapBounds && state.currentMapBounds) {
         params = Object.assign({}, params, convertLngLatBoundsToDirectionBounds(state.currentMapBounds))
         params.srid = 4326
-      }
-      else {
-        params = Object.assign({}, params, {sw_lat: null, sw_long: null, ne_lat: null, ne_long: null})
+      } else {
+        params = Object.assign({}, params, { sw_lat: null, sw_long: null, ne_lat: null, ne_long: null })
         params.srid = null
       }
 
       if (!params.subactivities.length) {
-        params.subactivities = [""]
+        params.subactivities = ['']
       }
-      //be flexible with the input format of the any parameter that allows 
-      //multiple choices.  In such cases allow the value to be either a csv 
-      //string or an array, but before further processing standardize the format 
-      //internally into an array (which is easier for the UI to work with)
-      const arrayParams = ["subactivities", "city"]
+      // be flexible with the input format of the any parameter that allows
+      // multiple choices.  In such cases allow the value to be either a csv
+      // string or an array, but before further processing standardize the format
+      // internally into an array (which is easier for the UI to work with)
+      const arrayParams = ['subactivities', 'city']
       arrayParams.forEach(p => {
         if (params.hasOwnProperty(p) && typeof params[p] === 'string') {
-          params[p] = params[p].split(",");
+          params[p] = params[p].split(',')
         }
-      });
-      
-      
-      //prepare a slightly modified parameters object that will be sent
-      //to the API.
+      })
+
+      // prepare a slightly modified parameters object that will be sent
+      // to the API.
       // - convert all array parameters into CSV strings
       const paramsForApi = Object.assign({}, params)
       for (const [key, value] of Object.entries(paramsForApi)) {
         if (Array.isArray(value)) {
-          paramsForApi[key] = value.join(",")
+          paramsForApi[key] = value.join(',')
         }
       }
 
@@ -292,7 +293,7 @@ const registriesStore = {
         commit(SET_HAS_SEARCHED, true)
         commit(SET_IS_SEARCH_IN_PROGRESS, true)
         ApiService.query('drillers', paramsForApi)
-          .then((response) => {            
+          .then((response) => {
             commit(SET_IS_SEARCH_IN_PROGRESS, false)
             commit(SET_LIST_ERROR, null)
             commit(SET_SEARCH_RESPONSE, response.data)
@@ -305,14 +306,14 @@ const registriesStore = {
           })
       })
     },
-    [SEARCH_AGAIN]({ dispatch, state }) {
-      //repeat the last search using the saved
-      //search params
-      if (state.searchParams){
+    [SEARCH_AGAIN] ({ dispatch, state }) {
+      // repeat the last search using the saved
+      // search params
+      if (state.searchParams) {
         dispatch(SEARCH, state.searchParams)
       }
     },
-    [FETCH_DRILLER_OPTIONS] ({commit}, params) {
+    [FETCH_DRILLER_OPTIONS] ({ commit }, params) {
       // We only fetch driller options if we don't already have a copy cached
       if (!this.state.drillerOptions) {
         return new Promise((resolve, reject) => {
@@ -329,25 +330,31 @@ const registriesStore = {
         })
       }
     },
-    /* param mapPosition  is an object of the form 
+    /* param mapPosition  is an object of the form
       {centre: ..., zoom: ... }, or
       {bounds: ...}
     */
-    [REQUEST_MAP_POSITION]({ commit }, mapPosition) {        
-      commit(SET_REQUESTED_MAP_POSITION, mapPosition) 
+    [REQUEST_MAP_POSITION] ({ commit }, mapPosition) {
+      commit(SET_REQUESTED_MAP_POSITION, mapPosition)
+    },
+    [SEARCH_REGION] ({ dispatch, commit, state }, payload) {
+      const searchParams = Object.assign({}, state.searchParams)
+      searchParams.region = payload
+      commit(SET_SEARCH_PARAMS, searchParams)
+      dispatch(SEARCH, state.searchParams)
     }
   },
   getters: {
-    loading(state) {
+    loading (state) {
       return state.loading
     },
-    hasSearched(state) {
+    hasSearched (state) {
       return state.hasSearched
     },
-    searchParams(state) {
+    searchParams (state) {
       return state.searchParams
     },
-    error(state) {
+    error (state) {
       return state.error
     },
     listError (state) {
@@ -368,31 +375,31 @@ const registriesStore = {
     drillerOptions (state) {
       return state.drillerOptions
     },
-    requestedMapPosition(state) {
-      return state.requestedMapPosition;
+    requestedMapPosition (state) {
+      return state.requestedMapPosition
     },
-    currentMapBounds(state) {
-      return state.currentMapBounds;
+    currentMapBounds (state) {
+      return state.currentMapBounds
     },
-    doSearchOnBoundsChange(state) {
-      return state.doSearchOnBoundsChange;
+    doSearchOnBoundsChange (state) {
+      return state.doSearchOnBoundsChange
     },
-    limitSearchToCurrentMapBounds(state) {
-      return state.limitSearchToCurrentMapBounds;
+    limitSearchToCurrentMapBounds (state) {
+      return state.limitSearchToCurrentMapBounds
     },
-    snapMapToSearchResults(state) {
-      return !state.limitSearchToCurrentMapBounds;
+    snapMapToSearchResults (state) {
+      return !state.limitSearchToCurrentMapBounds
     },
     activity (state) {
       /**
        * last searched activity, exposed to components as "activity"
        */
-      return state.lastSearchedParams ? state.lastSearchedParams.raw.activity : null;
+      return state.lastSearchedParams ? state.lastSearchedParams.raw.activity : null
     },
-    isSearchInProgress(state) {
+    isSearchInProgress (state) {
       return state.isSearchInProgress
     },
-    lastSearchedParams(state) {
+    lastSearchedParams (state) {
       return state.lastSearchedParams
     },
     provinceStateOptions (state) {
@@ -403,9 +410,16 @@ const registriesStore = {
         })
       }
       return options
+    },
+    regionOptions (state) {
+      const options = []
+      if (state.drillerOptions && state.drillerOptions.regional_areas) {
+        return state.drillerOptions.regional_areas
+      }
+      return options
     }
   }
-    
+
 }
 
 export default registriesStore

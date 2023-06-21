@@ -54,13 +54,13 @@
 
       <!-- Search options -->
       <div class="pr-3 mb-4">
-        <b-row class="mt-4">          
+        <b-row class="mt-4">
           <!-- Search form -->
           <b-col cols="12" lg="6" xl="5">
             <div class="mb-3">
-              Use the search function below to define your search criteria. 
-              Please note: The map only shows registered well drillers and well pump installers whose base operation and address are within B.C. 
-              Some well drillers and well pump installers may operate in multiple areas throughout B.C. 
+              Use the search function below to define your search criteria.
+              Please note: The map only shows registered well drillers and well pump installers whose base operation and address are within B.C.
+              Some well drillers and well pump installers may operate in multiple areas throughout B.C.
               For a complete list refer to the results table below.
             </div>
             <b-form @submit.prevent="drillerSearch" @reset.prevent="resetSearch({clearDrillers: true})" id="drillerSearchForm">
@@ -78,8 +78,8 @@
                 <b-col md="12">
                   <b-form-group label="Choose classification(s):">
                     <b-form-checkbox-group name="subactivitySelector"
-                      class="fixed-width font-weight-normal pt-2" 
-                      :options="subactivities"                       
+                      class="fixed-width font-weight-normal pt-2"
+                      :options="subactivities"
                       v-model="searchParams.subactivities"></b-form-checkbox-group>
                   </b-form-group>
                 </b-col>
@@ -102,16 +102,16 @@
                         >
                           <option v-for="city in prov.cities" :key="`${city} ${prov.prov}`" :value="city">{{ city }}</option>
                         </optgroup>
-                    </b-form-select>                    
+                    </b-form-select>
                     <b-alert
                       show
                       variant="warning"
                       class="container mb-3"
                       v-if="limitSearchToCurrentMapBounds && isCommunitySelected">
-                    Caution: Your are filtering the search by community ({{searchParams.city.filter(c => c).join(", ")}}) <i>and</i> by the map area.  Ensure 
+                    Caution: Your are filtering the search by community ({{searchParams.city.filter(c => c).join(", ")}}) <i>and</i> by the map area.  Ensure
                     these two selections are consistent, or you won't get any search results.
                   </b-alert>
-                  </b-form-group>                  
+                  </b-form-group>
                 </b-col>
                 <b-col cols="12" md="6" v-if="userRoles.registry.view" class="md-5">
                   <b-form-group label="Registration status:" label-for="registrationStatusSelect">
@@ -120,6 +120,21 @@
                         v-model="searchParams.status"
                         id="registrationStatusSelect"
                         name="registryStatuses"/>
+                  </b-form-group>
+                </b-col>
+              </b-form-row>
+              <b-form-row>
+                <b-col cols="12" md="12">
+                  <b-form-group label="Region:" label-for="regionOptions">
+                    <b-form-select
+                        multiple="multiple"
+                        id="regionOptions"
+                        v-model="searchParams.region"
+                        class="mb-3"
+                        :select-size="6">
+                        <option value="">All</option>
+                        <option v-for="region in regionOptions" :key="`${region.regional_area_guid}`" :value="region.regional_area_guid">{{ region.name }}</option>
+                    </b-form-select>
                   </b-form-group>
                 </b-col>
               </b-form-row>
@@ -140,7 +155,7 @@
                   <b-form-group label="Entries:" label-for="registriesResultsNumberSelect">
                     <select
                         v-model="searchParams.limit"
-                        id="registriesResultsNumberSelect">                      
+                        id="registriesResultsNumberSelect">
                       <option>10</option>
                       <option>25</option>
                     </select>
@@ -149,17 +164,17 @@
               </b-form-row>
               <b-form-row>
                 <b-col cols="12">
-                  <b-form-group label="Map options:">                    
+                  <b-form-group label="Map options:">
                     <b-form-radio-group v-model="limitSearchToCurrentMapBounds" name="limitSearchToCurrentMapBounds">
                       <b-form-radio v-bind:value="false" id="dontLimitSearchToMap">Snap map to search results</b-form-radio><br/>
-                      <b-form-radio v-bind:value="true" id="limitSearchToMap">Limit search to map area</b-form-radio>                                            
+                      <b-form-radio v-bind:value="true" id="limitSearchToMap">Limit search to map area</b-form-radio>
                     </b-form-radio-group>
-                    <b-form-checkbox 
-                      class="ml-4" 
-                      v-model="refreshOnMapChange" 
+                    <b-form-checkbox
+                      class="ml-4"
+                      v-model="refreshOnMapChange"
                       id="refreshOnMapChange"
                       :disabled="!limitSearchToCurrentMapBounds">
-                        Refresh search results when map area changes</b-form-checkbox>                      
+                        Refresh search results when map area changes</b-form-checkbox>
                   </b-form-group>
                 </b-col>
               </b-form-row>
@@ -179,15 +194,14 @@
               </b-form-row>
             </b-form>
           </b-col>
-          
+
           <!-- search map -->
           <b-col>
             <registry-map
-              ref="registryMap"              
-              />              
+              ref="registryMap"
+              />
           </b-col>
         </b-row>
-        
 
         <div id="registry-download" v-if="userRoles.registry.view">
           <h6 class="mt-3">Download everyone in registry</h6>
@@ -275,7 +289,7 @@ export default {
         username: null,
         password: null
       },
-      surveys: [],
+      surveys: []
     }
   },
   computed: {
@@ -310,14 +324,14 @@ export default {
       }
       return ''
     },
-    subactivities() {
+    subactivities () {
       if (!this.drillerOptions) {
         return []
       }
       return this.drillerOptions[this.searchParams.activity].subactivity_codes.map((item) => { return { 'text': item.description, 'value': item.registries_subactivity_code } })
     },
-    isCommunitySelected() {
-      return this.searchParams && this.searchParams.city && this.searchParams.city.filter(c => c != "").length > 0
+    isCommunitySelected () {
+      return this.searchParams && this.searchParams.city && this.searchParams.city.filter(c => c !== '').length > 0
     },
     /*
     apiSearchParams () {
@@ -330,7 +344,7 @@ export default {
         activity: this.searchParams.activity,
         subactivities: this.searchParams.subactivities,
         ordering: this.searchParams.ordering
-      }    
+      }
     },
     */
     downloadLinkQS () {
@@ -338,41 +352,42 @@ export default {
     },
     hasResults () {
       return this.searchResponse.results && this.searchResponse.results.length > 0
-    },    
+    },
     refreshOnMapChange: {
-      get() { return this.doSearchOnBoundsChangeFromStore },
-      set(value) { this[SET_DO_SEARCH_ON_BOUNDS_CHANGE](value) }
+      get () { return this.doSearchOnBoundsChangeFromStore },
+      set (value) { this[SET_DO_SEARCH_ON_BOUNDS_CHANGE](value) }
     },
     limitSearchToCurrentMapBounds: {
-      get() { return this.limitSearchToCurrentMapBoundsFromStore },
-      set(value) { this[SET_LIMIT_SEARCH_TO_CURRENT_MAP_BOUNDS](value) }
+      get () { return this.limitSearchToCurrentMapBoundsFromStore },
+      set (value) { this[SET_LIMIT_SEARCH_TO_CURRENT_MAP_BOUNDS](value) }
     },
     ...mapState('registriesStore', {
       limitSearchToCurrentMapBoundsFromStore: 'limitSearchToCurrentMapBounds',
       doSearchOnBoundsChangeFromStore: 'doSearchOnBoundsChange'
     }),
     ...mapGetters(['userRoles']),
-    ...mapGetters('registriesStore', [      
+    ...mapGetters('registriesStore', [
       'drillerOptions',
       'loading',
       'listError',
       'cityList',
+      'regionOptions',
       'searchResponse',
       'activity',
       'searchParams',
-      'hasSearched', 
+      'hasSearched',
       'isSearchInProgress',
       'lastSearchedParams'
-    ])    
+    ])
   },
   watch: {
-    'searchParams.activity': function (activity) {      
+    'searchParams.activity': function (activity) {
       // get new city list when user changes activity (well driller or well pump installer)
       this.searchParams.city = ['']
       this.resetSelectedSubactivities(this.subactivities)
       this.FETCH_CITY_LIST(this.formatActivityForCityList)
     },
-    subactivities: function (subactivities) {  
+    subactivities: function (subactivities) {
       if (!this.searchParams.subactivities || !this.searchParams.subactivities.length) {
         this.resetSelectedSubactivities(subactivities)
       }
@@ -380,25 +395,28 @@ export default {
     'searchParams.city': function (selectedCities) {
       this.zoomToSelectedCities(selectedCities)
     },
+    'searchParams.region': function (selectedRegions) {
+      // console.log(selectedRegions)
+    },
     user: function () {
       // reset search when user changes (this happens every login or logout)
       this.resetSearch()
     }
   },
   methods: {
-    resetSelectedSubactivities(subactivities) {
-      this.searchParams.subactivities = subactivities ?
-        subactivities.map(item => item.value) :
-        [];
+    resetSelectedSubactivities (subactivities) {
+      this.searchParams.subactivities = subactivities
+        ? subactivities.map(item => item.value)
+        : []
     },
-    drillerSearch() {
+    drillerSearch () {
       const params = this.searchParams
 
       // If the search parameters specify a page offset, disregard it.
       // (This method always performs a fresh search and results should
       // start at page 1.)
-      if (params.hasOwnProperty("offset")) {
-        delete params.offset;
+      if (params.hasOwnProperty('offset')) {
+        delete params.offset
       }
 
       if (window.ga) {
@@ -411,10 +429,10 @@ export default {
       }
       this.SEARCH(params)
     },
-    sortTable(sortCode) {
+    sortTable (sortCode) {
       if (!this.lastSearchedParams) {
         return
-      }      
+      }
       if (this.lastSearchedParams.raw.ordering[0] !== '-') {
         this.lastSearchedParams.raw['ordering'] = `-${sortCode}`
       } else {
@@ -426,42 +444,42 @@ export default {
       if (!e.ctrlKey) {
         ApiService.download(e.currentTarget.getAttribute('href'))
       }
-    },  
-    //returns a promise with results from BC Physical Address Geocoder API
-    geocodeCity(city) {
+    },
+    // returns a promise with results from BC Physical Address Geocoder API
+    geocodeCity (city) {
       return axios.get(
-        "https://geocoder.api.gov.bc.ca/addresses.json", 
-        { params: { maxResults: 1, provinceCode: "BC", localities: city, matchPrecision: "locality", addressString: city } }
+        'https://geocoder.api.gov.bc.ca/addresses.json',
+        { params: { maxResults: 1, provinceCode: 'BC', localities: city, matchPrecision: 'locality', addressString: city } }
       )
-    },      
-    zoomToSelectedCities(selectedCities) {
-      if (selectedCities && selectedCities != "") {
-        const lngLats = []; //a list of {lat:..., lng:...} objects
-        var numResponses = 0;
+    },
+    zoomToSelectedCities (selectedCities) {
+      if (selectedCities && selectedCities !== '') {
+        const lngLats = [] // a list of {lat:..., lng:...} objects
+        var numResponses = 0
         const onGeocodeSuccess = (resp) => {
-          numResponses++;
-          //Although we can ask the geocoder to return only locations in BC, it doesn't
-          //respect this request.  We work around this limitation by filtering out non-BC
-          //feature from the response.
+          numResponses++
+          // Although we can ask the geocoder to return only locations in BC, it doesn't
+          // respect this request.  We work around this limitation by filtering out non-BC
+          // feature from the response.
           const featuresInBc = resp.data.features.filter(
-            f => f.properties.provinceCode == "BC"
+            f => f.properties.provinceCode === 'BC'
           )
-          if (featuresInBc.length) {            
+          if (featuresInBc.length) {
             const feature = featuresInBc[0]
             lngLats.push(new mapboxgl.LngLat(feature.geometry.coordinates[0], feature.geometry.coordinates[1]))
-          }          
-          checkAllGeocodesComplete();        
+          }
+          checkAllGeocodesComplete()
         }
         const onGeocodeError = (err) => {
-          numResponses++;
-          checkAllGeocodesComplete();
+          console.log(err)
+          numResponses++
+          checkAllGeocodesComplete()
         }
         const checkAllGeocodesComplete = () => {
-          if (numResponses == selectedCities.length) {
-            if (lngLats.length == 1) {
+          if (numResponses === selectedCities.length) {
+            if (lngLats.length === 1) {
               this.REQUEST_MAP_POSITION({ centre: lngLats[0] })
-            }
-            else if (lngLats.length > 1) {
+            } else if (lngLats.length > 1) {
               // Build a LngLatBounds object that contains the
               // geocoded points representing all the selected cities
               const bounds = new mapboxgl.LngLatBounds()
@@ -469,40 +487,39 @@ export default {
                 bounds.extend(lngLats)
               })
               this.REQUEST_MAP_POSITION({ bounds: bounds })
-            }
-            else {
-              // None of the selected cities could be geocoded, so don't adjust the 
+            } else {
+              // None of the selected cities could be geocoded, so don't adjust the
               // map position
-            }            
+            }
           }
         }
         for (var i = 0; i < selectedCities.length; i++) {
-          const city = selectedCities[i];          
+          const city = selectedCities[i]
           this.geocodeCity(city).then(
             onGeocodeSuccess,
             onGeocodeError
           )
-        }        
+        }
       }
     },
-    resetSearch() {
-      this[RESET_SEARCH]();
-    },    
+    resetSearch () {
+      this[RESET_SEARCH]()
+    },
     ...mapMutations('registriesStore', [
       SET_HAS_SEARCHED,
       SET_LOADING,
       SET_LIMIT_SEARCH_TO_CURRENT_MAP_BOUNDS,
-      SET_DO_SEARCH_ON_BOUNDS_CHANGE    
+      SET_DO_SEARCH_ON_BOUNDS_CHANGE
     ]),
     ...mapActions('registriesStore', [
       FETCH_DRILLER_OPTIONS,
       FETCH_CITY_LIST,
-      SEARCH,  
-      RESET_SEARCH, 
-      REQUEST_MAP_POSITION   
+      SEARCH,
+      RESET_SEARCH,
+      REQUEST_MAP_POSITION
     ])
   },
-  created() {
+  created () {
     // send request for city list when app is loaded
     this.FETCH_CITY_LIST(this.formatActivityForCityList)
     this.FETCH_DRILLER_OPTIONS()
