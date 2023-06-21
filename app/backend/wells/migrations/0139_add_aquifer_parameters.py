@@ -25,7 +25,7 @@ MIGRATE_HYDRAULIC_TABLE_INFO = """
         update_date
     )
     SELECT
-        uuid_generate_v4() AS aquifer_parameters_guid,
+        public.uuid_generate_v4() AS aquifer_parameters_guid,
         w.well_tag_number,
         w.storativity,
         w.transmissivity,
@@ -169,6 +169,10 @@ class Migration(migrations.Migration):
             model_name='fieldsprovided',
             name='aquifer_parameters_set',
             field=models.BooleanField(default=False),
+        ),
+        migrations.RunSQL( 
+          sql='CREATE EXTENSION IF NOT EXISTS "uuid-ossp";',
+          reverse_sql='DROP EXTENSION IF EXISTS "uuid-ossp";',
         ),
         migrations.RunSQL(
           MIGRATE_HYDRAULIC_TABLE_INFO,
