@@ -32,10 +32,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <template v-for="(aquiferParameter, index) in aquiferParametersData">
             <div class="bordered-table">
               <tr>
-                <th class="font-weight-normal top-row-no-border">Start Date of Test</th>
-                <th class="font-weight-normal top-row-no-border">Test Description</th>
-                <th class="font-weight-normal top-row-no-border">Test Duration (min)</th>
-                <th class="font-weight-normal top-row-no-border">Boundary Effect</th>
+                <th class="font-weight-normal top-row-no-border" scope="col">Start Date of Test</th>
+                <th class="font-weight-normal top-row-no-border" scope="col">Test Description</th>
+                <th class="font-weight-normal top-row-no-border" scope="col">Test Duration (min)</th>
+                <th class="font-weight-normal top-row-no-border" scope="col">Boundary Effect</th>
               </tr>
               <tr>
                 <td>
@@ -86,12 +86,12 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 </td>
               </tr>
               <tr>
-                <th class="font-weight-normal">Analysis Method</th>
-                <th class="font-weight-normal">Transmissivity (m²/day)</th>
-                <th class="font-weight-normal">Conductivity (m/day)</th>
-                <th class="font-weight-normal">Storativity</th>
-                <th class="font-weight-normal">Specific Yield</th>
-                <th class="font-weight-normal">Specific Capacity (L/s/m)</th>
+                <th class="font-weight-normal" scope="col">Analysis Method</th>
+                <th class="font-weight-normal" scope="col">Transmissivity (m²/day)</th>
+                <th class="font-weight-normal" scope="col">Conductivity (m/day)</th>
+                <th class="font-weight-normal" scope="col">Storativity</th>
+                <th class="font-weight-normal" scope="col">Specific Yield</th>
+                <th class="font-weight-normal" scope="col">Specific Capacity (L/s/m)</th>
               </tr>
               <tr>
                 <td>
@@ -154,7 +154,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 </td>
               </tr>
               <tr>
-                <th class="font-weight-normal">Comments</th>
+                <th class="font-weight-normal" scope="col">Comments</th>
                 <th></th>
               </tr>
               <tr>
