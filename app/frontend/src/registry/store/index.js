@@ -412,11 +412,7 @@ const registriesStore = {
       return options
     },
     regionOptions (state) {
-      const options = []
-      if (state.drillerOptions && state.drillerOptions.regional_areas) {
-        return state.drillerOptions.regional_areas
-      }
-      return options
+      return state?.drillerOptions?.regional_areas || []
     }
   }
 

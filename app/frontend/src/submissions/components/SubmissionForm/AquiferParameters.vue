@@ -155,7 +155,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               </tr>
               <tr>
                 <th class="font-weight-normal" scope="col">Comments</th>
-                <th></th>
+                <th scope="col"></th>
               </tr>
               <tr>
                 <td colspan="6">

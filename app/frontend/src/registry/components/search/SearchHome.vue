@@ -331,7 +331,7 @@ export default {
       return this.drillerOptions[this.searchParams.activity].subactivity_codes.map((item) => { return { 'text': item.description, 'value': item.registries_subactivity_code } })
     },
     isCommunitySelected () {
-      return this.searchParams && this.searchParams.city && this.searchParams.city.filter(c => c !== '').length > 0
+      return (this.searchParams?.city?.filter(c => c !== '')?.length ?? 0) > 0
     },
     /*
     apiSearchParams () {
@@ -455,7 +455,7 @@ export default {
     zoomToSelectedCities (selectedCities) {
       if (selectedCities && selectedCities !== '') {
         const lngLats = [] // a list of {lat:..., lng:...} objects
-        var numResponses = 0
+        let numResponses = 0
         const onGeocodeSuccess = (resp) => {
           numResponses++
           // Although we can ask the geocoder to return only locations in BC, it doesn't
