@@ -113,12 +113,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
               </b-col>
               <b-col cols="12" md="4">
                 <div><a class="jump_link" href="#casing_fieldset">Casing Details</a></div>
+                <div><a class="jump_link" href="#aquifer_parameters_fieldset">Aquifer Parameters</a></div>
                 <div><a class="jump_link" href="#surface_seal_fieldset">Surface Seal and Backfill Details</a></div>
                 <div><a class="jump_link" href="#liner_details_fieldset">Liner Details</a></div>
                 <div><a class="jump_link" href="#screen_details_fieldset">Screen Details</a></div>
-                <div><a class="jump_link" href="#well_development_fieldset">Well Development</a></div>
               </b-col>
               <b-col cols="12" md="4">
+                <div><a class="jump_link" href="#well_development_fieldset">Well Development</a></div>
                 <div><a class="jump_link" href="#well_yield_fieldset">Well Yield</a></div>
                 <div><a class="jump_link" href="#well_decommissioning_fieldset">Well Decommissioning</a></div>
                 <div><a class="jump_link" href="#well_comments_fieldset">Comments</a></div>
@@ -475,6 +476,35 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </b-row>
         </fieldset>
 
+        <fieldset id="aquifer_parameters_fieldset" class="my-3 detail-section">
+          <legend>Pumping Test Information and Aquifer Parameters</legend>
+          <div class="table-responsive">
+            <b-table
+                striped
+                small
+                bordered
+                :items="well.aquifer_parameters_set"
+                :fields="[
+                  'start_date_pumping_test',
+                  'pumping_test_description',
+                  { key: 'test_duration', label: 'Test Duration (min)' },
+                  'boundary_effect',
+                  'storativity',
+                  { key: 'transmissivity', label: 'Transmissivity (m²/day)' },
+                  { key: 'hydraulic_conductivity', label: 'Hydraulic Conductivity (m/day)' },
+                  'specific_yield',
+                  { key: 'specific_capacity', label: 'Specific Capacity (L/s/m)' },
+                  'analysis_method',
+                  'comments'
+                ]"
+                show-empty>
+                <template slot="pumping_test_description" slot-scope="data">{{codeToDescription('pumping_test_description_codes', data.item.pumping_test_description)}}</template>
+                <template slot="boundary_effect" slot-scope="data">{{codeToDescription('boundary_effect_codes', data.item.boundary_effect)}}</template>
+                <template slot="analysis_method" slot-scope="data">{{codeToDescription('analysis_method_codes', data.item.analysis_method)}}</template>
+            </b-table>
+          </div>
+        </fieldset>
+
         <fieldset id="well_comments_fieldset" class="my-3 detail-section">
           <legend>Comments</legend>
           <p>
@@ -600,7 +630,7 @@ export default {
     isUnpublished () {
       return !this.well.is_published
     },
-    ...mapGetters(['userRoles', 'config', 'well', 'wellLicence', 'storedWellId'])
+    ...mapGetters(['userRoles', 'config', 'well', 'wellLicence', 'storedWellId', 'codes'])
   },
   methods: {
     handlePrint () {

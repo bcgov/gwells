@@ -16,7 +16,6 @@ import {
 import { SET_SEARCH_RESPONSE, SET_LAST_SEARCHED_PARAMS } from '@/registry/store/mutations.types'
 import fakePersonList from '../fakePersonList.js'
 
-
 const localVue = createLocalVue()
 localVue.use(Vuex)
 
@@ -77,7 +76,7 @@ const DEFAULT_REGISTRIES_STORE_GETTERS = {
         }
       ]
     }
-  },      
+  },
   activity: () => 'DRILL',
   searchParams: () => {
     return {
@@ -103,7 +102,7 @@ const DEFAULT_REGISTRIES_STORE_GETTERS = {
       api: {}
     }
   },
-  requestedMapPosition:() => null,
+  requestedMapPosition: () => null,
   hasSearched: () => false
 }
 const DEFAULT_REGISTRIES_STORE_ACTIONS = {
@@ -125,14 +124,14 @@ describe('SearchHome.vue', () => {
   beforeEach(() => {
     moxios.install()
     authGetters = {
-      userRoles: () => ({ registry: { edit: false, view: false, approve: false } }),
+      userRoles: () => ({ registry: { edit: false, view: false, approve: false } })
     }
     store = new Vuex.Store({
       modules: {
         auth: { getters: authGetters },
         registriesStore: { namespaced: true, getters: DEFAULT_REGISTRIES_STORE_GETTERS, actions: DEFAULT_REGISTRIES_STORE_ACTIONS, mutations: DEFAULT_REGISTIES_STORE_MUTATIONS }
       }
-    })    
+    })
   })
 
   afterEach(() => {
@@ -159,9 +158,9 @@ describe('SearchHome.vue', () => {
         return { status: '400', statusText: 'error!' }
       },
       cityList: () => [],
-      activity: () => 'DRILL',
+      activity: () => 'DRILL'
     })
-    const store = new Vuex.Store({  
+    const store = new Vuex.Store({
       modules: {
         auth: { getters: authGetters },
         registriesStore: { namespaced: true, getters: registriesStoreGetters, actions: DEFAULT_REGISTRIES_STORE_ACTIONS, mutations: DEFAULT_REGISTIES_STORE_MUTATIONS }
@@ -190,9 +189,9 @@ describe('SearchHome.vue', () => {
     })
     const table = wrapper.find(SearchTable)
     let spy = jest.spyOn(wrapper.vm, 'sortTable')
-    wrapper.setMethods({ sortTable: spy });
+    wrapper.setMethods({ sortTable: spy })
     table.vm.$emit('sort', '-surname')
-    expect(spy).toHaveBeenCalledWith("-surname")
+    expect(spy).toHaveBeenCalledWith('-surname')
     spy.mockRestore()
   })
   it('has a list of cities for drillers', () => {
@@ -227,9 +226,9 @@ describe('SearchHome.vue', () => {
         return { status: '400', statusText: 'error!' }
       },
       cityList: () => [],
-      activity: () => 'DRILL',
+      activity: () => 'DRILL'
     })
-    const store = new Vuex.Store({ 
+    const store = new Vuex.Store({
       modules: {
         auth: { getters: authGetters },
         registriesStore: { namespaced: true, getters: registriesStoreGetters, actions: DEFAULT_REGISTRIES_STORE_ACTIONS, mutations: DEFAULT_REGISTIES_STORE_MUTATIONS }

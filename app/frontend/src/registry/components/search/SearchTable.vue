@@ -175,7 +175,7 @@ export default {
     ...mapGetters('registriesStore', [
       'loading',
       'isSearchInProgress',
-      'listError',      
+      'listError',
       'searchResponse',
       'activity'
     ])

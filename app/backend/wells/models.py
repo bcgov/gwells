@@ -198,6 +198,40 @@ class BoundaryEffectCode(CodeTableModel):
         return self.description
 
 
+class PumpingTestDescriptionCode(CodeTableModel):
+    """
+     The pumping test method description in aquifer pumping tests.
+    """
+    pumping_test_description_code = models.CharField(primary_key=True, max_length=10, editable=False)
+    description = models.CharField(max_length=100)
+
+    class Meta:
+        db_table = 'pumping_test_description_code'
+        ordering = ['display_order', 'description']
+
+    db_table_comment = ('Type of the pumping test method used for aquifer pumping tests.')
+
+    def __str__(self):
+        return self.description
+
+
+class AnalysisMethodCode(CodeTableModel):
+    """
+     The analysis method used in aquifer pumping tests.
+    """
+    analysis_method_code = models.CharField(primary_key=True, max_length=10, editable=False)
+    description = models.CharField(max_length=100)
+
+    class Meta:
+        db_table = 'analysis_method_code'
+        ordering = ['display_order', 'description']
+
+    db_table_comment = ('The analysis method used in aquifer pumping tests.')
+
+    def __str__(self):
+        return self.description
+
+
 class WellDisinfectedCode(CodeTableModel):
     """
      The status on whether the well has been disinfected or not.
@@ -1996,6 +2030,7 @@ class FieldsProvided(models.Model):
     recommended_pump_rate = models.BooleanField(default=False)
     lithologydescription_set = models.BooleanField(default=False)
     casing_set = models.BooleanField(default=False)
+    aquifer_parameters_set = models.BooleanField(default=False)
     decommission_description_set = models.BooleanField(default=False)
     screen_set = models.BooleanField(default=False)
     linerperforation_set = models.BooleanField(default=False)
@@ -2431,3 +2466,121 @@ class DecommissionDescription(AuditModel):
     db_table_comment = ('A cross refernce table maintaining the list of wells that have been decomissioned'
                         ' and the materials used to fill the well when decomissioned. E.g. Bentonite chips,'
                         ' Native sand or gravel, Commercial gravel/pea gravel.')
+
+
+class AquiferParameters(AuditModel):
+    """
+    Aquifer Parameter information from well pumping tests
+
+    There can be many pumping tests done for a well so there may be many aquifer parameter records per well
+    """
+    aquifer_parameters_guid = models.UUIDField(
+        primary_key=False, default=uuid.uuid4, editable=False)
+    
+    testing_number = models.AutoField(
+        primary_key=True, verbose_name='Testing Number',
+        db_comment=('The testing number is automatically assigned to each pumping test record that gets created'))
+    
+    activity_submission = models.ForeignKey(ActivitySubmission, db_column='filing_number',
+                                            on_delete=models.PROTECT, blank=True, null=True,
+                                            related_name='aquifer_parameters_set')
+    well = models.ForeignKey(
+        Well, db_column='well_tag_number', on_delete=models.PROTECT,
+        blank=True, null=True,
+        related_name='aquifer_parameters_set',
+        db_comment=('The file number assigned to a particular well in the in the province\'s Groundwater '
+                    'Wells and Aquifers application.'))
+    
+    start_date_pumping_test = models.DateField(
+        null=True, verbose_name='Start date of pumping test',
+        db_comment='The date when the analysis started.')
+    
+    pumping_test_description = models.ForeignKey(PumpingTestDescriptionCode, db_column='pumping_test_description_code',
+                                    on_delete=models.PROTECT, blank=True, null=True,
+                                    verbose_name='Testing Type',
+                                    db_comment='Valid codes for the testing types used in '
+                                                'pumping test analysis. i.e. ST, PTPW, PTOW, RT, OTHER')
+    
+    test_duration = models.PositiveIntegerField(blank=True, null=True)
+
+    boundary_effect = models.ForeignKey(BoundaryEffectCode, db_column='boundary_effect_code',
+                                on_delete=models.PROTECT, blank=True, null=True,
+                                verbose_name='Boundary Effect',
+                                db_comment='Valid codes for the boundaries observed in '
+                                            'pumping test analysis. i.e. CH, NF.')
+
+    storativity = models.DecimalField(
+        max_digits=8, decimal_places=7, blank=True, null=True, verbose_name='Storativity')
+    
+    transmissivity = models.DecimalField(
+        max_digits=30, decimal_places=10, blank=True, null=True, verbose_name='Transmissivity')
+    
+    hydraulic_conductivity = models.TextField(
+        max_length=100,
+        blank=True,
+        null=True,
+        verbose_name='Hydraulic Conductivity')
+    
+    specific_yield = models.DecimalField(
+        max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Specific Yield')
+    
+    specific_capacity = models.DecimalField(
+        max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Specific Yield')
+   
+    analysis_method = models.ForeignKey(AnalysisMethodCode, db_column='analysis_method_code',
+                                    on_delete=models.PROTECT, blank=True, null=True,
+                                    verbose_name='Analysis Method',
+                                    db_comment='Valid codes for the analysis methods used in '
+                                                'pumping test analysis. i.e. TH, CJ, HJ, N, B, PC, OTHER')
+    
+    comments = models.TextField(
+        max_length=350,
+        blank=True,
+        null=True,
+        verbose_name='Testing Comments')
+
+    class Meta:
+        ordering = ["start_date_pumping_test"]
+        db_table = 'aquifer_parameters'
+
+    db_table_comment = ('Aquifer parameter testing stats from well pumping tests.')
+
+    db_column_supplemental_comments = {
+        "testing_number":"System generated sequential number assigned to each pumping test record.",
+        "aquifer_parameters_guid":"System generated unique guid assigned to each pumping test record.",
+        "well_tag_number":"System generated sequential number assigned to each well. It is widely used by groundwater staff as it is the only consistent unique identifier for each well. It is different from a well ID plate number.",
+        "start_date_pumping_test":"Start date of the pumping test.",
+        "pumping_test_description_code":"Identification of the testing method (e.g.basic pumping test, pumping test with monitoring wells, single-well-response/slug test, constant head).",
+        "test_duration":"The duration of the hydraulic testing period.  For consistency, do not include the recovery period.",
+        "boundary_effect_code":"Valid codes for the boundaries observed in pumping test analysis. i.e. CH, NF.",
+        "storativity":"Storativity estimated from hydraulic testing (dimensionless).",
+        "transmissivity":"Transmissivity estimated from hydraulic testing.",
+        "hydraulic_conductivity":"Hydraulic conductivity estimated from hydraulic testing in metres per second.",
+        "specific_yield":"Specific Yield estimated from hydraulic testing (dimensionless).",
+        "specific_capacity":"Specific Capacity.",
+        "analysis_method_code":"The mathematical solution to the groundwater flow equation used to fit the observational data and estimate hydraulic parameters e.g. Theis 1935",
+        "comments":"Any additional comments about the pumping test.",
+    }
+
+    def __str__(self):
+        if self.activity_submission:
+            return 'activity_submission {} {}'.format(self.activity_submission, self.aquifer_parameters_guid)
+        else:
+            return 'well {} {}'.format(self.well, self.aquifer_parameters_guid)
+
+    def as_dict(self):
+        return {
+            "testing_number": self.testing_number,
+            "aquifer_parameters_guid": self.aquifer_parameters_guid,
+            "well_tag_number": self.well,
+            "start_date_pumping_test": self.start_date_pumping_test,
+            "pumping_test_description_code": self.pumping_test_description,
+            "test_duration": self.test_duration,
+            "storativity": self.storativity,
+            "transmissivity": self.transmissivity,
+            "hydraulic_conductivity": self.hydraulic_conductivity,
+            "specific_yield": self.specific_yield,
+            "specific_capacity": self.specific_capacity,
+            "analysis_method": self.analysis_method,
+            "comments": self.comments
+        }

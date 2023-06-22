@@ -37,6 +37,9 @@ from wells.models import (
     WellOrientationCode,
     WaterQualityCharacteristic,
     Well,
+    PumpingTestDescriptionCode,
+    BoundaryEffectCode,
+    AnalysisMethodCode
 )
 
 logger = logging.getLogger('wells_filters')
@@ -275,14 +278,26 @@ class WellListFilter(AnyOrAllFilterSet):
     decommission_backfill_material = filters.CharFilter(lookup_expr='icontains')
     decommission_details = filters.CharFilter(lookup_expr='icontains')
     aquifer_vulnerability_index = filters.RangeFilter()
-    storativity = filters.RangeFilter()
-    transmissivity = filters.RangeFilter()
-    hydraulic_conductivity = filters.CharFilter(lookup_expr='icontains')
     specific_storage = filters.CharFilter(lookup_expr='icontains')
-    specific_yield = filters.RangeFilter()
-    testing_method = filters.CharFilter(lookup_expr='icontains')
-    testing_duration = filters.RangeFilter()
-    analytic_solution_type = filters.RangeFilter()
+
+    testing_number = filters.RangeFilter(field_name='aquifer_parameters_set__testing_number')
+    start_date_pumping_test = filters.DateFromToRangeFilter(label='Pumping Test Date', 
+                                                 field_name='aquifer_parameters_set__start_date_pumping_test')
+    pumping_test_description = filters.ModelChoiceFilter(
+        queryset=PumpingTestDescriptionCode.objects.all(), field_name='aquifer_parameters_set__pumping_test_description')
+    test_duration = filters.RangeFilter(field_name='aquifer_parameters_set__test_duration')
+    boundary_effect = filters.ModelChoiceFilter(
+        queryset=BoundaryEffectCode.objects.all(), field_name='aquifer_parameters_set__boundary_effect')
+    storativity = filters.RangeFilter(field_name='aquifer_parameters_set__storativity')
+    transmissivity = filters.RangeFilter(field_name='aquifer_parameters_set__transmissivity')
+    hydraulic_conductivity = filters.CharFilter(lookup_expr='icontains', 
+                                                field_name='aquifer_parameters_set__hydraulic_conductivity')
+    specific_yield = filters.RangeFilter(field_name='aquifer_parameters_set__specific_yield')
+    specific_capacity = filters.RangeFilter(field_name='aquifer_parameters_set__specific_capacity')
+    analysis_method = filters.ModelChoiceFilter(
+        queryset=AnalysisMethodCode.objects.all(), field_name='aquifer_parameters_set__analysis_method')
+    comments = filters.CharFilter(lookup_expr='icontains', 
+                                          field_name='aquifer_parameters_set__comments')
     final_casing_stick_up = filters.RangeFilter()
     bedrock_depth = filters.RangeFilter()
     static_water_level = filters.RangeFilter()

@@ -36,6 +36,7 @@ from registries.models import (
     PersonNote,
     PersonNote,
     OrganizationNote,
+    RegionalArea
 )
 
 logger = logging.getLogger(__name__)
@@ -818,3 +819,11 @@ class PersonNameSerializer(serializers.ModelSerializer):
     class Meta:
         model = Person
         fields = ('name', 'person_guid', 'registrations')
+
+
+class RegionalAreaSerializer(serializers.ModelSerializer):
+    """Serializes regional area names for quick searching"""
+
+    class Meta:
+        model = RegionalArea
+        fields = ('name', 'regional_area_guid',)

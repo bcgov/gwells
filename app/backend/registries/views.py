@@ -51,7 +51,8 @@ from registries.models import (
     RegistriesApplication,
     RegistriesRemovalReason,
     SubactivityCode,
-    WellClassCode)
+    WellClassCode,
+    RegionalArea)
 from registries.permissions import RegistriesEditPermissions, RegistriesEditOrReadOnly
 from registries.serializers import (
     ApplicationAdminSerializer,
@@ -72,7 +73,8 @@ from registries.serializers import (
     WellClassCodeSerializer,
     AccreditedCertificateCodeSerializer,
     OrganizationNoteSerializer,
-    PersonNameSerializer)
+    PersonNameSerializer,
+    RegionalAreaSerializer)
 from gwells.change_history import generate_history_diff
 from gwells.views import AuditCreateMixin, AuditUpdateMixin
 
@@ -200,6 +202,9 @@ class PersonOptionsView(APIView):
         result['province_state_codes'] = \
             list(map(lambda item: ProvinceStateCodeSerializer(item).data,
                      ProvinceStateCode.objects.all().order_by('display_order')))
+        result['regional_areas'] = \
+            list(map(lambda item: RegionalAreaSerializer(item).data,
+                     RegionalArea.objects.all().order_by('name')))
 
         return Response(result)
 
@@ -237,7 +242,31 @@ def person_search_qs(request):
         cities = cities.split(',')
         person_filters = person_filters & Q(registrations__organization__city__in=cities)
         reg_filters = reg_filters & Q(organization__city__in=cities)
-        
+    
+    # regional areas
+    region_guids = query.get('region', None)
+    if region_guids:
+        region_guids = region_guids.split(',')
+        regional_areas = RegionalArea.objects.filter(regional_area_guid__in=region_guids)
+
+        # Initialize the filter condition as None
+        person_within_regional_areas = None
+        reg_within_regional_areas = None
+
+        # Loop through regional_areas and build the filter condition using OR (|)
+        for regional_area in regional_areas:
+            if person_within_regional_areas is None:
+                person_within_regional_areas = Q(registrations__organization__geom__within=regional_area.geom)
+                reg_within_regional_areas = Q(organization__geom__within=regional_area.geom)
+            else:
+                person_within_regional_areas |= Q(registrations__organization__geom__within=regional_area.geom)
+                reg_within_regional_areas |= Q(organization__geom__within=regional_area.geom)
+
+        # Apply the filter condition to the query
+        if person_within_regional_areas is not None:
+            person_filters &= person_within_regional_areas
+            reg_filters &= reg_within_regional_areas
+
     #bbox
     sw_long = query.get('sw_long')
     sw_lat = query.get('sw_lat')

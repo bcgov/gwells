@@ -17,13 +17,13 @@ describe('ApplicationAddEdit.vue', () => {
             drillerOptions: jest.fn().mockReturnValue(fakeOptions),
             loading: () => false
           },
-          actions: { 
+          actions: {
             [FETCH_DRILLER_OPTIONS]: jest.fn()
           },
-          mutations:{        
+          mutations: {
           }
-        }        
-      }  
+        }
+      }
     })
     const activity = 'DRILL'
 

@@ -12,7 +12,7 @@
     limitations under the License.
 */
 <template>
-  <div id="registries-search-map" class="map"/>  
+  <div id="registries-search-map" class="map"/>
 </template>
 
 <script>
@@ -26,17 +26,30 @@ import {
   SEARCHED_REGISTRIES_SOURCE_ID,
   SEARCHED_REGISTRIES_LAYER_ID,
   searchedRegistriesLayer,
+  REGISTRY_SOURCE_ID,
+  REGISTRY_FILL_LAYER_ID,
+  setupRegistryHover,
+  registryFillLayer,
+  registryLineLayer,
+  REGISTRY_SOURCE
 } from '../../../common/mapbox/layers'
 import { LegendControl, BoxZoomControl } from '../../../common/mapbox/controls'
 import { DEFAULT_MAP_ZOOM, CENTRE_LNG_LAT_BC, peopleToGeoJSON } from '../../../common/mapbox/geometry'
 import {
   REQUEST_MAP_POSITION,
-  SEARCH_AGAIN
+  SEARCH_AGAIN,
+  SEARCH_REGION
 } from '../../store/actions.types'
 import { SET_CURRENT_MAP_BOUNDS } from '../../store/mutations.types'
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import { setupFeatureTooltips } from '../../../common/mapbox/popup'
-import { createRegistrySearchResultPopupElement } from '../../popup'
+import {
+  createRegistrySearchResultPopupElement,
+  createRegistryRegionPopupElement
+} from '../../popup'
+
+const CURRENT_REGISTRY_FILL_LAYER_ID = 'cur-registry-fill'
+const CURRENT_REGISTRY_LINE_LAYER_ID = 'cur-registry-line'
 
 export default {
   name: 'RegistryMap',
@@ -74,15 +87,15 @@ export default {
       'limitSearchToCurrentMapBounds',
       'snapMapToSearchResults'
     ]),
-    //hasSearchParams(state) {
+    // hasSearchParams(state) {
     //  return Object.keys(this.searchQueryParams).length > 0
-    //},
+    // },
     showUnpublished () {
       return Boolean(this.userRoles.wells.edit)
-    },
+    }
   },
   methods: {
-    initMapBox() {
+    initMapBox () {
       if (!mapboxgl.supported()) {
         this.browserUnsupported = true
         return
@@ -111,7 +124,7 @@ export default {
       this.bboxZoomControl = new BoxZoomControl({
         onZoom: this.zoomToBBox,
         suppressClickEvent: true
-      });
+      })
       this.map.addControl(this.bboxZoomControl, 'top-left')
       this.map.addControl(new mapboxgl.GeolocateControl({
         positionOptions: {
@@ -135,18 +148,29 @@ export default {
           layers: this.legendLayers
         })
         this.map.addControl(this.legendControl, 'bottom-right')
-      }      
+      }
 
-      this.map.on("click", this.onMapClick)
+      this.map.on('click', this.onMapClick)
       this.map.on('load', () => {
-
         const tooltipLayers = {
+          [REGISTRY_FILL_LAYER_ID]: {
+            showOnHover: true,
+            createTooltipContent: this.createRegistryRegionPopupElement
+          },
+          [CURRENT_REGISTRY_FILL_LAYER_ID]: {
+            showOnHover: true,
+            createTooltipContent: this.createRegistryRegionPopupElement
+          },
           [SEARCHED_REGISTRIES_LAYER_ID]: {
             snapToCenter: false,
             showOnHover: false,
             createTooltipContent: this.createRegistrySearchResultPopupElement
-          },
+          }
         }
+
+        /* Setup registry region hover effect */
+        setupRegistryHover(this.map, REGISTRY_FILL_LAYER_ID)
+        setupRegistryHover(this.map, CURRENT_REGISTRY_FILL_LAYER_ID)
 
         setupFeatureTooltips(this.map, tooltipLayers)
 
@@ -154,10 +178,9 @@ export default {
 
         this.$emit('mapLoaded', mapBounds)
         this.SET_CURRENT_MAP_BOUNDS(mapBounds)
+      })
 
-      });
-
-      //listen to map move/zoom events      
+      // listen to map move/zoom events
       const mapChangedHandler = debounce(
         e => {
           const bounds = this.map.getBounds()
@@ -171,83 +194,108 @@ export default {
       ['zoomend', 'moveend', 'resize'].forEach(eventName => {
         this.map.on(eventName, mapChangedHandler)
       })
-      
     },
-    buildMapStyle() {
+    buildMapStyle () {
       return {
         version: 8,
         sources: {
           [DATABC_ROADS_SOURCE_ID]: DATABC_ROADS_SOURCE,
-          [SEARCHED_REGISTRIES_SOURCE_ID]: { type: 'geojson', data: peopleToGeoJSON([]) }
+          [SEARCHED_REGISTRIES_SOURCE_ID]: { type: 'geojson', data: peopleToGeoJSON([]) },
+          [REGISTRY_SOURCE_ID]: REGISTRY_SOURCE
         },
         layers: [
           DATABC_ROADS_LAYER,
           searchedRegistriesLayer(),
+          { ...registryFillLayer({ filter: this.allOtherRegistryFilter() }), maxzoom: 8 },
+          registryLineLayer({ filter: this.allOtherRegistryFilter() }),
+          { ...registryFillLayer({ id: CURRENT_REGISTRY_FILL_LAYER_ID, filter: this.currentRegistryFilter() }), maxzoom: 8 },
+          registryLineLayer({ id: CURRENT_REGISTRY_LINE_LAYER_ID, filter: this.currentRegistryFilter() })
         ]
       }
     },
-    resetMap() {
+    currentRegistryFilter () {
+      return [
+        'case',
+        ['==', ['get', 'name'], this.name], true,
+        false
+      ]
+    },
+    allOtherRegistryFilter () {
+      return [
+        'case',
+        ['!=', ['get', 'name'], this.name], true,
+        false
+      ]
+    },
+    resetMap () {
       this.map.fire('reset')
       this.flyToBC()
       this.hasMapBeenReset = true
     },
-    zoomToBBox(bbox) {
+    zoomToBBox (bbox) {
       if (bbox) {
         this.map.fitBounds(bbox)
       }
     },
-    onMapClick(e) {
+    onMapClick (e) {
+      const features = this.map.queryRenderedFeatures(e.point, {
+        layers: [CURRENT_REGISTRY_FILL_LAYER_ID]
+      })
+      if (features.length > 0) {
+        const clickedPolygon = features[0]
+        this.SEARCH_REGION([clickedPolygon.properties.regional_area_guid])
+      }
     },
-    triggerSearchMapArea() {
+    triggerSearchMapArea () {
       this.$emit('search', this.map.getBounds(), { showLoadingSpinner: true })
       this.searchOnMoveControl.showSearchAreaButton(false)
     },
-    clearSearch() {
+    clearSearch () {
       this.clearSearchResultsLayer()
       this.clearSearchCriteriaControl.toggleShow(false)
       this.$emit('clearSearch')
     },
 
-    updateSearchResultsLayer(geoJSON) {
-      if (this.map) { 
+    updateSearchResultsLayer (geoJSON) {
+      if (this.map) {
         this.map.getSource(SEARCHED_REGISTRIES_SOURCE_ID).setData(geoJSON)
       }
     },
-    clearSearchResultsLayer() {
+    clearSearchResultsLayer () {
       this.updateSearchResultsLayer(peopleToGeoJSON([]))
     },
-    flyToBC() {
+    flyToBC () {
       this.map.flyTo({ center: CENTRE_LNG_LAT_BC, zoom: DEFAULT_MAP_ZOOM })
     },
-    flyToBounds(bounds, options = {}) {
+    flyToBounds (bounds, options = {}) {
       const defaultOptions = {
         duration: 1000,
         padding: 60
       }
-      options = Object.assign({}, defaultOptions, options);
+      options = Object.assign({}, defaultOptions, options)
       this.map.fitBounds(bounds, options)
     },
-    flyToPoint(centre, zoom) {
+    flyToPoint (centre, zoom) {
       const existingCentre = this.map.getCenter()
-      const existingZoom = this.map.getZoom();
-      //don't adjust the map if the requested position is the same as 
-      //(or within 1 metre of) the existing position (this avoids a 
-      //cascade of map moved events)
-      if (centre.distanceTo(existingCentre) < 1 && zoom == existingZoom) {
-        return;
+      const existingZoom = this.map.getZoom()
+      // don't adjust the map if the requested position is the same as
+      // (or within 1 metre of) the existing position (this avoids a
+      // cascade of map moved events)
+      if (centre.distanceTo(existingCentre) < 1 && zoom === existingZoom) {
+        return
       }
       this.map.flyTo({ center: centre, zoom: zoom, duration: 200 })
     },
-    clearPopups() {
-      //remove all map popups
-      const popups = document.getElementsByClassName('mapboxgl-popup');
-      if (popups) { 
+    clearPopups () {
+      // remove all map popups
+      const popups = document.getElementsByClassName('mapboxgl-popup')
+      if (popups) {
         for (var i = 0; i < popups.length; i++) {
           popups[i].remove()
-        }    
+        }
       }
     },
-    geoJsonToBounds(geoJson) {
+    geoJsonToBounds (geoJson) {
       if (!geoJson.features.length) {
         return null
       }
@@ -256,20 +304,27 @@ export default {
         const g = f.geometry
         bounds.extend(new mapboxgl.LngLat(g.coordinates[0], g.coordinates[1]))
       })
-      return bounds;
+      return bounds
     },
-    createRegistrySearchResultPopupElement(features, { canInteract }) {
+    createRegistrySearchResultPopupElement (features, { canInteract }) {
       return createRegistrySearchResultPopupElement(features, this.map, this.$router, {
         pageSize: 1,
         canInteract,
-        wellLayerIds: [
-          SEARCHED_REGISTRIES_LAYER_ID,
+        registryLayerIds: [
+          SEARCHED_REGISTRIES_LAYER_ID
         ]
+      })
+    },
+    createRegistryRegionPopupElement (features, { canInteract }) {
+      return createRegistryRegionPopupElement(features, this.map, this.$router, {
+        canInteract,
+        registryLayerIds: [ REGISTRY_FILL_LAYER_ID ]
       })
     },
     ...mapActions('registriesStore', [
       REQUEST_MAP_POSITION,
-      SEARCH_AGAIN
+      SEARCH_AGAIN,
+      SEARCH_REGION
     ]),
     ...mapMutations('registriesStore', [
       SET_CURRENT_MAP_BOUNDS
@@ -278,29 +333,27 @@ export default {
   watch: {
     requestedMapPosition (requestedMapPosition) {
       if (requestedMapPosition) {
+        this.clearPopups()
 
-        this.clearPopups();
-
-        //requestedMapPosition may specify either {center:..., zoom:...} or {bounds:..., maxZoom: ...}.  
-        if (requestedMapPosition.hasOwnProperty("centre") && requestedMapPosition.hasOwnProperty("zoom")) {
-          this.flyToPoint(requestedMapPosition.centre, requestedMapPosition.zoom);
-        }
-        else if (requestedMapPosition.hasOwnProperty("bounds")) {
-          const maxZoom = requestedMapPosition.hasOwnProperty("maxZoom") ? requestedMapPosition.maxZoom : null;
-          this.flyToBounds(requestedMapPosition.bounds, {maxZoom: maxZoom});
+        // requestedMapPosition may specify either {center:..., zoom:...} or {bounds:..., maxZoom: ...}.
+        if (requestedMapPosition.hasOwnProperty('centre') && requestedMapPosition.hasOwnProperty('zoom')) {
+          this.flyToPoint(requestedMapPosition.centre, requestedMapPosition.zoom)
+        } else if (requestedMapPosition.hasOwnProperty('bounds')) {
+          const maxZoom = requestedMapPosition.hasOwnProperty('maxZoom') ? requestedMapPosition.maxZoom : null
+          this.flyToBounds(requestedMapPosition.bounds, { maxZoom: maxZoom })
         }
       }
     },
     searchInProgress (isLoading) {
       this.searchOnMoveControl.loading(isLoading)
     },
-    searchResponse(searchResponse) {
-      const geoJson = peopleToGeoJSON(searchResponse.results);
+    searchResponse (searchResponse) {
+      const geoJson = peopleToGeoJSON(searchResponse.results)
       this.updateSearchResultsLayer(geoJson)
       if (this.snapMapToSearchResults) {
         const bounds = this.geoJsonToBounds(geoJson)
         if (bounds) {
-          this.flyToBounds(bounds, { maxZoom: 12 });
+          this.flyToBounds(bounds, { maxZoom: 12 })
         }
       }
     },

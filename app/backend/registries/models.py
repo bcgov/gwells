@@ -778,3 +778,34 @@ class vw_well_class(models.Model):
 
     def __str__(self):
         return '%s %s %s' % (self.subactivity, self.activity_code, self.well_class)
+
+
+class RegionalArea(AuditModel):
+    regional_area_guid = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
+        verbose_name="Regional Area UUID")
+
+    name = models.CharField(
+        max_length=200,
+        null=False,
+        blank=False,
+        db_comment='Regional Area Administrative Name')
+    
+    geom = models.PolygonField(
+        srid=4326, 
+        null=False,
+        blank=False,
+        db_comment='Regional Area polygon.'
+    )
+
+    class Meta:
+        db_table = 'regional_area'
+        ordering = ['name']
+        verbose_name_plural = 'Regional Areas'
+
+    db_table_comment = 'Regional Areas in BC used to locate drillers and pump installers.'
+
+    def __str__(self):
+        return self.name

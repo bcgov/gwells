@@ -540,10 +540,10 @@ export default {
       'error',
       'currentDriller',
       'searchResponse',
-      'loading',
+      'loading'
     ]),
-    ...mapGetters([      
-      'user',            
+    ...mapGetters([
+      'user',
       'userRoles'
     ]),
     ...mapState('documentState', [
@@ -560,16 +560,16 @@ export default {
       'fileUploadSuccess',
       'fileUploadFail'
     ]),
-    ...mapActions('registriesStore', [      
+    ...mapActions('registriesStore', [
       FETCH_DRILLER,
       FETCH_DRILLER_OPTIONS
     ]),
     ...mapMutations('documentState', [
       'setFiles'
     ]),
-    ...mapMutations('registriesStore', [      
+    ...mapMutations('registriesStore', [
       SET_DRILLER
-    ]),    
+    ]),
     show (key) {
       return ((key === 'PUMP' && this.pumpApplication) || (key === 'DRILL' && this.drillApplication))
     },
