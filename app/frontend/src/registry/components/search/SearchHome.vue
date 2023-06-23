@@ -331,7 +331,7 @@ export default {
       return this.drillerOptions[this.searchParams.activity].subactivity_codes.map((item) => { return { 'text': item.description, 'value': item.registries_subactivity_code } })
     },
     isCommunitySelected () {
-      return (this.searchParams?.city?.filter(c => c !== '')?.length ?? 0) > 0
+      return this.searchParams && this.searchParams.city && this.searchParams.city.filter(c => c !== '').length > 0
     },
     /*
     apiSearchParams () {
