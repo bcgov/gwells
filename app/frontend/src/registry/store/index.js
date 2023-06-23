@@ -412,10 +412,13 @@ const registriesStore = {
       return options
     },
     regionOptions (state) {
-      return state?.drillerOptions?.regional_areas || []
+      if (state.drillerOptions && state.drillerOptions.regional_areas) {
+        return state.drillerOptions.regional_areas
+      } else {
+        return []
+      }
     }
   }
-
 }
 
 export default registriesStore
