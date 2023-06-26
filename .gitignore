@@ -25,6 +25,7 @@
 *.rar
 *.tar
 *.zip
+!regional_areas.zip
 
 # Logs and databases #
 ######################
