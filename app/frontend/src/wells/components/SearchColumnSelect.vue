@@ -175,7 +175,6 @@ const RESULT_COLUMNS = [
   'specificYield',
   'specificCapacity',
   'pumpingTestDescription',
-  'analyticSolutionType',
   'boundaryEffect',
   'createUser',
   'createDate',

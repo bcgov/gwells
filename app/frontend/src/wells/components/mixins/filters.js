@@ -547,7 +547,11 @@ const SEARCH_FIELDS = {
     label: 'AVI',
     type: 'range'
   },
-  storativity: { param: 'storativity', label: 'Storativity', type: 'range' },
+  storativity: {
+    param: 'storativity',
+    label: 'Storativity',
+    type: 'range'
+  },
   startDatePumpingTest: {
     param: 'start_date_pumping_test',
     label: 'Start Date Pumping Test',
@@ -561,7 +565,7 @@ const SEARCH_FIELDS = {
   hydraulicConductivity: {
     param: 'hydraulic_conductivity',
     label: 'Hydraulic Conductivity',
-    type: 'text'
+    type: 'range'
   },
   specificStorage: {
     param: 'specific_storage',
@@ -584,11 +588,6 @@ const SEARCH_FIELDS = {
     type: 'select',
     textField: 'description',
     valueField: 'pumping_test_description_code'
-  },
-  analyticSolutionType: {
-    param: 'analytic_solution_type',
-    label: 'Analytic solution',
-    type: 'range'
   },
   createUser: {
     authenticated: true,

@@ -248,24 +248,8 @@ def person_search_qs(request):
     if region_guids:
         region_guids = region_guids.split(',')
         regional_areas = RegionalArea.objects.filter(regional_area_guid__in=region_guids)
-
-        # Initialize the filter condition as None
-        person_within_regional_areas = None
-        reg_within_regional_areas = None
-
-        # Loop through regional_areas and build the filter condition using OR (|)
-        for regional_area in regional_areas:
-            if person_within_regional_areas is None:
-                person_within_regional_areas = Q(registrations__organization__geom__within=regional_area.geom)
-                reg_within_regional_areas = Q(organization__geom__within=regional_area.geom)
-            else:
-                person_within_regional_areas |= Q(registrations__organization__geom__within=regional_area.geom)
-                reg_within_regional_areas |= Q(organization__geom__within=regional_area.geom)
-
-        # Apply the filter condition to the query
-        if person_within_regional_areas is not None:
-            person_filters &= person_within_regional_areas
-            reg_filters &= reg_within_regional_areas
+        person_filters &= Q(registrations__organization__regional_areas__in=regional_areas)
+        reg_filters &= Q(organization__regional_areas__in=regional_areas)
 
     #bbox
     sw_long = query.get('sw_long')

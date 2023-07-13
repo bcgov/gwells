@@ -205,6 +205,11 @@ class Organization(AuditModel):
         blank=True, null=True, 
         srid=4326,
         db_comment='Geo-referenced location of the address')
+    regional_areas = models.ManyToManyField(
+        'RegionalArea',
+        related_name='organizations',
+        blank=True,
+        db_comment='The regional areas where the organization operates.')
 
     history = GenericRelation(Version)
 
