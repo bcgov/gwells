@@ -75,7 +75,7 @@ services:
       - "7800:7800"
     entrypoint: sh -c "sleep 10; /app/pg_tileserv"
   frontend:
-    image: node:8.9.4
+    image: node:14.21.3
     hostname: frontend
     working_dir: /app/frontend
     environment:
@@ -101,7 +101,7 @@ services:
     depends_on:
       - backend
   backend:
-    image: gwells/backend
+    image: artifacts.developer.gov.bc.ca/g26e-backend-docker-local/gwells-backend:1.0
     hostname: backend
     environment:
       APP_CONTEXT_ROOT: gwells
