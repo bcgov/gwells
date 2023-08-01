@@ -67,6 +67,12 @@ cd gwells/openshift/docker/backend
 docker build . --tag=gwells/backend
 ```
 
+Login to Artifactory for pulling backend image:
+```sh
+docker login -u <svc-usn> -p <svc-pwd> artifacts.developer.gov.bc.ca/g26e-backend-docker-local
+```
+Replace svc-usn and svc-pwd with Artifactory service account credentials obtained from Openshift (under ally-tools secrets)
+
 Then, run the application with Docker:
 ```sh
 cd gwells
