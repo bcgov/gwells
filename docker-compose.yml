@@ -36,6 +36,7 @@ services:
     entrypoint: /minio-entrypoint.sh
     command: server --address :9001 /data
   db:
+    platform: linux/x86_64
     image: crunchydata/crunchy-postgres-gis:centos7-12.2-4.2.2
     hostname: db
     environment:
@@ -68,6 +69,7 @@ services:
     hostname: tileserv
     depends_on:
       - db
+    platform: linux/x86_64
     image: pramsey/pg_tileserv:latest
     environment:
       DATABASE_URL: postgres://ftw_reader:test1@db:5432/gwells
