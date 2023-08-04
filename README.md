@@ -74,6 +74,12 @@ If a new field(s) are needed for export, this export_databc.py has raw sql queri
     ```
     *Note:* you'll have to first enable experimental features in Docker Desktop (**Settings** > **Features in development** > **Experimental features** > **Access experimental features**).
 
+Login to Artifactory for pulling backend image:
+```sh
+docker login -u <svc-usn> -p <svc-pwd> artifacts.developer.gov.bc.ca/g26e-backend-docker-local
+```
+Replace svc-usn and svc-pwd with Artifactory service account credentials obtained from Openshift (under ally-tools secrets)
+
 Then, run the application with Docker:
 ```sh
 cd gwells
