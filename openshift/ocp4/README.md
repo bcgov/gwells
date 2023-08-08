@@ -1,6 +1,6 @@
 # OpenShift 4 Deployment
 
-## Prerequisites
+## Prerequisites 
 
 The Jenkins pipeline is designed to roll out GWELLS to dev, test and prod.  Before beginning, it requires a Jenkins deployment,
 Python, PostGIS, Minio, and pg_tileserv base images, and secrets in every namespace before it can run. The pipeline should roll everything else out.
