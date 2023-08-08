@@ -86,7 +86,7 @@ const ApiService = {
     return axios.put(presignedUrl, file, config)
   },
   deleteFile (resource) {
-    return axios.delete(resource)
+    return axios.delete(encodeURIComponent(resource))
   }
 }
 
