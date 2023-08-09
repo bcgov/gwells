@@ -156,5 +156,5 @@ Many of our features have been developed by members of the community. Check the 
 Issues are tracked on the [Water Jira board](https://apps.nrs.gov.bc.ca/int/jira/projects/WATER/issues). Note this is a restricted issue tracker and you will require permission to be able to view it.
 
 ## License
-
+ 
 Code released under the [Apache License, Version 2.0](https://github.com/bcgov/gwells/blob/master/LICENSE).
