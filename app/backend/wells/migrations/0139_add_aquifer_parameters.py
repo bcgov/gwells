@@ -170,6 +170,10 @@ class Migration(migrations.Migration):
             name='aquifer_parameters_set',
             field=models.BooleanField(default=False),
         ),
+        migrations.RunSQL( 
+          sql='CREATE EXTENSION IF NOT EXISTS "uuid-ossp";',
+          reverse_sql='DROP EXTENSION IF EXISTS "uuid-ossp";',
+        ),
         migrations.RunSQL(
           MIGRATE_HYDRAULIC_TABLE_INFO,
           REVERSE_MIGRATE_HYDRAULIC_TABLE_INFO
