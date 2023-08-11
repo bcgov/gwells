@@ -477,7 +477,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <span class="font-weight-bold">Technical Report:</span> {{ form.technical_report | nullBooleanToYesNo }}
       </p>
       <p>
-        <span class="font-weight-bold">Technical Report:</span> {{ form.drinking_water_protection_area_ind | nullBooleanToYesNo }}
+        <span class="font-weight-bold">Drinking Water Area Indicator:</span> {{ form.drinking_water_protection_area_ind | nullBooleanToYesNo }}
       </p>
     </fieldset>
 

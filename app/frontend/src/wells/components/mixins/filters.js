@@ -531,7 +531,7 @@ const SEARCH_FIELDS = {
   },
   drinkingWaterProtectionArea: {
     param: 'drinking_water_protection_area_ind',
-    label: 'Drinking Water Protection Area',
+    label: 'Drinking Water Area Indicator',
     type: 'radio',
     options: [{ text: 'Yes', value: 'true' }, { text: 'No', value: 'false' }]
   },

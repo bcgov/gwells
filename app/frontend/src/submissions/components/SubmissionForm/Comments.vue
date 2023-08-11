@@ -77,7 +77,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     </b-row>
     <b-row class="mt-3">
       <b-col cols="12" sm="6">
-        <b-form-group label="Drinking Water Protection Area">
+        <b-form-group label="Drinking Water Area Indicator">
         <b-form-radio-group
           id="drinkingWaterProtectionAreaCheckbox"
           class="mt-1"
