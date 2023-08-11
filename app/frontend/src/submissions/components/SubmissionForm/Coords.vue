@@ -203,7 +203,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </b-row>
         </b-col>
         <b-col sm="12" md="6">
-          <coords-map :latitude="mapLatitude" :longitude="mapLongitude" v-on:coordinate="handleMapCoordinate"/>
+          <coords-map :latitude="mapLatitude" :longitude="mapLongitude" v-on:coordinate="handleMapCoordinate" :drinking_water="this.drinking_water"/>
         </b-col>
       </b-row>
 
@@ -255,6 +255,10 @@ export default {
     saveDisabled: {
       type: Boolean,
       isInput: false
+    },
+    drinking_water: {
+      type: Boolean,
+      default: false
     }
   },
   data () {

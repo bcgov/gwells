@@ -28,7 +28,8 @@ import {
   DATABC_ROADS_SOURCE_ID,
   DATABC_CADASTREL_SOURCE_ID,
   DATABC_ROADS_LAYER,
-  DATABC_CADASTREL_LAYER
+  DATABC_CADASTREL_LAYER,
+wellLayerFilter
 } from '../../../common/mapbox/layers'
 import { buildLeafletStyleMarker } from '../../../common/mapbox/images'
 import { fetchInsideBCCheck, checkCoordsAreTheSame } from '../../../common/mapbox/geometry'
@@ -46,10 +47,15 @@ export default {
       type: Boolean,
       default: true
     },
+    drinking_water: {
+      type: Boolean,
+      default: false
+    },
     insideBC: {
       type: Function,
       default: () => {}
     }
+
   },
   data () {
     return {
@@ -149,6 +155,8 @@ export default {
       this.map.flyTo({ center: [-126.5, 54.5], zoom: 5 })
     },
     coordsChanged (longitude, latitude) {
+      console.log(this.drinking_water)
+
       const markerCoords = this.marker.getLngLat() // get previous coords
       const newCoords = new mapboxgl.LngLat(this.longitude, this.latitude)
 
