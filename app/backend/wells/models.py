@@ -2515,11 +2515,8 @@ class AquiferParameters(AuditModel):
     transmissivity = models.DecimalField(
         max_digits=30, decimal_places=10, blank=True, null=True, verbose_name='Transmissivity')
     
-    hydraulic_conductivity = models.TextField(
-        max_length=100,
-        blank=True,
-        null=True,
-        verbose_name='Hydraulic Conductivity')
+    hydraulic_conductivity = models.DecimalField(
+        max_digits=30, decimal_places=10, blank=True, null=True, verbose_name='Hydraulic Conductivity')
     
     specific_yield = models.DecimalField(
         max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Specific Yield')

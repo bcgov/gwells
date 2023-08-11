@@ -501,6 +501,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 <template slot="pumping_test_description" slot-scope="data">{{codeToDescription('pumping_test_description_codes', data.item.pumping_test_description)}}</template>
                 <template slot="boundary_effect" slot-scope="data">{{codeToDescription('boundary_effect_codes', data.item.boundary_effect)}}</template>
                 <template slot="analysis_method" slot-scope="data">{{codeToDescription('analysis_method_codes', data.item.analysis_method)}}</template>
+                <template slot="storativity" slot-scope="data">{{parseFloat(data.item.storativity).toString()}}</template>
+                <template slot="transmissivity" slot-scope="data">{{parseFloat(data.item.transmissivity).toString()}}</template>
+                <template slot="hydraulic_conductivity" slot-scope="data">{{parseFloat(data.item.hydraulic_conductivity).toString()}}</template>
             </b-table>
           </div>
         </fieldset>

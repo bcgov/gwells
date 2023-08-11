@@ -264,7 +264,8 @@ class OrganizationListSerializer(AuditModelSerializer, OrganizationUpdateMixin):
             'email',
             'website_url',
             'latitude',
-            'longitude'
+            'longitude',
+            'regional_areas'
         )
 
 
@@ -336,7 +337,8 @@ class OrganizationSerializer(AuditModelSerializer):
             'email',
             'website_url',
             'latitude',
-            'longitude'
+            'longitude',
+            'regional_areas'
         )
 
 
@@ -371,7 +373,8 @@ class OrganizationAdminSerializer(AuditModelSerializer, OrganizationUpdateMixin)
             'notes',
             'registrations_count',
             'latitude',
-            'longitude'
+            'longitude',
+            'regional_areas'
         )
 
     def update(self, instance, validated_data):

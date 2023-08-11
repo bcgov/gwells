@@ -290,8 +290,7 @@ class WellListFilter(AnyOrAllFilterSet):
         queryset=BoundaryEffectCode.objects.all(), field_name='aquifer_parameters_set__boundary_effect')
     storativity = filters.RangeFilter(field_name='aquifer_parameters_set__storativity')
     transmissivity = filters.RangeFilter(field_name='aquifer_parameters_set__transmissivity')
-    hydraulic_conductivity = filters.CharFilter(lookup_expr='icontains', 
-                                                field_name='aquifer_parameters_set__hydraulic_conductivity')
+    hydraulic_conductivity = filters.RangeFilter(field_name='aquifer_parameters_set__hydraulic_conductivity')
     specific_yield = filters.RangeFilter(field_name='aquifer_parameters_set__specific_yield')
     specific_capacity = filters.RangeFilter(field_name='aquifer_parameters_set__specific_capacity')
     analysis_method = filters.ModelChoiceFilter(

@@ -187,6 +187,17 @@
                 </b-form-text>
               </b-form-group>
             </b-col>
+            <b-col cols="12" md="12">
+              <b-form-group label="Region:" label-for="regionOptions">
+                <b-form-select
+                    multiple="multiple"
+                    id="regionOptions"
+                    v-model="companyForm.regional_areas"
+                    class="mb-3">
+                    <option v-for="region in regionOptions" :key="`${region.regional_area_guid}`" :value="region.regional_area_guid">{{ region.name }}</option>
+                </b-form-select>
+              </b-form-group>
+            </b-col>
           </b-row>
           <b-row class="mt-3">
             <b-col>
@@ -350,7 +361,8 @@ export default {
         email: '',
         main_tel: '',
         fax_tel: '',
-        website_url: ''
+        website_url: '',
+        regional_areas: []
       },
       companyNotesForm: '',
 
@@ -394,7 +406,7 @@ export default {
       // returns true or false if any of the fields changed. Uses fieldsChanged() method above
       return (Object.keys(this.fieldsChanged).map(x => this.fieldsChanged[x]).includes(true))
     },
-    ...mapGetters('registriesStore', ['provinceStateOptions'])
+    ...mapGetters('registriesStore', ['provinceStateOptions', 'regionOptions'])
   },
   watch: {
     selectedCompany (val) {
@@ -478,6 +490,7 @@ export default {
       this.companyForm.main_tel = company.main_tel || ''
       this.companyForm.fax_tel = company.fax_tel || ''
       this.companyForm.website_url = company.website_url || ''
+      this.companyForm.regional_areas = company.regional_areas || []
       this.resetFieldErrors()
     },
     resetFieldErrors () {
