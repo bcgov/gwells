@@ -529,6 +529,7 @@ export default {
         internal_comments: '',
         alternative_specs_submitted: false,
         technical_report: false,
+        drinking_water_protection_area_ind: false,
         decommission_description_set: [],
         decommission_reason: '',
         decommission_method: '',

@@ -476,6 +476,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <p>
         <span class="font-weight-bold">Technical Report:</span> {{ form.technical_report | nullBooleanToYesNo }}
       </p>
+      <p>
+        <span class="font-weight-bold">Technical Report:</span> {{ form.drinking_water_protection_area_ind | nullBooleanToYesNo }}
+      </p>
     </fieldset>
 
     <fieldset v-if="upload_files && upload_files.length > 0">

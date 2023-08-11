@@ -436,6 +436,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         :internalComments.sync="form.internal_comments"
         :alternativeSpecsSubmitted.sync="form.alternative_specs_submitted"
         :technicalReport.sync="form.technical_report"
+        :drinkingWaterProtectionArea.sync="form.drinking_water_protection_area_ind"
         :errors="errors"
         :isStaffEdit="isStaffEdit"
         :saveDisabled="editSaveDisabled"
