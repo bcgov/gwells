@@ -14,6 +14,23 @@ Licensed under the Apache License, Version 2.0 (the "License");
 <template>
   <div id="single-well-map" class="map">
     <p id="unsupported-browser" v-if="browserUnsupported">Your browser is unable to view the map</p>
+    <b-card>
+      <b-modal
+        v-model="confirmRemoveModal"
+        centered
+        title="Confirm Coordinates Change"
+        @shown="focusRemoveModal">
+        WARNING, this drinking water capture zone is delineated based on these GPS coordinates, do you need to change the coordinates?
+        <div slot="modal-footer">
+          <b-btn variant="secondary" @click="confirmRemoveModal=false;revertCoords()" ref="cancelRemoveBtn">
+            No, Cancel
+          </b-btn>
+          <b-btn variant="danger" @click="confirmRemoveModal=false;confirmCoords()">
+            Yes, Update
+          </b-btn>
+        </div>
+      </b-modal>
+    </b-card>
   </div>
 </template>
 
@@ -64,13 +81,17 @@ export default {
       marker: null,
       insideBCCheckCancelSource: null,
       coordsChangeTimer: null,
-      markerOnMap: false
+      markerOnMap: false,
+      initialLongitude: null,
+      initialLatitude: null,
+      confirmRemoveModal: false,
     }
   },
   mounted () {
-    this.$emit('mapLoading')
-
-    this.initMapBox()
+    this.initialLongitude = this.longitude;
+    this.initialLatitude = this.latitude;
+    this.$emit('mapLoading');
+    this.initMapBox();
   },
   destroyed () {
     this.map.remove()
@@ -155,8 +176,6 @@ export default {
       this.map.flyTo({ center: [-126.5, 54.5], zoom: 5 })
     },
     coordsChanged (longitude, latitude) {
-      console.log(this.drinking_water)
-
       const markerCoords = this.marker.getLngLat() // get previous coords
       const newCoords = new mapboxgl.LngLat(this.longitude, this.latitude)
 
@@ -199,19 +218,21 @@ export default {
         this.resetMap()
       }
     },
-    handleDrag () {
-      const markerLngLat = this.marker.getLngLat()
+    handleDrag() {
+      const markerLngLat = this.marker.getLngLat();
       this.performCheck(markerLngLat.lng, markerLngLat.lat).then((isInsideBC) => {
         if (isInsideBC) {
-          // In B.C. that longitude is always negative, so people aren't used to seeing the minus sign - so
-          // we're hiding it away from them.
-          const lngLat = { lng: Math.abs(markerLngLat.lng), lat: markerLngLat.lat }
-          this.$emit('coordinate', lngLat)
+          const newLongitude = Math.abs(markerLngLat.lng);
+          const newLatitude = markerLngLat.lat;
+          if (newLongitude !== this.initialLongitude || newLatitude !== this.initialLatitude) {
+            // Show the confirmation modal if the coordinates have changed
+            this.confirmRemoveModal = true;
+          }
         } else {
           // We don't allow dragging the marker outside of BC, put it back.
-          this.updateMarkerLatLong([this.longitude, this.latitude])
+          this.updateMarkerLatLong([this.longitude, this.latitude]);
         }
-      })
+      });
     },
     updateMarkerLatLong (lngLat) {
       if (this.marker) {
@@ -233,6 +254,23 @@ export default {
     },
     toggleMarkerLoading (isLoading) {
       this.marker.getElement().classList.toggle('loading', isLoading)
+    },
+    focusRemoveModal () {
+      // Focus the "cancel" button in the confirm remove popup.
+      this.$refs.cancelRemoveBtn.focus()
+    },
+    revertCoords () {
+      // Revert the coordinates to the initial values.
+      this.updateMarkerLatLong([this.initialLongitude, this.initialLatitude]);
+    },
+    confirmCoords () {
+      const markerLngLat = this.marker.getLngLat()
+      this.performCheck(markerLngLat.lng, markerLngLat.lat).then(() => {
+        // In B.C. that longitude is always negative, so people aren't used to seeing the minus sign - so
+        // we're hiding it away from them.
+        const lngLat = { lng: Math.abs(markerLngLat.lng), lat: markerLngLat.lat }
+        this.$emit('coordinate', lngLat)
+      });
     }
   },
   watch: {
