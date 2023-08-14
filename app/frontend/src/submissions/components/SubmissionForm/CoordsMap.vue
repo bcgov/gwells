@@ -224,7 +224,7 @@ export default {
         if (isInsideBC) {
           const newLongitude = Math.abs(markerLngLat.lng);
           const newLatitude = markerLngLat.lat;
-          if (newLongitude !== this.initialLongitude || newLatitude !== this.initialLatitude) {
+          if ((newLongitude !== this.initialLongitude || newLatitude !== this.initialLatitude) && this.drinking_water) {
             // Show the confirmation modal if the coordinates have changed
             this.confirmRemoveModal = true;
           }
