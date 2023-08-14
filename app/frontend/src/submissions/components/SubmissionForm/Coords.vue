@@ -206,7 +206,23 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <coords-map :latitude="mapLatitude" :longitude="mapLongitude" v-on:coordinate="handleMapCoordinate" :drinking_water="this.drinking_water"/>
         </b-col>
       </b-row>
-
+      <b-card>
+      <b-modal
+        v-model="confirmRemoveModalInput"
+        centered
+        title="Confirm Coordinates Change"
+        @shown="focusRemoveModal">
+        WARNING, this drinking water capture zone is delineated based on these GPS coordinates, do you need to change the coordinates?
+        <div slot="modal-footer">
+          <b-btn variant="secondary" @click="confirmRemoveModalInput=false;revertCoords()" ref="cancelRemoveBtn">
+            No, Cancel
+          </b-btn>
+          <b-btn variant="danger" @click="confirmRemoveModalInput=false;confirmCoords()">
+            Yes, Update
+          </b-btn>
+        </div>
+      </b-modal>
+    </b-card>
       <!-- Error message when coordinates not entered in at least one of the 3 input groups -->
       <b-alert class="mt-3" variant="danger" :show="errorCoordsNotProvided">
         Must enter geographic coordinates in either decimal degrees, degrees/minutes/seconds, or UTM format.
@@ -290,7 +306,10 @@ export default {
       coordinateLookup: new Map(),
       coordinateResolveLookup: new Map(),
       validCoordinate: null,
-      timeout: null
+      timeout: null,
+      initialLongitude: null,
+      initialLatitude: null,
+      confirmRemoveModalInput: false
     }
   },
   created () {
@@ -299,6 +318,9 @@ export default {
       // and East/Northing get populated.
       this.handleMapCoordinate({ lng: Math.abs(Number(this.longitude)), lat: Number(this.latitude) })
     }
+    this.initialLongitude = this.longitude;
+    this.initialLatitude = this.latitude;
+    console.log("drinking_water: " + this.drinking_water);
   },
   computed: {
     // BC is covered by UTM zones 7 through 11
@@ -424,11 +446,25 @@ export default {
     updateDegrees (longitude, latitude) {
       const newLong = this.roundDecimalDegrees(longitude)
       const newLat = this.roundDecimalDegrees(latitude)
+      console.log("newLong: " + newLong + " vs. init: " + this.initialLongitude);
+      console.log("newLat: " + newLat + " vs. init: " + this.initialLatitude);
+      console.log("if statement: ",newLong !== this.initialLongitude || newLat !== this.initialLatitude)
+
+      // if ((newLong !== this.initialLongitude || newLat !== this.initialLatitude) && this.drinking_water && !this.temporaryDeactivateModal) {
+      //   // Show the confirmation modal if the coordinates have changed
+      //   console.log("changed coords")
+      //   this.confirmRemoveModalInput = true;
+      // }
+
+      this.setNewDegrees(newLong, newLat)
+    },
+    setNewDegrees (newLong, newLat) {
       // Set the prop value of longitude and latitude
       this.longitudeInput = Math.abs(newLong) * -1 // Always make longitude negative so form is clean
       this.latitudeInput = newLat
       this.degrees.longitude = Math.abs(newLong)
       this.degrees.latitude = newLat
+      
       this.checkIfCoordinateIsValid(newLat, newLong)
     },
     resetDegrees () {
@@ -460,6 +496,18 @@ export default {
           this.validCoordinate = result
         })
       }, 500)
+    },
+    focusRemoveModal () {
+      // Focus the "cancel" button in the confirm remove popup.
+      this.$refs.cancelRemoveBtn.focus()
+    },
+    revertCoords () {
+      // Revert the coordinates to the initial values.
+      this.updateDegrees(this.initialLongitude, this.initialLatitude);
+      return
+    },
+    confirmCoords () {
+      return
     }
   }
 }

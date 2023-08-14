@@ -16,16 +16,16 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <p id="unsupported-browser" v-if="browserUnsupported">Your browser is unable to view the map</p>
     <b-card>
       <b-modal
-        v-model="confirmRemoveModal"
+        v-model="confirmRemoveModalMap"
         centered
         title="Confirm Coordinates Change"
         @shown="focusRemoveModal">
         WARNING, this drinking water capture zone is delineated based on these GPS coordinates, do you need to change the coordinates?
         <div slot="modal-footer">
-          <b-btn variant="secondary" @click="confirmRemoveModal=false;revertCoords()" ref="cancelRemoveBtn">
+          <b-btn variant="secondary" @click="confirmRemoveModalMap=false;revertCoords()" ref="cancelRemoveBtn">
             No, Cancel
           </b-btn>
-          <b-btn variant="danger" @click="confirmRemoveModal=false;confirmCoords()">
+          <b-btn variant="danger" @click="confirmRemoveModalMap=false;confirmCoords()">
             Yes, Update
           </b-btn>
         </div>
@@ -84,7 +84,7 @@ export default {
       markerOnMap: false,
       initialLongitude: null,
       initialLatitude: null,
-      confirmRemoveModal: false,
+      confirmRemoveModalMap: false,
     }
   },
   mounted () {
@@ -226,7 +226,7 @@ export default {
           const newLatitude = markerLngLat.lat;
           if ((newLongitude !== this.initialLongitude || newLatitude !== this.initialLatitude) && this.drinking_water) {
             // Show the confirmation modal if the coordinates have changed
-            this.confirmRemoveModal = true;
+            this.confirmRemoveModalMap = true;
           }
         } else {
           // We don't allow dragging the marker outside of BC, put it back.
