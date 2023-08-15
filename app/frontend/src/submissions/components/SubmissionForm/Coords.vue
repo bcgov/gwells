@@ -309,7 +309,8 @@ export default {
       timeout: null,
       initialLongitude: null,
       initialLatitude: null,
-      confirmRemoveModalInput: false
+      confirmRemoveModalInput: false,
+      temporaryDeactivateModal: false
     }
   },
   created () {
@@ -450,11 +451,12 @@ export default {
       console.log("newLat: " + newLat + " vs. init: " + this.initialLatitude);
       console.log("if statement: ",newLong !== this.initialLongitude || newLat !== this.initialLatitude)
 
-      // if ((newLong !== this.initialLongitude || newLat !== this.initialLatitude) && this.drinking_water && !this.temporaryDeactivateModal) {
-      //   // Show the confirmation modal if the coordinates have changed
-      //   console.log("changed coords")
-      //   this.confirmRemoveModalInput = true;
-      // }
+      if ((newLong !== this.initialLongitude || newLat !== this.initialLatitude) && this.drinking_water && !this.temporaryDeactivateModal) {
+        // Show the confirmation modal if the coordinates have changed
+        console.log("changed coords")
+        this.confirmRemoveModalInput = true;
+        this.temporaryDeactivateModal = false
+      }
 
       this.setNewDegrees(newLong, newLat)
     },
@@ -507,6 +509,7 @@ export default {
       return
     },
     confirmCoords () {
+      this.temporaryDeactivateModal = true
       return
     }
   }

@@ -14,23 +14,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
 <template>
   <div id="single-well-map" class="map">
     <p id="unsupported-browser" v-if="browserUnsupported">Your browser is unable to view the map</p>
-    <b-card>
-      <b-modal
-        v-model="confirmRemoveModalMap"
-        centered
-        title="Confirm Coordinates Change"
-        @shown="focusRemoveModal">
-        WARNING, this drinking water capture zone is delineated based on these GPS coordinates, do you need to change the coordinates?
-        <div slot="modal-footer">
-          <b-btn variant="secondary" @click="confirmRemoveModalMap=false;revertCoords()" ref="cancelRemoveBtn">
-            No, Cancel
-          </b-btn>
-          <b-btn variant="danger" @click="confirmRemoveModalMap=false;confirmCoords()">
-            Yes, Update
-          </b-btn>
-        </div>
-      </b-modal>
-    </b-card>
   </div>
 </template>
 
@@ -45,8 +28,7 @@ import {
   DATABC_ROADS_SOURCE_ID,
   DATABC_CADASTREL_SOURCE_ID,
   DATABC_ROADS_LAYER,
-  DATABC_CADASTREL_LAYER,
-wellLayerFilter
+  DATABC_CADASTREL_LAYER
 } from '../../../common/mapbox/layers'
 import { buildLeafletStyleMarker } from '../../../common/mapbox/images'
 import { fetchInsideBCCheck, checkCoordsAreTheSame } from '../../../common/mapbox/geometry'
@@ -64,15 +46,10 @@ export default {
       type: Boolean,
       default: true
     },
-    drinking_water: {
-      type: Boolean,
-      default: false
-    },
     insideBC: {
       type: Function,
       default: () => {}
     }
-
   },
   data () {
     return {
@@ -81,17 +58,13 @@ export default {
       marker: null,
       insideBCCheckCancelSource: null,
       coordsChangeTimer: null,
-      markerOnMap: false,
-      initialLongitude: null,
-      initialLatitude: null,
-      confirmRemoveModalMap: false,
+      markerOnMap: false
     }
   },
   mounted () {
-    this.initialLongitude = this.longitude;
-    this.initialLatitude = this.latitude;
-    this.$emit('mapLoading');
-    this.initMapBox();
+    this.$emit('mapLoading')
+
+    this.initMapBox()
   },
   destroyed () {
     this.map.remove()
@@ -218,21 +191,19 @@ export default {
         this.resetMap()
       }
     },
-    handleDrag() {
-      const markerLngLat = this.marker.getLngLat();
+    handleDrag () {
+      const markerLngLat = this.marker.getLngLat()
       this.performCheck(markerLngLat.lng, markerLngLat.lat).then((isInsideBC) => {
         if (isInsideBC) {
-          const newLongitude = Math.abs(markerLngLat.lng);
-          const newLatitude = markerLngLat.lat;
-          if ((newLongitude !== this.initialLongitude || newLatitude !== this.initialLatitude) && this.drinking_water) {
-            // Show the confirmation modal if the coordinates have changed
-            this.confirmRemoveModalMap = true;
-          }
+          // In B.C. that longitude is always negative, so people aren't used to seeing the minus sign - so
+          // we're hiding it away from them.
+          const lngLat = { lng: Math.abs(markerLngLat.lng), lat: markerLngLat.lat }
+          this.$emit('coordinate', lngLat)
         } else {
           // We don't allow dragging the marker outside of BC, put it back.
-          this.updateMarkerLatLong([this.longitude, this.latitude]);
+          this.updateMarkerLatLong([this.longitude, this.latitude])
         }
-      });
+      })
     },
     updateMarkerLatLong (lngLat) {
       if (this.marker) {
@@ -254,23 +225,6 @@ export default {
     },
     toggleMarkerLoading (isLoading) {
       this.marker.getElement().classList.toggle('loading', isLoading)
-    },
-    focusRemoveModal () {
-      // Focus the "cancel" button in the confirm remove popup.
-      this.$refs.cancelRemoveBtn.focus()
-    },
-    revertCoords () {
-      // Revert the coordinates to the initial values.
-      this.updateMarkerLatLong([this.initialLongitude, this.initialLatitude]);
-    },
-    confirmCoords () {
-      const markerLngLat = this.marker.getLngLat()
-      this.performCheck(markerLngLat.lng, markerLngLat.lat).then(() => {
-        // In B.C. that longitude is always negative, so people aren't used to seeing the minus sign - so
-        // we're hiding it away from them.
-        const lngLat = { lng: Math.abs(markerLngLat.lng), lat: markerLngLat.lat }
-        this.$emit('coordinate', lngLat)
-      });
     }
   },
   watch: {
