@@ -209,6 +209,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <b-card>
       <b-modal
         v-model="confirmRemoveModalInput"
+        no-close-on-esc
+        no-close-on-backdrop
+        hide-header-close
         centered
         title="Confirm Coordinates Change"
         @shown="focusRemoveModal">
@@ -319,9 +322,6 @@ export default {
       // and East/Northing get populated.
       this.handleMapCoordinate({ lng: Math.abs(Number(this.longitude)), lat: Number(this.latitude) })
     }
-    this.initialLongitude = this.longitude;
-    this.initialLatitude = this.latitude;
-    console.log("drinking_water: " + this.drinking_water);
   },
   computed: {
     // BC is covered by UTM zones 7 through 11
@@ -447,15 +447,19 @@ export default {
     updateDegrees (longitude, latitude) {
       const newLong = this.roundDecimalDegrees(longitude)
       const newLat = this.roundDecimalDegrees(latitude)
-      console.log("newLong: " + newLong + " vs. init: " + this.initialLongitude);
-      console.log("newLat: " + newLat + " vs. init: " + this.initialLatitude);
-      console.log("if statement: ",newLong !== this.initialLongitude || newLat !== this.initialLatitude)
+      
+      // Save original the coords to compare against if user select "No" to the modal
+      this.initialLatitude = this.latitude
+      this.initialLongitude = this.longitude
 
-      if ((newLong !== this.initialLongitude || newLat !== this.initialLatitude) && this.drinking_water && !this.temporaryDeactivateModal) {
+      // Check if the coordinates coming in have changed
+      // while also checking if the drinking water flag is true.
+      // If the user has changed the coordinates and selected "Yes", we don't show again
+      if ((newLong !== this.longitude * -1 || newLat !== this.latitude) &&
+        this.drinking_water &&
+        !this.temporaryDeactivateModal) {
         // Show the confirmation modal if the coordinates have changed
-        console.log("changed coords")
-        this.confirmRemoveModalInput = true;
-        this.temporaryDeactivateModal = false
+        this.confirmRemoveModalInput = true
       }
 
       this.setNewDegrees(newLong, newLat)
@@ -504,11 +508,13 @@ export default {
       this.$refs.cancelRemoveBtn.focus()
     },
     revertCoords () {
-      // Revert the coordinates to the initial values.
-      this.updateDegrees(this.initialLongitude, this.initialLatitude);
+      // Revert the coordinates to the initial values, hide modal
+      this.updateDegrees(this.initialLongitude, this.initialLatitude)
+      this.confirmRemoveModalInput = false
       return
     },
     confirmCoords () {
+      // User agrees to update coords, so modal doesn't need to show again
       this.temporaryDeactivateModal = true
       return
     }
