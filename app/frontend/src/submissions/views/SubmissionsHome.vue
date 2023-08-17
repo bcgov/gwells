@@ -243,7 +243,7 @@ export default {
             if (data[key] === '') { data[key] = null } return
           }
           // Remove any fields that aren't changed
-          if (key !== 'well' && !(key in meta.valueChanged)) { delete data[key] }
+          if (key !== 'well' && !(key in meta.valueChanged) && key !== 'drinking_water_protection_area_ind') { delete data[key] }
         })
       }
 

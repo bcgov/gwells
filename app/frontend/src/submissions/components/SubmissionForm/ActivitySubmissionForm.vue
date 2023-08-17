@@ -212,6 +212,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         :saveDisabled="editSaveDisabled"
         v-on:save="$emit('submit_edit')"
         :drinking_water="form.drinking_water_protection_area_ind"
+        :test_value="form.drinking_water_protection_area_ind"
       />
 
       <!-- Method of Drilling -->
