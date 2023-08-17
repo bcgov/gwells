@@ -212,6 +212,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         :saveDisabled="editSaveDisabled"
         v-on:save="$emit('submit_edit')"
         :drinking_water="form.drinking_water_protection_area_ind"
+        v-on:editWater="$emit('editWater')"
       />
 
       <!-- Method of Drilling -->
@@ -612,6 +613,10 @@ export default {
     isPublished: {
       type: Boolean,
       isInput: false
+    },
+      editWater: {
+      type: Boolean,
+      default: false
     }
   },
   components: {

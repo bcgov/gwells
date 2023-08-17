@@ -268,6 +268,7 @@ export default {
       this.performCheck(markerLngLat.lng, markerLngLat.lat).then(() => {
         // In B.C. that longitude is always negative, so people aren't used to seeing the minus sign - so
         // we're hiding it away from them.
+        this.$emit('editWater')
         const lngLat = { lng: Math.abs(markerLngLat.lng), lat: markerLngLat.lat }
         this.$emit('coordinate', lngLat)
       });

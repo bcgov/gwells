@@ -203,7 +203,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </b-row>
         </b-col>
         <b-col sm="12" md="6">
-          <coords-map :latitude="mapLatitude" :longitude="mapLongitude" v-on:coordinate="handleMapCoordinate" :drinking_water="this.drinking_water"/>
+          <coords-map :latitude="mapLatitude" :longitude="mapLongitude" v-on:coordinate="handleMapCoordinate" :drinking_water="this.drinking_water" v-on:editWater="$emit('editWater')"/>
         </b-col>
       </b-row>
       <b-card>
@@ -464,7 +464,7 @@ export default {
       this.latitudeInput = newLat
       this.degrees.longitude = Math.abs(newLong)
       this.degrees.latitude = newLat
-      
+
       this.checkIfCoordinateIsValid(newLat, newLong)
     },
     resetDegrees () {
