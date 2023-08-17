@@ -37,7 +37,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   type="text"
                   label="Latitude"
                   hint="Decimal degrees"
-                  @blur="handleDegreesChange"
+                  @input="handleDegreesChange"
                   v-model.number="degrees.latitude"
                   :errors="errors['latitude']"
                   :loaded="fieldsLoaded['latitude']"
@@ -47,7 +47,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 <form-input
                   id="longitude"
                   type="text"
-                  @blur="handleDegreesChange"
+                  @input="handleDegreesChange"
                   label="Longitude"
                   hint="Decimal degrees"
                   v-model.number="degrees.longitude"
@@ -66,7 +66,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   <b-col cols="12" sm="4" class="px-2">
                     <form-input
                       id="latitudeDeg"
-                      @blur="handleDMSChange"
+                      @input="handleDMSChange"
                       hint="Degrees"
                       type="text"
                       v-model.number="dms.lat.deg"
@@ -78,7 +78,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     <form-input
                       id="latitudeMin"
                       hint="Minutes"
-                      @blur="handleDMSChange"
+                      @input="handleDMSChange"
                       type="text"
                       v-model.number="dms.lat.min"
                       :errors="errors['latitude']"
@@ -89,7 +89,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     <form-input
                       id="latitudeSec"
                       type="text"
-                      @blur="handleDMSChange"
+                      @input="handleDMSChange"
                       hint="Seconds"
                       v-model.number="dms.lat.sec"
                       :errors="errors['latitude']"
@@ -105,7 +105,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     <form-input
                       id="longitudeDeg"
                       type="text"
-                      @blur="handleDMSChange"
+                      @input="handleDMSChange"
                       hint="Degrees"
                       v-model.number="dms.long.deg"
                       :errors="errors['longitude']"
@@ -116,7 +116,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     <form-input
                       id="longitudeMin"
                       type="text"
-                      @blur="handleDMSChange"
+                      @input="handleDMSChange"
                       hint="Minutes"
                       v-model.number="dms.long.min"
                       :errors="errors['longitude']"
@@ -127,7 +127,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     <form-input
                       id="longitudeSec"
                       type="text"
-                      @blur="handleDMSChange"
+                      @input="handleDMSChange"
                       hint="Seconds"
                       v-model.number="dms.long.sec"
                       :errors="errors['longitude']"
@@ -324,6 +324,10 @@ export default {
       // and East/Northing get populated.
       this.handleMapCoordinate({ lng: Math.abs(Number(this.longitude)), lat: Number(this.latitude) })
     }
+
+    // Save original the coords to compare against if user select "No" to the modal
+    this.initialLatitude = this.latitude
+    this.initialLongitude = this.longitude
   },
   computed: {
     // BC is covered by UTM zones 7 through 11
@@ -449,10 +453,6 @@ export default {
     updateDegrees (longitude, latitude) {
       const newLong = this.roundDecimalDegrees(longitude)
       const newLat = this.roundDecimalDegrees(latitude)
-      
-      // Save original the coords to compare against if user select "No" to the modal
-      this.initialLatitude = this.latitude
-      this.initialLongitude = this.longitude
 
       // Check if the coordinates coming in have changed
       // while also checking if the drinking water flag is true.

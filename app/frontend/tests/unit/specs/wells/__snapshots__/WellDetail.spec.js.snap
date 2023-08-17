@@ -291,6 +291,19 @@ exports[`WellDetail.vue should match snapshot 1`] = `
                N/A
             </span>
           </b-col-stub>
+           
+          <b-col-stub
+            cols="12"
+            md="4"
+            tag="div"
+          >
+            <span
+              class="font-weight-bold"
+            >
+              Drinking Water Area Indicator:
+            </span>
+             
+          </b-col-stub>
         </b-row-stub>
       </fieldset>
        
