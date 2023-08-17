@@ -37,7 +37,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   type="text"
                   label="Latitude"
                   hint="Decimal degrees"
-                  @input="handleDegreesChange"
+                  @blur="handleDegreesChange"
                   v-model.number="degrees.latitude"
                   :errors="errors['latitude']"
                   :loaded="fieldsLoaded['latitude']"
@@ -47,7 +47,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 <form-input
                   id="longitude"
                   type="text"
-                  @input="handleDegreesChange"
+                  @blur="handleDegreesChange"
                   label="Longitude"
                   hint="Decimal degrees"
                   v-model.number="degrees.longitude"
@@ -66,7 +66,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   <b-col cols="12" sm="4" class="px-2">
                     <form-input
                       id="latitudeDeg"
-                      @input="handleDMSChange"
+                      @blur="handleDMSChange"
                       hint="Degrees"
                       type="text"
                       v-model.number="dms.lat.deg"
@@ -78,7 +78,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     <form-input
                       id="latitudeMin"
                       hint="Minutes"
-                      @input="handleDMSChange"
+                      @blur="handleDMSChange"
                       type="text"
                       v-model.number="dms.lat.min"
                       :errors="errors['latitude']"
@@ -89,7 +89,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     <form-input
                       id="latitudeSec"
                       type="text"
-                      @input="handleDMSChange"
+                      @blur="handleDMSChange"
                       hint="Seconds"
                       v-model.number="dms.lat.sec"
                       :errors="errors['latitude']"
@@ -105,7 +105,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     <form-input
                       id="longitudeDeg"
                       type="text"
-                      @input="handleDMSChange"
+                      @blur="handleDMSChange"
                       hint="Degrees"
                       v-model.number="dms.long.deg"
                       :errors="errors['longitude']"
@@ -116,7 +116,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     <form-input
                       id="longitudeMin"
                       type="text"
-                      @input="handleDMSChange"
+                      @blur="handleDMSChange"
                       hint="Minutes"
                       v-model.number="dms.long.min"
                       :errors="errors['longitude']"
@@ -127,7 +127,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     <form-input
                       id="longitudeSec"
                       type="text"
-                      @input="handleDMSChange"
+                      @blur="handleDMSChange"
                       hint="Seconds"
                       v-model.number="dms.long.sec"
                       :errors="errors['longitude']"
@@ -511,7 +511,7 @@ export default {
     },
     revertCoords () {
       // Revert the coordinates to the initial values, hide modal
-      this.updateDegrees(this.initialLongitude, this.initialLatitude)
+      this.handleMapCoordinate({ lng: Math.abs(Number(this.initialLongitude)), lat: Number(this.initialLatitude) })
       this.confirmRemoveModalInput = false
       return
     },
