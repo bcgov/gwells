@@ -279,7 +279,6 @@ export default {
       type: Boolean,
       default: false
     },
-    test_value: Boolean
   },
   data () {
     return {
@@ -318,7 +317,6 @@ export default {
     }
   },
   created () {
-    console.log('drinking_water=' + this.drinking_water + this.test_value)
     if (this.latitude || this.longitude) {
       // If we're loaded with a latitude and longitude, trigger an update so that degree,minute,second
       // and East/Northing get populated.

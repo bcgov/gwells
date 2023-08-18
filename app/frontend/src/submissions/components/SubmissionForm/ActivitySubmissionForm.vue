@@ -206,14 +206,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
         id="wellCoords"
         :latitude.sync="form.latitude"
         :longitude.sync="form.longitude"
+        :drinking_water="form.drinking_water_protection_area_ind"
         :coordinateAcquisitionCode.sync="form.coordinate_acquisition_code"
         :isStaffEdit="isStaffEdit"
         :errors="errors"
         :saveDisabled="editSaveDisabled"
         v-on:save="$emit('submit_edit')"
-        :drinking_water="form.drinking_water_protection_area_ind"
         v-on:editWater="$emit('editWater')"
-        :test_value="form.drinking_water_protection_area_ind"
       />
 
       <!-- Method of Drilling -->
