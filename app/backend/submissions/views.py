@@ -11,10 +11,10 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
+from django.core.mail import send_mail
 import logging
 import sys
 from posixpath import join as urljoin
-
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView
@@ -25,7 +25,6 @@ from rest_framework.reverse import reverse
 from rest_framework.response import Response
 from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveAPIView
 from rest_framework.views import APIView
-
 from gwells.documents import MinioClient
 from gwells.urls import app_root
 from gwells.pagination import APILimitOffsetPagination
@@ -570,3 +569,32 @@ class PreSignedDocumentKey(RetrieveAPIView):
             filename, bucket_name=bucket_name, private=is_private)
 
         return JsonResponse({"object_name": object_name, "url": url})
+
+
+
+class EmailNotification(APIView):
+    """
+    Send GWELLS team notification of anyone changing the GPS COORDS of a well flagged for drinking water.
+    """
+    swagger_schema = None
+    permission_classes = (WellsSubmissionPermissions,)
+    def post(self, request, *args, **kwargs):
+        
+        well_tag_number = request.query_params.get('well_tag_number')
+
+        recipient = "christopher.walsh@gov.bc.ca"
+        subject = "Drinking water well location updated"
+        well_tag_number = request.data.get('well_tag_number')  # Access the well_tag_number from the request data
+
+        message = f"This is a warning that well {well_tag_number} which is tagged for drinking water has had its coordinates changed."
+
+        try:
+            print("Attempting to send mail")
+            send_mail(subject, message, None, [recipient])
+            print("MAIL HAS BEEN SENT?")
+            return JsonResponse({'message': 'Email sent successfully'})
+
+        except Exception as e:
+            logger.error(str(e))
+            logger.error(request)
+            return JsonResponse({'error': str(e)}, status=500)

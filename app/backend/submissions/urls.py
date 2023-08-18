@@ -17,9 +17,8 @@ from django.views.decorators.cache import never_cache
 from submissions.views import (SubmissionsOptions, SubmissionListAPIView, SubmissionConstructionAPIView,
                                SubmissionAlterationAPIView, SubmissionDecommissionAPIView,
                                SubmissionGetAPIView, SubmissionStaffEditAPIView,
-                               PreSignedDocumentKey,)
+                               PreSignedDocumentKey, EmailNotification)
 from gwells.urls import api_path_prefix
-
 
 urlpatterns = [
 
@@ -45,8 +44,10 @@ urlpatterns = [
     # Edit submission
     url(api_path_prefix() + r'/submissions/staff_edit$',
         never_cache(SubmissionStaffEditAPIView().as_view()), name='STAFF_EDIT'),
-
     # Document Uploading (submission records)
     url(api_path_prefix() + r'/submissions/(?P<submission_id>[0-9]+)/presigned_put_url$',
         never_cache(PreSignedDocumentKey.as_view()), name='submissions-pre-signed-url'),
+    # Send email notification when Coordinates are changed on drinking well
+     url(api_path_prefix() + r'/submissions/editwater$',
+        never_cache(EmailNotification.as_view()), name='send_email')
 ]

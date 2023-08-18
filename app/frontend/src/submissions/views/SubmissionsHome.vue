@@ -80,6 +80,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 v-on:submit_edit="formSubmit"
                 v-on:resetForm="resetForm"
                 v-on:fetchFiles="fetchFiles"
+                v-on:editWater="editWater"
                 />
             </div>
 
@@ -212,6 +213,11 @@ export default {
       'resetUploadFiles'
     ]),
     ...mapActions([ RESET_WELL_DATA ]),
+
+    editWater(){
+      this.editedWater = true
+    },
+
     formSubmit () {
       const data = Object.assign({}, this.form)
       const meta = data.meta
@@ -302,6 +308,9 @@ export default {
       // different endpoints.
       const PATH = this.codes.activity_types.find((item) => item.code === this.activityType).path
       ApiService.post(PATH, data).then((response) => {
+        if(this.editedWater){
+          ApiService.post(`/submissions/editwater?well_tag_number=${data.well}`).then((response) => {})
+        }
         this.formSubmitSuccess = true
         this.formSubmitSuccessWellTag = response.data.well
 
@@ -799,6 +808,7 @@ export default {
 
 function initialState () {
   return {
+    editedWater: false,
     activityType: 'CON',
     formIsFlat: false,
     preview: false,
