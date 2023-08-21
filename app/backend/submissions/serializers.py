@@ -403,7 +403,7 @@ class WellConstructionSubmissionSerializer(WellSubmissionSerializerBase):
                   'finished_well_depth', 'final_casing_stick_up', 'bedrock_depth', 'static_water_level',
                   'well_yield', 'artesian_flow', 'artesian_pressure', 'artesian_pressure_head', 'artesian_conditions',
                   'well_cap_type', 'well_disinfected_status',
-                  'comments', 'internal_comments', 'alternative_specs_submitted', 'technical_report', 'drinking_water_protection_area_ind' 'consultant_company',
+                  'comments', 'internal_comments', 'alternative_specs_submitted', 'technical_report', 'drinking_water_protection_area_ind', 'consultant_company',
                   'consultant_name', 'driller_name', 'person_responsible', 'company_of_person_responsible',
                   'coordinate_acquisition_code',
                   'create_user', 'create_date',
