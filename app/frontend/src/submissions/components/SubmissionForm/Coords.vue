@@ -470,7 +470,7 @@ export default {
       this.latitudeInput = newLat
       this.degrees.longitude = Math.abs(newLong)
       this.degrees.latitude = newLat
-      
+
       this.checkIfCoordinateIsValid(newLat, newLong)
     },
     resetDegrees () {
@@ -516,6 +516,7 @@ export default {
     confirmCoords () {
       // User agrees to update coords, so modal doesn't need to show again
       this.temporaryDeactivateModal = true
+      this.$emit('editWater')
       return
     }
   }
