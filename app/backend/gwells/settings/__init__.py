@@ -324,7 +324,7 @@ ADD_REVERSION_ADMIN = True
 # Email settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'apps.smtp.gov.bc.ca'
-EMAIL_PORT = 25
+EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 EMAIL_HOST_USER = 'no-reply@gov.bc.ca'
