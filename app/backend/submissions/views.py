@@ -589,9 +589,9 @@ class EmailNotification(APIView):
         message = f"This is a warning that well {well_tag_number} which is tagged for drinking water has had its coordinates changed."
 
         try:
-            print("Attempting to send mail")
+            logger.info("Attempting to send mail")
             send_mail(subject, message, None, [recipient])
-            print("MAIL HAS BEEN SENT?")
+            logger.info("MAIL HAS BEEN SENT?")
             return JsonResponse({'message': 'Email sent successfully'})
 
         except Exception as e:
