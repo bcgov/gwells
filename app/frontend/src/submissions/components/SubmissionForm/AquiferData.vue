@@ -27,7 +27,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
     <b-row>
       <b-col cols="12" md="6" xl="3">
-        <b-form-group label="Associated aquifer">
+        <b-form-group label="Associated Aquifer">
           <v-select
             v-model="aquiferInput"
             id="aquiferSelect"

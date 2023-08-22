@@ -76,7 +76,7 @@
           <b-col cols="12" md="4">
             <b-form-group
               id="emailInputGroup"
-              label="Email address:"
+              label="Email Address:"
               label-for="emailInput">
               <b-form-input
                 id="emailInput"
