@@ -583,11 +583,11 @@ class EmailNotification(APIView):
         recipient = "christopher.walsh@gov.bc.ca"
         subject = "Drinking water well location updated"
         well_tag_number = request.query_params.get('well_tag_number')
-        message = f"This is a warning that well {well_tag_number} which is tagged for drinking water has had its coordinates changed."
+        message = f"This is a warning: There has been a change in coordinates of well {well_tag_number}. This well has been marked as a source of drinking water."
 
         try:
             logger.info("Attempting to send mail")
-            send_mail(subject, message, "no-replyh@gov.bc.ca", [recipient])
+            send_mail(subject, message, "Sustainment.Team@gov.bc.ca", [recipient])
             logger.info("Email has been sent")
             return JsonResponse({'message': 'Email sent successfully'})
 
