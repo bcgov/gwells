@@ -85,6 +85,7 @@ objects:
         create extension pg_stat_statements;
         create extension pgaudit;
         create extension plr;
+        create extension "uuid-ossp";
 
         alter user postgres password 'PG_ROOT_PASSWORD'; -- these values are automatically replaced by secrets
 
@@ -109,6 +110,7 @@ objects:
         create extension pg_stat_statements;
         create extension pgaudit;
         create extension plr;
+        create extension "uuid-ossp";
 
         \c "PG_DATABASE" "PG_USER";
 
