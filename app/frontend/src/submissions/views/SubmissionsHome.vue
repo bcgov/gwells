@@ -901,7 +901,7 @@ function initialState () {
         'decommissionInformation',
         'comments',
         'documents',
-        // 'aquiferData',
+        'aquiferData',
         'aquiferParameters',
         'editHistory'
       ]
