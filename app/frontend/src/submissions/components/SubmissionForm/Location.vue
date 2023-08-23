@@ -61,7 +61,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <b-row>
         <b-col>
           <p class="mb-1">OR</p>
-          <p>2) Legal description</p>
+          <p>2) Legal Description</p>
         </b-col>
       </b-row>
 

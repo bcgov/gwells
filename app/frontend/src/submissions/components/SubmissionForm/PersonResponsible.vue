@@ -91,7 +91,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <b-form-group
               aria-describedby="companyOfPersonResponsibleInvalidFeedback"
               :state="false">
-            <label>Company of person Responsible for Drilling</label>
+            <label>Company of Person Responsible for Drilling</label>
             <v-select
               :disabled="companies === null"
               id="companyOfPersonResponsibleSelect"

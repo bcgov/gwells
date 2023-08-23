@@ -15,7 +15,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
   <fieldset>
     <b-row>
       <b-col cols="12" lg="6">
-        <legend :id="id">Well Testing and Aquifer Details</legend>
+        <legend :id="id">Aquifer Information</legend>
       </b-col>
       <b-col cols="12" lg="6">
         <div class="float-right">
@@ -27,7 +27,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
     <b-row>
       <b-col cols="12" md="6" xl="3">
-        <b-form-group label="Associated aquifer">
+        <b-form-group label="Associated Aquifer">
           <v-select
             v-model="aquiferInput"
             id="aquiferSelect"
@@ -56,7 +56,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <b-col cols="12" md="4">
         <b-form-group
           id="aquiferLithology"
-          label="Aquifer Lithology">
+          label="Aquifer Material">
           <b-form-select
             v-model="aquiferLithologyInput"
             value-field="aquifer_lithology_code"
