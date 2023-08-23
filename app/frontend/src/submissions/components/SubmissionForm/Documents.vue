@@ -216,7 +216,9 @@ export default {
 
       let tag = this.form.well && isNaN(this.form.well) ? this.form.well.well_tag_number : this.form.well
 
-      ApiService.deleteFile(`wells/${tag}/delete_document?filename=${this.file}&private=${isPrivate}`)
+      let encodedFileName = encodeURIComponent(this.file)
+
+      ApiService.deleteFile(`wells/${tag}/delete_document?filename=${encodedFileName}&private=${isPrivate}`)
         .then(() => {
           this.$emit('fetchFiles')
         })
