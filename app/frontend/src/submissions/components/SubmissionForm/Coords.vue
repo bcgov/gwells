@@ -320,7 +320,7 @@ export default {
     if (this.latitude || this.longitude) {
       // If we're loaded with a latitude and longitude, trigger an update so that degree,minute,second
       // and East/Northing get populated.
-      this.handleMapCoordinate({ lng: Math.abs(Number(this.longitude)), lat: Number(this.latitude) })
+      this.handleMapCoordinate({ lng: Math.abs(this.roundDecimalDegrees(Number(this.longitude))), lat: this.roundDecimalDegrees(Number(this.latitude)) })
     }
 
     // Save original the coords to compare against if user select "No" to the modal
@@ -449,8 +449,8 @@ export default {
       }
     },
     updateDegrees (longitude, latitude) {
-      const newLong = longitude
-      const newLat = latitude
+      const newLong = this.roundDecimalDegrees(longitude)
+      const newLat = this.roundDecimalDegrees(latitude)
 
       // Check if the coordinates coming in have changed
       // while also checking if the drinking water flag is true.
