@@ -250,7 +250,7 @@
               </div>
               <div class="row mb-2">
                 <div class="col-5 col-md-2 mb-1 mb-sm-0">
-                  Email address:
+                  Email Address:
                 </div>
                 <div class="col-7 col-md-4">
                   {{ registration.organization.email }}

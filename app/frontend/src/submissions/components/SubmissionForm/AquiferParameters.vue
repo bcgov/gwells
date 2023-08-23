@@ -112,7 +112,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     group-class="mt-1 mb-0"
                     :id="'aquiferParameter_transmissivity_' + index"
                     type="number"
-                    v-model="aquiferParameter.transmissivity"
+                    :value="removeTrailingZeros(aquiferParameter.transmissivity)"
+                    @input="aquiferParameter.transmissivity = $event"
                     :errors="getAquiferParametersError(index).transmissivity"
                     :loaded="getFieldsLoaded(index).transmissivity"/>
                 </td>
@@ -120,8 +121,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   <form-input
                     group-class="mt-1 mb-0"
                     :id="'aquiferParameter_hydraulicConductivity_' + index"
-                    type="text"
-                    v-model="aquiferParameter.hydraulic_conductivity"
+                    type="number"
+                    :value="removeTrailingZeros(aquiferParameter.hydraulic_conductivity)"
+                    @input="aquiferParameter.hydraulic_conductivity = $event"
                     :errors="getAquiferParametersError(index).hydraulic_conductivity"
                     :loaded="getFieldsLoaded(index).hydraulic_conductivity"/>
                 </td>
@@ -130,7 +132,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     group-class="mt-1 mb-0"
                     :id="'aquiferParameter_storativity_' + index"
                     type="number"
-                    v-model="aquiferParameter.storativity"
+                    :value="removeTrailingZeros(aquiferParameter.storativity)"
+                    @input="aquiferParameter.storativity = $event"
                     :errors="getAquiferParametersError(index).storativity"
                     :loaded="getFieldsLoaded(index).storativity"/>
                 </td>
@@ -304,6 +307,9 @@ export default {
     aquiferParametersIsEmpty (aquiferParameters) {
       const fieldsToTest = omit(aquiferParameters, 'length_required')
       return Object.values(fieldsToTest).every((x) => !x)
+    },
+    removeTrailingZeros (value) {
+      return parseFloat(value).toString()
     }
   },
   computed: {

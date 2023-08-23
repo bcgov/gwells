@@ -197,7 +197,6 @@ const ADDITIONAL_FILTER_SECTIONS = [
        'hydraulicConductivity',
        'specificYield',
        'specificCapacity',
-       'analyticSolutionType',
        'pumpingTestDescription',
        'startDatePumpingTest' ] },
   { header: 'Record maintenance',

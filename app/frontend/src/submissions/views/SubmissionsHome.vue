@@ -896,12 +896,12 @@ function initialState () {
         'wellYield',
         'waterQuality',
         'wellCompletion',
+        'aquiferData',
         'observationWellInfo',
         'closureDescription',
         'decommissionInformation',
         'comments',
         'documents',
-        // 'aquiferData',
         'aquiferParameters',
         'editHistory'
       ]
