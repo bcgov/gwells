@@ -449,8 +449,8 @@ export default {
       }
     },
     updateDegrees (longitude, latitude) {
-      const newLong = this.roundDecimalDegrees(longitude)
-      const newLat = this.roundDecimalDegrees(latitude)
+      const newLong = longitude
+      const newLat = latitude
 
       // Check if the coordinates coming in have changed
       // while also checking if the drinking water flag is true.
