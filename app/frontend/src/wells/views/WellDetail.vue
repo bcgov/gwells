@@ -97,6 +97,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               > Report Available</a>
               <span v-if="!well.technical_report"> N/A</span>
             </b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Drinking Water Area Indicator:</span> {{ well.drinking_water_protection_area_ind | nullBooleanToYesNo }}</b-col>
           </b-row>
         </fieldset>
 

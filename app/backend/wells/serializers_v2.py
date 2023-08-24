@@ -286,6 +286,7 @@ class WellListSerializerV2(serializers.ModelSerializer):
             "static_water_level",
             "alternative_specs_submitted",
             "technical_report",
+            "drinking_water_protection_area_ind"
         )
 
 

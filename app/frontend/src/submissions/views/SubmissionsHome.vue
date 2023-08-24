@@ -80,6 +80,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 v-on:submit_edit="formSubmit"
                 v-on:resetForm="resetForm"
                 v-on:fetchFiles="fetchFiles"
+                v-on:editWater="editWater"
                 />
             </div>
 
@@ -212,6 +213,11 @@ export default {
       'resetUploadFiles'
     ]),
     ...mapActions([ RESET_WELL_DATA ]),
+
+    editWater(){
+      this.editedWater = true
+    },
+
     formSubmit () {
       const data = Object.assign({}, this.form)
       const meta = data.meta
@@ -226,6 +232,7 @@ export default {
         let skipAltDates = 'alteration_start_date' in meta.valueChanged || 'alteration_end_date' in meta.valueChanged
         let skipDecDates = 'decommission_start_date' in meta.valueChanged || 'decommission_end_date' in meta.valueChanged
         let skipGroundElevation = 'ground_elevation' in meta.valueChanged || 'ground_elevation_method' in meta.valueChanged
+        let doNotSkip = ['drinking_water_protection_area_ind', 'technical_report']
         Object.keys(data).forEach((key) => {
           // Skip lat lon if one of them has changed
           if ((key === 'latitude' || key === 'longitude') && skipLatLon) { return }
@@ -242,8 +249,8 @@ export default {
           if ((key === 'decommission_start_date' || key === 'decommission_end_date') && skipDecDates) {
             if (data[key] === '') { data[key] = null } return
           }
-          // Remove any fields that aren't changed
-          if (key !== 'well' && !(key in meta.valueChanged)) { delete data[key] }
+          // Remove any fields that aren't changed or booleans
+          if (key !== 'well' && !(key in meta.valueChanged) && !doNotSkip.includes(key)) { delete data[key] }
         })
       }
 
@@ -301,6 +308,9 @@ export default {
       // different endpoints.
       const PATH = this.codes.activity_types.find((item) => item.code === this.activityType).path
       ApiService.post(PATH, data).then((response) => {
+        if(this.editedWater){
+          ApiService.post(`/submissions/editwater?well_tag_number=${data.well}`).then((response) => {})
+        }
         this.formSubmitSuccess = true
         this.formSubmitSuccessWellTag = response.data.well
 
@@ -529,6 +539,7 @@ export default {
         internal_comments: '',
         alternative_specs_submitted: false,
         technical_report: false,
+        drinking_water_protection_area_ind: false,
         decommission_description_set: [],
         decommission_reason: '',
         decommission_method: '',
@@ -797,6 +808,7 @@ export default {
 
 function initialState () {
   return {
+    editedWater: false,
     activityType: 'CON',
     formIsFlat: false,
     preview: false,

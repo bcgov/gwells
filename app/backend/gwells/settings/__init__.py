@@ -321,6 +321,15 @@ SWAGGER_SETTINGS = {
 ADD_REVERSION_ADMIN = True
 
 
+# Email settings
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'apps.smtp.gov.bc.ca'
+EMAIL_PORT = 25
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'no-reply@gov.bc.ca'
+EMAIL_HOST_PASSWORD = ''
+
+
 # It can be very useful to disable migrations when testing. This piece of code allows one to disable
 # migrations by specifying an environemnt variable DISABLE_MIGRATIONS. Used in conjunction with
 # --keepdb, a developer can run mosts unit tests, and run them fast.

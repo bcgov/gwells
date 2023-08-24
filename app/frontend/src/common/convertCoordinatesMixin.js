@@ -73,7 +73,7 @@ const convertCoordinatesMixin = {
     roundDecimalDegrees (deg) {
       // Regulations are specific about how GPS coordinates are to be provided.
       // DD to at least 5 decimal places.
-      return Math.round(deg * 100000) / 100000
+      return Math.round(deg * 1000000) / 1000000
     },
     roundSeconds (seconds) {
       // Regulations are specific about how GPS coordinates are to be provided.

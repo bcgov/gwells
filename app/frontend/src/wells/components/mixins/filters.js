@@ -529,6 +529,12 @@ const SEARCH_FIELDS = {
     type: 'radio',
     options: [{ text: 'Yes', value: 'true' }, { text: 'No', value: 'false' }]
   },
+  drinkingWaterProtectionArea: {
+    param: 'drinking_water_protection_area_ind',
+    label: 'Drinking Water Area Indicator',
+    type: 'radio',
+    options: [{ text: 'Yes', value: 'true' }, { text: 'No', value: 'false' }]
+  },
   internalComments: {
     param: 'internal_comments',
     authenticated: true,

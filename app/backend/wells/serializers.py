@@ -708,6 +708,7 @@ class WellDetailSerializer(AuditModelSerializer):
             "comments",
             "alternative_specs_submitted",
             "technical_report",
+            "drinking_water_protection_area_ind",
             "well_yield_unit",
             "diameter",
             "observation_well_number",

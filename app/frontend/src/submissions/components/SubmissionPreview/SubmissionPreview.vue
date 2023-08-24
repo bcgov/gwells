@@ -141,7 +141,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         </b-col>
         <b-col cols="12" lg="6" xl="6" offset-xl="2">
           <div>
-            <coords-map :latitude="form.latitude" :longitude="form.longitude" :draggable="false"/>
+            <coords-map :latitude="form.latitude" :longitude="form.longitude" :draggable="false" :drinking_water="form.drinking_water_protection_area_ind"/>
           </div>
           <div class="my-3">&nbsp;</div>
           <div><span class="font-weight-bold">Geographic Coordinates - North American Datum of 1983 (NAD 83)</span></div>
@@ -475,6 +475,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </p>
       <p>
         <span class="font-weight-bold">Technical Report:</span> {{ form.technical_report | nullBooleanToYesNo }}
+      </p>
+      <p>
+        <span class="font-weight-bold">Drinking Water Area Indicator:</span> {{ form.drinking_water_protection_area_ind | nullBooleanToYesNo }}
       </p>
     </fieldset>
 
