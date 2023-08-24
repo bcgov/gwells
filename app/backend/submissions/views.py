@@ -580,7 +580,7 @@ class EmailNotification(APIView):
     permission_classes = (WellsSubmissionPermissions,)
 
     def post(self, request, *args, **kwargs):
-        recipient = "christopher.walsh@gov.bc.ca"
+        recipient = "gwells@gov.bc.ca"
         subject = "Drinking water well location updated"
         well_tag_number = request.query_params.get('well_tag_number')
         message = f"This is a warning: There has been a change in coordinates of well {well_tag_number}. This well has been marked as a source of drinking water."
