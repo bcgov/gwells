@@ -587,7 +587,7 @@ class EmailNotification(APIView):
         initialLongitude = request.query_params.get('initialLongitude')
 
         recipient = get_env_variable("EMAIL_NOTIFICATION_RECIPIENT")
-        subject = "Warning: drinking water well location updated for well {well_tag_number}"
+        subject = f'Warning: drinking water well location updated for well {well_tag_number}'
         well_link = f'https://apps.nrs.gov.bc.ca/gwells/well/{well_tag_number}'
 
         # multiply longitude by -1 to get a positive value, as most people don't expect negative longitudes
