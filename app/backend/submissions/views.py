@@ -583,7 +583,23 @@ class EmailNotification(APIView):
         recipient = "gwells@gov.bc.ca"
         subject = "Drinking water well location updated"
         well_tag_number = request.query_params.get('well_tag_number')
-        message = f"This is a warning: There has been a change in coordinates of well {well_tag_number}. This well has been marked as a source of drinking water."
+        latitude = request.query_params.get('latitude')
+        longitude = request.query_params.get('longitude')
+        initialLatitude = request.query_params.get('initialLatitude')
+        initialLongitude = request.query_params.get('initialLongitude')
+        
+        message = f"""
+        This is a warning: There has been a change in coordinates of well {well_tag_number}.
+        This well has been marked as a source of drinking water.
+
+        Previous Coordinates:
+        Latitude: {initialLatitude}
+        Longitude: {float(initialLongitude)*-1}
+
+        New Coordinates:
+        Latitude: {latitude}
+        Longitude: {float(longitude)*-1}
+        """
 
         try:
             logger.info("Attempting to send mail")

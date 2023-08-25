@@ -214,7 +214,9 @@ export default {
     ]),
     ...mapActions([ RESET_WELL_DATA ]),
 
-    editWater(){
+    editWater(coords){
+      this.initialLatitude = coords.lat
+      this.initialLongitude = coords.lng
       this.editedWater = true
     },
 
@@ -309,7 +311,7 @@ export default {
       const PATH = this.codes.activity_types.find((item) => item.code === this.activityType).path
       ApiService.post(PATH, data).then((response) => {
         if(this.editedWater){
-          ApiService.post(`/submissions/editwater?well_tag_number=${data.well}`).then((response) => {})
+          ApiService.post(`/submissions/editwater?well_tag_number=${data.well}&latitude=${data.latitude}&longitude=${data.longitude}&initialLongitude=${this.initialLongitude}&initialLatitude=${this.initialLatitude}`).then((response) => {})
         }
         this.formSubmitSuccess = true
         this.formSubmitSuccessWellTag = response.data.well
@@ -809,6 +811,8 @@ export default {
 function initialState () {
   return {
     editedWater: false,
+    initialLatitude: null,
+    initialLongitude: null,
     activityType: 'CON',
     formIsFlat: false,
     preview: false,

@@ -212,7 +212,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         :errors="errors"
         :saveDisabled="editSaveDisabled"
         v-on:save="$emit('submit_edit')"
-        v-on:editWater="$emit('editWater')"
+        v-on:editWater="editWater"
       />
 
       <!-- Method of Drilling -->
@@ -627,10 +627,6 @@ export default {
       type: Boolean,
       isInput: false
     },
-      editWater: {
-      type: Boolean,
-      default: false
-    }
   },
   components: {
     WorkDates,
@@ -705,7 +701,9 @@ export default {
         'submissionHistory': 'Activity report history',
         'documents': 'Attachments',
         'editHistory': 'Edit history'
-      }
+      },
+      initLong: null,
+      initLat: null,
     }
   },
   watch: {
@@ -825,6 +823,9 @@ export default {
       // Only set the route hash on a multi-step form
       const hash = this.formIsFlat ? '' : `#${this.stepCodes[step - 1]}`
       this.$router.push({ hash })
+    },
+    editWater (coords) {
+      this.$emit('editWater', coords)
     }
   },
   created () {

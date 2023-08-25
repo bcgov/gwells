@@ -516,7 +516,11 @@ export default {
     confirmCoords () {
       // User agrees to update coords, so modal doesn't need to show again
       this.temporaryDeactivateModal = true
-      this.$emit('editWater')
+      let coords = {
+        lat: this.initialLatitude,
+        lng: this.initialLongitude
+      }
+      this.$emit('editWater', coords)
       return
     }
   }
