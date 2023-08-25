@@ -733,6 +733,15 @@
                                     {
                                         "name": "ENFORCE_ENV_VARIABLES",
                                         "value": "False"
+                                    },
+                                    {
+                                        "name": "EMAIL_NOTIFICATION_RECIPIENT",
+                                        "valueFrom": {
+                                            "configMapKeyRef": {
+                                                "key": "EMAIL_NOTIFICATION_RECIPIENT",
+                                                "name": "gwells-global-config${NAME_SUFFIX}"
+                                            }
+                                        }
                                     }
                                 ],
                                 "resources": {

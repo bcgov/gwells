@@ -580,17 +580,17 @@ class EmailNotification(APIView):
     permission_classes = (WellsSubmissionPermissions,)
 
     def post(self, request, *args, **kwargs):
-        recipient = "david.claveau@gov.bc.ca"
+        recipient = get_env_variable("EMAIL_NOTIFICATION_RECIPIENT")
         subject = "Drinking water well location updated"
         well_tag_number = request.query_params.get('well_tag_number')
         latitude = request.query_params.get('latitude')
         longitude = request.query_params.get('longitude')
         initialLatitude = request.query_params.get('initialLatitude')
         initialLongitude = request.query_params.get('initialLongitude')
-        
+
+        well_link = f'<a href="https://apps.nrs.gov.bc.ca/gwells/well/{well_tag_number}">{well_tag_number}</a>'
         message = f"""
-        This is a warning: There has been a change in coordinates of well {well_tag_number}.
-        This well has been marked as a source of drinking water.
+        This is a warning: there has been a change in coordinates for well {well_link}. This well has been marked as a source of drinking water.
 
         Previous Coordinates:
         Latitude: {initialLatitude}
