@@ -580,10 +580,31 @@ class EmailNotification(APIView):
     permission_classes = (WellsSubmissionPermissions,)
 
     def post(self, request, *args, **kwargs):
-        recipient = "christopher.walsh@gov.bc.ca"
-        subject = "Drinking water well location updated"
         well_tag_number = request.query_params.get('well_tag_number')
-        message = f"This is a warning: There has been a change in coordinates of well {well_tag_number}. This well has been marked as a source of drinking water."
+        latitude = request.query_params.get('latitude')
+        longitude = request.query_params.get('longitude')
+        initialLatitude = request.query_params.get('initialLatitude')
+        initialLongitude = request.query_params.get('initialLongitude')
+
+        recipient = get_env_variable("EMAIL_NOTIFICATION_RECIPIENT")
+        subject = f'Warning: drinking water well location updated for well {well_tag_number}'
+        well_link = f'https://apps.nrs.gov.bc.ca/gwells/well/{well_tag_number}'
+
+        # multiply longitude by -1 to get a positive value, as most people don't expect negative longitudes
+        # this matches what is done in the frontend (Coords.vue)
+        message = f"""
+        This is a warning: there has been a change in coordinates for well {well_tag_number}. This well has been marked as a source of drinking water.
+
+        Link to well: {well_link}
+
+        Previous Coordinates:
+        Latitude: {initialLatitude}
+        Longitude: {float(initialLongitude)*-1}
+
+        New Coordinates:
+        Latitude: {latitude}
+        Longitude: {float(longitude)*-1}
+        """
 
         try:
             logger.info("Attempting to send mail")

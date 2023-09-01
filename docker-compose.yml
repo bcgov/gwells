@@ -150,6 +150,7 @@ services:
       S3_WELL_BUCKET: well-docs
       S3_WELL_EXPORT_BUCKET: gwells
       S3_USE_SECURE: 0
+      EMAIL_NOTIFICATION_RECIPIENT: sustainment.team@gov.bc.ca
     command: /bin/bash -c "
       sleep 3 &&
       set -x &&
