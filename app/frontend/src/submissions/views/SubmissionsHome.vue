@@ -298,6 +298,7 @@ export default {
         return
       }
 
+      let testEnv = false
       this.formSubmitLoading = true
       this.formSubmitSuccess = false
       this.formSubmitError = false
@@ -310,8 +311,16 @@ export default {
       // different endpoints.
       const PATH = this.codes.activity_types.find((item) => item.code === this.activityType).path
       ApiService.post(PATH, data).then((response) => {
+        // If we are in a test environment, we want to make note in the email
+        if (window.location.href.indexOf('localhost:8080') > -1 ||
+            window.location.href.indexOf('gwells-dev-pr') > -1 ||
+            window.location.href.indexOf('gwells-staging') > -1
+        ) { 
+          testEnv = true
+        }
+
         if(this.editedWater){
-          ApiService.post(`/submissions/editwater?well_tag_number=${data.well}&latitude=${data.latitude}&longitude=${data.longitude}&initialLongitude=${this.initialLongitude}&initialLatitude=${this.initialLatitude}`).then((response) => {})
+          ApiService.post(`/submissions/editwater?well_tag_number=${data.well}&latitude=${data.latitude}&longitude=${data.longitude}&initialLongitude=${this.initialLongitude}&initialLatitude=${this.initialLatitude}&testEnv=${testEnv}`).then((response) => {})
         }
         this.formSubmitSuccess = true
         this.formSubmitSuccessWellTag = response.data.well
