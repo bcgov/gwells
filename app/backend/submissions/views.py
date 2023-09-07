@@ -596,7 +596,7 @@ class EmailNotification(APIView):
 
         # Instead of showing the different local/dev/test URLs, we just remove the link to the well unless it's prod
         # Show a warning that this is from a test environment just to be clear
-        if test_env:
+        if test_env == 'true':
             test_env_message = '**NOTE: THIS IS FROM A TEST ENVIRONMENT**'
             link_message = ''
 
