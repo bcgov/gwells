@@ -215,7 +215,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         centered
         title="Confirm Coordinates Change"
         @shown="focusRemoveModal">
-        WARNING, this drinking water capture zone is delineated based on these GPS coordinates, do you need to change the coordinates?
+        WARNING, a well capture zone has been delineated based on the existing coordinates. Are you sure you want to update the coordinates? Note: If you select 'Yes, Update' a notification email will be sent to the data managers of the Capture Zones dataset.
         <div slot="modal-footer">
           <b-btn variant="secondary" @click="confirmRemoveModalInput=false;revertCoords()" ref="cancelRemoveBtn">
             No, Cancel
