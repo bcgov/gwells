@@ -588,7 +588,7 @@ class EmailNotification(APIView):
         test_env = request.query_params.get('testEnv')
 
         recipient = get_env_variable("EMAIL_NOTIFICATION_RECIPIENT")
-        subject = "Warning: drinking water well location updated for well {well_tag_number}"
+        subject = f'Warning: drinking water well location updated for well {well_tag_number}'
         well_link = f'https://apps.nrs.gov.bc.ca/gwells/well/{well_tag_number}'
 
         test_env_message = ''
@@ -597,12 +597,12 @@ class EmailNotification(APIView):
         # Instead of showing the different local/dev/test URLs, we just remove the link to the well unless it's prod
         # Show a warning that this is from a test environment just to be clear
         if test_env:
-            test_env_message = f'**NOTE: THIS IS FROM A TEST ENVIRONMENT**'
+            test_env_message = '**NOTE: THIS IS FROM A TEST ENVIRONMENT**'
             link_message = ''
 
         # multiply longitude by -1 to get a positive value, as most people don't expect negative longitudes
         # this matches what is done in the frontend (Coords.vue)
-        message = f"""
+        message = f'''
         This is a warning: there has been a change in coordinates for well {well_tag_number}. This well has been marked as a source of drinking water.
 
         {test_env_message}
@@ -618,7 +618,7 @@ class EmailNotification(APIView):
         Longitude: {float(longitude)*-1}
 
         {test_env_message}
-        """
+        '''
 
         try:
             logger.info("Attempting to send mail")
