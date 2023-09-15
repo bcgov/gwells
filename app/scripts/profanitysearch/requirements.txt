@@ -4,5 +4,5 @@ numpy==1.18.5
 profanity-check==1.0.3
 profanityfilter==2.0.6
 scikit-learn==0.22.2.post1
-scipy==1.4.1
+scipy==1.10.0
 threadpoolctl==2.1.0
