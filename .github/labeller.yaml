@@ -1,0 +1,40 @@
+# Auto Label Git Action Config
+# 'label_name'
+#   - path_of_diff/where/code_lives/to_base_label_upon
+
+# Any change to any file in .github/workflows
+'GitHub Actions':
+  - '.github/workflows/*'
+
+# Any change to the docker-compose file or any dockerfile in the repo
+'Docker':
+  - '**/Dockerfile'
+  - docker-compose.yml
+  
+# Any changes to file or subfolders in /backend
+'Backend':
+  - 'app/backend/**/*'
+  
+# Any changes to file or subfolders in /frontend
+'Frontend':
+  - 'app/frontend/**/*'
+
+# Any changes to file or subfolders in /database
+'Database':
+  - 'app/database/**/*'
+
+# Any changes to file or subfolders in /scripts
+'Scripts':
+  - 'app/scripts/**/*'
+
+# Any changes to file or subfolders in /openshift
+'OpenShift':
+  - 'openshift/**/*'
+
+# Any changes to file of subfolders in /tests
+'Testing':
+  - 'tests/**/*'
+
+# Any change to any file in any directory with a .env in name
+'Environment Variables':
+  - '**/*.env*'
