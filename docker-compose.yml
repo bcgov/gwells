@@ -103,6 +103,7 @@ services:
     depends_on:
       - backend
   backend:
+    user: root
     build:
       context: ./openshift/docker/backend
       dockerfile: Dockerfile

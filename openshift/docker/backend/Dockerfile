@@ -1,4 +1,5 @@
-FROM registry.access.redhat.com/ubi8/python-38:1
+FROM python:3.7.17-bullseye
+# registry.access.redhat.com/ubi8/python-38:1
 
 
 # Switch to root user
