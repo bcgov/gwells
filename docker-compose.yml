@@ -103,8 +103,11 @@ services:
     depends_on:
       - backend
   backend:
-    platform: linux/x86_64
-    image: artifacts.developer.gov.bc.ca/g26e-backend-docker-local/gwells-backend:1.0
+    build:
+      context: ./openshift/docker/backend
+      dockerfile: Dockerfile
+      args:
+        NPROC: $$(nproc)
     hostname: backend
     environment:
       APP_CONTEXT_ROOT: gwells
