@@ -34,7 +34,7 @@ spec:
     dockerStrategy:
       from:
         kind: DockerImage
-        name: registry.access.redhat.com/ubi8/python-36:1
+        name: python:3.7.17-bullseye
     type: Docker
   successfulBuildsHistoryLimit: 5
   triggers:
