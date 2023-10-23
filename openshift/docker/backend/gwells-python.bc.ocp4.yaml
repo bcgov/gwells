@@ -34,7 +34,7 @@ spec:
     dockerStrategy:
       from:
         kind: ImageStreamTag
-        name: 'python-36-rhel7:v1'
+        name: 'python:3.7.17-bullseye'
         namespace: 26e83e-tools
     type: Docker
   successfulBuildsHistoryLimit: 5
