@@ -2,6 +2,8 @@
 import os
 import sys
 
+# This is a superfluous message 
+
 if __name__ == "__main__":
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "gwells.settings")
 
