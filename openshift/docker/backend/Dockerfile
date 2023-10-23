@@ -5,7 +5,7 @@ FROM python:3.7.17-bullseye
 USER root
 
 # NPROC Gets number of processing units available to system, speeding up build. 
-RUN NPROC=$(nproc)
+ENV NPROC 3
 
 # External libraries required by Python GIS extensions (e.g. GeoDjango, GeoAlchemy)
 # Install and configure GEOS
@@ -15,7 +15,8 @@ RUN NPROC=$(nproc)
 
 WORKDIR /tmp
 
-RUN wget http://download.osgeo.org/geos/geos-3.7.1.tar.bz2 && \
+RUN NPROC=${NPROC} && \
+    wget http://download.osgeo.org/geos/geos-3.7.1.tar.bz2 && \
     tar xjf geos-3.7.1.tar.bz2 && \
     cd geos-3.7.1/ && \
     ./configure --prefix=/usr/local && \
