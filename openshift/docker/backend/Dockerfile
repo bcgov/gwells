@@ -13,7 +13,9 @@ RUN NPROC=$(nproc)
 # Note: HTTPS will result in certificate errors, hence the downgrade to HTTP here
 #
 
-RUN cd /tmp && wget http://download.osgeo.org/geos/geos-3.7.1.tar.bz2 && \
+WORKDIR /tmp
+
+RUN wget http://download.osgeo.org/geos/geos-3.7.1.tar.bz2 && \
     tar xjf geos-3.7.1.tar.bz2 && \
     cd geos-3.7.1/ && \
     ./configure --prefix=/usr/local && \
@@ -29,7 +31,7 @@ RUN cd /tmp && wget http://download.osgeo.org/geos/geos-3.7.1.tar.bz2 && \
 # Note: HTTPS will result in certificate errors, hence the downgrade to HTTP here
 #
 
-RUN cd /tmp && wget http://download.osgeo.org/proj/proj-5.2.0.tar.gz && \
+RUN wget http://download.osgeo.org/proj/proj-5.2.0.tar.gz && \
     wget http://download.osgeo.org/proj/proj-datumgrid-north-america-1.1.tar.gz && \
     tar xzf proj-5.2.0.tar.gz && \
     cd proj-5.2.0/nad && \
@@ -46,7 +48,7 @@ RUN cd /tmp && wget http://download.osgeo.org/proj/proj-5.2.0.tar.gz && \
 # (without SFCGAL as we aren't using "CREATE EXTENSION postgis_sfcgal;")
 #
 
-RUN cd /tmp && wget http://download.osgeo.org/gdal/2.4.0/gdal-2.4.0.tar.gz && \
+RUN wget http://download.osgeo.org/gdal/2.4.0/gdal-2.4.0.tar.gz && \
     tar zxvf gdal-2.4.0.tar.gz && cd gdal-2.4.0/ && \
     ./configure --prefix=/usr/local --with-python --with-sfcgal=no && \
     make -j4 && \
@@ -54,6 +56,8 @@ RUN cd /tmp && wget http://download.osgeo.org/gdal/2.4.0/gdal-2.4.0.tar.gz && \
     ldconfig && \
     rm -rf /tmp/gdal-2.4.0 /tmp/gdal-2.4.0.tar.gz
 
+
+WORKDIR /
 
 # Configure GDAL file locations
 #
