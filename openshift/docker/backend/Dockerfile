@@ -1,12 +1,12 @@
 FROM python:3.7.17-bullseye
-# registry.access.redhat.com/ubi8/python-38:1
-
 
 # Switch to root user
 #
 USER root
 
+# NPROC Gets number of processing units available to system, speeding up build. 
 RUN NPROC=$(nproc)
+
 # External libraries required by Python GIS extensions (e.g. GeoDjango, GeoAlchemy)
 # Install and configure GEOS
 #
@@ -17,7 +17,7 @@ RUN cd /tmp && wget http://download.osgeo.org/geos/geos-3.7.1.tar.bz2 && \
     tar xjf geos-3.7.1.tar.bz2 && \
     cd geos-3.7.1/ && \
     ./configure --prefix=/usr/local && \
-    make -j$NPROC && \
+    make -j"$NPROC" && \
     make install && \
     ldconfig && \
     cd /tmp && \
@@ -36,7 +36,7 @@ RUN cd /tmp && wget http://download.osgeo.org/proj/proj-5.2.0.tar.gz && \
     tar xzf ../../proj-datumgrid-north-america-1.1.tar.gz && \
     cd .. && \
     ./configure --prefix=/usr/local && \
-    make -j$NPROC \
+    make -j"$NPROC" \
     && make install && \
     ldconfig && \
     rm -rf /tmp/proj-5.2.0 /tmp/proj-5.2.0.tar.gz /tmp/proj-datumgrid-north-america-1.1.tar.gz
