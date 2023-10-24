@@ -28,6 +28,4 @@ RUN wget http://download.osgeo.org/gdal/2.4.0/gdal-2.4.0.tar.gz && \
     make -j4 && make install && ldconfig && \
     rm -rf /tmp/gdal-2.4.0 /tmp/gdal-2.4.0.tar.gz
 
-WORKDIR /
-
 USER 1001
