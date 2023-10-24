@@ -121,7 +121,7 @@
                     "sourceStrategy": {
                         "from": {
                             "kind": "ImageStreamTag",
-                            "name": "gwells-python:v2"
+                            "name": "gwells-python:latest"
                         },
                         "env": [
                             {
