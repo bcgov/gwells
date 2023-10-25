@@ -2,6 +2,8 @@ FROM registry.redhat.io/rhel8/python-39
 
 USER root
 
+RUN pip3 install --upgrade pip
+
 # External libraries required by Python GIS extensions (e.g. GeoDjango, GeoAlchemy)
 
 # Install and configure GEOS 
