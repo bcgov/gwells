@@ -1,8 +1,6 @@
-FROM registry.redhat.io/rhel8/python-39
+FROM registry.access.redhat.com/rhscl/python-36-rhel7:1-21
 
 USER root
-
-RUN pip3 install --upgrade pip
 
 # External libraries required by Python GIS extensions (e.g. GeoDjango, GeoAlchemy)
 
