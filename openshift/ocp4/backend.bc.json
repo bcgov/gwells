@@ -112,8 +112,8 @@
                     "type": "Source",
                     "sourceStrategy": {
                         "from": {
-                            "kind": "ImageStreamTag",
-                            "name": "gwells-python:v4"
+                            "kind": "registry.redhat.io",
+                            "name": "rhel8/python-39:latest"
                         },
                         "env": [
                             {
