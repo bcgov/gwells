@@ -1,4 +1,4 @@
-FROM python:3.7.17-bullseye
+FROM registry.access.redhat.com/ubi8/python-38:1
 
 # Switch to root user
 #
@@ -32,30 +32,29 @@ RUN NPROC=${NPROC} && \
 # Note: HTTPS will result in certificate errors, hence the downgrade to HTTP here
 #
 
-RUN wget http://download.osgeo.org/proj/proj-5.2.0.tar.gz && \
-    wget http://download.osgeo.org/proj/proj-datumgrid-north-america-1.1.tar.gz && \
-    tar xzf proj-5.2.0.tar.gz && \
-    cd proj-5.2.0/nad && \
-    tar xzf ../../proj-datumgrid-north-america-1.1.tar.gz && \
-    cd .. && \
+RUN wget http://download.osgeo.org/proj/proj-6.0.0.tar.gz && \
+    wget http://download.osgeo.org/proj/proj-datumgrid-north-america-1.4.tar.gz && \
+    tar xzf proj-6.0.0.tar.gz && \
+    cd proj-6.0.0 && \
+    tar xzf ../proj-datumgrid-north-america-1.4.tar.gz && \
     ./configure --prefix=/usr/local && \
     make -j"$NPROC" \
     && make install && \
     ldconfig && \
-    rm -rf /tmp/proj-5.2.0 /tmp/proj-5.2.0.tar.gz /tmp/proj-datumgrid-north-america-1.1.tar.gz
+    rm -rf /tmp/proj-6.0.0 /tmp/proj-6.0.0.tar.gz /tmp/proj-datumgrid-north-america-1.4.tar.gz
 
 
 # Install and configure GDAL
 # (without SFCGAL as we aren't using "CREATE EXTENSION postgis_sfcgal;")
 #
 
-RUN wget http://download.osgeo.org/gdal/2.4.0/gdal-2.4.0.tar.gz && \
-    tar zxvf gdal-2.4.0.tar.gz && cd gdal-2.4.0/ && \
+RUN wget http://download.osgeo.org/gdal/3.0.4/gdal-3.0.4.tar.gz && \
+    tar zxvf gdal-3.0.4.tar.gz && cd gdal-3.0.4/ && \
     ./configure --prefix=/usr/local --with-python --with-sfcgal=no && \
     make -j4 && \
     make install && \
     ldconfig && \
-    rm -rf /tmp/gdal-2.4.0 /tmp/gdal-2.4.0.tar.gz
+    rm -rf /tmp/gdal-3.0.4 /tmp/gdal-3.0.4.tar.gz
 
 
 WORKDIR /
