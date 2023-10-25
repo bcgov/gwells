@@ -1,4 +1,4 @@
-django==3.2.0
+django==3.1.12
 numpy==1.24.0
 django-debug-toolbar==3.2.4
 gunicorn==19.9.0
