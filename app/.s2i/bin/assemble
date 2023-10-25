@@ -25,6 +25,9 @@ function install_pipenv() {
 set -e
 
 shopt -s dotglob
+
+echo "Current user: $(whoami)"
+
 echo "---> Installing application source ..."
 mv /tmp/src/* ./
 
