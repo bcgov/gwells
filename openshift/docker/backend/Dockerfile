@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/rhscl/python-36-rhel7:1
+FROM registry.access.redhat.com/ubi8/python-311:1-25
 
 
 # Switch to root user
