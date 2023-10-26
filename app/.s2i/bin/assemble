@@ -33,7 +33,7 @@ mv /tmp/src/* ./
 
 if [[ ! -z "$UPGRADE_PIP_TO_LATEST" || ! -z "$ENABLE_PIPENV" ]]; then
   echo "---> Upgrading pip to latest version ..."
-  pip install -U pip setuptools<=58.0.0 wheel
+  pip install -U pip setuptools==41.6.0 wheel
 fi
 
 cd backend
