@@ -112,8 +112,8 @@
                     "type": "Source",
                     "sourceStrategy": {
                         "from": {
-                            "kind": "DockerImage",
-                            "name": "python:3.7.17"
+                            "kind": "ImageStreamTag",
+                            "name": "gwells-python:v3"
                         },
                         "env": [
                             {
