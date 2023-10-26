@@ -70,4 +70,4 @@ The following was tested for staging:
 * ensure `ftw_reader` user is in place (for tile server).  Must have connect privileges.
 * `pg_dump -d gwells -Fp -c -C -f /tmp/backup/staging-20201208.sql --exclude-table=spatial_ref_sys`
 * rsync to OCP4 (todo: automate this step)
-* `psql -x -v ON_ERROR_STOP=1 2>&1 < staging-20201208.sql`
+* `psql -x -v ON_ERROR_STOP=1 2>&1 < staging-20201208.sql` 
