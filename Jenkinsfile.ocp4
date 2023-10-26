@@ -616,6 +616,11 @@ pipeline {
             agent { label 'build' }
             steps {
                 script {
+                    // Install GDAL and its dependencies
+                    sh 'sudo apt-get install gdal-bin'
+                    sh 'sudo apt-get install libgdal-dev'
+                    sh 'sudo apt-get install python3-dev'
+
                     _openshift(env.STAGE_NAME, toolsProject) {
                         echo "Running unit tests and building images..."
                         echo "This may take several minutes. Logs are not forwarded to Jenkins by default (at this time)."
