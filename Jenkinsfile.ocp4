@@ -617,9 +617,9 @@ pipeline {
             steps {
                 script {
                     // Install GDAL and its dependencies
-                    sh 'sudo apt-get install gdal-bin'
-                    sh 'sudo apt-get install libgdal-dev'
-                    sh 'sudo apt-get install python3-dev'
+                    sh 'apt-get install gdal-bin'
+                    sh 'apt-get install libgdal-dev'
+                    sh 'apt-get install python3-dev'
 
                     _openshift(env.STAGE_NAME, toolsProject) {
                         echo "Running unit tests and building images..."
