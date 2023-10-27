@@ -2596,3 +2596,20 @@ class AquiferParameters(AuditModel):
             "analysis_method": self.analysis_method,
             "comments": self.comments
         }
+
+class DocumentLabelCode(CodeTableModel):
+    """
+    Type of labels for a document
+    """
+    code = models.CharField(primary_key=True, max_length=10,
+                            editable=False, db_column='document_label_code')
+    description = models.CharField(max_length=100)
+
+    class Meta:
+        db_table = 'document_label_code'
+        ordering = ['display_order', 'description']
+
+    db_table_comment = ('Describes the label of a document. E.g. Well Driller Report, Well Record')
+
+    def __str__(self):
+        return self.description

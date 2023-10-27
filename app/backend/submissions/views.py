@@ -78,11 +78,13 @@ from wells.models import (
     WellPublicationStatusCode,
     YieldEstimationMethodCode,
     AquiferLithologyCode,
+    DocumentLabelCode
 )
 from submissions.models import WellActivityCode
 from wells.serializers import (
     CasingCodeSerializer,
     CasingMaterialSerializer,
+    DocumentLabelCodeSerializer
 )
 from submissions.serializers import (
     AlterationSubmissionDisplaySerializer,
@@ -486,6 +488,9 @@ class SubmissionsOptions(APIView):
             instance=LithologyDescriptionCode.objects.all(), many=True)
         licenced_status_codes = LicencedStatusCodeSerializer(
             instance=LicencedStatusCode.objects.all(), many=True)
+        
+        document_label_codes = DocumentLabelCodeSerializer(
+            instance=DocumentLabelCode.objects.all(), many=True)
 
         root = urljoin('/', app_root, 'api/v2/')
         for item in activity_codes.data:
@@ -536,6 +541,7 @@ class SubmissionsOptions(APIView):
         options["well_publication_status_codes"] = well_publication_status_codes.data
         options["observation_well_status"] = observation_well_status.data
         options["licenced_status_codes"] = licenced_status_codes.data
+        options["document_label_codes"] = document_label_codes.data
 
         return Response(options)
 
