@@ -14,88 +14,71 @@ Licensed under the Apache License, Version 2.0 (the "License");
 <template>
   <div>
     <fieldset>
-      <b-row>
-        <b-col cols="12" lg="6">
-          <legend :id="id">Attachments</legend>
-        </b-col>
-        <b-col cols="12" lg="6">
-          <div class="float-right">
-            <b-btn v-if="isStaffEdit" variant="primary" class="ml-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
-            <back-to-top-link v-if="isStaffEdit"/>
-          </div>
-        </b-col>
-      </b-row>
-      <b-row class="mt-3">
-        <b-col cols="12">
-          <b-form-group
-            label="Attachments"
-            id="attachmentGroup">
-            <b-form-file
-              v-model="files"
-              id="files"
-              multiple
-              plain/>
-            <div class="mt-3">
-              <b-form-checkbox
-               id="isPrivateCheckbox"
-               v-model="privateDocument">Are these documents private?</b-form-checkbox>
-            </div>
-            <div class="mt-3" v-if="upload_files.length > 0">
-              <b-list-group>
-                <b-list-group-item v-for="(f, index) in upload_files" :key="index">
-                  {{f.name}}
-                  <a class="fa fa-times fa-lg"
-                     variant="primary"
-                     style="margin-left: .5em"
-                     href="#"
-                     v-on:click="removeUploadFile(f, $event)" />
-                </b-list-group-item>
-              </b-list-group>
-            </div>
-          </b-form-group>
-        </b-col>
-      </b-row>
-      <b-row v-if="showDocuments">
-        <b-col cols="12">
-          <div class="row no-gutters mt-3">
-            <div class="col-md-12">
-              <!-- public documents -->
-              <ul v-if="uploadedFiles && uploadedFiles.public && uploadedFiles.public.length">
-                <li v-for="(file, index) in uploadedFiles.public" :key="index">
-                  <a :href="file.url" :download="file.name" target="_blank">{{file.name}}</a>
-                  <a class="fa fa-trash fa-lg"
-                  variant="primary"
-                  style="margin-left: .5em"
-                  href="#"
-                  v-on:click="confirmDeleteFile(file.name, 'public', $event)" />
-                </li>
-              </ul>
-              <div v-else>
-                No additional documentation currently available for this well.
-              </div>
-            </div>
-          </div>
-          <div class="row no-gutters" v-if="userRoles.wells.edit">
-            <div class="col-md-12">
-              <h4>Internal documentation - authorized access only</h4>
-              <ul v-if="uploadedFiles && uploadedFiles.private && uploadedFiles.private.length">
-                <li v-for="(file, index) in uploadedFiles.private" :key="index">
-                  <a :href="file.url" :download="file.name" target="_blank">{{file.name}}</a>
-                  <a class="fa fa-trash fa-lg"
-                  variant="primary"
-                  style="margin-left: .5em"
-                  href="#"
-                  v-on:click="confirmDeleteFile(file.name, 'private', $event)" />
-                </li>
-              </ul>
-              <div v-else>
-                No additional private documentation currently available for this well.
-              </div>
-            </div>
-          </div>
-        </b-col>
-      </b-row>
-    </fieldset>
+    <b-row>
+      <b-col cols="12" lg="6">
+        <legend :id="id">Attachments</legend>
+      </b-col>
+      <b-col cols="12" lg="6">
+        <div class="float-right">
+          <b-btn v-if="isStaffEdit" variant="primary" class="ml-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
+          <back-to-top-link v-if="isStaffEdit"/>
+        </div>
+      </b-col>
+    </b-row>
+    <div class="table-responsive" id="attachmentsTable">
+      <table class="table table-sm" aria-describedby="attachmentsDetails">
+        <thead>
+          <tr>
+            <th class="font-weight-normal">Well Number</th>
+            <th class="font-weight-normal">Well Label/Type</th>
+            <th class="font-weight-normal">Date</th>
+            <th class="font-weight-normal">File Upload Name</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(attachment, index) in upload_files" :key="index">
+            <td>
+              <b-form-input
+                disabled
+                inline
+                class="mr-0 mt-2"/>
+                Well Number
+            </td>
+            <td>
+              Well Label/Type
+            </td>
+            <td>
+              Date
+            </td>
+            <td>
+              {{attachment.name}}
+            </td>
+            <td class="pt-1 py-0">
+              <b-btn size="sm" variant="primary" :id="`removeAttachmentRowBtn${index}`" @click="removeUploadFile(attachment, $event)" class="mt-2 float-right"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <b-btn size="sm" id="addAttachmentRowBtn" variant="primary" @click="addRow"><i class="fa fa-plus-square-o"></i> Add file</b-btn>
+    <b-modal
+        v-model="confirmRemoveModal"
+        centered
+        title="Confirm remove"
+        @shown="focusRemoveModal">
+      Are you sure you want to remove this row?
+      <div slot="modal-footer">
+        <b-btn variant="secondary" @click="confirmRemoveModal=false;rowIndexToRemove=null" ref="cancelRemoveBtn">
+          Cancel
+        </b-btn>
+        <b-btn variant="danger" @click="confirmRemoveModal=false;removeRowByIndex(rowIndexToRemove)">
+          Remove
+        </b-btn>
+      </div>
+    </b-modal>
+  </fieldset>
+
     <b-modal
       ok-variant="primary"
       cancel-variant="default"
@@ -158,7 +141,9 @@ export default {
     return {
       status: 'False',
       file: '',
-      fileType: ''
+      fileType: '',
+      rowIndexToRemove: null,
+      confirmRemoveModal: false,
     }
   },
   computed: {
@@ -222,11 +207,51 @@ export default {
         .then(() => {
           this.$emit('fetchFiles')
         })
+    },
+
+    addRow () {
+      console.log('add row')
+      // this.files.push(emptyObject())
+    },
+    removeRowByIndex (index) {
+      // this.casingsData.splice(index, 1)
+      // this.rowIndexToRemove = null
+    },
+    focusRemoveModal () {
+      // Focus the "cancel" button in the confirm remove popup.
+      this.$refs.cancelRemoveBtn.focus()
     }
   }
 }
 </script>
 
 <style>
+
+#files-to-upload {
+    tr {
+      &.error {
+        color: red;
+      }
+    }
+
+    td {
+      padding: 0.3rem 0.5rem;
+      border-bottom: 1px solid #EEE;
+
+      &:first-child {
+        padding-left: 0;
+      }
+
+      &:last-child {
+        padding-right: 0;
+      }
+    }
+
+    tr:last-child {
+      td {
+        border-bottom: none;
+      }
+    }
+  }
 
 </style>
