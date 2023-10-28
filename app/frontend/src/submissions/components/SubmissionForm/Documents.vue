@@ -32,69 +32,106 @@ Licensed under the Apache License, Version 2.0 (the "License");
             <th class="font-weight-normal">Well Number</th>
             <th class="font-weight-normal">Well Label/Type</th>
             <th class="font-weight-normal">Date</th>
-            <th class="font-weight-normal">File Upload Name</th>
+            <th class="font-weight-normal">File Name</th>
+            <th class="font-weight-normal">File</th>
+            <th class="font-weight-normal">Private?</th>
             <th></th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(attachment, index) in upload_files" :key="index">
+          <tr v-for="(attachment, index) in attachmentsData" :key="index">
+            <td class="p-3">
+                {{ attachment.well_tag_number = wellTagNumber }}
+            </td>
             <td>
+              <!-- Label Selector -->
+              <b-form-group
+                :id="'attachmentLabel_' + index"
+                class="mt-1 mb-0"
+                :aria-describedby="`attachmentLabelInvalidFeedback${index}`">
+                <b-form-select
+                    v-model="attachment.document_label_code"
+                    :options="codes.document_label_codes"
+                    value-field="code"
+                    text-field="description"
+                    :state="getAttachmentError(index).document_label_code ? false : null">
+                  <template slot="first">
+                    <option :value="null" enabled>Select a label</option>
+                  </template>
+                </b-form-select>
+                <b-form-invalid-feedback :id="`attachmentCodeInvalidFeedback${index}`">
+                  <div v-for="(error, error_index) in getAttachmentError(index).document_label_code" :key="`Label input error ${error_index}`">
+                    {{ error }}
+                  </div>
+                </b-form-invalid-feedback>
+              </b-form-group>
+            </td>
+            <td class="p-2">
+              <!-- Date -->
+              <strong>{{ attachment.upload_date = new Date().getTime() }}</strong><br>({{ new Date().toLocaleString() }})
+            </td>
+            <td>
+              <!-- File Name -->
               <b-form-input
-                disabled
-                inline
-                class="mr-0 mt-2"/>
-                Well Number
+                class="mt-1 mb-0"
+                v-model="attachment.file_name"
+                placeholder="File_Name"
+                :errors="getAttachmentError(index).file_name"
+                :loaded="getFieldsLoaded(index).file_name"
+              />
             </td>
             <td>
-              Well Label/Type
+              <!-- File Upload -->
+              <b-form-file
+                class="mt-1 mb-0"
+                v-model="attachment.file"
+                :errors="getAttachmentError(index).file"
+                :loaded="getFieldsLoaded(index).file"
+              />
             </td>
             <td>
-              Date
-            </td>
-            <td>
-              {{attachment.name}}
+              <b-form-checkbox
+                class="mt-2 ml-3"
+                id="checkbox"
+                v-model="attachment.private[index]"
+                name="checkbox"
+                value="private"
+                unchecked-value="public"
+              />
             </td>
             <td class="pt-1 py-0">
-              <b-btn size="sm" variant="primary" :id="`removeAttachmentRowBtn${index}`" @click="removeUploadFile(attachment, $event)" class="mt-2 float-right"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
+              <b-btn size="sm" variant="primary" :id="`removeAttachmentRowBtn${index}`" @click="removeRowIfOk(attachment)" class="mt-2 float-right"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
     <b-btn size="sm" id="addAttachmentRowBtn" variant="primary" @click="addRow"><i class="fa fa-plus-square-o"></i> Add file</b-btn>
-    <b-modal
-        v-model="confirmRemoveModal"
-        centered
-        title="Confirm remove"
-        @shown="focusRemoveModal">
-      Are you sure you want to remove this row?
-      <div slot="modal-footer">
-        <b-btn variant="secondary" @click="confirmRemoveModal=false;rowIndexToRemove=null" ref="cancelRemoveBtn">
-          Cancel
-        </b-btn>
-        <b-btn variant="danger" @click="confirmRemoveModal=false;removeRowByIndex(rowIndexToRemove)">
-          Remove
-        </b-btn>
-      </div>
-    </b-modal>
-  </fieldset>
-
-    <b-modal
-      ok-variant="primary"
-      cancel-variant="default"
-      v-on:ok="deleteFile"
-      ref="deleteModal" >
-      <p>Are you sure you would like to delete this file?</p>
-      <p>{{file}}</p>
-    </b-modal>
+      <b-modal
+          v-model="confirmRemoveModal"
+          centered
+          title="Confirm remove"
+          @shown="focusRemoveModal">
+        Are you sure you want to remove this row?
+        <div slot="modal-footer">
+          <b-btn variant="secondary" @click="confirmRemoveModal=false;rowIndexToRemove=null" ref="cancelRemoveBtn">
+            Cancel
+          </b-btn>
+          <b-btn variant="danger" @click="confirmRemoveModal=false;removeRowByIndex(rowIndexToRemove)">
+            Remove
+          </b-btn>
+        </div>
+      </b-modal>
+    </fieldset>
   </div>
 </template>
 
 <script>
-import { mapGetters, mapMutations, mapState } from 'vuex'
+import { mapGetters } from 'vuex'
+import { omit } from 'lodash'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
-import ApiService from '@/common/services/ApiService.js'
+// import ApiService from '@/common/services/ApiService.js'
 
 import BackToTopLink from '@/common/components/BackToTopLink.vue'
 
@@ -104,6 +141,7 @@ export default {
     BackToTopLink
   },
   props: {
+    wellTagNumber: null,
     errors: {
       type: Object,
       default: () => ({})
@@ -140,86 +178,98 @@ export default {
   data () {
     return {
       status: 'False',
-      file: '',
-      fileType: '',
-      rowIndexToRemove: null,
       confirmRemoveModal: false,
+      rowIndexToRemove: null,
+      attachmentsData: [],
     }
   },
   computed: {
     ...mapGetters(['codes', 'userRoles']),
-    ...mapState('documentState', [
-      'isPrivate',
-      'upload_files'
-    ]),
-    files: {
-      get: function () {
-        return this.upload_files
-      },
-      set: function (value) {
-        this.setFiles(value)
-        this.$emit('setFormValueChanged')
-      }
-    },
-    privateDocument: {
-      get: function () {
-        return this.isPrivate
-      },
-      set: function (value) {
-        this.setPrivate(value)
+    computedAttachments () {
+      return [...this.attachmentsData]
+    }
+  },
+  watch: {
+    computedAttachments: {
+      deep: true,
+      handler: function (n, o) {
+        const attachments = this.attachmentsData.filter((d) => !this.attachmentIsEmpty(d))
+        this.$emit('update:attachments', attachments)
       }
     }
   },
-  methods: {
-    ...mapMutations('documentState', [
-      'setFiles',
-      'setPrivate',
-      'removeFile'
-    ]),
-    showModal () {
-      this.$refs.deleteModal.show()
-    },
-    hideModal () {
-      this.$refs.deleteModal.hide()
-    },
-    removeUploadFile (file, e) {
-      e.preventDefault()
-      this.removeFile(file)
-    },
-    confirmDeleteFile (file, fileType, e) {
-      e.preventDefault()
-      this.file = file
-      this.fileType = fileType
-      this.showModal()
-    },
-    deleteFile () {
-      this.hideModal()
-      let isPrivate = false
-      if (this.fileType === 'private') {
-        isPrivate = true
+  created () {
+    // When component created, add an initial row of attachments.
+    if (!this.attachmentsData.length) {
+      for (let i = 0; i < 3; i++) {
+        this.addRow()
       }
-
-      let tag = this.form.well && isNaN(this.form.well) ? this.form.well.well_tag_number : this.form.well
-
-      let encodedFileName = encodeURIComponent(this.file)
-
-      ApiService.deleteFile(`wells/${tag}/delete_document?filename=${encodedFileName}&private=${isPrivate}`)
-        .then(() => {
-          this.$emit('fetchFiles')
-        })
-    },
-
+    } else {
+      this.attachments.forEach((attachment) => {
+        this.attachmentsData.push({ ...attachment })
+      })
+      this.addRow()
+    }
+  },
+  methods: {
     addRow () {
-      console.log('add row')
-      // this.files.push(emptyObject())
+      console.log('attachmentsData --->', this.attachmentsData)
+
+      this.attachmentsData.push(this.emptyObject())
+    },
+    emptyObject () {
+      return {
+        well_tag_number: null,
+        document_label_code: null,
+        upload_date: null,
+        file_name: null,
+        file: null,
+        private: false,
+      }
     },
     removeRowByIndex (index) {
-      // this.casingsData.splice(index, 1)
-      // this.rowIndexToRemove = null
+      this.attachmentsData.splice(index, 1)
+      this.rowIndexToRemove = null
+    },
+    removeRowIfOk (instance) {
+      const index = this.attachmentsData.findIndex(item => item === instance)
+      if (this.rowHasValues(this.attachmentsData[index])) {
+        this.rowIndexToRemove = index
+        this.confirmRemoveModal = true
+      } else {
+        this.removeRowByIndex(index)
+      }
+    },
+    toggleAttachmentLengthRequired (index) {
+      const instance = this.attachmentsData[index]
+      instance.length_required = !instance.length_required
+      Vue.set(this.attachmentsData, index, instance)
+    },
+    getAttachmentError (index) {
+      if (this.errors && 'attachment_set' in this.errors && index in this.errors['attachment_set']) {
+        return this.errors['attachment_set'][index]
+      }
+      return {}
+    },
+    getFieldsLoaded (index) {
+      if (this.fieldsLoaded && 'attachment_set' in this.fieldsLoaded && index in this.fieldsLoaded['attachment_set']) {
+        return this.fieldsLoaded['attachment_set'][index]
+      }
+      return {}
+    },
+    rowHasValues (row) {
+      let keys = Object.keys(row)
+      if (keys.length === 0) return false
+      // Check that all fields are not empty.
+      return !this.attachmentIsEmpty(row)
     },
     focusRemoveModal () {
       // Focus the "cancel" button in the confirm remove popup.
       this.$refs.cancelRemoveBtn.focus()
+    },
+    attachmentIsEmpty (attachment) {
+      const fieldsToTest = omit(attachment, 'length_required')
+      return Object.values(fieldsToTest).every((x) => !x)
     }
   }
 }
