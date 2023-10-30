@@ -50,6 +50,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 class="mt-1 mb-0"
                 :aria-describedby="`attachmentLabelInvalidFeedback${index}`">
                 <b-form-select
+                    @change="setFileName(index)"
                     v-model="attachment.document_label_code"
                     :options="codes.document_label_codes"
                     value-field="code"
@@ -68,7 +69,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             </td>
             <td class="p-2">
               <!-- Date -->
-              <strong>{{ attachment.upload_date = new Date().getTime() }}</strong><br>({{ new Date().toLocaleString() }})
+              {{ new Date(attachment.upload_date).toLocaleDateString() }}<br />{{ new Date(attachment.upload_date).toLocaleTimeString() }}
             </td>
             <td>
               <!-- File Name -->
@@ -78,11 +79,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 placeholder="File_Name"
                 :errors="getAttachmentError(index).file_name"
                 :loaded="getFieldsLoaded(index).file_name"
+                disabled
               />
             </td>
             <td>
               <!-- File Upload -->
               <b-form-file
+                @input="setFileName(index)"
                 class="mt-1 mb-0"
                 v-model="attachment.file"
                 :errors="getAttachmentError(index).file"
@@ -93,7 +96,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               <b-form-checkbox
                 class="mt-2 ml-3"
                 id="checkbox"
-                v-model="attachment.private[index]"
+                v-model="attachment.private"
                 name="checkbox"
                 value="private"
                 unchecked-value="public"
@@ -200,18 +203,29 @@ export default {
   },
   created () {
     // When component created, add an initial row of attachments.
-    if (!this.attachmentsData.length) {
-      for (let i = 0; i < 3; i++) {
-        this.addRow()
-      }
-    } else {
+    if(this.attachments.length > 0){
       this.attachments.forEach((attachment) => {
         this.attachmentsData.push({ ...attachment })
       })
-      this.addRow()
     }
+    this.addRow()
   },
   methods: {
+    setFileName(index) {
+      console.log("Filename called")
+      try {
+        let file_name = ""
+        let entry = this.attachmentsData[index];
+        if (entry.document_label_code &&
+            entry.upload_date &&
+            entry.file){
+          file_name =  `WTN ${entry.well_tag_number}_${entry.document_label_code}_${entry.upload_date}.${entry.file.name.split('.')[1]}`;
+        }
+        this.attachmentsData[index].file_name = file_name;
+      } catch (ex) {
+        console.log(ex);
+      }
+    },
     addRow () {
       console.log('attachmentsData --->', this.attachmentsData)
 
@@ -221,7 +235,7 @@ export default {
       return {
         well_tag_number: null,
         document_label_code: null,
-        upload_date: null,
+        upload_date: Date.now(),
         file_name: null,
         file: null,
         private: false,
