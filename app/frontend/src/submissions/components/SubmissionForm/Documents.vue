@@ -86,6 +86,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               <!-- File Upload -->
               <b-form-file
                 @input="setFileName(index)"
+                accept=".jpg, .png, .jpeg, .pdf, .docx, .csv"
                 class="mt-1 mb-0"
                 v-model="attachment.file"
                 :errors="getAttachmentError(index).file"
@@ -212,9 +213,8 @@ export default {
   },
   methods: {
     setFileName(index) {
-      console.log("Filename called")
       try {
-        let file_name = ""
+        let file_name = null
         let entry = this.attachmentsData[index];
         if (entry.document_label_code &&
             entry.upload_date &&
