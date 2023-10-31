@@ -8,6 +8,9 @@ version: '3.7'
 #        For example:
 #          docker login -u garywong-bc -p `oc whoami -t` docker-registry.pathfinder.gov.bc.ca
 services:
+#############################################################################################
+###                                       Minio-Pub                                       ###
+#############################################################################################
   minio-public:
     build:
       context: ./openshift/docker/minio/
@@ -22,6 +25,11 @@ services:
       MINIO_DATA_DIR: /data
     entrypoint: /minio-entrypoint.sh
     command: server /data
+    networks:
+      - gwells-network
+#############################################################################################
+###                                       Minio-Priv                                      ###
+#############################################################################################
   minio-private:
     build:
       context: ./openshift/docker/minio/
@@ -35,6 +43,11 @@ services:
       MINIO_SECRET_KEY: minio1234
     entrypoint: /minio-entrypoint.sh
     command: server --address :9001 /data
+    networks:
+      - gwells-network
+#############################################################################################
+###                                       CrunchyDB                                       ###
+#############################################################################################
   db:
     platform: linux/x86_64
     image: crunchydata/crunchy-postgres-gis:centos7-12.2-4.2.2
@@ -65,6 +78,11 @@ services:
         source: ./app/database/scripts/local_dev/setup.sql
         target: /pgconf/setup.sql
         consistency: cached
+    networks:
+      - gwells-network
+#############################################################################################
+###                                       Tileserv                                        ###
+#############################################################################################
   tileserv:
     hostname: tileserv
     depends_on:
@@ -76,6 +94,11 @@ services:
     ports:
       - "7800:7800"
     entrypoint: sh -c "sleep 10; /app/pg_tileserv"
+    networks:
+      - gwells-network
+#############################################################################################
+###                                       Frontend                                        ###
+#############################################################################################
   frontend:
     image: node:14.21.3
     hostname: frontend
@@ -102,6 +125,11 @@ services:
       - /app/frontend/node_modules/
     depends_on:
       - backend
+    networks:
+      - gwells-network
+#############################################################################################
+###                                       Backend                                         ###
+#############################################################################################
   backend:
     platform: linux/x86_64
     image: artifacts.developer.gov.bc.ca/g26e-backend-docker-local/gwells-backend:1.0
@@ -175,5 +203,17 @@ services:
       - "3000:3000"
     depends_on:
       - db
+    networks:
+      - gwells-network
+#############################################################################################
+###                                       Volumes                                         ###
+#############################################################################################
 volumes:
   pgdata-volume:
+
+#############################################################################################
+###                                       Network                                         ###
+#############################################################################################
+networks:
+  gwells-network:
+    driver: "bridge"
