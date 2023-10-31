@@ -52,13 +52,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 <b-form-select
                     @change="setFileName(index)"
                     v-model="attachment.document_label_code"
-                    :options="codes.document_label_codes"
-                    value-field="code"
-                    text-field="description"
-                    :state="getAttachmentError(index).document_label_code ? false : null">
-                  <template slot="first">
-                    <option :value="null" enabled>Select a label</option>
-                  </template>
+                    :options="WELL_TAGS"
+                    :state="getAttachmentError(index).document_label_code ? false : null"
+                    size="med"   
+                >    
                 </b-form-select>
                 <b-form-invalid-feedback :id="`attachmentCodeInvalidFeedback${index}`">
                   <div v-for="(error, error_index) in getAttachmentError(index).document_label_code" :key="`Label input error ${error_index}`">
@@ -67,9 +64,14 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 </b-form-invalid-feedback>
               </b-form-group>
             </td>
+            <!-- Date -->
             <td class="p-2">
-              <!-- Date -->
-              {{ new Date(attachment.upload_date).toLocaleDateString() }}<br />{{ new Date(attachment.upload_date).toLocaleTimeString() }}
+              <b-form-datepicker
+                @input="setFileName(index)"
+                v-model="attachment.upload_date"
+                value-as-date
+                autoclose
+              />
             </td>
             <td>
               <!-- File Name -->
@@ -95,7 +97,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             </td>
             <td>
               <b-form-checkbox
-                class="mt-2 ml-3"
+                class="mt-2 ml-3 private-box"
                 id="checkbox"
                 v-model="attachment.private"
                 name="checkbox"
@@ -138,6 +140,7 @@ import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 // import ApiService from '@/common/services/ApiService.js'
 
 import BackToTopLink from '@/common/components/BackToTopLink.vue'
+import { WELL_TAGS } from '@/common/constants.js'
 
 export default {
   mixins: [inputBindingsMixin],
@@ -185,13 +188,14 @@ export default {
       confirmRemoveModal: false,
       rowIndexToRemove: null,
       attachmentsData: [],
+      WELL_TAGS: WELL_TAGS,
     }
   },
   computed: {
     ...mapGetters(['codes', 'userRoles']),
     computedAttachments () {
       return [...this.attachmentsData]
-    }
+    },
   },
   watch: {
     computedAttachments: {
@@ -204,7 +208,7 @@ export default {
   },
   created () {
     // When component created, add an initial row of attachments.
-    if(this.attachments.length > 0){
+    if(this.attachments && this.attachments.length > 0){
       this.attachments.forEach((attachment) => {
         this.attachmentsData.push({ ...attachment })
       })
@@ -219,9 +223,10 @@ export default {
         if (entry.document_label_code &&
             entry.upload_date &&
             entry.file){
-          file_name =  `WTN ${entry.well_tag_number}_${entry.document_label_code}_${entry.upload_date}.${entry.file.name.split('.')[1]}`;
+          file_name =  `WTN ${entry.well_tag_number}_${entry.document_label_code}_${(entry.upload_date.getTime() + Math.floor(Math.random() * 999999))}.${entry.file.name.split('.')[1]}`;
         }
         this.attachmentsData[index].file_name = file_name;
+        if(this.attachmentsData[index].file_name !== null){ this.$emit('setFormValueChanged'); }
       } catch (ex) {
         console.log(ex);
       }
@@ -235,7 +240,7 @@ export default {
       return {
         well_tag_number: null,
         document_label_code: null,
-        upload_date: Date.now(),
+        upload_date: null,
         file_name: null,
         file: null,
         private: false,
@@ -289,7 +294,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 
 #files-to-upload {
     tr {
@@ -310,12 +315,17 @@ export default {
         padding-right: 0;
       }
     }
-
+    .private-box {
+      height: 50pt;
+      width: 50pt;
+    }
     tr:last-child {
       td {
         border-bottom: none;
       }
     }
   }
-
+  #attachmentsTable { 
+    overflow-x: visible !important;
+  }
 </style>
