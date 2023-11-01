@@ -85,26 +85,26 @@ export default {
       submissionsPage: 1,
       submissionsBusy: false,
       submissionsRecordsCount: 0,
-      tableHeaders: {
-        report: {
+      tableHeaders: [
+        {
           label: 'Report',
           thStyle: {
             width: '33%'
           }
         },
-        date_entered: {
+        {
           label: 'Date Entered',
           thStyle: {
             width: '33%'
           }
         },
-        entered_by: {
+        {
           label: 'Entered By',
           thStyle: {
             width: '33%'
           }
         }
-      }
+      ]
     }
   },
   computed: {
