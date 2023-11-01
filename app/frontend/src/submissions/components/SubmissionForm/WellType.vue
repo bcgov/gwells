@@ -297,7 +297,7 @@ export default {
       return this.wellClass !== 'WATR_SPPLY' && this.intendedWaterUseInput === 'NA'
     },
     intendedWaterUseOptions () {
-      if (this.wellClass === 'WATR_SPPLY') {
+      if (this.wellClass === 'WATR_SPPLY' && this.codes.intended_water_uses) {
         // Do not allow user to pick "Not Applicable" when well_class_code is WATR_SPPLY
         return this.codes.intended_water_uses.filter((code) => {
           return code.intended_water_use_code !== 'NA'
