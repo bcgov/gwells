@@ -14,6 +14,7 @@
 import sys
 import os
 import logging
+import re
 from datetime import timedelta
 from django.urls import reverse
 from urllib.parse import quote, unquote_plus
@@ -122,11 +123,32 @@ class MinioClient():
                     'url': self.create_url(document, host, bucket_name, private),
 
                     # split on last occurrence of '/' and return last item (supports any or no prefixes)
-                    'name': unquote_plus(document.object_name).rsplit('/', 1)[-1]
+                    'name': unquote_plus(document.object_name).rsplit('/', 1)[-1],
+                    "well_number": self.extract_well_number(document.object_name),
+                    "date_of_action": self.extract_date_of_action(document.object_name),
+                    "well_label": self.extract_well_label(document.object_name),
                 }, objects)
         )
         return urls
 
+    def extract_well_number(self, object_name):
+        try:
+            return re.findall(r'\d+', unquote_plus(object_name).rsplit('/', 1)[-1].split("_")[0])[0]
+        except IndexError:
+            return "Unknown"
+
+    def extract_date_of_action(self, object_name):
+        try:
+            return int(unquote_plus(object_name).rsplit('/', 1)[-1].split("_")[2].split(".")[0].strip())
+        except IndexError:
+            return -1
+
+    def extract_well_label(self, object_name):
+        try:
+            return unquote_plus(object_name).rsplit('/', 1)[-1].split("_")[1]
+        except IndexError:
+            return ""
+        
     def get_bucket_folder(self, document_id, resource='well'):
         """Helper function to determine the folder for a given resource"""
         if resource == 'well':

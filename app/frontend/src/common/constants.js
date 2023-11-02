@@ -5,7 +5,7 @@ export const AQUIFER_ID_FOR_UNCORRELATED_WELLS = 1143
 // See task: https, value, //apps.nrs.gov.bc.ca/int/jira/browse/WATER-1775
 export const MAX_API_RESULT_AND_EXPORT_COUNT = 999999
 
-const WELL_TAGS_PUBLIC = [
+export const WELL_TAGS_PUBLIC = [
   { text:  "Well Construction Report", value: "Well Construction" },
   { text:  "Well Alteration Report", value:  "Well Alteration" },
   { text: "Well Decommission Report", value:  "Well Decommission" },
@@ -16,7 +16,7 @@ const WELL_TAGS_PUBLIC = [
   { text: "Other", value:  "Additional Well Details" },
 ]
 
-const WELL_TAGS_PRIVATE = [
+export const WELL_TAGS_PRIVATE = [
   { text: "Well Inspection Report", value:  "Well Inspection" },
   { text: "Confirmation/Alternative Specifications", value:  "Alternative Specs" },
   { text: "Water Quality Report", value:  "Water Quality" },

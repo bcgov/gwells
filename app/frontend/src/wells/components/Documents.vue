@@ -33,6 +33,22 @@
       <div v-else>
         No additional documentation available for this well.
       </div>
+      <b-table
+          hover
+          :fields="['well_number', 'well_label', 'date_of_action', 'file']"
+          striped
+          :items="files.public"
+        >
+        <template v-slot:cell(date_of_action)="data">
+            {{ data.item.date_of_action !== -1 ? new Date(data.item.date_of_action).toLocaleDateString() : "Date Unknown" }}
+          </template>
+          <template v-slot:cell(well_label)="data">
+            {{ data.item.name.split("_")[1].split(".")[0] }}
+          </template>
+          <template v-slot:cell(file)="data">
+            <a :href="data.item.url" target="_blank">{{ data.item.name }}</a>
+          </template>
+        </b-table>
       <div class="internal-documents mt-5" v-if="userRoles.wells.view">
         <h5>Internal documentation - authorized access only</h5>
         <div v-if="error">
@@ -74,7 +90,8 @@ export default {
       files: null,
       error: null,
       file: '',
-      fileType: ''
+      fileType: '',
+      splitFiles: [],
     }
   },
   watch: {
@@ -128,6 +145,9 @@ export default {
           eventLabel: `Original Well Record ${file}`
         })
       }
+    },
+    displayFileFormat() {
+      const arr = [];
     },
     showModal () {
       this.$refs.deleteModal.show()
