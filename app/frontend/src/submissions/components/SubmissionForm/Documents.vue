@@ -25,6 +25,35 @@ Licensed under the Apache License, Version 2.0 (the "License");
         </div>
       </b-col>
     </b-row>
+      <b-table
+        hover
+        :fields="['well_number', 'well_label', 'date_of_action', 'private', 'file', 'delete']"
+        striped
+        :items="[...uploadedFiles.public, ...uploadedFiles.private]"
+      >
+        <template v-slot:cell(well_label)="data">
+          {{ callLongFormLabel(data.item.well_label) }}
+        </template>
+        <template v-slot:cell(date_of_action)="data">
+          {{ data.item.date_of_action !== -1 ? new Date(data.item.date_of_action).toLocaleDateString() : "Date Unknown" }}
+        </template>
+        <template v-slot:cell(file)="data">
+          <a :href="data.item.url" target="_blank">{{ data.item.name }}</a>
+        </template>
+        <template v-slot:cell(private)="data">
+          <p v-if="data.item.private">Private Document</p>
+          <p v-else>Public Document</p>
+        </template>
+        <template v-slot:cell(delete)="data">
+          <a
+            class="fa fa-trash fa-lg"
+            variant="primary"
+            style="margin-left: .5em"
+            href="#"
+            @click="handleFileDelete"
+          />
+        </template>
+    </b-table>
     <div class="table-responsive" id="attachmentsTable">
       <table class="table table-sm" aria-describedby="attachmentsDetails">
         <thead>
@@ -141,6 +170,7 @@ import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 
 import BackToTopLink from '@/common/components/BackToTopLink.vue'
 import { WELL_TAGS } from '@/common/constants.js'
+import getLongFormLabel from '@/common/helpers/getLongFormLabel.js';
 
 export default {
   mixins: [inputBindingsMixin],
@@ -251,6 +281,9 @@ export default {
       'setPrivate',
       'removeFile'
     ]),
+    handleFileDelete() {
+      alert('Delete Action!');
+    },
     setFileName(index) {
       try {
         let file_name = null
@@ -265,6 +298,9 @@ export default {
       } catch (ex) {
         console.log(ex);
       }
+    },
+    callLongFormLabel(label){
+      return getLongFormLabel(label);
     },
     addRow () {
 

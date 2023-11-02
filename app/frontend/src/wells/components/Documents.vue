@@ -25,14 +25,6 @@
       <div v-if="error">
         {{error}}
       </div>
-      <ul v-else-if="files && files.public && files.public.length">
-        <li v-for="(file, index) in files.public" :key="index">
-          <a :href="file.url" :download="file.name" target="_blank" @click="handleDownloadEvent(file.name)">{{file.name}}</a>
-        </li>
-      </ul>
-      <div v-else>
-        No additional documentation available for this well.
-      </div>
         <b-table
             hover
             :fields="['well_number', 'well_label', 'date_of_action', 'private', 'file']"
@@ -40,7 +32,7 @@
             :items="[...files.public, ...files.private]"
           >
             <template v-slot:cell(well_label)="data">
-              {{ getLongFormLabel(data.item.well_label) }}
+              {{ callLongFormLabel(data.item.well_label) }}
             </template>
             <template v-slot:cell(date_of_action)="data">
               {{ data.item.date_of_action !== -1 ? new Date(data.item.date_of_action).toLocaleDateString() : "Date Unknown" }}
@@ -53,20 +45,6 @@
               <p v-else>Public Document</p>
             </template>
         </b-table>
-      <div class="internal-documents mt-5" v-if="userRoles.wells.view">
-        <h5>Internal documentation - authorized access only</h5>
-        <div v-if="error">
-          {{error}}
-        </div>
-        <ul v-else-if="files && files.private && files.private.length">
-          <li v-for="(file, index) in files.private" :key="index">
-            <a :href="file.url" :download="file.name" target="_blank" @click="handleDownloadEvent(file.name)">{{file.name}}</a>
-          </li>
-        </ul>
-        <div v-else>
-          No additional private documentation available for this well.
-        </div>
-      </div>
     </div>
     <b-modal
       ok-variant="primary"
@@ -83,6 +61,8 @@
 import ApiService from '@/common/services/ApiService.js'
 import { mapActions, mapGetters } from 'vuex'
 import { WELL_TAGS_PRIVATE, WELL_TAGS_PUBLIC } from '../../common/constants.js'
+import getLongFormLabel from '@/common/helpers/getLongFormLabel'
+
 export default {
   props: {
     well: {
@@ -155,12 +135,8 @@ export default {
     displayFileFormat() {
       const arr = [];
     },
-    getLongFormLabel(shortFormLabel) {
-      try {
-        return this.WELL_TAGS.filter((item) => item.value === shortFormLabel)[0].text;
-      } catch (ex) {
-        return "Unknown"
-      }
+    callLongFormLabel(shortFormLabel) {
+      return getLongFormLabel(shortFormLabel);
     },
     showModal () {
       this.$refs.deleteModal.show()
@@ -193,5 +169,5 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 </style>
