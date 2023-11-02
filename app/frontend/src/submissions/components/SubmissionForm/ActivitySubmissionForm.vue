@@ -463,6 +463,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-if="showSection('documents')"
         id="documents"
         :wellTagNumber="wellTagNumber"
+        :uploadedFiles="uploadedFiles"
         :isStaffEdit="isStaffEdit"
         :saveDisabled="editSaveDisabled"
         :showDocuments="form.well !== null"

@@ -133,7 +133,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapState, mapMutations } from 'vuex'
 import { omit } from 'lodash'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
@@ -193,6 +193,27 @@ export default {
   },
   computed: {
     ...mapGetters(['codes', 'userRoles']),
+    ...mapState('documentState', [
+      'isPrivate',
+      'upload_files'
+    ]),
+    files: {
+      get: function () {
+        return this.upload_files
+      },
+      set: function (value) {
+        this.setFiles(value)
+        this.$emit('setFormValueChanged')
+      }
+    },
+    privateDocument: {
+      get: function () {
+        return this.isPrivate
+      },
+      set: function (value) {
+        this.setPrivate(value)
+      }
+    },
     computedAttachments () {
       return [...this.attachmentsData]
     },
@@ -200,11 +221,20 @@ export default {
   watch: {
     computedAttachments: {
       deep: true,
-      handler: function (n, o) {
-        const attachments = this.attachmentsData.filter((d) => !this.attachmentIsEmpty(d))
-        this.$emit('update:attachments', attachments)
-      }
-    }
+      handler: function (newAttachments, oldAttachments) {
+        if (newAttachments[0].file) {
+          newAttachments.forEach((newAttachment, index) => {
+            const newFile = newAttachment.file;
+            if (newAttachment.file_name) {
+              const uploadName = newAttachment.file_name.replace(/^WTN\s\d+_/,'');
+              const modifiedFile = new File([newFile], uploadName, { type: newFile.type });
+              this.files = [modifiedFile];
+              this.privateDocument = false;
+            }
+          });
+        }
+      },
+    },
   },
   created () {
     // When component created, add an initial row of attachments.
@@ -216,6 +246,11 @@ export default {
     this.addRow()
   },
   methods: {
+    ...mapMutations('documentState', [
+      'setFiles',
+      'setPrivate',
+      'removeFile'
+    ]),
     setFileName(index) {
       try {
         let file_name = null
@@ -232,7 +267,6 @@ export default {
       }
     },
     addRow () {
-      console.log('attachmentsData --->', this.attachmentsData)
 
       this.attachmentsData.push(this.emptyObject())
     },
