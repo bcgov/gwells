@@ -33,21 +33,25 @@
       <div v-else>
         No additional documentation available for this well.
       </div>
-      <b-table
-          hover
-          :fields="['well_number', 'well_label', 'date_of_action', 'file']"
-          striped
-          :items="files.public"
-        >
-        <template v-slot:cell(date_of_action)="data">
-            {{ data.item.date_of_action !== -1 ? new Date(data.item.date_of_action).toLocaleDateString() : "Date Unknown" }}
-          </template>
-          <template v-slot:cell(well_label)="data">
-            {{ data.item.name.split("_")[1].split(".")[0] }}
-          </template>
-          <template v-slot:cell(file)="data">
-            <a :href="data.item.url" target="_blank">{{ data.item.name }}</a>
-          </template>
+        <b-table
+            hover
+            :fields="['well_number', 'well_label', 'date_of_action', 'private', 'file']"
+            striped
+            :items="[...files.public, ...files.private]"
+          >
+            <template v-slot:cell(well_label)="data">
+              {{ getLongFormLabel(data.item.well_label) }}
+            </template>
+            <template v-slot:cell(date_of_action)="data">
+              {{ data.item.date_of_action !== -1 ? new Date(data.item.date_of_action).toLocaleDateString() : "Date Unknown" }}
+            </template>
+            <template v-slot:cell(file)="data">
+              <a :href="data.item.url" target="_blank" @click="handleDownloadEvent(data.item.name)">{{ data.item.name }}</a>
+            </template>
+            <template v-slot:cell(private)="data">
+              <p v-if="data.item.private">Private Document</p>
+              <p v-else>Public Document</p>
+            </template>
         </b-table>
       <div class="internal-documents mt-5" v-if="userRoles.wells.view">
         <h5>Internal documentation - authorized access only</h5>
@@ -70,7 +74,7 @@
       v-on:ok="deleteFile"
       ref="deleteModal" >
       <p>Are you sure you would like to delete this file?</p>
-      <p>{{file}}</p>
+      <p>{{ file }}</p>
     </b-modal>
   </div>
 </template>
@@ -78,6 +82,7 @@
 <script>
 import ApiService from '@/common/services/ApiService.js'
 import { mapActions, mapGetters } from 'vuex'
+import { WELL_TAGS_PRIVATE, WELL_TAGS_PUBLIC } from '../../common/constants.js'
 export default {
   props: {
     well: {
@@ -92,6 +97,7 @@ export default {
       file: '',
       fileType: '',
       splitFiles: [],
+      WELL_TAGS: [...WELL_TAGS_PUBLIC, ...WELL_TAGS_PRIVATE],
     }
   },
   watch: {
@@ -148,6 +154,13 @@ export default {
     },
     displayFileFormat() {
       const arr = [];
+    },
+    getLongFormLabel(shortFormLabel) {
+      try {
+        return this.WELL_TAGS.filter((item) => item.value === shortFormLabel)[0].text;
+      } catch (ex) {
+        return "Unknown"
+      }
     },
     showModal () {
       this.$refs.deleteModal.show()

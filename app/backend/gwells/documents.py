@@ -127,6 +127,7 @@ class MinioClient():
                     "well_number": self.extract_well_number(document.object_name),
                     "date_of_action": self.extract_date_of_action(document.object_name),
                     "well_label": self.extract_well_label(document.object_name),
+                    "private": private
                 }, objects)
         )
         return urls
