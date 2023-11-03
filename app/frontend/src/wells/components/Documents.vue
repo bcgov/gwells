@@ -149,11 +149,8 @@ export default {
       this.showModal()
     },
     deleteFile () {
-      this.hideModal()
-      let isPrivate = false
-      if (this.fileType === 'private') {
-        isPrivate = true
-      }
+      
+      const isPrivate = this.fileType === 'private'
 
       ApiService.deleteFile(`wells/${this.wellTag}/delete_document?filename=${this.file}&private=${isPrivate}`)
         .then(() => {

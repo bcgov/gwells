@@ -50,7 +50,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             variant="primary"
             style="margin-left: .5em"
             href="#"
-            @click="handleFileDelete(data.item.name, $event)"
+            @click="handleFileDelete(data.item.name, data.item.document_status, $event)"
           />
         </template>
     </b-table>
@@ -60,10 +60,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <tr>
             <th class="font-weight-normal">Well Number</th>
             <th class="font-weight-normal">Well Label/Type</th>
-            <th class="font-weight-normal">Date</th>
-            <th class="font-weight-normal">File Name</th>
+            <th class="font-weight-normal">Date of Action</th>
+            <th class="font-weight-normal">New File Name</th>
             <th class="font-weight-normal">File</th>
-            <th class="font-weight-normal">Private?</th>
+            <th class="font-weight-normal">Private Document?</th>
             <th></th>
           </tr>
         </thead>
@@ -124,24 +124,22 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 :loaded="getFieldsLoaded(index).file"
               />
             </td>
+            <!-- Privacy Flag  -->
             <td>
               <b-form-checkbox
-                class="mt-2 ml-3 private-box"
-                id="checkbox"
+                class="mt-2 ml-3"
                 v-model="attachment.private"
-                name="checkbox"
-                value="private"
-                unchecked-value="public"
+                :loaded="getFieldsLoaded(index).private"
               />
             </td>
             <td class="pt-1 py-0">
-              <b-btn size="sm" variant="primary" :id="`removeAttachmentRowBtn${index}`" @click="removeRowIfOk(attachment)" class="mt-2 float-right"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
+              <b-btn size="sm" variant="primary" :id="`removeAttachmentRowBtn${index}`" @click="removeRowIfOk(attachment)" class="mt-2 float-right"><i class="fa fa-minus-square-o"></i>&nbsp;Remove</b-btn>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
-    <b-btn size="sm" id="addAttachmentRowBtn" variant="primary" @click="addRow"><i class="fa fa-plus-square-o"></i> Add file</b-btn>
+    <b-btn size="sm" id="addAttachmentRowBtn" variant="primary" @click="addRow"><i class="fa fa-plus-square-o"></i>&nbsp;Add file</b-btn>
       <b-modal
           v-model="confirmRemoveModal"
           centered
@@ -245,7 +243,7 @@ export default {
       }
     },
     computedAttachments () {
-      return JSON.stringify(this.attachmentsData);
+      return this.attachmentsData ? JSON.stringify(this.attachmentsData) : [];
     },
   },
   watch: {
@@ -264,11 +262,8 @@ export default {
             if (newAttachment.file_name) {
               const uploadName = newAttachment.file_name.replace(/^WTN\s\d+_/,'');
               const newFileAdded = new File([newFile], uploadName, { type: newFile.type });
-              this.files[index] = newFileAdded;
+              this.files[index] = { file: newFileAdded, private: this.attachmentsData[index].private };
             }
-
-            // TODO: add prive doc logic
-            this.privateDocument = false;
           });
         }
       },
@@ -289,17 +284,18 @@ export default {
       'setPrivate',
       'removeFile'
     ]),
-    handleFileDelete(value, e) {
+    handleFileDelete(value, doc_status, e) {
       e.preventDefault()
       let tag = this.form.well && isNaN(this.form.well) ? this.form.well.well_tag_number : this.form.well
       let encodedFileName = encodeURIComponent(value)
-
-      //TODO: add private file deletion/logic
-      ApiService.deleteFile(`wells/${tag}/delete_document?filename=${encodedFileName}&private=false}`)
-        .then(() => {
-          console.log('File deleted')
-          this.$emit('fetchFiles')
-        })
+      if(confirm(`Are you sure you want to delete file: \n${value}`)){
+        //TODO: add private file deletion/logic
+        ApiService.deleteFile(`wells/${tag}/delete_document?filename=${encodedFileName}&private=${doc_status}}`)
+          .then(() => {
+            console.log('File deleted')
+            this.$emit('fetchFiles')
+          })
+      }
     },
     setFileName(index) {
       try {
@@ -320,7 +316,6 @@ export default {
       return getLongFormLabel(label);
     },
     addRow () {
-
       this.attachmentsData.push(this.emptyObject())
     },
     emptyObject () {
@@ -352,22 +347,18 @@ export default {
       Vue.set(this.attachmentsData, index, instance)
     },
     getAttachmentError (index) {
-      if (this.errors && 'attachment_set' in this.errors && index in this.errors['attachment_set']) {
-        return this.errors['attachment_set'][index]
-      }
-      return {}
+      return this.errors && 'attachment_set' in this.errors && index in this.errors['attachment_set']
+        ? this.errors['attachment_set'][index]
+        : {}
     },
     getFieldsLoaded (index) {
-      if (this.fieldsLoaded && 'attachment_set' in this.fieldsLoaded && index in this.fieldsLoaded['attachment_set']) {
-        return this.fieldsLoaded['attachment_set'][index]
-      }
-      return {}
+      return this.fieldsLoaded && 'attachment_set' in this.fieldsLoaded && index in this.fieldsLoaded['attachment_set']
+        ? this.fieldsLoaded['attachment_set'][index]
+        : {}
     },
     rowHasValues (row) {
       let keys = Object.keys(row)
-      if (keys.length === 0) return false
-      // Check that all fields are not empty.
-      return !this.attachmentIsEmpty(row)
+      return keys.length === 0 ? false : !this.attachmentIsEmpty(row);
     },
     focusRemoveModal () {
       // Focus the "cancel" button in the confirm remove popup.
@@ -401,10 +392,6 @@ export default {
       &:last-child {
         padding-right: 0;
       }
-    }
-    .private-box {
-      height: 50pt;
-      width: 50pt;
     }
     tr:last-child {
       td {

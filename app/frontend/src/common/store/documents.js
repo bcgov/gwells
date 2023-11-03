@@ -64,8 +64,14 @@ export default {
       return files.reduce((previousPromise, file, i) => {
         return previousPromise.then((results) => {
           // use override file name if it exists
-          const fileName = fileNames[i] || file.name
-
+          let fileName;
+          console.log(file);
+          if(file.file){
+            fileName = file.file.name;
+            isPrivate = file.private;
+          } else {
+            fileName = fileNames[i] || file.name
+          }
           return ApiService.presignedPutUrl(
             documentType,
             recordId,
@@ -95,7 +101,6 @@ export default {
             .catch(error => {
               console.log(error)
               context.commit('addError', error)
-              throw error
             })
         })
       }, Promise.resolve())
