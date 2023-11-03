@@ -25,7 +25,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         </div>
       </b-col>
     </b-row>
-      <b-table
+    <b-table
         hover
         :fields="['well_number', 'well_label', 'date_of_action', 'private', 'file', 'delete']"
         striped
@@ -50,7 +50,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             variant="primary"
             style="margin-left: .5em"
             href="#"
-            @click="handleFileDelete"
+            @click="handleFileDelete(data.item.name, $event)"
           />
         </template>
     </b-table>
@@ -166,7 +166,7 @@ import { mapGetters, mapState, mapMutations } from 'vuex'
 import { omit } from 'lodash'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
-// import ApiService from '@/common/services/ApiService.js'
+import ApiService from '@/common/services/ApiService.js'
 
 import BackToTopLink from '@/common/components/BackToTopLink.vue'
 import { WELL_TAGS } from '@/common/constants.js'
@@ -245,22 +245,30 @@ export default {
       }
     },
     computedAttachments () {
-      return [...this.attachmentsData]
+      return JSON.stringify(this.attachmentsData);
     },
   },
   watch: {
     computedAttachments: {
       deep: true,
       handler: function (newAttachments, oldAttachments) {
-        if (newAttachments[0].file) {
-          newAttachments.forEach((newAttachment, index) => {
+        let jsonNewAttachments = JSON.parse(newAttachments),
+            jsonOldAttachments = JSON.parse(oldAttachments);
+
+        // We have at least one new attachment
+        if (jsonNewAttachments[0].file) {
+          jsonNewAttachments.forEach((newAttachment, index) => {
+
+            // Add the new attachment
             const newFile = newAttachment.file;
             if (newAttachment.file_name) {
               const uploadName = newAttachment.file_name.replace(/^WTN\s\d+_/,'');
-              const modifiedFile = new File([newFile], uploadName, { type: newFile.type });
-              this.files = [modifiedFile];
-              this.privateDocument = false;
+              const newFileAdded = new File([newFile], uploadName, { type: newFile.type });
+              this.files[index] = newFileAdded;
             }
+
+            // TODO: add prive doc logic
+            this.privateDocument = false;
           });
         }
       },
@@ -281,8 +289,17 @@ export default {
       'setPrivate',
       'removeFile'
     ]),
-    handleFileDelete() {
-      alert('Delete Action!');
+    handleFileDelete(value, e) {
+      e.preventDefault()
+      let tag = this.form.well && isNaN(this.form.well) ? this.form.well.well_tag_number : this.form.well
+      let encodedFileName = encodeURIComponent(value)
+
+      //TODO: add private file deletion/logic
+      ApiService.deleteFile(`wells/${tag}/delete_document?filename=${encodedFileName}&private=false}`)
+        .then(() => {
+          console.log('File deleted')
+          this.$emit('fetchFiles')
+        })
     },
     setFileName(index) {
       try {
@@ -359,7 +376,7 @@ export default {
     attachmentIsEmpty (attachment) {
       const fieldsToTest = omit(attachment, 'length_required')
       return Object.values(fieldsToTest).every((x) => !x)
-    }
+    },
   }
 }
 </script>
