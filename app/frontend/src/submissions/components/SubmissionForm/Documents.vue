@@ -27,9 +27,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
     </b-row>
     <b-table
         hover
-        :fields="['well_number', 'well_label', 'date_of_action', 'private', 'file', 'delete']"
+        :fields="['well_number', 'well_label', 'date_of_action', 'document_status', 'uploaded_document', 'delete']"
         striped
-        :items="[...uploadedFiles.public, ...uploadedFiles.private]"
+        :items="files.private ? [...files.public, ...files.private] : files.public"
       >
         <template v-slot:cell(well_label)="data">
           {{ callLongFormLabel(data.item.well_label) }}
@@ -37,11 +37,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <template v-slot:cell(date_of_action)="data">
           {{ data.item.date_of_action !== -1 ? new Date(data.item.date_of_action).toLocaleDateString() : "Date Unknown" }}
         </template>
-        <template v-slot:cell(file)="data">
+        <template v-slot:cell(uploaded_document)="data">
           <a :href="data.item.url" target="_blank">{{ data.item.name }}</a>
         </template>
-        <template v-slot:cell(private)="data">
-          <p v-if="data.item.private">Private Document</p>
+        <template v-slot:cell(document_status)="data">
+          <p v-if="data.item.document_status">Private Document</p>
           <p v-else>Public Document</p>
         </template>
         <template v-slot:cell(delete)="data">

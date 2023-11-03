@@ -27,9 +27,9 @@
       </div>
         <b-table
             hover
-            :fields="['well_number', 'well_label', 'date_of_action', 'private', 'file']"
+            :fields="['well_number', 'well_label', 'date_of_action', 'document_status', 'uploaded_document']"
             striped
-            :items="[...files.public, ...files.private]"
+            :items="files.private ? [...files.public, ...files.private] : files.public"
           >
             <template v-slot:cell(well_label)="data">
               {{ callLongFormLabel(data.item.well_label) }}
@@ -37,11 +37,11 @@
             <template v-slot:cell(date_of_action)="data">
               {{ data.item.date_of_action !== -1 ? new Date(data.item.date_of_action).toLocaleDateString() : "Date Unknown" }}
             </template>
-            <template v-slot:cell(file)="data">
+            <template v-slot:cell(uploaded_document)="data">
               <a :href="data.item.url" target="_blank" @click="handleDownloadEvent(data.item.name)">{{ data.item.name }}</a>
             </template>
-            <template v-slot:cell(private)="data">
-              <p v-if="data.item.private">Private Document</p>
+            <template v-slot:cell(document_status)="data">
+              <p v-if="data.item.document_status">Private Document</p>
               <p v-else>Public Document</p>
             </template>
         </b-table>
@@ -60,7 +60,6 @@
 <script>
 import ApiService from '@/common/services/ApiService.js'
 import { mapActions, mapGetters } from 'vuex'
-import { WELL_TAGS_PRIVATE, WELL_TAGS_PUBLIC } from '../../common/constants.js'
 import getLongFormLabel from '@/common/helpers/getLongFormLabel'
 
 export default {
@@ -77,7 +76,6 @@ export default {
       file: '',
       fileType: '',
       splitFiles: [],
-      WELL_TAGS: [...WELL_TAGS_PUBLIC, ...WELL_TAGS_PRIVATE],
     }
   },
   watch: {
