@@ -29,7 +29,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         hover
         :fields="['well_number', 'well_label', 'date_of_action', 'document_status', 'uploaded_document', 'delete']"
         striped
-        :items="files.private ? [...files.public, ...files.private] : files.public"
+        :items="[...uploadedFiles.public, ...uploadedFiles.private]"
       >
         <template v-slot:cell(well_label)="data">
           {{ callLongFormLabel(data.item.well_label) }}

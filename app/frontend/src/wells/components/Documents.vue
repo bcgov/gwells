@@ -29,7 +29,7 @@
             hover
             :fields="['well_number', 'well_label', 'date_of_action', 'document_status', 'uploaded_document']"
             striped
-            :items="files.private ? [...files.public, ...files.private] : files.public"
+            :items="files.private ? [...files.public, ...files.private] : [...files.public]"
           >
             <template v-slot:cell(well_label)="data">
               {{ callLongFormLabel(data.item.well_label) }}
