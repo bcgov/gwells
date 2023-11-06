@@ -15,22 +15,24 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
       <li
         class="breadcrumb-item"
       >
-        <router-link-stub
+        <a
           class=""
+          href="#"
           target="_self"
         >
           Aquifer Search
-        </router-link-stub>
+        </a>
       </li>
       <li
         class="breadcrumb-item"
       >
-        <router-link-stub
+        <a
           class=""
+          href="#"
           target="_self"
         >
           Aquifer 4 Summary
-        </router-link-stub>
+        </a>
       </li>
       <li
         class="breadcrumb-item active"
@@ -170,12 +172,13 @@ exports[`View Component View mode matches the snapshot 1`] = `
       <li
         class="breadcrumb-item"
       >
-        <router-link-stub
+        <a
           class=""
+          href="#"
           target="_self"
         >
           Aquifer Search
-        </router-link-stub>
+        </a>
       </li>
       <li
         class="breadcrumb-item active"
@@ -792,6 +795,7 @@ exports[`View Component View mode matches the snapshot 1`] = `
                 aria-colcount="2"
                 class="table b-table table-striped"
                 id="licenses"
+                role="table"
               >
                 <!---->
                 <!---->
@@ -801,6 +805,7 @@ exports[`View Component View mode matches the snapshot 1`] = `
                 >
                   <!---->
                   <tr
+                    class=""
                     role="row"
                   >
                     <th
@@ -809,7 +814,9 @@ exports[`View Component View mode matches the snapshot 1`] = `
                       role="columnheader"
                       scope="col"
                     >
-                      Licence Number
+                      <div>
+                        Licence Number
+                      </div>
                     </th>
                     <th
                       aria-colindex="2"
@@ -817,13 +824,13 @@ exports[`View Component View mode matches the snapshot 1`] = `
                       role="columnheader"
                       scope="col"
                     >
-                      Well Tag Numbers In Licence
+                      <div>
+                        Well Tag Numbers In Licence
+                      </div>
                     </th>
                   </tr>
                 </thead>
-                <!---->
                 <tbody
-                  class=""
                   role="rowgroup"
                 >
                   <!---->
@@ -836,31 +843,16 @@ exports[`View Component View mode matches the snapshot 1`] = `
                       class=""
                       role="cell"
                     >
-                      <a
-                        href="https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&PosseObjectDef=o_ATIS_DocumentSearch&PosseMenuName=WS_Main&Criteria_LicenceNumber=501525"
-                        target="_blank"
-                      >
-                        
-                  501525
-                
-                      </a>
+                      501525
                     </td>
                     <td
                       aria-colindex="2"
                       class=""
                       role="cell"
                     >
-                      <ul
-                        class="p-0 m-0"
-                      >
-                        <li>
-                          <router-link-stub
-                            to="[object Object]"
-                          >
-                            117041
-                          </router-link-stub>
-                        </li>
-                      </ul>
+                      [
+  117041
+]
                     </td>
                   </tr>
                   <tr
@@ -872,31 +864,16 @@ exports[`View Component View mode matches the snapshot 1`] = `
                       class=""
                       role="cell"
                     >
-                      <a
-                        href="https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&PosseObjectDef=o_ATIS_DocumentSearch&PosseMenuName=WS_Main&Criteria_LicenceNumber=501526"
-                        target="_blank"
-                      >
-                        
-                  501526
-                
-                      </a>
+                      501526
                     </td>
                     <td
                       aria-colindex="2"
                       class=""
                       role="cell"
                     >
-                      <ul
-                        class="p-0 m-0"
-                      >
-                        <li>
-                          <router-link-stub
-                            to="[object Object]"
-                          >
-                            117043
-                          </router-link-stub>
-                        </li>
-                      </ul>
+                      [
+  117043
+]
                     </td>
                   </tr>
                   <tr
@@ -908,31 +885,16 @@ exports[`View Component View mode matches the snapshot 1`] = `
                       class=""
                       role="cell"
                     >
-                      <a
-                        href="https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&PosseObjectDef=o_ATIS_DocumentSearch&PosseMenuName=WS_Main&Criteria_LicenceNumber=501527"
-                        target="_blank"
-                      >
-                        
-                  501527
-                
-                      </a>
+                      501527
                     </td>
                     <td
                       aria-colindex="2"
                       class=""
                       role="cell"
                     >
-                      <ul
-                        class="p-0 m-0"
-                      >
-                        <li>
-                          <router-link-stub
-                            to="[object Object]"
-                          >
-                            117044
-                          </router-link-stub>
-                        </li>
-                      </ul>
+                      [
+  117044
+]
                     </td>
                   </tr>
                   <tr
@@ -944,36 +906,22 @@ exports[`View Component View mode matches the snapshot 1`] = `
                       class=""
                       role="cell"
                     >
-                      <a
-                        href="https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&PosseObjectDef=o_ATIS_DocumentSearch&PosseMenuName=WS_Main&Criteria_LicenceNumber=501528"
-                        target="_blank"
-                      >
-                        
-                  501528
-                
-                      </a>
+                      501528
                     </td>
                     <td
                       aria-colindex="2"
                       class=""
                       role="cell"
                     >
-                      <ul
-                        class="p-0 m-0"
-                      >
-                        <li>
-                          <router-link-stub
-                            to="[object Object]"
-                          >
-                            117045
-                          </router-link-stub>
-                        </li>
-                      </ul>
+                      [
+  117045
+]
                     </td>
                   </tr>
                   <!---->
                   <!---->
                 </tbody>
+                <!---->
               </table>
                
               <p>

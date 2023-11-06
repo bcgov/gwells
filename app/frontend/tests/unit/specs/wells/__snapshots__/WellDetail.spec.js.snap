@@ -11,11 +11,9 @@ exports[`WellDetail.vue should match snapshot 1`] = `
       footertag="div"
       headertag="div"
       nobody="true"
-      subtitle=""
       subtitletag="h6"
       subtitletextvariant="muted"
       tag="div"
-      title=""
       titletag="h4"
     >
       <b-breadcrumb-stub
@@ -29,11 +27,9 @@ exports[`WellDetail.vue should match snapshot 1`] = `
       class="container p-1"
       footertag="div"
       headertag="div"
-      subtitle=""
       subtitletag="h6"
       subtitletextvariant="muted"
       tag="div"
-      title=""
       titletag="h4"
     >
        
@@ -64,8 +60,6 @@ exports[`WellDetail.vue should match snapshot 1`] = `
             <b-btn-stub
               aria-label="Print"
               class="mb-1"
-              event="click"
-              routertag="a"
               tag="button"
               target="_self"
               type="button"
@@ -842,23 +836,34 @@ exports[`WellDetail.vue should match snapshot 1`] = `
         </legend>
          
         <b-table-stub
-          apiurl=""
           bordered="true"
           currentpage="1"
           emptyfilteredtext="There are no records matching your request"
           emptytext="There has been no activity related to this well."
-          fields="[object Object]"
+          fields="[object Object],[object Object],[object Object],[object Object],[object Object]"
+          filterdebounce="0"
+          filterfunction="function bvConfigurablePropDefault() {
+      var value = getComponentConfig(componentKey, key, prop.default);
+      return isFunction(value) ? value() : value;
+    }"
+          filterignoredfields=""
+          filterincludedfields=""
           id="submissionActivityTable"
           items=""
-          labelsortasc="Click to sort Ascending"
+          labelsortasc="Click to sort ascending"
           labelsortclear="Click to clear sorting"
-          labelsortdesc="Click to sort Descending"
+          labelsortdesc="Click to sort descending"
           perpage="5"
           responsive="true"
-          selectedvariant="primary"
+          selectedvariant="active"
           selectmode="multi"
           showempty="true"
           small="true"
+          sortcompare="function bvConfigurablePropDefault() {
+      var value = getComponentConfig(componentKey, key, prop.default);
+      return isFunction(value) ? value() : value;
+    }"
+          sortcompareoptions="[object Object]"
           sortdirection="asc"
           striped="true"
           value=""
@@ -876,20 +881,31 @@ exports[`WellDetail.vue should match snapshot 1`] = `
         </legend>
          
         <b-table-stub
-          apiurl=""
           bordered="true"
           currentpage="1"
           emptyfilteredtext="There are no records matching your request"
           emptytext="There are no records to show"
-          fields="[object Object]"
+          fields="[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]"
+          filterdebounce="0"
+          filterfunction="function bvConfigurablePropDefault() {
+      var value = getComponentConfig(componentKey, key, prop.default);
+      return isFunction(value) ? value() : value;
+    }"
+          filterignoredfields=""
+          filterincludedfields=""
           id="wellWorkDatesTable"
           items="[object Object]"
-          labelsortasc="Click to sort Ascending"
+          labelsortasc="Click to sort ascending"
           labelsortclear="Click to clear sorting"
-          labelsortdesc="Click to sort Descending"
+          labelsortdesc="Click to sort descending"
           perpage="0"
-          selectedvariant="primary"
+          selectedvariant="active"
           selectmode="multi"
+          sortcompare="function bvConfigurablePropDefault() {
+      var value = getComponentConfig(componentKey, key, prop.default);
+      return isFunction(value) ? value() : value;
+    }"
+          sortcompareoptions="[object Object]"
           sortdirection="asc"
           striped="true"
           value=""
@@ -1131,21 +1147,32 @@ exports[`WellDetail.vue should match snapshot 1`] = `
         </legend>
          
         <b-table-stub
-          apiurl=""
           bordered="true"
           currentpage="1"
           emptyfilteredtext="There are no records matching your request"
           emptytext="There are no records to show"
-          fields="[object Object]"
+          fields="[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]"
+          filterdebounce="0"
+          filterfunction="function bvConfigurablePropDefault() {
+      var value = getComponentConfig(componentKey, key, prop.default);
+      return isFunction(value) ? value() : value;
+    }"
+          filterignoredfields=""
+          filterincludedfields=""
           items=""
-          labelsortasc="Click to sort Ascending"
+          labelsortasc="Click to sort ascending"
           labelsortclear="Click to clear sorting"
-          labelsortdesc="Click to sort Descending"
+          labelsortdesc="Click to sort descending"
           perpage="0"
-          selectedvariant="primary"
+          selectedvariant="active"
           selectmode="multi"
           showempty="true"
           small="true"
+          sortcompare="function bvConfigurablePropDefault() {
+      var value = getComponentConfig(componentKey, key, prop.default);
+      return isFunction(value) ? value() : value;
+    }"
+          sortcompareoptions="[object Object]"
           sortdirection="asc"
           striped="true"
           value=""
@@ -1164,21 +1191,32 @@ exports[`WellDetail.vue should match snapshot 1`] = `
           class="table-responsive"
         >
           <b-table-stub
-            apiurl=""
             bordered="true"
             currentpage="1"
             emptyfilteredtext="There are no records matching your request"
             emptytext="There are no records to show"
             fields="from,to,casing_type,casing_material,diameter,wall_thickness,drive_shoe"
+            filterdebounce="0"
+            filterfunction="function bvConfigurablePropDefault() {
+      var value = getComponentConfig(componentKey, key, prop.default);
+      return isFunction(value) ? value() : value;
+    }"
+            filterignoredfields=""
+            filterincludedfields=""
             items=""
-            labelsortasc="Click to sort Ascending"
+            labelsortasc="Click to sort ascending"
             labelsortclear="Click to clear sorting"
-            labelsortdesc="Click to sort Descending"
+            labelsortdesc="Click to sort descending"
             perpage="0"
-            selectedvariant="primary"
+            selectedvariant="active"
             selectmode="multi"
             showempty="true"
             small="true"
+            sortcompare="function bvConfigurablePropDefault() {
+      var value = getComponentConfig(componentKey, key, prop.default);
+      return isFunction(value) ? value() : value;
+    }"
+            sortcompareoptions="[object Object]"
             sortdirection="asc"
             striped="true"
             value=""
@@ -1395,21 +1433,32 @@ exports[`WellDetail.vue should match snapshot 1`] = `
             </div>
              
             <b-table-stub
-              apiurl=""
               bordered="true"
               currentpage="1"
               emptyfilteredtext="There are no records matching your request"
               emptytext="There are no records to show"
               fields="from,to"
+              filterdebounce="0"
+              filterfunction="function bvConfigurablePropDefault() {
+      var value = getComponentConfig(componentKey, key, prop.default);
+      return isFunction(value) ? value() : value;
+    }"
+              filterignoredfields=""
+              filterincludedfields=""
               items=""
-              labelsortasc="Click to sort Ascending"
+              labelsortasc="Click to sort ascending"
               labelsortclear="Click to clear sorting"
-              labelsortdesc="Click to sort Descending"
+              labelsortdesc="Click to sort descending"
               perpage="0"
-              selectedvariant="primary"
+              selectedvariant="active"
               selectmode="multi"
               showempty="true"
               small="true"
+              sortcompare="function bvConfigurablePropDefault() {
+      var value = getComponentConfig(componentKey, key, prop.default);
+      return isFunction(value) ? value() : value;
+    }"
+              sortcompareoptions="[object Object]"
               sortdirection="asc"
               striped="true"
               value=""
@@ -1532,21 +1581,32 @@ exports[`WellDetail.vue should match snapshot 1`] = `
             </div>
              
             <b-table-stub
-              apiurl=""
               bordered="true"
               currentpage="1"
               emptyfilteredtext="There are no records matching your request"
               emptytext="There are no records to show"
               fields="from,to,diameter,assembly_type,slot_size"
+              filterdebounce="0"
+              filterfunction="function bvConfigurablePropDefault() {
+      var value = getComponentConfig(componentKey, key, prop.default);
+      return isFunction(value) ? value() : value;
+    }"
+              filterignoredfields=""
+              filterincludedfields=""
               items=""
-              labelsortasc="Click to sort Ascending"
+              labelsortasc="Click to sort ascending"
               labelsortclear="Click to clear sorting"
-              labelsortdesc="Click to sort Descending"
+              labelsortdesc="Click to sort descending"
               perpage="0"
-              selectedvariant="primary"
+              selectedvariant="active"
               selectmode="multi"
               showempty="true"
               small="true"
+              sortcompare="function bvConfigurablePropDefault() {
+      var value = getComponentConfig(componentKey, key, prop.default);
+      return isFunction(value) ? value() : value;
+    }"
+              sortcompareoptions="[object Object]"
               sortdirection="asc"
               striped="true"
               value=""
@@ -1804,21 +1864,32 @@ exports[`WellDetail.vue should match snapshot 1`] = `
           class="table-responsive"
         >
           <b-table-stub
-            apiurl=""
             bordered="true"
             currentpage="1"
             emptyfilteredtext="There are no records matching your request"
             emptytext="There are no records to show"
             fields="start_date_pumping_test,pumping_test_description,[object Object],boundary_effect,storativity,[object Object],[object Object],specific_yield,[object Object],analysis_method,comments"
+            filterdebounce="0"
+            filterfunction="function bvConfigurablePropDefault() {
+      var value = getComponentConfig(componentKey, key, prop.default);
+      return isFunction(value) ? value() : value;
+    }"
+            filterignoredfields=""
+            filterincludedfields=""
             items=""
-            labelsortasc="Click to sort Ascending"
+            labelsortasc="Click to sort ascending"
             labelsortclear="Click to clear sorting"
-            labelsortdesc="Click to sort Descending"
+            labelsortdesc="Click to sort descending"
             perpage="0"
-            selectedvariant="primary"
+            selectedvariant="active"
             selectmode="multi"
             showempty="true"
             small="true"
+            sortcompare="function bvConfigurablePropDefault() {
+      var value = getComponentConfig(componentKey, key, prop.default);
+      return isFunction(value) ? value() : value;
+    }"
+            sortcompareoptions="[object Object]"
             sortdirection="asc"
             striped="true"
             value=""
