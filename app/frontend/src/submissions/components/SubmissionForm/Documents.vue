@@ -297,6 +297,10 @@ export default {
           })
       }
     },
+    /**
+     * @desc Updated the filename of an upload object if the user has filled in all the fields
+     * @param {number} index of the item being modified
+     */
     setFileName(index) {
       try {
         let file_name = null
@@ -315,9 +319,15 @@ export default {
     callLongFormLabel(label){
       return getLongFormLabel(label);
     },
+    /**
+     * @desc Add new entry to the users list of uploaded files
+     */
     addRow () {
       this.attachmentsData.push(this.emptyObject())
     },
+    /**
+     * @desc Object factory for uploaded files
+     */
     emptyObject () {
       return {
         well_tag_number: null,
@@ -328,6 +338,10 @@ export default {
         private: false,
       }
     },
+    /**
+     * @desc remove an uploaded file entry from the attachmentsData array
+     * @param {number} index of the row to remove
+     */
     removeRowByIndex (index) {
       this.attachmentsData.splice(index, 1)
       this.rowIndexToRemove = null
