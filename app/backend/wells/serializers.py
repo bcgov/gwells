@@ -35,8 +35,7 @@ from wells.models import (
     LithologyDescription,
     Screen,
     Well,
-    AquiferParameters,
-    DocumentLabelCode
+    AquiferParameters
 )
 from submissions.models import WellActivityCode
 
@@ -1192,11 +1191,3 @@ class WellLithologySerializer(serializers.ModelSerializer):
                 "longitude",
                 "lithologydescription_set"
             )
-
-class DocumentLabelCodeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = DocumentLabelCode
-        fields = (
-            'code',
-            'description',
-        )

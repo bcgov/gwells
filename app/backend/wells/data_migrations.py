@@ -377,25 +377,3 @@ def update_update_user_fields(apps, schema_editor):
                 model.objects.filter(update_user__isnull=True).update(update_user=F('create_user'))
             except AttributeError:
                 logger.error("skipping")
-
-def document_label_codes():
-    """
-    Generator that deserializes and provides document label codes.
-    """
-    path = os.path.dirname(os.path.realpath(__file__))
-    with open(os.path.join(path, 'migrations/document_label_codes.json'), 'r') as json_data:
-        data = json.load(json_data)
-        for item in data:
-            yield item
-
-
-def load_document_label_codes(apps, schema_editor):
-    DocumentLabelCode = apps.get_model('wells', 'DocumentLabelCode')
-    for item in document_label_codes():
-        DocumentLabelCode.objects.create(**item)
-
-
-def unload_document_label_codes(apps, schema_editor):
-    DocumentLabelCode = apps.get_model('wells', 'DocumentLabelCode')
-    for item in document_label_codes():
-        DocumentLabelCode.objects.get(code=item.get('code')).delete()
