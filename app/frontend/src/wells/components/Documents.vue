@@ -38,7 +38,7 @@
               {{ data.item.date_of_action !== -1 ? new Date(data.item.date_of_action).toLocaleDateString() : "Date Unknown" }}
             </template>
             <template v-slot:cell(uploaded_document)="data">
-              <a :href="data.item.url" target="_blank" @click="handleDownloadEvent(data.item.name)">{{ data.item.name }}</a>
+              <a :href="data.item.url" :download="data.item.name" target="_blank" @click="handleDownloadEvent(data.item.name)">{{ data.item.name }}</a>
             </template>
             <template v-slot:cell(document_status)="data">
               <p v-if="data.item.document_status">Private Document</p>

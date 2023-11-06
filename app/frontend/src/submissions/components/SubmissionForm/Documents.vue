@@ -25,36 +25,37 @@ Licensed under the Apache License, Version 2.0 (the "License");
         </div>
       </b-col>
     </b-row>
-    <b-table
-        hover
-        :fields="['well_number', 'well_label', 'date_of_action', 'document_status', 'uploaded_document', 'delete']"
-        striped
-        :items="[...uploadedFiles.public, ...uploadedFiles.private]"
-      >
-        <template v-slot:cell(well_label)="data">
-          {{ callLongFormLabel(data.item.well_label) }}
-        </template>
-        <template v-slot:cell(date_of_action)="data">
-          {{ data.item.date_of_action !== -1 ? new Date(data.item.date_of_action).toLocaleDateString() : "Date Unknown" }}
-        </template>
-        <template v-slot:cell(uploaded_document)="data">
-          <a :href="data.item.url" target="_blank">{{ data.item.name }}</a>
-        </template>
-        <template v-slot:cell(document_status)="data">
-          <p v-if="data.item.document_status">Private Document</p>
-          <p v-else>Public Document</p>
-        </template>
-        <template v-slot:cell(delete)="data">
-          <a
-            class="fa fa-trash fa-lg"
-            variant="primary"
-            style="margin-left: .5em"
-            href="#"
-            @click="handleFileDelete(data.item.name, data.item.document_status, $event)"
-          />
-        </template>
-    </b-table>
-    <div class="table-responsive" id="attachmentsTable">
+    <div v-if="uploadedFiles && uploadedFiles.private && uploadedFiles.public" class="table-responsive">
+      <b-table
+          hover
+          :fields="['well_number', 'well_label', 'date_of_action', 'document_status', 'uploaded_document', 'delete']"
+          striped
+          :items="[...uploadedFiles.public, ...uploadedFiles.private]"
+        >
+          <template v-slot:cell(well_label)="data">
+            {{ callLongFormLabel(data.item.well_label) }}
+          </template>
+          <template v-slot:cell(date_of_action)="data">
+            {{ data.item.date_of_action !== -1 ? new Date(data.item.date_of_action).toLocaleDateString() : "Date Unknown" }}
+          </template>
+          <template v-slot:cell(uploaded_document)="data">
+            <a :href="data.item.url" :download="data.item.name" target="_blank">{{ data.item.name }}</a>
+          </template>
+          <template v-slot:cell(document_status)="data">
+            <p v-if="data.item.document_status">Private Document</p>
+            <p v-else>Public Document</p>
+          </template>
+          <template v-slot:cell(delete)="data">
+            <a
+              class="fa fa-trash fa-lg"
+              variant="primary"
+              style="margin-left: .5em"
+              href="#"
+              @click="handleFileDelete(data.item.name, data.item.document_status, $event)"></a>
+          </template>
+      </b-table>
+    </div>
+    <div class="table-responsive" id="attachmentsTable" v-if="attachmentsData">
       <table class="table table-sm" aria-describedby="attachmentsDetails">
         <thead>
           <tr>
@@ -203,7 +204,8 @@ export default {
     },
     uploadedFiles: {
       type: Object,
-      isInput: false
+      isInput: false,
+      default: {},
     },
     showDocuments: {
       type: Boolean,
@@ -287,7 +289,7 @@ export default {
       let tag = this.form.well && isNaN(this.form.well) ? this.form.well.well_tag_number : this.form.well
       let encodedFileName = encodeURIComponent(value)
       if(confirm(`Are you sure you want to delete file: \n${value}`)){
-        ApiService.deleteFile(`wells/${tag}/delete_document?filename=${encodedFileName}&private=${doc_status}}`)
+        ApiService.deleteFile(`wells/${tag}/delete_document?filename=${encodedFileName}&private=${doc_status}`)
           .then(() => {
             console.log('File deleted')
             this.$emit('fetchFiles')
