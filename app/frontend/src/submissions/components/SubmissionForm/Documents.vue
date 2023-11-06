@@ -243,14 +243,14 @@ export default {
       }
     },
     computedAttachments () {
-      return this.attachmentsData ? JSON.stringify(this.attachmentsData) : JSON.stringify([]);
+      return this.attachmentsData || [];
     },
   },
   watch: {
     computedAttachments: {
       deep: true,
       handler: function (newAttachments, oldAttachments) {
-        let jsonNewAttachments = JSON.parse(newAttachments);
+        let jsonNewAttachments = newAttachments;
         // We have at least one new attachment
         if (jsonNewAttachments[0].file) {
           jsonNewAttachments.forEach((newAttachment, index) => {

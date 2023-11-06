@@ -65,10 +65,10 @@ export default {
         return previousPromise.then((results) => {
           // use override file name if it exists
           let fileName;
-          console.log(file);
           if(file.file){
             fileName = file.file.name;
             isPrivate = file.private;
+            file = file.file;
           } else {
             fileName = fileNames[i] || file.name
           }
