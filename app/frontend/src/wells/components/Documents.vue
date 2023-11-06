@@ -130,9 +130,6 @@ export default {
         })
       }
     },
-    displayFileFormat() {
-      const arr = [];
-    },
     callLongFormLabel(shortFormLabel) {
       return getLongFormLabel(shortFormLabel);
     },

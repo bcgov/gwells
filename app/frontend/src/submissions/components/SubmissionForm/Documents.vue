@@ -243,16 +243,14 @@ export default {
       }
     },
     computedAttachments () {
-      return this.attachmentsData ? JSON.stringify(this.attachmentsData) : [];
+      return this.attachmentsData ? JSON.stringify(this.attachmentsData) : JSON.stringify([]);
     },
   },
   watch: {
     computedAttachments: {
       deep: true,
       handler: function (newAttachments, oldAttachments) {
-        let jsonNewAttachments = JSON.parse(newAttachments),
-            jsonOldAttachments = JSON.parse(oldAttachments);
-
+        let jsonNewAttachments = JSON.parse(newAttachments);
         // We have at least one new attachment
         if (jsonNewAttachments[0].file) {
           jsonNewAttachments.forEach((newAttachment, index) => {
@@ -289,7 +287,6 @@ export default {
       let tag = this.form.well && isNaN(this.form.well) ? this.form.well.well_tag_number : this.form.well
       let encodedFileName = encodeURIComponent(value)
       if(confirm(`Are you sure you want to delete file: \n${value}`)){
-        //TODO: add private file deletion/logic
         ApiService.deleteFile(`wells/${tag}/delete_document?filename=${encodedFileName}&private=${doc_status}}`)
           .then(() => {
             console.log('File deleted')
