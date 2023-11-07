@@ -28,15 +28,15 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <div v-if="uploadedFiles && uploadedFiles.private && uploadedFiles.public" class="table-responsive">
       <b-table
           hover
-          :fields="['well_number', 'well_label', 'date_of_action', 'document_status', 'uploaded_document', 'delete']"
+          :fields="['well_number', 'document_type', 'date_of_upload', 'document_status', 'uploaded_document', 'delete']"
           striped
           :items="[...uploadedFiles.public, ...uploadedFiles.private]"
         >
-          <template v-slot:cell(well_label)="data">
-            {{ callLongFormLabel(data.item.well_label) }}
+          <template v-slot:cell(document_type)="data">
+            {{ callLongFormLabel(data.item.document_type) }}
           </template>
-          <template v-slot:cell(date_of_action)="data">
-            {{ data.item.date_of_action !== -1 ? new Date(data.item.date_of_action).toLocaleDateString() : "Date Unknown" }}
+          <template v-slot:cell(date_of_upload)="data">
+            {{ data.item.date_of_upload !== -1 ? new Date(data.item.date_of_upload).toLocaleDateString() : "Date Unknown" }}
           </template>
           <template v-slot:cell(uploaded_document)="data">
             <a :href="data.item.url" :download="data.item.name" target="_blank">{{ data.item.name }}</a>
@@ -55,16 +55,19 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </template>
       </b-table>
     </div>
+    <div v-else>
+      No documents available
+    </div>
     <div class="table-responsive" id="attachmentsTable" v-if="attachmentsData">
       <table class="table table-sm" aria-describedby="attachmentsDetails">
         <thead>
           <tr>
             <th class="font-weight-normal">Well Number</th>
-            <th class="font-weight-normal">Well Label/Type</th>
-            <th class="font-weight-normal">Date of Action</th>
-            <th class="font-weight-normal">New File Name</th>
+            <th class="font-weight-normal">Document Type</th>
             <th class="font-weight-normal">File</th>
             <th class="font-weight-normal">Private Document?</th>
+            <th class="font-weight-normal">New File Name</th>
+            <th class="font-weight-normal">Date of Upload</th>
             <th></th>
           </tr>
         </thead>
@@ -74,33 +77,43 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 {{ attachment.well_tag_number = wellTagNumber }}
             </td>
             <td>
-              <!-- Label Selector -->
+              <!-- Document Selector -->
               <b-form-group
                 :id="'attachmentLabel_' + index"
                 class="mt-1 mb-0"
                 :aria-describedby="`attachmentLabelInvalidFeedback${index}`">
                 <b-form-select
                     @change="setFileName(index)"
-                    v-model="attachment.document_label_code"
+                    v-model="attachment.document_code"
                     :options="WELL_TAGS"
-                    :state="getAttachmentError(index).document_label_code ? false : null"
+                    :state="getAttachmentError(index).document_code ? false : null"
                     size="med"   
                 >    
                 </b-form-select>
                 <b-form-invalid-feedback :id="`attachmentCodeInvalidFeedback${index}`">
-                  <div v-for="(error, error_index) in getAttachmentError(index).document_label_code" :key="`Label input error ${error_index}`">
+                  <div v-for="(error, error_index) in getAttachmentError(index).document_code" :key="`Document Type input error ${error_index}`">
                     {{ error }}
                   </div>
                 </b-form-invalid-feedback>
               </b-form-group>
             </td>
-            <!-- Date -->
-            <td class="p-2">
-              <b-form-datepicker
+            <td>
+              <!-- File Upload -->
+              <b-form-file
                 @input="setFileName(index)"
-                v-model="attachment.upload_date"
-                value-as-date
-                autoclose
+                accept=".jpg, .png, .jpeg, .pdf, .docx, .csv"
+                class="mt-1 mb-0"
+                v-model="attachment.file"
+                :errors="getAttachmentError(index).file"
+                :loaded="getFieldsLoaded(index).file"
+              />
+            </td>
+           <!-- Privacy Flag  -->
+           <td>
+              <b-form-checkbox
+                class="mt-2 ml-3"
+                v-model="attachment.private"
+                :loaded="getFieldsLoaded(index).private"
               />
             </td>
             <td>
@@ -114,24 +127,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 disabled
               />
             </td>
-            <td>
-              <!-- File Upload -->
-              <b-form-file
-                @input="setFileName(index)"
-                accept=".jpg, .png, .jpeg, .pdf, .docx, .csv"
-                class="mt-1 mb-0"
-                v-model="attachment.file"
-                :errors="getAttachmentError(index).file"
-                :loaded="getFieldsLoaded(index).file"
-              />
-            </td>
-            <!-- Privacy Flag  -->
-            <td>
-              <b-form-checkbox
-                class="mt-2 ml-3"
-                v-model="attachment.private"
-                :loaded="getFieldsLoaded(index).private"
-              />
+            <!-- Date -->
+            <td class="p-2">
+              {{ new Date().toLocaleDateString() }}
             </td>
             <td class="pt-1 py-0">
               <b-btn size="sm" variant="primary" :id="`removeAttachmentRowBtn${index}`" @click="removeRowIfOk(attachment)" class="mt-2 float-right"><i class="fa fa-minus-square-o"></i>&nbsp;Remove</b-btn>
@@ -304,10 +302,10 @@ export default {
         let file_name = null
         let WTN = this.wellTagNumber ? `WTN ${this.wellTagNumber}_` : ''
         let entry = this.attachmentsData[index];
-        if (entry.document_label_code &&
+        if (entry.document_code &&
             entry.upload_date &&
             entry.file){
-          file_name =  `${WTN}${entry.document_label_code}_${(entry.upload_date.getTime() + Math.floor(Math.random() * 999999))}.${entry.file.name.split('.')[1]}`;
+          file_name =  `${WTN}${entry.document_code}_${entry.upload_date}.${entry.file.name.split('.')[1]}`;
         }
         this.attachmentsData[index].file_name = file_name;
         if(this.attachmentsData[index].file_name !== null){ this.$emit('setFormValueChanged'); }
@@ -330,8 +328,8 @@ export default {
     emptyObject () {
       return {
         well_tag_number: null,
-        document_label_code: null,
-        upload_date: null,
+        document_code: null,
+        upload_date: Date.now(),
         file_name: null,
         file: null,
         private: false,
