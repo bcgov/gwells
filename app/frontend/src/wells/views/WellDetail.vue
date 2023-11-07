@@ -557,32 +557,32 @@ export default {
   data () {
     return {
       surveys: [],
-      lithology_fields: {
-        start: { label: 'From (ft bgl)' },
-        end: { label: 'To (ft bgl)' },
-        lithology_raw_data: { label: 'Raw Data' },
-        lithology_description: { label: 'Description' },
-        lithology_moisture: { label: 'Moisture' },
-        lithology_colour: { label: 'Colour' },
-        lithology_hardness: { label: 'Hardness' },
-        lithology_observation: { label: 'Observations' },
-        water_bearing_estimated_flow: { label: 'Water Bearing Flow Estimate (USGPM)' }
-      },
-      activity_fields: {
-        well_activity_description: { label: 'Activity', sortable: true },
-        work_start_date: { label: 'Work Start Date', sortable: true },
-        work_end_date: { label: 'Work End Date', sortable: true },
-        drilling_company: { label: 'Drilling Company', sortable: true },
-        create_date: { label: 'Date Entered', sortable: true }
-      },
-      work_date_fields: {
-        construction_start_date: { label: 'Start Date of Construction', class: 'text-center' },
-        construction_end_date: { label: 'End Date of Construction', class: 'text-center' },
-        alteration_start_date: { label: 'Start Date of Alteration', class: 'text-center' },
-        alteration_end_date: { label: 'End Date of Alteration', class: 'text-center' },
-        decommission_start_date: { label: 'Start Date of Decommission', class: 'text-center' },
-        decommission_end_date: { label: 'End Date of Decommission', class: 'text-center' }
-      },
+      lithology_fields: [
+        { key: 'start', label: 'From (ft bgl)' },
+        { key: 'end', label: 'To (ft bgl)' },
+        { key: 'lithology_raw_data', label: 'Raw Data' },
+        { key: 'lithology_description', label: 'Description' },
+        { key: 'lithology_moisture', label: 'Moisture' },
+        { key: 'lithology_colour', label: 'Colour' },
+        { key: 'lithology_hardness', label: 'Hardness' },
+        { key: 'lithology_observation', label: 'Observations' },
+        { key: 'water_bearing_estimated_flow', label: 'Water Bearing Flow Estimate (USGPM)' }
+      ],
+      activity_fields: [
+        { key: 'well_activity_description', label: 'Activity', sortable: true },
+        { key: 'work_start_date', label: 'Work Start Date', sortable: true },
+        { key: 'work_end_date', label: 'Work End Date', sortable: true },
+        { key: 'drilling_company', label: 'Drilling Company', sortable: true },
+        { key: 'create_date', label: 'Date Entered', sortable: true }
+      ],
+      work_date_fields: [
+        { key: 'construction_start_date', label: 'Start Date of Construction', class: 'text-center' },
+        { key: 'construction_end_date', label: 'End Date of Construction', class: 'text-center' },
+        { key: 'alteration_start_date', label: 'Start Date of Alteration', class: 'text-center' },
+        { key: 'alteration_end_date', label: 'End Date of Alteration', class: 'text-center' },
+        { key: 'decommission_start_date', label: 'Start Date of Decommission', class: 'text-center' },
+        { key: 'decommission_end_date', label: 'End Date of Decommission', class: 'text-center' }
+      ],
       submissionsPerPage: 5,
       submissionsPage: 1,
       loading: false,

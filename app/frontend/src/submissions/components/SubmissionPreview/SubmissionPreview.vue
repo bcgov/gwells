@@ -484,9 +484,18 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <fieldset v-if="upload_files && upload_files.length > 0">
       <legend>Documents to Upload</legend>
       <b-row>
-        <b-col cols="12" lg="4">
+        <b-col cols="12" lg="8">
           <b-list-group>
-            <b-list-group-item v-for="(f, index) in upload_files" :key="index">{{f.name}}</b-list-group-item>
+            <b-list-group-item v-for="(f, index) in upload_files" :key="index">
+              {{f.file ? f.file.name.replace('null', '{ASSIGNED_WELL_ID}') : f.name}}
+              <a
+                class="fa fa-trash fa-lg"
+                variant="primary"
+                style="margin-left: 0.5em"
+                href="#"
+                @click="handleDelete(index)"
+              ></a>
+            </b-list-group-item>
           </b-list-group>
         </b-col>
       </b-row>
@@ -584,7 +593,10 @@ export default {
   methods: {
     fetchFiles () {
       this.$emit('fetchFiles')
-    }
+    },
+    handleDelete (index) {
+      this.upload_files.splice(index, 1);
+    },
   },
   created () {
     this.fetchFiles()

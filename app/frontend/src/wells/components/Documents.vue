@@ -25,28 +25,26 @@
       <div v-if="error">
         {{error}}
       </div>
-      <ul v-else-if="files && files.public && files.public.length">
-        <li v-for="(file, index) in files.public" :key="index">
-          <a :href="file.url" :download="file.name" target="_blank" @click="handleDownloadEvent(file.name)">{{file.name}}</a>
-        </li>
-      </ul>
-      <div v-else>
-        No additional documentation available for this well.
-      </div>
-      <div class="internal-documents mt-5" v-if="userRoles.wells.view">
-        <h5>Internal documentation - authorized access only</h5>
-        <div v-if="error">
-          {{error}}
-        </div>
-        <ul v-else-if="files && files.private && files.private.length">
-          <li v-for="(file, index) in files.private" :key="index">
-            <a :href="file.url" :download="file.name" target="_blank" @click="handleDownloadEvent(file.name)">{{file.name}}</a>
-          </li>
-        </ul>
-        <div v-else>
-          No additional private documentation available for this well.
-        </div>
-      </div>
+        <b-table
+            hover
+            :fields="['well_number', 'well_label', 'date_of_action', 'document_status', 'uploaded_document']"
+            striped
+            :items="files.private ? [...files.public, ...files.private] : [...files.public]"
+          >
+            <template v-slot:cell(well_label)="data">
+              {{ callLongFormLabel(data.item.well_label) }}
+            </template>
+            <template v-slot:cell(date_of_action)="data">
+              {{ data.item.date_of_action !== -1 ? new Date(data.item.date_of_action).toLocaleDateString() : "Date Unknown" }}
+            </template>
+            <template v-slot:cell(uploaded_document)="data">
+              <a :href="data.item.url" :download="data.item.name" target="_blank" @click="handleDownloadEvent(data.item.name)">{{ data.item.name }}</a>
+            </template>
+            <template v-slot:cell(document_status)="data">
+              <p v-if="data.item.document_status">Private Document</p>
+              <p v-else>Public Document</p>
+            </template>
+        </b-table>
     </div>
     <b-modal
       ok-variant="primary"
@@ -54,7 +52,7 @@
       v-on:ok="deleteFile"
       ref="deleteModal" >
       <p>Are you sure you would like to delete this file?</p>
-      <p>{{file}}</p>
+      <p>{{ file }}</p>
     </b-modal>
   </div>
 </template>
@@ -62,6 +60,8 @@
 <script>
 import ApiService from '@/common/services/ApiService.js'
 import { mapActions, mapGetters } from 'vuex'
+import getLongFormLabel from '@/common/helpers/getLongFormLabel'
+
 export default {
   props: {
     well: {
@@ -74,7 +74,8 @@ export default {
       files: null,
       error: null,
       file: '',
-      fileType: ''
+      fileType: '',
+      splitFiles: [],
     }
   },
   watch: {
@@ -129,6 +130,9 @@ export default {
         })
       }
     },
+    callLongFormLabel(shortFormLabel) {
+      return getLongFormLabel(shortFormLabel);
+    },
     showModal () {
       this.$refs.deleteModal.show()
     },
@@ -142,11 +146,8 @@ export default {
       this.showModal()
     },
     deleteFile () {
-      this.hideModal()
-      let isPrivate = false
-      if (this.fileType === 'private') {
-        isPrivate = true
-      }
+      
+      const isPrivate = this.fileType === 'private'
 
       ApiService.deleteFile(`wells/${this.wellTag}/delete_document?filename=${this.file}&private=${isPrivate}`)
         .then(() => {
@@ -160,5 +161,5 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 </style>

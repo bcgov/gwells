@@ -486,7 +486,7 @@ class SubmissionsOptions(APIView):
             instance=LithologyDescriptionCode.objects.all(), many=True)
         licenced_status_codes = LicencedStatusCodeSerializer(
             instance=LicencedStatusCode.objects.all(), many=True)
-
+        
         root = urljoin('/', app_root, 'api/v2/')
         for item in activity_codes.data:
             if item['code'] not in ('LEGACY'):

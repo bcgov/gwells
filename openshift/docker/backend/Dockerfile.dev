@@ -1,0 +1,6 @@
+FROM artifacts.developer.gov.bc.ca/g26e-backend-docker-local/gwells-backend:1.0 AS base
+
+FROM base
+WORKDIR /app
+
+COPY . .
