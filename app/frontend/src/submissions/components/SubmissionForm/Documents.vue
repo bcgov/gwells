@@ -303,11 +303,12 @@ export default {
     setFileName(index) {
       try {
         let file_name = null
+        let WTN = this.wellTagNumber ? `WTN ${this.wellTagNumber}_` : ''
         let entry = this.attachmentsData[index];
         if (entry.document_label_code &&
             entry.upload_date &&
             entry.file){
-          file_name =  `WTN ${entry.well_tag_number}_${entry.document_label_code}_${(entry.upload_date.getTime() + Math.floor(Math.random() * 999999))}.${entry.file.name.split('.')[1]}`;
+          file_name =  `${WTN}${entry.document_label_code}_${(entry.upload_date.getTime() + Math.floor(Math.random() * 999999))}.${entry.file.name.split('.')[1]}`;
         }
         this.attachmentsData[index].file_name = file_name;
         if(this.attachmentsData[index].file_name !== null){ this.$emit('setFormValueChanged'); }
