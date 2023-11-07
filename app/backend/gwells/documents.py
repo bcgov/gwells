@@ -125,8 +125,8 @@ class MinioClient():
                     # split on last occurrence of '/' and return last item (supports any or no prefixes)
                     'name': unquote_plus(document.object_name).rsplit('/', 1)[-1],
                     "well_number": self.extract_well_number(document.object_name),
-                    "date_of_action": self.extract_date_of_action(document.object_name),
-                    "well_label": self.extract_well_label(document.object_name),
+                    "date_of_upload": self.extract_date_of_action(document.object_name),
+                    "document_type": self.extract_well_label(document.object_name),
                     "document_status": private
                 }, objects)
         )

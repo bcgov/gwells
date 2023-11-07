@@ -27,15 +27,15 @@
       </div>
         <b-table
             hover
-            :fields="['well_number', 'well_label', 'date_of_action', 'document_status', 'uploaded_document']"
+            :fields="['well_number', 'document_type', 'date_of_upload', 'document_status', 'uploaded_document']"
             striped
             :items="files.private ? [...files.public, ...files.private] : [...files.public]"
           >
-            <template v-slot:cell(well_label)="data">
-              {{ callLongFormLabel(data.item.well_label) }}
+            <template v-slot:cell(document_type)="data">
+              {{ callLongFormLabel(data.item.document_type) }}
             </template>
-            <template v-slot:cell(date_of_action)="data">
-              {{ data.item.date_of_action !== -1 ? new Date(data.item.date_of_action).toLocaleDateString() : "Date Unknown" }}
+            <template v-slot:cell(date_of_upload)="data">
+              {{ data.item.date_of_action !== -1 ? new Date(data.item.date_of_upload).toLocaleDateString() : "Date Unknown" }}
             </template>
             <template v-slot:cell(uploaded_document)="data">
               <a :href="data.item.url" :download="data.item.name" target="_blank" @click="handleDownloadEvent(data.item.name)">{{ data.item.name }}</a>
