@@ -291,7 +291,6 @@ export default {
       if(confirm(`Are you sure you want to delete file: \n${value}`)){
         ApiService.deleteFile(`wells/${tag}/delete_document?filename=${encodedFileName}&private=${doc_status}`)
           .then(() => {
-            console.log('File deleted')
             this.$emit('fetchFiles')
           })
       }
