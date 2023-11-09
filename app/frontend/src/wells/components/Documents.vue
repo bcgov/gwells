@@ -35,7 +35,7 @@
               {{ callLongFormLabel(data.item.document_type) }}
             </template>
             <template v-slot:cell(date_of_upload)="data">
-              {{ data.item.date_of_action !== -1 ? new Date(data.item.date_of_upload).toLocaleDateString() : "Date Unknown" }}
+              {{ data.item.date_of_upload !== -1 ? new Date(data.item.date_of_upload).toLocaleDateString() : "Date Unknown" }}
             </template>
             <template v-slot:cell(uploaded_document)="data">
               <a :href="data.item.url" :download="data.item.name" target="_blank" @click="handleDownloadEvent(data.item.name)">{{ data.item.name }}</a>

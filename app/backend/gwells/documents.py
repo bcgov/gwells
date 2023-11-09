@@ -125,7 +125,7 @@ class MinioClient():
                     # split on last occurrence of '/' and return last item (supports any or no prefixes)
                     'name': unquote_plus(document.object_name).rsplit('/', 1)[-1],
                     "well_number": self.extract_well_number(document.object_name),
-                    "date_of_upload": self.extract_date_of_action(document.object_name),
+                    "date_of_upload": self.extract_date_of_upload(document.object_name),
                     "document_type": self.extract_well_label(document.object_name),
                     "document_status": private
                 }, objects)
@@ -138,7 +138,7 @@ class MinioClient():
         except IndexError:
             return "Unknown"
 
-    def extract_date_of_action(self, object_name):
+    def extract_date_of_upload(self, object_name):
         try:
             return int(unquote_plus(object_name).rsplit('/', 1)[-1].split("_")[2].split(".")[0].strip())
         except IndexError:
