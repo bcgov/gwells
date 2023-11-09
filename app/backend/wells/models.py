@@ -44,7 +44,6 @@ WELL_STATUS_CODE_DECOMMISSION = 'CLOSURE'
 WELL_STATUS_CODE_ALTERATION = 'ALTERATION'
 WELL_STATUS_CODE_OTHER = 'OTHER'
 
-
 class DecommissionMethodCode(CodeTableModel):
     decommission_method_code = models.CharField(primary_key=True, max_length=10, editable=False,
                                                 verbose_name="Code")
@@ -2596,3 +2595,43 @@ class AquiferParameters(AuditModel):
             "analysis_method": self.analysis_method,
             "comments": self.comments
         }
+
+class WellAttachment(models.Model):
+    well_tag_number = models.ForeignKey(Well, on_delete=models.PROTECT, blank=True, null = False)
+    # Public Tags
+    well_construction = models.PositiveSmallIntegerField(default=0)
+    well_alteration = models.PositiveSmallIntegerField(default=0)
+    well_decommission = models.PositiveSmallIntegerField(default=0)
+    photo = models.PositiveSmallIntegerField(default=0)
+    well_pump_installation = models.PositiveSmallIntegerField(default=0)
+    pumping_test = models.PositiveSmallIntegerField(default=0)
+    map = models.PositiveSmallIntegerField(default=0)
+    additional_well_details = models.PositiveSmallIntegerField(default=0)
+    # Private Tags
+    well_inspection = models.PositiveSmallIntegerField(default=0)
+    alternative_specs = models.PositiveSmallIntegerField(default=0)
+    water_quality = models.PositiveSmallIntegerField(default=0)
+    health_authority = models.PositiveSmallIntegerField(default=0)
+    consultants_report = models.PositiveSmallIntegerField(default=0)
+    class Meta:
+        db_table = "well_attachment_count"
+        
+    
+    def __str__(self):
+        template = "{} File count: {}\n"
+        return_string = "Files for WTN: {}\n".format(self.well_tag_number)
+        return_string += template.format('Well Construction',self.well_construction)
+        return_string += template.format('Well Alteration',self.well_alteration)
+        return_string += template.format('Well Decommission',self.well_decommission)
+        return_string += template.format('Well Photos',self.photo)
+        return_string += template.format('Well Pump Installations',self.well_pump_installation)
+        return_string += template.format('Pumping Test',self.pumping_test)
+        return_string += template.format('Map',self.map)
+        return_string += template.format('Additional Detail',self.additional_well_details)
+        return_string += template.format('Well Inspections',self.well_inspection)
+        return_string += template.format('Alternative Specs',self.alternative_specs)
+        return_string += template.format('Water Quality',self.water_quality)
+        return_string += template.format('Health Authority',self.health_authority)
+        return_string += "{} File count: {}".format('Consultants Report',self.consultants_report)
+        
+        return return_string
