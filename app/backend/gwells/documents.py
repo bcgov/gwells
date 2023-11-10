@@ -135,19 +135,19 @@ class MinioClient():
     def extract_well_number(self, object_name):
         try:
             return re.findall(r'\d+', unquote_plus(object_name).rsplit('/', 1)[-1].split("_")[0])[0]
-        except IndexError:
+        except Exception:
             return "Unknown"
 
     def extract_date_of_upload(self, object_name):
         try:
             return int(unquote_plus(object_name).rsplit('/', 1)[-1].split("_")[2].split(".")[0].strip())
-        except Exception as e:
+        except Exception:
             return -1
 
     def extract_well_label(self, object_name):
         try:
             return unquote_plus(object_name).rsplit('/', 1)[-1].split("_")[1]
-        except IndexError:
+        except Exception:
             return ""
         
     def get_bucket_folder(self, document_id, resource='well'):
