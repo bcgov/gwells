@@ -141,7 +141,7 @@ class MinioClient():
     def extract_date_of_upload(self, object_name):
         try:
             return int(unquote_plus(object_name).rsplit('/', 1)[-1].split("_")[2].split(".")[0].strip())
-        except IndexError:
+        except Exception as e:
             return -1
 
     def extract_well_label(self, object_name):
