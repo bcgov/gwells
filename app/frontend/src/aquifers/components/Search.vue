@@ -140,13 +140,13 @@
             v-if="searchPerformed"
             :tbody-tr-class="searchResultsRowClass"
             responsive>
-            <template slot="id" slot-scope="row">
+            <template v-slot:cell(id)="row">
               <router-link :to="{ name: 'aquifers-view', params: {id: row.item.aquifer_id} }">{{ row.item.aquifer_id }}</router-link>
             </template>
-            <template slot="name" slot-scope="row">
+            <template v-slot:cell(name)="row">
               {{row.item.name}}
             </template>
-            <template slot="retire_date" slot-scope="row">
+            <template v-slot:cell(retired_date)="row">
               <span :title="row.item.retire_date">{{ row.item.retire_date | moment("MMMM Do YYYY [at] LT") }}</span>
             </template>
             <template v-slot:table-busy>
