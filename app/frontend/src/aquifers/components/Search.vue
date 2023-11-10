@@ -146,7 +146,7 @@
             <template v-slot:cell(name)="row">
               {{row.item.name}}
             </template>
-            <template v-slot:cell(retired_date)="row">
+            <template v-slot:cell(retire_date)="row">
               <span :title="row.item.retire_date">{{ row.item.retire_date | moment("MMMM Do YYYY [at] LT") }}</span>
             </template>
             <template v-slot:table-busy>
