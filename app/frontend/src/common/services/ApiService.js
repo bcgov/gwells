@@ -88,11 +88,11 @@ const ApiService = {
   deleteFile (resource) {
     return axios.delete(resource)
   },
-  decrementFileCount(resource){
-    return axios.put(`${resource}/sum`)
+  decrementFileCount(resource, documentType){
+    return axios.get(`${resource}/sum`, {params: {inc: false, documentType}})
   },
-  incrementFileCount(resource){
-    return axios.get(`${resource}/sum`)
+  incrementFileCount(resource, documentType){
+    return axios.get(`${resource}/sum`, {params: { inc: true, documentType}})
   },
 }
 

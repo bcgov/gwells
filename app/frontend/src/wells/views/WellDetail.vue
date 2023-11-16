@@ -640,8 +640,8 @@ export default {
   methods: {
     demoPress() {
       console.log("WTN", this.storedWellId)
-      ApiService.incrementFileCount(`wells/${this.storedWellId}`)
-      ApiService.decrementFileCount(`wells/${this.storedWellId}`)
+      ApiService.incrementFileCount(`wells/${this.storedWellId}`, "Well Inspection")
+      ApiService.decrementFileCount(`wells/${this.storedWellId}`, "Well Inspection")
     },
     handlePrint () {
       if (window.ga) {

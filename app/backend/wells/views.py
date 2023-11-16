@@ -90,7 +90,7 @@ from wells.serializers import (
     WellLithologySerializer,
 )
 from wells.permissions import WellsEditPermissions, WellsEditOrReadOnly
-from wells.constants import MAX_EXPORT_COUNT, MAX_LOCATION_COUNT
+from wells.constants import MAX_EXPORT_COUNT, MAX_LOCATION_COUNT, WELL_TAGS
 
 
 logger = logging.getLogger(__name__)
@@ -217,9 +217,25 @@ class ListFiles(APIView):
 
 class FileSumView(APIView):
     def get(self, request, tag, **kwargs):
+        # Verify user has permissions to edit wells
+        if not self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
+            return HttpResponse(status=403)
+        increment = self.request.query_params.get('inc')
+        documentType = self.request.query_params.get('documentType')
+        
+        # Verify we have correct query params, and the document type is valid
+        if self.request.query_params.get('documentType') == None \
+            or increment == None \
+            or not any(item['value'] == documentType for item in WELL_TAGS):
+            return HttpResponse(status=400)
+        
+        if increment == "true":
+            print("Increment Action")
+        else:
+            print("Decrement Action")
+
         return Response("Hello World")
-    def put(self, request, tag, **kwargs):
-        return Response("Goodbye World")
+
 class WellListAPIViewV1(ListAPIView):
     """List and create wells
 
