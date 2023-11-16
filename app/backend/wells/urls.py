@@ -73,6 +73,9 @@ urlpatterns = [
     url(api_path_prefix() + r'/wells/(?P<tag>[0-9]+)/files$',
         never_cache(views.ListFiles.as_view()), name='file-list'),
 
+    url(api_path_prefix() + r'/wells/(?P<tag>[0-9]+)/sum$',
+        never_cache(views.FileSumView.as_view()), name='file-sums'),
+
     # Extract files
     url(api_path_prefix() + r'/wells/extracts$', views.ListExtracts.as_view(), name='extract-list'),
 

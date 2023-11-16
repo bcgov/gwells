@@ -87,7 +87,13 @@ const ApiService = {
   },
   deleteFile (resource) {
     return axios.delete(resource)
-  }
+  },
+  decrementFileCount(resource){
+    return axios.put(`${resource}/sum`)
+  },
+  incrementFileCount(resource){
+    return axios.get(`${resource}/sum`)
+  },
 }
 
 export default ApiService

@@ -215,6 +215,11 @@ class ListFiles(APIView):
 
         return Response(documents)
 
+class FileSumView(APIView):
+    def get(self, request, tag, **kwargs):
+        return Response("Hello World")
+    def put(self, request, tag, **kwargs):
+        return Response("Goodbye World")
 class WellListAPIViewV1(ListAPIView):
     """List and create wells
 

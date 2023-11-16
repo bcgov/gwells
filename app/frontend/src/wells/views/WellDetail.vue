@@ -46,6 +46,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <fieldset id="summary_fieldset" class="detail-section mb-3">
           <legend>
             <span class="h2">Well Summary</span>
+            <button @click="demoPress">Press me</button>
             <div class="float-right d-print-none">
               <router-link v-if="show.edit" :to="{ name: 'SubmissionsEdit', params: { id } }" class="mr-3">
                 <button class="btn btn-primary mb-1">Edit</button>
@@ -637,6 +638,11 @@ export default {
     ...mapGetters(['userRoles', 'config', 'well', 'wellLicence', 'storedWellId', 'codes'])
   },
   methods: {
+    demoPress() {
+      console.log("WTN", this.storedWellId)
+      ApiService.incrementFileCount(`wells/${this.storedWellId}`)
+      ApiService.decrementFileCount(`wells/${this.storedWellId}`)
+    },
     handlePrint () {
       if (window.ga) {
         window.ga('send', 'event', 'Button', 'print', 'Wells Summary Print')
