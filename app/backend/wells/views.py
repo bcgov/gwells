@@ -222,27 +222,26 @@ class FileSumView(APIView):
         if not self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
             return HttpResponse(status=403)
         increment = self.request.query_params.get('inc')
-        documentType = self.request.query_params.get('documentType')
+        document_type = self.request.query_params.get('documentType')
         
         # Verify we have correct query params, and the document type is valid
         if self.request.query_params.get('documentType') == None \
             or increment == None \
-            or not any(item['value'] == documentType for item in WELL_TAGS):
+            or not any(item['value'] == document_type for item in WELL_TAGS):
             return HttpResponse(status=400)
         
-        attachment = documentType.replace(' ', "_").lower()
+        attachment = document_type.replace(' ', "_").lower()
         try:
             if increment == "true":
-                wellAttach = WellAttachment.objects.get(well_tag_number=tag)
-                setattr(wellAttach, attachment, getattr(wellAttach, attachment) + 1)
-                wellAttach.save()
+                well_attach = WellAttachment.objects.get(well_tag_number=tag)
+                setattr(well_attach, attachment, getattr(well_attach, attachment) + 1)
+                well_attach.save()
                 return HttpResponse("Count updated successfully", status=200)
             elif increment == "false":
-                wellAttach = WellAttachment.objects.get(well_tag_number=tag)
-                currValue = getattr(wellAttach, attachment)
-                if currValue > 0:
-                    setattr(wellAttach, attachment, getattr(wellAttach, attachment) - 1)
-                    wellAttach.save()
+                well_attach = WellAttachment.objects.get(well_tag_number=tag)
+                if getattr(well_attach, attachment) > 0:
+                    setattr(well_attach, attachment, getattr(well_attach, attachment) - 1)
+                    well_attach.save()
                     return HttpResponse("File count decreased", status=200)
                 else:
                     return HttpResponse("Cannot have negative number of files", status=400)

@@ -73,6 +73,7 @@ urlpatterns = [
     url(api_path_prefix() + r'/wells/(?P<tag>[0-9]+)/files$',
         never_cache(views.ListFiles.as_view()), name='file-list'),
 
+    # Increment/Decrement count of files for a given well during uploads
     url(api_path_prefix() + r'/wells/(?P<tag>[0-9]+)/sum$',
         never_cache(views.FileSumView.as_view()), name='file-sums'),
 
