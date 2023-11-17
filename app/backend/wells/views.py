@@ -70,6 +70,7 @@ from wells.models import (
     LithologyHardnessCode,
     LithologyMaterialCode,
     Well,
+    WellAttachment,
     WellClassCode,
     WellYieldUnitCode,
     WellStatusCode,
@@ -229,12 +230,28 @@ class FileSumView(APIView):
             or not any(item['value'] == documentType for item in WELL_TAGS):
             return HttpResponse(status=400)
         
-        if increment == "true":
-            print("Increment Action")
-        else:
-            print("Decrement Action")
-
-        return Response("Hello World")
+        attachment = documentType.replace(' ', "_").lower()
+        try:
+            if increment == "true":
+                wellAttach = WellAttachment.objects.get(well_tag_number=tag)
+                setattr(wellAttach, attachment, getattr(wellAttach, attachment) + 1)
+                wellAttach.save()
+                return HttpResponse("Count updated successfully", status=200)
+            elif increment == "false":
+                wellAttach = WellAttachment.objects.get(well_tag_number=tag)
+                currValue = getattr(wellAttach, attachment)
+                if currValue > 0:
+                    setattr(wellAttach, attachment, getattr(wellAttach, attachment) - 1)
+                    wellAttach.save()
+                    return HttpResponse("File count decreased", status=200)
+                else:
+                    return HttpResponse("Cannot have negative number of files", status=400)
+            else:
+                return HttpResponse("Invalid value for qs: increment", status=400)
+                
+        except Exception as e:
+            print(e)
+            return HttpResponse(400)
 
 class WellListAPIViewV1(ListAPIView):
     """List and create wells
