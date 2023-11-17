@@ -284,12 +284,13 @@ export default {
     ]),
     handleFileDelete(value, doc_status, e) {
       e.preventDefault()
-      let tag = this.form.well && isNaN(this.form.well) ? this.form.well.well_tag_number : this.form.well
-      let encodedFileName = encodeURIComponent(value)
+      let tag = this.form.well && isNaN(this.form.well) ? this.form.well.well_tag_number : this.form.well;
+      let encodedFileName = encodeURIComponent(value);
       if(confirm(`Are you sure you want to delete file: \n${value}`)){
         ApiService.deleteFile(`wells/${tag}/delete_document?filename=${encodedFileName}&private=${doc_status}`)
           .then(() => {
-            this.$emit('fetchFiles')
+            ApiService.decrementFileCount(`wells/${tag}`, value.split("_")[1]);
+            this.$emit('fetchFiles');
           })
       }
     },
