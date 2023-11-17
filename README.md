@@ -85,12 +85,17 @@ Then, run the application with Docker:
 cd gwells
 docker-compose up
 ```
+### Connecting to Minio
 
-For gwells to interact with your local instance of Min.IO add the appropriate settings to your local machines HOSTS file:
+For gwells to interact with your local instance of Min.IO add the appropriate settings to your local machines `HOSTS` file:
+
 ```
 127.0.0.1 minio-public
+127.0.0.1 minio-private
 ```
+
 ### Connecting to PGAdmin
+
 > Information in this section reflects docker-compose as of `Nov 8th, 2023`
 
 PG Admin is setup in the `docker-compose up` and requires no additional installations
