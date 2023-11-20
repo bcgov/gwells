@@ -41,6 +41,7 @@ services:
     environment:
       MINIO_ACCESS_KEY: minio
       MINIO_SECRET_KEY: minio1234
+      MINIO_DATA_DIR: /data
     entrypoint: /minio-entrypoint.sh
     command: server --address :9001 /data
     networks:
@@ -78,6 +79,12 @@ services:
         source: ./app/database/scripts/local_dev/setup.sql
         target: /pgconf/setup.sql
         consistency: cached
+    healthcheck:
+      test: ["CMD-SHELL", "/usr/pgsql-12/bin/pg_isready", "-d", "gwells"]
+      interval: 20s
+      timeout: 30s
+      retries: 5
+      start_period: 120s
     networks:
       - gwells-network
 #############################################################################################
@@ -204,9 +211,26 @@ services:
       - "8000:8000"
       - "3000:3000"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - gwells-network
+
+#############################################################################################
+###                                       Volumes                                         ###
+#############################################################################################
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    ports:
+      - 5050:80
+    environment:
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_DEFAULT_EMAIL: admin@gwells.com
+    networks:
+      - gwells-network
+
+
 #############################################################################################
 ###                                       Volumes                                         ###
 #############################################################################################

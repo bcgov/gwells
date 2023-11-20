@@ -849,6 +849,13 @@
         }
     },
     {
+        "model": "wells.wellattachment",
+        "pk": 123,
+        "fields": {
+          "well_tag_number": 123
+        }
+    },
+    {
         "model": "wells.well",
         "pk": 112316,
         "fields": {
@@ -960,6 +967,13 @@
             "hydro_fracturing_performed": false,
             "hydro_fracturing_yield_increase": null,
             "geom": "POINT(-122.540000 49.200000)"
+        }
+    },
+    {
+        "model": "wells.wellattachment",
+        "pk": 112316,
+        "fields": {
+          "well_tag_number": 112316
         }
     },
     {
@@ -1077,6 +1091,13 @@
         }
     },
     {
+        "model": "wells.wellattachment",
+        "pk": 113169,
+        "fields": {
+          "well_tag_number": 113169
+        }
+    },
+    {
         "model": "wells.well",
         "pk": 112286,
         "fields": {
@@ -1188,6 +1209,13 @@
             "hydro_fracturing_performed": false,
             "hydro_fracturing_yield_increase": null,
             "geom": "POINT(-122.590000 49.250000)"
+        }
+    },
+    {
+        "model": "wells.wellattachment",
+        "pk": 112286,
+        "fields": {
+          "well_tag_number": 112286
         }
     },
     {
@@ -1305,6 +1333,13 @@
             "decommission_sealant_material": "CONCRETE",
             "decommission_backfill_material": "test",
             "geom": "POINT(-125.360830 52.456449)"
+        }
+    },
+    {
+        "model": "wells.wellattachment",
+        "pk": 20143,
+        "fields": {
+          "well_tag_number": 20143
         }
     },
     {
@@ -1445,6 +1480,13 @@
             "decommission_backfill_material": null,
             "decommission_sealant_material": null,
             "geom": null
+        }
+    },
+    {
+        "model": "wells.wellattachment",
+        "pk": 216265,
+        "fields": {
+          "well_tag_number": 216265
         }
     }
 ]

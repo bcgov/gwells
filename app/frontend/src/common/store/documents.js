@@ -91,6 +91,9 @@ export default {
               return ApiService.fileUpload(url, file, options)
                 .then(() => {
                   console.log('successfully added file: ' + objectName)
+                  if(documentType === "wells"){
+                    ApiService.incrementFileCount(`wells/${recordId}`, fileName.split("_")[0])
+                  }
                 })
                 .catch(error => {
                   console.log(error)

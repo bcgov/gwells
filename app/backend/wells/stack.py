@@ -23,7 +23,7 @@ from submissions.models import WellActivityCode, WELL_ACTIVITY_CODE_ALTERATION,\
     WELL_ACTIVITY_CODE_CONSTRUCTION, WELL_ACTIVITY_CODE_DECOMMISSION, WELL_ACTIVITY_CODE_LEGACY,\
     WELL_ACTIVITY_CODE_STAFF_EDIT
 import submissions.serializers
-from wells.models import Well, ActivitySubmission, ActivitySubmissionLinerPerforation, FieldsProvided, \
+from wells.models import Well, ActivitySubmission, ActivitySubmissionLinerPerforation, FieldsProvided, WellAttachment, \
     WellStatusCode, WELL_STATUS_CODE_CONSTRUCTION,\
     WELL_STATUS_CODE_DECOMMISSION, WELL_STATUS_CODE_ALTERATION, WELL_STATUS_CODE_OTHER, LithologyDescription,\
     Casing, Screen, LinerPerforation, DecommissionDescription, LithologyDescription, AquiferParameters
@@ -212,11 +212,13 @@ class StackWells():
             create_user=submission.create_user,
             create_date=submission.create_date,
             update_date=submission.update_date)
+        
         # If there's no well as yet - then this necessarily has to be the 1st submission, so we just
         # re-query it as a collection, and call stack.
         submissions = ActivitySubmission.objects.filter(filing_number=filing_number)
         well = self._stack(submissions, well)
         submission.well = well
+        WellAttachment.objects.create(well_tag_number=well)
         submission.save()
         return well
 

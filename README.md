@@ -85,11 +85,34 @@ Then, run the application with Docker:
 cd gwells
 docker-compose up
 ```
+### Connecting to Minio
 
-For gwells to interact with your local instance of Min.IO add the appropriate settings to your local machines HOSTS file:
+For gwells to interact with your local instance of Min.IO add the appropriate settings to your local machines `HOSTS` file:
+
 ```
 127.0.0.1 minio-public
+127.0.0.1 minio-private
 ```
+
+### Connecting to PGAdmin
+
+> Information in this section reflects docker-compose as of `Nov 8th, 2023`
+
+PG Admin is setup in the `docker-compose up` and requires no additional installations
+
+Steps:
+1. connect to Pgadmin through [localhost](http://localhost:5050)
+1. Login using username: `admin@gwells.com`, password: `admin`.
+1. Right click `Server` -> `Register` -> `Server`
+1. Enter any meaningful name in `Name`
+1. Under the `Connection` tab supply the following values
+
+|Field|Value|
+| --- | --- |
+| Host name / address | `db`
+| Port | `5432` |
+| Username | `gwells` |
+| Password | `test1` |
 
 Visit the following links to browse the API and frontend applications:
 

@@ -70,6 +70,7 @@ from wells.models import (
     LithologyHardnessCode,
     LithologyMaterialCode,
     Well,
+    WellAttachment,
     WellClassCode,
     WellYieldUnitCode,
     WellStatusCode,
@@ -90,7 +91,7 @@ from wells.serializers import (
     WellLithologySerializer,
 )
 from wells.permissions import WellsEditPermissions, WellsEditOrReadOnly
-from wells.constants import MAX_EXPORT_COUNT, MAX_LOCATION_COUNT
+from wells.constants import MAX_EXPORT_COUNT, MAX_LOCATION_COUNT, WELL_TAGS
 
 
 logger = logging.getLogger(__name__)
@@ -214,6 +215,42 @@ class ListFiles(APIView):
             int(tag), resource="well", include_private=user_is_staff)
 
         return Response(documents)
+
+class FileSumView(APIView):
+    def get(self, request, tag, **kwargs):
+        # Verify user has permissions to edit wells
+        if not self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
+            return HttpResponse(status=403)
+        increment = self.request.query_params.get('inc')
+        document_type = self.request.query_params.get('documentType')
+        
+        # Verify we have correct query params, and the document type is valid
+        if self.request.query_params.get('documentType') == None \
+            or increment == None \
+            or not any(item['value'] == document_type for item in WELL_TAGS):
+            return HttpResponse(status=400)
+        
+        attachment = document_type.replace(' ', "_").lower()
+        try:
+            if increment == "true":
+                well_attach = WellAttachment.objects.get(well_tag_number=tag)
+                setattr(well_attach, attachment, getattr(well_attach, attachment) + 1)
+                well_attach.save()
+                return HttpResponse("Count updated successfully", status=200)
+            elif increment == "false":
+                well_attach = WellAttachment.objects.get(well_tag_number=tag)
+                if getattr(well_attach, attachment) > 0:
+                    setattr(well_attach, attachment, getattr(well_attach, attachment) - 1)
+                    well_attach.save()
+                    return HttpResponse("File count decreased", status=200)
+                else:
+                    return HttpResponse("Cannot have negative number of files", status=400)
+            else:
+                return HttpResponse("Invalid value for qs: increment", status=400)
+                
+        except Exception as e:
+            print(e)
+            return HttpResponse(400)
 
 class WellListAPIViewV1(ListAPIView):
     """List and create wells
