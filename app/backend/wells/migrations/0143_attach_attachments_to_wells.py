@@ -1,14 +1,14 @@
 from django.db import migrations, models
 
 def populate_wells_with_attachment_table(apps, schema_editor):
-  A = apps.get_model('wells', 'Well')
-  B = apps.get_model('wells', 'WellAttachment')
+    Well = apps.get_model('wells', 'Well')
+    WellAttachment = apps.get_model('wells', 'WellAttachment')
 
-  for a_instance in A.objects.all():
-    if B.objects.filter(well_tag_number=a_instance):
-      pass # This entry already has a well attachment associated with it
-    else:
-      B.objects.create(well_tag_number=a_instance)
+    # Get all well tag numbers that don't have an entry in WellAttachment
+    well_tag_numbers_without_attachment = Well.objects.exclude(wellattachment__isnull=False).values_list('well_tag_number', flat=True)
+
+    well_attachments_to_create = [WellAttachment(well_tag_number=tag_number) for tag_number in well_tag_numbers_without_attachment]
+    WellAttachment.objects.bulk_create(well_attachments_to_create)
   
 class Migration(migrations.Migration):
   
