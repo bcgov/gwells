@@ -232,6 +232,11 @@ class FileSumView(APIView):
         
         attachment = document_type.replace(' ', "_").lower()
         try:
+            # Create entry to WellAttachment in event it does not already have one
+            if not WellAttachment.objects.filter(well_tag_number=tag).exists():
+                well = Well.objects.get(well_tag_number=tag)
+                WellAttachment.objects.create(well_tag_number=well)
+                
             if increment == "true":
                 well_attach = WellAttachment.objects.get(well_tag_number=tag)
                 setattr(well_attach, attachment, getattr(well_attach, attachment) + 1)
