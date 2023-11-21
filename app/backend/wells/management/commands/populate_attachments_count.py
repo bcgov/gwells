@@ -77,6 +77,13 @@ class Command(BaseCommand):
         )
 
     
+    def get_or_create_entry(self, well_tag_number):
+        if WellAttachment.objects.filter(well_tag_number=well_tag_number).exists():
+            return WellAttachment.objects.get(well_tag_number=well_tag_number)
+        else:
+            well = Well.objects.get(well_tag_number=well_tag_number)
+            return WellAttachment.objects.create(well_tag_number=well)
+                   
     def process_well_tag(self, well_tag_number):
         """Summary:
             Queries for files related to a well tag and updates the counted values in the WellAttachments table
@@ -92,15 +99,10 @@ class Command(BaseCommand):
         
         if hash_map:
             try:
-                if WellAttachment.objects.filter(well_tag_number=well_tag_number).exists():
-                    well_attachment_entry = WellAttachment.objects.get(well_tag_number=well_tag_number)
-                else:
-                    well = Well.objects.get(well_tag_number=well_tag_number)
-                    well_attachment_entry = WellAttachment.objects.create(well_tag_number=well)
-                    
+                well_attachment_entry = self.get_or_create_entry(well_tag_number)
                 for key, value in hash_map.items():
                     if key == "well_record":
-                        setattr(well_attachment_entry, ['well_construction'], value)
+                        setattr(well_attachment_entry, 'well_construction', value)
                     elif key in self.formatted_well_tags:
                         setattr(well_attachment_entry, key, value)
                     else:
