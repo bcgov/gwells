@@ -2597,6 +2597,7 @@ class AquiferParameters(AuditModel):
         }
 
 class WellAttachment(models.Model):
+    id = models.AutoField(primary_key=True)
     well_tag_number = models.ForeignKey(Well, on_delete=models.PROTECT, blank=True, null = False)
     # Public Tags
     well_construction = models.PositiveSmallIntegerField(default=0)
@@ -2604,15 +2605,18 @@ class WellAttachment(models.Model):
     well_decommission = models.PositiveSmallIntegerField(default=0)
     photo = models.PositiveSmallIntegerField(default=0)
     well_pump_installation = models.PositiveSmallIntegerField(default=0)
-    pumping_test = models.PositiveSmallIntegerField(default=0)
+    pumping_test_data = models.PositiveSmallIntegerField(default=0)
+    directions_artesian_conditions = models.PositiveSmallIntegerField(default=0)
     map = models.PositiveSmallIntegerField(default=0)
-    additional_well_details = models.PositiveSmallIntegerField(default=0)
+    additional_details = models.PositiveSmallIntegerField(default=0)
     # Private Tags
     well_inspection = models.PositiveSmallIntegerField(default=0)
     alternative_specs = models.PositiveSmallIntegerField(default=0)
     water_quality = models.PositiveSmallIntegerField(default=0)
     health_authority = models.PositiveSmallIntegerField(default=0)
     consultants_report = models.PositiveSmallIntegerField(default=0)
+    sharing_agreement = models.PositiveSmallIntegerField(default=0)
+    pumping_test_info = models.PositiveSmallIntegerField(default=0)
     class Meta:
         db_table = "well_attachment_count"
         
