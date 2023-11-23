@@ -193,14 +193,14 @@ Licensed under the Apache License, Version 2.0 (the "License");
             'water_bearing_estimated_flow',
             'observations'
           ]">
-          <template slot="description" slot-scope="data">{{data.item.lithology_raw_data}}</template>
-          <template slot="from" slot-scope="data">{{data.item.start}}</template>
-          <template slot="to" slot-scope="data">{{data.item.end}}</template>
-          <template slot="colour" slot-scope="data">{{codeToDescription('lithology_colours', data.item.lithology_colour) }}</template>
-          <template slot="hardness" slot-scope="data">{{codeToDescription('lithology_hardness_codes', data.item.lithology_hardness) }}</template>
-          <template slot="moisture" slot-scope="data">{{codeToDescription('lithology_moisture_codes', data.item.lithology_moisture) }}</template>
-          <template slot="descriptor" slot-scope="data">{{codeToDescription('lithology_descriptors', data.item.lithology_description) }}</template>
-          <template slot="observations" slot-scope="data">{{ data.item.lithology_observation }}</template>
+          <template v-slot:cell(description)="data">{{data.item.lithology_raw_data}}</template>
+          <template v-slot:cell(from)="data">{{data.item.start}}</template>
+          <template v-slot:cell(to)="data">{{data.item.end}}</template>
+          <template v-slot:cell(colour)="data">{{codeToDescription('lithology_colours', data.item.lithology_colour) }}</template>
+          <template v-slot:cell(hardness)="data">{{codeToDescription('lithology_hardness_codes', data.item.lithology_hardness) }}</template>
+          <template v-slot:cell(moisture)="data">{{codeToDescription('lithology_moisture_codes', data.item.lithology_moisture) }}</template>
+          <template v-slot:cell(descriptor)="data">{{codeToDescription('lithology_descriptors', data.item.lithology_description) }}</template>
+          <template v-slot:cell(observations)="data">{{ data.item.lithology_observation }}</template>
         </b-table>
       </div>
     </fieldset>
@@ -216,10 +216,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
           :fields="['start', 'end', 'material', 'observations']"
           show-empty
         >
-          <template slot="start" slot-scope="data">{{data.item.start}} ft</template>
-          <template slot="end" slot-scope="data">{{data.item.end}} ft</template>
-          <template slot="material" slot-scope="data">{{codeToDescription('decommission_materials', data.item.material)}}</template>
-          <template slot="observations" slot-scope="data">{{codeToDescription('decommission_materials', data.item.observations)}}</template>
+          <template v-slot:cell(start)="data">{{data.item.start}} ft</template>
+          <template v-slot:cell(end)="data">{{data.item.end}} ft</template>
+          <template v-slot:cell(material)="data">{{codeToDescription('decommission_materials', data.item.material)}}</template>
+          <template v-slot:cell(observations)="data">{{codeToDescription('decommission_materials', data.item.observations)}}</template>
         </b-table>
       </div>
     </fieldset>
@@ -235,11 +235,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
             :fields="['from', 'to', 'casing_type', 'casing_material', 'diameter', 'wall_thickness', 'drive_shoe_status']"
             show-empty>
 
-          <template slot="from" slot-scope="data">{{data.item.start}}{{data.item.start ? ' ft' : '' }}</template>
-          <template slot="to" slot-scope="data">{{data.item.end}}{{data.item.end ? ' ft' : '' }}</template>
-          <template slot="casing_type" slot-scope="data">{{codeToDescription('casing_codes', data.item.casing_code)}}</template>
-          <template slot="casing_material" slot-scope="data">{{codeToDescription('casing_materials', data.item.casing_material)}}</template>
-          <template slot="drive_shoe_status" slot-scope="data">{{codeToDescription('drive_shoe_status', data.item.drive_shoe_status)}}</template>
+          <template v-slot:cell(from)="data">{{data.item.start}}{{data.item.start ? ' ft' : '' }}</template>
+          <template v-slot:cell(to)="data">{{data.item.end}}{{data.item.end ? ' ft' : '' }}</template>
+          <template v-slot:cell(casing_type)="data">{{codeToDescription('casing_codes', data.item.casing_code)}}</template>
+          <template v-slot:cell(casing_material)="data">{{codeToDescription('casing_materials', data.item.casing_material)}}</template>
+          <template v-slot:cell(drive_shoe_status)="data">{{codeToDescription('drive_shoe_status', data.item.drive_shoe_status)}}</template>
 
         </b-table>
       </div>
@@ -289,8 +289,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
               :fields="['from', 'to']"
               show-empty
           >
-            <template slot="from" slot-scope="data">{{data.item.start}} ft</template>
-            <template slot="to" slot-scope="data">{{data.item.end}} ft</template>
+            <template v-slot:cell(from)="data">{{data.item.start}} ft</template>
+            <template v-slot:cell(to)="data" >{{data.item.end}} ft</template>
           </b-table>
         </b-col>
       </b-row>
@@ -332,9 +332,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
               :fields="['from', 'to', 'diameter', 'assembly_type', 'slot_size']"
               show-empty
               >
-            <template slot="from" slot-scope="data">{{data.item.start}} ft</template>
-            <template slot="to" slot-scope="data">{{data.item.end}} ft</template>
-            <template slot="assembly_type" slot-scope="data">{{codeToDescription('screen_assemblies', data.item.assembly_type)}}</template>
+            <template v-slot:cell(from)="data">{{data.item.start}} ft</template>
+            <template v-slot:cell(to)="data">{{data.item.end}} ft</template>
+            <template v-slot:cell(assembly_type)="data">{{codeToDescription('screen_assemblies', data.item.assembly_type)}}</template>
           </b-table>
         </b-col>
       </b-row>
@@ -458,9 +458,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   'comments'
                 ]"
             show-empty>
-            <template slot="pumping_test_description" slot-scope="data">{{codeToDescription('pumping_test_description_codes', data.item.pumping_test_description)}}</template>
-            <template slot="boundary_effect" slot-scope="data">{{codeToDescription('boundary_effect_codes', data.item.boundary_effect)}}</template>
-            <template slot="analysis_method" slot-scope="data">{{codeToDescription('analysis_method_codes', data.item.analysis_method)}}</template>
+            <template v-slot:cell(pumping_test_description)="data">{{codeToDescription('pumping_test_description_codes', data.item.pumping_test_description)}}</template>
+            <template v-slot:cell(boundary_effect)="data">{{codeToDescription('boundary_effect_codes', data.item.boundary_effect)}}</template>
+            <template v-slot:cell(analysis_method)="data">{{codeToDescription('analysis_method_codes', data.item.analysis_method)}}</template>
         </b-table>
       </div>
     </fieldset>

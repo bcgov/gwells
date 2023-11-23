@@ -120,13 +120,13 @@
                   :show-empty="wellTableData.length === 0"
                   empty-text="No documents with well tag numbers"
                   striped>
-                  <template slot="wellTagNumber" slot-scope="row">
+                  <template v-slot:cell(wellTagNumber)="row">
                     <span :class="{ unknown: checkWellIsUnknown(row.item.wellTagNumber) }">
                       {{row.item.wellTagNumber}}
                     </span>
                     <b-spinner v-if="fetchWellFilesInProgress[row.item.wellTagNumber]" small/>
                   </template>
-                  <template slot="documents" slot-scope="row">
+                  <template v-slot:cell(documents)="row">
                     <ul>
                       <li v-for="(doc, index) in row.item.documents" :key="index" :class="{overwrite: doc.exists}">
                         {{ doc.name }}

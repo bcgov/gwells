@@ -243,7 +243,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             :current-page="submissionsPage"
             :fields="activity_fields"
           >
-            <template slot="create_date" slot-scope="data">
+            <template v-slot:cell(create_date)="data">
               <div>
                 {{ data.item.create_date | moment("MMMM Do YYYY [at] LT") }}
               </div>
@@ -306,9 +306,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
             :items="well.lithologydescription_set"
             show-empty
             :fields="lithology_fields">
-            <template slot="start" slot-scope="data">{{ data.item.start | excludeZeroDecimals }}</template>
-            <template slot="end" slot-scope="data">{{ data.item.end | excludeZeroDecimals }}</template>
-            <template slot="water_bearing_estimated_flow" slot-scope="data">{{ data.item.water_bearing_estimated_flow | excludeZeroDecimals }}</template>
+            <template v-slot:cell(start)="data">{{ data.item.start | excludeZeroDecimals }}</template>
+            <template v-slot:cell(end)="data">{{ data.item.end | excludeZeroDecimals }}</template>
+            <template v-slot:cell(water_bearing_estimated_flow)="data">{{ data.item.water_bearing_estimated_flow | excludeZeroDecimals }}</template>
           </b-table>
         </fieldset>
 
@@ -323,17 +323,17 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 :fields="['from', 'to', 'casing_type', 'casing_material', 'diameter', 'wall_thickness', 'drive_shoe']"
                 show-empty>
 
-              <template slot="from" slot-scope="data">{{ data.item.start | excludeZeroDecimals }}</template>
-              <template slot="HEAD_from" slot-scope="data">{{ data.label }} (ft bgl)</template>
-              <template slot="to" slot-scope="data">{{ data.item.end | excludeZeroDecimals }}</template>
-              <template slot="HEAD_to" slot-scope="data">{{ data.label }} (ft bgl)</template>
-              <template slot="casing_type" slot-scope="data">{{codeToDescription('casing_codes', data.item.casing_code)}}</template>
-              <template slot="casing_material" slot-scope="data">{{codeToDescription('casing_materials', data.item.casing_material)}}</template>
-              <template slot="HEAD_diameter" slot-scope="data">{{ data.label }} (in)</template>
-              <template slot="diameter" slot-scope="data">{{ data.item.diameter | excludeZeroDecimals }}</template>
-              <template slot="HEAD_wall_thickness" slot-scope="data">{{ data.label }} (in)</template>
-              <template slot="wall_thickness" slot-scope="data">{{ data.item.wall_thickness | excludeZeroDecimals }}</template>
-              <template slot="drive_shoe" slot-scope="data">{{codeToDescription('drive_shoe', data.item.drive_shoe_status)}}</template>
+              <template v-slot:cell(from)="data">{{ data.item.start | excludeZeroDecimals }}</template>
+              <template v-slot:cell(HEAD_from)="data">{{ data.label }} (ft bgl)</template>
+              <template v-slot:cell(to)="data">{{ data.item.end | excludeZeroDecimals }}</template>
+              <template v-slot:cell(HEAD_to)="data">{{ data.label }} (ft bgl)</template>
+              <template v-slot:cell(casing_type)="data">{{codeToDescription('casing_codes', data.item.casing_code)}}</template>
+              <template v-slot:cell(casing_material)="data">{{codeToDescription('casing_materials', data.item.casing_material)}}</template>
+              <template v-slot:cell(HEAD_diameter)="data">{{ data.label }} (in)</template>
+              <template v-slot:cell(diameter)="data">{{ data.item.diameter | excludeZeroDecimals }}</template>
+              <template v-slot:cell(HEAD_wall_thickness)="data">{{ data.label }} (in)</template>
+              <template v-slot:cell(wall_thickness)="data">{{ data.item.wall_thickness | excludeZeroDecimals }}</template>
+              <template v-slot:cell(drive_shoe)="data">{{codeToDescription('drive_shoe', data.item.drive_shoe_status)}}</template>
             </b-table>
           </div>
         </fieldset>
@@ -382,10 +382,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   :fields="['from', 'to']"
                   show-empty
               >
-                <template slot="HEAD_from" slot-scope="data">{{data.label}} (ft bgl)</template>
-                <template slot="from" slot-scope="data">{{ data.item.start | excludeZeroDecimals }}</template>
-                <template slot="HEAD_to" slot-scope="data">{{data.label}} (ft bgl)</template>
-                <template slot="to" slot-scope="data">{{ data.item.end | excludeZeroDecimals }}</template>
+                <template v-slot:cell(HEAD_from)="data">{{data.label}} (ft bgl)</template>
+                <template v-slot:cell(from)="data">{{ data.item.start | excludeZeroDecimals }}</template>
+                <template v-slot:cell(HEAD_to)="data">{{data.label}} (ft bgl)</template>
+                <template v-slot:cell(to)="data">{{ data.item.end | excludeZeroDecimals }}</template>
               </b-table>
             </b-col>
           </b-row>
@@ -421,13 +421,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   :fields="['from', 'to', 'diameter', 'assembly_type', 'slot_size']"
                   show-empty
                   >
-                <template slot="HEAD_from" slot-scope="data">{{data.label}} (ft bgl)</template>
-                <template slot="from" slot-scope="data">{{data.item.start}}</template>
-                <template slot="HEAD_to" slot-scope="data">{{data.label}} (ft bgl)</template>
-                <template slot="to" slot-scope="data">{{data.item.end}}</template>
-                <template slot="HEAD_diameter" slot-scope="data">{{data.label}} (in)</template>
-                <template slot="diameter" slot-scope="data">{{data.item.diameter}}</template>
-                <template slot="assembly_type" slot-scope="data">{{codeToDescription('screen_assemblies', data.item.assembly_type)}}</template>
+                <template v-slot:cell(HEAD_from)="data">{{data.label}} (ft bgl)</template>
+                <template v-slot:cell(from)="data">{{data.item.start}}</template>
+                <template v-slot:cell(HEAD_to)="data">{{data.label}} (ft bgl)</template>
+                <template v-slot:cell(to)="data">{{data.item.end}}</template>
+                <template v-slot:cell(HEAD_diameter)="data">{{data.label}} (in)</template>
+                <template v-slot:cell(diameter)="data">{{data.item.diameter}}</template>
+                <template v-slot:cell(assembly_type)="data">{{codeToDescription('screen_assemblies', data.item.assembly_type)}}</template>
               </b-table>
             </b-col>
           </b-row>
@@ -499,12 +499,12 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   'comments'
                 ]"
                 show-empty>
-                <template slot="pumping_test_description" slot-scope="data">{{codeToDescription('pumping_test_description_codes', data.item.pumping_test_description)}}</template>
-                <template slot="boundary_effect" slot-scope="data">{{codeToDescription('boundary_effect_codes', data.item.boundary_effect)}}</template>
-                <template slot="analysis_method" slot-scope="data">{{codeToDescription('analysis_method_codes', data.item.analysis_method)}}</template>
-                <template slot="storativity" slot-scope="data">{{parseFloat(data.item.storativity).toString()}}</template>
-                <template slot="transmissivity" slot-scope="data">{{parseFloat(data.item.transmissivity).toString()}}</template>
-                <template slot="hydraulic_conductivity" slot-scope="data">{{parseFloat(data.item.hydraulic_conductivity).toString()}}</template>
+                <template v-slot:cell(pumping_test_description)="data">{{codeToDescription('pumping_test_description_codes', data.item.pumping_test_description)}}</template>
+                <template v-slot:cell(boundary_effect)="data">{{codeToDescription('boundary_effect_codes', data.item.boundary_effect)}}</template>
+                <template v-slot:cell(analysis_method)="data">{{codeToDescription('analysis_method_codes', data.item.analysis_method)}}</template>
+                <template v-slot:cell(storativity)="data">{{parseFloat(data.item.storativity).toString()}}</template>
+                <template v-slot:cell(transmissivity)="data">{{parseFloat(data.item.transmissivity).toString()}}</template>
+                <template v-slot:cell(hydraulic_conductivity)="data">{{parseFloat(data.item.hydraulic_conductivity).toString()}}</template>
             </b-table>
           </div>
         </fieldset>

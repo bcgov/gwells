@@ -13,16 +13,16 @@
           :per-page="perPage"
           :current-page="currentPage"
         >
-          <template slot="survey_page" slot-scope="row">
+          <template v-slot:cell(survey_page)="row">
             {{formatPageName(row.item.survey_page)}}
           </template>
-          <template slot="survey_link" slot-scope="row">
+          <template v-slot:cell(survey_link)="row">
             <a :href="row.item.survey_link" target="_blank">{{row.item.survey_link}}</a>
           </template>
-          <template slot="survey_enabled" slot-scope="row">
+          <template v-slot:cell(survey_enabled)="data">
             <b-form-checkbox v-model="row.item.survey_enabled" name="check-button" @input="toggleSurveyEnabled(row.item.survey_guid, row.item.survey_enabled)"/>
           </template>
-          <template slot="remove" slot-scope="row">
+          <template v-slot:cell(remove)="data">
             <b-btn type="button" variant="outline-danger" size="sm" @click="handleRemoveSurvey(row.item.survey_guid)"><i class="fa fa-trash"></i></b-btn>
           </template>
         </b-table>

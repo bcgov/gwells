@@ -843,16 +843,31 @@ exports[`View Component View mode matches the snapshot 1`] = `
                       class=""
                       role="cell"
                     >
-                      501525
+                      <a
+                        href="https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&PosseObjectDef=o_ATIS_DocumentSearch&PosseMenuName=WS_Main&Criteria_LicenceNumber=501525"
+                        target="_blank"
+                      >
+                        
+                  501525
+                
+                      </a>
                     </td>
                     <td
                       aria-colindex="2"
                       class=""
                       role="cell"
                     >
-                      [
-  117041
-]
+                      <ul
+                        class="p-0 m-0"
+                      >
+                        <li>
+                          <router-link-stub
+                            to="[object Object]"
+                          >
+                            117041
+                          </router-link-stub>
+                        </li>
+                      </ul>
                     </td>
                   </tr>
                   <tr
@@ -864,16 +879,31 @@ exports[`View Component View mode matches the snapshot 1`] = `
                       class=""
                       role="cell"
                     >
-                      501526
+                      <a
+                        href="https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&PosseObjectDef=o_ATIS_DocumentSearch&PosseMenuName=WS_Main&Criteria_LicenceNumber=501526"
+                        target="_blank"
+                      >
+                        
+                  501526
+                
+                      </a>
                     </td>
                     <td
                       aria-colindex="2"
                       class=""
                       role="cell"
                     >
-                      [
-  117043
-]
+                      <ul
+                        class="p-0 m-0"
+                      >
+                        <li>
+                          <router-link-stub
+                            to="[object Object]"
+                          >
+                            117043
+                          </router-link-stub>
+                        </li>
+                      </ul>
                     </td>
                   </tr>
                   <tr
@@ -885,16 +915,31 @@ exports[`View Component View mode matches the snapshot 1`] = `
                       class=""
                       role="cell"
                     >
-                      501527
+                      <a
+                        href="https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&PosseObjectDef=o_ATIS_DocumentSearch&PosseMenuName=WS_Main&Criteria_LicenceNumber=501527"
+                        target="_blank"
+                      >
+                        
+                  501527
+                
+                      </a>
                     </td>
                     <td
                       aria-colindex="2"
                       class=""
                       role="cell"
                     >
-                      [
-  117044
-]
+                      <ul
+                        class="p-0 m-0"
+                      >
+                        <li>
+                          <router-link-stub
+                            to="[object Object]"
+                          >
+                            117044
+                          </router-link-stub>
+                        </li>
+                      </ul>
                     </td>
                   </tr>
                   <tr
@@ -906,16 +951,31 @@ exports[`View Component View mode matches the snapshot 1`] = `
                       class=""
                       role="cell"
                     >
-                      501528
+                      <a
+                        href="https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&PosseObjectDef=o_ATIS_DocumentSearch&PosseMenuName=WS_Main&Criteria_LicenceNumber=501528"
+                        target="_blank"
+                      >
+                        
+                  501528
+                
+                      </a>
                     </td>
                     <td
                       aria-colindex="2"
                       class=""
                       role="cell"
                     >
-                      [
-  117045
-]
+                      <ul
+                        class="p-0 m-0"
+                      >
+                        <li>
+                          <router-link-stub
+                            to="[object Object]"
+                          >
+                            117045
+                          </router-link-stub>
+                        </li>
+                      </ul>
                     </td>
                   </tr>
                   <!---->
