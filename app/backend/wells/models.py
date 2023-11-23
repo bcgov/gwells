@@ -2611,6 +2611,7 @@ class WellAttachment(models.Model):
     additional_details = models.PositiveSmallIntegerField(default=0)
     # Private Tags
     well_inspection = models.PositiveSmallIntegerField(default=0)
+    artesianmgmtreport = models.PositiveSmallIntegerField(default=0)
     alternative_specs = models.PositiveSmallIntegerField(default=0)
     water_quality = models.PositiveSmallIntegerField(default=0)
     health_authority = models.PositiveSmallIntegerField(default=0)

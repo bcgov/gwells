@@ -39,5 +39,10 @@ class Migration(migrations.Migration):
             model_name='wellattachment',
             name='sharing_agreement',
             field=models.PositiveSmallIntegerField(default=0),
+        ),
+        migrations.AddField(
+            model_name='wellattachment',
+            name='artesianmgmtreport',
+            field=models.PositiveSmallIntegerField(default=0)
         )
     ]
