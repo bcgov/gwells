@@ -95,7 +95,7 @@ services:
     depends_on:
       - db
     platform: linux/x86_64
-    image: pramsey/pg_tileserv:latest
+    image: pramsey/pg_tileserv:20231005
     environment:
       DATABASE_URL: postgres://ftw_reader:test1@db:5432/gwells
     ports:
