@@ -94,12 +94,12 @@
               hover
               :items="errorsTableData"
               :fields="errorTableFields">
-              <template slot="aquiferId" slot-scope="row">
+              <template v-slot:cell(aquiferId)="row">
                 <span :class="{ error: isUnknownAquifer(row.item.aquiferId) }">
                   {{row.item.aquiferId}}
                 </span>
               </template>
-              <template slot="wellTagNumber" slot-scope="row">
+              <template v-slot:cell(wellTagNumber)="row">
                 <span :class="{ error: isUnknownWell(row.item.wellTagNumber) }">
                   {{row.item.wellTagNumber}}
                 </span>
@@ -133,12 +133,12 @@
               hover
               :items="tableData"
               :fields="tableFields">
-              <template slot="oldAquiferId" slot-scope="row">
+              <template v-slot:cell(oldAquiferId)="row">
                 <span>
                   {{formatOldAquifer(row)}}
                 </span>
               </template>
-              <template slot="warnings" slot-scope="row">
+              <template v-slot:cell(warnings)="row">
                 <ul v-if="row.item.warnings.length > 0">
                   <li v-for="(warning, index) in row.item.warnings" :key="index">
                     {{ warning }}

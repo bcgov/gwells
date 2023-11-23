@@ -184,10 +184,10 @@
                           <template slot="no-options">
                             Search for an aquifer by name or id number
                           </template>
-                          <template slot="option" slot-scope="option">
+                          <template v-slot:cell(option)="option">
                             <div>{{ option.description }}</div>
                           </template>
-                          <template slot="selected-option" slot-scope="option">
+                          <template v-slot:cell(selected-option)="option">
                             <div>{{ option.description }}</div>
                           </template>
                         </v-select>
@@ -205,12 +205,12 @@
                       :show-empty="aquiferTableData.length === 0"
                       empty-text="No documents with keyed aquifer IDs"
                       striped>
-                      <template slot="aquiferId" slot-scope="row">
+                      <template v-slot:cell(aquiferId)="row">
                         <span :class="{ unknown: checkAquiferIsUnknown(row.item.aquiferId) }">
                           {{row.item.aquiferId}}
                         </span>
                       </template>
-                      <template slot="documents" slot-scope="row">
+                      <template v-slot:cell(documents)="option">
                         <ul>
                           <li v-for="(file, index) in row.item.documents" :key="index">
                             {{ fileNameWithoutPrefix(file.name) }}

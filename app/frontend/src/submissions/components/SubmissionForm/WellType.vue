@@ -126,12 +126,12 @@ Licensed under the Apache License, Version 2.0 (the "License");
               <template slot="no-options">
                   Search by well tag number or owner name
               </template>
-              <template slot="option" slot-scope="option">
+              <template v-slot:cell(option)="option">
                 <div>
                   {{ option.well_tag_number }} ({{ option.owner_full_name }})
                 </div>
               </template>
-              <template slot="selected-option" slot-scope="option">
+              <template v-slot:cell(selected-option)="option">
                 <div>
                   {{ option.well_tag_number }}
                 </div>

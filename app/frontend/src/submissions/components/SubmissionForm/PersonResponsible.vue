@@ -53,12 +53,12 @@ Licensed under the Apache License, Version 2.0 (the "License");
               <template slot="no-options">
                   Type to search registry...
               </template>
-              <template slot="selected-option" slot-scope="option">
+              <template v-slot:cell(selected-option)="option">
                 <div>
                   {{ personNameReg (option) }}
                 </div>
               </template>
-              <template slot="option" slot-scope="option">
+              <template v-slot:cell(option)="option">
                 <div>
                   {{ personNameReg (option) }}
                 </div>
