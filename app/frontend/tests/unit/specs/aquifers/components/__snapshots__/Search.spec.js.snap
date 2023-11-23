@@ -486,19 +486,33 @@ exports[`Search Component Matches the snapshot 1`] = `
                   aria-colindex="1"
                   class=""
                   role="cell"
-                />
+                >
+                  <router-link-stub
+                    to="[object Object]"
+                  >
+                    4
+                  </router-link-stub>
+                </td>
                 <td
                   aria-colindex="2"
                   class=""
                   role="cell"
                 >
-                  2020-01-01
+                  <span
+                    title="2020-01-01"
+                  >
+                    January 1st 2020 at 12:00 AM
+                  </span>
                 </td>
                 <td
                   aria-colindex="3"
                   class=""
                   role="cell"
-                />
+                >
+                  
+            
+          
+                </td>
                 <td
                   aria-colindex="4"
                   class=""
