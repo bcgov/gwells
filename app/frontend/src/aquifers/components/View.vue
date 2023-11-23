@@ -307,12 +307,12 @@
                 </b-row>
               </div>
               <b-table id="licenses" striped :items="licenceDetails.wells_by_licence">
-                <template v-slot:cell(license_number)="row">
+                <template v-slot:cell(licence_number)="row">
                   <a :href="`https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&amp;PosseObjectDef=o_ATIS_DocumentSearch&amp;PosseMenuName=WS_Main&Criteria_LicenceNumber=${row.item.licence_number}`" target="_blank">
                     {{ row.item.licence_number }}
                   </a>
                 </template>
-                <template v-slot:cell(well_tag_numbers_in_license)="row">
+                <template v-slot:cell(well_tag_numbers_in_licence)="row">
                   <ul class="p-0 m-0">
                     <li v-for="wtn in row.item.well_tag_numbers_in_licence" :key="wtn">
                       <router-link :to="{ name: 'wells-detail', params: { id: wtn }}">{{ wtn }}</router-link>

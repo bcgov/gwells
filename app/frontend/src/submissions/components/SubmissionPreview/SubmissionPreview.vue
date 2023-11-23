@@ -289,8 +289,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
               :fields="['from', 'to']"
               show-empty
           >
-          <template v-slot:cell(from)="data">{{data.item.start}} ft</template>
-          <template v-slot:cell(to)="data" >{{data.item.end}} ft</template>
+            <template v-slot:cell(from)="data">{{data.item.start}} ft</template>
+            <template v-slot:cell(to)="data" >{{data.item.end}} ft</template>
           </b-table>
         </b-col>
       </b-row>

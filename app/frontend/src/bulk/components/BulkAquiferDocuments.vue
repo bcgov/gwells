@@ -210,7 +210,7 @@
                           {{row.item.aquiferId}}
                         </span>
                       </template>
-                      <template v-slot:cell(documents)="option">
+                      <template v-slot:cell(documents)="row">
                         <ul>
                           <li v-for="(file, index) in row.item.documents" :key="index">
                             {{ fileNameWithoutPrefix(file.name) }}
