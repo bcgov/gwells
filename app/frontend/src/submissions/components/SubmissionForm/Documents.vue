@@ -289,7 +289,9 @@ export default {
       if(confirm(`Are you sure you want to delete file: \n${value}`)){
         ApiService.deleteFile(`wells/${tag}/delete_document?filename=${encodedFileName}&private=${doc_status}`)
           .then(() => {
-            ApiService.decrementFileCount(`wells/${tag}`, value.split("_")[1]);
+            const splitFile = value.split("_");
+            const splitFileName = splitFile.length > 3 ? `${splitFile[1]}_${splitFile[2]}` : splitFile[1];
+            ApiService.decrementFileCount(`wells/${tag}`, splitFileName);
             this.$emit('fetchFiles');
           })
       }

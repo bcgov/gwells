@@ -140,13 +140,19 @@ class MinioClient():
 
     def extract_date_of_upload(self, object_name):
         try:
-            return int(unquote_plus(object_name).rsplit('/', 1)[-1].split("_")[2].split(".")[0].strip())
+            split_file_name = unquote_plus(object_name).rsplit('/', 1)[-1].split("_")
+            split_val = 2 if len(split_file_name) == 3 else 3
+            return int(split_file_name[split_val].split(".")[0].strip())
         except Exception:
             return -1
 
     def extract_well_label(self, object_name):
         try:
-            return unquote_plus(object_name).rsplit('/', 1)[-1].split("_")[1]
+            split_file_name = unquote_plus(object_name).rsplit('/', 1)[-1].split("_")
+            if(len(split_file_name) == 3):
+                return split_file_name[1]
+            elif(len(split_file_name) == 4):
+                return split_file_name[1] + "_" + split_file_name[2]
         except Exception:
             return ""
         

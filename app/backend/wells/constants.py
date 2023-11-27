@@ -8,7 +8,7 @@ WELL_TAGS_PUBLIC = [
   { "text": "Pictures/Photos", "value":  "Photo" },
   { "text": "Well Pump Installation Report", "value":  "Well Pump Installation" },
   { "text": "Pumping Test Raw Data", "value":  "Pumping Test Data" },
-  { "text": "Directions Artesian Conditions", "value": "Directions Artesian Conditions"},
+  { "text": "Directions Artesian Conditions", "value": "Directions_ArtesianConditions"},
   { "text": "Map(s)", "value":  "Map" },
   { "text": "Other", "value":  "Additional Details" },
 ]

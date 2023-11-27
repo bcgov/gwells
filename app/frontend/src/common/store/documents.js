@@ -92,7 +92,9 @@ export default {
                 .then(() => {
                   console.log('successfully added file: ' + objectName)
                   if(documentType === "wells"){
-                    ApiService.incrementFileCount(`wells/${recordId}`, fileName.split("_")[0])
+                    const fileNameSplit = objectName.split("_");
+                    const fileDocumentType = fileNameSplit.length > 2 ? `${fileNameSplit[0]}_${fileNameSplit[1]}` : fileNameSplit[0];
+                    ApiService.incrementFileCount(`wells/${recordId}`, fileDocumentType)
                   }
                 })
                 .catch(error => {
