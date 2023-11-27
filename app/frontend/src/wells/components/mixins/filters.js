@@ -13,7 +13,7 @@
 */
 /* Shared logic for handling search filters. */
 import { mapGetters } from 'vuex'
-
+import { WELL_TAGS_PRIVATE, WELL_TAGS_PUBLIC, } from '../../../common/constants'
 const SEARCH_FIELDS = {
   matchAny: {
     param: 'match_any',
@@ -24,6 +24,12 @@ const SEARCH_FIELDS = {
     ]
   },
   well: { param: 'well', label: 'Well tag or ID plate number', type: 'text' },
+  wellDocumentType: {
+    param: "well_document_type",
+    label: "Contains document type",
+    type: "select",
+    options: [...WELL_TAGS_PUBLIC, ...WELL_TAGS_PRIVATE].sort((a,b) => a.text.toLowerCase()-b.text.toLowerCase())
+  },
   streetOrCity: {
     param: 'street_address_or_city',
     label: 'Street address or city',
