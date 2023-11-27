@@ -2606,7 +2606,7 @@ class WellAttachment(models.Model):
     photo = models.PositiveSmallIntegerField(default=0)
     well_pump_installation = models.PositiveSmallIntegerField(default=0)
     pumping_test_data = models.PositiveSmallIntegerField(default=0)
-    directions_artesian_conditions = models.PositiveSmallIntegerField(default=0)
+    directions_artesianconditions = models.PositiveSmallIntegerField(default=0)
     map = models.PositiveSmallIntegerField(default=0)
     additional_details = models.PositiveSmallIntegerField(default=0)
     # Private Tags
