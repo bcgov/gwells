@@ -92,14 +92,14 @@ class Command(BaseCommand):
         hash_map = defaultdict(int)
         for doc in response['public']:
             split_file = doc["name"].split("_")
-            if len(split_file) >= 3:
+            if len(split_file) <= 3:
                 value = split_file[1].replace(" ", "_").lower()
             else:
                 value = split_file[1].lower() + "_" + split_file[2].lower()
             hash_map[value] = (hash_map[value] or 0) + 1
         for doc in response['private']:
             split_file = doc["name"].split("_")
-            if len(split_file) >= 3:
+            if len(split_file) <= 3:
                 value = split_file[1].replace(" ", "_").lower()
             else:
                 value = split_file[1].lower() + "_" + split_file[2].lower()
