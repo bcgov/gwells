@@ -6,7 +6,7 @@ export const AQUIFER_ID_FOR_UNCORRELATED_WELLS = 1143
 export const MAX_API_RESULT_AND_EXPORT_COUNT = 999999
 
 export const WELL_TAGS_PUBLIC = [
-  { text: "Directions Artesian Conditions", value: "Directions Artesian Conditions"},
+  { text: "Directions Artesian Conditions", value: "Directions_ArtesianConditions"},
   { text: "Map(s)", value:  "Map" },
   { text: "Pictures/Photos", value:  "Photo" },
   { text: "Pumping Test Raw Data", value:  "Pumping Test Data" },

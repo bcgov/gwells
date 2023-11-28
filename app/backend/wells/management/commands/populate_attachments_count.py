@@ -91,10 +91,18 @@ class Command(BaseCommand):
         response = self.CLIENT.get_documents(int(well_tag_number), resource="well", include_private=True)
         hash_map = defaultdict(int)
         for doc in response['public']:
-            value = doc['name'].split("_")[1].replace(" ", "_").lower()
+            split_file = doc["name"].split("_")
+            if len(split_file) <= 3:
+                value = split_file[1].replace(" ", "_").lower()
+            else:
+                value = split_file[1].lower() + "_" + split_file[2].lower()
             hash_map[value] = (hash_map[value] or 0) + 1
         for doc in response['private']:
-            value = doc['name'].split("_")[1].replace(" ", "_").lower()
+            split_file = doc["name"].split("_")
+            if len(split_file) <= 3:
+                value = split_file[1].replace(" ", "_").lower()
+            else:
+                value = split_file[1].lower() + "_" + split_file[2].lower()
             hash_map[value] = (hash_map[value] or 0) + 1
         
         if hash_map:
