@@ -15,7 +15,11 @@ export const WELL_TAGS_PUBLIC = [
   { text: "Well Decommission Report", value:  "Well Decommission" },
   { text: "Well Pump Installation Report", value:  "Well Pump Installation" },
   { text: "Other", value:  "Additional Details" },
-]
+].sort((a,b) => {
+  if(a.text === 'Other') return 1;
+  if(b.text === 'Other') return -1;
+  a.text.toLowerCase().localeCompare(b.text.toLowerCase())
+})
 
 export const WELL_TAGS_PRIVATE = [
   { text: "Alternative Specifications", value:  "Alternative Specs" },
@@ -26,7 +30,7 @@ export const WELL_TAGS_PRIVATE = [
   { text: "Signed Sharing Agreement", value:  "Sharing Agreement" },
   { text: "Water Quality Report", value:  "Water Quality" },
   { text: "Well Inspection Report", value:  "Well Inspection" },
-]
+].sort((a,b) => a.text.toLowerCase().localeCompare(b.text.toLowerCase()))
 
 export const WELL_TAGS = [
   {

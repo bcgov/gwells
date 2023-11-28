@@ -28,7 +28,11 @@ const SEARCH_FIELDS = {
     param: "well_document_type",
     label: "Contains document type",
     type: "select",
-    options: [...WELL_TAGS_PUBLIC, ...WELL_TAGS_PRIVATE].sort((a,b) => a.text.toLowerCase()-b.text.toLowerCase())
+    options: [...WELL_TAGS_PUBLIC, ...WELL_TAGS_PRIVATE].sort((a,b) => {
+      if(a.text === 'Other') return 1;
+      if(b.text === 'Other') return -1;
+      return a.text.toLowerCase().localeCompare(b.text.toLowerCase())
+    })
   },
   streetOrCity: {
     param: 'street_address_or_city',
