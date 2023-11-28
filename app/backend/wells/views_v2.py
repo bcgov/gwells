@@ -38,7 +38,7 @@ from wells.filters import (
     GeometryFilterBackend,
     RadiusFilterBackend
 )
-from wells.models import Well
+from wells.models import Well, WellAttachment
 from wells.serializers_v2 import (
     WellLocationSerializerV2,
     WellVerticalAquiferExtentSerializerV2,
