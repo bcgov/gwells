@@ -94,6 +94,8 @@ class Command(BaseCommand):
             split_file = doc["name"].split("_")
             if len(split_file) <= 3:
                 value = split_file[1].replace(" ", "_").lower()
+                if "." in value:
+                    value = value.split(".")[0]
             else:
                 value = split_file[1].lower() + "_" + split_file[2].lower()
             hash_map[value] = (hash_map[value] or 0) + 1
@@ -109,7 +111,7 @@ class Command(BaseCommand):
             try:
                 well_attachment_entry = self.get_or_create_entry(well_tag_number)
                 for key, value in hash_map.items():
-                    if key == "well_record":
+                    if "well_record" in key:
                         setattr(well_attachment_entry, 'well_construction', value)
                     elif key in self.formatted_well_tags:
                         setattr(well_attachment_entry, key, value)

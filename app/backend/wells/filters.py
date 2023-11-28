@@ -37,6 +37,7 @@ from wells.models import (
     WellOrientationCode,
     WaterQualityCharacteristic,
     Well,
+    WellAttachment,
     PumpingTestDescriptionCode,
     BoundaryEffectCode,
     AnalysisMethodCode
@@ -215,7 +216,9 @@ class WellListFilter(AnyOrAllFilterSet):
     filter_pack_range = filters.RangeFilter(method='filter_filter_pack_range',
                                             label='Filter pack from/to range')
     liner_range = filters.RangeFilter(method='filter_liner_range', label='Liner range')
-
+    well_document_type = filters.CharFilter(method='filter_by_document_type',
+                                             label='Contains document type')
+    
     # Don't require a choice (i.e. select box) for aquifer
     aquifer = filters.NumberFilter()
 
@@ -462,6 +465,7 @@ class WellListFilter(AnyOrAllFilterSet):
             'well_class',
             'well_depth',
             'well_disinfected_status',
+            'well_document_type',
             'well_identification_plate_attached',
             'well_location_description',
             'well_orientation_status',
@@ -504,6 +508,12 @@ class WellListFilter(AnyOrAllFilterSet):
     def filter_street_address_or_city(self, queryset, name, value):
         return queryset.filter(Q(street_address__icontains=value) |
                                Q(city__icontains=value))
+
+    def filter_by_document_type(self, queryset, name, value):
+        filter_condition = {f"{value.lower().replace(' ', '_')}__gt": 0}
+        attachments = WellAttachment.objects.filter(**filter_condition).values_list('well_tag_number', flat=True)
+        attachments = list(map(int, attachments))
+        return queryset.filter(well_tag_number__in=attachments)
 
     def filter_combined_legal(self, queryset, name, value):
         lookups = (
