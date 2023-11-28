@@ -18,7 +18,7 @@ export const WELL_TAGS_PUBLIC = [
 ].sort((a,b) => {
   if(a.text === 'Other') return 1;
   if(b.text === 'Other') return -1;
-  a.text.toLowerCase().localeCompare(b.text.toLowerCase())
+  return a.text.toLowerCase().localeCompare(b.text.toLowerCase())
 })
 
 export const WELL_TAGS_PRIVATE = [
