@@ -20,7 +20,7 @@
       "create_date": "2023-03-31T17:42:52.421Z",
       "update_user": "DATALOAD_USER",
       "update_date": "2023-03-31T17:42:52.421Z",
-      "description": "Pumping Test - Pumping Well",
+      "description": "Pumping test - pumping well",
       "display_order": 1,
       "effective_date": "2013-11-07T05:28:00.402Z",
       "expiry_date": "9999-12-31T23:59:59Z"
@@ -34,7 +34,7 @@
         "create_date": "2023-03-31T17:42:52.421Z",
         "update_user": "DATALOAD_USER",
         "update_date": "2023-03-31T17:42:52.421Z",
-        "description": "Pumping Test - Observation Well",
+        "description": "Pumping test - observation well",
         "display_order": 2,
         "effective_date": "2013-11-07T05:28:00.402Z",
         "expiry_date": "9999-12-31T23:59:59Z"
@@ -48,7 +48,7 @@
         "create_date": "2023-03-31T17:42:52.421Z",
         "update_user": "DATALOAD_USER",
         "update_date": "2023-03-31T17:42:52.421Z",
-        "description": "Recovery Test - Pumping Well",
+        "description": "Recovery test - pumping well",
         "display_order": 3,
         "effective_date": "2013-11-07T05:28:00.402Z",
         "expiry_date": "9999-12-31T23:59:59Z"
@@ -62,7 +62,7 @@
         "create_date": "2023-03-31T17:42:52.421Z",
         "update_user": "DATALOAD_USER",
         "update_date": "2023-03-31T17:42:52.421Z",
-        "description": "Recovery Test - Observation Well",
+        "description": "Recovery test - observation well",
         "display_order": 4,
         "effective_date": "2013-11-07T05:28:00.402Z",
         "expiry_date": "9999-12-31T23:59:59Z"
