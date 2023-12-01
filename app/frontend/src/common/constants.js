@@ -46,3 +46,16 @@ export const WELL_TAGS = [
     options: WELL_TAGS_PRIVATE,
   },
 ]
+
+export const TOOLTIP_TEXT = {
+  pumping_test_information: {
+    pumping_test: 'Describes the type of test (step, recovery, constant rate Pumping Test) and type of well (pumping well, Observation well).',
+    boundary_effect: 'Describe the specific conditions that are to be imposed at the boundaries of a groundwater flow region such as a recharge (river, lake) boundary or a barrier (impermeable rock) boundary where the assumption that the aquifer is of infinite extent is no longer valid.',
+    storativity: 'Storativity (S) is a dimensionless measure of the volume of water that will be discharged from an aquifer per unit area of the aquifer and per unit reduction in hydraulic head.',
+    transmissivity: 'Describes the ability of the aquifer to transmit groundwater throughout its entire saturated thickness, is measured as the rate at which groundwater can flow through an aquifer section of unit width under a unit hydraulic gradient.',
+    hydraulic_conductivity: 'A measure of how easily water can pass through soil or rock.',
+    specific_yield: 'The quantity of water that a unit volume of saturated permeable rock or soil will yield when drained by gravity.',
+    specific_capacity: 'The Specific Capacity of a well is simply the pumping rate (yield) divided by the drawdown.',
+    analysis_method: 'Mathematical solutions (Theis, Cooper-Jacob, Neuman, etc.) where response data (Discharge, Drawdown/Time) from pumping tests are used to estimate the hydraulic properties of aquifers.',
+  },
+}

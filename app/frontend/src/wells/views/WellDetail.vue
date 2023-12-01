@@ -486,19 +486,59 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 bordered
                 :items="well.aquifer_parameters_set"
                 :fields="[
-                  'start_date_pumping_test',
-                  'pumping_test_description',
+                  { key: 'start_date_pumping_test', label: 'Start Date' },
+                  { key: 'pumping_test_description', label: 'Description' },
                   { key: 'test_duration', label: 'Test Duration (min)' },
-                  'boundary_effect',
-                  'storativity',
+                  { key: 'boundary_effect', label: 'Boundary Effect' },
+                  { key: 'storativity', label: 'Storativity' },
                   { key: 'transmissivity', label: 'Transmissivity (m²/day)' },
                   { key: 'hydraulic_conductivity', label: 'Hydraulic Conductivity (m/day)' },
-                  'specific_yield',
+                  { key: 'specific_yield', label: 'Specific Yield' },
                   { key: 'specific_capacity', label: 'Specific Capacity (L/s/m)' },
-                  'analysis_method',
-                  'comments'
+                  { key: 'analysis_method', label: 'Analysis Method' },
+                  { key: 'comments', label: 'Comments' }
                 ]"
                 show-empty>
+                <template v-slot:head(pumping_test_description)="data">
+                  <span>{{ data.label }}</span>&nbsp;
+                  <i id="test_duration" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none" ></i>
+                  <b-popover no-arrow target="test_duration" placement="top" triggers="hover focus" :content="TOOLTIP_TEXT.pumping_test_information.pumping_test" ></b-popover>
+                </template>
+                <template v-slot:head(boundary_effect)="data">
+                  <span>{{ data.label }}</span>&nbsp;
+                  <i id="boundary_effect" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none" ></i>
+                  <b-popover no-arrow target="boundary_effect" placement="top" triggers="hover focus" :content="TOOLTIP_TEXT.pumping_test_information.boundary_effect" ></b-popover>
+                </template>
+                <template v-slot:head(storativity)="data">
+                  <span>{{ data.label }}</span>&nbsp;
+                  <i id="storativity" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none" ></i>
+                  <b-popover no-arrow target="storativity" placement="top" triggers="hover focus" :content="TOOLTIP_TEXT.pumping_test_information.storativity" ></b-popover>
+                </template>
+                <template v-slot:head(transmissivity)="data">
+                  <span>{{ data.label }}</span>&nbsp;
+                  <i id="transmissivity" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none" ></i>
+                  <b-popover no-arrow target="transmissivity" placement="top" triggers="hover focus" :content="TOOLTIP_TEXT.pumping_test_information.transmissivity" ></b-popover>
+                </template>
+                <template v-slot:head(hydraulic_conductivity)="data">
+                  <span>{{ data.label }}</span>&nbsp;
+                  <i id="hydraulic_conductivity" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none" ></i>
+                  <b-popover no-arrow target="hydraulic_conductivity" placement="top" triggers="hover focus" :content="TOOLTIP_TEXT.pumping_test_information.hydraulic_conductivity" ></b-popover>
+                </template>
+                <template v-slot:head(specific_yield)="data">
+                  <span>{{ data.label }}</span>&nbsp;
+                  <i id="specific_yield" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none" ></i>
+                  <b-popover no-arrow target="specific_yield" placement="top" triggers="hover focus" :content="TOOLTIP_TEXT.pumping_test_information.specific_yield" ></b-popover>
+                </template>
+                <template v-slot:head(specific_capacity)="data">
+                  <span>{{ data.label }}</span>&nbsp;
+                  <i id="specific_capacity" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none" ></i>
+                  <b-popover no-arrow target="specific_capacity" placement="top" triggers="hover focus" :content="TOOLTIP_TEXT.pumping_test_information.specific_capacity" ></b-popover>
+                </template>
+                <template v-slot:head(analysis_method)="data">
+                  <span>{{ data.label }}</span>&nbsp;
+                  <i id="analysis_method" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none" ></i>
+                  <b-popover no-arrow target="analysis_method" placement="top" triggers="hover focus" :content="TOOLTIP_TEXT.pumping_test_information.analysis_method" ></b-popover>
+                </template>
                 <template v-slot:cell(pumping_test_description)="data">{{codeToDescription('pumping_test_description_codes', data.item.pumping_test_description)}}</template>
                 <template v-slot:cell(boundary_effect)="data">{{codeToDescription('boundary_effect_codes', data.item.boundary_effect)}}</template>
                 <template v-slot:cell(analysis_method)="data">{{codeToDescription('analysis_method_codes', data.item.analysis_method)}}</template>
@@ -544,6 +584,7 @@ import codeToDescription from '@/common/codeToDescription.js'
 import { FETCH_CODES } from '@/submissions/store/actions.types.js'
 import { RESET_WELL_DATA } from '@/wells/store/actions.types.js'
 import { SET_WELL_RECORD, SET_WELL_LICENCE } from '@/wells/store/mutations.types.js'
+import { TOOLTIP_TEXT } from '@/common/constants.js';
 
 export default {
   name: 'WellDetail',
@@ -556,6 +597,7 @@ export default {
   ],
   data () {
     return {
+      TOOLTIP_TEXT: TOOLTIP_TEXT,
       surveys: [],
       lithology_fields: [
         { key: 'start', label: 'From (ft bgl)' },
@@ -702,6 +744,9 @@ export default {
 </script>
 
 <style lang="scss">
+.popover .arrow {
+  display: none !important;
+}
 .well-detail .print-notice {
   font-size: 1rem;
 }
