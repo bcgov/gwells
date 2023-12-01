@@ -220,7 +220,7 @@ services:
 ###                                       Volumes                                         ###
 #############################################################################################
   pgadmin:
-    container_name: pgadmin
+    container_name: gwells-pgadmin
     image: dpage/pgadmin4
     ports:
       - 5050:80
