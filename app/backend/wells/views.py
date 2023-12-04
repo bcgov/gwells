@@ -74,8 +74,8 @@ from wells.models import (
     WellClassCode,
     WellYieldUnitCode,
     WellStatusCode,
-    AquiferParameters,
 )
+
 from wells.change_history import get_well_history
 from wells.renderers import WellListCSVRenderer, WellListExcelRenderer
 from wells.serializers import (
@@ -783,42 +783,33 @@ def lithology_geojson(request, **kwargs):
 @api_view(['GET'])
 def well_licensing(request, **kwargs):
     tag = request.GET.get('well_tag_number')
-    e_licensing_url = get_env_variable('E_LICENSING_URL')
-    api_success = False
+    try:
+        if tag and tag.isnumeric():
+            well = Well.objects.get(well_tag_number=tag)
+            raw_query = """
+                SELECT DISTINCT 
+                aw.licence_number 
+                FROM well_licences wl 
+                LEFT JOIN aquifers_waterrightslicence aw 
+                ON aw.wrl_sysid = wl.waterrightslicence_id
+                WHERE well_id = %s
+            """
 
-    headers = {
-        'content_type': 'application/json',
-        'AuthUsername': get_env_variable('E_LICENSING_AUTH_USERNAME'),
-        'AuthPass': get_env_variable('E_LICENSING_AUTH_PASSWORD')
-    }
+            with connection.cursor() as cursor:
+                cursor.execute(raw_query, [tag])
+                result = cursor.fetchall()
+                flattened_result = [value for row in result for value in row]
+                data = {
+                    'status': well.licenced_status.description,
+                    'number': flattened_result,
+                    'date': ''
+                }
+            return JsonResponse(data)
+    except Exception as e:
+        return HttpResponse(status=500)
+    return HttpResponse(status=400)
 
-    if e_licensing_url:
-        try:
-            response = requests.get(e_licensing_url + '{}'.format(tag), headers=headers)
-            if response.ok:
-                try:
-                    licence = response.json()[-1]  # Use the latest licensing value, fails purposely if empty array
-                    licence_status = 'Licensed' if licence.get('authorization_status') == 'ACTIVE' else 'Unlicensed'
-                    data = {
-                        'status': licence_status,
-                        'number': licence.get('authorization_number'),
-                        'date': licence.get('authorization_status_date')
-                    }
-                    api_success = True
-                except:
-                    pass
-        except:
-            pass
-
-    if not api_success:
-        well = Well.objects.get(well_tag_number=tag)
-        data = {
-            'status': well.licenced_status.description,
-            'number': '',
-            'date': ''
-        }
-
-    return HttpResponse(json.dumps(data), content_type="application/json")
+    
 
 
 # Deprecated. Use WellSubsurface instead
