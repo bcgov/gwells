@@ -502,9 +502,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 <template v-slot:cell(pumping_test_description)="data">{{codeToDescription('pumping_test_description_codes', data.item.pumping_test_description)}}</template>
                 <template v-slot:cell(boundary_effect)="data">{{codeToDescription('boundary_effect_codes', data.item.boundary_effect)}}</template>
                 <template v-slot:cell(analysis_method)="data">{{codeToDescription('analysis_method_codes', data.item.analysis_method)}}</template>
-                <template v-slot:cell(storativity)="data">{{parseFloat(data.item.storativity).toString()}}</template>
-                <template v-slot:cell(transmissivity)="data">{{parseFloat(data.item.transmissivity).toString()}}</template>
-                <template v-slot:cell(hydraulic_conductivity)="data">{{parseFloat(data.item.hydraulic_conductivity).toString()}}</template>
+                <template v-slot:cell(storativity)="data">{{data.item.storativity && parseFloat(data.item.storativity).toString()}}</template>
+                <template v-slot:cell(transmissivity)="data">{{data.item.transmissivity && parseFloat(data.item.transmissivity).toString()}}</template>
+                <template v-slot:cell(hydraulic_conductivity)="data">{{data.item.hydraulic_conductivity && parseFloat(data.item.hydraulic_conductivity).toString()}}</template>
             </b-table>
           </div>
         </fieldset>
@@ -541,7 +541,7 @@ import Documents from '@/wells/components/Documents.vue'
 import convertCoordinatesMixin from '@/common/convertCoordinatesMixin.js'
 import ApiService from '@/common/services/ApiService.js'
 import codeToDescription from '@/common/codeToDescription.js'
-
+import { FETCH_CODES } from '@/submissions/store/actions.types.js'
 import { RESET_WELL_DATA } from '@/wells/store/actions.types.js'
 import { SET_WELL_RECORD, SET_WELL_LICENCE } from '@/wells/store/mutations.types.js'
 
@@ -689,7 +689,7 @@ export default {
   },
   created () {
     this.fetchSurveys()
-
+    this.$store.dispatch(FETCH_CODES)
     if (this.id === null) {
       this.error = `Unable to load well '${this.id}'`
     }
