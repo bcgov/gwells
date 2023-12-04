@@ -805,7 +805,7 @@ def well_licensing(request, **kwargs):
                     'date': ''
                 }
             return JsonResponse(data)
-    except Exception as e:
+    except Exception:
         return HttpResponse(status=500)
     return HttpResponse(status=400)
 
