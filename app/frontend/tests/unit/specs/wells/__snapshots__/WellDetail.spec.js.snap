@@ -505,14 +505,6 @@ exports[`WellDetail.vue should match snapshot 1`] = `
             </span>
              
             
-            <a
-              href="https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&PosseObjectDef=o_ATIS_DocumentSearch&PosseMenuName=WS_Main&Criteria_LicenceNumber="
-              target="_blank"
-            >
-              
-              
-            
-            </a>
           </b-col-stub>
            
           <b-col-stub
