@@ -17,6 +17,7 @@ from collections import OrderedDict
 
 from django import forms
 from django.core.exceptions import FieldDoesNotExist
+from django.db import connection
 from django.http import HttpRequest, QueryDict
 from django.contrib.gis.geos import GEOSException, Polygon, GEOSGeometry, Point
 from django.contrib.gis.gdal import GDALException
@@ -42,6 +43,7 @@ from wells.models import (
     BoundaryEffectCode,
     AnalysisMethodCode
 )
+from wells.constants import WELL_TAGS
 
 logger = logging.getLogger('wells_filters')
 
@@ -346,7 +348,10 @@ class WellListFilter(AnyOrAllFilterSet):
                                                 method='filter_licenced_status',
                                                 label='Licence status'
     )
-
+    licence_number = filters.NumberFilter(field_name='licence_number',
+                                          method="filter_licence_number",
+                                          label="Licence Number"
+                                          )
     class Meta:
         model = Well
         fields = [
@@ -416,6 +421,7 @@ class WellListFilter(AnyOrAllFilterSet):
             'legal_range',
             'legal_section',
             'legal_township',
+            'licence_number',
             'licenced_status',
             'liner_diameter',
             'liner_from',
@@ -509,11 +515,37 @@ class WellListFilter(AnyOrAllFilterSet):
         return queryset.filter(Q(street_address__icontains=value) |
                                Q(city__icontains=value))
 
+    def filter_licence_number(self, queryset, name, value):
+        raw_query = """
+        SELECT DISTINCT
+        wl.well_id
+        FROM well_licences wl 
+        LEFT JOIN aquifers_waterrightslicence aw 
+        ON aw.wrl_sysid = wl.waterrightslicence_id
+        WHERE aw.licence_number = %s
+        """
+        params = [value]
+        try:
+            if int(value):
+                with connection.cursor() as cursor:
+                    cursor.execute(raw_query, params)
+                    result = cursor.fetchall()
+                well_ids = [row[0] for row in result]
+                print(well_ids)
+                return queryset.filter(well_tag_number__in=well_ids)
+        except:
+            pass
+        logger.warning(f"[FILTER SEARCH]: invalid licence_number '{value}' was inputted.")
+        return queryset.filter(well_tag_number=None)
+
     def filter_by_document_type(self, queryset, name, value):
-        filter_condition = {f"{value.lower().replace(' ', '_')}__gt": 0}
-        attachments = WellAttachment.objects.filter(**filter_condition).values_list('well_tag_number', flat=True)
-        attachments = list(map(int, attachments))
-        return queryset.filter(well_tag_number__in=attachments)
+        if any(value == entry["value"] for entry in WELL_TAGS):
+            filter_condition = {f"{value.lower().replace(' ', '_')}__gt": 0}
+            attachments = WellAttachment.objects.filter(**filter_condition).values_list('well_tag_number', flat=True)
+            attachments = list(map(int, attachments))
+            return queryset.filter(well_tag_number__in=attachments)
+        logger.warning(f"[FILTER SEARCH]: invalid document_type '{value}' was inputted.")
+        return queryset.filter(well_tag_number=None)
 
     def filter_combined_legal(self, queryset, name, value):
         lookups = (
@@ -729,7 +761,6 @@ class WellListOrderingFilter(OrderingFilter):
         for field in Well._meta.get_fields()
         if field.many_to_many and not field.auto_created
     }
-
     def get_ordering(self, request, queryset, view):
         ordering = super().get_ordering(request, queryset, view)
         updated_ordering = []
