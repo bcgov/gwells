@@ -2640,3 +2640,13 @@ class WellAttachment(models.Model):
         return_string += "{} File count: {}".format('Consultants Report',self.consultants_report)
         
         return return_string
+
+class WellLicence(models.Model):
+    id = models.IntegerField(primary_key=True)
+    well_id = models.IntegerField()
+    waterrightslicence_id = models.IntegerField()
+    class Meta:
+        db_table = "well_licences"
+        managed = False
+    def __str__(self):
+        return "Well Number: " + str(self.well_id) + ", License #: " + str(self.waterrightslicence_id)
