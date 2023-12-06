@@ -791,7 +791,7 @@ class WellDetailAdminSerializer(AuditModelSerializer):
     person_responsible = PersonNameSerializer()
     company_of_person_responsible = OrganizationNameListSerializer()
     lithologydescription_set = LithologyDescriptionSerializer(many=True)
-    submission_reports = serializers.SerializerMethodField()
+    submission_reports = serializers.SerializerMethodField() 
 
     # well vs. well_tag_number ; on submissions, we refer to well
     well = serializers.IntegerField(source='well_tag_number')
