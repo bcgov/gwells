@@ -13,7 +13,7 @@
 """
 import logging
 from decimal import Decimal
-
+from django.db import connection
 from rest_framework import serializers
 from django.contrib.gis.geos import Point
 
@@ -142,7 +142,7 @@ class WellVerticalAquiferExtentSerializerV2(serializers.ModelSerializer):
 
 class WellListSerializerV2(serializers.ModelSerializer):
     """Serializes a well record"""
-
+    licence_number = serializers.SerializerMethodField()
     legal_pid = serializers.SerializerMethodField()
     drilling_company = serializers.ReadOnlyField(
         source='company_of_person_responsible.org_guid')
@@ -286,9 +286,29 @@ class WellListSerializerV2(serializers.ModelSerializer):
             "static_water_level",
             "alternative_specs_submitted",
             "technical_report",
-            "drinking_water_protection_area_ind"
+            "drinking_water_protection_area_ind",
+            "licence_number"
         )
+    def get_licence_number(self, obj):
+        with connection.cursor() as cursor:
+            licence_num_query = """
+                SELECT ARRAY_AGG(aw.licence_number) AS licence_numbers
+                FROM well_licences wl 
+                LEFT JOIN aquifers_waterrightslicence aw ON aw.wrl_sysid = wl.waterrightslicence_id
+                WHERE wl.well_id = %s
+                GROUP BY wl.well_id
+            """
+            cursor.execute(licence_num_query, [obj.well_tag_number])
+            row = cursor.fetchone()
+            if row:
+                return row[0]
+            else:
+                return None
 
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['licence_number'] = self.get_licence_number(instance)
+        return representation
 
 class WellListAdminSerializerV2(WellListSerializerV2):
     class Meta:

@@ -185,7 +185,8 @@ const RESULT_COLUMNS = [
   'alterationStartDate',
   'alterationEndDate',
   'decomissionStartDate',
-  'decomissionEndDate'
+  'decomissionEndDate',
+  'licenceNumber',
 ]
 
 export default {
