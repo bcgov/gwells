@@ -784,7 +784,10 @@ class SubmissionWorkDatesByWellSerializer(serializers.ModelSerializer):
 
 class WellDetailAdminSerializer(AuditModelSerializer):
     casing_set = CasingSerializer(many=True)
-    aquifer_parameters_set = AquiferParametersSerializer(many=True)
+    aquifer_parameters_set = AquiferParametersSerializer(
+            many=True,
+            partial=True
+        )
     screen_set = ScreenSerializer(many=True)
     linerperforation_set = LinerPerforationSerializer(many=True)
     decommission_description_set = DecommissionDescriptionSerializer(many=True)
@@ -803,7 +806,7 @@ class WellDetailAdminSerializer(AuditModelSerializer):
     class Meta:
         model = Well
         fields = '__all__'
-        extra_fields = ['latitude', 'longitude']
+        extra_fields = ['latitude', 'longitude', 'aquifer_parameters_set']
 
     def get_legal_pid(self, instance):
         if instance.legal_pid is None:
