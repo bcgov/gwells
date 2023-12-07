@@ -784,10 +784,7 @@ class SubmissionWorkDatesByWellSerializer(serializers.ModelSerializer):
 
 class WellDetailAdminSerializer(AuditModelSerializer):
     casing_set = CasingSerializer(many=True)
-    aquifer_parameters_set = AquiferParametersSerializer(
-            many=True,
-            partial=True
-        )
+    aquifer_parameters_set = AquiferParametersSerializer(many=True,)
     screen_set = ScreenSerializer(many=True)
     linerperforation_set = LinerPerforationSerializer(many=True)
     decommission_description_set = DecommissionDescriptionSerializer(many=True)

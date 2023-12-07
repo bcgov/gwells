@@ -563,9 +563,21 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
         many=True, required=False)
     lithologydescription_set = LithologyDescriptionSerializer(
         many=True, required=False)
-    aquifer_parameters_set = AquiferParametersSerializer(
-        many=True, required=False)
 
+
+    def create(self, validated_data):
+        aquifer_parameters_data = validated_data.pop('aquifer_parameters_set', None)
+        instance = super().create(validated_data)
+        if aquifer_parameters_data:
+            for entry in aquifer_parameters_data:
+                if entry.get('testing_number', None) is None:
+                    entry.pop('well', None)
+                    new_entry = AquiferParameters.objects.get_or_create(well=validated_data['well'], **entry)
+                    entry['testing_number'] = getattr(new_entry, 'testing_number', None)
+                else:
+                    pass
+
+        return instance
     # Sets person_responsible and company_of back to object, otherwise client view only gets guid
     def to_representation(self, instance):
         response = super().to_representation(instance)
@@ -743,7 +755,6 @@ class WellDecommissionSubmissionSerializer(WellSubmissionSerializerBase):
         return {
             'casing_set': Casing,
             'decommission_description_set': DecommissionDescription,
-            'aquifer_parameters_set': AquiferParameters,
         }
 
     class Meta:

@@ -251,6 +251,7 @@ export default {
     },
     emptyObject () {
       return {
+        testing_number: null,
         start_date_pumping_test: null,
         pumping_test_description: null,
         test_duration: null,
