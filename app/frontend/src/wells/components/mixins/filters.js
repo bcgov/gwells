@@ -24,6 +24,12 @@ const SEARCH_FIELDS = {
     ]
   },
   well: { param: 'well', label: 'Well tag or ID plate number', type: 'text' },
+  licenceNumber: {
+    param: "licence_number",
+    label: "Licence number",
+    type: "number",
+    resultLabel: "Licence number(s)"
+  },
   wellDocumentType: {
     param: "well_document_type",
     label: "Contains document type",

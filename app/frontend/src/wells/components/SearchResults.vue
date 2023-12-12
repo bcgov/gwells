@@ -103,6 +103,13 @@
               <template v-else-if="column.param === 'legal_pid'">
                 {{ row[column.param] }}
               </template>
+              <template v-else-if="column.param === 'licence_number'">
+                <span v-for="(licence, index) in row.licence_number">
+                  <a :href="LICENCE_URL + licence">
+                    {{ licence }}{{ index + 1 < row.licence_number.length ? ', ' : '' }}
+                  </a>
+                </span>
+              </template>
               <template v-else>
                 {{ row[column.param] | defaultFormat }}
               </template>
@@ -154,7 +161,8 @@ export default {
         { value: 10, text: '10' },
         { value: 25, text: '25' },
         { value: 50, text: '50' }
-      ]
+      ],
+      LICENCE_URL: 'https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&PosseObjectDef=o_ATIS_DocumentSearch&PosseMenuName=WS_Main&Criteria_LicenceNumber='
     }
   },
   computed: {
