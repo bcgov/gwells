@@ -234,7 +234,7 @@ export default {
         let skipAltDates = 'alteration_start_date' in meta.valueChanged || 'alteration_end_date' in meta.valueChanged
         let skipDecDates = 'decommission_start_date' in meta.valueChanged || 'decommission_end_date' in meta.valueChanged
         let skipGroundElevation = 'ground_elevation' in meta.valueChanged || 'ground_elevation_method' in meta.valueChanged
-        let doNotSkip = ['drinking_water_protection_area_ind', 'technical_report']
+        let doNotSkip = ['drinking_water_protection_area_ind', 'technical_report', 'aquifer_parameters_set']
         Object.keys(data).forEach((key) => {
           // Skip lat lon if one of them has changed
           if ((key === 'latitude' || key === 'longitude') && skipLatLon) { return }
