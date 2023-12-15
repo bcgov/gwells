@@ -15,7 +15,9 @@ The application is being developed as an open source solution.
 ## Table of Contents
 
 1. [Using the GWELLS API](#Using-the-gwells-api)
+1. [DataBC Export](#databc-export)
 1. [Developing GWELLS](#Developing-gwells)
+    * [Setup Prerequisites](#setup-prerequisites)
     * [Running the GWELLS application locally](#Running-the-GWELLS-application-locally)
     * [Authentication](#Authentication)
     * [Running tests](#Running-tests)
@@ -59,32 +61,18 @@ If a new field(s) are needed for export, this export_databc.py has raw sql queri
 
 ## Developing GWELLS
 
-### Running the GWELLS application locally
+### Setup Prerequisites
 
-[Clone the GWELLS repository](https://help.github.com/en/articles/cloning-a-repository), and build the [Docker](https://store.docker.com/search?type=edition&offering=community) image for the backend:
-* If using x86 (e.g. Intel-based Mac):
-    ```sh
-    cd gwells/openshift/docker/backend
-    docker build . --tag=gwells/backend
-    ```
-* If using ARM (e.g. Apple Silicon):
-    ```sh
-    cd gwells/openshift/docker/backend
-    docker buildx build --platform=linux/amd64 . --tag=gwells/backend
-    ```
-    *Note:* you'll have to first enable experimental features in Docker Desktop (**Settings** > **Features in development** > **Experimental features** > **Access experimental features**).
+**Software Requirements**
+* Docker Desktop
+* Node
 
-Login to Artifactory for pulling backend image:
-```sh
-docker login -u <svc-usn> -p <svc-pwd> artifacts.developer.gov.bc.ca/g26e-backend-docker-local
-```
-Replace svc-usn and svc-pwd with Artifactory service account credentials obtained from Openshift (under ally-tools secrets)
+**Actions to take**:
 
-Then, run the application with Docker:
-```sh
-cd gwells
-docker-compose up
-```
+- [Connecting to Minio](#connecting-to-minio)
+- [CSSO Authentication](#authentication)
+- You will need to login to [artifactory](https://artifacts.developer.gov.bc.ca/ui/login/) with your IDIR so a member of Sustainment Team can add you.
+
 ### Connecting to Minio
 
 For gwells to interact with your local instance of Min.IO add the appropriate settings to your local machines `HOSTS` file:
@@ -94,6 +82,28 @@ For gwells to interact with your local instance of Min.IO add the appropriate se
 127.0.0.1 minio-private
 ```
 
+### Authentication
+
+Some GWELLS pages (submitting new well reports, adding or editing aquifers, or adding or editing qualified well drillers to the registry) require authentication. Authentication uses the Province's Single Sign-On system. A GWELLS team member can request access for collaborators if needed.
+
+
+### Running the GWELLS application locally
+
+- [Clone the GWELLS repository](https://help.github.com/en/articles/cloning-a-repository)
+- From the gwells folder run `docker-compose up -d`
+
+Login to Artifactory for pulling the backend base image:
+```sh
+docker login -u <svc-usn> -p <svc-pwd> artifacts.developer.gov.bc.ca/g26e-backend-docker-local
+```
+Replace svc-usn and svc-pwd with Artifactory service account credentials obtained from Openshift (under artifacts-default-tulivf secrets)
+
+Then, run the application with Docker:
+```sh
+cd gwells
+docker-compose up
+```
+
 ### Connecting to PGAdmin
 
 > Information in this section reflects docker-compose as of `Nov 8th, 2023`
@@ -101,27 +111,23 @@ For gwells to interact with your local instance of Min.IO add the appropriate se
 PG Admin is setup in the `docker-compose up` and requires no additional installations
 
 Steps:
-1. connect to Pgadmin through [localhost](http://localhost:5050)
-1. Login using username: `admin@gwells.com`, password: `admin`.
+1. Connect to Pgadmin through [localhost](http://localhost:5050)
+1. Login using username: `admin@gwells.com`, password: `admin`
 1. Right click `Server` -> `Register` -> `Server`
 1. Enter any meaningful name in `Name`
 1. Under the `Connection` tab supply the following values
 
-|Field|Value|
-| --- | --- |
-| Host name / address | `db`
-| Port | `5432` |
-| Username | `gwells` |
-| Password | `test1` |
+| Field               | Value    |
+|   ---               | ---      |
+| Host name / address | `db`     |
+| Port                | `5432`   |
+| Username            | `gwells` |
+| Password            | `test1`  |
 
 Visit the following links to browse the API and frontend applications:
 
 * Django REST API development server: http://localhost:8000/gwells/api/
 * Vue frontend development server: http://localhost:8080/
-
-### Authentication
-
-Some GWELLS pages (submitting new well reports, adding or editing aquifers, or adding or editing qualified well drillers to the registry) require authentication. Authentication uses the Province's Single Sign-On system. A GWELLS team member can request access for collaborators if needed.
 
 ### Running tests:
 
@@ -194,3 +200,9 @@ Issues are tracked on the [Water Jira board](https://apps.nrs.gov.bc.ca/int/jira
 ## License
 
 Code released under the [Apache License, Version 2.0](https://github.com/bcgov/gwells/blob/master/LICENSE).
+
+## Additional Documentation
+More documentation for the repository can be found in the following places
+- [Frontend](/app/frontend/README.md)
+- [OpenShift](/openshift/README.md)
+- [Tests](/tests/api-tests/README.md)
