@@ -16,7 +16,7 @@ import csv
 import openpyxl
 from openpyxl.writer.excel import save_virtual_workbook
 import requests
-
+import json
 from django_filters import rest_framework as djfilters
 from django.http import HttpResponse, HttpResponseRedirect, StreamingHttpResponse
 from django.db import connection
@@ -49,6 +49,7 @@ from gwells.roles import AQUIFERS_EDIT_ROLE
 
 from aquifers import serializers, serializers_v2
 from aquifers.models import Aquifer
+from wells.models import Well
 from aquifers.filters import BoundingBoxFilterBackend
 from aquifers.permissions import HasAquiferEditRole, HasAquiferEditRoleOrReadOnly
 
@@ -106,11 +107,18 @@ def _aquifer_qs(request):
     """
     query = request.GET
     qs = Aquifer.objects.all()
+    wqs = Well.objects.filter(Q(transmissivity__isnull=False) | Q(storativity__isnull=False) | Q(hydraulic_conductivity__isnull=False), aquifer_id__isnull=False)
+    #json_string = json.dumps(wqs, indent=2)  
+    #print(wqs.objects.get(id=1))
+    # wqs = wqs.filter(Q(transmissivity__isnull=False) | Q(storativity__isnull=False) | Q(hydraulic_conductivity__isnull=False), aquifer_id__isnull=False)
+    for item in wqs:
+        print(f"storativity: {item.storativity}, well_tag_number: {item.well_tag_number}, transmissivity: {item.transmissivity}, hydraulic_conductivity: {item.hydraulic_conductivity}, aquifer_id: {item.aquifer_id}")
     resources__section__code = query.get("resources__section__code")
     hydraulic = query.get('hydraulically_connected')
     notations = query.get('aquifer_notations')
     unpublished = query.get('unpublished')
     search = query.get('search')
+    aquifer_parameters = False
 
     # V2 changes to `and`-ing the filters by default unless "match_any" is explicitly set to 'true'
     match_any = query.get('match_any') == 'true'
@@ -143,7 +151,11 @@ def _aquifer_qs(request):
     # ignore missing and empty string for resources__section__code qs param
     if resources__section__code:
         for code in resources__section__code.split(','):
-            filters.append(Q(resources__section__code=code))
+            if code != 'Q':
+             filters.append(Q(resources__section__code=code))
+             print ("code>>>>>>" + code)
+            else:
+                aquifer_parameters = True
 
     if match_any:
         if len(filters) > 0:
@@ -177,6 +189,23 @@ def _aquifer_qs(request):
         'vulnerability')
 
     qs = qs.distinct()
+
+    if (aquifer_parameters):
+        well_aquifer_id_array = [well.aquifer_id for well in wqs]
+        # well_aquifer_id_array = [well['aquifer_id'] for well in wqs.values()]
+        print (well_aquifer_id_array)
+        qs = qs.filter(aquifer_id__in = well_aquifer_id_array)
+        # for item in wqs:
+        #     print(f"aquifer_id: {item.aquifer_id}")
+        #     qs = qs.objects.exclude(aquifer_id!=item.aquifer_id)
+
+
+    # for aquifer_values in qs.values():
+    #     print(aquifer_values['aquifer_id'])
+
+    # well_aquifer_id_array = [well.aquifer_id for well in wqs]
+    # qs = qs.filter(aquifer_id__in = well_aquifer_id_array)
+    print (qs)
 
     return qs
 
