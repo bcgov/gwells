@@ -34,7 +34,7 @@
               class="text-nowrap"
               scope="col">
               {{ column.resultLabel ? column.resultLabel : column.label }}
-              <b-button
+              <b-button v-if="column.sortable"
                 class="sort-button px-0"
                 :class="{active: column.sortParam === orderingParam}"
                 variant="link"
