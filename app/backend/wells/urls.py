@@ -123,4 +123,14 @@ urlpatterns = [
     # get geocoder address
     url(api_path_prefix() + r'/wells/geocoder$',
         views.AddressGeocoder.as_view(), name='address-geocoder'),
+
+    # QA/QC Endpoints
+    url(api_path_prefix() + r'/qaqc/crossreferencing$',
+        never_cache(views_v2.CrossReferencingListView.as_view()), name='qaqc-cross-referencing'),
+
+    url(api_path_prefix() + r'/qaqc/mislocatedwells$',
+        never_cache(views_v2.MislocatedWellsListView.as_view()), name='qaqc-mislocated-wells'),
+
+    url(api_path_prefix() + r'/qaqc/recordcompliance$',
+        never_cache(views_v2.RecordComplianceListView.as_view()), name='qaqc-record-compliance'),
 ]
