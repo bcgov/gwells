@@ -24,19 +24,15 @@ from django.db.models.functions import Cast
 from django.contrib.gis.db.models.functions import Transform
 from django.views.decorators.cache import cache_page
 from django.utils import timezone
-
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-
 from rest_framework import filters
 from rest_framework.decorators import api_view, schema
 from rest_framework.response import Response
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveUpdateAPIView, RetrieveAPIView
 from rest_framework.pagination import PageNumberPagination
-
 from reversion.views import RevisionMixin
-
 from gwells.settings.base import get_env_variable
 from gwells.views import AuditCreateMixin, AuditUpdateMixin
 from gwells.management.commands.export_databc import (
@@ -45,7 +41,6 @@ from gwells.management.commands.export_databc import (
     AQUIFER_CHUNK_SIZE,
 )
 from gwells.roles import AQUIFERS_EDIT_ROLE
-
 from aquifers import serializers, serializers_v2
 from aquifers.models import Aquifer
 from wells.models import Well
