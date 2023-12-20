@@ -16,7 +16,6 @@ import csv
 import openpyxl
 from openpyxl.writer.excel import save_virtual_workbook
 import requests
-
 from django_filters import rest_framework as djfilters
 from django.http import HttpResponse, HttpResponseRedirect, StreamingHttpResponse
 from django.db import connection
@@ -25,19 +24,15 @@ from django.db.models.functions import Cast
 from django.contrib.gis.db.models.functions import Transform
 from django.views.decorators.cache import cache_page
 from django.utils import timezone
-
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-
 from rest_framework import filters
 from rest_framework.decorators import api_view, schema
 from rest_framework.response import Response
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveUpdateAPIView, RetrieveAPIView
 from rest_framework.pagination import PageNumberPagination
-
 from reversion.views import RevisionMixin
-
 from gwells.settings.base import get_env_variable
 from gwells.views import AuditCreateMixin, AuditUpdateMixin
 from gwells.management.commands.export_databc import (
@@ -46,9 +41,9 @@ from gwells.management.commands.export_databc import (
     AQUIFER_CHUNK_SIZE,
 )
 from gwells.roles import AQUIFERS_EDIT_ROLE
-
 from aquifers import serializers, serializers_v2
 from aquifers.models import Aquifer
+from wells.models import Well
 from aquifers.filters import BoundingBoxFilterBackend
 from aquifers.permissions import HasAquiferEditRole, HasAquiferEditRoleOrReadOnly
 
@@ -111,6 +106,7 @@ def _aquifer_qs(request):
     notations = query.get('aquifer_notations')
     unpublished = query.get('unpublished')
     search = query.get('search')
+    aquifer_parameters = False
 
     # V2 changes to `and`-ing the filters by default unless "match_any" is explicitly set to 'true'
     match_any = query.get('match_any') == 'true'
@@ -141,9 +137,13 @@ def _aquifer_qs(request):
             print("Cannot get aquifer notations, call to DataBC failed: " + e)
 
     # ignore missing and empty string for resources__section__code qs param
+    # remove Aquifer parameters code from resource__section__code if present and set a flag
     if resources__section__code:
         for code in resources__section__code.split(','):
-            filters.append(Q(resources__section__code=code))
+            if code != 'Q':
+             filters.append(Q(resources__section__code=code))
+            else:
+                aquifer_parameters = True
 
     if match_any:
         if len(filters) > 0:
@@ -177,6 +177,13 @@ def _aquifer_qs(request):
         'vulnerability')
 
     qs = qs.distinct()
+
+    # if Aquifer parameters flag is set, obtain list of wells with aquifer parameters set and compare its aquifer id against the original query set
+    # remove aquifers that doesn't have a match from the original query set
+    if (aquifer_parameters):
+        wqs = Well.objects.filter(Q(transmissivity__isnull=False) | Q(storativity__isnull=False) | Q(hydraulic_conductivity__isnull=False), aquifer_id__isnull=False)
+        well_aquifer_id_array = [well.aquifer_id for well in wqs]
+        qs = qs.filter(aquifer_id__in = well_aquifer_id_array)
 
     return qs
 
