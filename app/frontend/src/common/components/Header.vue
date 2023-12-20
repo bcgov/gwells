@@ -44,6 +44,7 @@
             <b-nav-item id="ribbon-registry" class="navbar-link lvl2-link" :to="{ name: 'SearchHome'}">Registry Search</b-nav-item>
             <b-nav-item class="navbar-link lvl2-link" v-if="show.dataEntry" :to="{ name: 'SubmissionsHome'}">Submit Report</b-nav-item>
             <b-nav-item id="ribbon-bulk" class="navbar-link lvl2-link" v-if="show.bulk" :to="{ name: 'bulk-home' }">Bulk Upload</b-nav-item>
+            <b-nav-item id="ribbon-qaqc" class="navbar-link lvl2-link" v-if="show.qaqc" :to="{ name: 'qaqc' }">QA/QC Dashboard</b-nav-item>
             <b-nav-item id="ribbon-surveys" class="navbar-link lvl2-link" v-if="show.surveys" :to="{ name: 'Surveys' }">Admin</b-nav-item>
             <b-nav-item id="ribbon-groundwaterinfo" class="navbar-link lvl2-link" :to="{ name: 'groundwater-information' }">Groundwater Information</b-nav-item>
             <b-nav-item class="d-sm-none"><keycloak-auth v-if="auth !== 'hide'" id="keycloak-auth-xs"/></b-nav-item>
@@ -89,6 +90,7 @@ export default {
         admin: adminMeta ? adminMeta.content === 'true' : false,
         aquifers: this.hasConfig && this.config.enable_aquifers_search === true,
         surveys: this.hasConfig && this.userRoles.surveys.edit === true,
+        qaqc: this.hasConfig && this.userRoles.submissions.edit === true,
         bulk
       }
     }

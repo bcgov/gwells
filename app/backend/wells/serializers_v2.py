@@ -475,3 +475,55 @@ class WellDetailSerializer(WellDetailSerializerV1):
 
     class Meta(WellDetailSerializerV1.Meta):
         ref_name = "well_detail_v2"
+
+
+class MislocatedWellsSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Well
+        fields = [
+            'well_tag_number',
+            'identification_plate_number',
+            'street_address',
+            'city',
+            'geom',  # Geographical location of the well
+            'work_start_date',
+            'created_date',
+            'created_by',
+            'notes',
+        ]
+
+
+class CrossReferencingSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Well
+        fields = [
+            'well_tag_number',
+            'work_type',
+            'work_start_date',
+            'created_by',
+            'created_date',
+            'updated_by',
+            'updated_date',
+            'natural_resource_region',
+            'notes',
+        ]
+
+
+class RecordComplianceSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Well
+        fields = [
+            'well_tag_number',
+            'work_type',
+            'work_start_date',
+            'lat',
+            'lon',
+            'widp',
+            'finished_well_depth',
+            'class_of_well',
+            'person_responsible_for_work',
+            'company_that_did_the_work',
+        ]

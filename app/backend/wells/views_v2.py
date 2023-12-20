@@ -20,7 +20,7 @@ from django.http import FileResponse, StreamingHttpResponse
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.geos import GEOSException, GEOSGeometry
 from django.contrib.gis.gdal import GDALException
-from django.db.models import FloatField
+from django.db.models import FloatField, Q
 from django.db.models.functions import Cast
 
 from rest_framework import status, filters
@@ -47,7 +47,10 @@ from wells.serializers_v2 import (
     WellExportSerializerV2,
     WellExportAdminSerializerV2,
     WellSubsurfaceSerializer,
-    WellDetailSerializer
+    WellDetailSerializer,
+    MislocatedWellsSerializer,
+    CrossReferencingSerializer,
+    RecordComplianceSerializer
 )
 from wells.permissions import WellsEditOrReadOnly
 from wells.renderers import WellListCSVRenderer, WellListExcelRenderer
@@ -573,3 +576,66 @@ class WellDetail(WellDetailV1):
     This view is open to all, and has no permissions.
     """
     serializer_class = WellDetailSerializer
+
+
+class MislocatedWellsListView(ListAPIView):
+    """
+    API view to retrieve mislocated wells.
+    """
+    serializer_class = MislocatedWellsSerializer
+
+    def get_queryset(self):
+        """
+        This view should return a list of all mislocated wells
+        for the currently authenticated user.
+        """
+        return Well.objects.filter(Q(geom__isnull=True) | Q(incorrect_location_flag=True))
+
+    def get(self, request, *args, **kwargs):
+        """
+        Optionally restricts the returned mislocated wells to a given user,
+        by filtering against a `username` query parameter in the URL.
+        """
+        queryset = self.get_queryset()
+
+        serializer = self.serializer_class(queryset, many=True)
+        return Response(serializer.data)
+    
+
+class CrossReferencingListView(ListAPIView):
+    serializer_class = CrossReferencingSerializer
+
+    def get_queryset(self):
+        """
+        Optionally restricts the returned wells to a given date range,
+        by filtering against `start_date` and `end_date` query parameters in the URL.
+        """
+        queryset = Well.objects.all()
+        start_date = self.request.query_params.get('start_date')
+        end_date = self.request.query_params.get('end_date')
+
+        if start_date and end_date:
+            queryset = queryset.filter(created_date__range=[start_date, end_date])
+
+        return queryset
+    
+
+class RecordComplianceListView(ListAPIView):
+    serializer_class = RecordComplianceSerializer
+
+    def get_queryset(self):
+        """
+        Retrieves wells and allows filtering for compliance checks.
+        Filters can include work type, date ranges, lat/lon presence, etc.
+        """
+        queryset = Well.objects.all()
+        work_start_date = self.request.query_params.get('work_start_date')
+        has_issues = self.request.query_params.get('has_issues', None)
+
+        if work_start_date:
+            queryset = queryset.filter(work_start_date__gte=work_start_date)
+
+        if has_issues is not None:
+            queryset = queryset.filter(lat__isnull=True, lon__isnull=True) if has_issues.lower() == 'true' else queryset.exclude(lat__isnull=True, lon__isnull=True)
+
+        return queryset
