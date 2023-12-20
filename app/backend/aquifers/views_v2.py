@@ -16,7 +16,6 @@ import csv
 import openpyxl
 from openpyxl.writer.excel import save_virtual_workbook
 import requests
-import json
 from django_filters import rest_framework as djfilters
 from django.http import HttpResponse, HttpResponseRedirect, StreamingHttpResponse
 from django.db import connection
