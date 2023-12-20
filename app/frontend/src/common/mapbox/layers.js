@@ -287,7 +287,7 @@ export function wellsBaseAndArtesianLayer (options = {}) {
       ['to-boolean', ['get', 'artesian']], '#EE14CA',
       'transparent'
     ],
-    'circle-stroke-width': 1
+    'circle-stroke-width': 2.5
   })
 
   const filter = options.filter || wellLayerFilter(false)
@@ -313,7 +313,7 @@ export function searchedWellsLayer (options = {}) {
       ['to-boolean', ['get', 'artesian_conditions']], '#EE14CA',
       'black'
     ],
-    'circle-stroke-width': 2
+    'circle-stroke-width': 2.5
   })
 
   return layerConfig(layerId, options.source || SEARCHED_WELLS_SOURCE_ID, options.layerType || 'circle', styles, options.layout)
