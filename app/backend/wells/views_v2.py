@@ -20,8 +20,8 @@ from django.http import FileResponse, StreamingHttpResponse
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.geos import GEOSException, GEOSGeometry
 from django.contrib.gis.gdal import GDALException
-from django.db.models import FloatField, Q
 from django.db.models.functions import Cast
+from django.db.models import FloatField, Q, Case, When, F, Value, DateField
 
 from rest_framework import status, filters
 from rest_framework.exceptions import PermissionDenied, NotFound, ValidationError
@@ -38,7 +38,8 @@ from wells.filters import (
     GeometryFilterBackend,
     RadiusFilterBackend
 )
-from wells.models import Well, WellAttachment
+from wells.models import Well, WellAttachment, \
+  WELL_STATUS_CODE_ALTERATION, WELL_STATUS_CODE_CONSTRUCTION, WELL_STATUS_CODE_DECOMMISSION
 from wells.serializers_v2 import (
     WellLocationSerializerV2,
     WellVerticalAquiferExtentSerializerV2,
@@ -602,40 +603,122 @@ class MislocatedWellsListView(ListAPIView):
         return Response(serializer.data)
     
 
-class CrossReferencingListView(ListAPIView):
-    serializer_class = CrossReferencingSerializer
+class RecordComplianceListView(ListAPIView):
+    serializer_class = RecordComplianceSerializer
+
+    swagger_schema = None
+    permission_classes = (WellsEditOrReadOnly,)
+    model = Well
+    pagination_class = APILimitOffsetPagination
+
+    # Allow searching on name fields, names of related companies, etc.
+    filter_backends = (WellListFilterBackend, BoundingBoxFilterBackend,
+                       filters.SearchFilter, WellListOrderingFilter, GeometryFilterBackend)
+    ordering = ('well_tag_number',)
 
     def get_queryset(self):
         """
-        Optionally restricts the returned wells to a given date range,
-        by filtering against `start_date` and `end_date` query parameters in the URL.
+        Retrieves wells that are missing information in any of the specified fields.
         """
         queryset = Well.objects.all()
-        start_date = self.request.query_params.get('start_date')
-        end_date = self.request.query_params.get('end_date')
 
-        if start_date and end_date:
-            queryset = queryset.filter(created_date__range=[start_date, end_date])
+        queryset = Well.objects.select_related('well_status').annotate(
+            work_start_date=Case(
+                When(well_status__well_status_code=WELL_STATUS_CODE_CONSTRUCTION, then=F('construction_start_date')),
+                When(well_status__well_status_code=WELL_STATUS_CODE_ALTERATION, then=F('alteration_start_date')),
+                When(well_status__well_status_code=WELL_STATUS_CODE_DECOMMISSION, then=F('decommission_start_date')),
+                default=Value(None),
+                output_field=DateField()
+            ),
+            work_end_date=Case(
+                When(well_status__well_status_code=WELL_STATUS_CODE_CONSTRUCTION, then=F('construction_end_date')),
+                When(well_status__well_status_code=WELL_STATUS_CODE_ALTERATION, then=F('alteration_end_date')),
+                When(well_status__well_status_code=WELL_STATUS_CODE_DECOMMISSION, then=F('decommission_end_date')),
+                default=Value(None),
+                output_field=DateField()
+            )
+        )
+
+        # Filtering for records missing any of the specified fields
+        missing_info_filter = (
+            Q(well_tag_number__isnull=True) |
+            Q(identification_plate_number__isnull=True) |
+            Q(well_class__isnull=True) |
+            Q(geom__isnull=True) | # for latitude and longitude
+            Q(finished_well_depth__isnull=True) |
+            Q(surface_seal_depth__isnull=True) |
+            Q(surface_seal_thickness__isnull=True) |
+            Q(aquifer_lithology__isnull=True) |
+            Q(well_status__isnull=True) |
+            Q(work_start_date__isnull=True) |
+            Q(work_end_date__isnull=True) |
+            Q(person_responsible__isnull=True) |
+            Q(company_of_person_responsible__isnull=True) |
+            Q(create_date__isnull=True) |
+            Q(create_user__isnull=True)
+            # Q(natural_resource_region__isnull=True) |
+            # Q(internal_comments__isnull=True)
+        )
+
+        queryset = queryset.filter(missing_info_filter)
+
+        # Additional filtering based on query parameters
+        work_start_date = self.request.query_params.get('work_start_date')
+        work_end_date = self.request.query_params.get('work_end_date')
+
+        if work_start_date:
+            queryset = queryset.filter(work_start_date__gte=work_start_date)
+        if work_end_date:
+            queryset = queryset.filter(work_end_date__lte=work_end_date)
 
         return queryset
     
 
-class RecordComplianceListView(ListAPIView):
-    serializer_class = RecordComplianceSerializer
+class CrossReferencingListView(ListAPIView):
+    serializer_class = CrossReferencingSerializer
+
+    swagger_schema = None
+    permission_classes = (WellsEditOrReadOnly,)
+    model = Well
+    pagination_class = APILimitOffsetPagination
+
+    # Allow searching on name fields, names of related companies, etc.
+    filter_backends = (WellListFilterBackend, BoundingBoxFilterBackend,
+                       filters.SearchFilter, WellListOrderingFilter, GeometryFilterBackend)
+    ordering = ('well_tag_number',)
 
     def get_queryset(self):
         """
-        Retrieves wells and allows filtering for compliance checks.
-        Filters can include work type, date ranges, lat/lon presence, etc.
+        Optionally restricts the returned wells to those that have certain keywords like 'x-ref'd' or 'cross-ref'
+        in their internal_comments.
         """
         queryset = Well.objects.all()
-        work_start_date = self.request.query_params.get('work_start_date')
-        has_issues = self.request.query_params.get('has_issues', None)
 
-        if work_start_date:
-            queryset = queryset.filter(work_start_date__gte=work_start_date)
+        queryset = Well.objects.select_related('well_status').annotate(
+            work_start_date=Case(
+                When(well_status__well_status_code=WELL_STATUS_CODE_CONSTRUCTION, then=F('construction_start_date')),
+                When(well_status__well_status_code=WELL_STATUS_CODE_ALTERATION, then=F('alteration_start_date')),
+                When(well_status__well_status_code=WELL_STATUS_CODE_DECOMMISSION, then=F('decommission_start_date')),
+                default=Value(None),
+                output_field=DateField()
+            ),
+            work_end_date=Case(
+                When(well_status__well_status_code=WELL_STATUS_CODE_CONSTRUCTION, then=F('construction_end_date')),
+                When(well_status__well_status_code=WELL_STATUS_CODE_ALTERATION, then=F('alteration_end_date')),
+                When(well_status__well_status_code=WELL_STATUS_CODE_DECOMMISSION, then=F('decommission_end_date')),
+                default=Value(None),
+                output_field=DateField()
+            )
+        )
 
-        if has_issues is not None:
-            queryset = queryset.filter(lat__isnull=True, lon__isnull=True) if has_issues.lower() == 'true' else queryset.exclude(lat__isnull=True, lon__isnull=True)
+        search_terms = ["x-ref'd", "x-ref", "cross-ref"]
+        
+        # Build a Q object for the search terms
+        comments_query = Q()
+        for term in search_terms:
+            comments_query |= Q(internal_comments__icontains=term)
+
+        # Filter the queryset based on the search terms
+        queryset = queryset.filter(comments_query)
 
         return queryset

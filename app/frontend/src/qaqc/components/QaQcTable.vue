@@ -15,7 +15,22 @@
   <div id="qaqcResults">
     <b-col sm="4"></b-col>
     <b-row align-h="between" class="mb-2">
-      <b-col sm="4"></b-col>
+      <b-col sm="4">
+        <!-- Date Range Filter specifically for createDate -->
+        <div><b>Created Date Range</b></div>
+        <div :class="`qaqc-filters-${dateColumn.type}`">
+          <qaqc-filters
+            v-if="dateColumn"
+            :type="dateColumn.type"
+            :id="`${dateColumn.id}ResultFilter`"
+            :errors="resultErrors[dateColumn.param]"
+            :param-names="dateColumn.params"
+            :options="dateColumn.options || filterSelectOptions[dateColumn.id]"
+            :value="filterParams[dateColumn.id]"
+            :text-field="dateColumn.textField"
+            @input="applyFilter(dateColumn, $event)" />
+        </div>
+      </b-col>
       <b-col sm="4" class="form-inline">
         Show <b-form-select class="mx-1" :value="limit" @input="setLimit($event)" :options="limitOptions" /> results
       </b-col>
@@ -29,7 +44,7 @@
               :key="column.id"
               class="text-nowrap"
               scope="col">
-              {{ column.resultLabel ? column.resultLabel : column.label }}
+              {{ columnLabels(column.id) }}
               <b-button
                 class="sort-button px-0"
                 :class="{active: column.sortParam === orderingParam}"
@@ -42,6 +57,7 @@
           <tr class="filters">
             <th v-for="column in columns" :key="column.id" :class="`qaqc-filters-${column.type}`">
               <qaqc-filters
+                v-if="!excludedFilterColumns.includes(column.id)"
                 :type="column.type"
                 :id="`${column.id}ResultFilter`"
                 :errors="resultErrors[column.param]"
@@ -211,6 +227,38 @@ export default {
     },
     isReset () {
       return (!this.isBusy && this.results === null)
+    },
+    dateColumn () {
+      return this.columns.find(column => column.param === 'create_date')
+    },
+    excludedFilterColumns () {
+      return ['latitude', 'longitude']
+    },
+    columnLabels () {
+      // Define a mapping for updated labels
+      const labelMapping = {
+        'wellTagNumber': 'WTN',
+        'identificationPlateNumber': 'WIDP',
+        'wellClass': 'Class of well',
+        'latitude': 'Lat',
+        'longitude': 'Lon',
+        'finishedWellDepth': 'Finished well depth (feet)',
+        'diameter': 'Casing Diameter (inches)',
+        'surfaceSealDepth': 'Seal Depth (feet)',
+        'surfaceSealThickness': 'Seal Thickness (inches)',
+        'aquiferLithology': 'Lithology',
+        'wellStatus': 'Work Type',
+        'dateOfWork': 'Work Start Date',
+        'personResponsible': 'Person Responsible',
+        'orgResponsible': 'Company that did the work',
+        'createDate': 'Created Date',
+        'createUser': 'Created By',
+        'updateDate': 'Updated Date',
+        'updateUser': 'Updated By',
+        'internalOfficeComments': 'Internal Office Comments',
+        'internalComments': 'Notes'
+      }
+      return (columnId) => labelMapping[columnId] || columnId
     }
   },
   methods: {
@@ -236,7 +284,7 @@ export default {
     },
     applyFilter ({ id }, values) {
       this.filterParams[id] = values
-      const filterGroup = { ...this.qaqcQueryParams }
+      const filterGroup = { ...this.searchQueryParams }
       this.$store.commit(SET_QAQC_RESULT_FILTERS, filterGroup)
       this.$emit('filter-changed', filterGroup)
 

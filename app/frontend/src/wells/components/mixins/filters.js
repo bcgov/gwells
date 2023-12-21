@@ -874,7 +874,9 @@ const SEARCH_FIELDS = {
     textField: 'description',
     valueField: 'well_disinfected_code',
     sortable: true,
-  }
+  },
+  latitude: { param: 'latitude', label: 'Latitude', type: 'number' },
+  longitude: { param: 'longitude', label: 'Longitude', type: 'number' }
 }
 
 export default {
