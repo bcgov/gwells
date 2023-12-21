@@ -495,35 +495,49 @@ class MislocatedWellsSerializer(serializers.ModelSerializer):
 
 
 class CrossReferencingSerializer(serializers.ModelSerializer):
-    
+    work_start_date = serializers.DateField(read_only=True)
+    work_end_date = serializers.DateField(read_only=True)
+
     class Meta:
         model = Well
         fields = [
             'well_tag_number',
-            'work_type',
+            'well_status',
             'work_start_date',
-            'created_by',
-            'created_date',
-            'updated_by',
-            'updated_date',
-            'natural_resource_region',
-            'notes',
+            'work_end_date',
+            'create_user',
+            'create_date',
+            'update_date',
+            'update_user',
+            # 'natural_resource_region',
+            'internal_comments',
         ]
 
 
 class RecordComplianceSerializer(serializers.ModelSerializer):
-    
+    work_start_date = serializers.DateField(read_only=True)
+    work_end_date = serializers.DateField(read_only=True)
+
     class Meta:
         model = Well
         fields = [
-            'well_tag_number',
-            'work_type',
-            'work_start_date',
-            'lat',
-            'lon',
-            'widp',
-            'finished_well_depth',
-            'class_of_well',
-            'person_responsible_for_work',
-            'company_that_did_the_work',
+          'well_tag_number',
+          'identification_plate_number',
+          'well_class',
+          'latitude',
+          'longitude',
+          'finished_well_depth',
+          'diameter',
+          'surface_seal_depth',
+          'surface_seal_thickness',
+          'aquifer_lithology',
+          'well_status',
+          'work_start_date',
+          'work_end_date',
+          'person_responsible',
+          'company_of_person_responsible',
+          'create_date',
+          'create_user',
+          # 'natural_resource_region',
+          'internal_comments'
         ]

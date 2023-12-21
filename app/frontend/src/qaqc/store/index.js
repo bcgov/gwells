@@ -60,6 +60,27 @@ function buildSearchParams (state) {
   return params
 }
 
+export const RECORD_COMPLIANCE_COLUMNS = [
+  'wellTagNumber',
+  'identificationPlateNumber',
+  'wellClass',
+  'latitude',
+  'longitude',
+  'finishedWellDepth',
+  'diameter',
+  'surfaceSealDepth',
+  'surfaceSealThickness',
+  'aquiferLithology',
+  'wellStatus',
+  'dateOfWork',
+  'personResponsible',
+  'orgResponsible',
+  'createDate',
+  'createUser',
+  'naturalResourceRegion',
+  'internalComments'
+]
+
 export const MISLOCATED_WELLS_COLUMNS = [
   'wellTagNumber',
   'geocodeDistance', //
@@ -72,40 +93,19 @@ export const MISLOCATED_WELLS_COLUMNS = [
   'naturalResourceRegion', //
   'createDate',
   'createUser',
-  'notes' //
-]
-
-export const RECORD_COMPLIANCE_COLUMNS = [
-  'wellTagNumber',
-  'widp',
-  'wellClass',
-  'latitude',
-  'longitude',
-  'finishedWellDepth',
-  'casingDiameter',
-  'surfaceSealDepth',
-  'surfaceSealThickness',
-  'aquiferLithology',
-  'workType',
-  'dateOfWork',
-  'personResponsible',
-  'orgResponsible',
-  'createDate',
-  'createUser',
-  'naturalResourceRegion',
-  'notes'
+  'internalComments' //
 ]
 
 export const CROSS_REFERENCING_COLUMNS = [
   'wellTagNumber',
-  'workType',
+  'wellStatus',
   'dateOfWork',
-  'createDate',
   'createUser',
+  'createDate',
   'updateUser',
   'updateDate',
   'naturalResourceRegion',
-  'notes'
+  'internalComments'
 ]
 
 const DEFAULT_ORDERING = '-well_tag_number'
@@ -128,7 +128,7 @@ const wellsStore = {
     qaqcResults: null,
     qaqcResultCount: 0,
     downloads: null,
-    selectedTab: 'crossReferencing'
+    selectedTab: 0
   },
   mutations: {
     [SET_QAQC_SELECTED_TAB] (state, payload) {
@@ -184,13 +184,13 @@ const wellsStore = {
       let columns = []
       switch (tab) {
         case 0:
-          columns = CROSS_REFERENCING_COLUMNS
+          columns = RECORD_COMPLIANCE_COLUMNS
           break
         case 1:
           columns = MISLOCATED_WELLS_COLUMNS
           break
         case 2:
-          columns = RECORD_COMPLIANCE_COLUMNS
+          columns = CROSS_REFERENCING_COLUMNS
           break
         default:
           columns = [] // Default case or you can set a default column set
@@ -244,16 +244,14 @@ const wellsStore = {
       // Modify the endpoint or parameters based on the selectedTab
       let endpoint = 'qaqc'
       if (state.selectedTab === 0) {
-        endpoint += '/crossreferencing'
+        endpoint += '/recordcompliance'
       } else if (state.selectedTab === 1) {
         endpoint += '/mislocatedwells'
       } else if (state.selectedTab === 2) {
-        endpoint += '/recordcompliance'
+        endpoint += '/crossreferencing'
       }
-      console.log('SEARCHING WELLS', endpoint)
-      let tempEndpoint = 'wells' // TODO Remove
 
-      ApiService.query(tempEndpoint, params, { cancelToken: cancelSource.token }).then((response) => {
+      ApiService.query(endpoint, params, { cancelToken: cancelSource.token }).then((response) => {
         commit(SET_QAQC_ERRORS, {})
         commit(SET_QAQC_RESULTS, response.data.results)
         commit(SET_QAQC_RESULT_COUNT, response.data.count)
@@ -316,7 +314,7 @@ const wellsStore = {
     qaqcWellFileDownloads (state) {
       return state.downloads
     },
-    qaqcQueryParams (state) {
+    searchQueryParams (state) {
       return buildSearchParams(state)
     }
   }
