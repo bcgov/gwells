@@ -181,7 +181,7 @@ def _aquifer_qs(request):
     # if Aquifer parameters flag is set, obtain list of wells with aquifer parameters set and compare its aquifer id against the original query set
     # remove aquifers that doesn't have a match from the original query set
     if (aquifer_parameters):
-        wqs = Well.objects.filter(Q(transmissivity__isnull=False) | Q(storativity__isnull=False) | Q(hydraulic_conductivity__isnull=False), aquifer_id__isnull=False)
+        wqs = Well.objects.filter(Q(transmissivity__isnull=False) | Q(storativity__isnull=False) | (Q(hydraulic_conductivity__isnull=False) & ~Q(hydraulic_conductivity__exact='')), aquifer_id__isnull=False)
         well_aquifer_id_array = [well.aquifer_id for well in wqs]
         qs = qs.filter(aquifer_id__in = well_aquifer_id_array)
 
