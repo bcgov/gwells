@@ -31,7 +31,7 @@
             <th
               v-for="column in columns"
               :key="column.id"
-              class="text-nowrap"
+              class="text-nowrap vertical-align-middle"
               scope="col">
               {{ column.resultLabel ? column.resultLabel : column.label }}
               <b-button v-if="column.sortable"
@@ -356,6 +356,10 @@ export default {
 
   .sort-button.active {
     opacity: 1;
+  }
+
+  .vertical-align-middle {
+    vertical-align: middle;
   }
 }
 

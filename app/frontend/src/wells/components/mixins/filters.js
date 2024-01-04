@@ -95,7 +95,7 @@ const SEARCH_FIELDS = {
     type: 'select',
     textField: 'description',
     valueField: 'licenced_status_code',
-    sortable: true,
+    sortable: false,
   },
   personResponsible: {
     param: 'person_responsible_name',
@@ -137,7 +137,7 @@ const SEARCH_FIELDS = {
     param: 'well_depth',
     label: 'Well depth',
     type: 'range',
-    sortable: true,
+    sortable: false,
   },
   aquiferNr: {
     param: 'aquifer',
@@ -209,13 +209,13 @@ const SEARCH_FIELDS = {
     param: 'consultant_name',
     label: 'Consultant name',
     type: 'text',
-    sortable: true,
+    sortable: false,
   },
   consultantCompany: {
     param: 'consultant_company',
     label: 'Consultant company',
     type: 'text',
-    sortable: true,
+    sortable: false,
   },
   ownerMailingAddress: {
     authenticated: true,
@@ -327,7 +327,7 @@ const SEARCH_FIELDS = {
     param: 'backfill_above_surface_seal',
     label: 'Backfill material above surface seal',
     type: 'text',
-    sortable: true,
+    sortable: false,
   },
   backfillDepth: {
     param: 'backfill_depth',
@@ -660,7 +660,7 @@ const SEARCH_FIELDS = {
     param: 'comments',
     label: 'Comments',
     type: 'text',
-    sortable: true,
+    sortable: false,
   },
   alternativeSpecsSubmitted: {
     param: 'alternative_specs_submitted',
@@ -743,7 +743,7 @@ const SEARCH_FIELDS = {
     param: 'specific_capacity',
     label: 'Specific Capacity',
     type: 'range',
-    sortable: true,
+    sortable: false,
   },
   pumpingTestDescription: {
     param: 'pumping_test_description',
@@ -751,7 +751,7 @@ const SEARCH_FIELDS = {
     type: 'select',
     textField: 'description',
     valueField: 'pumping_test_description_code',
-    sortable: true,
+    sortable: false,
   },
   createUser: {
     authenticated: true,
@@ -823,7 +823,7 @@ const SEARCH_FIELDS = {
     param: 'legal_pid',
     label: 'PID',
     type: 'text',
-    sortable: true,
+    sortable: false,
   },
   diameter: {
     param: 'diameter',
@@ -859,13 +859,13 @@ const SEARCH_FIELDS = {
     param: 'decomission_start_date',
     label: 'Decomission start date',
     type: 'dateRange',
-    sortable: true,
+    sortable: false,
   },
   decomissionEndDate: {
     param: 'decomission_end_date',
     label: 'Decomission end date',
     type: 'dateRange',
-    sortable: true,
+    sortable: false,
   },
   wellDisinfectedStatus: {
     param: 'well_disinfected_status',
