@@ -292,6 +292,7 @@ export default {
 
         this.$emit('mapLoaded')
       })
+      this.listenForMapMovement();
     },
     buildMapStyle () {
       return {
@@ -398,8 +399,55 @@ export default {
         canInteract,
         ecocatLayerIds: [ DATABC_ECOCAT_LAYER_ID ]
       })
+    //}
+    },
+    isLayerVisible(layerId) {
+    const layer = this.map.getLayer(layerId);
+if (layer) {
+  const visibility = this.map.getLayoutProperty(layerId, 'visibility');
+
+  console.log("visibility>>>>>>>" + visibility);
+
+  //console.log(layerId + " visible");
+  if (visibility === 'visible')
+  {
+    console.log(layerId + " visible");
+  }
+  else
+  {
+    console.log(layerId + " invisible");
+  }
+} else {
+  console.log(layerId + " invisible");
+  return false;
+}
+    },
+    listenForMapMovement () {
+      //console.log("movement-----called>>>>>");
+      const startEvents = ['zoomstart', 'movestart']
+      startEvents.forEach(eventName => {
+        this.map.on(eventName, (e) => {
+          console.log("movezoom start-----called>>>>>");
+          this.isLayerVisible(DATABC_CADASTREL_LAYER_ID);
+          //this.isLayerVisible(DATABC_ECOCAT_LAYER_ID);
+          // if (this.searchMapButtonEnabled) {
+          //   this.showMapSearchButton()
+          // }
+        })
+      })
+      const endEvents = ['zoomend', 'moveend']
+      endEvents.forEach(eventName => {
+        this.map.on(eventName, (e) => {
+          console.log("movezoomend-----called>>>>>");
+          // const visibleFeatures = this.map.queryRenderedFeatures({ layers: [ AQUIFERS_FILL_LAYER_ID ] })
+          // const bounds = this.map.getBounds()
+          // const aquiferIds = visibleFeatures.map((l) => l.properties.aquifer_id)
+          // this.$emit('moved', bounds, uniq(aquiferIds))
+        })
+      })
     }
   },
+  
   watch: {
     aquiferId (newAquiferId, oldAquiferId) {
       this.setSelectedAquifer(oldAquiferId, false)
