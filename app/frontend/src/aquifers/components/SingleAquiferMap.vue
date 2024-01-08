@@ -408,6 +408,10 @@ if (layer) {
 
   console.log("visibility>>>>>>>" + visibility);
 
+//   this.map.on('data', () => {
+// console.log(data + 'A data event occurred.');
+// });
+
   //console.log(layerId + " visible");
   if (visibility === 'visible')
   {
@@ -423,13 +427,25 @@ if (layer) {
 }
     },
     listenForMapMovement () {
+//       this.map.on('data', () => {
+// console.log(data + 'A data event occurred.');
+// });
       //console.log("movement-----called>>>>>");
       const startEvents = ['zoomstart', 'movestart']
       startEvents.forEach(eventName => {
         this.map.on(eventName, (e) => {
-          console.log("movezoom start-----called>>>>>");
-          this.isLayerVisible(DATABC_CADASTREL_LAYER_ID);
+          // console.log("movezoom start-----called>>>>>");
+         // this.isLayerVisible(DATABC_CADASTREL_LAYER_ID);
           //this.isLayerVisible(DATABC_ECOCAT_LAYER_ID);
+          const visibleFeatures = this.map.queryRenderedFeatures({ layers: [ DATABC_GROUND_WATER_LICENCES_LAYER_ID ] });
+          if (visibleFeatures.length != 0) {
+           // console.log("features visible>>>>>>" + JSON.stringify(visibleFeatures));
+            console.log("features visible>>>>>>");
+          }else{
+            console.log("features invisible>>>>>>");
+            //console.log("features invisible>>>>>>"  + JSON.stringify(visibleFeatures));
+          }
+          
           // if (this.searchMapButtonEnabled) {
           //   this.showMapSearchButton()
           // }
@@ -438,7 +454,16 @@ if (layer) {
       const endEvents = ['zoomend', 'moveend']
       endEvents.forEach(eventName => {
         this.map.on(eventName, (e) => {
-          console.log("movezoomend-----called>>>>>");
+          const visibleFeatures = this.map.queryRenderedFeatures({ layers: [ DATABC_GROUND_WATER_LICENCES_LAYER_ID ] });
+          if (visibleFeatures.length != 0) {
+           // console.log("features visible>>>>>>" + JSON.stringify(visibleFeatures));
+            console.log("features visible>>>>>>");
+          }else{
+            console.log("features invisible>>>>>>");
+            //console.log("features invisible>>>>>>"  + JSON.stringify(visibleFeatures));
+          }
+          
+          // console.log("movezoomend-----called>>>>>");
           // const visibleFeatures = this.map.queryRenderedFeatures({ layers: [ AQUIFERS_FILL_LAYER_ID ] })
           // const bounds = this.map.getBounds()
           // const aquiferIds = visibleFeatures.map((l) => l.properties.aquifer_id)
