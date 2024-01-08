@@ -79,6 +79,7 @@ import { setupFeatureTooltips } from '../../common/mapbox/popup'
 
 const CURRENT_AQUIFER_FILL_LAYER_ID = 'cur-aquifer-fill'
 const CURRENT_AQUIFER_LINE_LAYER_ID = 'cur-aquifer-line'
+const CADASTRAL_LAYER_MIN_ZOOM = 12.5
 
 export default {
   name: 'SingleAquiferMap',
@@ -399,75 +400,46 @@ export default {
         canInteract,
         ecocatLayerIds: [ DATABC_ECOCAT_LAYER_ID ]
       })
-    //}
     },
-    isLayerVisible(layerId) {
-    const layer = this.map.getLayer(layerId);
-if (layer) {
-  const visibility = this.map.getLayoutProperty(layerId, 'visibility');
+    updateMapLegendBasedOnVisibleElements() {
+      //gets a list of rendered objects and then updates the legend to only display entries for items that are currently rendered
+      const visibleFeatures = this.map.queryRenderedFeatures();
+      const uniqueRenderedLayerIds = new Set();
+      visibleFeatures.forEach(item => {
+        if (item.layer.id){
+          uniqueRenderedLayerIds.add(item.layer.id);
+        }
+      });
 
-  console.log("visibility>>>>>>>" + visibility);
+      //as cadastrals are a raster layer rather than a vector layer like the others, so seperate logic is required.         
+      this.mapLayers.forEach(layerObj =>{
+        if(uniqueRenderedLayerIds.has(layerObj.id) && layerObj.id != DATABC_CADASTREL_LAYER_ID){
+          this.mapLayers.find((layer) => layer.id === layerObj.id).show = true;
+        } else if(!uniqueRenderedLayerIds.has(layerObj.id) && layerObj.id != DATABC_CADASTREL_LAYER_ID){
+          this.mapLayers.find((layer) => layer.id === layerObj.id).show = false;
+        }
+      });
 
-//   this.map.on('data', () => {
-// console.log(data + 'A data event occurred.');
-// });
-
-  //console.log(layerId + " visible");
-  if (visibility === 'visible')
-  {
-    console.log(layerId + " visible");
-  }
-  else
-  {
-    console.log(layerId + " invisible");
-  }
-} else {
-  console.log(layerId + " invisible");
-  return false;
-}
+      //For simplicity, the cadastral check is only based on the maps zoom level and not on any cadastrals being rendered.
+      if(this.map.getZoom() > CADASTRAL_LAYER_MIN_ZOOM){
+        this.mapLayers.find((layer) => layer.id === DATABC_CADASTREL_LAYER_ID).show = true;
+      } else {
+        this.mapLayers.find((layer) => layer.id === DATABC_CADASTREL_LAYER_ID).show = false;
+      }
+      this.legendControl.update();
     },
     listenForMapMovement () {
-//       this.map.on('data', () => {
-// console.log(data + 'A data event occurred.');
-// });
-      //console.log("movement-----called>>>>>");
       const startEvents = ['zoomstart', 'movestart']
       startEvents.forEach(eventName => {
         this.map.on(eventName, (e) => {
-          // console.log("movezoom start-----called>>>>>");
-         // this.isLayerVisible(DATABC_CADASTREL_LAYER_ID);
-          //this.isLayerVisible(DATABC_ECOCAT_LAYER_ID);
-          const visibleFeatures = this.map.queryRenderedFeatures({ layers: [ DATABC_GROUND_WATER_LICENCES_LAYER_ID ] });
-          if (visibleFeatures.length != 0) {
-           // console.log("features visible>>>>>>" + JSON.stringify(visibleFeatures));
-            console.log("features visible>>>>>>");
-          }else{
-            console.log("features invisible>>>>>>");
-            //console.log("features invisible>>>>>>"  + JSON.stringify(visibleFeatures));
-          }
-          
-          // if (this.searchMapButtonEnabled) {
-          //   this.showMapSearchButton()
-          // }
+
         })
       })
       const endEvents = ['zoomend', 'moveend']
       endEvents.forEach(eventName => {
         this.map.on(eventName, (e) => {
-          const visibleFeatures = this.map.queryRenderedFeatures({ layers: [ DATABC_GROUND_WATER_LICENCES_LAYER_ID ] });
-          if (visibleFeatures.length != 0) {
-           // console.log("features visible>>>>>>" + JSON.stringify(visibleFeatures));
-            console.log("features visible>>>>>>");
-          }else{
-            console.log("features invisible>>>>>>");
-            //console.log("features invisible>>>>>>"  + JSON.stringify(visibleFeatures));
-          }
-          
-          // console.log("movezoomend-----called>>>>>");
-          // const visibleFeatures = this.map.queryRenderedFeatures({ layers: [ AQUIFERS_FILL_LAYER_ID ] })
-          // const bounds = this.map.getBounds()
-          // const aquiferIds = visibleFeatures.map((l) => l.properties.aquifer_id)
-          // this.$emit('moved', bounds, uniq(aquiferIds))
+          this.updateMapLegendBasedOnVisibleElements();        
+
         })
       })
     }
