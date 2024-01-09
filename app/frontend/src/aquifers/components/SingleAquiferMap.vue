@@ -336,14 +336,39 @@ export default {
       filter.splice(1, 0, ['==', ['get', 'aquifer_id'], this.aquiferId], false)
       return filter
     },
+    updateMapLegendBasedOnVisibleElements() {
+      //gets a list of rendered objects and then updates the legend to only display entries for items that are currently rendered
+      const visibleFeatures = this.map.queryRenderedFeatures();
+      const uniqueRenderedLayerIds = new Set();
+      visibleFeatures.forEach(item => {
+        if (item.layer.id){
+          uniqueRenderedLayerIds.add(item.layer.id);
+        }
+      });
+
+      //cadastrals are a raster layer rather than a vector layer like the others, so seperate logic is required.         
+      this.mapLayers.forEach(layerObj =>{
+        if(uniqueRenderedLayerIds.has(layerObj.id) && layerObj.id != DATABC_CADASTREL_LAYER_ID){
+          this.mapLayers.find((layer) => layer.id === layerObj.id).show = true;
+        } else if(!uniqueRenderedLayerIds.has(layerObj.id) && layerObj.id != DATABC_CADASTREL_LAYER_ID){
+          this.mapLayers.find((layer) => layer.id === layerObj.id).show = false;
+        }
+      });
+
+      //For simplicity, the cadastral check is only based on the maps zoom level and not on any cadastrals being rendered.
+      //Check if cadastral checkbox is checked
+      if(this.map.getZoom() > CADASTRAL_LAYER_MIN_ZOOM && this.map.getLayoutProperty(DATABC_CADASTREL_LAYER_ID, 'visibility') != "none"){
+        this.mapLayers.find((layer) => layer.id === DATABC_CADASTREL_LAYER_ID).show = true;
+      } else {
+        this.mapLayers.find((layer) => layer.id === DATABC_CADASTREL_LAYER_ID).show = false;
+      }
+      this.legendControl.update();//finally, update the legend
+    },
     layersChanged (layerId, show) {
-      // Find the layer and mark it as shown so the legend can be updated properly
-      this.mapLayers.find((layer) => layer.id === layerId).show = show
-
-      this.legendControl.update()
-
       // Turn the layer's visibility on / off
       this.map.setLayoutProperty(layerId, 'visibility', show ? 'visible' : 'none')
+      //find visible elements and update the legend
+      this.updateMapLegendBasedOnVisibleElements();
     },
     zoomToAquifer (fitBoundsOptions) {
       if (!this.geom) { return }
@@ -400,34 +425,6 @@ export default {
         canInteract,
         ecocatLayerIds: [ DATABC_ECOCAT_LAYER_ID ]
       })
-    },
-    updateMapLegendBasedOnVisibleElements() {
-      //gets a list of rendered objects and then updates the legend to only display entries for items that are currently rendered
-      const visibleFeatures = this.map.queryRenderedFeatures();
-      const uniqueRenderedLayerIds = new Set();
-      visibleFeatures.forEach(item => {
-        if (item.layer.id){
-          uniqueRenderedLayerIds.add(item.layer.id);
-        }
-      });
-
-      //as cadastrals are a raster layer rather than a vector layer like the others, so seperate logic is required.         
-      this.mapLayers.forEach(layerObj =>{
-        if(uniqueRenderedLayerIds.has(layerObj.id) && layerObj.id != DATABC_CADASTREL_LAYER_ID){
-          this.mapLayers.find((layer) => layer.id === layerObj.id).show = true;
-        } else if(!uniqueRenderedLayerIds.has(layerObj.id) && layerObj.id != DATABC_CADASTREL_LAYER_ID){
-          this.mapLayers.find((layer) => layer.id === layerObj.id).show = false;
-        }
-      });
-
-      //For simplicity, the cadastral check is only based on the maps zoom level and not on any cadastrals being rendered.
-      //Check if cadastral checkbox is checked
-      if(this.map.getZoom() > CADASTRAL_LAYER_MIN_ZOOM && this.map.getLayoutProperty(DATABC_CADASTREL_LAYER_ID, 'visibility') != "none"){
-        this.mapLayers.find((layer) => layer.id === DATABC_CADASTREL_LAYER_ID).show = true;
-      } else {
-        this.mapLayers.find((layer) => layer.id === DATABC_CADASTREL_LAYER_ID).show = false;
-      }
-      this.legendControl.update();
     },
     listenForMapMovement () {
       const startEvents = ['zoomstart', 'movestart']
