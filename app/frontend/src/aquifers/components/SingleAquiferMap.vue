@@ -421,7 +421,8 @@ export default {
       });
 
       //For simplicity, the cadastral check is only based on the maps zoom level and not on any cadastrals being rendered.
-      if(this.map.getZoom() > CADASTRAL_LAYER_MIN_ZOOM){
+      //Check if cadastral checkbox is checked
+      if(this.map.getZoom() > CADASTRAL_LAYER_MIN_ZOOM && this.map.getLayoutProperty(DATABC_CADASTREL_LAYER_ID, 'visibility') != "none"){
         this.mapLayers.find((layer) => layer.id === DATABC_CADASTREL_LAYER_ID).show = true;
       } else {
         this.mapLayers.find((layer) => layer.id === DATABC_CADASTREL_LAYER_ID).show = false;
