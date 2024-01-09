@@ -25,7 +25,6 @@ The application is being developed as an open source solution.
 1. [Architecture](#Architecture)
 1. [Contributing](#contributing)
     * [Code With Us](#code-with-us)
-1. [Issues](#issues)
 1. [License](#license)
 
 ## Using the GWELLS API
@@ -192,10 +191,6 @@ All contributors retain original copyright, but are granting a world-wide, royal
 ### Code With Us
 
 Many of our features have been developed by members of the community. Check the [BC Developer Exchange website](https://bcdevexchange.org/), where paid opportunities to build features for GWELLS and other applications are posted.
-
-## Issues
-
-Issues are tracked on the [Water Jira board](https://apps.nrs.gov.bc.ca/int/jira/projects/WATER/issues). Note this is a restricted issue tracker and you will require permission to be able to view it.
 
 ## License
 
