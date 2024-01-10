@@ -33,6 +33,8 @@ from gwells.models.lithology import (
     LithologyMaterialCode, BedrockMaterialCode, BedrockMaterialDescriptorCode, LithologyStructureCode,
     LithologyMoistureCode, SurficialMaterialCode)
 from gwells.db_comments.patch_fields import patch_fields
+from wells.utils import calculate_geocode_distance, calculate_pid_distance_for_well, \
+  calculate_score_address, calculate_score_city, calculate_natural_resource_region_for_well
 
 # from aquifers.models import Aquifer
 
@@ -1148,6 +1150,25 @@ class Well(AuditModelStructure):
     recommended_pump_rate = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True,
                                                 verbose_name='Recommended pump rate',
                                                 validators=[MinValueValidator(Decimal('0.00'))])
+    # QaQc Fields for internal use
+    geocode_distance = models.DecimalField(
+        null=True, blank=True, max_digits=7, decimal_places=2, verbose_name='Geocode Distance',
+        db_comment='Distance calculated during geocoding process.')
+    distance_to_pid = models.DecimalField(
+        null=True, blank=True, max_digits=7, decimal_places=2, verbose_name='Distance to PID',
+        db_comment='Distance to the Property Identification Description.')
+    score_address = models.DecimalField(
+        null=True, blank=True, max_digits=7, decimal_places=2, verbose_name='Score for Address',
+        db_comment='Score representing the accuracy or confidence of the address geocoding.')
+    score_city = models.DecimalField(
+        null=True, blank=True, max_digits=7, decimal_places=2, verbose_name='Score for City',
+        db_comment='Score representing the accuracy or confidence of the city geocoding.')
+    cross_referenced = models.BooleanField(
+        default=False, verbose_name='Cross Referenced',
+        db_comment='Indicates if the record has been cross-referenced by an internal team member.')
+    natural_resource_region = models.CharField(
+        max_length=250, blank=True, null=True, verbose_name="Natural Resource Region",
+        db_comment='The Natural Resource Region the well is located within.')
 
     class Meta:
         db_table = 'well'
@@ -1292,6 +1313,50 @@ def update_utm(sender, instance, **kwargs):
         # We round to integers because easting/northing is only precise to 1m. The DB column is also an integer type.
         instance.utm_easting = round(utm_point.x)
         instance.utm_northing = round(utm_point.y)
+
+
+@receiver(pre_save, sender=Well)
+def update_well(sender, instance, **kwargs):
+    """
+    Signal receiver that triggers before a Well instance is saved.
+
+    For new Well instances, it calculates and sets various geographical and scoring fields.
+    For existing Well instances, it recalculates these fields if the geographical location (geom) has changed.
+
+    Parameters:
+    sender (Model Class): The model class that sent the signal. Should always be the Well model.
+    instance (Well instance): The instance of Well being saved.
+    kwargs: Additional keyword arguments. Not used in this function.
+    """
+
+    def is_valid_geom(geom):
+        """
+        Helper function to check if the geom attribute is valid.
+        A valid geom should be non-null and must have both latitude and longitude.
+        """
+        return geom and hasattr(geom, 'latitude') and hasattr(geom, 'longitude')
+
+    try:
+        if instance._state.adding and not instance.pk:
+            # Handling new instance creation
+            if is_valid_geom(instance.geom):
+                instance.geocode_distance = calculate_geocode_distance(instance)
+                instance.distance_to_pid = calculate_pid_distance_for_well(instance)
+                instance.score_address = calculate_score_address(instance)
+                instance.score_city = calculate_score_city(instance)
+                instance.natural_resource_region = calculate_natural_resource_region_for_well(instance)
+        else:
+            # Handling updates to existing instances
+            original_instance = sender.objects.get(pk=instance.pk)
+            if original_instance.geom != instance.geom:
+                if is_valid_geom(instance.geom):
+                    instance.geocode_distance = calculate_geocode_distance(instance)
+                    instance.distance_to_pid = calculate_pid_distance_for_well(instance)
+                    instance.score_address = calculate_score_address(instance)
+                    instance.score_city = calculate_score_city(instance)
+                    instance.natural_resource_region = calculate_natural_resource_region_for_well(instance)
+    except Exception as e:
+        print(f"Error in update_well for Well ID {instance.pk}: {str(e)}")
 
 
 class CasingMaterialCode(CodeTableModel):

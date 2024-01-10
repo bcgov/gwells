@@ -83,17 +83,17 @@ export const RECORD_COMPLIANCE_COLUMNS = [
 
 export const MISLOCATED_WELLS_COLUMNS = [
   'wellTagNumber',
-  'geocodeDistance', //
-  'distanceToMatchingPid', //
-  'streetAddress',
-  'ownerCity',
-  'workType', //
+  'geocodeDistance',
+  'distanceToPid',
+  'scoreAddress',
+  'scoreCity',
+  'wellStatus',
   'dateOfWork',
   'orgResponsible',
-  'naturalResourceRegion', //
+  'naturalResourceRegion',
   'createDate',
   'createUser',
-  'internalComments' //
+  'internalComments'
 ]
 
 export const CROSS_REFERENCING_COLUMNS = [

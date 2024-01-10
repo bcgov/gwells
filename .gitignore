@@ -26,6 +26,7 @@
 *.tar
 *.zip
 !regional_areas.zip
+!qaqc_well_data.zip
 
 # Logs and databases #
 ######################

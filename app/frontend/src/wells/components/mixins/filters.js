@@ -876,7 +876,37 @@ const SEARCH_FIELDS = {
     sortable: true,
   },
   latitude: { param: 'latitude', label: 'Latitude', type: 'number' },
-  longitude: { param: 'longitude', label: 'Longitude', type: 'number' }
+  longitude: { param: 'longitude', label: 'Longitude', type: 'number' },
+  geocodeDistance: {
+    param: 'geocode_distance',
+    label: 'Geocode Distance',
+    type: 'range',
+    sortable: true,
+  },
+  distanceToPid: {
+    param: 'distance_to_pid',
+    label: 'Distance to Matching PID',
+    type: 'range',
+    sortable: true,
+  },
+  scoreAddress: {
+    param: 'score_address',
+    label: 'Score Address',
+    type: 'range',
+    sortable: true,
+  },
+  scoreCity: {
+    param: 'score_city',
+    label: 'Score City',
+    type: 'range',
+    sortable: true,
+  },
+  naturalResourceRegion: {
+    param: 'natural_resource_region',
+    label: 'Natural Resource Region',
+    type: 'text',
+    sortable: true,
+  },
 }
 
 export default {
