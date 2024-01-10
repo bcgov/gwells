@@ -17,10 +17,10 @@
     <div>
       <ul>
         <li>
-          <a :href="excelExportUrl" download="search-results.xlsx" @click="handleExportClickEvent('Excel')">Excel</a>
+          <a :href="sanitizeExportUrl(excelExportUrl)" download="search-results.xlsx" @click="handleExportClickEvent('Excel')">Excel</a>
         </li>
         <li>
-          <a :href="csvExportUrl" download="search-results.csv" @click="handleExportClickEvent('CSV')">CSV</a>
+          <a :href="sanitizeExportUrl(csvExportUrl)" download="search-results.csv" @click="handleExportClickEvent('CSV')">CSV</a>
         </li>
       </ul>
     </div>
@@ -32,6 +32,7 @@ import querystring from 'querystring'
 
 import { mapGetters } from 'vuex'
 import { MAX_API_RESULT_AND_EXPORT_COUNT } from '@/common/constants'
+import { sanitizeUrl } from '@braintree/sanitize-url'
 
 export default {
   props: {
@@ -92,6 +93,10 @@ export default {
           eventLabel: format
         })
       }
+    },
+    sanitizeExportUrl (url) {
+      const sanitized = sanitizeUrl(url)
+      return encodeURI(sanitized)
     }
   }
 }
