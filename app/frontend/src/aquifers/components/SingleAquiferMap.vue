@@ -342,34 +342,49 @@ export default {
       // Turn the layer's visibility on / off
       this.map.setLayoutProperty(layerId, 'visibility', show ? 'visible' : 'none');
       try {
-        // Wait for the layer change to be rendered
-        await this.waitForLayerChangeRender(layerId, show);
+        // Wait for the layer change to be rendered/removed
+        await this.waitForLayerRenderChange(layerId, show);
 
         // Update the legend based on visible elements
         this.updateMapLegendBasedOnVisibleElements();
       } catch (error) {
         console.error('Error in layersChanged:', error);
-        // Handle the error as needed (log, throw, etc.)
         throw error;
       }
     },
 
-    async waitForLayerChangeRender(layerId, show) {//waits for layer with layerId to appear or be removed based on value of show
-      const maxAttempts = 10; // Adjust the number of attempts as needed
+    /**
+     * Asynchronously waits for a layer with the specified ID to appear or be removed based on the specified condition.
+     *
+     * @param {string} layerId - The ID of the layer to wait for.
+     * @param {boolean} show - A flag indicating whether to wait for the layer to appear (true) or be removed (false).
+     * @returns {Promise<void>} - A promise that resolves when the layer change has been rendered or the maximum attempts are reached.
+     * @throws {Error} - Throws an error if the maximum number of attempts is reached without the expected layer change.
+     */
+    async waitForLayerRenderChange(layerId, show) {//waits for layer with layerId to appear or be removed based on value of show
+      // Number of attempts before giving up
+      const maxAttempts = 10;
+
+      // Counter for attempts
       let attempts = 0;
+
+      // Flag indicating whether the layer change has been rendered
       let hasChangeBeenRendered = false;
 
+      // Continue the loop until the layer change is rendered or maxAttempts is reached
       while (!hasChangeBeenRendered && attempts < maxAttempts) {
+        // Get the currently visible layer IDs
         const visibleLayerIds = this.getRenderedLayerIds();
 
+        // Check if the layer change has been rendered/removed based on the 'show' parameter
         if (show) {
           hasChangeBeenRendered = visibleLayerIds.has(layerId);
         } else {
           hasChangeBeenRendered = !visibleLayerIds.has(layerId);
         }
 
+        // If the layer change has not been noticed, add a delay before checking again
         if (!hasChangeBeenRendered) {
-          // Add a delay before checking again
           await new Promise(resolve => setTimeout(resolve, 100));
           attempts++;
         }
@@ -432,29 +447,42 @@ export default {
         ecocatLayerIds: [ DATABC_ECOCAT_LAYER_ID ]
       })
     },
+
+    /**
+     * Updates the map legend based on the currently visible elements.
+     * It retrieves a list of rendered objects and updates the legend to display entries
+     * only for items that are currently rendered.
+     */
     updateMapLegendBasedOnVisibleElements() {
-      //gets a list of rendered objects and then updates the legend to only display entries for items that are currently rendered
+
       const uniqueRenderedLayerIds = this.getRenderedLayerIds();
 
-      //as cadastrals are a raster layer rather than a vector layer like the others, so seperate logic is required.         
-      this.mapLayers.forEach(layerObj =>{
-        if(uniqueRenderedLayerIds.has(layerObj.id) && layerObj.id != DATABC_CADASTREL_LAYER_ID){
+      // Iterates through map layers to update their visibility status based on rendering
+      // cadastral layer is checked later due to special handling being needed
+      this.mapLayers.forEach(layerObj => {
+        if (uniqueRenderedLayerIds.has(layerObj.id) && layerObj.id !== DATABC_CADASTREL_LAYER_ID) {
           this.mapLayers.find((layer) => layer.id === layerObj.id).show = true;
-        } else if(!uniqueRenderedLayerIds.has(layerObj.id) && layerObj.id != DATABC_CADASTREL_LAYER_ID){
+        } else if (!uniqueRenderedLayerIds.has(layerObj.id) && layerObj.id !== DATABC_CADASTREL_LAYER_ID) {
           this.mapLayers.find((layer) => layer.id === layerObj.id).show = false;
         }
       });
 
-      //For simplicity, the cadastral check is only based on the maps zoom level and not on any cadastrals being rendered.
-      //Check if cadastral checkbox is checked
-      if(this.map.getZoom() > CADASTRAL_LAYER_MIN_ZOOM && this.map.getLayoutProperty(DATABC_CADASTREL_LAYER_ID, 'visibility') != "none"){
+      // Checks cadastral layer visibility based on zoom level and checkbox status
+      if (this.map.getZoom() > CADASTRAL_LAYER_MIN_ZOOM &&
+          this.map.getLayoutProperty(DATABC_CADASTREL_LAYER_ID, 'visibility') !== "none") {
         this.mapLayers.find((layer) => layer.id === DATABC_CADASTREL_LAYER_ID).show = true;
       } else {
         this.mapLayers.find((layer) => layer.id === DATABC_CADASTREL_LAYER_ID).show = false;
       }
       this.legendControl.update();
     },
-    getRenderedLayerIds(){ //returns a set of all layer ids which are currently being rendered
+
+    /**
+     * Retrieves a set of all layer IDs that are currently being rendered on the map.
+     *
+     * @returns {Set<string>} - A Set of unique layer IDs representing the currently rendered layers.
+     */
+    getRenderedLayerIds(){
       const visibleFeatures = (this.map.queryRenderedFeatures());
       const uniqueRenderedLayerIds = new Set();
       visibleFeatures.forEach(item => {
