@@ -336,14 +336,51 @@ export default {
       filter.splice(1, 0, ['==', ['get', 'aquifer_id'], this.aquiferId], false)
       return filter
     },
-    layersChanged (layerId, show) {
-      // Turn the layer's visibility on / off
-      this.map.setLayoutProperty(layerId, 'visibility', show ? 'visible' : 'none');
 
-      //this will update the legend but needs to wait for entries to render/disappear
-      setTimeout(() => {   this.updateMapLegendBasedOnVisibleElements(); }, 100);
+    async layersChanged(layerId, show) {
+      try {
+        // Turn the layer's visibility on / off
+        this.map.setLayoutProperty(layerId, 'visibility', show ? 'visible' : 'none');
 
+        // Wait for the layer change to be rendered
+        await this.waitForLayerChangeRender(layerId, show);
+
+        // Update the legend based on visible elements
+        this.updateMapLegendBasedOnVisibleElements();
+      } catch (error) {
+        console.error('Error in layersChanged:', error);
+        // Handle the error as needed (log, throw, etc.)
+        throw error;
+      }
     },
+
+    async waitForLayerChangeRender(layerId, show) {
+      const maxAttempts = 10; // Adjust the number of attempts as needed
+      let attempts = 0;
+      let hasChangeBeenRendered = false;
+
+      while (!hasChangeBeenRendered && attempts < maxAttempts) {
+        const visibleLayerIds = this.getRenderedLayerIds();
+
+        if (show) {
+          hasChangeBeenRendered = visibleLayerIds.has(layerId);
+        } else {
+          hasChangeBeenRendered = !visibleLayerIds.has(layerId);
+        }
+
+        if (!hasChangeBeenRendered) {
+          // Add a delay before checking again (e.g., 100ms)
+          await new Promise(resolve => setTimeout(resolve, 100));
+          attempts++;
+        }
+      }
+
+      if (!hasChangeBeenRendered) {
+        console.warn('Timeout waiting for layer change to be rendered.');
+        // Handle the timeout scenario (e.g., log, throw, etc.)
+      }
+    },
+
     zoomToAquifer (fitBoundsOptions) {
       if (!this.geom) { return }
 
@@ -402,14 +439,8 @@ export default {
     },
     updateMapLegendBasedOnVisibleElements() {
       //gets a list of rendered objects and then updates the legend to only display entries for items that are currently rendered
-      const visibleFeatures = this.map.queryRenderedFeatures();
-      const uniqueRenderedLayerIds = new Set();
-      visibleFeatures.forEach(item => {
-        if (item.layer.id){
-          uniqueRenderedLayerIds.add(item.layer.id);
-        }
-      });
-      console.log(uniqueRenderedLayerIds);
+      const uniqueRenderedLayerIds = this.getRenderedLayerIds();
+
       //as cadastrals are a raster layer rather than a vector layer like the others, so seperate logic is required.         
       this.mapLayers.forEach(layerObj =>{
         if(uniqueRenderedLayerIds.has(layerObj.id) && layerObj.id != DATABC_CADASTREL_LAYER_ID){
@@ -427,6 +458,16 @@ export default {
         this.mapLayers.find((layer) => layer.id === DATABC_CADASTREL_LAYER_ID).show = false;
       }
       this.legendControl.update();
+    },
+    getRenderedLayerIds(){
+      const visibleFeatures = (this.map.queryRenderedFeatures());
+      const uniqueRenderedLayerIds = new Set();
+      visibleFeatures.forEach(item => {
+        if (item.layer.id){
+          uniqueRenderedLayerIds.add(item.layer.id);
+        }
+      });
+      return uniqueRenderedLayerIds;
     },
     listenForMapMovement () {
       const startEvents = ['zoomstart', 'movestart']
