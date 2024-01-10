@@ -36,7 +36,7 @@
       </b-col>
     </b-row>
     <div class="table-responsive">
-      <table id="qaqcTable" class="table table-striped">
+      <table id="qaqcTable" class="table table-striped" aria-describedby="qaqcTableDesc">
         <thead>
           <tr>
             <th
@@ -55,7 +55,7 @@
             </th>
           </tr>
           <tr class="filters">
-            <th v-for="column in columns" :key="column.id" :class="`qaqc-filters-${column.type}`">
+            <th v-for="column in columns" :key="column.id" :class="`qaqc-filters-${column.type}`" scope="col">
               <qaqc-filters
                 v-if="!excludedFilterColumns.includes(column.id)"
                 :type="column.type"

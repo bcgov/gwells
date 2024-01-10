@@ -151,7 +151,7 @@ def download_file(url, out_path, filename):
         _, extension = os.path.split(urlfile)
         fp = tempfile.NamedTemporaryFile("wb", suffix=extension, delete=False)
         if parsed_url.scheme == "http" or parsed_url.scheme == "https":
-            res = requests.get(url, stream=True, verify=False)
+            res = requests.get(url, stream=True)
             if not res.ok:
                 raise IOError
 
