@@ -338,10 +338,10 @@ export default {
     },
 
     async layersChanged(layerId, show) {
-      try {
-        // Turn the layer's visibility on / off
-        this.map.setLayoutProperty(layerId, 'visibility', show ? 'visible' : 'none');
 
+      // Turn the layer's visibility on / off
+      this.map.setLayoutProperty(layerId, 'visibility', show ? 'visible' : 'none');
+      try {
         // Wait for the layer change to be rendered
         await this.waitForLayerChangeRender(layerId, show);
 
@@ -354,7 +354,7 @@ export default {
       }
     },
 
-    async waitForLayerChangeRender(layerId, show) {
+    async waitForLayerChangeRender(layerId, show) {//waits for layer with layerId to appear or be removed based on value of show
       const maxAttempts = 10; // Adjust the number of attempts as needed
       let attempts = 0;
       let hasChangeBeenRendered = false;
@@ -369,15 +369,10 @@ export default {
         }
 
         if (!hasChangeBeenRendered) {
-          // Add a delay before checking again (e.g., 100ms)
+          // Add a delay before checking again
           await new Promise(resolve => setTimeout(resolve, 100));
           attempts++;
         }
-      }
-
-      if (!hasChangeBeenRendered) {
-        console.warn('Timeout waiting for layer change to be rendered.');
-        // Handle the timeout scenario (e.g., log, throw, etc.)
       }
     },
 
@@ -459,7 +454,7 @@ export default {
       }
       this.legendControl.update();
     },
-    getRenderedLayerIds(){
+    getRenderedLayerIds(){ //returns a set of all layer ids which are currently being rendered
       const visibleFeatures = (this.map.queryRenderedFeatures());
       const uniqueRenderedLayerIds = new Set();
       visibleFeatures.forEach(item => {
