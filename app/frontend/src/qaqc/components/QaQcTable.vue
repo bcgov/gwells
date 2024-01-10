@@ -256,8 +256,14 @@ export default {
         'updateDate': 'Updated Date',
         'updateUser': 'Updated By',
         'internalOfficeComments': 'Internal Office Comments',
-        'internalComments': 'Notes'
+        'internalComments': 'Notes',
+        'geocodeDistance': 'Geocode Distance',
+        'distanceToPid': 'Distance to Matching PID',
+        'scoreAddress': 'Score Address',
+        'scoreCity': 'Score City',
+        'naturalResourceRegion': 'Natural Resource Region'
       }
+
       return (columnId) => labelMapping[columnId] || columnId
     }
   },

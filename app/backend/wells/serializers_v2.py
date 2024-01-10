@@ -461,19 +461,25 @@ class WellDetailSerializer(WellDetailSerializerV1):
 
 
 class MislocatedWellsSerializer(serializers.ModelSerializer):
+    work_start_date = serializers.DateField(read_only=True)
+    work_end_date = serializers.DateField(read_only=True)
 
     class Meta:
         model = Well
         fields = [
             'well_tag_number',
-            'identification_plate_number',
-            'street_address',
-            'city',
-            'geom',  # Geographical location of the well
+            'geocode_distance',
+            'distance_to_pid',
+            'score_address',
+            'score_city',
+            'well_status',
             'work_start_date',
-            'created_date',
-            'created_by',
-            'notes',
+            'work_end_date',
+            'company_of_person_responsible',
+            'natural_resource_region',
+            'create_date',
+            'create_user',
+            'internal_comments'
         ]
 
 
@@ -492,8 +498,9 @@ class CrossReferencingSerializer(serializers.ModelSerializer):
             'create_date',
             'update_date',
             'update_user',
-            # 'natural_resource_region',
+            'natural_resource_region',
             'internal_comments',
+            'cross_referenced'
         ]
 
 
@@ -521,6 +528,6 @@ class RecordComplianceSerializer(serializers.ModelSerializer):
           'company_of_person_responsible',
           'create_date',
           'create_user',
-          # 'natural_resource_region',
+          'natural_resource_region',
           'internal_comments'
         ]

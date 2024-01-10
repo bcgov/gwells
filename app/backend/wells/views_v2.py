@@ -20,7 +20,7 @@ from django.http import FileResponse, StreamingHttpResponse
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.geos import GEOSException, GEOSGeometry
 from django.contrib.gis.gdal import GDALException
-from django.db.models.functions import Cast
+from django.db.models.functions import Cast, Lower
 from django.db.models import FloatField, Q, Case, When, F, Value, DateField
 
 from rest_framework import status, filters
@@ -585,23 +585,42 @@ class MislocatedWellsListView(ListAPIView):
     """
     serializer_class = MislocatedWellsSerializer
 
+    swagger_schema = None
+    permission_classes = (WellsEditOrReadOnly,)
+    model = Well
+    pagination_class = APILimitOffsetPagination
+
+    # Allow searching on name fields, names of related companies, etc.
+    filter_backends = (WellListFilterBackend, BoundingBoxFilterBackend,
+                       filters.SearchFilter, WellListOrderingFilter, GeometryFilterBackend)
+    ordering = ('well_tag_number',)
+
     def get_queryset(self):
         """
         This view should return a list of all mislocated wells
         for the currently authenticated user.
         """
-        return Well.objects.filter(Q(geom__isnull=True) | Q(incorrect_location_flag=True))
+        queryset = Well.objects.all()
 
-    def get(self, request, *args, **kwargs):
-        """
-        Optionally restricts the returned mislocated wells to a given user,
-        by filtering against a `username` query parameter in the URL.
-        """
-        queryset = self.get_queryset()
+        queryset = Well.objects.select_related('well_status').annotate(
+            work_start_date=Case(
+                When(well_status__well_status_code=WELL_STATUS_CODE_CONSTRUCTION, then=F('construction_start_date')),
+                When(well_status__well_status_code=WELL_STATUS_CODE_ALTERATION, then=F('alteration_start_date')),
+                When(well_status__well_status_code=WELL_STATUS_CODE_DECOMMISSION, then=F('decommission_start_date')),
+                default=Value(None),
+                output_field=DateField()
+            ),
+            work_end_date=Case(
+                When(well_status__well_status_code=WELL_STATUS_CODE_CONSTRUCTION, then=F('construction_end_date')),
+                When(well_status__well_status_code=WELL_STATUS_CODE_ALTERATION, then=F('alteration_end_date')),
+                When(well_status__well_status_code=WELL_STATUS_CODE_DECOMMISSION, then=F('decommission_end_date')),
+                default=Value(None),
+                output_field=DateField()
+            )
+        )
 
-        serializer = self.serializer_class(queryset, many=True)
-        return Response(serializer.data)
-    
+        return queryset
+
 
 class RecordComplianceListView(ListAPIView):
     serializer_class = RecordComplianceSerializer
@@ -711,12 +730,15 @@ class CrossReferencingListView(ListAPIView):
             )
         )
 
-        search_terms = ["x-ref'd", "x-ref", "cross-ref"]
-        
-        # Build a Q object for the search terms
+        search_terms = ["x-ref'd", "x-ref", "cross-ref", "cross r", "cross-r", "ref'd", "referenced", "refd", "xref", "x-r", "x r"]
+
+        # Annotate the queryset to add a lowercase version of internal_comments
+        queryset = Well.objects.annotate(lower_internal_comments=Lower('internal_comments'))
+
+        # Build a Q object for the search terms, against the lowercase internal_comments
         comments_query = Q()
         for term in search_terms:
-            comments_query |= Q(internal_comments__icontains=term)
+            comments_query |= Q(lower_internal_comments__icontains=term)
 
         # Filter the queryset based on the search terms
         queryset = queryset.filter(comments_query)
