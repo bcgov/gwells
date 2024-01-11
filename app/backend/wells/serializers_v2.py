@@ -19,7 +19,7 @@ from django.contrib.gis.geos import Point
 
 from gwells.utils import isPointInsideBC
 from wells.models import Well, DevelopmentMethodCode
-from aquifers.models import VerticalAquiferExtent, Aquifer, WaterRightsLicence
+from aquifers.models import VerticalAquiferExtent, Aquifer
 
 from aquifers.serializers_v2 import AquiferDetailSerializerV2
 from wells.serializers import (
