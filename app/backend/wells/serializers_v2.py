@@ -19,7 +19,7 @@ from django.contrib.gis.geos import Point
 
 from gwells.utils import isPointInsideBC
 from wells.models import Well, DevelopmentMethodCode
-from aquifers.models import VerticalAquiferExtent, Aquifer
+from aquifers.models import VerticalAquiferExtent, Aquifer, WaterRightsLicence
 
 from aquifers.serializers_v2 import AquiferDetailSerializerV2
 from wells.serializers import (
@@ -138,11 +138,10 @@ class WellVerticalAquiferExtentSerializerV2(serializers.ModelSerializer):
         well = Well.objects.get(well_tag_number=well_tag_number)
         validated_data['well'] = well
         return super().create(validated_data)
-
-
+        
 class WellListSerializerV2(serializers.ModelSerializer):
     """Serializes a well record"""
-    licence_number = serializers.SerializerMethodField()
+    licence_number = serializers.SerializerMethodField(source='get_licence_number')
     legal_pid = serializers.SerializerMethodField()
     drilling_company = serializers.ReadOnlyField(
         source='company_of_person_responsible.org_guid')
@@ -159,6 +158,9 @@ class WellListSerializerV2(serializers.ModelSerializer):
         if instance.legal_pid is None:
             return instance.legal_pid
         return "{0:0>9}".format(instance.legal_pid)
+    
+    def get_licence_number(self, instance):
+        return list(instance.licences.values_list('licence_number', flat=True))
 
     class Meta:
         model = Well
@@ -289,26 +291,6 @@ class WellListSerializerV2(serializers.ModelSerializer):
             "drinking_water_protection_area_ind",
             "licence_number"
         )
-    def get_licence_number(self, obj):
-        with connection.cursor() as cursor:
-            licence_num_query = """
-                SELECT ARRAY_AGG(aw.licence_number) AS licence_numbers
-                FROM well_licences wl 
-                LEFT JOIN aquifers_waterrightslicence aw ON aw.wrl_sysid = wl.waterrightslicence_id
-                WHERE wl.well_id = %s
-                GROUP BY wl.well_id
-            """
-            cursor.execute(licence_num_query, [obj.well_tag_number])
-            row = cursor.fetchone()
-            if row:
-                return row[0]
-            else:
-                return None
-
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)
-        representation['licence_number'] = self.get_licence_number(instance)
-        return representation
 
 class WellListAdminSerializerV2(WellListSerializerV2):
     class Meta:
