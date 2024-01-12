@@ -1,7 +1,7 @@
 import csv
 import logging
 import sys
-from zipfile import ZipFile
+from zipfile import ZipFile, BadZipFile
 from io import BytesIO
 from time import sleep
 import os
@@ -18,7 +18,6 @@ import geopandas as gpd
 import pandas as pd
 import requests
 import click
-from cligj import verbose_opt, quiet_opt
 from thefuzz import fuzz
 import bcdata
 
@@ -80,12 +79,14 @@ ADDRESS_COLUMNS = [
 
 PARCELFABRIC_URL = "https://pub.data.gov.bc.ca/datasets/4cf233c2-f020-4f7a-9b87-1923252fbc24/pmbc_parcel_fabric_poly_svw.zip"
 
+WELLS_FILENAME = "wells.csv"
+PIDMATCH_FILENAME = "pidmatch.csv"
+EPSG_3154 = "EPSG:3153"
+
+# Configure logging at the module level
+logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
+
 LOG = logging.getLogger(__name__)
-
-
-def configure_logging(verbosity):
-    log_level = max(10, 20 - 10 * verbosity)  # default to info level logging
-    logging.basicConfig(stream=sys.stderr, level=log_level)
 
 
 class ZipCompatibleTarFile(tarfile.TarFile):
@@ -107,6 +108,7 @@ class ZipCompatibleTarFile(tarfile.TarFile):
 def get_compressed_file_wrapper(path):
     """From https://github.com/OpenBounds/Processing/blob/master/utils.py"""
     ARCHIVE_FORMAT_ZIP = "zip"
+    ARCHIVE_FORMAT_TAR = "tar"
     ARCHIVE_FORMAT_TAR_GZ = "tar.gz"
     ARCHIVE_FORMAT_TAR_BZ2 = "tar.bz2"
     archive_format = None
@@ -120,12 +122,11 @@ def get_compressed_file_wrapper(path):
         try:
             with ZipFile(path, "r") as f:
                 archive_format = ARCHIVE_FORMAT_ZIP
-        except:
+        except BadZipFile:
             try:
-                f = tarfile.TarFile.open(path, "r")
-                f.close()
-                archive_format = ARCHIVE_FORMAT_ZIP
-            except:
+                with tarfile.TarFile.open(path, "r") as f:
+                    archive_format = ARCHIVE_FORMAT_TAR
+            except tarfile.TarError:
                 pass
     if archive_format is None:
         raise Exception("Unable to determine archive format")
@@ -142,7 +143,6 @@ def get_compressed_file_wrapper(path):
 
 def download_file(url, out_path, filename):
     """Download and extract a zipfile to unique location"""
-    # out_folder = os.path.join(path, hashlib.sha224(url.encode("utf-8")).hexdigest())
     out_file = os.path.join(out_path, filename)
     if not os.path.exists(os.path.join(out_path, filename)):
         LOG.info("Downloading " + url)
@@ -178,7 +178,7 @@ def download_file(url, out_path, filename):
     return (out_file, layer)
 
 
-def get_gwells(outfile=os.path.join("data", "wells.csv")):
+def get_gwells(outfile=os.path.join("data", WELLS_FILENAME)):
     """
     - get wells csv if not already present
     - retain only records of interest
@@ -262,11 +262,11 @@ def reverse_geocode(
 
 
 def pidmatch(wells_gdf):
-    if os.path.exists(os.path.join("data", "pidmatch.csv")):
+    if os.path.exists(os.path.join("data", PIDMATCH_FILENAME)):
         LOG.info(
             "Loading data/pidmatch.csv, cached result of wells/parcels PID matching"
         )
-        pid_distances = gpd.read_file(os.path.join("data", "pidmatch.csv"))
+        pid_distances = gpd.read_file(os.path.join("data", PIDMATCH_FILENAME))
         pid_distances["well_tag_number"] = pid_distances["well_tag_number"].astype(int)
 
     else:
@@ -287,7 +287,12 @@ def pidmatch(wells_gdf):
         ]
         # join to parcel fabric on PID
         wells_parcels_pid = pd.merge(
-            wells_with_pid, parcels, how="inner", left_on="legal_pid", right_on="PID"
+            wells_with_pid, 
+            parcels, 
+            how="inner", 
+            left_on="legal_pid", 
+            right_on="PID",
+            validate="many_to_one"
         )
         # find distance from well point to parcel polygon with matching PID
         distances_series = wells_parcels_pid["geometry_x"].distance(
@@ -298,7 +303,7 @@ def pidmatch(wells_gdf):
             distance_to_matching_pid=distances_series
         )[["well_tag_number", "distance_to_matching_pid"]]
         # dump to file
-        pid_distances.to_csv(os.path.join("data", "pidmatch.csv"), index=False)
+        pid_distances.to_csv(os.path.join("data", PIDMATCH_FILENAME), index=False)
 
     return pd.merge(wells_gdf, pid_distances, on="well_tag_number", how="left")
 
@@ -322,7 +327,7 @@ def agriculture_overlays(in_gdf):
             bcdata.get_data("WHSE_LEGAL_ADMIN_BOUNDARIES.OATS_ALR_POLYS", as_gdf=True)[
                 ["STATUS", "geometry"]
             ]
-            .to_crs("EPSG:3153")
+            .to_crs(EPSG_3154)
             .rename(
                 columns={
                     "STATUS": "alr_ind",
@@ -337,7 +342,7 @@ def agriculture_overlays(in_gdf):
             bcdata.get_data(
                 "WHSE_BASEMAPPING.BTM_PRESENT_LAND_USE_V1_SVW", as_gdf=True
             )[["PRESENT_LAND_USE_LABEL", "geometry"]]
-            .to_crs("EPSG:3153")
+            .to_crs(EPSG_3154)
             .rename(
                 columns={
                     "PRESENT_LAND_USE_LABEL": "btm_label",
@@ -389,18 +394,23 @@ def compare_strings(x):
 
 @click.group()
 def cli():
+    """
+    This is the main command group for the CLI.
+
+    The function `cli` is decorated with `@click.group()`, which turns it into a command group. 
+    This group will serve as the base for nesting other sub-commands. The `pass` statement is used 
+    here because the function itself does not need to execute any code. Its primary purpose is to 
+    serve as a foundation for the CLI structure. Sub-commands will be attached to this group, 
+    and they will be the ones performing the actual operations or functionalities.
+    """
     pass
 
 
 @cli.command()
-@verbose_opt
-@quiet_opt
-def download(verbose, quiet):
+def download():
     """Download required data to data folder"""
-    verbosity = verbose - quiet
-    configure_logging(verbosity)
     Path("data").mkdir(parents=True, exist_ok=True)
-    get_gwells(os.path.join("data", "wells.csv"))
+    get_gwells(os.path.join("data", WELLS_FILENAME))
     download_file(PARCELFABRIC_URL, "data", "pmbc_parcel_fabric_poly_svw.gdb")
 
 
@@ -412,17 +422,12 @@ def download(verbose, quiet):
     default=os.path.join("data", "wells_geocoded.csv"),
     help="Name of output file.",
 )
-@verbose_opt
-@quiet_opt
-def geocode(geocoder_api_key, out_file, verbose, quiet):
+def geocode(geocoder_api_key, out_file):
     """Reverse geocode well locations with BC Geocoder API"""
-    verbosity = verbose - quiet
-    configure_logging(verbosity)
-
     # only process if output file does not already exist
     if not os.path.exists(out_file):
         # get wells csv as pandas dataframe
-        df = get_gwells(os.path.join("data", "wells.csv"))
+        df = get_gwells(os.path.join("data", WELLS_FILENAME))
 
         # extract just id and coords
         well_locations = df[
@@ -447,9 +452,7 @@ def geocode(geocoder_api_key, out_file, verbose, quiet):
 
 
 @cli.command()
-@verbose_opt
-@quiet_opt
-def qa(verbose, quiet):
+def qa():
     """Create several columns to use for location QA
     - distance from well pt to parcel with matching PID
     - wells street address / geocoder street address similarity
@@ -458,9 +461,6 @@ def qa(verbose, quiet):
 
     While running the analysis, reports on a few counts.
     """
-    verbosity = verbose - quiet
-    configure_logging(verbosity)
-
     # load source wells data
     gwells_df = get_gwells()
 
@@ -471,7 +471,7 @@ def qa(verbose, quiet):
         geometry=gpd.points_from_xy(
             x=wells_copy.longitude_Decdeg, y=wells_copy.latitude_Decdeg, crs="EPSG:4326"
         ),
-    ).to_crs("EPSG:3153")
+    ).to_crs(EPSG_3154)
     # convert id to integer
     wells["well_tag_number"] = wells["well_tag_number"].astype(int)
     # retain just columns of interest
@@ -491,7 +491,7 @@ def qa(verbose, quiet):
         bcdata.get_data("WHSE_ADMIN_BOUNDARIES.ADM_NR_DISTRICTS_SPG", as_gdf=True)[
             ["DISTRICT_NAME", "REGION_ORG_UNIT_NAME", "geometry"]
         ]
-        .to_crs("EPSG:3153")
+        .to_crs(EPSG_3154)
         .rename(
             columns={
                 "DISTRICT_NAME": "nr_district_name",
