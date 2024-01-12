@@ -1,5 +1,5 @@
 /*
-    Licensed under the Apache License, Version 2.0 (the "License");
+    Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
     You may obtain a copy of the License at
 
@@ -14,15 +14,9 @@
 <template>
   <div v-if="resultCount > 0 && resultCount < maxExportSize">
     <h3>Export qaqc results</h3>
-    <div>
-      <ul>
-        <li>
-          <a :href="sanitizeExportUrl(excelExportUrl)" download="search-results.xlsx" @click="handleExportClickEvent('Excel')">Excel</a>
-        </li>
-        <li>
-          <a :href="sanitizeExportUrl(csvExportUrl)" download="search-results.csv" @click="handleExportClickEvent('CSV')">CSV</a>
-        </li>
-      </ul>
+    <div class="button-container">
+      <a @click="handleExportClickEvent('xlsx')" class="qaqc-download-button">Excel</a>
+      <a @click="handleExportClickEvent('csv')" class="qaqc-download-button">CSV</a>
     </div>
   </div>
 </template>
@@ -32,7 +26,6 @@ import querystring from 'querystring'
 
 import { mapGetters } from 'vuex'
 import { MAX_API_RESULT_AND_EXPORT_COUNT } from '@/common/constants'
-import { sanitizeUrl } from '@braintree/sanitize-url'
 
 export default {
   props: {
@@ -76,31 +69,78 @@ export default {
     }
   },
   methods: {
-    getExportUrl (format) {
-      let url = `${this.exportBaseUrl}?format=${format}`
+    getExportUrl(format) {
+      let url = `${this.exportBaseUrl}?format=${format}`;
       if (this.fullQueryString) {
-        url = `${url}&${this.fullQueryString}`
+        url = `${url}&${this.fullQueryString}`;
       }
-
-      return url
+      return url;
     },
-    handleExportClickEvent (format) {
+    sendAnalyticsEvent(format) {
       if (window.ga) {
         window.ga('send', {
           hitType: 'event',
           eventCategory: 'Button',
           eventAction: 'WellSearchResultsExtract',
-          eventLabel: format
-        })
+          eventLabel: format,
+        });
       }
     },
-    sanitizeExportUrl (url) {
-      const sanitized = sanitizeUrl(url)
-      return encodeURI(sanitized)
+    async handleExportClickEvent(format) {
+      // Send the analytics event
+      this.sendAnalyticsEvent(format);
+
+      // Generate the URL for the file download
+      const url = this.getExportUrl(format);
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.blob();
+
+        const downloadUrl = window.URL.createObjectURL(data);
+
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+        link.setAttribute('download', `search-results.${format}`);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+      } catch (error) {
+        console.error('There was a problem with the fetch operation:', error);
+      }
     }
   }
 }
 </script>
+<style scoped>
+.button-container {
+  margin-left: 5px;
+  display: flex;
+  justify-content: start; /* Aligns items to the start */
+  gap: 5px; /* Adjust the gap as needed */
+}
+.qaqc-download-button {
+  padding: 5px 10px;
+  width: 60px;
+  background-color: transparent; /* Transparent background */
+  color: grey; /* Text color */
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  border-radius: 5px;
+  border: 1px solid grey; /* Border properties */
+  cursor: pointer;
+  transition: background-color 0.3s; /* Smooth transition for the hover effect */
+}
 
-<style lang="scss">
+.qaqc-download-button:hover {
+  background-color: rgba(0, 0, 0, 0.1); /* Slight grey overlay on hover */
+}
+
+.qaqc-download-button:active {
+  background-color: rgba(0, 0, 0, 0.2); /* Darker overlay when clicked */
+}
 </style>

@@ -20,56 +20,45 @@ def isPointInsideBC(latitude, longitude):
     return False
 
 
-def geocode_bc_location(options={}):
-    """
-    Makes an HTTP call to the BC Physical Address Geocoder API
-    (https://www2.gov.bc.ca/gov/content/data/geographic-data-services/location-services/geocoder)
-    using any options provided as query string parameters. (the 'options'
-    parameter supports any query string parameter supported by the "addresses.json" 
-    endpoint.
-    If the address is successfully geocoded then this method returns a 
-    django.contrib.gis.geos.Point object corresponding to the first result.  
-    If a HTTP error occurs during 
-    communication with the remote API then an HTTPError exception is 
-    raised.  If the API call succeeds but does not find a coordinate 
-    matching the given address_string, then a ValueError is raised.
-    :param options: typical options are:
-      {
-        "addressString": "101 main st.",
-        "localityName": "Kelowna"
-      }
-    """
+def setup_parameters(options):
     default_options = {
-      "provinceCode": "BC",
-      "outputSRS": 4326,
-      "maxResults": 1,
-      "minScore": 65
+        "provinceCode": "BC",
+        "outputSRS": 4326,
+        "maxResults": 1,
+        "minScore": 65
     }
-    params = {}
-    params.update(default_options)
-    params.update(options)
+    return {**default_options, **options}
 
-    url = "https://geocoder.api.gov.bc.ca/addresses.json"
-        
+def perform_api_request(url, params):
     try:
         resp = requests.get(url, params=params, timeout=10)
         resp.raise_for_status()
-    except HTTPError as e:
-        #caught and re-raised to be clear ane explicit which exceptions 
-        #this method may cause
+        return resp
+    except requests.HTTPError as e:
         raise e
 
-    features = []
-    
-    try: 
-        features = resp.json().get('features')
+def process_response(response):
+    try:
+        features = response.json().get('features')
+        if not features:
+            raise ValueError("Unable to geocode address")
+        return features[0]
     except AttributeError as e:
         raise ValueError("Unable to geocode address")
 
-    if not len(features):
-        raise ValueError("Unable to geocode address")
-    
-    first_feature = features[0]
+def geocode_bc_location(options={}):
+    """
+    Performs an HTTP request to the BC Physical Address Geocoder API, 
+    returning a django.contrib.gis.geos.Point for the first result. Supports query 
+    string parameters via the 'options' argument. Raises HTTPError for 
+    communication issues and ValueError if no matching coordinate is found.
+    Example 'options': {"addressString": "101 main st.", "localityName": "Kelowna"}.
+    """
+    params = setup_parameters(options)
+    url = "https://geocoder.api.gov.bc.ca/addresses.json"
+    response = perform_api_request(url, params)
+    first_feature = process_response(response)
+
     try:
         point = GEOSGeometry(json.dumps(first_feature.get("geometry", {})))
     except TypeError as e:
