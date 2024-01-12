@@ -83,8 +83,6 @@ WELLS_FILENAME = "wells.csv"
 PIDMATCH_FILENAME = "pidmatch.csv"
 EPSG_3154 = "EPSG:3153"
 
-# Configure logging at the module level
-logging.basicConfig(stream=sys.stderr, level=logging.INFO)
 
 LOG = logging.getLogger(__name__)
 
