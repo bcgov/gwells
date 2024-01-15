@@ -31,6 +31,16 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </b-col>
       <b-col cols="12" md="6">
         <form-input id="ownerMailingAddress" label="Owner Mailing Address" v-model="ownerAddressInput" :errors="errors['owner_mailing_address']" :loaded="fieldsLoaded['owner_mailing_address']"></form-input>
+        <!-- Display the address suggestions -->
+        <ul v-if="addressSuggestions.length > 0" class="address-suggestions">
+          <li v-for="(suggestion, index) in addressSuggestions" :key="index">
+            <button @click="selectAddressSuggestion(suggestion)">{{ suggestion }}</button>
+          </li>
+        </ul>
+        <!-- Display a loading indicator while fetching suggestions -->
+        <div v-if="isLoadingSuggestions" class="loading-indicator">
+          Loading...
+        </div>
       </b-col>
     </b-row>
     <b-row>
@@ -135,10 +145,62 @@ export default {
     ownerTelInput: 'ownerTel'
   },
   data () {
-    return {}
+    return {
+      addressSuggestions: [],
+      isLoadingSuggestions: false
+    }
   },
   computed: {
     ...mapGetters(['codes'])
+  },
+  methods: {
+    async fetchAddressSuggestions() {
+
+      if (!this.ownerAddressInput) {
+        this.addressSuggestions = [];
+        return;
+      }
+
+      this.isLoadingSuggestions = true;
+      const params = {
+        minScore: 50,
+		    maxResults: 5,
+        echo: 'false',
+        brief: true,
+        autoComplete: true,
+        addressString: this.ownerAddressInput
+      };
+
+      const querystring = require('querystring');
+      const searchParams = querystring.stringify(params);
+      try {
+        const response = await fetch(`https://geocoder.api.gov.bc.ca/addresses.json?q=${searchParams}`);
+        console.log(encodeURIComponent(params));
+        console.log(searchParams);
+        const data = await response.json();
+        console.log(data);
+        if (data && data.features) {
+          
+          this.addressSuggestions = data.features.map(item => item.properties.fullAddress);
+        } else {
+          this.addressSuggestions = [];
+        }
+      } catch (error) {
+        console.error(error);
+        this.addressSuggestions = [];
+      } finally {
+        this.isLoadingSuggestions = false;
+      }
+    },
+    selectAddressSuggestion(suggestion) {
+      this.ownerAddressInput = suggestion;
+      this.addressSuggestions = [];
+    }
+  },
+  watch: {
+    ownerAddressInput() {
+      this.fetchAddressSuggestions();
+    }
   }
 }
 </script>
