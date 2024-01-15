@@ -79,6 +79,7 @@ import { setupFeatureTooltips } from '../../common/mapbox/popup'
 
 const CURRENT_AQUIFER_FILL_LAYER_ID = 'cur-aquifer-fill'
 const CURRENT_AQUIFER_LINE_LAYER_ID = 'cur-aquifer-line'
+const CADASTRAL_LAYER_MIN_ZOOM = 12.5
 
 export default {
   name: 'SingleAquiferMap',
@@ -292,6 +293,7 @@ export default {
 
         this.$emit('mapLoaded')
       })
+      this.listenForMapMovement();
     },
     buildMapStyle () {
       return {
@@ -334,15 +336,61 @@ export default {
       filter.splice(1, 0, ['==', ['get', 'aquifer_id'], this.aquiferId], false)
       return filter
     },
-    layersChanged (layerId, show) {
-      // Find the layer and mark it as shown so the legend can be updated properly
-      this.mapLayers.find((layer) => layer.id === layerId).show = show
 
-      this.legendControl.update()
+    async layersChanged(layerId, show) {
 
       // Turn the layer's visibility on / off
-      this.map.setLayoutProperty(layerId, 'visibility', show ? 'visible' : 'none')
+      this.map.setLayoutProperty(layerId, 'visibility', show ? 'visible' : 'none');
+      try {
+        // Wait for the layer change to be rendered/removed
+        await this.waitForLayerRenderChange(layerId, show);
+
+        // Update the legend based on visible elements
+        this.updateMapLegendBasedOnVisibleElements();
+      } catch (error) {
+        console.error('Error in layersChanged:', error);
+        throw error;
+      }
     },
+
+    /**
+     * Asynchronously waits for a layer with the specified ID to appear or be removed based on the specified condition.
+     *
+     * @param {string} layerId - The ID of the layer to wait for.
+     * @param {boolean} show - A flag indicating whether to wait for the layer to appear (true) or be removed (false).
+     * @returns {Promise<void>} - A promise that resolves when the layer change has been rendered or the maximum attempts are reached.
+     * @throws {Error} - Throws an error if the maximum number of attempts is reached without the expected layer change.
+     */
+    async waitForLayerRenderChange(layerId, show) {//waits for layer with layerId to appear or be removed based on value of show
+      // Number of attempts before giving up
+      const maxAttempts = 10;
+
+      // Counter for attempts
+      let attempts = 0;
+
+      // Flag indicating whether the layer change has been rendered
+      let hasChangeBeenRendered = false;
+
+      // Continue the loop until the layer change is rendered or maxAttempts is reached
+      while (!hasChangeBeenRendered && attempts < maxAttempts) {
+        // Get the currently visible layer IDs
+        const visibleLayerIds = this.getRenderedLayerIds();
+
+        // Check if the layer change has been rendered/removed based on the 'show' parameter
+        if (show) {
+          hasChangeBeenRendered = visibleLayerIds.has(layerId);
+        } else {
+          hasChangeBeenRendered = !visibleLayerIds.has(layerId);
+        }
+
+        // If the layer change has not been noticed, add a delay before checking again
+        if (!hasChangeBeenRendered) {
+          await new Promise(resolve => setTimeout(resolve, 100));
+          attempts++;
+        }
+      }
+    },
+
     zoomToAquifer (fitBoundsOptions) {
       if (!this.geom) { return }
 
@@ -398,8 +446,69 @@ export default {
         canInteract,
         ecocatLayerIds: [ DATABC_ECOCAT_LAYER_ID ]
       })
+    },
+
+    /**
+     * Updates the map legend based on the currently visible elements.
+     * It retrieves a list of rendered objects and updates the legend to display entries
+     * only for items that are currently rendered.
+     */
+    updateMapLegendBasedOnVisibleElements() {
+
+      const uniqueRenderedLayerIds = this.getRenderedLayerIds();
+
+      // Iterates through map layers to update their visibility status based on rendering
+      // cadastral layer is checked later due to special handling being needed
+      this.mapLayers.forEach(layerObj => {
+        if (uniqueRenderedLayerIds.has(layerObj.id) && layerObj.id !== DATABC_CADASTREL_LAYER_ID) {
+          this.mapLayers.find((layer) => layer.id === layerObj.id).show = true;
+        } else if (!uniqueRenderedLayerIds.has(layerObj.id) && layerObj.id !== DATABC_CADASTREL_LAYER_ID) {
+          this.mapLayers.find((layer) => layer.id === layerObj.id).show = false;
+        }
+      });
+
+      // Checks cadastral layer visibility based on zoom level and checkbox status
+      if (this.map.getZoom() > CADASTRAL_LAYER_MIN_ZOOM &&
+          this.map.getLayoutProperty(DATABC_CADASTREL_LAYER_ID, 'visibility') !== "none") {
+        this.mapLayers.find((layer) => layer.id === DATABC_CADASTREL_LAYER_ID).show = true;
+      } else {
+        this.mapLayers.find((layer) => layer.id === DATABC_CADASTREL_LAYER_ID).show = false;
+      }
+      this.legendControl.update();
+    },
+
+    /**
+     * Retrieves a set of all layer IDs that are currently being rendered on the map.
+     *
+     * @returns {Set<string>} - A Set of unique layer IDs representing the currently rendered layers.
+     */
+    getRenderedLayerIds(){
+      const visibleFeatures = (this.map.queryRenderedFeatures());
+      const uniqueRenderedLayerIds = new Set();
+      visibleFeatures.forEach(item => {
+        if (item.layer.id){
+          uniqueRenderedLayerIds.add(item.layer.id);
+        }
+      });
+      return uniqueRenderedLayerIds;
+    },
+    listenForMapMovement () {
+      const startEvents = ['zoomstart', 'movestart']
+      startEvents.forEach(eventName => {
+        this.map.on(eventName, (e) => {
+
+        })
+      })
+      const endEvents = ['zoomend', 'moveend']
+      endEvents.forEach(eventName => {
+        this.map.on(eventName, (e) => {
+          this.updateMapLegendBasedOnVisibleElements();        
+
+        })
+      })
     }
   },
+  
   watch: {
     aquiferId (newAquiferId, oldAquiferId) {
       this.setSelectedAquifer(oldAquiferId, false)
