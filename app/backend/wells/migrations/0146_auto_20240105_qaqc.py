@@ -41,6 +41,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='well',
             name='natural_resource_region',
-            field=models.CharField(default='', max_length=200),
+            field=models.CharField(null=True, blank=True, max_length=200),
         ),
     ]
