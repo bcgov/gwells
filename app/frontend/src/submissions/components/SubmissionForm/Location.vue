@@ -220,6 +220,8 @@ import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 
 import BackToTopLink from '@/common/components/BackToTopLink.vue'
 
+import { GEOCODER_ADDRESS_API } from '@/common/constants';
+
 export default {
   name: 'Location',
   mixins: [inputBindingsMixin],
@@ -322,7 +324,7 @@ export default {
       const querystring = require('querystring');
       const searchParams = querystring.stringify(params);
       try {
-        const response = await fetch(`https://geocoder.api.gov.bc.ca/addresses.json?q=${searchParams}`);
+        const response = await fetch(`${GEOCODER_ADDRESS_API}${searchParams}`);
         const data = await response.json();
         if (data && data.features) {    
           this.addressSuggestions = data.features.map(item => item.properties.fullAddress);

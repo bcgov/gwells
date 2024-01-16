@@ -59,3 +59,5 @@ export const TOOLTIP_TEXT = {
     analysis_method: 'Mathematical solutions (Theis, Cooper-Jacob, Neuman, etc.) where response data (discharge, drawdown/time) from pumping tests are used to estimate the hydraulic properties of aquifers.',
   },
 }
+
+export const GEOCODER_ADDRESS_API = 'https://geocoder.api.gov.bc.ca/addresses.json?q='

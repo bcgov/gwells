@@ -100,7 +100,7 @@ import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 import inputFormatMixin from '@/common/inputFormatMixin.js'
 
 import BackToTopLink from '@/common/components/BackToTopLink.vue'
-const GEOCODER_QUERY_URL = 'https://geocoder.api.gov.bc.ca/addresses.json?q='
+import { GEOCODER_ADDRESS_API } from '@/common/constants'
 export default {
   mixins: [inputBindingsMixin, inputFormatMixin],
   components: {
@@ -174,7 +174,7 @@ export default {
       const querystring = require('querystring');
       const searchParams = querystring.stringify(params);
       try {
-        const response = await fetch(GEOCODER_QUERY_URL + searchParams);
+        const response = await fetch(`${GEOCODER_ADDRESS_API}${searchParams}`);
         const data = await response.json();
         if (data && data.features) {
           
@@ -193,7 +193,10 @@ export default {
       const ownerAddressArray = suggestion.split(',');
       if(ownerAddressArray){
         if(ownerAddressArray[ownerAddressArray.length -1].toUpperCase().trim() === 'BC' || ownerAddressArray[-1].toUpperCase().trim() === 'BRITISH COLUMBIA')
-        this.ownerProvinceInput = this.codes.province_codes[0].province_state_code;
+        {
+          this.ownerProvinceInput = this.codes.province_codes[0].province_state_code;
+          this.ownerAddressInput = '';
+        }
       else this.ownerProvinceInput = "";
       this.ownerCityInput = ownerAddressArray[ownerAddressArray.length -2];
       if(ownerAddressArray[ownerAddressArray.length -3]) this.ownerAddressInput = ownerAddressArray[ownerAddressArray.length -3];
