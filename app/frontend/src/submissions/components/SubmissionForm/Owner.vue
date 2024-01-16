@@ -100,7 +100,7 @@ import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 import inputFormatMixin from '@/common/inputFormatMixin.js'
 
 import BackToTopLink from '@/common/components/BackToTopLink.vue'
-
+const GEOCODER_QUERY_URL = 'https://geocoder.api.gov.bc.ca/addresses.json?q='
 export default {
   mixins: [inputBindingsMixin, inputFormatMixin],
   components: {
@@ -174,11 +174,8 @@ export default {
       const querystring = require('querystring');
       const searchParams = querystring.stringify(params);
       try {
-        const response = await fetch(`https://geocoder.api.gov.bc.ca/addresses.json?q=${searchParams}`);
-        console.log(encodeURIComponent(params));
-        console.log(searchParams);
+        const response = await fetch(GEOCODER_QUERY_URL + searchParams);
         const data = await response.json();
-        console.log(data);
         if (data && data.features) {
           
           this.addressSuggestions = data.features.map(item => item.properties.fullAddress);
@@ -194,23 +191,29 @@ export default {
     },
     selectAddressSuggestion(suggestion) {
       const ownerAddressArray = suggestion.split(',');
-      this.ownerAddressInput = ownerAddressArray[0];
-      this.ownerCityInput = ownerAddressArray[1];
-      if(ownerAddressArray[2].toUpperCase().trim() === 'BC' || ownerAddressArray[2].toUpperCase().trim() === 'BRITISH COLUMBIA')
-      this.ownerProvinceInput = this.codes.province_codes[0].province_state_code;
-      else
-      this.ownerProvinceInput = "";
+      if(ownerAddressArray){
+        if(ownerAddressArray[ownerAddressArray.length -1].toUpperCase().trim() === 'BC' || ownerAddressArray[-1].toUpperCase().trim() === 'BRITISH COLUMBIA')
+        this.ownerProvinceInput = this.codes.province_codes[0].province_state_code;
+      else this.ownerProvinceInput = "";
+      this.ownerCityInput = ownerAddressArray[ownerAddressArray.length -2];
+      if(ownerAddressArray[ownerAddressArray.length -3]) this.ownerAddressInput = ownerAddressArray[ownerAddressArray.length -3];
+      }
+      
       this.clearAddressSuggestions();
     },
     clearAddressSuggestions () {
       this.addressSuggestions = [];
     },
     showList() {
-            document.getElementById('address-suggestions-list').style.display = 'block';
+      if(document.getElementById('address-suggestions-list')){
+        document.getElementById('address-suggestions-list').style.display = 'block';
+      }     
     },
     hideList() {
-      document.getElementById('address-suggestions-list').style.display = 'none';
-    }
+      if(document.getElementById('address-suggestions-list')){
+        document.getElementById('address-suggestions-list').style.display = 'none';
+      }
+    }     
   }
 }
 </script>
