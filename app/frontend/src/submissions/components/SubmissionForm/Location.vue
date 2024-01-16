@@ -38,10 +38,23 @@ Licensed under the Apache License, Version 2.0 (the "License");
             id="wellStreetAddress"
             type="text"
             label="Street address"
+            @input="fetchAddressSuggestions"
+            v-on:focus="showList"
+            v-on:blur="hideList"
             :errors="errors['street_address']"
             :loaded="fieldsLoaded['street_address']"
             :disabled="sameAsOwnerAddress"
           ></form-input>
+           <!-- Display the address suggestions -->
+        <div v-if="addressSuggestions.length > 0" class="address-suggestions list-group list-group-flush border" id="address-suggestions-list">
+          <li v-for="(suggestion, index) in addressSuggestions" :key="index">
+            <button @mousedown="selectAddressSuggestion(suggestion)" class="list-group-item list-group-item-action border-0">{{ suggestion }}</button>
+          </li>
+        </div>
+        <!-- Display a loading indicator while fetching suggestions -->
+        <div v-if="isLoadingSuggestions" class="loading-indicator">
+          Loading...
+        </div>
         </b-col>
       </b-row>
       <b-row>
@@ -255,7 +268,9 @@ export default {
   data () {
     return {
       wellAddressHints: [],
-      sameAsOwnerAddress: false
+      sameAsOwnerAddress: false,
+      addressSuggestions: [],
+      isLoadingSuggestions: false
     }
   },
   computed: {
@@ -285,6 +300,73 @@ export default {
       this.streetAddressInput = String(this.ownerMailingAddress)
       this.cityInput = String(this.ownerCity)
     }
+  },
+  methods: {
+    async fetchAddressSuggestions() {
+
+if (!this.streetAddressInput) {
+  this.addressSuggestions = [];
+  return;
+}
+
+this.isLoadingSuggestions = true;
+const params = {
+  minScore: 50,
+  maxResults: 5,
+  echo: 'false',
+  brief: true,
+  autoComplete: true,
+  addressString: this.streetAddressInput
+};
+
+const querystring = require('querystring');
+const searchParams = querystring.stringify(params);
+try {
+  const response = await fetch(`https://geocoder.api.gov.bc.ca/addresses.json?q=${searchParams}`);
+  console.log(encodeURIComponent(params));
+  console.log(searchParams);
+  const data = await response.json();
+  console.log(data);
+  if (data && data.features) {
+    
+    this.addressSuggestions = data.features.map(item => item.properties.fullAddress);
+  } else {
+    this.addressSuggestions = [];
+  }
+} catch (error) {
+  console.error(error);
+  this.addressSuggestions = [];
+} finally {
+  this.isLoadingSuggestions = false;
+}
+},
+selectAddressSuggestion(suggestion) {
+const wellAddressArray = suggestion.split(',');
+
+let province = '';
+
+switch (wellAddressArray.length) {
+  case 3: {
+    this.streetAddressInput = wellAddressArray[0];
+    this.cityInput = wellAddressArray[1];
+    break;
+  }
+  case 2: {
+    this.cityInput = wellAddressArray[0];
+    this.streetAddressInput = '';
+    break;
+  }
+}
+},
+clearAddressSuggestions () {
+this.addressSuggestions = [];
+},
+showList() {
+      document.getElementById('address-suggestions-list').style.display = 'block';
+},
+hideList() {
+document.getElementById('address-suggestions-list').style.display = 'none';
+}
   }
 }
 </script>
