@@ -193,9 +193,9 @@ export default {
       }
     },
     selectAddressSuggestion(suggestion) {
-      this.ownerAddressInput = suggestion;
-      this.addressSuggestions = [];
       const ownerAddressArray = suggestion.split(',');
+      this.ownerAddressInput = ownerAddressArray[0];
+      this.ownerCityInput = ownerAddressArray[1];
       if(ownerAddressArray[2].toUpperCase().trim() === 'BC' || ownerAddressArray[2].toUpperCase().trim() === 'BRITISH COLUMBIA')
       this.ownerProvinceInput = this.codes.province_codes[0].province_state_code;
       else
