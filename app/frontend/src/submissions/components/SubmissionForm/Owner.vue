@@ -32,11 +32,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <b-col cols="12" md="6">
         <form-input id="ownerMailingAddress" label="Owner Mailing Address" v-model="ownerAddressInput" @input="fetchAddressSuggestions" v-on:focus="showList" v-on:blur="hideList" :errors="errors['owner_mailing_address']" :loaded="fieldsLoaded['owner_mailing_address']"></form-input>
         <!-- Display the address suggestions -->
-        <ul v-if="addressSuggestions.length > 0" class="address-suggestions list-group" id="address-suggestions-list">
+        <div v-if="addressSuggestions.length > 0" class="address-suggestions list-group list-group-flush border" id="address-suggestions-list">
           <li v-for="(suggestion, index) in addressSuggestions" :key="index">
-            <button @mousedown="selectAddressSuggestion(suggestion)" class="list-group-item list-group-item-action">{{ suggestion }}</button>
+            <button @mousedown="selectAddressSuggestion(suggestion)" class="list-group-item list-group-item-action border-0">{{ suggestion }}</button>
           </li>
-        </ul>
+        </div>
         <!-- Display a loading indicator while fetching suggestions -->
         <div v-if="isLoadingSuggestions" class="loading-indicator">
           Loading...
@@ -216,5 +216,7 @@ export default {
 </script>
 
 <style>
-
+  .address-suggestions {
+    list-style-type: none;
+  }
 </style>
