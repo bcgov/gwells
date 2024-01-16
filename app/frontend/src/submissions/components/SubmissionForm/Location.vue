@@ -304,69 +304,69 @@ export default {
   methods: {
     async fetchAddressSuggestions() {
 
-if (!this.streetAddressInput) {
-  this.addressSuggestions = [];
-  return;
-}
+      if (!this.streetAddressInput) {
+        this.addressSuggestions = [];
+        return;
+      }
 
-this.isLoadingSuggestions = true;
-const params = {
-  minScore: 50,
-  maxResults: 5,
-  echo: 'false',
-  brief: true,
-  autoComplete: true,
-  addressString: this.streetAddressInput
-};
+      this.isLoadingSuggestions = true;
+      const params = {
+        minScore: 50,
+        maxResults: 5,
+        echo: 'false',
+        brief: true,
+        autoComplete: true,
+        addressString: this.streetAddressInput
+      };
 
-const querystring = require('querystring');
-const searchParams = querystring.stringify(params);
-try {
-  const response = await fetch(`https://geocoder.api.gov.bc.ca/addresses.json?q=${searchParams}`);
-  console.log(encodeURIComponent(params));
-  console.log(searchParams);
-  const data = await response.json();
-  console.log(data);
-  if (data && data.features) {
-    
-    this.addressSuggestions = data.features.map(item => item.properties.fullAddress);
-  } else {
-    this.addressSuggestions = [];
-  }
-} catch (error) {
-  console.error(error);
-  this.addressSuggestions = [];
-} finally {
-  this.isLoadingSuggestions = false;
-}
-},
-selectAddressSuggestion(suggestion) {
-const wellAddressArray = suggestion.split(',');
+      const querystring = require('querystring');
+      const searchParams = querystring.stringify(params);
+      try {
+        const response = await fetch(`https://geocoder.api.gov.bc.ca/addresses.json?q=${searchParams}`);
+        const data = await response.json();
+        if (data && data.features) {    
+          this.addressSuggestions = data.features.map(item => item.properties.fullAddress);
+        } else {
+          this.addressSuggestions = [];
+        }
+      } catch (error) {
+        console.error(error);
+        this.addressSuggestions = [];
+      } finally {
+        this.isLoadingSuggestions = false;
+      }
+    },
+    selectAddressSuggestion(suggestion) {
+      const wellAddressArray = suggestion.split(',');
 
-let province = '';
+      let province = '';
 
-switch (wellAddressArray.length) {
-  case 3: {
-    this.streetAddressInput = wellAddressArray[0];
-    this.cityInput = wellAddressArray[1];
-    break;
-  }
-  case 2: {
-    this.cityInput = wellAddressArray[0];
-    this.streetAddressInput = '';
-    break;
-  }
-}
-},
-clearAddressSuggestions () {
-this.addressSuggestions = [];
-},
-showList() {
-      document.getElementById('address-suggestions-list').style.display = 'block';
-},
-hideList() {
-document.getElementById('address-suggestions-list').style.display = 'none';
-}
+      switch (wellAddressArray.length) {
+        case 3: {
+          this.streetAddressInput = wellAddressArray[0];
+          this.cityInput = wellAddressArray[1];
+          break;
+        }
+        case 2: {
+          this.cityInput = wellAddressArray[0];
+          this.streetAddressInput = '';
+          break;
+        }
+      }
+    },
+    clearAddressSuggestions () {
+      this.addressSuggestions = [];
+    },
+    showList() {
+      if(document.getElementById('address-suggestions-list')){
+        document.getElementById('address-suggestions-list').style.display = 'block';
+      }     
+    },
+    hideList() {
+      if(document.getElementById('address-suggestions-list')){
+        document.getElementById('address-suggestions-list').style.display = 'none';
+      }
+    }     
   }
 }
 </script>
