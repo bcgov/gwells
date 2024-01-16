@@ -30,11 +30,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <form-input id="ownerFullName" label="Well Owner Name" v-model="ownerFullNameInput" :errors="errors['owner_full_name']" :loaded="fieldsLoaded['owner_full_name']"></form-input>
       </b-col>
       <b-col cols="12" md="6">
-        <form-input id="ownerMailingAddress" label="Owner Mailing Address" v-model="ownerAddressInput" :errors="errors['owner_mailing_address']" :loaded="fieldsLoaded['owner_mailing_address']"></form-input>
+        <form-input id="ownerMailingAddress" label="Owner Mailing Address" v-model="ownerAddressInput" @input="fetchAddressSuggestions" v-on:blur="clearAddressSuggestions" :errors="errors['owner_mailing_address']" :loaded="fieldsLoaded['owner_mailing_address']"></form-input>
         <!-- Display the address suggestions -->
         <ul v-if="addressSuggestions.length > 0" class="address-suggestions">
           <li v-for="(suggestion, index) in addressSuggestions" :key="index">
-            <button @click="selectAddressSuggestion(suggestion)">{{ suggestion }}</button>
+            <button @mousedown="selectAddressSuggestion(suggestion)">{{ suggestion }}</button>
           </li>
         </ul>
         <!-- Display a loading indicator while fetching suggestions -->
@@ -198,11 +198,11 @@ export default {
       const ownerAddressArray = suggestion.split(',');
       if(ownerAddressArray[2].toUpperCase().trim() === 'BC' || ownerAddressArray[2].toUpperCase().trim() === 'BRITISH COLUMBIA')
       this.ownerProvinceInput = this.codes.province_codes[0].province_state_code;
-    }
-  },
-  watch: {
-    ownerAddressInput() {
-      this.fetchAddressSuggestions();
+      else
+      this.ownerProvinceInput = "";
+    },
+    clearAddressSuggestions () {
+      this.addressSuggestions = [];
     }
   }
 }
