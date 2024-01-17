@@ -162,37 +162,39 @@ export default {
      * Finally, sets the loading state to false.
      */
     async fetchAddressSuggestions() {
-      if (!this.ownerAddressInput) {
+      console.log(this.ownerAddressInput.length);
+      if (!this.ownerAddressInput || this.ownerAddressInput.length < 3) {
         this.addressSuggestions = [];
         return;
-      }
-      this.isLoadingSuggestions = true;
-      const params = {
-        minScore: 50, //accuracy score of results compared to input
-		    maxResults: 5,
-        echo: 'false',
-        brief: true,
-        autoComplete: true,
-        addressString: this.ownerAddressInput
-      };
+      } else {
+        this.isLoadingSuggestions = true;
+        const params = {
+          minScore: 50, //accuracy score of results compared to input
+          maxResults: 5,
+          echo: 'false',
+          brief: true,
+          autoComplete: true,
+          addressString: this.ownerAddressInput
+        };
 
-      const querystring = require('querystring');
-      const searchParams = querystring.stringify(params);
-      try {
-        const response = await fetch(`${GEOCODER_ADDRESS_API}${searchParams}`);
-        const data = await response.json();
-        if (data && data.features) {
-          
-          this.addressSuggestions = data.features.map(item => item.properties.fullAddress);
-        } else {
+        const querystring = require('querystring');
+        const searchParams = querystring.stringify(params);
+        try {
+          const response = await fetch(`${GEOCODER_ADDRESS_API}${searchParams}`);
+          const data = await response.json();
+          if (data && data.features) {
+            
+            this.addressSuggestions = data.features.map(item => item.properties.fullAddress);
+          } else {
+            this.addressSuggestions = [];
+          }
+        } catch (error) {
+          console.error(error);
           this.addressSuggestions = [];
+        } finally {
+          this.isLoadingSuggestions = false;
         }
-      } catch (error) {
-        console.error(error);
-        this.addressSuggestions = [];
-      } finally {
-        this.isLoadingSuggestions = false;
-      }
+      }   
     },
 
     /**

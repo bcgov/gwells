@@ -312,7 +312,8 @@ export default {
      * Finally, sets the loading state to false.
      */
     async fetchAddressSuggestions() {
-      if (!this.streetAddressInput) {
+      const MIN_QUERY_LENGTH = 3;
+      if (!this.streetAddressInput || this.streetAddressInput.length < MIN_QUERY_LENGTH) {
         this.addressSuggestions = [];
         return;
       }
