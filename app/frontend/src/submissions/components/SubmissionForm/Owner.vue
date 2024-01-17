@@ -27,10 +27,25 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
     <b-row>
       <b-col cols="12" md="6">
-        <form-input id="ownerFullName" label="Well Owner Name" v-model="ownerFullNameInput" :errors="errors['owner_full_name']" :loaded="fieldsLoaded['owner_full_name']"></form-input>
+        <form-input 
+          id="ownerFullName" 
+          label="Well Owner Name" 
+          v-model="ownerFullNameInput" 
+          :errors="errors['owner_full_name']" 
+          :loaded="fieldsLoaded['owner_full_name']"
+        ></form-input>       
       </b-col>
       <b-col cols="12" md="6">
-        <form-input id="ownerMailingAddress" label="Owner Mailing Address" v-model="ownerAddressInput" @input="fetchAddressSuggestions" v-on:focus="showList" v-on:blur="hideList" :errors="errors['owner_mailing_address']" :loaded="fieldsLoaded['owner_mailing_address']"></form-input>
+        <form-input 
+          id="ownerMailingAddress" 
+          label="Owner Mailing Address" 
+          v-model="ownerAddressInput" 
+          @input="fetchAddressSuggestions" 
+          v-on:focus="showList(true)" 
+          v-on:blur="showList(false)" 
+          :errors="errors['owner_mailing_address']" 
+          :loaded="fieldsLoaded['owner_mailing_address']">
+        </form-input>
         <!-- Display the address suggestions -->
         <div v-if="addressSuggestions.length > 0" class="address-suggestions list-group list-group-flush border" id="address-suggestions-list">
           <li v-for="(suggestion, index) in addressSuggestions" :key="index">
@@ -162,8 +177,8 @@ export default {
      * Finally, sets the loading state to false.
      */
     async fetchAddressSuggestions() {
-      console.log(this.ownerAddressInput.length);
-      if (!this.ownerAddressInput || this.ownerAddressInput.length < 3) {
+      const MIN_QUERY_LENGTH = 3;
+      if (!this.ownerAddressInput || this.ownerAddressInput.length < MIN_QUERY_LENGTH) {
         this.addressSuggestions = [];
         return;
       } else {
@@ -227,22 +242,14 @@ export default {
     },
 
     /**
-     * @desc Shows the address suggestions list in the UI.
+     * @desc Shows or hides the address suggestions list in the UI.
+     * @param {boolean} show - a boolean which indicates whether to show or hide the element
      */
-    showList() {
+     showList(show) {
       if(document.getElementById('address-suggestions-list')){
-        document.getElementById('address-suggestions-list').style.display = 'block';
-      }     
-    },
-
-    /**
-     * @desc Hides the address suggestions list in the UI.
-     */
-    hideList() {
-      if(document.getElementById('address-suggestions-list')){
-        document.getElementById('address-suggestions-list').style.display = 'none';
+        document.getElementById('address-suggestions-list').style.display =  show? 'block' : 'none';
       }
-    }     
+    }        
   }
 }
 </script>

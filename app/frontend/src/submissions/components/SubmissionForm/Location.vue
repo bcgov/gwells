@@ -39,8 +39,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
             type="text"
             label="Street address"
             @input="fetchAddressSuggestions"
-            v-on:focus="showList"
-            v-on:blur="hideList"
+            v-on:focus="showList(true)"
+            v-on:blur="showList(false)"
             :errors="errors['street_address']"
             :loaded="fieldsLoaded['street_address']"
             :disabled="sameAsOwnerAddress"
@@ -378,22 +378,14 @@ export default {
     },
     
     /**
-     * @desc Shows the address suggestions list in the UI.
+     * @desc Shows or hides the address suggestions list in the UI.
+     * @param {boolean} show - a boolean which indicates whether to show or hide the element
      */
-    showList() {
+     showList(show) {
       if(document.getElementById('address-suggestions-list')){
-        document.getElementById('address-suggestions-list').style.display = 'block';
-      }     
-    },
-    
-    /**
-     * @desc Hides the address suggestions list in the UI.
-     */
-    hideList() {
-      if(document.getElementById('address-suggestions-list')){
-        document.getElementById('address-suggestions-list').style.display = 'none';
+        document.getElementById('address-suggestions-list').style.display =  show? 'block' : 'none';
       }
-    }     
+    }        
   }
 }
 </script>
