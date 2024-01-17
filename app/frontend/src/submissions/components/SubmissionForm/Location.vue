@@ -47,9 +47,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
           ></form-input>
            <!-- Display the address suggestions -->
         <div v-if="addressSuggestions.length > 0" class="address-suggestions list-group list-group-flush border" id="address-suggestions-list">
-          <li v-for="(suggestion, index) in addressSuggestions" :key="index">
+          <div v-for="(suggestion, index) in addressSuggestions" :key="index">
             <button @mousedown="selectAddressSuggestion(suggestion)" class="list-group-item list-group-item-action border-0">{{ suggestion }}</button>
-          </li>
+          </div>
         </div>
         <!-- Display a loading indicator while fetching suggestions -->
         <div v-if="isLoadingSuggestions" class="loading-indicator">
