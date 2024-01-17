@@ -219,16 +219,22 @@ export default {
      * @param {string} suggestion - The selected address suggestion. ("1234 Street Rd, Name of City, BC")
      */
     selectAddressSuggestion(suggestion) {
+      const PROV_ARRAY_INDEX = ownerAddressArray.length -1;
+      const CITY_ARRAY_INDEX = ownerAddressArray.length -2;
+      const STREET_ARRAY_INDEX = ownerAddressArray.length -3;
+
       const ownerAddressArray = suggestion.split(',');
       if(ownerAddressArray){
-        if(ownerAddressArray[ownerAddressArray.length -1].toUpperCase().trim() === 'BC' || ownerAddressArray[-1].toUpperCase().trim() === 'BRITISH COLUMBIA')
-        {
+        if(ownerAddressArray[PROV_ARRAY_INDEX].toUpperCase().trim() === 'BC' 
+          || ownerAddressArray[-1].toUpperCase().trim() === 'BRITISH COLUMBIA'){
           this.ownerProvinceInput = this.codes.province_codes[0].province_state_code;
           this.ownerAddressInput = '';
         }
-      else this.ownerProvinceInput = "";
-      this.ownerCityInput = ownerAddressArray[ownerAddressArray.length -2];
-      if(ownerAddressArray[ownerAddressArray.length -3]) this.ownerAddressInput = ownerAddressArray[ownerAddressArray.length -3];
+      else {
+        this.ownerProvinceInput = "";
+      }
+      this.ownerCityInput = ownerAddressArray[CITY_ARRAY_INDEX];
+      if(ownerAddressArray[STREET_ARRAY_INDEX]) this.ownerAddressInput = ownerAddressArray[STREET_ARRAY_INDEX];
       }
       
       this.clearAddressSuggestions();
