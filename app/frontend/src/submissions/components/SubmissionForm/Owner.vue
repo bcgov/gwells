@@ -48,9 +48,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
         </form-input>
         <!-- Display the address suggestions -->
         <div v-if="addressSuggestions.length > 0" class="address-suggestions list-group list-group-flush border" id="address-suggestions-list">
-          <div v-for="(suggestion, index) in addressSuggestions" :key="index">
+          <li v-for="(suggestion, index) in addressSuggestions" :key="index">
             <button @mousedown="selectAddressSuggestion(suggestion)" class="list-group-item list-group-item-action border-0">{{ suggestion }}</button>
-          </div>
+          </li>
         </div>
         <!-- Display a loading indicator while fetching suggestions -->
         <div v-if="isLoadingSuggestions" class="loading-indicator">
@@ -219,12 +219,15 @@ export default {
      * @param {string} suggestion - The selected address suggestion. ("1234 Street Rd, Name of City, BC")
      */
     selectAddressSuggestion(suggestion) {
-      const PROV_ARRAY_INDEX = ownerAddressArray.length -1;
-      const CITY_ARRAY_INDEX = ownerAddressArray.length -2;
-      const STREET_ARRAY_INDEX = ownerAddressArray.length -3;
+      console.log(suggestion);
 
       const ownerAddressArray = suggestion.split(',');
       if(ownerAddressArray){
+
+        const PROV_ARRAY_INDEX = ownerAddressArray.length -1;
+        const CITY_ARRAY_INDEX = ownerAddressArray.length -2;
+        const STREET_ARRAY_INDEX = ownerAddressArray.length -3;
+
         if(ownerAddressArray[PROV_ARRAY_INDEX].toUpperCase().trim() === 'BC' 
           || ownerAddressArray[-1].toUpperCase().trim() === 'BRITISH COLUMBIA'){
           this.ownerProvinceInput = this.codes.province_codes[0].province_state_code;
