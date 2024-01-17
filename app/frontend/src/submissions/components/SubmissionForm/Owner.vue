@@ -248,5 +248,7 @@ export default {
 <style>
   .address-suggestions {
     list-style-type: none;
+    position: absolute;
+    z-index: 10;
   }
 </style>

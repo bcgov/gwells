@@ -401,4 +401,9 @@ export default {
 .dropdown-error-border {
   border-radius: 5px;
 }
+.address-suggestions {
+    list-style-type: none;
+    position: absolute;
+    z-index: 10;
+  }
 </style>
