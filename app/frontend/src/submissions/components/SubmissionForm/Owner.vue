@@ -155,7 +155,7 @@ export default {
   },
   methods: {
     /**
-     * Asynchronously fetches address suggestions based on the owner's address input.
+     * @desc Asynchronously fetches address suggestions based on the owner's address input.
      * If no input is provided, it clears the current suggestions.
      * On success, it maps the received data to full addresses and updates the addressSuggestions state.
      * On failure, it logs the error and clears the current suggestions.
@@ -196,7 +196,7 @@ export default {
     },
 
     /**
-     * Processes the selected address suggestion.
+     * @desc Processes the selected address suggestion.
      * Splits the suggestion into components and updates the owner's province, city, and address inputs accordingly.
      * Clears the address suggestions afterward.
      * @param {string} suggestion - The selected address suggestion. ("1234 Street Rd, Name of City, BC")
@@ -218,14 +218,14 @@ export default {
     },
 
     /**
-     * Clears the current list of address suggestions.
+     * @desc Clears the current list of address suggestions.
      */
     clearAddressSuggestions () {
       this.addressSuggestions = [];
     },
 
     /**
-     * Shows the address suggestions list in the UI.
+     * @desc Shows the address suggestions list in the UI.
      */
     showList() {
       if(document.getElementById('address-suggestions-list')){
@@ -234,7 +234,7 @@ export default {
     },
 
     /**
-     * Hides the address suggestions list in the UI.
+     * @desc Hides the address suggestions list in the UI.
      */
     hideList() {
       if(document.getElementById('address-suggestions-list')){
