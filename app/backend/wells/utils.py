@@ -74,8 +74,6 @@ def calculate_natural_resource_region_for_well(well):
     # Construct the request URL
     request_url = f"{base_url}?{'&'.join([f'{k}={v}' for k, v in params.items()])}"
 
-    print(request_url)
-
     # Make the request
     response = requests.get(request_url)
     if response.status_code != 200:

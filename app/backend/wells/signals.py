@@ -63,8 +63,6 @@ def set_well_attributes(instance):
     instance (Well instance): The instance of Well being processed.
     """
     geocoded_address = reverse_geocode(instance.longitude, instance.latitude)
-    print("geocoded_address")
-    print(geocoded_address)
     instance.geocode_distance = calculate_geocode_distance(geocoded_address)
     instance.distance_to_pid = calculate_pid_distance_for_well(instance)
     instance.score_address = calculate_score_address(instance, geocoded_address)
