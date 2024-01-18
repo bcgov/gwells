@@ -6,6 +6,7 @@ from wells.constants import ADDRESS_COLUMNS, GEOCODER_ENDPOINT
 from thefuzz import fuzz
 from django.db.models import Case, When, Value, DateField, F
 from wells.models import Well
+from pyproj import Proj, transform
 
 WELL_STATUS_CODE_CONSTRUCTION = 'CONSTRUCTION'
 WELL_STATUS_CODE_ALTERATION = 'ALTERATION'
@@ -17,6 +18,12 @@ def calculate_pid_distance_for_well(well):
     :param well: A well instance with latitude, longitude attributes
     :return: Distance to the nearest parcel
     """
+    proj_4326 = Proj(init='epsg:4326')  # WGS 84
+    proj_3005 = Proj(init='epsg:3005')  # NAD83 / BC Albers
+
+    # Transform the point
+    x_3005, y_3005 = transform(proj_4326, proj_3005, well.longitude, well.latitude)
+
     # Base URL for the WFS request
     base_url = "https://openmaps.gov.bc.ca/geo/pub/wfs"
     params = {
@@ -26,7 +33,7 @@ def calculate_pid_distance_for_well(well):
         "typeName": "WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW",
         "outputFormat": "json",
         "srsName": "EPSG:4326",
-        "CQL_FILTER": f"DWITHIN(geometry, POINT({well.longitude} {well.latitude}), 0.1, meters)"
+        "CQL_FILTER": f"DWITHIN(SHAPE, POINT({x_3005} {y_3005}), 0.1, meters)"
     }
 
     # Construct the request URL
@@ -59,6 +66,13 @@ def calculate_natural_resource_region_for_well(well):
     :param well: A well instance with latitude, longitude attributes
     :return: Natural Resource Region name
     """
+    # convert between projections
+    proj_4326 = Proj(init='epsg:4326')  # WGS 84
+    proj_3005 = Proj(init='epsg:3005')  # NAD83 / BC Albers
+
+    # Transform the point
+    x_3005, y_3005 = transform(proj_4326, proj_3005, well.longitude, well.latitude)
+
     # Base URL for the WFS request
     base_url = "https://openmaps.gov.bc.ca/geo/pub/wfs"
     params = {
@@ -68,7 +82,8 @@ def calculate_natural_resource_region_for_well(well):
         "typeName": "WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONS_SPG",
         "outputFormat": "json",
         "srsName": "EPSG:4326",
-        "CQL_FILTER": f"CONTAINS(SHAPE, POINT({well.longitude} {well.latitude}))"
+        "CQL_FILTER": f"CONTAINS(SHAPE, POINT({x_3005} {y_3005}))",
+        "propertyName": "REGION_NAME,ORG_UNIT_NAME"
     }
 
     # Construct the request URL
@@ -89,7 +104,7 @@ def calculate_natural_resource_region_for_well(well):
         return None
 
     # Assuming the well can only be in one region, return the name of the first region found
-    return regions_gdf.iloc[0]['properties']['REGION_ORG_UNIT_NAME']
+    return regions_gdf.iloc[0]['ORG_UNIT_NAME']
 
 
 def reverse_geocode(
