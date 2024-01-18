@@ -116,6 +116,7 @@ import inputFormatMixin from '@/common/inputFormatMixin.js'
 
 import BackToTopLink from '@/common/components/BackToTopLink.vue'
 import { GEOCODER_ADDRESS_API } from '@/common/constants'
+import ApiService from '../../../common/services/ApiService'
 export default {
   mixins: [inputBindingsMixin, inputFormatMixin],
   components: {
@@ -195,14 +196,36 @@ export default {
         const querystring = require('querystring');
         const searchParams = querystring.stringify(params);
         try {
-          const response = await fetch(`${GEOCODER_ADDRESS_API}${searchParams}`);
-          const data = await response.json();
-          if (data && data.features) {
+          // const response = await fetch(`${GEOCODER_ADDRESS_API}${searchParams}`);
+          // const data = await response.json();
+          // if (data && data.features) {
             
-            this.addressSuggestions = data.features.map(item => item.properties.fullAddress);
-          } else {
-            this.addressSuggestions = [];
-          }
+          //   this.addressSuggestions = data.features.map(item => item.properties.fullAddress);
+          // } else {
+          //   this.addressSuggestions = [];
+          // }
+          // const response = ApiService.getAddresses(this.ownerAddressInput)
+          // .then(
+
+          // )
+
+          ApiService.getAddresses(this.ownerAddressInput).then((response) => {
+        if (response.data) {
+          // response.data.forEach((survey) => {
+          //   if (survey.survey_page === 'a' && survey.survey_enabled) {
+          //     this.surveys.push(survey)
+          //   }
+          // })
+          console.log('response>>>' + response)
+        }
+      })
+          
+      //     axios.get(
+      //   'geocoder',
+      //   { params: { ownerAddressInput: this.ownerAddressInput} }
+        
+      // )
+      //console.log('response>>>' + response)
         } catch (error) {
           console.error(error);
           this.addressSuggestions = [];

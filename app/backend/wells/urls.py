@@ -114,5 +114,9 @@ urlpatterns = [
 
     # Well Licensing status endpoint from e-Licensing.
     url(api_path_prefix() + r'/wells/licensing$',
-        views.well_licensing, name='well-licensing')
+        views.well_licensing, name='well-licensing'),
+    
+    # get geocoder address
+    url(api_path_prefix() + r'/wells/geocoder/(?P<tag>)',
+        views.AddressGeocoder.as_view(), name='address-geocoder'),
 ]
