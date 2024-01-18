@@ -64,6 +64,7 @@ from aquifers.models import (
 from aquifers.permissions import HasAquiferEditRole
 from wells.views import WellDetail as WellDetailV1
 from wells.constants import MAX_EXPORT_COUNT, MAX_LOCATION_COUNT
+from wells.utils import get_annotated_well_queryset
 
 logger = logging.getLogger(__name__)
 
@@ -601,23 +602,7 @@ class MislocatedWellsListView(ListAPIView):
         for the currently authenticated user.
         """
         queryset = Well.objects.all()
-
-        queryset = Well.objects.select_related('well_status').annotate(
-            work_start_date=Case(
-                When(well_status__well_status_code=WELL_STATUS_CODE_CONSTRUCTION, then=F('construction_start_date')),
-                When(well_status__well_status_code=WELL_STATUS_CODE_ALTERATION, then=F('alteration_start_date')),
-                When(well_status__well_status_code=WELL_STATUS_CODE_DECOMMISSION, then=F('decommission_start_date')),
-                default=Value(None),
-                output_field=DateField()
-            ),
-            work_end_date=Case(
-                When(well_status__well_status_code=WELL_STATUS_CODE_CONSTRUCTION, then=F('construction_end_date')),
-                When(well_status__well_status_code=WELL_STATUS_CODE_ALTERATION, then=F('alteration_end_date')),
-                When(well_status__well_status_code=WELL_STATUS_CODE_DECOMMISSION, then=F('decommission_end_date')),
-                default=Value(None),
-                output_field=DateField()
-            )
-        )
+        queryset = get_annotated_well_queryset()
 
         return queryset
 
@@ -640,23 +625,7 @@ class RecordComplianceListView(ListAPIView):
         Retrieves wells that are missing information in any of the specified fields.
         """
         queryset = Well.objects.all()
-
-        queryset = Well.objects.select_related('well_status').annotate(
-            work_start_date=Case(
-                When(well_status__well_status_code=WELL_STATUS_CODE_CONSTRUCTION, then=F('construction_start_date')),
-                When(well_status__well_status_code=WELL_STATUS_CODE_ALTERATION, then=F('alteration_start_date')),
-                When(well_status__well_status_code=WELL_STATUS_CODE_DECOMMISSION, then=F('decommission_start_date')),
-                default=Value(None),
-                output_field=DateField()
-            ),
-            work_end_date=Case(
-                When(well_status__well_status_code=WELL_STATUS_CODE_CONSTRUCTION, then=F('construction_end_date')),
-                When(well_status__well_status_code=WELL_STATUS_CODE_ALTERATION, then=F('alteration_end_date')),
-                When(well_status__well_status_code=WELL_STATUS_CODE_DECOMMISSION, then=F('decommission_end_date')),
-                default=Value(None),
-                output_field=DateField()
-            )
-        )
+        queryset = get_annotated_well_queryset()
 
         # Filtering for records missing any of the specified fields
         missing_info_filter = (
@@ -674,9 +643,8 @@ class RecordComplianceListView(ListAPIView):
             Q(person_responsible__isnull=True) |
             Q(company_of_person_responsible__isnull=True) |
             Q(create_date__isnull=True) |
-            Q(create_user__isnull=True)
-            # Q(natural_resource_region__isnull=True) |
-            # Q(internal_comments__isnull=True)
+            Q(create_user__isnull=True) |
+            Q(natural_resource_region__isnull=True)
         )
 
         queryset = queryset.filter(missing_info_filter)
@@ -712,23 +680,7 @@ class CrossReferencingListView(ListAPIView):
         in their internal_comments.
         """
         queryset = Well.objects.all()
-
-        queryset = Well.objects.select_related('well_status').annotate(
-            work_start_date=Case(
-                When(well_status__well_status_code=WELL_STATUS_CODE_CONSTRUCTION, then=F('construction_start_date')),
-                When(well_status__well_status_code=WELL_STATUS_CODE_ALTERATION, then=F('alteration_start_date')),
-                When(well_status__well_status_code=WELL_STATUS_CODE_DECOMMISSION, then=F('decommission_start_date')),
-                default=Value(None),
-                output_field=DateField()
-            ),
-            work_end_date=Case(
-                When(well_status__well_status_code=WELL_STATUS_CODE_CONSTRUCTION, then=F('construction_end_date')),
-                When(well_status__well_status_code=WELL_STATUS_CODE_ALTERATION, then=F('alteration_end_date')),
-                When(well_status__well_status_code=WELL_STATUS_CODE_DECOMMISSION, then=F('decommission_end_date')),
-                default=Value(None),
-                output_field=DateField()
-            )
-        )
+        queryset = get_annotated_well_queryset()
 
         search_terms = ["x-ref'd", "x-ref", "cross-ref", "cross r", "cross-r", "ref'd", "referenced", "refd", "xref", "x-r", "x r"]
 

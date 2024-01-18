@@ -4,6 +4,12 @@ from time import sleep
 from shapely.geometry import Point
 from wells.constants import ADDRESS_COLUMNS, GEOCODER_ENDPOINT
 from thefuzz import fuzz
+from django.db.models import Case, When, Value, DateField, F
+from wells.models import Well
+
+WELL_STATUS_CODE_CONSTRUCTION = 'CONSTRUCTION'
+WELL_STATUS_CODE_ALTERATION = 'ALTERATION'
+WELL_STATUS_CODE_DECOMMISSION = 'DECOMMISSION'
 
 def calculate_pid_distance_for_well(well):
     """
@@ -59,14 +65,16 @@ def calculate_natural_resource_region_for_well(well):
         "service": "WFS",
         "version": "2.0.0",
         "request": "GetFeature",
-        "typeName": "WHSE_ADMIN_BOUNDARIES.ADM_NR_DISTRICTS_SPG",
+        "typeName": "WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONS_SPG",
         "outputFormat": "json",
         "srsName": "EPSG:4326",
-        "CQL_FILTER": f"CONTAINS(geometry, POINT({well.longitude} {well.latitude}))"
+        "CQL_FILTER": f"CONTAINS(SHAPE, POINT({well.longitude} {well.latitude}))"
     }
 
     # Construct the request URL
     request_url = f"{base_url}?{'&'.join([f'{k}={v}' for k, v in params.items()])}"
+
+    print(request_url)
 
     # Make the request
     response = requests.get(request_url)
@@ -132,20 +140,38 @@ def reverse_geocode(
         return empty_result
 
 
-def calculate_geocode_distance(well):
-    response = reverse_geocode(well.longitude, well.latitude)
-    return response.get('distance', None) if response else None
+def calculate_geocode_distance(geocoded_address):
+    if not geocoded_address:
+        return None
+    return geocoded_address.get('distance', None)
 
 
-def calculate_score_address(well):
-    geocoded_address = reverse_geocode(well.longitude, well.latitude)
+def calculate_score_address(well, geocoded_address):
     if not geocoded_address:
         return None
     return fuzz.token_set_ratio(well.street_address.lower(), geocoded_address.get('fullAddress', '').lower())
 
 
-def calculate_score_city(well):
-    geocoded_address = reverse_geocode(well.longitude, well.latitude)
+def calculate_score_city(well, geocoded_address):
     if not geocoded_address:
         return None
     return fuzz.token_set_ratio(well.city.lower(), geocoded_address.get('localityName', '').lower())
+
+
+def get_annotated_well_queryset():
+    return Well.objects.select_related('well_status').annotate(
+        work_start_date=Case(
+            When(well_status__well_status_code=WELL_STATUS_CODE_CONSTRUCTION, then=F('construction_start_date')),
+            When(well_status__well_status_code=WELL_STATUS_CODE_ALTERATION, then=F('alteration_start_date')),
+            When(well_status__well_status_code=WELL_STATUS_CODE_DECOMMISSION, then=F('decommission_start_date')),
+            default=Value(None),
+            output_field=DateField()
+        ),
+        work_end_date=Case(
+            When(well_status__well_status_code=WELL_STATUS_CODE_CONSTRUCTION, then=F('construction_end_date')),
+            When(well_status__well_status_code=WELL_STATUS_CODE_ALTERATION, then=F('alteration_end_date')),
+            When(well_status__well_status_code=WELL_STATUS_CODE_DECOMMISSION, then=F('decommission_end_date')),
+            default=Value(None),
+            output_field=DateField()
+        )
+    )
