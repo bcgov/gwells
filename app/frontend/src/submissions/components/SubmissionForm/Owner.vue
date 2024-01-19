@@ -200,12 +200,10 @@ export default {
         if (response.data) {
           const data = response.data;
           if (data && data.features) {
-            
             this.addressSuggestions = data.features.map(item => item.properties.fullAddress);
           } else {
             this.addressSuggestions = [];
           }
-          console.log('response>>>' + response)
         }
       })
         } catch (error) {
@@ -232,9 +230,8 @@ export default {
         const PROV_ARRAY_INDEX = ownerAddressArray.length -1;
         const CITY_ARRAY_INDEX = ownerAddressArray.length -2;
         const STREET_ARRAY_INDEX = ownerAddressArray.length -3;
-
-        if(ownerAddressArray[PROV_ARRAY_INDEX].toUpperCase().trim() === 'BC' 
-          || ownerAddressArray[-1].toUpperCase().trim() === 'BRITISH COLUMBIA'){
+        let province = ownerAddressArray[PROV_ARRAY_INDEX].toUpperCase().trim();
+        if(province === 'BC' || province === 'BRITISH COLUMBIA'){
           this.ownerProvinceInput = this.codes.province_codes[0].province_state_code;
           this.ownerAddressInput = '';
         }
