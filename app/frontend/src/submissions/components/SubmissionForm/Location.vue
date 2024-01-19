@@ -353,9 +353,6 @@ export default {
      */
     selectAddressSuggestion(suggestion) {
       const wellAddressArray = suggestion.split(',');
-
-      let province = '';
-
       switch (wellAddressArray.length) {
         case 3: {
           this.streetAddressInput = wellAddressArray[0];
