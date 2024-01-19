@@ -153,7 +153,6 @@ export default {
   },
   fields: {
     ownerFullNameInput: 'ownerFullName',
-    ownerAddressInput: 'ownerMailingAddress',
     ownerCityInput: 'ownerCity',
     ownerProvinceInput: 'ownerProvinceState',
     ownerPostalCodeInput: 'ownerPostalCode',
@@ -163,7 +162,8 @@ export default {
   data () {
     return {
       addressSuggestions: [],
-      isLoadingSuggestions: false
+      isLoadingSuggestions: false,
+      ownerAddressInput: ''
     }
   },
   computed: {
@@ -196,19 +196,6 @@ export default {
         const querystring = require('querystring');
         const searchParams = querystring.stringify(params);
         try {
-          // const response = await fetch(`${GEOCODER_ADDRESS_API}${searchParams}`);
-          // const data = await response.json();
-          // if (data && data.features) {
-            
-          //   this.addressSuggestions = data.features.map(item => item.properties.fullAddress);
-          // } else {
-          //   this.addressSuggestions = [];
-          // }
-          // const response = ApiService.getAddresses(this.ownerAddressInput)
-          // .then(
-
-          // )
-
           ApiService.getAddresses(searchParams).then((response) => {
         if (response.data) {
           const data = response.data;
@@ -221,13 +208,6 @@ export default {
           console.log('response>>>' + response)
         }
       })
-          
-      //     axios.get(
-      //   'geocoder',
-      //   { params: { ownerAddressInput: this.ownerAddressInput} }
-        
-      // )
-      //console.log('response>>>' + response)
         } catch (error) {
           console.error(error);
           this.addressSuggestions = [];
