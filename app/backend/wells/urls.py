@@ -117,6 +117,6 @@ urlpatterns = [
         views.well_licensing, name='well-licensing'),
     
     # get geocoder address
-    url(api_path_prefix() + r'/wells/geocoder/(?P<tag>)',
+    url(api_path_prefix() + r'/wells/geocoder$',
         views.AddressGeocoder.as_view(), name='address-geocoder'),
 ]

@@ -46,7 +46,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             :disabled="sameAsOwnerAddress"
           ></form-input>
            <!-- Display the address suggestions -->
-        <div v-if="addressSuggestions.length > 0" class="address-suggestions list-group list-group-flush border" id="address-suggestions-list">
+        <div v-if="addressSuggestions.length > 0" class="address-suggestions list-group list-group-flush border" id="location-address-suggestions-list">
           <div v-for="(suggestion, index) in addressSuggestions" :key="index">
             <button @mousedown="selectAddressSuggestion(suggestion)" class="list-group-item list-group-item-action border-0">{{ suggestion }}</button>
           </div>
@@ -382,8 +382,8 @@ export default {
      * @param {boolean} show - a boolean which indicates whether to show or hide the element
      */
      showList(show) {
-      if(document.getElementById('address-suggestions-list')){
-        document.getElementById('address-suggestions-list').style.display =  show? 'block' : 'none';
+      if(document.getElementById('location-address-suggestions-list')){
+        document.getElementById('location-address-suggestions-list').style.display =  show? 'block' : 'none';
       }
     }        
   }

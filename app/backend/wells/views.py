@@ -894,13 +894,13 @@ class WellLithology(ListAPIView):
 
         return qs
 class AddressGeocoder(APIView):
-    def get(self, request, tag, **kwargs):
+    def get(self, request,**kwargs):
         print('AddressGeocoder Called>>>>>')
-        print('tag>>>' + self.request.query_params.get('searchTag'));
+        print('tag>>>' + self.request.query_params.get('searchTag'))
         GEOCODER_ADDRESS_API = 'https://geocoder.api.gov.bc.ca/addresses.json?q='
         # realtime = request.GET.get('realtime') in ('True', 'true')
         # addressInput = request.GET.get('addressInput') 
-        #response = request.get(GEOCODER_ADDRESS_API + '120')
-        return HttpResponse(status=200)
+        response = request.GET.get(GEOCODER_ADDRESS_API + self.request.query_params.get('searchTag'))
+        
+        return HttpResponse(200)
    
-
