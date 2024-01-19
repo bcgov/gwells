@@ -94,7 +94,7 @@ const ApiService = {
   incrementFileCount(resource, documentType){
     return axios.get(`${resource}/sum`, {params: { inc: true, documentType}})
   },
-  getAddresses(resource, params){
+  getAddresses(resource){
     return axios.get(`wells/geocoder`, {params: {searchTag: resource}})
   },
 }

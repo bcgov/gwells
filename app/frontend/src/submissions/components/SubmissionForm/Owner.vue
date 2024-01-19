@@ -209,13 +209,15 @@ export default {
 
           // )
 
-          ApiService.getAddresses(this.ownerAddressInput).then((response) => {
+          ApiService.getAddresses(searchParams).then((response) => {
         if (response.data) {
-          // response.data.forEach((survey) => {
-          //   if (survey.survey_page === 'a' && survey.survey_enabled) {
-          //     this.surveys.push(survey)
-          //   }
-          // })
+          const data = response.data;
+          if (data && data.features) {
+            
+            this.addressSuggestions = data.features.map(item => item.properties.fullAddress);
+          } else {
+            this.addressSuggestions = [];
+          }
           console.log('response>>>' + response)
         }
       })
