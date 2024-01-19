@@ -110,13 +110,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
 <script>
 import { mapGetters } from 'vuex'
-
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 import inputFormatMixin from '@/common/inputFormatMixin.js'
-
 import BackToTopLink from '@/common/components/BackToTopLink.vue'
-import { GEOCODER_ADDRESS_API } from '@/common/constants'
 import ApiService from '../../../common/services/ApiService'
+
 export default {
   mixins: [inputBindingsMixin, inputFormatMixin],
   components: {

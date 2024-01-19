@@ -215,12 +215,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 <script>
 import { mapGetters } from 'vuex'
-
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
-
 import BackToTopLink from '@/common/components/BackToTopLink.vue'
-
-import { GEOCODER_ADDRESS_API } from '@/common/constants';
+import ApiService from '../../../common/services/ApiService'
 
 export default {
   name: 'Location',
@@ -272,7 +269,8 @@ export default {
       wellAddressHints: [],
       sameAsOwnerAddress: false,
       addressSuggestions: [],
-      isLoadingSuggestions: false
+      isLoadingSuggestions: false,
+      streetAddressInput: ''
     }
   },
   computed: {
@@ -330,13 +328,16 @@ export default {
       const querystring = require('querystring');
       const searchParams = querystring.stringify(params);
       try {
-        const response = await fetch(`${GEOCODER_ADDRESS_API}${searchParams}`);
-        const data = await response.json();
-        if (data && data.features) {    
-          this.addressSuggestions = data.features.map(item => item.properties.fullAddress);
-        } else {
-          this.addressSuggestions = [];
+        ApiService.getAddresses(searchParams).then((response) => {
+        if (response.data) {
+          const data = response.data;
+          if (data && data.features) {
+            this.addressSuggestions = data.features.map(item => item.properties.fullAddress);
+          } else {
+            this.addressSuggestions = [];
+          }
         }
+      })
       } catch (error) {
         console.error(error);
         this.addressSuggestions = [];
