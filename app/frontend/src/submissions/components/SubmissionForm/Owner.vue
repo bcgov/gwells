@@ -47,7 +47,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           :loaded="fieldsLoaded['owner_mailing_address']">
         </form-input>
         <!-- Display the address suggestions -->
-        <div v-if="addressSuggestions.length > 0" class="address-suggestions list-group list-group-flush border" id="address-suggestions-list">
+        <div v-if="addressSuggestions.length > 0" class="address-suggestions list-group list-group-flush border" id="owner-address-suggestions-list">
           <div v-for="(suggestion, index) in addressSuggestions" :key="index">
             <button @mousedown="selectAddressSuggestion(suggestion)" class="list-group-item list-group-item-action border-0">{{ suggestion }}</button>
           </div>
@@ -110,12 +110,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
 <script>
 import { mapGetters } from 'vuex'
-
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 import inputFormatMixin from '@/common/inputFormatMixin.js'
-
 import BackToTopLink from '@/common/components/BackToTopLink.vue'
-import { GEOCODER_ADDRESS_API } from '@/common/constants'
+import ApiService from '../../../common/services/ApiService'
+
 export default {
   mixins: [inputBindingsMixin, inputFormatMixin],
   components: {
@@ -152,7 +151,6 @@ export default {
   },
   fields: {
     ownerFullNameInput: 'ownerFullName',
-    ownerAddressInput: 'ownerMailingAddress',
     ownerCityInput: 'ownerCity',
     ownerProvinceInput: 'ownerProvinceState',
     ownerPostalCodeInput: 'ownerPostalCode',
@@ -162,7 +160,8 @@ export default {
   data () {
     return {
       addressSuggestions: [],
-      isLoadingSuggestions: false
+      isLoadingSuggestions: false,
+      ownerAddressInput: ''
     }
   },
   computed: {
@@ -195,14 +194,16 @@ export default {
         const querystring = require('querystring');
         const searchParams = querystring.stringify(params);
         try {
-          const response = await fetch(`${GEOCODER_ADDRESS_API}${searchParams}`);
-          const data = await response.json();
+          ApiService.getAddresses(searchParams).then((response) => {
+        if (response.data) {
+          const data = response.data;
           if (data && data.features) {
-            
             this.addressSuggestions = data.features.map(item => item.properties.fullAddress);
           } else {
             this.addressSuggestions = [];
           }
+        }
+      })
         } catch (error) {
           console.error(error);
           this.addressSuggestions = [];
@@ -227,9 +228,8 @@ export default {
         const PROV_ARRAY_INDEX = ownerAddressArray.length -1;
         const CITY_ARRAY_INDEX = ownerAddressArray.length -2;
         const STREET_ARRAY_INDEX = ownerAddressArray.length -3;
-
-        if(ownerAddressArray[PROV_ARRAY_INDEX].toUpperCase().trim() === 'BC' 
-          || ownerAddressArray[-1].toUpperCase().trim() === 'BRITISH COLUMBIA'){
+        let province = ownerAddressArray[PROV_ARRAY_INDEX].toUpperCase().trim();
+        if(province === 'BC' || province === 'BRITISH COLUMBIA'){
           this.ownerProvinceInput = this.codes.province_codes[0].province_state_code;
           this.ownerAddressInput = '';
         }
@@ -255,8 +255,8 @@ export default {
      * @param {boolean} show - a boolean which indicates whether to show or hide the element
      */
      showList(show) {
-      if(document.getElementById('address-suggestions-list')){
-        document.getElementById('address-suggestions-list').style.display =  show? 'block' : 'none';
+      if(document.getElementById('owner-address-suggestions-list')){
+        document.getElementById('owner-address-suggestions-list').style.display =  show? 'block' : 'none';
       }
     }        
   }

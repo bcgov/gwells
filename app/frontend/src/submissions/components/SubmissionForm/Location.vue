@@ -46,7 +46,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             :disabled="sameAsOwnerAddress"
           ></form-input>
            <!-- Display the address suggestions -->
-        <div v-if="addressSuggestions.length > 0" class="address-suggestions list-group list-group-flush border" id="address-suggestions-list">
+        <div v-if="addressSuggestions.length > 0" class="address-suggestions list-group list-group-flush border" id="location-address-suggestions-list">
           <div v-for="(suggestion, index) in addressSuggestions" :key="index">
             <button @mousedown="selectAddressSuggestion(suggestion)" class="list-group-item list-group-item-action border-0">{{ suggestion }}</button>
           </div>
@@ -215,12 +215,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 <script>
 import { mapGetters } from 'vuex'
-
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
-
 import BackToTopLink from '@/common/components/BackToTopLink.vue'
-
-import { GEOCODER_ADDRESS_API } from '@/common/constants';
+import ApiService from '../../../common/services/ApiService'
 
 export default {
   name: 'Location',
@@ -272,7 +269,8 @@ export default {
       wellAddressHints: [],
       sameAsOwnerAddress: false,
       addressSuggestions: [],
-      isLoadingSuggestions: false
+      isLoadingSuggestions: false,
+      streetAddressInput: ''
     }
   },
   computed: {
@@ -330,13 +328,16 @@ export default {
       const querystring = require('querystring');
       const searchParams = querystring.stringify(params);
       try {
-        const response = await fetch(`${GEOCODER_ADDRESS_API}${searchParams}`);
-        const data = await response.json();
-        if (data && data.features) {    
-          this.addressSuggestions = data.features.map(item => item.properties.fullAddress);
-        } else {
-          this.addressSuggestions = [];
+        ApiService.getAddresses(searchParams).then((response) => {
+        if (response.data) {
+          const data = response.data;
+          if (data && data.features) {
+            this.addressSuggestions = data.features.map(item => item.properties.fullAddress);
+          } else {
+            this.addressSuggestions = [];
+          }
         }
+      })
       } catch (error) {
         console.error(error);
         this.addressSuggestions = [];
@@ -353,9 +354,6 @@ export default {
      */
     selectAddressSuggestion(suggestion) {
       const wellAddressArray = suggestion.split(',');
-
-      let province = '';
-
       switch (wellAddressArray.length) {
         case 3: {
           this.streetAddressInput = wellAddressArray[0];
@@ -382,8 +380,8 @@ export default {
      * @param {boolean} show - a boolean which indicates whether to show or hide the element
      */
      showList(show) {
-      if(document.getElementById('address-suggestions-list')){
-        document.getElementById('address-suggestions-list').style.display =  show? 'block' : 'none';
+      if(document.getElementById('location-address-suggestions-list')){
+        document.getElementById('location-address-suggestions-list').style.display =  show? 'block' : 'none';
       }
     }        
   }
