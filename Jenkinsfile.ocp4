@@ -1410,7 +1410,7 @@ pipeline {
             node('build') {
                 step([$class: 'Mailer',
                     notifyEveryUnstableBuild: true,
-                    recipients: "dmitri.korin@gov.bc.ca,David.Claveau@gov.bc.ca,Christopher.Walsh@gov.bc.ca,Norris.Ng@gov.bc.ca",
+                    recipients: "David.Claveau@gov.bc.ca,Fergus.MacConnell@gov.bc.ca,Adam.Catchpole@gov.bc.ca,Matthew.1.Logan@gov.bc.ca,Sanjay.Babu@gov.bc.ca",
                     sendToIndividuals: true])
             }
         }
