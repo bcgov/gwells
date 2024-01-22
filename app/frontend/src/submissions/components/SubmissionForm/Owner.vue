@@ -180,7 +180,7 @@ export default {
       if (!this.ownerAddressInput || this.ownerAddressInput.length < MIN_QUERY_LENGTH) {
         this.addressSuggestions = [];
         return;
-      } else {
+      } 
         this.isLoadingSuggestions = true;
         const params = {
           minScore: 50, //accuracy score of results compared to input
@@ -203,14 +203,14 @@ export default {
             this.addressSuggestions = [];
           }
         }
-      })
+      }
+      )
         } catch (error) {
           console.error(error);
           this.addressSuggestions = [];
         } finally {
           this.isLoadingSuggestions = false;
         }
-      }   
     },
 
     /**
