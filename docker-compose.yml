@@ -188,6 +188,7 @@ services:
       S3_WELL_EXPORT_BUCKET: gwells
       S3_USE_SECURE: 0
       EMAIL_NOTIFICATION_RECIPIENT: sustainment.team@gov.bc.ca
+      GEOCODER_ADDRESS_API_BASE: https://geocoder.api.gov.bc.ca/addresses.json?q=
     command: /bin/bash -c "
       sleep 3 &&
       set -x &&

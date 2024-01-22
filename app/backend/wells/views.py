@@ -895,8 +895,7 @@ class WellLithology(ListAPIView):
         return qs
 class AddressGeocoder(APIView):
     def get(self, request,**kwargs):
-        GEOCODER_ADDRESS_API_BASE = 'https://geocoder.api.gov.bc.ca/addresses.json?q='
-        GEOCODER_ADDRESS_URL = GEOCODER_ADDRESS_API_BASE + self.request.query_params.get('searchTag')
+        GEOCODER_ADDRESS_URL = get_env_variable('GEOCODER_ADDRESS_API_BASE') + self.request.query_params.get('searchTag')
         response = requests.get(GEOCODER_ADDRESS_URL)
         # Check if the request was successful (status code 200)
         if response.status_code == 200:
