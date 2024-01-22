@@ -239,7 +239,6 @@ export default {
       this.ownerCityInput = ownerAddressArray[CITY_ARRAY_INDEX];
       if(ownerAddressArray[STREET_ARRAY_INDEX]) this.ownerAddressInput = ownerAddressArray[STREET_ARRAY_INDEX];
       }
-      
       this.clearAddressSuggestions();
     },
 
