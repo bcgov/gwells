@@ -893,15 +893,3 @@ class WellLithology(ListAPIView):
             qs = qs.filter(well_tag_number__in=wells)
 
         return qs
-class AddressGeocoder(APIView):
-    def get(self, request,**kwargs):
-        GEOCODER_ADDRESS_URL = get_env_variable('GEOCODER_ADDRESS_API_BASE') + self.request.query_params.get('searchTag')
-        response = requests.get(GEOCODER_ADDRESS_URL)
-        # Check if the request was successful (status code 200)
-        if response.status_code == 200:
-            data = response.json()
-            # Create a Django JsonResponse object and return it
-            return JsonResponse(data)
-        else:
-        # If the request was not successful, return an appropriate HTTP response
-            return JsonResponse({'error': f"Error: {response.status_code} - {response.text}"}, status=500)

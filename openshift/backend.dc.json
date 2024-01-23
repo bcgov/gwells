@@ -733,15 +733,6 @@
                                     {
                                         "name": "ENFORCE_ENV_VARIABLES",
                                         "value": "False"
-                                    },
-                                    {
-                                        "name": "GEOCODER_ADDRESS_API_BASE",
-                                        "valueFrom": {
-                                            "configMapKeyRef": {
-                                                "key": "GEOCODER_ADDRESS_API_BASE",
-                                                "name": "gwells-global-config${NAME_SUFFIX}"
-                                            }
-                                        }
                                     }
                                 ],
                                 "resources": {
