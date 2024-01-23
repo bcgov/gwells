@@ -221,7 +221,7 @@ export default {
      */
     selectAddressSuggestion(suggestion) {
       const ownerAddressArray = suggestion.split(',');
-      if(ownerAddressArray){
+      if(ownerAddressArray.length > 1){
 
         const PROV_ARRAY_INDEX = ownerAddressArray.length -1;
         const CITY_ARRAY_INDEX = ownerAddressArray.length -2;
