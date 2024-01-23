@@ -1249,10 +1249,19 @@ exports[`View Component View mode matches the snapshot 1`] = `
                         />
                          
                         <b-popover-stub
-                          content="Water allocation notations are a water management tool that indicates a potential lack of water availability/quality in a source."
                           target="aquiferNotations"
                           triggers="hover focus"
-                        />
+                        >
+                          <p>
+                            Water allocation notations are a water management tool that indicates a potential lack of water availability/quality in a source. For details click 
+                            <a
+                              href="https://www2.gov.bc.ca/gov/content/environment/air-land-water/water/water-licensing-rights/water-allocation-notations"
+                            >
+                              here
+                            </a>
+                            .
+                          </p>
+                        </b-popover-stub>
                       </dt>
                        
                       <dd

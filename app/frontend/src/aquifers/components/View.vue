@@ -505,8 +505,9 @@
                         <i id="aquiferNotations" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
                         <b-popover
                           target="aquiferNotations"
-                          triggers="hover focus"
-                          content="Water allocation notations are a water management tool that indicates a potential lack of water availability/quality in a source."/>
+                          triggers="hover focus">
+                          <p>Water allocation notations are a water management tool that indicates a potential lack of water availability/quality in a source. For details click <a href="https://www2.gov.bc.ca/gov/content/environment/air-land-water/water/water-licensing-rights/water-allocation-notations">here</a>.</p>
+                        </b-popover>
                       </dt>
                       <dd class="m-0">{{ aquiferNotations || 'No notation currently assigned.' }}</dd>
                     </dl>
