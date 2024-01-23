@@ -151,6 +151,7 @@ export default {
   },
   fields: {
     ownerFullNameInput: 'ownerFullName',
+    ownerAddressInput: 'ownerMailingAddress',
     ownerCityInput: 'ownerCity',
     ownerProvinceInput: 'ownerProvinceState',
     ownerPostalCodeInput: 'ownerPostalCode',
@@ -160,8 +161,7 @@ export default {
   data () {
     return {
       addressSuggestions: [],
-      isLoadingSuggestions: false,
-      ownerAddressInput: ''
+      isLoadingSuggestions: false
     }
   },
   computed: {

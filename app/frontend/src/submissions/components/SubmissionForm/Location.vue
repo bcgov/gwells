@@ -269,8 +269,7 @@ export default {
       wellAddressHints: [],
       sameAsOwnerAddress: false,
       addressSuggestions: [],
-      isLoadingSuggestions: false,
-      streetAddressInput: ''
+      isLoadingSuggestions: false
     }
   },
   computed: {
