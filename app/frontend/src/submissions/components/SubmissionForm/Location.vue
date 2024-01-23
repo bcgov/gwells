@@ -357,7 +357,7 @@ export default {
       switch (wellAddressArray.length) {
         case 3: {
           this.streetAddressInput = wellAddressArray[0];
-          this.cityInput = wellAddressArray[1];
+          this.cityInput = wellAddressArray[1].trim();
           break;
         }
         case 2: {
