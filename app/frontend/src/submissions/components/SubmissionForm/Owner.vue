@@ -222,7 +222,6 @@ export default {
     selectAddressSuggestion(suggestion) {
       const ownerAddressArray = suggestion.split(',');
       if(ownerAddressArray.length > 1){
-
         const PROV_ARRAY_INDEX = ownerAddressArray.length -1;
         const CITY_ARRAY_INDEX = ownerAddressArray.length -2;
         const STREET_ARRAY_INDEX = ownerAddressArray.length -3;
@@ -231,11 +230,11 @@ export default {
           this.ownerProvinceInput = this.codes.province_codes[0].province_state_code;
           this.ownerAddressInput = '';
         }
-      else {
+        else {
         this.ownerProvinceInput = "";
-      }
-      this.ownerCityInput = ownerAddressArray[CITY_ARRAY_INDEX].trim();
-      if(ownerAddressArray[STREET_ARRAY_INDEX]) this.ownerAddressInput = ownerAddressArray[STREET_ARRAY_INDEX];
+        }
+        this.ownerCityInput = ownerAddressArray[CITY_ARRAY_INDEX].trim();
+        if(ownerAddressArray[STREET_ARRAY_INDEX]) this.ownerAddressInput = ownerAddressArray[STREET_ARRAY_INDEX];
       }
       this.clearAddressSuggestions();
     },
