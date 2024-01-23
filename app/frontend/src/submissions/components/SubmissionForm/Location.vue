@@ -38,23 +38,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
             id="wellStreetAddress"
             type="text"
             label="Street address"
-            @input="fetchAddressSuggestions"
-            v-on:focus="showList(true)"
-            v-on:blur="showList(false)"
             :errors="errors['street_address']"
             :loaded="fieldsLoaded['street_address']"
             :disabled="sameAsOwnerAddress"
           ></form-input>
-           <!-- Display the address suggestions -->
-        <div v-if="addressSuggestions.length > 0" class="address-suggestions list-group list-group-flush border" id="location-address-suggestions-list">
-          <div v-for="(suggestion, index) in addressSuggestions" :key="index">
-            <button @mousedown="selectAddressSuggestion(suggestion)" class="list-group-item list-group-item-action border-0">{{ suggestion }}</button>
-          </div>
-        </div>
-        <!-- Display a loading indicator while fetching suggestions -->
-        <div v-if="isLoadingSuggestions" class="loading-indicator">
-          Loading...
-        </div>
         </b-col>
       </b-row>
       <b-row>
@@ -215,9 +202,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 <script>
 import { mapGetters } from 'vuex'
+
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
+
 import BackToTopLink from '@/common/components/BackToTopLink.vue'
-import ApiService from '../../../common/services/ApiService'
 
 export default {
   name: 'Location',
@@ -267,10 +255,7 @@ export default {
   data () {
     return {
       wellAddressHints: [],
-      sameAsOwnerAddress: false,
-      addressSuggestions: [],
-      isLoadingSuggestions: false,
-      streetAddressInput: ''
+      sameAsOwnerAddress: false
     }
   },
   computed: {
@@ -300,90 +285,6 @@ export default {
       this.streetAddressInput = String(this.ownerMailingAddress)
       this.cityInput = String(this.ownerCity)
     }
-  },
-  methods: {
-      /**
-     * @desc Asynchronously fetches address suggestions based on the owner's address input.
-     * If no input is provided, it clears the current suggestions.
-     * On success, it maps the received data to full addresses and updates the addressSuggestions state.
-     * On failure, it logs the error and clears the current suggestions.
-     * Finally, sets the loading state to false.
-     */
-    async fetchAddressSuggestions() {
-      const MIN_QUERY_LENGTH = 3;
-      if (!this.streetAddressInput || this.streetAddressInput.length < MIN_QUERY_LENGTH) {
-        this.addressSuggestions = [];
-        return;
-      }
-      this.isLoadingSuggestions = true;
-      const params = {
-        minScore: 50,
-        maxResults: 5,
-        echo: 'false',
-        brief: true,
-        autoComplete: true,
-        addressString: this.streetAddressInput
-      };
-
-      const querystring = require('querystring');
-      const searchParams = querystring.stringify(params);
-      try {
-        ApiService.getAddresses(searchParams).then((response) => {
-        if (response.data) {
-          const data = response.data;
-          if (data && data.features) {
-            this.addressSuggestions = data.features.map(item => item.properties.fullAddress);
-          } else {
-            this.addressSuggestions = [];
-          }
-        }
-      })
-      } catch (error) {
-        console.error(error);
-        this.addressSuggestions = [];
-      } finally {
-        this.isLoadingSuggestions = false;
-      }
-    },
-
-    /**
-     * @desc Processes the selected address suggestion.
-     * Splits the suggestion into components and updates the owner's province, city, and address inputs accordingly.
-     * Clears the address suggestions afterward.
-     * @param {string} suggestion - The selected address suggestion. ("1234 Street Rd, Name of City, BC")
-     */
-    selectAddressSuggestion(suggestion) {
-      const wellAddressArray = suggestion.split(',');
-      switch (wellAddressArray.length) {
-        case 3: {
-          this.streetAddressInput = wellAddressArray[0];
-          this.cityInput = wellAddressArray[1].trim();
-          break;
-        }
-        case 2: {
-          this.cityInput = wellAddressArray[0];
-          this.streetAddressInput = '';
-          break;
-        }
-      }
-    },
-
-    /**
-     * @desc Clears the current list of address suggestions.
-     */
-    clearAddressSuggestions () {
-      this.addressSuggestions = [];
-    },
-    
-    /**
-     * @desc Shows or hides the address suggestions list in the UI.
-     * @param {boolean} show - a boolean which indicates whether to show or hide the element
-     */
-     showList(show) {
-      if(document.getElementById('location-address-suggestions-list')){
-        document.getElementById('location-address-suggestions-list').style.display =  show? 'block' : 'none';
-      }
-    }        
   }
 }
 </script>
@@ -392,9 +293,4 @@ export default {
 .dropdown-error-border {
   border-radius: 5px;
 }
-.address-suggestions {
-    list-style-type: none;
-    position: absolute;
-    z-index: 10;
-  }
 </style>

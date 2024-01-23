@@ -742,15 +742,6 @@
                                                 "name": "gwells-global-config${NAME_SUFFIX}"
                                             }
                                         }
-                                    },
-                                    {
-                                        "name": "GEOCODER_ADDRESS_API_BASE",
-                                        "valueFrom": {
-                                            "configMapKeyRef": {
-                                                "key": "GEOCODER_ADDRESS_API_BASE",
-                                                "name": "gwells-global-config${NAME_SUFFIX}"
-                                            }
-                                        }
                                     }
                                 ],
                                 "resources": {
