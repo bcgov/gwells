@@ -220,8 +220,6 @@ export default {
      * @param {string} suggestion - The selected address suggestion. ("1234 Street Rd, Name of City, BC")
      */
     selectAddressSuggestion(suggestion) {
-      console.log(suggestion);
-
       const ownerAddressArray = suggestion.split(',');
       if(ownerAddressArray){
 
