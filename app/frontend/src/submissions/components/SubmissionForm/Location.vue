@@ -321,6 +321,7 @@ export default {
         echo: 'false',
         brief: true,
         autoComplete: true,
+        matchPrecision: 'CIVIC_NUMBER', //forced minimum level of specificity for return values. will only return addresses that contain at least contain a street number
         addressString: this.streetAddressInput
       };
 
@@ -352,19 +353,11 @@ export default {
      * @param {string} suggestion - The selected address suggestion. ("1234 Street Rd, Name of City, BC")
      */
     selectAddressSuggestion(suggestion) {
+      const CITY_ARRAY_INDEX = 1;
+      const STREET_ARRAY_INDEX = 0;
       const wellAddressArray = suggestion.split(',');
-      switch (wellAddressArray.length) {
-        case 3: {
-          this.streetAddressInput = wellAddressArray[0];
-          this.cityInput = wellAddressArray[1].trim();
-          break;
-        }
-        case 2: {
-          this.cityInput = wellAddressArray[0];
-          this.streetAddressInput = '';
-          break;
-        }
-      }
+      this.streetAddressInput = wellAddressArray[STREET_ARRAY_INDEX];
+      this.cityInput = wellAddressArray[CITY_ARRAY_INDEX].trim();
     },
 
     /**

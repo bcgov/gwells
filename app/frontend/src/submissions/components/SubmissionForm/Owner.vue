@@ -188,6 +188,7 @@ export default {
           echo: 'false',
           brief: true,
           autoComplete: true,
+          matchPrecision: 'CIVIC_NUMBER', //forced minimum level of specificity for return values. will only return addresses that contain at least contain a street number
           addressString: this.ownerAddressInput
         };
 
@@ -221,22 +222,20 @@ export default {
      */
     selectAddressSuggestion(suggestion) {
       const ownerAddressArray = suggestion.split(',');
-      if(ownerAddressArray.length > 1){
-        const PROV_ARRAY_INDEX = ownerAddressArray.length -1;
-        const CITY_ARRAY_INDEX = ownerAddressArray.length -2;
-        const STREET_ARRAY_INDEX = ownerAddressArray.length -3;
-        let province = ownerAddressArray[PROV_ARRAY_INDEX].toUpperCase().trim();
-        if(province === 'BC' || province === 'BRITISH COLUMBIA'){
-          this.ownerProvinceInput = this.codes.province_codes[0].province_state_code;
-          this.ownerAddressInput = '';
-        }
-        else {
-        this.ownerProvinceInput = "";
-        }
-        this.ownerCityInput = ownerAddressArray[CITY_ARRAY_INDEX].trim();
-        if(ownerAddressArray[STREET_ARRAY_INDEX]) this.ownerAddressInput = ownerAddressArray[STREET_ARRAY_INDEX];
+      const PROV_ARRAY_INDEX = 2;
+      const CITY_ARRAY_INDEX = 1;
+      const STREET_ARRAY_INDEX = 0;
+      let province = ownerAddressArray[PROV_ARRAY_INDEX].toUpperCase().trim();
+      if(province === 'BC' || province === 'BRITISH COLUMBIA'){
+        this.ownerProvinceInput = this.codes.province_codes[0].province_state_code;
       }
-      this.clearAddressSuggestions();
+      else {
+      this.ownerProvinceInput = "";
+      }
+      this.ownerCityInput = ownerAddressArray[CITY_ARRAY_INDEX].trim();
+      this.ownerAddressInput = ownerAddressArray[STREET_ARRAY_INDEX];
+    
+    this.clearAddressSuggestions();
     },
 
     /**
