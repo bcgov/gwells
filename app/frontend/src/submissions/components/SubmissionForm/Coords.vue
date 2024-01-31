@@ -196,7 +196,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </b-card>
           <b-row>
             <b-col class="mt-3">
-              <div v-if="!validCoordinate">
+              <div v-if="validCoordinate === false">
                 <div class="alert alert-danger" role="alert">You have entered an invalid coordinate</div>
               </div>
             </b-col>
