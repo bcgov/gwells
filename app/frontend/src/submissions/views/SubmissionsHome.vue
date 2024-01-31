@@ -61,6 +61,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               </div>
               <activity-submission-form
                 v-else
+                ref="activitySubmissionForm"
                 :form="form"
                 :events="events"
                 :submissionsHistory="submissionsHistory"
@@ -586,6 +587,14 @@ export default {
         validateWellClassAndIntendedWaterUse = false
       }
 
+      const wellCoordsWithinBC = this.$refs.activitySubmissionForm.$refs.wellCoords.validCoordinate
+      if (!this.form.latitude || !this.form.longitude) {
+        errors.position = ['Latitude + Longitude required']
+      } else if (!wellCoordsWithinBC) {
+        errors.position = ['Coordinates not within BC']
+      }
+      
+      
       // Always validate well_class and intended_water_use except for ALT or DEC submissions with a
       // well_tag_number specified
       if (validateWellClassAndIntendedWaterUse) {
