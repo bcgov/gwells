@@ -587,10 +587,17 @@ export default {
         validateWellClassAndIntendedWaterUse = false
       }
 
-      const wellCoordsWithinBC = this.$refs.activitySubmissionForm.$refs.wellCoords.validCoordinate
-      if (!this.form.latitude || !this.form.longitude) {
-        errors.position = ['Latitude + Longitude required']
-      } else if (!wellCoordsWithinBC) {
+      const wellCoordsNotWithinBC = !this.$refs.activitySubmissionForm.$refs.wellCoords.validCoordinate
+      const wellCoordsMissing = !this.form.latitude || !this.form.longitude;
+      //
+      if (wellCoordsMissing) {
+        if (!this.form.latitude){
+          errors.latitude = ['Valid Latitude Required'];
+        }
+        if (!this.form.longitude) { 
+          errors.longitude = ['Valid Longitude Required']
+        }
+      } else if (wellCoordsNotWithinBC) {
         errors.position = ['Coordinates not within BC']
       }
       
