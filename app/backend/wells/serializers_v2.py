@@ -160,7 +160,8 @@ class WellListSerializerV2(serializers.ModelSerializer):
         return "{0:0>9}".format(instance.legal_pid)
     
     def get_licence_number(self, instance):
-        return list(instance.licences.values_list('licence_number', flat=True))
+        licence_numbers = instance.licences.values_list('licence_number', flat=True).distinct()
+        return list(licence_numbers)
 
     class Meta:
         model = Well
