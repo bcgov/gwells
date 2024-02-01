@@ -871,6 +871,21 @@
     }
   },
   {
+    "model": "aquifers.waterrightslicence",
+    "pk": 8,
+    "fields": {
+      "create_user": "",
+      "create_date": "2019-11-04T19:40:43.379Z",
+      "update_user": "",
+      "update_date": "2019-11-04T19:47:48.075Z",
+      "purpose": "03A",
+      "licence_number": 501528,
+      "quantity_flag": "T",
+      "quantity": "100000.000",
+      "effective_date": "2019-11-04T19:40:43.379Z"
+    }
+  },
+  {
     "model": "wells.well",
     "pk": 100123,
     "fields": {
@@ -1263,7 +1278,7 @@
       "well_subclass": "ce97445a-664e-44f1-a096-95c97ffd084e",
       "intended_water_use": "DWS",
       "well_status": "NEW",
-      "licences": [4, 5, 6, 7],
+      "licences": [4, 5, 6, 7, 8],
       "street_address": "6647 CHRISTENSEN ROAD",
       "city": "ANAHIM LAKE",
       "legal_lot": "A",
