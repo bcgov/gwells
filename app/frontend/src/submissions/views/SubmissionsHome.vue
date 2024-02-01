@@ -130,6 +130,7 @@ import filterBlankRows from '@/common/filterBlankRows.js'
 import ActivitySubmissionForm from '@/submissions/components/SubmissionForm/ActivitySubmissionForm.vue'
 import parseErrors from '@/common/helpers/parseErrors.js'
 import { RESET_WELL_DATA } from '@/wells/store/actions.types.js'
+import { dateOfValidationEnforcement } from '@/common/constants'
 
 export default {
   name: 'SubmissionsHome',
@@ -141,6 +142,7 @@ export default {
   data () {
     return {
       compareForm: {},
+      dateOfValidationEnforcement: dateOfValidationEnforcement,
       // event bus; use by emitting events on the events instance eg. this.events.$emit('updated')
       events: new Vue(),
       ...initialState()
@@ -579,14 +581,11 @@ export default {
       }
       this.componentUpdateTrigger = Date.now()
     },
-    isFormValid () {
-      const errors = {}
-
-      let validateWellClassAndIntendedWaterUse = true
-      if ((this.activityType === 'ALT' || this.activityType === 'DEC') && this.form.well) {
-        validateWellClassAndIntendedWaterUse = false
-      }
-
+    /**
+     * @desc Check validity of coordinates in well submission
+     * @param {obj} errors Reference to Errors object displaying issues on page
+     */
+    validateCoordinates (errors) {
       const wellCoordsNotWithinBC = !this.$refs.activitySubmissionForm.$refs.wellCoords.validCoordinate
       const wellCoordsMissing = !this.form.latitude || !this.form.longitude;
       //
@@ -600,15 +599,16 @@ export default {
       } else if (wellCoordsNotWithinBC) {
         errors.position = ['Coordinates not within BC']
       }
-      
-      
-      // Always validate well_class and intended_water_use except for ALT or DEC submissions with a
-      // well_tag_number specified
-      if (validateWellClassAndIntendedWaterUse) {
+    },
+    validateWellClassAndIntendedWaterUse (errors) {
+        // Always validate well_class and intended_water_use except for ALT or DEC submissions with a well_tag_number specified
+        const validateWellClassAndIntendedWaterUse = !((this.activityType === 'ALT' || this.activityType === 'DEC') && this.form.well)
+        if (validateWellClassAndIntendedWaterUse) {
+        
+        
         if (!this.form.intended_water_use) {
-          errors.intended_water_use = [ 'Intended water use is required.' ]
-        }
-
+            errors.intended_water_use = [ 'Intended water use is required.' ]
+          }
         if (!this.form.well_class) {
           errors.well_class = [ 'Well class is required.' ]
         } else if (this.form.well_class === 'WATR_SPPLY') {
@@ -621,12 +621,38 @@ export default {
           }
         }
       }
-
-      // Validate the Artesian Well radio button, if flow, pressure head or pressure psi has a value then we
-      //  ask the user to set the value of Artesian Well to Yes
-      if (!this.form.artesian_conditions && (this.form.artesian_flow > 0 || this.form.artesian_pressure > 0 || this.form.artesian_pressure_head > 0)) {
+    },
+    validateDatesOfWork (errors){
+      if(!this.form.work_start_date){
+        errors.work_start_date = ['Must enter work start date'];
+      }
+      if(!this.form.work_end_date){
+        errors.work_end_date = ['Must enter work end date'];
+      }
+    },
+    /**
+     * @desc Validate the Artesian Well radio button, if flow, pressure head or pressure psi has a value then we ask the user to set the value of Artesian Well to Yes
+     * @param {*} errors 
+     */
+    validateArtesianFlow (errors) {
+      const positivePressureOrFlow = ( this.form.artesian_flow > 0 || this.form.artesian_pressure > 0 || this.form.artesian_pressure_head > 0 );
+      if (positivePressureOrFlow && !this.form.artesian_conditions) {
         errors.artesian_conditions = [ 'Set Artesian Well to Yes for positive flow or pressure.' ]
       }
+    },
+    isFormValid () {
+      const errors = {}
+      const enhancedValidation = (
+        new Date(this.form.work_start_date).getTime() >= this.dateOfValidationEnforcement ||
+        new Date(this.form.work_end_date).getTime() >= this.dateOfValidationEnforcement
+      );
+      this.validateWellClassAndIntendedWaterUse(errors);
+      this.validateCoordinates(errors);
+
+      if (enhancedValidation) {
+        this.validateDatesOfWork(errors);
+      }
+
 
       this.errors = errors
       return Object.keys(errors).length === 0

@@ -61,4 +61,4 @@ export const TOOLTIP_TEXT = {
 }
 
 // January 1st 2024
-export const dateOfValidationEnforcement = new Date(2024, 1, 1, 0);
+export const dateOfValidationEnforcement = new Date(2024, 0, 0, 0).getTime();
