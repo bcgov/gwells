@@ -132,6 +132,13 @@ export default {
           })
         }
 
+        // Allow users to place a marker if one is not already present
+        this.map.on('click', (ev) => {
+          if(!this.latitude || !this.longitude){
+            this.handleMapClick(ev);
+          }
+        });
+        
         if (this.longitude && this.latitude) {
           this.coordsChanged(this.longitude, this.latitude)
 
@@ -190,6 +197,20 @@ export default {
       } else {
         this.resetMap()
       }
+    },
+    /**
+     * @desc Updates the Longitude / Latitude of the map marker when user clicks, if click is within BC
+     * @summary Updates map marker to click location
+     * @param {Object} event Mapbox event
+     */
+    handleMapClick(event) {
+      const { lat, lng } = event.lngLat
+      this.performCheck(lng, lat).then((isInsideBC) => {
+        if (isInsideBC) {
+          const longLat = { lng: Math.abs(lng), lat }
+          this.$emit('coordinate', longLat);
+        }
+      });
     },
     handleDrag () {
       const markerLngLat = this.marker.getLngLat()
