@@ -59,3 +59,6 @@ export const TOOLTIP_TEXT = {
     analysis_method: 'Mathematical solutions (Theis, Cooper-Jacob, Neuman, etc.) where response data (discharge, drawdown/time) from pumping tests are used to estimate the hydraulic properties of aquifers.',
   },
 }
+
+// January 1st 2024
+export const dateOfValidationEnforcement = new Date(2024, 1, 1, 0);
