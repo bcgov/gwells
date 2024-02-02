@@ -204,7 +204,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <coords class="my-5"
         v-if="showSection('wellCoords')"
         id="wellCoords"
-        ref="wellCoords"
         :latitude.sync="form.latitude"
         :longitude.sync="form.longitude"
         :drinking_water="form.drinking_water_protection_area_ind"
