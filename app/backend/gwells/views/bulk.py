@@ -240,7 +240,8 @@ class BulkWellAquiferCorrelation(APIView):
             create_date=self.create_date
         )
         self.change_log.append(bulk_history_item)
-
+        
+    # add activity submission objects to the array
     def append_to_change_log_activity_submission(self, well_tag_number, to_aquifer_id):
         well_instance = Well.objects.get(pk=well_tag_number)
         aquifer_instance = Aquifer.objects.get(pk=to_aquifer_id)
@@ -255,9 +256,7 @@ class BulkWellAquiferCorrelation(APIView):
             well_activity_type=well_activity_code_instance
         )
         self.change_log_activity_submission.append(activity_submission_item)
-        # FieldsProvided.objects.create(filing_number=activity_submission_object.pk)
         
-
 
 class BulkVerticalAquiferExtents(APIView):
     """
