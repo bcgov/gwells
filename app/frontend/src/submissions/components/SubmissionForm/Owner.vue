@@ -65,7 +65,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <b-col cols="6" md="4">
         <b-form-group
             id="ownerProvince"
-            label="Province"
+            label="Province or State"
             aria-describedby="ownerProvinceInvalidFeedback">
           <b-form-select
               v-model="ownerProvinceInput"

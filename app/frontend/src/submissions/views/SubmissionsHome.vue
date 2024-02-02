@@ -131,7 +131,7 @@ import ActivitySubmissionForm from '@/submissions/components/SubmissionForm/Acti
 import parseErrors from '@/common/helpers/parseErrors.js'
 import { RESET_WELL_DATA } from '@/wells/store/actions.types.js'
 
-import { DEWATERING_DRAINAGE_WELL_CLASS, WATER_SUPPLY_WELL_CLASS, PERMANENT_SUBCLASS } from '@/common/constants.js'
+import { WELL_CLASS, WELL_SUBCLASS } from '@/common/constants.js'
 
 export default {
   name: 'SubmissionsHome',
@@ -576,25 +576,41 @@ export default {
 
         // non-form fields that should be saved with form
         meta: {
-          drillerSameAsPersonResponsible: false
+          drillerSameAsPersonResponsible: false 
         }
       }
       this.componentUpdateTrigger = Date.now()
     },
-    newlyConstructedWellValidation(errors) {
+    groundwaterProtectionRegulationValidation(errors) {
 
-      // const WELL_OWNER_NAME = this.form.owner_full_name;
-      // const START_DATE_OF_WORK = this.form.construction_start_date;
-      // const END_DATE_OF_WORK = this.form.construction_end_date;
-      // const OWNER_MAILING_ADDRESS = this.form.owner_mailing_address;
-      // const DRILLING_METHODS = this.form.drilling_methods;
-      // const TOTAL_DEPTH_DRILLED = this.form.total_depth_drilled;
-      // const FINISHED_WELL_DEPTH = this.form.finished_well_depth;
-      // const FINAL_CASING_STICK_UP = this.form.final_casing_stick_up
-
-      const { 
+      const {
         owner_full_name, 
         owner_mailing_address,
+        owner_city,
+        owner_province_state,
+        owner_postal_code,
+      } = this.form
+
+
+      if (!owner_full_name) {
+        errors.owner_full_name = ['Owners Full Name Required.'];
+      }
+      if (!owner_mailing_address) {
+        errors.owner_mailing_address = ['Owners Mailing Address Required.'];
+      }
+      if (!owner_city) {
+        errors.owner_city = ['Owners City Required.'];
+      }
+      if (!owner_province_state) {
+        errors.owner_province_state = ['Owners Province or State Required.'];
+      }
+      if (!owner_postal_code) {
+        errors.owner_postal_code = ['Owners Postal Code Required.'];
+      }
+    },
+    newlyConstructedWellValidation(errors) {
+
+      const { 
         drilling_methods,
         total_depth_drilled,
         finished_well_depth,
@@ -607,20 +623,22 @@ export default {
         well_identification_plate_attached,
       } = this.form
       
-      const mandatoryLicensingDate = new Date('2016-03-01');
+      const mandatoryLicensingDate = new Date('2024-01-01');
       mandatoryLicensingDate.setHours(0, 0 , 0 , 0);
       const workStartDate = new Date(`${work_start_date}`);
+      const workEndDate = new Date(`${work_end_date}`);
 
-      // TODO: need to rethink this, if we should be doing early returns? probably because we need to run the code again anyway except if the error message is populated in the form then we should not return until the very end
       if (this.activityType !== 'CON') return;
 
+      // TODO: confirm with s.o. that we can validate dates this way:
       if (isNaN(workStartDate)) return errors.work_start_date = ['Invalid work start date.'];
+      if (isNaN(workEndDate)) return errors.work_end_date = ['Invalid work start date.'];
 
       if (workStartDate < mandatoryLicensingDate) return;
-      
-      // If Class of Wells is Dewatering/Drainage (and well subclass is permanent) or Water supply: Well Identification Plate Number, Where Identification Plate Attached
+      if (workEndDate < mandatoryLicensingDate) return;
 
-      if ((well_class === DEWATERING_DRAINAGE_WELL_CLASS && well_subclass === PERMANENT_SUBCLASS) || well_class === WATER_SUPPLY_WELL_CLASS) {
+      let isWellIdentificationPlateToBeVerified = false;
+      const validateWellIdentificationPlate = (errors) => {
         if (!identification_plate_number) {
           errors.identification_plate_number = ['Identification Plate Number Required.'];
         }
@@ -628,6 +646,14 @@ export default {
           errors.well_identification_plate_attached = ['Well Identification Plate Attached Required.'];
         }
       }
+      
+      // If Class of Wells is Dewatering/Drainage (and well subclass is permanent) or Water supply: Well Identification Plate Number, Where Identification Plate Attached
+      if (well_class === WELL_CLASS.DEWATERING_DRAINAGE && well_subclass === WELL_SUBCLASS.PERMANENT) { isWellIdentificationPlateToBeVerified = true; }
+      if (well_class === WELL_CLASS.WATER_SUPPLY) { isWellIdentificationPlateToBeVerified = true; }
+      if (well_class === WELL_CLASS.INJECTION) { isWellIdentificationPlateToBeVerified = true; }
+      if (well_class === WELL_CLASS.RECHARGE) { isWellIdentificationPlateToBeVerified = true; }
+
+      if (isWellIdentificationPlateToBeVerified) { validateWellIdentificationPlate(errors); } 
 
       // Start Date of Work, End Date of Work
       if (!work_start_date) {
@@ -636,17 +662,6 @@ export default {
       if (!work_end_date) {
         errors.work_end_date = ['End Date of Work Required.'];
       }
-
-      // Well Owner Name, Owner Mailing Address
-      if (!owner_full_name) {
-        errors.owner_full_name = ['Owners Full Name Required.'];
-      }
-      if (!owner_mailing_address) {
-        errors.owner_mailing_address = ['Owners Mailing Address Required.'];
-      }
-
-      // Geographic Coordinates (if possible/optional: error message for coordinates out of the province boundary)
-      // TODO: verify that this is already being done and doesn't need to be done within the scope of this ticket?
 
       // Drilling Method(s)
       if (!drilling_methods) {
@@ -662,6 +677,7 @@ export default {
     isFormValid () {
       const errors = {}
 
+      this.groundwaterProtectionRegulationValidation(errors)
       this.newlyConstructedWellValidation(errors)
 
       let validateWellClassAndIntendedWaterUse = true
