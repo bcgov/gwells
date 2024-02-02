@@ -50,6 +50,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </b-col>
         </b-row>
       <p v-if="!isStaffEdit">Submit activity on a well. <a href="/gwells/" target="_blank">Try a search</a> to see if the well exists in the system before submitting a report.</p>
+      <p>All form fields marked with a trailing asterisk are mandatory fields.</p>
 
       <!-- Form load/save -->
       <b-row v-if="!isStaffEdit">

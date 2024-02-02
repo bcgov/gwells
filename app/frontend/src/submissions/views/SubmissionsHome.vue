@@ -131,6 +131,8 @@ import ActivitySubmissionForm from '@/submissions/components/SubmissionForm/Acti
 import parseErrors from '@/common/helpers/parseErrors.js'
 import { RESET_WELL_DATA } from '@/wells/store/actions.types.js'
 
+import { DEWATERING_DRAINAGE_WELL_CLASS, WATER_SUPPLY_WELL_CLASS, PERMANENT_SUBCLASS } from '@/common/constants.js'
+
 export default {
   name: 'SubmissionsHome',
   mixins: [inputFormatMixin, filterBlankRows],
@@ -579,8 +581,88 @@ export default {
       }
       this.componentUpdateTrigger = Date.now()
     },
+    newlyConstructedWellValidation(errors) {
+
+      // const WELL_OWNER_NAME = this.form.owner_full_name;
+      // const START_DATE_OF_WORK = this.form.construction_start_date;
+      // const END_DATE_OF_WORK = this.form.construction_end_date;
+      // const OWNER_MAILING_ADDRESS = this.form.owner_mailing_address;
+      // const DRILLING_METHODS = this.form.drilling_methods;
+      // const TOTAL_DEPTH_DRILLED = this.form.total_depth_drilled;
+      // const FINISHED_WELL_DEPTH = this.form.finished_well_depth;
+      // const FINAL_CASING_STICK_UP = this.form.final_casing_stick_up
+
+      const { 
+        owner_full_name, 
+        owner_mailing_address,
+        drilling_methods,
+        total_depth_drilled,
+        finished_well_depth,
+        final_casing_stick_up,
+        work_start_date,
+        work_end_date,
+        well_class,
+        well_subclass,
+        identification_plate_number,
+        well_identification_plate_attached,
+      } = this.form
+      
+      const mandatoryLicensingDate = new Date('2016-03-01');
+      mandatoryLicensingDate.setHours(0, 0 , 0 , 0);
+      const workStartDate = new Date(`${work_start_date}`);
+
+      // TODO: need to rethink this, if we should be doing early returns? probably because we need to run the code again anyway except if the error message is populated in the form then we should not return until the very end
+      if (this.activityType !== 'CON') return;
+
+      if (isNaN(workStartDate)) return errors.work_start_date = ['Invalid work start date.'];
+
+      if (workStartDate < mandatoryLicensingDate) return;
+      
+      // If Class of Wells is Dewatering/Drainage (and well subclass is permanent) or Water supply: Well Identification Plate Number, Where Identification Plate Attached
+
+      if ((well_class === DEWATERING_DRAINAGE_WELL_CLASS && well_subclass === PERMANENT_SUBCLASS) || well_class === WATER_SUPPLY_WELL_CLASS) {
+        if (!identification_plate_number) {
+          errors.identification_plate_number = ['Identification Plate Number Required.'];
+        }
+        if (!well_identification_plate_attached) {
+          errors.well_identification_plate_attached = ['Well Identification Plate Attached Required.'];
+        }
+      }
+
+      // Start Date of Work, End Date of Work
+      if (!work_start_date) {
+        errors.work_start_date = ['Start Date of Work Required.'];
+      }
+      if (!work_end_date) {
+        errors.work_end_date = ['End Date of Work Required.'];
+      }
+
+      // Well Owner Name, Owner Mailing Address
+      if (!owner_full_name) {
+        errors.owner_full_name = ['Owners Full Name Required.'];
+      }
+      if (!owner_mailing_address) {
+        errors.owner_mailing_address = ['Owners Mailing Address Required.'];
+      }
+
+      // Geographic Coordinates (if possible/optional: error message for coordinates out of the province boundary)
+      // TODO: verify that this is already being done and doesn't need to be done within the scope of this ticket?
+
+      // Drilling Method(s)
+      if (!drilling_methods) {
+        errors.drilling_methods = ['Drilling Methods Required.'];
+      }
+
+      // Total Depth Drilled(?), Finished Well Depth, Final Casing Stick Up
+      if (!total_depth_drilled) { errors.total_depth_drilled = ['Total Depth Drilled Required.'] }
+      if (!finished_well_depth) { errors.finished_well_depth = ['Finished Well Depth Required.'] }
+      if (!final_casing_stick_up) { errors.final_casing_stick_up = ['Final Casing Stick Up'] }
+
+    },
     isFormValid () {
       const errors = {}
+
+      this.newlyConstructedWellValidation(errors)
 
       let validateWellClassAndIntendedWaterUse = true
       if ((this.activityType === 'ALT' || this.activityType === 'DEC') && this.form.well) {
@@ -653,10 +735,10 @@ export default {
       })
     },
     handlePreviewButton () {
-      if (!this.formChanges()) {
-        this.$noty.info('<div class="errorTitle">Please add some data to your submission.</div>', { killer: true })
-        return
-      }
+      // if (!this.formChanges()) {
+      //   this.$noty.info('<div class="errorTitle">Please add some data to your submission.</div>', { killer: true })
+      //   return
+      // }
 
       if (!this.isFormValid()) {
         this.showErrorMessages()
