@@ -104,7 +104,7 @@
           <tr v-for="row in results" :key="row.well_tag_number" @mousedown="searchResultsRowClicked(row)">
             <td v-for="column in columns" :key="column.id" class="data">
               <template v-if="column.param === 'well_tag_number'">
-                <a :href="`/gwells/well/${row.well_tag_number}`" target="_blank">{{ row.well_tag_number }}</a>
+                <a :href="`/gwells/well/${row.well_tag_number}`" target="_blank" rel="noopener noreferrer">{{ row.well_tag_number }}</a>
               </template>
               <template v-else-if="column.param === 'street_address'">
                 {{ row | streetAddressFormat }}
