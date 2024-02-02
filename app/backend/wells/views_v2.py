@@ -65,7 +65,6 @@ from aquifers.models import (
 from aquifers.permissions import HasAquiferEditRole
 from wells.views import WellDetail as WellDetailV1
 from wells.constants import MAX_EXPORT_COUNT, MAX_LOCATION_COUNT
-from wells.utils import get_annotated_well_queryset
 
 logger = logging.getLogger(__name__)
 
@@ -603,7 +602,6 @@ class MislocatedWellsListView(ListAPIView):
         for the currently authenticated user.
         """
         queryset = Well.objects.all()
-        queryset = get_annotated_well_queryset()
 
         return queryset
 
@@ -621,42 +619,7 @@ class RecordComplianceListView(ListAPIView):
     ordering = ('well_tag_number',)
 
     def get_queryset(self):
-        """
-        Retrieves wells that are missing information in any of the specified fields.
-        """
         queryset = Well.objects.all()
-        queryset = get_annotated_well_queryset()
-
-        # Filtering for records missing any of the specified fields
-        # missing_info_filter = (
-        #     Q(well_tag_number__isnull=True) |
-        #     Q(identification_plate_number__isnull=True) |
-        #     Q(well_class__isnull=True) |
-        #     Q(geom__isnull=True) | # for latitude and longitude
-        #     Q(finished_well_depth__isnull=True) |
-        #     Q(surface_seal_depth__isnull=True) |
-        #     Q(surface_seal_thickness__isnull=True) |
-        #     Q(aquifer_lithology__isnull=True) |
-        #     Q(well_status__isnull=True) |
-        #     Q(work_start_date__isnull=True) |
-        #     Q(work_end_date__isnull=True) |
-        #     Q(person_responsible__isnull=True) |
-        #     Q(company_of_person_responsible__isnull=True) |
-        #     Q(create_date__isnull=True) |
-        #     Q(create_user__isnull=True) |
-        #     Q(natural_resource_region__isnull=True)
-        # )
-
-        # queryset = queryset.filter(missing_info_filter)
-
-        # Additional filtering based on query parameters
-        work_start_date = self.request.query_params.get('work_start_date')
-        work_end_date = self.request.query_params.get('work_end_date')
-
-        if work_start_date:
-            queryset = queryset.filter(work_start_date__gte=work_start_date)
-        if work_end_date:
-            queryset = queryset.filter(work_end_date__lte=work_end_date)
 
         return queryset
     
@@ -679,7 +642,6 @@ class CrossReferencingListView(ListAPIView):
         in their internal_comments.
         """
         queryset = Well.objects.all()
-        queryset = get_annotated_well_queryset()
 
         search_terms = ["x-ref'd", "x-ref", "cross-ref", "cross r", "cross-r", "ref'd", "referenced", "refd", "xref", "x-r", "x r"]
 

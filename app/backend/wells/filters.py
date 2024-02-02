@@ -24,7 +24,7 @@ from django.contrib.gis.geos import GEOSException, Polygon, GEOSGeometry, Point
 from django.contrib.gis.gdal import GDALException
 from django.contrib.gis.db.models.functions import Transform
 from django.contrib.gis.measure import D
-from django.db.models import Max, Min, Q, QuerySet
+from django.db.models import Max, Min, Q, QuerySet,  Subquery, OuterRef
 from django_filters import rest_framework as filters
 from django_filters.widgets import BooleanWidget
 from rest_framework.exceptions import ValidationError
@@ -42,7 +42,10 @@ from wells.models import (
     WellAttachment,
     PumpingTestDescriptionCode,
     BoundaryEffectCode,
-    AnalysisMethodCode
+    AnalysisMethodCode,
+    LithologyDescription,
+    Casing,
+    ActivitySubmission
 )
 from wells.constants import WELL_TAGS
 
@@ -851,12 +854,24 @@ class WellQaQcFilterBackend(filters.DjangoFilterBackend):
                     continue
                 
                 q_objects = Q()
+                create_date_gte = None
+                create_date_lte = None
+
                 for field, value in group_params.items():
                     if field == 'well_tag_number':
                         queryset = queryset.filter(well_tag_number__icontains=value)
+                    
+                    if field == 'create_user':
+                        queryset = queryset.filter(create_user__icontains=value)
 
                     elif field == 'identification_plate_number':
                         queryset = queryset.filter(identification_plate_number__icontains=value)
+
+                    elif field == 'create_date_after':
+                        create_date_gte = value  # Store the value to use later in the date range filter
+
+                    elif field == 'create_date_before':
+                        create_date_lte = value  # Store the value to use later in the date range filter
 
                     elif field == 'person_responsible_name' and value == 'null':
                         q_objects |= (Q(person_responsible__isnull=True) | Q(person_responsible__first_name__isnull=True) |
@@ -871,7 +886,73 @@ class WellQaQcFilterBackend(filters.DjangoFilterBackend):
                     elif field in ['latitude', 'longitude']:
                         if value == 'null':
                             q_objects &= Q(**{'geom__isnull': True})
+
+                    # Check for null or empty 'aquifer_lithology'
+                    elif field == 'aquifer_lithology' and value == 'null':
+                        # Subquery to get the last lithology description's raw data for each well
+                        last_lithology_raw_data = Subquery(
+                            LithologyDescription.objects.filter(
+                                well=OuterRef('pk')
+                            ).order_by('-lithology_sequence_number').values('lithology_raw_data')[:1]
+                        )
+                        queryset = queryset.annotate(
+                            last_lithology_raw_data=last_lithology_raw_data
+                        ).filter(
+                            Q(last_lithology_raw_data__isnull=True) | 
+                            Q(last_lithology_raw_data='') |
+                            Q(last_lithology_raw_data=' ')
+                        )
                     
+                    # Check for null or empty 'casing_diameter' using the subquery
+                    elif field == 'diameter' and value == 'null':
+                        # Subquery to get the last casing's diameter for each well
+                        last_casing_diameter = Subquery(
+                            Casing.objects.filter(
+                                well=OuterRef('pk')
+                            ).order_by('-end').values('diameter')[:1]
+                        )
+                        queryset = queryset.annotate(
+                            last_casing_diameter=last_casing_diameter
+                        ).filter(
+                            Q(last_casing_diameter__isnull=True)
+                        )
+
+                    elif field == 'well_status' and value == 'null':
+                        last_activity_type = Subquery(
+                            ActivitySubmission.objects.filter(
+                                well=OuterRef('pk')
+                            ).order_by('-work_end_date').values('well_activity_type__description')[:1]
+                        )
+                        queryset = queryset.annotate(
+                            last_well_status=last_activity_type
+                        ).filter(
+                            Q(last_well_status__isnull=True) | Q(last_well_status='')
+                        )
+
+                    elif field == 'work_start_date' and value == 'null':
+                        last_activity_start_date = Subquery(
+                            ActivitySubmission.objects.filter(
+                                well=OuterRef('pk')
+                            ).order_by('-work_end_date').values('work_start_date')[:1]
+                        )
+                        queryset = queryset.annotate(
+                            last_work_start_date=last_activity_start_date
+                        ).filter(
+                            Q(last_work_start_date__isnull=True)
+                        )
+
+                    elif field == 'work_end_date' and value == 'null':
+                        last_activity_end_date = Subquery(
+                            ActivitySubmission.objects.filter(
+                                well=OuterRef('pk')
+                            ).order_by('-work_end_date').values('work_end_date')[:1]
+                        )
+                        queryset = queryset.annotate(
+                            last_work_end_date=last_activity_end_date
+                        ).filter(
+                            Q(last_work_end_date__isnull=True)
+                        )
+  
                     elif value == 'null':
                         # Check if the field exists in the model
                         try:
@@ -885,6 +966,14 @@ class WellQaQcFilterBackend(filters.DjangoFilterBackend):
                         else:
                             # For other field types, just check for null
                             q_objects &= Q(**{f'{field}__isnull': True})
+
+                # After processing all fields, apply the date range filter if both values are provided
+                if create_date_gte and create_date_lte:
+                    q_objects |= Q(create_date__range=(create_date_gte, create_date_lte))
+                elif create_date_gte:  # Only 'after' date is provided
+                    q_objects |= Q(create_date__gte=create_date_gte)
+                elif create_date_lte:  # Only 'before' date is provided
+                    q_objects |= Q(create_date__lte=create_date_lte)
 
                 # Apply the combined Q object filters to the queryset
                 queryset = queryset.filter(q_objects)

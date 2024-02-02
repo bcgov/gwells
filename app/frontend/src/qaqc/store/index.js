@@ -73,12 +73,13 @@ export const RECORD_COMPLIANCE_COLUMNS = [
   'surfaceSealThicknessNull',
   'aquiferLithologyNull',
   'wellStatusNull',
-  'dateOfWorkNull',
+  'workStartDateNull',
+  'workEndDateNull',
   'personResponsibleNull',
   'orgResponsibleNull',
+  'naturalResourceRegionNull',
   'createDate',
   'createUser',
-  'naturalResourceRegion',
   'internalComments'
 ]
 
@@ -88,10 +89,11 @@ export const MISLOCATED_WELLS_COLUMNS = [
   'distanceToPid',
   'scoreAddress',
   'scoreCity',
-  'wellStatus',
-  'dateOfWork',
-  'orgResponsible',
-  'naturalResourceRegion',
+  'wellStatusNull',
+  'workStartDateNull',
+  'workEndDateNull',
+  'orgResponsibleNull',
+  'naturalResourceRegionNull',
   'createDate',
   'createUser',
   'internalComments'
@@ -99,13 +101,14 @@ export const MISLOCATED_WELLS_COLUMNS = [
 
 export const CROSS_REFERENCING_COLUMNS = [
   'wellTagNumber',
-  'wellStatus',
-  'dateOfWork',
+  'wellStatusNull',
+  'workStartDateNull',
+  'workEndDateNull',
+  'naturalResourceRegionNull',
   'createUser',
   'createDate',
   'updateUser',
   'updateDate',
-  'naturalResourceRegion',
   'internalComments'
 ]
 

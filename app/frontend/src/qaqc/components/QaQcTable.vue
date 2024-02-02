@@ -52,6 +52,13 @@
                 @click="sortResults({ param: column.sortParam || column.sortParam, desc: (column.sortParam === orderingParam) ? !orderingDesc : false })">
                 {{ (column.sortParam === orderingParam) ? orderingDesc ? '&#x2191;' : '&#x2193;' : '&#x2195;' }}
               </b-button>
+              <!-- Only show the badge and popover if there is tooltip content -->
+              <template v-if="getTooltipContent(column.id)">
+                <b-badge pill variant="primary" :id="`${column.id}-tooltip`" tabindex="0" class="ml-1">
+                  <i class="fa fa-question fa-sm"></i>
+                </b-badge>
+                <b-popover :target="`${column.id}-tooltip`" placement="bottom" triggers="hover focus" :content="getTooltipContent(column.id)"></b-popover>
+              </template>
             </th>
           </tr>
           <tr class="filters">
@@ -97,7 +104,7 @@
           <tr v-for="row in results" :key="row.well_tag_number" @mousedown="searchResultsRowClicked(row)">
             <td v-for="column in columns" :key="column.id" class="data">
               <template v-if="column.param === 'well_tag_number'">
-                <a :href="`/wells-detail/${row.well_tag_number}`" target="_blank">{{ row.well_tag_number }}</a>
+                <a :href="`/gwells/well/${row.well_tag_number}`" target="_blank">{{ row.well_tag_number }}</a>
               </template>
               <template v-else-if="column.param === 'street_address'">
                 {{ row | streetAddressFormat }}
@@ -164,7 +171,20 @@ export default {
         { value: 10, text: '10' },
         { value: 25, text: '25' },
         { value: 50, text: '50' }
-      ]
+      ],
+      // Object mapping column IDs to tooltip content
+      tooltipContent: {
+        'diameterNull': 'Diameter in the first line/last line of the Casing Details table on the Well Summary page. It is used to check if the casing information is missing',
+        'aquiferLithologyNull': 'Raw Data in the first line/last line of the Lithology table on the Well Summary page; It is used to check if lithology information is missing',
+        'wellStatusNull': 'Activity in the Well Activity table on the Well Summary page',
+        'workStartDateNull': 'Work Start Date in the Well Activity Table on the Well Summary page',
+        'workEndDateNull': 'Work End Date in the Well Activity Table on the Well Summary page',
+        'createDate': 'When the well record was entered/created',
+        'geocodeDistance': 'The distance from well to location determined by the BC Address Geocoder API (value 99999 indicates no result). Wells with Geocode distance of 400 m or greater are displayed in this table.',
+        'distanceToPid': 'The distance from well to BC Parcel Fabric Polygon with matching Parcel Identifier (PID). A higher value indicates higher probability of a location error. NULL indicates no matching PID found. Wells with Distance to matching PID of 25 m or greater are displayed in this table.',
+        'scoreAddress': 'Token Set Ratio score for matching wells address to reverse geocoded address (street number/name/direction). A lower score indicates a higher probability of a location error. Wells with Address Scores less than 80 are displayed in this table.',
+        'scoreCity': 'Token Set Ratio score for matching wells city to reverse geocoded locality. A lower score indicates a higher probability of a location error. This table is not filtered by City Score.'
+      }
     }
   },
   computed: {
@@ -248,10 +268,12 @@ export default {
         'surfaceSealDepthNull': 'Seal Depth (feet)',
         'surfaceSealThicknessNull': 'Seal Thickness (inches)',
         'aquiferLithologyNull': 'Lithology',
-        'wellStatusNull': 'Work Type',
-        'dateOfWorkNull': 'Work Start Date',
+        'wellStatusNull': 'Work/Report Type',
+        'workStartDateNull': 'Work Start Date',
+        'workEndDateNull': 'Work End Date',
         'personResponsibleNull': 'Person Responsible',
         'orgResponsibleNull': 'Company that did the work',
+        'naturalResourceRegionNull': 'Natural Resource Region',
         'createDate': 'Created Date',
         'createUser': 'Created By',
         'updateDate': 'Updated Date',
@@ -261,8 +283,7 @@ export default {
         'geocodeDistance': 'Geocode Distance',
         'distanceToPid': 'Distance to Matching PID',
         'scoreAddress': 'Score Address',
-        'scoreCity': 'Score City',
-        'naturalResourceRegion': 'Natural Resource Region'
+        'scoreCity': 'Score City'
       }
 
       return (columnId) => labelMapping[columnId] || columnId
@@ -312,7 +333,11 @@ export default {
     },
     searchResultsRowClicked (data) {
       this.$emit('rowClicked', data)
-    }
+    },
+    getTooltipContent(columnId) {
+      // Return the tooltip content if it exists, or null if it doesn't
+      return this.tooltipContent[columnId] || null;
+    },
   },
   filters: {
     streetAddressFormat (row) {

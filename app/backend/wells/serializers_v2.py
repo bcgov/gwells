@@ -18,7 +18,7 @@ from rest_framework import serializers
 from django.contrib.gis.geos import Point
 
 from gwells.utils import isPointInsideBC
-from wells.models import Well, DevelopmentMethodCode
+from wells.models import Well, DevelopmentMethodCode, ActivitySubmission
 from aquifers.models import VerticalAquiferExtent, Aquifer
 
 from aquifers.serializers_v2 import AquiferDetailSerializerV2
@@ -460,9 +460,24 @@ class WellDetailSerializer(WellDetailSerializerV1):
         ref_name = "well_detail_v2"
 
 
-class MislocatedWellsSerializer(serializers.ModelSerializer):
-    work_start_date = serializers.DateField(read_only=True)
-    work_end_date = serializers.DateField(read_only=True)
+class ActivitySubmissionMixin:
+    def get_well_status(self, obj):
+        last_activity = ActivitySubmission.objects.filter(well=obj).order_by('-work_end_date').first()
+        return last_activity.well_activity_type.description if last_activity else None
+
+    def get_work_start_date(self, obj):
+        last_activity = ActivitySubmission.objects.filter(well=obj).order_by('-work_end_date').first()
+        return last_activity.work_start_date if last_activity else None
+
+    def get_work_end_date(self, obj):
+        last_activity = ActivitySubmission.objects.filter(well=obj).order_by('-work_end_date').first()
+        return last_activity.work_end_date if last_activity else None
+    
+
+class MislocatedWellsSerializer(ActivitySubmissionMixin, serializers.ModelSerializer):
+    well_status = serializers.SerializerMethodField()
+    work_start_date = serializers.SerializerMethodField()
+    work_end_date = serializers.SerializerMethodField()
 
     class Meta:
         model = Well
@@ -483,9 +498,10 @@ class MislocatedWellsSerializer(serializers.ModelSerializer):
         ]
 
 
-class CrossReferencingSerializer(serializers.ModelSerializer):
-    work_start_date = serializers.DateField(read_only=True)
-    work_end_date = serializers.DateField(read_only=True)
+class CrossReferencingSerializer(ActivitySubmissionMixin, serializers.ModelSerializer):
+    well_status = serializers.SerializerMethodField()
+    work_start_date = serializers.SerializerMethodField()
+    work_end_date = serializers.SerializerMethodField()
 
     class Meta:
         model = Well
@@ -504,12 +520,32 @@ class CrossReferencingSerializer(serializers.ModelSerializer):
         ]
 
 
-class RecordComplianceSerializer(serializers.ModelSerializer):
-    work_start_date = serializers.DateField(read_only=True)
-    work_end_date = serializers.DateField(read_only=True)
+class RecordComplianceSerializer(ActivitySubmissionMixin, serializers.ModelSerializer):
     company_of_person_responsible_name = serializers.ReadOnlyField(
         source='company_of_person_responsible.name')
     person_responsible_name = serializers.ReadOnlyField(source='person_responsible.name')
+
+    # Serializer methods for the last ActivitySubmission's work types
+    well_status = serializers.SerializerMethodField()
+    work_start_date = serializers.SerializerMethodField()
+    work_end_date = serializers.SerializerMethodField()
+
+    # last_lithology_raw_data
+    aquifer_lithology = serializers.SerializerMethodField()
+    # Serializer method field for the last casing's diameter
+    diameter = serializers.SerializerMethodField()
+
+    def get_aquifer_lithology(self, obj):
+      # Fetch the last LithologyDescription based on the sequence number
+      last_lithology = obj.lithologydescription_set.order_by('-lithology_sequence_number').first()
+      # Return the raw data if it exists, otherwise return None
+      return last_lithology.lithology_raw_data if last_lithology else None
+    
+    def get_diameter(self, obj):
+        # Fetch the last Casing based on the 'end' field
+        last_casing = obj.casing_set.order_by('-end').first()
+        # Return the diameter if it exists, otherwise return None
+        return last_casing.diameter if last_casing else None
 
     class Meta:
         model = Well

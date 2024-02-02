@@ -49,7 +49,10 @@ def update_well(sender, instance, **kwargs):
         else:
             # Handling updates to existing instances
             original_instance = sender.objects.get(pk=instance.pk)
-            if original_instance.geom != instance.geom and is_valid_geom(instance.geom):
+            if original_instance.geom != instance.geom \
+              or original_instance.street_address != instance.street_address \
+              or original_instance.city != instance.city \
+              and is_valid_geom(instance.geom):
                 set_well_attributes(instance)
     except Exception as e:
         print(f"Error in update_well for Well ID {instance.pk}: {str(e)}")

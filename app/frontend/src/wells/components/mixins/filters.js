@@ -957,9 +957,14 @@ const SEARCH_FIELDS = {
     label: 'Work Type',
     type: 'nullcheck'
   },
-  dateOfWorkNull: {
-    param: 'date_of_work',
+  workStartDateNull: {
+    param: 'work_start_date',
     label: 'Work Start Date',
+    type: 'nullcheck'
+  },
+  workEndDateNull: {
+    param: 'work_end_date',
+    label: 'Work End Date',
     type: 'nullcheck'
   },
   personResponsibleNull: {
@@ -970,6 +975,11 @@ const SEARCH_FIELDS = {
   orgResponsibleNull: {
     param: 'company_of_person_responsible_name',
     label: 'Company that did the work',
+    type: 'nullcheck'
+  },
+  naturalResourceRegionNull: {
+    param: 'natural_resource_region',
+    label: 'Natural Resource Region',
     type: 'nullcheck'
   },
 }

@@ -169,22 +169,3 @@ def calculate_score_city(well, geocoded_address):
     if not geocoded_address:
         return None
     return fuzz.token_set_ratio(well.city.lower(), geocoded_address.get('localityName', '').lower())
-
-
-def get_annotated_well_queryset():
-    return Well.objects.select_related('well_status').annotate(
-        work_start_date=Case(
-            When(well_status__well_status_code=WELL_STATUS_CODE_CONSTRUCTION, then=F('construction_start_date')),
-            When(well_status__well_status_code=WELL_STATUS_CODE_ALTERATION, then=F('alteration_start_date')),
-            When(well_status__well_status_code=WELL_STATUS_CODE_DECOMMISSION, then=F('decommission_start_date')),
-            default=Value(None),
-            output_field=DateField()
-        ),
-        work_end_date=Case(
-            When(well_status__well_status_code=WELL_STATUS_CODE_CONSTRUCTION, then=F('construction_end_date')),
-            When(well_status__well_status_code=WELL_STATUS_CODE_ALTERATION, then=F('alteration_end_date')),
-            When(well_status__well_status_code=WELL_STATUS_CODE_DECOMMISSION, then=F('decommission_end_date')),
-            default=Value(None),
-            output_field=DateField()
-        )
-    )
